@@ -83,7 +83,6 @@ function ParseSettings($set) {
 
 function ParseViewParameters($query_string="") {
   global $cmd, $set, $vid, $als, $slice_id, $conds, $slices, $mapslices, $debug;
-  global $all_ids, $ids, $sel_ids, $add_disc, $sh_itm, $parent_id, $disc_ids, $disc_type;  # used for discussions
 
   # Parse parameters
   # if view in cmd[] or set[] is not specified - fill it from vid
@@ -155,16 +154,19 @@ function ParseViewParameters($query_string="") {
   #  $arr = ParseSettings($set[$vid]);
 
   # the parameters for discussion comes (quite not standard way) from globals
-  if( !$arr["all_ids"] )   $arr["all_ids"] = $all_ids;
-  if( !$arr["ids"] )       $arr["ids"] = $ids;
-  if( !$arr["sel_ids"] )   $arr["sel_ids"] = $sel_ids;
-  if( !$arr["add_disc"] )  $arr["add_disc"]  = $add_disc;
-  if( !$arr["sh_itm"] )    $arr["sh_itm"] = $sh_itm;
-  if( !$arr["parent_id"] ) $arr["parent_id"] = $parent_id;
+  if( !$arr["all_ids"] )     $arr["all_ids"]     = $GLOBALS['all_ids'];
+  if( !$arr["ids"] )         $arr["ids"]         = $GLOBALS['ids'];
+  if( !$arr["sel_ids"] )     $arr["sel_ids"]     = $GLOBALS['sel_ids'];
+  if( !$arr["add_disc"] )    $arr["add_disc"]    = $GLOBALS['add_disc'];
+  if( !$arr["sh_itm"] )      $arr["sh_itm"]      = $GLOBALS['sh_itm'];
+  if( !$arr["parent_id"] )   $arr["parent_id"]   = $GLOBALS['parent_id'];
   # IDs of discussion items for discussion list
-  if( !$arr["disc_ids"] )  $arr["disc_ids"] = $disc_ids;
+  if( !$arr["disc_ids"] )    $arr["disc_ids"]    = $GLOBALS['disc_ids'];
   # used for discussion list view
-  if( !$arr["disc_type"] ) $arr["disc_type"] = $disc_type;
+  if( !$arr["disc_type"] )   $arr["disc_type"]   = $GLOBALS['disc_type'];
+  # used for Links module - categories and links
+  if( !$arr["cat"] )         $arr["cat"]         = $GLOBALS['cat'];
+  if( !$arr["show_subcat"] ) $arr["show_subcat"] = $GLOBALS['show_subcat'];
 
   $arr['als']=GetAliasesFromUrl(true);
   $arr['vid']=$vid;
@@ -433,22 +435,38 @@ function GetViewFromDB($view_param, &$cache_sid) {
         # Note drops through to next case
         trace("=","","calendar - drop through");
 
-    case 'const':
+    case 'links':              // links       (module Links)
+    case 'categories':         // categories  (module Likns)
+      if ( $view_param['cat'] ) {
+          $cat_path = Links_GetCategoryColumn( $view_param['cat'], 'path');
+      }
+      // no break here !!!
+    case 'const':              // constants
       $format    = GetViewFormat($view_info);
-      $aliases   = GetConstantAliases($als);
+      $aliases   = GetAliases4Type($view_info['type'],$als);
       if (! $conds )         # conds could be defined via cmd[]=d command
           $conds = GetViewConds($view_info, $param_conds);
       $sort      = GetViewSort($view_info);
-      $zids      = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
+      if ( $view_info['type'] == 'const' ) {
+          $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
+          $content_function = 'GetConstantContent';
+      } elseif ( ($view_info['type'] == 'links') AND $cat_path ) {
+          $zids             = Links_QueryZIDs($cat_path, $conds, $sort, $view_param['show_subcat']);
+          $content_function = 'Links_GetLinkContent';
+      } elseif ( ($view_info['type'] == 'categories') AND $cat_path ) {
+          $zids             = Links_QueryCatZIDs($cat_path, $conds, $sort, $view_param['show_subcat']);
+          $content_function = 'Links_GetCategoryContent';
+      }
+
       if ( !isset($zids) || $zids->count() <= 0)
           return $noitem_msg;
 
       list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
                       $view_param["from"], $list_page, $zids->count(), $random);
 
-      $itemview = new itemview( $db, $format, $CATEGORY_FILEDS, $aliases,
+      $itemview = new itemview( $db, $format, $CONSTANT_FIELDS, $aliases,
                                 $zids, $list_from, $listlen, shtml_url(),
-                                "", 'GetConstantContent');
+                                "", $content_function);
       return $itemview->get_output_cached($itemview_type);
 
     case 'digest':

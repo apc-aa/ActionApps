@@ -23,8 +23,9 @@ if( file_exists( $GLOBALS["AA_INC_PATH"]."usr_aliasfnc.php3" ) ) {
   include( $GLOBALS["AA_INC_PATH"]."usr_aliasfnc.php3" );
 }
 
-require_once $GLOBALS["AA_INC_PATH"]."math.php3";
-require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
+require_once $GLOBALS["AA_INC_PATH"]. "math.php3";
+require_once $GLOBALS["AA_INC_PATH"]. "stringexpand.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/links/constants.php3";
 
 function txt2html($txt) {          // converts plain text to html
   return nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));
@@ -93,26 +94,39 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
   return($aliases);
 }
 
-function GetConstantAliases( $additional="" ) {
-  #  Standard aliases
-  $aliases["_#NAME###_"] = GetAliasDef( "f_h", "const_name",        _m("Constant name"));
-  $aliases["_#VALUE##_"] = GetAliasDef( "f_h", "const_value",       _m("Constant value"));
-  $aliases["_#PRIORITY"] = GetAliasDef( "f_h", "const_priority",    _m("Constant priority"));
-  $aliases["_#GROUP##_"] = GetAliasDef( "f_n", "const_group",       _m("Constant group id"));
-  $aliases["_#CLASS##_"] = GetAliasDef( "f_h", "const_class",       _m("Category class (for categories only)"));
-  $aliases["_#COUNTER_"] = GetAliasDef( "f_h", "const_counter",     _m("Constant number"));
-  $aliases["_#CONST_ID"] = GetAliasDef( "f_n", "const_id",          _m("Constant unique id (32-haxadecimal characters)"));
-  $aliases["_#SHORT_ID"] = GetAliasDef( "f_t", "const_short_id",    _m("Constant unique short id (autoincremented from '1' for each constant in the system)"));
-  $aliases["_#DESCRIPT"] = GetAliasDef( "f_t", "const_description", _m("Constant description"));
-  $aliases["_#LEVEL##_"] = GetAliasDef( "f_t", "const_level",       _m("Constant level (used for hierachical constants)"));
-
-  # add additoinal aliases
-  if( isset( $additional ) AND is_array( $additional ) ) {
-    foreach ( $additional as $k => $v)
-        $aliases["_#".$k] = GetAliasDef( "f_s:$v");
-  }
-  return($aliases);
-}
+/** Returns aliases
+ *  @param string type - 'const'/'links'/'categories' - just like *view* types
+ */
+function GetAliases4Type( $type, $additional="" ) {
+    switch ( $type ) {
+        case 'const':
+            #  Standard aliases
+            $aliases["_#NAME###_"] = GetAliasDef( "f_h", "const_name",        _m("Constant name"));
+            $aliases["_#VALUE##_"] = GetAliasDef( "f_h", "const_value",       _m("Constant value"));
+            $aliases["_#PRIORITY"] = GetAliasDef( "f_h", "const_priority",    _m("Constant priority"));
+            $aliases["_#GROUP##_"] = GetAliasDef( "f_n", "const_group",       _m("Constant group id"));
+            $aliases["_#CLASS##_"] = GetAliasDef( "f_h", "const_class",       _m("Category class (for categories only)"));
+            $aliases["_#COUNTER_"] = GetAliasDef( "f_h", "const_counter",     _m("Constant number"));
+            $aliases["_#CONST_ID"] = GetAliasDef( "f_n", "const_id",          _m("Constant unique id (32-haxadecimal characters)"));
+            $aliases["_#SHORT_ID"] = GetAliasDef( "f_t", "const_short_id",    _m("Constant unique short id (autoincremented from '1' for each constant in the system)"));
+            $aliases["_#DESCRIPT"] = GetAliasDef( "f_t", "const_description", _m("Constant description"));
+            $aliases["_#LEVEL##_"] = GetAliasDef( "f_t", "const_level",       _m("Constant level (used for hierachical constants)"));
+            break;
+        case 'links':
+            $aliases = $GLOBALS['LINK_ALIASES'];       // defined in modules/links/constant.php3
+            break;
+        case 'links':
+            $aliases = $GLOBALS['CONSTANT_ALIASES'];   // defined in modules/links/constant.php3
+            break;
+    }
+    
+    // add additoinal aliases
+    if( isset( $additional ) AND is_array( $additional ) ) {
+        foreach ( $additional as $k => $v)
+            $aliases["_#".$k] = GetAliasDef( "f_s:$v");
+    }
+    return($aliases);
+}    
 
 # helper function for f_e
 # this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site

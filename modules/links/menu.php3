@@ -61,7 +61,8 @@ function get_aamenus ()
            $AA_CP_Session,
            $linkedit,
            $r_state,
-           $bookmarks;
+           $bookmarks,
+           $slice_id;
 
     $module_location = "modules/links/";
 
@@ -150,28 +151,22 @@ function get_aamenus ()
         "level"=>"submenu",
         "items"=> array(
         "header1"=>_m('Main settings'),
-        "main"=>array ("cond"=>IfSlPerm(PS_LINKS_SETTINGS),
-                       "href"=>$module_location."modedit.php3",
-                       "label"=>_m('Polls')),
-        "design"=>array ("cond"=>IfSlPerm(PS_LINKS_EDIT_DESIGN),
-                         "href"=>"admin/tabledit.php3?set_tview=polls_designs",
-                         "label"=>_m('Designs')),
-    ));
-
-
-    /*  Second-level (left) menu description:
-        bottom_td       empty space under the menu
-        items           array of menu items in form item_id => properties
-                        if item_id is "headerxxx", shows a header,
-                            be careful that xxx be always a different number
-                        if item_id is "line", shows a line
-            label       to be shown
-            cond        if not satisfied, don't show the label linked
-                        slice_id is included in the cond automatically
-            href        link, relative to aa/
-            exact_href  link, absolute (use either exact_href or href, not both)
-            show_always don't include slice_id in cond
-    */
+        "main"=>array ("cond"      => IfSlPerm(PS_LINKS_SETTINGS),
+                       "href"      => $module_location."modedit.php3",
+                       "label"     => _m('Links')),
+        "header2" => _m("Design"),
+        "design"=>array ("cond"    => IfSlPerm(PS_LINKS_EDIT_DESIGN),
+                         "href"    => "admin/tabledit.php3?set_tview=polls_designs",
+                         "label"   => _m('Designs')),
+        "views"=>array('function'  => 'CreateMenu4Views',
+                       'func_param'=> ''),
+        "newcatview" =>  array ("cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
+                                "href"  => get_admin_url('se_view.php3?new=1&view_type=categories'),
+                                "label" => _m('New Category View')),
+        "newlinkview" => array ("cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
+                                "href"  => get_admin_url('se_view.php3?new=1&view_type=links'),
+                                "label" => _m('New Link View'))
+        ));
 
     /*  Second-level (left) menu description:
         bottom_td       empty space under the menu
@@ -185,10 +180,35 @@ function get_aamenus ()
             href        link, relative to aa/
             exact_href  link, absolute (use either exact_href or href, not both)
             show_always don't include slice_id in cond
+            function    allows not define items directly - the function is
+                        called when the left menu is displayed. I
+                        It is better mainly for left submenus for which we need
+                        database access - we do not spend time on DB operations
+                        of unused menu rows
+            func_param  Param to function (see above)
     */
 
     // left menu for aaadmin is common to all modules, so it is shared
     require_once $GLOBALS[AA_INC_PATH]."menu_aa.php3";
     return $aamenus;
+}
+
+/** Create view menu for current slice */
+function CreateMenu4Views( $foo ) {
+    global $slice_id;
+
+    if ( !IfSlPerm(PS_LINKS_EDIT_DESIGN) )
+        return;
+
+    $db = getDB();
+
+    $SQL = "SELECT id, name, type FROM views WHERE slice_id='". q_pack_id($sl_id)."'";
+    $db->tquery( $SQL );
+    while($db->next_record()) {
+        $menu['view'.$db->f('id')] = CreateMetuItem( $db->f('name'),  // label, href [, cond]
+            get_admin_url('se_view.php3?view_id='.$db->f('id').'&view_type='.$db->f('type')));
+    }
+    freeDB($db);
+    return $menu;
 }
 ?>
