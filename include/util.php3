@@ -87,6 +87,7 @@ function add_vars($query_string="", $debug="") {
   $i = 0;
 
   while ($i < count ($a)) {
+    unset($index1, $index2, $lvalue, $value);
     $pos = strpos($a[$i], "=");
     if($pos) {
       $lvalue = substr($a[$i],0,$pos);
@@ -640,6 +641,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.25  2001/10/05 10:55:38  honzam
+bugfix: field variables posted in url are parsed correctly in add_vars() now.
+
 Revision 1.24  2001/09/27 16:10:48  honzam
 Field ids will begin with zero ( headline........), New related stories support
 
