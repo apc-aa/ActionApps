@@ -1,3 +1,9 @@
+02/03/04 - fixed bug in feed field mapping settings - names with apostroph now
+(honzam)   works
+         - slice.php3 with iview parameter now accepts view sort order
+         - new possibility to create "template" field in AA_Core_fields slice
+           (just by adding new field there) and then use this field as template
+           field for your slices
 01/21/04 - fixed bug in f_r parameter parsing (interpreting)
 01/18/04 - "Top HTML" and "Bottom HTML" code for fulltext slice view
 (honzam)   is unaliased, now
