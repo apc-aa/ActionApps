@@ -232,9 +232,12 @@ function JoinAA_SlicePerm($slice_perm, $aa_perm) {
   }
 }
 
-function GetUsersSlices( $user_id ) {
-  global $permission_uid, $permission_to;
+function GetUsersSlices( $user_id = "current") {
+  global $permission_uid, $permission_to, $auth;
 
+  if ($user_id == "current")
+    $user_id = $auth->auth ["uid"];
+    
   if($permission_uid != $user_id)
     CachePermissions($user_id);
 
@@ -286,6 +289,32 @@ function FilemanPerms ($auth, $slice_id) {
         $perms_ok = true;
         
     return $perms_ok;
+}
+
+/** get email permissions
+*
+* @param $user_id OPTIONAL, default is current user   
+* @return array (email id => description)
+*/
+function GetUserEmails ($user_id = "current") {
+    global $auth, $db;
+    if ($user_id == "current")
+        $user_id = $auth->auth["uid"];
+    $slices = GetUsersSlices ($user_id);
+    if ($slices == "all")
+        $where = "";
+    else if (!is_array ($slices) || count ($slices) == 0)
+        return array ();
+    else {                
+        reset ($slices);
+        while (list ($slice) = each ($slices)) 
+            $slice_ids[] = q_pack_id ($slice);
+        $where = "WHERE owner_module_id IN ('".join ("','", $slice_ids)."')";
+    }
+    $db->query ("SELECT * FROM email ".$where);
+    while ($db->next_record())
+        $retval[$db->f("id")] = $db->f("description");
+    return $retval;
 }
 
 ?>
