@@ -58,7 +58,8 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "cz_news_lang.php3" => "cz_news_lang.php3",
                          "sk_news_lang.php3" => "sk_news_lang.php3",
                          "de_news_lang.php3" => "de_news_lang.php3",
-                         "ro_news_lang.php3" => "ro_news_lang.php3");
+                         "ro_news_lang.php3" => "ro_news_lang.php3",
+                         "ja_news_lang.php3" => "ja_news_lang.php3");
 
 $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "en" => "iso-8859-1",
@@ -66,7 +67,7 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "de" => "iso-8859-1",
                             "ro" => "iso-8859-2",
                             "sk" => "windows-1250",
-                            "ja" => "ISO-2022-JP");
+                            "ja" => "EUC-JP");
                          
 # MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and 
 # specifies how many items from the begining we have to search
