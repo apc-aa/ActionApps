@@ -441,6 +441,12 @@ function huhlo($a) {
         }
     }
 }
+
+function get_microtime() { 
+  list($usec, $sec) = explode(" ",microtime()); 
+  return ((float)$usec + (float)$sec); 
+} 
+
 # Set a starting timestamp, if checking times, huhl can report 
 # Debug function to print debug messages recursively - handles arrays
 function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
@@ -449,11 +455,9 @@ function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
         print("<listing>");
         if ($debugtimes) {
            if (! $debugtimestart) {
-                list($usec, $sec) = explode(" ",microtime()); 
-                $debugtimestart = ((float)$usec + (float)$sec); 
+                $debugtimestart = get_microtime(); 
             }
-            list($usec, $sec) = explode(" ",microtime()); 
-            print("Time: ".(((float)$usec + (float)$sec) - $debugtimestart)."\n"); 
+            print("Time: ".get_microtime() - $debugtimestart."\n"); 
         }
         huhlo($a);
         huhlo($b);
@@ -476,11 +480,18 @@ function huhsess($msg="") {
 	}
 	huhl($msg,$sessvars);
 }
+
 #Prints all values from array
-function PrintArray($a){
- if (is_array ($a))
-   while ( list( $key, $val ) = each( $a ) )
-     echo $val;
+function PrintArray($a) {
+    if (is_array($a)) {
+        while ( list( $key, $val ) = each( $a ) ) {
+            if (is_array($val)) {
+               PrintArray($val);
+            } else {
+               echo $val;
+            }   
+        }
+    }     
 }
 
 #Prepare OK Message
@@ -597,24 +608,26 @@ function GetFieldNo($id) {
 
 // helper function for GetItemContent and such functions
 function itemContent_getWhere($zids, $use_short_ids=false) {
-  if( $zids and is_array($zids) ) { # Backward compat. array plus flag
+  if( $zids and is_array($zids) and (count($zids)>0)) { # Backward compat. array plus flag
     if( $use_short_ids )
       $sel_in = " IN (". implode( ",", $zids). ")";
     else
       $sel_in = " IN (" . implode(",", array_map("qq_pack_id",$zids)). ")";
-  } elseif ($zids and is_object($zids)) {
+  } elseif ($zids and is_object($zids) and ($zids->count()>0)) {
       $use_short_ids = $zids->use_short_ids();
       $sel_in = " IN ("
            . implode( ",", 
             ($use_short_ids ? $zids->shortids() : $zids->qq_packedids())) 
            .")";
-      if ($zids->onetype() == "t") $settags = true;  # Used below
+      if ($zids->onetype() == "t") {
+          $settags = true;  # Used below
+      }    
   } elseif($zids) {   # Its just one one id, look at the $use_short_ids flag
     if( $use_short_ids )
       $sel_in = "='$zids'";
      else
       $sel_in = "='".q_pack_id($zids)."'";
-  }
+  } 
  
   return array( $sel_in, $settags );
 }    
@@ -635,6 +648,12 @@ function GetItemContent($zids, $use_short_ids=false) {
        
   # get content from item table
   $delim = "";
+  
+  if( is_object($zids) ) {
+      if( $zids->onetype() == 's' )
+          $use_short_ids = true;
+  }        
+    
   $id_column = ($use_short_ids ? "short_id" : "id");   
   $SQL = "SELECT item.*, slice.reading_password 
       FROM item INNER JOIN slice ON item.slice_id = slice.id
