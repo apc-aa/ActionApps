@@ -11,6 +11,7 @@ VALUES (
 'mlxctrl', '', 'AA_Core_Fields..', 'MLX Control', '6000', '', '', 'txt:', '0', '0', '1', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_v:vid=243&cmd[243]=x-243-_#this', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '0', '1'
 );
 
+diff --exclude=doc --exclude=um_uedit.php3 --exclude=constants.php3 --exclude=item.php3 --exclude=phplib --exclude=profile.class.php3 --exclude=stringexpand.php3 --exclude=htmlarea --exclude=alerts --exclude=site --exclude=config.php3 --exclude=CVS --exclude=*.css -Naur apc-aa.cvs apc-aa
 
 aletrnative way to do slice.php3
 

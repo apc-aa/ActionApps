@@ -36,7 +36,6 @@ define ('MLX_HTML_TABHD',"\n"
 ."        <tr>\n"
 ."          <td><table border='0' cellspacing='0' cellpadding='1'>\n"
 ."            <tr>\n");
-
 define ('MLX_HTML_TABFT',"\n"
 ."            </tr>\n"
 ."            </table>\n"
@@ -117,13 +116,11 @@ class MLXCtrl
 		}
 		return false;
 	}
-
 };
 class MLX
 {
 //private:
 	var $ctrlFields = 0;
-//	var $linkField;
 	var $slice = 0;
 	var $langSlice = 0;
 //public:	
@@ -150,7 +147,7 @@ class MLX
 		reset($this->ctrlFields);
 		while( list($k,$v) = each($this->ctrlFields) ) {
 			if($v['name'] == $lang) {
-				$content4mlxid["$k"] = array(array('value' => addslashes("$cntitemid")));
+				$content4mlxid["$k"] = array(array('value' => q_pack_id($cntitemid)));
 				break;
 			}
 		}
@@ -165,7 +162,7 @@ class MLX
 		//$GLOBALS[debugsi] = 5;
 		StoreItem($id,$this->langSlice,$content4mlxid,
 			$this->ctrlFields,$insert,true,true);
-		$content4id[MLX_CTRLIDFIELD][0][value] = "$id";
+		$content4id[MLX_CTRLIDFIELD][0][value] = q_pack_id($id);
 		$this->trace("done. id=$id");
 	}
 	function itemform($lang_control,$params,$content4id,$action,$lang,$mlxid)
@@ -182,9 +179,7 @@ class MLX
 			case "update":
 			case "edit":
 				$lang = $content4id['lang_code.......'][0][value];
-				$mlxid = $content4id[MLX_CTRLIDFIELD][0][value];
-				if($mlxid == 1) //this is only here because of my stupid testimport
-					return;
+				$mlxid = unpack_id128($content4id[MLX_CTRLIDFIELD][0][value]);
 				break;
 			case "insert":
 			case "add":
@@ -192,7 +187,7 @@ class MLX
 				$mlxCtrl = new MLXCtrl($mlxid,$this);
 				$defCntId = $mlxCtrl->getFirstNonEmpty();
 				if($defCntId) {
-					$tritemid = array_shift($defCntId);
+					$tritemid = unpack_id128(array_shift($defCntId));
 					$itemcontent = GetItemContent($tritemid);
 					$content4form = $itemcontent[$tritemid];
 					foreach($this->slice->fields('record') as $slfield) {
@@ -204,7 +199,7 @@ class MLX
 //						$this->dbg($slfield);
 						$itcnt = $content4form[$slfield[id]];
 						$GLOBALS[$kstr."html"] = ($v[0][flag]==65?1:0); //TODO fix
-						if($slfield[multiple]) {
+						if($slfield[multiple] && is_array($itcnt)) {
 							foreach($itcnt as $vai)  
 								$GLOBALS[$kstr][] = addslashes($vai[value]);
 						} else {
@@ -213,7 +208,7 @@ class MLX
 					}
 					//$this->dbg($GLOBALS);
 				}
-				$GLOBALS['v'. unpack_id(MLX_CTRLIDFIELD)]= "$mlxid";
+				$GLOBALS['v'. unpack_id(MLX_CTRLIDFIELD)]= q_pack_id($mlxid);
 				//check if lang is set, set to default from MLX
 				if(!$lang)
 					$GLOBALS['v'. unpack_id('lang_code.......')] = $mlxCtrl->getDefLangName();
@@ -276,12 +271,13 @@ class MLX
 	{
 		global $err;
 		if(is_array($content4id))
-			$mlxid = $content4id[MLX_CTRLIDFIELD][0][value];
+			$mlxid = unpack_id128($content4id[MLX_CTRLIDFIELD][0][value]);
 		else
 			$mlxid = $content4id;
 		//mlxid should now hold the itemid of the mlx info
 		if(!$mlxid)
 			return false;
+		//__mlx_dbg($mlxid,"mlxid");
 		if(empty($content4mlxid) && (isset($mlxid))) {
 			$content = GetItemContent($mlxid);
 			if( !$content )
@@ -289,12 +285,10 @@ class MLX
 			$content4mlxid = $content[$mlxid];
 		} 
 		if(empty($content4mlxid))
-				$this->fatal(_m("No ID for MLX, "
-					."set the lang_control field in the MLX slice "
-					."(e.g. to text.......)"));
+				$this->fatal(_m("No ID for MLX"));
 		foreach($this->ctrlFields as $v) {
 			if($v['name'] == $lang)
-				return $content4mlxid[$v['id']][0]['value'];
+				return unpack_id128($content4mlxid[$v['id']][0]['value']);
 		}
 		return false;
 	}
@@ -355,6 +349,8 @@ class MLXView
 		}
 	}
 	//-- type is p
+	//TODO since changing to storing packed_ids in MySQL this can be 
+	//     much optimised with a JOIN
 	function postQueryZIDs(&$zidsObj,$ctrlSliceID,$slice_id, $conds, $sort, 
 		$group_by,$type, $slices, $neverAllItems, $restrict_zids,
 		$defaultCondsOperator,$nocache) 
@@ -383,7 +379,7 @@ class MLXView
 		$arr = array();
 		foreach($zidsObj->a as $packedid) {
 			$unpackedid = unpack_id128($packedid);
-			$arr[(string)$unpackedid] = $packedid;
+			$arr[(string)$packedid] = $packedid;
 		}
 		$translations = $this->getPrioTranslationFields($ctrlSliceID);
 		$db = getDB();
@@ -399,24 +395,28 @@ class MLXView
 				//Remove
 				if($db->Record[0] == 1)
 					continue;
-				$ctrlId = q_pack_id($db->Record[0]);
-				//__mlx_dbg($ctrlId);
+				//$ctrlId = q_pack_id($db->Record[0]);
+				$ctrlId = $db->Record[0];
+				//__mlx_dbg(unpack_id128($ctrlId),"ctrlId");
 				$subsql = "SELECT `field_id`,`text` FROM `content`"
-					." WHERE ( `item_id`='".$ctrlId."'"
+					." WHERE ( `item_id`='".quote($ctrlId)."'"
 					." AND `field_id` RLIKE '".MLX_LANG2ID_TYPE."')";
 				$db2->tquery($subsql);
 				unset($aMlxCtrl);
 				while($db2->next_record()) { //get all translations
+					//__mlx_dbg(unpack_id128($db2->Record[0]),"Record");
 					$aMlxCtrl[(string)$db2->Record[0]] = $db2->Record[1];
 				}
+				//__mlx_dbg($aMlxCtrl,"aMlxCtrl");
 				$bFound = false;
 				foreach($translations as $tr) {
 					$fieldSearch = $aMlxCtrl[$tr];
 					if(!$fieldSearch)
 						continue;
 					if($bFound) {
-						//__mlx_dbg($fieldSearch,"unset");
+						//__mlx_dbg(unpack_id128($fieldSearch),"unset");
 						unset($arr[(string)$fieldSearch]);
+						//__mlx_dbg($arr,"arr");
 					} else
 						$bFound = true;
 				}
@@ -475,23 +475,23 @@ class MLXEvents
 		foreach($item_ids as $itemid) {
 			$db->query("SELECT item_id FROM content WHERE ( `field_id` "
 	    			."RLIKE '".MLX_LANG2ID_TYPE."' AND "
-	    			."`text`='".unpack_id($itemid)."')");
+	    			."`text`='".quote($itemid)."')");
     			while( $db->next_record() )
         			$rm_itemids[] = $db->f("item_id");
 			$db->query("DELETE FROM content WHERE ( `field_id` "
 	    			."RLIKE '".MLX_LANG2ID_TYPE."' AND "
-	    			."`text`='".unpack_id($itemid)."')");
+	    			."`text`='".quote($itemid)."')");
 	    	}
 		foreach($rm_itemids as $itemid) {
 			$db->query("SELECT * FROM content WHERE ("
-				." `item_id`='".$itemid."' "
+				." `item_id`='".quote($itemid)."' "
 				." AND `field_id` "
 				."RLIKE '".MLX_LANG2ID_TYPE."')");
 			if($db->num_rows() === 0) {
 				$db->query("DELETE FROM content WHERE "
-					." `item_id`='".$itemid."' ");
+					." `item_id`='".quote($itemid)."' ");
 				$db->query("DELETE FROM item WHERE "
-					." `id`='".$itemid."' ");
+					." `id`='".quote($itemid)."' ");
 			}
 		}
 		freeDB($db);
