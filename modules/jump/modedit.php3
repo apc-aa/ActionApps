@@ -144,8 +144,8 @@ echo '
      <tr><td class=tabtxt colspan=2 align=center>
         <input type=submit name='update' value='".($jump_id ? L_UPDATE : L_CREATE)."'>
      </td></tr>
-</table></form>
-</body></html>";
+</table></form>";
+HTMLPageEnd();
 page_close();
 ?>
 

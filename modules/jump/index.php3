@@ -34,7 +34,7 @@ $db->query ("SELECT * FROM jump WHERE slice_id = '".q_pack_id($slice_id)."'");
 if ($db->next_record()) {
 	$dest = $db->f("destination");
 	if (strchr ($dest,"?")) $dest .= "&"; else $dest .= "?";
-    $instal_url = AA_INSTAL_URL;
+    $instal_url = $AA_INSTAL_PATH;
 	$url = $instal_url.$dest."AA_CP_Session=$AA_CP_Session";
     $change_id = $db->f("dest_slice_id");  
     if ($change_id) $url .= "&jumping=1&change_id=".unpack_id($change_id);
