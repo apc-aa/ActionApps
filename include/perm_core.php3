@@ -188,9 +188,16 @@ function ComparePerms($perms1, $perms2) {
     return "G";    
 }    
 
-// Solves conflict when permission string is set both for slice object and aa object
+// Resolves precedence issues between slice-specific permissions
+// and global access rigths (rights to object aa).
+// Slice-specific perms take precedence except the SUPER access level
 function JoinAA_SlicePerm($slice_perm, $aa_perm) {
-  return ($slice_perm ? $slice_perm : $aa_perm);
+  global $perms_roles_perms;
+  if (ComparePerms($aa_perm, $perms_roles_perms["SUPER"])=="E") {
+    return $aa_perm;
+  } else {
+    return ($slice_perm ? $slice_perm : $aa_perm);
+  }
 }  
 
 function GetUsersSlices( $user_id ) {
@@ -213,6 +220,9 @@ function IfSlPerm($perm) {
 
 /*
 $Log$
+Revision 1.3  2000/08/01 14:32:33  kzajicek
+AA-super access level takes precedence
+
 Revision 1.2  2000/07/28 15:11:41  kzajicek
 Functions DeleteUserComplete and buggy DeleteGroupComlete are now
 obsolete, DelUser and DelGroup do the job.
