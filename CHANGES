@@ -1,7 +1,29 @@
-09/17/03 - extended time limits on some admin functions 
+09/23/03 - added possibility to get constant name (and other informations) from
+(honzam)   constants value in unaliasing. The syntax is
+           {const_name:category.......1} - prints constants name from current
+           value in "category.......1" field. Possible informations are:
+           const_name, const_value, const_short_id, const_description,
+           const_pri, const_group, const_class, const_id
+           (see constants table or constants view)
+         - added possibility to specify more fields in 'd' parameter of
+           view.php3 (cmd[246]=d-headline.......1,category........-RLIKE-Enviro)
+         - added new "sort" param to view.php3 (set[246]=sort-headline.......1)
+         - "display count" of randomly displayed items (probably
+           banners/tickers/...) is updated on its display (in case you display
+           just one item (=banner) by the view
+         - fixed bad bug in constants change with "propagate changes"
+           (wrong records was updated sometimes)
+         - contentcache class for unaliasing speedup introduced
+         - removed unused fields from links_category table
+         - added possibility to query categories in whole subtree in links mod.
+         - added document_uri computing on environments, where not specified
+         - new possibility to specify file permissions on upload
+           (IMG_UPLOAD_FILE_MODE constant in config.php3)
+         - prepared for russian and vietnamese translation
+09/17/03 - extended time limits on some admin functions
 (mitra)  - major changes to summarize to compare slices
-09/09/03 - added multiple checkbox refill to setControlArray, so now multiple 
-(marek)    checkboxes can be used in search forms that use fillform.php 
+09/09/03 - added multiple checkbox refill to setControlArray, so now multiple
+(marek)    checkboxes can be used in search forms that use fillform.php
 09/04/03 - fixed show_fnc_hco to do input_before
 (mitra)  - $db fixes to constedit_util itemfunc site/util admin/itemedit
          - fixed invalid_email regexp use [.] instead of \\.
