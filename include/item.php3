@@ -157,6 +157,12 @@ function QuoteColons($level, $maxlevel, $text) {
   return $text;
 }
 
+# Substitutes special AA 'colon' string back to colon ':' character
+# Used for parameters, where is no need colons are not parameter separators
+function DeQuoteColons($text) {
+  return str_replace("_AA_CoLoN_", ":", $text);
+}
+
 # helper function for f_e
 # this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
 # added by setu@gwtech.org 2002-0211
@@ -426,7 +432,9 @@ class item {
       # include file
       if( !($pos = strpos($out,')')) )
         return "";
-      $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()) ,substr($out, 8, $pos-8));
+      $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), 
+                               DeQuoteColons( substr($out, 8, $pos-8)));
+           # filename do not use colons as separators => dequote before callig
       $fp = fopen( self_server().'/'. $filename, 'r' );
       $fileout = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
       fclose( $fp );

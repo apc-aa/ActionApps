@@ -33,6 +33,11 @@ function default_fnc_uid($param) {
   return quote(isset($auth) ? $auth->auth["uid"] : "9999999999");
 }  
 
+function default_fnc_log($param) {
+  global $auth;                                  #  9999999999 for anonymous
+  return quote(isset($auth) ? $auth->auth["uname"] : "anonymous");
+}  
+
 function default_fnc_dte($param) {
   return mktime(0,0,0,date("m"),date("d")+$param,date("Y"));
 }
@@ -71,6 +76,34 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
 
   #huh( "insert_fnc_qte($item_id, $field, $value, $param)"); 
   #p_arr_m($field);
+
+  # if input function is 'selectbox with presets' and add2connstant flag is set,
+  # store filled value to constants
+  $fnc = ParseFnc($field[input_show_func]);   # input show function
+  if( $fnc AND ($fnc['fnc']=='pre') ) {
+    # get add2constant and constgroup (other parameters are irrelevant in here)
+    list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding,
+         $secondfield, $add2constant) = explode(':', $fnc['param']);
+    # add2constant is used in insert_fnc_qte - adds new value to constant table
+    if( $add2constant AND $constgroup AND (substr($constgroup,0,7) != "#sLiCe-") ) {
+      # does this constant already exist?
+      $constgroup=quote($constgroup);
+      $SQL = "SELECT * FROM constant
+               WHERE group_id='$constgroup'
+                 AND value='". $value['value'] ."'";
+      $db->query($SQL);
+      if (!$db->next_record()) {
+        # constant is not in database yet => add it
+    		$varset->clear();
+    		$varset->set("name",  $value['value'], "quoted");
+  	  	$varset->set("value", $value['value'], "quoted");
+  		  $varset->set("pri",   1000, "number");
+        $varset->set("id", new_id(), "unpacked" );
+        $varset->set("group_id", $constgroup, "quoted" );
+        $db->query ("INSERT INTO constant " . $varset->makeINSERT() );
+      }
+    }
+  }
 
   if( $field[in_item_tbl] ) {
     if( ($field[in_item_tbl] == 'expiry_date') && 
@@ -120,15 +153,18 @@ function insert_fnc_ids($item_id, $field, $value, $param) {
 
 #echo "<script> alert( 'insert_fnc_ids($item_id, $field, $value, $param), ". $value['value'] ." ".substr($value['value'],0,1)."');</script>";
 #flush();  
-  switch( substr($value['value'],0,1) ) {
+  $add_mode = substr($value['value'],0,1);      # x=add, y=add mutual, z=add backward
+  if( ($add_mode == 'x') || ($add_mode == 'y') || ($add_mode == 'z') ) 
+    $value['value'] = substr($value['value'],1);  # remove x, y or z
+
+  switch( $add_mode ) {
     case 'x':   // just filling character - remove it
-      $value['value'] = substr($value['value'],1);
       insert_fnc_qte($item_id, $field, $value, $param);
       return;
     case 'y':   // y means 2way related item id - we have to store it for both
-      $value['value'] = substr($value['value'],1);
       insert_fnc_qte($item_id, $field, $value, $param);
-
+      # !!!!! there is no break or return - CONTINUE with 'z' case !!!!!
+    case 'z':   // z means backward related item id - store it only backward
         # add reverse related
       $reverse_id = $value['value'];
       $value['value'] = $item_id;
@@ -151,6 +187,14 @@ function insert_fnc_uid($item_id, $field, $value, $param) {
   # if not $auth, it is from anonymous posting - 9999999999 is anonymous user
   $val = (isset($auth) ?  $auth->auth["uid"] : ( (strlen($value['value'])>0) ? 
                                               $value['value'] : "9999999999"));
+  insert_fnc_qte($item_id, $field, array("value"=>$val) , $param);
+}
+
+function insert_fnc_log($item_id, $field, $value, $param) {
+  global $auth;
+  # if not $auth, it is from anonymous posting
+  $val = (isset($auth) ?  $auth->auth["uname"] : ( (strlen($value['value'])>0) ? 
+                                              $value['value'] : "anonymous"));
   insert_fnc_qte($item_id, $field, array("value"=>$val) , $param);
 }
 
@@ -442,7 +486,9 @@ function show_fnc_pre($varname, $field, $value, $param, $html) {
   global $db;
 
   if (!empty($param)) 
-    list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield) = explode(':', $param);
+    list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding,
+         $secondfield, $add2constant) = explode(':', $param);
+    # add2constant is used in insert_fnc_qte - adds new value to constant table
 
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
@@ -485,8 +531,11 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
   global $db;
 
   if (!empty($param)) 
-    list($constgroup, $selectsize) = explode(':', $param);
-
+    list($constgroup, $selectsize, $mode, $design) = explode(':', $param);
+    
+  if( !$mode )     # AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
+    $mode = 'AMB';
+  
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $sid = substr($constgroup, 7);
    else
@@ -494,8 +543,8 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
 
   $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids");
     
-  FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid,
-                      $field[required], $field[input_help], $field[input_morehlp]);
+  FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid, $mode, 
+          $design, $field[required], $field[input_help], $field[input_morehlp]);
 }
   
 function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {

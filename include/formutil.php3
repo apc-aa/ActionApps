@@ -521,7 +521,7 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
 # Prints html tag <select multiple .. to 2-column table
 # for use within <form> and <table> tag
 function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5, 
-          $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0) {
+          $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
   $name=safe($name); $size=safe($size); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
@@ -547,7 +547,7 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
   PrintHelp($hlp);
   if( $relation )       # all selection in this box should be selected on submit
     echo "<br><center>
-          <input type='button' value='". L_ADD ."' onclick='OpenRelated(\"$name\", \"$relation\")'> 
+          <input type='button' value='". L_ADD ."' onclick='OpenRelated(\"$name\", \"$relation\", \"$mode\", \"$design\" )'> 
           <input type='button' value='". L_DELETE ."' 
             onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
                      document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'> 
@@ -559,8 +559,8 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
   echo "</td></tr>\n";
 }  
 
-function FrmRelated($name, $txt, $arr, $size, $sid, $needed=false, $hlp="", $morehlp="") {
-  FrmInputMultiSelect($name, $txt, $arr, "", $size=5, $sid, $needed, $hlp, $morehlp, MAX_RELATED_COUNT);
+function FrmRelated($name, $txt, $arr, $size, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="") {
+  FrmInputMultiSelect($name, $txt, $arr, "", $size=5, $sid, $needed, $hlp, $morehlp, MAX_RELATED_COUNT, $mode, $design);
 }  
 
 # Prints html tag <select .. 

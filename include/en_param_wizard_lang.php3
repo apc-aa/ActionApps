@@ -152,6 +152,12 @@ define("L_PARAM_WIZARD_INPUT_iso_DESC","List of items connected with the active 
 define("L_PARAM_WIZARD_INPUT_iso_PAR0_NAME","Row count");
 define("L_PARAM_WIZARD_INPUT_iso_PAR0_DESC","Row count in the list");
 define("L_PARAM_WIZARD_INPUT_iso_PAR0_EXAMPLE","15");
+define("L_PARAM_WIZARD_INPUT_iso_PAR1_NAME","Buttons to show");
+define("L_PARAM_WIZARD_INPUT_iso_PAR1_DESC","Defines, which buttons to show in item selection:<br>A - 'Add'<br>M - 'Add Mutual<br>B - 'Backward'.<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important.");
+define("L_PARAM_WIZARD_INPUT_iso_PAR1_EXAMPLE","AMB");
+define("L_PARAM_WIZARD_INPUT_iso_PAR2_NAME","Admin design");
+define("L_PARAM_WIZARD_INPUT_iso_PAR2_DESC","If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default).");
+define("L_PARAM_WIZARD_INPUT_iso_PAR2_EXAMPLE","0");
 define("L_PARAM_WIZARD_INPUT_nul_NAME","Do not show");
 define("L_PARAM_WIZARD_INPUT_nul_DESC","This option hides the input field");
 define("L_PARAM_WIZARD_INPUT_hco_NAME","Hierarchical constants");

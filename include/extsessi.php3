@@ -35,8 +35,9 @@ class DB_AA extends DB_Sql {
   function dquery($SQL) {
     echo "<br>$SQL";
 
+    $SelectQuery = (strpos( " ".$SQL, "SELECT") == 1);
     // only SELECT queries can be explained
-    if (strpos (" ".$SQL, "SELECT") == 1) {   
+    if ( $SelectQuery )  {   
         $this->query("explain ".$SQL);
     
         echo "<table><tr><td><b>table</b></td> <td><b>type</b></td><td><b>possible_keys</b></td><td><b>key</b></td><td><b>key_len</b></td><td><b>ref</b></td><td><b>rows</b></td><td><b>Extra</b></td></tr>";
@@ -54,7 +55,8 @@ class DB_AA extends DB_Sql {
     list($usec, $sec) = explode(" ",microtime()); 
     $endtime = ((float)$usec + (float)$sec); 
     echo "<br>Query duration: ". ($endtime - $starttime);
-    
+    echo $SelectQuery ? "<br>Rows returned: ".$this->num_rows() :
+                        "<br>Affected rows: ".$this->affected_rows();
     return $retval;
   }  
 

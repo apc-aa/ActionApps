@@ -63,6 +63,8 @@ class PageCache  {
   function get($keyString) {
     if( ENABLE_PAGE_CACHE ) {
       $db = $this->db;
+//      if( $GLOBALS['debug'] )
+//        echo "<br>PageCache - KeyString: $keyString";
       $SQL = "SELECT * FROM pagecache WHERE id='".md5($keyString)."'";
       if( $GLOBALS['debug'] ) 
         $db->dquery($SQL);

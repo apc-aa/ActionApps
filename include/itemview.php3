@@ -23,6 +23,10 @@ http://www.apc.org/
 #                         itemview class
 # ----------------------------------------------------------------------------
 
+if (!defined ("ITEMVIEW_INCLUDED")) 
+     define ("ITEMVIEW_INCLUDED",1);
+else return;
+
 class itemview{
   var $db;
   var $ids;                      # ids to show

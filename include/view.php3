@@ -388,10 +388,16 @@ function GetViewFromDB($view_param, &$cache_sid) {
           }
       }
 
-      if (! $item_ids ) {    # ids could be defined via cmd[]=x command
-        $sort  = GetViewSort($view_info);
-        $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, "ACTIVE", $slices);
-      }  
+      $sort  = GetViewSort($view_info);
+      unset($p_item_ids);
+      if ( $item_ids ) {    # ids could be defined via cmd[]=x command
+        reset( $item_ids );
+        while( list( ,$v) = each( $item_ids ) )
+          $p_item_ids[] = pack_id( $v );   # no q_pack_id - it mustn't be quoted
+      }
+      $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, 
+                                            "ACTIVE", $slices, 0, $p_item_ids);
+
       $format = GetViewFormat($view_info);
       $format['calendar_month'] = $month;
       $format['calendar_year'] = $year;
@@ -418,8 +424,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
             $list_from = $listlen * ($list_page-1);
         }                     
          
-       if( !$list_from )
-         $list_from = 0;
+        if( !$list_from )
+          $list_from = 0;
 
         $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, $random ? $random : $list_from,
                                   $listlen, shtml_url(), "", $use_short_ids );
