@@ -800,7 +800,7 @@ define ("NOT_EMAIL_WELCOME", -1);
 define ("COUNTHIT_PROBABILITY", 1000);
 
 // PagecachePurge probability: how offen remove old entries from pagecache table
-define ("PAGECACHEPURGE_PROBABILITY", 100); // each 100-th pagecache store event
+define ("PAGECACHEPURGE_PROBABILITY", 1000); // each 1000-th pagecache store event
 
 // how much links check in one run (for links module link checker)
 define ("LINKS_VALIDATION_COUNT", 100);

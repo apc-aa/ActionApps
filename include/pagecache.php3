@@ -55,6 +55,7 @@ class PageCache  {
 
     /** Returns cached informations or false */
     function get($keyString) {
+        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->get(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString) );
         if( ENABLE_PAGE_CACHE ) {
             return $this->getById( $this->getKeyId($keyString) );
         } else {
@@ -91,11 +92,14 @@ class PageCache  {
         if( ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
             $keyid  = $this->getKeyId($keyString);
+            if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache->store(key):'.$keyid, '<br>Pagecache->store(str2find):'.$str2find, '<br>Pagecache->store(content):'.$content);
             $varset = new Cvarset( array( 'content' => $content,
                                           'stored'  => time()));
             $varset->addkey('id', 'text', $keyid);
-            $varset->doReplace('pagecache');
             $str2find->store($keyid);
+            $varset->doReplace('pagecache');
+
+            // writeLog('PAGECACHE', $keyid.':'.serialize($str2find)); // for debug
 
             if (rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
@@ -112,9 +116,9 @@ class PageCache  {
         $tm   = time();
         $keys = GetTable2Array("SELECT id FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'", '', 'id');
         if (is_array($keys) AND (count($keys)>0)) {
-            $in_where = ' IN ('. join(',',$keys) .')';
-            $varset->doDeleteWhere('pagecache', "id $where", true);
-            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id $where", true);
+            $in_where = " IN ('". join("','",$keys) ."')";
+            $varset->doDeleteWhere('pagecache', "id $in_where", true);
+            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id $in_where", true);
         }
     }
 
@@ -128,11 +132,12 @@ class PageCache  {
         // halting the operation.
 
         $varset = new Cvarset();
+        // writeLog('PAGECACHE', $cond, 'invalidate'); // for debug
         $keys = GetTable2Array("SELECT pagecache_id FROM pagecache_str2find WHERE str2find = '".quote($cond)."'", '', 'pagecache_id');
         if (is_array($keys) AND (count($keys)>0)) {
-            $in_where = ' IN ('. join(',',$keys) .')';
-            $varset->doDeleteWhere('pagecache', "id $where", true);
-            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id $where", true);
+            $in_where = " IN ('". join("','",$keys) ."')";
+            $varset->doDeleteWhere('pagecache', "id $in_where", true);
+            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id $in_where", true);
         }
     }
 

@@ -1,3 +1,9 @@
+01/06/05 - discussions are not cached now, so there will not be problem
+(honzam)   with unupdated list of comments
+         - pagecache fixes
+         - fixed bug in "links" module - category crossreferencing works also
+           for catalogs, where you can crossreference deeper category
+           ("select start") than is your "tree start"
 01/04/05 - new implementation of pagecache - uses two tables - pagecache
 (honzam)   (as the old one) and pagecache_str2find table. It should bring much
            quicker pagecache invalidation, when the content must be updated.

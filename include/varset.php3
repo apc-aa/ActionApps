@@ -218,7 +218,7 @@ class Cvarset {
           }
       }
       if ($tablename) {
-          $retval = "UPADTE $tablename SET";
+          $retval = "UPDATE $tablename SET";
       }
       $retval .= " " . join (", ", $updates);
       if ($where = $this->makeWHERE()) {     // assignment
