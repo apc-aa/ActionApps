@@ -160,7 +160,7 @@ objects:
 <P>
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE>% ldapmodify -a -f ldiffile -D "cn=root,ou=AA" -w password
+<PRE>% ldapmodify -x -a -f ldiffile -D "cn=root,ou=AA" -w password
 adding new entry ou=AA
 
 adding new entry cn=aauser,ou=AA
@@ -210,7 +210,7 @@ for the new password, enter the new root dn password you want to set. And remind
 it!
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE>% ldappasswd -D "cn=root,ou=AA" -w password -t "cn=aauser,ou=AA" -H ssha
+<PRE>% ldappasswd -x -D "cn=root,ou=AA" -w password -S "cn=aauser,ou=AA"
 New password:
 Re-enter new password:
 % ldapsearch -x -D "cn=root,ou=AA" -w password -L cn=aauser
