@@ -139,7 +139,6 @@ define( "L_COPYRIGHT", 'Copyright (C) 2001 the
 
 define("DEFAULT_CODEPAGE","iso-8859-1");
 
-            
 # ------------------- New constants (not in other lang files ------------------
 
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
@@ -161,6 +160,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.2  2001/11/07 22:23:25  udosw
+Bugfix to include parametr wizard language file.
+
 Revision 1.1  2001/11/07 16:04:55  udosw
 German translation (partly) by UdoSW
 

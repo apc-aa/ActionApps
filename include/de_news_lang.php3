@@ -827,6 +827,9 @@ define ("L_E_IMPORT_COUNT", "Count of imported slices: %d.");
 define ("L_E_IMPORT_ADDED", "Added were:");
 define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 
+require  $GLOBALS[AA_INC_PATH]."de_param_wizard_lang.php3";
+
+define("L_PARAM_WIZARD_LINK", "Feld-Assistent");
 
 // ------------------------- New ----------------------------
 // not appended to other lang files
@@ -835,6 +838,9 @@ define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 
 /*
 $Log$
+Revision 1.2  2001/11/07 22:23:25  udosw
+Bugfix to include parametr wizard language file.
+
 Revision 1.1  2001/11/07 16:04:55  udosw
 German translation (partly) by UdoSW
 
