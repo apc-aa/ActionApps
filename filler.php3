@@ -63,8 +63,9 @@ require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
 function SendErrorPage($txt) {
-  if( $GLOBALS["err_url"] )
-    go_url($GLOBALS["err_url"]);
+  if( $GLOBALS["err_url"] ) {
+    go_url( con_url($GLOBALS["err_url"], "err=".substr(serialize($txt),0,100)));
+  }
   echo (L_OFFLINE_ERR_BEGIN);
   if( isset( $txt ) AND is_array( $txt ) )
     PrintArray($txt);    
