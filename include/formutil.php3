@@ -831,5 +831,50 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
     case "all":    
     default:       return true;
   }  
-}    
+} 
+
+// used in tabledit.php3 and itemedit.php3
+
+function get_javascript_field_validation () {
+    return "
+        function validate (txtfield, type, required) {
+            var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/;
+            var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/;
+
+            if (txtfield == null)
+                return true;
+
+            var val = txtfield.value;
+            var err = '';
+
+            if (val == '' && required)
+                err = '"._m("This field is required.")."';
+
+            else if (val == '')
+                return true;
+
+            else switch (type) {
+                case 'number':
+                    if (!val.match (/^[0-9]+$/))
+                        err = '"._m("Not a valid integer number.")."';
+                    break;
+                case 'filename':
+                    if (!val.match (/^[0-9a-zA-Z_]+$/))
+                        err = '"._m("Not a valid file name.")."';
+                    break;
+                case 'email':
+                    if (val.match(invalid_email) || !val.match(valid_email))
+                        err = '"._m("Not a valid email address.")."';
+                    break;
+            }
+
+            if (err != '') {
+                alert (err);
+                txtfield.focus();
+                return false;
+            }
+            else return true;
+        }";
+}
+
 ?>

@@ -1319,7 +1319,7 @@ function mail_html_text_body ($message, $charset, $use_base64) {
     // All MIME headers should be terminated by CR+LF (\r\n)
     // but the headers in the individual parts should only be delimited by LF (\n)
        
-    return  
+    return
         "MIME-Version: 1.0\r\n"
         ."Content-Type: multipart/alternative;\r\n"
         ." boundary=\"$boundary\"\r\n"
@@ -1338,48 +1338,7 @@ function mail_html_text_body ($message, $charset, $use_base64) {
         ."\r\n"
         .$textmessage."\n"
         ."--$boundary--\n";
-        
-}        
 
-// used in tabledit.php3 and itemedit.php3
-
-function get_javascript_field_validation () {
-    return "
-        function validate (txtfield, type, required) {
-            var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/; 
-            var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/; 
-            
-            if (txtfield == null)
-                return true;
-            
-            var val = txtfield.value;
-            var err = '';
-            
-            if (val == '' && required)
-                err = '"._m("This field is required.")."';
-            
-            else switch (type) {
-            case 'number': 
-                if (!val.match (/^[0-9]+$/)) 
-                    err = '"._m("Not a valid integer number.")."';
-                break;
-            case 'filename':
-                if (!val.match (/^[0-9a-zA-Z_]+$/)) 
-                    err = '"._m("Not a valid file name.")."';
-                break;
-            case 'email': 
-                if (val.match(invalid_email) || !val.match(valid_email)) 
-                    err = '"._m("Not a valid email address.")."';
-                break;
-            }
-            
-            if (err != '') {
-                alert (err);
-                txtfield.focus();
-                return false;
-            }
-            else return true;
-        }";
-}               
+}
 
 ?>
