@@ -1,3 +1,4 @@
+03/24/03 - removed the old Alerts scripts from misc/alerts (jakub)
 03/24/03 - fixed several things in Alerts (jakub)
 03/24/03 - fixed bug of empty row appearing in "Two boxes" input type
 (honzam) - new keyword "<!--Vacuum-->" can be used in "No item message" 
