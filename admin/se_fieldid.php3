@@ -62,7 +62,7 @@ $maintain_fields = array (
                 "aditional",
                 "javascript")),
     "field" => array (
-            "primary" => "id", 
+            "primary_part" => "id", // the whole key is (id,slice_id)
             "primary_type" => "text", 
             "slice_id" => "slice_id",
             "fields" => array (
@@ -131,7 +131,9 @@ function ChangeFieldID ($old_id, $new_id)
     $varset = new Cvarset();
     reset ($maintain_fields);
     while (list ($table,$settings) = each ($maintain_fields)) {
-        $SQL = "SELECT $settings[primary],".join($settings[fields],",")." FROM $table 
+        $keyfield = $settings[primary];
+        if (!$keyfield) $keyfield = $settings[primary_part];
+        $SQL = "SELECT $keyfield,".join($settings[fields],",")." FROM $table 
                 WHERE $settings[slice_id] = '$p_slice_id'";
         $rows = GetTable2Array ($SQL, $db);
         reset ($rows);
@@ -150,10 +152,12 @@ function ChangeFieldID ($old_id, $new_id)
             }
             if ($varset->vars) {
                 $SQL = "UPDATE $table SET ".$varset->makeUPDATE();
-                $SQL .= " WHERE $settings[primary] = ";
+                $SQL .= " WHERE $keyfield = ";
                 if ($settings[primary_type] == "text")
-                     $SQL .= "'".$row[$settings[primary]]."'";
-                else $SQL .= $row[$settings[primary]];
+                     $SQL .= "'".$row[$keyfield]."'";
+                else $SQL .= $row[$keyfield];
+                if ($settings[primary_part])
+                     $SQL .= " AND $settings[slice_id] = '$p_slice_id'";
                 tryQuery ($db,$SQL);
             }           
         }
