@@ -273,7 +273,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
                     $href = "javascript:".$item['js'];
                 }
                 echo '<a href="'.$href.'" class=leftmenuy>'.$item["label"]."</a>\n";
-            } else {
+            } elseif ( !$item["hide"] ) {
                 echo "<span class=leftmenun>".$item["label"]."</span>\n";
             }
             echo "</td></tr>\n";

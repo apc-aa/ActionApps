@@ -180,7 +180,11 @@ function get_aamenus()
                         "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')",
                         "href"=>"admin/index.php3?Delete=trash",
                         "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash")),
-        "line" => "",
+        "debug"=>array ("cond"=>IsSuperadmin(),
+                        "hide"=>!IsSuperadmin(),
+                        "js"=>"ToggleCookie('aa_debug','1')",
+                        "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))),
+        "line" => ""
     ));
 
     trace("=","","Pre PS_EDIT_ALL_ITEMS");

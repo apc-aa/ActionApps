@@ -77,7 +77,6 @@ function expand_return_url ($addsess) {
     else	return $r1;
 }
 
-
 // This function goes to either $return_url if set, or to $url
 // if $usejs is set, then it will use inline Javascript, its not clear why this is done
 //    sometimes (item.php3) but not others.
@@ -353,15 +352,19 @@ function new_id ($seed="hugo"){
       // which is removed by MySQL
     return $foo;
 }
-# Returns a unique id from a string, note that it will always return the same id from the same string so
-# can be used to compare the hashes.
+
+/** Returns a unique id from a string.
+ *  Note that it will always return the same id from the same string so it
+ *  can be used to compare the hashes as well as create new item id (combining
+ *  item id of fed item and slice_id, for example - @see xml_fetch.php3)
+ */
 function string2id ($str) {
-  $trialstr = $str;
-  do {
-   $foo=md5($trialstr);
-   $trialstr = $trialstr . " ";
-  } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
-  return $foo;
+    $trialstr = $str;
+    do {
+        $foo=md5($trialstr);
+        $trialstr = $trialstr . " ";
+    } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
+    return $foo;
 }
 
 # returns packed md5 id, not quoted !!!
@@ -383,7 +386,6 @@ function unpack_id($packed_id){
   $foo=bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
   return (string)$foo;
 }
-
 
 
 /** returns current date/time as timestamp;
@@ -465,6 +467,18 @@ function detect_browser() {
   if ($GLOBALS[debug]) huhl("$HTTP_USER_AGENT => $BName,$BVersion,$BPlatform");
 }
 
+/** variable count of variables */
+function debug() {
+    // could be toggled from Item Manager left menu 'debug' (by Superadmins!)
+    if ( $_COOKIE['aa_debug'] != 1 ) return;
+    echo "<pre>\n";
+    $messages = func_get_args();
+    foreach ( $messages as $msg ) {
+        huhlo( $msg );
+        echo "<br>\n";
+    }
+    echo "</pre>\n";
+}
 
 # debug function for printing debug messages
 function huh($msg, $name="") {
