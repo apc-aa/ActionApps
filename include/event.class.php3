@@ -166,11 +166,16 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     }
 
     // get categories in which we have to create global category
+    // = categories and all subcategories - 1,2,33,88 => 1,2; 1,2,33; 1,2,33,88
+    $final_categories = array();     // clear return categories
     if ( isset($ret_params) AND is_array($ret_params) ) {
         foreach( $ret_params as $cid ) {
             $cpath = GetCategoryPath( $cid );
             if ( substr($cpath, 0, 4) != '1,2,' ) {
-                continue;                 // category is not in 'Kormidlo'
+                // category is not in 'Kormidlo' => do not add link to
+                // subcategories, but only to category itself
+                $final_categories[] = $cid;
+                continue;
             }
             $cat_on_path = explode(',', $cpath);
             $curr_path = '';
@@ -181,7 +186,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
                 $curr_path .= ( $i ? ',' : ''). $subcat;  // Create path
                 if ( $i++ ) {                             // Skip first level
                     $reverse_cat[]  = $subcat;
-                    $reverse_path[] = $curr_path;           // There we have to
+                    $reverse_path[] = $curr_path;         // There we have to
                 }                                         // add general categ.
             }
             // created categories are in wrong order - we need the deepest
@@ -191,6 +196,9 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
             }
         }
     }
+    // Now we have $subcategories[] (before translation), where link and global
+    // category will be added AND $final_categories[] with other categories,
+    // where we want to add link (without translation or global cat. creation)
 
     // go through desired categories and translate it, if we have to
     if ( isset($subcategories) AND isset($trans) ) {
@@ -209,13 +217,14 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
     // So, finaly create categories, if not created yet and build the result
     // category list
-    $ret_params = array();  // clear return values (=categories)
-    if (!$subcat_translated) {
+    $ret_params = $final_categories;  // add non-Kormidlo categories
+    if (!$subcat_translated AND count($ret_params)<=0) {
         return false;       // no category to assign - seldom case
     }
 
     $tree = new cattree( $db );
 
+    // we have $subcat_translated[] AND $ret_params[] already prefilled
     foreach ( $subcat_translated as $cid => $path ) {
         $sub_cat_id = $tree->subcatExist($cid, $name);
         if ( !$sub_cat_id AND ($tree->getName($cid) != $name) ) {
