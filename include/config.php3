@@ -12,7 +12,7 @@
 # in the form
 #    $name = "value";
 # or in the form
-#    define("name", "value);
+#    define("name", "value");
 
 # AA_INC_PATH defines the AA include directory. It must be an absolute
 # path. Normally this is the path to the directory where this file
