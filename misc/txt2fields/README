@@ -1,0 +1,52 @@
+command-line utilities:
+#>  fields2txt.pl sliceid > datafile
+#>  txt2fields.pl sliceid < datafile
+
+txt2fields.pl
+ * Replaces fields for a slice, based on a text file
+ * Used to build slice rapidly, based on names of fields
+ * Configure fields (like the 'edit' button in fields control panel),
+   but very quickly. 
+ * Not well tested, little help -- it is a 'database-level' tool
+   Requires understanding of the 'fields' table.
+
+fields2txt.pl
+ * exports field structure to text file, in a format that txt2fields.pl can use
+
+---------------------------------------------
+An example datafile is: list_fields.apc_member_survey
+
+In short:
+* A datafile is a list of fields.  
+* Each new field starts with the word 'field' and then has the field name.  
+* Optionally, a field can have modifiers; e.g. 
+     choosing the input form to be multiple-checkboxes 
+     instead of a simple text field.
+* Comments (lines starting with #) and whitespace are ignored
+
+txt2fields.pl will supply useful defaults, which is why both 
+Example A and Example B will work:
+
+---------------------------------------------
+Example A)
+
+field Location / country of your organization.
+field Name of Organization
+field Email address
+
+---------------------------------------------
+Example B)
+
+field Location / country of your organization.
+id location........
+required 0
+
+field Name of Organization
+id headline........
+required 1
+alias1 _#HEADLINE
+alias2 _#RSS_IT_T
+alias2_func f_r:100
+
+---------------------------------------------
+

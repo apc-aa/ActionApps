@@ -1,0 +1,268 @@
+field Your name
+input_before <TR bgcolor="#D8C8B0"><TD colspan=2><h2>1. Basic Information</h2></TD></TR>
+
+field Your e-mail address
+input_validate email
+id e_posted_by.....
+alias1 _#E_POSTED
+
+field Name of your organization.
+id headline........
+alias2_help item title, for RSS
+required 1
+alias1 _#HEADLINE
+alias2 _#RSS_IT_T
+alias2_func f_r:100
+
+field Location / country of your organization.
+
+field Staff
+input_before <TR><TD COLSPAN=2>How big is your organization, in staff, yearly budget and number of offices?</TD></TR>
+
+field Budget ($US)
+field Budget (local currency)
+field Offices
+
+field Strongest Service
+input_before <TR bgcolor="#D8C8B0"><TD colspan=2><h2>2. Services</h2></TD></TR>
+input_help Of the services you offer, which are you best at delivering?
+
+field Prioritized Service
+input_help Of the services you currently offer, which are you prioritising in terms of the time and energy you invest in developing and providing the service?
+
+field New Services
+input_help What new services or service delivery goals will be most important to your organization in the next two years?
+
+field E-mail access
+input_show_func mch:service_status:
+input_before <TR><TD COLSPAN=2>We would like to get a sense of which services APC members are offering and where they are most interested in receiving professional development (developing of staff skills and capacity). Using the list below, please indicate which services you offer and where you might like to receive service delivery training? <P><h3>Hosting and technical services</h3></TD></TR>
+
+#	We offer this	Would like to offer this in future	Don't want to offer this	Would like service delivery training
+
+field Internet access
+input_show_func mch:service_status:
+
+field Mailing lists and newsgroups
+input_show_func mch:service_status:
+
+field Web hosting				
+input_show_func mch:service_status:
+
+field Online database hosting
+input_show_func mch:service_status:
+
+field ActionApps hosting
+input_show_func mch:service_status:
+				
+field Ecommerce hosting
+input_show_func mch:service_status:
+
+field What other 'Hosting and technical' services do you offer?
+
+field What would you say are the three most pressing professional development needs in your organization at the moment? Would internships or exchanges be particularly useful in any of these areas?
+input_before <TR bgcolor="#D8C8B0"><TD colspan=2><h2>3. Professional Development</h2></TD></TR>
+alias1_help Alias for Professional Development Priorities
+input_show_func txt:8
+
+field Face to face workshops
+input_before <TR><TD colspan=2>On a scale of one to nine, please rate the usefulness of the following types of professional development activities. One is 'not at all useful' and nine is 'extremely useful'.</TD></TR>
+input_show_func rio:one2nine:
+
+field Online workshops
+input_show_func rio:one2nine:
+
+field Face to face peer networking (e.g., BIC workshop)
+input_show_func rio:one2nine:
+
+field APC ActionApps content management tools that make it easier to maintain web sites				
+input_before <TR bgcolor="#D8C8B0"><TD colspan=2><h2>5. L+P Teams</h2></TD></TR><TR><TD colspan=2>It is likely that the L+P network will create 'service teams' that will provide specific ICT services to INGOs and other large, international clients. Which of the following service teams would your organization be most interested in joining?  Please only choose 'Very interested' in one.</TD></TR>
+input_show_func rio:survey_interest
+
+field Security audits and training in areas such as virus protection, back ups and secure online communication				
+input_show_func rio:survey_interest
+
+# ------------------------
+# standard fields
+
+field Edited by
+in_item_tbl edited_by
+input_show_func nul
+input_validate text
+input_help Identification of last editor
+search_show 0
+input_show 0
+id edited_by.......
+search_ft_show 0
+search_ft_default 0
+input_insert_func uid
+alias1 _#EDITEDBY
+alias1_help alias for Last edited By
+
+field Expiry Date
+in_item_tbl expiry_date
+input_show_func dte:1:10:1
+input_validate date
+input_help Date when the news expires
+search_show 0
+input_show 0
+alias1_func f_d:m/d/Y
+id expiry_date.....
+search_ft_show 0
+search_ft_default 0
+required 1
+input_insert_func dte
+alias1 _#EXP_DATE
+text_stored 0
+alias1_help alias for Expiry Date
+input_default dte:2000
+
+field Comments Count
+feed 1
+in_item_tbl disc_count
+input_help Internal field - do not change
+search_show 0
+input_show 0
+id disc_count......
+search_ft_show 0
+search_ft_default 0
+required 1
+input_insert_func nul
+alias1 _#D_ALLCNT
+alias1_help alias for number of all discussion comments for this item
+input_default qte:0
+
+field Approved Comments Count
+feed 1
+in_item_tbl disc_app
+input_help Internal field - do not change
+hidden 1
+input_show 0
+id disc_app........
+required 1
+input_insert_func nul
+alias1 _#D_APPCNT
+alias1_help alias for number of approved discussion comments for this item
+input_default qte:0
+
+field Displayed Times
+feed 1
+in_item_tbl display_count
+input_help Internal field - do not change
+search_show 0
+input_show 0
+id display_count...
+search_ft_show 0
+search_ft_default 0
+required 1
+input_insert_func nul
+alias1 _#DISPL_NO
+alias1_help alias for number of displaying of this item
+input_default qte:0
+
+field Highlight
+in_item_tbl highlight
+input_show_func chb
+input_validate bool
+input_help Interesting news - shown on homepage
+search_show 0
+input_show 0
+id highlight.......
+search_ft_show 0
+search_ft_default 0
+input_insert_func boo
+text_stored 0
+
+field Last Edit
+in_item_tbl last_edit
+input_show_func dte:1:10:1
+input_validate date
+input_help Date of last edit
+search_show 0
+input_show 0
+alias1_func f_d:m/d/Y
+id last_edit.......
+search_ft_show 0
+search_ft_default 0
+input_insert_func now
+alias1 _#LASTEDIT
+text_stored 0
+alias1_help alias for Last Edit
+input_default now:
+
+field Posted by
+in_item_tbl posted_by
+input_validate text
+input_help Identification of author
+search_show 0
+input_show 0
+id posted_by.......
+search_ft_show 0
+search_ft_default 0
+alias1 _#POSTEDBY
+alias1_help alias for Author
+
+field Post Date
+in_item_tbl post_date
+input_show_func nul
+input_validate date
+input_help Date of posting this news
+search_show 0
+input_show 0
+alias1_func f_d:m/d/Y
+id post_date.......
+search_ft_show 0
+search_ft_default 0
+required 1
+input_insert_func now
+alias1 _#POSTDATE
+text_stored 0
+alias1_help alias for Post Date
+input_default now:
+
+field Publish Date
+in_item_tbl publish_date
+input_show_func dte:1:10:1
+input_validate date
+input_help Date when the news will be published
+search_show 0
+input_show 0
+alias1_func f_d:m/d/Y
+id publish_date....
+search_ft_show 0
+search_ft_default 0
+required 1
+input_insert_func dte
+alias1 _#PUB_DATE
+text_stored 0
+alias1_help alias for Publish Date
+input_default now:
+
+field Slice
+in_item_tbl slice_id
+input_help Internal field - do not change
+search_show 0
+input_show 0
+alias1_func f_n:slice_id........
+id slice_id........
+search_ft_show 0
+search_ft_default 0
+required 1
+input_insert_func nul
+alias1 _#SLICE_ID
+alias1_help alias for id of slice
+input_default qte:1
+
+field Status Code
+in_item_tbl status_code
+input_show_func sel:AA_Core_Bins....
+input_validate number
+input_help Select in which bin should the news appear
+search_show 0
+input_show 0
+id status_code.....
+search_ft_show 0
+search_ft_default 0
+required 1
+input_insert_func num
+text_stored 0
+input_default qte:1
