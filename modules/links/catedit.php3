@@ -65,10 +65,15 @@ $links_count = CountCategLinks($cat_path, $r_state['cat_id']);
 HtmlPageBegin();
 echo '<title>'. _m('APC ActionApps - Category Edit'). '</title>';
 
-$tree = new cattree( $db, $links_info['tree_start'], true, ' > ');
+// find the lowest category we will need for admin interface
+$tree_to_begin = ($links_info['select_start'] ?
+                    min($links_info['select_start'], $links_info['tree_start']) :
+                    $links_info['tree_start']);
+
+$tree = new cattree( $db, $tree_to_begin, true, ' > ');
 FrmJavascriptFile('javascript/js_lib.js');
 FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
-$tree->printTreeData($links_info['tree_start']);
+$tree->printTreeData($tree_to_begin);
 
 echo '
  <style>
