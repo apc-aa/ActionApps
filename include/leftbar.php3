@@ -46,7 +46,7 @@ $menus = array (
     "header5" => L_MISC,
     "field_ids" => array ("label"=>L_FIELD_IDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fieldid.php3?slice_id=$slice_id"),    
     "javascript" => array ("label"=>L_F_JAVASCRIPT, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_javascript.php3")
-    //,"fileman" => array ("label"=>"file manager", "cond"=>1, "href"=>"fileman.php3")
+    ,"fileman" => array ("label"=>L_FILEMAN, "cond"=>FilemanPerms ($auth, $slice_id), "href"=>"fileman.php3")
 )),
 
 
@@ -83,7 +83,8 @@ $menus = array (
     "sliceexp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceexp.php3", "label"=>L_EXPORT_SLICE), 
     "sliceimp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceimp.php3", "label"=>L_IMPORT_SLICE),
     "header70"=>L_MISC,
-    "tabledit" => array ("label"=>L_EDIT_WIZARD_WELCOME, "cond"=>IsSuperadmin(), "href"=>"tabledit.php3")
+    "te_wizard_welcome" => array ("label"=>L_EDIT_WIZARD_WELCOME, "cond"=>IsSuperadmin(), "href"=>"te_wizard_welcome.php3"),
+    "te_wizard_template" => array ("label"=>L_EDIT_WIZARD_TEMPLATE, "cond"=>IsSuperadmin(), "href"=>"te_wizard_template.php3")
 )));
   
 echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">';
