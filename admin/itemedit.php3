@@ -186,7 +186,6 @@ if( $insert || $update )
     
     if( $update )
     {
-      $varset->add("created_by", "quoted", $created_by);
       $SQL = "UPDATE items SET ". $varset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
       $db->query($SQL);
       if ($db->affected_rows() == 0) {
@@ -287,6 +286,9 @@ echo $Msg;
 
 /*
 $Log$
+Revision 1.3  2000/07/13 10:02:22  kzajicek
+created_by should not be changed, it is a constant value.
+
 Revision 1.2  2000/07/12 11:06:26  kzajicek
 names of image upload variables were a bit confusing
 
