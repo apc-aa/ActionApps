@@ -317,20 +317,21 @@ if( !$encap ) {
           inputbox.value=value;
         }
       }
-        
+
     // -->
     </script>';
-echo "\n<script language=\"JavaScript\">
-<!--
-  function add_to_area(inputbox, value) {
-    if (inputbox.value.length != 0) {
-      inputbox.value=inputbox.value+\",\"+value;
-    } else {
-      inputbox.value=value;
-    }
-  }
-//-->
-</script>\n";
+
+    echo $js_proove_fields;
+
+    echo '
+  </head>
+  <body id="body_white_color">
+    <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
+ }
+ 
+ PrintArray($err);
+ echo $Msg;
+
 if ($return_url)
   $PASS_PARAM=$PHP_SELF."?return_url=".urlencode($return_url);
 else
