@@ -354,9 +354,19 @@ class item {
       $fce = $parts[2];
       return $this->$fce($parts[1], $parts[3]);
     } 
-    if( substr($out, 0, 7) == "switch(" ) {
+    elseif( substr($out, 0, 7) == "switch(" ) {
       # replace switches
       return $this->parseSwitch( substr($out,7) );
+    }
+    elseif( substr($out, 0, 8) == "include(" ) {
+      # include file
+      if( !($pos = strpos($out,')')) )
+        return "";
+      $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()) ,substr($out, 8, $pos-8));
+      $fp = fopen( self_server().'/'. $filename, 'r' );
+      $fileout = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
+      fclose( $fp );
+      return $fileout;
     }
     elseif( substr($out, 0, 1) == "#" )
       # remove comments
