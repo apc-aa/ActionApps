@@ -575,7 +575,7 @@ $aliases = GetAliasesFromFields($fields);
 
 // Added by Jakub on 6.3.2003, not sure if OK:
 echo "<tr><td class=tabtxt>";
-$itemview = new itemview( $db, $format_strings, $fields, $aliases, $zids,
+$itemview = new itemview($format_strings, $fields, $aliases, $zids,
           $st->metapage * ($st->current-1), $st->metapage, $r_slice_view_url );
 $itemview->print_view("NOCACHE");   # big security hole is open if we cache it
                                   # (links to itemedit.php3 would stay with

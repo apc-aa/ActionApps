@@ -209,7 +209,7 @@ if( isset($zids) && ($zids->count() > 0) ) {
 
   $nocache=1;
   
-  $itemview = new itemview( $db, $format_strings, $fields, $aliases, $zids,
+  $itemview = new itemview($format_strings, $fields, $aliases, $zids,
               $st->metapage * ($st->current-1), $st->metapage, "" );
   $itemview->print_view();
     
