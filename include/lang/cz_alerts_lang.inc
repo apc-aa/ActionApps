@@ -81,8 +81,8 @@ $_m["This email is not registered with Alerts."]
   = "Tento email není pøihlášen k Zasílání zpráv.";
 
 # /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 40
-$_m["OK. Password was sent."]
-  = "OK. Heslo je posláno.";
+$_m["OK. Confirmation email was sent."]
+  = "OK. Potvrzovací email byl poslán.";
 
 # /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 58
 $_m["Wrong password."]
@@ -279,4 +279,10 @@ $_m["Add filter"]
 
 $_m["Language"]
   = "Jazyk";    
+
+$_m["You have not yet confirmed your subscription. See confirmation e-mail or use Send confirmation."]
+  = "Ještì jste nepotvrdil(a) pøihlášku. Podívejte se do potvrzovacího emailu nebo použijte Zaslat potvrzení.";
+
+$_m["Send confirmation"]
+  = "Zaslat potvrzení";  
 ?>

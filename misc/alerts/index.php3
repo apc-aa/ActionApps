@@ -38,17 +38,18 @@ if ($send_passwd && $email) {
     else {
         $db->next_record();
         alerts_subscribe ($email, $lang, "");
-        $Msg = _m("OK. Password was sent.");
+        $Msg = _m("OK. Confirmation email was sent.");
     }
 }
 
 else if ($email) {
     $db = new DB_AA;
-    $db->query ("SELECT id, password FROM alerts_user WHERE email='$email'");
+    $db->query ("SELECT id, password, confirm FROM alerts_user WHERE email='$email'");
     if ($db->num_rows() == 0) $Err[] = _m("This email is not registered with Alerts.");
     else {
         $db->next_record();
-        if ($db->f("password") == "" || (md5($password) == $db->f("password"))) {
+        if ($db->f("confirm")) $Err[] = _m("You have not yet confirmed your subscription. See confirmation e-mail or use Send confirmation.");
+        else if ($db->f("password") == "" || (md5($password) == $db->f("password"))) {
             $alerts_session = new_id ();
             $db->query ("UPDATE alerts_user 
                 SET session='$alerts_session', sessiontime=".time()." 
@@ -86,7 +87,8 @@ echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
             <TD class=tabtxt><INPUT TYPE=password NAME=password></TD></TR>
        </table> 
        <p align=center><INPUT TYPE=SUBMIT VALUE='"._m("Login")."'></p>";
-       echo _m("Login by your e-mail address. If you don't use password, leave that box empty. If you forgot your password, click here and we will send a new confirmation e-mail to you.")." <p align=center><INPUT TYPE=SUBMIT NAME='send_passwd' VALUE='"._m("Send password")."'></p>
+       echo _m("Login by your e-mail address. If you don't use password, leave that box empty. If you forgot your password, click here and we will send a new confirmation e-mail to you.")
+        ." <p align=center><INPUT TYPE=SUBMIT NAME='send_passwd' VALUE='"._m("Send confirmation")."'></p>
     </FORM>";
 
 echo "</TD></TR></TABLE>
