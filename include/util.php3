@@ -23,6 +23,10 @@ http://www.apc.org/
 # Miscellaneous utility functions 
 #
 
+if (!defined("AA_UTIL_INCLUDED"))
+     define ("AA_UTIL_INCLUDED",1);
+else return;
+
 require $GLOBALS[AA_INC_PATH]."constants.php3";
 
 function get_aa_url ($href) {

@@ -21,15 +21,11 @@ http://www.apc.org/
 
 // Settings for each table view (see include/tabledit.php3 for more info)
 
-/* Table Views Grammar: * = required, | = alternatives
+/* Universal Table Views Grammar: * = required, | = alternatives
     
    "table"* => table name
    "type"* => "edit" | "browse"  browse view = table, edit view = fields one on a row each 
-   "caption"* => caption shown above the table
    "cond"* => permissions needed to access this site
-   "mainmenu"* => menu
-   "submenu"* => menu
-   "title"* => HTML page title
 
    "attrs" => attributes for TABLE and TD
    "addrecord" => true | false  show an empty record, applicable only with readonly = false
@@ -41,7 +37,6 @@ http://www.apc.org/
    "gotoview" => which view to show after clicking on Edit or Insert (Browse view)
    				 or after clicking on Cancel (Edit view)
 				 default: stay in the same view
-   "help" => text to be shown above the table
    "listlen" => number of records to be shown at once, default: 15
    "orderby" => field to sort by (default: don't sort)
    "orderdir" => order direction, "a" = ascending or "d" = descending (default: "a")
@@ -87,6 +82,16 @@ http://www.apc.org/
             "join"* => (array of many) master fields must be the ones with "primary" set
                 "master field" => "child field" (child field is in table table_name)
             "fields"* => the same as above
+
+----------------------------------------------------------------------------------------------------
+            
+   AA SPECIAL table view grammar:
+   
+   "mainmenu"* => menu
+   "submenu"* => menu
+   "title"* => HTML page title
+   "caption"* => caption shown above the table
+   "help" => text to be shown above the table
 */        
 
 function GetTableView ($viewID) {        
