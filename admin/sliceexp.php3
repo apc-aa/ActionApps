@@ -133,7 +133,7 @@ function b_export_date_onchange(vstup)
 
 <h1><b><?php echo L_E_EXPORT_TITLE ?></b></h1>
 
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
 
 <?php 
 if ($SHOWTEXT == ""): ?>

@@ -195,7 +195,11 @@ function GetConstantGroup( $input_show_func ) {
                           translated to $slices = array($slice_id) 
              $neverAllItems -- if no conds[] apply (all are wrong formatted or empty),
                                generates an empty set
-             $restrict_ids -- if you want to choose only from a set of items (used by E-nail Alerts)
+             $restrict_ids -- if you want to choose only from a set of items 
+                              (used by E-mail Alerts and related item view (for 
+                               sorting and eliminating of expired items))
+                              ids are packed but not quoted in $restrict_ids
+                               
    Globals:  $debug=1 -- many debug messages
              $debugfields=1 -- useful mainly for multiple slices mode -- views info about field_ids 
                 used in conds[] but not existing in some of the slices
