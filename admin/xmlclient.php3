@@ -66,7 +66,7 @@ function GetCategoryIdFromValue($cat_group, $value) {
   if (!$cat_group || !is_array($cat_group))
     return;
 
-  $db->query("SELECT id FROM constant WHERE group_id='$group_id' AND value='$value'");
+  $db->query("SELECT id FROM constant WHERE group_id='$group_id' AND value='".addslashes($value)."'");
   if ($db->next_record()) {
     return unpack_id($db->f(id));
   }

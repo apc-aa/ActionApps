@@ -377,7 +377,7 @@ function FeedItem($item_id, $fields) {
   if($cat_group AND $cat_field) {
     $SQL = "SELECT id FROM constant 
              WHERE group_id = '$cat_group' 
-               AND value = '". $content4id[$cat_field][0][value] ."'";
+               AND value = '". addslashes ($content4id[$cat_field][0][value]) ."'";
     $db->query($SQL);
     if( $db->next_record() )
       $cat_id = unpack_id($db->f(id));
