@@ -503,5 +503,10 @@ $conds_not_field_names = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuej
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);
 
+$FILEMAN_ACCESSES = array (
+    "0" => L_SUPERADMIN,
+//    "EDITOR" => L_EDITOR,
+    "ADMINISTRATOR" => L_ADMINISTRATOR);
+
 require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 ?>
