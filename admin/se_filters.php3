@@ -101,13 +101,7 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
     if ($ext_categs AND is_array($ext_categs)) {
 
         // check, if we use 'All categories' option
-        $all_categories = true;
-        foreach ( $ext_categs as $k => $v ) {
-            if ( $v['target_category_id'] AND ($k != UNPACKED_AA_OTHER_CATEGOR) ) {
-                $all_categories = false;
-                break;
-            }
-        }
+        $all_categories = UseAllCategoriesOption( $ext_categs );
 
         if ( $all_categories ) {
             // first row - all categories

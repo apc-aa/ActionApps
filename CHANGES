@@ -1,3 +1,4 @@
+05/13/04 - fixed Cross Server Feeding - filters did not work properly (honzam)
 05/11/04 - improved Cross Server Feeding
 (honzam)    - added APC RSS and RSS test pages with debug options (see AA menu),
             - better handled categories (possibility to import any category

@@ -245,40 +245,47 @@ function onefeedStore($feed_id, $feed, $debugfeed) {
     }
 }
 
-function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs, &$l_categs ) {
+function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs, &$l_categs, $all_categories) {
 
     // we have set mapping for this category
-    $ext_category = ( isset($ext_categs[$remote_cat_id]) ? $ext_categs[$remote_cat_id] :
-                                                           $ext_categs[UNPACKED_AA_OTHER_CATEGOR] );
+    $ext_category_id = ( (!$all_categories AND isset($ext_categs[$remote_cat_id])) ?
+                           $remote_cat_id : UNPACKED_AA_OTHER_CATEGOR );
 
-    $local_cat_id = $ext_categs[$remote_cat_id]['target_category_id'];
-    $approved     = $ext_categs[$remote_cat_id]['approved'];
+    $local_cat_id = $ext_categs[$ext_category_id]['target_category_id'];
+    $approved     = $ext_categs[$ext_category_id]['approved'];
+
     if ( $local_cat_id == UNPACKED_AA_THE_SAME_CATE ) {
         // we have to not rename the category - return original name
         return array( $remote_cat_value, $approved );
     }
+
     // return local category name or empty value for "not feed"
     return array( $l_categs[$local_cat_id]['value'], $approved );
 }
 
 /** Translates remote categories to local one using external ext_categs array
- *  $category_field - field id for category (category.......1)
+ *  $cat_field_id   - field id for category (category.......1)
  *  $item           - data for current item. This will be updated by the values
- *                    for new categories ( $category_field )
+ *                    for new categories ( $cat_field_id )
  *  $ext_categs     - remote categories array (structure with name, value,
  *                    target_category_id, approved)
  *  $l_categs       - local categories array [id] => (name, value, parent_id)
  */
-function translateCategories( $category_field, &$item, &$ext_categs, &$l_categs ) {
+function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) {
 
     $return_approved = null;
+
+    // true if filters are set for 'All categories' option (and not separately
+    // for each category)
+    $all_categories = UseAllCategoriesOption( $ext_categs );
+
     // Create [id] => value array of all items categories
     if ( isset($item['categories']) AND is_array($item['categories']) ) {
         // This categories are regular categories on remote slice, so it
         // should have value defined
         // This categories are set in special $item[categories] array
         foreach ( $item['categories'] as $r_cid ) {
-            list( $new_cat, $approved ) = translteFeedCatid2Value($r_cid, $ext_categs[$r_cid]['value'], $ext_categs, $l_categs );
+            list( $new_cat, $approved ) = translteFeedCatid2Value( $r_cid, $ext_categs[$r_cid]['value'], $ext_categs, $l_categs, $all_categories );
             if ( is_null( $return_approved ) ) {
                 $return_approved = $approved ;
             }
@@ -289,13 +296,13 @@ function translateCategories( $category_field, &$item, &$ext_categs, &$l_categs 
             }
         }
     }
-    if ( $category_field AND is_array($item['fields_content'][$cat_field_id]) ) {
+    if ( $cat_field_id AND is_array($item['fields_content'][$cat_field_id]) ) {
         // Now do the same also for "dirty" categories - categories, which are
         // not in the list of current remote categories (item has another than
-        // listed category - strange, but obvious (due feedin, importing, ...)
+        // listed category - strange, but obvious (due feeding, importing, ...)
         foreach ( $item['fields_content'][$cat_field_id] as $r_value ) {
-            if ( !$used_values[trim($r_value)] ) {
-                list( $new_cat, $approved ) = translteFeedCatid2Value( UNPACKED_AA_OTHER_CATEGOR, $r_value, $ext_categs, $l_categs );
+            if ( !$used_values[trim($r_value['value'])] ) {
+                list( $new_cat, $approved ) = translteFeedCatid2Value( UNPACKED_AA_OTHER_CATEGOR, $r_value['value'], $ext_categs, $l_categs, $all_categories );
                 if ( is_null( $return_approved ) ) {
                     $return_approved = $approved ;
                 }
@@ -308,7 +315,7 @@ function translateCategories( $category_field, &$item, &$ext_categs, &$l_categs 
     }
 
     // And now somethig completely different - substitute old categories with new ones
-    $item['fields_content'][$category_field] = $new_categories;
+    $item['fields_content'][$cat_field_id] = $new_categories;
 
     return $return_approved;
 }

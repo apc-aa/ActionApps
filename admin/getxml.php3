@@ -255,11 +255,12 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
 
     // create item's categories
     $item_categs = $content4id[GetBaseFieldId($slice_fields, "category")];
+
     if (is_array($item_categs)) {
         // get constants array from database ('val'=>'packed id')
         if ( !isset($value2const_id[$slice_id]) ) {
             // get and store it for later usage (it is static variable
-            $value2const_id[$slice_id] = GetConstants( GetCategoryGroup($slice_id), '', 'value', 'id');
+            $value2const_id[$slice_id] = GetConstants( GetCategoryGroup($slice_id), '', 'id', 'value');
         }
         $xml_items.="\t<aa:categories><rdf:Bag>\n";
         foreach ($item_categs as $k => $v) {

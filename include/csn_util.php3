@@ -79,6 +79,19 @@ function GetExternalCategories($feed_id, $add_other=false) {
     return $ext_categs;
 }
 
+/** Returns true if filters are set for 'All categories' option
+ *  (and not separately for each category)
+ */
+function UseAllCategoriesOption( &$ext_categs ) {
+    foreach ( $ext_categs as $k => $v ) {
+        if ( $v['target_category_id'] AND ($k != UNPACKED_AA_OTHER_CATEGOR) ) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
 // get external mapping from remote slice to local slice = returns two array
 // map_to = from_field_id -> from_field_name  (but just for fields with flag = FEEDMAP_FLAG_MAP
 // map_from = to_field_id -> { feedmap_flag => flag, value => from_field_id|value, from_field_name
