@@ -19,6 +19,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined ("AA_FORMUTIL_INCLUDED"))
+    define ("AA_FORMUTIL_INCLUDED", 1);
+else return;
+
 #
 # Form utility functions
 #
@@ -333,12 +337,13 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false,
 
 # Prints html tag <input type=checkbox 
 function FrmChBoxEasy($name, $checked=true, $add="") {
+  echo FrmChBoxEasyCode($name, $checked, $add);
+}
+function FrmChBoxEasyCode($name, $checked=true, $add="") {
   $name=safe($name); # $add=safe($add); NO!!
 
-  echo "<input type=\"checkbox\" name=\"$name\" $add ";
-  if($checked)
-    echo " checked";
-  echo ">";
+  return "<input type=\"checkbox\" name=\"$name\" $add".
+    ($checked ? " checked>" : ">");
 }
 
 # Prints html tag <select .. to 2-column table
@@ -713,17 +718,22 @@ function FrmRelated($name, $txt, $arr, $size, $sid, $mode, $design, $needed=fals
 
 # Prints html tag <select .. 
 function FrmSelectEasy($name, $arr, $selected="", $add="") { 
+  echo FrmSelectEasyCode ($name, $arr, $selected, $add);
+}
+
+function FrmSelectEasyCode($name, $arr, $selected="", $add="") { 
   $name=safe($name); # safe($add) - NO! - do not safe it
 
-  echo "<select name=\"$name\" $add>";	
+  $retval = "<select name=\"$name\" $add>\n";	
   reset($arr);
   while(list($k, $v) = each($arr)) { 
-    echo "<option value=\"". htmlspecialchars($k)."\"";
+    $retval .= "  <option value=\"". htmlspecialchars($k)."\"";
     if ((string)$selected == (string)$k) 
-      echo " selected";
-    echo "> ". htmlspecialchars( is_array($v) ? $v['name'] : $v ) ." </option>";
+      $retval .= " selected";
+    $retval .= ">". htmlspecialchars( is_array($v) ? $v['name'] : $v ) ."</option>\n";
   }
-  echo "</select>\n";
+  $retval .= "</select>\n";
+  return $retval;
 }  
 
 function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $morehelp="",  $rows=4, $cols=60) {
