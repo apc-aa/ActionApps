@@ -299,6 +299,119 @@ class item {
     return "";
   }
 
+  function parseMath($text)
+  {
+  	$variable = strtok($text,")");
+    $twos = ParamExplode( strtok("") );
+	//print_r ($twos);
+	$i=0;$key=true;
+	while( $i < count($twos) ) {
+     $val = trim($twos[$i]);
+	
+	  if ($key)
+	  	{
+			if ($val) $ret.=str_replace("#:","",$val); $key=false;
+		}
+	  else
+	  	{	$val=str_replace ("{", "", $val);
+			$val=str_replace ("}", "", $val);
+			$val=str_replace (" ", "", $val);
+			while (strpos($val,"("))
+			{
+				$val=$this->calc_brackets($val);
+				//echo "<br>";
+			}
+			$val=$this->calculate($val);
+			
+			$format=explode("#",$variable);
+			$val=number_format($val, $format[0], $format[1], $format[2]);
+			
+			$ret.=$val;
+			$key=true;
+		}
+	 $i++;
+    }
+  	return $ret;
+  }
+  
+  
+  //calculating expression only with +,-,/,*,^
+  function calculate($expr)
+  {
+  	//prepare array of parts to caltulate.. ordered by priority...
+  	$parts = explode ("+",$expr);
+	foreach ($parts as $key => $val)
+		{
+			unset($res2);
+			$parts[$key]=explode ("#-",$val);
+			foreach ($parts[$key] as $key2 => $val2)
+				{
+					unset($res3);
+					$parts[$key][$key2]=explode("*",$val2);
+					foreach ($parts[$key][$key2] as $key3 => $val3)
+						{
+							unset($res4);
+							$parts[$key][$key2][$key3]=explode("/",$val3);
+							foreach ($parts[$key][$key2][$key3] as $key4 => $val4)
+								{
+									unset($exp);
+									$parts[$key][$key2][$key3][$key4]=explode("^",$val4);
+									for( $i=sizeof($parts[$key][$key2][$key3][$key4])-1; $i>=1; $i--)
+										{
+											if (!isset($exp)) $exp=$parts[$key][$key2][$key3][$key4][$i];
+											$exp=pow($parts[$key][$key2][$key3][$key4][$i-1],$exp);
+											
+										};
+									if (isset($exp)) $parts[$key][$key2][$key3][$key4]=$exp;
+									else $parts[$key][$key2][$key3][$key4]=$parts[$key][$key2][$key3][$key4][0];
+									
+									if (isset($exp)) $val4=$exp;
+									//else $val4=$parts[$key][$key2][$key3][$key4][0];
+									
+									//echo $res4."fff".$val4."<br>";
+									if (!isset($res4)) $res4=$val4;
+									elseif ($val4==0) $return="Error!";
+									else $res4=$res4/$val4;
+									
+								}
+							//echo $res3."fff".$res4."<br>";
+							$parts[$key][$key2][$key3]=$res4;
+							if (!isset($res3)) $res3=$res4;
+							else $res3=$res3*$res4;
+						}
+					$parts[$key][$key2]=$res3;
+					if (!isset($res2)) $res2=$res3;
+					else $res2=$res2-$res3;
+				}
+			//	echo $res2."fff".$res1."<br>";
+				$parts[$key]=$res2;
+				if (!isset($res1)) $res1=$res2;
+				else $res1=$res1+$res2;
+		};
+	return $parts=$res1;
+	
+	/*if (isset($return)) return $return;
+	else return "vysledok=$res1-----";
+	return 	print_r ($parts);*/
+	
+  
+  }
+  
+  //return expression with calculated most inner bracket
+  function calc_brackets($expr){
+  			$beg=strrpos($expr, "(");
+			$end=strpos($expr, ")");
+			$expr_beg=substr($expr,0,$beg);
+			//echo "<br>\n";
+			$expr_mid=substr($expr,$beg+1,$end-$beg-1);
+			//echo "<br>\n";
+			$expr_end=substr($expr,$end+1 );
+			//echo "<br>\n";
+			$expr_beg.$this->calculate($expr_mid).$expr_end;
+			return $expr_beg.$this->calculate($expr_mid).$expr_end;
+  }
+  
+  
   function remove_strings( $text, $remove_arr ) {
     if( is_array($remove_arr) ) {
       reset($remove_arr);
@@ -383,8 +496,13 @@ class item {
       # replace switches
       return QuoteColons($level, $maxlevel, $this->parseSwitch( substr($out,7) ));
       # QuoteColons used to mark colons, which is not parameter separators.
-    }
-    elseif( substr($out, 0, 8) == "include(" ) {
+	  }
+    elseif( substr($out, 0, 5) == "math(" ) {
+      # replace math
+      return QuoteColons($level, $maxlevel, $this->parseMath( substr($out,5) ));
+      # QuoteColons used to mark colons, which is not parameter separators.  
+	  }
+	elseif( substr($out, 0, 8) == "include(" ) {
       # include file
       if( !($pos = strpos($out,')')) )
         return "";
