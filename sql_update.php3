@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+crash!!!
+
+
 # script for MySQL database update
 
 # this script updates the database to last structure, create all tables, ...
@@ -865,6 +868,9 @@ $SQL_aacore[] = "INSERT INTO field VALUES( 'file', '', 'AA_Core_Fields..', 'File
 $SQL_aacore[] = "INSERT INTO field VALUES( 'text', '', 'AA_Core_Fields..', 'Text', '100', '', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '1', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')";
 $SQL_aacore[] = "INSERT INTO field VALUES( 'unspecified', '', 'AA_Core_Fields..', 'Unspecified', '100', '', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '1', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')";
 $SQL_aacore[] = "INSERT INTO field VALUES( 'url', '', 'AA_Core_Fields..', 'URL', '2055', 'Internet URL address', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#UNDEFINE', 'f_i', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'url', 'qte', '1', '1')";
+$SQL_aacore[] = "INSERT INTO field VALUES( 'switch', '', 'AA_Core_Fields..', 'Switch', '2055', '', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'chb', '', '100', '', '', '', '', '0', '0', '0', '_#UNDEFINE', 'f_i', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'boo', '1', '0')";
+$SQL_aacore[] = "INSERT INTO field VALUES( 'password', '', 'AA_Core_Fields..', 'Password', '2055', 'Password which user must know if (s)he want to edit item on public site', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#UNDEFINE', 'f_i', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')";
+$SQL_aacore[] = "INSERT INTO field VALUES( 'relation', '', 'AA_Core_Fields..', 'Relation', '2055', '', '', 'txt:', '0', '0', '1', 'mse:#sLiCe-4e6577735f454e5f746d706c2e2e2e2e:', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_v:vid=243&cmd[243]=x-243-_#this', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')";
 
 $SQL_templates[] = "DELETE FROM field WHERE slice_id='News_EN_tmpl....'";
 $SQL_templates[] = "REPLACE INTO slice VALUES( 'News_EN_tmpl....', 'News (EN) Template', 'AA_Core.........', '0', '', '975157733', '1', 'News_EN_tmpl....', '1', '', '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR><img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\">_#FULLTEXT ', '','<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font><font color=#FF0000><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font><font color=#808080 size=-1><br>_#PLACE###(_#LINK_SRC) - </font><font color=black size=-1>_#ABSTRACT<br></font><br>', '', '0', '<br>', '<br>', '', '<p>_#CATEGORY</p>', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', 'No item found', '<tr class=tablename><td width=30>&nbsp;</td><td>Click on Headline to Edit</td><td>Date</td></tr>', '<tr class=tabtxt><td width=30><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"\"></td><td><a href=\"_#EDITITEM\">_#HEADLINE</a></td><td>_#PUB_DATE</td></tr>', '', '', '1', '1', '', '0', '0')";
@@ -1190,6 +1196,9 @@ echo '<h2>Update OK</h2>
 
 /*
 $Log$
+Revision 1.15  2002/03/06 13:44:20  honzam
+new standard field definition for switch, password and relation field
+
 Revision 1.14  2002/01/12 02:47:18  mitraearth
 Changed absolute path to AA_INC_PATH to a relative one.
 

@@ -28,6 +28,7 @@ DROP TABLE IF EXISTS external_feeds ;
 DROP TABLE IF EXISTS ef_categories  ;
 DROP TABLE IF EXISTS ef_permissions ;
 
+# 02/18/02 - idded definition for switch, password and relation field type
 # 01/08/02 - added index to item table
 # 11/26/01 - added profile table
 #          - added notify_holding_item_s, notify_holding_item_b, 
@@ -791,7 +792,9 @@ INSERT INTO field VALUES( 'file', '', 'AA_Core_Fields..', 'File upload', '2222',
 INSERT INTO field VALUES( 'text', '', 'AA_Core_Fields..', 'Text', '100', '', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '1', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1');
 INSERT INTO field VALUES( 'unspecified', '', 'AA_Core_Fields..', 'Unspecified', '100', '', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '1', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1');
 INSERT INTO field VALUES( 'url', '', 'AA_Core_Fields..', 'URL', '2055', 'Internet URL address', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#UNDEFINE', 'f_i', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'url', 'qte', '1', '1');
-
+INSERT INTO field VALUES( 'switch', '', 'AA_Core_Fields..', 'Switch', '2055', '', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'chb', '', '100', '', '', '', '', '0', '0', '0', '_#UNDEFINE', 'f_i', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'boo', '1', '0');
+INSERT INTO field VALUES( 'password', '', 'AA_Core_Fields..', 'Password', '2055', 'Password which user must know if (s)he want to edit item on public site', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#UNDEFINE', 'f_i', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1');
+INSERT INTO field VALUES( 'relation', '', 'AA_Core_Fields..', 'Relation', '2055', '', '', 'txt:', '0', '0', '1', 'mse:#sLiCe-4e6577735f454e5f746d706c2e2e2e2e:', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_v:vid=243&cmd[243]=x-243-_#this', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1');
 
 # --------------------------------------------------------
 # Templete slices
