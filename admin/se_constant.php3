@@ -275,13 +275,13 @@ if( $group_id OR $as_new ) {
   $gid = ( $as_new ? $as_new : $group_id );
   $SQL = "SELECT id, name, value, class, pri FROM constant
            WHERE group_id='$gid' ORDER BY pri, name";
-  $s_constants = GetTable2Array($SQL, $db, "NoCoLuMn");
+  $s_constants = GetTable2Array($SQL, "NoCoLuMn");
 }  
 
   # lookup apc categories classes
 $SQL = "SELECT name, value, pri, id FROM constant
          WHERE group_id='lt_apcCategories' ORDER BY name";
-$classes = GetTable2Array($SQL, $db, "id");
+$classes = GetTable2Array($SQL, "id");
 
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

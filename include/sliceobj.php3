@@ -53,9 +53,8 @@ class slice {
 
     // Load $this from the DB for any of $fields not already loaded
     function getfields($fields,$force=false) {
-        global $db3;
         if (is_string($fields)) $fields = array ( $fields);
-        if (!isset($db3)) $db3 = new DB_AA;
+        $db = getDB();
         reset($fields);
         if ($force)   // Ignore existing fields (not normally used)
             $fieldsreq = $fields;
@@ -67,22 +66,28 @@ class slice {
         if (isset($fieldsreq)) {
             $SQL = "SELECT ".implode(",",$fieldsreq).
                 " FROM slice WHERE id = '".$this->sql_id(). "'";
-            $db3->tquery($SQL);
-            if (! $db3->next_record()) {
+            $db->tquery($SQL);
+            if (! $db->next_record()) {
                 if ($GLOBALS[errcheck]) 
                     huhl("Slice ".$this->unpacked_id()." is not a valid slice");
             }
             else {
                 reset($fieldsreq);
                 foreach ($fieldsreq as $f)
-                    $this->$f = $db3->f($f);
+                    $this->$f = $db->f($f);
             }  
 	    }
+        freeDB($db);
     }
 
     function name() {
         $this->getfields("name");
         return $this->name;
+    }
+
+    function deleted() {
+        $this->getfields("deleted");
+        return $this->deleted;
     }
 
     // Return a 32 character id

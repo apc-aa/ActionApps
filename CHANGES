@@ -1,3 +1,4 @@
+04/25/03 - GetTable2Array no longer needs $db parameter
 04/23/03 - added support for convertors from DOC/XLS/PPT/.. to HTML
 (honzam) - fixed page scroller's 'All' feature - now works also from other
            than first page

@@ -41,7 +41,7 @@ $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
         FROM field 
         WHERE slice_id='".q_pack_id($slice_id)."' 
         ORDER BY input_pri";
-$s_fields = GetTable2Array($SQL, $db);
+$s_fields = GetTable2Array($SQL);
 
 add_post2shtml_vars();
 ShowAnonymousForm();
@@ -51,13 +51,14 @@ ShowAnonymousForm();
 
 function ShowAnonymousForm () {
     global $s_fields, $show, $ok_url, $err_url, $use_show_result, $show_result,
-        $show_func_used, $js_proove_fields, $fields, $prifields, $slice_id, $db;
-    
+        $show_func_used, $js_proove_fields, $fields, $prifields, $slice_id;
+    $db = getDB();
     $db->query ("SELECT permit_anonymous_edit, type FROM slice 
         WHERE id='".q_pack_id($slice_id)."'");
     $db->next_record();
     $form_type = $db->f("permit_anonymous_edit");
-        
+    freeDB($db);
+
     foreach ($s_fields as $field)
         if ($field["input_show"] && !$show[$field["id"]])
             $notshown ["v".unpack_id($field["id"])] = 1;

@@ -65,19 +65,21 @@ function AuthDeleteReaders( $item_ids, $slice_id ) {
 *   @param array $item_ids non-quoted packed IDs
 */
 function AuthUpdateReaders( $item_ids, $slice_id ) {
-    global $db;
+    $db = getDB();
     $db->query ("SELECT type, auth_field_group FROM slice WHERE id='"
         .q_pack_id( $slice_id )."'");
     $db->next_record();
-    if ($db->f("type") != "ReaderManagement" || ! $db->f("auth_field_group"))
+    if ($db->f("type") != "ReaderManagement" || ! $db->f("auth_field_group")) {
+        freeDB($db);
         return; 
+    }
 
     // This select follows the idea of QueryZIDs: it uses several times the
     // table content to place several fields on one row.        
     $SQL = AuthSelect ($db->f("auth_field_group"))
         ." AND item.id IN ('".join_and_quote( "','", $item_ids )."')";
-
-    $readers = GetTable2Array( $SQL, $db, "NoCoLuMn");
+    freeDB($db);
+    $readers = GetTable2Array( $SQL, "NoCoLuMn");
     if( is_array( $readers )) foreach ($readers as $reader) {
         if (AuthIsActive ($reader) && $reader["groups"])
             AuthUpdateReader ($reader["username"], $reader["password"], $reader["groups"]);
@@ -95,8 +97,7 @@ function AuthUpdateReaders( $item_ids, $slice_id ) {
 *   This function should be called once a day from cron.
 */
 function AuthMaintenance() {
-    global $db;
-    $db2 = new DB_AA;
+    $db = getDB();
     
     // Create the array $oldusers with user names 
     $db->query ("SELECT username FROM auth_user");
@@ -104,7 +105,7 @@ function AuthMaintenance() {
         $oldusers[$db->f("username")] = 1;
     
     $slices = GetTable2Array (
-        "SELECT * FROM slice WHERE type='ReaderManagement'", $db);
+        "SELECT * FROM slice WHERE type='ReaderManagement'");
         
     // Work slice by slice
     reset( $slices );
@@ -114,25 +115,25 @@ function AuthMaintenance() {
         // Get all reader data for this slice
         $SQL = AuthSelect ($slice["auth_field_group"])
             ." AND slice_id = '".addslashes($slice_id)."'";
-        $db2->query ($SQL);
-        while ($db2->next_record()) {        
-            $olduser_exists = $oldusers [$db2->f("username")];
-            unset ($oldusers[$db2->f("username")]);
+        $db->query ($SQL);
+        while ($db->next_record()) {        
+            $olduser_exists = $oldusers [$db->f("username")];
+            unset ($oldusers[$db->f("username")]);
     
             // Add readers which should be in auth_user but are not
             // (perhaps moved recently from Pending to Active)
-            if (AuthIsActive ($db2->Record) && $db2->f("groups")) {
+            if (AuthIsActive ($db->Record) && $db->f("groups")) {
                 if (! $olduser_exists) {
                     $result["readers added"] ++;
-                    AuthUpdateReader ($db2->f("username"), $db2->f("password"), 
-                        $db2->f("groups"));
+                    AuthUpdateReader ($db->f("username"), $db->f("password"), 
+                        $db->f("groups"));
                 }
             }
             // Remove readers which are in auth_user but should not
             // (perhaps moved recently from Active to Expired)
             else if ($olduser_exists) {
                 $result["not active readers deleted"] ++;
-                AuthDeleteReader ($db2->f("username"));
+                AuthDeleteReader ($db->f("username"));
             }
         }
     }
@@ -190,6 +191,7 @@ function AuthMaintenance() {
         $db->query ("INSERT INTO auth_log (result, created)
             VALUES ('".addslashes($log)."', ".time().")");
     }
+    freeDB($db);
 }      
 
 // --------------------------------------------------------------------------

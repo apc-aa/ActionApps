@@ -40,7 +40,7 @@ $varset = new Cvarset();
 
 # lookup - APC wide possible field types are defined as special slice AA_Core_Fields..
 $field_types = GetTable2Array("SELECT * FROM field 
-                                WHERE slice_id='AA_Core_Fields..'", $db);
+                                WHERE slice_id='AA_Core_Fields..'");
 
 function ShowField($id, $name, $pri, $required, $show, $type="", $alias="") {
     global $sess, $field_types, $AA_CP_Session;
@@ -169,7 +169,7 @@ if( $update )
 $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, alias2, alias3
         FROM field
         WHERE slice_id='$p_slice_id' ORDER BY input_pri";
-$s_fields = GetTable2Array($SQL, $db);
+$s_fields = GetTable2Array($SQL);
          
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>

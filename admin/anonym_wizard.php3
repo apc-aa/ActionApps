@@ -52,7 +52,7 @@ $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
         FROM field 
         WHERE slice_id='$p_slice_id' 
         ORDER BY input_pri";
-$s_fields = GetTable2Array($SQL, $db);
+$s_fields = GetTable2Array($SQL);
 
 // Either ShowAnonymousForm or the rest of the file is used. Never both.         
 //if ($show_form) ShowAnonymousForm();

@@ -39,8 +39,7 @@ if(!IfSlPerm(PS_FIELDS)) {
 }  
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$db = new DB_AA;
-$s_fields = GetTable2Array($SQL, $db);
+$s_fields = GetTable2Array($SQL);
 
 // update database or get the value
 
@@ -48,12 +47,14 @@ if (get_magic_quotes_gpc() && $javascript)
     $javascript = stripslashes ($javascript);
 
 if ($p_slice_id && $update) 
-    $db->query("UPDATE slice SET javascript=\"".myaddslashes($javascript)."\" 
+    tryQuery("UPDATE slice SET javascript=\"".myaddslashes($javascript)."\" 
         WHERE id='$p_slice_id'");
 else {
+    $db = getDB();
     $db->query("SELECT javascript FROM slice WHERE id='$p_slice_id'");
     if ($db->next_record())
         $javascript = $db->f("javascript");
+    freeDB($db);
 }
          
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -85,13 +86,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 $SQL = "SELECT id FROM field
         WHERE slice_id='$p_slice_id'
         ORDER BY id";
-$db = new DB_AA;
+$db = getDB();
 $db->query($SQL);
 echo '<table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
 <tr><td valign=top><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'">
 <tr><td class=tabtit>'._m("Field IDs").':</td></tr>';
 while ($db->next_record()) 
     echo "<tr><td class=tabtxt>".$db->f("id")."</td></tr>";
+freeDB($db);
 echo '</table>
 </td>
 <td valign=top><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">

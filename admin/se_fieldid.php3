@@ -36,6 +36,7 @@ require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3"; // tryquery
 
 set_time_limit(600);
 
@@ -134,16 +135,9 @@ if(!IfSlPerm(PS_FIELDS)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-function tryQuery (&$db, $sql, $always=1) {
-    global $debug;
-    if (!$always) echo $sql;
-    else if ($debug) $db->dquery ($sql);
-    else $db->query($sql);
-}
-
 function ChangeFieldID ($old_id, $new_id)
 {
-    global $db, $maintain_fields, $maintain_sql, $p_slice_id;
+    global $maintain_fields, $maintain_sql, $p_slice_id;
     
     $varset = new Cvarset();
     reset ($maintain_fields);
@@ -152,7 +146,7 @@ function ChangeFieldID ($old_id, $new_id)
         if (!$keyfield) $keyfield = $settings[primary_part];
         $SQL = "SELECT $keyfield,".join($settings[fields],",")." FROM $table 
                 WHERE $settings[slice_id] = '$p_slice_id'";
-        $rows = GetTable2Array ($SQL, $db);
+        $rows = GetTable2Array ($SQL);
         if (is_array ($rows)) {
             reset ($rows);
             $i = 0;
@@ -176,7 +170,7 @@ function ChangeFieldID ($old_id, $new_id)
                     else $SQL .= $row[$keyfield];
                     if ($settings[primary_part])
                          $SQL .= " AND $settings[slice_id] = '$p_slice_id'";
-                    tryQuery ($db,$SQL);
+                    tryQuery($SQL);
                 }           
             }
         }
@@ -186,15 +180,16 @@ function ChangeFieldID ($old_id, $new_id)
     while (list (,$sql) = each ($maintain_sql)) {
         $sql = str_replace (":old_id:", $old_id, $sql);
         $sql = str_replace (":new_id:", $new_id, $sql);
-        tryQuery ($db, $sql);
+        tryQuery($sql);
     }
         
     // replace the field id in table content
+    $db = getDB();
     $db->query("SELECT id FROM item WHERE slice_id='$p_slice_id'");
     while ($db->next_record()) 
         $item_ids[] = myaddslashes ($db->f("id"));
-    if (count ($item_ids)) tryQuery($db, 
-        "UPDATE content SET field_id='$new_id'
+    freeDB($db);
+    if (count ($item_ids)) tryQuery("UPDATE content SET field_id='$new_id'
          WHERE item_id IN ('".join($item_ids,"','")."') AND field_id='$old_id'");
 }
     
@@ -209,8 +204,10 @@ if ($update && $new_id_text && $p_slice_id) {
             if (my_in_array ($new_id, $reserved_ids)) $err[] = _m("This ID is reserved")." ($new_id).";
             else {
                 // proove the field does not exist
+                $db = getDB();
                 $db->query("SELECT id FROM field WHERE slice_id='$p_slice_id' AND id='$new_id'");
                 if ($db->next_record()) $err[] = _m("This ID is already used")." ($new_id).";
+                freeDB($db);
             }
             if (count($err) <= 1 ) {
                 $nchanges ++;
@@ -224,8 +221,7 @@ if ($update && $new_id_text && $p_slice_id) {
 $SQL = "SELECT id, name FROM field
         WHERE slice_id='$p_slice_id'
         ORDER BY id";
-$db = new DB_AA;
-$s_fields = GetTable2Array($SQL, $db);
+$s_fields = GetTable2Array($SQL);
          
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -251,12 +247,14 @@ while (list (,$field) = each ($s_fields))
     if (!my_in_array ($field["id"], $reserved_ids))
         echo "<option value='$field[id]'>$field[id]";
 echo "</select> "._m("to")." <select name='new_id_text'>";
+$db = getDB();
 $db->query("SELECT id FROM field 
              WHERE slice_id='AA_Core_Fields..'");
 while ($db->next_record()) {
     $id_text = $db->f("id");
     echo "<option value='$id_text'>$id_text";
 }
+freeDB($db);
 echo "</select> <select name='new_id_number'>
 <option value='.'>.";
 for ($i = 1; $i < 100; ++$i)

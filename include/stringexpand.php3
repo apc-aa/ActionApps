@@ -95,6 +95,8 @@ function ParamExplode($param) {
   	return $ret;
   }
 
+# Do not change strings used, as they can be used to force an escaped character
+# in something that would normally expand it
 $QuoteArray = array(":" => "_AA_CoLoN_",
 		"(" => "_AA_OpEnPaR_", ")" => "_AA_ClOsEpAr_",
 		"{" => "_AA_OpEnBrAcE_", "}" => "_AA_ClOsEbRaCe_");

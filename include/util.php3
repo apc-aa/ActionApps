@@ -585,30 +585,34 @@ function GetViewInfo($vid) {
 
 # function converts table from SQL query to array
 # $idcol specifies key column for array or "NoCoLuMn" for none
-function GetTable2Array($SQL, $db, $idcol="id") {
+# See also DBFields
+function GetTable2Array($SQL, $idcol="id",$nonnumeric=0) {
+  $db = getDB();
   $db->tquery($SQL);
   if( $idcol == "NoCoLuMn") {
     while($db->next_record())
-      $arr[] = $db->Record;
+      $arr[] = $nonnumeric ? DBFields($db) : $db->Record;
   } else {
     while($db->next_record())
-      $arr[$db->f($idcol)] = $db->Record;
+      $arr[$db->f($idcol)] = $nonnumeric ? DBFields($db) : $db->Record;
   }
+  freeDB($db);
   return $arr;
 }
 
 # function returns two arrays - SliceFields (key is field_id)
 #                               Priorities  (field_id sorted by priority
+# See also sliceobj:slice->fields()
 function GetSliceFields($slice_id) {
-  global $db;
-
   $p_slice_id = q_pack_id($slice_id);
+  $db = getDB();
   $SQL = "SELECT * FROM field WHERE slice_id='$p_slice_id' ORDER BY input_pri";
   $db->query($SQL);
   while($db->next_record()) {
     $fields[$db->f("id")] = $db->Record;
     $prifields[]=$db->f("id");
   }
+  freeDB($db);
   return array($fields, $prifields);
 }
 
@@ -1161,19 +1165,21 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = "", $id_co
         echo "<br>";
     }
 
-    $db = new DB_AA;
+    $db = getDB();
     $varset = new CVarset();
 
-    $columns = $db->metadata ($table);
+    $columns = $db->metadata($table);
+    freeDB($db);
 
     if ($GLOBALS[debug]) $rows = 0;
 
-    $data = GetTable2Array ("SELECT * FROM $table WHERE $where", $db, "NoCoLuMn");
+    $data = GetTable2Array ("SELECT * FROM $table WHERE $where", "NoCoLuMn");
 
     if ($GLOBALS[debug]) { echo "data: "; print_r ($data); echo "<br>"; }
 
-    if (!is_array ($data))
+    if (!is_array ($data)) {    
         return true;
+    }
 
     reset ($data);
     while (list (,$datarow) = each ($data)) {
@@ -1201,8 +1207,9 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = "", $id_co
 
         if ($GLOBALS[debug]) { echo "Row $rows<br>"; $rows ++; }
 
-        if (!$db->tquery ("INSERT INTO $table ".$varset->makeINSERT()))
+        if (!tryQuery("INSERT INTO $table ".$varset->makeINSERT())) {
 			return false;
+        }
     }
 	return true;
 }
@@ -1569,7 +1576,16 @@ function freeDB($db) {
     array_push($spareDBs,$db);
 }
 
+// Try a query, displaying debugging if $debug, return true on success, false on failure
+function tryQuery($SQL) {
+    $db = getDB();
+    $res = $db->tquery($SQL);
+    freeDB($db);
+    return $res;
+}
+
 // Return an array of fields, skipping numeric ones
+// See also GetTable2Array
 function DBFields($db) {
     $a = array();
     while (list($key,$val,,) = each($db->Record)) {

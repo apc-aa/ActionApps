@@ -43,7 +43,6 @@ function writeLog($event, $params="" ) {
 # group_by_params - if true, returns events grouped by params and their count as count
 # delete_old_logs - 
 function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_old_logs=false) {
-	global $db;
 	
 	$time = time();
 	
@@ -63,14 +62,14 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
 	    // $SQL .= "ORDER BY TIME";
 	}
 	
-	$return = GetTable2Array($SQL, $db);
+	$return = GetTable2Array($SQL);
 	
     // remove old log entries from table
 	if ($delete_old_logs) {
 	    $SQL = "DELETE FROM log WHERE type='$event'";
 	    if ($from) { $SQL .= " AND time >= '$from'"; }
 	    if ($to) { $SQL .= " AND time <= '$to'"; }
-	    $db->query($SQL);
+	    tryQuery($SQL);
     }
 		
 	return $return;
