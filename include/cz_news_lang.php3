@@ -320,7 +320,7 @@ define("L_A_NEWUSER", "Nový uživatel v systému");
 define("L_NEWUSER_HDR", "Nový uživatel");
 define("L_USER_LOGIN", "Uživatelské jméno");
 define("L_USER_PASSWORD1", "Heslo");
-define("L_USER_PASSWORD2", "Potvrdit helso");
+define("L_USER_PASSWORD2", "Potvrdit heslo");
 define("L_USER_FIRSTNAME", "Jméno");
 define("L_USER_SURNAME", "Pøíjmení");
 define("L_USER_MAIL", "E-mail");
@@ -558,6 +558,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.11  2000/08/14 12:39:13  kzajicek
+Language definitions required by setup.php3
+
 Revision 1.10  2000/08/03 15:19:57  kzajicek
 Language changes
 

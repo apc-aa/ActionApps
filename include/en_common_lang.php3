@@ -21,6 +21,40 @@ http://www.apc.org/
 
 # common language file - comm
 
+// setup constats
+define("L_SETUP_PAGE_BEGIN", 
+ '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+  <HTML>
+  <HEAD>
+  <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">');
+define("L_SETUP_TITLE", "AA Setup");
+define("L_SETUP_H1", "AA Setup");
+define("L_SETUP_NO_ACTION", "This script can't be used on a configured system.");
+define("L_SETUP_INFO1", "Welcome! Use this script to create " .
+                        "the superadmin account.<p>" .
+      "If you are installing a new copy of AA, press <b>Init</b>.<br>");
+define("L_SETUP_INFO2", "If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>");
+define("L_SETUP_INIT", "Init");  
+define("L_SETUP_RECOVER", "Recover");
+define("L_SETUP_TRY_RECOVER", "Can't add primary permission object.<br>" .
+       "Please check the access settings to your permission system.<br>" .
+       "If you just deleted your superadmin account, use <b>Recover</b>");
+define("L_SETUP_USER", "Superadmin account");
+define("L_SETUP_LOGIN", "Login name");
+define("L_SETUP_PWD1", "Password");
+define("L_SETUP_PWD2", "Retype Password");
+define("L_SETUP_FNAME", "First name");
+define("L_SETUP_LNAME", "Last name");
+define("L_SETUP_EMAIL", "E-mail");
+define("L_SETUP_CREATE", "Create");
+define("L_SETUP_DELPERM", "Invalid permission deleted (no such user/group): ");
+define("L_SETUP_ERR_ADDPERM", "Can't assign super access permission.");
+define("L_SETUP_ERR_DELPERM", "Can't delete invalid permission.");
+define("L_SETUP_OK", "Congratulations! The account was created.");
+define("L_SETUP_NEXT", "Use this account to login and add your first slice:");
+define("L_SETUP_SLICE", "Add Slice");
+
 // loginform language constants
 define("L_LOGIN", "Welcome!");
 define("L_LOGIN_TXT", "Welcome! Please identify yourself with a username and a password:");
@@ -115,6 +149,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.5  2000/08/14 12:39:13  kzajicek
+Language definitions required by setup.php3
+
 Revision 1.4  2000/07/26 16:01:48  kzajicek
 More descriptive message for "login failed"
 

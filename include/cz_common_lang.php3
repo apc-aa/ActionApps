@@ -21,6 +21,40 @@ http://www.apc.org/
 
 # common lanmguage file - comm
 
+// setup constats
+define("L_SETUP_PAGE_BEGIN", 
+ '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+  <HTML>
+  <HEAD>
+  <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
+define("L_SETUP_TITLE", "AA Setup");
+define("L_SETUP_H1", "AA Setup");
+define("L_SETUP_NO_ACTION", "Tento skript nemůže být použit na již nakonfigurovaném systému.");
+define("L_SETUP_INFO1", "Vítejte! Pomocí tohoto skriptu vytvoříte " .
+                        "Váš administrativní účet.<p>" .
+      "Pokud instalujete novou kopii tohoto programu, zvolte <b>Inicializace</b>.<br>");
+define("L_SETUP_INFO2", "Pokud jste omylem smazali Váš administrativní účet, zvolte <b>Obnovit</b>.<br>");
+define("L_SETUP_INIT", "Inicializace");  
+define("L_SETUP_RECOVER", "Obnovit");
+define("L_SETUP_TRY_RECOVER", "Nemohu přidat primární objekt v databázi přistupových práv.<br>" .
+       "Prosím zkontrolujte přístupová práva do databáze přistupových práv.<br>" .
+       "Pokud jste pouze smazali Váš administrativní účet, použijte volbu <b>Obnovit</b>");
+define("L_SETUP_USER", "Administrativní účet");
+define("L_SETUP_LOGIN", "Uživatelské jméno");
+define("L_SETUP_PWD1", "Heslo");
+define("L_SETUP_PWD2", "Potvrdit heslo");
+define("L_SETUP_FNAME", "Jméno");
+define("L_SETUP_LNAME", "Příjmení");
+define("L_SETUP_EMAIL", "E-mail");
+define("L_SETUP_CREATE", "Vytvořit");
+define("L_SETUP_DELPERM", "Nekonzistentní práva byla smazána (účet/skupina neexistuje): ");
+define("L_SETUP_ERR_ADDPERM", "Není možné přiřadit administrativní práva.");
+define("L_SETUP_ERR_DELPERM", "Není možné smazat nekonzistentní práva.");
+define("L_SETUP_OK", "Gratulace! Účet byl vytvořen.");
+define("L_SETUP_NEXT", "Zalogujte se tímto účtem a vytvořte první webík:");
+define("L_SETUP_SLICE", "Přidat webík");
+
 // loginform language constants
 define("L_LOGIN", "Přihlášení");
 define("L_LOGIN_TXT", "Vítejte! Přihlašte se prosím Vaším jménem a heslem:");
@@ -114,6 +148,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.6  2000/08/14 12:39:13  kzajicek
+Language definitions required by setup.php3
+
 Revision 1.5  2000/07/26 16:01:48  kzajicek
 More descriptive message for "login failed"
 
