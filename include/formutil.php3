@@ -282,8 +282,9 @@ class aainputfield {
     var $classname = "aainputfield";  // class name (just for PHPLib sessions)
 
     /** Constructor - initializes aainputfield  */
-    function aainputfield($value, $html_flag, $mode, $varname="", $name="",
-                          $add=false, $required=false, $hlp="", $morehlp="", $arr=null) {
+    function aainputfield($value='', $html_flag=true, $mode='normal',
+                          $varname="", $name="", $add=false, $required=false,
+                          $hlp="", $morehlp="", $arr=null) {
         $this->value             = is_array($value) ? $value : array( 0=>array('value'=>$value));
         $this->html_flag         = $html_flag;
         $this->mode              = $mode;
@@ -373,6 +374,10 @@ class aainputfield {
     function varname() {
         return get_if($this->varname_modified, $this->varname);
     }
+
+    /** input_type manipulation functions */
+    function get_inputtype()      {  return $this->input_type; }
+    function set_inputtype($type) {  $this->input_type = $type; }
 
     /** Grabs common variables from object. Internal function used as shortcut
       * in most of input functions (maybe all)
@@ -528,6 +533,7 @@ class aainputfield {
                                $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
                                break;
             case 'normal_wi2': list($constgroup, $size, $wi2_offer, $wi2_selected) = $this->param;
+                               $this->varname_modify('[]');         // use slightly modified varname
                                $this->twoBox(get_if($size,5), $wi2_offer, $wi2_selected);
                                break;
             case 'anonym_pwd':  // handled in passwordModify
@@ -1134,24 +1140,25 @@ class aainputfield {
             <td align=\"CENTER\" valign=\"TOP\">". $wi2_selected ."</td></tr>
           <tr align=left><td align='CENTER' valign='TOP'>");
 
-        $out  = "<select name=\"".$name."_1\" size=$size ".getTriggers("select",$name).">\n";
+        $offername = str_replace("[]", "", $name). '_1';
+        $out  = "<select name=\"".$offername."\" size=$size ".getTriggers("select",$name).">\n";
         $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), AA_WIDTHTOR );
         $out  .= '</select>';
         $this->echovar( $out, 'unselected' );
 
         $this->echoo("</td>
-          <td>&nbsp;&nbsp;<input type=\"button\" VALUE=\"  >>  \" onClick = \"MoveSelected(document.inputform.".$name."_1,document.inputform['".$name."[]'])\" align=center>
-              <br><br>&nbsp;&nbsp;<input type=\"button\" VALUE=\"  <<  \" onClick = \"MoveSelected(document.inputform['".$name."[]'],document.inputform.".$name."_1)\" align=center>&nbsp;&nbsp;</td>
+          <td>&nbsp;&nbsp;<input type=\"button\" VALUE=\"  >>  \" onClick = \"MoveSelected(document.inputform.".$offername.",document.inputform['".$name."'])\" align=center>
+              <br><br>&nbsp;&nbsp;<input type=\"button\" VALUE=\"  <<  \" onClick = \"MoveSelected(document.inputform['".$name."'],document.inputform.".$offername.")\" align=center>&nbsp;&nbsp;</td>
           <td align=\"CENTER\" valign=\"TOP\">");
 
-        $out = "<select multiple name=\"".$name."[]\" size=$size  ".getTriggers("select",$name).">";
+        $out = "<select multiple name=\"".$name."\" size=$size  ".getTriggers("select",$name).">";
         $out .= get_if( $this->get_options( $this->const_arr, false, false, 'selected'), AA_WIDTHTOR );
         $out  .= '</select>';
         $this->echovar( $out, 'selected' );
 
         $this->echoo('
           <script language="javascript" type="text/javascript"><!--
-            listboxes[listboxes.length] = \''. $name .'[]\';
+            listboxes[listboxes.length] = \''. $name .'\';
             //-->
           </script>
           ');
