@@ -1,9 +1,48 @@
+07/19/03 - new "u_slice_id......" and "unpacked_id....." item fields (with
+(honzam)   unpacked ids) usable for unaliasing
+         - new special "url" parameter used with "x" view.php3 cmd[] -
+           view.php3?cmd[43]=x-43-url - which means, that such view takes
+           item_id from x=... url parameter (obviously used with slice.php3)
+           - we used it to create special view for <title> tag to contain
+           Headline
+         - fixed password protected anonymous posting in filler.php3
+           and fillform.php3 - error 'No Slice ID' is no longer displayed
+         - commented out wrong AlertsSendInstantAlert() call - instant Alerts
+           are send form cron - as well as any other type of alerts
+           (daily, weekly, monthly)
+         - fixed f_x alias function - it do not report error if empty pairs
+           supplied
+         - fixed link editing problem - old values are shown in form again
+           (on error)
+         - general category selection is hidden for public users in Links
+           module, now
+         - new Links module alias functions
+           - l_b (prints if category is crossreferenced)
+           - l_p (allows to print path to the category)
+         - allow delete only not empty categories (or categories which contain
+           only trashed links
+         - allow sorting categories with general categories at the end in Links
+         - new aliases for crossreference and category path (category, where we
+           are, now) in Links module
+         - better (DHTML) category selection in on LinkEdit page
+           (thanks to Martin Hladik)
+         - fixed category assignment bug in linkedit2.php3
+         - fixed trash display (it shows also proposals, now) in Links module
+         - fixed problem with multislice search and quoted/unquoted slice_ids
+         - item_content class generalized and prepared for content
+           transformations (for CVS uploads, feeding, ...)
+         - better function for counting number of links in categories
+         - new item class parameter, which can contain additional item class
+           settings
+         - new addglobals() method for shorter code in varset.php3
+         - new set_from_item_arr() method for storing ids posted from item
+           manager.class to zids.class
+07/10/03 - added user id to the user edit form (AA -> Edit User)
+(honzam) - fixed posted_by (Author permissions) problem
 07/09/03 - rearranged GetViewFromDB to fix bug in calendar drop-thru
 (mitra)  - fixed bug in sliceid in GetViewFromDB (unpack doesnt work on quoted)
          - some changes to trace
-         - fixes to site module to get rid of bad "co" 
-07/10/03 - added user id to the user edit form (AA -> Edit User)
-(honzam) - fixed posted_by (Author permissions) problem
+         - fixes to site module to get rid of bad "co"
 07/08/03 - fixed huhe with multiple arguments
 (mitra)  - fixed isField to allow wider selection including alerts1....aZh12
 07/07/03 - updated spanish translations (more work needed)
