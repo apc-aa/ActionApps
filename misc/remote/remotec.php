@@ -60,7 +60,7 @@ Strategic usage:
       these items into news.html, on their local webhost.
 
   Note: For high performance, frequently updated sites, set 
-   $cache4days = ".01"; # about 15 minutes
+   $cache4secs = "1000"; # about 15 minutes
   and then have a cronjob visit the page every 10 minutes
   to keep the cache relevant.
   0,10,20,30,40,50 * * * lynx -dump http://www./page.html > /dev/null
@@ -112,7 +112,7 @@ $id = md5($url);
 $target = "$cachedir/$id";
 $age = time() - filemtime( $target ) ; 
 
-if ( ( file_exists($target) ) and ( $age < $cache4seconds ) ) {
+if ( ( file_exists($target) ) and ( $age < $cache4secs ) ) {
    readfile ($target); 
 } else {
 
@@ -141,6 +141,9 @@ if ( ( file_exists($target) ) and ( $age < $cache4seconds ) ) {
 }
 /*
 $Log$
+Revision 1.5  2001/10/19 08:24:17  madebeer
+fixed typo in cache4secs
+
 Revision 1.4  2001/10/19 08:00:31  madebeer
 fixed typo in cachedir
 
