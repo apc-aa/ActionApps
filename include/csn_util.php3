@@ -62,12 +62,14 @@ function GetExternalMapping($l_slice_id, $r_slice_id) {
         $map_to[$v] = $db->f(from_field_name) ;
         break;
 	  case FEEDMAP_FLAG_JOIN:
+      case FEEDMAP_FLAG_RSS:
       case FEEDMAP_FLAG_VALUE :  $v = $db->f(value); break;
       case FEEDMAP_FLAG_EMPTY :  $v = ""; break;
     }
     $map_from[$db->f(to_field_id)] = array("feedmap_flag"=>$f,"value"=>$v,
                                             "from_field_name"=>$db->f(from_field_name));
   }
+
   return array($map_to,$map_from);
 }
 
@@ -140,6 +142,47 @@ function iso8601_to_unixstamp($t) {
  if ($r[7] == "+")
   $tz =-$tz;
  return gmmktime($r[4],$r[5],$r[6],$r[2],$r[3],$r[1])+$tz;
+}
+$default_rss_map = array (
+	// Note this matches code in xml_rssparse.php3 for parsing DC fields
+	// Can change the names without affecting anything
+		"author.........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/creator","from_field_name"=>"DC:creator"),
+		"abstract........" => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"),
+		"publish_date...." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW","from_field_name"=>"DC:date"),
+		"source.........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/source|CHANNEL/title","from_field_name"=>"DC:source"),
+		"lang_code......." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/language","from_field_name"=>"DC:language"),
+		"source_href....." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/relation|CHANNEL/link","from_field_name"=>"DC:relation"),
+		"place..........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/coverage","from_field_name"=>"DC:coverage"),
+		"headline........" => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/title|ITEM/title","from_field_name"=>"DC:title"),
+		"full_text......." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"CONTENT","from_field_name"=>"Content"),
+//		"status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>1,"from_field_name"=>"Approved"),
+		"status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,"from_field_name"=>"Approved"),
+		"hl_href........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"ITEM/link|ITEM/guid","from_field_name"=>"ITEM:link"),
+		"expiry_date....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),"from_field_name"=>"Expiry Date")
+	);
+
+// This function converts an attribute string to a unique id, 
+// this function must: always return the same result; and not contain 00 or 27
+// the tricky part is that APC attribute strings contain a prefix and 32 digits, while 
+// non APC strings need the whole string hashed. 
+function attr2id($str) {
+	if (ereg("/(items|cat|slices)/([0-9a-f]{32})",$str,$regs)) { // Looks like an APC id
+		return $regs[2]; // Maybe this should be 0 ?
+	} else {
+		return(string2id($str));
+	}
+}
+
+function name2rssfeed($slice_id,$name) {
+    $db = getDB();
+    $db->query("SELECT * FROM rssfeeds WHERE name='$name' AND slice_id = '".q_pack_id($slice_id)."'");
+    if ($db->next_record()) {
+      $res = $db->Record;
+      $res["feed_type"] = FEEDTYPE_RSS;
+      $res["remote_slice_id"] = attr2id($db->f(server_url));
+    }
+    freeDB($db);
+    return $res;
 }
 
 ?>

@@ -48,6 +48,9 @@ function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to=
     case FEEDMAP_FLAG_VALUE:
     case FEEDMAP_FLAG_JOIN:
         $val = $db->f(value); break;
+    case FEEDMAP_FLAG_RSS:
+        huhe("Warning: RSS field mapping appearing in non RSS feed");
+        $val = ""; break;
     default:
         $val = ""; break;
     }
@@ -233,6 +236,9 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
         break;
       case FEEDMAP_FLAG_JOIN:
         FeedJoin ($content4id, $fields, $val, $new4id[$newfld][0]); break;
+      case FEEDMAP_RSS:
+        huhe("Warning RSS feed mapping found in non RSS feedat feeding:240");
+        break;
     }
 
     $new4id[$newfld][0][flag] |= FLAG_FEED;      # mark as fed

@@ -58,6 +58,15 @@ while($db->next_record()) {
   $impslices[unpack_id128($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
   $remote_slices[unpack_id128($db->f(remote_slice_id))] = 1;       // mark slice as external
 }
+// lookup RSS feeds
+	$SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds 
+        WHERE slice_id='$p_slice_id'";
+    $db->query($SQL);
+    while($db->next_record()) {
+      $u_remote_slice_id = attr2id($db->f(server_url));
+      $impslices[$u_remote_slice_id] = "RSS - ".$db->f(name);
+      $remote_slices[$u_remote_slice_id] = 2;       // mark slice as RSS
+    }
 
 // add all slices where I have permission to (for setting of mapping for slices, 
 // which is only manualy fed)
@@ -87,6 +96,10 @@ $p_from_slice_id = q_pack_id($from_slice_id);
 // get mapping from table
 list($map_to,$field_map) = GetExternalMapping($slice_id, $from_slice_id );
 
+if (is_null($field_map) && ($remote_slices[$from_slice_id] == 2))  {
+        $field_map = $default_rss_map;
+}
+
 // find out list of "to fields"
 $SQL= "SELECT id, name FROM field WHERE slice_id='$p_slice_id' ORDER BY name";
 $db->query($SQL);
@@ -97,6 +110,7 @@ while($db->next_record())
 $from_fields[_m("-- Not map --")] = _m("-- Not map --");
 $from_fields[_m("-- Value --")] = _m("-- Value --");
 $from_fields[_m("-- Joined fields --")] = _m("-- Joined fields --");
+$from_fields[_m("-- RSS field or expr --")] = _m("-- RSS field or expr --");
 
 if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
 $SQL= "SELECT id, name FROM field WHERE slice_id='$p_from_slice_id' ORDER BY name";
@@ -215,7 +229,13 @@ function Submit() {
                case FEEDMAP_FLAG_EMPTY: $sel =  _m("-- Not map --"); break;
                case FEEDMAP_FLAG_MAP :
                case FEEDMAP_FLAG_EXTMAP :
-                  $sel = $field_map[$f_id][value];
+                  $sel = $field_map[$f_id][value]; 
+                    break;
+               case FEEDMAP_FLAG_RSS :
+                  $v = $field_map[$f_id][value];
+                  $sel =  ($from_fields[$v]) ? $v 
+                        : _m("-- RSS field or expr --");
+                  $val = htmlspecialchars($field_map[$f_id][value]); break;
              }
              FrmSelectEasy("fmap[$f_id]",$from_fields,$sel);
              echo "</td><td class=tabtxt> <input type=text name=\"fval[$f_id]\" value=\"$val\"></input></td>";

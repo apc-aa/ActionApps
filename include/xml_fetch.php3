@@ -27,24 +27,6 @@ require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
 require_once $GLOBALS["AA_INC_PATH"]."csn_util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."xml_rssparse.php3";
 
-$default_rss_map = array (
-	// Note this matches code in xml_rssparse.php3 for parsing DC fields
-	// Can change the names without affecting anything
-		"author.........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/creator","from_field_name"=>"DC:creator"),
-		"abstract........" => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"),
-		"publish_date...." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW","from_field_name"=>"DC:date"),
-		"source.........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/source|CHANNEL/title","from_field_name"=>"DC:source"),
-		"lang_code......." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/language","from_field_name"=>"DC:language"),
-		"source_href....." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/relation|CHANNEL/link","from_field_name"=>"DC:relation"),
-		"place..........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/coverage","from_field_name"=>"DC:coverage"),
-		"headline........" => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/title|ITEM/title","from_field_name"=>"DC:title"),
-		"full_text......." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"CONTENT","from_field_name"=>"Content"),
-//		"status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>1,"from_field_name"=>"Approved"),
-		"status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,"from_field_name"=>"Approved"),
-		"hl_href........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"ITEM/link|ITEM/guid","from_field_name"=>"ITEM:link"),
-		"expiry_date....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),"from_field_name"=>"Expiry Date")
-	);
-
 // fetch xml data from $url through http. This function is used by the rss aa module client as well as
 // by the administrative interface
 function  xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timestamp, $categories) {
@@ -218,7 +200,7 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
       $approved = $first_cat[approved];
       $item[fields_content][$cat_field_id][][value] = $l_categs[$first_cat[target_category_id]][value];
 
-    } else {
+    } else { // its FEEDTYPE_RSS
       $approved = $ext_categs[$item[categories][0]][approved];
       reset( $item[categories] );
       while (list (,$cat_id) = each($item[categories])) {
@@ -234,10 +216,8 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
 
     // create $content4id from $item[fields_content]
 	// note that each item in content4id is an array 
-	if ($feed[feed_type] == FEEDTYPE_APC) {
-	    list(,$map) = GetExternalMapping($l_slice_id,$r_slice_id);
-	} else { // FEEDTYPE_RSS
-		// TODO - allow RSS to use mapping
+    list(,$map) = GetExternalMapping($l_slice_id,$r_slice_id);
+	if (!$map && ($feed[feed_type] == FEEDTYPE_RSS)) {
   		$map = $default_rss_map;
 	}
     while (list($to_field_id,$v) = each($map)) {
@@ -247,7 +227,8 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
           $content4id[$to_field_id][0][value] = quote($v[value]);
           break;
 
-        case FEEDMAP_FLAG_EXTMAP:
+        case FEEDMAP_FLAG_EXTMAP:   // Check this really works when val in from_field_id
+        case FEEDMAP_FLAG_RSS: 
 			$values = map1field($v[value],$item,$channel);
           	if (isset($values) && is_array($values)) {
 			  	// quote all values
@@ -280,7 +261,7 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
 
 }
 
-// Process one feed
+// Process one feed RSS or APC
 function onefeed($feed_id,$feed,$debugfeed,$fill) {
     if (onefeedFetchAndParse($feed_id,$feed,$debugfeed)) {
         onefeedStore($feed_id,$feed,$debugfeed,$fill);
@@ -360,7 +341,5 @@ function contentvalue ($item) {
 		        }
 				return array("value"=>$item[content][$cont_flag], "flag"=>$flag);
 }
-
-
 
 ?>

@@ -739,6 +739,7 @@ define ("FEEDMAP_FLAG_VALUE", 1);
 define ("FEEDMAP_FLAG_EMPTY", 2);
 define ("FEEDMAP_FLAG_EXTMAP", 3);
 define ("FEEDMAP_FLAG_JOIN", 4);
+define ("FEEDMAP_FLAG_RSS", 5);
 
 define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in slice table
 

@@ -46,6 +46,11 @@ $err["Init"]="";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 $qp_slice_id=q_pack_id($slice_id);
 
+ if ($mode == "map") {
+    $feed = name2rssfeed($slice_id,$sel_rssfeed_name);
+    go_url($sess->url(self_base() . "se_mapping.php3?from_slice_id=".$feed["remote_slice_id"]));
+ }
+
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
  if ($mode == "edit" || $mode == "test") {
@@ -182,6 +187,7 @@ function Cancel() {
       <input type=button VALUE="<?php echo _m("Delete") ?>" onClick = "Submit('delete')">
       <input type=button VALUE="<?php echo _m("Add") ?>" onClick = "Submit('add')">
       <input type=button VALUE="<?php echo _m("Test") ?>" onClick = "Submit('test')">
+      <input type=button VALUE="<?php echo _m("Map") ?>" onClick = "Submit('map')">
      </td></tr>
     <tr><td colspan=2>&nbsp;</td></tr>
     <tr><td colspan=2><?php echo ($new_mode=="insert" ? _m("Add new rssfeed") :

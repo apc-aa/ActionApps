@@ -66,6 +66,12 @@ while (list($to_field_id,$val) = each($fmap)) {
 	case _m("-- Joined fields --"):
 	  $flag = FEEDMAP_FLAG_JOIN;
       $catVS->add("value", "quoted", $fval[$to_field_id]); break;  
+	case _m("-- RSS field or expr --"):
+	  $flag = FEEDMAP_FLAG_RSS;
+      $catVS->add("value", "quoted", $fval[$to_field_id]); 
+      if (! $map_to[$val]) $catVS->add("from_field_name",$fval[$to_field_id]);
+      unset($map_to[$val]);
+      break;
     case  FEEDMAP_FLAG_EXTMAP :
     case  FEEDMAP_FLAG_MAP :
       $flag = ($ext_slice) ? FEEDMAP_FLAG_EXTMAP : FEEDMAP_FLAG_MAP ;

@@ -57,19 +57,6 @@ function decode($v) {
   return utf8_decode($v);
 }
 
-// This function converts an attribute string to a unique id, 
-// this function must: always return the same result; and not contain 00 or 27
-// the tricky part is that APC attribute strings contain a prefix and 32 digits, while 
-// non APC strings need the whole string hashed. 
-function attr2id($str) {
-	if (ereg("/(items|cat|slices)/([0-9a-f]{32})",$str,$regs)) { // Looks like an APC id
-		return $regs[2]; // Maybe this should be 0 ?
-	} else {
-		return(string2id($str));
-	}
-	// Note old function was  substr(strrchr($attrs["RDF:ABOUT"],"/"),1) which is what the "if" returns
-}
-
 function nsName2abbrevname($name) {
 	global $module2abbrev;
 	ereg("(.+):([^:]+)",$name,$nameparts);
