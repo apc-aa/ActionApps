@@ -106,7 +106,12 @@ if( $update ) {
 
     if( count($err) > 1)
       break;
-
+    // A group that only appear with onlyupdate, normally edited in se_fields  
+    if ($onlyupdate) {
+        Qvarsetadd("name","quoted",$name);
+        Qvarsetadd("input_pri","number",$input_pri);
+        Qvarsetadd("input_show","number",$input_show);
+    }
     Qvarsetadd("input_before", "quoted", $input_before);
     Qvarsetadd("input_help", "quoted", $input_help);
     Qvarsetadd("input_morehlp", "quoted", $input_morehlp);
@@ -144,10 +149,12 @@ if( $update ) {
         ($onlyupdate ? $input_show_func : "$isf"));
     Qvarsetadd("input_validate", "quoted", 
         ($onlyupdate ? $input_validate : "$input_validate_f:$input_validate_p"));
-    Qvarsetadd("feed", "quoted", "$feed");
+    if (! ($onlyupdate && is_null($feed)))  
+        Qvarsetadd("feed", "quoted", "$feed");
     Qvarsetadd("input_insert_func", "quoted", 
         ($onlyupdate ? $input_insert_func : "$iif") );
-    Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
+    if (! ($onlyupdate && is_null($html_default)))  
+        Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
     Qvarsetadd("html_show", "number", 
         ($onlyupdate ? $html_show : ($html_show ? 1 : 0)));
     Qvarsetadd("text_stored", "number", 
@@ -157,6 +164,7 @@ if( $update ) {
                                          OR ($input_validate_f=="date")) ? 0:1)));
    $SQL = "UPDATE field SET ". $varset->makeUPDATE() . 
            " WHERE id='$fid' AND slice_id='$p_slice_id'";
+    #huhl($SQL); exit;
     if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
       $err["DB"] = MsgErr("Can't change field");
       break;

@@ -1,3 +1,4 @@
+09/25/03 - Changes to summarize and related changes to se_inputform
 09/23/03 - added possibility to get constant name (and other informations) from
 (honzam)   constants value in unaliasing. The syntax is
            {const_name:category.......1} - prints constants name from current

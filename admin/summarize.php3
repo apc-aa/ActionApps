@@ -59,11 +59,11 @@ HtmlPageBegin();
     echo $Msg;  
     initSummarize();
     $nocache=1;
-    sliceshortcuts(1);
     setnr();
     print("<p>");
     mapslice();
 #    mapslices();
+    sliceshortcuts(1);
     HtmlPageEnd();
     page_close();
 
@@ -101,7 +101,7 @@ function sliceshortcuts($ign) {
          print("<tr><td><a href=\"#$si\">$si</a></td><td>$n</td><td>" .
             ($so->deleted() ? "Deleted " : "") . 
 //            pack_id128($si) .
-            editslicefields($si) . " " .
+            editslicefields($si) . " " . comparewith($si) .
             "</td></tr>\n");
     }
   }
@@ -118,16 +118,22 @@ function editslicefields($sid) {
     return "<a href=\"se_fields.php3?AA_CP_Session=$AA_CP_Session&change_id=$sid\"> Edit fields </a>";
 }
 
+function comparewith($sid) {
+    global $AA_CP_Session;
+    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid\"> Compare </a>";
+}
+
 function mapslice() {
-    global $sao,$slice_id,$nr;
+    global $sao,$slice_id,$nr,$nearest;
     $sid = $slice_id;
     $so = $sao[$sid];
-    if ($nearest = $nr[$slice_id]) {
+    if (!$nearest) $nearest = $nr[$slice_id];
+    if ($nearest) {
         $sno = $sao[$nearest];
         print("<a name=\"$sid\"></a>$sid: '" . $so->name() . "' closest to <a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'<br>".editslicefields($sid));
         compareSlices($so,$sno,1);
     } else {
-        huhl("No match for ",$sid," nr=",$nr);
+        print "summarize.php3 needs configuring for closest slice to $sid";
     }
 }
 
@@ -229,10 +235,14 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
         print("<li><a href=\"" . $u1
         . "&change_id=" . $st->unpacked_id()
         . $fixert ."\">Fix this slice</a>");
-        if (!ignored_slice($sm->unpacked_id())) {
+        if ($pre == "Added") {
+            print("<li>Or add field to ".$sm->name(). " by hand</a>");
+        } else {
+          if (!ignored_slice($sm->unpacked_id())) {
             print("<li>or <a href=\"" . $u1
             . "&change_id=" . $sm->unpacked_id()
             . $fixerm ."\">Fix slice '". $sm->name() . "'</a>");
+          }
         }
         print("</li></ul>\n"); 
       }
@@ -301,7 +311,7 @@ function qenc($val,$htmlformat,$unp,$color) {
 // built from as a field in the database.
 function setnr() {
     global $nr;
-    //Pan blog
+// This is a good place to set some short names for your templates
  $blog = "7a74a7bf81661ea18537e05136adf6c9"; //bbkm
  $import = "db1452fab6282a0da83050e7d844fb69"; // km
  $directory = "480fddb2820269b80555042d1a8c8dbb"; // bin
@@ -310,10 +320,11 @@ function setnr() {
  $newstemplate = "4e6577735f454e5f746d706c2e2e2e2e";
  $photos = "70616e2e70686f746f732e2e2e2e2e2e";
  $photosections = "70616e2e70686f746f732e7365637469";
+ $blogfaq = "4b88f1c5e5a94e1e379d12f247a252b3";
  $alerts = "c338bb154f445afb84307f35f5facd9d"; //bbkm
 
 //BIN
- $nr["4b88f1c5e5a94e1e379d12f247a252b3"] = $blog;
+ $nr[$blogfaq] = $blog;
  $nr["1b5d8a892fc9e6867ab841bec079984d"] = $import;
  $nr[$directory] = $blog;
 //BBKM
@@ -335,7 +346,7 @@ function setnr() {
  $nr[$photosections] = $blog;
 //SART
  $nr["e8e885b0143c1ccee94d576d488210da"] = $import;
- $nr["420a65b68496d0f869b5519ff0f7b0c0"] = $blog;
+ $nr["420a65b68496d0f869b5519ff0f7b0c0"] = $blogfaq;
 //Alerts
  $nr["98122b72f41dcd4ac5724f91e9bd85c0"] = $alerts;
  $nr["635a1206228867bfc5d7e3feb1d950c8"] = $alerts;
