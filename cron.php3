@@ -44,7 +44,7 @@ require "./include/config.php3";
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 
-echo "<HTML><BODY>";
+#echo "<HTML><BODY>";
 
 // you may call cron with specified timestamp to simulate the behavior 
 
@@ -65,7 +65,7 @@ function cron ($time = 0) {
 	$db_update = new DB_AA;
 	
 	$parts = array ("mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60);
-	echo "<B>".date("d.m.y H:i",$time)."</B></BR>";
+	if ($debug) { echo "<B>".date("d.m.y H:i",$time)."</B></BR>"; }
 	
 	$db->query ("SELECT * FROM cron");
 	while ($db->next_record()) {
@@ -184,5 +184,5 @@ for ($i = 0; $i < 50; $i++) {
 
 cron();
 
-echo "</BODY></HTML>";
+#echo "</BODY></HTML>";
 ?>

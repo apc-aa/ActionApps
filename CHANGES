@@ -1,6 +1,7 @@
-12/11/02 - Allowed - and . in filemanager names in formutils and added err msg
-12/11/02 - fixed bug so Slice Admins can add/edit RSS feeds, not just superadmin
-11/21/02 - fixed problem, where slice admin can't edit slice settings (only superadmins can)
+12/13/02 - Removed output from cron (mitra)
+12/11/02 - Allowed - and . in filemanager names in formutils and added err msg (mitra)
+12/11/02 - fixed bug so Slice Admins can add/edit RSS feeds, not just superadmin (mitra)
+11/21/02 - fixed problem, where slice admin can't edit slice settings (only superadmins can) 
          - fixed bug of ocasional warning of empty array in sql_parse.php3
          - fixed typo in slice4cache variable name in modules/site/site.php3
 
