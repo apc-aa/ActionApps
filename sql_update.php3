@@ -807,6 +807,18 @@ $tablelist = array(   'active_sessions' => "(
                           last_post bigint(20) NOT NULL default '0',
                           KEY uid (uid,frequency)
                       )",
+                      'toexecute' => "(
+                          id int(11) NOT NULL auto_increment,
+                          created bigint(20) NOT NULL default '0',
+                          execute_after bigint(20) NOT NULL default '0',
+                          aa_user varchar(60) NOT NULL default '',
+                          priority int(11) NOT NULL default '0',
+                          selector varchar(255) NOT NULL default '',
+                          object text NOT NULL,
+                          params text NOT NULL,
+                          PRIMARY KEY  (id),
+                          KEY time (execute_after,priority)
+                      )",
                       'users' => "(
                           id int(11) NOT NULL auto_increment,
                           type char(10) NOT NULL default '',
@@ -1234,12 +1246,6 @@ $SQL_cron[] = array (
     "sql" => array (
         "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run)
          VALUES ('0-60/5', '*', '*', '*', '*', 'modules/alerts/alerts.php3', 'howoften=instant', NULL)",
-        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run)
-         VALUES ('*',      '1', '*', '*', '*', 'modules/alerts/alerts.php3', 'howoften=daily', NULL)",
-        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run)
-         VALUES ('*',      '1', '*', '*', '1', 'modules/alerts/alerts.php3', 'howoften=weekly', NULL)",
-        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run)
-         VALUES ('*',      '1', '1', '*', '*', 'modules/alerts/alerts.php3', 'howoften=monthly', NULL)"),
     "script" => 'modules/alerts/alerts.php3');
 $SQL_cron[] = array (
     "sql" => array (
@@ -1261,6 +1267,11 @@ $SQL_cron[] = array (
         "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run)
          VALUES ('35',     '*', '*', '*', '*', 'modules/links/linkcheck.php3', '', NULL)"),
     "script" => 'modules/links/linkcheck.php3');
+$SQL_cron[] = array (
+    "sql" => array (
+        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run)
+         VALUES ('0-60/2',     '*', '*', '*', '*', 'misc/toexecute.php3', '', NULL)"),
+    "script" => 'misc/toexecute.php3');
 
 $SQL_email_templates[] = "REPLACE INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Welcome', 'Welcome to Econnect Alerts', 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'somebody@haha.cz', '', '', '', 'cz', 1, 'alerts welcome');";
 $SQL_email_templates[] = "REPLACE INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Alert', '{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}', '_#FILTERS_\r\n<br><hr>\r\nTo change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'econnect@team.cz', '', '', '', 'cz', 1, 'alerts alert');";

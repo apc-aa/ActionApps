@@ -188,7 +188,6 @@ class Cvarset {
       return $retval;
   }
 
-
   /** Makes SQL INSERT clause from varset */
   function makeINSERT($tablename = "")
   {

@@ -101,8 +101,7 @@ function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
     $GLOBALS["HTTP_POST_VARS"]["result"] = $txt;
     // allows fillform to use this data
-    $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] =
-        StripslashesArray ($GLOBALS["content4id"]);
+    $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = StripslashesArray($GLOBALS["content4id"]);
     if (!$url) huhe("Warning: no Url on anonymous form (could be  ok_url or err_url missing");
     $GLOBALS["shtml_page"] = $url;
     if ($GLOBALS[debugfill]) huhl("Filler:UseShowResult");
@@ -118,27 +117,27 @@ function UseShowResult($txt,$url) {
  * @param string $txt error message to print
  */
 function SendErrorPage($txt) {
-  if( !$GLOBALS["err_url"] ) {
-    if ($GLOBALS[debugfill]) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$GLOBALS["err_url"] );
-    echo HtmlPageBegin("");
-    echo "</head><body>";
-    if( is_array( $txt ) ) {
-      PrintArray($txt);
-    } else echo $txt;
-    echo "</body></html>";
-    exit;
-  }
-
-  else {
-    if (! $GLOBALS["use_post2shtml"]) {
-      $posturl = con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000));
-      if ($GLOBALS[debugfill]) huhl("Going to post2shtml posturl=",$posturl);
-      go_url($posturl);
+    if ( !$GLOBALS["err_url"] ) {
+        if ($GLOBALS[debugfill]) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$GLOBALS["err_url"] );
+        echo HtmlPageBegin("");
+        echo "</head><body>";
+        if (is_array($txt)) {
+            PrintArray($txt);
+        } else {
+            echo $txt;
+        }
+        echo "</body></html>";
+        exit;
     } else {
-        if ($GLOBALS[debugfill]) huhl("Show result with url=",$GLOBALS["err_url"], " txt=",$txt);
-        UseShowResult ($txt,$GLOBALS["err_url"]);
+        if (!$GLOBALS["use_post2shtml"]) {
+            $posturl = con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000));
+            if ($GLOBALS[debugfill]) huhl("Going to post2shtml posturl=",$posturl);
+            go_url($posturl);
+        } else {
+            if ($GLOBALS[debugfill]) huhl("Show result with url=",$GLOBALS["err_url"], " txt=",$txt);
+            UseShowResult($txt,$GLOBALS["err_url"]);
+        }
     }
-  }
 }
 
 /**
@@ -148,13 +147,13 @@ function SendErrorPage($txt) {
 function SendOkPage($txt) {
     global $debugfill;
     if ($debugfill) huhl("Filler:SendOkPage:",$txt);
-    if( ! $GLOBALS["ok_url"] )
-        go_url($GLOBALS[HTTP_REFERER]);
-
-    else if (! $GLOBALS["use_post2shtml"])
+    if (!$GLOBALS["ok_url"]) {
+        go_url($GLOBALS['HTTP_REFERER']);
+    } elseif (!$GLOBALS["use_post2shtml"]) {
         go_url($GLOBALS["ok_url"]);
-
-    else UseShowResult($txt,$GLOBALS["ok_url"]);
+    } else {
+        UseShowResult($txt,$GLOBALS["ok_url"]);
+    }
 }
 
 #$debugfill=1;
@@ -168,15 +167,17 @@ $slice      = new slice($slice_id);
 $p_slice_id = q_pack_id($slice_id);
 $slice_info = GetSliceInfo($slice_id);
 
-if( !$slice_info ) SendErrorPage(array ("fatal"=>_m("Bad slice ID")));
+if (!$slice_info) {
+    SendErrorPage(array ("fatal"=>_m("Bad slice ID")));
+}
+
 // if you want to edit an item from an anonymous form, prepare its ID into
 // the my_item_id hidden field
 if (!$my_item_id) {
     $my_item_id = new_id();
-    $insert = true;
-}
-else {
-    $db->query ("SELECT id FROM item WHERE id='".q_pack_id($my_item_id)."'");
+    $insert     = true;
+} else {
+    $db->query("SELECT id FROM item WHERE id='".q_pack_id($my_item_id)."'");
     $insert = ! $db->next_record();
 }
 if ($debugfill) huhl("Debugfill insert=",$insert);
@@ -187,15 +188,18 @@ if ($debugfill) huhl("Debugfill insert=",$insert);
 ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 list($fields, $prifields) = $slice->fields();
 
-if( !(isset($prifields) AND is_array($prifields)) )
-SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
+if (!(isset($prifields) AND is_array($prifields))) {
+    SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
+}
+
+if ($debugfill) huhl("Debugfill err_valid=",$err_valid);
 
 if (count($err_valid) > 1) {
     unset($err_valid["Init"]);
     $zids = new zids();
-    reset($err_valid);
-    while (list ($field_zid, $msg) = each ($err_valid)) {
-        $zids->refill($field_zid);
+    foreach ( $err_valid as $field_zid => $msg) {
+        $zids->refill(substr($field_zid,1));  // remove first 'v' in the name
+        if ($debugfill) huhl("Debugfill $zids=",$zids, '-', $zids->packedids(0));
         $result["validate"][$zids->packedids(0)] = $msg;
     }
 }
@@ -209,9 +213,9 @@ $oldcontent4id = $foocontent4id->getContentQuoted();
 
 // copy old values for fields not shown in the form
 if (! $insert && is_array ($notshown)) {
-    reset ($notshown);
-    while (list ($vfield_id) = each ($notshown))
+    foreach ( $notshown as $vfield_id => $foo) {
         $field_ids[] = substr($vfield_id,1);  // remove first 'v'
+    }
     $zids = new zids($field_ids,'l');
     for ($i = 0; $i < $zids->count(); $i ++) {
         $field_id = $zids->packedids ($i);
@@ -230,7 +234,7 @@ $content4id["status_code....."][0]['value'] = max($bin2fill,$content4id["status_
 
 if ($insert) {
     $content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
-} else if (!is_array ($result)) {
+} elseif (!is_array($result)) {
   if ($debugfill) huhl("Perms=",$slice_info["permit_anonymous_edit"]);
     // Proove we are permitted to update this item.
     switch ($slice_info["permit_anonymous_edit"]) {
@@ -272,8 +276,9 @@ if ($insert) {
         break;
     }
 
-    if (! $permok)
+    if (!$permok) {
         $result["permissions"] = _m("You are not allowed to update this item.");
+    }
 }
 
 if ($debugfill) huhl("result=",$result);
@@ -281,20 +286,18 @@ if ($debugfill) huhl("result=",$result);
 // See doc/anonym.html for structure of $result, which is intended
 // for fillform.php3 to interpret and display
 
+if ($debugfill) exit;
 
 if ($debugfill) huhl("Going to Store Item");
 if ($debugfill) huhl("content4id=",$content4id);
-if( is_array ($result))
+if (is_array($result)) {
     SendErrorPage( $result );
- # update database
-else if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert,
-          true, true, $oldcontent4id )) { # insert, invalidatecache, feed
-         if ($debugfill) huhl("Filler: sending error");
-    SendErrorPage ( array ("store" => _m("Some error in store item.")));
-  }
-  else {
+} elseif (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, true, true, $oldcontent4id )) { # insert, invalidatecache, feed
+    if ($debugfill) huhl("Filler: sending error");
+    SendErrorPage( array("store" => _m("Some error in store item.")));
+} else {
     if ($debugfill) huhl("Filler: Sending ok");
-    SendOkPage ( array ("success" => $insert ? "insert" : "update" ));
-  }
+    SendOkPage( array("success" => $insert ? "insert" : "update" ));
+}
 
 ?>

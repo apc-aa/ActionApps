@@ -2,6 +2,8 @@
 (honzam)   (as the old one) and pagecache_str2find table. It should bring much
            quicker pagecache invalidation, when the content must be updated.
            Database update (sql_update.php3) for new table is needed.
+         - fixed bug in Related Item Window input type - related items from
+           trash are displayed correctly, now
 12/30/04 - new "Toexecute" class used for e-mail sending - e-mails are not send
 (honzam)   in one run of the script. It is rather send from AA cron, so the load
            of the server is lowered

@@ -69,12 +69,10 @@ class PageCache  {
         $SQL   = "SELECT * FROM pagecache WHERE id='$keyid'";
         $db->tquery($SQL);
         if ($db->next_record()) {
-            huhl($db->Record);
             if ( (time() - $this->cacheTime) < $db->f("stored") ) {
                 $ret = $db->f('content');
             }
         }
-        huhl("<br>ret:$ret");
         freeDB($db);
         return $ret;
     }
