@@ -38,9 +38,10 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
 }  
 
 function ParseIdA($param,$app) {
-   ERegI("([0-9a-f]{1,32})-([01])", $param, $parse); 
-   $app = $parse[2];
-   return $parse[1];
+   if (ERegI("([0-9a-f]{1,32}|0)-([01])", $param, $parse)) {   # slice_id or 0 
+      $app = $parse[2];
+      return $parse[1];
+   }
 }   
 
 $p_import_id= q_pack_id($import_id);
@@ -103,8 +104,11 @@ else
 page_close();
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:01  madebeer
-Initial revision
+Revision 1.2  2000/07/14 14:09:04  kzajicek
+Fixed faulty behaviour caused by nonexistent in or out categories.
+
+Revision 1.1.1.1  2000/06/21 18:40:01  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
