@@ -87,8 +87,6 @@ class manager extends storable_class {
         // create searchbar, if we have to ------------------------------------
         if ( $settings['searchbar'] ) {
             $this->searchbar = new searchbar(
-                              $settings['searchbar']['search_fields'],
-                              $settings['searchbar']['order_fields'],
                               $settings['searchbar']['fields'],
                               'filterform',   // form name is given in this case
                               $settings['searchbar']['search_row_count_min'],

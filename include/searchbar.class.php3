@@ -35,6 +35,18 @@ else return;
 require $GLOBALS[AA_INC_PATH] . "statestore.php3";
 
 
+/** helper function to sort search fields */
+function searchfields_cmp($a, $b) {
+    if ($a['search_pri'] == $b['search_pri']) return 0;
+    return ($a['search_pri'] < $b['search_pri']) ? -1 : 1;
+}
+
+/** helper function to sort order fields */
+function orderfields_cmp($a, $b) {
+    if ($a['order_pri'] == $b['order_pri']) return 0;
+    return ($a['order_pri'] < $b['order_pri']) ? -1 : 1;
+}
+
 /** 
  * searchbar class - handles search and order bar in AA admin interface 
  * (on Links Manager page, for example)
@@ -61,20 +73,25 @@ class searchbar extends storable_class{
               "form_name", "search_row", "order_row", "search_row_count_min",
               "order_row_count_min", "add_empty_search_row");
      
-    function searchbar($sf, $of, $fields, $f, $srcm=1, $orcm=1, $aesr=1) { // constructor 
-        if( isset($sf) AND is_array($sf) ) {
-            reset($sf);
-            while( list(,$v) = each($sf) ) {
-                $this->search_fields[$v] = $fields[$v]['name'];
-                $this->search_operators[$v] = $fields[$v]['operators'];
-            }    
-        }        
-        if( isset($of) AND is_array($of) ) {
-            reset($of);
-            while( list(,$v) = each($of) )
-                $this->order_fields[$v] = $fields[$v]['name'];
-        }        
+    function searchbar($fields, $f, $srcm=1, $orcm=1, $aesr=1) { // constructor 
         $this->fields               = $fields;
+        if( isset($fields) AND is_array($fields) ) {
+            usort ($fields, "searchfields_cmp");
+//            print_r($fields);
+            foreach ( $fields as $fid => $v) {
+                if ($v['search_pri'] > 0 ) {
+                    $this->search_fields[$fid]    = $v['name'];
+                    $this->search_operators[$fid] = $v['operators'];
+                }    
+            }
+            usort ($fields, "orderfields_cmp");
+//            print_r($fields);
+            foreach ( $fields as $fid => $v) {
+                if ($v['order_pri'] > 0 ) {
+                    $this->order_fields[$fid]     = $v['name'];
+                }    
+            }
+        }        
         $this->form_name            = $f;
         $this->search_row_count_min = $srcm;
         $this->order_row_count_min  = $orcm;

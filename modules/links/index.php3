@@ -234,8 +234,6 @@ $links_info = GetModuleInfo($module_id,'Links');
 
 $manager_settings = array(
      'searchbar' => array(
-         'search_fields'        => $LINKS_SEARCH_FIELDS,
-         'order_fields'         => $LINKS_ORDER_FIELDS,
          'fields'               => $LINKS_FIELDS,
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
@@ -256,7 +254,7 @@ $manager_settings = array(
              'category_bottom'  => "",
              'even_odd_differ'  => false,
              'even_row_format'  => "",
-             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td class=tabtxt><a href="_#EDITLINK">_#LINK_NAM</a> (_#LINK_ONA)<div class="tabsmall">_#LINK_DES<br>(_#CATEG_GO)<br>_#LINK_LNK</div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_u:usr_print_uid}<br>{alias:edited_by:f_u:usr_print_uid}</td></tr>',
+             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td class=tabtxt><a href="_#EDITLINK">_#L_NAME__</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br>_#L_LINK__</div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_u:usr_print_uid}<br>{alias:edited_by:f_u:usr_print_uid}</td></tr>',
              'compact_remove'   => "()",
              'compact_bottom'   => "</table>",
              'id'               => $link_info['id'] ),
