@@ -201,7 +201,7 @@ include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
 
 <?php
 if( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
-  echo '</BODY></HTML>';
+  HtmlPageEnd();
   page_close();
   exit;
 }

@@ -189,7 +189,7 @@ do {
       }
     }  
   } else {
-    echo '</BODY></HTML>';
+    HtmlPageEnd();
     page_close();
     exit;
   }
