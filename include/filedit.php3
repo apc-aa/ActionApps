@@ -23,13 +23,15 @@ http://www.apc.org/
    edit, download, rename a file here
 */
 
-// returns true if file opening OK, false otherwise
+// parameters: $fe_path, $fe_filename, $fe_script, $fe_wwwpath
 
 $filedit_js = "
     <script language='javascript'>
     <!--
 
     var formname = 'fileman';
+    var richname = 'rich';
+    
     function submitCommand (name) {
         document.forms[formname]['cmd'].value = name;
         document.forms[formname].submit();
@@ -37,6 +39,14 @@ $filedit_js = "
     
     function command (name) {
         switch (name) {
+        case 'norichedit':
+            document.forms[formname]['arg[norichedit]'].value = 1;
+            submitCommand ('edit');
+            break;
+        case 'savefile':
+            if (edt) document.forms[formname]['arg[savefile]'].value = get_text('edt'+richname);
+            submitCommand (name);
+            break;
         case 'reset':
             document.forms[formname]['arg[savefile]'].value = filetext;
             break;
@@ -49,72 +59,94 @@ $filedit_js = "
     //-->
     </script>";
 
-function filedit ($path, $filename, $script, $top, $bottom, $wwwpath) {
-    // don't edit the file if you won't be able to save it
-    $filedes = @fopen ($path.$filename, "a");
-    if (!$filedes) {
-        $GLOBALS[err][] = "Cannot open file $filename.";
-        return false;
-    }
-    fclose ($filedes);
-    $filedes = fopen ($path.$filename, "r");
-    $top ($filename);
-    echo $GLOBALS[filedit_js];
-    echo "
-    <form name='fileman' method=post action='$script'>
-    <input type=hidden name='cmd'>
-    <input type=hidden name='fmset[filename]' value='$filename'>
-    <input type=hidden name='fmset[directory]' value='".dirname($filename)."'>"
-    .fileAction ("cancel", 'Back to file list')
-    .formatAction("<a href='$wwwpath$filename'>Download</a>&nbsp;&nbsp;")
-    .fileAction ("rename","Rename to")."<input type=text name='arg[rename]' value='".basename($filename)."'>";
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+echo "<TITLE>".L_A_FTP_TIT."</TITLE>";
+echo "</HEAD>";
 
-    echo "<hr>".formatAction("Edit:")."<br>
-    <textarea name='arg[savefile]' cols=80 rows=30>
-    </textarea><br>";
-    echo fileAction ("savefile", 'Save changes')
-        .fileAction ("reset", 'Reset content');
-    echo "</td></tr></table>";
-    echo "</form>";
-    echo "<script language='javascript'>
-    <!--
-        filetext = ";
+global $show;
+$show["fileman"] = false;
+require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+
+echo "<H1><B>" . L_A_FTP_TIT . " - ".L_FILE." ".$fe_filename . "</B></H1>";
+
+PrintArray($err);
+echo $Msg;
+
+echo '<table border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
+echo "<tr><td colspan=2 class=tabtxt>";
+    
+echo $GLOBALS[filedit_js];
+echo "
+<form name='fileman' method=post action='$fe_script'>
+<input type=hidden name='cmd'>
+<input type=hidden name='fmset[filename]' value='$fe_filename'>
+<input type=hidden name='fmset[directory]' value='".dirname($fe_filename)."'>"
+.fileAction ("cancel", L_BACK_TO_FILE_LIST)
+.formatAction("<a href='$fe_wwwpath$fe_filename'>".L_DOWNLOAD_BY_RIGHTCLICK."</a>&nbsp;&nbsp;")
+.fileAction ("rename",L_RENAME_TO)."<input type=text name='arg[rename]' value='".basename($fe_filename)."'>";
+
+echo "<hr>";
+
+$filetype = get_filetype ($fe_filename); 
+if ($filetype == L_FILETYPE_TEXT || $filetype == L_FILETYPE_WEB || $filetype == L_FILETYPE_HTML) {
+       
+    // don't edit the file if you won't be able to save it - only show it's contents
+    $filedes = @fopen ($fe_path.$fe_filename, "a");
+    if ($filedes) {    
+        fclose ($filedes);       
+        $filedes = fopen ($fe_path.$fe_filename, "r");
+        $value = "";
+        while (!feof ($filedes)) 
+            $value .= fgets($filedes, 4096);
+        fclose ($filedes);
+/*            if ($filetype == L_FILETYPE_HTML && !$arg["norichedit"]) {
+            echo formatAction(L_EDIT.":")."&nbsp;&nbsp;".
+                fileAction("norichedit",L_NORICHEDIT).
+                "<input type=hidden name='arg[norichedit]' value=$arg[norichedit]>
+                <input type=hidden name='arg[edit]' value='$arg[edit]'><br>";            
+            RawRichEditTextarea("",'rich', $value, 20, 80, "class", 1);
+            $repl = array ("'"=>"\\'","\n"=>"\\n","\r"=>"\\r");
+            reset ($repl);
+            while (list ($find,$rep) = each ($repl))
+                $value = str_replace ($find, $rep, $value);
+            echo "<INPUT TYPE=HIDDEN NAME='arg[savefile]' VALUE='$value'>";
+            echo fileAction ("savefile", L_SAVE_CHANGES);
+        }
+        else {*/
+            echo formatAction(L_EDIT.":")."<br>";
+            echo "<textarea name='arg[savefile]' cols=80 rows=30>
+            </textarea><br>";
+            $value = str_replace ("'", "\\'", $value);
+            $value = str_replace ("\n", "\\n", $value);
+            $value = str_replace ("\r", "\\r", $value);
+            echo "<script language='javascript'>
+            <!--
+                var edt = 0;
+                var filetext = '$value';
+                document.forms['fileman']['arg[savefile]'].value = filetext;
+            //-->
+            </script>";           
+            echo fileAction ("savefile", L_SAVE_CHANGES)
+                .fileAction ("reset", L_RESET_CONTENT);
+//            }
+    }
+    else {
+        echo formatAction(L_FILE_CONTENT.":")."<br>";
+        $filedes = fopen ($fe_path.$fe_filename, "r");
         while (!feof ($filedes)) {
             $row = fgets($filedes, 4096);
-            $row = str_replace ("'", "\\'", $row);
-            $row = str_replace ("\n", "\\n", $row);
-            $row = str_replace ("\r", "\\r", $row);
-            echo "'$row'+\n";
+            echo str_replace("\t","    ",nl2br (HTMLEntities ($row)));
         }
         fclose ($filedes);           
-    echo "'';
-        document.forms['fileman']['arg[savefile]'].value = filetext;
-    //-->
-    </script>";
-    $bottom ();
-    return true;
+    }
 }
+else if ($filetype == L_FILETYPE_IMAGE) 
+    echo "<img src='$fe_wwwpath$fe_filename' border=0>";
+else 
+    echo L_THIS_IS_FILE." $filetype. ".L_I_CANT_VIEW;
+//echo "</td></tr></table>";
+echo "</form>";
 
-function filedit_top ($filename) {
-    HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-    echo "<TITLE>".L_A_FTP_TIT."</TITLE>";
-    echo "</HEAD>";
-
-    $GLOBALS[show]["fileman"] = false;
-    require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
-
-    echo "<H1><B>" . L_A_FTP_TIT . " - ".L_FILE." ".$filename . "</B></H1>";
-
-    PrintArray($err);
-    echo $Msg;
-    
-    echo '<table border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
-    echo "<tr><td colspan=2 class=tabtxt>";
-}
-
-function filedit_bottom () {
-    echo "</td></tr></table></body></html>";
-}
-
+echo "</td></tr></table></body></html>";
 ?>
 
