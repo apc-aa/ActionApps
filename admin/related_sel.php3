@@ -138,14 +138,14 @@ $sort[] = array ( $r_r_admin_order => $r_r_admin_order_dir);
 
 $zids=QueryZIDs($fields, $r_sid, $conds, $sort, "", $bin_condition);
 
-global $tp;  # Defined in itemfunc.php3
+global $tps;  # Defined in itemfunc.php3
 
 # mode - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
 if( !$mode )
   $mode='AMB';
 for( $i=0; $i<strlen($mode); $i++) {
     $m1 = substr($mode,$i,1);
-    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('".$tp[$m1][tag]."','".$tp[$m1][prefix]."','".$tp[$m1][tag]."_#ITEM_ID_','_#HEADLINE')\">". $tp[$m1][str] ."</a>&nbsp;";
+    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#HEADLINE')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
 }   
 
 

@@ -674,7 +674,7 @@ function show_fnc_freeze_tpr($varname, $field, $value, $param, $html) {
 # but any letters can be used, i.e. this table can be extended.
 # Next step might be to extend parameter recognition to load this table
 # Retaining backward compatability with "[AMB]+" recognition
-global $tp;
+global $tps;
 $tps = array ( 
   AMB => array (
     A => array ( prefix => '>> ', tag => 'x', str => _m("Add") ),
