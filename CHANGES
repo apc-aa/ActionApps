@@ -1,3 +1,5 @@
+04/08/03 - fixed layout bugs in menu_util (showed up in mac ie, included
+           colspan=2 applied to an IMG
 04/05/03 - enhanced the view types definitions in constant.php3 so that
 (jakub)    help text may be added and field type overrided
          - enhanced zids->add() to work with arrays and zids objects

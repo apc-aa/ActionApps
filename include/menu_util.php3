@@ -170,7 +170,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
         <TD colspan=2>
         <TABLE border=0 cellpadding=0 cellspacing=0 width='100%'>
             <TR><TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=122 height=1></TD>
-                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width='99%' height=1 colspan=2></TD>
+                <TD width=99%><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" height=1></TD><TD></TD>
             </TR>
             <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
                 <TD colspan=2 height=43 align=center valign=middle class=slicehead>\n";
@@ -184,9 +184,9 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
         echo "
         </TD>
             </TR>
-            <form name=nbform enctype=\"multipart/form-data\" method=post
+            <TR><td align=center class=navbar><form name=nbform enctype=\"multipart/form-data\" method=post
                 action=\"". $sess->url($PHP_SELF) ."\">            
-            <TR><td align=center class=navbar>";
+";
                             
         $first = true;
         reset ($smmenus);
