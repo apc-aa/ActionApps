@@ -87,13 +87,18 @@ function add_vars($debug="") {
 
   while ($i < count ($a)) {
     $b = explode ('=', $a [$i]);
-    if (ERegI("^(.+)\[(.*)\]", $b[0], $c)) {  // for array variable
-           // I do not know exactly, why there is
-                 // so much '\' but '\\\\\\[' means '\['
-      $c[1] = DeBackslash($c[1]);
-      $c[2] = DeBackslash($c[2]);
-      $b[1] = DeBackslash($b[1]);
-      $GLOBALS[urldecode ($c[1])][urldecode ($c[2])] = urldecode ($b[1]);
+    if (ERegI("^(.+)\[(.*)\]", $b[0], $c)) {  // for array variable[]
+      $index1 = urldecode (DeBackslash($c[2]));
+      $value  = urldecode (DeBackslash($b[1]));
+      if (ERegI("^(.+)\[(.*)\]", $c[1], $d)) { // for double array variable[][]
+        $index2  = urldecode (DeBackslash($d[2]));
+        $varname = urldecode (DeBackslash($d[1]));  
+      } else 
+        $varname  = urldecode (DeBackslash($c[1]));  
+      if( isset($index2) ) 
+        $GLOBALS[$varname][$index2][$index1] = $value;
+       else 
+        $GLOBALS[$varname][$index1] = $value;
     } else {
       $b[0] = DeBackslash($b[0]);
       $b[1] = DeBackslash($b[1]);
@@ -495,6 +500,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.21  2001/05/23 23:08:24  honzam
+Arrays passed to SSIed script by URL can be two-dimensional, now
+
 Revision 1.20  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 
