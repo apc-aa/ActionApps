@@ -357,6 +357,7 @@ $FIELD_FUNCTIONS = array ("name"=>L_PARAM_WIZARD_FUNC_NAME,
 		"desc"=>L_PARAM_WIZARD_FUNC_F_J_PAR2_DESC,
 		"type"=>"STR",
 		"example"=>L_PARAM_WIZARD_FUNC_F_J_PAR1_EXAMPLE))),
+"f_k"=>array("name" => L_AUTO_CHECKBOX),  #auto update check box
 "f_l"=>array("name"=>L_PARAM_WIZARD_FUNC_F_L_NAME,
 	"desc"=>L_PARAM_WIZARD_FUNC_F_L_DESC,
 	"params"=>array(

@@ -391,8 +391,29 @@ function OpenFeedForm(){
   feedformwindow = open('<?php echo $sess->url("feed_to.php3")?>','feedform','scrollbars')
 }
 
+<?php //called by the f_k alias function (see item.php3) 
+echo '
+function CallLiveCheckbox (controlName) {
+    LiveCheckbox (
+        "itemsform", 
+        controlName, 
+        "'.$AA_INSTAL_PATH.'images/",
+        "'.$AA_INSTAL_PATH.'live_checkbox.php3",
+        "'._m("on").'",
+        "'._m("off").'",
+        "'._m("changing to on").'",
+        "'._m("changing to off").'",
+        "'._m("error: change failed").'",
+        "'._m("Please wait until the database change is made and the checkbox changes to ON.").'",
+        "'._m("Please wait until the database change is made and the checkbox changes to OFF.").'",
+        "'._m("Please wait until the other request is finished.").'");
+}'; ?>
+  
 // -->
 </SCRIPT>
+<SCRIPT language=javascript src="<?php echo $AA_INSTAL_PATH ?>include/live_checkbox.js">
+</SCRIPT>
+
 </head> <?php
 
 require $GLOBALS[AA_INC_PATH]."menu.php3";
