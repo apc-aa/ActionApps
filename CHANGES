@@ -1,4 +1,5 @@
-
+7/27/00  - to change priviliges of other accounts, equality of permissions 
+           is no longer adequate (higher role is required)
 7/25/00  - fixed minor Javascript errors in se_compact.php3 and index.php3
          - changes.txt renamed to CHANGES
 7/21/00  - Edit User prints login names instead of DB specific IDs
@@ -91,19 +92,20 @@
          - "Posting enabled" and "Show recents" removed from slicedit.php3 - recrement information
          - New "Remove strings" in compact and fulltext view (in order to remove empty braces and 
            other things from display)
-1/20/00  - fixed bugs on category sorting (1. database error ocurred, 2. skipped to another slice)
-         - Deleted slices are not accessible for authors-administrators from editor page index.php3
-           (super user (as toolkit one) see all slices)
+1/20/00  - fixed bugs on category sorting (1. database error ocurred, 
+           2. skipped to another slice)
+         - Deleted slices are not accessible for authors-administrators from 
+           editor page index.php3 (super user (as toolkit one) see all slices)
          - Deleted slices are not accessible for view, too (in slice.php3)
-           (items from deleted slice are still accessible from search engine, if user do not specify
-           slice, where to search)
+           (items from deleted slice are still accessible from search engine,
+           if user do not specify slice, where to search)
 1/19/00  - new: se_newuser.php3 for adding new user to LDAP permission system 
            (password is md5 encrypted)
 1/14/00  - editor.php3 ranamed to index.php3, index.php3 removed
 1/13/00  - new: item fulltext preview button in editor.php3
          - new: slice management strip in editor.php3
-1/12/00  - new LDAP permission system (user management with roles, add user from ldap directory, 
-           not new LDAP users interface)
+1/12/00  - new LDAP permission system (user management with roles, add user 
+           from ldap directory, not new LDAP users interface)
          - all known pages (without index.php3) support LDAP permission system
 1/11/00  - max nesting of groups of users is checked (it avoids cycle in group definition)
 1/6/00   - if you add slice, new ldap entry for this object is created.           
