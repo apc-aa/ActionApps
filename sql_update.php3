@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS tmp_external_feeds (
    node_name varchar(150) NOT NULL,
    remote_slice_id varchar(16) NOT NULL,
    user_id varchar(200) NOT NULL,
-   newest_item bigint(20) NOT NULL,
+   newest_item varchar(40) NOT NULL,
    remote_slice_name varchar(200) NOT NULL,
    PRIMARY KEY (feed_id)
 )";
@@ -595,7 +595,7 @@ CREATE TABLE IF NOT EXISTS tmp_external_feeds (
    node_name varchar(150) NOT NULL,
    remote_slice_id varchar(16) NOT NULL,
    user_id varchar(200) NOT NULL,
-   newest_item bigint(20) NOT NULL,
+   newest_item varchar(40) NOT NULL,
    remote_slice_name varchar(200) NOT NULL,
    PRIMARY KEY (feed_id)
 )";
@@ -1121,6 +1121,9 @@ echo '<h2>Update OK</h2>
 
 /*
 $Log$
+Revision 1.11  2001/11/13 09:00:08  honzam
+Fixed bug of bad type of external_feeds.newest_item field
+
 Revision 1.10  2001/10/02 11:36:41  honzam
 bugfixes
 

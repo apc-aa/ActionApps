@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS external_feeds ;
 DROP TABLE IF EXISTS ef_categories  ;
 DROP TABLE IF EXISTS ef_permissions ;
 
+# 11/13/01 - changed external_feeds.newest_item from bigint to varchar(40)
 # 09/26/01 - added "nodes" table
 #          - added "external_feeds" table
 #          - added "ef_categories" table
@@ -195,7 +196,7 @@ CREATE TABLE external_feeds (
    node_name varchar(150) NOT NULL,
    remote_slice_id varchar(16) NOT NULL,
    user_id varchar(200) NOT NULL,
-   newest_item bigint(20) NOT NULL,
+   newest_item varchar(40) NOT NULL,
    remote_slice_name varchar(200) NOT NULL,
    PRIMARY KEY (feed_id)
 );
