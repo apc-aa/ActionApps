@@ -37,6 +37,8 @@ http://www.apc.org/
 function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false) 
 {
     global $err;
+    // value to be shown if the requested value is not a part of the select box array
+    $unknown_select_value = "????????";
     
     if ($function == "show" && $cview["readonly"])
         $function = "show_ro";
@@ -86,7 +88,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false)
                 .$val."</textarea>"; 
             break;
         case 'show_ro':
-            ShowColumnValueReadOnly ($cview, $val, $name);
+            ShowColumnValueReadOnly ($cview, $val, $val, $name);
             break;
         }
         return;
@@ -98,14 +100,14 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false)
         case 'show':
             // show ****** for undefined values in select box, but not for new records
             if (!isset ($cview["source"][$val]) && !$new_record)
-                $cview["source"][$val] = "*******";            
+                $cview["source"][$val] = $unknown_select_value;            
             FrmSelectEasy($name, $cview["source"], $val); 
             break;
         case 'show_ro':           
             // show ****** for undefined values in select box, but not for new records
             if (!isset ($cview["source"][$val]) && !$new_record)
-                $cview["source"][$val] = "*******";            
-            ShowColumnValueReadOnly ($cview, $cview["source"][$val], $name);
+                $cview["source"][$val] = $unknown_select_value;            
+            ShowColumnValueReadOnly ($cview, $cview["source"][$val], $val, $name);
             break;
         }
         return;
@@ -122,8 +124,8 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false)
                 value=\"".$val."\">"; 
             break;
         case 'show_ro':
-            if ($val) $val = date($cview["format"], $val); 
-            ShowColumnValueReadOnly ($cview, $val, $name);
+            if ($val) $show_val = date($cview["format"], $val); 
+            ShowColumnValueReadOnly ($cview, $show_val, $val, $name);
             break;
         case 'form':                        
             $val = get_formatted_date ($val, $cview["format"]);
@@ -152,7 +154,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false)
         case 'show_ro':
             $fnc = $cview["function"];
             ShowColumnValueReadOnly ($cview, 
-                $fnc ($val));
+                $fnc ($val), $val);
             break;
         default:
             $err[] = "Only readonly fields may be viewed by userdef function.";
@@ -172,7 +174,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false)
                 value=\"".$val."\">"; 
             break;            
         case 'show_ro':
-            ShowColumnValueReadOnly ($cview, $val, $name);
+            ShowColumnValueReadOnly ($cview, $val, $val, $name);
             break;
         }
         return;
@@ -185,21 +187,21 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false)
 *
 * @param $name if given, a hidden box with the field value will be added
 */
-function ShowColumnValueReadOnly ($cview, $val, $name="") {
+function ShowColumnValueReadOnly ($cview, $show_val, $val, $name="") {
     if ($name)
         echo "<INPUT type=\"hidden\" name=\"$name\" value=\"".$val."\">\n";       
-    if ($val) {
-        if (!$cview["html"]) $val = htmlspecialchars ($val);
+    if ($show_val) {
+        if (!$cview["html"]) $show_val = htmlspecialchars ($show_val);
     }
-    else if ($val == 0 && is_field_type_numerical ($cview["dbtype"]) 
+    else if ($show_val == 0 && is_field_type_numerical ($cview["dbtype"]) 
         && $cview["type"] != "date")
-        $val = "0";
-    else $val = "&nbsp;";
+        $show_val = "0";
+    else $show_val = "&nbsp;";
     
-    if ($cview["maxlen"] && strlen ($val) > $cview["maxlen"])
-        $val = substr ($val, 0, $cview["maxlen"])." ...";
+    if ($cview["maxlen"] && strlen ($show_val) > $cview["maxlen"])
+        $show_val = substr ($show_val, 0, $cview["maxlen"])." ...";
 
-    echo $val;
+    echo $show_val;
 }    
 
 ?>

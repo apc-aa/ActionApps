@@ -1,7 +1,17 @@
 <?php 
-//$Id$
+/**
+*  Prepares and activates Javascript filling a Collection Form.
+*  Parameters: 
+*        $uid or $alerts[userid] .. REQUIRED user ID
+*        $cid or $alerts[collectionid] .. collection ID (if you want to refill collection info)
+*
+ * @package Alerts
+ * @version $Id$
+ * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2002 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -17,13 +27,6 @@ http://www.apc.org/
     You should have received a copy of the GNU General Public License
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/* Prepares and activates Javascript filling a Collection Form.
-
-   Parameters: 
-        $uid or $alerts[userid] .. user ID
-        $cid or $alerts[collectionid] .. collection ID (if you want to refill collection info)
 */
 
 require "../../include/config.php3";

@@ -1,7 +1,14 @@
 <?php 
-//$Id$
+/**
+ * Defines the $cf_fields array used in Collection Form handling scripts.
+ * 
+ * @package Alerts
+ * @version $Id$
+ * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2002 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify

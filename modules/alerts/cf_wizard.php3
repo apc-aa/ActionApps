@@ -1,7 +1,20 @@
 <?php
-//$Id$
+/**
+*   Alerts user settings - shows login page
+*   Global parameters:
+*       $uid or $email
+*       $password (may be empty when the user wishes)
+*       $lang - set language
+*       $ss - set style sheet URL
+*       $show_email - email to be shown but not processed (used by confirm.php3)
+*
+* @package Alerts
+* @version $Id$
+* @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+* @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2002 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,16 +32,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* Alerts user settings - shows login page
-   Global parameters:
-       $uid or $email
-       $password (may be empty when the user wishes)
-       $lang - set language
-       $ss - set style sheet URL
-       
-       $show_email - email to be shown but not processed (used by confirm.php3)
-*/
-
 $directory_depth = "../";
 require "../../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -43,27 +46,6 @@ set_collectionid();
 showMenu ($aamenus, "admin", "formwizard");
 
 if (!is_object ($db)) $db = new DB_AA;
-
-if (!$collectionid) {
-    $db->query("SELECT AC.id, name FROM alerts_collection AC
-        INNER JOIN module ON module.id = AC.moduleid
-        WHERE showme=1");
-    while ($db->next_record()) 
-        $collections [$db->f("id")] = $db->f("name");
-    
-    echo "<FORM name=choose_collection ACTION=cf_wizard.php3 METHOD=post>\n";
-    echo "<INPUT TYPE=hidden NAME=AA_CP_Session VALUE='$AA_CP_Session'>\n";
-    echo "<B>"._m("Select Collection: ")."</B>";
-    FrmSelectEasy ("collectionid", $collections, $collectionid, "onchange='document.choose_collection.submit()'");
-    echo "<INPUT TYPE=submit VALUE='"._m("Go")."'>\n";
-    echo "<br><B>"._m("You can choose only from collections where <i>url</i> is defined.")."</B>\n";
-    echo "</FORM>\n";
-
-    HTMLPageEnd();
-    page_close();
-    exit;
-}
-
 if ($formlang) 
     bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_alerts_lang.inc");
 
@@ -99,8 +81,8 @@ echo "<FORM name='collection_form_wizard' METHOD=post ACTION='cf_wizard.php3#for
 echo _m("Form language").": ".$cf_fields["lang"]["code"]."<br>";
 echo _m("After you have created the form, jump to it: ")."<a target=_blank href='$cf_url'>$cf_url</a>\n";
 echo "<BR><BR>
-    <INPUT TYPE=hidden NAME='AA_CP_Session' VALUE='$AA_CP_Session'>
-    <INPUT TYPE=hidden NAME='collectionid' VALUE=$collectionid>";
+    <INPUT TYPE=hidden NAME='collectionid' VALUE=$collectionid>
+    <INPUT TYPE=hidden NAME='".$sess->name."' VALUE='".$sess->id."'>";
 
 $formaction = $AA_INSTAL_PATH."post2shtml.php3?shtml_page=".$cf_url;    
         
@@ -149,7 +131,10 @@ while (list ($fname, $fprop) = each ($cf_fields)) {
 }
 $formcode .= "
 <TR><TD colspan=2><INPUT type=\"submit\" value=\""._m("OK")."\"></TD></TR>
-</TABLE></FORM>\n";
+</TABLE></FORM>
+<!--#include virtual=\"".$AA_INSTAL_PATH."modules/alerts/cf_filler.php3?cid=$collectionid\"-->
+<!--#include virtual=\"".$AA_INSTAL_PATH."modules/alerts/cf_fillform.php3?cid=$collectionid\"-->
+";
     
 echo "</TABLE><BR><BR>";
 echo "<INPUT TYPE=submit NAME=showme VALUE='"._m("Reload form code")."'>";

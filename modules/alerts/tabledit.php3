@@ -76,17 +76,20 @@ echo "</TD></TR></TABLE>";
 
 PrintArray($err);
 echo $Msg;
-$script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
+$script = $sess->url("tabledit.php3");
 
 $tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."images/", $sess, "GetAlertsTableView");
 $err = $tabledit->view ();
+if ($err) echo "<b>$err</b>";
 
 if (!$err && $tview == "acf") {
     require "design.php3";
     ShowCollectionAddOns();
 }
 
-if ($err) echo "<b>$err</b>";
+if (!$err && $tview == "email_edit") 
+    ShowEmailAliases();
+
 if ($new_module)
     echo "</BODY></HTML>";
 else HTMLPageEnd();

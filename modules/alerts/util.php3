@@ -177,7 +177,7 @@ function add_user_collection ($info, $collection_record, $confirmed=false, $over
 
 // ----------------------------------------------------------------------------------------
 
-/* Sessions are used in Alerts to allow that users don't have to write 
+/* Sessions are used in Alerts to allow users not to have to write 
    password every time they change something in their settings.
    Each user has his/her session ID and time in the database, the time is 
    updated on every page submit and expires after some time (see below). */
@@ -187,8 +187,10 @@ function AlertsUser ($session) {
     $db->query ("SELECT * FROM alerts_user WHERE session='$session'");
     // expires after 600 seconds
     if ($db->next_record()) {
+        global $userinfo;
         $GLOBALS["email"] = $db->f("email");
         $GLOBALS["lang"] = $db->f("lang");
+        $GLOBALS["userinfo"] = $db->Record;
         bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$GLOBALS["lang"]."_alerts_lang.inc");
         if ($db->f("sessiontime") > time() - 600) {
             $db->query ("UPDATE alerts_user SET sessiontime=".time());

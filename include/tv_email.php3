@@ -22,6 +22,43 @@ http://www.apc.org/
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
+require $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
+
+function ShowEmailAliases () {    
+    $ali[] = array (
+        "group" => _m("Aliases for Alerts Digest"), 
+        "aliases" => array (
+            "_#FILTERS_" => _m("complete filter text"),
+            "_#HOWOFTEN" => _m("howoften")." (".join(", ",get_howoften_options()).")",
+            "_#COLLFORM" => _m("Collection Form URL"),
+            "_#USER_SET" => _m("User Settings URL")
+        ));
+        
+    $ali[] = array (
+        "group" => _m("Aliases for Alerts Welcome"), 
+        "aliases" => array (
+            "_#CONFIRM_" => _m("confirmation URL"),
+            "_#HOWOFTEN" => _m("howoften")." (".join(", ",get_howoften_options()).")",
+        ));
+
+    $ali[] = array (
+        "group" => _m("Aliases for Alerts Single Usage Access"), 
+        "aliases" => array (
+            "_#ACCESURL" => _m("single usage access URL"),
+        ));
+        
+    echo "<TABLE border=0 cellspacing=0 cellpadding=0>";
+    reset ($ali);
+    while (list (, $aligroup) = each ($ali)) {
+        echo "<TR><TD class=tabtit colspan=2><B>&nbsp;$aligroup[group]&nbsp;</B></TD></TR>";
+        reset ($aligroup["aliases"]);
+        while (list ($alias, $desc) = each ($aligroup["aliases"])) 
+            echo "<TR><TD class=tabtxt>&nbsp;$alias&nbsp;</TD>
+                <TD class=tabtxt>&nbsp;$desc&nbsp;</TD></TR>";
+    }
+    echo "</TABLE>";
+}
+    
 // Settings for emails table views 
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
 function GetEmailTableView ($viewID, $processForm = false)
@@ -47,6 +84,7 @@ function GetEmailTableView ($viewID, $processForm = false)
         "where" => GetEmailWhere(),        
         "cond" => 1,
         "fields" => array (
+            "id" => array ("view" => array ("readonly" => true)),
             "description" => array (
                 "required" => true,
                 "caption" => _m("description")),

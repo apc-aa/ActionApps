@@ -111,7 +111,6 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
 *    @param $primary_aliases is an output array with a complete list of field aliases of primary fields 
 *                       in all tables
 */
-
 function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="", 
     $default_readonly=false, $primary="") {
     global $db;

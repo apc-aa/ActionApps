@@ -35,15 +35,18 @@ $format = array (
     "caption" => array (
         "before" => "<b>",
         "after" => "</b>"));
-
+/*
 global $LANGUAGE_CHARSETS;
 reset ($LANGUAGE_CHARSETS);
 while (list ($l) = each ($LANGUAGE_CHARSETS))
     $langs[$l] = $l;
-    
+*/
+global $LANGUAGE_NAMES;    
 reset ($LANGUAGE_NAMES);
-while (list ($l, $langname) = each ($LANGUAGE_NAMES))
+while (list ($l, $langname) = each ($LANGUAGE_NAMES)) {
     $biglangs[$l."_news_lang.php3"] = $langname;
+    $langs[$l] = $langname;
+}
 
 // ----------------------------------------------------------------------------------        
 

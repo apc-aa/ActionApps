@@ -22,11 +22,26 @@ http://www.apc.org/
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
+require $GLOBALS["AA_INC_PATH"]."tv_email.php3";
+
 // Settings for miscellaneous table views (see doc/tabledit.html for more info)       
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
-function GetTableView ($viewID, $processForm = false) {        
+function GetMiscTableView ($viewID, $processForm = false) {        
     global $auth, $slice_id, $db;
     global $attrs_edit, $attrs_browse, $format, $langs;
+            
+    if ($viewID == "email_edit") {
+        $tableview = GetEmailTableView ($viewID);
+        $tableview["mainmenu"] = "sliceadmin";
+        return $tableview;
+    }
+
+    if ($viewID == "email") {
+        $tableview = GetEmailTableView ($viewID);
+        $tableview["mainmenu"] = "sliceadmin";
+        $tableview["submenu"] = "te_emails";
+        return $tableview;
+    }	          
             
     /* ------------------------------------------------------------------------------------
        ww -- browse wizard welcomes

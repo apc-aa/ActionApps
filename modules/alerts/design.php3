@@ -27,15 +27,15 @@ require "alerts_sending.php3";
 
 function showCollectionAddOns () 
 {
-    global $example, $auth, $cmd, $db, $AA_INSTAL_PATH, $AA_CP_Session,
+    global $example, $auth, $cmd, $db, $AA_INSTAL_PATH, $sess,
         $collectionprop, $collectionid;
 
     echo "<BR><BR><TABLE border=0 bgcolor=".COLOR_TABBG."><TR><TD class=tabtxt>
     <FORM NAME=\"example[form]\" METHOD=\"post\">";
 
     $emailid = $collectionprop["emailid_alert"];
-    $menu_settings = "tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
-                .$GLOBALS["slice_id"]."]=1&AA_CP_Session=$AA_CP_Session";
+    $menu_settings = $sess->url("tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
+                .$GLOBALS["slice_id"]."]=1");
     if (!$emailid) {
         echo "<a href='".$menu_settings."'>"
             ._m("First set the Alert Email in the Settings menu.")."</a><br><br>";
@@ -46,7 +46,7 @@ function showCollectionAddOns ()
     echo _m("Alert Email for this Collection: ")."<B>".$db->f("description")."<br>&nbsp;&nbsp;--> ";
     $useremails = GetUserEmails();
     if ($useremails[$emailid]) 
-        echo " <a href='tabledit.php3?set_tview=email_edit&cmd[email_edit][edit][$emailid]=1&AA_CP_Session=$AA_CP_Session'>"
+        echo " <a href='".$sess->url("tabledit.php3?set_tview=email_edit&cmd[email_edit][edit][$emailid]=1")."'>"
             ._m("Edit")."</a> - ";
     echo "<a href='".$menu_settings."'>"
         ._m("Choose another")."</a></B><br><br>";

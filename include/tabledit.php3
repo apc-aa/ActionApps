@@ -25,6 +25,7 @@ http://www.apc.org/
 require "tabledit_column.php3";
 require "tabledit_util.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require $GLOBALS[AA_INC_PATH]."scroller.php3";
 
 // identifies new record 
 $new_key = "__new__";
@@ -320,7 +321,8 @@ class tabledit {
     
     function showBrowseHeader ($record_count) {
         echo "<TR>";
-        $header = "<TD colspan=".count ($this->view["buttons_left"]).">&nbsp;</TD>";
+        if (is_array ($this->view["buttons_left"]))
+            $header = "<TD colspan=".count ($this->view["buttons_left"]).">&nbsp;</TD>";
         /*
         reset ($this->view["buttons_left"]);
         while (list ($button, $use) = each ($this->view["buttons_left"])) {
@@ -367,7 +369,7 @@ class tabledit {
         echo "<TR><TD colspan=100><TABLE width=\"100%\">
             <TR><TD class=\"te_b_col_head\" width=\"100\" valign=top>";
         // icon explanation ("= update" etc.)
-        if ($record_count) {    
+        if ($record_count && is_array ($this->view["buttons_left"])) {    
             reset ($this->view["buttons_left"]);
             while (list ($button, $use) = each ($this->view["buttons_left"])) {
                 $bt = $this->ButtonsText (false);
@@ -842,7 +844,7 @@ class tabledit {
             $chtv = $fn ($chview);
 
             SetColumnTypes ($chtv["fields"], $primary_aliases, $chtv["table"], 
-                $chtv["readonly"], $chtv["primary"]);
+                $chtv["join"], $chtv["readonly"], $chtv["primary"]);
 
             $varset = new CVarset;
 

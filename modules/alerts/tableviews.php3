@@ -167,6 +167,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             "year_of_birth" => array ("table" => "alerts_user", "caption" => _m("year of birth"),
                 "view"=>array("readonly"=>!$useredit)),
             "remark" => array ("table" => "alerts_user", "caption" => _m("remark"),
+                "hint"=>_m("Not shown to the user."),
                 "view"=>array("readonly"=>!$useredit, "type"=>"area", "size"=>array ("cols"=>50,"rows"=>3))),
             "confirm" => array ("caption" =>_m("confirmation"),
                 "hint"=>_m("if empty, user is confirmed")),
@@ -258,19 +259,19 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                         alerts_filter DF ON DF.vid = view.id";
         $SQL .= " ORDER BY slice.name, DF.description";  
         $db->tquery ($SQL);
-        global $AA_CP_Session;
+        global $sess;
         $myslices = GetUsersSlices( $auth->auth["uid"] );    
         while ($db->next_record()) {
             $txt = HTMLSpecialChars ($db->f("fdesc"));
             if (IsSuperadmin() || strchr ($myslices [unpack_id ($db->f("slice_id"))], PS_FULLTEXT)) {
                 $new_filters[$db->f("filterid")] = $txt;
                 $txt =            
-                    "<a href='tabledit.php3"
+                    "<a href='".$sess->url("tabledit.php3"
                     ."?change_id=".unpack_id($db->f("slice_id"))
                     ."&change_page=se_view.php3"
                     ."&change_params[view_id]=".$db->f("view_id")
-                    ."&change_params[view_type]=".$db->f("view_type")
-                    ."&AA_CP_Session=$AA_CP_Session'>".$txt."</a>";
+                    ."&change_params[view_type]=".$db->f("view_type"))
+                    ."'>".$txt."</a>";
             }
             $filters[$db->f("filterid")] = $txt;
         }        
@@ -480,13 +481,13 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         $SQL .= " ORDER BY slice.name, DF.description";  
         $db->tquery ($SQL);
         $filter_perms = FindAlertsFilterPermissions();
-        global $AA_CP_Session;
+        global $sess;
         while ($db->next_record()) {
             $txt = $db->f("name"). " - ". $db->f("fdesc");
             $filters[$db->f("filterid")] = 
-                "<a href=\"se_view.php3?view_id=".$db->f("view_id")."&view_type=".$db->f("view_type")
-                ."&change_id=".unpack_id($db->f("slice_id"))
-                ."&AA_CP_Session=$AA_CP_Session\">".HTMLEntities($txt)."</a>";
+                "<a href=\"".$sess->url("se_view.php3?view_id=".$db->f("view_id")."&view_type=".$db->f("view_type")
+                ."&change_id=".unpack_id($db->f("slice_id")))
+                ."\">".HTMLEntities($txt)."</a>";
             if (!is_array ($filter_perms) || my_in_array ($db->f("filterid"), $filter_perms))
                 $new_filters[$db->f("filterid")] = $txt;
         }

@@ -1,7 +1,19 @@
 <?php 
-//$Id$
+/**
+*  Fills info from collection form into database.
+*  Parameters: $alerts .. array of info 
+*               $alerts[userid] 
+*               $alerts[collectionid]
+*               $alerts[password]
+*               etc.
+*
+ * @package Alerts
+ * @version $Id$
+ * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2002 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -17,15 +29,6 @@ http://www.apc.org/
     You should have received a copy of the GNU General Public License
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/* Fills info from collection form into database.
-
-   Parameters: $alerts .. array of info 
-               $alerts[userid] 
-               $alerts[collectionid]
-               $alerts[password]
-               etc.
 */
 
 require "../../include/config.php3";

@@ -52,8 +52,7 @@ function get_aamenus ()
 {
     global $r_slice_view_url,
            $auth,
-           $AA_INSTAL_PATH,
-           $AA_CP_Session;
+           $AA_INSTAL_PATH;
 
     $aamenus["addusers"] = array (
         "label" => _m("Add Users"),
@@ -102,6 +101,8 @@ function get_aamenus ()
         "settings"=>array ("cond"=>IfSlPerm(PS_USERS), 
             "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
                 .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")),
+        "usercenter" => array ("cond"=>1, "label" => _m("User Center"),
+            "href" => "modules/alerts/uc_settings.php3"),
         "header2" => _m("Common"),
 		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
 			"href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Emails"))

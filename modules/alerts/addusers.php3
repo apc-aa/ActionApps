@@ -1,7 +1,14 @@
 <?php
-//$Id$
+/**
+ * "Add users" page from Alerts menu
+ * 
+ * @package Alerts
+ * @version $Id$
+ * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2002 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -41,7 +48,7 @@ if (!IfSlPerm (PS_USERS)) { echo "No permissions."; exit; }
 showMenu ($aamenus, "addusers", "");
 
 echo "
-<FORM name=addusers METHOD=post ACTION=\"addusers.php3?AA_CP_Session=$AA_CP_Session\">
+<FORM name=addusers METHOD=post ACTION=\"".$sess->url("addusers.php3")."\">
 <table width='540' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
 <TR><TD class=tabtit><h1>"._m("Add Users")." ".$db->f("description")."</h1></TD></TR>
 <TR><TD class=tabtxt>";
