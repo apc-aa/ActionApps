@@ -430,11 +430,12 @@ function GetViewFromDB($view_param, &$cache_sid) {
       
     case 'static':   # parameters: 0
   case 'static': 
-    $format = GetViewFormat($view_info);
+    // $format = GetViewFormat($view_info);  // not needed now
     // I create a CurItem object so I can use the unalias function 
     $CurItem = new item("", "", $als, "", "", "");
-    return $CurItem->unalias( $view_info["odd"] );
-  }
+    $formatstring = $view_info["odd"];          # it is better to copy format-
+    return $CurItem->unalias( $formatstring );  # string to variable - unalias
+  }                                             # uses call by reference
 }  
 
 # ----------------------------------------------------------------------------
