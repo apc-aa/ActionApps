@@ -1,10 +1,13 @@
+8/01/00  - fixed problem with OpenLDAP and ldap_mod_del (apcaci changes)
+         - global SuperAdmin access rights take precedence over slice-specific
+         - membership in groups now queried in SQL version of GetIDPerms()
 7/28/00  - deletion of groups now works
          - resolved differencies in behaviour of perm_sql and perm_ldap
 7/27/00  - to change privileges of other accounts, equality of permissions 
            is no longer adequate (higher role is required)
          - superadmin privilege settings in User / Group management
 7/25/00  - fixed minor Javascript errors in se_compact.php3 and index.php3
-         - changes.txt renamed to CHANGES
+         - changes.txt renamed to CHANGES, format adjusted
 7/21/00  - Edit User prints login names instead of DB specific IDs
          - added support for PHP in CGI mode with --enable-force-cgi-redirect
 7/18/00  - added support for other crypt() variants
