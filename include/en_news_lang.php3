@@ -159,8 +159,8 @@ define("L_USER_MAIL", "E-mail");
 define("L_USER_SUPER", "Superadmin account");
 define("L_A_USERS_TIT", "Admin - User Management");
 define("L_A_PERMISSIONS", "Admin - Permissions");
-define("L_A_ADMIN", "Admin - Administration Design");
-define("L_A_ADMIN_TIT", "Admin - Administration Design");
+define("L_A_ADMIN", "Admin - design Item Manager view");
+define("L_A_ADMIN_TIT", "Admin - design Item Manager view");
 define("L_ADMIN_FORMAT", "Item format");
 define("L_ADMIN_FORMAT_BOTTOM", "Bottom HTML");
 define("L_ADMIN_FORMAT_TOP", "Top HTML");
@@ -487,6 +487,9 @@ define("L_A_FULLTEXT_HELP", "Use these boxes ( with the tags listed below ) to c
 
 /*
 $Log$
+Revision 1.30  2001/02/25 08:33:40  madebeer
+fixed some table formats, cleaned up admin headlines
+
 Revision 1.29  2001/02/23 11:18:04  madebeer
 interface improvements merged from wn branch
 

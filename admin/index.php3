@@ -342,14 +342,19 @@ $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
                           "compact_remove"=>$slice_info[admin_remove],
                           "compact_bottom"=>$slice_info[admin_format_bottom]);
 echo "<center>";
-echo "$Msg <br>";
+echo "$Msg";
 
 # ------- Caption -----------
 
-echo "<div class=tablename><img src='$table_icon' border=0 alt='$table_name'> $table_name </div>";
 
-echo '<form name="itemsform" enctype="multipart/form-data" method=post action="'. $sess->url($PHP_SELF) .'">';
-echo '<table width="460" border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
+echo "<table border=0 cellspacing=0 class=login width=460>" .
+     "<TR><TD width=24><img src='$table_icon' border=0 alt=''></TD>".
+     "<TD align=center class=tablename width=436> $table_name </TD></TR>".
+ "</table>";
+
+echo '<form name="itemsform" enctype="multipart/form-data" method=post action="'. $sess->url($PHP_SELF) .'">'.
+'<table width="460" border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
+
                          
 if( count( $item_ids ) > 0 ) {
   $aliases = GetAliasesFromFields($fields);
@@ -392,6 +397,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 
 /*
 $Log$
+Revision 1.15  2001/02/25 08:33:40  madebeer
+fixed some table formats, cleaned up admin headlines
+
 Revision 1.14  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
