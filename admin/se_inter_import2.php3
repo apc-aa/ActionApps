@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,7 @@ if (substr($data,0,1) != "<") {
   switch ($data) {
     case ERR_NO_SLICE : $err_msg = _m("No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."); break;
     case ERR_PASSWORD : $err_msg = _m("Invalid password for the node name:") . " ".ORG_NAME . ". "._m("Contact the administrator of the local node."); break;
+    default:            $err_msg = _m("Remote server returns following error:") . " $data"; break;
   }
   MsgPage($sess->url(self_base() . "se_inter_import.php3"), $err_msg); // $data contains error message
 }                                                                   // from the server module
