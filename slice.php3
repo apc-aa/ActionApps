@@ -195,8 +195,13 @@ function LogItem($id, $column) {
 //-----------------------------End of functions definition---------------------
 # $debugtimes[]=microtime();
 
-if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED 
+if ($encap) add_vars("",1);        # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED
+
+if( $debug ) {
+  echo "<br><br>Group by:<br>";
+  print_r($group_by);
+}
 
 // p_arr_m( $r_state_vars );
 
@@ -334,7 +339,7 @@ if($query) {              # complex query - posted by big search form ---
     $scr->current = 1;
 }
 elseif(isset($conds) AND is_array($conds)) {     # posted by query form ----------------
-  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","conds", "sort")); # store in session
+  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","conds", "sort", "group_by")); # store in session
 
   reset($conds); 
   while( list( $k , $cond) = each( $conds )) {
@@ -348,9 +353,14 @@ elseif(isset($conds) AND is_array($conds)) {     # posted by query form --------
       $conds[$k]['operator'] = 'LIKE';
   }    
 
+  if(isset($group_by)) {
+    $sort_tmp[] = array ( "$group_by" => 'a' );
+    $slice_info["group_by"] = $group_by;
+  }  
+
   if(isset($sort)) {
     if( !is_array($sort) ) {
-      $sort_tmp[] = array ( '$sort' => 'd' );
+      $sort_tmp[] = array ( "$sort" => 'a' );
     } else {  
       reset($sort); 
       while( list( $k , $srt) = each( $sort )) {
@@ -491,6 +501,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.26  2001/10/05 10:56:48  honzam
+slice.php3 allows grouping items
+
 Revision 1.25  2001/09/27 16:09:33  honzam
 New discussion support
 

@@ -98,7 +98,12 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   global $db, $debug;
 
 if( $debug ) {
-  p_arr_m($conds);p_arr_m($sort);p_arr_m($group_by);
+  echo "<br>Conds:<br>";
+  p_arr_m($conds);
+  echo "<br><br>Sort:<br>";
+  p_arr_m($sort);
+  echo "<br><br>Group by:<br>";
+  p_arr_m($group_by);
 }
   
   # parse conditions ----------------------------------
@@ -188,9 +193,14 @@ if( $debug ) {
   if( isset($group_by) AND is_array($group_by)) {
     reset ($group_by);
     $delim='';
-    while( list( ,$fid ) = each( $group_by )) {
+
+if( $debug ) echo "<br>Group<br>";
+
+    while( list( $fid, ) = each( $group_by )) {
+if( $debug ) echo "<br>-$fid-<br>";
       if( !$fields[$fid] )  # bad field_id - skip
         continue;
+if( $debug ) echo "<br>OK<br>";
 
       if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
         $select_group .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
@@ -798,6 +808,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.20  2001/10/05 10:56:48  honzam
+slice.php3 allows grouping items
+
 Revision 1.19  2001/10/04 13:56:47  honzam
 New BETWEEN operator, debug listings on demand
 
