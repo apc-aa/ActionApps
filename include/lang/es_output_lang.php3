@@ -19,36 +19,36 @@ $_m["Bad inc parameter - included file must be in the same directory as this .sh
 
 # ./slice.php3, row 169
 $_m["No such file"]
-  = "";
+  = "No se encontró el archivo";
 
 # ./slice.php3, row 199
 $_m["Invalid slice number or slice was deleted"]
-  = "";
+  = "Identificador de canal no válido, o el canal fué borrado";
 
 # ./slice.php3, row 507
 # include/view.php3, row 362
 $_m["No item found"]
-  = "";
+  = "No se encontraron items";
 
 # include/slice.php3, row 56
 $_m["Select Category "]
-  = "";
+  = "Seleccione Categoría ";
 
 # include/slice.php3, row 58
 $_m["All categories"]
-  = "";
+  = "Todas las categorías";
 
 # include/discussion.php3, row 127, 172
 $_m["Show selected"]
-  = "";
+  = "Mostrar seleccionados";
 
 # include/discussion.php3, row 128, 174
 $_m["Show all"]
-  = "";
+  = "Mostrar todos";
 
 # include/discussion.php3, row 130, 176
 $_m["Add new"]
-  = "";
+  = "Añadir nuevo";
 
 # include/discussion.php3, row 136
 $_m["Alias for subject of the discussion comment"]
@@ -175,23 +175,23 @@ $_m["Date RSS information is generated, in RSS date format"]
 
 # include/item.php3, row 71
 $_m["Slice name"]
-  = "";
+  = "Nombre del canal";
 
 # include/item.php3, row 104
 $_m["Constant name"]
-  = "";
+  = "Nombre de constante";
 
 # include/item.php3, row 105
 $_m["Constant value"]
-  = "";
+  = "Valor de constante";
 
 # include/item.php3, row 106
 $_m["Constant priority"]
-  = "";
+  = "Prioridad de constante";
 
 # include/item.php3, row 107
 $_m["Constant group id"]
-  = "";
+  = "ID grupo de constante";
 
 # include/item.php3, row 108
 $_m["Category class (for categories only)"]
@@ -199,7 +199,7 @@ $_m["Category class (for categories only)"]
 
 # include/item.php3, row 109
 $_m["Constant number"]
-  = "";
+  = "Número de constante";
 
 # include/item.php3, row 110
 $_m["Constant unique id (32-haxadecimal characters)"]
@@ -211,7 +211,7 @@ $_m["Constant unique short id (autoincremented from '1' for each constant in the
 
 # include/item.php3, row 112
 $_m["Constant description"]
-  = "";
+  = "Descripción de constante";
 
 # include/item.php3, row 113
 $_m["Constant level (used for hierachical constants)"]
@@ -219,19 +219,19 @@ $_m["Constant level (used for hierachical constants)"]
 
 # include/item.php3, row 863
 $_m["on"]
-  = "";
+  = "activo";
 
 # include/item.php3, row 863
 $_m["off"]
-  = "";
+  = "inactivo";
 
 # include/item.php3, row 916
 $_m["Back"]
-  = "";
+  = "Atrás";
 
 # include/item.php3, row 917
 $_m["Home"]
-  = "";
+  = "Inicio";
 
 # include/scroller.php3, row 217
 $_m["All"]
@@ -239,14 +239,14 @@ $_m["All"]
 
 # include/easy_scroller.php3, row 103, 187
 $_m["Previous"]
-  = "";
+  = "Anterior";
 
 # include/easy_scroller.php3, row 114, 198
 $_m["Next"]
-  = "";
+  = "Siguiente";
 
 # include/itemview.php3, row 272
 $_m["No comment was selected"]
-  = "";
+  = "No hay ningún comentario seleccionado";
 
 ?>
