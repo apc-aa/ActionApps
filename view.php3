@@ -97,6 +97,7 @@ function GetViewFormat($view_info) {
   $format['even_row_format'] = $view_info['even'];
   $format['odd_row_format'] = $view_info['odd'];
   $format['even_odd_differ'] = $view_info['even_odd_differ'];
+  $format['id'] = $view_info['slice_id'];
   return $format;
 }
 
@@ -183,6 +184,9 @@ switch( $view_info['type'] ) {
 
 /*
 $Log$
+Revision 1.2  2001/05/23 23:04:54  honzam
+fixed bug of not updated list of item in Item manager after item edit
+
 Revision 1.1  2001/05/18 13:41:02  honzam
 New View feature, new and improved search function (QueryIDs)
 

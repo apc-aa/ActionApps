@@ -284,7 +284,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         continue;
       reset($cont);               # it must serve multiple values for one field
       while(list(,$v) = each($cont)) {
- //       echo "$fncname ( $id, $f, $v , $insert)<br>";
           # add to content table or to itemvarset
         $fncname($id, $f, $v, $fnc[param], $insert); 
           # do not store multiple values if field is not marked as multiple
@@ -295,9 +294,10 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
   }
  
     # update item table
-  if( !$insert )
+  if( !$insert ) {
+    $itemvarset->add("slice_id", "unpacked", $slice_id);
     $SQL = "UPDATE item SET ". $itemvarset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
-   else {
+  } else {
     $itemvarset->add("id", "unpacked", $id);
     $itemvarset->add("slice_id", "unpacked", $slice_id);
     $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
@@ -369,6 +369,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.10  2001/05/23 23:07:00  honzam
+fixed bug of not updated list of item in Item manager after item edit
+
 Revision 1.9  2001/04/10 02:00:32  keb
 Added explanation for Text Field parameters.
 Handle case of multiple parameter delimiters, e.g. " : " or ", ".

@@ -1,3 +1,5 @@
+05/24/01 - fixed bug of item disapearing after item modify
+         - fixed bug of not updated list of item in Item manager after item edit
 05/21/01 - new "field mapping" feature for feeding - se_mapping.php3
 05/18/01 - new View feature, new and improved search function (QueryIDs)
          - better Message Page handling (not so much)

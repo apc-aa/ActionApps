@@ -365,7 +365,8 @@ $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
                           "even_row_format"=>"",
                           "odd_row_format"=>$slice_info[admin_format],
                           "compact_remove"=>$slice_info[admin_remove],
-                          "compact_bottom"=>$slice_info[admin_format_bottom]);
+                          "compact_bottom"=>$slice_info[admin_format_bottom],
+                          "id"=>$slice_info['id']);
 
 echo "<center>";
 echo "$Msg <br>";
@@ -457,6 +458,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.22  2001/05/23 23:05:34  honzam
+fixed bug of not updated list of item in Item manager after item edit
+
 Revision 1.21  2001/05/18 13:43:43  honzam
 New View feature, new and improved search function (QueryIDs)
 
