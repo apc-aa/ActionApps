@@ -83,10 +83,13 @@ define( "L_ICON_LEGEND", '
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/less.gif" border=0 alt=""> Less detail view</TD>
                   <TD COLSPAN=2><img src="../images/more.gif" border=0 alt=""> More detail view</TD></TR>
-                  </TABLE><br>
-                  To include slice in your webpage type next line to your html code:<br><code>&lt;!--#include virtual=&quot;/aa/slice.php3?slice_id='. $slice_id .'&quot;--&gt;
-                  </code>');
+                  </TABLE>');
                            
+define( "L_SLICE_HINT", '
+                  <br>
+                  To include slice in your webpage type next line to your shtml code:
+                  ');
+
 //transforms my_sql date to human date format
 function datetime2date ($dttm) {
 	return ereg_replace("^([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2}).*", 
@@ -111,6 +114,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.3  2000/07/12 14:26:40  kzajicek
+Poor printing of the SSI statement fixed
+
 Revision 1.2  2000/07/03 15:00:14  honzam
 Five table admin interface. 'New slice expiry date bug' fixed.
 

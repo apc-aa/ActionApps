@@ -563,6 +563,12 @@ echo '<input type=hidden name=feed2app value="">';    // array of comma delimete
 echo '</form></center>';
 
 echo L_ICON_LEGEND;
+echo L_SLICE_HINT;
+
+$ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
+
+echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
+     "?slice_id=" . $slice_id . "&quot;--&gt;</pre>";
 
 echo '
   </body>
@@ -573,6 +579,9 @@ echo '
 
 /*
 $Log$
+Revision 1.4  2000/07/12 14:26:40  kzajicek
+Poor printing of the SSI statement fixed
+
 Revision 1.3  2000/07/07 21:28:17  honzam
 Both manual and automatical feeding bug fixed
 
