@@ -1,23 +1,36 @@
+03/20/03 - constants view - added new aliases for description, level, short_id 
+(honzam) - added "url" view for list of urls (good for search engines) 
+         - permission to empty trash is asigned also to Editors (not only to 
+           administrators)
+         - fixed bug with anonymous user login
+         - fixed bug - not replaced lineends on Mac-type texts
 03/16/03 - fixed init_page moving to index.php3 too often (jakub)
 03/14/03 - fixed slice selector to show only permitted modules (jakub)
 03/11/03 - globalised pagecache to avoid multiple purges (mitra)
 03/11/03 - some more debugging code in image upload and manipulation (mitra)
-03/10/03 - addedparamater to UseShowResult (was assuming err_url even on OK) (mitra)
+03/10/03 - addedparamater to UseShowResult (was assuming err_url even on OK) 
+           (mitra)
 03/10/03 - changed $db3 to getDB/freeDB to fix bug in item.php3 (mitra)
 03/10/03 - insert_fnc_fil now preserves previously uploaded file or URL (mitra)
-03/08/03 - removed duplicate new_id() from post2shtml and required util.php3 (mitra)
+03/08/03 - removed duplicate new_id() from post2shtml and required util.php3 
+           (mitra)
 03/08/03 - added links to Alerts modules to Item Manager submenu (jakub)
 03/08/03 - added some ? help icons to slice settings (jakub)
 03/08/03 - added the Reading Password slice setting, see FAQ (jakub)
 03/08/03 - added Alerts section to Item Manager submenu (jakub)
 03/08/03 - created the file-lock synchronization mechanism, 
            see include/file_lock.php3 (jakub)
-03/08/03 - added a new feature "Mailman: create list", see doc/reader.html (jakub)
-03/07/03 - joined the Slice Wizard Welcome emails with other emails, added "email templates" to menu (jakub)
-03/06/03 - fixed (?) design of index.php3 with <tr><td> around item manager view (jakub)
+03/08/03 - added a new feature "Mailman: create list", see doc/reader.html 
+           (jakub)
+03/07/03 - joined the Slice Wizard Welcome emails with other emails, added 
+           "email templates" to menu (jakub)
+03/06/03 - fixed (?) design of index.php3 with <tr><td> around item manager view 
+           (jakub)
 03/06/03 - changed some labels in Alerts (jakub)
-03/06/03 - fixed filler.php3 so that it does not call ErrPage when everything OK (jakub)
-03/06/03 - reorganized the module select box to groups by module / slice type (jakub)
+03/06/03 - fixed filler.php3 so that it does not call ErrPage when everything OK 
+           (jakub)
+03/06/03 - reorganized the module select box to groups by module / slice type 
+           (jakub)
 03/06/03 - added an image to the title of Reader Management slices and to the
            title of Alerts (jakub)
 03/05/03 - imagefunc.php3: Added debugging, $debugupload=1, note exit on err
@@ -36,7 +49,8 @@
 (honzam) - fixed bug with wrong display multiple checkboxes input 
            when "move down" is ON
          - fixed bug of not showing cron admin pages
-02/25/03 - fixed bug of not showing buttons in related item select window (honzam)
+02/25/03 - fixed bug of not showing buttons in related item select window 
+           (honzam)
 02/20/03 - added the mailman feature, which creates files with lists of 
            email addresses (jakub)
 02/20/03 - added new input type field for itemedit - Hidden
@@ -48,7 +62,8 @@
          - new Links module (not complete, yet)
          - fixed wrong order of odd/even rows in itemview (Index)
          - do not load already loaded language file in mgettext environment
-         - new manager class for administration of items (still in Links module only)
+         - new manager class for administration of items (still in Links module 
+           only)
          - removed old, unused functions in searchlib
          - it is impossible to use "AA Core slice" as template, now
          - fixed problem of not showing roles for slices in user management
@@ -67,16 +82,18 @@
            from the items in menu.php3 (jakub)
 02/17/03 - updated sql_update to match the current changes
 02/17/03 - fixed the bug in TableEdit with not deleting items
-02/17/03 - fixed the bug in Item Manager with ignoring 0 in the Search box (jakub)
+02/17/03 - fixed the bug in Item Manager with ignoring 0 in the Search box 
+           (jakub)
 02/17/03 - fixed the bug in se_profile and profile with non-existing func
            inputDefaultTypes() (jakub)
-02/17/03 - added "if (class_exists(DB_AA)) return" to extsess and extsessi (jakub)
+02/17/03 - added "if (class_exists(DB_AA)) return" to extsess and extsessi 
+           (jakub)
 02/17/03 - added zids::refill() function (jakub)
 02/17/03 - improved the Anonymous Wizard to match the other changes (jakub)
 02/17/03 - added a new field to slice settings, "Allow anonymous editing",
            with several options, described in doc/anonym.html (jakub)
-02/17/03 - fixed several bugs in filler and fillform, improved their documentation,
-           additional features (jakub)
+02/17/03 - fixed several bugs in filler and fillform, improved their 
+           documentation, additional features (jakub)
 02/17/03 - added a new Field validation function, "Unique e-mail", which
            combines the "Unique" and "e-mail" validations (jakub)
 02/17/03 - enhanced the Anonymous form and Reader management documentation
@@ -85,7 +102,6 @@
            allow to view them in a table (jakub)
 02/17/03 - finished the Alert module which cooperates with the Reader management
            slice, added events to event_handler (jakub)
->>>>>>> 1.126
 02/16/03 - removed include of nonexistant en_site_lang.php3 from modedit (mitra)
          - added roles to um_util.php3.PrintModuleAddRow - possibly wrong
          - fixed bug in init_page stopping non-superusers logging in
@@ -122,7 +138,8 @@
 02/05/03 - changed almost all files by changing require to require_once, 
            deleting the "if (defined) return" constructs and changing
            GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"] (jakub)
-         - fixed so conflict screen will still import from file, (textarea truncates)
+         - fixed so conflict screen will still import from file, (textarea 
+           truncates)
 02/04/03 - sql_update.php3: Changed the Alerts tables, added the Email table
 02/04/03 - big changes in init_page. The script was a mess. With mgettext
            and some other changes it is much tidier and perhaps readable.
@@ -133,45 +150,57 @@
            the code with them. (jakub)
 02/04/03 - added the Anonymous Form Wizard (jakub)
 02/04/03 - slightly changed the "Language" field in Slice Settings (jakub)
-02/04/03 - fixed Slice Deleting (was in a bad state, deleted almost nothing) (jakub)
-02/04/03 - added the Reader Management Minimal template to sql_update.php3 (jakub)
+02/04/03 - fixed Slice Deleting (was in a bad state, deleted almost nothing) 
+           (jakub)
+02/04/03 - added the Reader Management Minimal template to sql_update.php3 
+           (jakub)
 02/04/03 - added Hex checkbox to Slice Export (default), uncheck to get XML
 02/04/03 - fixed bug in discussion views (mitra)
 02/04/03 - fixed new_id to skip ids ending in space (honza, via mitra)
-02/04/03 - added sliceobj.php3 to start encapsulating slice db manipulation (mitra)
+02/04/03 - added sliceobj.php3 to start encapsulating slice db manipulation 
+           (mitra)
          - fixed bug with error handling in xmlclient.php3
          - updated install-4.html to show no more aadb.sql
          - added % operator to math
          - support empty format string to math
 02/01/03 - removed "Edit" from uneditable aliases in se_view (mitra)
          - added _#ITEMINDX and f_e:itemindex  for item number within a view 
-         - added _#ADD_ITEM standard alias, for putting on views to jump to add item (uses f_e)
-         - added {dequote:....} to stringexpand to allow { } in fields where needed
-         - added a generic extensions syntax to stringexpand via an array of functions
-         - made huhl smarter, can print object via its printobj() method, implemented for zids.
+         - added _#ADD_ITEM standard alias, for putting on views to jump to add 
+           item (uses f_e)
+         - added {dequote:....} to stringexpand to allow { } in fields where 
+           needed
+         - added a generic extensions syntax to stringexpand via an array 
+           of functions
+         - made huhl smarter, can print object via its printobj() method, 
+           implemented for zids.
 02/01/03 - fixed bug with empty cmd[20]=x-20-   so returns empty set
-01/30/03 - added support for match field "short_id" to f_q (could still use return field) (mitra)
+01/30/03 - added support for match field "short_id" to f_q (could still use 
+           return field) (mitra)
 01/30/03 - fixed bug in itemfunc where file not uploaded (mitra)
 01/30/03 - fixed bug in {math where parameters contain aliases (mitra)
 01/30/03 - allow time_limit parameter to extend PHP timeout on view.php3 (mitra)
          - switched ereg for preg in stringexpand 10000* speedup! (mitra)
          - added debug_times parameter to print timestamps (mitra)
-01/28/03 - added new Password and Change Password field type and insert function (jakub)
+01/28/03 - added new Password and Change Password field type and insert function 
+           (jakub)
 01/28/03 - added new Random function into Field Default (jakub)
-01/28/03 - added parameters for Field Validation, Param Wizard for Field Validation
-           and new Unique validation (jakub)
+01/28/03 - added parameters for Field Validation, Param Wizard for Field 
+           Validation and new Unique validation (jakub)
 01/28/03 - added paramater wizzard for i_s (mitra)
          - added some more warnings: in i_s, and stringexpand/alias
          - fixed title on site admin window
          - added test for GD into admin/test.php3
-01/27/03 - fixed language constants in so many files, hopefully completely (jakub)
+01/27/03 - fixed language constants in so many files, hopefully completely 
+           (jakub)
 01/27/03 - changed design of se_inputform.php3: added 2 new param wizards (jakub)
 01/27/03 - improved param wizard design with buttons (jakub)
 01/27/03 - fixed bug: slice was not deleted from module table (jakub)
-01/26/03 - added i_s as in {alias:{img_src.........}:i_s:} to generate height and width (mitra)
+01/26/03 - added i_s as in {alias:{img_src.........}:i_s:} to generate height 
+           and width (mitra)
 01/26/03 - fixed bad url from slicedel2 to slicedel 
 01/25/03 - added warnings to GD tests (controlled by errcheck=1) (mitra)
-01/25/03 - restored en_site_lang.php3 since _m conversion not done completely (mitra)
+01/25/03 - restored en_site_lang.php3 since _m conversion not done completely 
+           (mitra)
 01/24/03 - bug fix in slicedit.php3, mistyped URL sliceEdit.php3 (Jakub)
 01/24/03 - changed design of se_inputform.php3 (Jakub)
 01/24/03 - added H2 to admin.css (Jakub)
@@ -189,23 +218,29 @@
 01/22/03 - fixed buggy shortids() function in zids.php3 (honzam)
 01/22/03 - fixed typo sliceedit -> slicedit (mitra)
 01/21/03 - code rule changes (mitra)
-         - added global flag $errcheck like $debug but generates warnings on strangeness
+         - added global flag $errcheck like $debug but generates warnings 
+           on strangeness
          - added zids.php3 to encapsulate id management including:
            * adds support for tagged ids in many places (not all yet)
-           ** If related item window field set to store text, it will cleanly edit these
+           ** If related item window field set to store text, it will cleanly 
+              edit these
            *** More changes to related item window coming
-           * duplicates pack_id and unpack_id to pack_id128 and unpack_id128 which check type
+           * duplicates pack_id and unpack_id to pack_id128 and unpack_id128 
+             which check type
          - commented out require of  _lang.php3 files from config.php3
-01/21/03 - changed {....} expansion to use f_h for fields, allowing multi-value fields
+01/21/03 - changed {....} expansion to use f_h for fields, allowing multi-value 
+           fields
          - fixed bug in stringexpand for scroller (mitra)
 01/20/03 - modified mgettext language files extension from .inc to .php3 
            (mainly for backward compatibility) (jakub)
 01/17/03 - changed all January dates here from /02 to /03 :-)) (jakub)
-01/17/03 - changed name loginform.html to loginform.inc, the name was nonsense (jakub)
+01/17/03 - changed name loginform.html to loginform.inc, the name was nonsense 
+           (jakub)
 01/17/03 - BIG CHANGE: moved the complete AA to mgettext (jakub)
             * see documentation in include/lang/readme.html and misc/mgettext/*
             * Finished the scripts in misc/mgettext and include/mgettext.php3
-            * In almost every script: All language constants replaced by _m() calls
+            * In almost every script: All language constants replaced by _m() 
+              calls
             * All language files include/??_????_lang.php3 removed.
             * Updated language files in include/lang.
             * Added new item into config.php3: $XMGETTEXT_DESTINATION_DIR
@@ -214,7 +249,8 @@
             * changed global variables in constants.php3 to function calls
             * changed include/init_page.php3 to use mini-gettext
             * changed slice.php3 to use the ??_output_lang.inc language file
-            * changed admin/param_wizard.php3 to use the ??_param_wizard.inc language file            
+            * changed admin/param_wizard.php3 to use the ??_param_wizard.inc 
+              language file            
 01/17/03 - Documentation - ref to GD (but no instructions) (mitra)
             -- and ref FAQ for developer CVS install
          - stringexpand: do unalias on results of expanding apc_state or als
@@ -225,15 +261,16 @@
            -- pass apc_state[item] on to unaliasing 
 01/15/03 - fixed bugs in imagefunc.php3 (check for GD, removed debug messages)
          - fixed problem in Item Manager (search field works again)
-01/14/03 - hiding the slice select box for users with access to only one module (jakub)
+01/14/03 - hiding the slice select box for users with access to only one module
+           (jakub)
 01/14/03 - new function GetUserEmails in perm_core.php3 (jakub)
 01/14/03 - new language file selectbox for site module (Site Admin - modedit)
 01/13/03 - added "add" as option to f_e for adding an item;  (mitra)
            created parameter wizard for f_e
-01/12/03 - changed site module to go to prior sibling when deleting rather than (mitra)
-           parent
-01/12/03 - added default $item=null to new_unalias_recurent to allow calling (mitra)
-           from site module without warnings
+01/12/03 - changed site module to go to prior sibling when deleting rather than 
+           parent (mitra)
+01/12/03 - added default $item=null to new_unalias_recurent to allow calling 
+           from site module without warnings (mitra)
 01/12/03 - fixed adding AA_CP_Session to url in site module AAPage where it is 
            already there.
 01/12/03 - changes to allow _#EDITITEM to be used outside of admin interface
@@ -289,10 +326,14 @@
            -- modules/site/site.php3 uses new unalias which means
               ---  it requires switch({m}) instead of switch(m)
               ---  it supports the {math ...} and {include...} syntax
-01/02/03  - fixed bug in site/index.php3 where cache not invalidated when site updated
-12/30/02 - spelling correction in _m("There are too many related items. The number of related items is limited.") all *news_lang.php3 still in english (mitra)
+01/02/03 - fixed bug in site/index.php3 where cache not invalidated when site 
+           updated
+12/30/02 - spelling correction in _m("There are too many related items. 
+           The number of related items is limited.") all *news_lang.php3 still 
+           in english (mitra)
 12/30/02 - warning comment on slice special case in item.php3 (mitra)
-12/29/02 - Added some comments in site/site and added simple example from sf.net (mitra)
+12/29/02 - Added some comments in site/site and added simple example from sf.net 
+           (mitra)
 12/20/02 - fixed problem with LiveCheckbox (image path/mozilla refresh) (honzam)
          - fixed bug of ignored conditions, when conds[x][value] was 0 (honzam)
 12/17/02 - input type "selectbox with presets" with the "adding" parameter ads 
@@ -301,9 +342,12 @@
 12/15/02 - date fields posted from anonymous form takes date from Defaults, if 
            it is send as empty and the field is not marked as REQUIRED (honzam)
 12/13/02 - Removed output from cron (mitra)
-12/11/02 - Allowed - and . in filemanager names in formutils and added err msg (mitra)
-12/11/02 - fixed bug so Slice Admins can add/edit RSS feeds, not just superadmin (mitra)
-11/21/02 - fixed problem, where slice admin can't edit slice settings (only superadmins can) 
+12/11/02 - Allowed - and . in filemanager names in formutils and added err msg 
+           (mitra)
+12/11/02 - fixed bug so Slice Admins can add/edit RSS feeds, not just superadmin 
+           (mitra)
+11/21/02 - fixed problem, where slice admin can't edit slice settings 
+           (only superadmins can) 
          - fixed bug of ocasional warning of empty array in sql_parse.php3
          - fixed typo in slice4cache variable name in modules/site/site.php3
 
@@ -461,7 +505,8 @@
            textarea
          - added RLIKE possibility in operator list for views
          - fixed bug of not working url aliases in static view
-         - added error description text passed to error page (on err_url)' filler.php3
+         - added error description text passed to error page (on err_url)'
+           filler.php3
          - removed old and unused parameter "query" and all related functions
          - added accesskey "s" for form submit
          - slice owners are ordered by name, now
