@@ -28,7 +28,7 @@ define("SCROLLER_PHP3_INC",1);
 class scroller {
 	var $classname = "scroller";
 	var $persistent_slots = Array("pgcnt", "current", "id", "visible", "sortdir", 
-  		"sortcol", "filters", "itmcnt", "metapage", "variables", "urldefault");
+  		"sortcol", "filters", "itmcnt", "metapage", "urldefault");
 	var $current = 1;		# current page
 	var $id;				    # scroller id
 	var $visible = 1;
@@ -39,7 +39,6 @@ class scroller {
 	var $sortdir = 1;
 	var $sortcol = "";
 	var $filters;
-  var $variables;     #array of variables which is send via url
 	
 	# constructor
 	# $id identifies scroller on a web page
@@ -51,32 +50,14 @@ class scroller {
 		$this->filters = array();
 	}
 
-  function addVariable($name, $value) {
-    $this->variables[$name] = $value;
-  }  
-
-  function Parameters() {
-  }
-  function __Parameters() {
-    if (!is_array($this->variables))
-      return "";
-    reset($this->variables);
-    $foo = "";
-    while( list($k, $v) = each( $this->variables ))
-      $foo .= "&" . "$k=$v";
-    return $foo;
-  }    
-    
 	# return part of a query string for move of $pages relative of current position
 	function Relative($pages) {
-		return urlencode("scr_" . $this->id . "_Mv") . "=" . urlencode($pages)
-           . $this->Parameters();
+		return urlencode("scr_" . $this->id . "_Mv") . "=" . urlencode($pages);
 	}
 
 	# return part of a query string for move to absolute position $page
 	function Absolute($page) {
-		return urlencode("scr_" . $this->id . "_Go") . "=" . urlencode($page)
-           . $this->Parameters();
+		return urlencode("scr_" . $this->id . "_Go") . "=" . urlencode($page);
 	}
 	
 	# print Toggle Visibility button
@@ -176,9 +157,9 @@ class scroller {
 	# labels as keys, query string fragments a values
 	function navarray() {
 		if(!$this->pgcnt) return array();
-		$mp = floor(($this->current - 1) / SCROLLER_LENGTH);
-		$from = max(1, $mp * SCROLLER_LENGTH);
-		$to = min(($mp + 1) * SCROLLER_LENGTH + 1, $this->pgcnt + 0);
+		$mp = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
+		$from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
+		$to = min(($mp + 1) * SCROLLER_LENGTH + 1, $this->pgcnt);
 		if($this->current > 1)
 			$arr[L_PREV] = $this->Relative(-1);
 		if($from > 1) $arr["1"] = $this->Absolute(1);
@@ -269,8 +250,11 @@ class scroller {
 			
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:47  madebeer
-Initial revision
+Revision 1.2  2000/08/03 12:28:20  honzam
+SCROLLER_LENGTH constant bug fixed - the length is accepted now
+
+Revision 1.1.1.1  2000/06/21 18:40:47  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:26  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

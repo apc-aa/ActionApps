@@ -34,7 +34,7 @@ function Needed( $condition=true ) {
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
-  echo "</td>\n  <td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value='$val'></td></tr>\n";
+  echo "</td>\n  <td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"></td></tr>\n";
 }
 
 # Prints two static text to 2-column table
@@ -140,7 +140,7 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
   {
     case "id":     if((string)$variable=="0" AND !$needed)
                      return true;     
-                   if( !EReg("^[0-9a-f]{32}$",Chop($variable)))
+                   if( !EReg("^[0-9a-f]{1,32}$",Chop($variable)))
                    { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName</div>";
                      return false;
                    }
@@ -161,15 +161,20 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
                    }
                    return true;
     case "login":
-    case "password":
       $len = strlen($variable);
-      if( ($len>=5) AND ($len<=32) )
+      if( ($len>=3) AND ($len<=32) )
       { if( !EReg("^[a-zA-Z0-9]*$",Chop($variable)))
         { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_LOG.")</div>";
           return false;
         }
         return true;
       }  
+      $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_LOGLEN.")</div>";                   
+      return false; 
+    case "password":
+      $len = strlen($variable);
+      if( ($len>=5) AND ($len<=32) )
+        return true;
       $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_LOGLEN.")</div>";                   
       return false; 
     case "url":
@@ -179,14 +184,21 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 }    
 
 # returns html safe code
+# use for preparing variable to print in form
 function safe( $var ) {
-  return htmlspecialchars( $var );
+  return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
 }  
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:38  madebeer
-Initial revision
+Revision 1.3  2000/08/29 11:29:58  honzam
+Better validation of id (1-32 chars) and password (any character).
+
+Revision 1.2  2000/08/03 12:31:19  honzam
+Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
+
+Revision 1.1.1.1  2000/06/21 18:40:38  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:23  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

@@ -21,7 +21,7 @@ http://www.apc.org/
 
 # se_fulltext.php3 - assigns html format for fulltext view
 # expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update succesfull)
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -116,8 +116,11 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:01  madebeer
-Initial revision
+Revision 1.2  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.1.1.1  2000/06/21 18:40:01  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
