@@ -939,7 +939,7 @@ class aainputfield {
 
         if (is_array ($records)) {
             if (! $ncols) {
-                $this->echovar( implode($records) );
+                $this->echovar( implode('', $records) );
             } else {
                 $nrows = ceil (count ($records) / $ncols);
                 $this->echoo('<table border="0" cellspacing="0">');
@@ -986,9 +986,10 @@ class aainputfield {
             }
         }
         if ( $add_empty ) {
-            $ret .= '<option value=""';
-            if ($selectedused == false) $ret .= ' selected class="sel_on"';
-           $ret .= '> </option>';
+            $emptyret = '<option value=""';
+            if ($selectedused == false) $emptyret .= ' selected class="sel_on"';
+           $emptyret .= '> </option>';
+           $ret = $emptyret . $ret;
         }
         return $ret;
     }
@@ -1053,13 +1054,7 @@ class aainputfield {
              $this->echoo("</td>");
         }
         $this->echoo("</tr>\n <tr><td valign=\"bottom\"><center>
-          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\" )'>
-          <input type='button' value='". _m("Select") ."' onclick='Dialog(\"". Inputform_url('add=1', '', 'ac934c8440c73b34687c6306efa4c37e', 'close_dialog', '') ."\", function(param) {
-            if (!param) {	// user must have pressed Cancel
-                return false;
-            } else {
-                alert(param);
-          }}, null)'>
+          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
           &nbsp;&nbsp;");
 /*              <input type='button' value='". _m("Delete") ."' size='250'
             onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
@@ -2333,7 +2328,7 @@ function get_javascript_field_validation () {
         function validate (myform, txtfield, type, required, add) {
             var ble;
             var invalid_email = /(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)/;
-            var valid_email = /^.+@[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})$/;
+            var valid_email = /^.+@[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,4})$/;
 
             if (type == 'pwd') {
                 myfield = myform[txtfield+'a'];
