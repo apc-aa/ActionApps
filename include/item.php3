@@ -159,17 +159,17 @@ function make_return_url($prifix,$r1="") {
 
   global $return_url, $REQUEST_URI, $sess;
   if ($r1)
-	return $prifix . urlencode($r1);
+    return $prifix . urlencode($r1);
   elseif ($return_url)
-	return $prifix . urlencode($return_url);
+    return $prifix . urlencode($return_url);
   elseif (!$sess) {   # If there is no $sess, then we need a return url, default to self, including parameters
-			# but remove any left over AA_CP_Session, it will be re-added if needed
+            # but remove any left over AA_CP_Session, it will be re-added if needed
         if (ereg("(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)",$REQUEST_URI,$parts))
           return $prifix . urlencode($parts[1].$parts[2].$parts[3]);
         return($prifix . urlencode($REQUEST_URI));
   }
   else
-	return "";
+    return "";
 }
 
 # helper function for f_e:link_*  (links module admin page link) - honzam
@@ -329,9 +329,9 @@ class item {
   }
 
   function subst_alias( $text ) {
-	if (IsField($text))
-		return $this->getval($text);
-	else return  $this->unalias( $text );
+    if (IsField($text))
+        return $this->getval($text);
+    else return  $this->unalias( $text );
   }
 
   function subst_aliases( $var ) {
@@ -372,7 +372,7 @@ class item {
     if( $param=="" )
       $param = "m/d/Y";
     $dstr = date($param, $this->columns[$col][0][value]);
-  	return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
+    return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
   }
 
   # prints image scr (<img src=...) - NO_PICTURE for none
@@ -515,13 +515,13 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
   # returns fulltext of the blurb
   function f_q($col, $param="") {
       /* Usually this is called with no parameters.
-	 Optional parameters for f_q are:
-	 [0] stringToMatch is by default $col
-	 It can be formatted either as the name of a field in self->columns OR
-	 as static text.
-	 [1] blurbSliceId  is by default the non-packed id in BLURB_SLICE_ID
-	 [2] fieldToMatch  is by default BLURB_FIELD_TO_MATCH
-	 [3] fieldToReturn is by default BLURB_FIELD_TO_RETURN
+     Optional parameters for f_q are:
+     [0] stringToMatch is by default $col
+     It can be formatted either as the name of a field in self->columns OR
+     as static text.
+     [1] blurbSliceId  is by default the non-packed id in BLURB_SLICE_ID
+     [2] fieldToMatch  is by default BLURB_FIELD_TO_MATCH
+     [3] fieldToReturn is by default BLURB_FIELD_TO_RETURN
       these constants should be defined in include/config.php3
       */
 
@@ -547,23 +547,23 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
         print("f_q cannot yet return $fieldToReturn fields");
         return("");
       } elseif ($fieldToMatch == "id..............") {
-	// Special case id... its not a real field
-      	$fqsqlid = q_pack_id($stringToMatch);
-      	$SQL = "SELECT c2.text AS text
+    // Special case id... its not a real field
+        $fqsqlid = q_pack_id($stringToMatch);
+        $SQL = "SELECT c2.text AS text
                 FROM content c2
                 WHERE
                      c2.field_id    = '$fieldToReturn' AND
                      c2.item_id     = '$fqsqlid'";
 
       } elseif ($fieldToMatch == "short_id........") {
-      	$p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
+        $p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
         $SQL = "SELECT c2.text AS text
                 FROM item LEFT JOIN content c2 ON item.id = c2.item_id
                 WHERE slice_id  = '$p_blurbSliceId' AND
                      item.short_id = '$stringToMatch' AND
                      c2.field_id    = '$fieldToReturn'";
       } else {
-      	$p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
+        $p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
         $SQL = "SELECT c2.text AS text
                 FROM item LEFT JOIN content c1 ON item.id = c1.item_id
                           LEFT JOIN content c2 ON item.id = c2.item_id
@@ -640,7 +640,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
   # prints the field content and converts text to html or escape html (due to
   # html flag). If param is specified, it prints rather param (instead of field)
 
-  # f_t looks to see if param is a field, and if so gets the value, and 
+  # f_t looks to see if param is a field, and if so gets the value, and
   #  if it doesn't look like a field, then it unaliases the param
   # If there is no param, then it converts the field to HTML (if text)
   # param: string to be printed (like <img src="{img_src........1}"></img>
@@ -686,9 +686,9 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
       # These next two return values from globals that would actually be better coming froom the item or itemview,
       # otherwise won't work if there are nested views.
       case "itemcount":
-      	return $GLOBALS['QueryIDsCount'];
+        return $GLOBALS['QueryIDsCount'];
       case "itemindex";
-      	return "".$GLOBALS['QueryIDsIndex'];   # Need to append to "" so doesn't return "false" on 0th item
+        return "".$GLOBALS['QueryIDsIndex'];   # Need to append to "" so doesn't return "false" on 0th item
       case "safe":
         return safe($this->getval($col));
       case "javascript":                       # In javascript we need escape apostroph
@@ -724,10 +724,10 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
       case "add":
-    	$add="add=1";
-	// drop through to default
+        $add="add=1";
+    // drop through to default
       default:  {
-	// If Session is set, then append session id, otherwise append slice_id and it will prompt userid
+    // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
           return con_url(
                    isset($sess) ?
                      $sess->url($admin_path ."itemedit.php3")	:
@@ -801,9 +801,9 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
 
       if( substr( $fid, 0, 4 ) == "this" )   # special alias _#this
         $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
-	  elseif( substr( $fid, 0, 5) == "slice" )   # Another special alias _#slice
-	  	//Mitra says: looks like this mucks up _#slice_id........
-		$param = str_replace("_#slice", $this->getval('slice_id........'), $param);
+      elseif( substr( $fid, 0, 5) == "slice" )   # Another special alias _#slice
+        //Mitra says: looks like this mucks up _#slice_id........
+        $param = str_replace("_#slice", $this->getval('slice_id........'), $param);
       elseif( $fid == 'unpacked_id.....' )
         $param = str_replace( "_#$fid", $this->f_n('id..............'), $param );
       elseif( IsField($fid) )
@@ -826,7 +826,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
     list ($pbegin, $pfield, $pelse, $ptype, $padd) = $this->subst_aliases($p);
 
     if( !$this->getval($col) ) {
-      	return $pelse ? $pbegin.$pelse : "";
+        return $pelse ? $pbegin.$pelse : "";
     }
     if( $this->columns[$p[1]] ) {
       $column = ($pfield ? $p[1] : $col);
@@ -846,14 +846,14 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
     $p = ParamExplode($param);
     list ($start, $n, $case) = $this->subst_aliases($p);
 
-	$text = $this->getval($col);
-	if ($n <= 0) $n = strlen ($text);
-	$text = substr($text,$start,$n);
+    $text = $this->getval($col);
+    if ($n <= 0) $n = strlen ($text);
+    $text = substr($text,$start,$n);
 
-	if ($case == "upper")		$text = strtoupper ($text);
-	else if ($case == "lower")	$text = strtolower ($text);
-	else if ($case == "first")  $text = ucwords (strtolower ($text));
-	return $text;
+    if ($case == "upper")		$text = strtoupper ($text);
+    else if ($case == "lower")	$text = strtolower ($text);
+    else if ($case == "first")  $text = ucwords (strtolower ($text));
+    return $text;
   }
 
   # live checkbox -- updates database immediately on clicking without reloading the page
@@ -884,7 +884,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
         print_r($content4id);
         echo "</pre>";
         */
-   	    return $fncname($varname, "", $content4id[$col],
+        return $fncname($varname, "", $content4id[$col],
                  $param2, $content4id[$col][0]['flag'] & FLAG_HTML, true );
 
     }
@@ -900,10 +900,11 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
     $p = $this->subst_aliases( ParamExplode($param) );
     $to = (int) floor(count($p)/2);
     $colvalue = $this->getval($col);
+
     for( $i=0; $i < $to; $i++ ) {
       $first = $i*2;
       $second = $first +1;
-      if( ereg( $p[$first] , $colvalue ) )
+      if( ($p[$first] != '') AND ereg( $p[$first] , $colvalue ) )
         return $p[$second];
     }
       # the last option can be definned as default
