@@ -32,7 +32,8 @@ http://www.apc.org/
 # A design goal is to use lazy-evaluation wherever possible, i.e. to only 
 # go to the database when something is needed.
 
-require_once "../include/config.php3";
+#If this is needed, comment why! It trips out anything calling sliceobj NOT from one level down
+#require_once "../include/config.php3";
 //require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3"; // Pack and unpack ids
 require_once $GLOBALS["AA_INC_PATH"]."viewobj.php3"; //GetViewsWhere
@@ -80,6 +81,10 @@ class slice {
         freeDB($db);
     }
 
+    function get1field($fname) {
+        $this->getfields($fname);
+        return $this->$fname;
+    }
     function name() {
         $this->getfields("name");
         return $this->name;
@@ -88,6 +93,11 @@ class slice {
     function deleted() {
         $this->getfields("deleted");
         return $this->deleted;
+    }
+
+    function fileman_dir() {
+        $this->getfields("fileman_dir");
+        return $this->fileman_dir;
     }
 
     // Return a 32 character id
@@ -124,11 +134,13 @@ class slices {
     var $a;     # Array unpackedsliceid -> slice obj 
 
     // Create slices array from unpacked slice ids
-    function slices($iarr) {
+    function slices($iarr=null) {
         $this->a = array();
-        reset($iarr);
-        foreach($iarr as $unpackedsliceid) {
-            $this->a[$unpackedsliceid] = new slice($unpackedsliceid);
+        if ($iarr) {
+            reset($iarr);
+            foreach($iarr as $unpackedsliceid) {
+                addslice($unpackedsliceid);
+            }
         }
     }
 
@@ -136,13 +148,30 @@ class slices {
     function objarr() {
         return $this->a;
     }
+    function addslice($unpackedsliceid) {
+        if ($this->a[$unpackedsliceid]) 
+            return $this->a[$unpackedsliceid];
+        $s = new slice($unpackedsliceid);
+        $this->a[$unpackedsliceid] = $s;
+        return $s;
+    }
 }
 
+$GLOBALS['allknownslices'] = new slices();  # Globally accessable 
 
 // Utility functions to avoid mucking with classes where only used once
 function sliceid2name($unpackedsliceid) {
-    $s = new slice($unpackedsliceid);
+    global $allknownslices;
+    $s = $allknownslices->addslice($unpackedsliceid);
     return $s->name();
+}
+
+// Utility functions to avoid mucking with classes where only used once
+function sliceid2field($unpackedsliceid,$field) {
+    global $allknownslices;
+    $s = $allknownslices->addslice($unpackedsliceid);
+    $s = $s->get1field($field);  # Note this should save it but it doesn't BUG! 
+    return $s;
 }
 
 // Function just here for debugging 

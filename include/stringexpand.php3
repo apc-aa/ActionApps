@@ -32,8 +32,10 @@ if (!defined ("STRINGEXPAND_INCLUDED"))
 else return;
 
 require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
+require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
 
 #explodes $param by ":". The "#:" means true ":" - don't separate
+# Returns array
 function ParamExplode($param) {
   $a = str_replace ("#:", "__-__.", $param);    # dummy string
   $b = str_replace ("://", "__-__2", $a);       # replace all <http>:// too
@@ -186,6 +188,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {switch(testvalue)test:result:test2:result2:default}
     # {math(<format>)expression}
     # {include(file)}
+    # {include:file} or {include:file:http} or {include:file:fileman}
     # {scroller.....}
     # {#comments}
     # {debug}
@@ -234,23 +237,49 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       # include file
       if( !($pos = strpos($out,')')) )
         return "";
-      $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()),
-                               DeQuoteColons( substr($out, 8, $pos-8)));
-           # filename do not use colons as separators => dequote before callig
-
-      if( !$filename || trim($filename)=="" )
-        return "";
-
-      // if no http request - add server name
-      if( !(substr($filename, 0, 7) == 'http://') AND
-          !(substr($filename, 0, 8) == 'https://')   )
-        $filename = self_server().'/'. $filename;
-
-      $fp = @fopen( $filename, 'r' );
-      $fileout = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
-      fclose( $fp );
-      return QuoteColons($level, $maxlevel, $fileout);
-      # QuoteColons used to mark colons, which is not parameter separators.
+        $fileout = expandFilenameWithHttp(substr($out, 8, $pos-8));
+        return QuoteColons($level, $maxlevel, $fileout);
+        # QuoteColons used to mark colons, which is not parameter separators.
+    }
+    elseif( substr($out, 0, 8) == "include:") {
+        #include file, first parameter is filename, second is hints on where to find it
+        $parts = ParamExplode(substr($out,8));
+        if (! ($fn = $parts[0]))
+            return "";
+        # Could extend this to recognize | seperated alternatives
+        if (! $parts[1]) $parts[1] = "http";  # Backward compatability
+        switch ($parts[1]) {
+          case "http":
+            $fileout = expandFilenameWithHttp($parts[0]); break;
+          case "fileman":
+            # Note this won't work if called from a Static view because no slice_id available
+            # This should be fixed.
+            global $auth,$slice_id;
+            #huhl($itemview->slice_info);
+            if ($itemview->slice_info["id"]) $mysliceid = unpack_id128($itemview->slice_info['id']);
+            elseif ($slice_id) $mysliceid = $slice_id;
+            else {
+                if ($errcheck) huhl("No slice_id defined when expanding fileman");
+                return "";
+            }
+            $fileman_dir = sliceid2field($mysliceid,"fileman_dir");
+            $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $parts[0];
+            if ($filedes = @fopen ($filename, "r")) {
+                $fileout = "";
+                while (!feof ($filedes)) 
+                    $fileout .= fgets($filedes, 4096);
+                fclose($filedes);
+            } else {
+                if ($errcheck) huhl("Unable to read from file $filename");
+                return "";
+            }
+            break;
+          default:
+            if ($errcheck) huhl("Trying to expand include, but no valid hint in $out"); 
+            return("");
+        }
+        return QuoteColons($level, $maxlevel, $fileout);
+        # QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( ereg("^scroller:?([^}]*)$", $out, $parts)) {
         if (!isset($itemview) OR ($itemview->num_records<0) ) {   #negative is for n-th grou display
@@ -268,12 +297,12 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       return "";
     elseif( substr($out, 0,5) == "debug" ) {
         # Note don't rely on the behavior of {debug} its changed by programmers for testing!
-        if (isset($item)) huhl("item=",$item);
+#        if (isset($item)) huhl("item=",$item);
         if (isset($GLOBALS["apc_state"])) huhl("apc_state=",$GLOBALS["apc_state"]);
         if (isset($itemview)) huhl("itemview=",$itemview);
         if (isset($aliases)) huhl("aliases=",$aliases);
         if (isset($als)) huhl("als=",$als);
-        #huhl("globals=",$GLOBALS);
+        huhl("globals=",$GLOBALS);
         return "";
     }
     elseif ( substr($out, 0,10) == "view.php3?" )
@@ -331,6 +360,30 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         if ($errcheck)  huhl("Couldn't expand: \"{$out}\"");
         return QuoteColons($level, $maxlevel, "{" . $out . "}");
     }
+}
+
+# Expand any quotes in the parturl, and fetch via http
+function expandFilenameWithHttp($parturl) {
+    global $errcheck;
+      $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()),
+                               DeQuoteColons($parturl));
+           # filename do not use colons as separators => dequote before callig
+
+      if( !$filename || trim($filename)=="" )
+        return "";
+
+      // if no http request - add server name
+      if( !(substr($filename, 0, 7) == 'http://') AND
+          !(substr($filename, 0, 8) == 'https://')   )
+        $filename = self_server().'/'. $filename;
+
+      if (! $fp = @fopen( $filename, 'r' ))  {
+        if ($errcheck) huhl("Unable to retrieve $filename");
+        return "";
+      }
+      $fileout = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
+      fclose( $fp );
+      return $fileout;
 }
 
 # Return some strings to use in keystr for cache if could do a stringexpand

@@ -86,7 +86,7 @@ echo "
 
 echo "<hr>";
 
-$filetype = get_filetype ($fe_filename); 
+$filetype = get_filetype($fe_filename); 
 if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == _m("HTML file")) {
        
     // don't edit the file if you won't be able to save it - only show it's contents

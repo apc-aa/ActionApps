@@ -1,4 +1,5 @@
-05/19/13 - new {user:} inline alias which is able to dislplay informations
+05/23/03 - added {include:file:fileman} for getting files from file manager
+05/19/03 - new {user:} inline alias which is able to dislplay informations
 (honzam)   about logged user (from PHP_USER_AUTH and ReaderManagement slice)
 05/19/03 - fixed RSS2 so recognizes HTML in description etc
 05/15/03 - added debugging to misc/file2slice/importer (mitra)

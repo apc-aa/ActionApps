@@ -357,12 +357,13 @@ function ChangeCatPermAsIn($category, $template) {
 * (c) Jakub Adamek, Econnect, +-July 2002
 */
 function FilemanPerms ($auth, $slice_id) {
-    global $sess;
+    global $sess, $errcheck;
     // Sets the fileman_dir var:
     global $fileman_dir;
     trace("+","FilemanPerms slice_id=".$slice_id);
     $db = getDB();
     if (! $slice_id) {
+        if ($errcheck)  huhl("Warning: Calling perm_core without a slice-id defined");
         $perms_ok = false;
     } else {
       $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");

@@ -214,7 +214,8 @@ function is_dir_empty ($dirname) {
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
+# Paramater arg is an array e.g. $arg[edit] = "myfilename.htm"
+#
 function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset) {
     global $AA_CP_Session, $err,
         // set to the name of file which should be viewed by filedit.php3
@@ -233,6 +234,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
 
     else if ($cmd == 'edit')
         $fe_filename = $arg;
+        // Action taken in caller, which outputs HTML
 
     // Create file
     else if ($cmd=='createfile') {
@@ -243,6 +245,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         if (!fopen ($newfile, "w")) { $err[] = _m("Unable to create file")." $newfilename."; return; }
         chmod ($newfile, $FILEMAN_MODE_FILE);
         $fe_filename = $directory.$arg;
+        // Action taken in caller, which outputs HTML
     }
 
     // Create directory
