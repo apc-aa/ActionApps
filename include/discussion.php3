@@ -140,7 +140,7 @@ function GetDiscussionAliases() {
   $aliases["_#EMAIL##_"] = GetAliasDef("f_h",          "d_e_mail........", _m("Alias for author's e-mail"));
   $aliases["_#WWW_URL_"] = GetAliasDef("f_h",          "d_url_address...", _m("Alias for url address of author's www site"));
   $aliases["_#WWW_DESC"] = GetAliasDef("f_h",          "d_url_descript..", _m("Alias for description of author's www site"));
-  $aliases["_#DATE###_"] = GetAliasDef("f_d:d M  H:i", "d_date..........", _m("Alias for publish date"));
+  $aliases["_#DATE###_"] = GetAliasDef("f_d:d M Y H:i", "d_date..........", _m("Alias for publish date"));
   $aliases["_#IP_ADDR_"] = GetAliasDef("f_h",          "d_remote_addr...", _m("Alias for IP address of author's computer"));
   $aliases["_#CHECKBOX"] = GetAliasDef("f_h",          "d_checkbox......", _m("Alias for checkbox used for choosing discussion comment"));
   $aliases["_#TREEIMGS"] = GetAliasDef("f_h",          "d_treeimages....", _m("Alias for images"));
