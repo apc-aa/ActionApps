@@ -1,3 +1,12 @@
+--------------------
+11/18/02 - v2.4.0 - stable release
+--------------------
+11/18/02 - install documentation updated (thanks to Marek Tichy)
+         - multipart/form-data type of form is send only if you use file upload
+           field on the form
+         - fixed javascript error on new user/group creation
+         - related items could be from another slice, again
+11/17/02 - replaced bad '<?' php delimiters with '<?php' and other fixes
 11/15/02 - display control variables (like navbar, sort_filter) are in sessions
          - new input type "two boxes"
          - fixed problem of IsSuperuser() function - it didn't use cached values
@@ -46,15 +55,17 @@
 10/03/02 - added span to active scroller page.
          - new cron admin pages
          - constants.description database field changed to TEXT
-09/27/02 - minor bug fix: util.php3 / html2text (used in alerts sending) does 
+09/27/02 - minor bug fix: util.php3 / html2text (used in alerts sending) does
            not comprime all empty lines to one line end any more.
 09/26/02 - nested aliases work in f_v alias function too
          - renamed all defaults aliases, which ends by '#' character (_#ITEM_ID#
-           => _#ITEM_ID_) - there was problem with colon ':' escaping '#:'. 
+           => _#ITEM_ID_) - there was problem with colon ':' escaping '#:'.
            old aliases works, so all code is backward compatible
 09/12/02 - added Editorial to Alerts Collection
 09/11/02 - fixed problems with related items view
-08/20/02 - first parts of new language environment mini gettext 
+         - new possibility to log user searches (queries) (see searchlog 
+           parameter to slice.php3)
+08/20/02 - first parts of new language environment mini gettext
 08/20/02 - new AA Alerts introduced, allowing to send new items to users by 
            e-mail
 08/20/02 - because MsgPage is sometimes called with menu which again uses some 
@@ -92,7 +103,7 @@
 06/17/02 - patched PHPLib is part of AA, now (use 'cvs update -d' to get it)
          - fillform.php3 works with scroller (fillconds)
          - removed call-time passed-by-reference variables in function calls
-         - better variable handling if magic_qoutes are not set (no more 
+         - better variable handling if magic_qoutes are not set (no more
            warning displayed)
          - f_t alias function parameter used for unaliasing string
 --------------------
