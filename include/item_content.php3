@@ -116,12 +116,12 @@ class ItemContent {
     /** Fills the name with dots to the standard 16 characters,
     *   returns the value for the field. You can use field names
     *   from the <i>item</i> table with this function. */
-    function getItemValue ($field_name) {
-        return $this->getValue (substr($field_name."................",0,16));
+    function getItemValue($field_name) {
+        return $this->getValue(substr($field_name."................",0,16));
     }
 
-    function getQuotedValue ($field_id) {
-        return addslashes ($this->getValue ($field_id));
+    function getQuotedValue($field_id) {
+        return addslashes($this->getValue ($field_id));
     }
 
     function getItemID()     { return unpack_id($this->getItemValue ("id")); }
@@ -135,7 +135,7 @@ class ItemContent {
         $this->content[$field_id][0]['value'] = $val;
     }
 
-    function setItemValue ($field_name, $value) {
+    function setItemValue($field_name, $value) {
         $this->content[substr($field_name."...................",0,16)] =
             array (0 => array ("value" => $value));
     }
@@ -220,7 +220,7 @@ class ItemContent {
       $itemvarset = new Cvarset();
       $db = new DB_AA;
 
-      $id = $this->getItemValue ("id");
+      $id = $this->getItemValue("id");
       if ($id == "new id") {		// if the item has no id => set up an unique new id
         $id = new_id();
         $insert = true;

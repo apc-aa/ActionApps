@@ -30,9 +30,12 @@ http://www.apc.org/
 
 /** Appends any number of QUERY_STRING (separated by &) parameters
 *   to given URL, using apropriate ? or &. */
-function con_url($Url,$Params){
-    list( $path,$fragment ) = explode( '#', $Url, 2 );
-    return $path . (strstr($path, '?') ? "&" : "?"). $Params. ($fragment ? '#'.$fragment : '') ;
+function con_url($url, $params) {
+    list($path, $fragment) = explode( '#', $url, 2 );
+    if (is_array($params)) {
+        $params = implode('&', $params);
+    }
+    return $path . (strstr($path, '?') ? "&" : "?"). $params. ($fragment ? '#'.$fragment : '') ;
 }
 
 /// Move to another page (must be before any output from script)

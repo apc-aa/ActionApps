@@ -156,10 +156,8 @@ class manager extends storable_class {
                     $this->scroller->metapage = $view_info['listlen'];
             }
         } else {
-            if ( !isset($aliases["_#ITEM_ID_"]) ) $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............");
-            if ( !isset($aliases["_#SITEM_ID"]) ) $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........");
-            if ( !isset($aliases["_#HEADLINE"]) ) $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($module_id));
-            if ( !isset($aliases["_#JS_HEAD_"]) ) $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($module_id));
+            // define JS_HEAD_, HEADLINE, SITEM_ID, ITEM_ID_ (if not set)
+            DefineBaseAliases($aliases, $module_id);
 
             if ( !$format_strings ) {
                 $row = '<td>_#PUB_DATE&nbsp;</td><td>_#HEADLINE</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>_#AA_ACTIO</td>': '');

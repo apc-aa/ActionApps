@@ -346,7 +346,7 @@ function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $pa
     $send     = trim($ret_params->getValue('switch.........2'));
 
     if ( $email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1')) ) {
-        $item = GetItemFromId($short_id, true);
+        $item = GetItemFromId(new zids($short_id, 's'));
         return send_mail_from_table_inner (8, $email, $item) > 0 ;
     }
     return false;

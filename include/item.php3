@@ -42,6 +42,13 @@ function DeHtml($txt, $flag) {
   return ( ($flag & FLAG_HTML) ? $txt : txt2html($txt) );
 }
 
+function DefineBaseAliases(&$aliases, $module_id) {
+    if ( !isset($aliases["_#ITEM_ID_"]) ) $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............");
+    if ( !isset($aliases["_#SITEM_ID"]) ) $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........");
+    if ( !isset($aliases["_#HEADLINE"]) ) $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($module_id));
+    if ( !isset($aliases["_#JS_HEAD_"]) ) $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($module_id));
+}
+
 function GetAliasesFromFields($fields, $additional="", $type='') {
   trace("+","GetAliasesFromFields");
   if( !( isset($fields) AND is_array($fields)) AND ($type != 'justids') ) {
@@ -206,7 +213,7 @@ function Links_admin_url($script, $add) {
 
 /** helper function which create link to inputform from item manager
   * (_#EDITITEM, f_e:add, ...)  */
-function Inputform_url($add, $iid, $sid, $ret_url, $vid='') {
+function Inputform_url($add, $iid, $sid, $ret_url, $vid = null, $var = null) {
     global $sess, $AA_INSTAL_EDIT_PATH, $AA_CP_Session;
     // code to keep compatibility with older version
     // which was working without $AA_INSTAL_EDIT_PATH
@@ -216,13 +223,16 @@ function Inputform_url($add, $iid, $sid, $ret_url, $vid='') {
                      $sess->url($admin_path)	:
                      ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
     global $profile;
-    $param = get_if($add, "edit=1").
-             ($vid ? "&vid=$vid" : "").
-             "&encap=false&id=$iid&change_id=$sid".
-             (isset($sess) ? "" : "&change_id=$sid").
-             ((isset($profile) AND $profile->getProperty('input_view')) ?
-                  '&vid='.$profile->getProperty('input_view') : '').
-             make_return_url("&return_url=",$ret_url);	// it return "" if return_url is not defined.
+    $param[]           = ($add ? 'add=1' : 'edit=1');
+    $param[]           = "encap=false";
+    $param[]           = "id=$iid";
+    $param[]           = "slice_id=$sid";
+    $param[]           = make_return_url("&return_url=",$ret_url);
+    if ($vid) $param[] = "vid=$vid";
+    if ($var) $param[] = "openervar=$var";  // id of variable in parent window (used for popup inputform)
+    if (isset($profile) AND $profile->getProperty('input_view')) {
+        $param[]       = '&vid='.$profile->getProperty('input_view');
+    }
     return con_url($url2go,$param);
 }
 
@@ -281,11 +291,10 @@ function GetFormatedItems( $sid, $format="",  $restrict_zids=false, $frombins=AA
 /** Creates item object just from item id and fills all necessary structures
  * @param         id        - an item id, unpacked or short
  *                          - could be also ZID - then $use_short_ids is ignored
- * @param boolean short_ids - indicating type of $ids (default is false => unpacked)
  */
-function GetItemFromId($id, $use_short_ids='aa_guess') {
-    if (isset($id) && ($id != "-")) {
-        $content = new ItemContent($id);
+function GetItemFromId($zid) {
+    if (isset($zid) && ($zid != "-")) {
+        $content = new ItemContent($zid);
         $slice   = new slice($content->getSliceID());
         return new item($content->getContent(),$slice->aliases());
     }
@@ -575,11 +584,6 @@ class item {
     return htmlspecialchars($this->getval($col));
   }
 
-  function mystripos($haystack, $needle) {
-      $sub = stristr($haystack, $needle);
-      return ($sub ? strlen($haystack)-strlen($sub) : strlen($haystack));
-  }
-
   /** Prints abstract ($col) or grabed fulltext text from field_id
    *  param: length:field_id:paragraph
    *         length    - max number of characters taken from field_id
@@ -592,14 +596,16 @@ class item {
    *                     first paragraph or at least stop at the end of sentence
    */
   function f_a($col, $param="") {
+      list(         , $field )               = ParamExplode($param);  // we need $field unexpanded
       list( $plength, $pfield, $pparagraph ) = $this->subst_aliases( ParamExplode($param) );
-      if ( !$pfield ) {
-          $pfield = $col;                // content is grabbed from current $col
-      }
       $value = $this->getval($col);
-      if ($value AND ($col != $pfield)) {
+      if ($value AND !($col == $field)) {  // special case - return whole field
           return DeHtml( $value, $this->getval($col,'flag') );
       }
+      $shorted_text = substr(get_if($value, $pfield), 0, $plength);    // pfield is already expanded!!!
+
+      // search the text for following ocurrences in the order!
+      $PARAGRAPH_ENDS = array( '</p>','<p>','<br>', "\n", "\r" );
       if ($pparagraph) {
           foreach ( $PARAGRAPH_ENDS as $end_str ) {
               $paraend = strpos(strtolower($shorted_text), $end_str, min(strlen($shorted_text),10));  // we do not want to
@@ -919,23 +925,24 @@ function RSS_restrict($txt, $len) {
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
       case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
-        if(!$GLOBALS[mlxView]) 
-	  return "MLX no global mlxView set: this shouldnt happen in:".__FILE__.",".__LINE__;
+        if (!$GLOBALS[mlxView]) { 
+    	  return "MLX no global mlxView set: this shouldnt happen in:".__FILE__.",".__LINE__;
+        }
         return $GLOBALS[mlxView]->getCurrentLang();
         break;
       case 'mlx_dir':    // print the current mlx language html markup dir tag 
-      			 //(the article's 'real' one!)
-	$mlx_dir = $GLOBALS[mlxScriptsTable][$this->getval('lang_code.......')];
+      	        		 //(the article's 'real' one!)
+    	$mlx_dir = $GLOBALS[mlxScriptsTable][$this->getval('lang_code.......')];
         return ($mlx_dir?" DIR=".$mlx_dir['DIR']." ":"");
         break;
       case 'addform':   // show link to inputform with special design defined in view (id in p[1])
-        $add = "add=1";
+        $add = true;
       // drop through to default
       case 'editform':
         return Inputform_url($add, unpack_id128($this->getval('id..............')),
                                    unpack_id128($this->getval('slice_id........')), $p[2], $p[1]);
       case "add":
-        $add="add=1";
+        $add = true;
       // drop through to default
       default:
           return Inputform_url($add, unpack_id128($this->getval('id..............')),

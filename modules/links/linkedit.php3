@@ -366,9 +366,8 @@ HtmlPageBegin();
 echo '<title>'. _m('APC ActionApps') ." - $pagename</title>";
 
 $tree = new cattree( $db, $select_start, false, ' > ');
-// special javascript for category selection
-
-FrmJavascriptFile('javascript/js_lib_links.js');
+FrmJavascriptFile('javascript/js_lib.js');
+FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);
 
 if( !$r_state['link_id'] ) {  // add new link

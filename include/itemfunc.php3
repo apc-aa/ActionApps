@@ -474,15 +474,18 @@ function IsEditable($fieldcontent, $field, &$profile) {
 }
 
 /** Returns content4id - values in content4id are quoted (addslashes) */
-function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=true ) {
-  global $profile, $auth, $slice_id;
+function GetContentFromForm( $slice, $oldcontent4id="", $insert=true ) {
+  global $profile, $auth;
 
-  if( !isset($prifields) OR !is_array($prifields) )
-    return false;
+  list($fields, $prifields) = $slice->fields();
+  if( !isset($prifields) OR !is_array($prifields) ) {
+      return false;
+  }
 
   if ( !is_object( $profile ) ) {
-      $profile = new aaprofile($auth->auth["uid"], $slice_id);  // current user settings
+      $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
   }
+
 
   reset($prifields);
   while(list(,$pri_field_id) = each($prifields)) {
@@ -814,10 +817,8 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
 
 /** Validates new content, sets defaults, reads dates from the 3-selectbox-AA-format,
 *   sets global variables:
-*       $show_func_used to a list of show func used in the form.
-*       $js_proove_fields to complete JavaScript code for form validation
-*       list ($fields, $prifields) = GetSliceFields ()
 *       $oldcontent4id
+*       $special input variables
 *
 *   This function is used in itemedit.php3, filler.php3 and file_import.php3.
 *
@@ -834,17 +835,12 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
 *   @param array $notshown is an optional array ("field_id"=>1,...) of fields
 *                          not shown in the anonymous form
 */
-function ValidateContent4Id(&$err, $slice_id, $action, $id=0, $do_validate=true,
-    $notshown="")
+function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $notshown="")
 {
-    global $show_func_used, $js_proove_fields, $fields, $prifields;
     global $oldcontent4id, $profile, $auth;
 
-    global $varset, $itemvarset;
-    if (!is_object ($varset)) $varset = new Cvarset();
-    if (!is_object ($itemvarset)) $itemvarset = new Cvarset();
-    if (!is_object( $profile ) ) {             // current user settings
-        $profile = new aaprofile($auth->auth["uid"], $slice_id);
+    if (!is_object($profile)) {             // current user settings
+        $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());
     }
 
     // error array (Init - just for initializing variable
@@ -852,34 +848,24 @@ function ValidateContent4Id(&$err, $slice_id, $action, $id=0, $do_validate=true,
         $err["Init"] = "";
     }
 
-      # get slice fields and its priorities in inputform
-    list($fields, $prifields) = GetSliceFields($slice_id);
+    // get slice fields and its priorities in inputform
+    list($fields, $prifields) = $slice->fields();
 
     if (!is_array($prifields)) {
         return;
     }
 
-    // javascript for input validation
-    $js_proove_fields = get_javascript_field_validation (). "
-
-        function proove_fields () {
-            var myform = document.inputform;
-            return true";
-
-    #it is needed to call IsEditable() function and GetContentFromForm()
+    // it is needed to call IsEditable() function and GetContentFromForm()
     if( $action == "update" ) {
         $oldcontent = GetItemContent($id);
         $oldcontent4id = $oldcontent[$id];   # shortcut
     }
 
-    reset($prifields);
-    while(list(,$pri_field_id) = each($prifields)) {
+    foreach ($prifields as $pri_field_id) {
         $f = $fields[$pri_field_id];
-        if( ($pri_field_id=='edited_by.......') ||
-            ($pri_field_id=='posted_by.......')
-        //  || ($pri_field_id=='status_code.....')  // commented out by honza
-          ) {                    // status_code could be set from defaults
-                continue;   // filed by AA - it could not be filled here
+        //  'status_code.....' is not in condition - could be set from defaults
+        if (($pri_field_id=='edited_by.......') || ($pri_field_id=='posted_by.......')) {
+            continue;   // filed by AA - it could not be filled here
         }
         $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
         $htmlvarname = $varname."html";
@@ -891,43 +877,16 @@ function ValidateContent4Id(&$err, $slice_id, $action, $id=0, $do_validate=true,
                 || $profile->getProperty('hide',$pri_field_id)
                 || ($action == "insert" && $notshown [$varname]);
 
-        list ($validate) = split (":", $f["input_validate"]);
+        list($validate) = explode(":", $f["input_validate"], 2);
 
         if ($setdefault) {
-            $$varname = GetDefault($f);
+            $$varname     = GetDefault($f);
             $$htmlvarname = GetDefaultHTML($f);
         } elseif ($validate=='date') {         // we do not know at this moment,
-            $default_val = GetDefault($f);     // if we have to use default
+            $default_val  = GetDefault($f);    // if we have to use default
         }
 
-        $editable = IsEditable ($oldcontent4id[$pri_field_id], $f, $profile)
-                    && ! $notshown [$varname];
-        if ($editable) {
-            list ($show_func) = split (":", $f["input_show_func"]);
-            $show_func_used [$show_func] = 1;
-        }
-
-        $js_proove_password_filled = $action != "edit"
-            && $f["required"] && ! $oldcontent4id[$pri_field_id][0]["value"];
-
-        $js_validate = $validate;
-        if ($js_validate == 'e-unique')
-            $js_validate = "email";
-
-        # prepare javascript function for validation of the form
-        if( $editable ) switch( $js_validate ) {
-            case 'text':
-            case 'url':
-            case 'email':
-            case 'number':
-            case 'id':
-            case 'pwd':
-                $js_proove_fields .= "
-            && validate (myform, '$varname', '$js_validate', "
-                    .($f["required"] ? "1" : "0").", "
-                    .($js_proove_password_filled ? "1" : "0").")";
-                break;
-        }
+        $editable = IsEditable($oldcontent4id[$pri_field_id], $f, $profile) && !$notshown[$varname];
 
         // Run the "validation" which changes field values
         if ($editable && ($action == "insert" || $action == "update")) {
@@ -947,7 +906,7 @@ function ValidateContent4Id(&$err, $slice_id, $action, $id=0, $do_validate=true,
                 // store the original password to use it in
                 // insert_fnc_pwd when it is not changed
                 if ($action == "update")
-                    $GLOBALS[$varname."c"] = $oldcontent4id [$pri_field_id][0]["value"];
+                    $GLOBALS[$varname."c"] = $oldcontent4id[$pri_field_id][0]["value"];
                 break;
             }
         }
@@ -981,9 +940,6 @@ function ValidateContent4Id(&$err, $slice_id, $action, $id=0, $do_validate=true,
             }
         }
     }
-
-    $js_proove_fields .= ";
-        }\n";
 }
 
 ?>

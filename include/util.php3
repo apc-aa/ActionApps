@@ -69,7 +69,7 @@ function go_return_or_url($url, $usejs, $session, $add_param="") {
 }
 
 /** Adds slash at the end of a directory name if it is not yet there. */
-function endslash (&$s) {
+function endslash(&$s) {
     if (strlen ($s) && substr ($s,-1) != "/")
         $s .= "/";
 }
@@ -80,7 +80,7 @@ function my_in_array($needle, $array) {
 }
 
 /** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
-function debuglog ($text)
+function debuglog($text)
 {
     $f = fopen ($GLOBALS["AA_INC_PATH"]."logs.txt","a");
     if ($f) {
@@ -126,7 +126,7 @@ function self_server() {
 }
 
 # returns server name with protocol, port and current directory of php script
-function self_base () {
+function self_base() {
   global $PHP_SELF;
   return (self_server(). ereg_replace("/[^/]*$", "", $PHP_SELF) . "/");
 }
@@ -291,16 +291,6 @@ function QuoteVars($method="get", $skip='') {
       $GLOBALS[$varname] = AddslashesArray($value);
 }
 
-# function for extracting variables from $r_hidden session field
-function GetHidden() {
-  global $r_hidden;
-  if( !isset($r_hidden) OR !is_array($r_hidden))
-    return;
-  reset( $r_hidden );
-  while( list($varname,$value) = each( $r_hidden ))
-    $GLOBALS[$varname] = ($value);
-}
-
 # function to reverse effect of "magic quotes"
 // not needed in MySQL and get_magic_quotes_gpc()==1
 function dequote($str) {
@@ -308,7 +298,7 @@ function dequote($str) {
 }
 
 # prints content of a (multidimensional) array
-function p_arr_m ($arr, $level = 0) {
+function p_arr_m($arr, $level = 0) {
    if ( !isset($arr) OR !is_array($arr)) {
      for ($i = 0; $i < $level; $i++) { echo "&nbsp;&nbsp;&nbsp;"; };
          echo ( isset($arr) ? " Not array: $arr <br>" : " (Empty Array) <br>");
@@ -1760,14 +1750,15 @@ function ShowRefreshWizardJavaScript() {
     FrmJavascript( 'if (top.wizardFrame != null) top.wizardFrame.wizard_form.submit();' );
 }
 
-function GetAAImage ($filename, $alt='', $width=0, $height=0) {
+function GetAAImage($filename, $alt='', $width=0, $height=0) {
+    $title = ($alt ? "title=\"$alt\" " : '');
     if ( $width ) {
         $size = "width=\"$width\" height=\"$height\"";
     } else {
         $im_size = @GetImageSize($GLOBALS["AA_BASE_PATH"]."images/$filename");
         $size = $im_size[3];
     }
-    return '<img border=0 src="'. $GLOBALS['AA_INSTAL_PATH'] ."images/$filename\" alt=\"$alt\" $size>";
+    return '<img border=0 src="'. $GLOBALS['AA_INSTAL_PATH'] ."images/$filename\" alt=\"$alt\" $title $size>";
 }
 
 /// On many places in Admin panel, it is secure to read sensitive data => use this function
