@@ -314,6 +314,8 @@ class itemview{
      else $CurItem->aliases = $this->aliases;
   }
   
+  // ----------------------------------------------------------------------------------
+  //  get_output
   
   #view_type used internaly for different view types
   function get_output($view_type="") {  
