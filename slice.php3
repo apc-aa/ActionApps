@@ -36,6 +36,8 @@ http://www.apc.org/
 #easy_query          // for easiest form of query
 #order               // order field id - if other than publish date
                      // add minus sign for descending order (like "headline.......1-"); 
+#timeorder           // rev - reverse publish date order 
+                     // (less priority than "order")
 #no_scr              // if true, no scroller is displayed                     
 #scr_go              // sets scroller to specified page
 #restrict            // field id used with "res_val" and "exact" for restricted
@@ -320,14 +322,19 @@ else {
       $orderdirection = "DESC";
       $order = substr($order,0,-1);
     }
+    if( substr($order,-1) == '+' )   # just skip
+      $order = substr($order,0,-1);
   }    
-
+  
+  # time order the fields in compact view
+  $pubdate_order = ($timeorder == "rev" ? "" : "DESC");
+  
   if( $res_field != "" )
     $conditions[$res_field] = $res_value;
   if( $highlight != "" )
     $conditions['highlight.......'] = 1;
 
-  $item_ids = GetItemAppIds($fields, $db, $slice_id, $conditions, "DESC",
+  $item_ids=GetItemAppIds($fields, $db, $slice_id, $conditions, $pubdate_order,
     ($slice_info[category_sort] ? GetCategoryFieldId( $fields ) : $order),
     $orderdirection, "", $exact );
 }    
@@ -357,8 +364,8 @@ ExitPage();
 
 /*
 $Log$
-Revision 1.17  2001/03/30 11:50:22  honzam
-offline filling bug and other smalll bugs fixed
+Revision 1.18  2001/04/09 20:36:33  honzam
+Order parameter works with '+' sign too, new timeorder parameter.
 
 Revision 1.16  2001/03/20 15:21:33  honzam
 Scrollers used in search output too, better parameters handling
