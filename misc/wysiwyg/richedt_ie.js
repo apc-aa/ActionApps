@@ -433,3 +433,11 @@
  obj_editor.ExecCommand(DECMD_OUTDENT,OLECMDEXECOPT_DODEFAULT); 
  //obj_editor.focus(); 
  } 
+ function clearfonts(nom_editor) {
+     var text = get_text (nom_editor);
+     alert (text);
+     text = text.replace (/<[Ff][Oo][Nn][Tt][^>]*>/g,"");
+	 text = text.replace (/<\/[Ff][Oo][Nn][Tt]>/g,"");
+     alert (text);
+     posa_contingut_html (nom_editor,text);
+ }
