@@ -152,15 +152,17 @@ if( $add_submit OR ($submit_action == "update_submit"))
     }
 
     # Procces users data ---------------------
-//huh("Posted_users:".$posted_users);
-    $assigned_users = explode(",",$posted_users); //posted_users contains comma delimeted list of selected users of group
-//p_arr_m($sel_groups);
-    if( isset($sel_users) AND is_array($sel_users) AND ($sel_users["n"]=="")) {
+    //posted_users contains comma delimeted list of selected users of group
+    if ($posted_users) {
+       $assigned_users = explode(",",$posted_users); 
+    }
+    
+    if (isset($sel_users) AND is_array($sel_users) AND ($sel_users["n"]=="")) {
       reset($sel_users);
-      while( list($foo_uid,) = each($sel_users))  // first we remove all users from group
+      while( list($foo_uid,) = each($sel_users))  // first remove all members
         DelGroupMember ($selected_group, $foo_uid);
     }
-    if( isset($assigned_users) AND is_array($assigned_users) ) {
+    if (isset($assigned_users)) {
       reset($assigned_users);
       while( list(,$foo_uid) = each($assigned_users)){  // then we add specified users to group
         $foo_uid = urldecode($foo_uid);                 // we use urldecode in order to use comma as separator
@@ -168,7 +170,7 @@ if( $add_submit OR ($submit_action == "update_submit"))
       }
     }
   } while(false);
-  if( count($err) <= 1 ) {
+  if (count($err) <= 1) {
     $Msg = MsgOK(L_NEWGROUP_OK);
     go_url( con_url($sess->url($PHP_SELF), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
   }
@@ -335,6 +337,9 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.6  2000/08/14 12:20:57  kzajicek
+$assigned_users was always non-empty array after explode().
+
 Revision 1.5  2000/08/03 12:49:22  kzajicek
 English editing
 
