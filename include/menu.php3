@@ -137,13 +137,13 @@ function get_aamenus ()
         "rssfeeds"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"admin/se_rssfeeds.php3?slice_id=$slice_id", "label"=>L_RSSFEEDS_MANAGER),
         "filters"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"admin/se_filters.php3?slice_id=$slice_id", "label"=>L_FILTERS),
         "mapping"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"admin/se_mapping.php3?slice_id=$slice_id", "label"=>L_MAP),
-
+/*
         "header6"=>L_ALERTS,
         "te_alerts_admin" => array("cond"=>IsSuperadmin(), "href" => "admin/tabledit.php3?set_tview=alerts_admin", "label" => _m("Admin")),
         "te_alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=ac", "label"=>L_ALERTS_COLLECTIONS),
         "te_alerts_users"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=au", "label"=>L_ALERTS_USERS),
         "alerts_ui"=>array("cond"=>1, "exact_href"=>$AA_INSTAL_PATH."misc/alerts/index.php3?lang=".get_mgettext_lang(), "label"=>L_ALERTS_UI),
-
+*/
         "header5" => L_MISC,
         "field_ids" => array ("label"=>L_FIELD_IDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"admin/se_fieldid.php3?slice_id=$slice_id"),
         "javascript" => array ("label"=>L_F_JAVASCRIPT, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"admin/se_javascript.php3")
