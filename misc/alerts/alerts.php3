@@ -91,7 +91,9 @@ function create_filter_text ($ho)
         3. and were not active until $last,
             i.e. publish_date > $last
             
-   The field moved2active is filled whenever an item is moved from other bin to Active bin or when it is a new item inserted into Active bin. The field is cleared whenever the item is moved from Active bin to another one.
+   The field moved2active is filled whenever an item is moved from other bin to Active bin 
+       or when it is a new item inserted into Active bin. 
+   The field is cleared whenever the item is moved from Active bin to another one.
 */
                 
                 $db->query(
@@ -112,9 +114,11 @@ function create_filter_text ($ho)
                     
                 $dbconds = $filter["conds"];
                 if ($debug) echo "<br>Slice ".$slice["name"].", conds ".$dbconds."<br>";       
+                $conds = ""; $sort = "";
                 add_vars ($dbconds);
                 if ($debug) { print_r ($conds); echo "<br>"; }
         
+                $items_text = "";
                 if (is_array ($all_ids)) {
                     // find items for the given filter
                     $item_ids = QueryIDs ($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, $all_ids);
@@ -187,27 +191,32 @@ function send_emails ($ho)
             WHERE UF.userid = ".$db->f("id")."
               AND DF.text_$ho <> ''
               AND UF.howoften = '$ho'");
-            
+
+        $colls = "";  
+        $all_filters = "";          
         while ($dbtexts->next_record()) {
             $colls[$dbtexts->f("collectionid")] = array (
                 "desc" => $dbtexts->f("description"),
                 "editorial" => $dbtexts->f("editorial"),
                 "contents" => $dbtexts->f("contents"),
                 "headers" => alerts_email_headers ($dbtexts->Record, $default_collection));
-            $colls[$dbtexts->f("collectionid")]["filters"][$dbtexts->f("myindex")] = $dbtexts->f("text_$ho");
+            $all_filters[$dbtexts->f("collectionid")][$dbtexts->f("myindex")] .= $dbtexts->f("text_$ho");
         }
         
-        $email = email_address ($db->f("firstname")." ".$db->f("lastname"), $db->f("email"));
-        $url = AA_INSTAL_URL."misc/alerts?show_email=".$db->f("email")."&lang=".$db->f("lang");
-        $footer = "-----------------------------------------------------------------------<br>"
-            . _m("You can change your subscriptions on %1.", array ("<a href='$url'>$url</a>."));
-            
         if (is_array ($colls)) {
+            $email = email_address ($db->f("firstname")." ".$db->f("lastname"), $db->f("email"));
+            $url = AA_INSTAL_URL."misc/alerts?show_email=".$db->f("email")."&lang=".$db->f("lang");
+            $footer = "-----------------------------------------------------------------------<br>"
+                . _m("You can change your subscriptions on %1.", array ("<a href='$url'>$url</a>."));
+                
             reset ($colls);
             while (list ($cid, $collection) = each ($colls)) {
                 $mailbody = str_replace ("_#CONTENTS", $collection_contents[$cid], 
                     $collection["editorial"]);
-                while (list (,$text) = each ($collection["filters"]))
+                $filters = &$all_filters[$cid];
+                ksort ($filters);
+                reset ($filters);
+                while (list (,$text) = each ($filters))
                     $mailbody .= $text;           
                 $mailbody .= $footer;
                 mail_html_text (
