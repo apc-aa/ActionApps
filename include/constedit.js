@@ -315,7 +315,6 @@ function hcAddItemTo (i,targetBox) {
 	if (selectBox.selectedIndex == -1) return;
 	name = selectBox.options[selectBox.selectedIndex].text;
 	value = selectBox.options[selectBox.selectedIndex].value;
-    alert ('name '+name+' value '+value);
 	opt = new Option(name,value,false,false);
 	var target = document[hcForm][targetBox];
 	target.options [target.length] = opt;
