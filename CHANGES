@@ -1,3 +1,15 @@
+10/24/01 - new parameter wizard for function aliases and input type parameters
+         - fixed bug of two listed slices in slice export 
+         - search expressions with AND, OR, NOT, (, ) allowed in conditions
+         - fixed bug in search (INNER JOIN replaced by LEFT JOIN to content 
+           table)
+         - group_by parametr extension for direction specification (+/-) 
+           in slice.php3
+         - fixed bug with fourth parameter to f_c
+         - fixed bug with unspecified maxlength parameter in text input field  
+--------------------
+10/08/01 - v2.0.0
+--------------------
 10/02/01 - new sliceexport/import feature
 10/01/01 - better Halt_On_Error support in extsess and extsessi
 09/27/01 - added Cross Server Networking (RSS item exchange between AA)

@@ -21,6 +21,8 @@ http://www.apc.org/
 
 /* 
 	Author: Jakub Adámek
+	
+	This page is called from sliceexp.php3 to generate the exported text.
 
  	slices: an associative array variable of all the slices to be exported, 
 	the index is the slice ID.
@@ -38,16 +40,17 @@ function getRecord (&$array, &$record)
 }	
 
 if ($b_export_type != L_E_EXPORT_SWITCH) {
-	$export[] = unpack_id($p_slice_id);
+	unset ($export_slices);
+	$export_slices = array($slice_id);
 }
 
-reset($export);
-while (list(,$slice_id) = each($export)) {
-	$slice_id = addslashes(pack_id($slice_id));
+reset($export_slices);
+while (list(,$slice_id_bck) = each($export_slices)) {
+	$slice_id = addslashes(pack_id($slice_id_bck));
 	$SQL = "SELECT * FROM slice WHERE id='$slice_id'";
 	$db->query($SQL);
 	if (!$db->next_record()) {
-		MsgPage($sess->url(self_base())."index.php3", "ERROR", "standalone");
+		MsgPage($sess->url(self_base())."index.php3", "ERROR - slice $slice_id_bck (".pack_id($slice_id_bck).") not found", "standalone");
 		exit;	
 	}
 	
@@ -87,8 +90,7 @@ while (list(,$slice_id) = each($export)) {
 	$export_text .= "<slice id=\"".$uid."\" name=\"".$slice["name"]."\">";
 	$export_text .= HTMLEntities(base64_encode(serialize($slice)));
 	$export_text .= "</slice>\n\n\n";
-}
-	
+}	
 $header .= "<sliceexport version=\"1.0\">\n";
 $header .= "<comment>This text contains exported slices definitions. You may import them to any Toolkit.</comment>\n";
 
@@ -109,6 +111,9 @@ $export_text = $header.$export_text."</sliceexport>";
 <?PHP
 /*
 $Log$
+Revision 1.3  2001/10/24 18:45:02  honzam
+fixed bug of two listed slices in slice export
+
 Revision 1.2  2001/10/05 10:51:29  honzam
 Slice import/export allows backup of more slices, bugfixes
 

@@ -26,6 +26,8 @@ http://www.apc.org/
 	Two kinds of export:
 		* for another AA installation - allows to change the id
 		* for backup reasons - allows to export more defs at once
+		
+	To show the exported text the page sliceexp_text.php3 is called.
 */
 
 require "../include/init_page.php3";
@@ -95,7 +97,7 @@ if ($SHOWTEXT == ""): ?>
 			<?php echo L_E_EXPORT_LIST ?>
 			</td>
 			<tr><td class=tabtit width="100%">
-			<SELECT name="export[]" size=8 class=tabtxt MULTIPLE>
+			<SELECT name="export_slices[]" size=8 class=tabtxt MULTIPLE>
 			<?php
 				reset($all_slices);
 			    while(list($s_id,$name) = each($all_slices))
@@ -128,6 +130,9 @@ endif;
 <?PHP
 /*
 $Log$
+Revision 1.3  2001/10/24 18:45:02  honzam
+fixed bug of two listed slices in slice export
+
 Revision 1.2  2001/10/05 10:51:29  honzam
 Slice import/export allows backup of more slices, bugfixes
 
