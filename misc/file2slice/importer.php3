@@ -116,12 +116,13 @@ function processDataArray($data, $actions)
 function Importer_SendErrorPage($txt) {
   if( $GLOBALS["err_url"] )
     go_url($GLOBALS["err_url"]);
-  echo (L_OFFLINE_ERR_BEGIN);
+  HTMLPageBegin();
+  echo "</head><body>";
   if( isset( $txt ) AND is_array( $txt ) )
     PrintArray($txt);    
    else 
     echo $txt;
-  echo (L_OFFLINE_ERR_END );
+  echo "</body></html>";
   exit;
 }  
 

@@ -26,11 +26,10 @@ http://www.apc.org/
     Shows all the help to all the list items (i.e. all alias functions, all field types)
 */	
 
-require "../include/en_news_lang.php3";
-require "../include/en_param_wizard_lang.php3";
-require "../include/constants_param_wizard.php3";
 require "../include/util.php3";
 require "../include/mgettext.php3";
+bind_mgettext_domain ("../include/lang/".get_mgettext_lang()."_param_wizard_lang.php3");
+require "../include/constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>"._m("Param Wizard Summary")."</TITLE>";
@@ -38,9 +37,10 @@ echo "</HEAD><BODY>";
 
 $list = $$mylist;
 
-$lists = array ("INPUT_TYPES", "FIELD_FUNCTIONS");
+$lists = array ("INPUT_TYPES", "FIELD_FUNCTIONS", "INSERT_TYPES", "DEFAULT_VALUE_TYPES");
 
 if (!is_array ($list)) {
+    echo "<h1>"._m("Choose a Parameter Wizard")."</h1>";
     echo '<FORM action="param_wizard_list.php3" method="get">';
     echo '<SELECT name=mylist MULTIPLE size="'.count($list).'" style=".">';
     reset ($lists);
@@ -48,7 +48,7 @@ if (!is_array ($list)) {
         $list = $$mylist;
         echo "<OPTION value='$mylist'>".$list["name"]."s";
     }
-    echo "</SELECT><BR>";
+    echo "</SELECT><BR><br>";
     echo "<INPUT TYPE=submit value='"._m("Go")."'>&nbsp;";
     echo "</FORM></BODY></HTML>";
     exit;
@@ -99,10 +99,10 @@ while (list ($name, $item) = each ($list["items"])) {
             echo "<TR>";
             echo "<TD><B>".nl($param[name])."</B></TD><TD>";
 			switch($param[type]) {
-			case "INT":  echo L_PARAM_WIZARD_TYPE_INT; break;
-			case "STR":  echo L_PARAM_WIZARD_TYPE_STR; break;
-			case "STRID":echo L_PARAM_WIZARD_TYPE_STRID; break;
-			case "BOOL": echo L_PARAM_WIZARD_TYPE_BOOL; break;
+			case "INT":  echo " ("._m("integer number").")"; break;
+			case "STR":  echo " ("._m("any text").")"; break;
+			case "STRID":echo " ("._m("field id").")"; break;
+			case "BOOL": echo " ("._m("boolean: 0=false,1=true").")"; break;
             default : echo "&nbsp;";
 			}
             echo "</TD>
