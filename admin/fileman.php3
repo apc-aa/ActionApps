@@ -53,7 +53,7 @@ if (!FilemanPerms($auth, $slice_id)) {
 
 $basedir = FILEMAN_BASE_DIR.$fileman_dir;
 if (!is_dir ($basedir) && !file_exists ($basedir))
-    mkdir ($basedir);
+    mkdir ($basedir,FILEMAN_MODE);
   
 if (IsSuperadmin()) {
     $basedir = FILEMAN_BASE_DIR;
