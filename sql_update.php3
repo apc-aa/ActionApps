@@ -87,6 +87,53 @@ $tablelist = array( 'active_sessions' => "(
                          PRIMARY KEY (name, sid),
                          KEY changed (changed)
                       )",
+                      'alerts_collection' => "(
+                         id int(11) NOT NULL auto_increment,
+                         description text NOT NULL,
+                         showme tinyint(1) NOT NULL default '1',
+                         PRIMARY KEY  (id)
+                      )",
+                      'alerts_collection_filter' => "(
+                         collectionid int(11) NOT NULL default '0',
+                         filterid int(11) NOT NULL default '0',
+                         myindex tinyint(4) NOT NULL default '0',
+                         PRIMARY KEY  (collectionid,filterid)
+                      )",
+                      'alerts_digest_filter' => "(
+                         id int(11) NOT NULL auto_increment,
+                         vid int(11) NOT NULL default '0',
+                         conds text NOT NULL,
+                         showme tinyint(1) NOT NULL default '1',
+                         description text NOT NULL,
+                         last_daily int(11) NOT NULL default '0',
+                         last_weekly int(11) NOT NULL default '0',
+                         last_monthly int(11) NOT NULL default '0',
+                         text_daily text NOT NULL,
+                         text_weekly text NOT NULL,
+                         text_monthly text NOT NULL,
+                         PRIMARY KEY  (id)
+                      )",
+                      'alerts_user' => "(
+                         id int(10) NOT NULL auto_increment,
+                         email varchar(255) NOT NULL default '',
+                         password varchar(255) NOT NULL default '',
+                         firstname varchar(100) NOT NULL default '',
+                         lastname varchar(100) NOT NULL default '',
+                         session varchar(32) NOT NULL default '',
+                         sessiontime int(10) NOT NULL default '0',
+                         confirm varchar(20) NOT NULL default '',
+                         PRIMARY KEY  (id)
+                      )",
+                      'alerts_user_filter' => "(
+                         id int(10) NOT NULL auto_increment,
+                         userid int(11) default NULL,
+                         filterid int(11) default NULL,
+                         howoften varchar(10) NOT NULL default 'daily',
+                         collectionid int(11) default NULL,
+                         PRIMARY KEY  (id),
+                         UNIQUE KEY user_filter (userid,filterid),
+                         KEY alerts_collection (userid,collectionid)
+                      )", 
                       'constant' => "(
                          id char(16) NOT NULL,
                          group_id char(16) NOT NULL,
@@ -273,6 +320,7 @@ $tablelist = array( 'active_sessions' => "(
                          disc_count int(11) DEFAULT '0',            
                          disc_app int(11) DEFAULT '0',              
                          externally_fed char(150),
+                         moved2active int(10) NOT NULL default '0',
                          PRIMARY KEY (id),
                          KEY short_id (short_id),
                          KEY slice_id (slice_id, status_code, publish_date),
