@@ -2,6 +2,8 @@
 (honzam) - fixed get_aamenus() redeclare error
          - better general categories handling in Links module
          - fixed PHP warning of not existing array in slice import
+         - all language files regenerated
+         - fixed problem with wrong url supplied after discussion reply
 11/03/03 - added Spanish language file to site module
 (pep)    - fixed bug: admin/param_wizard.php3 and se_inputform.php3 now
            load the param wizard language file
