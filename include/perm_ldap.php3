@@ -100,15 +100,15 @@ function AddUser($user, $flags = 0) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
-    
+
   $record["objectclass"][0]   = "top";
   $record["objectclass"][1]   = "person";
   $record["objectclass"][2]   = "organizationalperson";
   $record["objectclass"][3]   = "inetorgperson";
-  $record["cn"] = $user["givenname"]." ".$user["sn"];
+  $record["cn"] = $user["givenname"] . "  " . $user["sn"];
   $record["sn"] = $user["sn"];
   $record["givenname"] = $user["givenname"];
-  $record["mail"] = $user["mail"];                // can be an array
+  if ($user["mail"]) { $record["mail"] = $user["mail"]; }  // can be an array
   $record["uid"] = $user["uid"];
   $record["userPassword"] = "{md5}" 
                   . base64_encode(pack("H*",md5($user["userpassword"])));
@@ -534,7 +534,7 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
   }
   
   ldap_close($ds);
-  return $r;
+  return $r;          // true or false
 }
 
 function DelPerm ($id, $objectID, $objectType, $flags = 0) {
@@ -690,6 +690,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.10  2000/08/11 17:12:48  kzajicek
+E-mail is not required
+
 Revision 1.9  2000/08/10 15:37:18  kzajicek
 UserAdd now returns user_id on success and false on error.
 
