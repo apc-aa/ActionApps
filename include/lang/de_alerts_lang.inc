@@ -2,7 +2,7 @@
 # $Id$
 # Language: DE
 # This file was automatically created by the Mini GetText environment
-# on 18.9.2002 17:14
+# on 25.9.2002 12:49
 
 # Do not change this file otherwise than by typing translations on the right of =
 
