@@ -310,6 +310,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   // load the HIERARCHICAL EDITOR
   if ($hierarch) {
       require_once $GLOBALS["AA_INC_PATH"]."constedit.php3";
+      // it exits here
+
   }
 /*
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">

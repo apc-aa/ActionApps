@@ -36,7 +36,7 @@ require_once $GLOBALS["AA_INC_PATH"]."import_util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 
-/** Returns key of the $array, which value is most similar to given $text */ 
+/** Returns key of the $array, which value is most similar to given $text */
 function findNearestText($text, $array) {
     $max = -2;
     if ( isset($array) AND is_array($array) ) {
@@ -143,8 +143,8 @@ if ($upload) {
     // log
     $logMsg = "Slice " .$slice_id. ": Processed ". $numProcessed. ", Inserted ". $numInserted. ", Updated:". $numUpdated. ", Error: ". $numError. " items";
     writeLog("CSV_IMPORT",$logMsg);
-    
-    // invalidate cache; 
+
+    // invalidate cache;
     $GLOBALS['pagecache']->invalidateFor("slice_id=".$GLOBALS['slice_id']);  # invalidate old cached values
 
     fclose($handle);
@@ -269,7 +269,7 @@ FrmTabCaption(_m("Mapping settings"));
            echo "<td class=tabtxt>";
            FrmSelectEasy("actions[$f_id]",$actionList,$preview ? $actions[$f_id] : "default");
            echo "</td>";
-           
+
            echo "<td class=tabtxt ><input type=checkbox name=\"html[$f_id]\" "; if ($preview && $html[$f_id]) echo  "CHECKED";  echo  "></input></td>";
            echo "<td class=tabtxt><input type=text name=\"params[$f_id]\" value=\""; if ($preview) echo stripslashes($params[$f_id]);  echo "\"></input></td>";
            echo "<td class=tabhlp><a href='javascript:CallParamWizard(\"TRANS_ACTIONS\",\"actions[$f_id]\",\"params[$f_id]\")'><b>"
@@ -286,16 +286,16 @@ FrmTabCaption(_m("Mapping settings"));
        </tr>
        <tr>
        <td class=tabtxt align=center><input type="radio" <?php if ($itemId == "old") echo "CHECKED"; ?> NAME="itemId" value="old"></td>
-       <td class=tabtxt ><?php 
-         echo _m("Map item id from"). '&nbsp'; 
+       <td class=tabtxt ><?php
+         echo _m("Map item id from"). '&nbsp';
          FrmSelectEasy("itemIdMappedFrom",$inFields,$preview ? $idFrom : $inFields[0]);
-         echo '<br>'; 
+         echo '<br>';
          $mapping_options = array ( 'pack_id'   => _m('unpacked long id (pack_id)'),
-                                    'store'     => _m('packed long id (store)'),  
+                                    'store'     => _m('packed long id (store)'),
                                     'string2id' => _m('string to be converted (string2id) - with param:'));
-         
+
          FrmSelectEasy("itemIdMappedActions",$mapping_options, $preview ? $itemIdMappedActions : 'pack_id');
-         echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. ($preview ? $itemIdMappedParams : '').'"></input>'; 
+         echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. ($preview ? $itemIdMappedParams : '').'"></input>';
        ?></td>
 
     </tr>

@@ -36,26 +36,27 @@ function con_url($Url,$Params){
 }
 
 /// Move to another page (must be before any output from script)
-function go_url($url, $add_param="") {
-    global $sess;
-    if( isset( $sess ) )
+function go_url($url, $add_param="", $usejs=false) {
+    global $sess, $rXn;
+    if (is_object($sess)) {
         page_close();
-    if( $add_param != "" )
+    }
+    if ($add_param != "") {
         $url = con_url( $url, rawurlencode($add_param));
+    }
     // special parameter for Netscape to reload page
-    $netscape = ($rXn=="") ? "rXn=1" : "rXn=".++$rXn;
-    header("Status: 302 Moved Temporarily");
-    header("Location: ". con_url($url,$netscape));
+    $url = con_url($url,($rXn=="") ? "rXn=1" : "rXn=".++$rXn);
+    if ( $usejs OR headers_sent() ) {
+       echo '
+        <script language="JavaScript" type="text/javascript"> <!--
+            document.location = "'.$url.'";
+          //-->
+        </script>
+       ';
+    } else {
+        header("Status: 302 Moved Temporarily");
+        header("Location: ". con_url($url,$netscape));
+    }
     exit;
-}
-
-/// Note this doesn't appear to be used (mitra)
-function go_url_javascript ($to_go_url) {
-    echo "
-    <SCRIPT language=JavaScript>
-    <!--\n
-        document.location = \"".$sess->url($to_go_url)."\";\n
-    // -->\n
-    </SCRIPT>";
 }
 ?>

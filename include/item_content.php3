@@ -70,7 +70,7 @@ class ItemContent {
     function is_empty() {
         return !is_array($this->content);
     }
-    
+
     function is_set($field_id) {
         return is_array($this->content[$field_id]);
     }
@@ -147,7 +147,7 @@ class ItemContent {
     function setExpiryDate($value) { $this->setItemValue ("expiry_date", $value); }
 
     /*------------------------ */
-    
+
     /** Special function - fills field by prepared array $v[]['value'] */
     function setFieldValue($field_id,$v) {
         $this->content[$field_id] = $v;
@@ -171,9 +171,9 @@ class ItemContent {
     /**
     Transform $itemContent according to the transformation actions $trans_actions and slice fields $slice_fields
     */
-     function transform(&$itemContent, &$trans_actions, &$slice_fields) {
-          return $trans_actions->transform($itemContent,$slice_fields,$this);
-       }
+    function transform(&$itemContent, &$trans_actions, &$slice_fields) {
+        return $trans_actions->transform($itemContent,$slice_fields,$this);
+    }
 
     /** Show the item in one row in a table according to the order specified by slice fields $slf
     */

@@ -609,7 +609,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
     }
     $zids2 =
         QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
-                         $group_by, "ACTIVE", $slices, 0, $zids);
+                         $group_by, "ACTIVE", $zids ? false : $slices, 0, $zids);
 
     if(isMLXSlice($slice_info)) { 
       $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,

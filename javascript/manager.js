@@ -242,7 +242,11 @@ function SelectRelations(tag, prefix, taggedid, headline) {
 }
 
 function SetCookie(name, value) {
-    document.cookie = name + "=" + escape(value);
+   var expires = new Date();
+   expires.setTime (expires.getTime() + (1000 * 60 * 60 * 24 * 1)); // a day
+   document.cookie = name + "=" + escape(value) +
+                      "; expires=" + expires.toGMTString() +
+                      "; path=/";
     // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
     // + ((path == null)    ? "" : ("; path=" + path))
     // + ((domain == null)  ? "" : ("; domain=" + domain))
@@ -275,7 +279,7 @@ function DeleteCookie(name) {
     var exp = new Date();
     exp.setTime (exp.getTime() - 1);
     var cval = GetCookie (name);
-    document.cookie = name + "=" + cval + "; expires=" + exp.toGMTString();
+    document.cookie = name + "=" + cval + "; expires=" + exp.toGMTString() + "; path=/";
 }
 
 function ToggleCookie(name,val) {
