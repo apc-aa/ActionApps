@@ -22,6 +22,8 @@ DROP TABLE IF EXISTS relation       ;
 DROP TABLE IF EXISTS pagecache      ;
 DROP TABLE IF EXISTS view           ;
 
+# 06/01/01 - added display_count, short_id and flags to item table
+# 05/30/01 - new sql_update.php3 script updating current database instalation
 # 05/13/01 - added view table
 # 0x/0x/01 - add feedmap table
 #          - add relation table
@@ -231,6 +233,7 @@ CREATE TABLE groups (
 
 CREATE TABLE item (
    id char(16) NOT NULL,
+   short_id int(11) NOT NULL auto_increment,     # used for short url link
    slice_id char(16) NOT NULL,
    status_code smallint(5) DEFAULT '0' NOT NULL,
    post_date bigint(20) DEFAULT '0' NOT NULL,
@@ -240,9 +243,10 @@ CREATE TABLE item (
    posted_by char(60),
    edited_by char(60),
    last_edit bigint(20),
+   display_count int(11) DEFAULT '0' NOT NULL,   # log information of how many times it was displayed
+   flags char(30),                               # item flags for future ussage 
    PRIMARY KEY (id),
-   KEY id (id),
-   UNIQUE id_2 (id)
+   KEY short_id (short_id)
 );
 
 # --------------------------------------------------------
@@ -675,3 +679,4 @@ INSERT INTO field VALUES( 'source..........', '', 'News_EN_tmpl....', 'Source', 
 INSERT INTO field VALUES( 'source_href.....', '', 'News_EN_tmpl....', 'Source URL', '610', 'URL of the source', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#SRC_URL#', 'f_s:javascript: window.alert(\'No source url specified\')', 'alias for Source URL<br>(if there is no source url defined in database, default source url is displayed (see ALIAS definition on field setting page))<br>Use _#LINK_SRC for text source link.<div class=example><em>Example: </em>&lt;a href\"_#SRC_URL#\"', '_#LINK_SRC', 'f_l', 'alias for Source Name with link.<br>(substituted by &lt;a href=\"_#SRC_URL#\"&gt;_#SOURCE##&lt;/a&gt; if Source URL defined, otherwise _#SOURCE## only)', '', '', '', '', '', '0', '0', '0', '', 'url', 'qte', '1', '1');
 INSERT INTO field VALUES( 'status_code.....', '', 'News_EN_tmpl....', 'Status Code', '5020', 'Select in which bin should the news appear', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:1', '1', '0', '0', 'sel:AA_Core_Bins....', '', '100', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', 'status_code', 'number', 'num', '0', '0');
 INSERT INTO field VALUES( 'slice_id........', '', 'News_EN_tmpl....', 'Slice', '5000', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:1', '1', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#SLICE_ID', 'f_n:slice_id........', 'alias for id of slice', '', '', '', '', '', '', '', '', '0', '0', '0', 'slice_id', '', 'nul', '0', '1');
+INSERT INTO field VALUES( 'display_count...', '', 'News_EN_tmpl....', 'Displayed Times', '5050', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')
