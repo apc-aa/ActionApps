@@ -131,9 +131,13 @@ class MLX
 	}
 	function &getCtrlFields() { return $this->ctrlFields; }
 	function update(&$content4id,$cntitemid,$action,$mlxl,$mlxid) {
+		$content4mlxid = array();
+		$oldcontent4mlxid = array();
 		$insert = false;
-		if(($action == "insert") && $mlxl && $mlxid) {
+		if((($action == "insert")||($action == "update")) && $mlxl && $mlxid) {
 			$this->trace("Updating control data..");
+			$oldcontent4mlx = GetItemContent($mlxid);
+			$oldcontent4mlxid = $oldcontent4mlx[$mlxid];
 			$id = $mlxid;
 			$lang = $mlxl;
 		} else if((!$content4id[MLX_CTRLIDFIELD][0][value]) || ($action == "insert")) {
@@ -144,11 +148,14 @@ class MLX
 			$insert = true;
 		} else 
 			$this->fatal("MLX update: duno what to do");
+		$qp_cntitemid = q_pack_id($cntitemid);
 		reset($this->ctrlFields);
 		while( list($k,$v) = each($this->ctrlFields) ) {
 			if($v['name'] == $lang) {
-				$content4mlxid["$k"] = array(array('value' => q_pack_id($cntitemid)));
-				break;
+				$content4mlxid[(string)$k] = array(array('value' => $qp_cntitemid));
+			} else if($oldcontent4mlxid 
+			  && ($oldcontent4mlxid[(string)$k][0]['value'] == $qp_cntitemid)) {
+				$content4mlxid[(string)$k] = 0;
 			}
 		}
 		if(empty($content4mlxid)) 
