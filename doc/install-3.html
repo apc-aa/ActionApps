@@ -341,7 +341,9 @@ Password:
 
 allow_call_time_pass_reference = On
 
-register_globals = On                                                                    ; needed so that POST parameters end up in global variables</code></PRE>
+register_globals = On                 ; needed so that POST parameters end up in global variables</code></PRE>
+
+magic_quotes_gpc = On                 ; needed to avoid various bugs with untested code!
   <code></code></BLOCKQUOTE>
 <blockquote><code>
   <hr>
