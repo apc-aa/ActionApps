@@ -70,9 +70,12 @@ function DeleteCategory($catId) {
   $db->tquery( $SQL );
 }
 
-function ChangeCatPriority($category_id, $insertedId, $pri, $state) {
+function ChangeCatPriority($category_id, $insertedId, $pri, $state, $name) {
 	global $db;
 
+    // General categories have its own priorities
+    $new_pri = Links_GlobalCatPriority($name);
+    if ( $new_pri ) $pri = $new_pri;
   	$SQL = "UPDATE links_cat_cat SET priority=$pri, state='$state'
            	  WHERE category_id = $category_id
              		AND what_id = $insertedId";
@@ -272,7 +275,10 @@ if (isset($ids) && is_array($ids) && $subcatIds!="") {
 
         // existing but base (so assignment must exist before)
         else {
-            ChangeCatPriority($cid, $insertedId, $pri, $states[$key]);
+// commented out - Honza - priorities are not possible, now - all is displayed
+// alphabeticaly. On the other hand, to add priorities just uncoment following
+// line and add order changing arrows to catedit admin interface
+//          ChangeCatPriority($cid, $insertedId, $pri, $states[$key], $names[$key]);
             $oldBaseSubcat[$insertedId] = "";      // reassigned
         }
     }

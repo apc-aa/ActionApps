@@ -83,42 +83,42 @@ function MoveSelectedDown(listbox)
 // Encodes all values from listbox to comma delimeted string
 // prepared for sending as url parameter
 function CrossDelimeted(listbox,valueVar,textVar,stateVar) {
-	var delimeter=''
-	var delimeter2=''
+    var delimeter=''
+    var delimeter2=''
 
-  	eval(valueVar).value = "";
-  	eval(textVar).value = "";
+    eval(valueVar).value = "";
+    eval(textVar).value = "";
 
-	for (var i = 0; i < eval(listbox).options.length; i++) {
-    	// blank rows are just for <select> size setting
-		if (eval(listbox).options[i].value != 'wIdThTor' ) {
-		    if (eval(listbox).options[i].text.length >=4) {
-				switch (eval(listbox).options[i].text.substring(0,4)) {
-					case "(!) ":
-						eval(stateVar).value += delimeter + "highlight"
-						break
-					case "(-) ":
-						eval(stateVar).value += delimeter + "visible"
-						break
-				}
-	      		eval(textVar).value += delimeter + eval(listbox).options[i].text.substring(4)
-			}
-			else {
-				eval(stateVar).value += delimeter + "visible"
-				eval(textVar).value += delimeter + eval(listbox).options[i].text
-			}
+    for (var i = 0; i < eval(listbox).options.length; i++) {
+        // blank rows are just for <select> size setting
+        if (eval(listbox).options[i].value != 'wIdThTor' ) {
+            if (eval(listbox).options[i].text.length >=4) {
+                switch (eval(listbox).options[i].text.substring(0,4)) {
+                    case "(!) ":
+                        eval(stateVar).value += delimeter + "highlight"
+                        break
+                    case "(-) ":
+                        eval(stateVar).value += delimeter + "visible"
+                        break
+                }
+                eval(textVar).value += delimeter + eval(listbox).options[i].text.substring(4)
+            }
+            else {
+                eval(stateVar).value += delimeter + "visible"
+                eval(textVar).value += delimeter + eval(listbox).options[i].text
+            }
 
-    		eval(valueVar).value += delimeter2 + eval(listbox).options[i].value
+            eval(valueVar).value += delimeter2 + eval(listbox).options[i].value
 
-      		delimeter='#'
+            delimeter='#'
           delimeter2=','
 
-    	}
-  	}
+        }
+    }
 
 /*	prompt("textVar = '" + eval(textVar).value + "'\n" +
-		   "statetextVar = " + eval(stateVar).value + "\n" +
-		   "valueVar = '" + eval(valueVar).value +"'")*/
+           "statetextVar = " + eval(stateVar).value + "\n" +
+           "valueVar = '" + eval(valueVar).value +"'")*/
 }
 
 function DelCateg(msg) {
@@ -287,32 +287,32 @@ function UpdateCategory() {
 
 function ChangeStateCateg(listbox) {
 
-	// Is there at least one option?
-  	if (!eval(listbox).disabled && eval(listbox).length >= 1) {
-  		var i=eval(listbox).selectedIndex
+    // Is there at least one option?
+    if (!eval(listbox).disabled && eval(listbox).length >= 1) {
+        var i=eval(listbox).selectedIndex
 
-		// is selected any option?
-  		if (i >= 0) {
-  	  		var temptxt = eval(listbox).options[i].text
-	  		var prefix = temptxt.substring(0,3)
-	  		var text = temptxt.substring(4)
+        // is selected any option?
+        if (i >= 0) {
+            var temptxt = eval(listbox).options[i].text
+            var prefix = temptxt.substring(0,3)
+            var text = temptxt.substring(4)
 
-	  		// option should begin with prefix
-	  		if (prefix == "(-)" || prefix == "(!)") {
-	  	  		switch (temptxt.charAt(1)) {
-		  	  		case '!':
-			  	  		temptxt = "(-) " + text
-			  	  		break
-			  		case '-':
-				  		temptxt = "(!) " + text
-				  		break
-		  		}
-	      		eval(listbox).options[i].text = temptxt
-	  		}
-	  		else
-	  	  		eval(listbox).options[i].text = "(-) " + text
-    	}
-	}
+            // option should begin with prefix
+            if (prefix == "(-)" || prefix == "(!)") {
+                switch (temptxt.charAt(1)) {
+                    case '!':
+                        temptxt = "(-) " + text
+                        break
+                    case '-':
+                        temptxt = "(!) " + text
+                        break
+                }
+                eval(listbox).options[i].text = temptxt
+            }
+            else
+                eval(listbox).options[i].text = "(-) " + text
+        }
+    }
 }
 
 // function replaces html code of a an HTML element (identified by id)
@@ -342,9 +342,9 @@ function DeleteField(index) {
 }
 
 function CheckURL() {
-	document.f_hidden.url.value=document.f.url.value
-	window.open("","message","resizable=yes, scrollbars=yes")
-	document.f_hidden.submit()
+    document.f_hidden.url.value=document.f.url.value
+    window.open("","message","resizable=yes, scrollbars=yes")
+    document.f_hidden.submit()
 }
 
 function getElementByName(n, d) {
@@ -355,15 +355,16 @@ function getElementByName(n, d) {
   if(!x && document.getElementById) x=document.getElementById(n); return x;
 }
 
-function LinkVote(link1, link2) {
-    // needs global aa_live_file, aa_img_null 
+function LinkVote(link1, link2, changetag) {
+    // needs global aa_live_file, aa_img_null
   imgsrc = aa_live_file+"?type=linksvote&clicked="+link1+"&notclicked="+link2;
   img1 = getElementByName(""+link1+"");
-  img1.src = imgsrc;
-  img1.width = 68;
+  img1.src = imgsrc;  // now we write to database
+  SetContent(changetag,thanks_text);
+/*  img1.width = 68;
   img2 = getElementByName(""+link2+"");
   img2.src = aa_img_null;
-  img2.width = 1;
+  img2.width = 1; */
 }
 
 
