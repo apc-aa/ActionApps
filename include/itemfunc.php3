@@ -473,8 +473,8 @@ function show_fnc_freeze_fld($varname, $field, $value, $param, $html) {
 function show_fnc_rio($varname, $field, $value, $param, $html) {
   global $db;
 
-  if (!empty($param))     # there are no parameters now, but 1) may be in future
-    list($constgroup, ) = explode(':', $param); # 2) sometimes there is ':' at the end as parameter separation 
+  if (!empty($param))
+    list($constgroup, $ncols, $move_right) = explode(':', $param);     
 
   if( substr($constgroup,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7), "" );
@@ -483,7 +483,8 @@ function show_fnc_rio($varname, $field, $value, $param, $html) {
   
   echo $field["input_before"];
   FrmInputRadio($varname, $field['name'], $arr, $value[0]['value'],
-                $field["required"], $field["input_help"], $field["input_morehlp"] );
+                $field["required"], $field["input_help"], $field["input_morehlp"],
+                $ncols, $move_right);
 }
 
 function show_fnc_freeze_rio($varname, $field, $value, $param, $html) {

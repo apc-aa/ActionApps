@@ -679,40 +679,41 @@ function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
       </tr>";
 }
 
+
+/// Used in FrmInputRadio
+function getRadioButtonTag(&$k, &$v, &$name, &$selected) {
+    $ret = "<input type='radio' name='$name'
+                 value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
+    if ((string)$selected == (string)$k) 
+      $ret .= " checked";
+    $ret .= ">".htmlspecialchars($v);
+    return $ret;
+}
+
 /**
 * Prints a radio group, html tags <input type="radio" .. to 2-column table
 * for use within <form> and <table> tag
 */
 function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
-                       $hlp="", $morehlp="", $linebreaks=false) {
-  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+                       $hlp="", $morehlp="", $ncols=0, $move_right=true) {
+    
+    $name=safe($name);
 
-  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
-  Needed($needed);
-  echo "</td>\n <td>";	
-  reset($arr);
-  while(list($k, $v) = each($arr)) { 
-    echo "<input type='radio' name='$name'
-                 value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
-    if ((string)$selected == (string)$k) 
-      echo " checked";
-    echo ">".htmlspecialchars($v);
-    if ($linebreaks) echo "<br>";
-    echo "\n";
-  }
-  reset($arr);
-  PrintMoreHelp($morehlp);
-  PrintHelp($hlp);
-  echo "</td></tr>\n";
-}  
+    reset($arr);
+    while(list($k, $v) = each($arr)) 
+        $records[] = getRadioButtonTag($k, $v, $name, $selected);
+    
+    printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp, $ncols, $move_right);
+}
 
 /// Used in FrmInputMultiChBox
-function OneChBox (&$k, &$v, &$name, &$selected) {
-    echo "<nobr><input type='checkbox' name='$name'
+function getOneChBoxTag(&$k, &$v, &$name, &$selected) {
+    $ret = "<nobr><input type='checkbox' name='$name'
          value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
     if ($selected[$k])
-        echo " checked";
-    echo ">".htmlspecialchars($v)."</nobr>";
+        $ret .= " checked";
+    $ret .= ">".htmlspecialchars($v)."</nobr>";
+    return $ret;
 }
 
 /**
@@ -721,24 +722,37 @@ function OneChBox (&$k, &$v, &$name, &$selected) {
 */
 function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
                             $hlp="", $morehlp="", $ncols=0, $move_right=true) {
-    $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+    
+    $name=safe($name);
+
+    reset($arr);
+    while(list($k, $v) = each($arr)) 
+        $records[] = getOneChBoxTag($k, $v, $name, $selected);
+    
+    printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp, $ncols, $move_right);
+}
+
+
+/**
+* Prints html tag <input type="radio" or ceckboxes .. to 2-column table
+* - for use internal use of FrmInputMultiChBox and FrmInputRadio
+*/
+function printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp, 
+                           $ncols, $move_right) {
+                               
+    $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
     
     echo "<tr align=left><td class=tabtxt><b>$txt</b>";
     Needed($needed);
     echo "</td>\n <td>";
     
-    if (is_array ($arr)) {
+    if (is_array ($records)) {
         if (! $ncols) {
-            reset($arr);
-            while(list($k, $v) = each($arr)) 
-                OneChBox ($k, $v, $name, $selected);
+            reset($records);
+            while(list(,$v) = each($records)) 
+                echo $v;
         } else {
-            for ($i = 0, reset ($arr); list ($k,$v) = each ($arr); $i ++) {
-                $keys[$i] = $k;
-                $values[$i] = $v;
-            }    
-
-            $nrows = ceil (count ($arr) / $ncols);
+            $nrows = ceil (count ($records) / $ncols);
             echo '<table border="0" cellspacing="0">';
             for ($irow = 0; $irow < $nrows; $irow ++) {
                 echo '<tr>';
@@ -746,10 +760,10 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
                     echo '<td>';
                     $pos = ( $move_right ? $ncols*$irow+$icol : 
                                            $nrows*$icol+$irow );
-                    if (!$keys[$pos] AND !$values[$pos]) {
+                    if (!$records[$pos]) {
                         echo "&nbsp;";
                     } else {
-                        OneChBox ($keys[$pos], $values[$pos], $name, $selected);
+                        echo $records[$pos];
                     }
                     echo '</td>';
                 }
@@ -763,6 +777,7 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
     PrintHelp($hlp);
     echo "</td></tr>\n";
 }
+
 
 
 /**

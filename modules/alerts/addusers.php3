@@ -70,7 +70,7 @@ echo _m("Enter email addresses one on a row, you may add first and last name sep
 echo "<BR><BR><TABLE border='0'>";
 
 if (!$collection_record ["fix_howoften"]) 
-    FrmInputRadio("add[howoften]", _m("How often"), get_howoften_options(), "daily", false, "", "", true);
+    FrmInputRadio("add[howoften]", _m("How often"), get_howoften_options(), "daily", false, "", "", 1);
 
 FrmInputRadio("add[confirm]", _m("Confirmation"), array (
     "notconfirmed" => _m("Send a confirmation email to users (recommended)."),
