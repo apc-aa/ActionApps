@@ -344,9 +344,11 @@ class MLXView
 	//                  ALL  -> show all articles regardless of language (like without MLX)
 	var $mode = "MLX";
 	var $supported_modes = array("MLX","ONLY","ALL");
-	
-	function MLXView($mlx) { 
+	///@param mlx is the thing set in the URL
+	///@param slice_id is a fallback in case mlx is missing
+	function MLXView($mlx,$slice_id=0) { 
 		if($mlx) {
+			huhl("mls set");
 			$arr = explode("-",$mlx);
 			foreach($arr as $av) {
 				$av = strtoupper($av);
@@ -355,6 +357,9 @@ class MLXView
 				else
 					$this->language[] = $av;
 			}
+		} else { //mlx is not set for some reason, get default prios
+			$aPrio = $this->getPrioTranslationFields($slice_id);
+			$this->language = array_keys($aPrio);
 		}
 	}
 	function preQueryZIDs($ctrlSliceID,&$conds,&$slices)

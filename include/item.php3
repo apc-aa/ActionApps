@@ -848,18 +848,10 @@ function RSS_restrict($txt, $len) {
         return (( (integer)$p[1] == (integer)($this->getval('short_id........')) ) ? '1' : '0');
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
-      case 'mlx_lang':    // print the current mlx language (the desired one instead of the lang_code...)
-        if(!$GLOBALS['mlxView']) {
-	  if( !is_array( $slice_info ) )
-            $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));
-          if(!$slice_info['MLX_SLICEDB_COLUMN'])
-            return _m("Not an MLX Slice -- no MLX Control Slice selected.");
-          $mlxView = new MLXView($slice_info['MLX_SLICEDB_COLUMN']);
-	} else 
-	  $mlxView = $GLOBALS['mlxView'];
-	if(!$mlxView)
-	  return "";
-        return $mlxView->getLangByIdx(0);		  
+      case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
+        if(!$GLOBALS[mlxView]) 
+	  return "MLX no global set: this shouldnt happen".__FILE__.",".__LINE__;
+        return $GLOBALS[mlxView]->getLangByIdx(0);		  
         break;
       case 'addform':   // show link to inputform with special design defined in view (id in p[1])
         $add = "add=1";

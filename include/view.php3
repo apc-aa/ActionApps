@@ -586,9 +586,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
     //mlx stuff    
     $slice_info = GetSliceInfo($slice_id);
     if(isMLXSlice($slice_info)) {
-      $mlx = $view_param["mlx"];
-      if(!$GLOBALS['mlxView'])
-        $GLOBALS['mlxView'] = new MLXView($mlx);
+      $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
+      //make sure the lang info doesnt get reused with different view
+      $GLOBALS['mlxView'] = new MLXView($mlx,$slice_info[MLX_SLICEDB_COLUMN]);
       $GLOBALS['mlxView']->preQueryZIDs($slice_info[MLX_SLICEDB_COLUMN],$conds,$slices); 
     }
     $zids2 =
