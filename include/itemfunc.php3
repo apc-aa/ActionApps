@@ -236,12 +236,22 @@ function insert_fnc_ids($item_id, $field, $value, $param, $additional='') {
         # add reverse related
       $reverse_id = $value['value'];
       $value['value'] = $item_id;
+      // mimo added
+      // get rid of empty dummy relations (text=0) 
+      // this is only a problem for text content
+      $db = getDB();
+      if($field["text_stored"]) { 
+        $SQL = "DELETE FROM content
+                 WHERE item_id = '". q_pack_id($reverse_id) ."'
+                   AND field_id = '". $field["id"] ."'
+                   AND `text`=0";
+        $db->query( $SQL );
+      }
         # is reverse relation already set?
       $SQL = "SELECT * FROM content
                WHERE item_id = '". q_pack_id($reverse_id) ."'
                  AND field_id = '". $field["id"] ."'
                  AND ". ($field["text_stored"] ? "text" : "number") ."= '". $value['value'] ."'";
-      $db = getDB();
       $db->query( $SQL );
       if( !$db->next_record() )  # not found
         insert_fnc_qte($reverse_id, $field, $value, $param);

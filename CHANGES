@@ -1,3 +1,9 @@
+02/18/05 - fixed a bug with mutual/reverse related items:
+(mimo)     when adding a new reverse relation it used to keep an empty
+           text content, so one reverse relation were 2 entries in the
+           target content. The fix deletes 0 text relations from the target
+           content.
+         - minor mlx fixes 
 02/11/05 - other LDAP fixes for its new version - updated documentation
 (honzam)  and configuration (thanks to Jiri Reischig)
          - e-mail is now marked as "required" on setup screen

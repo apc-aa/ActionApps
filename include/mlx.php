@@ -459,11 +459,12 @@ class MLXView
 			}
 			//conservative				
 			$sql = "SELECT  c2.field_id,c2.text FROM `content` AS c1" //`field_id`,`text`
-				." LEFT JOIN `content` AS c2 ON ("
+//				." LEFT JOIN `content` AS c2 ON ("
+				." INNER JOIN `content` AS c2 ON ("
 				." c2.item_id=c1.text )"
 				." WHERE (c1.item_id='".quote($upContId)."'"
 				." AND c1.field_id='".MLX_CTRLIDFIELD."'"
-				." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."')";
+				." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."') LIMIT ".count($translations);
 			$db->tquery($sql);
 			unset($aMlxCtrl);
 			while( $db->next_record() ) { //get all translations
@@ -584,6 +585,8 @@ class MLXView
 	function getPrioTranslationFields($ctrlSliceID) {
 		list($fields,) = GetSliceFields($ctrlSliceID);
 		$translations = array();
+		if(!is_array($fields))
+			return $translations;
 		foreach( $fields as $v ) {
 			if(isset($v[id]) && ( strpos($v[id],MLX_LANG2ID_TYPE)) === 0) {
 				$tmptrans[(string)$v[name]] = $v[id];
