@@ -21,6 +21,40 @@ http://www.apc.org/
 
 # common lanmguage file - comm
 
+// setup constats
+define("L_SETUP_PAGE_BEGIN", 
+ '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+  <HTML>
+  <HEAD>
+  <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
+define("L_SETUP_TITLE", "AA Setup");
+define("L_SETUP_H1", "AA Setup");
+define("L_SETUP_NO_ACTION", "Tento skript nemůže být použit na již nakonfigurovaném systému.");
+define("L_SETUP_INFO1", "Vítejte! Pomocí tohoto skriptu vytvoříte " .
+                        "Váš administrativní účet.<p>" .
+      "Pokud instalujete novou kopii tohoto programu, zvolte <b>Inicializace</b>.<br>");
+define("L_SETUP_INFO2", "Pokud jste omylem smazali Váš administrativní účet, zvolte <b>Obnovit</b>.<br>");
+define("L_SETUP_INIT", "Inicializace");  
+define("L_SETUP_RECOVER", "Obnovit");
+define("L_SETUP_TRY_RECOVER", "Nemohu přidat primární objekt v databázi přistupových práv.<br>" .
+       "Prosím zkontrolujte přístupová práva do databáze přistupových práv.<br>" .
+       "Pokud jste pouze smazali Váš administrativní účet, použijte volbu <b>Obnovit</b>");
+define("L_SETUP_USER", "Administrativní účet");
+define("L_SETUP_LOGIN", "Uživatelské jméno");
+define("L_SETUP_PWD1", "Heslo");
+define("L_SETUP_PWD2", "Potvrdit heslo");
+define("L_SETUP_FNAME", "Jméno");
+define("L_SETUP_LNAME", "Příjmení");
+define("L_SETUP_EMAIL", "E-mail");
+define("L_SETUP_CREATE", "Vytvořit");
+define("L_SETUP_DELPERM", "Nekonzistentní práva byla smazána (účet/skupina neexistuje): ");
+define("L_SETUP_ERR_ADDPERM", "Není možné přiřadit administrativní práva.");
+define("L_SETUP_ERR_DELPERM", "Není možné smazat nekonzistentní práva.");
+define("L_SETUP_OK", "Gratulace! Účet byl vytvořen.");
+define("L_SETUP_NEXT", "Zalogujte se tímto účtem a vytvořte první webík:");
+define("L_SETUP_SLICE", "Přidat webík");
+
 // loginform language constants
 define("L_LOGIN", "Přihlášení");
 define("L_LOGIN_TXT", "Vítejte! Přihlašte se prosím Vaším jménem a heslem:");
@@ -30,8 +64,9 @@ define("L_SEARCH_TIP", "Seznam je omezen na 5 uživatelů.<br>Pokud v seznamu není
 define("L_USERNAME", "Uživatelské jméno:");
 define("L_PASSWORD", "Heslo:");
 define("L_LOGINNOW", "Přihlásit se");
-define("L_BAD_LOGIN", "Uživatelské jméno či helso je neplatné.");
+define("L_BAD_LOGIN", "Uživatelské jméno či heslo je neplatné.");
 define("L_TRY_AGAIN", "Zkuste to znovu!");
+define("L_BAD_HINT", "Pokud určitě zadáváte správné heslo, kontaktujte <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.");
 define("LOGIN_PAGE_BEGIN",
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML>
@@ -56,7 +91,10 @@ define("L_NEW_GROUP", "Nová skupina");
 define("L_EDIT_GROUP", "Editace Skupiny");
 
 // application not specific strings
+define("NO_SOURCE_URL", "javascript: window.alert('Nebylo zadáno')"); 
 define("L_ALLCTGS", "Všechny kategorie");
+define("L_BAD_INC", "Špatný parametr inc - soubor může být v tomtéž adresáři, kde je .shtml soubor - smi obsahovat jen znaky a cisla");
+define("L_NO_SUCH_FILE", "Soubor nenalezen");
 define("L_SELECT_CATEGORY", "Zvol Kategorii ");
 define("L_NO_ITEM", "Nenalezena žádná zpráva");
 define("L_VIEW_SLICE", "Zobraz webík");
@@ -74,11 +112,6 @@ define( "L_ICON_LEGEND", '
                   <br>
                   <i>Legenda</i>
                   <TABLE BORDER=1>
-                  <TR>
-                  <TD><img src="../images/notpubl.gif" width=24 height=24 border=0 alt=""> Dosud nepublikováno</TD>
-                  <TD><img src="../images/publish.gif" width=24 height=24 border=0 alt=""> Publikovaná zpráva</TD>
-                  <TD><img src="../images/expired.gif" width=24 height=24 border=0 alt=""> Expirovaná zpráva</TD>
-                  </TR>
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/hlight.gif" border=0 alt=""> Důležité</TD>
                   <TD COLSPAN=2><img src="../images/feed.gif" border=0 alt=""> Importováno</TD></TR>
@@ -89,11 +122,12 @@ define( "L_ICON_LEGEND", '
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/less.gif" border=0 alt=""> Méně detailů</TD>
                   <TD COLSPAN=2><img src="../images/more.gif" border=0 alt=""> Více detailů</TD></TR>
-                  </TABLE>
-                  Kategorie zobrazené červeně nejsou součástí tohoto webíku (článek byl zřejmě importován z jiného webíku)<br><br>
-                  Webík zahrnete do své *.shtml stránky přidáním následujícího příkazu do HTML kódu:<br><code>&lt;!--#include virtual=&quot;/aa/slice.php3?slice_id='. $slice_id .'&quot;--&gt;
-                  </code>');
-
+                  </TABLE>');
+                           
+define( "L_SLICE_HINT", '
+                  <br>
+                  Webík zahrnete do své *.shtml stránky přidáním následující řádky v HTML kódu:
+                  ');
                    
 function datetime2date ($dttm) {
 	return ereg_replace("^([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2}).*", 
@@ -117,8 +151,29 @@ function dateExample() {
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:23  madebeer
-Initial revision
+Revision 1.9  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
+Revision 1.8  2000/08/23 12:29:57  honzam
+fixed security problem with inc parameter to slice.php3
+
+Revision 1.7  2000/08/17 15:17:55  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
+Revision 1.6  2000/08/14 12:39:13  kzajicek
+Language definitions required by setup.php3
+
+Revision 1.5  2000/07/26 16:01:48  kzajicek
+More descriptive message for "login failed"
+
+Revision 1.4  2000/07/12 14:26:40  kzajicek
+Poor printing of the SSI statement fixed
+
+Revision 1.3  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:23  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:12  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

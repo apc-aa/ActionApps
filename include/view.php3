@@ -69,9 +69,9 @@ class itemview{
            " WHERE $where AND fulltexts.ft_id=items.master_id";
 
     if( $category_sort )
-      $SQL .= " ORDER BY category_id, publish_date $sort_order";
+      $SQL .= " ORDER BY category_id, publish_date $this->sort_order";
      else 
-      $SQL .= " ORDER BY publish_date $sort_order";
+      $SQL .= " ORDER BY publish_date $this->sort_order";
   
     if( OPTIMIZE_FOR_MYSQL )                             // if no mySQL - go to item no (mySQL use LIMIT)
       $SQL .= " LIMIT ". $this->from_record .", ". $this->num_records;
@@ -109,8 +109,11 @@ class itemview{
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:50  madebeer
-Initial revision
+Revision 1.2  2000/08/03 12:39:35  honzam
+Bug in sort order fixed
+
+Revision 1.1.1.1  2000/06/21 18:40:50  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:27  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

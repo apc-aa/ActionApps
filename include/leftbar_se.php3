@@ -22,8 +22,11 @@ http://www.apc.org/
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:41  madebeer
-Initial revision
+Revision 1.2  2000/07/17 13:28:55  kzajicek
+Language changes
+
+Revision 1.1.1.1  2000/06/21 18:40:41  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:24  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -98,21 +101,21 @@ added $Id $Log and $Copyright to some stray files
   </tr>
   <tr><td>&nbsp;</td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
-  <tr><td class=leftmenu><?php echo L_USER_MNG ?></td></tr>
+  <tr><td class=leftmenu><?php echo L_PERMISSIONS ?></td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <tr><td valign="TOP">
   <?php
   if( $show["users"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS) ) 
-    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_users.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_USER_PERMS."</a></td>"; 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_users.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_PERM_CHANGE."</a></td>"; 
    else 
-    echo "&nbsp;&nbsp;<span class=leftmenun>". L_USER_PERMS ."</span></td>"; ?>
+    echo "&nbsp;&nbsp;<span class=leftmenun>". L_PERM_CHANGE ."</span></td>"; ?>
   </tr>
   <tr><td valign="TOP">
   <?php
   if( $show["addusers"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ADD_USER) ) 
-    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_users.php3") ."&adduser=1&slice_id=$slice_id\" class=leftmenuy>".L_USER_ADD."</a></td>"; 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_users.php3") ."&adduser=1&slice_id=$slice_id\" class=leftmenuy>".L_PERM_ASSIGN."</a></td>"; 
    else 
-    echo "&nbsp;&nbsp;<span class=leftmenun>". L_USER_ADD ."</span></td>"; ?>
+    echo "&nbsp;&nbsp;<span class=leftmenun>". L_PERM_ASSIGN ."</span></td>"; ?>
   </tr>
   <tr><td>&nbsp;</td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>

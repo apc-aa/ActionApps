@@ -21,7 +21,7 @@ http://www.apc.org/
 
 # se_newuser.php3 - adds new user to permission system (now LDAP directory)
 # expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update succesfull)
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -51,7 +51,7 @@ if( $update )
     ValidateInput("user_surname", L_USER_SURNAME, &$user_surname, &$err, true, "text");
     ValidateInput("user_firstname", L_USER_FIRSTNAME, &$user_firstname, &$err, true, "text");
     if( $user_password1 != $user_password2 )
-      $err[$user_password2] = MsgERR(L_BAD_RETYPED_PWD);
+      $err[$user_password2] = MsgErr(L_BAD_RETYPED_PWD);
     if( count($err) > 1)
       break;
       
@@ -118,8 +118,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:02  madebeer
-Initial revision
+Revision 1.3  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
+Revision 1.2  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.1.1.1  2000/06/21 18:40:02  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:51  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

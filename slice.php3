@@ -27,8 +27,8 @@ http://www.apc.org/
 #optionaly bigsrch   // true, if this script have to show big search form
 #optionaly cat_id    // select only items in category with id cat_id
 #optionaly cat_name  // select only items in category with name cat_name
-
-#$debugtimes["begin"]=microtime();
+#optionaly inc       // for dispalying another file instead of slice data 
+                     // (like static html file - inc=/contact.html)
 
 $encap = ( ($encap=="false") ? false : true );
 
@@ -38,12 +38,10 @@ require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
-#$debugtimes["required"]=microtime();
 
 if ($encap){require $GLOBALS[AA_INC_PATH]."locsessi.php3";}
 else {require $GLOBALS[AA_INC_PATH]."locsess.php3";} 
 page_open(array("sess" => "AA_SL_Session"));
-#$debugtimes["page_open"]=microtime();
 $sess->register(r_highlight); 
 $sess->register(r_category); 
 $sess->register(r_unpacked_where); 
@@ -147,7 +145,7 @@ function CompactView($where, $catsel=false) {
    else 
     $SQL .= " ORDER BY publish_date DESC";
 
-  if( OPTIMIZE_FOR_MYSQL ) {                 // if no mySQL - go to item no (mySQL use LIMIT)
+  if( OPTIMIZE_FOR_MYSQL ) {                 // mySQL - use LIMIT
     $SQL .= " LIMIT ". $scr->metapage * ($scr->current - 1). ", ". $scr->metapage;
   }  
 
@@ -166,8 +164,8 @@ function CompactView($where, $catsel=false) {
                         $compact_remove, $fulltext_remove);
     $oldcat = "_No CaTeg";
 
-    if( !OPTIMIZE_FOR_MYSQL )                             // if no mySQL - go to item no (mySQL use LIMIT)
-      $db->seek(max(0,min($scr->metapage * ($scr->current - 1)),$db->nf()));
+    if( !OPTIMIZE_FOR_MYSQL )                // no mySQL - seek in result set
+      $db->seek($scr->metapage * ($scr->current - 1));
       
     while($db->next_record()){ 
       $CurItem->odd = $i%2;
@@ -200,7 +198,25 @@ function CompactView($where, $catsel=false) {
 
 //-----------------------------End of functions definition------------------------------------------ 
 
-  if ($encap) $sess->add_vars(); ## adds values from QUERY_STRING_UNESCAPED  
+  if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
+                                 #       and REDIRECT_STRING_UNESCAPED
+
+    # url posted command to display another file
+  if( $inc ) {                   # this section must be after $sess->add_vars()
+    if( !eregi("^([0-9a-z_])+(\.[0-9a-z]*)?$", $inc) ) {
+      echo L_BAD_INC. " $inc";
+      page_close();
+      exit;
+    } else {  
+      $fp = @fopen( shtml_base().$inc, "r");    #   if encapsulated
+      if( !$fp )
+        echo L_NO_SUCH_FILE ." $inc";
+       else
+        FPassThru($fp); 
+      exit;
+    }  
+  }  
+
   $p_slice_id= q_pack_id($slice_id);
   $db = new DB_AA; 		 // open BD	
   $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
@@ -250,7 +266,10 @@ function CompactView($where, $catsel=false) {
     require $GLOBALS[AA_INC_PATH]."big_srch.php3";
   }
   elseif( $sh_itm ) {   // fulltext view
-    $SQL= "select items.*, fulltexts.full_text from items, fulltexts where fulltexts.ft_id=items.master_id AND (id='".q_pack_id($sh_itm)."')";
+    $SQL= "SELECT items.*, fulltexts.full_text, categories.name as category 
+             FROM items, fulltexts 
+             LEFT JOIN categories ON categories.id=items.category_id 
+             WHERE fulltexts.ft_id=items.master_id AND (items.id='".q_pack_id($sh_itm)."')";
     $db->query($SQL);
     if ($db->next_record()) {
       $CurItem = new item($foo,true,1,$sess->MyUrl($slice_id, $encap), $fulltext_format, $odd_row_format, $even_row_format, "", $grab_len, $compact_remove, $fulltext_remove);
@@ -278,14 +297,12 @@ function CompactView($where, $catsel=false) {
     }
     else {
       if( $cat_id ) {         // optional parameter cat_id
-//huh("catid");    
         $r_category = ( $cat_id == "all" ? "" : $cat_id );
         $r_highlight = $highlight;
         $r_unpacked_where = unpack_id(MakeWhere($p_slice_id, $r_category, $r_highlight));
         $scr->current = 1;
       }  
       elseif ( $cat_name ) {  // optional parameter cat_name
-//huh("catname");    
         $SQL = "SELECT categories.id FROM categories, catbinds 
                   WHERE categories.id=catbinds.category_id 
                     AND catbinds.slice_id = '$p_slice_id'
@@ -324,11 +341,23 @@ function CompactView($where, $catsel=false) {
 //    p_arr_m($debugtimes);
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:52  madebeer
-Initial revision
+Revision 1.8  2000/08/23 12:29:57  honzam
+fixed security problem with inc parameter to slice.php3
 
-Revision 1.1.1.1  2000/06/12 21:49:44  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
+Revision 1.7  2000/08/22 12:30:06  honzam
+fixed problem with lost session id AA_SL_Session in cgi (PHP4) instalation.
+
+Revision 1.6  2000/08/19 11:53:31  kzajicek
+Removed debugging output ()
+
+Revision 1.5  2000/08/17 15:09:11  honzam
+new inc parameter for displaying specified file instead of slice data
+
+Revision 1.4  2000/07/12 16:53:09  kzajicek
+No min-max games are necessary, scroller keeps us within boundaries.
+
+Revision 1.3  2000/07/07 21:31:15  honzam
+Wrong parameter count in min() - fixed
 
 Revision 1.22  2000/06/12 19:57:51  madebeer
 added GPL LICENSE file, added copyright notice to all files that
