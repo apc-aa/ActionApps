@@ -10,7 +10,9 @@
         }
         if (HTMLArea.checkSupportedBrowser) {
             elem = document.getElementById("htmlplainspan");
-            elem.style.display = "none";
+            if ( elem != null ) {
+                 elem.style.display = "none";
+            }
         }
     }
 

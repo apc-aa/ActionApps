@@ -56,6 +56,10 @@ require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 function create_filter_text($ho, $collectionid, $update, $item_id)
 {
+    global $debug_alerts, $auth;
+
+    if ( $debug_alerts ) { huhl("create_filter_text($ho, $collectionid, $update, $item_id)"); }
+
     // the view.aditional field stores info about grouping by selections
     $SQL = "
     SELECT F.conds, view.slice_id, view.aditional, view.aditional3,
@@ -70,7 +74,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
         AND CH.collectionid='$collectionid'";
     $db = getDB();
     if ($item_id) {
-        $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
+        $db->tquery("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
         if (!$db->next_record())
             { freeDB($db); return ""; }
         $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
@@ -82,7 +86,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
     // (= how_often) not exist, yet
     initialize_last ();
 
-    $db->query($SQL);
+    $db->tquery($SQL);
     while ($db->next_record()) {
         $last = $db->f("last");
         $slices[$db->f("slice_id")]["name"] = $db->f("slicename");
@@ -99,7 +103,6 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
     }
     if (! is_array($slices)) { freeDB($db);  return; }
 
-    global $debug_alerts;
     $howoften_options = get_howoften_options();
 
     // first I create a hierarchical array $slices and than use it instead of the recordset
@@ -132,13 +135,15 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
             $SQL .= "WHERE id = '".q_pack_id($item_id)."'";
         } else {
             $SQL .=
-            "WHERE publish_date <= $now AND expiry_date >= $last "  # a) 2. and b) 2.
+            "WHERE slice_id = '$p_slice_id' AND
+                   publish_date <= $now AND expiry_date >= $last "  # a) 2. and b) 2.
                ."AND ((moved2active BETWEEN $last AND $now) "       # a) 1.
                      ."OR (moved2active < $last "                   # b) 1.
                          ."AND publish_date > $last) "              # b) 3.
                    .")";
         }
-        $db->query($SQL);
+
+        $db->tquery($SQL);
 
         $all_ids = "";
         while ($db->next_record()) {
@@ -173,7 +178,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
         $varset->addkey ("howoften", "text", $ho);
         $varset->addkey ("collectionid", "text", $collectionid);
         $varset->add ("last", "number", $now);
-        $db->query($varset->makeINSERTorUPDATE("alerts_collection_howoften"));
+        $db->tquery($varset->makeINSERTorUPDATE("alerts_collection_howoften"));
     }
 
     //print_r ($retval);
@@ -215,7 +220,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
         $unordered_filters = create_filter_text ($ho, $cid, $update, $item_id);
 
         // find filters for this collection
-        $db->query("SELECT CF.filterid
+        $db->tquery("SELECT CF.filterid
             FROM alerts_collection_filter CF
             WHERE CF.collectionid = '$cid'
             ORDER BY CF.myindex");
@@ -231,7 +236,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
         // Find all users who should receive anything
         if (! is_array ($emails)) {
 
-            $db->query("
+            $db->tquery("
                 SELECT id FROM item
                 WHERE slice_id = '".addslashes($collection["slice_id"])."'
                   AND status_code = 1
@@ -307,19 +312,19 @@ function initialize_last ()
     foreach ($hos as $ho => $v ) {
         // fill alerts_collection_howoften.last in cases the row for this period
         // (= how_often) not exist, yet
-        $db->query("SELECT C.id FROM alerts_collection C LEFT JOIN
+        $db->tquery("SELECT C.id FROM alerts_collection C LEFT JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id AND howoften='$ho'
             WHERE last IS NULL");
         while ($db->next_record())
-            $db2->query("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
+            $db2->tquery("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
                 VALUES ('".$db->f("id")."', '$ho', ".$init[$ho].")");
 
         // the same as above, but for rows, which exist but with last=0
-        $db->query("SELECT C.id FROM alerts_collection C INNER JOIN
+        $db->tquery("SELECT C.id FROM alerts_collection C INNER JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id
             WHERE last=0 AND howoften='$ho'");
         while ($db->next_record())
-            $db2->query("UPDATE alerts_collection_howoften SET last=".$init[$ho]
+            $db2->tquery("UPDATE alerts_collection_howoften SET last=".$init[$ho]
                 ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
     }
     freeDB($db);

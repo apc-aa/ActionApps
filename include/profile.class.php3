@@ -60,6 +60,7 @@ class aaprofile {
             return;
         }
         $db = getDB();
+        $this->properties = array();
 
         // default setting for the slice is stored as user with uid = *
         $SQL= " SELECT * FROM profile
