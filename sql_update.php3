@@ -775,6 +775,7 @@ $SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri
 $SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined058', 'AA_Core_Bins....', 'Approved', '1', '', '100')";
 $SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined059', 'AA_Core_Bins....', 'Holding Bin', '2', '', '200')";
 $SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined060', 'AA_Core_Bins....', 'Trash Bin', '3', '', '300')";
+$SQL_constants[] = "INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined061', 'lt_codepages', 'windows-1251', 'windows-1251', '', '100')";
 
 $SQL_apc_categ[] = "DELETE FROM constant WHERE group_id = 'lt_apcCategories'";
 $SQL_apc_categ[] = "INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined100', 'lt_apcCategories', 'Internet & ICT', 'Internet & ICT', '', '1000')";

@@ -1,3 +1,6 @@
+# 12/16/02 - added Cyrilic Windows encoding constant
+# 11/05/02 - added tables for polls module - polls, polls_data, polls_designs,
+#            polls_ip_lock, polls_log           
 # 10/24/02 - added default cron entries
 # 08/20/02 - renewed everything from database
 # 08/20/02 - added tables alerts_collection, alerts_collection_filter, 
@@ -944,6 +947,88 @@ CREATE TABLE wizard_welcome (
 
 # --------------------------------------------------------
 
+#
+# Table structure for table `polls`
+#
+
+CREATE TABLE polls (
+  id varchar(16) NOT NULL default '',
+  pollID int(11) NOT NULL auto_increment,
+  status_code tinyint(4) NOT NULL default '1',
+  pollTitle varchar(100) NOT NULL default '',
+  startDate int(11) NOT NULL default '0',
+  endDate int(11) NOT NULL default '0',
+  defaults tinyint(1) default NULL,
+  Logging tinyint(1) default NULL,
+  IPLocking tinyint(1) default NULL,
+  IPLockTimeout int(4) default NULL,
+  setCookies tinyint(1) default NULL,
+  cookiesPrefix varchar(16) default NULL,
+  designID int(11) default NULL,
+  params text NOT NULL,
+  PRIMARY KEY  (pollID)
+);
+# --------------------------------------------------------
+
+#
+# Table structure for table `polls_data`
+#
+
+CREATE TABLE polls_data (
+  pollID int(11) NOT NULL default '0',
+  optionText char(50) NOT NULL default '',
+  optionCount int(11) NOT NULL default '0',
+  voteID int(11) NOT NULL default '0'
+);
+# --------------------------------------------------------
+
+#
+# Table structure for table `polls_designs`
+#
+
+CREATE TABLE polls_designs (
+  designID int(11) NOT NULL auto_increment,
+  pollsModuleID varchar(16) NOT NULL default '',
+  name text NOT NULL,
+  comment text NOT NULL,
+  resultBarFile text NOT NULL,
+  resultBarWidth int(4) NOT NULL default '0',
+  resultBarHeight int(4) NOT NULL default '0',
+  top text NOT NULL,
+  answer text NOT NULL,
+  bottom text NOT NULL,
+  params text NOT NULL,
+  PRIMARY KEY  (designID)
+);
+# --------------------------------------------------------
+
+#
+# Table structure for table `polls_ip_lock`
+#
+
+CREATE TABLE polls_ip_lock (
+  pollID int(11) NOT NULL default '0',
+  voteID int(11) NOT NULL default '0',
+  votersIP char(16) NOT NULL default '',
+  timeStamp int(11) NOT NULL default '0'
+);
+# --------------------------------------------------------
+
+#
+# Table structure for table `polls_log`
+#
+
+CREATE TABLE polls_log (
+  logID int(11) NOT NULL auto_increment,
+  pollID int(11) NOT NULL default '0',
+  voteID int(11) NOT NULL default '0',
+  votersIP char(16) NOT NULL default '',
+  timeStamp int(11) NOT NULL default '0',
+  PRIMARY KEY  (logID)
+);
+
+
+
 # Dumping data for table 'constant'
 #
 
@@ -1008,6 +1093,7 @@ INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefi
 INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined058', 'AA_Core_Bins....', 'Approved', '1', '', '100');
 INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined059', 'AA_Core_Bins....', 'Holding Bin', '2', '', '200');
 INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined060', 'AA_Core_Bins....', 'Trash Bin', '3', '', '300');
+INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined061', 'lt_codepages', 'windows-1251', 'windows-1251', '', '100');
 
 INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined100', 'lt_apcCategories', 'Internet & ICT', 'Internet & ICT', '', '1000');
 INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined101', 'lt_apcCategories', 'Internet & ICT - Free software & Open Source', 'Internet & ICT - Free software & Open Source', '', '1100');
