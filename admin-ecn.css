@@ -257,6 +257,10 @@ TD.leftmenu {
   background: #DDDDDD;
 }
 
+.sel_missing {
+  color: #CC0000;
+}
+
 .sel_title {
        background: #EBDABE;
 }

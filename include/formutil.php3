@@ -433,7 +433,9 @@ class aainputfield {
         if ( !isset( $this->selected ) ) {  // not cached yet => create selected array
             if( isset($this->value) AND is_array($this->value) ) {
                 foreach ( $this->value as $v ) {
-                    if( $v['value'] )  $this->selected[(string)$v['value']] = true;
+                    if( $v['value'] ) {
+                        $this->selected[(string)$v['value']] = true;
+                    }
                 }
             }
         }
@@ -925,14 +927,28 @@ class aainputfield {
         if( isset($arr) && is_array($arr) ) {
             foreach ( $arr as $k => $v ) {
                 if( $usevalue ) $k = $v;    // special parameter to use values instead of keys
-                $selected = $this->if_selected($testval ? $v : $k, ' selected class="sel_on"');
-                if ($selected != '') $selectedused = true;
+                $select_val = $testval ? $v : $k;
+                $selected   = $this->if_selected($select_val, ' selected class="sel_on"');
+                if ($selected != '') {
+                    $selectedused = true;
+                    $already_selected[(string)$select_val] = true;  // flag
+                }
                 if ( ($restrict == 'selected')   AND !$selected ) continue;  // do not print this option
                 if ( ($restrict == 'unselected') AND $selected  ) continue;  // do not print this option
                 $ret .= "<option value=\"". htmlspecialchars($k) ."\" $selected>".htmlspecialchars($v)."</option>";
             }
         }
-        if( $add_empty ) {
+        // now add all values, which is not in the array, but field has this value
+        // (this is slice inconsistence, which could go from feeding, ...)
+        if ( isset( $this->selected ) AND is_array( $this->selected ) ) {
+            foreach ( $this->selected as $k =>$v ) {
+                if ( !$already_selected[$k] ) {
+                    $ret .= "<option value=\"". htmlspecialchars($k) ."\" selected class=\"sel_missing\">".htmlspecialchars($k)."</option>";
+                    $selectedused = true;
+                }
+            }
+        }
+        if ( $add_empty ) {
             $ret .= '<option value=""';
             if ($selectedused == false) $ret .= ' selected class="sel_on"';
            $ret .= '> </option>';
@@ -2001,7 +2017,7 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
                      return false;
                    }
                    return true;
-    case "email":  if( !EReg("^.+@.+\..+",Chop($variable)))
+    case "email":  if ( !valid_email(Chop($variable)) )
                    { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }

@@ -144,6 +144,10 @@ H1 {
   background: #DDDDDD;
 }
 
+.sel_missing {
+  color: #CC0000;
+}
+
 .sel_title {
   background: #F5F0E7;
 }
