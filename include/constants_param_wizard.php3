@@ -49,7 +49,51 @@ use the escape character \ - the wizard will translate the characters. Remember 
 		"params"=>the params in the internal format (divided by :)
 */
 	
+$INSERT_TYPES["name"] = _m("Insert Function");
+$INSERT_TYPES["items"]["qte"] = 
+array ("name" => _m("Text = don't modify"),
+       "desc" => _m("Does not modify the value."));
+$INSERT_TYPES["items"]["boo"] = 
+array ("name" => _m("Boolean = store 0 or 1"));
+$INSERT_TYPES["items"]["fil"] =
+array ("name" => _m("File = uploaded file"),
+       "desc" => _m("Stores the uploaded file and a link to it."));
+$INSERT_TYPES["items"]["uid"] =
+array ("name" => _m("User ID = always store current user ID"),
+       "desc" => "Inserts the identity of the current user, no matter what the user sets.");
+$INSERT_TYPES["items"]["log"] =
+array ("name" => _m("Login name"));
+$INSERT_TYPES["items"]["ids"] =
+array ("name" => _m("Item IDs")); 
+$INSERT_TYPES["items"]["now"] =
+array ("name" => _m("Now = always store current time"),
+       "desc" => _m("Inserts the current time, no matter what the user sets."));
+/*"dte" => _m("Date"), 
+ "cns" => _m("Constant"), 
+ "num" => _m("Number"), 
+ "nul" => _m("None")*/
+     
+// --------------------------------------------------------------------------------       
+    
+$DEFAULT_VALUE_TYPES["name"] = _m("Default Value Type");
+$DEFAULT_VALUE_TYPES["items"]["txt"] =
+array ("name" => _m("Text = text from 'Parameter' field"),
+       "params" => array (array ("name" => _m("Text"))));
+$DEFAULT_VALUE_TYPES["items"]["dte"] =
+array ("name" => _m("Date = current date plus 'Parameter' number of days"),
+       "params" => array (array ("name" => _m("Number of days"))));
+$DEFAULT_VALUE_TYPES["items"]["uid"] =
+array ("name" => _m("User ID = current user ID"));
+$DEFAULT_VALUE_TYPES["items"]["log"] =
+array ("name" => _m("Login name"));
+$DEFAULT_VALUE_TYPES["items"]["now"] =
+array ("name" => _m("Now = current date"));
+$DEFAULT_VALUE_TYPES["items"]["variable"] =
+array ("name" => _m("Variable"),
+       "desc" => _m("A dangerous function. Do not use."));
 
+// --------------------------------------------------------------------------------       
+       
 $INPUT_TYPES["name"] = _m("Input Type");
 $INPUT_TYPES["items"]["hco"] =
 array("name"=>_m("Hierarchical constants"),
@@ -259,6 +303,8 @@ array("name"=>_m("Two Windows"),
 $INPUT_TYPES["items"]["nul"]=
 array("name"=>_m("Do not show"),
 	"desc"=>_m("This option hides the input field"));
+
+// --------------------------------------------------------------------------------       
 
 $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
 "hint"=>_m("How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen."),
