@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </head>
 <!-- frames -->
 <frameset  rows="30,*">
-   <frame name="Navigation" src="<?php echo con_url($sess->url("prev_navigation.php3"),"sh_itm=".$sh_itm); ?>" marginwidth="10" marginheight="10" scrolling="no" frameborder="0" >
+   <frame name="Navigation" src="<?php echo con_url($sess->url("prev_navigation.php3"),"sh_itm=$sh_itm&return_url=$return_url"); ?>" marginwidth="10" marginheight="10" scrolling="no" frameborder="0" >
    <frame name="Item" src="<?php echo con_url($r_slice_view_url, "sh_itm=".$sh_itm); ?>" marginwidth="10" marginheight="10" scrolling="auto" frameborder="0">
 </frameset>
 </html>
