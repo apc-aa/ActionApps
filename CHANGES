@@ -1,3 +1,5 @@
+09/07/04 - The value of Display counter could be set be CSV importer of itemform
+(honzam) - bugfix - html flag for CSV import now works
 09/06/04 - List of "related" items in inputform could be now filtered for most
 (honzam)   input types. You can specify:
              - Conditions in conds[] array
