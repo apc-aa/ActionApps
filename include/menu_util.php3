@@ -126,7 +126,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
 {
     global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad, $sess, $db;
     global $debug;
-
+    trace("+","showMenu",$smmenus);
     #huhsess("Session Variables");
     // load the main AA menu (see menu.php3)
     if ($smmenus == "aamenus")
@@ -136,6 +136,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     if ($activeMain == "aaadmin")
         bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".get_mgettext_lang()."_news_lang.php3");
 
+    trace("=","","useOnLoad=".$useOnLoad);
     if( $useOnLoad )
         echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
     else
@@ -150,6 +151,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
 
     echo "<TABLE border=0 cellspacing=0 cellpadding=0 width='100%'><TR>";
 
+    trace("=","","showMain=".$showMain);
     if ($showMain) {
         // Show the Alerts and Reader management images in the header
         if ($GLOBALS["g_modules"][$slice_id]["type"] == "Alerts") {
@@ -189,6 +191,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
                 action=\"". $sess->url($PHP_SELF) ."\">
             <TR><td align=center class=navbar>";
         $first = true;
+        trace("=","","loop");
         reset ($smmenus);
         while (list ($aamenu,$aamenuprop) = each ($smmenus)) {
             if ($aamenuprop["level"] == "main") {
@@ -228,6 +231,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     echo "
         <TD align=left valign=top width='99%'>
         <TABLE border=0 cellspacing=0 cellpadding=10 width='100%'><TR><TD align=left>\n";
+    trace("-");
 }
 
 // ----------------------------------------------------------------------------------------

@@ -52,6 +52,7 @@ function get_aamenus ()
            $apple_design,
            $AA_INSTAL_PATH,
            $AA_CP_Session;
+    trace("+","get_aamenus");
 
     $aamenus["view"] = array (
         "label" => _m("View site"),
@@ -79,6 +80,7 @@ function get_aamenus ()
         "level" => "main",
         "submenu"=>"sliceadmin_submenu");
 
+    trace("=","","Creating main menu");
     $aamenus["aaadmin"] = array (
         "label" => _m("AA"),
         "title" => _m("AA Administration"),
@@ -101,7 +103,7 @@ function get_aamenus ()
             show_always don't include slice_id in cond
             no_slice_id don't add slice_id to the URL
     */
-
+    trace("=","","Creating submenu");
     $aamenus ["sliceadmin_submenu"] = array (
         "bottom_td"=>50,
         "level"=>"submenu",
@@ -135,16 +137,20 @@ function get_aamenus ()
         "rssfeeds"=>array("cond"=>IfSlPerm(PS_FEEDING), "href"=>"admin/se_rssfeeds.php3", "label"=>_m("RSS Feeds")),
         "filters"=>array("cond"=>IfSlPerm(PS_FEEDING), "href"=>"admin/se_filters.php3", "label"=>_m("Filters")),
         "mapping"=>array("cond"=>IfSlPerm(PS_FEEDING), "href"=>"admin/se_mapping.php3", "label"=>_m("Mapping")),
+
         "header5" => _m("Misc"),
         "field_ids" => array ("label"=>_m("Change field IDs"), "cond"=>IfSlPerm(PS_FIELDS), "href"=>"admin/se_fieldid.php3"),
         "javascript" => array ("label"=>_m("Field Triggers"), "cond"=>IfSlPerm(PS_FIELDS), "href"=>"admin/se_javascript.php3"),
         "fileman" => array ("label"=>_m("File Manager"), "cond"=>FilemanPerms ($auth, $slice_id), "href"=>"admin/fileman.php3"),
+/*
         "anonym_wizard" => array ("label"=>_m("Anonymous Form Wizard"), "cond"=>IfSlPerm(PS_FIELDS), "href"=>"admin/anonym_wizard.php3"),
 		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
 			"href" => "admin/tabledit.php3?set_tview=email", "label"=>_m("Email templates")),
+*/
     ));
     
-    $slice_info = GetSliceInfo ($slice_id);
+    trace("=","","Getting slice info");
+    $slice_info = GetSliceInfo($slice_id);
     if ($slice_info ["mailman_field_lists"]) 
         $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = array (
             "cond"=>IfSlPerm(PS_FIELDS),
@@ -172,7 +178,8 @@ function get_aamenus ()
         "line" => "",
     ));
     
-    if (IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+    trace("=","","Pre PS_EDIT_ALL_ITEMS");
+    if ($slice_id && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
         $db = new DB_AA;
         $items = &$aamenus["itemmanager_submenu"]["items"];
         
@@ -184,7 +191,7 @@ function get_aamenus ()
             AddAlertsModules ($items, $db, _m("Alerts"),
                     _m("List of Alerts modules using this slice as Reader Management."));
         }                
-            
+        trace("=","","module ids slice_id=".$slice_id);
         $db->query ("SELECT DISTINCT AC.module_id, module.name FROM alerts_collection AC
             INNER JOIN module ON AC.module_id = module.id
             INNER JOIN alerts_collection_filter ACF ON AC.id = ACF.collectionid
@@ -197,6 +204,7 @@ function get_aamenus ()
 
     // left menu for aaadmin is common to all modules, so it is shared 
     require_once $GLOBALS["AA_INC_PATH"]."menu_aa.php3";
+    trace("-");
     return $aamenus;
 }
 

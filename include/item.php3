@@ -37,9 +37,11 @@ function DeHtml($txt, $flag) {
 }
 
 function GetAliasesFromFields($fields, $additional="", $type='') {
-  if( !( isset($fields) AND is_array($fields)) AND ($type != 'justids') )
+  trace("+","GetAliasesFromFields");
+  if( !( isset($fields) AND is_array($fields)) AND ($type != 'justids') ) {
+    trace("-");
     return false;
-
+  }
   #add additional aliases
   if( is_array( $additional ) ) {
       reset ($additional);
@@ -61,8 +63,10 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
                                  "param" => "short_id........",
                                  "hlp" => _m("alias for Short Item ID"));
 
-  if( $type == 'justids')   // it is enough for view of urls
+  if( $type == 'justids') {  // it is enough for view of urls
+      trace("-");
       return $aliases;
+  }
                                  
   $aliases["_#EDITITEM"] = array("fce" => "f_e",
                                  "param" => "id..............",
@@ -109,7 +113,7 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
                                      "hlp" => $val[alias3_help],
                                      "fld" => $k);
   }
-
+  trace("-");
   return($aliases);
 }
 

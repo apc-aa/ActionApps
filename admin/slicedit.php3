@@ -29,6 +29,7 @@ require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 
+trace("+","slicedit.php3");
 $PERMS_STATE = array( "0" => _m("Not allowed"),
                       "1" => _m("Active"),
                       "2" => _m("Hold bin") );
@@ -62,6 +63,7 @@ require_once $GLOBALS["AA_INC_PATH"]."slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
   # set variables from database - allways
+$db = getDB();
 $SQL= " SELECT * FROM slice WHERE id='".q_pack_id($foo_source)."'";
 $db->query($SQL);
 if ($db->next_record())
@@ -70,8 +72,10 @@ if ($db->next_record())
       continue;
     $$key = $val; // variables and database fields have identical names
   }
+trace("=","","id and owner");
 $id = unpack_id128($db->f("id"));  // correct ids
 $owner = unpack_id($db->f("owner"));  // correct ids
+trace("=","","post id and owner");
 
 if( $slice_id == "" ) {         // load default values for new slice
   $name = "";
@@ -88,6 +92,7 @@ while ($db->next_record()) {
   $slice_owners[unpack_id128($db->f(id))] = $db->f(name);
 }
 
+trace("=","","Languages");
 reset ($LANGUAGE_NAMES);
 while (list ($l, $langname) = each ($LANGUAGE_NAMES)) 
     $biglangs[$l."_news_lang.php3"] = $langname;
@@ -97,12 +102,16 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("Slice Administration");?></TITLE>
 </HEAD>
 <?php
+  trace("=","","Menu");
   require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
-  showMenu ($aamenus, "sliceadmin","main");
+  trace("=","","calling showMenu");
+  showMenu($aamenus, "sliceadmin","main");
+  trace("=","","Post Menu");
 
   echo "<H1><B>" . ( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings")) . "</B></H1>";
   PrintArray($err);
   echo $Msg;
+  trace("=","","Form");
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
@@ -190,5 +199,7 @@ if($slice_id=="") {
 </td></tr></table>
 </FORM>
 <?php 
+freeDB($db);
+trace("-");
 HTMLPageEnd();
 page_close()?>

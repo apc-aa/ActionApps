@@ -450,6 +450,7 @@ function huhe ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
     global $errcheck;
     if ($errcheck) {
         huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="");
+        if ($GLOBALS["trace"] || $GLOBALS["debug"]) { trace("p"); }
     }
 }
 // Only called from within huhl
@@ -557,6 +558,8 @@ function GetConstants($group, $order='pri', $column='name') {
 # gets fields from main table of the module
 function GetModuleInfo($module_id, $type) {
   global $MODULES;
+  if (! $module_id ) return false;
+  trace("+","GetModuleInfo id=".$module_id);
   $p_module_id = q_pack_id($module_id);
 
   $db = getDB();
@@ -564,6 +567,7 @@ function GetModuleInfo($module_id, $type) {
                WHERE id = '$p_module_id'");
   $ret = ($db->next_record() ? $db->Record : false);
   freeDB($db);
+  trace("-");
   return $ret;
 }
 
@@ -1642,4 +1646,16 @@ function FetchSliceReadingPassword() {
         $slice_pwd = $db->f("reading_password");
 }
 
+$tracearr = array();
+// Support function for debugging, because of the lack of a stacktrace in PHP
+// $d = + for entering a function - for leaving = for a checkpoint.
+function trace($d,$v="NONE",$c="") {
+    global $tracearr;
+    if ($d == "+") {
+        array_push($tracearr,$v,$c);
+    }
+    if ($d == "-") { array_pop($tracearr); array_pop($tracearr); }
+    if ($d == "=") { array_pop($tracearr); array_push($tracearr,$c); }
+    if ($trace || $debug || $d == "p" ) { huhl("TRACE: ",$tracearr); }
+}
 ?>

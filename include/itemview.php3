@@ -365,7 +365,7 @@ class itemview {
   #view_type used internaly for different view types
   function get_output($view_type="") {
     global $debug;
-    if ($debug) huhl("get_output($view_type)",$this->zids);
+    trace("+","itemview:get_content",$view_type);
     $db = $this->db;
 
     if ($view_type == "discussion") {
@@ -376,12 +376,15 @@ class itemview {
         case 'list' : $out = $this->get_disc_list($CurItem); break;
         default: $out = $this->get_disc_add($CurItem); break;
       }
+      trace("-");
       return $out;
     }
      // other view_type than discussion
 
-    if( !( isset($this->zids) AND is_object($this->zids) ))
+    if( !( isset($this->zids) AND is_object($this->zids) )) {
+      trace("-");
       return;
+    }
 
     # fill the foo_ids - ids to itemids to get from database
     if( substr($this->from_record, 0, 6) != 'random') {
@@ -541,6 +544,7 @@ class itemview {
           $out = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
         $out .= $this->unaliasWithScroller($this->slice_info['compact_bottom'], $CurItem);
     }
+    trace("-");
     return $out;
   }
 
@@ -566,6 +570,7 @@ class itemview {
 
     # send content via reference to be quicker
     function get_output_calendar (&$content) {
+        trace("+","get_output_calendar");
         $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
 
         $month = $this->slice_info['calendar_month'];
@@ -588,8 +593,11 @@ class itemview {
         $calendar = array();
         $max_events = 0;
 
-
-        for( $i=0; $i<$this->num_records; $i++ ) {
+        trace("=","","pre-for");
+        for( $i=0; 
+            $i<$this->num_records 
+            && ($i+$this->from_record < $this->zids->count()); 
+            $i++ ) {
             $iid = $this->zids->short_or_longids($this->from_record+$i);
             if( !$iid )
                 continue;                                     # iid = unpacked item id
@@ -628,6 +636,7 @@ class itemview {
             for ($date = $start_date+1; $date <= $end_date; ++$date)
                 $calendar [$date][$ievent] = array ("iid" => $iid,"span"=>$end_date-$date+1);
         }
+        trace("=","","post-for");
 
         if ($this->slice_info['calendar_type'] == 'mon_table') {
             $row_len = 7;
@@ -736,6 +745,7 @@ class itemview {
 
         $out .= $this->unaliasWithScroller(
                $this->resolve_calendar_aliases ($this->slice_info['compact_bottom']), $CurItem);
+        trace("-");
         return $out;
     }
 

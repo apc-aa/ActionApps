@@ -1,4 +1,9 @@
-05/02/03 - fixed address of sql_update in install-4.html (mitra)
+05/02/03 - FilemanPerms and GetModuleInfo and get_aamenus handle null
+            slice_id better (was generating warnings on Add Slice)
+(mitra)  - Fixed overlong for loop in calendar generating warnings
+         - fixed address of sql_update in install-4.html (mitra)
+05/01/03 - integrated summarize.php3 into menus and styles etc
+05/01/03 - updated fileman.php3 and admin/test.php3 to check for missing 
 05/01/03 - integrated summarize.php3 into menus and styles etc (mitra)
 (mitra)  - updated fileman.php3 and admin/test.php3 to check for missing 
            fileman directory - still has UI and other bugs

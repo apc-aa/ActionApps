@@ -194,6 +194,7 @@ function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
  * @return array conditions array
  */
 function GetViewConds($view_info, $param_conds) {
+  trace("+","GetViewConds");
   # param_conds - redefines default condition values by url parameter (cmd[]=c)
   ResolveCondsConflict($conds, $view_info['cond1field'], $view_info['cond1op'],
                                $view_info['cond1cond'],  $param_conds[1]);
@@ -201,6 +202,7 @@ function GetViewConds($view_info, $param_conds) {
                                $view_info['cond2cond'],  $param_conds[2]);
   ResolveCondsConflict($conds, $view_info['cond3field'], $view_info['cond3op'],
                                $view_info['cond3cond'],  $param_conds[3]);
+  trace("-");
   return $conds;
 }
 
@@ -270,11 +272,12 @@ function ParseBannerParam(&$view_info, $banner_param) {
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
   global $db, $nocache, $debug;
-  if ($debug) huhl("GetView:",$view_param);
+  trace("+","GetView",$view_param);
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param);
 
   if( !$nocache && ($res = $GLOBALS['pagecache']->get($keystr)) ) {
+    trace("-");
     return $res;
   }
 
@@ -287,6 +290,7 @@ function GetView($view_param) {
     // Note cache_sid set by GetViewFromDB
   $GLOBALS['pagecache']->store($keystr, $res, $GLOBALS['str2find_passon']);
   $GLOBALS['str2find_passon'] .= $str2find_save; // and append saved for above
+  trace("-");
   return $res;
 }
 
@@ -295,7 +299,7 @@ function GetView($view_param) {
 function GetViewFromDB($view_param, &$cache_sid) {
   global $db,$debug;
 
-  if ($debug) huhl("GetViewFromDB:",$view_param);
+  trace("+","GetViewFromDB");
   $vid = $view_param["vid"];
   $als = $view_param["als"];
   $conds = $view_param["conds"];
@@ -313,9 +317,10 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                              'random:'.$view_param["random"]);
   # gets view data
   $view_info = GetViewInfo($vid);
-  if (!$view_info OR ($view_info['deleted']>0))
+  if (!$view_info OR ($view_info['deleted']>0)) {
+    trace("-");
     return false;
-
+  }
   $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
                    ( $view_info['noitem_msg'] ?
                    str_replace( '<!--Vacuum-->', '', $view_info['noitem_msg']) :
@@ -331,6 +336,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
   # ---- display content in according to view type ----
   if ($debug) huhl("GetViewFromDB:view_info=",$view_info);
+  trace("=","GetViewFromDB",$view_info['type']);
   switch( $view_info['type'] ) {
     case 'full':  # parameters: zids, als
       $format = GetViewFormat($view_info);
@@ -341,9 +347,12 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
         $itemview = new itemview( $db, $format, $fields, $aliases, $zids,
                                   0, 1, shtml_url(), "");
-        return $itemview->get_output_cached("view");
+        $ret=$itemview->get_output_cached("view");
+      } else {
+        $ret=$noitem_msg;
       }
-      return $noitem_msg;
+      trace("-");
+      return $ret;
     case 'const':
       $format = GetViewFormat($view_info);
       $aliases = GetConstantAliases($als);
@@ -352,8 +361,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
                             ((($view_info['o1_direction'] == 1) ||
                               ($view_info['o1_direction'] == 3))? 'DESC' : ''),
                             ($listlen ? $listlen : $view_info['listlen']) );
-      return $constantview->get_output_cached();
-
+      $ret=$constantview->get_output_cached();
+      trace("-");
+      return $ret;
     case 'discus':
       // create array of discussion parameters
       $disc = array('ids'=> ($view_param["all_ids"] ? "" : $view_param["ids"]),
@@ -380,7 +390,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
 
       $itemview = new itemview( $db, $format,"",$aliases,null,"","",$durl, $disc);
-      return $itemview->get_output_cached("discussion");
+      $ret=$itemview->get_output_cached("discussion");
+      trace("-");
+      return($ret);
 
 
     case 'seetoo':
@@ -400,6 +412,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                       'value' => mktime (0,0,0,$month,1,$year),
                       $view_info['field2'] => 1 ));
         # Note drops through to next case
+        trace("=","","calendar - drop through"); 
     case 'digest':
     case 'list':
     case 'rss':
@@ -477,21 +490,24 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                   ($view_info['type'] == 'urls') ?
                                                'GetItemContentMinimal' : '');
 
-        if ($view_info['type'] == 'calendar')
-            $itemview_type = 'calendar';
-        else $itemview_type = 'view';
+        $itemview_type = (($view_info['type'] == 'calendar') 
+                            ? 'calendar' : 'view');
         if ($debug) huhl("GetViewFromDB going to get_output_cached");
-        return $itemview->get_output_cached($itemview_type);
+        $ret = $itemview->get_output_cached($itemview_type);
       }   #zids2->count >0
+      else { $ret = $noitem_msg; }
       // 	if( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
-      return $noitem_msg;
+      trace("-");
+      return $ret;
 
   case 'static':
     // $format = GetViewFormat($view_info);  // not needed now
     // I create a CurItem object so I can use the unalias function
     $CurItem = new item("", "", $als, "", "", "");
     $formatstring = $view_info["odd"];          # it is better to copy format-
-    return $CurItem->unalias( $formatstring );  # string to variable - unalias
+    $ret = $CurItem->unalias( $formatstring );  # string to variable - unalias
+    trace("-");
+    return $ret;
   }                                             # uses call by reference
 }
 

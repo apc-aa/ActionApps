@@ -195,16 +195,20 @@ function IsPerm($perms, $perm){
 // Check if user has specified permissions
 function CheckPerms( $user_id, $objType, $objID, $perm) {
   global $permission_uid, $permission_to;
-
+  trace("+","CheckPerms");
   if($permission_uid != $user_id)
     CachePermissions($user_id);
 
   switch($objType) {
     case "aa":
-      return IsPerm($permission_to["aa"][$objID], $perm);
+      $ret = IsPerm($permission_to["aa"][$objID], $perm);
+      trace("-");
+      return($ret);
     case "slice":
-      return IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
-    default: return false;
+      $ret = IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
+      trace("-");
+      return($ret);
+    default: trace("-"); return false;
   }
 }
 
@@ -267,9 +271,11 @@ function IfSlPerm($perm) {
 // Checks if logged user is superadmin
 function IsSuperadmin() {
   global $auth, $r_superuser, $permission_uid;
+    trace("+","isSuperadmin");
     # check all superadmin's global permissions
   if($permission_uid != $auth->auth["uid"])
     CachePermissions($auth->auth["uid"]);
+  trace("-","isSuperadmin");
   return $r_superuser[AA_ID];
 }
 
@@ -354,26 +360,35 @@ function FilemanPerms ($auth, $slice_id) {
     global $sess;
     // Sets the fileman_dir var:
     global $fileman_dir;
-
-    $db = new DB_AA;
-    $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
-
-    if ($db->num_rows() != 1) return false;
-
-    $db->next_record();
-    $fileman_dir = $db->f("fileman_dir");
-    if (IsSuperadmin()) return true;
-    else if (!$fileman_dir) return false;
-
-    if ($GLOBALS[debug]) echo "FILEMAN ACCESS ".$db->f("fileman_access");
-    $perms_ok = false;
-    if ($db->f("fileman_access") == "EDITOR"
-        && IfSlPerm(PS_EDIT_ALL_ITEMS))
-        $perms_ok = true;
-    else if ($db->f("fileman_access") == "ADMINISTRATOR"
-        && IfSlPerm(PS_FULLTEXT))
-        $perms_ok = true;
-
+    trace("+","FilemanPerms slice_id=".$slice_id);
+    $db = getDB();
+    if (! $slice_id) {
+        $perms_ok = false;
+    } else {
+      $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
+  
+      if ($db->num_rows() != 1) { $perms_ok = false; }
+      else {
+        $db->next_record();
+        $fileman_dir = $db->f("fileman_dir");
+        if (IsSuperadmin()) { $perms_ok = true; }
+        else {
+          if (!$fileman_dir) { 
+              $perms_ok = false;
+          } else {
+            $perms_ok = false;
+            if ($db->f("fileman_access") == "EDITOR"
+              && IfSlPerm(PS_EDIT_ALL_ITEMS))
+              $perms_ok = true;
+            else if ($db->f("fileman_access") == "ADMINISTRATOR"
+              && IfSlPerm(PS_FULLTEXT))
+              $perms_ok = true;
+          }
+        }
+      } 
+    }
+    freeDB($db); 
+    trace("-");
     return $perms_ok;
 }
 
