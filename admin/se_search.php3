@@ -81,9 +81,8 @@ if( $update )
   $default = PackFields('d', count($default_search_in));
     
   $SQL = "UPDATE slices SET search_show = '$shown', search_default = '$default' WHERE id='$p_slice_id'";
-  $db->query($SQL);
-  if ($db->affected_rows() == 0)
-    $err["DB"] = "<div class=err>Can't change fields</div>";
+  if (!$db->query($SQL))   # not necessary - we have set the halt_on_error
+    $err["DB"] = MsgErr("Can't change fields");
   if( count($err) <= 1 )
     $Msg = MsgOK(L_SEARCH_OK);
 }
@@ -154,8 +153,11 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:03  madebeer
-Initial revision
+Revision 1.2  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
+Revision 1.1.1.1  2000/06/21 18:40:03  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:51  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

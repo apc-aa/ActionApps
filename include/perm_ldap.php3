@@ -56,6 +56,10 @@ $aa_ldap_servers = array(
 function AuthenticateUsername($username, $password, $flags = 0) {
   global $aa_ldap_servers, $aa_default_ldap;
 
+  if (!$username or !$password) {         // no password => anonymous in LDAP
+     return false;
+  }
+
   $return_val=false;
   if($org = strstr($username, "@"))       // user tries to auth. via e-mail  
     $LDAPserver = WhereToSearch( substr($org,"@"));  // get ldap server for this address
@@ -96,29 +100,34 @@ function AddUser($user, $flags = 0) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
-    
+
   $record["objectclass"][0]   = "top";
   $record["objectclass"][1]   = "person";
   $record["objectclass"][2]   = "organizationalperson";
   $record["objectclass"][3]   = "inetorgperson";
-  $record["cn"] = $user["givenname"]." ".$user["sn"];
+  $record["cn"] = $user["givenname"] . "  " . $user["sn"];
   $record["sn"] = $user["sn"];
   $record["givenname"] = $user["givenname"];
-  $record["mail"] = $user["mail"];                // can be an array
+  if ($user["mail"]) { $record["mail"] = $user["mail"]; }  // can be an array
   $record["uid"] = $user["uid"];
   $record["userPassword"] = "{md5}" 
                   . base64_encode(pack("H*",md5($user["userpassword"])));
   if ($user["phone"]) { $record["telephoneNumber"] = $user["phone"]; };
 
   // add data to directory
-  $r=@ldap_add($ds, "uid=$user[uid]," . $aa_default_ldap[people], $record);
+  $user_dn = "uid=$user[uid]," . $aa_default_ldap[people];  
+  $r=@ldap_add($ds, $user_dn, $record);
   ldap_close($ds);
-  return $r; 
+  if ($r) {
+     return $user_dn;
+  } else {
+     return false;
+  }
 }
 
 // deletes an user in LDAP permission system
 // $user_id is DN
-function DelUser ($user_id, $flags = 1) {
+function DelUser ($user_id, $flags = 3) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -129,10 +138,22 @@ function DelUser ($user_id, $flags = 1) {
   
   if ($flags & 1) {            // cancel membership in groups
      $filter = "(&(objectclass=groupOfNames)(member=$user_id))";
-     $r = ldap_search($ds, $LDAPserver[groups], $filter, array(""));
+     $r = ldap_search($ds, $aa_default_ldap[groups], $filter, array(""));
      $arr = ldap_get_entries($ds,$r);
      for($i=0; $i < $arr["count"]; $i++) {
         DelGroupMember($arr[$i]["dn"], $user_id);
+     }
+     ldap_free_result($r);
+  }
+  
+  if ($flags & 2) {            // cancel asssigned permissions
+     $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
+     $r = ldap_search($ds, $aa_default_ldap[acls], $filter,
+                      array("apcObjectType","apcaci","apcObjectID"));
+     $arr = ldap_get_entries($ds,$r);
+     for($i=0; $i < $arr["count"]; $i++) {
+        DelPerm($user_id, $arr[$i]["apcobjectid"][0], 
+                $arr[$i]["apcobjecttype"][0]);   // indexes in lowercase !!!
      }
      ldap_free_result($r);
   }    
@@ -174,12 +195,14 @@ function GetUser ($user_id, $flags = 0) {
     return false;
 
   $filter = "objectclass=inetOrgPerson";
-  $result = @ldap_read($ds, $user_id, $filter, array("cn","sn","givenname","mail","telephonenumber"));
+  $result = @ldap_read($ds, $user_id, $filter, 
+               array("uid","cn","sn","givenname","mail","telephonenumber"));
   if (!$result) return false; 
   $entry = ldap_first_entry ($ds, $result);
   $arr = ldap_get_attributes($ds, $entry);
 
   $res["uid"] = $user_id;
+  $res["login"] = $arr["uid"][0];
   if( is_array($arr["givenname"]) )
     $res["givenname"] = $arr["givenname"][0];
   if( is_array($arr["sn"]) )
@@ -214,14 +237,19 @@ function AddGroup ($group, $flags = 0) {
   if ($group["description"]) $record["description"] = $group["description"];
 
   // add data to directory
-  $r=@ldap_add($ds, "cn=$group[name]," . $aa_default_ldap[groups], $record);
+  $group_dn = "cn=$group[name]," . $aa_default_ldap[groups];
+  $r=@ldap_add($ds, $group_dn, $record);
   ldap_close($ds);
-  return $r; 
+  if ($r) { 
+     return $group_dn;
+  } else {
+     return false;
+  }
 }
 
 // deletes a group in LDAP permission system
 // $group_id is DN
-function DelGroup ($group_id, $flags = 0) {
+function DelGroup ($group_id, $flags = 3) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -232,21 +260,22 @@ function DelGroup ($group_id, $flags = 0) {
   
   if ($flags & 1) {            // cancel membership in other groups
      $filter = "(&(objectclass=groupOfNames)(member=$group_id))";
-     $r = ldap_search($ds, $LDAPserver[groups], $filter, array(""));
+     $r = ldap_search($ds, $aa_default_ldap[groups], $filter, array(""));
      $arr = ldap_get_entries($ds,$r);
      for($i=0; $i < $arr["count"]; $i++) {
         DelGroupMember($arr[$i]["dn"], $group_id);
      }
      ldap_free_result($r);
   }    
-  
+
   if ($flags & 2) {            // cancel asssigned permissions
      $filter = "(&(objectclass=apcacl)(apcaci=$group_id:*))";
-     $r = ldap_search($ds, $LDAPserver[acls], $filter, array("apcObjectType","apcaci"));
+     $r = ldap_search($ds, $aa_default_ldap[acls], $filter,
+                      array("apcObjectType","apcaci","apcObjectID"));
      $arr = ldap_get_entries($ds,$r);
      for($i=0; $i < $arr["count"]; $i++) {
-#       1) ParseApcAci     
-#       2) DelPerm   ($group_id, $arr[$i]["dn"], $arr[$i]["apcObjectType"], );
+        DelPerm($group_id, $arr[$i]["apcobjectid"][0], 
+                $arr[$i]["apcobjecttype"][0]);   // indexes in lowercase !!!
      }
      ldap_free_result($r);
   }    
@@ -494,15 +523,18 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
     }
   }
 
-  if(!$perm) {
-    $r=@ldap_mod_del($ds, $basedn, $old);
-  } else {
+  if($perm) {
     $new["apcaci"][] = "$id:$perm";
+  }
+  
+  if (count($new) > 0) {
     $r=@ldap_mod_replace($ds, $basedn, $new);
+  } else {
+    $r=@ldap_mod_del($ds, $basedn, $old);
   }
   
   ldap_close($ds);
-  return $r;
+  return $r;          // true or false
 }
 
 function DelPerm ($id, $objectID, $objectType, $flags = 0) {
@@ -532,7 +564,7 @@ function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
   for($i=0; $i < $arr["apcaci"]["count"]; $i++) {
     $apcaci = ParseApcAci( $arr["apcaci"][$i] );
     if( $apcaci ) {
-      $info[$apcaci["dn"]]       = GetIDsInfo($apcaci["dn"]);
+      $info[$apcaci["dn"]]   = GetIDsInfo($apcaci["dn"]);
       $info[$apcaci["dn"]]["perm"] = $apcaci["perm"];
     }  
   }
@@ -658,8 +690,40 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:45  madebeer
-Initial revision
+Revision 1.11  2000/08/14 09:22:17  kzajicek
+Fixed incorrect default for in DelGroup
+
+Revision 1.10  2000/08/11 17:12:48  kzajicek
+E-mail is not required
+
+Revision 1.9  2000/08/10 15:37:18  kzajicek
+UserAdd now returns user_id on success and false on error.
+
+Revision 1.8  2000/08/09 15:13:24  kzajicek
+Fixed incorrect default for  in DelUser
+
+Revision 1.7  2000/08/01 13:04:44  kzajicek
+OpenLDAP search did not work well when apcaci was not the last attribute.
+ldap_mod_del is now used only when there will be no apcaci value in the entry.
+
+Revision 1.6  2000/07/28 14:46:32  kzajicek
+GroupAdd now returns group_id on success and false on error.
+
+Revision 1.5  2000/07/28 14:37:33  kzajicek
+Unified behaviour of DelUser, DelGroup in LDAP and SQL. Default is now
+delete any links to removed subject in permission system (to keep integrity).
+
+Revision 1.4  2000/07/28 14:25:02  kzajicek
+DelUser and DelGroup now able to cancel assigned permissions.
+
+Revision 1.3  2000/07/21 14:45:41  kzajicek
+Admin needs to see login names, not IDs (DB specific)
+
+Revision 1.2  2000/07/17 10:31:16  kzajicek
+Fixed login without password bug
+
+Revision 1.1.1.1  2000/06/21 18:40:45  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:26  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

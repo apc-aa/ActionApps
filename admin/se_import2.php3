@@ -58,10 +58,9 @@ do {
       $expVS->clear();
       $expVS->add("from_id", "unpacked", $slice_id);
       $expVS->add("to_id", "unpacked", $val);
-      $db->query("INSERT INTO feedperms" . $expVS->makeINSERT() );
-      if ($db->affected_rows() == 0)
-      { $err["DB"] .= "<div class=err>Can't add export to $val</div>";
-        break;
+      if( !$db->query("INSERT INTO feedperms" . $expVS->makeINSERT() )) {
+        $err["DB"] .= MsgErr("Can't add export to $val");
+        break;    # not necessary - we have set the halt_on_error
       }
     }
   }        
@@ -96,10 +95,9 @@ do {
       $catVS->add("all_categories", "number", 1);
       $catVS->add("to_approved", "number", 0);
       $catVS->add("to_category_id", "unpacked", "0");   // zero means import to the same category (if all_actegories==1)
-      $db->query("INSERT INTO feeds" . $catVS->makeINSERT() );
-      if ($db->affected_rows() == 0)
-      { $err["DB"] .= "<div class=err>Can't add import from $val</div>";
-        break;
+      if( !$db->query("INSERT INTO feeds" . $catVS->makeINSERT() )) {
+        $err["DB"] .= MsgErr("Can't add import from $val");
+        break;  # not necessary - we have set the halt_on_error
       }
     }
   }
@@ -116,9 +114,9 @@ do {
 
 if( count($err) <= 1 ) {
   if( isset($I) AND is_array($I) )   // slice imports some slices
-    go_url( $sess->url(self_base() . "se_filters.php3") ."&Msg=" . rawurlencode(L_IMPORT_OK));
+    go_url( $sess->url(self_base() . "se_filters.php3") ."&Msg=" . rawurlencode(MsgOK(L_IMPORT_OK)));
    else
-    go_url( $sess->url(self_base() . "se_import.php3") ."&Msg=" . rawurlencode(L_IMPORT_OK));
+    go_url( $sess->url(self_base() . "se_import.php3") ."&Msg=" . rawurlencode(MsgOK(L_IMPORT_OK)));
 } else
   MsgPage($sess->url(self_base()."se_import.php3"), $err);
 
@@ -126,8 +124,11 @@ page_close();
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:02  madebeer
-Initial revision
+Revision 1.2  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
+Revision 1.1.1.1  2000/06/21 18:40:02  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
