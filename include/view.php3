@@ -110,7 +110,7 @@ function ParseViewParameters($query_string="") {
                if( strlen($command[2]) < 16  ) {           # short id is used
                  $use_short_ids = true;
                  if( $command[2] > 0 )
-                   CountHit($command[2], 'short_id');      # count hit only for 
+                   CountHit($command[2], 'short_id');      # count hit only for
                } else {                                    #  first displayed
                  CountHit($command[2], 'id');              #  item
                }  
@@ -183,7 +183,7 @@ function GetViewConds($view_info, $param_conds) {
                                                   $view_info['cond3cond']),
                      $view_info['cond3field'] => 1 );
 
-  return $conds;                   
+  return $conds;
 }                     
 
 function GetViewSort($view_info) {
@@ -330,7 +330,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
           $disc['type'] = "list";
       else if ($view_param["add_disc"])
           $disc['type'] = "adddisc";
-      else if ($view_param["sel_ids"] || $view_param["all_ids"]) 
+      else if ($view_param["sel_ids"] || $view_param["all_ids"])
           $disc['type'] = "fulltext";
       else $disc['type'] = "thread";
       $aliases = GetDiscussionAliases();
@@ -356,14 +356,14 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $year = $view_param['year'];
         if ($year < 1900 || $year > 3000) $year = $today['year'];
         
-        $calendar_conds = 
+        $calendar_conds =
         array (array( 'operator' => '<',
                       'value' => mktime (0,0,0,$month+1,1,$year),
                       $view_info['field1'] => 1 ),
                array( 'operator' => '>=',
                       'value' => mktime (0,0,0,$month,1,$year),
                       $view_info['field2'] => 1 ));
-        
+
     case 'digest':
     case 'list':
     case 'rss':
@@ -390,24 +390,25 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
       $sort  = GetViewSort($view_info);
       unset($p_item_ids);
-      if ( $item_ids ) {    # ids could be defined via cmd[]=x command
+      if ( $item_ids && !$use_short_ids) {    # ids could be defined via cmd[]=x command
         reset( $item_ids );
         while( list( ,$v) = each( $item_ids ) )
           $p_item_ids[] = pack_id( $v );   # no q_pack_id - it mustn't be quoted
       }
-      $item_ids=QueryIDs($fields, $item_ids ? false : $slice_id, $conds, $sort, 
-                         $group_by, "ACTIVE", $slices, 0, $p_item_ids);
+      $item_ids=QueryIDs($fields, $item_ids ? false : $slice_id, $conds, $sort,
+                         $group_by, "ACTIVE", $slices, 0, 
+                         $use_short_ids ? $item_ids : $p_item_ids);
 
       $format = GetViewFormat($view_info);
       $format['calendar_month'] = $month;
       $format['calendar_year'] = $year;
-  
+
       $ids_cnt = count( $item_ids );
       if( ($ids_cnt > 0) AND !( ($ids_cnt==1) AND !$item_ids[0]) ) {
 
         if( $list_to > 0 )
           $listlen = max(0, $list_to-$list_from + 1);
-        
+
         if( $list_page ) {   # split listing to pages
                              # Format:  <page>-<number of pages>
           $pos=strpos($list_page,'-');
@@ -422,15 +423,15 @@ function GetViewFromDB($view_param, &$cache_sid) {
             $listlen = floor(($items*($page_n+1))/$no_of_pages) - floor(($items*$page_n)/$no_of_pages);
           } else  # second parameter is not specified - take listlen parameter
             $list_from = $listlen * ($list_page-1);
-        }                     
-         
+        }
+
         if( !$list_from )
           $list_from = 0;
 
         $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, $random ? $random : $list_from,
-                                  $listlen, shtml_url(), "", $use_short_ids );
-        if ($view_info['type'] == 'calendar') 
-            $itemview_type = 'calendar'; 
+                                  $listlen, shtml_url(), "");
+        if ($view_info['type'] == 'calendar')
+            $itemview_type = 'calendar';
         else $itemview_type = 'view';
         return $itemview->get_output_cached($itemview_type);
       }  
@@ -438,7 +439,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       return $noitem_msg;
       
     case 'static':   # parameters: 0
-  case 'static': 
+  case 'static':
     // $format = GetViewFormat($view_info);  // not needed now
     // I create a CurItem object so I can use the unalias function 
     $CurItem = new item("", "", $als, "", "", "");

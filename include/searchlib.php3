@@ -198,7 +198,7 @@ function GetConstantGroup( $input_show_func ) {
              $restrict_ids -- if you want to choose only from a set of items
                               (used by E-mail Alerts and related item view (for
                                sorting and eliminating of expired items))
-                              ids are packed but not quoted in $restrict_ids
+                              ids are packed but not quoted in $restrict_ids or short
              $defaultCondsOperator
              $use_cache -- if set, the cache is searched , if the result isn't 
                            already known. If not, the result is found and stored into 
@@ -458,16 +458,20 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   }
 
   if (is_array($restrict_ids)) {
-    $rids = "";
+    $rids  = "";
+    $delim = "";
+    $column = "";
     reset ($restrict_ids);
     while (list (,$id) = each ($restrict_ids)) {
         if ( !$id )
           continue;
-        if ($rids) $rids .= ",";
-        $rids .= '"'.addslashes($id).'"';
+        if ( !$column )
+          $column = ( (strlen($id) < 16) ? 'short_id' : 'id' );
+        $rids .= $delim.'"'. (($column=='id') ? addslashes($id) : $id) .'"';
+        $delim = ",";
     }
     if ($rids)
-        $SQL .= ' item.id IN ('.$rids.') AND ';
+        $SQL .= " item.$column IN (".$rids.') AND ';
      else
         return array();   # restrict_id definned but empty - no result
   }
