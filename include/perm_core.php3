@@ -437,7 +437,7 @@ function perm_username( $username ) {
     $begin = strpos($username, '=');
     $end   = strpos($username, ',');
     if ( !$begin OR !$end )
-        return _m("anonym");
+        return "anonym";
     return substr($username, $begin+1, $end-$begin-1);
 }
 

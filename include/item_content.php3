@@ -56,6 +56,10 @@ class ItemContent {
         $this->content = $this->content [$item_id];
     }
     
+    function getContent() {
+        return $this->content;
+    }
+    
     /** Returns the value for a field. If it is a multi-value
     *   field, this is the first value. */
     function getValue ($field_id) {

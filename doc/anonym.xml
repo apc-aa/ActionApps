@@ -21,6 +21,15 @@
 
     <revhistory>
       <revision>
+        <revnumber>1.4</revnumber>
+
+        <date>29.3.2003</date>
+
+        <revremark>Slightly updated the info about the wizard, added a warning
+        about two forms in one page to Tips and Tricks.</revremark>
+      </revision>
+
+      <revision>
         <revnumber>1.3</revnumber>
 
         <date>8.3.2003</date>
@@ -54,6 +63,11 @@
       </revision>
     </revhistory>
   </articleinfo>
+
+  <note>
+    <para><emphasis>This file was created from the DocBook XML source. Please
+    do modifications in the source, not here.</emphasis></para>
+  </note>
 
   <abstract>
     <para>Explains the basic idea, creation and settings of Anonymous forms.
@@ -99,14 +113,14 @@
     form now allows to edit items and to use several options for it, a new
     wizard was created. This wizard creates the HTML code for a complete form
     with the SSI include of <constant>fillform.php3</constant> necessary to
-    edit items. Use some feature like <quote>Show source code</quote> in your
-    browser to get the code. The resulting form differs depending on whether
-    Anonymous editing is allowed or not.</para>
+    edit items. The resulting form differs depending on whether Anonymous
+    editing is allowed or not.</para>
 
-    <para>You may change these settings sent in hidden fields:</para>
+    <para>You may change these settings in the wizard or later in hidden
+    fields:</para>
 
     <table>
-      <title>Some hidden fields in the anonymous form</title>
+      <title>Wizard settings</title>
 
       <tgroup cols="2">
         <tbody>
@@ -264,6 +278,12 @@
         <para>You can disable the standard AA validation by adding a hidden
         field notvalidate in the form: <screen>&#60;input type=hidden name=&#34;notvalidate&#34; value=&#34;1&#34;&#62;</screen></para>
       </listitem>
+
+      <listitem>
+        <para>Be cautious when using two anonymous forms on one page. You must
+        rename the form and the Javascript variables so that they do not
+        conflict with each other. </para>
+      </listitem>
     </itemizedlist>
   </sect1>
 
@@ -306,8 +326,7 @@
     parameter to the <constant>fillform.php3</constant> SSI include created by
     the Wizard, e.g. <screen>&#60;!--#include virtual=&#34;/aaa/fillform.php3?show_result=http://ecn.cz/show_result.php3&#38;form=...&#34;--&#62;</screen>An
     array <constant>$result</constant> with the results will be sent to the
-    PHP script and you may print appropriate messages, see the example.
-    </para>
+    PHP script and you may print appropriate messages, see the example.</para>
 
     <para>The <constant>$result</constant> array content is created at various
     places in <constant>filler.php3</constant> array. Look there for accurate

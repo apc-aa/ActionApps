@@ -1391,8 +1391,8 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
                 $$varname = ($$varname ? 1 : 0);
                 break;
             case 'pwd':
-                // store the original password to use it when it in 
-                // insert_fnc_pwd when is not changed
+                // store the original password to use it in 
+                // insert_fnc_pwd when it is not changed
                 if ($action == "update")
                     $GLOBALS[$varname."c"] = $oldcontent4id [$pri_field_id][0]["value"];
                 break;                    

@@ -97,6 +97,7 @@ function html2text ($html) {
     return preg_replace ($search, $replace, $html);
 }
 
+// -----------------------------------------------------------------------------
 /** 
 * (c) Jakub Adamek, Econnect, December 2002
 * Sends email from the table "email" to the address given.
@@ -107,16 +108,8 @@ function html2text ($html) {
 *        array $aliases   (optional) array of alias => text
 * @return int count of successfully sent emails
 */
-
 function send_mail_from_table ($mail_id, $to, $aliases="") 
 {
-    global $db, $LANGUAGE_CHARSETS;
-    $db->query("SELECT * FROM email WHERE id = $mail_id");
-    if (!$db->next_record()) 
-        return false;
-    $record = $db->Record;
-    reset ($record);
-    
     if (! is_array ($aliases)) 
         $aliases = array ("_#dUmMy__aLiAsSs#_" => "");
 
@@ -131,7 +124,19 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
         $als [$alias] = array ("fce"=>"f_h", "param"=>$alias);
     }
     $item = new Item ("", $cols, $als, "", "" ,"");
+    return send_mail_from_table_inner ($mail_id, $to, $item);
+}
 
+// -----------------------------------------------------------------------------
+  
+function send_mail_from_table_inner ($mail_id, $to, &$item) {
+    global $db, $LANGUAGE_CHARSETS;
+    $db->query("SELECT * FROM email WHERE id = $mail_id");
+    if (!$db->next_record()) 
+        return false;
+    $record = $db->Record;
+    reset ($record);       
+    
     while (list ($key, $value) = each ($record)) 
         $record[$key] = $item->unalias ($value);
         
@@ -162,9 +167,10 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
         if (! $to)
             continue;
             
-        if (! $GLOBALS["EMAILS_INTO_TABLE"]) 
+        if (! $GLOBALS["EMAILS_INTO_TABLE"]) {
             if ($mail->send (array ($to)))
                 $sent ++;
+        }
         else {
             if ($db->query ("
                 INSERT INTO email_sent (email_id, send_to, subject, headers, body, created_at)
@@ -176,5 +182,7 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
     
     return $sent;
 }
-   
+
+// -----------------------------------------------------------------------------
+
 ?>

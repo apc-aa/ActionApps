@@ -84,6 +84,11 @@
     </revhistory>
   </articleinfo>
 
+  <note>
+    <para><emphasis>This file was created from the DocBook XML source. Please
+    do modifications in the source, not here.</emphasis></para>
+  </note>
+
   <sect1>
     <title>Basic idea</title>
 
@@ -231,17 +236,15 @@
       <para>On Reader Management slices there appears in the action select box
       a new item: <quote>Send emails wizard</quote>. If you select some items
       (readers) and choose this action, the window is divided in two frames
-      with a wizard in the right one. </para>
+      with a wizard in the right one.</para>
 
-      <para>The wizard is non-intrusive, meaning that no AA code was changed
-      to allow its function but it contains hints and links into AA pages. The
-      wizard steps include creating or editing the email template, sending an
-      example email to yourself and sending the email to all readers which you
-      selected before running the wizard. </para>
+      <para>The wizard contains hints and links into AA pages. Its steps
+      include creating or editing the email template, sending an example email
+      to yourself and sending the email to all readers which you selected
+      before running the wizard.</para>
 
-      <para>Note: no email aliases are translated, thus if you use an email
-      template designed e.g. as alerts alert, you will receive email
-      containing <constant>_#FILTERS_</constant> etc. </para>
+      <para>You can use any fields aliases like in any view (index, fulltext
+      etc.) </para>
     </sect2>
   </sect1>
 

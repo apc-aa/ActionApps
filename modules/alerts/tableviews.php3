@@ -59,7 +59,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             $no_filters = false;
         }
         else {
-            $collection_filters[-1] = _m("No filters defined. You must define some.");
+            $collection_filters[-1] = _m("No selections defined. You must define some.");
             $no_filters = true;
         }
 
@@ -132,8 +132,6 @@ function GetAlertsTableView ($viewID, $processForm = false) {
     */    
     
     if ($viewID == "modedit") {
-        $fix_howoften_options = get_howoften_options();
-        $fix_howoften_options[""] = _m("don't fix");
         global $LANGUAGE_NAMES;
         reset ($LANGUAGE_NAMES);
         while (list ($l, $langname) = each ($LANGUAGE_NAMES)) 

@@ -68,6 +68,7 @@ function expand_return_url ($addsess) {
 		return $sess->url($r1);
 	else	return $r1;
 }
+
 // This function goes to either $return_url if set, or to $url
 // if $usejs is set, then it will use inline Javascript, its not clear why this is done 
 //    sometimes (item.php3) but not others.
@@ -76,19 +77,20 @@ function expand_return_url ($addsess) {
 // if $add_param are set, then they are added to the cases EXCEPT return_url
 function go_return_or_url($url,$usejs,$addsess,$add_param="") {
 	global $return_url,$sess;
-      if ($return_url) {
-	if ($usejs) {
-		echo '<SCRIPT Language="JavaScript"><!--
-              		document.location = "'. expand_return_url($addsess) .'";
-	              // -->
-        	      </SCRIPT>';
-	} else {
-		go_url(expand_return_url($addsess));
-	}
-      } else {
-	if ($url) go_url($sess->url($url),$add_param);
-	// Note if no $url or $return_url then drops through - this is used in index.php3
-      }
+    if ($return_url) {
+    	if ($usejs) {
+    		echo '
+            <SCRIPT Language="JavaScript"><!--
+                  document.location = "'. expand_return_url($addsess) .'";
+    	    // -->
+            </SCRIPT>';
+    	} else {
+            go_url(expand_return_url($addsess));
+        }
+    } else {
+    	if ($url) go_url($sess->url($url),$add_param);
+    	// Note if no $url or $return_url then drops through - this is used in index.php3
+    }
 }
 
 
@@ -649,66 +651,63 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
 *       to unauthorized persons.
 */
 function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false) {
-  // Fills array $content with current content of $sel_in items (comma separated ids). 
-  global $db;
-
-  if ($GLOBALS[debug]) huhl("GetItemContent short='",$use_short_ids,"' " ,$zids);
-  if (!is_object ($db)) $db = new DB_AA;
-
-  # construct WHERE clause
-  list($sel_in, $settags) = itemContent_getWhere($zids, $use_short_ids);
-  if(!$sel_in)
+    // Fills array $content with current content of $sel_in items (comma separated ids). 
+    global $db;
+    
+    if ($GLOBALS[debug]) huhl("GetItemContent short='",$use_short_ids,"' " ,$zids);
+    if (!is_object ($db)) $db = new DB_AA;
+    
+    # construct WHERE clause
+    list($sel_in, $settags) = itemContent_getWhere($zids, $use_short_ids);
+    if(!$sel_in)
     return false;
        
-  # get content from item table
-  $delim = "";
-  
-  if( is_object($zids) ) {
-      if( $zids->onetype() == 's' )
-          $use_short_ids = true;
-  }        
+    # get content from item table
+    $delim = "";
     
-  $id_column = ($use_short_ids ? "short_id" : "id");   
-  $SQL = "SELECT item.*, slice.reading_password 
-      FROM item INNER JOIN slice ON item.slice_id = slice.id
-      WHERE item.$id_column $sel_in";
-  $db->tquery($SQL);
-
-  $n_items = 0;
-  while( $db->next_record() ) {
-    // proove permissions for password-read-protected slices
-    $reading_permitted = $ignore_reading_password
-       || ($db->f("reading_password") == "")
-       || ($db->f("reading_password") == $GLOBALS["slice_pwd"]);
-       
-    $n_items = $n_items+1;
-    reset( $db->Record );
-    if( $use_short_ids ) {
-      $foo_id = $db->f("short_id");
-      $translate[unpack_id128($db->f("id"))] = $db->f("short_id"); # id -> short_id
-        # WHERE for query to content table
-      $new_sel_in .= "$delim '". quote($db->f("id")) ."'"; 
-      $delim = ",";
-    } else 
-      $foo_id = unpack_id128($db->f("id"));
-    # Note that it stores into the $content[] array based on the id being used which 
-    # could be either shortid or longid, but is NOT tagged id.
-    while( list( $key, $val ) = each( $db->Record )) {
-      if( EReg("^[0-9]*$", $key))
-        continue;
-      if ($reading_permitted) {
-         $content[$foo_id][substr($key."................",0,16)][] = 
-                                                        array("value" => $val);
-      } else {
-          $content[$foo_id][substr($key."................",0,16)] =
-            array (0 => array ("value" => _m("Error: Missing Reading Password")));
-      }
+    if( is_object($zids) ) {
+        if( $zids->onetype() == 's' )
+            $use_short_ids = true;
+    }        
+    
+    $id_column = ($use_short_ids ? "short_id" : "id");   
+    $SQL = "SELECT item.*, slice.reading_password 
+            FROM item INNER JOIN slice ON item.slice_id = slice.id
+            WHERE item.$id_column $sel_in";
+    $db->tquery($SQL);
+    
+    $n_items = 0;
+    while( $db->next_record() ) {
+        // proove permissions for password-read-protected slices
+        $reading_permitted = $ignore_reading_password
+           || ($db->f("reading_password") == "")
+           || ($db->f("reading_password") == $GLOBALS["slice_pwd"]);
+        $item_permitted [$db->f("id")] = $reading_permitted;
+           
+        $n_items = $n_items+1;
+        reset( $db->Record );
+        if( $use_short_ids ) {
+            $foo_id = $db->f("short_id");
+            $translate[unpack_id128($db->f("id"))] = $db->f("short_id"); # id -> short_id
+            # WHERE for query to content table
+            $new_sel_in .= "$delim '". quote($db->f("id")) ."'"; 
+            $delim = ",";
+        } else 
+            $foo_id = unpack_id128($db->f("id"));
+        # Note that it stores into the $content[] array based on the id being used which 
+        # could be either shortid or longid, but is NOT tagged id.
+        while( list( $key, $val ) = each( $db->Record )) {
+            if( EReg("^[0-9]*$", $key))
+                continue;
+            $content[$foo_id][substr($key."................",0,16)][] = 
+               array("value" => $reading_permitted ? $val
+                     : _m("Error: Missing Reading Password"));
+        }
     }
-  }
-
-  // Skip the rest if no items found
-  if ($n_items == 0) return null;
-
+    
+    // Skip the rest if no items found
+    if ($n_items == 0) return null;
+    
     # If its a tagged id, then set the "idtag..........." field
     if ($settags) {
         $tags = $zids->gettags();
@@ -716,39 +715,37 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             $content[$k]["idtag..........."][] = array("value" => $v);
         }
     }
-  
+    
     # construct WHERE query to content table if used short_ids
     if( $use_short_ids) {
-        if( count($translate)>1 )
-            $sel_in = " IN ( $new_sel_in ) ";
-        else 
-            $sel_in = " = $new_sel_in ";
+        if (count($translate) > 1)
+             $sel_in = " IN ( $new_sel_in ) ";
+        else $sel_in = " = $new_sel_in ";
     }
-
+    
     # get content from content table
     # feeding - don't worry about it - when fed item is updated, informations
     # in content table is updated too
-
-    $SQL = "SELECT * FROM content 
-           WHERE item_id $sel_in";  # usable just for constants
+    
+    $SQL = "SELECT content.* FROM content INNER JOIN item
+            ON item.id = content.item_id 
+            WHERE item_id $sel_in";  # usable just for constants
                
     $db->tquery($SQL);
-
+    
     while( $db->next_record() ) {
-        $fooid = ( $use_short_ids ? $translate[unpack_id128($db->f(item_id))] : 
-                               unpack_id128($db->f(item_id)));
-        if ($reading_permitted) {
-          $content[$fooid][$db->f(field_id)][] = 
-             array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
-             "flag"=> $db->f(flag) );
-        }
-        else {
-          $content[$fooid][$db->f(field_id)] =
-            array (0 => array ("value" => _m("Error: Missing Reading Password")));
-        }
+        if ($use_short_ids)
+             $fooid = $translate[unpack_id128($db->f("item_id"))];
+        else $fooid = unpack_id128($db->f("item_id"));
+        
+        $content[$fooid][$db->f("field_id")][] = 
+            $item_permitted [$db->f("item_id")]
+            ? array( "value"=>( ($db->f("text")=="") ? $db->f("number") : $db->f("text")),
+                     "flag"=> $db->f("flag") )
+            : array( "value" => _m("Error: Missing Reading Password"));
     }
-
-  return $content;   // Note null returned above if no items found
+    
+    return $content;   // Note null returned above if no items found
 }  
 
 # fills content arr with current content of $sel_in items (comma separated short ids)
@@ -1482,6 +1479,7 @@ function get_email_types () {
         "alerts alert" => _m("alerts alert"),
         "alerts welcome" => _m("alerts welcome"),
         "slice wizard welcome" => _m("slice wizard welcome"),
+        "other" => _m("other"),
     );
 }
 
@@ -1540,7 +1538,7 @@ function ShowWizardFrames ($aa_url, $wizard_url, $title, $noframes_html="") {
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 </head>
 
-<frameset cols="80%,*" frameborder="YES" border="1" framespacing="0">
+<frameset cols="*,300" frameborder="YES" border="1" framespacing="0">
     <frame src="'.$aa_url.'&called_from_wizard=1" name="aaFrame">
     <frame src="'.con_url ($wizard_url,"post2shtml_id=$post2shtml_id").'" name="wizardFrame">
 </frameset>
@@ -1548,6 +1546,17 @@ function ShowWizardFrames ($aa_url, $wizard_url, $title, $noframes_html="") {
 '.$noframes_html.'
 </body></noframes>
 </html>';
+}
+
+/** Shows JavaScript which updates the Wizard frame, if it exists. */
+function ShowRefreshWizardJavaScript() {
+    echo '
+    <script language="JavaScript"><!--
+        if (top.wizardFrame != null)
+            top.wizardFrame.wizard_form.submit();            
+    //-->
+    </script>
+    ';
 }
 
 function GetAAImage ($filename, $alt) {

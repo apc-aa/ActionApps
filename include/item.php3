@@ -206,8 +206,8 @@ function Links_admin_url($script, $add) {
 }
 
 class item {    
-  var $item_content;   # associative array with names of columns and values from item table
-  var $columns;        # associative array with names of columns and values of current row 
+  var $item_content;   # Jakub: dummy, unused parameter??!!
+  var $columns;        # ItemContent array for this Item (like from GetItemContent)
   var $clean_url;      # 
   var $top;
   var $format;         # format string with aliases 
@@ -235,8 +235,9 @@ class item {
   }
 
   function getval($column, $what='value') {
-    return ( is_array($this->columns[$column]) ?
-                                    $this->columns[$column][0][$what] : false);
+      if ( is_array($this->columns[$column]) )
+           return $this->columns[$column][0][$what];
+      else return false;
   }  
   
   # get item url - take in mind: item_id, external links and redirection

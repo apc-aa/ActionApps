@@ -150,14 +150,20 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     echo "<TABLE border=0 cellspacing=0 cellpadding=0 width='100%'><TR>";
 
     if ($showMain) {
-        if ($GLOBALS["g_modules"][$slice_id]["type"] == "Alerts")
-            $title_img = "<img border=0 src=\"".$AA_INSTAL_PATH."images/alerts.gif\" 
-                alt=\""._m("Alerts")."\">";
+        // Show the Alerts and Reader management images in the header        
+        if ($GLOBALS["g_modules"][$slice_id]["type"] == "Alerts") {
+            $title_img =
+            "<a href=\"".$AA_INSTAL_PATH."doc/reader.html\">
+            <img border=0 src=\"".$AA_INSTAL_PATH."images/alerts.gif\" 
+                alt=\""._m("Alerts")."\"></a>";
+        } 
         else if ($GLOBALS["g_modules"][$slice_id]["type"] == "S") {
             $slice_info = GetSliceInfo ($slice_id);
             if ($slice_info ["type"] == "ReaderManagement")
-                $title_img = "<img border=0 src=\"".$AA_INSTAL_PATH."images/readers.gif\"
-                 alt=\""._m("Reader management")."\">";
+                $title_img = 
+                "<a href=\"".$AA_INSTAL_PATH."doc/reader.html\">
+                 <img border=0 src=\"".$AA_INSTAL_PATH."images/readers.gif\"
+                 alt=\""._m("Reader management")."\"></a>";
         }
             
         echo "

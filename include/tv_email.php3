@@ -89,6 +89,7 @@ function GetEmailTableView ($viewID, $processForm = false)
         "gotoview" => "email",
         "where" => GetEmailWhere(),        
         "cond" => 1,
+        "triggers" => array ("AfterInsert" => "EmailAfterInsert"),
         "fields" => array (
             "id" => array ("view" => array ("readonly" => true)),
             "description" => array (
@@ -193,5 +194,8 @@ function GetEmailWhere () {
     }
     return $retval;
 }
-   
+
+function EmailAfterInsert($varset) {   
+    ShowRefreshWizardJavaScript();
+}
 ?>

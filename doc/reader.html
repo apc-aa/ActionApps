@@ -7,11 +7,12 @@
         corrected the Alerts specific section to reflect the recent
         implementation.</td></tr><tr><td align="left">Revision 1.1</td><td align="left">11.2.2003</td></tr><tr><td align="left" colspan="2">Added a remark about using several slices (second paragraph
         in "Central point: Slice"). Enhanced and corrected the Auth
-        specific section to reflect the recent implementation.</td></tr><tr><td align="left">Revision 1.0</td><td align="left">5.2.2003</td></tr></table></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#d0e73">Basic idea</a></dt><dt><a href="#d0e98">Reader Management Slice</a></dt><dd><dl><dt><a href="#d0e175">Sending emails by wizard</a></dt></dl></dd><dt><a href="#d0e191">Editing Reader Info: Anonymous posting form</a></dt><dt><a href="#d0e199">Module common behaviour</a></dt><dt><a href="#d0e206">Module specific behaviour</a></dt><dd><dl><dt><a href="#d0e209">Alerts specific behaviour</a></dt><dd><dl><dt><a href="#d0e335">Tips</a></dt><dt><a href="#d0e383">Step by step tutorial</a></dt></dl></dd><dt><a href="#d0e553">Auth specific behaviour</a></dt><dd><dl><dt><a href="#d0e556">Apache module mod_auth_mysql</a></dt><dt><a href="#d0e594">Auth feature</a></dt></dl></dd><dt><a href="#d0e670">Mailman specific behaviour</a></dt><dd><dl><dt><a href="#d0e708">Mailman: create list</a></dt></dl></dd></dl></dd><dt><a href="#d0e724">Discussion - Why to use slice?</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e73"></a>Basic idea</h2></div></div><p>Readers are users with no AA admin access. I don't want to use
+        specific section to reflect the recent implementation.</td></tr><tr><td align="left">Revision 1.0</td><td align="left">5.2.2003</td></tr></table></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#d0e77">Basic idea</a></dt><dt><a href="#d0e102">Reader Management Slice</a></dt><dd><dl><dt><a href="#d0e179">Sending emails by wizard</a></dt></dl></dd><dt><a href="#d0e195">Editing Reader Info: Anonymous posting form</a></dt><dt><a href="#d0e203">Module common behaviour</a></dt><dt><a href="#d0e210">Module specific behaviour</a></dt><dd><dl><dt><a href="#d0e213">Alerts specific behaviour</a></dt><dd><dl><dt><a href="#d0e339">Tips</a></dt><dt><a href="#d0e387">Step by step tutorial</a></dt></dl></dd><dt><a href="#d0e557">Auth specific behaviour</a></dt><dd><dl><dt><a href="#d0e560">Apache module mod_auth_mysql</a></dt><dt><a href="#d0e598">Auth feature</a></dt></dl></dd><dt><a href="#d0e674">Mailman specific behaviour</a></dt><dd><dl><dt><a href="#d0e712">Mailman: create list</a></dt></dl></dd></dl></dd><dt><a href="#d0e728">Discussion - Why to use slice?</a></dt></dl></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p><span class="emphasis"><em>This file was created from the DocBook XML source. Please
+    do modifications in the source, not here.</em></span></p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e77"></a>Basic idea</h2></div></div><p>Readers are users with no AA admin access. I don't want to use
     the term &#8220;users&#8221; because of possible confusion with the AA
     users like Authors and more.</p><p>Several modules may be connected with readers:</p><div class="itemizedlist"><ul type="disc"><li>Alerts, for sending new items by email</li><li>Authorization (Auth), for HTTP authorization via MySQL_Auth</li><li>Mailman, for e-mail discussions</li><li><p>AA permissions synchronization, which propagates username and
         password changes to the AA permission system</p></li></ul></div><p>Readers are identified by email in Alerts and Mailman and by
-    username in Auth.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e98"></a>Reader Management Slice</h2></div></div><p>After a lot of discussing and unhappily also a lot of work to be
+    username in Auth.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e102"></a>Reader Management Slice</h2></div></div><p>After a lot of discussing and unhappily also a lot of work to be
     thrown off, we have in Econnect decided the best approach to handle Reader
     management will be a slice. It is so simple: each item belongs to one
     person. The individual settings for Alerts, Auth etc. are added as fields
@@ -41,22 +42,22 @@
     different Alerts Collections. They all link to the same reader group and
     thus use the same Reader management slice.</p><p>In the simplest cases, there will be one Reader management slice +
     one Alerts or Auth module. The Alerts or Auth module will always use
-    (almost) directly the slice data.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e175"></a><a name="wizard_email"></a>Sending emails by wizard</h3></div></div><p>On Reader Management slices there appears in the action select box
+    (almost) directly the slice data.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e179"></a><a name="wizard_email"></a>Sending emails by wizard</h3></div></div><p>On Reader Management slices there appears in the action select box
       a new item: &#8220;Send emails wizard&#8221;. If you select some items
       (readers) and choose this action, the window is divided in two frames
-      with a wizard in the right one. </p><p>The wizard is non-intrusive, meaning that no AA code was changed
+      with a wizard in the right one.</p><p>The wizard is non-intrusive, meaning that no AA code was changed
       to allow its function but it contains hints and links into AA pages. The
       wizard steps include creating or editing the email template, sending an
       example email to yourself and sending the email to all readers which you
-      selected before running the wizard. </p><p>Note: no email aliases are translated, thus if you use an email
+      selected before running the wizard.</p><p>Note: no email aliases are translated, thus if you use an email
       template designed e.g. as alerts alert, you will receive email
-      containing <tt>_#FILTERS_</tt> etc. </p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e191"></a>Editing Reader Info: Anonymous posting form</h2></div></div><p>As readers do not have access to the AA control panel, they must
+      containing <tt>_#FILTERS_</tt> etc.</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e195"></a>Editing Reader Info: Anonymous posting form</h2></div></div><p>As readers do not have access to the AA control panel, they must
     edit their personal details on the <a href="anonym.html" target="_top">Anonymous
-    posting form, described in another document</a>.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e199"></a>Module common behaviour</h2></div></div><p>Only readers in Active bin will receive Alerts, be allowed to pages
+    posting form, described in another document</a>.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e203"></a>Module common behaviour</h2></div></div><p>Only readers in Active bin will receive Alerts, be allowed to pages
     guarded by Authorization etc.</p><p>In special cases, when you want to stop web access for some reader
     (authorization) but don't want to stop him or her receiving Alerts,
     you must create a dummy authorization group and assign this group to him
-    or her.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e206"></a>Module specific behaviour</h2></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e209"></a>Alerts specific behaviour</h3></div></div><p>The Alerts module appears like other regular modules in the slice
+    or her.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e210"></a>Module specific behaviour</h2></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e213"></a>Alerts specific behaviour</h3></div></div><p>The Alerts module appears like other regular modules in the slice
       select box. It offers these pages:</p><div class="table"><p><b>Table 2. Alerts menu</b></p><table summary="Alerts menu" border="1"><colgroup><col><col></colgroup><tbody><tr><td>Settings</td><td>Core settings for the Alerts module, see below.</td></tr><tr><td>Selections</td><td>Choose which selections you want to show and their order.
               Selections are defined in views of type Alerts Selection Set in
               the slices from which you want to send new items. Each selection
@@ -91,7 +92,7 @@
       <tt>_#HOWOFTEN</tt>. To allow readers to confirm their email
       and change their personal settings, use the alias <tt>_#COLLFORM</tt>,
       which is the URL you filled in Alerts Admin - Settings, with an
-      additional 9 letters parameter containing the <a href="#access_code">access code</a>.</p><p>An example of both email types is added by <tt>sql_update</tt>.</p><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e335"></a>Tips</h4></div></div><p><span class="emphasis"><em>Alerts-only reader management: </em></span>You do not
+      additional 9 letters parameter containing the <a href="#access_code">access code</a>.</p><p>An example of both email types is added by <tt>sql_update</tt>.</p><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e339"></a>Tips</h4></div></div><p><span class="emphasis"><em>Alerts-only reader management: </em></span>You do not
         need the username, but the email is required. Change these Fields
         settings. Perhaps you even do not need to password-protect the reader
         personal info. Change also the &#8220;Allow anonymous posting /
@@ -106,7 +107,7 @@
         function <tt>f_h</tt> with the parameter
         <tt>,</tt> (comma). You will see the selection IDs
         prefixed by <tt>f</tt>. Now you understand why you should
-        enter something like &#8220;f45&#8221; into the Search box.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e383"></a>Step by step tutorial</h4></div></div><p>Here is a tutorial, describing in steps how you can try the
+        enter something like &#8220;f45&#8221; into the Search box.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e387"></a>Step by step tutorial</h4></div></div><p>Here is a tutorial, describing in steps how you can try the
         Alerts module. The result does not use Authorization, the personal
         info is protected by a password.</p><div class="orderedlist"><ol type="1"><li>Update to the new AA version from CVS and run
             <tt>sql_update.php3</tt></li><li><p>Create &#8220;My Readers&#8221;:</p><div class="orderedlist"><ol type="a"><li>Create a new slice from the &#8220;Reader Management
@@ -139,7 +140,7 @@
                 Note this will store the time into the database and if you
                 click again on this button, no mail will be sent because no
                 message was added between the two runs.</li></ol></div></li><li>Add items to your favorite test slice and test that you
-            receive them</li></ol></div></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e553"></a>Auth specific behaviour</h3></div></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e556"></a>Apache module mod_auth_mysql</h4></div></div><p>The Auth feature (it is not a real module) is meant to be used
+            receive them</li></ol></div></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e557"></a>Auth specific behaviour</h3></div></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e560"></a>Apache module mod_auth_mysql</h4></div></div><p>The Auth feature (it is not a real module) is meant to be used
         by the <tt>mod_auth_mysql</tt> Apache module. You must
         install this module on your web server to appreciate the Auth feature.
         There are several versions of the module with different option names.
@@ -148,7 +149,7 @@
                 &#8220;groups&#8221;</td></tr></tbody></table></div><p>Set up Apache and fill correct group info into the
         <tt>.htaccess</tt> files in folders which you want to
         protect. Note the groups you are using here are the groups separated
-        by semicolon in the AA constants, see below.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e594"></a>Auth feature</h4></div></div><p>The Auth administration includes creating membership types
+        by semicolon in the AA constants, see below.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e598"></a>Auth feature</h4></div></div><p>The Auth administration includes creating membership types
         (meta-groups) and assigning (sub)groups to them. This may be achieved
         with the usage of AA constants, where the constant name is the
         membership type and the constant value are the subgroups assigned to
@@ -176,7 +177,7 @@
         Pending or Expired bin depending on Start date and Expiry date
         settings. You should run the script <tt>auth_maintain.php3?maintain_auth=1</tt>
         once a day by cron to automatically add or delete users moved to or
-        from the Active bin.</p></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e670"></a><a name="mailman"></a>Mailman specific behaviour</h3></div></div><p>You can manage mailing lists with the Mailman feature. The idea is
+        from the Active bin.</p></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e674"></a><a name="mailman"></a>Mailman specific behaviour</h3></div></div><p>You can manage mailing lists with the Mailman feature. The idea is
       to use a directory accessible both to PHP and to mailman. AA maintain
       files with names being the mailing list names, each file contains a list
       of email addresses subscribed to the list, one on a row. Mailman reads
@@ -192,7 +193,7 @@ for LIST in `find $LISTSDIR/* -newer $MMDIR/data/.lastsync -printf "%f\n"`;
     do
         $MMDIR/bin/sync_members -f $LISTSDIR/$LIST -w=no -a=no $LIST
     done
-touch $MMDIR/data/.lastsync</pre></li></ol></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e708"></a>Mailman: create list</h4></div></div><p>Another convenience feature is the possibility to create new
+touch $MMDIR/data/.lastsync</pre></li></ol></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e712"></a>Mailman: create list</h4></div></div><p>Another convenience feature is the possibility to create new
         mailing lists from the AA interface. For Reader management slices with
         a field filled in Slice Settings - Mailman Lists Field there appears a
         new option in the menu, &#8220;Mailman: create list&#8221;. You fill
@@ -201,7 +202,7 @@ touch $MMDIR/data/.lastsync</pre></li></ol></div><div class="sect3"><div class="
         request row is added to the file <tt>.mailman</tt> in the
         <tt>$MAILMAN_SYNCHRO_DIR</tt> directory. You should run
         another Unix shell-script regularly which executes the requests.</p><p>Tip: If you enable users to subscribe to mailing lists in an
-        anonymous form, you must add the new checkbox to that form.</p></div></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e724"></a>Discussion - Why to use slice?</h2></div></div><p>The main reason to use slice was that we need some reader management
+        anonymous form, you must add the new checkbox to that form.</p></div></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e728"></a>Discussion - Why to use slice?</h2></div></div><p>The main reason to use slice was that we need some reader management
     with the possibility to add any new fields. This is exactly what slice
     does. Also, we can use many other nice features already developed for
     slice. And last but not least if we need to improve the current slice

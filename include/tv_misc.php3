@@ -128,4 +128,3 @@ function GetMiscTableView ($viewID, $processForm = false) {
     }
 } // end of GetTableView
 ?>
-

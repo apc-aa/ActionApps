@@ -160,8 +160,8 @@
     </tr>
     <tr> 
         <td>triggers</td>
-        <td><code>array</code> (&quot;BeforeDelete&quot;=&gt;fn1, <br> &quot;AfterInsert&quot;=&gt;fn2, 
-            &quot;BeforeUpdate&quot;=&gt;fn3, ...)</td>
+        <td><code>array</code> (&quot;BeforeDelete&quot;=&gt;"fn1", <br> &quot;AfterInsert&quot;=&gt;"fn2", 
+            &quot;BeforeUpdate&quot;=&gt;"fn3", ...)</td>
         <td>calls the function fn1($varset) etc. before or after the operation. 
             The parameter $varset is a CVarset instance used in the operation. 
             The Before- triggers must return <code>true</code> if the operation 
