@@ -23,38 +23,43 @@ http://www.apc.org/
 # Functions for feeding
 #
 
-# Find fields mapping. If not found apropriate fields, map is blank
-
-function GetFieldMap2($from_slice_id, $to_slice_id, $fields_from, $fields_to) {
+# Find fields mapping.
+function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to="") {
   global $db;
+
+  if (!$fields_to)
+    list($fields_to,) = GetSliceFields($to_slice_id);
+
+  if (!$fields_to || !is_array($fields_to))
+    return;
 
   $p_from_slice_id = q_pack_id($from_slice_id);
   $p_to_slice_id = q_pack_id($to_slice_id);
 
-  $SQL = "SELECT from_field_id, to_field_id from feedmap WHERE from_slice_id = '$p_from_slice_id'
-                                  AND to_slice_id = '$p_to_slice_id'";
+  $SQL = "SELECT from_field_id, to_field_id, flag, value
+            FROM feedmap
+            WHERE from_slice_id = '$p_from_slice_id'
+              AND to_slice_id = '$p_to_slice_id'";
   $db->query($SQL);
-  while( $db->next_record() )
-    $map[$db->f(from_field_id)] = $db->f(to_field_id);
-
-  if( isset($fields_from) AND is_array($fields_from) ) {
-    reset( $fields_from ) ;
-    while( list( $k, $v ) = each( $fields_from ) ) {
-       if( isset($map[$k]) )
-        $pair[$k] = $map[$k];               # set if mapped
-       else                                 # if not mapped - store in the same
-        $pair[$k] = ( $fields_to[$k] ? $k : "" );  # if not exist - leave blank
-    }
+  while( $db->next_record() ) {
+    $val = ($db->f(flag) == FEEDMAP_FLAG_MAP) ?
+              $db->f(from_field_id) :
+              ( ($db->f(flag) == FEEDMAP_FLAG_VALUE) ? $db->f(value) : "" );
+    $m[$db->f(to_field_id)] = array("feedmap_flag"=>$db->f(flag),"val"=>$val);
   }
-  return $pair;
+
+  reset( $fields_to ) ;
+  while( list( $k, $v ) = each( $fields_to ) ) {
+    if( $m[$k] )
+      $map[$k] = $m[$k];                 # set if mapped
+    else                                 # if not mapped - store in the same; if not exist, set empty
+      $map[$k] =  $fields_from[$k] ? array("feedmap_flag"=>FEEDMAP_FLAG_MAP,"val"=>$k)  :
+                                     array("feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"val"=>"") ;
+  }
+  return $map;
 }
 
-# Find fields mapping. If not found apropriate fields, map is blank
-function GetFieldMap($slice_id, $destination, $fields_from) {
-  list($fields_to,) = GetSliceFields($destination);
-  return GetFieldMap2($slice_id,$destination,$fields_from,$fields_to);
-}
-
+// get base item of $item_id from relation table
 function GetBaseItem($item_id) {
   global $db;
   $dest_id = $item_id;
@@ -104,20 +109,21 @@ function IsItemFed($item_id, $destination) {
   return false;
 }
 
+// copy one item
 function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, $tocategory=0,
                     $content="") {
   global $db,  $varset, $itemvarset;
 
   if( $destination == $from_slice_id )  # don't feed into the same slice
     return false;
+  if (isItemFed($item_id, $destination)) # don't feed if the item is already fed.
+    return false;
 
   $p_item_id = q_pack_id($item_id);
   $p_destination = q_pack_id($destination);
 
-  if (isItemFed($item_id, $destination))
-    return false;
-
-  $map = GetFieldMap($from_slice_id, $destination, $fields);
+  list($fields_to,) = GetSliceFields($destination);
+  $map = GetFieldMapping($from_slice_id, $destination, $fields,$fields_to);
 
   if( !$content )
     $content = GetItemContent($item_id);
@@ -132,30 +138,35 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
       $destinationcat = $db->f(value);
   }
 
-#huh( "Catfield: $catfieldid - $destinationcat");
-
   $varset = new Cvarset;
   $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
   $id = new_id();
   $p_id = q_pack_id($id);
 
   # prepare new4id array before call StoreItem function
-  while(list($key,$val) = each($content4id)) {
-    $newfld = $map[$key];
-    if( !$newfld OR                              # feed only mapped fields
-        ($fields[$key][feed]==STATE_UNFEEDABLE)) # and fields with perms to feed
-      continue;
+  while(list($newfld,$newfldname) = each($fields_to)) {
+    $flag = $map[$newfld][feedmap_flag];
+    $val = $map[$newfld][val];
 
-    $new4id[$newfld] = $val;
+    switch ($flag) {
+      case FEEDMAP_FLAG_EMPTY : continue;
+      case FEEDMAP_FLAG_MAP :
+        if ($fields[$val][feed]==STATE_UNFEEDABLE)
+          continue;
+        else {
+          $new4id[$newfld] = $content4id[$val];
+         if ($fields[$val][feed]==STATE_FEEDNOCHANGE )
+            $new4id[$newfld][0][flag] |= FLAG_FREEZE;  # don't allow to change
+          else if ($fields[$val][feed]==STATE_FEEDABLE_UPDATE_LOCKED)
+            $new4id[$newfld][0][flag] |= FLAG_FREEZE | FLAG_UPDATE;   #update and don't allow to change
+        }
+        break;
+      case FEEDMAP_FLAG_VALUE : $new4id[$newfld][0][value] = $val;
+    }
 
-      # update flags
     $new4id[$newfld][0][flag] |= FLAG_FEED;      # mark as fed
-    if ($fields[$key][feed]==STATE_FEEDNOCHANGE )
-      $new4id[$newfld][0][flag] |= FLAG_FREEZE;  # don't allow to change
-    else if ($fields[$key][feed]==STATE_FEEDABLE_UPDATE_LOCKED)
-      $new4id[$newfld][0][flag] |= FLAG_FREEZE | FLAG_UPDATE;   #update and don't allow to change
 
-      # category mapping
+    # category mapping
     if( $newfld == $catfieldid ) {
       if( (string)$tocategory != "0" )    # if 0 - don't change category
         $new4id[$newfld][0][value] = $destinationcat;
@@ -163,7 +174,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
     $new4id[$newfld][0][value]=quote($new4id[$newfld][0][value]);
   }
 
-    # fill required fields if not set
+  # fill required fields if not set
   $new4id["status_code....."][0][value] = ($approved=='y' ? 1 : 2);
   $field_ids = array("post_date", "publish_date","expiry_date", "highlight", "posted_by",
                      "edited_by", "last_edit");
@@ -173,7 +184,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
       $new4id[$f_id] = $content4id[$f_id];
   }
 
-  StoreItem( $id, $destination, $new4id, $fields, true, true, false );
+  StoreItem( $id, $destination, $new4id, $fields_to, true, true, false );
                                         # insert, invalidatecache, not feed
 
   # update relation table - stores where is what fed
@@ -227,7 +238,9 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
   global $varset, $itemvarset;
 
   list($fields,) = GetSliceFields($slice_id);
-  $map = GetFieldMap($slice_id, $destination, $fields);
+  list($fields_to,) = GetSliceFields($destination);
+
+  $map = GetFieldMapping($slice_id, $destination, $fields, $fields_to);
 
   $oldcontent = GetItemContent($dest_id);
   $oldcontent4id = $oldcontent[$dest_id];
@@ -237,23 +250,14 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
   $varset = new Cvarset;
   $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
 
-  # prepare new4id array before call StoreItem function
-  while(list($key,$val) = each($content4id)) {
-     $newfld = $map[$key];
-     if (!$newfld || $fields[$key][feed]==STATE_UNFEEDABLE)
-          continue;
-
-     if (($oldcontent4id[$newfld][0][flag] & FLAG_UPDATE) ||
-        ($fields[$key][feed]==STATE_FEEDABLE_UPDATE)) {
-       $new4id[$newfld] = $val;
-       $new4id[$newfld][0][flag] = $oldcontent4id[$newfld][0][flag];
-      } else
-       $new4id[$newfld] = $oldcontent4id[$newfld];
-
-    $new4id[$newfld][0][value]=quote($new4id[$newfld][0][value]);
-   }
-   if ($new4id)
-         StoreItem( $dest_id, $destination, $new4id, $fields, false, true, false );
+  while(list($key,$fval) = each($oldcontent4id)) {
+    if ($map[$key][feedmap_flag] != FEEDMAP_FLAG_MAP)    # skip field, if field from source item is not mapped to dest
+      continue;
+    $val = $map[$key][val];
+    if (($fval[0][flag] & FLAG_UPDATE) || $fields[$val][feed]==STATE_FEEDABLE_UPDATE )
+       $oldcontent4id[$key][0][value] = quote($content4id[$val][0][value]);
+  }
+  StoreItem( $dest_id, $destination, $oldcontent4id, $fields_to, false, true, false );
                                         # update, invalidatecache, not feed
 }
 
@@ -353,6 +357,7 @@ function DeleteItem($db, $id) {
   $db->query($SQL);
 
   # delete feeding relation
+
   $SQL = "DELETE LOW_PRIORITY FROM relation WHERE (source_id='$p_itm_id'
                                                OR destination_id='$p_itm_id')
                                               AND flag & ".REL_FLAG_FEED;
@@ -361,6 +366,9 @@ function DeleteItem($db, $id) {
 
 /*
 $Log$
+Revision 1.13  2001/06/21 14:15:44  honzam
+feeding improved - field value redefine possibility in se_mapping.php3
+
 Revision 1.12  2001/06/12 16:07:22  honzam
 new feeding modes -  "Feed & update" and "Feed & update & lock"
 
@@ -380,7 +388,6 @@ Better feeding support
 Revision 1.7  2001/03/07 14:34:01  honzam
 fixed bug with radiobuttons dispaly
 
-
 Revision 1.6  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 
@@ -398,6 +405,7 @@ Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
 
 Revision 1.4  2000/06/12 21:41:24  madebeer
 removed whitespace from config-ecn.inc
+
 added $Id $Log and $Copyright to some stray files
 
 */

@@ -57,18 +57,19 @@ if( $from_slice_id == "" ) {
 }
 $p_from_slice_id = q_pack_id($from_slice_id);
 
+$from_fields[L_MAP_NOTMAP] = L_MAP_NOTMAP;
+$from_fields[L_MAP_VALUE] = L_MAP_VALUE;
 $SQL= "SELECT id, name FROM field WHERE slice_id='$p_from_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
   $from_fields[$db->f(id)] = $db->f(name);
 
-$to_fields["-"] = L_MAP_NOTMAP;
 $SQL= "SELECT id, name FROM field WHERE slice_id='$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
   $to_fields[$db->f(id)] = $db->f(name);
 
-$field_map = GetFieldMap2($from_slice_id,$slice_id,$from_fields,$to_fields);
+$field_map = GetFieldMapping($from_slice_id,$slice_id,$from_fields,$to_fields);
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -80,6 +81,7 @@ function InitPage() {}
 function SelectValue(sel) {
   return eval(sel).options[eval(sel).selectedIndex].value
 }
+
 
 function ChangeFromSlice()
 {
@@ -94,7 +96,7 @@ function Cancel() {
 }
 
 function Submit() {
-  var e = document.f.elements;
+/*  var e = document.f.elements;
   fcnt = <?php echo count($from_fields)?>
 
   // test for duplicity
@@ -104,6 +106,7 @@ function Submit() {
         alert("<?php echo L_MAP_DUP ?>");
         return;
       }
+  */
   document.f.submit();
 }
 // -->
@@ -122,14 +125,14 @@ function Submit() {
 
 ?>
 <form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_mapping2.php3")?>">
-  <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+  <table width="600" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
     <tr><td class=tabtit><b>&nbsp;<?php echo L_MAP_TABTIT ?></b></td></tr>
 
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
         <tr>
-          <td colspan class=tabtxt align=center><b><?php echo L_MAP_FROM_SLICE . "&nbsp; "?></b></td>
-          <td><?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, "OnChange=\"ChangeFromSlice()\""); ?></td>
+          <td align=left class=tabtxt align=center><b><?php echo L_MAP_FROM_SLICE . "&nbsp; "?></b>
+          <?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, "OnChange=\"ChangeFromSlice()\""); ?></td>
          </tr>
       </table>
     </td></tr>
@@ -138,13 +141,28 @@ function Submit() {
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
         <tr>
-          <td width="50%" class=tabtxt align=center><b><?php echo L_MAP_FROM ?></b></td>
-          <td width="50%" class=tabtxt align=center><b><?php echo L_MAP_TO ?></b></td>
+          <td class=tabtxt align=center><b><?php echo L_MAP_TO ?></b></td>
+          <td class=tabtxt align=center><b><?php echo L_MAP_FROM ?></b></td>
+          <td class=tabtxt align=center><b><?php echo L_MAP_VALUE2 ?></b></td>
         </tr>
         <?php
-           reset($from_fields);
-           while (list($f_id, $f_name) = each($from_fields))
-           FrmInputSelect("fmap[$f_id]",$f_name,$to_fields,$field_map[$f_id] =="" ? "-" : $field_map[$f_id]);
+           reset($to_fields);
+           while (list($f_id, $f_name) = each($to_fields)) {
+             echo "<tr><td class=tabtxt><b>$f_name</b></td>\n";
+             echo "<td>";
+
+             $val = "";
+             switch ($field_map[$f_id][feedmap_flag]) {
+               case FEEDMAP_FLAG_VALUE :
+                 $sel = L_MAP_VALUE;
+                 $val = htmlspecialchars($field_map[$f_id][val]); break;
+               case FEEDMAP_FLAG_EMPTY: $sel =  L_MAP_NOTMAP; break;
+               case FEEDMAP_FLAG_MAP : $sel = $field_map[$f_id][val];
+             }
+             FrmSelectEasy("fmap[$f_id]",$from_fields,$sel);
+             echo "</td><td class=tabtxt> <input type=text name=\"fval[$f_id]\" value=\"$val\"></input></td>";
+             echo "</tr>\n";
+           }
         ?>
       </table>
     </td></tr>
@@ -156,6 +174,8 @@ function Submit() {
 
   </table>
 </FORM>
+ <?php //p_arr_m($field_map);
+ ?>
 </BODY>
 </HTML>
 <?php

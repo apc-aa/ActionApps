@@ -250,7 +250,7 @@ define("L_EDIT_USER", "Editace uživatele");
 define("L_EDITUSER_HDR", L_EDIT_USER);
 
 define("NO_SOURCE_URL", "javascript: window.alert('Nebylo zadáno url zdroje')"); 
-define("NO_OUTER_LINK_URL", "javascript: window.alert('Nebylo zadáno url odkazu ven')");
+define("NO_OUTER_LINK_URL", "#top");
 
 # editor interface constants
 define("L_PUBLISHED_HEAD", "PUB");
@@ -568,9 +568,14 @@ define("L_STATE_FEEDABLE_UPDATE", "Kopírovat obsah a zmìny" );
 define("L_STATE_FEEDABLE_UPDATE_LOCKED", "Kopírovat obsah a zmìny nemìnitelnì");
 
 define("L_SITEM_ID_ALIAS",'alias pro zkrácené èíslo èlánku');
+define("L_MAP_VALUE","-- Hodnota --");
+define("L_MAP_VALUE2","Hodnota");
 
 /*
 $Log$
+Revision 1.33  2001/06/21 14:15:44  honzam
+feeding improved - field value redefine possibility in se_mapping.php3
+
 Revision 1.32  2001/06/12 16:07:22  honzam
 new feeding modes -  "Feed & update" and "Feed & update & lock"
 

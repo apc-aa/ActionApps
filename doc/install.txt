@@ -196,51 +196,51 @@
 
 
 
-  11..  IInnttrroodduuccttiioonn
+  1.1...  I.In.nt.tr.ro.od.du.uc.ct.ti.io.on.n
 
-  11..11..  OOvveerrvviieeww
+  1.1...1.1...  O.Ov.ve.er.rv.vi.ie.ew.w
 
   The APC Action Applications provide easy automated publishing for non-
   profit WWW sites and 'Usenet-like' sharing of articles between sites.
 
   Action Applications consist of
 
-  +o  actual www pages which display the content. These pages can be
+  +.o  actual www pages which display the content. These pages can be
      designed individually. At one spot, they contain an "include"
      directive which is automatically replaced by the current content
      whenever a user requests this page, and
 
-  +o  a database engine including a permission system, a storage and a
+  +.o  a database engine including a permission system, a storage and a
      content managing system. This system has a www interface and
      administrators, editors and authors of a certain page can do their
      work completely using that interface.
 
 
-  11..22..  SSlliicceess
+  1.1...2.2...  S.Sl.li.ic.ce.es.s
 
-  Action Applications provide something called _s_l_i_c_e_s which represent
-  one _a_p_p_l_i_c_a_t_i_o_n each. Each application/slice has its own content, its
+  Action Applications provide something called _.s_.l_.i_.c_.e_.s which represent
+  one _.a_.p_.p_.l_.i_.c_.a_.t_.i_.o_.n each. Each application/slice has its own content, its
   own configuration, permissions, and so on. If you run the Action
   Applications on a server, you can set up such slices for your users
-  and grant individual _s_l_i_c_e _a_d_m_i_n_i_s_t_r_a_t_i_o_n _r_i_g_h_t_s. Users are then
+  and grant individual _.s_.l_.i_.c_.e _.a_.d_.m_.i_.n_.i_.s_.t_.r_.a_.t_.i_.o_.n _.r_.i_.g_.h_.t_.s. Users are then
   administering their respective slices in every way.
 
-  Slices are of a certain _t_y_p_e. There are currently seven slice types
+  Slices are of a certain _.t_.y_.p_.e. There are currently seven slice types
   implemented within the Action Applications:
 
-  +o  News
+  +.o  News
 
-  +o  Action Alerts
+  +.o  Action Alerts
 
-  +o  Event Listings
+  +.o  Event Listings
 
-  +o  Press Release Publisher
+  +.o  Press Release Publisher
 
-  +o  Job Listing
+  +.o  Job Listing
 
-  +o  Address List and
+  +.o  Address List and
 
-  +o  Media Monitoring.
+  +.o  Media Monitoring.
 
      Slice types differ in information field names, number of fields and
      default presentation. Still, all the slice types work basically in
@@ -248,7 +248,7 @@
      not suit your needs.
 
 
-  11..33..  UUsseerrss,, RRoolleess aanndd PPeerrmmiissssiioonnss
+  1.1...3.3...  U.Us.se.er.rs.s,., R.Ro.ol.le.es.s a.an.nd.d P.Pe.er.rm.mi.is.ss.si.io.on.ns.s
 
   Action Applications provides its own user management engine.
   Authentication and authorization are implemented by a permission
@@ -259,7 +259,7 @@
 
   There are five roles:
 
-     RReeaaddeerr..
+     R.Re.ea.ad.de.er.r...
         Readers do not need to have user accounts in the Action
         Applications permission system. Most of the times, they actually
         do not realize that they have to do with something like the
@@ -267,14 +267,14 @@
         read the information provided by the Action Application slice
         owners.
 
-     AAuutthhoorr..
+     A.Au.ut.th.ho.or.r...
         Authors must have user accounts in the Action Applications
         permission system.  The role "author" is bound to a certain
         slice. Any Action Applications user who has "author" privileges
         for an Action Applications slice can submit new information
         items for this slice and remove and edit her own submissions.
 
-     EEddiittoorr..
+     E.Ed.di.it.to.or.r...
         Editors must have user accounts in the Action Applications
         permission system.  The role "editor" is bound to a certain
         slice. An Action Applications user who has "editor" privileges
@@ -286,7 +286,7 @@
         modify the full text of items imported from other slices (the so
         called ?fed items?).
 
-     AAddmmiinniissttrraattoorr..
+     A.Ad.dm.mi.in.ni.is.st.tr.ra.at.to.or.r...
         Administrators must have user accounts in the Action
         Applications permission system. The role "administrator" is
         bound to a certain slice.  An Action Applications user who has
@@ -299,42 +299,42 @@
         are predefined and which can be modified by the authors/editors
         of the slice.
 
-     SSuuppeerr AAddmmiinniissttrraattoorr..
+     S.Su.up.pe.er.r A.Ad.dm.mi.in.ni.is.st.tr.ra.at.to.or.r...
         Super administrators must have user accounts in the Action
         Applications permission system. The role "super administrator"
-        is _n_o_t bound to a slice. Super administrators (superadmins) can
+        is _.n_.o_.t bound to a slice. Super administrators (superadmins) can
         do everything. This means, they can do anything a slice
-        administrator can, but for _e_v_e_r_y slice; additionally, they can
+        administrator can, but for _.e_.v_.e_.r_.y slice; additionally, they can
         add slices to the system.
 
   Permission management can generally be done by everyone for roles
   below their own level.
 
 
-  11..44..  AAccttiioonn AApppplliiccaattiioonnss SSooffttwwaarree CCoommppoonneennttss
+  1.1...4.4...  A.Ac.ct.ti.io.on.n A.Ap.pp.pl.li.ic.ca.at.ti.io.on.ns.s S.So.of.ft.tw.wa.ar.re.e C.Co.om.mp.po.on.ne.en.nt.ts.s
 
   Action Applications consist of several software components. Only one
   of them is provided by the APC Action Applications package:
 
-  +o  The APC Action Application software. These are basically a set of
+  +.o  The APC Action Application software. These are basically a set of
      PHP scripts running within a web server.
 
-  +o  A database server.  The database server does not have to be on the
+  +.o  A database server.  The database server does not have to be on the
      same host as the other components. It can be used for other
      applications as well.
 
-  +o  Optionally a LDAP server. LDAP provides access control to the
+  +.o  Optionally a LDAP server. LDAP provides access control to the
      Action Applications.  It is possible to use a different permission
      system, such as a SQL database based one. LDAP has the advantage of
      being a universal directory service whose information can be used
      by other applications, such as address books or email delivery
      services, too.
 
-  +o  A WWW Server. The WWW Server provides the access from the network
+  +.o  A WWW Server. The WWW Server provides the access from the network
      via the http protocol. It runs the Action Applications programs
      whenever someone accesses the Action Application controlled pages.
 
-  +o  PHP3. The PHP interpreter is needed to execute the Action
+  +.o  PHP3. The PHP interpreter is needed to execute the Action
      Applications PHP scripts.
 
      See section ``Requirements / Preconditions / Suggested
@@ -342,7 +342,7 @@
      components.
 
 
-  11..55..  CCoonnvveennttiioonnss uusseedd iinn tthhiiss ddooccuummeenntt
+  1.1...5.5...  C.Co.on.nv.ve.en.nt.ti.io.on.ns.s u.us.se.ed.d i.in.n t.th.hi.is.s d.do.oc.cu.um.me.en.nt.t
 
   Command line input is shown including the command line prompt so it is
   clear which lines should be typed in. The prompt indicates if a
@@ -394,9 +394,9 @@
 
 
 
-  22..  RReeqquuiirreemmeennttss // PPrreeccoonnddiittiioonnss // SSuuggggeesstteedd EEnnvviirroonnmmeenntt
+  2.2...  R.Re.eq.qu.ui.ir.re.em.me.en.nt.ts.s /./ P.Pr.re.ec.co.on.nd.di.it.ti.io.on.ns.s /./ S.Su.ug.gg.ge.es.st.te.ed.d E.En.nv.vi.ir.ro.on.nm.me.en.nt.t
 
-  22..11..  HHaarrddwwaarree RReeqquuiirreemmeennttss
+  2.2...1.1...  H.Ha.ar.rd.dw.wa.ar.re.e R.Re.eq.qu.ui.ir.re.em.me.en.nt.ts.s
 
   The Action Applications can run on every computer which runs one of
   the supported operating systems.
@@ -407,29 +407,29 @@
   than a 200 MHz processor and 64 MByte of RAM.
 
 
-  22..22..  SSooffttwwaarree RReeqquuiirreemmeennttss
+  2.2...2.2...  S.So.of.ft.tw.wa.ar.re.e R.Re.eq.qu.ui.ir.re.em.me.en.nt.ts.s
 
   Note: There are instructions for the installation of all software
   modules but the operating system in the next chapter: ``Installation
   of other packages needed by the Action Applications''
 
-  22..22..11..  OOppeerraattiinngg SSyysstteemm
+  2.2...2.2...1.1...  O.Op.pe.er.ra.at.ti.in.ng.g S.Sy.ys.st.te.em.m
 
   The primary supported operating system is GNU/Linux. However, the
   Action Applications should run on any unix or unix-like operating
   system which can run all the other software components. The Action
-  Applications were developed and tested on RReedd HHaatt LLiinnuuxx 6.0 and 6.2,
+  Applications were developed and tested on R.Re.ed.d H.Ha.at.t L.Li.in.nu.ux.x 6.0 and 6.2,
   so it is recommended to use this OS.  This installation guide has a
   strong focus on Red Hat Linux.
 
   It is known that Action Applications also run on FreeBSD 2.2.7.
 
 
-  22..22..22..  DDaattaabbaassee SSeerrvveerr
+  2.2...2.2...2.2...  D.Da.at.ta.ab.ba.as.se.e S.Se.er.rv.ve.er.r
 
   An SQL database server is needed by the Action Applications in order
   to store all the information.  The only supported SQL server so far is
-  the MMyySSQQLL database server. The data is organized in several tables in
+  the M.My.yS.SQ.QL.L database server. The data is organized in several tables in
   the database. Action Applications need one logical database within the
   database server. The server can be used for other applications as
   well.
@@ -449,10 +449,10 @@
   support for the database server you want to use.
 
 
-  22..22..33..  PPeerrmmiissssiioonn SSyysstteemm
+  2.2...2.2...3.3...  P.Pe.er.rm.mi.is.ss.si.io.on.n S.Sy.ys.st.te.em.m
 
   If you want to use LDAP as the permission system, you should use the
-  OOppeennLLDDAAPP server software. Other LDAP servers should work, too, but the
+  O.Op.pe.en.nL.LD.DA.AP.P server software. Other LDAP servers should work, too, but the
   Action Applications have been tested with OpenLDAP only.
 
   If you have already an OpenLDAP server running, you may skip the rest
@@ -463,93 +463,93 @@
   be wasted. An LDAP database is an hierarchically structured system of
   objects, each member of one or more certain classes.  Every object in
   your database has its place in the potentially global LDAP hierarchy.
-  Each object has a unique name, the so called _d_i_s_t_i_n_g_u_i_s_h_e_d _n_a_m_e, or
-  short _d_n. The dn consists of the full "path" from the global LDAP name
+  Each object has a unique name, the so called _.d_.i_.s_.t_.i_.n_.g_.u_.i_.s_.h_.e_.d _.n_.a_.m_.e, or
+  short _.d_.n. The dn consists of the full "path" from the global LDAP name
   space to the object, similar to names in the domain name system.
 
   In order to set up the LDAP server for Action Applications, you need
   to figure out some information you want to use:
 
-  +o  Your base dn. This is the common part all your LDAP objects will
+  +.o  Your base dn. This is the common part all your LDAP objects will
      have in their dn, describing the "path" from the global LDAP name
      space to your organization. It is recommended that you use a domain
      name you own for that. (You could also use a geographical category,
      but this is not described here.) A domain name can be described in
-     a LDAP dn using the _d_c attribute. For example, the base dn for a
-     possible domain name _e_c_n_._a_p_c_._o_r_g would be dc=ecn,dc=apc,dc=org.
+     a LDAP dn using the _.d_.c attribute. For example, the base dn for a
+     possible domain name _.e_.c_.n_.._.a_.p_.c_.._.o_.r_.g would be dc=ecn,dc=apc,dc=org.
      Or you can use only simply ou=AA.
 
-  +o  Your LDAP administrative account. OpenLDAP's built-in access
-     control needs a _r_o_o_t object which has all privileges. Once it
+  +.o  Your LDAP administrative account. OpenLDAP's built-in access
+     control needs a _.r_.o_.o_.t object which has all privileges. Once it
      exists, the root object can be used to modify the data stored in
      the LDAP database.  Like every object in the database, the root
      object needs a dn. It is recommended that you use the canonical
-     name _r_o_o_t. Following the example above, this gives us a root object
+     name _.r_.o_.o_.t. Following the example above, this gives us a root object
      dn of cn=root,dc=ecn,dc=apc,dc=org. Or simply cn=root,ou=AA.
 
   Note: As with the database server, the OpenLDAP server does not
   necessarily need to be running on the same machine as the Action
   Applications.
 
-  If you are _n_o_t using LDAP as the permission system basis, permission
+  If you are _.n_.o_.t using LDAP as the permission system basis, permission
   information will be stored within the SQL database.
 
 
-  22..22..44..  WWWWWW ((hhttttpp)) SSeerrvveerr
+  2.2...2.2...4.4...  W.WW.WW.W (.(h.ht.tt.tp.p).) S.Se.er.rv.ve.er.r
 
-  The Action Applications have been developed and tested with the aappaacchhee
+  The Action Applications have been developed and tested with the a.ap.pa.ac.ch.he.e
   http server. Other http servers might work, too, but there are some
   things to consider:
 
-  +o  The Action Application relay on a feature in the apache http server
+  +.o  The Action Application relay on a feature in the apache http server
      which allows to pass GET parameters (query strings) to scripts
      which are run from a SSI (server side include) command in a page.
      It is known that the Microsoft Internet Information Server, for
      example, does not do that.
 
-  +o  The apache http server can be configured to load PHP as a _m_o_d_u_l_e.
+  +.o  The apache http server can be configured to load PHP as a _.m_.o_.d_.u_.l_.e.
      This speeds things up a lot because the PHP interpreter does not
      have to be loaded every time a PHP script runs. Action Applications
      work in CGI mode as well, though.
 
 
-  22..22..55..  PPHHPP
+  2.2...2.2...5.5...  P.PH.HP.P
 
   Action Applications are written in PHP3. The minimum version to use
   should be PHP 3.0.7 but this has not been tested; we know they work
   with PHP 3.0.12 and newer up to 3.0.16. PHP4 has not been tested,
   either.
 
-  PHP can be build as a _m_o_d_u_l_e _f_o_r _t_h_e _a_p_a_c_h_e _h_t_t_p _s_e_r_v_e_r or as a
-  _s_t_a_n_d_a_l_o_n_e _p_r_o_g_r_a_m. The first way is preferred for performance
+  PHP can be build as a _.m_.o_.d_.u_.l_.e _.f_.o_.r _.t_.h_.e _.a_.p_.a_.c_.h_.e _.h_.t_.t_.p _.s_.e_.r_.v_.e_.r or as a
+  _.s_.t_.a_.n_.d_.a_.l_.o_.n_.e _.p_.r_.o_.g_.r_.a_.m. The first way is preferred for performance
   reasons.
 
   Your PHP needs optional modules:
 
 
-  +o  A module is needed to access your SQL database. For example, if you
+  +.o  A module is needed to access your SQL database. For example, if you
      are using MySQL as the database, you need the MySQL module for PHP.
 
-  +o  If you are using LDAP as the permission system, you need the LDAP
+  +.o  If you are using LDAP as the permission system, you need the LDAP
      module for PHP.
 
   The modules can be
 
-  +o  _c_o_m_p_i_l_e_d _i_n_t_o _P_H_P or
+  +.o  _.c_.o_.m_.p_.i_.l_.e_.d _.i_.n_.t_.o _.P_.H_.P or
 
-  +o  _l_o_a_d_e_d _a_t _r_u_n _t_i_m_e.
+  +.o  _.l_.o_.a_d_.e_.d _.a_.t _.r_.u_.n _.t_.i_.m_.e.
 
   Both ways are described in the ``PHP installation section''.
 
 
-  22..33..  KKnnooww--HHooww RReeqquuiirreemmeennttss
+  2.2...3.3...  K.Kn.no.ow.w-.-H.Ho.ow.w R.Re.eq.qu.ui.ir.re.em.me.en.nt.ts.s
 
   To install the Action Applications, you will need some basic unix
   skills. You should have installed programs before and be familiar with
   administration of your system.
 
 
-  22..33..11..  OOtthheerr PPrreeccoonnddiittiioonnss
+  2.2...3.3...1.1...  O.Ot.th.he.er.r P.Pr.re.ec.co.on.nd.di.it.ti.io.on.ns.s
 
 
 
@@ -593,22 +593,22 @@
 
 
 
-  33..  IInnssttaallllaattiioonn ooff OOtthheerr PPaacckkaaggeess nneeeeddeedd bbyy AAccttiioonn AApppplliiccaattiioonnss
+  3.3...  I.In.ns.st.ta.al.ll.la.at.ti.io.on.n o.of.f O.Ot.th.he.er.r P.Pa.ac.ck.ka.ag.ge.es.s n.ne.ee.ed.de.ed.d b.by.y A.Ac.ct.ti.io.on.n A.Ap.pp.pl.li.ic.ca.at.ti.io.on.ns.s
 
-  33..11..  PPllaattffoorrmm
+  3.3...1.1...  P.Pl.la.at.tf.fo.or.rm.m
 
   The installation instructions given here are intended for use with
   RedHat Linux. We used version 6.0 and 6.2. This specifically means
-  that the _r_p_m tool is used wherever possible.
+  that the _.r_.p_.m tool is used wherever possible.
 
-  _I_f _y_o_u_r _s_y_s_t_e_m _d_o_e_s _n_o_t _s_u_p_p_o_r_t _t_h_e _r_p_m _t_o_o_l, most procedures will be
+  _.I_.f _.y_.o_.u_.r _.s_.y_.s_.t_.e_.m _.d_.o_.e_.s _.n_.o_.t _.s_.u_.p_.p_.o_.r_.t _.t_.h_.e _.r_.p_.m _.t_.o_.o_.l, most procedures will be
   quite different from what is shown here.  You will probably have to do
   most installations by building the software itself. It is beyond the
   scope of this document to describe that although necessary
   configurations options will be mentioned.
 
 
-  33..22..  MMyySSQQLL ddaattaabbaassee bbaacckk eenndd
+  3.3...2.2...  M.My.yS.SQ.QL.L d.da.at.ta.ab.ba.as.se.e b.ba.ac.ck.k e.en.nd.d
 
   Check if you have already MySQL 3.22.32 or newer installed:
 
@@ -622,11 +622,11 @@
 
   If it is not installed or if the version used is too old, install it.
   If you don't have a CD with MySQL RPM files, download it from
-  <http://www.mysql.com/downloads/mysql.html>. (MySQL is _n_o_t included in
+  <http://www.mysql.com/downloads/mysql.html>. (MySQL is _.n_.o_.t included in
   RedHat Linux.) Use the stable release version. Get files from the
-  "standard binary RPMs" part: "_S_e_r_v_e_r _f_o_r _._._. _s_y_s_t_e_m_s", "_C_l_i_e_n_t
-  _p_r_o_g_r_a_m_s _f_o_r _._._. _s_y_s_t_e_m_s" and "_I_n_c_l_u_d_e _f_i_l_e_s _a_n_d _l_i_b_r_a_r_i_e_s _f_o_r
-  _d_e_v_e_l_o_p_m_e_n_t _f_o_r _._._. _s_y_s_t_e_m_s".  (The latter is needed re recompile php
+  "standard binary RPMs" part: "_.S_.e_.r_.v_.e_.r _.f_.o_.r _.._.._.. _.s_.y_.s_.t_.e_.m_.s", "_.C_.l_.i_.e_.n_.t
+  _.p_.r_.o_.g_.r_.a_.m_.s _.f_.o_.r _.._.._.. _.s_.y_.s_.t_.e_.m_.s" and "_.I_.n_.c_.l_.u_.d_.e _.f_.i_.l_.e_.s _.a_.n_.d _.l_.i_.b_.r_.a_.r_.i_.e_.s _.f_.o_.r
+  _.d_.e_.v_.e_.l_.o_.p_.m_.e_.n_.t _.f_.o_.r _.._.._.. _.s_.y_.s_.t_.e_.m_.s".  (The latter is needed re recompile php
   if this has to be done, see below.)
 
   As root, install the RPMs:
@@ -658,8 +658,8 @@
 
   Since the server is now running, it can be accessed. It is a good idea
   to immediately set a password for the MySQL root user.  Remind the
-  password - better not use _m_y_s_q_l_p_a_s_s for obvious reasons.  We will
-  refer to this password as the _m_y_s_q_l _r_o_o_t _p_a_s_s_w_o_r_d.
+  password - better not use _.m_.y_.s_.q_.l_.p_.a_.s_.s for obvious reasons.  We will
+  refer to this password as the _.m_.y_.s_.q_.l _.r_.o_.o_.t _.p_.a_.s_.s_.w_.o_.r_.d.
 
 
        ______________________________________________________________________
@@ -693,8 +693,8 @@
 
   Create a user in MySQL that will be able to access the new aadb
   database.  Again, you will need to provide a new password; below, it
-  is _p_a_s_s_w_o_r_d_2.  Use a different one and remind it. We will refer to
-  this password as the _a_a_d_b_u_s_e_r _p_a_s_s_w_o_r_d.
+  is _.p_.a_.s_.s_.w_.o_.r_.d_.2.  Use a different one and remind it. We will refer to
+  this password as the _.a_.a_.d_.b_.u_.s_.e_.r _.p_.a_.s_.s_.w_.o_.r_.d.
 
 
        ______________________________________________________________________
@@ -714,9 +714,9 @@
 
 
 
-  33..33..  OOppeennLLDDAAPP
+  3.3...3.3...  O.Op.pe.en.nL.LD.DA.AP.P
 
-  33..33..11..  PPaacckkaaggee IInnssttaallllaattiioonn
+  3.3...3.3...1.1...  P.Pa.ac.ck.ka.ag.ge.e I.In.ns.st.ta.al.ll.la.at.ti.io.on.n
 
   Note: You only need the OpenLDAP server if you decided to use LDAP as
   the permission system. The OpenLDAP server does not need to be on the
@@ -761,19 +761,19 @@
 
 
 
-  33..33..22..  SSeettuupp:: CCoonnffiigguurraattiioonn
+  3.3...3.3...2.2...  S.Se.et.tu.up.p:.: C.Co.on.nf.fi.ig.gu.ur.ra.at.ti.io.on.n
 
   If you didn't have an OpenLDAP server running, you will need to create
   the /etc/openldap/slapd.conf file - this is the server configuration
   file.  Use the file doc/slapd.conf from the Action Applications
   distribution to create it.  This file is well documented and contains
-  hints about which spots need to be modified. _T_h_e _L_D_A_P _s_e_r_v_e_r _w_i_l_l _n_o_t
-  _w_o_r_k _p_r_o_p_e_r_l_y _i_f _y_o_u _d_o_n_'_t _e_d_i_t _t_h_i_s _f_i_l_e_. You will need some basic
+  hints about which spots need to be modified. _.T_.h_.e _.L_.D_.A_.P _.s_.e_.r_.v_.e_.r _.w_.i_.l_.l _.n_.o_.t
+  _.w_.o_.r_.k _.p_.r_.o_.p_.e_.r_.l_.y _.i_.f _.y_.o_.u _.d_.o_.n_.'_.t _.e_.d_.i_.t _.t_.h_.i_.s _.f_.i_.l_.e_.. You will need some basic
   data to fill in here; see at ``LDAP basic info'' for details.
 
   The root dn password in this file can be trivial for now (leave it as
   it is, "password"), we will replace it shortly with a secure one. We
-  refer to this password as the _l_d_a_p _r_o_o_t _d_n password.
+  refer to this password as the _.l_.d_.a_.p _.r_.o_.o_.t _.d_.n password.
 
   Also you need to copy some other files from the Action Applications
   doc directory to the /etc/openldap/ directory and change the file mode
@@ -799,7 +799,7 @@
 
 
 
-  (This file is used by the programs that _a_c_c_e_s_s a ldap server, not by
+  (This file is used by the programs that _.a_.c_.c_.e_.s_.s a ldap server, not by
   the server itself. It only affects accessing programs on the machine
   where the programs run.)
 
@@ -816,7 +816,7 @@
 
 
 
-  33..33..33..  SSttaarrtt tthhee llddaapp sseerrvveerr
+  3.3...3.3...3.3...  S.St.ta.ar.rt.t t.th.he.e l.ld.da.ap.p s.se.er.rv.ve.er.r
 
   Try to start the ldap server and check messages from the messages
   logfile (normally /var/log/messages):
@@ -844,24 +844,24 @@
 
 
 
-  33..33..44..  IInniittiiaall ddaattaabbaassee ccrreeaattiioonn
+  3.3...3.3...4.4...  I.In.ni.it.ti.ia.al.l d.da.at.ta.ab.ba.as.se.e c.cr.re.ea.at.ti.io.on.n
 
   The OpenLDAP server needs an initial database before its first start.
-  To create this database, you need a _l_d_i_f format file which can be
+  To create this database, you need a _.l_.d_.i_.f format file which can be
   translated into the database by the ldapmodify command. There is an
   example ldif file, namely LDIF.ini, in the doc/ directory. Edit this
   file to suit your needs according to the following instructions.
 
   The initial ldif file should contain four objects:
 
-  +o  Action Applications base object
+  +.o  Action Applications base object
 
-  +o  The Action Applications account object (used by Action Applications
+  +.o  The Action Applications account object (used by Action Applications
      to access the ldap server)
 
-  +o  ldap tree for AA's users
+  +.o  ldap tree for AA's users
 
-  +o  ldap tree for ACLs used by the Action Applications
+  +.o  ldap tree for ACLs used by the Action Applications
 
      Objects are separated by blank lines. Each line consists of a
      keyword, followed by a colon, followed by a value. The first line
@@ -887,11 +887,11 @@
 
   If the server responds with an error message:
 
-     llddaapp__aadddd:: IInnssuuffffiicciieenntt aacccceessss
+     l.ld.da.ap.p_._a.ad.dd.d:.: I.In.ns.su.uf.ff.fi.ic.ci.ie.en.nt.t a.ac.cc.ce.es.ss.s
         Check the rootdn: entry in the slapd.conf file and what you
         typed after the -D switch to ldapmodify. They must match.
 
-     llddaapp__aadddd:: OObbjjeecctt ccllaassss vviioollaattiioonn
+     l.ld.da.ap.p_._a.ad.dd.d:.: O.Ob.bj.je.ec.ct.t c.cl.la.as.ss.s v.vi.io.ol.la.at.ti.io.on.n
         The objects in the ldif file are not consistent. Check if you
         accidently deleted lines from the file.
 
@@ -910,11 +910,11 @@
   dap/ldap.conf file for the BASE and HOST entries.
 
 
-  33..33..55..  LLDDAAPP ppaasssswwoorrddss
+  3.3...3.3...5.5...  L.LD.DA.AP.P p.pa.as.ss.sw.wo.or.rd.ds.s
 
   There are two passwords we must maintain for the ldap server. We refer
-  to them as the _r_o_o_t _d_n _p_a_s_s_w_o_r_d, which is used to access the LDAP root
-  account and the _a_a_l_d_u_s_e_r _a_c_c_o_u_n_t _p_a_s_s_w_o_r_d, which the Action
+  to them as the _.r_.o_.o_.t _.d_.n _.p_.a_.s_.s_.w_.o_.r_.d, which is used to access the LDAP root
+  account and the _.a_.a_.l_.d_.u_.s_.e_.r _.a_.c_.c_.o_.u_.n_.t _.p_.a_.s_.s_.w_.o_.r_.d, which the Action
   Applications use to access the aalduser account and the LDAP server.
 
   We should now set the root dn password in /etc/openldap/slapd.conf. To
@@ -922,7 +922,7 @@
   then make a query to the ldap server so we get an encrypted version of
   the password back, and copy and paste the encrypted password into the
   sldap.conf file.  When you issue the following commands, the password
-  given after the -w switches must match the _o_l_d root dn password which
+  given after the -w switches must match the _.o_.l_.d root dn password which
   is still defined in clear text in /etc/openldap/slapd.conf. When
   prompted for the new password, enter the new root dn password you want
   to set. And remind it!
@@ -967,7 +967,7 @@
   message, check the spelling of the command line... errors most likely
   have to do with spelling errors.
 
-  NNooww you can change the password for the aalduser account again so it
+  N.No.ow.w you can change the password for the aalduser account again so it
   is different from the root dn password:
 
 
@@ -981,7 +981,7 @@
 
 
 
-  33..44..  IInnssttaalllliinngg tthhee AAppaacchhee WWeebb SSeerrvveerr
+  3.3...4.4...  I.In.ns.st.ta.al.ll.li.in.ng.g t.th.he.e A.Ap.pa.ac.ch.he.e W.We.eb.b S.Se.er.rv.ve.er.r
 
   Use the RPM that comes from RedHat. We have had success with the
   versions 1.3.9 and 1.3.12. You need to install the "devel" packages,
@@ -1018,14 +1018,14 @@
   RPM will do part of this work.
 
 
-  33..55..  PPHHPP33
+  3.3...5.5...  P.PH.HP.P3.3
 
-  33..55..11..  PPHHPP33 iinnssttaallllaattiioonn
+  3.3...5.5...1.1...  P.PH.HP.P3.3 i.in.ns.st.ta.al.ll.la.at.ti.io.on.n
 
   Hint: The use of PHP4 has not yet been tested.
 
   php3 runs within the apache web server as a module. We need a version
-  of php3 which includes support for _t_w_o _o_p_t_i_o_n_a_l _p_h_p _m_o_d_u_l_e_s, namely
+  of php3 which includes support for _.t_.w_.o _.o_.p_.t_.i_.o_.n_.a_.l _.p_.h_.p _.m_.o_.d_.u_.l_.e_.s, namely
   ldap and mysql. These modules provide access to ldap and mysql
   databases, respectively, from php3 programs.  (If you don't use ldap
   with the Action Applications, you will not need the ldap php support.)
@@ -1034,7 +1034,7 @@
   of trouble. The cleanest and easiest way is, again, to use RPMs.
 
 
-  33..55..22..  TTeessttiinngg pphhpp33 iinnssttaallllaattiioonn
+  3.3...5.5...2.2...  T.Te.es.st.ti.in.ng.g p.ph.hp.p3.3 i.in.ns.st.ta.al.ll.la.at.ti.io.on.n
 
   First, create a test WWW page to find out the status of php3 support
   on your system. This can be done easily by executing this command
@@ -1050,17 +1050,17 @@
 
   Access the page with a web browser (http://localhost/test.php3).
 
-  +o  If you see the string php phpinfo() ?, you do not have php3
+  +.o  If you see the string php phpinfo() ?, you do not have php3
      installed or at least it is not enabled.
 
-  +o  If you see a page beginning with PHP Version, you have a working
+  +.o  If you see a page beginning with PHP Version, you have a working
      php. Browse through the Extensions section. Look for an extension
      named MySQL and, if you are using the LDAP permission system, for
      one named LDAP. If both are there, you are lucky because the php
      setup id complete; otherwise, you must install the missing parts.
 
 
-  33..55..33..  IInnssttaalllliinngg PPHHPP
+  3.3...5.5...3.3...  I.In.ns.st.ta.al.ll.li.in.ng.g P.PH.HP.P
 
   Unfortunately, as of this writing, there is no mysql support for php
   which comes as an rpm made by RedHat. There are some mysql modules for
@@ -1079,25 +1079,25 @@
   This is described in the sections following the next section.
 
 
-  33..55..44..  BBuuiillddiinngg tthhee PPHHPP RRPPMMss iinncclluuddiinngg mmyyssqqll
+  3.3...5.5...4.4...  B.Bu.ui.il.ld.di.in.ng.g t.th.he.e P.PH.HP.P R.RP.PM.Ms.s i.in.nc.cl.lu.ud.di.in.ng.g m.my.ys.sq.ql.l
 
 
   1. To build the PHP RPMs including the mysql support, you need the
      following packages installed which you find at www.redhat.com:
 
-  +o  apache-devel
+  +.o  apache-devel
 
-  +o  imap-devel
+  +.o  imap-devel
 
-  +o  openldap-devel
+  +.o  openldap-devel
 
-  +o  postgresql-devel
+  +.o  postgresql-devel
 
-  +o  MySQL-devel
+  +.o  MySQL-devel
 
-  +o  apache-devel (version 1.3.9 or newer)
+  +.o  apache-devel (version 1.3.9 or newer)
 
-  +o  and there must be a general development environment.
+  +.o  and there must be a general development environment.
 
   2. In order to build RPMs, you need an RPM build environment.  For a
      quick setup of this, use the following commands:
@@ -1187,23 +1187,23 @@
   (/etc/httpd/php.ini) automatically.
 
 
-  33..55..55..  BBuuiillddiinngg PPHHPP33 wwiitthhoouutt RRPPMMss
+  3.3...5.5...5.5...  B.Bu.ui.il.ld.di.in.ng.g P.PH.HP.P3.3 w.wi.it.th.ho.ou.ut.t R.RP.PM.Ms.s
 
   If you don't want to use RPM for PHP3 installation, you can as well
   build it from the scratch. If you want to do this, you will need
 
-  +o  The PHP3 sources themselves. get them from
+  +.o  The PHP3 sources themselves. get them from
      <http://www.php.net/downloads.php>.
 
-  +o  The apache development files installed (apache-devel)
+  +.o  The apache development files installed (apache-devel)
 
-  +o  The mysql development files installed (MySQL-devel)
+  +.o  The mysql development files installed (MySQL-devel)
 
-  +o  The openldap development files installed (openldap-devel) if you
+  +.o  The openldap development files installed (openldap-devel) if you
      plan to use LDAP as the permission system.
 
   Unpack the PHP3 distribution, change into that directory, configure
-  and build. This example shows a build _w_i_t_h the LDAP module; remove the
+  and build. This example shows a build _.w_.i_.t_.h the LDAP module; remove the
   --with-ldap if you don't use LDAP:
 
 
@@ -1223,7 +1223,7 @@
 
 
 
-  33..66..  CCoonnffiigguurriinngg tthhee aappaacchhee wweebb sseerrvveerr
+  3.3...6.6...  C.Co.on.nf.fi.ig.gu.ur.ri.in.ng.g t.th.he.e a.ap.pa.ac.ch.he.e w.we.eb.b s.se.er.rv.ve.er.r
 
   During the PHP3 installation using RPMs, most of the configuration
   work for the web server is already done. If you didn't use RPM to
@@ -1234,12 +1234,12 @@
   /etc/httpd/conf/httpd.conf.
 
   You will need the statement Options +Includes there. This enables the
-  so-called _s_e_r_v_e_r _s_i_d_e _i_n_c_l_u_d_e_s (SSI) which are used by the page the
-  users read (which contain the actual content). TThhiiss ccaann bbee aa sseeccuurriittyy
-  pprroobblleemm because whoever can edit these pages can run any command on
-  your web server.  (_I_n_c_l_u_d_e_s_N_O_E_X_E_C is not enough.)  You might want to
+  so-called _.s_.e_.r_.v_.e_.r _.s_.i_.d_.e _.i_.n_.c_.l_.u_.d_.e_.s (SSI) which are used by the page the
+  users read (which contain the actual content). T.Th.hi.is.s c.ca.an.n b.be.e a.a s.se.ec.cu.ur.ri.it.ty.y
+  p.pr.ro.ob.bl.le.em.m because whoever can edit these pages can run any command on
+  your web server.  (_.I_.n_.c_.l_.u_.d_.e_.s_.N_.O_.E_.X_.E_.C is not enough.)  You might want to
   consider to enable this only for the directories where it is needed
-  with _<_D_i_r_e_c_t_o_r_y_> statements. See also the chapter on ``''.
+  with _.<_.D_.i_.r_.e_.c_.t_.o_.r_.y_.> statements. See also the chapter on ``''.
 
   In /etc/httpd/conf/httpd.conf, make sure these lines are not commented
   out:
@@ -1290,7 +1290,7 @@
   browsing to your test page ( <http://localhost/test.php3>) again.
 
 
-  33..77..  PPHHPPLLIIBB iinnssttaallllaattiioonn
+  3.3...7.7...  P.PH.HP.PL.LI.IB.B i.in.ns.st.ta.al.ll.la.at.ti.io.on.n
 
   Get PHPLIB from  <http://phplib.netuse.de/download/index.php3>.
   Unpack it, create a directory /home/httpd/phplib and extract the files
@@ -1368,9 +1368,9 @@
 
 
 
-  44..  IInnssttaallllaattiioonn ooff AAccttiioonn AApppplliiccaattiioonnss
+  4.4...  I.In.ns.st.ta.al.ll.la.at.ti.io.on.n o.of.f A.Ac.ct.ti.io.on.n A.Ap.pp.pl.li.ic.ca.at.ti.io.on.ns.s
 
-  44..11..  IInnssttaallllaattiioonn
+  4.4...1.1...  I.In.ns.st.ta.al.ll.la.at.ti.io.on.n
 
   Create a directory aa in your httpdocs directory and copy most files
   from the Action Applications distribution there:
@@ -1379,7 +1379,7 @@
        ______________________________________________________________________
        # mkdir /home/httpd/html/aa
        # cd apc-aa-1.1.0
-       # cp -R *.css *.php3 admin images include /home/httpd/html/aa
+       # cp -R *.css *.php3 admin images include doc /home/httpd/html/aa
        ______________________________________________________________________
 
 
@@ -1391,7 +1391,7 @@
   everything there.  Note that this file may not contain anything before
   the <?php line at the top and after the ?> line at the bottom.
 
-  TThhee ffiillee /home/httpd/html/aa/include/config.php3 now contains
+  T.Th.he.e f.fi.il.le.e /home/httpd/html/aa/include/config.php3 now contains
   passwords. It should therefore not be world readable. On the other
   hand, the http server must be able to read it. Read the chapter on
   ``'' for a possible solution for this problem.
@@ -1400,7 +1400,7 @@
   page helps you to create your initial superadmin account.
 
 
-  44..22..  CCrreeaattiinngg aa ssuuppeerraaddmmiinn aaccccoouunntt
+  4.4...2.2...  C.Cr.re.ea.at.ti.in.ng.g a.a s.su.up.pe.er.ra.ad.dm.mi.in.n a.ac.cc.co.ou.un.nt.t
 
   Action Applications users who have the superadmin privilege may create
   new slices in addition to the rights any slice administrator has.
@@ -1413,53 +1413,53 @@
   Superadmin account. Fields marked with an asterisk are required. Click
   on the Create button.
 
-  Now you should see a page with a congratulation and a link _A_d_d _S_l_i_c_e.
+  Now you should see a page with a congratulation and a link _.A_.d_.d _.S_.l_.i_.c_.e.
   Follow this link. You will be asked for login name and password - log
   in with your (new) superadmin account and read on in the next section
   to see how to create a slice.
 
 
-  44..33..  YYoouurr ffiirrsstt tteesstt sslliiccee
+  4.4...3.3...  Y.Yo.ou.ur.r f.fi.ir.rs.st.t t.te.es.st.t s.sl.li.ic.ce.e
 
-  44..33..11..  CCrreeaattiinngg tthhee ffiirrsstt tteesstt sslliiccee
+  4.4...3.3...1.1...  C.Cr.re.ea.at.ti.in.ng.g t.th.he.e f.fi.ir.rs.st.t t.te.es.st.t s.sl.li.ic.ce.e
 
   After a successful login on
-  <http://localhost/aa/admin/sliceadd.php3>, you should see the _S_l_i_c_e
-  _A_d_m_i_n_i_s_t_r_a_t_i_o_n _- _A_d_d _S_l_i_c_e page. Choose the slice type (see ``'' for
-  details) and say _A_d_d.
+  <http://localhost/aa/admin/sliceadd.php3>, you should see the _.S_.l_.i_.c_.e
+  _.A_.d_.m_.i_.n_.i_.s_.t_.r_.a_.t_.i_.o_.n _.- _.A_.d_.d _.S_.l_.i_.c_.e page. Choose the slice type (see ``'' for
+  details) and say _.A_.d_.d.
 
   Fill in the form. The fields shown here depend on the slice type, but
   some fields are there for every slice type. Especially fill in the
   following fields:
 
-  +o  Headline - a title for the slice
+  +.o  Headline - a title for the slice
 
-  +o  Short name - a short description of the slices contents
+  +.o  Short name - a short description of the slices contents
 
-  +o  Slice URL - the URL of a WWW page where you want to display the
+  +.o  Slice URL - the URL of a WWW page where you want to display the
      actual content; this is the place readers will access. The page
      does not need to exist at this time and it does not need to be
      within the action application directory tree
 
-  +o  Listing length - say 10
+  +.o  Listing length - say 10
 
-  +o  Fulltext info abstract grab length - say 200.
+  +.o  Fulltext info abstract grab length - say 200.
 
-     You may fill in the other fields, too.  After selecting _i_n_s_e_r_t at
+     You may fill in the other fields, too.  After selecting _.i_.n_.s_.e_.r_.t at
      the page bottom the slice will be created.
 
   Each slice can have a set of categories. New information items can
   belong to one or more categories. Create your first category by
-  selecting _N_e_w. Enter the category name and hit OK.
+  selecting _.N_.e_.w. Enter the category name and hit OK.
 
   At this point in time, you have created a new slice and thus, a new
   action application.
 
 
-  44..33..22..  AAddddiinngg tthhee ffiirrsstt iinnffoorrmmaattiioonn iitteemm ttoo tthhee tteesstt sslliiccee
+  4.4...3.3...2.2...  A.Ad.dd.di.in.ng.g t.th.he.e f.fi.ir.rs.st.t i.in.nf.fo.or.rm.ma.at.ti.io.on.n i.it.te.em.m t.to.o t.th.he.e t.te.es.st.t s.sl.li.ic.ce.e
 
-  Select _A_d_d _A_r_t_i_c_l_e. Fill in some information. Make sure to set the
-  Expire date to a day in the future and hit _i_n_s_e_r_t.
+  Select _.A_.d_.d _.A_.r_.t_.i_.c_.l_.e. Fill in some information. Make sure to set the
+  Expire date to a day in the future and hit _.i_.n_.s_.e_.r_.t.
 
   The page you see after that tells you the HTML code which you must
   place into the page which is meant to display the content (the slice
@@ -1500,11 +1500,11 @@
 
 
 
-  55..  CCuussttoommiizzaattiioonn
+  5.5...  C.Cu.us.st.to.om.mi.iz.za.at.ti.io.on.n
 
-  55..11..  LLaanngguuaaggee CCuussttoommiizzaattiioonn
+  5.5...1.1...  L.La.an.ng.gu.ua.ag.ge.e C.Cu.us.st.to.om.mi.iz.za.at.ti.io.on.n
 
-  55..11..11..  HHooww iitt wwoorrkkss
+  5.5...1.1...1.1...  H.Ho.ow.w i.it.t w.wo.or.rk.ks.s
 
   Action Applications were designed with internationalization in mind.
   There are currently two languages shipping: English and Czech.
@@ -1514,28 +1514,28 @@
   information.
 
   Each language has an abbreviation used in the Action Application
-  configuration. The abbreviation for English is _e_m, Czech is _c_z.
+  configuration. The abbreviation for English is _.e_.m, Czech is _.c_.z.
 
   The language information is split up in parts:
 
-  +o  Common language information in the file
+  +.o  Common language information in the file
      include/??_common_lang.php3. This is used for non application
      specific language information, for example, for the login box.
 
-  +o  Application specific language information. Each Action Application
+  +.o  Application specific language information. Each Action Application
      has its own specific language information in the files
      include/??_*_lang.php3 where * is replaced with an Application
-     dependent abbreviation; for example, the _N_e_w_s _L_i_s_t_i_n_g Action
+     dependent abbreviation; for example, the _.N_.e_.w_.s _.L_.i_.s_.t_.i_.n_.g Action
      Application's language information lives in the file
      include/??_nefs_lang.php3.
 
      Of course the file names do not contain question marks; instead,
-     the _?_? is replaced by the actual language abbreviation. For
+     the _.?_.? is replaced by the actual language abbreviation. For
      example, the Czech common language file is named
      include/cz_common_lang.php3.
 
-  In include/config.php3, the _c_o_m_m_o_n language files are referenced by a
-  _r_e_q_u_i_r_e statement. The section containing it looks like this:
+  In include/config.php3, the _.c_.o_.m_.m_.o_.n language files are referenced by a
+  _.r_.e_.q_.u_.i_.r_.e statement. The section containing it looks like this:
 
 
        ______________________________________________________________________
@@ -1548,7 +1548,7 @@
 
 
   Exactly one common language file must be uncommented here. (Again, the
-  _# character at the beginning of the line makes it a comment.)  This
+  _.# character at the beginning of the line makes it a comment.)  This
   means that for the common part, one installation of the Action Appli-
   cations (using one config.php3 file) can only use one language for the
   common parts.
@@ -1600,17 +1600,17 @@
   same Action Application with more than one different languages.
 
 
-  55..11..22..  CCuussttoommiizziinngg aann AAccttiioonn AApppplliiccaattiioonn ttoo aa nneeww llaanngguuaaggee
+  5.5...1.1...2.2...  C.Cu.us.st.to.om.mi.iz.zi.in.ng.g a.an.n A.Ac.ct.ti.io.on.n A.Ap.pp.pl.li.ic.ca.at.ti.io.on.n t.to.o a.a n.ne.ew.w l.la.an.ng.gu.ua.ag.ge.e
 
   These are the steps you will have to perform if you want to set up an
   Action Application in a different language than the default, English:
 
-  +o  Figure out the language abbreviation for your new language. Check
+  +.o  Figure out the language abbreviation for your new language. Check
      if there are already files for this language in the include/
      directory. If not, make the abbreviation up. In the rest of these
-     instructions, the example language abbreviation _l_g will be used.
+     instructions, the example language abbreviation _.l_.g will be used.
 
-  +o  If you want the common non application specific parts of the Action
+  +.o  If you want the common non application specific parts of the Action
      Applications to be in that language, too, check if there is a file
      include/lg_common_lang.php3 for your language. If not, copy the
      English version include/en_common_lang.php3 to
@@ -1629,12 +1629,12 @@
 
 
 
-  +o  Find the application specific file for the Action Application you
+  +.o  Find the application specific file for the Action Application you
      want to translate in the include/ directory. Copy it the same way,
-     replacing the _e_n with your _l_g and edit it as above.
-  +o  Add another block to config.php3 where the application specific
+     replacing the _.e_.n with your _.l_.g and edit it as above.
+  +.o  Add another block to config.php3 where the application specific
      language information lives. For example, for a new news listing
-     application in your language _l_g add these lines:
+     application in your language _.l_.g add these lines:
 
 
        ______________________________________________________________________
@@ -1645,8 +1645,8 @@
 
 
 
-  Beware that the _e_n is replaced with _l_g at tthhrreeee spots.  This example
-  assumes that _N_e_w_s is translated _N_j_u_i_g_k_e_i_t_e_n in your new language.
+  Beware that the _.e_.n is replaced with _.l_.g at t.th.hr.re.ee.e spots.  This example
+  assumes that _.N_.e_.w_.s is translated _.N_.j_.u_.i_.g_.k_.e_.i_.t_.e_.n in your new language.
 
   Note: You do not need to remove the English version of News Listing!
 
@@ -1655,12 +1655,12 @@
   HTML_PAGE_BEGIN setting.
 
   After this procedure, the new lg language Action Application will show
-  up in the pull down box on the _a_d_d _s_l_i_c_e page.
+  up in the pull down box on the _.a_.d_.d _.s_.l_.i_.c_.e page.
 
 
-  55..22..  CCrreeaattiinngg nneeww AAccttiioonn AApppplliiccaattiioonnss
+  5.5...2.2...  C.Cr.re.ea.at.ti.in.ng.g n.ne.ew.w A.Ac.ct.ti.io.on.n A.Ap.pp.pl.li.ic.ca.at.ti.io.on.ns.s
 
-  55..22..11..  OOvveerrvviieeww
+  5.5...2.2...1.1...  O.Ov.ve.er.rv.vi.ie.ew.w
 
   If you are not satisfied with the collection of Action Applications
   and want to set up your own flavor, you can create your own Action
@@ -1672,42 +1672,42 @@
 
   In order to create a new Action Application, follow these steps:
 
-  +o  Figure out an abbreviation for your new application such as _n_e_w_s,
-     _e_v_e_n_t_s etc. This should be less than 15 characters and only contain
+  +.o  Figure out an abbreviation for your new application such as _.n_.e_.w_.s,
+     _.e_.v_.e_.n_.t_.s etc. This should be less than 15 characters and only contain
      letters and underscores (_). For this example, we assume your new
-     Action Application will have the abbreviation _p_i_z_z_a because you are
+     Action Application will have the abbreviation _.p_.i_.z_.z_.a because you are
      about to create a pizza place listing.
 
-  +o  Copy a template language file, for example,
+  +.o  Copy a template language file, for example,
      include/en_news_lang.php3, to a new name. The new name should
      contain your new abbreviation instead of the news. Thus, in our
      example, it is called include/en_pizza_lang.php3.
 
-  +o  Edit the new file to create the new Action Application, replacing
+  +.o  Edit the new file to create the new Action Application, replacing
      the old information there with your new one. See next section for
      details.
 
-  +o  Add the new application to the include/config.php3 file, just as if
+  +.o  Add the new application to the include/config.php3 file, just as if
      you would add a new language.
 
 
-  55..22..22..  EEddiittiinngg tthhee llaanngguuaaggee ffiillee ttoo ccrreeaattee aa nneeww AAccttiioonn AApppplliiccaattiioonn
+  5.5...2.2...2.2...  E.Ed.di.it.ti.in.ng.g t.th.he.e l.la.an.ng.gu.ua.ag.ge.e f.fi.il.le.e t.to.o c.cr.re.ea.at.te.e a.a n.ne.ew.w A.Ac.ct.ti.io.on.n A.Ap.pp.pl.li.ic.ca.at.ti.io.on.n
 
   There are comments within the file which will help you. However, some
   basic information will help you there.
 
 
 
-  +o  You will find text displayed on the application's pages here as
+  +.o  You will find text displayed on the application's pages here as
      well as default settings for several aspects of the application,
      database fields and their use and existence within the application
      and so on.
 
-  +o  It will probably help if you look at more than one application from
+  +.o  It will probably help if you look at more than one application from
      the distribution; you will see that by editing the file the right
      way, you can create way different things.
 
-  +o  If you need fields for your new application for which there are no
+  +.o  If you need fields for your new application for which there are no
      fields in the database table, just reuse a field which you do not
      need.  All field mapping is specified in language files (so there
      is no table in database for that). Lets look in en_news_lang.php3
@@ -1759,8 +1759,8 @@
   different name for the field. From the perspective of the Action
   Applications, the fields are not different.
 
-  +o  If you really need more fields than there are in the database for
-     the items (the table _i_t_e_m_s contains them), you will have to tweak
+  +.o  If you really need more fields than there are in the database for
+     the items (the table _.i_.t_.e_.m_.s contains them), you will have to tweak
      the program a bit more. Read this developer note to get the
      picture.  This process is not covered any further by this document
      at this point in time.
@@ -1830,9 +1830,9 @@
 
 
 
-  66..  SSeeccuurriittyy IIssssuueess
+  6.6...  S.Se.ec.cu.ur.ri.it.ty.y I.Is.ss.su.ue.es.s
 
-  66..11..  SSeerrvveerr SSiiddee IInncclluuddeess
+  6.6...1.1...  S.Se.er.rv.ve.er.r S.Si.id.de.e I.In.nc.cl.lu.ud.de.es.s
 
   The directories which contain the user pages must be enabled for SSI
   (server side includes). This is a major security hole if untrusted
@@ -1856,7 +1856,7 @@
   common directory structure and not into the normal user's htdocs tree,
   so control over the pages can easily be separated.
 
-  66..22..  ccoonnffiigg..pphhpp33 ppeerrmmiissssiioonnss
+  6.6...2.2...  c.co.on.nf.fi.ig.g...p.ph.hp.p3.3 p.pe.er.rm.mi.is.ss.si.io.on.ns.s
 
   The http server must be able to access the include/config.php3 file,
   but this file contains passwords, so it should not be world readable.
@@ -1865,7 +1865,7 @@
   for your http server and make the config.php3 file belong to that
   group and be group readable. The steps to do this would be:
 
-  +o  Create unix group, for example, _w_w_w. On RedHat Linux, this can be
+  +.o  Create unix group, for example, _.w_.w_.w. On RedHat Linux, this can be
      done like this:
 
 
@@ -1877,7 +1877,7 @@
 
 
 
-  +o  Edit /etc/httpd/conf/httpd.conf and alter the line
+  +.o  Edit /etc/httpd/conf/httpd.conf and alter the line
 
 
        ______________________________________________________________________
@@ -1896,7 +1896,7 @@
 
        ______________________________________________________________________
 
-  +o  Change file permissions in config.php3 and restart the server.
+  +.o  Change file permissions in config.php3 and restart the server.
 
 
        ______________________________________________________________________
@@ -1962,7 +1962,7 @@
 
 
 
-  77..  MMaaiinntteennaannccee
+  7.7...  M.Ma.ai.in.nt.te.en.na.an.nc.ce.e
 
   There is no maintenance to do, except that you must watch out always
   to have enough disk space for all the data.
@@ -2028,10 +2028,10 @@
 
 
 
-  88..  CCoonnttaaccttiinngg tthhee DDeevveellooppeerrss
+  8.8...  C.Co.on.nt.ta.ac.ct.ti.in.ng.g t.th.he.e D.De.ev.ve.el.lo.op.pe.er.rs.s
 
-  The Action Applications were developed by the _A_s_s_o_c_i_a_t_i_o_n _f_o_r
-  _P_r_o_g_r_e_s_s_i_v_e _C_o_m_m_u_n_i_c_a_t_i_o_n_s,  <http://www.apc.org/>. They are released
+  The Action Applications were developed by the _.A_.s_.s_.o_.c_.i_.a_.t_.i_.o_.n _.f_.o_.r
+  _.P_.r_.o_.g_.r_.e_.s_.s_.i_.v_.e _.C_.o_.m_.m_.u_.n_.i_.c_.a_.t_.i_.o_.n_.s,  <http://www.apc.org/>. They are released
   as open source and there is set up a project at SourceForge. The
   Action Applications SourceForge page can be found at
   <http://sourceforge.net/projects/apc-aa/>.
@@ -2094,7 +2094,7 @@
 
 
 
-                            TTaabbllee ooff CCoonntteennttss
+                            T.Ta.ab.bl.le.e o.of.f C.Co.on.nt.te.en.nt.ts.s
 
 
   1. Introduction  . . . . . . . . . . . . . . . . . . . . . . . . .   4

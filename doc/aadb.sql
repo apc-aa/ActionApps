@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS relation       ;
 DROP TABLE IF EXISTS pagecache      ;
 DROP TABLE IF EXISTS view           ;
 
+# 06/21/01 - added "value mediumtext" to feedmap table
 # 06/01/01 - added display_count, short_id and flags to item table
 #          - longer value in constant table (150 -> 255)
 # 05/30/01 - new sql_update.php3 script updating current database instalation
@@ -145,6 +146,7 @@ CREATE TABLE feedmap (
    to_slice_id char(16) NOT NULL,
    to_field_id char(16) NOT NULL,
    flag int(11),
+   value mediumtext,
    KEY from_slice_id (from_slice_id, to_slice_id)
 );
 

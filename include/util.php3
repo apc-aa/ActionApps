@@ -422,9 +422,10 @@ function GetCategoryGroup($slice_id) {
           ORDER BY id";  # first should be category........, 
                           # then category.......1, etc.
   $db->query($SQL);
-  if( $db->next_record() )
-    return substr( strchr($db->f(input_show_func),':'),1);
-   else
+  if( $db->next_record() ){
+    $arr = explode( ":", $db->f(input_show_func));
+    return $arr[1];
+  } else
     return false; 
 }    
 
@@ -496,6 +497,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.23  2001/06/21 14:15:44  honzam
+feeding improved - field value redefine possibility in se_mapping.php3
+
 Revision 1.22  2001/05/26 14:49:50  honzam
 Fixed problem with '=' character passed by url
 

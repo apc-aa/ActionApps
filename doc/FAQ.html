@@ -21,7 +21,7 @@
 <a href="#alias">What is the Prameters in Alias Function definition</a><br><br>
 <a href="#javascript">What does it means the "JavaScript item exchange" View?</a><br><br>
 <a href="#sliceparam">Which parameters can I use with slice.php3</a><br><br>
-<a href="#"></a>
+<a href="#ids">How to make item url shorter?</a>
 <a href="#"></a>
 <a href="#"></a>
 
@@ -419,38 +419,54 @@ Search in Headline and Fulltext:
 
 <p>Let's notice:
 <ul>
- <li>The <b>action</b> atribute on first row points to some file, where slice.php3 script is included (by SSI)</li>
+ <li>The <b>action</b> atribute on first row points to some file, where slice.php3 script is included (by SSI)<br><br></li>
  <li>There are two search fields - each of them uses a bit different syntax.<br>First field defines first search condition - conds[0]. The last index is field_id of searched field. Such syntax is easy and is good, if you want to
  <ul>
   <li>search only in one field for that specified phrase<br></li>
   <li>use standard searching operator, which is 'LIKE' (it means, that if the phrase is "los" the search function finds items with field content "los", "Carlos" or "lost"</li>
  </ul><br>
 Second field defines the second search condition. Between each condition is allways AND operator - selected item must allways pass each specified condition.<br>
-There is used extended syntax in second condition. In extended sytnax we allways use as last index to conds[]<br>
-- <b>value</b> atribut, where search phrase is specified (conds[0][value]="Prague")<br>
-- <b>operator</b> atribut, where operator for that condition is specified. If <b>operator</b> is not specified, 'LIKE' is used as default. The posibilities are:<ul>
-<li>= - equal</li>
-<li>&lt;&gt; - not equal</li>
-<li>&lt; - less than</li>
-<li>&gt; - more than</li>
-<li>&lt;= - less or equal</li>
-<li>&gt;= - more or equal</li>
-<li>LIKE - substring search (SQL: LIKE '%phrase%')</li>
-<li>RLIKE - substring which begins with phrase (SQL: LIKE 'phrase%')</li>
-<li>LLIKE - substring which ends with phrase (SQL: LIKE '%phrase')</li>
-<li>XLIKE - string (SQL: LIKE 'phrase')</li>
-</ul><br>
-- <b>&lt;field_id&gt;</b> atributes, where are specified ids of fields, where to search (note, that there can be specified more than one field. The value for those atributes are allways 1 - as shown in example)<br>
-</li>
+There is used extended syntax in second condition. In extended sytnax we allways use as last index to conds[]<br><br>
+- <b>value</b> atribut, where search phrase is specified (conds[0][value]="Prague")<br><br>
+- <b>operator</b> atribut, where operator for that condition is specified. If <b>operator</b> is not specified, 'LIKE' is used as default. The posibilities are:
+<table align=center cellpadding=3 border=0>
+<tr><td class=tabtit>Operator</td><td class=tabtit>Description</td></tr>
+<tr><td valign=top class=tabfnc>=</td><td>equal (or 'e:=' with <a href="#opmodifiers">modifiers</a>)</td></tr>
+<tr><td valign=top class=tabfnc>&lt;&gt;</td><td>not equal</td></tr>
+<tr><td valign=top class=tabfnc>&lt;</td><td>less than</td></tr>
+<tr><td valign=top class=tabfnc>&gt;</td><td>more than</td></tr>
+<tr><td valign=top class=tabfnc>&lt;=</td><td>less or equal</td></tr>
+<tr><td valign=top class=tabfnc>&gt;=</td><td>more or equal</td></tr>
+<tr><td valign=top class=tabfnc>LIKE</td><td>substring search (SQL: LIKE '%phrase%')</td></tr>
+<tr><td valign=top class=tabfnc>RLIKE</td><td>substring which begins with phrase (SQL: LIKE 'phrase%')</td></tr>
+<tr><td valign=top class=tabfnc>LLIKE</td><td>substring which ends with phrase (SQL: LIKE '%phrase')</td></tr>
+<tr><td valign=top class=tabfnc>XLIKE</td><td>string (SQL: LIKE 'phrase')</td></tr>
+</table>
+<br>
+
+<a name="opmodifiers"></a>The comparison operators can have its modifiers, 
+which is used for date transformations and such things. The modificators are 
+written before operator separated by colon (like 'd:&gt;='). The possible 
+modificators are now:
+
+<table align=center cellpadding=3 border=0>
+<tr><td class=tabtit>Operator modificator</td><td class=tabtit>Usage</td><td class=tabtit>Description</td></tr>
+<tr><td valign=top class=tabfnc>d</td><td>d:&gt;=</td><td>Used for english style datum transformation. If used, the "value" can be in format like '06/24/2001' or '10 September 2000' see <a href="http://php.net/strtotime">strtotime</a> PHP function definition</td></tr>
+<tr><td valign=top class=tabfnc>e</td><td>e:&gt;=</td><td>Used for european style datum transformation. If used, the "value" can be in format like '24.12.2001'</td></tr>
+</table><br>
+- <b>&lt;field_id&gt;</b> atributes, where are specified ids of fields, where to search (note, that there can be specified more than one field. The value for those atributes are allways 1 - as shown in example)<br><br></li>
 <li>It is possible to specify search order of found items. For this purpose is there sort[] variable, where the last index specifies the id of field we wont sort listing by. The value can by either<br>
-- <b>a</b> - for ascending order (default)<br>
-- <b>d</b> - for descending order<br>
+<table align=center cellpadding=3 border=0>
+<tr><td class=tabtit>Value</td><td class=tabtit>Description</td></tr>
+<tr><td valign=top class=tabfnc>a</td><td>for ascending order (default)</td></tr>
+<tr><td valign=top class=tabfnc>d</td><td>for descending order</td></tr>
+</table><br>
 If no sort[] variable is defined, items are sorted by <i>Publish date</i> - descending<br>
 As we can see, there is possibilty to specify more than one sort field. In this case the items are sorted primarily by sort[0] field, secondary by sort[1] field ...</li>
 </ul>
 </p>
 
-<p>Date values are passed in UNIX timestamp (no of seconds since 1.1.1970)</p>
+<p>Date values are passed in UNIX timestamp (no of seconds since 1.1.1970). You can use <a href="#opmodifiers">operatoer modificators</a> to convert it from human format.</p>
 <p>You can see the example on <a href="http://www.apc.org/actionapps/english/demo/search.shtml">APC Demo Site</a>, where publish date field is used too.</p>
 
 <br>
@@ -529,7 +545,7 @@ This example is usable for example for Highlight field - it shows Yes or No depe
 <tr><td>&nbsp;</td><td colspan=2><I>Example:</I> !:Email#:::<br>
 If e-mail field is filled, it shows "Email: email@apc.org" (for example), but if it is not filled, it shows nothing</td></tr>
 </table>
-<br>
+<br><br>
 
 <a name="javascript"></a>
 <h3>What does it means the "JavaScript item exchange" View?</h3>
@@ -554,7 +570,7 @@ document.write("&lt;TR&gt;&lt;TD VALIGN='TOP'&gt;_#PUB_DATE&lt;/TD&gt;&lt;TD&gt;
 document.write("&lt;/TABLE&gt;")<br>
 
 <p>You can see the example on <a href="http://www.apc.org/actionapps/english/demo/jsexchange.html">APC Demo Site</a></p>
-
+<br>
 
 <a name="sliceparam"></a>
 <h3>Which parameters can I use with slice.php3</h3>
@@ -581,12 +597,41 @@ document.write("&lt;/TABLE&gt;")<br>
 </table>
 
 
-<br>
-<a name=""></a>
-<h3></h3>
+<br><br>
+<a name="ids"></a>
+<h3>How to make item url shorter?</h3>
+<p><i>Why are slice IDs/item IDs so long? Would it be possible to have them shorter?</i></p>
+
+<p>The 32-digits hexadecimal ids are quite standard in  MySQL/PHP - 
+see uniqid() and md5() functions. This identifiers are designed to be 
+unique wordwide - so each item has unique id regardless if it is 
+stored on Econnect's server or Colnodo ones. This feature help us 
+in cross server feeding, ...</p>
+
+<p>Internaly (in database) the ids are stored packed to 16-character 
+long strings (for diskspace savings and a bit better performance of 
+database operations), but it is important just for developers.</p>
+
+<p>Because of long urls, I made short_id in v1.8 - so the 
+autoincremented short ids are used as default. The url for item is 
+now:</p>
+<code>
+http://kalendar.ecn.cz/index.shtml?AA_SL_Session=44ca275c691
+842965745f90ab9aee24e&amp;x=27968
+</code><br><br>
+OR better
+<br><br>
+<code>
+http://kalendar.ecn.cz/index.shtml?x=27968
+</code>
+
+<p>The AA_SL_Session is important just for pages with page 
+scrollers and it is need not to be sent, if you want to point to some 
+article.</p>
 
 
-<br>
+
+<br><br>
 <a name=""></a>
 <h3></h3>
 

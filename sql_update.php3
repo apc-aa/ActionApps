@@ -97,6 +97,7 @@ $SQL_create_new_tables[] = "
      to_slice_id char(16) NOT NULL,
      to_field_id char(16) NOT NULL,
      flag int(11),
+     value mediumtext,
      KEY from_slice_id (from_slice_id, to_slice_id)
   )";
 
@@ -916,6 +917,9 @@ echo '<h2>Update OK</h2>';
 
 /*
 $Log$
+Revision 1.5  2001/06/21 14:15:45  honzam
+feeding improved - field value redefine possibility in se_mapping.php3
+
 Revision 1.4  2001/06/05 18:24:08  madebeer
 adds tables that do not exist, to avoid errors.
 loads config.php3

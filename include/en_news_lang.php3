@@ -570,6 +570,8 @@ define("L_STATE_FEEDABLE_UPDATE", "Feed & update" );
 define("L_STATE_FEEDABLE_UPDATE_LOCKED", "Feed & update & lock" );
 
 define("L_SITEM_ID_ALIAS",'alias for Short Item ID');
+define("L_MAP_VALUE","-- Value --");
+define("L_MAP_VALUE2","Value");
 
 // ------------------------- New ----------------------------
 // not appended to other lang files
@@ -577,6 +579,9 @@ define("L_SITEM_ID_ALIAS",'alias for Short Item ID');
 
 /*
 $Log$
+Revision 1.44  2001/06/21 14:15:44  honzam
+feeding improved - field value redefine possibility in se_mapping.php3
+
 Revision 1.43  2001/06/12 16:07:22  honzam
 new feeding modes -  "Feed & update" and "Feed & update & lock"
 

@@ -42,7 +42,7 @@ define("AA_ID", "420224311780abcd420224311780abcd");
 #define("AA_ID", "000111222333444555666777888999A9");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
-define("PERM_LIB", "ldap");
+define("PERM_LIB", "sql");
 
 # LDAP Configuration
 define("LDAP_HOST", "localhost");

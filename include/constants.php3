@@ -369,10 +369,16 @@ $VIEW_TYPES_INFO['rss'] = array('aliases' => 'field');
 $VIEW_TYPES_INFO['static'] = array('aliases' => 'none');
 $VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
 
-                     
+# flag in the feedmap table 
+define ("FEEDMAP_FLAG_MAP", 0);
+define ("FEEDMAP_FLAG_VALUE", 1);
+define ("FEEDMAP_FLAG_EMPTY", 2);
                       
 /*
 $Log$
+Revision 1.14  2001/06/21 14:15:44  honzam
+feeding improved - field value redefine possibility in se_mapping.php3
+
 Revision 1.13  2001/06/12 16:07:22  honzam
 new feeding modes -  "Feed & update" and "Feed & update & lock"
 

@@ -615,10 +615,15 @@ define("L_STATE_FEEDABLE_UPDATE", "KopÌrovaù obsah a zmeny" );
 define("L_STATE_FEEDABLE_UPDATE_LOCKED", "KopÌrovaù obsah a zmeny nemeniteæne");
 
 define("L_SITEM_ID_ALIAS",'alias pro skr·tenÈ ËÌslo Ël·nku');
+define("L_MAP_VALUE","-- Hodnota --");
+define("L_MAP_VALUE2","Hodnota");
 
 
 /*
 $Log$
+Revision 1.2  2001/06/21 14:15:44  honzam
+feeding improved - field value redefine possibility in se_mapping.php3
+
 Revision 1.1  2001/06/12 16:07:22  honzam
 new feeding modes -  "Feed & update" and "Feed & update & lock"
 

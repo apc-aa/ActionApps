@@ -174,13 +174,18 @@ if( !$update ) {      # load defaults
   $input_default_f = substr($fld[input_default],0,3);
   $input_default = substr($fld[input_default],4);
   $input_show_func_f = substr($fld[input_show_func],0,3);
-  if( ($input_show_func_f=="txt") 
-       OR ($input_show_func_f=="fld") 
-       OR ($input_show_func_f=="dte") 
-       OR ($input_show_func_f=="fil"))
-    $input_show_func = substr($fld[input_show_func],4);
-   else 
-    $input_show_func_c = substr($fld[input_show_func],4);
+  switch( $input_show_func_f ) {
+    case "txt":
+    case "fld":
+    case "dte":
+    case "fil": $input_show_func = substr($fld[input_show_func],4);
+                break;
+    case "mse": $pos = strpos($fld[input_show_func], ":", 4);
+                $input_show_func_c = substr($fld[input_show_func],4,$pos-4);
+                $input_show_func = substr($fld[input_show_func],$pos+1);
+                break;
+    default:    $input_show_func_c = substr($fld[input_show_func],4);
+  }  
   $input_insert_func = $fld[input_insert_func];
   $html_default = $fld[html_default];
   $html_show = $fld[html_show];
@@ -405,6 +410,9 @@ echo "
 
 /*
 $Log$
+Revision 1.13  2001/06/21 14:15:45  honzam
+feeding improved - field value redefine possibility in se_mapping.php3
+
 Revision 1.12  2001/06/12 16:00:54  honzam
 date inputs support time, now
 new multivalue input possibility - <select multiple>

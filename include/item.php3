@@ -126,7 +126,7 @@ class item {
   # get link from url and text
   function getahref($url, $txt, $add="") { 
     if( $url AND $txt )
-      return '<a href="'. htmlspecialchars($url) .'" $add>'. 
+      return '<a href="'. htmlspecialchars($url) ."\" $add>". 
                           htmlspecialchars($txt).'</a>';
     return htmlspecialchars($txt); 
   }
@@ -371,6 +371,9 @@ class item {
 
 /*
 $Log$
+Revision 1.20  2001/06/21 14:15:44  honzam
+feeding improved - field value redefine possibility in se_mapping.php3
+
 Revision 1.19  2001/06/15 21:17:40  honzam
 fixed bug in manual feeding, fulltext f_b alias function improved
 
