@@ -495,10 +495,13 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
     }  
   }
 
-  # the ststus_code must be set in order we can use email_notify() 
+  # the status_code must be set in order we can use email_notify() 
   # in StoreItem() function.
   if( !$insert AND !$content4id['status_code.....'][0]['value'] )
     $content4id['status_code.....'][0]['value'] = max(1,$oldcontent4id['status_code.....'][0]['value']);
+	
+  if (!$insert)
+    $content4id["flags..........."][0]['value'] = $oldcontent4id["flags..........."][0]['value'];
 
   return $content4id;
 }                                             
@@ -713,6 +716,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.22  2002/02/05 21:42:14  honzam
+prepare for anonymous item edit feature
+
 Revision 1.21  2002/01/10 13:50:05  honzam
 new possibilty to anonymously edit items on public sites
 

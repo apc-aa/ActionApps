@@ -137,6 +137,10 @@ if( ($insert || $update) AND (count($err)<=1)
   # prepare content4id array before call StoreItem function
   $content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
 
+  # remove the ANONYMOUS_EDITABLE flag
+  if ($content4id["flags..........."][0]['value'] & ITEM_FLAG_ANONYMOUS_EDITABLE)
+    $content4id["flags..........."][0]['value'] -= ITEM_FLAG_ANONYMOUS_EDITABLE;
+
   if( $insert )
     $id = new_id();
 
@@ -290,9 +294,9 @@ if($edit || $update || ($insert && $added_to_db)) { ?>
    $r_hidden["id"] = $id;
 } else { ?>
    <input type=submit name=insert value="<?php echo L_INSERT ?>">
-   <input type=submit name=ins_preview value="<?php echo L_POST_PREV ?>"><?php
+   <input type=submit name=ins_preview value="<?php echo L_INSERT_PREV ?>"><?php
 } ?>
-<input type=submit name=cancel value="<?php echo L_CANCEL ?>">
+&nbsp;<input type=submit name=cancel value="<?php echo L_CANCEL ?>">
 </td>
 </tr>
 </table>
@@ -304,6 +308,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.28  2002/02/05 21:42:14  honzam
+prepare for anonymous item edit feature
+
 Revision 1.27  2001/12/18 11:49:26  honzam
 new WYSIWYG richtext editor for inputform (IE5+)
 
