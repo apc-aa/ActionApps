@@ -364,7 +364,7 @@ else {
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","order","cat_id", "cat_name",
-                      "exact","restrict","res_val","highlight","conds","group_by")); # store in session
+                      "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator")); # store in session
 
   // ***** CONDS *****
 
