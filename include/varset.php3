@@ -39,7 +39,7 @@ class Cvariable {
 	}
   
   function getValue() {
-    return $value;
+    return $this->value;
   }  
 
   function huh() {
@@ -59,7 +59,7 @@ class Cvarset {
     $this->vars="";
 	}	
 
-	# add variable to varset
+	# get variable value
 	function get($varname) {
     $cv = $this->vars["$varname"];
     return ( $cv ? $cv->getValue() : false);
@@ -190,6 +190,9 @@ class Cvarset {
 }
 /*
 $Log$
+Revision 1.5  2001/12/21 11:40:06  honzam
+fixed bug of bad return value in getValue()
+
 Revision 1.4  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 
