@@ -1,8 +1,16 @@
 <?php
+/*  $Id$ 
 
-# adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string) 
-# to GLOBALS 
-# alternatively, you can require aaa/include/util.php3, which contains this functions
+    This is an example of the top part of a calendar page. 
+    The script shows select boxes to choose month and year and a heading with
+    the chosen month and year. It uses JavaScript to prepare view parameters
+    for a calendar view which should be SSI included on this page. 
+    
+    (c) Jakub Adámek, May 2002
+*/
+
+/* First you need to add variables from URL --- this is not automatical when including PHP from .shtml 
+    The function add_vars is copied from in aaa/include/util.php3 */
 
 # skips terminating backslashes
 function DeBackslash($txt) {
@@ -50,69 +58,66 @@ function add_vars($query_string="", $debug="") {
   return $i;
 }
 
+add_vars();
+
+/* H E R E  begins the main script */
+
 $L_MONTH = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June', 
 'July', 'August', 'September', 'October', 'November', 'December');
 
-add_vars();
-
-function showSelectMonthYear ($yearMinus, $yearPlus)
-{
-    global $month, $year, $vid, $L_MONTH;
-    
-    echo "<select name='month' onChange='saveMonthYear();'>";
-    for ($i=1; $i <= 12; ++$i) 
-        echo "<option value=$i".($month == $i ? " selected" : "").">".$L_MONTH[$i];
-    echo "</select>&nbsp;&nbsp;";
-    echo "<select name='year' onChange='saveMonthYear();'>";
-    $thisyear = getdate();
-    $thisyear = $thisyear["year"];
-    for ($y=$thisyear - $yearMinus; $y <= $thisyear + $yearPlus; ++$y) 
-        echo "<option value=$y".($year == $y ? " selected": "").">$y";
-    echo "</select>";
-    $views = array ("301"=>"List view","317"=>"Table view","319"=>"Events list");
-    echo "<select name='vid' onChange='saveMonthYear();'>";
-    while (list ($id, $caption) = each ($views)) 
-        echo "<option value='$id'".($vid == $id ? " selected" : "").">$caption";
-    echo "</select>";
-}
+// set default month and year to current date
 
 if ($month == 0) {
     $month = getdate();
     $month = $month ["mon"];
 }
+
 if ($year == 0) {
     $year = getdate();
     $year = $year ["year"];
 }
 
-echo "<form name='f' method='get' action='./calendar.shtml'>
-        <input type=hidden name='set[301]'>
-        <input type=hidden name='set[317]'>
-        <input type=hidden name='set[318]'>
-        <input type=hidden name='set[319]'>";
-echo "Change to: ";
-showSelectmonthYear(10,10);
-echo "</form>";
-echo "<h1>";
-if ($day) echo "$day ";
-echo $L_MONTH[$month]." ".$year."</h1>";
+echo "<form name='f' method='get' action='./calendar.shtml'>";
 
-//showMonth ($month, $year);
+// the hidden field with view parameters:
+echo "<input type=hidden name='set[]'>";
+
+/* show the select boxes for month and year */
+
+echo "Change to: ";
+echo "<select name='month' onChange='saveMonthYear();'>";
+for ($i=1; $i <= 12; ++$i) 
+    echo "<option value=$i".($month == $i ? " selected" : "").">".$L_MONTH[$i];
+echo "</select>&nbsp;&nbsp;";
+
+echo "<select name='year' onChange='saveMonthYear();'>";
+$thisyear = getdate();
+$thisyear = $thisyear["year"];
+// show 1 year before and 10 years after the current year
+for ($y=$thisyear - 1; $y <= $thisyear + 10; ++$y) 
+    echo "<option value=$y".($year == $y ? " selected": "").">$y";
+echo "</select>";
+
+echo "</form>";
+
+/* show the (day and) month and year heading */
+
+echo "<h1>".($day ? $day : "").$L_MONTH[$month]." ".$year."</h1>";
 ?>
+
 <SCRIPT LANGUAGE=javascript>
 <!--
     function getSelected (selectBox) {
 	    return selectBox.options [selectBox.selectedIndex].value;
     }
 
+    // prepare the view parameters
     function saveMonthYear()
     {   
-        vid = getSelected (document.f.vid);
-        document.f['set['+vid+']'].value = 'month-'+getSelected(document.f['month'])
+        mytext = 'month-'+getSelected(document.f['month'])
             +',year-'+getSelected(document.f['year']);
+        document.f['set[]'].value = mytext;
         document.f.submit();
     }
 //-->
 </SCRIPT>
-
-
