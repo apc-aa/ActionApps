@@ -1,16 +1,16 @@
 <?php
 /**
  * Usage of the mini-gettext system.
- * See include/lang/readme.html for more info, and misc/mgettext for scripts 
+ * See include/lang/readme.html for more info, and misc/mgettext for scripts
  * used to maintain the language files.
- * 
+ *
  * @package MiniGetText
  * @version $Id$
  * @author Jakub Adamek, Econnect, January 2003
- * @copyright Copyright (C) 1999-2003 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999-2003 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2003 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2003 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -38,12 +38,12 @@ function get_mgettext_lang () {
 
 /** Reads language constants from given file/
 *   @param $filename  full path
-*   @param $cache     Should the old language constants remain in memory? 
-*                     You will need this behaviour only when using a script which 
+*   @param $cache     Should the old language constants remain in memory?
+*                     You will need this behaviour only when using a script which
 *                     several times changes the language,
-*                     e.g. sends a lot of emails in different languages. 
+*                     e.g. sends a lot of emails in different languages.
 *   @param $lang      If you want to include several language files,
-*                     you must tell mgettext not too free the 
+*                     you must tell mgettext not too free the
 *                     translations from the previous lang file. You do so by
 *                     sending the language shortcut.
 */
@@ -52,7 +52,7 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
 
     if( $mgettext_domain == $filename )
         return;                             // allready loaded
-    
+
     // store strings into backup and look for new strings in backup
     if (!$_m_backup[$mgettext_domain] && $cache)
         $_m_backup[$mgettext_domain] = $_m;
@@ -63,7 +63,7 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
         $_m = $_m_backup[$mgettext_domain];
         if ($_m) return;
     }
-    
+
     if ( !is_file($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
 #        exit;
@@ -71,7 +71,7 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
     else {
         if ($lang != get_mgettext_lang())
             $_m = "";
-        include $filename;        
+        include $filename;
     }
 }
 
@@ -79,30 +79,30 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
 *
 *   @param string $id       Text to be translated. Escape % by backslash (\%).
 *   @param array $params    You may use %1,%2,... in $id and supply an array of params,
-*                           which are substituted for %i, e.g. 
+*                           which are substituted for %i, e.g.
 *                           _m("Hello %1, how are you?",array($username))
 *   @return  if translation in the active language (get_mgettext_lang()) does not yet exist,
-*                 returns $id, i.e. the English version    
+*                 returns $id, i.e. the English version
 */
 function _m ($id, $params = 0) {
     global $_m;
-    
+
     $retval = $_m[$id];
-    if (!$retval) 
+    if (!$retval)
         $retval = $id;
-    
+
     if (is_array ($params)) {
         $foo = "#$&*-";
         $retval = str_replace ("\%", $foo, $retval);
-        for ($i = 0; $i < count ($params); $i ++) 
+        for ($i = 0; $i < count ($params); $i ++)
             $retval = str_replace ("%".($i+1), $params[$i], $retval);
         $retval = str_replace ($foo, "%", $retval);
     }
-        
-    return $retval;
-} 
 
-/** Works the same as _m() but is not parsed by xmgettext. This way it is 
+    return $retval;
+}
+
+/** Works the same as _m() but is not parsed by xmgettext. This way it is
 *   useful to translate a non constant message, counted at run-time. */
 function _mdelayed ($id, $params = 0) {
     return _m ($id, $params);
