@@ -1,3 +1,13 @@
+06/17/02 - patched PHPLib is part of AA, now (use 'cvs update -d' to get it)
+         - removed call-time passed-by-reference variables in function calls
+         - better variable handling if magic_qoutes are not set (no more 
+           warning displayed)
+         - f_t alias function parameter used for unaliasing string
+--------------------
+06/14/02 - v2.2.0 - stable release
+--------------------
+06/13/02 - fixed 'admin order' bug in profiles
+06/07/02 - added the Field Triggers page to allow JavaScript support
 06/06/02 - added possibility to create constant group from another constant
            group (clone template)
          - fixed bug with wrong day number in month in cron.php3
@@ -642,4 +652,3 @@ The new structure allows
 11/04/99 - category management for slices (for both - new slice and edit
            slice)
 11/03/99 - new category buton functionality added (in slice management)
-
