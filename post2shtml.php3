@@ -29,6 +29,10 @@
  * a md5[] array will be encrypted and stored outside the array. For example if you
  * add &lt;INPUT TYPE=password NAME="md5[password]"&gt; then after calling
  * add_post2shtml_vars() a global variable $password contains the encrypted password.
+ * (CHANGE: 06/19/2003 Honza - we no longer call md5() function on passwords -
+ *  we call crypt($password,'xx') function instead. crypt() is used for storing
+ *  passwords to database (@see /include/itemfunct.php3 insert_fnc_pwd()) - it
+ *  uses MD5 on some systems (but on other systems it uses DES?, ...))
  *
  * Parameters: <br>
  *     URL $shtml_page = complete URL of the requested .shtml page
@@ -111,13 +115,14 @@ function store_vars ()
 }
 
 function md5_array (&$array) {
+    // uses crypt() instead of md5() - Change by honza 06/19/2003 (see top)
     if (is_array ($array)) {
         reset ($array);
         while (list ($key) = each ($array))
             md5_array ($array[$key]);
     }
     else if ($array)
-        $array = md5 ($array);
+        $array = crypt( $array, 'xx');
 }
 
 /** Adds all values from the $source array to the $dest array. Follows all paths

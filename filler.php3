@@ -239,7 +239,7 @@ else if (!is_array ($result)) {
     		if (substr ($fid,0,14) == "password......") {
                 $password = $content4id[$fid][0]['value'];
                 if (!$text_password && $password)
-                    $password = md5 ($password);
+                    $password = crypt($password, 'xx');
     			$permok = ($oldcontent4id[$fid][0]['value'] == $password);
                 break;
     		}
