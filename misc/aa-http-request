@@ -1,32 +1,43 @@
 #!/bin/sh
+
+# This script should be run from cron for example by this crontab entry:
+# 1,16,31,46 * * * * /usr/local/myscripts/aa-http-request > /dev/null
+# For security reasons it is better to move it to some directory, where 
+# webserver don't have access to. For example to the directory 
+# /usr/local/myscripts/aa-http-request
+# In order to run this script from cron, it must have executable privileges 
+# ( chmod 755 aa-http-request )
+
 TMPFILE=/tmp/aa.$$
+
 #HOST=localhost.localdomain
-HOST=stagingearth.path.net
-#Set LYNX or PERL to absolute path of lynx or perl if you have either 
-#of them.  If neither are set, then it will try telnet, which will not 
+HOST=work.ecn.cz
+
+AADIR=/apc-aa
+
+#Set LYNX or PERL to absolute path of lynx or perl if you have either
+#of them.  If neither are set, then it will try telnet, which will not
 #work if your server uses virtual hosts
 
-LYNX=/usr/local/bin/lynx
+LYNX=/usr/bin/lynx
 PERL=/usr/bin/perl
 
 if [ -x "${LYNX:=}" ]
 then
-	# try lynx
-	/usr/local/bin/lynx -source http://${HOST}/apc-aa/admin/xmlclient.php3
-else 
+        # try lynx
+        $LYNX -source http://${HOST}${AADIR}/cron.php3
+else
 if [ -x "${PERL:=}" ]
 then
-	#or you can try perl directly,
-	$PERL -MLWP::Simple -e "get 'http://$HOST/apc-aa/admin/xmlclient.php3'"
+        #or you can try perl directly,
+        $PERL -MLWP::Simple -e "get 'http://${HOST}${AADIR}/cron.php3'"
 else
-	# If you use virtual hosts, this won't work
-	(
-	touch $TMPFILE
-	sleep 1;
-	echo "GET /apc-aa/admin/xmlclient.php3";
-	while true; do sleep 5; test -f $TMPFILE || break; done
-	) | (telnet $HOST 80; rm -f $TMPFILE)
+        # If you use virtual hosts, this won't work
+        (
+        touch $TMPFILE
+        sleep 1;
+        echo "GET ${AADIR}/cron.php3";
+        while true; do sleep 5; test -f $TMPFILE || break; done
+        ) | (telnet $HOST 80; rm -f $TMPFILE)
 fi
 fi
-
-
