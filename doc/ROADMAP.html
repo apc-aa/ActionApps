@@ -17,65 +17,46 @@ BODY,TABLE,TR, TD {  font-family: Verdana, Arial, Helvetica, sans-serif;
   </style>
 </head>
 <body>
-                       
+
 <h1>APC Action Applications - Development Roadmap</h1>
             <a href="http://www.apc.org/actionapps">apc-aa home</a> | <a
  href="http://apc-aa.sourceforge.net/aa/doc/"> docs home </a> <br>
-             <a name="Process"> </a>           
+             <a name="Process"> </a>
 <h2><a name="Process">How to put an item on the development priorities list</a></h2>
              <a name="Process">The list below contains all the requests posted
    to  the  apc-aa-general@lists.sourceforge.net mailinglist, that have the
-  word  'feature  request' in the subject.  </a>           
-<p><a name="Process"> The list below is prioritized by Honza Malik, the primary 
+  word  'feature  request' in the subject.  </a>
+<p><a name="Process"> The list below is prioritized by Honza Malik, the primary
      developer of the software.  Honza's organization, </a><a
- href="http://www.ecn.cz/">ECONNECT</a>, is actively developing the software 
+ href="http://www.ecn.cz/">ECONNECT</a>, is actively developing the software
      to meet the needs of its users.  </p>
-                     
+
 <p>If there is a feature on this list that you need done right away, you could
 either program it yourself (the software is open-source) or pay someone to
 develop it.  Several projects realized that the ActionApps meet 90% of their
-needs, and they can get a full-featured solution by paying for or writing 
-     the 10% of the code they need and contributing it back to the ActionApps 
+needs, and they can get a full-featured solution by paying for or writing
+     the 10% of the code they need and contributing it back to the ActionApps
     development tree. </p>
-                     
+
 <p>  </p>
-                     
+
 <p> If you want a new feature, but cannot pay for it or program it yourself,
       mention your request on the apc-aa-general mailinglist, and say what
  you    want, why it is a good idea, and as much details as you can about
 how it   could work.  The apps communinity values your good ideas about making
   the   software better, and your idea will be put on this list.  <a
  name="List">  </a></p>
-                     
+
 <h2><a name="List">Prioritized List of New Features</a></h2>
             <a name="List">NOTE: This list is prioritized by the list of
 needs    of  the  developers, </a><a href="#Process">please see above</a>.<br>
-                     
+
 <ul>
-           <li>Create module for polls (partialy done - Econnect works on
-this)</li>
-      <li>Code improvements<br>
-                       
-    <ul>
-        <li>new language environment - mgettext() - for easier translation
- &amp; development<br>
-         </li>
-         <li>comment the code using PHPDoc and create developer documentation</li>
-         <li>update the code of admin pages to use $_GET and $_POST variables 
- instead of $GLOBALS (due to recent changes in PHP default configuration, 
-where register_globals option is off as default</li>
-         <li>update the code of admin pages to not use slice_id as session
- variable. It will be end of problems with creation of new browser window
-for admin pages.<br>
-         </li>
-                       
-    </ul>
-            </li>
      <li>RSS / IDML, HTML, XML import   possibility   (Mitra works on this)<br>
   This feature should allow the sliceadmins to set import of   articles from
    an RSS (HTML or XML) page into the slice.  <br>
  Ideas:<br>
-   
+
     <ul>
       <li>Most  pages are generated    form database, so it have the same
 structure (mainly  the RSS). The configuration    of this tool should allow
@@ -88,72 +69,6 @@ to update slice from the external source - probably using  cron.php3 script
  </li>
     </ul>
  </li>
-  <li>Wizard for generation of search form/anonymous posting page/offline
-filling page/... - you select the fields and the template of the page/form
-is generated for you. Then you can copy it and manyally add styles, ... 
-  </li>
-  <li>Add scroller possibility to view.php3 (teach '<i>view</i>' the same 
- things as '<i>slice</i>')<br>
-     </li>
-     <li>Find solution for Rich Text Edit on Linux</li>
-  <li>Create module for link catalog (like Yahoo)  (partialy done - Econnect
-works on this) </li>
-  <li>Complete content senzitive help  </li>
-  <li>Group operations on articles (moving all to ..., unhighlight   all,
-    change category of all items in slice ...)<br>
-Possibility to fill all fields    in slice with some value (after addition 
-  of new fields, ...). It will be   nice to have special multichange page 
-or  multichange bar (just like search   bar under the items in 'Item Manager'. 
-   On the page (or bar) would be two   sections: 'Which items'  an 'What to
-  do with the items'.  <br>
- The options for   'Which items'  would be:<br>
-   
-    <ul>
-      <li>   all items  in slice</li>
-      <li>   all approved  </li>
-      <li> all  in holdin bin</li>
-      <li>   all in trash  </li>
-      <li> selected  (by the checkbox)</li>
-      <li>   matching  condition (condition just like in Search bar) - it
-could be omitted if we  would implement it as multichange bar in Item Manager
-      </li>
-    </ul>
- The options  for 'What to do with the items' would be:<br>
-   
-    <ul>
-      <li>   fill with specified value</li>
-      <li>   fill with the value of the specified  field in the same slice/item
- </li>
-      <li> fill with the specified value if the current  value is ...   
-      </li>
-    </ul>
- </li>
-  <li>Possibility to add user defined fields to slice (just like users can
- add fields to item)<br>
-     </li>
-            <li>Add possibility to change fields directly from Item Manager 
- - set dates, set text field for priority  of items  ...   (this is simillar 
- to allready implemented live_checkbox)<br>
-           </li>
-            <li>Better search in Item Manager (add possibility to search
-in  dates/numbers/logical     values, ..). Also the search in fields with
-multiple values should be improved - the AND operator do not return allways
-the value you expect.<br>
-           </li>
-            <li>Site module improvements<br>
-                                                     
-    <ul>
-               <li>add {include file} posibility to the site module <br>
-         </li>
-         <li>create tool for quick access to specified view&nbsp;(probably
- text field where user write view number)        </li>
-               <li>add possibility to highlight all spots for specified state 
- - the spots will be highligted in sitetree on site admin page        </li>
-               <li>better design of tree (visible better, colapsable branches, 
- ...)  </li>
-                                                     
-    </ul>
-           </li>
             <li>Alerts <br>
                                                          
     <dl>
@@ -238,6 +153,86 @@ Each   title  has a number beside it indicating the number of click throughs.<br
 bulk   delete  function.</dd>
     </dl>
        </li>
+      <li>Create module for polls (partialy done - Econnect works on this)</li>
+  <li>Wizard for generation of search form/anonymous posting page/offline
+filling page/... - you select the fields and the template of the page/form
+is generated for you. Then you can copy it and manyally add styles, ... 
+  </li>
+      <li>Code improvements<br>
+    <ul>
+        <li>new language environment - mgettext() - for easier translation
+ &amp; development<br>
+         </li>
+         <li>comment the code using PHPDoc and create developer documentation</li>
+         <li>update the code of admin pages to use $_GET and $_POST variables
+ instead of $GLOBALS (due to recent changes in PHP default configuration,
+where register_globals option is off as default</li>
+         <li>update the code of admin pages to not use slice_id as session
+ variable. It will be end of problems with creation of new browser window
+for admin pages.</li>
+         <li>display user_id on user admin pages (usefull for CSN for example)</li>
+    </ul>
+            </li>
+      <li>MySQL auth module</li>
+  <li>Add scroller possibility to view.php3 (teach '<i>view</i>' the same 
+ things as '<i>slice</i>')<br>
+     </li>
+     <li>Find solution for Rich Text Edit on Linux (probably done - <a href="http://composite.mozdev.org/">Composite</a> </li>
+  <li>Create module for link catalog (like Yahoo)  (partialy done - Econnect
+works on this) </li>
+  <li>Complete content senzitive help  </li>
+  <li>Group operations on articles (moving all to ..., unhighlight   all,
+    change category of all items in slice ...)<br>
+Possibility to fill all fields    in slice with some value (after addition 
+  of new fields, ...). It will be   nice to have special multichange page 
+or  multichange bar (just like search   bar under the items in 'Item Manager'. 
+   On the page (or bar) would be two   sections: 'Which items'  an 'What to
+  do with the items'.  <br>
+ The options for   'Which items'  would be:<br>
+   
+    <ul>
+      <li>   all items  in slice</li>
+      <li>   all approved  </li>
+      <li> all  in holdin bin</li>
+      <li>   all in trash  </li>
+      <li> selected  (by the checkbox)</li>
+      <li>   matching  condition (condition just like in Search bar) - it
+could be omitted if we  would implement it as multichange bar in Item Manager
+      </li>
+    </ul>
+ The options  for 'What to do with the items' would be:<br>
+   
+    <ul>
+      <li>   fill with specified value</li>
+      <li>   fill with the value of the specified  field in the same slice/item
+ </li>
+      <li> fill with the specified value if the current  value is ...   
+      </li>
+    </ul>
+ </li>
+  <li>Possibility to add user defined fields to slice (just like users can
+ add fields to item)<br>
+     </li>
+            <li>Add possibility to change fields directly from Item Manager 
+ - set dates, set text field for priority  of items  ...   (this is simillar 
+ to allready implemented live_checkbox)<br>
+           </li>
+            <li>Better search in Item Manager (add possibility to search
+in  dates/numbers/logical     values, ..). Also the search in fields with
+multiple values should be improved - the AND operator do not return allways
+the value you expect.<br>
+           </li>
+            <li>Site module improvements<br>
+             <ul>
+               <li>add {include file} posibility to the site module</li>
+               <li>create tool for quick access to specified view&nbsp;(probably text field where user write view number)</li>
+               <li>add possibility to highlight all spots for specified state
+ - the spots will be highligted in sitetree on site admin page</li>
+               <li>better design of tree (visible better, colapsable branches, ...)  </li>
+               <li>possibity to backup the site's data</li>
+               <li>add {browser(IE)text:else} inline - shows the <i>text</i> only for selected browsers
+             </ul>
+           </li>
         <li>Linker - component for automatical replacement keywords by  link
   in    fulltext (something like SmartTags - replace APC by   <a
  href="file:///home/honza/texty/...">APC</a>) <br>
@@ -321,6 +316,8 @@ users to  their  own  slices.&nbsp;</li>
 value,  add value to list    of existing ones). Usefull for article ratings, 
   opinion  pools, etc.         </li>
   <li>Slice backup for users  </li>
+  <li>constants view - add alias for level, so the constants could be viewed indented (with hierarchy)</li>
+  <li>XML-RPC item exchange between various CMSs</li>
   <li>More item info in admin interface<br>
      possibility to the get all    information  about the item (time of first 
   posting, "poster", last   edited,   where the  item is fed and from which 
@@ -331,22 +328,26 @@ value,  add value to list    of existing ones). Usefull for article ratings,
  of public  pages   where slice data are included/displayed.&nbsp;</li>
   <li>Database integrity check - checking for inconsistence in database 
 - lost items, ...</li>
-  <li>"Remove string" enhancements<br>
+<!--  <li>"Remove string" enhancements<br>
 It would be useful if the Remove String on the Design   view could<br>
    </li>
   <ul>
     <li>be longer than 255 characters;</li>
     <li>         accept single quote characters;</li>
     <li>         implement  regular expressions.</li>
-  </ul>
+  </ul> -->
     <li>Feeding improvements<br>
     <ul>
       <li>feedind filtering (the possibility to fed only highlighted items,
    ...     for example)</li>
-      <li>rewrite 'Filters' page for feeds -&nbsp;add possibility to change 
+      <li>rewrite 'Filters' page for feeds -&nbsp;add possibility to change
  not only content of category field</li>
-      <li>feeding improvements (the change in child item will be offered 
-for     acceptance/rejection to ALL "sharers"</li>
+      <li>feeding improvements (the change in child item will be offered
+for acceptance/rejection to ALL "sharers"</li>
+      <li>treat "status code" as a regular field that feeds like any other<br>
+          - make "status code" field respect "feeding mode" setting<br>
+          - keep current behaviour (no status feeding) when "feeding mode" 
+            is set to "do not feed"</li>
     </ul>
   </li>
                      <li>Configurable page scroller (number of pages ...)
