@@ -28,15 +28,8 @@ $timestart = getmicrotime();
 
 # APC AA site Module main administration page
 require "../../include/config.php3";
-require "./util.php3";                      # module specific utils
-require "./sitetree.php3";                  # module specific utils
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3"; 
-require $GLOBALS[AA_INC_PATH]."searchlib.php3"; 
-require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
-require $GLOBALS[AA_INC_PATH]."view.php3";
-require $GLOBALS[AA_INC_PATH]."discussion.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3"; 
 require $GLOBALS[AA_INC_PATH]."pagecache.php3"; 
 
 function IsInDomain( $domain ) {
@@ -66,6 +59,55 @@ if( substr($site_info['state_file'],0,4) == 'http' ) {
   # in the following file we should define apc_state variable
   require "./sites/site_".$site_info['state_file'];   
 }
+
+# look into cache if the page is not cached
+
+# CACHE_TTL defines the time in seconds the page will be stored in cache
+# (Time To Live) - in fact it can be infinity because of automatic cache 
+# flushing on page change
+# CACHE_PURGE_FREQ - frequency in which the cache is checked for old values 
+#                    (in seconds)
+
+$sitecache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
+
+# create keystring from values, which exactly identifies resulting content
+$key_str = $apc_state['state'];
+if( is_array($slices4chache) && !$nocache && ($res = $sitecache->get($key_str)) ) {
+  echo $res;
+  if( $debug ) {
+    $timeend = getmicrotime();
+    $time = $timeend - $timestart;
+    echo "<br><br>Site cache hit!!! Page generation time: $time";
+  }  
+  exit;
+} 
+
+require "./util.php3";                      # module specific utils
+require "./sitetree.php3";                  # module specific utils
+require $GLOBALS[AA_INC_PATH]."searchlib.php3"; 
+require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
+require $GLOBALS[AA_INC_PATH]."view.php3";
+require $GLOBALS[AA_INC_PATH]."discussion.php3";
+require $GLOBALS[AA_INC_PATH]."item.php3"; 
+  
+$res = ModW_GetSite( $apc_state, $site_id, $site_info );
+echo $res;
+
+# In $slices4chache array MUST be listed all (unpacked) slice ids (and other 
+# modules including site module itself), which is used in the site. If you 
+# mention the slice in this array, cache is cleared on any change of the slice
+# (item addition) - the page is regenerated, then.
+
+if (is_array($slices4chache) && !$nocache) {
+  $clear_cache_str = "slice_id=". join(',slice_id=', $slices4chache);
+  $sitecache->store($key_str, $res, $clear_cache_str);
+}  
+
+if( $debug ) {
+  $timeend = getmicrotime();
+  $time = $timeend - $timestart;
+  echo "<br><br>Page generation time: $time";
+}  
 
 # ----------------- process status end ----------------------------------------
 
@@ -196,37 +238,6 @@ function ModW_unalias( &$text, &$state ) {
   $level = 0;
   return ModW_unalias_recurent( $text, $state, $level, $maxlevel );
 }
-
-
-
-# look into cache if the value if the page is not cached
-
-
-# CACHE_TTL defines the time in seconds the page will be stored in cache
-# (Time To Live) - in fact it can be infinity because of automatic cache 
-# flushing on page change
-# CACHE_PURGE_FREQ - frequency in which the cache is checked for old values 
-#                    (in seconds)
-#
-#$sitecache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
-#
-#create keystring from values, which exactly identifies resulting content
-#$keystr = $apc_state['state'];
-#if( !$nocache && ($res = $sitecache->get($keystr)) ) {
-#  echo $res;
-#  exit;
-#} 
-  
-$res = ModW_GetSite( $apc_state, $site_id, $site_info );
-echo $res;
-
-# parametr 'slice_id=65636e2e' zarucuje, ze kes je vymazana pri jakekoliv zmene
-# (pridani clanku) do slice 'ecn.zpravodajstvi'
-#$sitecache->store($keystr, $res, "slice_id=65636e2e7a707261766f64616a737476");
-
-//  $timeend = getmicrotime();
-//  $time = $timeend - $timestart;
-//  echo $time;
 
 exit;
 
