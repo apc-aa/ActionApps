@@ -45,10 +45,10 @@ http://www.apc.org/
    "orderdir" => order direction, "a" = ascending or "d" = descending (default: "a")
    "no_item_msg" => message to be shown when no items pass the WHERE SQL clause
    "readonly" => true | false  default for all fields
-   "restrict" => restricts the view to a list of keys. Format: array (key1,key2,...). 
-                 If the field is not an array, it is ignored.
-                 Does not yet support tables with primary key including more than one field.
+   "where" => SQL WHERE condition
    "search" => view the search form?, default: true for browse view, false for edit view
+               the form is shown only if scroller is shown (i.e. there are more records than 
+               what fits to one page) 
 
    "fields"* => (array of many)
         "field_name"* => (array of)
@@ -179,7 +179,7 @@ function GetTableView ($viewID) {
                  "join" => array ("id" => "collectionid")
              )
         ),
-        "restrict" => FindCollectionPermissions(),
+        "where" => CreateWhereFromList ("id", FindCollectionPermissions()),
         "no_item_msg" => _m("You don't have permissions to edit any collection or no collection exists."));
     
     if ($viewID == "acf") {
@@ -223,6 +223,7 @@ function GetTableView ($viewID) {
                 "validate_min" => 1,
                 "validate_max" => 99,
                 "required" => true,
+                "hint" => _m("order"),
                 "default" => 1,
                 "view" => array (
                     "type" => "text",
@@ -276,6 +277,7 @@ function GetTableView ($viewID) {
         "mainmenu" => "sliceadmin",
         "submenu" => "te_alerts_collections",
         "orderby" => "description",
+        "no_item_msg" => _m("No collection uses any filter defined in any slice you have Admin permissions to."),
         "fields" => array (
             "id" => array (
                 "view" => array ("readonly" => true)),
@@ -293,7 +295,7 @@ function GetTableView ($viewID) {
             "mail_errors_to" => array ("view" => array ("type"=>"text","size"=>array("cols"=>15))),
             "mail_sender" => array ("view" => array ("type"=>"text","size"=>array("cols"=>15)))),
         "attrs" => $attrs_browse,
-        "restrict" => FindCollectionPermissions());
+        "where" => CreateWhereFromList ("id", FindCollectionPermissions()));
     
     /* ------------------------------------------------------------------------------------
        au -- browse Alerts users
@@ -308,7 +310,7 @@ function GetTableView ($viewID) {
         "type" => "browse",
         "mainmenu" => "sliceadmin",
         "submenu" => "te_alerts_users",
-        "readonly" => false,
+        "readonly" => !IsSuperadmin(),
         "addrecord" => false,
         "help" => _m("To add users use the standard Alerts User Interface."),
         "buttons" => array ("update"=>1,"delete"=>1,"edit"=>1),
@@ -327,7 +329,7 @@ function GetTableView ($viewID) {
             "lastname" => array ("view" => array ("type"=>"text","size"=>array("cols"=>15))),
             "lang" => array ("view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2)))),
         "attrs" => $attrs_browse,
-        "restrict" => FindAlertsUserPermissions(),
+        "where" => CreateWhereFromList ("id", FindAlertsUserPermissions()),
         "no_item_msg" => _m("No user is subscribed to any collection you have permissions to."));
     
     /* ------------------------------------------------------------------------------------
@@ -337,7 +339,7 @@ function GetTableView ($viewID) {
     if ($viewID == "au_edit") return  array (
         "table" => "alerts_user",
         "type" => "edit",
-        "readonly" => false,
+        "readonly" => !IsSuperadmin(),
         "addrecord" => false,
         "gotoview" => "au",
         "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
@@ -359,11 +361,12 @@ function GetTableView ($viewID) {
                  "join" => array ("id" => "userid")
              )
          ),
-         "restrict" => FindAlertsUserPermissions()
+         "where" => CreateWhereFromList ("id", FindAlertsUserPermissions())
     );
     
     if ($viewID == "auc") {
-        $db->query ("SELECT id,description,showme FROM alerts_collection");
+        $db->query ("SELECT id,description,showme FROM alerts_collection ".
+            "WHERE ".CreateWhereFromList ("id", FindCollectionPermissions()));
         while ($db->next_record()) {
             $alerts_collection[$db->f("id")] = $db->f("description");
             if ($db->f("showme")) 
@@ -380,6 +383,7 @@ function GetTableView ($viewID) {
         "title" => L_ALERTS_COLLECTION_TITLE, 
         "caption" => L_ALERTS_COLLECTION_TITLE,
         "attrs" => $attrs_browse,
+        "where" => CreateWhereFromList ("collectionid", FindCollectionPermissions()),
         "fields" => array (
             "collectionid" => array (
                 "view" => array (
@@ -503,6 +507,13 @@ function FindCollectionPermissions () {
         $_collection_permissions = array ();             
         while ($db->next_record())
             $_collection_permissions[] = $db->f("id");
+            
+        // collections with no filters
+        $db->query ("SELECT id, collectionid FROM alerts_collection AC
+                     LEFT JOIN alerts_collection_filter ACF ON AC.id = ACF.collectionid
+                     WHERE showme=1 AND collectionid IS NULL");
+        while ($db->next_record()) 
+            $_collection_permissions[] = $db->f("id");
     }
     return $_collection_permissions;
 }
@@ -529,4 +540,22 @@ function FindAlertsUserPermissions () {
     return $_alerts_user_permissions;
 }
 
+// ----------------------------------------------------------------------------------        
+
+function CreateWhereFromList ($column, $list, $type="number") {
+    if (!is_array ($list)) return "1";
+    if (count ($list) == 0) return "0";
+    if ($type == "number") 
+         return $column." IN (". join (",",$list). ")";
+    else {
+        $in = "";
+        reset ($list);
+        while (list (,$item) = each ($list)) {
+            if ($in) $in .= ",";
+            $in .= "'".addslashes ($item)."'";
+        }
+        return $column." IN ($in)";
+    }
+}
 ?>
+

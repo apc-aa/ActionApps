@@ -110,6 +110,10 @@ class tabledit {
         }
         
         // update EDIT
+        if ($this->cmd["show_new"]) {
+            unset($tecmd["edit"]);
+            unset($this->cmd["edit"]);
+        }
         $edit = $this->cmd["edit"];
         if (is_array ($edit)) {
             reset ($edit);
@@ -225,7 +229,7 @@ class tabledit {
                 if ($new_record && is_array ($this->joincols)) {
                     reset ($this->joincols);
                     while (list ($col,$val) = each ($this->joincols)) 
-                        echo "<INPUT TYPE=hidden NAME=val[$col] VALUE='".str_replace("'","\\'",$val)."'>";
+                        echo "<INPUT TYPE=hidden NAME='val[$col]' VALUE='".str_replace("'","\\'",$val)."'>";
                 }
                 
                 $this->ShowColumnValues ($db->Record, $new_record);
@@ -234,11 +238,14 @@ class tabledit {
                 if ($this->view["type"] == "edit") {
                     echo "<TR><TD colspan=2 ".$this->view["attrs"]["td"]." align=center>";
                     echo "<INPUT type=hidden name='set_tview' VALUE='$gotoview2'>\n";
-                    echo "<INPUT type=submit name='cmd[".$this->viewID."]";
-                    if (!$new_record) 
-                         echo "[update][$key]' value='".L_UPDATE."'>";
-                    else echo "[insert]' value='".L_INSERT."'>";
-                    echo "&nbsp;&nbsp;<INPUT type=button name='cancel' onclick='this.form.set_tview.value=\"$gotoview\"; this.form.submit();'"
+                    if (!$this->view["readonly"]) {
+                        echo "<INPUT type=submit name='cmd[".$this->viewID."]";
+                        if (!$new_record) 
+                             echo "[update][$key]' value='".L_UPDATE."'>";
+                        else echo "[insert]' value='".L_INSERT."'>";
+                        echo "&nbsp;&nbsp;";
+                    }
+                    echo "<INPUT type=button name='cancel' onclick='this.form.set_tview.value=\"$gotoview\"; this.form.submit();'"
                         ." value='".L_CANCEL."'>"
                         ."</TD></TR>\n";
                 }
@@ -253,12 +260,14 @@ class tabledit {
             echo "<P align=\"center\"><B>";
         	$scroll->pnavbar();
             echo "</B></P>";
+        
+            if ($this->view["search"])  
+                $this->ShowSearchRow ($gotoview2);
         }
         
-        if ($this->view["search"])  
-            $this->ShowSearchRow ($gotoview2);
-        
-        if (($this->view["readonly"] || $this->view["button_add"]) && $this->view["gotoview"]) {
+        if ($this->view["type"] == "browse" 
+            && ($this->view["readonly"] || $this->view["button_add"]) 
+            && $this->view["gotoview"]) {
             echo "<br><br>
                 <FORM name='tv_".$this->viewID."_insert' method=post action='".$this->getAction($gotoview)."'>
                 <INPUT type=submit name='cmd[".$gotoview."][show_new]' value='".L_INSERT."'>
@@ -322,30 +331,8 @@ class tabledit {
             else $where .= " AND $srch[field] LIKE '%".addslashes_magic($srch[value])."%' ";
         }
         
-        // restrict keys
-        if (is_array ($this->view["restrict"])) {
-            reset ($this->cols);
-            while (list ($colname, $column) = each ($this->cols)) 
-                if ($column["primary"]) {
-                    $key_cols ++;
-                    $key_type = $column["type"];
-                    $key_name = $colname;
-                }
-            if ($key_cols != 1)
-                echo "Restrict used on a table with wrong key column count $key_cols";
-            if (count ($this->view["restrict"]) == 0)
-                 $where .= " AND 0 ";
-            else if (is_field_type_numerical ($key_type))
-                 $where .= " AND $key_name IN (". join (",",$this->view["restrict"]).") ";
-            else {
-                reset ($this->view["restrict"]);
-                while (list (,$id) = each ($this->view["restrict"])) {
-                    if ($in) $in .= ",";
-                    $in .= "'".str_replace("'","\\'",$id)."'";
-                }
-                $where .= " AND $key_name IN ($in) ";
-            }
-        }                
+        if ($this->view["where"]) 
+            $where .= " AND ".$this->view["where"];
             
         return $where;
     }   
@@ -382,7 +369,8 @@ class tabledit {
     }
 
     // -----------------------------------------------------------------------------------
-    
+   
+    // prints javascript for input validation 
     function ShowProoveFields ($fnname)
     {
         PrintJavaScript_Validate();
@@ -485,11 +473,15 @@ class tabledit {
                 "gotoview" => $gotoview2),
             "update" => array (
                 "label" => L_UPDATE, 
-                "new" => L_ADD,
+                "new" => L_INSERT,
                 "new_name" => "insert", 
                 "view" => $this->viewID, 
                 "gotoview" => $gotoview2, 
                 "button"=>true));
+/*
+                <FORM name='tv_".$this->viewID."_insert' method=post action='".$this->getAction($gotoview)."'>
+                <INPUT type=submit name='cmd[".$gotoview."][show_new]' value='".L_INSERT."'>
+*/
                 
         $td = "<TD ".$this->view["attrs"]["td"].">";
         if (is_array ($this->view["buttons"])) {
@@ -506,8 +498,9 @@ class tabledit {
                     if ($bt["button"])
                          echo $td."<INPUT type=submit name='cmd[".$this->viewID."][$button][$key]' value='$label'>\n";
                     else {
-                        if ($label) echo $td."<a href='".$this->getAction($bt[gotoview])
-                            ."&cmd[$bt[view]][$button][$key]=1'>".$label."</a></td>\n";                
+                        $url = $this->getAction($bt[gotoview])."&cmd[$bt[view]][$button][$key]=1";
+                        if ($button == "delete") $url = "javascript:confirmDelete (\"".$url."\");";
+                        if ($label) echo $td."<a href='$url'>".$label."</a></td>\n";                
                         else echo $td."&nbsp;</td>\n";
                     }
                 }
@@ -628,20 +621,19 @@ function TableUpdate ($table, $key_value, $val, $columns, $be_cautious=1) {
 
 // -----------------------------------------------------------------------------------
 
-// inserts a record and returns the key
-function TableInsert ($table, $val, $columns) {
-    global $db;
+// inserts a record and returns the key or "" if not successfull
+function TableInsert ($table, $val, $columns, $be_cautious=1) {
+    global $db, $err;
     $columns = GetColumnTypes ($table, $columns);
-    if (!ProoveVals ($table, $val, $columns)) {
-        print_r ($GLOBALS["err"]); exit; }
+    if (!ProoveVals ($table, $val, $columns)) { return ""; }
     $varset = new CVarset();
     reset ($columns);
     while (list ($colname, $col) = each ($columns)) {
         if ($col["primary"]) {
             if ($col["auto_increment"])
                 $auto_inc = true;
-            else if (!$val[$colname]) {
-                echo "Error: Primary column $colname not set."; exit; }
+            else if (!$val[$colname]) 
+                { $err[] = "Error: Primary column $colname not set."; return ""; }
             else $key[] = $val[$colname];
         }
         if (isset ($val[$colname])) {
@@ -653,9 +645,18 @@ function TableInsert ($table, $val, $columns) {
             else $varset->set($colname,$value,"text");         
         }
     }
-
+   
+    if ($be_cautious && !$auto_inc) {
+        $key = join_escaped (":", $key, "#:");
+        $where = CreateWhereCondition ($key, $columns);
+        $db->query ("SELECT COUNT(*) AS key_already_used FROM $table WHERE $where");
+        $db->next_record();
+        if ($db->f("key_already_used") > 0)
+            { $err[] = "Error inserting to $table: A row with the same primary key ($key) already exists."; return ""; }
+    }
+    
     $ok = $db->query ("INSERT INTO $table ".$varset->makeINSERT());
-    if (!$ok) { echo "DB error on inserting record"; exit; }
+    if (!$ok) { $err[] = "DB error on inserting record to $table"; return ""; }
     if ($auto_inc) return get_last_insert_id ($db, $table);
     else return join_escaped (":", $key, "#:");
 }
@@ -698,8 +699,11 @@ function GetKey ($columns, $record)
 // -----------------------------------------------------------------------------------    
 
 // creates where condition from key fields values separated by :
+// Warning: send $columns processed with GetColumnTypes
 function CreateWhereCondition ($key_value, $columns) {
     $key_values = split_escaped (":", $key_value, "#:");
+    if (!is_array ($key_values))
+        return " 0 ";
     reset ($key_values);
     reset ($columns);
     $where = array();
@@ -726,18 +730,19 @@ function PrintJavaScript_Validate () {
     echo "
     <script language=javascript>
     <!--
-        function validate_number (txtfield, min, max, required) {
+        function validate_number (txtfield, minval, maxval, required) {
             if (!validate (txtfield, 'number', required))
                 return false;
             var val = txtfield.value;
             var err = '';
-            if (val > max || val < min) 
-                err = '"._m("Wrong value: a number between %1 and %2 is expected.",array("'+min+'","'+max+'"))."';
+            if (val > maxval || val < minval) 
+                err = '"._m("Wrong value: a number between %1 and %2 is expected.",array("'+minval+'","'+maxval+'"))."';
             if (err != '') {
                 alert (err);
                 txtfield.focus();
                 return false;
             }
+            else return true;
         }
         
         function validate (txtfield, type, required) {
@@ -770,7 +775,12 @@ function PrintJavaScript_Validate () {
                 txtfield.focus();
                 return false;
             }
-            return true;
+            else return true;
+        }
+        
+        function confirmDelete (url) {
+            if (confirm ('"._m("Are you sure you want to permanently DELETE this record?")."'))
+                document.URL = url;
         }
     // -->
     </script>";   
