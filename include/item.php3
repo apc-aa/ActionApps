@@ -300,13 +300,19 @@ class item {
   }
 
   function parseSwitch($text) {
-    $variable = strtok($text,")");
+    $variable = substr(strtok('_'.$text,")"),1);   # add and remove '_' - this 
+                                                   # is hack for empty variable 
+                                                   # (when $text begins with ')')
     $twos = ParamExplode( strtok("") );
     $i=0;
     while( $i < count($twos) ) {
+      if( $i == (count($twos)-1)) {                # default option
+        return $twos[$i];
+      }
       $val = trim($twos[$i]);
-      if( !$val OR ereg($val, $variable) )
+      if( !$val OR ereg($val, $variable) ) {
         return $twos[$i+1];
+      }
       $i+=2;
     }
     return "";
