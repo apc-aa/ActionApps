@@ -32,6 +32,7 @@ require $GLOBALS[AA_INC_PATH]."locsess.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3"; 
 require $GLOBALS[AA_INC_PATH]."pagecache.php3"; 
 require $GLOBALS[AA_INC_PATH]."stringexpand.php3";
+require $GLOBALS[AA_INC_PATH]."item.php3"; # So site_ can create an item
 
 function IsInDomain( $domain ) {
   global $HTTP_HOST;
@@ -248,6 +249,47 @@ function ModW_unalias( &$text, &$state ) {
   return new_unalias_recurent($text, "", $level, $maxlevel);
 #  return ModW_unalias_recurent( $text, $state, $level, $maxlevel );
 }
+
+// id = an item id, unpacked or short
+// short_ids = boolean indicating type of $ids (default is false => unpacked)
+function ModW_id2item($id,$use_short_ids="false") {
+        $content = GetItemContent($id, $use_short_ids);
+        $slice_id = unpack_id($content[$id]["slice_id........"][0][value]);
+        list($fields,) = GetSliceFields($slice_id);
+        $aliases = GetAliasesFromFields($fields);
+        return new item("",$content[$id],$aliases,"","","");
+}
+
+# Convert a state string into an array, based on the variable names and 
+# regular expression supplied, if str is not present or doesn't match 
+# the regular expression then use $strdef
+# e.g. ModW_str2arr("tpmi",$apc,"--h-",
+	"^([-p])([-]|[0-9]+)([hbsfcCt])([-]|[0-9]+)";
+function ModW_str2arr($varnames, $str, $strdef, $reg) {
+	if (!$str) $str = $strdef;
+	$varout = array();
+	if (!(ereg($reg, $str, $vars))) 
+		if (!(ereg($reg, $strdef, $vars))) {
+			print("Error initial string $strdef doesn't match regexp $reg\n<br>");
+		}
+	for ($i=0;$i < min(strlen($varnames),count($vars)-1); ++$i) {
+		$varout[substr($varnames,$i,1)] = $vars[$i+1];
+	}
+	if ($debug) { print("<br>State="); print_r($varout); }
+	return $varout;
+}
+
+# Convert an array into a state string, in the order from $varnames
+# This is fairly simplistic, just concatennating state, a more 
+# sophisticated sprint version might be needed
+function ModW_arr2str($varnames, $arr) {
+	$strout = "";
+	for ($i=0; $i < strlen($varnames); ++$i) {
+		$strout .= $arr[substr($varnames,$i,1)];
+	}
+	return $strout;
+}
+
 
 exit;
 
