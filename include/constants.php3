@@ -191,22 +191,6 @@ $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
   "content_edit", "html_default", "html_show", "input_show", "text_stored");
 
 
-/*
-    $content[$foo_id]["const_name......"][] = array( "value"=> $db->f("name") );
-    $content[$foo_id]["const_value....."][] = array( "value"=> $db->f("value"),
-                                                     "flag" => FLAG_HTML );
-    $content[$foo_id]["const_priority.."][] = array( "value"=> $db->f("pri") );
-    $content[$foo_id]["const_group....."][] = array( "value"=> $db->f("group_id") );
-    $content[$foo_id]["const_class....."][] = array( "value"=> $db->f("class") );
-    $content[$foo_id]["const_counter..."][] = array( "value"=> $i++ );
-    $content[$foo_id]["const_id........"][] = array( "value"=> unpack_id128($db->f("id") ));
-    $content[$foo_id]["const_descr....."][] = array( "value"=> $db->f("description"),
-                                                     "flag" => FLAG_HTML);
-    $content[$foo_id]["const_short_id.."][] = array( "value"=> $db->f("short_id") );
-    $content[$foo_id]["const_level....."][] = array( "value"=> strlen($db->f("ancestors"))/16);
-*/
-
-
 function GetConstantFields() {  // function - we need trnslate _m() on use (not at include time)
     return array(
         'const_short_id'    => GetFieldDef( _m('Short Id'),    'constant.short_id',   'numeric'),
@@ -219,7 +203,7 @@ function GetConstantFields() {  // function - we need trnslate _m() on use (not 
         'const_id'          => GetFieldDef( _m('Id'),          'constant.id',         'id'),
         'const_description' => GetFieldDef( _m('Description'), 'constant.description','text'),
         'const_level'       => GetFieldDef( _m('Level'),       'constant.level',      'numeric'));
-}        
+}
 
 function GetInputShowFuncTypesDef( $name, $multiple, $paramformat) {
     return array( 'name'=>$name, 'multiple'=>$multiple, 'paramformat'=>$paramformat);

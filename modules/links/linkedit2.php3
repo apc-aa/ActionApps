@@ -10,6 +10,7 @@ require_once "./constants.php3";
 require_once "./util.php3";           // module specific utils
 require_once "./cattree.php3";        // for event handler Event_LinkNew
 
+unset($r_state['linkedit']);
 $r_state['linkedit']['old'] = $HTTP_POST_VARS;  // in case of bad input
 unset($r_msg);
 unset($r_err);
@@ -23,20 +24,20 @@ function Validate() {
            $add_proposal_change,
            $sess, $auth, $db, $r_state, $r_err, $r_msg;
 
-    ValidateInput("linkname", _m('Page name'), &$linkname, &$r_err, true, "text");
-    ValidateInput("original_name", _m('Original page name'), &$original_name, &$r_err, false, "text");
-    ValidateInput("description", _m('Description'), &$description, &$r_err, false, "text");
-    ValidateInput("initiator", _m('Author'), &$initiator, &$r_err, false, "email");
-    ValidateInput("url", _m('Url'), &$url, &$r_err, true, "url");
-    ValidateInput("rate", _m('Rate'), &$rate, &$r_err, false, "float");
-    ValidateInput("type", _m('Link type'), &$type, &$r_err, false, "text");
-    ValidateInput("org_city", _m('City'), &$org_city, &$r_err, false, "text");
-    ValidateInput("org_street", _m('Street'), &$org_street, &$r_err, false, "text");
-    ValidateInput("org_post_code", _m('Post code'), &$org_post_code, &$r_err, false, "text");
-    ValidateInput("org_phone", _m('Phone'), &$org_phone, &$r_err, false, "text");
-    ValidateInput("org_fax", _m('Fax'), &$org_fax, &$r_err, false, "text");
-    ValidateInput("org_email", _m('E-mail'), &$org_email, &$r_err, false, "text");
-    ValidateInput("note", _m('Editor\'s note'), &$note, &$r_err, false, "text");
+    ValidateInput("linkname",      _m('Page name'),          $linkname,      $r_err, true,  "text" );
+    ValidateInput("original_name", _m('Original page name'), $original_name, $r_err, false, "text" );
+    ValidateInput("description",   _m('Description'),        $description,   $r_err, false, "text" );
+    ValidateInput("initiator",     _m('Author'),             $initiator,     $r_err, false, "email");
+    ValidateInput("url",           _m('Url'),                $url,           $r_err, true,  "url"  );
+    ValidateInput("rate",          _m('Rate'),               $rate,          $r_err, false, "float");
+    ValidateInput("type",          _m('Link type'),          $type,          $r_err, false, "text" );
+    ValidateInput("org_city",      _m('City'),               $org_city,      $r_err, false, "text" );
+    ValidateInput("org_street",    _m('Street'),             $org_street,    $r_err, false, "text" );
+    ValidateInput("org_post_code", _m('Post code'),          $org_post_code, $r_err, false, "text" );
+    ValidateInput("org_phone",     _m('Phone'),              $org_phone,     $r_err, false, "text" );
+    ValidateInput("org_fax",       _m('Fax'),                $org_fax,       $r_err, false, "text" );
+    ValidateInput("org_email",     _m('E-mail'),             $org_email,     $r_err, false, "text" );
+    ValidateInput("note",          _m('Editor\'s note'),     $note,          $r_err, false, "text" );
 
     # check for the same link
     if( !$add_proposal_change ) { # it is nonsence to check it in anonymous change
@@ -330,7 +331,7 @@ if( !$r_state['link_id'] OR $add_proposal_change ) {
     Languages2Db($inserted_id, $lang);
     # fill assignments (anonymous => proposals)
 
-    // prepare categories array to assign
+    // prepare categories array to assign ($categs2assign[]=$cid, ...)
     list($categs2assign,$cat_states) = GetCategoriesFromForm();
 
     if( $add_proposal_change ) { # not new link, but proposal to change existing
@@ -341,23 +342,24 @@ if( !$r_state['link_id'] OR $add_proposal_change ) {
         $db->query( $SQL );
         $r_msg[] = MsgOK(_m('Link change proposal inserted'));
 
-        // Event handler called, but general category assignment action is not 
+        // Event handler called, but general category assignment action is not
         // performed - type is not changed (it is just proposal)
         $isGlobalcat = Links_IsGlobalCategory($oldLink['type']);
-        $event->comes('LINK_UPDATED', $r_state["module_id"], 'Links', 
+        $event->comes('LINK_UPDATED', $r_state["module_id"], 'Links',
                       $categs2assign, $isGlobalcat, $isGlobalcat);
-        
+
         Links_UpdateCategoryAssignments($r_state['link_id'], $categs2assign, $cat_states );
     } else {                     // new link
         $r_msg[] = MsgOK(_m('Link inserted'));
-    
+
         // $categs2assign could be changed by handler of following event
         // - used for 'general categories'
         $event->comes('LINK_NEW', $r_state["module_id"], 'Links', $categs2assign,
                       Links_IsGlobalCategory($type), false);
-    
+
         Links_Assign2Category($inserted_id, $categs2assign, $add_proposal_change);
     }
+    Links_CountLinksInCategories($categs2assign);  // update number of links info
 
     page_close();
     go_url( $senderUrlOK );
@@ -403,6 +405,7 @@ $event->comes('LINK_UPDATED', $r_state["module_id"], 'Links', $categs2assign,
         Links_IsGlobalCategory($type), Links_IsGlobalCategory($oldLink['type']));
 
 Links_UpdateCategoryAssignments($r_state['link_id'], $categs2assign, $cat_states );
+Links_CountLinksInCategories($categs2assign);  // update number of links info
 
 $r_msg[] = MsgOK(_m('Link assigned to category'));
 page_close();
