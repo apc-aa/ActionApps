@@ -1,8 +1,4 @@
 <?php
-if (!defined ("SEARCHLIB_INCLUDED"))
-      define ("SEARCHLIB_INCLUDED",1);
-else return;
-
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -25,6 +21,35 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"]."sql_parser.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
+
+
+/** Returns sort[] array used by QueryZids functions
+ *  $sort - sort definition in varios formats:
+ *     1)   sort = headline........-
+ *     2)   sort[0] = headline........-
+ *     3)   sort[0][headline........]=d
+ */
+function getSortFromUrl( $sort ) {
+    $ret_sort = array();
+    if ( isset($sort) ) {
+        if ( !is_array($sort) ) {
+            $ret_sort[] = GetSortArray( $sort );
+        } else {
+            ksort( $sort, SORT_NUMERIC); // it is not sorted and the order is important
+            foreach ( $sort as $k => $srt) {
+                if ($srt) {
+                    if( is_array($srt) ) {
+                        $ret_sort[] = array( key($srt) => (strtolower(current($srt)) == "d" ? 'd' : 'a'));
+                    } else {
+                        $ret_sort[] = GetSortArray( $srt );
+                    }
+                }
+            }
+        }
+    }
+    return $ret_sort;
+}
+
 
 function GetWhereExp( $field, $operator, $querystring ) {
 

@@ -31,19 +31,14 @@ require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
 #                         view functions
 # ----------------------------------------------------------------------------
 
-function GetAliasesFromUrl($to_arr = false) {
-  global $aliases, $als;
-  if( isset( $als ) AND is_array( $als ) ) {
-    reset( $als );
-    if( $to_arr ) {
-      while( list($k,$v) = each( $als ) )
-        $ret["_#".$k] = GetAliasDef( "f_s:$v" );
-    } else {
-      while( list($k,$v) = each( $als ) )
-        $aliases["_#".$k] = GetAliasDef( "f_s:$v" );
+function GetAliasesFromUrl($als) {
+    $ret = array();
+    if (is_array($als) ) {
+        foreach ( $als as $k => $v ) {
+            $ret["_#".$k] = GetAliasDef( "f_s:$v" );
+        }
     }
-  }
-  return $ret;
+    return $ret;
 }
 
 /**
@@ -445,14 +440,14 @@ function GetViewFromDB($view_param, &$cache_sid) {
         # get alias list from database and possibly from url
         list($fields,) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);
-       //mlx stuff    
+       //mlx stuff
        if(!$slice_info)
           $slice_info = GetSliceInfo($slice_id);
        if(isMLXSlice($slice_info)) {  //mlx stuff, display the item's translation
           $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
           //make sure the lang info doesnt get reused with different view
           $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]));
-          $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices); 
+          $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
           $zids3 = new zids($zids->longids());
           $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,
                                              $conds, $sort,
@@ -598,21 +593,21 @@ function GetViewFromDB($view_param, &$cache_sid) {
       }
 
       $sort  = GetViewSort($view_info, $param_sort);
-    
-    //mlx stuff    
+
+    //mlx stuff
     if(!$slice_info)
       $slice_info = GetSliceInfo($slice_id);
     if(isMLXSlice($slice_info)) {
       $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
       //make sure the lang info doesnt get reused with different view
       $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]));
-      $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices); 
+      $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
     }
     $zids2 =
         QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
                          $group_by, "ACTIVE", $zids ? false : $slices, 0, $zids);
 
-    if(isMLXSlice($slice_info)) { 
+    if(isMLXSlice($slice_info)) {
       $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,
                 $conds, $sort,
                 $slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,

@@ -78,13 +78,13 @@ http://www.apc.org/
                       // are grouped by some field (category, for example))
                       // good for display all the items of last magazine issue
                       // ( group_n=1 )
-		      //
+              //
 #optionally mlx       // set language extension options (needs MLX field filled in Slice Settings)
                       // mlx=EN sets English as default language
-		      // mlx=EN-FR-DE first looks for EN, then FR, then DE 
-		      //              and then displays the first one found
-		      // mlx=EN-ONLY  displays only EN items (like conds)
-		      // mlx=ALL      turns of language extension
+              // mlx=EN-FR-DE first looks for EN, then FR, then DE
+              //              and then displays the first one found
+              // mlx=EN-ONLY  displays only EN items (like conds)
+              // mlx=ALL      turns of language extension
 
 function getmicrotime(){
   list($usec, $sec) = explode(" ",microtime());
@@ -186,7 +186,7 @@ if( $inc ) {                   # this section must be after add_vars()
 }
 
 // Take any slice to work with
-if (!$slice_id && is_array($slices)) {
+if (!$slice_id AND is_array($slices)) {
     reset ($slices);
     $slice_id = current($slices);
 }
@@ -194,20 +194,18 @@ if (!$slice_id && is_array($slices)) {
 // if someone breaks <!--#include virtual=""... into two rows, then slice_id
 // (or other variables) could contain \n. Should be fixed more generaly -
 // We will do it during rewrite AA to $_GET[] variable handling (probably)
-$slice_id=trim($slice_id);
-
-$p_slice_id= q_pack_id($slice_id);
+$slice_id   = trim($slice_id);
+$p_slice_id = q_pack_id($slice_id);
 
 require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
 
-$db = new DB_AA; 		 // open BD
+$db  = new DB_AA; 	 // open BD
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
 
-  # get fields info
-list($fields) = GetSliceFields($slice_id);
 
-  # get slice info
-$slice_info = GetSliceInfo($slice_id);
+
+list($fields) = GetSliceFields($slice_id);     // get fields info
+$slice_info   = GetSliceInfo($slice_id);       // get slice info
 if ($slice_info AND ($slice_info[deleted]<1)) {
 //  include $GLOBALS["AA_INC_PATH"] . $slice_info[lang_file];  // language constants (used in searchform...)
 }
@@ -267,29 +265,28 @@ if( $bigsrch ) {  # big search form ------------------------------------------
   ExitPage();
 }
 
-GetAliasesFromUrl();
-$urlaliases = $aliases;
+$urlaliases = $aliases = GetAliasesFromUrl($als);
 
 // if banner parameter supplied => set format
 ParseBannerParam($slice_info, $banner);
 
 # get alias list from database and possibly from url
 # if working with multi-slice, get aliases for all slices
-if (!is_array ($slices)) {
+if (!is_array($slices)) {
     $aliases = GetAliasesFromFields($fields);
-    if (is_array ($urlaliases))
-        array_add ($urlaliases, $aliases);
-}
-else {
-    reset($slices);
-    while (list(,$slice) = each($slices)) {
-        list($fields) = GetSliceFields ($slice);
+    if (is_array($urlaliases)) {
+        array_add($urlaliases, $aliases);
+    }
+} else {
+    foreach ( $slices as $slice) {
+        list($fields) = GetSliceFields($slice);
         // hack for searching in multiple slices. This is not so nice part
         // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
         // it is needed by itemview::set_column() (see include/itemview.php3)
         $aliases[q_pack_id($slice)] = GetAliasesFromFields($fields,$als);
-        if (is_array ($urlaliases))
-            array_add ($urlaliases, $aliases[q_pack_id($slice)]);
+        if (is_array($urlaliases)) {
+            array_add($urlaliases, $aliases[q_pack_id($slice)]);
+        }
     }
 }
 
@@ -372,198 +369,181 @@ if (!$scr_go) { $scr_go = 1; }
 // $scrl comes from easy_scroller
 if ($scrl)    { $scr->update(); }
 
-/* $easy_query .. easy query form
-   $srch .. bigsrch form ?? */
+/* old version of automatiocaly created search form - not used in AA > 1.2
+   $easy_query .. easy query form
+   $srch .. bigsrch form ??
+*/
 
-if ( ($easy_query || $srch)
-    && ! (is_array($conds) OR isset($group_by) OR isset($sort))) {
+if ( ($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($sort))) {
 
-    if($easy_query) {     # posted by easy query form ----------------
-
-      $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
-                          "easy_query", "qry", "srch_relev", "mlx")); # store in session, added mlx
-
-      $item_ids = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld,
-                                   $srch_from, $srch_to, $qry, $srch_relev);
-      if( isset($item_ids) AND !is_array($item_ids))
-        echo "<div>$item_ids</div>";
-      if( !$scrl )
-        $scr->current = $scr_go;
-    }
-
-    elseif($srch) {            # posted by bigsrch form -------------------
-      $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col", "mlx")); # store in session
-      if( !$big )
-        $search[slice] = $slice_id;
-      $item_ids = SearchWhere($search, $s_col);
-      if( !$scrl )
-        $scr->current = $scr_go;
-    }
-
-    else if ($debug) echo "ERROR: This branch should never be entered.";
-}
-
-else {
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-          Parse parameters posted by query form and from $slice_info
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-  $r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_name",
-                      "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator","mlx")); # store in session, added mlx
-
-  // ***** CONDS *****
-
-  if( $cat_id ) {  // optional parameter cat_id - deprecated - slow ------
-    $cat_group = GetCategoryGroup($slice_id);
-    $SQL = "SELECT value FROM constant
-             WHERE group_id = '$cat_group'
-               AND id = '". q_pack_id($cat_id) ."'";
-    $db->query($SQL);
-    if( $db->next_record() ) {
-      $conds[] = array (GetCategoryFieldId( $fields )=>1,
-                        'value' => $db->f(value),
-                        'operator' => ($exact ? '=' : 'LIKE'));
-    }
-  }
-  elseif ( $cat_name )   // optional parameter cat_name -------
-    $conds[] = array (GetCategoryFieldId( $fields )=>1,
-                      'value' => $cat_name,
-                      'operator' => ($exact ? '=' : 'LIKE'));
-
-  if ( $restrict ) {
-      $conds[] = array( $restrict=>1,
-                      'value' => ((($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 ) ? $res_val : "\"$res_val\""),
-                      'operator' => ($exact ? '=' : 'LIKE'));
-  }
-
-  if( $highlight != "" )
-    $conds[] = array ('highlight.......' => 1);
-
-  if(is_array($conds)) {
-    if (! isset ($defaultCondsOperator))
-      $defaultCondsOperator = 'LIKE';
-    ParseEasyConds ($conds, $defaultCondsOperator);
-    reset($conds);
-    while( list( $k ) = each( $conds ))
-      SubstituteAliases( $als, $conds[$k]['value'] );
-  }
-
-  // ***** SORT *****
-
-  # order the fields in compact view
-  if( $order ) {
-    $order = GetSortArray ($order);
-    reset ($order);
-    list ($order, $orderdirection) = each ($order);
-  }
-
-  if ($debug)
-    echo "Group by: $group_by. Slice_info[category_sort] $slice_info[category_sort] slice_info[group_by] $slice_info[group_by]";
-
-  if( $group_by ) {
-    $foo = GetSortArray( $group_by );
-    $sort_tmp[] = $foo;
-    $slice_info["group_by"] = key($foo);
-  }
-  else if( $slice_info['category_sort'] ) {
-    $group_field = GetCategoryFieldId( $fields );
-    $grp_odir = (($order==$group_field) AND ($orderdirection!='d')) ? 'a':'d';
-    $sort_tmp[] = array ( $group_field => $grp_odir );
-  }
-  else if ($slice_info['group_by']) {
-    switch( (string)$slice_info['gb_direction'] ) {  # gb_direction is number
-      case '1': $gbd = '1'; break;      # 1 (1)- ascending by priority
-      case 'd':                         #    d - descending - goes from view (iview) settings
-      case '8': $gbd = 'd'; break;      # d (8)- descending
-      case '9': $gbd = '9'; break;      # 9 (9)- descending by priority (for fields using constants)
-      default:  $gbd = 'a';             # 2 (2)- ascending;
-    }
-    $sort_tmp[] = array ( $slice_info['group_by'] => $gbd);
-  }
-  if(isset($sort)) {
-    if( !is_array($sort) )
-      $sort_tmp[] = GetSortArray( $sort );
-    else {
-      ksort( $sort, SORT_NUMERIC); # it is not sorted and the order is important
-      reset($sort);
-      while( list($k, $srt) = each( $sort )) {
-        if ($srt) {
-          if( is_array($srt) )
-            $sort_tmp[] = array( key($srt) => (strtolower(current($srt)) == "d" ? 'd' : 'a'));
-          else
-            $sort_tmp[] =  GetSortArray( $srt );
+    if($easy_query) {     // posted by easy query form ----------------
+        $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
+                                             "easy_query", "qry", "srch_relev", "mlx")); // store in session, added mlx
+        $item_ids     = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $srch_from, $srch_to, $qry, $srch_relev);
+        if ( isset($item_ids) AND !is_array($item_ids) ) {
+            echo "<div>$item_ids</div>";
         }
-      }
+        if ( !$scrl ) {
+            $scr->current = $scr_go;
+        }
     }
-  }
-
-  if( $order )
-    $sort_tmp[] = array ( $order => (( strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
-
-  # time order the fields in compact view
-  $sort_tmp[] = array ( 'publish_date....' => (($timeorder == "rev") ? 'a' : 'd') );
-
-  if( isset($sort_tmp) )
-    $sort = $sort_tmp;
-  else
-    $sort[] = array ( 'publish_date....' => 'd' );
-
-  //mlx stuff    
-  if(isMLXSlice($slice_info)) {
-    if(!$mlxView)
-      $mlxView = new MLXView($mlx);
-    $mlxView->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices); 
-  }
-  $zids=QueryZIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by],
-                     "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator, true );
-
-  if(isMLXSlice($slice_info)) { 
-    $mlxView->postQueryZIDs($zids,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id, $conds, $sort,
-		$slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
-		$defaultCondsOperator,$nocache);
-  }
-     
-// Commented out because queryids doesn't return error strings
-//  if( isset($item_ids) AND !is_array($item_ids))
-//    echo "<div>$item_ids</div>";
-  if( !$scrl )
-    $scr->current = $scr_go;
-
-  //$slice_info[category_sort] = false;      # do not sort by categories
-}
-
-if( !$srch AND !$encap AND !$easy_query ) {
-  $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
-  pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
-}
-//echo "aa - scr->current=$scr->current<br>";
-if( $zids->count() > 0 ) {
-  $scr->countPages( $zids->count() );
-
-  $itemview = new itemview($slice_info, $fields, $aliases, $zids,
-              $scr->metapage * ($scr->current - 1),
-              ($group_n ? -$group_n : $scr->metapage),  # negative number used for displaying n-th group
-              $sess->MyUrl($slice_id, $encap) );
-  $itemview->print_view();
-
-    if( ($scr->pageCount() > 1) AND !$no_scr AND !$group_n)
-    $scr->pnavbar();
+    elseif ($srch) {     // posted by bigsrch form -------------------
+        $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col", "mlx")); # store in session
+        if( !$big ) {
+            $search['slice'] = $slice_id;
+        }
+        $item_ids = SearchWhere($search, $s_col);
+        if( !$scrl ) {
+            $scr->current = $scr_go;
+        }
+    }
+    elseif ($debug) {
+        echo "ERROR: This branch should never be entered.";
+    }
 }
 else {
-  echo $slice_info['noitem_msg'] ?               // <!--Vacuum--> is keyword for removing 'no item message'
-          str_replace( '<!--Vacuum-->', '', $slice_info['noitem_msg']) :
-          ("<div>"._m("No item found") ."</div>");
+    /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *         Parse parameters posted by query form and from $slice_info
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    $r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_name",
+     "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator","mlx")); # store in session, added mlx
+
+    // ***** CONDS *****
+
+    if ( $cat_id ) {  // optional parameter cat_id - deprecated - slow ------
+        $cat_group = GetCategoryGroup($slice_id);
+        $SQL = "SELECT value FROM constant
+                 WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
+        $db->query($SQL);
+        if( $db->next_record() ) {
+            $conds[] = array( GetCategoryFieldId( $fields ) => 1,
+                              'value'                       => $db->f('value'),
+                              'operator'                    => ($exact ? '=' : 'LIKE'));
+        }
+    }
+    elseif ( $cat_name )  {  // optional parameter cat_name -------
+        $conds[]     = array( GetCategoryFieldId( $fields ) => 1,
+                              'value'                       => $cat_name,
+                              'operator'                    => ($exact ? '=' : 'LIKE'));
+    }
+
+    if ( $restrict ) {
+        $conds[]     = array( $restrict  => 1,
+                              'value'    => ((($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 ) ? $res_val : "\"$res_val\""),
+                              'operator' => ($exact ? '=' : 'LIKE'));
+    }
+
+    if ( $highlight != "" ) {
+        $conds[] = array('highlight.......' => 1);
+    }
+
+    if ( !isset($defaultCondsOperator) ) {
+        $defaultCondsOperator = 'LIKE';
+    }
+    if ( is_array($conds) ) {
+        ParseEasyConds($conds, $defaultCondsOperator);
+        foreach ( $conds as $k => $v ) {
+            SubstituteAliases( $als, $conds[$k]['value'] );
+        }
+    }
+
+    // ***** SORT *****
+
+    /** order by field xy if other than publish date.
+    *  Syntax: field_id[-]
+    *  (add minus sign for descending order (like "headline.......1-")
+    */
+    if ( $order ) {
+        $order = GetSortArray($order);
+        reset($order);
+        list($order, $orderdirection) = each($order);
+    }
+
+    if ($debug) {
+        echo "Group by: $group_by. Slice_info[category_sort] $slice_info[category_sort] slice_info[group_by] $slice_info[group_by]";
+    }
+
+    if ($group_by) {
+        $foo                    = GetSortArray( $group_by );
+        $sort_tmp[]             = $foo;
+        $slice_info["group_by"] = key($foo);
+    }
+    elseif ( $slice_info['category_sort'] ) {
+        $group_field = GetCategoryFieldId( $fields );
+        $grp_odir    = (($order==$group_field) AND ($orderdirection!='d')) ? 'a' : 'd';
+        $sort_tmp[]  = array( $group_field => $grp_odir );
+    }
+    elseif ($slice_info['group_by']) {
+        switch( (string)$slice_info['gb_direction'] ) {  // gb_direction is number
+            case '1': $gbd = '1'; break;      // 1 (1)- ascending by priority
+            case 'd':                         //    d - descending - goes from view (iview) settings
+            case '8': $gbd = 'd'; break;      // d (8)- descending
+            case '9': $gbd = '9'; break;      // 9 (9)- descending by priority (for fields using constants)
+            default:  $gbd = 'a';             // 2 (2)- ascending;
+        }
+        $sort_tmp[] = array ( $slice_info['group_by'] => $gbd);
+    }
+
+    $sort_tmp = array_merge($sort_tmp, getSortFromUrl( $sort ));
+
+    if ( $order ) {
+        $sort_tmp[] = array ( $order => (( strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
+    }
+
+    // time order the fields in compact view
+    $sort_tmp[] = array ( 'publish_date....' => (($timeorder == "rev") ? 'a' : 'd') );
+    $sort       = $sort_tmp;
+
+    //mlx stuff
+    if (isMLXSlice($slice_info)) {
+        if (!$mlxView) {
+            $mlxView = new MLXView($mlx);
+        }
+        $mlxView->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
+    }
+    $zids = QueryZIDs($fields, $slice_id, $conds, $sort, $slice_info['group_by'], "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator, true );
+
+    if (isMLXSlice($slice_info)) {
+        $mlxView->postQueryZIDs($zids,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id, $conds, $sort, $slice_info['group_by'],"ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator,$nocache);
+    }
+
+    if ( !$scrl ) {
+        $scr->current = $scr_go;
+    }
 }
 
-if ($searchlog) PutSearchLog ();
+if ( !$srch AND !$encap AND !$easy_query ) {
+    $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
+    pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
+}
 
-if( $debug ) {
-  $timeend = getmicrotime();
-  $time = $timeend - $timestart;
-  echo "<br><br>Page generation time: $time";
+
+if ( $zids->count() > 0 ) {
+    $scr->countPages( $zids->count() );
+
+    $itemview = new itemview($slice_info, $fields, $aliases, $zids, $scr->metapage * ($scr->current - 1),
+                             ($group_n ? -$group_n : $scr->metapage),  // negative number used for displaying n-th group
+                             $sess->MyUrl($slice_id, $encap) );
+    $itemview->print_view();
+
+    if ( ($scr->pageCount() > 1) AND !$no_scr AND !$group_n) {
+        $scr->pnavbar();
+    }
+} else {
+    echo $slice_info['noitem_msg'] ?               // <!--Vacuum--> is keyword for removing 'no item message'
+          str_replace( '<!--Vacuum-->', '', $slice_info['noitem_msg']) : ("<div>"._m("No item found") ."</div>");
+}
+
+if ($searchlog) {
+    PutSearchLog ();
+}
+
+if ( $debug ) {
+    $timeend = getmicrotime();
+    $time    = $timeend - $timestart;
+    echo "<br><br>Page generation time: $time";
 }
 
 ExitPage();
-
 ?>

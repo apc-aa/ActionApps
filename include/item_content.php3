@@ -49,20 +49,20 @@ class ItemContent {
     /// Constructor which takes content for ID or item_id (unpacked).
     function ItemContent ($content4id = "") {
         if ( is_array($content4id) ) {
-            $this->setFromArray ($content4id);
+            $this->setFromArray($content4id);
         } elseif ( $content4id ) {
-            $this->setByItemID ($content4id );
+            $this->setByItemID($content4id );
         }
     }
 
-    function setFromArray (&$content4id) {
+    function setFromArray(&$content4id) {
         $this->content = $content4id;
     }
 
     // Set by item ID (zid or unpacked or short)
-    function setByItemID ($item_id, $ignore_reading_password = false) {
+    function setByItemID($item_id, $ignore_reading_password=false) {
         if ( !$item_id ) return false;
-        $zid           = ((get_class($item_id)=='zids') ? $item_id : new zids($item_id));
+        $zid           = (strtolower(get_class($item_id))=='zids') ? $item_id : new zids($item_id);
         $content       = GetItemContent($zid);
         $this->content = is_array($content) ? reset($content) : null;
     }

@@ -1,3 +1,37 @@
+11/23/04 - any AA format-string could be used for displaying selects from
+(honzam)   related slice (not only 1 field like headline........). You can place
+           the format-string in "slice field" parameter for the Input Type.
+           It works for all Input Types allowing displaying selections from
+           a slice, like Selectbox, Two windows, Multiple Selectboxes,
+           Radiobuttons, Multiple checkboxes...
+         - new dictionary feature
+           You can create "dictionary" slice, where each item will contain
+           a word (in keywords........ field!) and url in other field (and
+           possibly any other fields). Then you can use this "dictionary" slice
+           in your own slice to add links to "dictionary words". You can do it
+           by alias construct:
+             {dictionary:<dictionary_slice_id>:<output_text>:<format>:<conds>}
+           where - dictionary_slice_id is id of "dictionary slice"
+                 - output_text is the text, where you want to search and replace
+                               for dictionary words,
+                 - format specifies, how to replace the keyword
+                 - conds is optional parameter, where you can filter only subset
+                   of used keywords from "dictionary slice". The syntax is
+                   normal conds[] array like:
+                   conds[0][category........]='myDict'&conds[1]...
+                   (simplified as well as extended syntax)
+           Example:
+             {dictionary:4394e6117a0d66fee7cb49ffab9015d2:{_#FULLTEXT}:
+             <a href="_#KEYW_URL">_#KEYWORD_</a>}
+           _#KEYWORD_ is special alias, which could not be defined in the
+           "dictionary slice". The reason, why we use it is, that you can use
+           Multi value field as keyword (in keywords........). It is good
+           to have only one dictionary item for one word (like APC) and then
+           define multivalue for keyword, where you can fill "APC", "apc",
+           "apc.org"... It is important for English, but it is crucial for such
+           languages as is Czech with different kinds of words.
+           Note: Use this feature mainly for fulltexts of item and not in
+                 item-listing, since it is not so quick, at this moment.
 11/18/04 - added "id" and "short_id" definitions to fields table for each slice,
 (honzam)   where the definition is missing. It allows searchbar in Item Manager
            to create filter also on Short id field, ...

@@ -29,10 +29,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined ("ITEMVIEW_INCLUDED"))
-     define ("ITEMVIEW_INCLUDED",1);
-else return;
-
 require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 
 /**
