@@ -47,9 +47,8 @@ if ($edit && !$jump_id && count ($jumps)) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "</head><body>";
 
-$show ["jumpedit"] = false;
-$menu = "aaadmin";
-require $GLOBALS[AA_INC_PATH]."aa_inc.php3";   //show navigation column depending on $show 
+require $GLOBALS[AA_INC_PATH] . "menu.php3";
+showMenu ($aamenus, "aaadmin","jumpedit");
 
 if ($update) {
     if (!$jump_id) $jump_id = new_id ();
