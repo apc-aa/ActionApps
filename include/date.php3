@@ -29,47 +29,56 @@ define("DATE_PHP3_INC",1);
 
 class datectrl {
 	var $name;
+	var $time;
 	var $day;
 	var $month;
 	var $year;
 	var $y_range_plus;    // how many years + display in year select list
 	var $y_range_minus;   // how many years + display in year select list
   var $from_now;        // year range is in relation to today's date/selected date
+  var $display_time;    // display time too
   
 	# constructor
 	# name identifies control on a form
-	function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false) {
+	function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false, 
+                    $display_time=false) {
 		$this->name = $name;
 		$this->y_range_plus  = $y_range_plus;
 		$this->y_range_minus = $y_range_minus;
 		$this->from_now = $from_now;
+		$this->display_time = $display_time;
 		$this->update();
 	}
 
 	# process form data
 	function update() {
+    $timevar  = "tdctr_" . $this->name . "_time";
     $dayvar   = "tdctr_" . $this->name . "_day";
     $monthvar = "tdctr_" . $this->name . "_month";
     $yearvar  = "tdctr_" . $this->name . "_year";
+		if(isset($GLOBALS[$timevar])) 
+			$this->time = $GLOBALS[$timevar];
 		if(isset($GLOBALS[$dayvar])) 
 			$this->day = $GLOBALS[$dayvar];
 		if(isset($GLOBALS[$monthvar])) 
 			$this->month = $GLOBALS[$monthvar];
 		if(isset($GLOBALS[$yearvar])) 
 			$this->year = $GLOBALS[$yearvar];
-    return (    isset($GLOBALS[$dayvar])
+    return ( isset($GLOBALS[$timevar])
+             OR isset($GLOBALS[$dayvar])
              OR isset($GLOBALS[$monthvar]) 
              OR isset($GLOBALS[$yearvar]) );
 	}	
 	
 	# set date, format form db
 	function setdate($date) {
-		if(ereg("([[:digit:]]{4}) *- *([[:digit:]]{1,2}) *- *([[:digit:]]{1,2})", 
+		if(ereg("([[:digit:]]{4}) *- *([[:digit:]]{1,2}) *- *([[:digit:]]{1,2}) *(.*$)", 
 				$date, $regs)) {
 			$this->year = $regs[1];
 			$this->month = $regs[2];
 			$this->day = $regs[3];
-		}
+			$this->time = $regs[4];
+    }  
 		if(checkdate($this->month, $this->day, $this->year)) 
 			return "$this->year-$this->month-$this->day";
 		return "";
@@ -81,28 +90,22 @@ class datectrl {
   	$this->year = $d[year];
 		$this->month = $d[mon];
 		$this->day = $d[mday];
-	}
-
-	# get stored date
-	function get_datetime() {
-    if( "$this->year-$this->month-$this->day" == date("Y-m-d"))  // today
-			return now();                                              // add time
-    return $this->get_date();  
+		$this->time = $d[hours].":".$d[minutes].":".$d[seconds] ;
 	}
 
   # get stored date as integer
 	function get_date() {
-    return  mktime (0,0,0,$this->month,$this->day,$this->year);
+    $t = explode( ':', $this->time );
+    return  mktime ($t[0],$t[1],$t[2],$this->month,$this->day,$this->year);
 	}
 
   # get stored date as integer
 	function get_datestring() {
-    return  $this->day. " - ". $this->month. " - ". $this->year;
+    return  $this->day. " - ". $this->month." - ".$this->year." ". $this->time;
 	}
 
   # check if date is valid  
-  function ValidateDate($inputName, &$err)
-  {
+  function ValidateDate($inputName, &$err)  {
     if( $this->get_date() > 0 ) 
       return true;
     $err[$this->name] = MsgErr(L_ERR_IN." $inputName");
@@ -142,9 +145,24 @@ class datectrl {
     return "<select name=\"tdctr_" . $this->name . "_year\">$ret</select>";
 	}	
 
+	# print select box for time
+	function gettimeselect() {
+    switch( $this->display_time ) {
+      case 2: return "<input type=text name=\"tdctr_". $this->name ."_time\" 
+                     value=\"". $this->time ."\" size=8 maxlength=8>";
+      case 1: $t = explode( ":", $this->time );
+              if( !is_array($t) ) $t = array( '00','00');
+              if( !$t[0] ) $t[0] = "00";
+              if( !$t[1] ) $t[1] = "00";
+              return "<input type=text name=\"tdctr_". $this->name ."_time\" 
+                     value=\"". $t[0] .":". $t[1] ."\" size=8 maxlength=8>";
+    }                 
+    return "";  
+	}	
+
 	# print complete date control 
 	function getselect () {
-		return $this->getdayselect(). $this->getmonthselect(). $this->getyearselect();
+		return $this->getdayselect(). $this->getmonthselect(). $this->getyearselect(). $this->gettimeselect();
 	}
 	
 	# print complete date control 
@@ -155,6 +173,10 @@ class datectrl {
 }
 /*
 $Log$
+Revision 1.8  2001/06/12 16:00:55  honzam
+date inputs support time, now
+new multivalue input possibility - <select multiple>
+
 Revision 1.7  2001/06/03 16:00:49  honzam
 multiple categories (multiple values at all) for item now works
 

@@ -258,6 +258,29 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
   echo "</td></tr>\n";
 }  
 
+
+# Prints html tag <select multiple .. to 2-column table
+# for use within <form> and <table> tag
+function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5, 
+                       $needed=false, $hlp="", $morehlp="") {
+  $name=safe($name); $size=safe($size); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
+  echo "<tr><td class=tabtxt><b>$txt</b>";
+  Needed($needed);
+  echo "</td>\n <td><select name=\"$name\" size=\"$size\" multiple>";	
+  reset($arr);
+  while(list($k, $v) = each($arr)) { 
+    echo "<option value='". htmlspecialchars($k) ."'";
+    if ($selected[$k]) 
+      echo " selected";
+    echo ">".htmlspecialchars($v)."</option>";
+  }
+  echo "</select>";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}  
+
 # Prints html tag <select .. 
 function FrmSelectEasy($name, $arr, $selected="", $add="") { 
   $name=safe($name); # safe($add) - NO! - do not safe it
@@ -338,6 +361,10 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.15  2001/06/12 16:00:55  honzam
+date inputs support time, now
+new multivalue input possibility - <select multiple>
+
 Revision 1.14  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

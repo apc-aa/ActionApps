@@ -224,6 +224,36 @@ function show_fnc_freeze_mch($varname, $field, $value, $param, $html) {
   FrmStaticText($field[name], implode (", ", $value));
 }
 
+function show_fnc_mse($varname, $field, $value, $param, $html) {
+  global $db;
+
+  if (!empty($param)) 
+    list($contgroup, $selectsize) = explode(':', $param);
+
+  if( $selectsize < 1 )   # default size
+    $selectsize = 5;
+      
+  $arr = GetConstants($contgroup, $db); 
+
+  # fill selected array from value
+  if( isset($value) AND is_array($value) ) {
+    reset($value);   
+    while( list( ,$x ) = each( $value )) {
+      if( $x[value] )
+        $selected[$x[value]] = true;
+    }
+  }  
+  
+  echo $field[input_before];
+  FrmInputMultiSelect($varname."[]", $field[name], $arr, $selected, $selectsize, 
+    $field[required], $field[input_help], $field[input_morehlp]);
+}
+  
+function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], implode (", ", $value));
+}
+
 function show_fnc_sel($varname, $field, $value, $param, $html) {
   global $db;
   $arr = GetConstants($param, $db); 
@@ -262,7 +292,7 @@ function show_fnc_dte($varname, $field, $value, $param, $html) {
     $arr = explode("'",$param);  // old format
    else 
     $arr = explode(":",$param);  // new format
-  $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2]);
+  $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2], $arr[3]);
   $datectrl->setdate_int($value[0][value]);
   FrmStaticText($field[name], $datectrl->getselect(), $field[required], 
                 $field[input_help], $field[input_morehlp], "0" );
@@ -447,6 +477,10 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.12  2001/06/12 16:00:55  honzam
+date inputs support time, now
+new multivalue input possibility - <select multiple>
+
 Revision 1.11  2001/06/03 16:00:49  honzam
 multiple categories (multiple values at all) for item now works
 

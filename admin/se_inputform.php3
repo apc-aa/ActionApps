@@ -83,7 +83,8 @@ if( $update ) {
     $varset->add("input_help", "quoted", $input_help);
     $varset->add("input_morehlp", "quoted", $input_morehlp);
     $varset->add("input_default", "quoted", "$input_default_f:$input_default");
-    $varset->add("multiple", "quoted", ($input_show_func_f=="mch") ? 1 : 0);
+    $varset->add("multiple", "quoted", (($input_show_func_f=="mch")
+                                     OR ($input_show_func_f=="mse")) ? 1 : 0);  #mark as multiple
 
     $varset->add("alias1", "quoted", $alias1);
     $varset->add("alias1_help", "quoted", $alias1_help);
@@ -104,6 +105,8 @@ if( $update ) {
       case "mch":
       case "rio":
       case "sel": $isf = "$input_show_func_f:$input_show_func_c";
+                  break;
+      case "mse": $isf = "$input_show_func_f:$input_show_func_c:$input_show_func";
                   break;
       default: $isf = "$input_show_func_f";
     }  
@@ -402,6 +405,10 @@ echo "
 
 /*
 $Log$
+Revision 1.12  2001/06/12 16:00:54  honzam
+date inputs support time, now
+new multivalue input possibility - <select multiple>
+
 Revision 1.11  2001/06/03 15:57:45  honzam
 multiple categories (multiple values at all) for item now works
 
