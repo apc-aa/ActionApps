@@ -77,9 +77,14 @@ function ParseViewParameters($query_string="") {
 
   # Parse parameters 
   # if view in cmd[] is not specified ...
-  if (!$cmd[$vid])
-    $cmd[$vid] = $cmd[0];
-  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
+  $cmd4view = ( (!$cmd[$vid] && strpos('x'.$query_string, 'cmd[]') ) ? $cmd[0] : $cmd[$vid]);
+  $command = ParseCommand($cmd4view, $GLOBALS['als']);
+
+  #  This code below do not work!! - it is not the same as the code above!!
+  #  (the code above parses only the specific guerystring for this view)
+  #  if (!$cmd[$vid])       
+  #    $cmd[$vid] = $cmd[0];
+  #  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
 
   switch ($command[0]) {
     case 'v':  $vid = $command[1];
@@ -116,9 +121,14 @@ function ParseViewParameters($query_string="") {
                break;
   }
 
-  if (!$set[$vid])
-      $set[$vid] = $set[0];
-  $arr = ParseSettings($set[$vid]);
+  $set4view = ( (!$set[$vid] && strpos('x'.$query_string, 'set[]')) ? $set[0] : $set[$vid]);
+  $arr = ParseSettings($set4view);
+
+  #  This code below do not work!! - it is not the same as the code above!!
+  #  (the code above parses only the specific guerystring for this view)
+  #  if (!$set[$vid])
+  #    $set[$vid] = $set[0];
+  #  $arr = ParseSettings($set[$vid]);
 
   # the parameters for discussion comes (quite not standard way) from globals
   if( !$arr["all_ids"] )   $arr["all_ids"] = $all_ids;
