@@ -616,14 +616,14 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
       while( list(,$v) = each($GLOBALS[$varname]) ) {
         $content4id[$pri_field_id][$i]['value'] = $v;    # add to content array
         $content4id[$pri_field_id][$i]['flag'] = ( $f[html_show] ? 
-                             (($GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
+                             (((string)$GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
                              (($f[html_default]>0) ? FLAG_HTML : 0));
         $i++;                     
       }  
     } else {
       $content4id[$pri_field_id][0]['value'] = $GLOBALS[$varname];
       $content4id[$pri_field_id][0]['flag'] = ( $f[html_show] ? 
-                             (($GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
+                             (((string)$GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
                              (($f[html_default]>0) ? FLAG_HTML : 0));
     }  
   }
@@ -801,18 +801,18 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
      else 
       $show_fnc_prefix = 'show_fnc_';
 
-	  if( !$f[input_show]                      # if set to not show - don't show
+	  if( !$f[input_show]                      # if set to not show - do not show
         OR GetProfileProperty('hide',$f['id'])
         OR GetProfileProperty('hide&fill',$f['id']) )
 	    continue;
-      
+
 	  $fnc = ParseFnc($f[input_show_func]);   # input show function
 	  if( $fnc ) {                     # call function
 	    $fncname = $show_fnc_prefix . $fnc[fnc];
-	      # updates content table or fills $itemvarset 
+	      # updates content table or fills $itemvarset
       if( !$edit ) {
         # insert or new reload of form after error in inserting
-        
+
         # first get values from profile, if there are some predefined value
         $foo = GetProfileProperty('predefine',$f['id']);
         if( $foo AND !$GLOBALS[$varname]) {
@@ -820,26 +820,26 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
           $GLOBALS[$varname] = $x[0];
           $GLOBALS[$htmlvarname] = $x[1];
         }
-          
-        # get values from form (values are filled when error on form ocures 
+
+        # get values from form (values are filled when error on form ocures
         if( $f[multiple] AND isset($GLOBALS[$varname])
                          AND is_array($GLOBALS[$varname]) ) {
-              # get the multivalues    
+              # get the multivalues
           reset($GLOBALS[$varname]);
           $i=0;
           while( list(,$v) = each($GLOBALS[$varname]) )
-            $arr[$i++]['value'] = safe($v);
+            $arr[$i++]['value'] = $v;
         } else
-          $arr[0]['value'] = safe($GLOBALS[$varname]);
-  	    $fncname($varname, $f, $arr, $fnc[param], $GLOBALS[$htmlvarname]==1);
+          $arr[0]['value'] = $GLOBALS[$varname];
+  	    $fncname($varname, $f, $arr, $fnc[param], ((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
       } else
-   	    $fncname($varname, $f, $content4id[$pri_field_id], 
+   	    $fncname($varname, $f, $content4id[$pri_field_id],
                  $fnc[param], $content4id[$pri_field_id][0]['flag'] & FLAG_HTML );
     }
 	}
-	
+
 	if (richEditShowable()) {
-		echo '	
+		echo '
 		<script language="JavaScript">
 		<!--
 			function saveRichEdits () {';
@@ -852,6 +852,6 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 		// -->
 		</script>';
 	}
-}	
+}
 
 ?>
