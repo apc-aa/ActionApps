@@ -192,7 +192,7 @@ if( $insert || $update )
         $err["DB"] = "<div class=err>". L_ITEM_NOT_CHANGED ."</div>";
         break;
       }     
-      $db->query("update fulltexts set full_text = '". $full_text ."' where ft_id='".q_pack_id($id)."'");
+      $db->query("UPDATE fulltexts SET full_text = '". $full_text ."' WHERE ft_id='".q_pack_id($id)."'");
       if( $status_code == 1 )  //Approved bin
         FeedItem($id, $db);
     }    
@@ -255,8 +255,8 @@ while($db->next_record()) {
 }
 
 if($edit) {
-  $SQL = "select items.*, fulltexts.full_text from items, fulltexts 
-                where fulltexts.ft_id = items.master_id AND id='".q_pack_id($id)."'";
+  $SQL = "SELECT items.*, fulltexts.full_text FROM items, fulltexts 
+                WHERE fulltexts.ft_id = items.master_id AND id='".q_pack_id($id)."'";
 	$db->query($SQL);
 	if($db->next_record()) {
     $tmp_slice_id = $slice_id;  
@@ -286,6 +286,9 @@ echo $Msg;
 
 /*
 $Log$
+Revision 1.5  2000/07/13 14:12:58  kzajicek
+SQL keywords to uppercase
+
 Revision 1.4  2000/07/13 10:12:18  kzajicek
 iIf possible, print real name instead of uid (number with sql, dn with ldap).
 
