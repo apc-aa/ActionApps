@@ -70,16 +70,17 @@ if( $update ) {
     ValidateInput("input_default", _m("Default"), $input_default, $err, false, "text");
     ValidateInput("input_show_func", L_INPUT_SHOW_FUNC, $input_show_func_f, $err, false, "text");
 
-    ValidateInput("alias1", _m("Alias 1"), $alias1, $err, false, "alias");
-    ValidateInput("alias1_help", _m("Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters.") ."1", $alias1_help, $err, false, "text");
-    ValidateInput("alias1_func", _m("Function") ."1", $alias1_func, $err, false, "text");
-    ValidateInput("alias2", _m("Alias 2"), $alias2, $err, false, "alias");
-    ValidateInput("alias2_help", _m("Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters.") ."2", $alias2_help, $err, false, "text");
-    ValidateInput("alias2_func", _m("Function") ."2", $alias2_func, $err, false, "text");
-    ValidateInput("alias3", _m("Alias 3"), $alias3, $err, false, "alias");
-    ValidateInput("alias3_help", _m("Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters.") ."3", $alias3_help, $err, false, "text");
-    ValidateInput("alias3_func", _m("Function") ."3", $alias3_func, $err, false, "text");
-      
+	$alias_err = _m("Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING.");
+	for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
+		$alias_var = "alias".$iAlias;
+		if ($$alias_var == "_#") $$alias_var = "";
+	    ValidateInput("alias".$iAlias, _m("Alias")." ".$iAlias, $$alias_var, $err, false, "alias");
+		$alias_var = "alias".$iAlias."_help";
+    	ValidateInput("alias".$iAlias."_help", $alias_err.$iAlias, $$alias_var, $err, false, "text");
+		$alias_var = "alias".$iAlias."_func";		
+    	ValidateInput("alias".$iAlias."_func", _m("Function").$iAlias, $$alias_var, $err, false, "text");
+	}
+
     if( count($err) > 1)
       break;
 
@@ -144,6 +145,10 @@ if( $update ) {
   # lookup constants
 $constants[] = "";   # add blank constant as the first option
 $constants += GetConstants('lt_groupNames', $db, 'name');
+
+$constants[] = "";
+$constants[] = "*** SLICES: ***";
+$constants[] = "";
 
   # add slices to constant array (good for related stories, link to authors ...)
 reset($g_modules);
@@ -265,7 +270,7 @@ echo "
 <form enctype=\"multipart/form-data\" method=post action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">
  <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
   <tr>
-   <td class=tabtit><b>&nbsp;". _m("Fields") ."</b></td>
+   <td class=tabtit><b>&nbsp;"._m("Field properties")."</b></td>
   </tr>
   <tr>
    <td>
@@ -281,11 +286,8 @@ echo "
       <td class=tabtxt><b>". _m("Input type") ."</b></td>
       <td class=tabtxt colspan=3>";
        FrmSelectEasy("input_show_func_f", $INPUT_SHOW_FUNC_TYPES, $input_show_func_f);
-	   ?>
-	   <a href='javascript:CallParamWizard ("INPUT_TYPES","input_show_func_f","input_show_func_p")'>
-		<?php echo _m("Wizard with help")."</a>";
 
-      echo "<div class=tabhlp>". _m("Function used for displaying in inputform. Some of them use the Constants,some of them use the Parameters. To get some more info, use the Wizard with Help.") ."</div>
+      echo "<div class=tabhlp>". _m("Input field type in Add / Edit item.") ."</div>
             <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
              <tr>
               <td class=tabtxt><b>". _m("Constants") ."</b> ";
@@ -299,9 +301,10 @@ echo "
              </tr>
             </table>
             <div class=tabtxt><b>". _m("Parameters") ."</b>
-              <input type=\"Text\" name=\"input_show_func_p\" size=25 maxlength=240 value=\"". safe($input_show_func_p) ."\">
+              <input type=\"Text\" name=\"input_show_func_p\" size=50 maxlength=240 value=\"". safe($input_show_func_p) ."\">
             </div> 
-            <div class=tabhlp>". _m("Parameters are divided by double dot (:) or (in some special cases) by apostrophy (').") ."</div>
+    	   <a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
+    		 ._m("Help: Parameter Wizard")."</b></a>
       </td>
      </tr>  
      <tr><td colspan=4><hr></td></tr>
@@ -309,11 +312,10 @@ echo "
       <td class=tabtxt><b>". _m("Default") ."</b></td>
       <td class=tabtxt colspan=3>";
         FrmSelectEasy("input_default_f", inputDefaultTypes(), $input_default_f);
-      echo "<div class=tabhlp>". _m("Which function should be used as default:<BR>Now - default is current date<BR>User ID - current user ID<BR>Text - default is text in Parameter field<br>Date - as default is used current date plus <Parameter> number of days") ."</div>
-            <div class=tabtxt><b>". _m("Parameters") ."</b>
-              <input type=\"Text\" name=\"input_default\" size=25 value=\"". safe($input_default) ."\">
+      echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>
+            <div class=tabtxt><b>". _m("Parameter") ."</b>
+              <input type=\"Text\" name=\"input_default\" size=50 value=\"". safe($input_default) ."\">
             </div> 
-            <div class=tabhlp>". _m("If default-type is Text, this sets the default text.<BR>If the default-type is Date, this sets the default date to the current date plus the number of days you set here.") ."</div>
       </td>
      </tr>  
      <tr><td colspan=4><hr></td></tr>
@@ -329,17 +331,22 @@ echo "
       <td class=tabtxt><b>". _m("Insert") ."</b></td>
       <td class=tabtxt colspan=3>";
         FrmSelectEasy("input_insert_func_f", inputInsertTypes(), $input_insert_func_f);
-      echo "<div class=tabhlp>". _m("This defines how the value is stored in the database.  Generally, use 'Text'.<BR>File will store an uploaded file.<BR>Now will insert the current time, no matter what the user sets.  Uid will insert the identity of the Current user, no matter what the user sets.  Boolean will store either 1 or 0.  ") ."</div>
+      echo "<div class=tabhlp>". _m("Defines how value is stored in database. Generally, use 'Text'.<BR>
+	  		<tt>Now</tt> inserts the current time, no matter what the user sets.  
+			<tt>User ID</tt> inserts the identity of the current user, no matter what the user sets.") ."</div>
             <div class=tabtxt><b>". _m("Parameters") ."</b>
               <input type=\"Text\" name=\"input_insert_func_p\" size=25 maxlength=240 value=\"". safe($input_insert_func_p) ."\">
             </div> 
       </td>
      </tr>  
      <tr>
-      <td class=tabtxt><b>". _m("Show 'HTML' / 'plain text' option") ."</b></td>
-      <td class=tabtxt><input type=\"checkbox\" name=\"html_show\"". ($html_show ? " checked" : "") ."></td>
-      <td class=tabtxt><b>". _m("HTML coded as default") ."</b></td>
-      <td class=tabtxt><input type=\"checkbox\" name=\"html_default\"". ($html_default ? " checked" : "") ."></td>
+      <td class=tabtxt><b>HTML</b></td>
+	  <td class=tabtxt>
+	  	<input type=\"checkbox\" name=\"html_show\"". ($html_show ? " checked" : "") .">
+	  	<b>". _m("Show 'HTML' / 'plain text' option") ."</b><br>
+        <input type=\"checkbox\" name=\"html_default\"". ($html_default ? " checked" : "") .">
+        <b>". _m("'HTML' as default") ."</b>
+	  </td>
      </tr>  
      <tr>
       <td class=tabtxt><b>". _m("Help for this field") ."</b></td>
@@ -371,7 +378,7 @@ echo "
    </td>
   </tr>  
   <tr>
-   <td class=tabtit><b>&nbsp;". _m("When you go to Admin-Design, you use an Alias to show this field") ."</b></td>
+   <td class=tabtit><b>&nbsp;". _m("ALIASES used in views to print field content") ."</b></td>
   </tr>
   <tr>
    <td>
@@ -387,41 +394,44 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
 		echo "
      <tr>
       <td class=tabtxt><a name='alias$iAlias'></a><b>";
-	  eval ("echo L_ALIAS$iAlias;");
+	  echo _m("Alias")." ".$iAlias;
 	  echo "</b></td>
       <td class=tabtxt colspan=3>
-	  <input type=\"Text\" name=\"alias$iAlias\" size=20 maxlength=10 value=\"";
+	  <div class=tabhlp><input type=\"Text\" name=\"alias$iAlias\" size=20 maxlength=10 value=\"";
       $alias_name = "alias".$iAlias;
-	  echo safe($$alias_name);
-	  echo "\">
-      <div class=tabhlp>". _m("Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters.") ."</div>
+	  if ($$alias_name) echo safe($$alias_name);
+	  else echo "_#";
+	  echo "\"> ". _m("_# + 8 UPPERCASE letters") ."</div>
       </td>
      </tr>  
      <tr>
-      <td class=tabtxt><b>". _m("Function") ."</b></td>
-      <td class=tabtxt colspan=3>";
+       <td class=tabtxt><b>". _m("Function") ."</b></td>
+       <td class=tabtxt colspan=3>";
 	  
        $alias_func_f = "alias".$iAlias."_func_f";
        FrmSelectEasy("alias$iAlias"."_func_f", $func_types, $$alias_func_f);
-	   echo "<a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\", \"alias$iAlias"."_func\")'>"._m("Wizard with help")."</a>
-      		<div class=tabhlp>". _m("Function which handles the database field and displays it on page<BR>usually, use 'print'.<BR>") ."</div>
-            <div class=tabtxt><b>". _m("Parameters") ."</b>
-              <input type=\"Text\" name=\"alias$iAlias"."_func\" size=25 maxlength=250 value=\"";
+	   echo "
+	   </td></tr>
+	 <tr><td class=tabtxt><b>". _m("Parameters") ."</b></td>
+	   <td class=tabtxt colspan=3>
+              <input type=\"Text\" name=\"alias$iAlias"."_func\" size=60 maxlength=250 value=\"";
                 $alias_func = "alias".$iAlias."_func";
 			  	echo safe($$alias_func);
 				echo "\">
-            </div> 
-            <div class=tabhlp>". _m("Parameter passed to alias handling function. For detail see include/item.php3 file") ."</div>
-      </td>
-     </tr>  
+       </td></tr>
+	 <tr><td class=tabtxt>&nbsp;</td>
+	   <td class=tabhlp><strong>
+			<a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\", 
+				\"alias$iAlias"."_func\")'>"._m("Help: Parameter Wizard")."</a></strong>
+		</td></tr>  
      <tr>
-      <td class=tabtxt><b>". _m("Help text") ."</b></td>
+      <td class=tabtxt><b>". _m("Description") ."</b></td>
       <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias".$iAlias."_help\" size=50 maxlength=254 value=\"";
         $alias_help = "alias".$iAlias."_help";
 		echo safe($$alias_help);
-		echo "\">
-      <div class=tabhlp>". _m("Help text for the alias") ."</div>
-      </td>
+		echo "\">"
+      //<div class=tabhlp>". _m("Help text for the alias") ."</div>
+      ."</td>
      </tr>
      <tr><td colspan=4><hr></td></tr>";
 endfor;
