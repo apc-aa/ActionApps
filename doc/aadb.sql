@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS offline        ;
 DROP TABLE IF EXISTS feedmap        ;
 DROP TABLE IF EXISTS relation       ;
 DROP TABLE IF EXISTS pagecache      ;
+DROP TABLE IF EXISTS profile        ;
 DROP TABLE IF EXISTS view           ;
 DROP TABLE IF EXISTS discussion     ;
 DROP TABLE IF EXISTS nodes          ;
@@ -27,6 +28,14 @@ DROP TABLE IF EXISTS external_feeds ;
 DROP TABLE IF EXISTS ef_categories  ;
 DROP TABLE IF EXISTS ef_permissions ;
 
+# 11/26/01 - added profile table
+#          - added notify_holding_item_s, notify_holding_item_b, 
+#            notify_holding_item_edit_s, notify_holding_item_edit_b, 
+#            notify_active_item_edit_s, notify_active_item_edit_b,
+#            notify_active_item_s, notify_active_item_b, noitem_msg
+#            into slice table
+#          - added aditional2, aditional3, aditional4, aditional5, aditional6,
+#            noitem_msg into profile table
 # 11/13/01 - changed external_feeds.newest_item from bigint to varchar(40)
 # 09/26/01 - added "nodes" table
 #          - added "external_feeds" table
@@ -392,6 +401,22 @@ CREATE TABLE perms (
 
 
 # --------------------------------------------------------
+# Table structure for table 'profile'
+# Table used for storing user profiles (user preferences in admin interface)
+
+CREATE TABLE profile (
+   id int(11) NOT NULL auto_increment,
+   slice_id varchar(16) NOT NULL,
+   uid varchar(60) DEFAULT '*' NOT NULL,   # user id (number for SQL permission system, uid=... string for LDAP permissions. '*' stands for default user setting
+   property varchar(20) NOT NULL,          # one of: listlen, admin_search, admin_order, hide, hide&fill, fill, predefine
+   selector varchar(255),                  # field_id if needed
+   value text,                             # value of property
+   PRIMARY KEY (id),
+   KEY slice_user_id (slice_id, uid)
+);
+
+
+# --------------------------------------------------------
 # Table structure for table 'relation'
 # Table used for storing relations between items (could hold feeding info,
 # discussion threads, list of related items ...)
@@ -449,6 +474,7 @@ CREATE TABLE slice (
    notify_active_item_edit_b mediumtext,
    notify_active_item_s mediumtext,
    notify_active_item_b mediumtext,
+   noitem_msg mediumtext,                # html text shown if no item found
    admin_format_top text,
    admin_format text,
    admin_format_bottom text,
@@ -550,6 +576,12 @@ CREATE TABLE view (
    img4 varchar(255),
    flag int(10) unsigned,
    aditional text,
+   aditional2 text,
+   aditional3 text,
+   aditional4 text,
+   aditional5 text,
+   aditional6 text,
+   noitem_msg text,                # html text shown if no item found
    PRIMARY KEY (id),
    KEY slice_id (slice_id)
 );
@@ -708,7 +740,7 @@ INSERT INTO slice_owner VALUES( 'AA_Core.........', 'Action Aplications System',
 # --------------------------------------------------------
 # AA Core slice for internal use only (defines APC wide field types and its default values in process of  creation
 
-INSERT INTO slice VALUES( 'AA_Core_Fields..', 'Action Aplication Core', 'AA_Core_Fields..', '0', '', '975157733', '1', 'AA_Core_Fields..', '0', '', '', '','', '', '0', '', '', '', '', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', '0', '0');
+INSERT INTO slice VALUES( 'AA_Core_Fields..', 'Action Aplication Core', 'AA_Core_Fields..', '0', '', '975157733', '1', 'AA_Core_Fields..', '0', '', '', '','', '', '0', '', '', '', '', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '0', '0');
 
 INSERT INTO field VALUES( 'headline', '', 'AA_Core_Fields..', 'Headline', '100', 'Headline', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '1', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1');
 INSERT INTO field VALUES( 'abstract', '', 'AA_Core_Fields..', 'Abstract', '189', 'Abstract', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'txt:8', '', '100', '', '', '', '', '0', '1', '1', '_#UNDEFINE', 'f_t', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '1', '', 'text', 'qte', '1', '1');
@@ -762,7 +794,7 @@ INSERT INTO field VALUES( 'url', '', 'AA_Core_Fields..', 'URL', '2055', 'Interne
 # --------------------------------------------------------
 # Templete slices
 
-INSERT INTO slice VALUES( 'News_EN_tmpl....', 'News (EN) Template', 'AA_Core.........', '0', '', '975157733', '1', 'News_EN_tmpl....', '1', '', '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR><img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\">_#FULLTEXT ', '','<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font><font color=#FF0000><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font><font color=#808080 size=-1><br>_#PLACE###(_#LINK_SRC) - </font><font color=black size=-1>_#ABSTRACT<br></font><br>', '', '0', '<br>', '<br>', '', '<p>_#CATEGORY</p>', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '<tr class=tablename><td width=30>&nbsp;</td><td>Click on Headline to Edit</td><td>Date</td></tr>', '<tr class=tabtxt><td width=30><input type=checkbox name="chb[x_#ITEM_ID#]" value=""></td><td><a href="_#EDITITEM">_#HEADLINE</a></td><td>_#PUB_DATE</td></tr>', '', '', '1', '1', '', '0', '0');
+INSERT INTO slice VALUES( 'News_EN_tmpl....', 'News (EN) Template', 'AA_Core.........', '0', '', '975157733', '1', 'News_EN_tmpl....', '1', '', '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR><img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\">_#FULLTEXT ', '','<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font><font color=#FF0000><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font><font color=#808080 size=-1><br>_#PLACE###(_#LINK_SRC) - </font><font color=black size=-1>_#ABSTRACT<br></font><br>', '', '0', '<br>', '<br>', '', '<p>_#CATEGORY</p>', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', 'No item found', '<tr class=tablename><td width=30>&nbsp;</td><td>Click on Headline to Edit</td><td>Date</td></tr>', '<tr class=tabtxt><td width=30><input type=checkbox name="chb[x_#ITEM_ID#]" value=""></td><td><a href="_#EDITITEM">_#HEADLINE</a></td><td>_#PUB_DATE</td></tr>', '', '', '1', '1', '', '0', '0');
 
 INSERT INTO field VALUES( 'abstract........', '', 'News_EN_tmpl....', 'Abstract', '150', 'Abstract', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'txt:8', '', '100', '', '', '', '', '0', '1', '1', '_#ABSTRACT', 'f_t', 'alias for abstract', '_#RSS_IT_D', 'f_r:256', 'Abstract for RSS', '', '', '', '', '', '0', '0', '1', '', 'text', 'qte', '1', '1');
 INSERT INTO field VALUES( 'category........', '', 'News_EN_tmpl....', 'Category', '500', 'Category', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:', '0', '0', '0', 'sel:lt_apcCategories', '', '100', '', '', '', '', '1', '1', '1', '_#CATEGORY', 'f_h', 'alias for Item Category', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '0', '1');
@@ -861,11 +893,11 @@ function checkData() {
 <input type=hidden name=d_parent value=\"_#DISC_ID#\">
 <input type=hidden name=d_item_id value=\"_#ITEM_ID#\">
 <input type=hidden name=url value=\"_#DISC_URL\">
-</FORM>', NULL, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '23', NULL, '<img src=\"http://aa.ecn.cz/aaa/images/i.gif\" width=9 height=21>', '<img src=\"http://aa.ecn.cz/aaa/images/l.gif\" width=9 height=21>', '<img src=\"http://aa.ecn.cz/aaa/images/t.gif\" width=9 height=21>', '<img src=\"http://aa.ecn.cz/aaa/images/blank.gif\" width=12 height=21>', NULL, NULL);
+</FORM>', NULL, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '23', NULL, '<img src=\"http://aa.ecn.cz/aaa/images/i.gif\" width=9 height=21>', '<img src=\"http://aa.ecn.cz/aaa/images/l.gif\" width=9 height=21>', '<img src=\"http://aa.ecn.cz/aaa/images/t.gif\" width=9 height=21>', '<img src=\"http://aa.ecn.cz/aaa/images/blank.gif\" width=12 height=21>', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found');
 
-INSERT INTO view VALUES ( '', 'AA_Core_Fields..', 'Constant view ...', 'const', '<table border=0 cellpadding=0 cellspacing=0>', '', '<tr><td>_#VALUE###</td></tr>', '0', '</table>', NULL, NULL, 'value', '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '10', NULL, '0', NULL, 'lt_languages', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO view VALUES ( '', 'AA_Core_Fields..', 'Constant view ...', 'const', '<table border=0 cellpadding=0 cellspacing=0>', '', '<tr><td>_#VALUE###</td></tr>', '0', '</table>', NULL, NULL, 'value', '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '10', NULL, '0', NULL, 'lt_languages', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found');
 
-INSERT INTO view VALUES ( '', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"http://work.ecn.cz/apc-aa/view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', '0', '', '0', NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', '8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO view VALUES ( '', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"http://work.ecn.cz/apc-aa/view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', '0', '', '0', NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', '8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found');
 
 INSERT INTO view  
 ( slice_id, name, type, before, odd, after, order1, o1_direction, 
@@ -891,4 +923,4 @@ cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen ) VALUES (
 </rss>
 ',  'publish_date....',  '0',  'headline........',  '0',
 'source..........',  
-'>',  '',  '',  '<',  '',  '',  '<',  '',  '15' ) ;
+'>',  '',  '',  '<',  '',  '',  '<',  '',  '15', NULL, NULL, NULL, NULL, NULL, 'No item found' ) ;

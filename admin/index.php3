@@ -75,8 +75,8 @@ if(isset($r_slice_id)) {
 $p_slice_id = q_pack_id($slice_id);
 
 $slice_info = GetSliceInfo($slice_id);
-$config_arr = unserialize( $slice_info["config"] );
 
+// $config_arr = unserialize( $slice_info["config"] );
 // $r_bin_state - controls display of editor pages. It should be:
 // app, appb, appc, hold, trash
 if(!isset($r_bin_state)) {
@@ -94,19 +94,50 @@ if(!isset($r_bin_show)) {
 // $r_admin_order, $r_admin_order - controls article ordering 
 // $r_admin_order contains field id
 // $r_admin_order_dir contains 'd' for descending order, 'a' for ascending
-if(!isset($r_admin_order)) {
-  $r_admin_order = ( $config_arr["admin_order"] ? 
-                     $config_arr["admin_order"] : "publish_date...." );
-  $r_admin_order_dir = ( $config_arr["admin_order_dir"] ? 
-                         $config_arr["admin_order_dir"] : "d" );
+if(!isset($r_admin_order) OR $change_id){ # we are here for the first time
+                                          # or we are switching to another slice
+  # switch to another slice - reset settings
+  if( $change_id ) {    
+    $r_admin_order = "";
+    $r_admin_order_dir = "";
+    $r_admin_search = "";
+    $r_admin_search_field = "";
+  }  
+                                          
+  # set default admin interface settings from user's profile
+  $r_admin_order = GetProfileProperty('admin_order',0);
+  $r_admin_order_dir = "d";
+  if( $r_admin_order ) {
+    if( substr($r_admin_order,-1) == '-' )
+      $r_admin_order = substr($order,0,-1);
+    if( substr($order,-1) == '+' ) {
+      $r_admin_order = substr($order,0,-1);
+      $r_admin_order_dir = "a";
+    }  
+  }    
+  if( !$r_admin_order )
+    $r_admin_order = "publish_date....";
+
   $sess->register(r_admin_order); 
   $sess->register(r_admin_order_dir); 
 
   // $r_admin_search, $r_admin_search_field - controls article filter
   // $r_admin_search contains search string
   // $r_admin_search_field contains field id
+  $foo_as = GetProfileProperty('admin_search',0);
+  if( $foo_as AND (($pos=strpos($foo_as,':')) > 0) ) {
+    $r_admin_search_field = substr($foo_as, 0, $pos);
+    $r_admin_search = substr($foo_as, $pos+1);
+  }  
+
   $sess->register(r_admin_search); 
   $sess->register(r_admin_search_field); 
+  
+  # get default number of listed items from user's profile (if not specified 
+  # another number through URL)
+
+  if( !$listlen )   
+    $listlen = GetProfileProperty('listlen',0);
 }
 
 $perm_edit_all  = CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS);
@@ -526,6 +557,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.30  2001/12/18 11:42:21  honzam
+new user profile feature
+
 Revision 1.29  2001/10/24 16:41:34  honzam
 search expressions with AND, OR, NOT, (, ) allowed in conditions
 

@@ -24,6 +24,25 @@ http://www.apc.org/
 # this script updates the database to last structure, create all tables, ...
 # can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
+# handle with PHP magic quotes - quote the variables if quoting is set off
+function Myaddslashes($val, $n=1) {
+  if (!is_array($val)) {
+    return addslashes($val);
+  }  
+  for (reset($val); list($k, $v) = each($val); )
+    $ret[$k] = Myaddslashes($v, $n+1);
+  return $ret;
+}    
+
+if (!get_magic_quotes_gpc()) { 
+  // Overrides GPC variables 
+  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+  $$k = Myaddslashes($v); 
+}
 
 # need config.php3 to set db access, and phplib, and probably other stuff
 $AA_INC_PATH = "/raid/www/htdocs/aa.ecn.cz/aaa/include/"; 
@@ -74,7 +93,8 @@ $tablelist = array("active_sessions",
                    "log", 
                    "membership", 
                    "pagecache", 
-                   "perms", 
+                   "perms",
+                   "profile",
                    "slice", 
                    "slice_owner", 
                    "subscriptions", 
@@ -144,12 +164,18 @@ $SQL_create_new_tables[] = "
      img4 varchar(255),
      flag int(10) unsigned,
      aditional text,
+     aditional2 text,
+     aditional3 text,
+     aditional4 text,
+     aditional5 text,
+     aditional6 text,
+     noitem_msg text,
      PRIMARY KEY (id),
      KEY slice_id (slice_id)
   )";
 
 $SQL_create_new_tables[] = "
-CREATE TABLE IF NOT EXISTS tmp_ef_categories (
+CREATE TABLE IF NOT EXISTS ef_categories (
    category varchar(255) NOT NULL,
    category_name varchar(255) NOT NULL,
    category_id varchar(16) NOT NULL,
@@ -160,7 +186,7 @@ CREATE TABLE IF NOT EXISTS tmp_ef_categories (
 )";
 
 $SQL_create_new_tables[] = "
-CREATE TABLE IF NOT EXISTS tmp_ef_permissions (
+CREATE TABLE IF NOT EXISTS ef_permissions (
    slice_id varchar(16) NOT NULL,
    node varchar(150) NOT NULL,
    user varchar(50) NOT NULL,
@@ -168,7 +194,7 @@ CREATE TABLE IF NOT EXISTS tmp_ef_permissions (
 )";
 
 $SQL_create_new_tables[] = "
-CREATE TABLE IF NOT EXISTS tmp_nodes (
+CREATE TABLE IF NOT EXISTS nodes (
    name varchar(150) NOT NULL,
    server_url varchar(200) NOT NULL,
    password varchar(50) NOT NULL,
@@ -176,7 +202,7 @@ CREATE TABLE IF NOT EXISTS tmp_nodes (
 )";
 
 $SQL_create_new_tables[] = "
-CREATE TABLE IF NOT EXISTS tmp_external_feeds (
+CREATE TABLE IF NOT EXISTS external_feeds (
    feed_id int(11) NOT NULL auto_increment,
    slice_id varchar(16) NOT NULL,
    node_name varchar(150) NOT NULL,
@@ -186,6 +212,20 @@ CREATE TABLE IF NOT EXISTS tmp_external_feeds (
    remote_slice_name varchar(200) NOT NULL,
    PRIMARY KEY (feed_id)
 )";
+
+$SQL_create_new_tables[] = "
+CREATE TABLE IF NOT EXISTS profile (
+   id int(11) NOT NULL auto_increment,
+   slice_id varchar(16) NOT NULL,
+   uid varchar(60) DEFAULT '*' NOT NULL,
+   property varchar(20) NOT NULL,       
+   selector varchar(255),               
+   value text,                          
+   PRIMARY KEY (id),
+   KEY slice_user_id (slice_id, uid)
+)";
+
+# ----------------------------------------------------------------------------
 
 $SQL_create_tmp_tables[] = "
   CREATE TABLE IF NOT EXISTS tmp_active_sessions (
@@ -445,7 +485,15 @@ $SQL_create_tmp_tables[] = "
      notify_sh_offer mediumtext,
      notify_sh_accept mediumtext,
      notify_sh_remove mediumtext,
-     notify_holding_item mediumtext,
+     notify_holding_item_s mediumtext,
+     notify_holding_item_b mediumtext,
+     notify_holding_item_edit_s mediumtext,
+     notify_holding_item_edit_b mediumtext,
+     notify_active_item_edit_s mediumtext,
+     notify_active_item_edit_b mediumtext,
+     notify_active_item_s mediumtext,
+     notify_active_item_b mediumtext,
+     noitem_msg mediumtext,
      admin_format_top text,
      admin_format text,
      admin_format_bottom text,
@@ -537,6 +585,12 @@ $SQL_create_tmp_tables[] = "
      img4 varchar(255),
      flag int(10) unsigned,
      aditional text,
+     aditional2 text,
+     aditional3 text,
+     aditional4 text,
+     aditional5 text,
+     aditional6 text,
+     noitem_msg text,
      PRIMARY KEY (id),
      KEY slice_id (slice_id)
   )";
@@ -598,6 +652,18 @@ CREATE TABLE IF NOT EXISTS tmp_external_feeds (
    newest_item varchar(40) NOT NULL,
    remote_slice_name varchar(200) NOT NULL,
    PRIMARY KEY (feed_id)
+)";
+
+$SQL_create_tmp_tables[] = "
+CREATE TABLE IF NOT EXISTS tmp_profile (
+   id int(11) NOT NULL auto_increment,
+   slice_id varchar(16) NOT NULL,
+   uid varchar(60) DEFAULT '*' NOT NULL,
+   property varchar(20) NOT NULL,       
+   selector varchar(255),               
+   value text,                          
+   PRIMARY KEY (id),
+   KEY slice_user_id (slice_id, uid)
 )";
 
 $SQL_apc_categ[] = "DELETE FROM constant WHERE group_id = 'lt_apcCategories'";
@@ -749,7 +815,7 @@ $SQL_constants[] = "REPLACE INTO constant VALUES( 'AA-predefined057', 'lt_groupN
 
 $SQL_aacore[] = "DELETE FROM field WHERE slice_id='AA_Core_Fields..'";
 $SQL_aacore[] = "REPLACE INTO slice_owner VALUES( 'AA_Core.........', 'Action Aplications System', 'technical@ecn.cz')";
-$SQL_aacore[] = "REPLACE INTO slice VALUES( 'AA_Core_Fields..', 'Action Aplication Core', 'AA_Core_Fields..', '0', '', '975157733', '1', 'AA_Core_Fields..', '0', '', '', '','', '', '0', '', '', '', '', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', '0','0')";
+$SQL_aacore[] = "REPLACE INTO slice VALUES( 'AA_Core_Fields..', 'Action Aplication Core', 'AA_Core_Fields..', '0', '', '975157733', '1', 'AA_Core_Fields..', '0', '', '', '','', '', '0', '', '', '', '', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '0', '0')";
 $SQL_aacore[] = "INSERT INTO field VALUES( 'headline', '', 'AA_Core_Fields..', 'Headline', '100', 'Headline', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '1', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')";
 $SQL_aacore[] = "INSERT INTO field VALUES( 'abstract', '', 'AA_Core_Fields..', 'Abstract', '189', 'Abstract', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'txt:8', '', '100', '', '', '', '', '0', '1', '1', '_#UNDEFINE', 'f_t', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '1', '', 'text', 'qte', '1', '1')";
 $SQL_aacore[] = "INSERT INTO field VALUES( 'full_text', '', 'AA_Core_Fields..', 'Fulltext', '300', 'Fulltext', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'txt:8', '', '100', '', '', '', '', '0', '1', '1', '_#UNDEFINE', 'f_t', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '1', '', 'text', 'qte', '1', '1')";
@@ -799,7 +865,7 @@ $SQL_aacore[] = "INSERT INTO field VALUES( 'unspecified', '', 'AA_Core_Fields..'
 $SQL_aacore[] = "INSERT INTO field VALUES( 'url', '', 'AA_Core_Fields..', 'URL', '2055', 'Internet URL address', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#UNDEFINE', 'f_i', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'url', 'qte', '1', '1')";
 
 $SQL_templates[] = "DELETE FROM field WHERE slice_id='News_EN_tmpl....'";
-$SQL_templates[] = "REPLACE INTO slice VALUES( 'News_EN_tmpl....', 'News (EN) Template', 'AA_Core.........', '0', '', '975157733', '1', 'News_EN_tmpl....', '1', '', '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR><img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\">_#FULLTEXT ', '','<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font><font color=#FF0000><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font><font color=#808080 size=-1><br>_#PLACE###(_#LINK_SRC) - </font><font color=black size=-1>_#ABSTRACT<br></font><br>', '', '0', '<br>', '<br>', '', '<p>_#CATEGORY</p>', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '<tr class=tablename><td width=30>&nbsp;</td><td>Click on Headline to Edit</td><td>Date</td></tr>', '<tr class=tabtxt><td width=30><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"\"></td><td><a href=\"_#EDITITEM\">_#HEADLINE</a></td><td>_#PUB_DATE</td></tr>', '', '', '1', '1', '', '0','0')";
+$SQL_templates[] = "REPLACE INTO slice VALUES( 'News_EN_tmpl....', 'News (EN) Template', 'AA_Core.........', '0', '', '975157733', '1', 'News_EN_tmpl....', '1', '', '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR><img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\">_#FULLTEXT ', '','<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font><font color=#FF0000><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font><font color=#808080 size=-1><br>_#PLACE###(_#LINK_SRC) - </font><font color=black size=-1>_#ABSTRACT<br></font><br>', '', '0', '<br>', '<br>', '', '<p>_#CATEGORY</p>', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', 'No item found', '<tr class=tablename><td width=30>&nbsp;</td><td>Click on Headline to Edit</td><td>Date</td></tr>', '<tr class=tabtxt><td width=30><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"\"></td><td><a href=\"_#EDITITEM\">_#HEADLINE</a></td><td>_#PUB_DATE</td></tr>', '', '', '1', '1', '', '0', '0')";
 $SQL_templates[] = "INSERT INTO field VALUES( 'abstract........', '', 'News_EN_tmpl....', 'Abstract', '150', 'Abstract', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'txt:8', '', '100', '', '', '', '', '0', '1', '1', '_#ABSTRACT', 'f_t', 'alias for abstract', '', '', '', '', '', '', '', '', '0', '0', '1', '', 'text', 'qte', '1', '1')";
 $SQL_templates[] = "INSERT INTO field VALUES( 'category........', '', 'News_EN_tmpl....', 'Category', '500', 'Category', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:', '0', '0', '0', 'sel:lt_apcCategories', '', '100', '', '', '', '', '1', '1', '1', '_#CATEGORY', 'f_h', 'alias for Item Category', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '0', '1')";
 $SQL_templates[] = "INSERT INTO field VALUES( 'cp_code.........', '', 'News_EN_tmpl....', 'Code Page', '1800', 'Language Code Page', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:iso8859-1', '0', '0', '0', 'sel:lt_codepages', '', '100', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '0', '1')";
@@ -830,9 +896,9 @@ $SQL_templates[] = "INSERT INTO field VALUES( 'display_count...', '', 'News_EN_t
 $SQL_templates[] = "INSERT INTO field VALUES( 'disc_count......', '', 'News_EN_tmpl....', 'Comments Count', '5060', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_ALLCNT', 'f_h', 'alias for number of all discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_count', '', 'nul', '0', '1')";
 $SQL_templates[] = "INSERT INTO field VALUES( 'disc_app........', '', 'News_EN_tmpl....', 'Approved Comments Count', '5070', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_APPCNT', 'f_h', 'alias for number of approved discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_app', '', 'nul', '0', '1')";
 
-$SQL_view_templates[] = "REPLACE INTO view VALUES( '', 'AA_Core_Fields..', 'Discussion ...', 'discus', '<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', '<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=20%><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', '<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=http://work.ecn.cz/apc-aa/images/blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', '1', '</table></td></tr></table>_#BUTTONS#', '<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', NULL, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '23', NULL, '<img src=http://work.ecn.cz/apc-aa/images/i.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/l.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/t.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/blank.gif width=12 height=21>', NULL, NULL)";
-$SQL_view_templates[] = "REPLACE INTO view VALUES ( '', 'AA_Core_Fields..', 'Constant view ...', 'const', '<table border=0 cellpadding=0 cellspacing=0>', '', '<tr><td>_#VALUE###</td></tr>', '0', '</table>', NULL, NULL, 'value', '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '10', NULL, '0', NULL, 'lt_languages', NULL, NULL, NULL, NULL, NULL, NULL)";
-$SQL_view_templates[] = "REPLACE INTO view VALUES ( '', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"http://work.ecn.cz/apc-aa/view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', '0', '', '0', NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', '8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)";
+$SQL_view_templates[] = "REPLACE INTO view VALUES( '', 'AA_Core_Fields..', 'Discussion ...', 'discus', '<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', '<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=20%><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', '<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=http://work.ecn.cz/apc-aa/images/blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', '1', '</table></td></tr></table>_#BUTTONS#', '<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', NULL, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '23', NULL, '<img src=http://work.ecn.cz/apc-aa/images/i.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/l.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/t.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/blank.gif width=12 height=21>', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found')";
+$SQL_view_templates[] = "REPLACE INTO view VALUES ( '', 'AA_Core_Fields..', 'Constant view ...', 'const', '<table border=0 cellpadding=0 cellspacing=0>', '', '<tr><td>_#VALUE###</td></tr>', '0', '</table>', NULL, NULL, 'value', '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '10', NULL, '0', NULL, 'lt_languages', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found')";
+$SQL_view_templates[] = "REPLACE INTO view VALUES ( '', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"http://work.ecn.cz/apc-aa/view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', '0', '', '0', NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', '8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found')";
 
 
 if( !$update AND !$restore AND !$restore_now) {
@@ -852,6 +918,7 @@ if( !$update AND !$restore AND !$restore_now) {
      definitions, APC-wide constants and templates).</p>
   <p><font color="red">However, it is strongly recommended backup your current 
   database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u root -p --opt aadb &gt; ./aadb/aadb.sql</code></p>
+  <p><b>!!!Please remove or invalidate this script after use!!!</b></p>
 
   <form name=f action="' .$PHP_SELF .'">
   <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
@@ -1121,6 +1188,9 @@ echo '<h2>Update OK</h2>
 
 /*
 $Log$
+Revision 1.12  2001/12/18 11:42:21  honzam
+new user profile feature
+
 Revision 1.11  2001/11/13 09:00:08  honzam
 Fixed bug of bad type of external_feeds.newest_item field
 

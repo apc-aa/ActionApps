@@ -95,7 +95,9 @@ function PrintUser($usr, $usr_id, $editor_perm) {
   IfLink( CanChangeRole($perm, $editor_perm, $perms_roles_perms["AUTHOR"]),
           $sess->url(self_base() . "se_users.php3") .
                      "&UsrDel=$usr_id", L_REVOKE);
-
+  echo "<td class=tabtxt>". (($usr[type]!=L_USER)? "&nbsp;" :
+         "<input type='button' name='uid' value='". L_PROFILE ."' 
+           onclick=\"document.location='". $sess->url("se_profile.php3?uid=$usr_id") ."'\"></td>\n");
   echo "</tr>\n";
 }
 
@@ -158,7 +160,7 @@ HtmlPageBegin();   // Prints HTML start page tags
     <tr>
      <td class=tabtit><b>&nbsp;<?php echo L_PERM_CURRENT ?></b></td>
     </tr>
-    <tr><td>
+    <tr><td><form>
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">  <?php
 
     $slice_users = GetObjectsPerms($slice_id, "slice");
@@ -187,10 +189,21 @@ HtmlPageBegin();   // Prints HTML start page tags
     reset($slice_users);
     while( list($usr_id,$usr)= each($slice_users))
       PrintUser($usr,$usr_id,$editor_perms);
-    echo "</table></td></tr></table>";
+      
+    echo "<tr><td class=tabtxt>&nbsp;</td>
+              <td class=tabtxt colspan='7'>". L_DEFAULT_USER_PROFILE ."</td>
+              <td class=tabtxt><input type='button' name='uid' value='". L_PROFILE ."' 
+           onclick=\"document.location='". $sess->url("se_profile.php3?uid=*") ."'\"></td>\n";
+  echo "</tr>\n";
+      
+    echo "</table>
+    </form></td></tr></table>";
   }  
 /*
 $Log$
+Revision 1.11  2001/12/18 11:42:21  honzam
+new user profile feature
+
 Revision 1.10  2001/09/27 15:44:35  honzam
 Easiest left navigation bar editation
 
