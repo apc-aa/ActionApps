@@ -451,7 +451,7 @@ function huhw($msg) {
 function huhe ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
     global $errcheck;
     if ($errcheck) {
-        huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="");
+        huhl($a, $b, $c,$d,$e,$f,$g,$h,$i,$j);
         if ($GLOBALS["trace"] || $GLOBALS["debug"]) { trace("p"); }
     }
 }
@@ -1129,7 +1129,8 @@ function IsField($fld) {
          $GLOBALS['CATEGORY_FIELDS'] = GetCategoryFields();
          $GLOBALS['CONSTANT_FIELDS'] = GetConstantFields();
     }
-    return( ((strlen($fld)==16) && ereg("^[a-z_]+\.+[0-9]*$",$fld))
+    // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
+    return( ((strlen($fld)==16) && ereg("^[a-z0-9_]+\.+[0-9A-Za-z]*$",$fld))
            OR $GLOBALS['LINKS_FIELDS'][$fld]
            OR $GLOBALS['CATEGORY_FIELDS'][$fld]
            OR $GLOBALS['CONSTANT_FIELDS'][$fld] );

@@ -1,3 +1,5 @@
+07/08/03 - fixed huhe with multiple arguments
+(mitra)  - fixed isField to allow wider selection including alerts1....aZh12
 07/07/03 - updated spanish translations (more work needed)
 (pep)    - fixed posted_by field insert function on sql_update.php3
 07/05/03 - added defaults and default functions to importer.php3 
