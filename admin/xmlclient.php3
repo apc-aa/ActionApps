@@ -23,13 +23,13 @@ http://www.apc.org/
 # Cross-Server Networking - client module
 
 /* Debugging
-	There is a lot of debugging code in here, since this tends to be hard to debug
-	Call with debugfeed=n parameter for different levels
-	1	just errors that indicate a malfunction somewhere
-	2	a list of feeds as they are processed
-	3	+ list of messages recieved
-	4	+ a list of messages rejected
-	9	lots and lots more
+    There is a lot of debugging code in here, since this tends to be hard to debug
+    Call with debugfeed=n parameter for different levels
+    1	just errors that indicate a malfunction somewhere
+    2	a list of feeds as they are processed
+    3	+ list of messages recieved
+    4	+ a list of messages rejected
+    9	lots and lots more
 
     This program can be called as for example:
     apc-aa/admin/xmlclient.php3?debugfeed=9&rssfeed_id=16
@@ -39,23 +39,23 @@ http://www.apc.org/
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
-  }  
+  }
   for (reset($val); list($k, $v) = each($val); )
     $ret[$k] = Myaddslashes($v, $n+1);
   return $ret;
-}    
+}
 
-if (!get_magic_quotes_gpc()) { 
-  // Overrides GPC variables 
+if (!get_magic_quotes_gpc()) {
+  // Overrides GPC variables
   if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
+      $$k = Myaddslashes($v);
 }
 
 
@@ -111,26 +111,26 @@ function updateCategories($feed_id, &$l_categs, &$ext_categs,&$cat_refs, &$categ
         $SQL = "UPDATE ef_categories SET category_name='".$category[name]."',
                                              category='".$category[value]."'
                                          WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
-		if ($debugfeed >= 8) print("\n<br>$SQL");
-		$db->query($SQL);
+        if ($debugfeed >= 8) print("\n<br>$SQL");
+        $db->query($SQL);
       } else {
         $l_cat_id = MapDefaultCategory($l_categs,$category[value], $category[catparent]);
         $SQL = "INSERT INTO ef_categories VALUES ('".$category[value]."','".$category[name]."',
                   '".q_pack_id($category[id])."','".$feed_id."','".q_pack_id($l_cat_id)."','0')";
-		if ($debugfeed >= 8) print("\n<br>$SQL");
+        if ($debugfeed >= 8) print("\n<br>$SQL");
         $db->query($SQL);
       }
     }
   }
-  
+
   // remove the categories from table, which were not sent
   if (isset($ext_categs) && is_array($ext_categs)) {
     reset($ext_categs);
     while (list($r_cat_id, ) = each($ext_categs)) {
       if (isset($cat_refs[$r_cat_id]))
         continue;
-	  $SQL = "DELETE FROM ef_categories WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
-	  if ($debugfeed >= 8) print("\n<br>$SQL");
+      $SQL = "DELETE FROM ef_categories WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
+      if ($debugfeed >= 8) print("\n<br>$SQL");
       $db->query($SQL);
     }
   }
@@ -148,25 +148,26 @@ function updateFieldsMapping($feed_id, &$l_slice_fields, $l_slice_id,
 
   // add new ones
   $db = getDB();
-  reset($field_refs);
-  while (list ($r_field_id,) = each($field_refs)) {
-    if ($ext_map && $ext_map[$r_field_id]) {
-      # remote field is in the feedmap table => update name
-	  $new_name = quote($fields[$r_field_id][name]);
-	  if ($ext_map[$r_field_id] != $new_name) { // update if field name changed on remote AA
-	   	$SQL = "UPDATE feedmap SET from_field_name='".quote($fields[$r_field_id][name])."'
-                    WHERE from_slice_id='$p_r_slice_id'
-                      AND to_slice_id='$p_l_slice_id'
-                      AND from_field_id='$r_field_id'";
-		if ($debugfeed >= 8) print("\n<br>$SQL");
-       	$db->query($SQL);
-	  }
-    } else {
-      $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id',
-                   '".FEEDMAP_FLAG_EXTMAP ."','','".quote($fields[$r_field_id][name])."')";
-	  if ($debugfeed >= 8) print("\n<br>$SQL");
-      $db->query($SQL); 
-    }
+  if ( isset($field_refs) AND is_array($field_refs) ) {
+      foreach( $field_refs as $r_field_id => $val ) {
+        if ($ext_map && $ext_map[$r_field_id]) {
+          # remote field is in the feedmap table => update name
+          $new_name = quote($fields[$r_field_id][name]);
+          if ($ext_map[$r_field_id] != $new_name) { // update if field name changed on remote AA
+            $SQL = "UPDATE feedmap SET from_field_name='".quote($fields[$r_field_id][name])."'
+                        WHERE from_slice_id='$p_r_slice_id'
+                          AND to_slice_id='$p_l_slice_id'
+                          AND from_field_id='$r_field_id'";
+            if ($debugfeed >= 8) print("\n<br>$SQL");
+            $db->query($SQL);
+          }
+        } else {
+          $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id',
+                       '".FEEDMAP_FLAG_EXTMAP ."','','".quote($fields[$r_field_id][name])."')";
+          if ($debugfeed >= 8) print("\n<br>$SQL");
+          $db->query($SQL);
+        }
+      }
   }
   freeDB($db);
   if (!$ext_map)
@@ -175,11 +176,11 @@ function updateFieldsMapping($feed_id, &$l_slice_fields, $l_slice_id,
   $db = getDB();
   while (list($r_field_id, ) = each($ext_map)) {
     if (!$field_refs[$r_field_id]) {
-		$SQL = "DELETE FROM feedmap WHERE from_slice_id='$p_r_slice_id'
+        $SQL = "DELETE FROM feedmap WHERE from_slice_id='$p_r_slice_id'
                                       AND to_slice_id='$p_l_slice_id'
                                       AND from_field_id='$r_field_id'";
-		if ($debugfeed >= 8) print("\n<br>$SQL");
-      	$db->query($SQL);
+        if ($debugfeed >= 8) print("\n<br>$SQL");
+        $db->query($SQL);
     }
   }
   freeDB($db);
@@ -189,61 +190,61 @@ function updateFieldsMapping($feed_id, &$l_slice_fields, $l_slice_id,
 
 
 function apcfeeds() {
-	global $debugfeed;
+    global $debugfeed;
     $db = getDB();
-	// select all incoming feeds from table external_feeds
-	$SQL="SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name 
+    // select all incoming feeds from table external_feeds
+    $SQL="SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name
             FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name";
-	if ($debugfeed >= 8) print("\n<br>$SQL");
-	$db->query($SQL);
-	
-	$feeds=array();
-	while ($db->next_record()) {
-		$fi = $db->f(feed_id);
-   		$feeds[$fi] = $db->Record;
-   		$feeds[$fi][field_type] = FEEDTYPE_APC;
-	}
+    if ($debugfeed >= 8) print("\n<br>$SQL");
+    $db->query($SQL);
+
+    $feeds=array();
+    while ($db->next_record()) {
+        $fi = $db->f(feed_id);
+        $feeds[$fi] = $db->Record;
+        $feeds[$fi][field_type] = FEEDTYPE_APC;
+    }
     freeDB($db);
-	if ($debugfeed >= 8) { print("\n<br>feeds="); print_r($feeds); }
-	return $feeds;
+    if ($debugfeed >= 8) { print("\n<br>feeds="); print_r($feeds); }
+    return $feeds;
 }
 
 function rssfeeds() {
-	global $debugfeed;
-	$db = getDB();
-	$SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds";
-	if ($debugfeed >= 8) print("\n<br>$SQL");
-	$db->query($SQL);
+    global $debugfeed;
+    $db = getDB();
+    $SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds";
+    if ($debugfeed >= 8) print("\n<br>$SQL");
+    $db->query($SQL);
 
-	$rssfeeds=array();
-	while ($db->next_record()) {
-   		$fi = $db->f(feed_id);
-   		$rssfeeds[$fi] = $db->Record;
-   		$rssfeeds[$fi][feed_type] = FEEDTYPE_RSS;
-   		$rssfeeds[$fi][remote_slice_id] = q_pack_id(attr2id($rssfeeds[$fi][server_url]));
-	}
+    $rssfeeds=array();
+    while ($db->next_record()) {
+        $fi = $db->f(feed_id);
+        $rssfeeds[$fi] = $db->Record;
+        $rssfeeds[$fi][feed_type] = FEEDTYPE_RSS;
+        $rssfeeds[$fi][remote_slice_id] = q_pack_id(attr2id($rssfeeds[$fi][server_url]));
+    }
     freeDB($db);
-	if ($debugfeed >= 9) { print("\n<br>rssfeeds="); print_r($rssfeeds); }
-	return $rssfeeds;
+    if ($debugfeed >= 9) { print("\n<br>rssfeeds="); print_r($rssfeeds); }
+    return $rssfeeds;
 }
 
 if ($debugfeed >= 8) print("\n<br>XMLCLIENT STARTING");
 
 if ($feed_id) {  // do one APC feed
-	$feeds = apcfeeds();
-	onefeed($feed_id,$feeds[$feed_id],$GLOBALS["debugfeed"],true);
+    $feeds = apcfeeds();
+    onefeed($feed_id,$feeds[$feed_id],$GLOBALS["debugfeed"],true);
 } elseif ($rssfeed_id) { // do one RSS feed
-	$rssfeeds = rssfeeds();
-	onefeed($rssfeed_id, $rssfeeds[$rssfeed_id],$GLOBALS["debugfeed"],true);   // Not sure if its safe for feed_id to be same as for APC feeds
+    $rssfeeds = rssfeeds();
+    onefeed($rssfeed_id, $rssfeeds[$rssfeed_id],$GLOBALS["debugfeed"],true);   // Not sure if its safe for feed_id to be same as for APC feeds
 } else {
-	$apcfeeds = apcfeeds();
-	while (list ($feed_id,$feed) = each($apcfeeds)) {
-		onefeed($feed_id,$feed,$GLOBALS["debugfeed"],true);
-	}
-	$rssfeeds = rssfeeds();
-	while (list ($feed_id,$feed) = each($rssfeeds)) {
-		onefeed($feed_id,$feed,$GLOBALS["debugfeed"],true);
-	}
+    $apcfeeds = apcfeeds();
+    while (list ($feed_id,$feed) = each($apcfeeds)) {
+        onefeed($feed_id,$feed,$GLOBALS["debugfeed"],true);
+    }
+    $rssfeeds = rssfeeds();
+    while (list ($feed_id,$feed) = each($rssfeeds)) {
+        onefeed($feed_id,$feed,$GLOBALS["debugfeed"],true);
+    }
 }
 
 
