@@ -499,10 +499,10 @@ function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
 function show_fnc_hco($varname, $field, $value, $param, $html) {
   global $db;
   if (!empty($param)) 
-    list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable) = explode(':', $param);
+    list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, $levelNames) = explode(':', $param);
 
   FrmHierarchicalConstant ($varname."[]", $field['name'], $value, $constgroup, $levelCount, $boxWidth, 
-  	$size, $horizontalLevels, $firstSelectable, $field[required],$field[input_help], $field[input_morehlp]);
+  	$size, $horizontalLevels, $firstSelectable, $field[required],$field[input_help], $field[input_morehlp], split("~",$levelNames));
 }
 
 function show_fnc_nul($varname, $field, $value, $param, $html) {

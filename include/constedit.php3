@@ -28,7 +28,7 @@ if (!$group_id) exit;
 
 <?php if ($hide_value) echo '<input type="hidden" name="hcfValue">'; ?>
 
-<?php showHierConstBoxes ($levelCount, $levelsHorizontal); ?>
+<?php showHierConstBoxes ($levelCount, $levelsHorizontal, "", true, 0, 0, $levelNames); ?>
 
 <table border=0>
 	<tr><td>

@@ -46,7 +46,7 @@ function PrintMoreHelp( $txt ) {
 
 # shows boxes allowing to choose constant in a hiearchical way
 function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $boxWidth, 
-	$size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="") 
+	$size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") 
 {
 	if (!$levelCount) $levelCount = 3;
 	if (!$size) $size = 5;
@@ -59,7 +59,7 @@ function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $
 	  echo "</tr><tr align=left>";
 	echo "<td>";
 	showHierConstInitJavaScript ($group_id, $levelCount, "inputform", false);
-	showHierConstBoxes ($levelCount, $horizontal, $name, false, $firstSelect, $boxWidth);
+	showHierConstBoxes ($levelCount, $horizontal, $name, false, $firstSelect, $boxWidth, $levelNames);
 	for ($i=0; $i<$boxWidth; ++$i) $widthTxt .= "m";
 	echo "
 	<TABLE border=1 cellpadding=2 width='100%'><TR>

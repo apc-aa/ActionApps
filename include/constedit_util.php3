@@ -68,11 +68,12 @@ function showHierConstInitJavaScript ($group_id, $levelCount=3, $formName='f', $
 			if yes, buttons are "Add new" and "Select",
 			else, buttons are "Select" - moves to the targetBox
 		minLevelSelect - from which level should be the "Select" button shown
+        levelNames - names for the level boxes (if you don't like Level 0, Level 1, etc.)
 */
 
 
 function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=true, 
-	$minLevelSelect=0, $boxWidth=0)
+	$minLevelSelect=0, $boxWidth=0, $levelNames=array())
 {
 	$admin = $admin ? 1 : 0;
 	if ($boxWidth == 0) $boxWidth = $horizontal ? 30 : 70;
@@ -91,10 +92,11 @@ function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=t
 			if ($minLevelSelect > $i) $buttonSelect = "";
 			else $buttonSelect = "<input type=button value=\"".L_SELECT."\" onClick=\"hcAddItemTo ($i,'$targetBox');\">";
 		}
+        if (!$levelNames[$i]) $levelNames[$i] = L_CONSTANT_LEVEL." $i";
 		if ($horizontal)
 			echo "
 			<td align=left valign=top width='10%'>
-				<b>".L_CONSTANT_LEVEL." $i:</b><br>
+				<b>".$levelNames[$i].":</b><br>
 		 		<select name=\"hclevel$i\" multiple size=10 onChange=\"hcSelectItem($i,$admin)\">
 				<option>$widthTxt</select>
 				<br><br>$buttonAdd&nbsp;&nbsp;$buttonSelect
@@ -102,7 +104,7 @@ function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=t
 		else
 			echo "
 			<tr><td align=right valign=top>
-	  		    <b>".L_CONSTANT_LEVEL." $i:</b><br>$buttonAdd<br>
+	  		    <b>".$levelNames[$i].":</b><br>$buttonAdd<br>
 				<img src=\"../images/spacer.gif\" width=1 height=2><br>$buttonSelect
 				</td><td>
 		 		<select name=\"hclevel$i\" multiple size=4 onChange=\"hcSelectItem($i,$admin)\">
