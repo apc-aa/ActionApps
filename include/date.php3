@@ -110,9 +110,8 @@ class datectrl {
     // check if date is valid and possibly set date to "default" value if it is
     // not required and default value is specified
     function ValidateDate($inputName, &$err, $required=true, $deafult='0')  {
-        echo "\n<br>---ValidateDate--$inputName, $required, $deafult:";
         if (( $this->get_date() > 0  ) OR ($this->get_date()==-3600))
-        return true;
+            return true;
         if ($required) {
             $err[$this->name] = MsgErr(_m("Error in")." $inputName");
             return false;
@@ -189,6 +188,5 @@ class datectrl {
 	function pselect () {
 		echo $this->getselect();
 	}
-
 }
 ?>
