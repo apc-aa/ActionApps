@@ -57,7 +57,7 @@ function showHierConstInitJavaScript ($group_id, $levelCount=3, $formName='f', $
 		var hcConsts = ".createConstsJavaScript ($group_id, $admin).";
 	// -->
 	</script>
-	<script language=javascript src=\"../include/constedit.js\"></script>";
+	<script language=javascript src=\"".AA_INSTAL_URL."include/constedit.js\"></script>";
 }
 
 /* paints horizontally or vertically the level boxes in a table. Params: 
