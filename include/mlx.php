@@ -395,13 +395,14 @@ class MLXView
 			return;
 		if($zidsObj->count() == 0)
 			return;
+		$translations = $this->getPrioTranslationFields($ctrlSliceID);
 		#create keystring from values, which exactly identifies resulting content
 		$keystr = $this->mode.serialize($this->language).$ctrlSliceID.$slice_id
 			. serialize($conds). serialize($sort)
 			. $group_by. $type. serialize($slices). $neverAllItems
 			. ((isset($restrict_zids) && is_object($restrict_zids)) ? 
 				serialize($restrict_zids) : "")
-			. $defaultCondsOperator;
+			. $defaultCondsOperator . $translations;
 		
 		$cachestr = "slice_id=$ctrlSliceID";
 		if ( $res = CachedSearch( !$nocache, $keystr, $cachestr )) {
@@ -415,7 +416,6 @@ class MLXView
 		foreach($zidsObj->a as $packedid) {
 			$arr[(string)$packedid] = 1; 
 		}
-		$translations = $this->getPrioTranslationFields($ctrlSliceID);
 		$db = getDB();
 		reset($arr);
 		while(list($upContId,$count) = each($arr)) {
