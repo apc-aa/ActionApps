@@ -500,8 +500,11 @@ if( $zids->count() > 0 ) {
 	if( ($scr->pageCount() > 1) AND !$no_scr AND !$group_n)
     $scr->pnavbar();
 }  
-else 
-  echo $slice_info['noitem_msg'] ? $slice_info['noitem_msg'] : ("<div>"._m("No item found") ."</div>");
+else {
+  echo $slice_info['noitem_msg'] ?               // <!--Vacuum--> is keyword for removing 'no item message'
+          str_replace( '<!--Vacuum-->', '', $slice_info['noitem_msg']) :
+          ("<div>"._m("No item found") ."</div>");
+}          
 
 if ($searchlog) PutSearchLog ();
 
