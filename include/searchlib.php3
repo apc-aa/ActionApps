@@ -4,8 +4,8 @@ if (!defined ("SEARCHLIB_INCLUDED"))
 else return;
 
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
   if ( $pos = strpos($operator,":") ) {  # not ==
     $func = substr($operator,0,$pos);
     $operator = substr($operator,$pos+1);
-    
+
     switch( $func ) {
       case 'd': # english style datum (like '12/31/2001' or '10 September 2000')
                 $querystring = strtotime($querystring);
@@ -50,29 +50,29 @@ function GetWhereExp( $field, $operator, $querystring ) {
                     if( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$", $querystring, $part)) {
                       $querystring = time();
                       break;
-                    }  
+                    }
                 if( ($operator == "<=") or ($operator == ">") )
                   # end of day used for some operators
                   $querystring = mktime(23,59,59,$part[2],$part[1],$part[3]);
-                 else 
+                 else
                   $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
                 break;
       case 'm':
       case '-': $querystring = time() - $querystring;
                 break;
     }
-  }               
+  }
 
   $querystring =  (string) $querystring;   // to be able to do string operations
 
   switch( $operator ) {
-    case 'LIKE':   
-    case 'RLIKE':  
-    case 'LLIKE':  
+    case 'LIKE':
+    case 'RLIKE':
+    case 'LLIKE':
     case 'XLIKE':
     case '=':
-      $querystring = str_replace('*', '%', trim($querystring)); 
-      $querystring = str_replace('?', '_', $querystring); 
+      $querystring = str_replace('*', '%', trim($querystring));
+      $querystring = str_replace('?', '_', $querystring);
     	$syntax = new Syntax($field, $operator, lex( trim($querystring) ) );
       $ret = $syntax->S();
       if( $ret == "_SYNTAX_ERROR" ) {
@@ -80,20 +80,20 @@ function GetWhereExp( $field, $operator, $querystring ) {
           echo "<br>Query syntax error: ". $GLOBALS['syntax_error'];
         return "1=1";
       }
-      return ( $ret ? " ($ret) " : "1=1" );    
-    case 'BETWEEN': 
+      return ( $ret ? " ($ret) " : "1=1" );
+    case 'BETWEEN':
       $arr = explode( ",", $querystring );
       return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
-    case 'ISNULL': 
+    case 'ISNULL':
       return ( " (($field IS NULL) OR ($field='0')) ");
     case 'NOTNULL':
       return ( " (($field IS NOT NULL) AND ($field<>'')) ");
     default:
-      $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ? 
+      $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ?
                                  substr( $querystring, 1, -1 ) : $querystring ;
       return " ($field $operator '$str') ";
-  }  
-}  
+  }
+}
 
 // -------------------------------------------------------------------------------------------
 
@@ -116,12 +116,12 @@ function ProoveFieldNames ($slices, $conds) {
             if( ! (isset($cond) AND is_array($cond)) )
               continue;
             reset ($cond);
-            while (list ($key) = each ($cond)) 
+            while (list ($key) = each ($cond))
                 if (!$conds_not_field_names [$key] && !isset ($slicefields[$key]))
                     echo "Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").<br>";
         }
     }
-}   
+}
 
 // -------------------------------------------------------------------------------------------
 
@@ -129,15 +129,15 @@ function ProoveFieldNames ($slices, $conds) {
     conds[1][value][0] = 'apple'
     conds[1][value][1] = 'cherry'
     conds[1][valuejoin] = 'AND'
-    
+
     => creates two conds: conds[7] and conds[8] for example,
         fill conds[7][value] = 'apple', conds[8][value] = 'cherry'
-        
+
     with conds[1][valuejoin] = 'OR' only changes conds[1][value] to '"apple" OR "cherry"'
     (c) Jakub, May 2002
 */
 
-function ParseMultiSelectConds (&$conds) 
+function ParseMultiSelectConds (&$conds)
 {
     if (!is_array ($conds)) return;
     reset ($conds);
@@ -170,7 +170,7 @@ function ParseMultiSelectConds (&$conds)
             else echo "ERROR in conds: [valuejoin] must be set to 'OR' or 'AND'.";
         }
     }
-}            
+}
 
 # function finds group_id in field.input_show_func parameter
 function GetConstantGroup( $input_show_func ) {
@@ -182,7 +182,61 @@ function GetConstantGroup( $input_show_func ) {
       (substr($constgroup,0,7) != "#sLiCe-") )  # prefix indicates select from items, not constants
     return $constgroup;          # yes
   return false;
-}  
+}
+
+/** Creates array of SQL conditions based on $conds and fields $add
+ *  @param function $additional_field_cond - aditional condition function
+ *  @param function $join_tables           - if some table is needed to join,
+ *                                           this function adds it to the array
+ */
+function MakeSQLConditions($fields_arr, $conds, &$join_tables, $additional_field_cond=false) {
+    if( isset($conds) AND is_array($conds)) {
+        foreach ($conds as $cond) {
+            if( isset($cond) AND is_array($cond) ) {
+                foreach ( $cond as $fid => $v ) {
+                    $finfo = $fields_arr[$fid];
+                    if ( isset($finfo) AND is_array($finfo) ) {
+                        if ( $additional_field_cond ) {
+                            if ( !$additional_field_cond( $finfo, $v ) )
+                                continue;
+                        }
+                        $ret[] = GetWhereExp( $finfo['field'],
+                                            $cond['operator'], $cond['value'] );
+                        if( $finfo['table'] )
+                            $join_tables[$finfo['table']] = true;
+                    }
+                }
+            }
+        }
+    }
+    return $ret;
+}
+
+/** Creates array of SQL ORDER BY expresions based on $sort and fields array
+ *  @param function $additional_field_cond - aditional condition function
+ *  @param function $join_tables           - if some table is needed to join,
+ *                                           this function adds it to the array
+ */
+function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_cond=false) {
+    if( isset($sort) AND is_array($sort)) {
+        foreach ( $sort as $fid => $srt ) {
+            if( isset($srt) AND is_array($srt) ) {
+                $finfo = $fields_arr[$fid];
+                if( $finfo AND is_array($finfo))  {
+                    if ( $additional_field_cond ) {
+                        if ( !$additional_field_cond( $finfo, $v ) )
+                                continue;
+                    }
+                    $ret[] = $finfo['field'] .
+                                (stristr(current( $srt ), 'd') ? " DESC" : "");
+                    if( $finfo['table'] )
+                        $join_tables[$finfo['table']] = true;
+               }
+            }
+        }
+    }
+    return $ret;
+}
 
 
 // -------------------------------------------------------------------------------------------
@@ -194,27 +248,27 @@ function GetConstantGroup( $input_show_func ) {
 *   @param array  $conds  search conditions (see FAQ)
 *   @param array  $sort   sort fields (see FAQ)
 *   @param array  $slices array of slices in which to look for items
-*   @param string $type 
+*   @param string $type
 *       sets status, pub_date and expiry_date according to specified type:
 *       ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL.
 *       If you want to specify it in conds, set to ALL.
-*      
-*   @param bool   $neverAllItems 
+*
+*   @param bool   $neverAllItems
 *       if no conds[] apply (all are wrong formatted or empty),
-*       should the function generate an empty set? 
+*       should the function generate an empty set?
 *       Otherwise all items from given slices are returned.
-*       
-*   @param array  $restrict_zids 
+*
+*   @param array  $restrict_zids
 *       ids are packed but not quoted in $restrict_ids or short.
 *       Use it if you want to choose only from a set of items
-*       (used by E-mail Alerts and related item view 
+*       (used by E-mail Alerts and related item view
 *       (for sorting and eliminating of expired items)).
-*       
-*   @param string $defaultCondsOperator 
+*
+*   @param string $defaultCondsOperator
 *       replaces the default "LIKE" for conditions with no operator set
-*       
+*
 *   @param bool   $use_cache should be the cache searched for the result?
-*   
+*
 *   @return A zids object with a list of the ids that match the query.
 *
 *   @global  bool $debug (in) many debug messages
@@ -222,8 +276,8 @@ function GetConstantGroup( $input_show_func ) {
 *               used in conds[] but not existing in some of the slices
 *   @global  int $QueryIDsCount (out) is set to the count of IDs returned
 *   @global  bool $nocache (in) do not use cache, even if use_cache is set
-*   
-*   Parameter format example: 
+*
+*   Parameter format example:
 *   <pre>
 *   conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
 *   conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
@@ -239,9 +293,8 @@ function GetConstantGroup( $input_show_func ) {
 *   sort[0][category........]='9';    // order items by category priority - descending
 *   </pre>
 */
-
-function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="", 
-    $type="ACTIVE", $slices="", $neverAllItems=0, $restrict_zids=false, 
+function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
+    $type="ACTIVE", $slices="", $neverAllItems=0, $restrict_zids=false,
     $defaultCondsOperator = "LIKE", $use_cache=false ) {
 
   # select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
@@ -458,13 +511,13 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
       $SQL .= " item.slice_id IN ( $slicesText ) AND ";
   }
   if (is_object($restrict_zids)) {
-    if ($restrict_zids->count() == 0) 
+    if ($restrict_zids->count() == 0)
         return new zids(); # restrict_zids defined but empty - no result
 
     $SQL .= " ".$restrict_zids->sqlin() ." AND ";
   } else {
     # slice(s) or item_ids MUST be specified (in order we can get answer in limited time)
-    if (!$slicesText) return new zids();  
+    if (!$slicesText) return new zids();
   }
 
 
@@ -527,6 +580,90 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   return $zids;
 }
 
+
+/** Finds constant ZIDs for constants to be shown in a slice / view
+*   @param string $group_id   constant group to search in
+*   @param array  $conds      search conditions {see QueryZIDs, FAQ}
+*   @param array  $sort       sort fields       {see QueryZIDs, FAQ}
+*   @param string $type       not used, yet
+*   @param array  $restrict_zids
+*       Use it if you want to choose only from a set of constants
+*   @param string $defaultCondsOperator
+*       replaces the default "RLIKE" for conditions with no operator set
+*   @param bool   $use_cache should be the cache searched for the result?
+*
+*   @return A zids object with a list of the ids that match the query.
+*
+*   @global  int $QueryIDsCount (out) is set to the count of IDs returned
+*
+*   Parameter format example - {see QueryZIDs, FAQ}
+*   Fields definition - {see include/constants.php3}
+*/
+function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
+    $restrict_zids=false, $defaultCondsOperator = "RLIKE", $use_cache=false ) {
+
+    global $debug;                 # displays debug messages
+    global $nocache;               # do not use cache, if set
+    global $conds_not_field_names; # list of special conds[] indexes (defined in constants.php3)
+    global $QueryIDsCount;
+
+    $db = new DB_AA;
+
+    if( $use_cache AND !$nocache ) {
+        #create keystring from values, which exactly identifies resulting content
+        $keystr = $group_id .
+                  serialize($conds).
+                  serialize($sort).
+                  $type.
+                  ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
+                  $defaultCondsOperator;
+
+        if( $res = $GLOBALS['pagecache']->get($keystr)) {
+            $zids = unserialize($res);
+            $QueryIDsCount = $zids->count();
+            if( $debug )
+                echo "<br>Cache HIT - return $QueryIDsCount IDs<br>";
+            return $zids;
+        }
+    }
+
+    ParseMultiSelectConds ($conds);
+    ParseEasyConds ($conds, $defaultCondsOperator);
+
+    if( $debug ) huhl("Conds=",$conds,"Sort=",$sort,"Group id=",$group_id);
+
+    // parse conditions and sort order ----------------------------------
+    $where_arr    = MakeSQLConditions($CONSTANT_FIELDS, $conds, $foo);
+    $order_by_arr = MakeSQLOrderBy($CONSTANT_FIELDS, $sort, $foo);
+
+    // construct query --------------------------
+    $SQL  = "SELECT DISTINCT constant.short_id FROM constant
+             WHERE group_id='$group_id' ".
+    $SQL .=  ( isset($where_arr) AND is_array($where_arr) ) ?
+            ' AND '. join(' AND ', $where_arr ) : '';
+    $SQL .=  ( isset($order_by_arr) AND is_array($order_by_arr) ) ?
+            ' AND '. join(', ', $order_by_arr ) : '';
+
+    if (is_object($restrict_zids)) {
+        if ($restrict_zids->count() == 0)
+            return new zids(); # restrict_zids defined but empty - no result
+        $SQL .= ' AND '.$restrict_zids->sqlin();
+    }
+
+    $db->tquery($SQL);
+
+    while( $db->next_record() )
+        $arr[] = $db->f('short_id');
+
+    $QueryIDsCount = count($arr);
+
+    $zids = new zids($arr,"s");
+
+    if( $use_cache AND !$nocache )
+        $GLOBALS['pagecache']->store($keystr, serialize($zids), "group_id=$group_id");
+    return $zids;
+}
+
 // -------------------------------------------------------------------------------------------
 
 /* Function: QueryDiscIDs
@@ -554,19 +691,19 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
       echo "<br><br>Slices:<br>";
       p_arr_m($slices);
     }
-  
+
     # parse conditions ----------------------------------
     if (is_array($conds)) {
-        reset($conds); 
+        reset($conds);
         $tbl_count=0;
         while( list( , $cond) = each( $conds )) {
             if( !is_array($cond) OR !$cond['discussion']
                               OR !$cond['operator'] OR ($cond['value']==""))
               continue;             # bad condition - ignore
-    
+
             # fill arrays according to this condition
-            reset($cond); 
-            while( list( $fid, $vv) = each( $cond )) 
+            reset($cond);
+            while( list( $fid, $vv) = each( $cond ))
                 if( $fid == 'discussion' ) {
                     unset ($select_cond);
                     while( list ($fid) = each ($vv)) {
@@ -579,7 +716,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
                         $select_conds[] = join ($select_cond, " OR ");
                 }
         }
-    }  
+    }
 /*
   # parse sort order ----------------------------
   if( !(isset($sort) AND is_array($sort)))
@@ -591,7 +728,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
       $fid = key($srt);
       if( !$fields[$fid] )  # bad field_id - skip
           continue;
-        
+
       if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
         $select_order .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
         if( stristr(current( $srt ), 'd'))
@@ -601,12 +738,12 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
         if( !$sortable[ $fid ] ) {           # this field is not joined, yet
           $tbl = 'c'.$tbl_count++;
           # fill arrays to be able construce select command
-          $select_tabs[] = "LEFT JOIN content as $tbl 
-                                   ON ($tbl.item_id=item.id 
+          $select_tabs[] = "LEFT JOIN content as $tbl
+                                   ON ($tbl.item_id=item.id
                                    AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
                         # mark this field as sortable (store without apostrofs)
           $sortable[$fid] = $tbl;
-        }  
+        }
 
         $store = ($fields[$fid]['text_stored'] ? "text" : "number");
         # fill arrays according to this sort specification
@@ -614,9 +751,9 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
         if( stristr(current( $srt ), 'd'))
           $select_order .= " DESC";
         $delim=',';
-      }  
+      }
     }
-  }      
+  }
 */
 
 if( $debug ) {
@@ -624,10 +761,10 @@ if( $debug ) {
   print_r($select_conds);
   echo "<br><br>select_order:";
   print_r($select_order);
-}  
-  
+}
+
     # construct query --------------------------
-    $SQL = "SELECT discussion.id 
+    $SQL = "SELECT discussion.id
             FROM discussion INNER JOIN item ON item.id = discussion.item_id
             WHERE ";
     if( $slices ) {
@@ -640,7 +777,7 @@ if( $debug ) {
     }
     else if( $slice_id )
         $SQL .= " item.slice_id = '". q_pack_id($slice_id) ."'";
-  
+
     if( isset($select_conds) AND is_array($select_conds))      # conditions -----
         $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
 
@@ -648,16 +785,16 @@ if( $debug ) {
         $SQL .= " ORDER BY $select_order";
 
     # get result --------------------------
-    if( $debug ) 
+    if( $debug )
         $db->dquery($SQL);
-    else 
+    else
         $db->query($SQL);
 
-    while( $db->next_record() ) 
+    while( $db->next_record() )
         $arr[] = unpack_id128($db->f(id));
 
-    return $arr;           
-}  
+    return $arr;
+}
 
 
 
@@ -673,12 +810,12 @@ function test_for_closed($search) {
                  break;
       case ")" : $zavorky--;
             		 break;
-      case "\"" : 
+      case "\"" :
                   if ($uvozovky==1)
                     $uvozovky--;
      		          else
                     $uvozovky++;
-      		        break;	
+      		        break;
     }
   }
   $retval = $zavorky+$uvozovky;
@@ -698,15 +835,15 @@ function arrange_query($search) {
     switch($search[$i]) {
       case "\"" : if ($uvozovky == 1) { $uvozovky--; }
                   else { $uvozovky++; }
-                  $retstr = $retstr . $search[$i]; 
-                  break;  
+                  $retstr = $retstr . $search[$i];
+                  break;
       case "+" : if ($uvozovky == 0) { $retstr = $retstr . " and "; }
                   else { $retstr = $retstr . $search[$i]; }
                   break;
-      case "-" : if ($uvozovky == 0) 
+      case "-" : if ($uvozovky == 0)
                     { $retstr = $retstr . " not "; }
                   else { $retstr = $retstr . $search[$i]; }
-                  break;                                    
+                  break;
       case "(" : break;
       case ")" : break;
       case "*" : if ($uvozovky == 0) { $retstr = $retstr . "%"; }
@@ -725,7 +862,7 @@ function arrange_query($search) {
 function parse_query($search, $default_op="and") {
   $terms=array();
   $dummy=$search;
-  $strtype=1; 
+  $strtype=1;
 
   do {
     if ($dummy[0]=="\"") {
@@ -734,9 +871,9 @@ function parse_query($search, $default_op="and") {
       $dummy2=substr($dummy, 0, strpos($dummy, "\"")+1);
       $dummy2="\"".$dummy2;
       if (strpos($dummy, "\"")+1 == strlen($dummy)) {
-        $dummy2 = "\"". $dummy; $dummy = ""; 
+        $dummy2 = "\"". $dummy; $dummy = "";
       } else {
-        $dummy=substr($dummy, strpos($dummy,  "\" ")+2, strlen($dummy));   
+        $dummy=substr($dummy, strpos($dummy,  "\" ")+2, strlen($dummy));
       }
       $dummy2 = ereg_replace("\"","",$dummy2);
 # tady to ma nejaky problemy, s tema zavorkama to beha neunosne pomalu
@@ -753,11 +890,11 @@ function parse_query($search, $default_op="and") {
         case "not" :
         case "or" : $strtype=1;
                       break;
-        default : if ($strtype != 1) { $terms[]=$default_op; } else { $strtype = 0; } 
-      }   
+        default : if ($strtype != 1) { $terms[]=$default_op; } else { $strtype = 0; }
+      }
       if (strpos($dummy, " ") != false) {
         $dummy=substr($dummy, strpos($dummy, " ")+1, strlen($dummy));
-      } else { $dummy2=$dummy; $dummy=""; }      
+      } else { $dummy2=$dummy; $dummy=""; }
     }
     $terms[]=$dummy2;
   }
@@ -778,7 +915,7 @@ function build_sql_query($searchterms, $field) {
       case "or" : if ($typecls==0) { $retstr = $retstr . " OR "; $typecls=1; }
                     next($searchterms);
                     break;
-      case "not" : if ($typecls==0) { 
+      case "not" : if ($typecls==0) {
                     $retstr = $retstr . " AND "; $typecls=1;
                     $notcls = 1;
                   }
@@ -787,11 +924,11 @@ function build_sql_query($searchterms, $field) {
       case "(" : $retstr = $retstr . "(";
                  break;
       case ")" : $retstr = $retstr . ")";
-                 break; 
+                 break;
       default : if ($notcls==1) { $retstr = $retstr . "(". $field . " NOT LIKE '%" . current($searchterms) . "%')"; }
                 else { $retstr = $retstr . "(". $field . " LIKE '%" . current($searchterms) . "%')"; }
                 $notcls = 0; $typecls=0;
-                next($searchterms); 
+                next($searchterms);
     }
   }
   if ($typecls != 0) { $retstr=""; }
@@ -812,8 +949,8 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
 	$query = str_replace("%", "\%", $query);
 	$query = str_replace("_", "\_", $query);
 	$query = str_replace("'", "\'", $query);
-  
-  if (test_for_closed($search) != 0) 
+
+  if (test_for_closed($search) != 0)
    return false;
   $search = arrange_query($search);
   $myqueryterms = parse_query($search);
@@ -822,7 +959,7 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
 
   if( trim($sqlstring) == "" )
     $sqlstring = "1=1";
-    
+
   if( !isset($srch_fld) OR !is_array($srch_fld) OR !$query )
     $field_id_cond = "1=1";               # no fields to search - all rows
 
@@ -839,28 +976,28 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
     $field_id_cond = "1=1";  # bad condition - field not exist in this slice
    else
     $field_id_cond = "field_id IN ( $in )";
-    
+
   # from date
   if( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $from, $part))
     $cond = " AND (publish_date >= '". mktime(0,0,0,$part[1],$part[2],$part[3]). "') ";
   elseif( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $from, $part))
     $cond = " AND (publish_date >= '". mktime(0,0,0,$part[1],$part[2],"20".$part[3]). "') ";
 
-  # to date     
+  # to date
   if( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $to, $part))
     $cond .= " AND (publish_date <= '". mktime(23,59,59,$part[1],$part[2],$part[3]). "') ";
   elseif( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $to, $part))
     $cond .= " AND (publish_date <= '". mktime(23,59,59,$part[1],$part[2],"20".$part[3]). "') ";
-       
+
   $distinct = ( $relevance ? "" : "DISTINCT" );
-  
+
   $SQL = "SELECT $distinct id from item, content WHERE item.id=content.item_id
             AND slice_id='$p_slice_id'
             AND ($field_id_cond)
             AND ($sqlstring)
             AND status_code='1'
             AND expiry_date > '". time() ."'
-            $cond 
+            $cond
             ORDER BY publish_date DESC";
 
   $db->query($SQL);
@@ -870,7 +1007,7 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
     $count=0;
     if( $db->next_record() )      #preset first old id
       $oldid = $db->f(id);
-      
+
     while( $db->next_record() ) {
       if( $oldid != $db->f(id)) {
         $tmp[$count][] = unpack_id128($db->f(id));
@@ -879,8 +1016,8 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
       }
       else  {
         $count++;
-      }  
-    }    
+      }
+    }
     $tmp[$count][] = unpack_id128($oldid);  # last value isn't stored
 
 //print_r($tmp);
@@ -891,9 +1028,9 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
   } else {
     while( $db->next_record() )
       $ret[] = unpack_id128($db->f(id));
-  }    
-    
-  return $ret;  
+  }
+
+  return $ret;
 }
 
 ?>
