@@ -86,14 +86,15 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
   $headers = "Content-Type: text/html; charset=iso-8859-1\n";
 */
 
+  $emails = "";
   // loop through the users for the event
-  while( $db->next_record() ){
-    // unalias the text
-   $email = $db->f('uid');
-   mail_html_text ($email, $subject, $body, $headers, $LANGUAGE_CHARSETS[get_mgettext_lang()], 0);
-   // you cant output here, you are still in the headers section!
-   // echo "DONE $email, $s, $body <BR>";
-  }
+  while( $db->next_record() )
+     $emails[] = $db->f('uid');
 
+  $mail = new HtmlMail();
+  $mail->setSubject ($subject);
+  $mail->setHtml ($body, html2text ($body));
+  $mail->setCharset ($LANGUAGE_CHARSETS[get_mgettext_lang()]);
+  $mail->send ($emails);
 }
 ?>

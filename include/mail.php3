@@ -21,16 +21,39 @@ http://www.apc.org/
 
 // (c) Jakub Adámek, Econnect, December 2002
 
-if (!defined ("aa_mail_included"))
-     define ("aa_mail_included", 1);
-else return;
-
 require_once $GLOBALS["AA_INC_PATH"]."item.php3";
 require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
+require_once $GLOBALS["AA_INC_PATH"]."htmlMimeMail/htmlMimeMail.php";
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-#                    M A I L   handling utility functions 
-#
+class HtmlMail extends HtmlMimeMail {
+
+    /// This function fits a record from the @c email table.
+    function setBasicHeaders ($record, $default) {
+        $headers = array (
+            "From" => "header_from",
+            "Reply-To" => "reply_to",
+            "Errors-To" => "errors_to",
+            "Sender" => "sender");
+        reset ($headers);
+        while (list ($header, $field) = each ($headers)) {
+            if ($record[$field])
+                $this->setHeader ($header, $record[$field]);
+            else if ($default[$field])
+                $this->setHeader ($header, $default[$field]);
+        }
+    }
+    
+    // header encoding does not seem to work correctly
+	function _encodeHeader($input, $charset = 'ISO-8859-1') {
+        return $input;
+    }
+    
+    function setCharset ($charset) {
+        $this->setHeadCharset ($charset);
+        $this->setHtmlCharset ($charset);
+        $this->setTextCharset ($charset);
+    }
+};
 
 /*  Function: html2text
     Purpose:  strips the HTML tags and lot more to get a plain text version
@@ -74,88 +97,15 @@ function html2text ($html) {
     return preg_replace ($search, $replace, $html);
 }
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-    Sends safely HTML messages. Some e-mail clients don't understand HTML. This function creates a multipart message containing both the HTML and the plain-text version of the message (by leaving out the HTML tags). Each e-mail client displays what it understands better (and hides all the rest of the message). 
- *
- *   Author:      Jakub Adámek
- *   Parameters:  same as PHP mail() plus
- *   @param       $additional_headers - use \r\n at the end of each row!
- *                $charset - e.g. iso-8859-1, iso-8859-2, windows-1250
- *                $use_base64 - set to 0 if you want to pass the message 8 bit encoded
- *   @return      true / false same as PHP mail()
-*/
-
-function mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1) 
-{
-    $body = mail_html_text_body ($message, $charset, $use_base64);
-    if ($GLOBALS["debug_email"]) {
-        $body2 = mail_html_text_body ($message, $charset, 0);
-        echo "To: $to<br>
-            Subject: $subject<br>".
-            nl2br(HTMLEntities($additional_headers.$body2));
-    }
-    if ($GLOBALS["EMAILS_INTO_TABLE"]) {
-        global $db;
-        $db->query ("
-            INSERT INTO email_sent (send_to, subject, headers, body, created_at)
-            VALUES ('".addslashes($to)."', '".addslashes($subject)."',
-               '".$additional_headers."','".$body."', ".time().")");
-        return true;               
-    }               
-    else return mail ($to, $subject, "", $additional_headers.$body);
-}
-
-function imap_mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1, 
-                              $cc = "", $bcc = "", $rpath = "") 
-{
-    $body = mail_html_text_body ($message, $charset, $use_base64);
-    return imap_mail ($to, $subject, "", $additional_headers.$body, $cc, $bcc, $rpath);
-}
-
-function mail_html_text_body ($message, $charset, $use_base64) {
-    $boundary = "-------AA-MULTI-".gensalt (20)."------";
-    $encoding = $use_base64 ? "base64" : "8bit";
-    $textmessage = html2text ($message);
-        
-    if ($use_base64) {
-        $textmessage = base64_encode ($textmessage);
-        $message = base64_encode ($message);
-    }
-       
-    // All MIME headers should be terminated by CR+LF (\r\n)
-    // but the headers in the individual parts should only be delimited by LF (\n)
-       
-    return
-        "MIME-Version: 1.0\r\n"
-        ."Content-Type: multipart/alternative;\r\n"
-        ." boundary=\"$boundary\"\r\n"
-        ."Content-Transfer-Encoding: $encoding\r\n"
-        ."\r\n"
-        ."--$boundary\n"
-
-        ."Content-Type: text/html; charset=\"$charset\"\n"
-        ."Content-Transfer-Encoding: $encoding\n"
-        ."\n"
-        .$message."\n"
-        ."--$boundary\n"
-
-        ."Content-Type: text/plain; charset=\"$charset\"\n"
-        ."Content-Transfer-Encoding: $encoding\n"
-        ."\r\n"
-        .$textmessage."\n"
-        ."--$boundary--\n";
-
-}
-
 /** 
 * (c) Jakub Adamek, Econnect, December 2002
 * Sends email from the table "email" to the address given.
 * First resolves the aliases, working even with the {} inline commands.
 *
-* @param $mail_id   id from the email table
-*        $to        email address or an array of email addresses
-*        $aliases   (optional) array of alias => text
-* @return count of successfully sent emails
+* @param int $mail_id     id from the email table
+*        mixed $to        email address or an array of email addresses
+*        array $aliases   (optional) array of alias => text
+* @return int count of successfully sent emails
 */
 
 function send_mail_from_table ($mail_id, $to, $aliases="") 
@@ -199,47 +149,32 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
     
     $sent = 0;
     
+    $mail = new HtmlMail;
+    if ($record["html"])
+        $mail->setHtml ($record["body"], html2text ($record["body"]));
+    else $mail->setText ($record["body"]);
+    $mail->setSubject ($record["subject"]);
+    $mail->setBasicHeaders ($record, "");
+    $mail->setTextCharset ($LANGUAGE_CHARSETS [$record["lang"]]);
+    $mail->setHtmlCharset ($LANGUAGE_CHARSETS [$record["lang"]]);
+
     foreach ($tos as $to) {
         if (! $to)
             continue;
             
-        if ($GLOBALS["EMAILS_INTO_TABLE"]) {
+        if (! $GLOBALS["EMAILS_INTO_TABLE"]) 
+            if ($mail->send (array ($to)))
+                $sent ++;
+        else {
             if ($db->query ("
                 INSERT INTO email_sent (email_id, send_to, subject, headers, body, created_at)
                 VALUES ($mail_id, '".addslashes($to)."', '".addslashes($record["subject"])."',
-                   '".addslashes(get_email_headers($record, ""))."',
-                   '".addslashes($record["body"])."', ".time().")"))
+                   '','".addslashes($record["body"])."', ".time().")"))
                 $sent ++;
-        }
-        
-        else {
-            if ($record["html"])
-                if (mail_html_text ($to, $record["subject"], $record["body"],
-                     get_email_headers($record, ""), $LANGUAGE_CHARSETS [$record["lang"]]))
-                    $sent ++;
-            else if (mail ($to, $record["subject"], $record["body"], get_email_headers($record)))
-                    $sent ++;
         }
     }
     
     return $sent;
 }
-    
-function get_email_headers ($record, $default)
-{
-    $headers = array (
-        "From" => "header_from",
-        "Reply-To" => "reply_to",
-        "Errors-To" => "errors_to",
-        "Sender" => "sender");
-    reset ($headers);
-    while (list ($header, $field) = each ($headers)) {
-        if ($record[$field])
-            $retval .= $header.": ".$record[$field]."\r\n";
-        else if ($default[$field])
-            $retval .= $header.": ".$default[$field]."\r\n";
-    }
-    return $retval;
-}
-
+   
 ?>

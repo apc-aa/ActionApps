@@ -164,12 +164,10 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
         <TD colspan=2>
         <TABLE border=0 cellpadding=0 cellspacing=0 width='100%'>
             <TR><TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=122 height=1></TD>
-                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=300 height=1></TD>
-                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=67 height=1></TD>
-                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width='99%' height=1></TD>
+                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width='99%' height=1 colspan=2></TD>
             </TR>
             <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
-                <TD height=43 colspan=3 align=center valign=middle class=slicehead>\n";
+                <TD colspan=2 height=43 align=center valign=middle class=slicehead>\n";
 
         if ($title_img) 
             echo "<table><tr><td>$title_img&nbsp;</td>
@@ -204,11 +202,10 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
             }
         }
         
-        echo "</td><TD class=navbar align=right><span class=nbdisable> &nbsp;";
+        echo "</td><td align=center class=navbar align=right> &nbsp; ";
         if( is_array($g_modules) AND (count($g_modules) > 1) ) 
             echo _m("Switch to:") ."&nbsp; ";
-        echo "</span></TD>
-        <TD class=navbar>\n";
+        echo "\n";
         PrintModuleSelection();
         echo "</TD></TR></form></TABLE>
         </TD></TR><TR>";
