@@ -1,8 +1,23 @@
+02/20/03 - added new input type field for itemedit - Hidden
+(honzam) - added new alias function f_o which displaye "New" or "Old"
+           or such text for the item
+         - added banner parameter to slice.php3 (see http://apc-aa.sourceforge.net/faq/#sliceparam)
+         - added database optimize script - called from AA cron.php3
+         - new Links module (not complete, yet)
+         - fixed wrong order of odd/even rows in itemview (Index)
+         - do not load already loaded language file in mgettext environment
+         - new manager class for administration of items (still in Links module only)
+         - removed old, unused functions in searchlib
+         - it is impossible to use "AA Core slice" as template, now
+         - fixed problem of not showing roles for slices in user management
+         - constants in selectbox is shown even if they have the same value (space added)
+         - added new paramewter for Selectbox input field - "show all" which displays
+           all items including expited ones for slice
 02/20/03 - added parameter wizzard for uploaded file (mitra)
-        - fixed warning about missing field in fpr example {alias::f_e:add} 
-        - more functionality in sliceobj
-        - another check in stringexpand
-        - fixed permissions to allow adding AUTHOR EDITOR ADMINISTRATOR (may not be ok)
+         - fixed warning about missing field in fpr example {alias::f_e:add} 
+         - more functionality in sliceobj
+         - another check in stringexpand
+         - fixed permissions to allow adding AUTHOR EDITOR ADMINISTRATOR (may not be ok)
 02/18/03 - added slice_id=$slice_id automatically to the menu_util and removed
            from the items in menu.php3 (jakub)
 02/17/03 - updated sql_update to match the current changes
@@ -26,21 +41,21 @@
 02/17/03 - finished the Alert module which cooperates with the Reader management
            slice, added events to event_handler (jakub)
 02/16/03 - removed include of nonexistant en_site_lang.php3 from modedit (mitra)
-        - added roles to um_util.php3.PrintModuleAddRow - possibly wrong
-        - fixed bug in init_page stopping non-superusers logging in
-        - fixed warning in view.php3 from packing empty slice_id
-        - added some reset's in getxml
-        - admin/index will now tell you WHICH slice you can't edit
-        - added test option to RSS feed adder
-        - added views to import and export - still not working properly! 
-        - added flag EXTSESSEITHER_INCLUDED to get around bugs with 
+         - added roles to um_util.php3.PrintModuleAddRow - possibly wrong
+         - fixed bug in init_page stopping non-superusers logging in
+         - fixed warning in view.php3 from packing empty slice_id
+         - added some reset's in getxml
+         - admin/index will now tell you WHICH slice you can't edit
+         - added test option to RSS feed adder
+         - added views to import and export - still not working properly! 
+         - added flag EXTSESSEITHER_INCLUDED to get around bugs with 
             multiple includes until these get fixed
-        - commented out security risk default_fnc_variable (mitra)
-        - created include/viewobj.php3 
-        - added mroe functionality to sliceobj, especially slice2
-        - added getDB and freeDB to remove guessing about which AA_DB to use
-        - created xml_serializer.php3 for object <-> xml
-        - renamed zids/qqqquote to qqquote
+         - commented out security risk default_fnc_variable (mitra)
+         - created include/viewobj.php3 
+         - added mroe functionality to sliceobj, especially slice2
+         - added getDB and freeDB to remove guessing about which AA_DB to use
+         - created xml_serializer.php3 for object <-> xml
+         - renamed zids/qqqquote to qqquote
 02/10/03 - added note on securing apc-aa-uploads to install-4.html
 02/06/03 - more on making import/export work  (mitra)
 02/05/03 - fixed bugs in sliceimp.xml (mitra)
