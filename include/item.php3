@@ -50,6 +50,18 @@ function GetAliasesFromFields($fields) {
   $aliases["_#EDITITEM"] = array("fce" => "f_e",
                                  "param" => "id..............",
                                  "hlp" => L_EDITITEM_ALIAS);
+  $aliases["_#RSS_TITL"] = array("fce" => "f_r",
+                                 "param" => "SLICEtitle",
+                                 "hlp" => L_RSS_TITL);
+  $aliases["_#RSS_LINK"] = array("fce" => "f_r",
+                                 "param" => "SLICElink",
+                                 "hlp" => L_RSS_LINK);
+  $aliases["_#RSS_DESC"] = array("fce" => "f_r",
+                                 "param" => "SLICEdesc",
+                                 "hlp" => L_RSS_DESC);
+  $aliases["_#RSS_DATE"] = array("fce" => "f_r",
+                                 "param" => "SLICEdate",
+                                 "hlp" => L_RSS_DATE);
 
   # database stored aliases
   while( list($k,$val) = each($fields) ) {
@@ -243,6 +255,130 @@ class item {
     return $this->getahref($url,$txt,$p[5]);
   }    
 
+  # prints 'blurb' (piece of text) based from another slice, 
+  # based on a simple condition.
+
+  /*
+Blurb slice, has fields
+headline........  ; example: "Computer Basics - Technology"
+full_text.......  ; example: "What you need to know for this cateogry is ...."
+    OR 
+title.......     ; "Computer Basics - Overview"
+fulltext.....  ; "What you need to know for this cateogry is ...."
+
+In view (of other slices), these blurbs can be gotten by creating a 
+  _#BLURB### alias, as a part of the field category........
+  _#BLURB### uses function f_q  
+*/
+
+
+# returns fulltext of the blurb
+  function f_q($col, $param="")
+    {
+      /* Usually this is called with no parameters.
+	 Optional parameters for f_q are:
+	 [0] stringToMatch is by default $col
+	 It can be formatted either as the name of a field in self->columns OR 
+	 as static text.
+	 [1] blurbSliceId  is by default the non-packed id in BLURB_SLICE_ID
+	 [2] fieldToMatch  is by default BLURB_FIELD_TO_MATCH
+	 [3] fieldToReturn is by default BLURB_FIELD_TO_RETURN
+      these constants should be defined in include/config.php3
+      */
+
+      $p = ParamExplode($param);
+      $stringToMatch_Raw = $p[0] ? $p[0] : $col;
+      // can use either the 'headline......' format or "You static text here"
+      $stringToMatch = $this->columns[$stringToMatch_Raw][0][value] ? 
+	$this->columns[$stringToMatch_Raw][0][value] : $stringToMatch_Raw;
+
+      $p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
+      $fieldToMatch  =   quote(     $p[2] ? $p[2] : BLURB_FIELD_TO_MATCH  );
+      $fieldToReturn =   quote(     $p[3] ? $p[3] : BLURB_FIELD_TO_RETURN );
+  /*
+ This SQL effectively narrows down through three sets:
+    a) all the items from our blurb slice 
+    (all the item_ids from item where item.slice_id  = $blurb_sliceid_packed)
+    b) take set a) and filter to find where the headline (category name)
+       matches our category name.
+    c) using the single item_id from b), find the content record that has the
+       fulltext blurb
+*/
+  $SQL = "
+    SELECT c2.text AS text 
+      FROM item LEFT JOIN content c1 ON item.id = c1.item_id 
+                LEFT JOIN content c2 ON item.id = c2.item_id
+      WHERE slice_id  = '$p_blurbSliceId' AND
+           c1.field_id    = '$fieldToMatch' AND
+           c2.field_id    = '$fieldToReturn' AND
+           c1.text        = '$stringToMatch'
+
+  ";
+
+
+  //  return $SQL;
+  global $db3;
+  $db3->query($SQL);
+  if ( !$db3->next_record()){ 
+    //    return "<br>NO RECORDS!!!!\n\n" . $SQL . "<br>\n\n" ;
+    return ""; 
+  } else { 
+    return $db3->f(text) ;
+  };
+
+}
+
+
+function RSS_restrict($txt, $len) {
+    return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
+  }  
+
+  # standard aliases to generate RSS .91 compliant meta-information
+  function f_r($col, $param="") { 
+    global $slice_id, $p_slice_id, $db2;
+    static $title, $link, $description; 
+
+    if (! $title) {
+      if ($slice_id==""){ echo "Error: slice_id not defined"; exit; }
+
+      // RSS chanel (= slice) info
+      $SQL= "SELECT * FROM slice WHERE id='$p_slice_id'";
+      $db2->query($SQL);
+      if (!$db2->next_record()){ echo "Can't get slice info"; exit;  }
+
+      $title           = $this->RSS_restrict( $db2->f(name), 100);
+      $link            = $this->RSS_restrict( $db2->f(slice_url), 500);
+      $name            = $db2->f(name);
+      $owner           = $db2->f(owner);
+      //$language        = RSS_restrict( strtolower($db2->f(lang_file)), 2);
+
+      $SQL= "SELECT name, email FROM slice_owner WHERE id='$owner'";
+      $db2->query($SQL);
+      if (!$db2->next_record()){ echo "Can't get slice info"; exit;  }
+      $description     = $this->RSS_restrict( $db2->f(name).": $name", 500);
+
+    }
+    //   return "tt: $col : $param<BR>"; 
+    if ($col == 'SLICEdate') 
+      return $this->RSS_restrict( GMDate("D, d M Y H:i:s "). "GMT", 100);
+    if ($col == 'SLICEtitle') return $title;
+    if ($col == 'SLICElink') return $link;
+    if ($col == 'SLICEdesc') return $description;
+
+    $p = ParamExplode($param);
+
+    if ($col == 'hl_href.........') {
+      if (! $p[1] ) 
+   
+        $redirect = strtr(AA_INSTAL_URL, ':', '#:') . 
+	  "slice.php3?slice_id=$slice_id&encap=false";
+      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
+      }
+
+    if ($this->columns[$col][0][value])
+      return $this->RSS_restrict( $this->columns[$col][0][value], $p[0]);
+  }
+
   # converts text to html or escape html (due to html flag)
   # param: 0
   function f_t($col, $param="") { 
@@ -383,6 +519,10 @@ class item {
 
 /*
 $Log$
+Revision 1.23  2001/09/12 06:19:00  madebeer
+Added ability to generate RSS views.
+Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
+
 Revision 1.22  2001/07/09 17:46:40  honzam
 user alias function - better parameters parsing
 

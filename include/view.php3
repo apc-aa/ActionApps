@@ -126,7 +126,8 @@ class itemview{
         break;
       default:                         # compact view
         $oldcat = "_No CaTeg";
-        $out = $this->slice_info[compact_top];
+	//        $out = $this->slice_info[compact_top];
+	$out = $CurItem->unalias( $this->slice_info[compact_top], "");
         $group_by_field = GetCategoryFieldId( $this->fields );
         
         for( $i=0; $i<$this->num_records; $i++ ) {
@@ -181,6 +182,10 @@ class itemview{
 
 /*
 $Log$
+Revision 1.12  2001/09/12 06:19:00  madebeer
+Added ability to generate RSS views.
+Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
+
 Revision 1.11  2001/06/07 09:59:32  honzam
 fixed bug of not displayed fulltext_top html code and fulltext_bottom html code
 

@@ -137,6 +137,8 @@ add_vars();       # adds values from url (it's not automatical in SSIed script)
 
 $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 		 // open BD	
+$db2 = new DB_AA; 		 // open BD	
+$db3 = new DB_AA; 		 // open BD	
 
 # Parse parameters
 $command = ParseCommand($cmd[$vid]);
@@ -233,6 +235,10 @@ switch( $view_info['type'] ) {
 
 /*
 $Log$
+Revision 1.8  2001/09/12 06:19:01  madebeer
+Added ability to generate RSS views.
+Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
+
 Revision 1.7  2001/08/02 20:04:53  honzam
 new - stronger - view condition redefining parameter cmd[]-d
 

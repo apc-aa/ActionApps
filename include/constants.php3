@@ -121,6 +121,8 @@ $ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
                             "f_i" => L_ALIAS_FUNC_I,
                             "f_l" => L_ALIAS_FUNC_L,
                             "f_n" => L_ALIAS_FUNC_N,
+			    "f_q" => L_ALIAS_FUNC_Q,
+			    "f_r" => L_ALIAS_FUNC_R,
                             "f_s" => L_ALIAS_FUNC_S,
                             "f_t" => L_ALIAS_FUNC_T,
                             "f_u" => L_ALIAS_FUNC_U,
@@ -377,6 +379,10 @@ define ("FEEDMAP_FLAG_EMPTY", 2);
                       
 /*
 $Log$
+Revision 1.16  2001/09/12 06:19:00  madebeer
+Added ability to generate RSS views.
+Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
+
 Revision 1.15  2001/07/09 09:28:45  honzam
 New supported User defined alias functions in include/usr_aliasfnc.php3 file
 

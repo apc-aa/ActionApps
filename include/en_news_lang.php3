@@ -450,7 +450,7 @@ define("L_ALIAS_FUNC_T", "f_t - fulltext");
 define("L_ALIAS_FUNC_U", "f_u - user function");
 define("L_ALIAS_FUNC_W", "f_w - image width");
 define("L_ALIAS_FUNC_0", "f_0 - none");
-
+define("L_ALIAS_FUNC_R", "f_r - rss util");
 define("L_ALIASES", "When you go to Admin-Design, you use an Alias to show this field");
 define("L_ALIAS1", "Alias 1"); 
 define("L_ALIAS_HLP", "Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters."); 
@@ -580,8 +580,17 @@ define("L_INSERT_AS_NEW","Insert as new");
 // not appended to other lang files
 //define("", "");
 
+define("L_RSS_TITL", "Title of Slice for RSS");
+define("L_RSS_LINK", "Link to the Slice for RSS");
+define("L_RSS_DESC", "Short description (owner and name) of slice for RSS");
+define("L_RSS_DATE", "Date RSS information is generated, in RSS date format");
+
 /*
 $Log$
+Revision 1.47  2001/09/12 06:19:00  madebeer
+Added ability to generate RSS views.
+Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
+
 Revision 1.46  2001/07/09 09:28:44  honzam
 New supported User defined alias functions in include/usr_aliasfnc.php3 file
 
