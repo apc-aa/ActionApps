@@ -956,7 +956,7 @@ function GetItemHeadlines( $sid="", $slice_field="headline........",
             = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
                 . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
       }
-  } else { // $type == 'all'
+  } elseif( is_array($headlines) ) { // $type == 'all'
       foreach( $headlines as $p_id => $val ) {
         $u_id = unpack_id($p_id);
         $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]

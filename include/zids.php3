@@ -332,8 +332,10 @@ class zids {
             $tags[$k]=$v;
         }
         $b = array();
-        while ( list(,$v) = each($this->a)) {
-            $b[] = $tags[$v];
+        if ( $this->count() > 0 ) {
+            while ( list(,$v) = each($this->a)) {
+                $b[] = $tags[$v];
+            }
         }
         return new zids($b,"t");
     }

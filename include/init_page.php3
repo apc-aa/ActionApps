@@ -42,7 +42,8 @@ http://www.apc.org/
 *   call showMenu() afterwards. */
 function menu_include() {
     global $AA_BASE_PATH, $MODULES, $g_modules, $slice_id;
-    return $AA_BASE_PATH.$MODULES[$g_modules[$slice_id]["type"]]["menu"];
+    $menu = $MODULES[$g_modules[$slice_id]["type"]]["menu"];
+    return $AA_BASE_PATH. ($menu ? $menu : 'include/menu.php3');
 }
 
  // handle with PHP magic quotes - quote the variables if quoting is set off
