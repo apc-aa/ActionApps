@@ -100,15 +100,16 @@ class itemview{
       case "fulltext":  
         $iid = $this->ids[0];      # unpacked item id
         $CurItem->columns = $content[$iid];   # set right content for aliases
-  
+
         # print item
         $CurItem->setformat( $this->slice_info[fulltext_format],
-                             $this->slice_info[fulltext_remove],
-                             $this->slice_info[fulltext_format_top],
-                             $this->slice_info[fulltext_format_bottom]);
-        $out = $CurItem->get_item();
+                             $this->slice_info[fulltext_remove]);
+        $out = $this->slice_info[fulltext_format_top];
+        $out .= $CurItem->get_item();
+        $out .= $this->slice_info[fulltext_format_bottom];
         break;
       case "itemlist":          # multiple items as fulltext one after one
+        $out = $this->slice_info[fulltext_format_top];
         for( $i=0; $i<$this->num_records; $i++ ) {
           $iid = $this->ids[$this->from_record+$i];
           if( !$iid )
@@ -118,11 +119,10 @@ class itemview{
           
             # print item
           $CurItem->setformat( $this->slice_info[fulltext_format],
-                               $this->slice_info[fulltext_remove],
-                               $this->slice_info[fulltext_format_top],
-                               $this->slice_info[fulltext_format_bottom]);
+                               $this->slice_info[fulltext_remove]);
           $out .= $CurItem->get_item();
         }
+        $out .= $this->slice_info[fulltext_format_bottom];
         break;
       default:                         # compact view
         $oldcat = "_No CaTeg";
@@ -140,17 +140,19 @@ class itemview{
             # print category name if needed
           if($this->group_fld AND ($catname != $oldcat)) {
             $oldcat = $catname;
-            $CurItem->setformat( $this->slice_info[category_format], "",
-                                 $this->slice_info[category_top],
-                                 $this->slice_info[category_bottom] );
+            
+            $CurItem->setformat( $this->slice_info[category_format] );
+            $out .= $this->slice_info[category_top];
             $out .= $CurItem->get_item();
+            $out .= $this->slice_info[category_bottom];
+            
           }  
           
             # print item
           $CurItem->setformat( 
              (!($i%2) AND $this->slice_info[even_odd_differ]) ?
              $this->slice_info[even_row_format] : $this->slice_info[odd_row_format],
-             $this->slice_info[compact_remove], "", "");
+             $this->slice_info[compact_remove] );
 
           $out .= $CurItem->get_item();
         }
@@ -179,6 +181,9 @@ class itemview{
 
 /*
 $Log$
+Revision 1.11  2001/06/07 09:59:32  honzam
+fixed bug of not displayed fulltext_top html code and fulltext_bottom html code
+
 Revision 1.10  2001/05/18 13:54:36  honzam
 New View feature, new and improved search function (QueryIDs)
 
