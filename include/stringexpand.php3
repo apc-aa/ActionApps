@@ -344,7 +344,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {include(file)}
     # {include:file} or {include:file:http}
     # {include:file:fileman|site}
-    # {include:file:readfile[:str_replace:<search>[;<search1>;..]:<replace>[:<replace1>;..]:<trim-to-tag>:<trim-from-tag>]}
+    # {include:file:readfile[:str_replace:<search>[;<search1>;..]:<replace>[:<replace1>;..]:<trim-to-tag>:<trim-from-tag>[:filter_func]]}
     # {include:file:eval} use at own risk!!
     # {scroller.....}
     # {#comments}
@@ -450,6 +450,25 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                 return "";
             }
             break;
+          case "filter":
+            $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
+            if ($filedes = @fopen ($filename, "r")) {
+              $fileout = "";
+              while (!feof ($filedes)) {
+                $fileout .= fgets($filedes, 4096);
+              }
+              fclose($filedes);
+              for($i=2;$i < count($parts);$i++) {
+              	if(method_exists($GLOBALS[filter],$parts[$i])) {
+              	  call_user_func_array(array(&$GLOBALS[filter],
+              	  	$parts[$i]),array(&$fileout,&$parts));
+              	} else if ($errcheck) huhl("No such method: ".$parts[$i]);
+              }
+	    }else {
+                if ($errcheck) huhl("Unable to read from file $filename");
+                return "";
+            }
+	    break;
           case "readfile": //simple support for reading static html (use at own risk)
             $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
             if ($filedes = @fopen ($filename, "r")) {
@@ -458,27 +477,6 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                     $fileout .= fgets($filedes, 4096);
                 }
                 fclose($filedes);
-                if($parts[5]) {
-                	$pos = strpos($fileout,$parts[5]);
-                	if($pos) 
-	                	$fileout = substr($fileout,$pos);
-                }
-                if($parts[6]) {
-			$pos = strpos($fileout,$parts[6]);
-			if($pos)
-				$fileout = substr($fileout,0,$pos);
-                }
-            	if($parts[2] == 'str_replace') {
-            		if(strpos($parts[3],';')) {
-            			$search = explode(";",$parts[3]);
-            			$replace = explode(";",$parts[4]);
-            		} else {
-            			$search = $parts[3];
-            			$replace = $parts[4];
-            		}
-            		if(is_array($search) || strlen($search))
-            			$fileout = str_replace($search,$replace,$fileout);
-            	}
             } else {
                 if ($errcheck) huhl("Unable to read from file $filename");
                 return "";

@@ -1,3 +1,7 @@
+10/25/04 - New {include:file:file:method1[:method2[:...]]}
+	   This calls filter methods method1, method2,.. on global object $GLOBALS[filter]
+	   after reading the file. Very nice with site module.
+	   Member function is called like this: method1(&$fileout,&$args)
 10/20/04 - changes to {include} -- extended support for a very specialised readfile mode
          - MLX: now using packed id for storing MLX control slice
 10/15/04 - view.php3 now with MLX support for fulltext (single item) views
