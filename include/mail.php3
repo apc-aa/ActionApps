@@ -99,6 +99,7 @@ function html2text ($html) {
             
     // strip HTML tags - borrowed from PHP manual user comments
     $search = array (
+                 "'<hr>'si",
                  "'<br>'si",
                  "'</p>'si",
                  "'<script[^>]*?>.*?</script>'si",  // Strip out javascript
@@ -112,6 +113,7 @@ function html2text ($html) {
                  "'&#(\d+);'e");                    // evaluate as php
 
     $replace = array (
+                  "\n------------------------------------------------------------\n",
                   "\n",
                   "\n",
                   "",
@@ -183,6 +185,10 @@ function send_mail_from_table_inner ($mail_id, $to, &$item) {
     else $tos = $to;
     
     $sent = 0;
+    
+    if ($tos[0] == "jakubadamek@ecn.cz")
+        $record["body"] .= "<br>Text version is:<hr>" . 
+            HtmlEntities(html2text ($record["body"]));
     
     $mail = new HtmlMail;
     if ($record["html"])
