@@ -1,3 +1,4 @@
+01/21/04 - fixed bug in f_r parameter parsing (interpreting)
 01/18/04 - "Top HTML" and "Bottom HTML" code for fulltext slice view
 (honzam)   is unaliased, now
 01/17/04 - speed optimalization for MySQL 4.0.x
