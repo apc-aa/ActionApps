@@ -12,6 +12,12 @@ var hcDeletedIDs = new Array ();
 // ID counter to be set for new items
 var hcNewID = 0;
 
+function clearSelectBox (formname, boxname) {
+	selectBox = document.forms[formname][boxname];
+	for (i=selectBox.options.length-1; i >= 0; i--)
+		selectBox.options[i] = null;
+}
+	
 function hcResolveValues (arr) {
     var i = new Number();
     for (i=0; i < arr.length; ++i) {
