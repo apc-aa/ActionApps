@@ -79,7 +79,7 @@ if (is_array($desc[params])) {
 <center>
 
 <?php # ------- Caption ----------- ?>
-<table border=0 cellspacing=0 class=login width="95%">
+<table border="0" cellspacing="0" cellpadding="1" width="95%" bgcolor="<?php echo COLOR_TABTITBG ?>">
    <TR><TD align=center class=tablename width="100%"><?php echo $title ?></TD></TR>
 </table>
 
@@ -136,30 +136,28 @@ if (is_array($desc[params])) {
 
 </table>
 
-</p>
-
-<table width="95%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABTITBG ?>">
-<tr><td class = tabtit>
+<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+<tr><td class=tabtit>
 <?php 
 	if ($desc[name])
 		echo $desc[name].": ".processSlashes($desc[desc]); 
 	else {
-	  	$what = $$list;
-	  	printf(L_PARAM_WIZARD_NOT_FOUND,$what[name]);
-		echo "<p align=center><input type=submit value=\"".L_PARAM_WIZARD_CLOSE."\"></p>";
+   	$what = $$list;
+	 	printf(L_PARAM_WIZARD_NOT_FOUND,$what[name]);
+		echo "<p align=center><input type=submit value=\"".L_PARAM_WIZARD_CLOSE."\">";
 		echo "</td></tr></table></body></html>";
 		exit;
 	}
 ?>
-</p>
 </td></tr>
-<tr><td class = tabtxt>
+<tr><td>
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<tr><td>
 <?php
 	// show the parameter boxes with hints
 
 	if (is_array($desc[params])):
-		echo L_PARAM_WIZARD_PARAMS;
-		echo "</p>";
+		echo L_PARAM_WIZARD_PARAMS."<br><br>";
 		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2>";
 		reset($desc[params]);
 		$iparam = 0;
@@ -169,21 +167,20 @@ if (is_array($desc[params])) {
 			."<b>".strtolower("$param[name]:")."</b>"
 			."</td><td class = tabtxt>"
 			."<INPUT TYPE=TEXT NAME=param$iparam VALUE=\"$param[example]\">"
-			."<font size=-1>";
+			."<span class=tabhlp>";
 			switch($param[type]) {
 			case "INT":  echo " (".L_PARAM_WIZARD_TYPE_INT.")"; break;
 			case "STR":  echo " (".L_PARAM_WIZARD_TYPE_STR.")"; break;
 			case "STRID":echo " (".L_PARAM_WIZARD_TYPE_STRID.")"; break;
 			case "BOOL": echo " (".L_PARAM_WIZARD_TYPE_BOOL.")"; break;
 			}
-			echo "<br>".processSlashes($param[desc])."</font>"
-			."</tr>";
+			echo "<br>".processSlashes($param[desc])."</span>"
+			."</td></tr>";
 			if ($iparam > 0) $example .= ":";
 			$example .= $param[example];
 			++$iparam;
 		}
-		echo "</table>"
-		."</p>";
+		echo "</table><br>";
 
 		// write, reread, example params
 		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2>"
@@ -194,14 +191,14 @@ if (is_array($desc[params])) {
 		."</td><td class = tabtxt align=center>"
 		."<a href='javascript:fillParams(\"$example\")'>".L_PARAM_WIZARD_EXAMPLE."</a>";
 	else:
-		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2>";
+		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2><tr><td>";
 		$what = $$list;
-		printf (L_PARAM_WIZARD_NO_PARAMS."</p>", strtolower($what[name]));
+		printf (L_PARAM_WIZARD_NO_PARAMS."<br>", strtolower($what[name]));
 	endif;
 ?>
 </td></tr>
-</table>
-</tr></td>
+</table><br>
+</td></tr></table></td></tr>
 <tr><td class = tabtit>
 <?php 
 if (is_array ($desc[examples])) {
@@ -230,6 +227,9 @@ if (is_array ($desc[examples])) {
   
 /*
 $Log$
+Revision 1.2  2001/10/24 19:39:55  honzam
+corrested wizard html code
+
 Revision 1.1  2001/10/24 18:44:11  honzam
 new parameter wizard for function aliases and input type parameters
 
