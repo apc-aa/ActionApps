@@ -279,6 +279,7 @@ do {
     if($usr_edit AND !($submit_action == "update_submit")) {
       if( !is_array($user_data = GetUser($selected_user)))
         break;
+      $user_login = $user_data[login];
       $user_firstname = $user_data[givenname];
       $user_surname = $user_data[sn];
       $user_password1 = "nOnEwpAsswD";    // unchanged password
@@ -314,7 +315,7 @@ if( $usr_edit OR ($submit_action == "update_submit") )
 # User data ---------------------------------------------------
 
   if( $usr_edit OR ($submit_action == "update_submit") )
-    FrmStaticText( L_USER_ID, $user_data[uid]);
+    FrmStaticText( L_USER_LOGIN, $user_data[login]);
    else
     FrmInputText("user_login", L_USER_LOGIN, $user_login, 50, 50, true);
   FrmInputPwd("user_password1", L_USER_PASSWORD1, $user_password1, 50, 50, true);
@@ -375,8 +376,11 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:07  madebeer
-Initial revision
+Revision 1.2  2000/07/21 14:47:43  kzajicek
+Admin needs to see login names, not IDs (DB specific)
+
+Revision 1.1.1.1  2000/06/21 18:40:07  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:57  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

@@ -178,12 +178,14 @@ function GetUser ($user_id, $flags = 0) {
     return false;
 
   $filter = "objectclass=inetOrgPerson";
-  $result = @ldap_read($ds, $user_id, $filter, array("cn","sn","givenname","mail","telephonenumber"));
+  $result = @ldap_read($ds, $user_id, $filter, 
+               array("uid","cn","sn","givenname","mail","telephonenumber"));
   if (!$result) return false; 
   $entry = ldap_first_entry ($ds, $result);
   $arr = ldap_get_attributes($ds, $entry);
 
   $res["uid"] = $user_id;
+  $res["login"] = $arr["uid"][0];
   if( is_array($arr["givenname"]) )
     $res["givenname"] = $arr["givenname"][0];
   if( is_array($arr["sn"]) )
@@ -662,6 +664,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.3  2000/07/21 14:45:41  kzajicek
+Admin needs to see login names, not IDs (DB specific)
+
 Revision 1.2  2000/07/17 10:31:16  kzajicek
 Fixed login without password bug
 

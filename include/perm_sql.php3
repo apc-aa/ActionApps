@@ -365,10 +365,10 @@ function ChangeUser ($user, $flags = 0) {
   return true;
 }
 
-// returns array(cn, sn, givenname, array(mail), array(phone))
+// returns array(uid, login, cn, sn, givenname, array(mail), array(phone))
 function GetUser ($user_id, $flags = 0) {
   $db  = new DB_AA;
-  $sql = sprintf( "SELECT sn, givenname, mail
+  $sql = sprintf( "SELECT uid, sn, givenname, mail
                      FROM users 
                     WHERE id = '%s'", $user_id);
   $sth = $db->query( $sql );
@@ -377,6 +377,7 @@ function GetUser ($user_id, $flags = 0) {
 
   if ($db->next_record()) {
     $res[uid] = $user_id;
+    $res[login] = $db->f("uid");
     $res[cn] = $db->f("givenname")." ".$db->f("sn");
     $res[sn] = $db->f("sn");
     $res[givenname] = $db->f("givenname");
@@ -599,6 +600,9 @@ function in_array($needle,$haystack)
 
 /*
 $Log$
+Revision 1.5  2000/07/21 14:45:41  kzajicek
+Admin needs to see login names, not IDs (DB specific)
+
 Revision 1.4  2000/07/21 14:34:20  kzajicek
 Sometimes we have to detect from the salt prefix what length of salt was used.
 
