@@ -387,9 +387,7 @@ class itemview {
      $CurItem->set_data($content[$iid]);
      // slice_id... in content is packed!!!
      $p_slice_id = addslashes($content[$iid]["slice_id........"][0]['value']);
-     if (is_array ($this->aliases[$p_slice_id]))
-        $CurItem->aliases = $this->aliases[$p_slice_id];
-     else $CurItem->aliases = $this->aliases;
+     $CurItem->aliases = (is_array($this->aliases[$p_slice_id]) ? $this->aliases[$p_slice_id] : $this->aliases);
   }
 
   // ----------------------------------------------------------------------------------
@@ -507,7 +505,7 @@ class itemview {
           if( !$iid )
             continue;                                     # iid = quoted or short id
 
-          $this->set_columns ($CurItem, $content, $iid);   # set right content for aliases
+          $this->set_columns($CurItem, $content, $iid);   # set right content for aliases
 
             # print item
           $CurItem->setformat( $this->slice_info['fulltext_format'],
@@ -526,69 +524,72 @@ class itemview {
         $group_n = 0;                  # group counter (see group_n slice.php3 parameter)
 
         # negative num_record used for displaying n-th group of items only
-        $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :
-                                        $this->num_records );
+        $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records );
         for( $i=0; $i<$number_of_ids; $i++ ) {
-          $GLOBALS['QueryIDsIndex'] = $i;   # So that _#ITEMINDX = f_e:itemindex can find it
-          # display banner, if you have to
-          if( $this->slice_info['banner_parameters'] &&
-              ($this->slice_info['banner_position']==$i) )
-            $out .= GetView(ParseViewParameters($this->slice_info['banner_parameters']));
+            $GLOBALS['QueryIDsIndex'] = $i;   # So that _#ITEMINDX = f_e:itemindex can find it
+            # display banner, if you have to
+            if( $this->slice_info['banner_parameters'] && ($this->slice_info['banner_position']==$i) ) {
+                $out .= GetView(ParseViewParameters($this->slice_info['banner_parameters']));
+            }
 
 
-          $zidx = $this->from_record+$i;
-          if ($zidx >= $this->zids->count()) continue;
-          $iid = $this->zids->short_or_longids($zidx);
-          if( !$iid ) { huhe("Warning: itemview: got a null id"); continue; }
-          # Note if iid is invalid, then expect empty answers
-          $catname = $content[$iid][$this->group_fld][0]['value'];
-          if ($this->slice_info['gb_header'])
-            $catname = substr($catname, 0, $this->slice_info['gb_header']);
+            $zidx = $this->from_record+$i;
+            if ($zidx >= $this->zids->count()) continue;
+            $iid = $this->zids->short_or_longids($zidx);
+            if( !$iid ) { huhe("Warning: itemview: got a null id"); continue; }
+            # Note if iid is invalid, then expect empty answers
 
-          $this->set_columns($CurItem, $content, $iid);   # set right content for aliases
+            $catname = $content[$iid][$this->group_fld][0]['value'];
+            if ($this->slice_info['gb_header']) {
+                $catname = substr($catname, 0, $this->slice_info['gb_header']);
+            }
 
-          # get top HTML code, unalias it and add scroller, if needed
-          if( !$top_html_already_printed ) {
-            $out = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
-            # we move printing of top HTML here, in order we can use aliases
-            # data from the first found item
-            $top_html_already_printed = true;
-          }
+            $OldItem = $CurItem;  // this could be used in CATEGORY BOTTOM -
+                                  // we need old item aliases & content there
+            $this->set_columns($CurItem, $content, $iid);   # set right content for aliases
+
+            # get top HTML code, unalias it and add scroller, if needed
+            if( !$top_html_already_printed ) {
+                $out = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
+                # we move printing of top HTML here, in order we can use aliases
+                # data from the first found item
+                $top_html_already_printed = true;
+            }
 
             # print category name if needed
-          if($this->group_fld AND strcasecmp ($catname,$oldcat)) {
-            if( $this->num_records >= 0 ) {
-              if ($oldcat != "_No CaTeg") {
-                  $CurItem->setformat( $this->slice_info['category_bottom'] );
-                  $out .= $CurItem->get_item();
-              }
-              $CurItem->setformat( $this->slice_info['category_format'] );
-
-              $out .= $this->slice_info['category_top'];
-              $out .= $CurItem->get_item();
-            } else {
-              $group_n++;
+            if($this->group_fld AND strcasecmp($catname,$oldcat)) {
+                if( $this->num_records >= 0 ) {
+                    if ($oldcat != "_No CaTeg") {
+                        // print bottom category code for previous category
+                        $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $OldItem);
+                    }
+                    $out .= $this->unaliasWithScroller($this->slice_info['category_top'], $CurItem);
+                    $out .= $this->unaliasWithScroller($this->slice_info['category_format'], $CurItem);
+                    $category_top_html_printed = true;
+                } else {
+                    // used to display n-th group only
+                    $group_n++;
+                }
+                $oldcat = $catname;
             }
-            $oldcat = $catname;
-          }
 
-          if( ($this->num_records < 0) AND ($group_n != -$this->num_records ))
-            continue;    # we have to display just -$this->num_records-th group
+            if( ($this->num_records < 0) AND ($group_n != -$this->num_records )) {
+                continue;    // we have to display just -$this->num_records-th group
+            }
 
-            # print item
-          $CurItem->setformat(
-             (($i%2) AND $this->slice_info['even_odd_differ']) ?
-             $this->slice_info['even_row_format'] : $this->slice_info['odd_row_format'],
-             $this->slice_info['compact_remove'] );
+            // print item
+            $CurItem->setformat( (($i%2) AND $this->slice_info['even_odd_differ']) ?
+                                 $this->slice_info['even_row_format'] : $this->slice_info['odd_row_format'],
+                                 $this->slice_info['compact_remove'] );
 
-          $out .= $CurItem->get_item();
-        }
-        if($this->group_fld) {
-            $CurItem->setformat( $this->slice_info['category_bottom'] );
             $out .= $CurItem->get_item();
         }
-        if( !$top_html_already_printed )   # print top HTML even no item found
-          $out = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
+        if ($category_top_html_printed) {
+            $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $CurItem);
+        }
+        if ( !$top_html_already_printed ) {  # print top HTML even no item found
+            $out  = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
+        }
         $out .= $this->unaliasWithScroller($this->slice_info['compact_bottom'], $CurItem);
     }
     trace("-");
