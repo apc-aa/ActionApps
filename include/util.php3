@@ -1185,6 +1185,8 @@ function split_escaped ($pattern, $string, $escape_pattern)
     
 function join_escaped ($pattern, $strings, $escape_pattern)
 {
+    if (!is_array ($strings))
+        $strings = array ($strings);
     reset ($strings);
     while (list (,$val) = each ($strings)) {
         if ($retval) $retval .= $pattern;
