@@ -23,15 +23,33 @@ http://www.apc.org/
 # Logging functions
 #
 
+/*
+
+Events logged into AA log
+type            selector                        parameters
+-------------------------------------------------------------------------------
+BM_CREATE       bookmark id in profile table    name
+BM_UPDATE       bookmark id in profile table    name
+BM_RENAME       bookmark id in profile table    new_name:old_name
+BM_DELETE       bookmark id in profile table    name
+EMAIL_SENT      bookmark id/LIST/TEST           users:valid_emails:emails_sent
+
+*/
+
 # Write log entry
-function writeLog($event, $params="" ) {
+function writeLog($event, $params="", $selector="" ) {
     global $db, $auth, $LOG_EVENTS;
+  
+    if (is_array($params)) {
+      $params = ParamImplode($params);
+    }
   
     $params = addslashes($params);
   
     $SQL = "INSERT into log SET time='". time() ."', 
                                 user='". $auth->auth["uid"] ."',
                                 type='$event',
+                                selector='$selector',
                                 params='$params'";
     $db->query($SQL);
 }
@@ -42,26 +60,31 @@ function writeLog($event, $params="" ) {
 # to - events to date
 # group_by_params - if true, returns events grouped by params and their count as count
 # delete_old_logs - 
-function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_old_logs=false) {
+function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_old_logs=false, $selector="") {
 	
 	$time = time();
 	
+    if (strpos($event, '%') == false) { $like = false; } else { $like = true; } 
+    
     // if "to" isn't set, we use time of query, because of saving log entries
     // written in (and after) query
 	if ($to == "") { $to = $time; }
 	
+    if ($selector != "") { $slctr = " AND selector = '$selector'"; }
+    
 	if ($group_by_param) {
-	    $SQL = "SELECT *,COUNT(*) AS count FROM log WHERE type='$event'";
+	    $SQL = "SELECT *,COUNT(*) AS count FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
 	    if ($from) { $SQL .= " AND time >= '$from'"; }
 	    if ($to) { $SQL .= " AND time <= '$to'";}
+        if ($slctr) { $SQL .= $slctr; }
 	    $SQL .= " GROUP BY params";
 	} else {
-	    $SQL = "SELECT * FROM log WHERE type='$event'";
+	    $SQL = "SELECT * FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
 	    if ($from) { $SQL .= " AND time >= '$from'"; }
 	    if ($to) { $SQL .= " AND time <= '$to'"; }
+        if ($slctr) { $SQL .= $slctr;  }      
 	    // $SQL .= "ORDER BY TIME";
 	}
-	
 	$return = GetTable2Array($SQL);
 	
     // remove old log entries from table
@@ -69,6 +92,7 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
 	    $SQL = "DELETE FROM log WHERE type='$event'";
 	    if ($from) { $SQL .= " AND time >= '$from'"; }
 	    if ($to) { $SQL .= " AND time <= '$to'"; }
+        if ($slctr) { $SQL .= $slctr;  }        
 	    tryQuery($SQL);
     }
 		
