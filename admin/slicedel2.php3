@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 # expected $del - unpacked id of slice to delete
 
-require "../include/init_page.php3";
+require "$directory_depth../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
 require $GLOBALS[AA_INC_PATH] . "msgpage.php3";
 require $GLOBALS[AA_INC_PATH] . "modutils.php3";
@@ -48,58 +48,83 @@ ExitIfCantDelete( $del, $db );
 # delete module (from common module table)
 DeleteModule( $del, $db );
 
-# delete all module specific tables
-$SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_del'";
-$db->query($SQL);
-
-# delete fields
-$SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_del'";
-$db->query($SQL);
-
-# delete items
-$db2  = new DB_AA;
-$SQL = "SELECT id FROM item WHERE slice_id='$p_del'";
-$db->query($SQL);
-while( $db->next_record() )
-  DeleteItem($db2, unpack_id($db->f(id))); # deletes from content, offline and
-                                           # relation tables
-
-# delete items
-$SQL = "DELETE LOW_PRIORITY FROM item WHERE slice_id='$p_del'";
-$db->query($SQL);
-
-# delete feedmap
-$SQL = "DELETE LOW_PRIORITY FROM feedmap WHERE from_slice_id='$p_del'
-                                            OR to_slice_id='$p_del'";
-$db->query($SQL);
-
-# delete feedprms
-$SQL = "DELETE LOW_PRIORITY FROM feedperms WHERE from_id='$p_del'
-                                            OR to_id='$p_del'";
-$db->query($SQL);
-
-# delete email_notify
-$SQL = "DELETE LOW_PRIORITY FROM email_notify WHERE slice_id='$p_del'";
-$db->query($SQL);
-
 # delete slice from permission system -----------------------------------------
 DelPermObject($del, "slice");
-
-# optimize tables -------------------------------------------------------------
-$db->query("OPTIMIZE TABLE module");
-$db->query("OPTIMIZE TABLE slice");
-$db->query("OPTIMIZE TABLE field");
-$db->query("OPTIMIZE TABLE content");
-$db->query("OPTIMIZE TABLE offline");
-$db->query("OPTIMIZE TABLE item");
-$db->query("OPTIMIZE TABLE feedmap");
-$db->query("OPTIMIZE TABLE feedperms");
-$db->query("OPTIMIZE TABLE email_notify");
-$db->query("OPTIMIZE TABLE relation");
+    
+switch ($g_modules[$del]['type']) {
+    case 'Alerts': DeleteAlerts ($del); break;
+    case 'S': DeleteSlice ($del); break;
+    default: echo "Functions for deleting module type ".$g_modules[$slice_id]['type']
+        ." are not yet defined."; exit;
+}
 
 page_close();                                // to save session variables
-go_url(con_url($sess->url(self_base() . "slicedel.php3"),
+go_url(con_url($sess->url($AA_INSTAL_PATH . "slicedel.php3"),
                                           "Msg=".rawurlencode(L_DELSLICE_OK)));
+
+function DeleteAlerts ($module_id) {
+    global $db;
+    
+    $db->query ("SELECT id FROM alerts_collection WHERE moduleid='".q_pack_id($module_id)."'");
+    if (!$db->next_record())
+        return;
+    $collectionid = $db->f ("id");
+    $db->query ("DELETE LOW_PRIORITY FROM alerts_collection_filter WHERE collectionid=$collectionid");
+    $db->query ("DELETE LOW_PRIORITY FROM alerts_user_collection WHERE collectionid=$collectionid");
+    $db->query ("DELETE LOW_PRIORITY FROM alerts_user_collection_filter WHERE collectionid=$collectionid");
+    $db->query ("DELETE LOW_PRIORITY FROM alerts_collection WHERE id=$collectionid");
+    $db->query ("UPDATE LOW_PRIORITY alerts_user SET owner_module_id = NULL 
+        WHERE owner_module_id = '".q_pack_id($module_id)."'");
+}
+
+function DeleteSlice ($del) {
+    global $db;
+    # delete all module specific tables
+    $SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_del'";
+    $db->query($SQL);
+    
+    # delete fields
+    $SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_del'";
+    $db->query($SQL);
+    
+    # delete items
+    $db2  = new DB_AA;
+    $SQL = "SELECT id FROM item WHERE slice_id='$p_del'";
+    $db->query($SQL);
+    while( $db->next_record() )
+      DeleteItem($db2, unpack_id($db->f(id))); # deletes from content, offline and
+                                               # relation tables
+    
+    # delete items
+    $SQL = "DELETE LOW_PRIORITY FROM item WHERE slice_id='$p_del'";
+    $db->query($SQL);
+    
+    # delete feedmap
+    $SQL = "DELETE LOW_PRIORITY FROM feedmap WHERE from_slice_id='$p_del'
+                                                OR to_slice_id='$p_del'";
+    $db->query($SQL);
+    
+    # delete feedprms
+    $SQL = "DELETE LOW_PRIORITY FROM feedperms WHERE from_id='$p_del'
+                                                OR to_id='$p_del'";
+    $db->query($SQL);
+    
+    # delete email_notify
+    $SQL = "DELETE LOW_PRIORITY FROM email_notify WHERE slice_id='$p_del'";
+    $db->query($SQL);
+    
+    # optimize tables -------------------------------------------------------------
+    $db->query("OPTIMIZE TABLE module");
+    $db->query("OPTIMIZE TABLE slice");
+    $db->query("OPTIMIZE TABLE field");
+    $db->query("OPTIMIZE TABLE content");
+    $db->query("OPTIMIZE TABLE offline");
+    $db->query("OPTIMIZE TABLE item");
+    $db->query("OPTIMIZE TABLE feedmap");
+    $db->query("OPTIMIZE TABLE feedperms");
+    $db->query("OPTIMIZE TABLE email_notify");
+    $db->query("OPTIMIZE TABLE relation");
+}
 
 ?>
 
