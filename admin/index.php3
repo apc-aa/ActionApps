@@ -231,8 +231,9 @@ function OpenPreview() {
     name = document.itemsform.elements[i].name
     if( name.substring(0,3) == 'chb') {  //items checkboxes
       if( document.itemsform.elements[i].checked == true) {
-        if( previewwindow != null ) 
+        if ((previewwindow != null) && (!previewwindow.closed)) {
           previewwindow.close()    // in order to preview go on top after open
+        }
         previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(4,name.indexOf(']')),'fullwindow');
         return;
       }  
@@ -579,6 +580,9 @@ echo '
 
 /*
 $Log$
+Revision 1.5  2000/07/25 13:23:36  kzajicek
+Fixed small inaccuracy in OpenPreview (Netscape only).
+
 Revision 1.4  2000/07/12 14:26:40  kzajicek
 Poor printing of the SSI statement fixed
 
