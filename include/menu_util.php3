@@ -134,7 +134,8 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
                     echo "<span class=nbactive>$aamenuprop[label]</span>\n";
                 else if ($slice_id && $aamenuprop["cond"]) {
                      $href = $aamenuprop["exact_href"];
-                     if (!$href) $href = get_aa_url($aamenuprop["href"]);                    
+                     if (!$href) $href = get_aa_url($aamenuprop["href"]);
+                     $href = con_url ($href, "slice_id=$slice_id");
                      echo "<a href=\"$href\">"
                          ."<span class=nbenable>$aamenuprop[label]</span></a>\n";
                 }
@@ -190,10 +191,10 @@ function showSubmenu (&$aamenu, $active)
             if ($itemshow == $active)
                 echo "<span class=leftmenua>".$item["label"]."</span>\n";
             else if (($slice_id || $item["show_always"]) && $item["cond"]) {
-                echo '<a href="';
-                if ($item["exact_href"]) echo $item["exact_href"]; 
-                else echo get_aa_url($item["href"]);
-                echo '" class=leftmenuy>'.$item["label"]."</a>\n";
+                if ($item["exact_href"]) $href = $item["exact_href"]; 
+                else $href = get_aa_url($item["href"]);
+                if ($slice_id) $href = con_url ($href, "slice_id=$slice_id");
+                echo '<a href="'.$href.'" class=leftmenuy>'.$item["label"]."</a>\n";
             }  
             else echo "<span class=leftmenun>".$item["label"]."</span>\n";
             echo "</td></tr>\n";
