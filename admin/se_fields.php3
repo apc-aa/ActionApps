@@ -57,11 +57,8 @@ function ShowField($id, $name, $pri, $required, $show, $type="") {
 	  }
 	  echo "</select>\n
           </td>";
-    } else {
-      $ft = GetFieldType($id);
-      echo "<td class=tabtxt>". 
-        ($field_types[$ft][name] =="" ? $ft : $field_types[$ft][name]) ."</td>";
-    }  
+    } else 
+      echo "<td class=tabtxt>$id</td>";
     echo "  
     <td class=tabtxt><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>
     <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
@@ -227,6 +224,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.12  2001/05/25 16:07:26  honzam
+Field ID is displayed instead of field type
+
 Revision 1.11  2001/05/21 13:52:31  honzam
 New "Field mapping" feature for internal slice to slice feeding
 
