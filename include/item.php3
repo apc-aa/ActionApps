@@ -396,6 +396,15 @@ class item {
       NO_PICTURE_URL);
   }
 
+  # expands and prints a string, if parameters are blank then expands field
+  function f_y($col, $param="") {
+    if ($param) {
+        return($this->unalias($param));
+    } else {
+        return($this->unalias($this->columns[$col][0][value]));
+    }
+  }
+
   # prints height and width of image file or URL referenced in field
   # Could be special case if in uploads directory, so can read directly
   function i_s($col, $param="") {

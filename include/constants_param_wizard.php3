@@ -603,6 +603,13 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
 	"desc"=>_m("prints <i>the field</i> as image source (\<img src=...\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. ")),
 "i_s"=>array("name"=>_m("image size"),
 	"desc"=>_m("prints <i>the field</i> as image width (height='xxx' width='yyy') empty string if cant work out, does not special case URLs from uploads directory, might do later! ")),
+"f_y"=>array("name"=>_m("expanded string"),
+	"desc"=>_m("expands the string in the parameter"),
+	"params"=>array(
+		array("name"=>_m("string to expand"),
+		"desc"=>_m("if specified then this string is expanded, if not specified then expands the contents of the field"),
+		"type"=>"STR",
+		"example"=>"{switch({href_url.........}).+:{href_url.........}}"))),
 "f_j"=>array("name"=>_m("substring with case change"),
 	"desc"=>_m("prints a part of <i>the field</i>"),
 	"params"=>array(
