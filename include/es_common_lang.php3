@@ -91,7 +91,7 @@ define("L_NEW_GROUP", "Nuevo Grupo");
 define("L_EDIT_GROUP", "Editar Grupo");
 
 // cadenas no específicas
-define("NO_PICTURE_URL", AA_INSTAL_URL ."images/pixel_blank.gif");  // imagen utilizada cuando
+define("NO_PICTURE_URL", $AA_INSTAL_PATH ."images/pixel_blank.gif");  // imagen utilizada cuando
   // cuando existe img_source en formato html pero no se encuentra 
   // almacenada en la base de datos img_source  
   // (Usted puede utilizar una imagen en Blanco cuando no existe la imagen)

@@ -89,7 +89,7 @@ define("L_NEW_GROUP", "New Group");
 define("L_EDIT_GROUP", "Edit Group");
 
 // application not specific strings
-define("NO_PICTURE_URL", AA_INSTAL_URL ."images/pixel_blank.gif");  // image used when 
+define("NO_PICTURE_URL", $AA_INSTAL_PATH ."images/pixel_blank.gif");  // image used when 
   // there is img_source in html format string but no img_source is stored in database 
   // (you can use blank pixel for none picture)
 

@@ -72,8 +72,8 @@ if (!$group_id) exit;
 // -->
 </script>
 
-</body></html>
 <?php 
+HTMLPageEnd();
 page_close(); 
 exit;
 ?>

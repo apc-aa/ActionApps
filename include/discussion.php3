@@ -33,7 +33,7 @@ define ("D_ITEM", 6);
 function PrintImg($src, $width=0, $height=0, $path='rel') {
   $width = $width ? "width=$width" : "";
   $height = $height ? "height=$height" : "";
-  $img = (($path=='rel') ? "../images/$src" : AA_INSTAL_URL."images/$src");
+  $img = (($path=='rel') ? "../images/$src" : $GLOBALS[AA_INSTAL_PATH]."images/$src");
   return "<img src=\"$img\" $width $height border='0'></img>";
 }
 
@@ -171,7 +171,7 @@ function GetDiscussionFormat(&$view_info) {
   $format['slice_id'] = $view_info['slice_id'];
   $format['d_form'] = $view_info['remove_string'];
   $format['d_spacer']   = ( $view_info['aditional']  ? $view_info['aditional'] :
-                                                       '<img src="'.AA_INSTAL_URL.'images/blank.gif" width=20 height=1 border="0">');
+                                                       '<img src="'.$GLOBALS[AA_INSTAL_PATH].'images/blank.gif" width=20 height=1 border="0">');
   $format['d_sel_butt'] = ( $view_info['aditional2'] ? $view_info['aditional2'] :
                                                        '<input type=button name=sel_ids value="' .L_D_SHOW_SELECTED. '" onClick=showSelectedComments() class="discbuttons">');
   $format['d_all_butt'] = ( $view_info['aditional3'] ? $view_info['aditional3'] :

@@ -40,17 +40,17 @@ else return;
 $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => 'Slice',
                                 'hide_create_module' => 1,
-                                'directory' => AA_INSTAL_URL ."admin/"),
+                                'directory' => $AA_INSTAL_PATH ."admin/"),
                   'W' => array( 'table' => 'site',
                                 'name' => 'Site',
-                                'directory' => AA_INSTAL_URL ."modules/site/"),
+                                'directory' => $AA_INSTAL_PATH ."modules/site/"),
                   'A' => array( 'table' => 'module', # this module doesn't have any special info yet
                                 'name' => 'MySQL Auth',
                                 'hide_create_module' => 1,
-                                'directory' => AA_INSTAL_URL ."modules/mysql_auth/"),
+                                'directory' => $AA_INSTAL_PATH ."modules/mysql_auth/"),
                   'J' => array( 'table' => 'jump',
                                 'name' => 'Jump inside AA control panel',
-                                'directory' => AA_INSTAL_URL ."modules/jump/"));
+                                'directory' => $AA_INSTAL_PATH ."modules/jump/"));
                   
 # language files for slices (not for some modules, e.g. site)
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
@@ -494,7 +494,7 @@ $VIEW_TYPES_INFO['digest'] = array('aliases' => 'field');
 $VIEW_TYPES_INFO['discus'] = array('modification'=>array('21'=>'timeorder', 
                                                          '22'=>'reverse timeorder', 
                                                          '23'=>'thread' ),
-                                   'aditional' =>array('default'=>'<img src="'.AA_INSTAL_URL.'images/blank.gif" width=20 height=1 border="0">'),
+                                   'aditional' =>array('default'=>'<img src="'.$AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">'),
                                    'aditional2'=>array('default'=>'<input type=button name=sel_ids value="' .L_D_SHOW_SELECTED. '" onClick=showSelectedComments() class="discbuttons">'),
                                    'aditional3'=>array('default'=>'<input type=button name=all_ids value="' .L_D_SHOW_ALL. '" onClick=showAllComments() class="discbuttons">'),
                                    'aditional4'=>array('default'=>'<input type=button name=add_disc value="' .L_D_ADD_NEW. '" onClick=showAddComments() class="discbuttons">'),

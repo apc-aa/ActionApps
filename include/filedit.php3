@@ -148,5 +148,7 @@ else
 //echo "</td></tr></table>";
 echo "</form>";
 
-echo "</td></tr></table></body></html>";
+echo "</td></tr></table>";
+HTMLPageEnd();
+page_close();
 ?>

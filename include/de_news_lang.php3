@@ -44,7 +44,7 @@ define("HTML_PAGE_BEGIN",
  '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//DE">
   <HTML>
   <HEAD>
-  <LINK rel=StyleSheet href="'.AA_INSTAL_URL.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
+  <LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">');
     
 # aa toolkit specific labels
