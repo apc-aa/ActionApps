@@ -257,16 +257,16 @@ echo "<script language =javascript >
  ($BName == "MSIE "
 	? "if( document[\"edt$name\"]){ 
   	   obj_editor = document.edt$name;
-		   document.edt$name.DocumentHTML = \"$val\";"
+			   document.edt$name.DocumentHTML = '$val';"
   : "if( window[\"PropertyAccessor\"] && window[\"edt$name\"]){ 
  		   obj_editor = edt$name;
- 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",\"$val\");").
+	 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",'$val');").
  	"    clearInterval(edt$name"."_timerID);
     } 
     return true;
  } 
  </script>	";
-	echo "<input type=hidden name=\"$name\" value=\"$val\">\n";
+		echo "<input type=hidden name=\"$name\" value='$val'>\n";
         $htmlvar = $name."html";
  	echo "<input type=hidden name=\"$htmlvar\" value=\"h\">\n";
 		
