@@ -31,6 +31,9 @@ href="install.html#toc4">Contents</A>
   </CODE></BLOCKQUOTE>
 <P>
 <P>You should see a list of the files as they are installed. 
+<P><i>There is a <a href="http://www.mail-archive.com/bug-cvs@gnu.org/msg01322.html">bug</a>
+in the current version of CVS 1.11, if you see the error "failed to open ~/.cvspass for reading: No such file or directory"
+when doing the login, then "touch ~/.cvspass" and try again.</i>
 <P>Then edit the Apache configuration file /etc/httpd/conf/httpd.conf, 
 <P>If you want Action Apps available to all domains, then add this line in the 
   global context with the other Aliases, otherwise you can add it to each Virtual 
