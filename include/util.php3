@@ -28,6 +28,7 @@ if (!defined("AA_UTIL_INCLUDED"))
 else return;
 
 require $GLOBALS[AA_INC_PATH]."constants.php3";
+require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 
 function get_aa_url ($href) {
     global $AA_INSTAL_PATH;
@@ -329,21 +330,21 @@ function detect_browser() {
 
   // Browser 
   if(eregi("(msie) ([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
-    { $BName = "MSIE "; $BVersion=$match[2]; }
+    { $BName = "MSIE"; $BVersion=$match[2]; }
   elseif(eregi("(opera) ([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match) || eregi("(opera/)([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match)) 
     { $BName = "Opera"; $BVersion=$match[2]; }
   elseif(eregi("(konqueror)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
     { $BName = "Konqueror"; $BVersion=$match[2]; }
   elseif(eregi("(lynx)/([0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2})",$HTTP_USER_AGENT,$match)) 
-    { $BName = "Lynx "; $BVersion=$match[2]; }
+    { $BName = "Lynx"; $BVersion=$match[2]; }
   elseif(eregi("(links) \(([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
-    { $BName = "Links "; $BVersion=$match[2]; }
+    { $BName = "Links"; $BVersion=$match[2]; }
   elseif(eregi("(netscape6)/(6.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
-    { $BName = "Netscape "; $BVersion=$match[2]; }
+    { $BName = "Netscape"; $BVersion=$match[2]; }
   elseif(eregi("mozilla/5",$HTTP_USER_AGENT)) 
     { $BName = "Netscape"; $BVersion="Unknown"; }
   elseif(eregi("(mozilla)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
-    { $BName = "Netscape "; $BVersion=$match[2]; }
+    { $BName = "Netscape"; $BVersion=$match[2]; }
   elseif(eregi("w3m",$HTTP_USER_AGENT)) 
     { $BName = "w3m"; $BVersion="Unknown"; }
   else{$BName = "Unknown"; $BVersion="Unknown";} 
@@ -769,7 +770,7 @@ function richEditShowable () {
   global $BName, $BVersion; 
 	global $showrich;
 	detect_browser();
-  return (($BName == "MSIE " && $BVersion >= "5.0") || $showrich > "");
+  return (($BName == "MSIE" && $BVersion >= "5.0") || $showrich > "");
 }
 
 function clean_email($line) { 
@@ -1050,93 +1051,6 @@ function gensalt($saltlen)
  return $salt;
 }
 
-/*  Function: html2text
-    Purpose:  strips the HTML tags and lot more to get a plain text version
-*/
-function html2text ($html) {
-    
-    // reverse to htmlentities
-    if (function_exists ("get_html_translation_table")) {
-        $trans_tbl = get_html_translation_table (HTML_ENTITIES);
-	    $trans_tbl = array_flip ($trans_tbl);
-        $html = strtr ($html, $trans_tbl);
-    }
-
-    // strip HTML tags
-    $search = array (
-                 "'<br>'si",
-                 "'</p>'si",
-                 "'<script[^>]*?>.*?</script>'si",  // Strip out javascript
-                 "'<[\/\!]*?[^<>]*?>'si",           // Strip out html tags
-                 "'([\r\n])[ \t]+'",                // Strip out leading white space
-                 "'&(quot|#34);'i",                 // Replace html entities
-                 "'&(amp|#38);'i",
-                 "'&(lt|#60);'i",
-                 "'&(gt|#62);'i",
-                 "'&(nbsp|#160);'i",
-                 "'&#(\d+);'e");                    // evaluate as php
-
-    $replace = array (
-                  "\n",
-                  "\n",
-                  "",
-                  "",
-                  "\\1",
-                  "\"",
-                  "&",
-                  "<",
-                  ">",
-                  " ",
-                  "chr(\\1)");
-
-    return preg_replace ($search, $replace, $html);
-}
-
-/*  Function:    mail_html_text
-    Author:      Jakub Adámek
-    Purpose:     sends safely HTML messages
-    Parameters:  same as PHP mail()
-                 $additional_headers - use \r\n at the end of each row!
-                 $charset - e.g. iso-8859-1, iso-8859-2, windows-1250
-                 $use_base64 - set to 0 if you want to pass the message 8 bit encoded
-    Description: some e-mail clients don't understand HTML. This function creates a multipart message containing both the HTML and the plain-text version of the message (by leaving out the HTML tags). Each e-mail client displays what it understands better (and hides all the rest of the message). */
-
-function mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1) {
-    $boundary = "-------AA-MULTI-".gensalt (20)."------";
-    $encoding = $use_base64 ? "base64" : "8bit";
-    $textmessage = html2text ($message);
-        
-    if ($use_base64) {
-        $message = base64_encode ($message);
-        $textmessage = base64_encode ($message);
-    }
-       
-    // All MIME headers should be terminated by CR+LF (\r\n)
-    // but the headers in the individual parts should only be delimited by LF (\n)
-       
-    $additional_headers .= 
-        "MIME-Version: 1.0\r\n"
-        ."Content-Type: multipart/alternative;\r\n"
-        ." boundary=\"$boundary\"\r\n"
-        ."Content-Transfer-Encoding: $encoding\r\n"
-        ."\r\n"
-        ."--$boundary\n"
-
-        ."Content-Type: text/html; charset=\"$charset\"\n"
-        ."Content-Transfer-Encoding: $encoding\n"
-        ."\n"
-        .$message."\n"
-        ."--$boundary\n"
-
-        ."Content-Type: text/plain; charset=\"$charset\"\n"
-        ."Content-Transfer-Encoding: $encoding\n"
-        ."\r\n"
-        .$textmessage."\n"
-        ."--$boundary--\n";
-        
-     mail ($to, $subject, "", $additional_headers);
-}
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 # Moves uploaded file to given directory and (optionally) changes permissions
@@ -1320,5 +1234,152 @@ function get_formatted_date ($datestring, $format) {
     }
     else return mktime ( $hour, $minute, $second, $month, $day, $year);
 }
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+#                    M A I L   handling utility functions 
+#
+
+/*  Function: html2text
+    Purpose:  strips the HTML tags and lot more to get a plain text version
+*/
+function html2text ($html) {
+    
+    // reverse to htmlentities
+    if (function_exists ("get_html_translation_table")) {
+        $trans_tbl = get_html_translation_table (HTML_ENTITIES);
+	    $trans_tbl = array_flip ($trans_tbl);
+        $html = strtr ($html, $trans_tbl);
+    }
+
+    // strip HTML tags
+    $search = array (
+                 "'<br>'si",
+                 "'</p>'si",
+                 "'<script[^>]*?>.*?</script>'si",  // Strip out javascript
+                 "'<[\/\!]*?[^<>]*?>'si",           // Strip out html tags
+                 "'([\r\n])[ \t]+'",                // Strip out leading white space
+                 "'&(quot|#34);'i",                 // Replace html entities
+                 "'&(amp|#38);'i",
+                 "'&(lt|#60);'i",
+                 "'&(gt|#62);'i",
+                 "'&(nbsp|#160);'i",
+                 "'&#(\d+);'e");                    // evaluate as php
+
+    $replace = array (
+                  "\n",
+                  "\n",
+                  "",
+                  "",
+                  "\\1",
+                  "\"",
+                  "&",
+                  "<",
+                  ">",
+                  " ",
+                  "chr(\\1)");
+
+    return preg_replace ($search, $replace, $html);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+/*  Function:    mail_html_text
+    Author:      Jakub Adámek
+    Purpose:     sends safely HTML messages
+    Parameters:  same as PHP imap_mail() plus:
+                 $additional_headers - use \r\n at the end of each row!
+                 $charset - e.g. iso-8859-1, iso-8859-2, windows-1250
+                 $use_base64 - set to 0 if you want to pass the message 8 bit encoded
+    Description: some e-mail clients don't understand HTML. This function creates a multipart message containing both the HTML and the plain-text version of the message (by leaving out the HTML tags). Each e-mail client displays what it understands better (and hides all the rest of the message). */
+
+function mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1) 
+{
+    $body = mail_html_text_body ($message, $charset, $use_base64);
+    mail ($to, $subject, "", $additional_headers.$body);
+}
+
+function imap_mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1, 
+                              $cc = "", $bcc = "", $rpath = "") 
+{
+    $body = mail_html_text_body ($message, $charset, $use_base64);
+    imap_mail ($to, $subject, "", $additional_headers.$body, $cc, $bcc, $rpath);
+}
+
+function mail_html_text_body ($message, $charset, $use_base64) {
+    $boundary = "-------AA-MULTI-".gensalt (20)."------";
+    $encoding = $use_base64 ? "base64" : "8bit";
+    $textmessage = html2text ($message);
         
+    if ($use_base64) {
+        $textmessage = base64_encode ($textmessage);
+        $message = base64_encode ($message);
+    }
+       
+    // All MIME headers should be terminated by CR+LF (\r\n)
+    // but the headers in the individual parts should only be delimited by LF (\n)
+       
+    return  
+        "MIME-Version: 1.0\r\n"
+        ."Content-Type: multipart/alternative;\r\n"
+        ." boundary=\"$boundary\"\r\n"
+        ."Content-Transfer-Encoding: $encoding\r\n"
+        ."\r\n"
+        ."--$boundary\n"
+
+        ."Content-Type: text/html; charset=\"$charset\"\n"
+        ."Content-Transfer-Encoding: $encoding\n"
+        ."\n"
+        .$message."\n"
+        ."--$boundary\n"
+
+        ."Content-Type: text/plain; charset=\"$charset\"\n"
+        ."Content-Transfer-Encoding: $encoding\n"
+        ."\r\n"
+        .$textmessage."\n"
+        ."--$boundary--\n";
+        
+}        
+
+// used in tabledit.php3 and itemedit.php3
+
+function get_javascript_field_validation () {
+    return "
+        function validate (txtfield, type, required) {
+            var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/; 
+            var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/; 
+            
+            if (txtfield == null)
+                return true;
+            
+            var val = txtfield.value;
+            var err = '';
+            
+            if (val == '' && required)
+                err = '"._m("This field is required.")."';
+            
+            else switch (type) {
+            case 'number': 
+                if (!val.match (/^[0-9]+$/)) 
+                    err = '"._m("Not a valid integer number.")."';
+                break;
+            case 'filename':
+                if (!val.match (/^[0-9a-zA-Z_]+$/)) 
+                    err = '"._m("Not a valid file name.")."';
+                break;
+            case 'email': 
+                if (val.match(invalid_email) || !val.match(valid_email)) 
+                    err = '"._m("Not a valid email address.")."';
+                break;
+            }
+            
+            if (err != '') {
+                alert (err);
+                txtfield.focus();
+                return false;
+            }
+            else return true;
+        }";
+}               
+
 ?>
