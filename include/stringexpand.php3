@@ -93,7 +93,7 @@ function GetAuthData() {
 *                   'permission'
 *                   'role'
 */
-function parseUser($field) {
+function stringexpand_user($field) {
     global $auth_user_info, $cache_nostore, $auth, $slice_id, $perms_roles;
     // this GLOBAL :-( variable is message for pagecache to NOT store views (or
     // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
@@ -125,7 +125,6 @@ function parseUser($field) {
             return $auth_user_info[$_SERVER['PHP_AUTH_USER']][$field][0]['value'];
     }
 }
-
 # text = [ decimals [ # dec_point [ thousands_sep ]]] )
 function parseMath($text) {
     // get format string, need to add and remove # to
@@ -354,7 +353,6 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     #
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which are processed before expanding the function
-
     if( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
@@ -369,17 +367,21 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       return QuoteColons($level, $maxlevel, parseSwitch( substr($out,7) ));
       # QuoteColons used to mark colons, which is not parameter separators.
           }
+/* now caught by stringexpand_user
     elseif( substr($out, 0, 5) == "user:" ) {
       # replace user auth informations
       return QuoteColons($level, $maxlevel, parseUser( substr($out,5) ));
       # QuoteColons used to mark colons, which is not parameter separators.
           }
+*/
     elseif( substr($out, 0, 9) == "inputvar:" ) {
-      # replace intutform field
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
+      # replace inputform field
       return QuoteColons($level, $maxlevel, $contentcache->get($out));
       # QuoteColons used to mark colons, which is not parameter separators.
           }
     elseif( substr($out, 0, 5) == "math(" ) {
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
       # replace math
       return QuoteColons($level, $maxlevel,
         parseMath( # Need to unalias in case expression contains _#XXX or ( )
@@ -388,6 +390,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
           }
     elseif( substr($out, 0, 8) == "include(" ) {
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
       # include file
       if( !($pos = strpos($out,')')) )
         return "";
@@ -396,6 +399,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         # QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( substr($out, 0, 8) == "include:") {
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
         #include file, first parameter is filename, second is hints on where to find it
         $parts = ParamExplode(substr($out,8));
         if (! ($fn = $parts[0]))
@@ -444,6 +448,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         # QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( ereg("^scroller:?([^}]*)$", $out, $parts)) {
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
         if (!isset($itemview) OR ($itemview->num_records<0) ) {   #negative is for n-th grou display
                 return "Scroller not valid without a view, or for group display"; }
         $viewScr = new view_scroller($itemview->slice_info['vid'],
@@ -492,13 +497,16 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts)
       && is_callable("stringexpand_".$parts[1])) {
         $fnctn = "stringexpand_".$parts[1];
-        $parts = ParamExplode($parts[2]);
-        switch(count($parts)) {
-          case 0: $ebres=$fnctn(); break;
-          case 1: $ebres=$fnctn($parts[0]); break;
-          case 2: $ebres=$fnctn($parts[0],$parts[1]); break;
-          case 3: $ebres=$fnctn($parts[0],$parts[1],$parts[2]); break;
-          case 4: $ebres=$fnctn($parts[0],$parts[1],$parts[2],$parts[3]); break;
+        if(!$parts[2]) {
+           $ebres=$fnctn();
+        } else {
+          $parts = ParamExplode($parts[2]);
+          switch(count($parts)) {
+            case 1: $ebres=$fnctn($parts[0]); break;
+            case 2: $ebres=$fnctn($parts[0],$parts[1]); break;
+            case 3: $ebres=$fnctn($parts[0],$parts[1],$parts[2]); break;
+            case 4: $ebres=$fnctn($parts[0],$parts[1],$parts[2],$parts[3]); break;
+          }
         }
         return QuoteColons($level,$maxlevel,$ebres);
     }
@@ -623,7 +631,7 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
     }
 
     if (isset($item)) {
-        return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));
+    return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));
     } else {
         return QuoteColons($level, $maxlevel, $text);
     }

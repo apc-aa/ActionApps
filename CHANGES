@@ -1,3 +1,10 @@
+10/30/03 - fixed bug with $scr->current in slice.php3 (setu)
+10/24/03 - fixed bug with state variable expanding in site module 
+(mitra)  - parseUser becomes stringexpand_user
+10/19/03 - Added mapping to RSS, 
+(mitra)    Added debugpermissions and associatioed reporting
+           Fixed bug with http fetching in php>4.3.0
+10/16/03 - 'Fixed bug in searchlib.php3 - multiple values joined by AND operator
 10/24/03 - added alternative syntax for {@category.......1} -
 (honzam)   {list:category.......1} - behaves in the same way
          - name 'Action Application' replaced by ActionApps

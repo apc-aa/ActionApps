@@ -340,8 +340,8 @@ if(!is_object($scr)) {
 if( $listlen )
   $scr->metapage = $listlen;
 // optional script parameter
-if( $scr_go )
-  $scr->current = $scr_go;
+if( ! $scr_go )
+  $scr_go = 1; // default start page = 1
 // comes from easy_scroller -----------
 if( $scrl && is_object ($scr))
   $scr->update();
@@ -362,7 +362,7 @@ if ( ($easy_query || $srch)
       if( isset($item_ids) AND !is_array($item_ids))
         echo "<div>$item_ids</div>";
       if( !$scrl )
-        $scr->current = 1;
+        $scr->current = $scr_go;
     }
 
     elseif($srch) {            # posted by bigsrch form -------------------
@@ -371,7 +371,7 @@ if ( ($easy_query || $srch)
         $search[slice] = $slice_id;
       $item_ids = SearchWhere($search, $s_col);
       if( !$scrl )
-        $scr->current = 1;
+        $scr->current = $scr_go;
     }
 
     else if ($debug) echo "ERROR: This branch should never be entered.";
@@ -488,7 +488,7 @@ else {
 //  if( isset($item_ids) AND !is_array($item_ids))
 //    echo "<div>$item_ids</div>";
   if( !$scrl )
-    $scr->current = 1;
+    $scr->current = $scr_go;
 
   //$slice_info[category_sort] = false;      # do not sort by categories
 }
@@ -497,7 +497,7 @@ if( !$srch AND !$encap AND !$easy_query ) {
   $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
   pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
 }
-
+//echo "aa - scr->current=$scr->current<br>";
 if( $zids->count() > 0 ) {
   $scr->countPages( $zids->count() );
 

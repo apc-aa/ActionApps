@@ -30,6 +30,9 @@ http://www.apc.org/
 	3	+ list of messages recieved
 	4	+ a list of messages rejected
 	9	lots and lots more
+
+    This program can be called as for example:
+    apc-aa/admin/xmlclient.php3?debugfeed=9&rssfeed_id=16
 */
 
 # handle with PHP magic quotes - quote the variables if quoting is set off

@@ -189,9 +189,10 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
     $item = $aa_rss[items][$item_id];
 
 	// A series of steps to make field specific edits
-    // set fulltext field back from the content field, where it was put by APC for RSS compatability
+    // set fulltext field back from the content field, where it was put by 
+    // APC for RSS compatability
      if ($fulltext_field_id = GetBaseFieldId($aa_rss[fields],"full_text")) {
-	 		        $item[fields_content][$fulltext_field_id][0] = contentvalue($item);
+	    $item[fields_content][$fulltext_field_id][0] = contentvalue($item);
 	 }
 	
   if ($feed[feed_type] == FEEDTYPE_APC) { // Use the APC specific fields from the item 
