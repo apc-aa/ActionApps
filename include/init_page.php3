@@ -31,7 +31,7 @@ if($free)            // anonymous authentication
 require $GLOBALS[AA_INC_PATH] . "locauth.php3";
 require $GLOBALS[AA_INC_PATH] . "scroller.php3";  
 
-$new_sliceid = $slice_id;
+$new_sliceid = $change_id;
  
 if( $encap ) // we can't use AA_CP_Session - it uses more Header information
   page_open(array("sess" => "AA_SL_Session", "auth" => "AA_CP_Auth"));
@@ -78,11 +78,13 @@ $sess->register("r_stored_slice");      // id of slice which values are in r_sli
 $sess->register("r_hidden");            // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
 //$sess->register("r_fields");            // array of fields for current slice
 
-if( $unset_r_hidden OR 
-   ($r_hidden["hidden_acceptor"] != (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF))) {
-  unset( $r_hidden );    // only acceptor can read this values. 
-                         // For others they are destroyed.
-}
+if( !$save_hidden ) {      # sometimes we need to not unset hidden - popup for related stories ...
+  if( $unset_r_hidden OR 
+     ($r_hidden["hidden_acceptor"] != (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF))) {
+    unset( $r_hidden );    // only acceptor can read this values. 
+                           // For others they are destroyed.
+  }
+}  
 
 $ldap_slices = GetUsersSlices( $auth->auth[uid] );
 
@@ -104,29 +106,33 @@ if( $ldap_slices == "all" ) {  // super admin - permission to manage all slices 
   $db->query($SQL);
   while($db->next_record()) {
     $up = unpack_id($db->f(id));
-    $slices[$up] = $db->f(name);
+    $g_slices[$up] = $db->f(name);
   }
 } else {
   # find names for slice ids and hide the deleted ones
   reset($ldap_slices);  
   while( list($slid,) = each($ldap_slices) ) {
     if( $all_slices[$slid] != "" )  
-      $slices[$slid] = $all_slices[$slid];
+      $g_slices[$slid] = $all_slices[$slid];
   }  
 }  
 
 if( !$Add_slice AND !$New_slice ) {
-  if( !is_array($slices)) {   // this slice was deleted
+  if( !is_array($g_slices)) {   // this slice was deleted
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
   }  
   if(!$slice_id) {       // user is here for the first time -  find any slice for him
-    reset($slices);
-    $slice_id = key($slices);
+    reset($g_slices);
+    $slice_id = key($g_slices);
+      # skip AA Core Field slice, if possible
+    if( ($slice_id == "41415f436f72655f4669656c64732e2e") AND next($g_slices) ) 
+      # 41415f436f72655f4669656c64732e2e is unpacked "AA_Core_Fields.."
+      $slice_id = key($g_slices);
     $p_slice_id = q_pack_id($slice_id);
   }    
 
-  if( !isset($slices[$slice_id])) {   // this slice was deleted
+  if( !isset($g_slices[$slice_id])) {   // this slice was deleted
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
   }  
@@ -165,6 +171,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.16  2001/09/27 15:57:59  honzam
+Starting with slice other than AA Core for admins, New related stories support
+
 Revision 1.15  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 
