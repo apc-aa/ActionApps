@@ -70,15 +70,25 @@ function ParseSettings($set) {
 }  
 
 function ParseViewParameters($query_string="") {
-  global $cmd, $set, $vid, $als, $slice_id, $conds, $slices, $mapslices;
+  global $cmd, $set, $vid, $als, $slice_id, $conds, $slices, $mapslices, $debug;
   global $all_ids, $ids, $sel_ids, $add_disc, $sh_itm, $parent_id, $disc_ids, $disc_type;  # used for discussions
 
+  # Parse parameters 
+  # if view in cmd[] or set[] is not specified - fill it from vid
+  if( EReg( "vid=([0-9]*)", $query_string, $parts) ) {
+    $query_string = str_replace( 'cmd[]', "cmd[".$parts[1]."]", $query_string );
+    $query_string = str_replace( 'set[]', "set[".$parts[1]."]", $query_string );
+  }
+
+if( $debug ) {
+  echo "<br>View - query_string:$query_string<br>";
+}
+
+  
+  
   add_vars($query_string);       # adds values from url (it's not automatical in SSIed script)
 
-  # Parse parameters 
-  # if view in cmd[] is not specified ...
-  $cmd4view = ( (!$cmd[$vid] && strpos('x'.$query_string, 'cmd[]') ) ? $cmd[0] : $cmd[$vid]);
-  $command = ParseCommand($cmd4view, $GLOBALS['als']);
+  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
 
   #  This code below do not work!! - it is not the same as the code above!!
   #  (the code above parses only the specific guerystring for this view)
@@ -113,7 +123,7 @@ function ParseViewParameters($query_string="") {
                break;
     case 'd':  $i=1;
                while( $command[$i] ) {
-                 $conds[]=array( 'operator' => $command[$i+1],
+                 $v_conds[]=array( 'operator' => $command[$i+1],
                                  'value' => stripslashes($command[$i+2]),
                                  $command[$i] => 1 );
                  $i += 3;
@@ -121,8 +131,7 @@ function ParseViewParameters($query_string="") {
                break;
   }
 
-  $set4view = ( (!$set[$vid] && strpos('x'.$query_string, 'set[]')) ? $set[0] : $set[$vid]);
-  $arr = ParseSettings($set4view);
+  $arr = ParseSettings($set[$vid]);
 
   #  This code below do not work!! - it is not the same as the code above!!
   #  (the code above parses only the specific guerystring for this view)
@@ -144,7 +153,7 @@ function ParseViewParameters($query_string="") {
   
   $arr['als']=GetAliasesFromUrl(true);
   $arr['vid']=$vid;
-  $arr['conds']=$conds;
+  $arr['conds']=$v_conds;
   $arr['slices']=$slices;
   $arr['mapslices']=$mapslices;
   $arr['param_conds'] = $param_conds; 
