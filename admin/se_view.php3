@@ -27,14 +27,15 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";     // GetAliasesFromField funct def 
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require $GLOBALS[AA_INC_PATH]."discussion.php3";  // GetDiscussionAliases funct def
 
-function OrderFrm($name, $txt, $val) {
-  global $lookup_fields, $vw_data;
+function OrderFrm($name, $txt, $val, $order_fields) {
+  global $vw_data;
   $name=safe($name); $txt=safe($txt);
   echo "<tr><td class=tabtxt><b>$txt</b> ";
   if (!SINGLE_COLUMN_FORM)
     echo "</td>\n<td>";
-  FrmSelectEasy($name, $lookup_fields, $val);
+  FrmSelectEasy($name, $order_fields, $val);
      # direction variable name - construct from $name
   $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
   FrmSelectEasy($dirvarname, array( '0'=>L_ASCENDING, '1' => L_DESCENDING ), 
@@ -182,10 +183,8 @@ echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>
       </SCRIPT>
     </HEAD>";
 
-$xx = ($slice_id!="");
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
-$show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-              "views"=>true, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+$show ["views"] = true;
 require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
 echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
@@ -214,20 +213,25 @@ while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
     case "op":      FrmInputSelect($k, $v, $lookup_op, $vw_data[$k], false, "", DOCUMENTATION_URL); break;
     case "chbox":   FrmInputChBox($k, $v, $vw_data[$k], true); break;
     case "cond":    ConditionFrm($k, $v, $vw_data[$k]); break;
-    case "order":   OrderFrm($k, $v, $vw_data[$k]); break;
+    case "order":   OrderFrm($k, $v, $vw_data[$k], $VIEW_TYPES_INFO[$view_type][order] ? 
+                                     $VIEW_TYPES_INFO[$view_type][order] : $lookup_fields); break;
     case "none": break;
   }
 }  
 echo "</table></td></tr>";
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
-  case 'field': if( $r_fields )
+  case 'field': if ($view_type == 'discus') {
+                   PrintAliasHelp(GetDiscussionAliases());
+                } else {
+                  if( $r_fields )
                   $fields = $r_fields;
                 else
                   list($fields,) = GetSliceFields($slice_id);
                 PrintAliasHelp(GetAliasesFromFields($fields));
+                }
                 break;
-  case 'const': // TODO
+  case 'const': PrintAliasHelp(GetConstantAliases());
                 break;
   case 'none':  break;
 }                
@@ -248,6 +252,9 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.7  2001/09/27 15:45:49  honzam
+Easiest left navigation bar editation, New constant view
+
 Revision 1.6  2001/08/02 20:04:54  honzam
 new - stronger - view condition redefining parameter cmd[]-d
 
