@@ -671,7 +671,9 @@ define("L_NODES_LIST","Seznam uzlù");
 define("L_NODES_ADD_NEW","Pøidání uzlu");
 define("L_NODES_EDIT","Editace uzlu");
 define("L_NODES_NODE_NAME","Jméno uzlu ");
+define("L_NODES_YOUR_NODE","Your node name");
 define("L_NODES_SERVER_URL","URL souboru getxml.php3");
+define("L_NODES_YOUR_GETXML","Your getxml is");
 define("L_NODES_PASWORD","Heslo");
 define("L_SUBMIT","Poslat");
 define("L_NODES_SEL_NONE","Nebyl vybrán uzel");
@@ -755,6 +757,10 @@ define("L_PARAM_WIZARD_LINK", "Prùvodce s nápovìdou");
 
 /*
 $Log$
+Revision 1.10  2001/11/29 08:40:09  mitraearth
+Provides help when using the Nodes screen to configre inter-node feeding
+It informs of the correect values to tell the superadmin of the other node.
+
 Revision 1.9  2001/10/24 18:44:10  honzam
 new parameter wizard for function aliases and input type parameters
 

@@ -744,7 +744,9 @@ define("L_NODES_LIST","Bekannte entfernte Server");
 define("L_NODES_ADD_NEW","Neuen Server hinzufügen");
 define("L_NODES_EDIT","Server bearbeiten");
 define("L_NODES_NODE_NAME","Server-Name");
+define("L_NODES_YOUR_NODE","Your node name");
 define("L_NODES_SERVER_URL","URL der getxml.php3");
+define("L_NODES_YOUR_GETXML","Your getxml is");
 define("L_NODES_PASWORD","Passwort");
 define("L_SUBMIT","OK");
 define("L_NODES_SEL_NONE","Kein Server ausgewählt");
@@ -838,6 +840,10 @@ define("L_PARAM_WIZARD_LINK", "Feld-Assistent");
 
 /*
 $Log$
+Revision 1.4  2001/11/29 08:40:08  mitraearth
+Provides help when using the Nodes screen to configre inter-node feeding
+It informs of the correect values to tell the superadmin of the other node.
+
 Revision 1.3  2001/11/07 22:26:33  udosw
 Another bugfic (CR/LF)s (Sorry)
 

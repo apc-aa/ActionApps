@@ -671,7 +671,9 @@ define("L_NODES_LIST","Known remote nodes");
 define("L_NODES_ADD_NEW","Add new node");
 define("L_NODES_EDIT","Edit node data");
 define("L_NODES_NODE_NAME","Node name");
+define("L_NODES_YOUR_NODE","Your node name");
 define("L_NODES_SERVER_URL","URL of the getxml.php3");
+define("L_NODES_YOUR_GETXML","Your getxml is");
 define("L_NODES_PASWORD","Password");
 define("L_SUBMIT","Submit");
 define("L_NODES_SEL_NONE","No selected node");
@@ -761,6 +763,10 @@ define("L_PARAM_WIZARD_LINK", "Wizard with help");
 
 /*
 $Log$
+Revision 1.53  2001/11/29 08:40:09  mitraearth
+Provides help when using the Nodes screen to configre inter-node feeding
+It informs of the correect values to tell the superadmin of the other node.
+
 Revision 1.52  2001/10/24 18:44:10  honzam
 new parameter wizard for function aliases and input type parameters
 
