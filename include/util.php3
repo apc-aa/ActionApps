@@ -1107,7 +1107,8 @@ function HtmlPageBegin($stylesheet='default', $js_lib=false) {
 '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
   <HTML>
-    <HEAD>';
+    <HEAD>
+      <LINK rel="SHORTCUT ICON" href="'.$GLOBALS['AA_INSTAL_PATH'] .'images/favicon.ico">';
     if ($stylesheet) echo '
       <LINK rel="StyleSheet" href="'.$stylesheet.'" type="text/css">';
     echo '
