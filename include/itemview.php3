@@ -101,7 +101,6 @@ class itemview {
     $this->disc        = $disc;
     $this->parameters  = array();
 
-
     switch( (string)$get_content_funct ) {
         case '1':         // - for backward compatibility when $use_short_ids
                           //   bool value was used instead of $get_content_funct
@@ -189,7 +188,7 @@ class itemview {
   // show list of discussion items --- useful as search form return value
 
   function get_disc_list(&$CurItem) {
-    $CurItem->setformat ($this->slice_info['d_top']);
+    $CurItem->setformat($this->slice_info['d_top']);
     $out = $CurItem->get_item();
     if (is_array ($this->disc['disc_ids'])) {
         $ids = $this->disc['disc_ids'];
@@ -403,7 +402,7 @@ class itemview {
 
     if ($view_type == "discussion") {
       trace("=","","discussion type ".$this->disc['type']);
-      $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
+      $CurItem = new item("", $this->aliases, $this->clean_url);   # just prepare
       $CurItem->set_parameters($this->parameters);
       switch ($this->disc['type']) {
         case 'thread' : $out = $this->get_disc_thread($CurItem); break;
@@ -455,7 +454,7 @@ class itemview {
     trace("=","",$view_type." after content");
     if ($debug) huhl("itemview:get_content: found",$content);
 
-    $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
+    $CurItem = new item("", $this->aliases, $this->clean_url);   # just prepare
     $CurItem->set_parameters($this->parameters);
 
     # process the random selection (based on weight)
@@ -619,7 +618,7 @@ class itemview {
     # send content via reference to be quicker
     function get_output_calendar (&$content) {
         trace("+","get_output_calendar");
-        $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
+        $CurItem = new item("", $this->aliases, $this->clean_url);   # just prepare
         $CurItem->set_parameters($this->parameters);
 
         $month = $this->slice_info['calendar_month'];

@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -42,12 +42,12 @@ class HtmlMail extends HtmlMimeMail {
                 $this->setHeader ($header, $default[$field]);
         }
     }
-    
+
     // header encoding does not seem to work correctly
-	function _encodeHeader($input, $charset = 'ISO-8859-1') {
+    function _encodeHeader($input, $charset = 'ISO-8859-1') {
         return $input;
     }
-    
+
     function setCharset ($charset) {
         $this->setHeadCharset ($charset);
         $this->setHtmlCharset ($charset);
@@ -60,21 +60,21 @@ class HtmlMail extends HtmlMimeMail {
 *   Removes diacritics.
 */
 function html2text ($html) {
-    
+
     // reverse to htmlentities
     if (function_exists ("get_html_translation_table")) {
         $trans_tbl = get_html_translation_table (HTML_ENTITIES);
-	    $trans_tbl = array_flip ($trans_tbl);
+        $trans_tbl = array_flip ($trans_tbl);
         $html = strtr ($html, $trans_tbl);
-    }    
+    }
 
     // Strip diacritics
-    $html = strtr( $html, "áäèïéìíåòóöøšúùüıÁÄÈÏÉÌÍÅÒÓÖØŠÚÙÜİ", 
+    $html = strtr( $html, "áäèïéìíåòóöøšúùüıÁÄÈÏÉÌÍÅÒÓÖØŠÚÙÜİ",
                           "aacdeeilnoorstuuuyzAACDEEILNOORSTUUUYZ");
-                
+
     // Replace URL references <a href="http://xy">Link</a> => Link {http://xy}
     /* We can't directly use preg_replace, because it would find the first <a href
-       and the last </a>. */ 
+       and the last </a>. */
     $ahref = "<[ \t]*a[ \t][^>]*href[ \t]*=[ \t]*[\"\\']([^\"\\']*)[\"\\'][^>]*>";
     preg_match_all ("'$ahref'si", $html, $html_ahrefs);
     $html_parts = preg_split ("'$ahref'si", $html);
@@ -110,23 +110,23 @@ function html2text ($html) {
         // Strip out html tags
         "'<[\/\!]*?[^<>]*?>'si"          => "",
         // Replace html entities
-        "'&(quot|#34);'i" => '"',                 
+        "'&(quot|#34);'i" => '"',
         "'&(amp|#38);'i"  => '&',
         "'&(lt|#60);'i"   => '<',
         "'&(gt|#62);'i"   => '>',
         "'&(nbsp|#160);'i"=> ' ',
         // evaluate as php
-        "'&#(\d+);'e"     => "chr(\\1)");                    
-        
+        "'&#(\d+);'e"     => "chr(\\1)");
+
     reset ($search_replace);
-    while (list ($search, $replace) = each ($search_replace)) 
+    while (list ($search, $replace) = each ($search_replace))
         $html = preg_replace ($search, $replace, $html);
 
     return $html;
 }
 
 // -----------------------------------------------------------------------------
-/** 
+/**
 * (c) Jakub Adamek, Econnect, December 2002
 * Sends email from the table "email" to the address given.
 * First resolves the aliases, working even with the {} inline commands.
@@ -136,58 +136,58 @@ function html2text ($html) {
 *        array $aliases   (optional) array of alias => text
 * @return int count of successfully sent emails
 */
-function send_mail_from_table ($mail_id, $to, $aliases="") 
+function send_mail_from_table ($mail_id, $to, $aliases="")
 {
-    if (! is_array ($aliases)) 
+    if (! is_array ($aliases))
         $aliases = array ("_#dUmMy__aLiAsSs#_" => "");
 
-    // I try to pretend having an item. 
+    // I try to pretend having an item.
     reset ($aliases);
     while (list ($alias, $translate) = each ($aliases)) {
         // I create the "columns"
         $cols[$alias][0] = array (
             "value" => $translate,
             "flag" => FLAG_HTML);
-        // and "aliases" 
+        // and "aliases"
         $als [$alias] = array ("fce"=>"f_h", "param"=>$alias);
     }
-    $item = new Item ("", $cols, $als, "", "" ,"");
+    $item = new item($cols, $als);
     return send_mail_from_table_inner ($mail_id, $to, $item);
 }
 
 // ---------------------------------------------------------------------------
-  
+
 function send_mail_from_table_inner ($mail_id, $to, $item, $aliases = null) {
     global $db, $LANGUAGE_CHARSETS;
     // email has the templates in it
     $db->query("SELECT * FROM email WHERE id = $mail_id");
-    if (!$db->next_record()) 
+    if (!$db->next_record())
         return false;
     $record = $db->Record;
-    reset ($record);       
-    
+    reset ($record);
+
     /* Old version - Jakub's
-    while (list ($key, $value) = each ($record)) 
+    while (list ($key, $value) = each ($record))
         $record[$key] = $item->unalias ($value);
     */
     // Mitra's version, - should be working now
     while (list ($key, $value) = each ($record)) {
         $level = 0; $maxlevel = 0;
 
-	    $record[$key] = new_unalias_recurent($value, "", $level, 
+        $record[$key] = new_unalias_recurent($value, "", $level,
             $maxlevel, $item, null, $aliases);
     }
-    
-    if (! is_array ($to)) 
+
+    if (! is_array ($to))
         $tos = array ($to);
     else $tos = $to;
-    
+
     $sent = 0;
-    
+
     if ($tos[0] == "jakubadamek@ecn.cz")
-        $record["body"] .= "<br>Text version is:<hr>" . 
+        $record["body"] .= "<br>Text version is:<hr>" .
             nl2br(HtmlEntities(html2text ($record["body"])));
-    
+
     $mail = new HtmlMail;
     if ($record["html"])
         $mail->setHtml ($record["body"], html2text ($record["body"]));
@@ -200,7 +200,7 @@ function send_mail_from_table_inner ($mail_id, $to, $item, $aliases = null) {
     foreach ($tos as $to) {
         if (! $to)
             continue;
-            
+
         if (! $GLOBALS["EMAILS_INTO_TABLE"]) {
             #huhl("Sending mail $to");
             if ($mail->send (array ($to)))
@@ -215,7 +215,7 @@ function send_mail_from_table_inner ($mail_id, $to, $item, $aliases = null) {
                 $sent ++;
         }
     }
-    
+
     return $sent;
 }
 

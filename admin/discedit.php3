@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ function getHeadline($content4id) {
 if(!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to edit all items."), "items");
   exit;
-}  
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
@@ -108,8 +108,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   ?>
   <form method="post" action=<?php echo sess_return_url(self_base()."index.php3") ?> >
   <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-  <tr><td class=tabtit><b>&nbsp;<?php 
-     echo _m("Item: ")." $headline</b> (". 
+  <tr><td class=tabtit><b>&nbsp;<?php
+     echo _m("Item: ")." $headline</b> (".
            $content[$item_id]["disc_app........"][0][value]. "/".
            $content[$item_id]["disc_count......"][0][value]. ")" ?> </td></tr>
   <tr><td>
@@ -127,7 +127,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
       <tr><td colspan=9>&nbsp;</td></tr>
 
  <?php
-  $item = new item("","",$aliases,"","","");
+  $item = new item("",$aliases);
   $i=0;
   if (!$outcome)
     echo "<tr><td colspan=9 align=center class=tabtxt>". _m("No discussion comments") ."<br><br></td></tr>";

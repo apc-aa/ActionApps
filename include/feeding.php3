@@ -23,6 +23,8 @@ http://www.apc.org/
 # Functions for feeding
 #
 
+require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3"; // for translateString()
+
 # Find fields mapping.
 function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to="") {
   global $db;
@@ -42,19 +44,19 @@ function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to=
               AND to_slice_id = '$p_to_slice_id'";
   $db->query($SQL);
   while( $db->next_record() ) {
-    switch ($db->f(flag)) {
+    switch ($db->f('flag')) {
     case FEEDMAP_FLAG_MAP:
-        $val = $db->f(from_field_id); break;
+        $val = $db->f('from_field_id'); break;
     case FEEDMAP_FLAG_VALUE:
     case FEEDMAP_FLAG_JOIN:
-        $val = $db->f(value); break;
+        $val = $db->f('value'); break;
     case FEEDMAP_FLAG_RSS:
         huhe("Warning: RSS field mapping appearing in non RSS feed");
         $val = ""; break;
     default:
         $val = ""; break;
     }
-    $m[$db->f(to_field_id)] = array("feedmap_flag"=>$db->f(flag),"val"=>$val);
+    $m[$db->f('to_field_id')] = array("feedmap_flag"=>$db->f('flag'),"val"=>$val);
   }
 
   reset( $fields_to ) ;
@@ -189,8 +191,6 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
   $content4id = $content[$item_id];   # shortcut
   $oldcontent4id = $content4id;
 
-// print_r($content4id);
-
   $catfieldid = GetCategoryFieldId( $fields );
 
   if( $catfieldid AND ( (string)$tocategory != "0" ) ) {
@@ -222,16 +222,14 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
             $new4id[$newfld][0][flag] |= FLAG_FREEZE | FLAG_UPDATE;   #update and don't allow to change
         }
         break;
-
         // in value you can specify not only new value but you can write there
         // also AA expression, which is unaliased - example:
         // <a href="{source_href.....}">{source..........}</a>
       case FEEDMAP_FLAG_VALUE :
         // create item from source data (in order we can unalias)
         if ( !$item2fed ) {
-          $item2fed = new item('', $content4id, GetAliasesFromFields($fields));
+          $item2fed = new item($content4id, GetAliasesFromFields($fields));
         }
-// for apc-aa-dev - ne version:       $item2fed =  new item($content4id='', $aliases='', $clean_url='', $format='', $remove='', $param=false){
         $new4id[$newfld][0]['value'] = $item2fed->unalias($val);
         break;
       case FEEDMAP_FLAG_JOIN:
@@ -269,7 +267,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
       $new4id[$f_id] = $content4id[$f_id];
   }
                                              # insert, invalidatecache, not feed
-  if ( StoreItem( $id, $destination, $new4id, $fields_to, true, true, false, $oldcontent4id ) ) {
+  if ( StoreItem( $id, $destination, $new4id, $fields_to, true, true, false, $oldcontent4id, 'feed' ) ) {
       AddRelationFeed($id,$item_id); // Add to relation table
   }
   return $id;
@@ -345,6 +343,10 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
     if ($map[$key][feedmap_flag] != FEEDMAP_FLAG_MAP)    # skip field, if field from source item is not mapped to dest
       continue;
     $val = $map[$key][val];
+    // There is a question if we would not handle status_code in special way.
+    // Current setting is, that if source slice admin sets status_code
+    // as update&change, then status_code is changed also in destination slice
+    // - Source admin APPROVE OR TRASHES items in destiation slice !!!
     if (($fval[0][flag] & FLAG_UPDATE) || $fields[$val][feed]==STATE_FEEDABLE_UPDATE )
        $oldcontent4id[$key][0][value] = quote($content4id[$val][0][value]);
      else
@@ -352,7 +354,7 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
        # we have to quote - data is from database
   }
   StoreItem( $dest_id, $destination, $oldcontent4id, $fields_to, false, true, false,
-    $backup_oldcontent4id );
+    $backup_oldcontent4id, 'feed' );
                                         # update, invalidatecache, not feed
 }
 

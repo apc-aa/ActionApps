@@ -4,7 +4,6 @@ require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
 require_once $GLOBALS["AA_INC_PATH"]."item_content.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
 add_post2shtml_vars (false);
 
@@ -12,7 +11,7 @@ $email_templates = GetUserEmails ();
 asort ($email_templates);
 
 if (! $example_email) {
-    $me = GetUser ($auth->auth["uid"]);  
+    $me = GetUser ($auth->auth["uid"]);
     $example_email = $me["mail"][0];
 }
 
@@ -23,12 +22,12 @@ if ($send_example_email || $send_emails) {
     while (list ($item_xid) = each ($chb)) {
         $itemContent->setByItemID (substr ($item_xid, 1));
         $to = $itemContent->getValue (FIELDID_EMAIL);
-        
+
         list($fields) = GetSliceFields ($slice_id);
         $aliases = GetAliasesFromFields($fields);
-        $item = new Item ("", $itemContent->getContent(), $aliases, "", "" ,"");
-    
-        if ($send_example_email)    
+        $item = new item($itemContent->getContent(), $aliases);
+
+        if ($send_example_email)
             $to = $example_email;
 
         $mail_count += send_mail_from_table_inner ($email_template, $to, $item);
@@ -39,14 +38,14 @@ if ($send_example_email || $send_emails) {
 }
 
 $wizard_steps[1] = array (
-    "brief" => is_array ($chb) 
+    "brief" => is_array ($chb)
          ? _m("Select readers<br><i>%1 reader(s) selected</i>", array(count($chb)))
          : _m("Select readers"),
     "desc" => ! is_array ($chb)
-        ? "<b>"._m("You can not proceed until you select at least one reader!")."</b> " 
+        ? "<b>"._m("You can not proceed until you select at least one reader!")."</b> "
         . _m("Find readers using the Search conditions in Item Manager.")
         : "",
-    "aa_href" => "admin/index.php3"    
+    "aa_href" => "admin/index.php3"
     );
 $wizard_steps[] = array (
     "brief" => _m("Create or edit email template"),
@@ -64,7 +63,7 @@ $wizard_steps[] = array (
     "inner" => 1,
     "nolink" => 1,
     "desc" => '<input type=text name=example_email value="'.$example_email.'">&nbsp;
-        <input type=submit name=send_example_email value="'._m("Go!").'">');    
+        <input type=submit name=send_example_email value="'._m("Go!").'">');
 $wizard_steps[] = array (
     "brief" => _m("Send emails"),
     "nolink" => 1,
@@ -73,7 +72,7 @@ $wizard_steps[] = array (
 $wizard_steps[] = array (
     "brief" => _m("Delete the email template"),
     "javascript" => "delete_email_template();",
-    "desc" => _m("If this was a one-off template, delete it."));        
+    "desc" => _m("If this was a one-off template, delete it."));
 
 HTMLPageBegin ();
 echo "<title>"._m("Send Emails Wizard")."</title>
@@ -108,7 +107,7 @@ while (list ($istep, $wizard_step) = each ($wizard_steps)) {
     if (! $wizard_step["nolink"]) {
         echo '<a href="javascript:document.wizard_form.step.value='.$istep.';';
         if ($wizard_step["aa_href"])
-            echo 'top.aaFrame.location.href=\''.$sess->url($AA_INSTAL_PATH.$wizard_step["aa_href"]).'\';';        
+            echo 'top.aaFrame.location.href=\''.$sess->url($AA_INSTAL_PATH.$wizard_step["aa_href"]).'\';';
         echo $wizard_step["javascript"].'document.wizard_form.submit()">';
     }
     echo _m("Step"), " ", $istep, ":";
