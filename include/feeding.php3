@@ -43,14 +43,14 @@ function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to=
   $db->query($SQL);
   while( $db->next_record() ) {
   	switch ($db->f(flag)) {
-	case FEEDMAP_FLAG_MAP:
-		$val = $db->f(from_field_id); break;
-	case FEEDMAP_FLAG_VALUE:
-	case FEEDMAP_FLAG_JOIN:
-		$val = $db->f(value); break;
-	default:
-		$val = ""; break;
-	}
+  	case FEEDMAP_FLAG_MAP:
+  		$val = $db->f(from_field_id); break;
+  	case FEEDMAP_FLAG_VALUE:
+  	case FEEDMAP_FLAG_JOIN:
+  		$val = $db->f(value); break;
+  	default:
+  		$val = ""; break;
+  	}
     $m[$db->f(to_field_id)] = array("feedmap_flag"=>$db->f(flag),"val"=>$val);
   }
 
@@ -155,7 +155,7 @@ function FeedJoin ($columns, $fields, $params, &$result)
 				$result_val .= $columns[$val][0][value];
 			else $result_val .= $val;
 		}
-		else $result_val .= $val;
+		else $result_val .= str_replace('\n',"\n",$val);
 	}
 	$result[flag] |= FLAG_UPDATE;
 	//if ($update != 1) // the function "update" doesn't support joined fields
@@ -172,6 +172,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
 
   if( $destination == $from_slice_id )  # don't feed into the same slice
     return false;
+
   if (isItemFed($item_id, $destination)) # don't feed if the item is already fed.
     return false;
 
@@ -186,7 +187,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
   $content4id = $content[$item_id];   # shortcut
 
 // print_r($content4id);
-  
+
   $catfieldid = GetCategoryFieldId( $fields );
 
   if( $catfieldid AND ( (string)$tocategory != "0" ) ) {
@@ -420,62 +421,9 @@ function DeleteItem($db, $id) {
   $db->query($SQL);
 
   # delete feeding relation
-
   $SQL = "DELETE LOW_PRIORITY FROM relation WHERE (source_id='$p_itm_id'
                                                OR destination_id='$p_itm_id')
                                               AND flag & ".REL_FLAG_FEED;
   $db->query($SQL);
 }  
-
-/*
-$Log$
-Revision 1.15  2001/12/18 12:02:19  honzam
-new possibility to join fields when fields are fed to another slice
-
-Revision 1.14  2001/08/23 09:58:49  honzam
-fixed two bugs with feeding: Error with next_record() and problems with  quoting already fed items.
-
-Revision 1.13  2001/06/21 14:15:44  honzam
-feeding improved - field value redefine possibility in se_mapping.php3
-
-Revision 1.12  2001/06/12 16:07:22  honzam
-new feeding modes -  "Feed & update" and "Feed & update & lock"
-
-Revision 1.11  2001/05/21 13:52:32  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.10  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.9  2001/04/17 21:32:08  honzam
-New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
-
-Revision 1.8  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.7  2001/03/07 14:34:01  honzam
-fixed bug with radiobuttons dispaly
-
-Revision 1.6  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.5  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.2  2000/07/07 21:28:17  honzam
-Both manual and automatical feeding bug fixed
-
-Revision 1.1.1.1  2000/06/21 18:40:38  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:23  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.4  2000/06/12 21:41:24  madebeer
-removed whitespace from config-ecn.inc
-
-added $Id $Log and $Copyright to some stray files
-
-*/
 ?>
