@@ -1,3 +1,6 @@
+01/17/02 - Documentation - ref to GD (but no instructions) 
+	 -- and ref FAQ for developer CVS install
+	 - stringexpand: do unalias on results of expanding apc_state or als
 01/16/02 - added functions to module/site/site.php3 for site_* files (mitra)
          -- ModW_id2item - convert id to item enabling aliases etc
 	 -- ModW_arr2str - convert array back to string
