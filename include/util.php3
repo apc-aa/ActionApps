@@ -908,4 +908,80 @@ function CountHit($id, $column='id') {
           WHERE $where";
   $db->query($SQL);
 }  
+
+
+function is_field_type_numerical ($field_type) {
+    $number_db_types = array ("float","double","decimal","int", "timestamp");
+
+    while ($n_col = each ($number_db_types)) 
+        if (strstr ($field_type, $n_col)) 
+            return true;
+    
+    return false;
+}
+
+/*  function: CopyTableRows
+    author:   Jakub Adámek
+    purpose:  copies rows within a table changing only given columns and omitting given columns
+	returns:  true if all additions succeed, false otherwise
+    
+    $table .. table name
+    $where .. where condition (filter)
+    $set_columns .. array ($column_name => $value, ...) - fields the value of which will be changed
+    [optionally] $omit_columns .. array ($column_name, ...) - fields to be omitted
+    [optionally] $id_columns .. array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
+*/
+
+function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $id_columns = array()) {
+    if ($GLOBALS[debug]) {
+        echo "CopyTableRows: SELECT * FROM $table WHERE $where<br>
+        set_columns = ";
+        print_r ($set_columns);
+        echo "<br>omit_columns = ";
+        print_r ($omit_columns);
+        echo "<br>";
+    }
+
+    global $db;
+    $varset = new CVarset();
+
+    $columns = $db->metadata ($table);
+
+    if ($GLOBALS[debug]) $rows = 0;
+        
+    $data = GetTable2Array ("SELECT * FROM $table WHERE $where", $db);
+    if (!is_array ($data))
+        return true;
+        
+    reset ($data);
+    while (list (,$datarow) = each ($data)) {
+		$varset->Clear();
+        reset ($columns);
+        
+        // create the varset
+        while (list (,$col) = each ($columns)) {
+            if (my_in_array ($col["name"], $omit_columns)) 
+                continue;
+
+            if (is_field_type_numerical ($col["type"]))
+                 $type = "number";
+            else $type = "text";
+                
+            // look into $set_columns
+            if (isset ($set_columns[$col["name"]]))
+                 $val = $set_columns[$col["name"]];
+            else if (my_in_array ($col["name"], $id_columns))
+                 $val = q_pack_id(new_id());
+            else $val = $datarow[$col["name"]];
+            
+            $varset->set ($col["name"],$val,$type);
+        }
+        
+        if ($GLOBALS[debug]) { echo "Row $rows<br>"; $rows ++; }
+        
+        if (!$db->query ("INSERT INTO $table ".$varset->makeINSERT()))
+			return false;
+    }
+	return true;
+}
 ?>
