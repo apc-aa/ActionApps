@@ -398,7 +398,7 @@ function GetTableView ($viewID) {
         "mainmenu" => "sliceadmin",
         "submenu" => "te_alerts_admin",
         "buttons_down" => array ("update"=>1),
-        "attrs" => array ("table" => "border=1"),
+        "attrs" => array ("table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"),    
         "type" => "edit",
         "readonly" => false,
         "addrecord" => false,
