@@ -1,6 +1,6 @@
 //$Id$
-/* 
-Copyright (C) 2002 Association for Progressive Communications 
+/*
+Copyright (C) 2002 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -18,15 +18,15 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* These are JavaScript functions used by the fillform script. 
-	They should run on Netscape 4.7 as well as Internet Explorer 5.0 and above.
+/* These are JavaScript functions used by the fillform script.
+    They should run on Netscape 4.7 as well as Internet Explorer 5.0 and above.
 
-	Created by Jakub Adamek, January 2002 */ 
+    Created by Jakub Adamek, January 2002 */
 
 myAlertCount = 0;
 
 function myAlert (x) {
-	if (myAlertCount++ < 150) alert (x);
+    if (myAlertCount++ < 150) alert (x);
 }
 
 function dec2hex (dec) {
@@ -35,203 +35,203 @@ function dec2hex (dec) {
     while (dec > 0) {
         digit = dec % 16;
         if (digit < 10)
-			 hex = String.fromCharCode (digit + 48) + hex; // '0' is 48 ASCII
-		else hex = String.fromCharCode (digit + 87) + hex; // 'a' is 97 ASCII
+             hex = String.fromCharCode (digit + 48) + hex; // '0' is 48 ASCII
+        else hex = String.fromCharCode (digit + 87) + hex; // 'a' is 97 ASCII
         dec = Math.floor (dec / 16);
     }
     return hex;
-}      
+}
 
 function unpackID (packedID)
 {
     retval = "";
-    for (i = 0; i < packedID.length; i ++) 
+    for (i = 0; i < packedID.length; i ++)
         retval += dec2hex (packedID.charCodeAt (i));
     return retval;
 }
 
 function hex2dec (hex) {
-	hex = hex.toUpperCase();
-	dec = 0;
-	for (i=0; i < hex.length; ++i) {
-		dec *= 16;
-		c = hex.charAt (i);
-		if (c >= '0' && c <= '9') 
-			dec += hex.charCodeAt (i) - 48; // '0' is 48 ASCII
-		else if (c >= 'A' && c <= 'F')
-			dec += hex.charCodeAt (i) - 55; // 'A' is 65 ASCII
-		else { /*alert ('Error: hex2dec called with ' + hex);*/	return 0; }
-	}
-	return dec;
+    hex = hex.toUpperCase();
+    dec = 0;
+    for (i=0; i < hex.length; ++i) {
+        dec *= 16;
+        c = hex.charAt (i);
+        if (c >= '0' && c <= '9')
+            dec += hex.charCodeAt (i) - 48; // '0' is 48 ASCII
+        else if (c >= 'A' && c <= 'F')
+            dec += hex.charCodeAt (i) - 55; // 'A' is 65 ASCII
+        else { /*alert ('Error: hex2dec called with ' + hex);*/	return 0; }
+    }
+    return dec;
 }
 
 function packID (unpackedID) {
-	var packedID = new String ();
-	for (j=0; j < unpackedID.length; j += 2) {
-		code = hex2dec (unpackedID.substr (j,2));
-		if (code != 0) 
-			packedID += String.fromCharCode (code);
-		else return '';
-	}
-	return packedID;
-}		
+    var packedID = new String ();
+    for (j=0; j < unpackedID.length; j += 2) {
+        code = hex2dec (unpackedID.substr (j,2));
+        if (code != 0)
+            packedID += String.fromCharCode (code);
+        else return '';
+    }
+    return packedID;
+}
 
 /* prooves all given fields are filled
-	params: fields = array of controls' names */ 
-	
+    params: fields = array of controls' names */
+
 function prooveFilled (formName, fields) {
-	var myform = document.forms[formName];
-	for (var i=0; i < fields.length; ++i) {
-		val = getControlValue (formName, fields[i]);
-		if (val == "") {
-			myform[fields[i]].focus();
-			alert ("You didn't fill in some required field.");
-			return false;
-		}
-	}
-	return true;
+    var myform = document.forms[formName];
+    for (var i=0; i < fields.length; ++i) {
+        val = getControlValue (formName, fields[i]);
+        if (val == "") {
+            myform[fields[i]].focus();
+            alert ("You didn't fill in some required field.");
+            return false;
+        }
+    }
+    return true;
 }
 
 /* gets array of 3-items arrays (field name, parent field name, parent field value)
-	if (parent_field_name contains parent_field_value) 
-	or (parent_field_name is filled and parent_field_value is empty)
-	then proove field_name is filled
-	params: fields = array of controls' names */ 
+    if (parent_field_name contains parent_field_value)
+    or (parent_field_name is filled and parent_field_value is empty)
+    then proove field_name is filled
+    params: fields = array of controls' names */
 
 function prooveFilledIf (formName, fields) {
-	var myform = document.forms[formName];
-	for (var i=0; i < fields.length; ++i) {
-		parVal = getControlValue (formName, fields[i][1]);
-		val = fields[i][2];
-		proove = (val == "" && parVal != "") || (parVal == val);
-		if (!proove) {
-			myform[fields[i][0]].focus;
-			alert ("You didn't fill in some required field.");
-			return false;
-		}
-	}
+    var myform = document.forms[formName];
+    for (var i=0; i < fields.length; ++i) {
+        parVal = getControlValue (formName, fields[i][1]);
+        val = fields[i][2];
+        proove = (val == "" && parVal != "") || (parVal == val);
+        if (!proove) {
+            myform[fields[i][0]].focus;
+            alert ("You didn't fill in some required field.");
+            return false;
+        }
+    }
 }
 
 function getSelected (selectBox) {
-	return selectBox.options [selectBox.selectedIndex].value;
+    return selectBox.options [selectBox.selectedIndex].value;
 }
 
 // the crazy Netscape returns 104 as year 2004 (hoping nobody will use it in the 21th century perhaps)
 function getYearNetscapeSafe (myDate) {
-	year = myDate.getYear();
-	if (year < 200) year += 1900;
-	return year;
+    year = myDate.getYear();
+    if (year < 200) year += 1900;
+    return year;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-	A A   D A T E   F U N C T I O N 
+    A A   D A T E   F U N C T I O N
 
-	Functions working with AA-like date: 
-	It is in three select boxes (day,month,year), which usually have the name in the form of
-	tdctr_vUNPACKED_FIELD_NAME_day, .._month, .._year
-	
-	'Cause it's used in public forms as well, we assume the web author added one option
-	marking not used fields. 
-*/ 
-	
+    Functions working with AA-like date:
+    It is in three select boxes (day,month,year), which usually have the name in the form of
+    tdctr_vUNPACKED_FIELD_NAME_day, .._month, .._year
+
+    'Cause it's used in public forms as well, we assume the web author added one option
+    marking not used fields.
+*/
+
 /* saves the date value from an AA-like 3-field form to targetField in m/d/y format
- 	emptyValue in any of the 3 select-boxes means date is not set */ 
+    emptyValue in any of the 3 select-boxes means date is not set */
 
 function saveDate (formName,dateField,targetField,emptyValue) {
-	myDate = getAADate (formName,dateField,emptyValue);
-	var myField = document.forms[formName][targetField];
-	if (myDate != 0) {
-		var d = new Date();
-		d.setTime (myDate);
-		year = getYearNetscapeSafe(d);
-		month = d.getMonth()+1;
-		myField.value = month+"/"+d.getDate()+"/"+year;
-	}
-	else myField.value = "";
+    myDate = getAADate (formName,dateField,emptyValue);
+    var myField = document.forms[formName][targetField];
+    if (myDate != 0) {
+        var d = new Date();
+        d.setTime (myDate);
+        year = getYearNetscapeSafe(d);
+        month = d.getMonth()+1;
+        myField.value = month+"/"+d.getDate()+"/"+year;
+    }
+    else myField.value = "";
 }
 
 /* sets given date in an AA-like form
- params: startYear is the top year in the year select box */ 
- 
+ params: startYear is the top year in the year select box */
+
 function setDay (formName,dateField,startYear,myDate) {
-	tryDate = new Date (2000,1,1);
-	dayShift = 1-tryDate.getDate();
-	document.forms[formName][dateField+"_day"].selectedIndex   = myDate.getDate()-dayShift-1;
-	document.forms[formName][dateField+"_month"].selectedIndex = myDate.getMonth();
-	document.forms[formName][dateField+"_year"].selectedIndex  = getYearNetscapeSafe(myDate)-startYear;
+    tryDate = new Date (2000,1,1);
+    dayShift = 1-tryDate.getDate();
+    document.forms[formName][dateField+"_day"].selectedIndex   = myDate.getDate()-dayShift-1;
+    document.forms[formName][dateField+"_month"].selectedIndex = myDate.getMonth();
+    document.forms[formName][dateField+"_year"].selectedIndex  = getYearNetscapeSafe(myDate)-startYear;
 }
 
 /* sets today's date in an AA-like form
- params: startYear is the top year in the year select box */ 
+ params: startYear is the top year in the year select box */
 
 function setToday (formName,dateField, startYear) {
-	setDay (formName,dateField,startYear, new Date());
+    setDay (formName,dateField,startYear, new Date());
 }
 
 /* returns a date read from the fields of an AA-like form as Unix timestamp
-	emptyValue in any of the day,month,year select boxes will return 0 */ 
+    emptyValue in any of the day,month,year select boxes will return 0 */
 
 function getAADate (formName,dateField,emptyValue) {
-	var f = document.forms[formName];
-	month = getSelected(f[dateField+"_month"]);
-	day = getSelected(f[dateField+"_day"]);
-	year = getSelected(f[dateField+"_year"]);
-	if (month != emptyValue && day != emptyValue && year != emptyValue)
-		return new Date (year,month-1,day).getTime();
-	else
-		return 0;
-}	 
+    var f = document.forms[formName];
+    month = getSelected(f[dateField+"_month"]);
+    day = getSelected(f[dateField+"_day"]);
+    year = getSelected(f[dateField+"_year"]);
+    if (month != emptyValue && day != emptyValue && year != emptyValue)
+        return new Date (year,month-1,day).getTime();
+    else
+        return 0;
+}
 
 /* Function: setControlOrAADate
    Purpose: sets different control types in a common way
-   
-   Sets the control, trying: 
-	1. given controlName - if succeeds, tries to set the HTML radio button as well
-	2. controlName + '[]' - usefull on multiple selectboxes, checkboxes, radios
-	3. AA date
 
-	sets the AA like date in 3 select boxes:
-	Params:
-		datePrefix is usually tdctr_ on forms created from itemedit.php3, '' on search forms
-		html is usually 'h' for HTML, 't' for Plain text, 0 when not needed 
-*/ 
+   Sets the control, trying:
+    1. given controlName - if succeeds, tries to set the HTML radio button as well
+    2. controlName + '[]' - usefull on multiple selectboxes, checkboxes, radios
+    3. AA date
+
+    sets the AA like date in 3 select boxes:
+    Params:
+        datePrefix is usually tdctr_ on forms created from itemedit.php3, '' on search forms
+        html is usually 'h' for HTML, 't' for Plain text, 0 when not needed
+*/
 
 function setControlOrAADate (formName, controlName, newValue, datePrefix, html, timeZone) {
-	if (getControlByName (formName, controlName) != null) {
-		setControl (formName, controlName, newValue);
-		if (html) setControl (formName, controlName+'html', html);
-	}
-	else if (getControlByName (formName, controlName+"[]") != null)
-		setControl (formName, controlName+"[]", newValue);
-	else if (!isNaN (newValue)) {
-		myName = datePrefix + controlName;
-		if (getControlByName (formName, myName+'_day') != null) { 
-			var myDate = new Date ();
+    if (getControlByName (formName, controlName) != null) {
+        setControl (formName, controlName, newValue);
+        if (html) setControl (formName, controlName+'html', html);
+    }
+    else if (getControlByName (formName, controlName+"[]") != null)
+        setControl (formName, controlName+"[]", newValue);
+    else if (!isNaN (newValue)) {
+        myName = datePrefix + controlName;
+        if (getControlByName (formName, myName+'_day') != null) {
+            var myDate = new Date ();
             var timeStamp = new Number(newValue);
             timeStamp += (myDate.getTimezoneOffset()/60 - timeZone) * 3600;
-			myDate.setTime (timeStamp * 1000);
+            myDate.setTime (timeStamp * 1000);
             //alert ("Date coming to JavaScript is "+timeStamp+". That means "+myDate);
-			setControl(formName,myName+'_day',myDate.getDate());
-			setControl(formName,myName+'_month',myDate.getMonth()+1);
-			setControl(formName,myName+'_year',getYearNetscapeSafe(myDate));
-		}
-	}
+            setControl(formName,myName+'_day',myDate.getDate());
+            setControl(formName,myName+'_month',myDate.getMonth()+1);
+            setControl(formName,myName+'_year',getYearNetscapeSafe(myDate));
+        }
+    }
 }
 
-/*  E N D  O F  A A   D A T E   F U N C T I O N S  */ 
+/*  E N D  O F  A A   D A T E   F U N C T I O N S  */
 
 
 /* moves the page to top avoiding display in frames
-	returns true if the page is on top, false otherwise */ 
-	
-function setMeTop () 
+    returns true if the page is on top, false otherwise */
+
+function setMeTop ()
 {
-	if (top.document.location.href != document.location.href) {
-		top.document.location.href = document.location.href;
-		return false;
-	}
-	else return true;
+    if (top.document.location.href != document.location.href) {
+        top.document.location.href = document.location.href;
+        return false;
+    }
+    else return true;
 }
 
 /* gets a control by name in IE and Netscape */
@@ -239,56 +239,57 @@ function setMeTop ()
 function getControlByName (formName, controlName) {
     if (document.forms[formName] == null)
         return null;
-	return document.forms[formName][controlName];
+    return document.forms[formName][controlName];
 }
 
 /* sets a control value to the given one - works fine with text fields, hidden fields,
-	select boxes (multiple not tried, but should be OK) and check boxes (multiple OK) */
-	
+    select boxes (multiple not tried, but should be OK) and check boxes (multiple OK) */
+
 function setControl (formName, controlName, newValue) {
-	var myControl = getControlByName (formName, controlName);
-	if (myControl != null) {
-		if (typeof (myControl.type) == "undefined") {
-			// multiple checkboxes or radio buttons
-		  	for (var iCtrl = 0; iCtrl < myControl.length; ++iCtrl) {
-				if (myControl[iCtrl].value == newValue) {
-					if (myControl[iCtrl].type == "checkbox" || myControl[iCtrl].type == "radio") 
-						myControl[iCtrl].checked = 1;
-					break;
-				}
-			}
-		}
-        else if (myControl.type.substr (0,6) == "select") 
-			for (var i = 0; i < myControl.options.length; i++) {
-				if ( (myControl.options[i].value == newValue) || 
-                    ((myControl.options[i].value == "") && (myControl.options[i].text == newValue))) 
-					myControl.options[i].selected = true;
-			}
-		else if (myControl.type == "checkbox")  
-			myControl.checked = newValue != 0;
-		else 
-			myControl.value = newValue;
-	}
+    var myControl = getControlByName (formName, controlName);
+    if (myControl != null) {
+        if (typeof (myControl.type) == "undefined") {
+            // multiple checkboxes or radio buttons
+            for (var iCtrl = 0; iCtrl < myControl.length; ++iCtrl) {
+                if (myControl[iCtrl].value == newValue) {
+                    if (myControl[iCtrl].type == "checkbox" || myControl[iCtrl].type == "radio")
+                        myControl[iCtrl].checked = 1;
+                    break;
+                }
+            }
+        }
+        else if (myControl.type.substr (0,6) == "select")
+            for (var i = 0; i < myControl.options.length; i++) {
+                if ( (myControl.options[i].value == newValue) ||
+                    ((myControl.options[i].value == "") && (myControl.options[i].text == newValue)))
+                    myControl.options[i].selected = true;
+            }
+        else if (myControl.type == "checkbox")
+            myControl.checked = newValue != 0;
+        else
+            myControl.value = newValue;
+    }
 }
 
 /* Function: setControlArray
    Purpose: sets multiple control types in a common way (multiple select box)
+   ToDo: implement multiple check-boxes
 */
 
 function setControlArray (formName, controlName, newArray) {
-	var myControl = getControlByName (formName, controlName);
-	if (myControl != null) {
+    var myControl = getControlByName (formName, controlName);
+    if (myControl != null) {
         if (myControl.type == "select-multiple") {
             for (var j = 0; j < newArray.length; j++) {
-    			for (var i = 0; i < myControl.options.length; i++) {
-    	    		if ( (myControl.options[i].value == newArray[j]) || 
+                for (var i = 0; i < myControl.options.length; i++) {
+                    if ( (myControl.options[i].value == newArray[j]) ||
                         ((myControl.options[i].value == "") && (myControl.options[i].text == newArray[j]))) {
-    					myControl.options[i].selected = true;
+                        myControl.options[i].selected = true;
                         break;
                     }
                 }
                 if (i == myControl.options.length) {
-    				opt = new Option(newArray[j],newArray[j],false,false);
+                    opt = new Option(newArray[j],newArray[j],false,false);
                     myControl.options [i] = opt;
                     myControl.options[i].selected = true;
                 }
@@ -309,20 +310,20 @@ function setControlArray (formName, controlName, newArray) {
                         myControl[i].checked = true;
                     }
                 }
-            } 
+            }
         }
     }
 }
 
 /* Function: getControlOrAADate
-   Purpose:  get value set in various form controls 
+   Purpose:  get value set in various form controls
    Works with: see getControlValue + AA three-select-boxes-date
 */
 
 function getControlOrAADate (formName, controlName, datePrefix, emptyValue) {
-	var myControl = getControlByName (formName, controlName);
-	if (myControl != null) 
-        return getControlValue (formName, controlName);    
+    var myControl = getControlByName (formName, controlName);
+    if (myControl != null)
+        return getControlValue (formName, controlName);
     else {
         var myControl = getControlByName (formName, datePrefix + controlName + '_day');
         if (myControl != null)
@@ -335,17 +336,17 @@ function getControlOrAADate (formName, controlName, datePrefix, emptyValue) {
    Purpose: get value set in various form controls
    Works with: <input>,<select>,<check>
 */
-   
+
 function getControlValue (formName, controlName) {
-	var myControl = getControlByName (formName, controlName);
-	if (myControl != null) {
-		if (myControl.type.substr(0,6) == "select")
-			return getSelected (myControl);
-		else if (myControl.type == "checkbox")
-			return myControl.checked ? 1 : 0;
-		else return myControl.value;
-	}
-	else return null;
+    var myControl = getControlByName (formName, controlName);
+    if (myControl != null) {
+        if (myControl.type.substr(0,6) == "select")
+            return getSelected (myControl);
+        else if (myControl.type == "checkbox")
+            return myControl.checked ? 1 : 0;
+        else return myControl.value;
+    }
+    else return null;
 }
 
 /* ITEMEDIT.PHP3 field JavaScript functions */
@@ -361,13 +362,13 @@ function setField (fieldID, newValue) {
 
 /* Miscellaneous */
 
-/* select all items in a multiple select box 
+/* select all items in a multiple select box
    (items not selected are not sent when a form is submitted) */
 
 function selectAllInBox (formName, controlName) {
-	var myControl = getControlByName (formName, controlName);
+    var myControl = getControlByName (formName, controlName);
     if (myControl != null) {
-        for (var i = 0; i < myControl.options.length; i++) 
-        	myControl.options[i].selected = true;
+        for (var i = 0; i < myControl.options.length; i++)
+            myControl.options[i].selected = true;
     }
-}	
+}

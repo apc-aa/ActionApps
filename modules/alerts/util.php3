@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -21,29 +21,28 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
-if (!is_object ($db))   
+if (!is_object ($db))
     $db=new DB_AA;
 
-function set_collectionid () {    
+function set_collectionid () {
     global $collectionid, $collectionprop,
         $db, $no_slice_id, $slice_id;
-    
+
     if (!$no_slice_id) {
         if (!$slice_id) { echo "Error: no slice ID"; exit; }
         $db->query ("SELECT AC.*, module.name, module.lang_file, module.slice_url
-			FROM alerts_collection AC INNER JOIN module
-			ON AC.module_id = module.id
-			WHERE module_id='".q_pack_id($slice_id)."'");
+            FROM alerts_collection AC INNER JOIN module
+            ON AC.module_id = module.id
+            WHERE module_id='".q_pack_id($slice_id)."'");
         if ($db->next_record()) {
-            $collectionid = $db->f("id");    
+            $collectionid = $db->f("id");
             $collectionprop = $db->Record;
         }
-        else { 
+        else {
             echo "Can't find collection with module_id=$slice_id ("
-                .HTMLEntities(pack_id($slice_id))."). Bailing out.<br>"; 
-            exit; 
+                .HTMLEntities(pack_id($slice_id))."). Bailing out.<br>";
+            exit;
         }
     }
 }
@@ -65,37 +64,37 @@ function get_howoften_options ($include_instant = true) {
 
 function get_bin_names () {
     return array (
-	1 => _m("Active"),
-	2 => _m("Holding bin"),
-	3 => _m("Trash bin"));
+    1 => _m("Active"),
+    2 => _m("Holding bin"),
+    3 => _m("Trash bin"));
 }
- 
-function new_user_id () { 
+
+function new_user_id () {
     global $db;
-    do { 
+    do {
         $new_id = new_numeric_id (32767);
-        $db->query("SELECT id FROM alerts_user WHERE id = $new_id");        
+        $db->query("SELECT id FROM alerts_user WHERE id = $new_id");
     } while ($db->next_record());
     return $new_id;
 }
 
 function new_collection_id() {
     global $db;
-    do { 
+    do {
         $new_id = new_alphanumeric_id (5);
-        $db->query("SELECT id FROM alerts_collection WHERE id = '$new_id'");        
+        $db->query("SELECT id FROM alerts_collection WHERE id = '$new_id'");
     } while ($db->next_record());
     return $new_id;
-} 
+}
 
 function new_alphanumeric_id ($saltlen) {
     srand((double) microtime() * 1000000);
     $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
-    for ($i = 0; $i < $saltlen; $i ++) 
+    for ($i = 0; $i < $saltlen; $i ++)
         $salt .= $salt_chars [rand (0,strlen($salt_chars)-1)];
     return $salt;
 }
-    
+
 function new_numeric_id ($max) {
     list($usec, $sec) = explode(' ', microtime());
     $seed = (float) $sec + ((float) $usec * 100000);
@@ -104,11 +103,11 @@ function new_numeric_id ($max) {
 }
 
 function new_user_confirm ()
-{ 
+{
     global $db;
-    do { 
+    do {
         $retval = gensalt (4);
-        $db->query("SELECT confirm FROM alerts_user_collection WHERE confirm='".addslashes($retval)."'");         
+        $db->query("SELECT confirm FROM alerts_user_collection WHERE confirm='".addslashes($retval)."'");
     } while ($db->next_record());
     return $retval;
 }
@@ -122,8 +121,8 @@ function new_user_confirm ()
 * @param $insert if true, user is inserted, else updated
 * @returns new user ID, if $insert=true, nothing otherwise
 */
-function insert_or_update_user ($info, $insert) 
-{        
+function insert_or_update_user ($info, $insert)
+{
     global $db, $slice_id;
     // insert new user
     $varset = new CVarset;
@@ -134,8 +133,8 @@ function insert_or_update_user ($info, $insert)
     else $varset->addkey ("id", "number", $info["uid"]);
     $userfields = array ("email","firstname","lastname","lang","password");
     reset ($userfields);
-    while (list (,$field) = each ($userfields)) 
-        if (isset ($info[$field]))        
+    while (list (,$field) = each ($userfields))
+        if (isset ($info[$field]))
             $varset->add ($field, "quoted", $info[$field]);
     $varset->add ("owner_module_id", "unpacked", $slice_id);
     $db->query($varset->makeINSERTorUPDATE("alerts_user"));
@@ -143,30 +142,30 @@ function insert_or_update_user ($info, $insert)
 }
 
 // ----------------------------------------------------------------------------------------
-    
-/** 
+
+/**
 *   @param $info    array (field => value), it should contain fields
-*                    "userid","allfilters","howoften","email" 
+*                    "userid","allfilters","howoften","email"
 *   @param $confirmed   add the user confirmed? if no, the confirmation email is sent,
-*                        if yes, no email is sent */    
-function insert_or_update_user_collection ($info, $collection_record, $confirmed=false, $override=false) 
-{  
+*                        if yes, no email is sent */
+function insert_or_update_user_collection ($info, $collection_record, $confirmed=false, $override=false)
+{
     global $db;
-    
-    $varset = new CVarset();        
+
+    $varset = new CVarset();
     $varset->addkey ("userid", "number", $info["userid"]);
     $varset->addkey ("collectionid", "number", $collection_record["id"]);
     $varset->add ("allfilters", "number", $info["allfilters"]);
-    $varset->add ("howoften", "quoted", 
+    $varset->add ("howoften", "quoted",
         $collection_record["fix_howoften"] ? $collection_record["fix_howoften"] : $info["howoften"]);
-    
+
     $getdate = getdate ();
-    $expiry = mktime (0, 0, 0, 
-        $getdate["mon"] + $collection_record["expiry_months"], 
-        $getdate["mday"], $getdate["year"]);       
+    $expiry = mktime (0, 0, 0,
+        $getdate["mon"] + $collection_record["expiry_months"],
+        $getdate["mday"], $getdate["year"]);
     $varset->add ("start_date", "number", time());
     $varset->add ("expiry_date", "number", $expiry);
-    
+
     if ($confirmed) {
         $varset->add ("status_code", "number", $collection_record ["confirmed_status_code"]);
     }
@@ -174,9 +173,9 @@ function insert_or_update_user_collection ($info, $collection_record, $confirmed
         $varset->add ("status_code", "number", $collection_record ["notconfirmed_status_code"]);
     }
 
-    $db->query($varset->makeSELECT ("alerts_user_collection")); 
+    $db->query($varset->makeSELECT ("alerts_user_collection"));
     if ($db->next_record()) {
-        if ($override) 
+        if ($override)
             return $db->query($varset->makeUPDATE ("alerts_user_collection"));
         else return false;
     }
@@ -190,8 +189,8 @@ function insert_or_update_user_collection ($info, $collection_record, $confirmed
             $alias["_#CONFIRM_"] = "<a href=\"$confirmurl\">$confirmurl</a>";
             if (!send_mail_from_table ($collection_record ["emailid_welcome"],
                 $info["email"], $alias))
-                echo "SOME ERROR WHEN SENDING MAIL TO $info[email].";                
-        }        
+                echo "SOME ERROR WHEN SENDING MAIL TO $info[email].";
+        }
         return $db->query($varset->makeINSERT ("alerts_user_collection"));
     }
 }
@@ -229,25 +228,31 @@ function AlertsPageBegin() {
     global $ss, $AA_INSTAL_PATH;
     $stylesheet = $ss ? $ss : $AA_INSTAL_PATH.ADMIN_CSS;
 
-    echo 
+    echo
     '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
        <HTML>
          <HEAD>
            <LINK rel=StyleSheet href="'.$stylesheet.'" type="text/css"  title="CPAdminCSS">
            <meta http-equiv="Content-Type" content="text/html; charset='.$LANGUAGE_CHARSETS[get_mgettext_lang()].'">';
-}           
+}
 
 // -----------------------------------------------------------------------------------
 
 function getAlertsField ($field_id, $collection_id) {
-    return substr ($field_id.".............", 0, 16 - strlen ($collection_id)) 
-        . $collection_id; 
-} 
+    return substr ($field_id.".............", 0, 16 - strlen ($collection_id))
+        . $collection_id;
+}
 
 // -----------------------------------------------------------------------------------
 
 function alerts_con_url($Url,$Params){
   return ( strstr($Url, '?') ? $Url."&".$Params : $Url."?".$Params );
-} 
+}
 
+function GetEmailLangs() {
+    global $LANGUAGE_CHARSETS, $LANGUAGE_NAMES;
+    foreach ( $LANGUAGE_CHARSETS as $l => $charset )
+        $ret[$l] = $LANGUAGE_NAMES[$l]." (".$charset.")";
+    return $ret;
+}
 ?>

@@ -58,6 +58,9 @@ class Cvariable {
         case "quoted":
             return "'" . $this->value ."'";
             break;
+        case "null" :
+            return "NULL";
+            break;
         case "date":
         case "text":
         default: return "'" . quote($this->value) ."'";

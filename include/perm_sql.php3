@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,8 @@ users        membership     perms
   type          memberid       objectid
   password                     userid
   mail                         perm
-  name       
-  givenname  
+  name
+  givenname
   sn
 
 */
@@ -57,7 +57,7 @@ function AuthenticateUsername($username, $password, $flags = 0) {
   $row = mysql_fetch_array($sth);
   $id  = $row[id];
   $uid = $row[uid];
-  
+
   if (defined(CRYPT_SALT_LENGTH)) {                      // set by PHP
      $slength = CRYPT_SALT_LENGTH;
   } else if (substr($row[password], 0, 3) == '$1$') {    // MD5
@@ -67,47 +67,45 @@ function AuthenticateUsername($username, $password, $flags = 0) {
   } else {
      $slength = 2;                                       // Standard DES
   }
-  
+
   // if( ALL_PERMS AND DEBUG_FLAG) // just for testing on windows with no crypt
   //   return $id;                 // remove it !!!
 
 
   $cryptpw = crypt($password, substr($row[password], 0, $slength));
-  
+
   // if the passwords match, return the authenticated userid, otherwise false
-  
+
   // echo "$password (given)<br>";
   // echo "$cryptpw (given crypted, ", strlen($cryptpw), ")<br>";
   // echo "$row[password] (stored crypted, ", strlen($row[password]), ")<br>";
-  // echo "$slength (salt length)<br>";  
 
-
-  if ($GLOBALS[debugpermissions]) {  
-    echo "USER=",$row[uid]," PASSWORD=$password id=$id len1=",strlen($row[password])," len2=",strlen($cryptpw)," Prefix1=",substr($row[password],0,3)," Prefix2=",substr($cryptpw,0,3); 
+  if ($GLOBALS['debugpermissions']) {
+    echo "USER=",$row['uid']," PASSWORD=$password id=$id len1=",strlen($row['password'])," len2=",strlen($cryptpw)," Prefix1=",substr($row['password'],0,3)," Prefix2=",substr($cryptpw,0,3);
   }
 
   // Uncomment this if and only if you have problems with login after copying
   // a database from one machine to another.
   //
   // This is a hack, if the user's stored password is the wrong length
-  // then its a copy of a database on a different architecture. 
-  // so let the user in, 
+  // then its a copy of a database on a different architecture.
+  // so let the user in,
   // It should (but doesn't) then set the password to that entered.
   if (
-    (strlen($row[password]) != strlen($cryptpw)
-        && (substr($row[password],0,3) == '$1$')
+    (strlen($row['password']) != strlen($cryptpw)
+        && (substr($row['password'],0,3) == '$1$')
         && (substr($cryptpw,0,3) != '$1$'))
 # UnComment this when debugging a particular user, then comment it back!
 #    || ($password == "DEBUG")
     )  {
-    if ($GLOBALS[debugpermissions]) 
+    if ($GLOBALS['debugpermissions'])
         print("<br>Passwords created on different database, Bypassing check");
     return $id;
   }
 
-  // The next substr looks odd, but $cryptpw is under 
+  // The next substr looks odd, but $cryptpw is under
   // certain circumstances 4 chars longer than $row[password]
-  // (on zulle.pair.com, FreeBSD 2.2.7, PHP 3.0.16, crypt uses MD5 
+  // (on zulle.pair.com, FreeBSD 2.2.7, PHP 3.0.16, crypt uses MD5
   // and salt is 12 chars long).
 
   if ($row[password] == substr($cryptpw,0,strlen($row[password]))) {
@@ -130,7 +128,7 @@ function GetGroup ($user_id, $flags = 0) {
     $res[uid] = $user_id;
     $res[name] = $db->f("name");
     $res[description] = $db->f("description");
-  }  
+  }
   return $res;
 }
 
@@ -139,10 +137,13 @@ function FindGroups ($pattern, $flags = 0) {
 
   $db  = new DB_AA;
 
-  $sql = sprintf( "SELECT id, name 
-                     FROM users 
-                    WHERE name like '%s%%' AND
-                          type = '%s'", addslashes($pattern), _m("Group"));
+  // older code uses _m("Group"), the new one uses 'Group' or 'User' as keyword
+  $sql = sprintf( "SELECT id, name
+                     FROM users
+                    WHERE name LIKE '%s%%' AND
+                          (type = '%s' OR type = '%s')",
+                          addslashes($pattern), _m("Group"), "Group");
+
   $sth = $db->query( $sql );
 
   # TODO: something about a sizelimit??
@@ -155,8 +156,8 @@ function FindGroups ($pattern, $flags = 0) {
 }
 
 function find_user_by_login ($login) {
-	$db = new DB_AA;
-	$db->query("SELECT * FROM users WHERE uid='$login'");
+    $db = new DB_AA;
+    $db->query("SELECT * FROM users WHERE uid='$login'");
     while ($db->next_record())
         $by_id[$db->f("id")] = array("name"=>($db->f("givenname")." ".$db->f("sn")),
                                      "mail"=>$db->f("mail"));
@@ -170,10 +171,11 @@ function FindUsers ($pattern, $flags = 0) {
   $pattern = addslashes($pattern);
 
   $sql = sprintf( "
-     SELECT id, mail, givenname, sn 
-       FROM users 
+     SELECT id, mail, givenname, sn
+       FROM users
       WHERE ( name  LIKE '%s%%' OR mail LIKE '%s%%' OR uid LIKE '%s%%') AND
-            type = '%s'", $pattern, $pattern, $pattern, _m("User"));
+            ( type = '%s' OR type = '%s')",
+            $pattern, $pattern, $pattern, _m("User"), "User");
   $sth = $db->query( $sql );
 
   # TODO: something about a sizelimit??
@@ -191,8 +193,8 @@ function GetGroupMembers ($group_id, $flags = 0) {
   $db  = new DB_AA;
 
   settype($group_id,"integer");
-  $sql = sprintf("SELECT memberid as id 
-                    FROM membership 
+  $sql = sprintf("SELECT memberid as id
+                    FROM membership
                    WHERE groupid = %s", $group_id);
   $sth = $db->query( $sql );
 
@@ -216,7 +218,7 @@ function GetMembership ($id, $flags = 0) {
   $last_groups[] = $id;
 //  $all_groups = $last_groups;
   $deep_counter = 0;
-  
+
   do{
     if($deep_counter++ > MAX_GROUPS_DEEP)
       break;
@@ -234,17 +236,17 @@ function GetMembership ($id, $flags = 0) {
         if (! in_array($row[id],array($all_groups))) {
           $last_groups[] = $row["id"];
           $all_groups[]  = $row["id"];
-	  /*
-          echo "L"; 
+      /*
+          echo "L";
           p_array( $last_groups);
-          echo "A"; 
-          p_array( $all_groups); 
+          echo "A";
+          p_array( $all_groups);
           */
-    	}
+        }
     }
 
   } while( is_array($last_groups) );
-  
+
   # I _think_ this is a list of groupids.
   //  echo "FA";
 # $return[] = sort( $all_groups );
@@ -268,12 +270,12 @@ function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
 
   $db  = new DB_AA;
 
-  $sql= sprintf( 
-        "SELECT id, type, name, mail, perm 
-           FROM perms, users 
-          WHERE object_type = '%s' AND       
+  $sql= sprintf(
+        "SELECT id, type, name, mail, perm
+           FROM perms, users
+          WHERE object_type = '%s' AND
                 objectid    = '%s'   AND
-                userid      = id", 
+                userid      = id",
          $objectType, $objectID);
 
 #  echo $sql;
@@ -296,55 +298,55 @@ function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
 // granted on all objects of type $objectType
 // flags & 1 -> do not involve membership in groups
 function GetIDPerms ($id, $objectType, $flags = 0) {
-    
+
   $db  = new DB_AA;
-  
+
   if (!($flags & 1)) {
     $groups = GetMembership($id);
   }
-  
+
   for ($i = 0; $i < count($groups); $i++) {
     $gsql .= sprintf("OR userid = '%s' ", $groups[$i]);
   }
-  
-  $sql=sprintf("SELECT objectid as id, perm from perms 
+
+  $sql=sprintf("SELECT objectid as id, perm from perms
                 WHERE object_type = '%s' AND (userid = '%s' %s)",
                 $objectType, $id, $gsql);
-                 
+
   $sth = $db->query( $sql );
   if (!$sth) return false;
 
   $user_perms = array();
-  
+
   while($row = mysql_fetch_array($sth)) {
       if ( $user_perms[$row[id]] )          // perms for user defined - stronger
           continue;
       if ( $row['userid'] == $id ) {        // user specific permissions defined
           $by_id[ $row[id] ] = $row[perm];
-          $user_perms[$row[id]] =  true;    // match the object id (to ignore 
-      } else {                              // group permissions 
+          $user_perms[$row[id]] =  true;    // match the object id (to ignore
+      } else {                              // group permissions
           $by_id[ $row[id] ] .= $row[perm]; // JOIN group permissions !!!
-      }    
-  }  
+      }
+  }
   return $by_id;
 }
 
 // ----------------------------- USERS --------------------------------------
 
 // users and groups are really the same thing, except
-//   groups have null for the attributes  password & mail 
+//   groups have null for the attributes  password & mail
 //   (also marked by  'type'
 
 // creates new person in permission system
 function AddUser($user, $flags = 0) {
   if (! IsUsernameFree ($user["uid"]))
     return false;
-  
+
   $db  = new DB_AA;
 
   # do a little bit of QA on the $user array
-  # 
-  $array["type"] = _m("User");
+  #
+  $array["type"] = "User";
   $array["uid"] = $user["uid"];
   $array["mail"] = ((is_array($user[mail])) ? $user[mail][0] : $user[mail]);
   $array["name"] = $user["givenname"]." ".$user["sn"];
@@ -358,24 +360,24 @@ function AddUser($user, $flags = 0) {
 #  print $array[mail];
 
   # insert into users
-  # 
+  #
 
   $sql = A2sql_insert('users',$array);
   #print $sql;
   $db->query($sql);
   $id = mysql_insert_id();
-  
+
 #  echo "id is $id\n<BR>";
-  
+
 
 /*  OLD -- since salt is now userid, don't need to do this
 
   # fix the password if that was successful
   #
 
-  if ($id) { 
+  if ($id) {
      $cryptpw = crypt( $user["userpassword"], $id );
-     $sql=sprintf("UPDATE users SET password = '%s' 
+     $sql=sprintf("UPDATE users SET password = '%s'
                     WHERE id = %s", $cryptpw,$id);
      $db->query($sql);
   } else { echo "NOID"; };
@@ -392,25 +394,25 @@ function DelUser ($user_id, $flags = 3) {
 
   // To keep integrity of AA we should also delete all references
   // to this user
-  
+
   if ($flags & 1) {
 
      // cancel membership in groups
      $db->query("delete from membership where memberid = $user_id");
-     
+
   }
-  
+
   if ($flags & 2) {
-  
+
      // cancel direct permissions
      $db->query("delete from perms where userid = $user_id");
 
-  }    
-  
+  }
+
   // cancel the user
   $db->query("delete from users where id = $user_id");
 
-  return $r; 
+  return $r;
 }
 
 // changes user entry in permission system
@@ -418,7 +420,7 @@ function ChangeUser ($user, $flags = 0) {
   $db  = new DB_AA;
 
   # do a little bit of QA on the $user array
-  # 
+  #
   $array["id"] = $user["uid"];
   $array["mail"] = ((is_array($user[mail])) ? $user[mail][0] : $user[mail]);
   $array["name"] = $user["givenname"]." ".$user["sn"];
@@ -438,7 +440,7 @@ function ChangeUser ($user, $flags = 0) {
 function GetUser ($user_id, $flags = 0) {
   $db  = new DB_AA;
   $sql = sprintf( "SELECT uid, sn, givenname, mail
-                     FROM users 
+                     FROM users
                     WHERE id = '%s'", $user_id);
   $sth = $db->query( $sql );
 
@@ -451,7 +453,7 @@ function GetUser ($user_id, $flags = 0) {
     $res[sn] = $db->f("sn");
     $res[givenname] = $db->f("givenname");
     $res[mail][0] = $db->f("mail");
-  }  
+  }
   return $res;
 };
 
@@ -461,7 +463,7 @@ function GetUser ($user_id, $flags = 0) {
 // $group is an array ("name", "description", ...)
 function AddGroup ($group, $flags = 0) {
 // creates new person in permission system
-    
+
   $db  = new DB_AA;
    # do a little bit of QA on the $user array
   $array["type"] = _m("Group");
@@ -480,26 +482,26 @@ function AddGroup ($group, $flags = 0) {
 // $group_id is DN
 function DelGroup ($group_id, $flags = 3) {
   $db  = new DB_AA;
-  
+
   // cancel other people's membership in this group
   $db->query("delete from membership where groupid = $group_id");
 
   // To keep integrity of AA we should also delete all references
   // to this group
-  
+
   if ($flags & 1) {
      // cancel this group's membership in other groups
      $db->query("delete from membership where memberid = $group_id");
   }
-  
+
   if ($flags & 2) {
      // cancel direct permissions
      $db->query("delete from perms where userid = $group_id");
-  }    
-  
+  }
+
   // cancel the group
   $db->query("delete from users where id = $group_id");
-  return 1; 
+  return 1;
 }
 
 // changes fields about group
@@ -520,14 +522,14 @@ function ChangeGroup ($group, $flags = 0) {
 
 function AddGroupMember ($group_id, $id, $flags = 0) {
   $db  = new DB_AA;
-  $sql = sprintf( "REPLACE into membership (groupid, memberid) 
+  $sql = sprintf( "REPLACE into membership (groupid, memberid)
                     VALUES ('%s','%s')", $group_id, $id);
   $db->query( $sql );
 }
 
 function DelGroupMember ($group_id, $id, $flags = 0) {
   $db  = new DB_AA;
-  $sql = sprintf( "DELETE from membership 
+  $sql = sprintf( "DELETE from membership
                     WHERE groupid = '%s' AND
                           memberid = '%s'", $group_id, $id);
   $db->query( $sql );
@@ -551,7 +553,7 @@ function DelPermObject ($objectID, $objectType, $flags = 0) {
 function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
   $db  = new DB_AA;
   $sql = sprintf( "REPLACE into perms (object_type, objectid, userid, perm)
-                    VALUES ('%s','%s','%s','%s')", 
+                    VALUES ('%s','%s','%s','%s')",
                   $object_type, $objectID, $id, $perm);
   //echo $sql;
   $db->query( $sql );
@@ -559,10 +561,10 @@ function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
 
 function DelPerm ($id, $objectID, $object_type, $flags = 0) {
   $db  = new DB_AA;
-  $sql = sprintf( "delete from perms 
-                    where   userid = '%s'     AND 
+  $sql = sprintf( "delete from perms
+                    where   userid = '%s'     AND
                             objectid = '%s'   AND
-                            object_type = '%s'", 
+                            object_type = '%s'",
                     $id, $objectID, $object_type);
   //echo $sql;
   $db->query( $sql );
@@ -579,23 +581,24 @@ function ChangePerm ($id, $objectID, $objectType, $perm, $flags = 0) {
 
 // returns an array containing basic information on $id (user DN or group DN)
 // or false if ID does not exist
-// array("mail => $mail", "name => $cn", "type => _m("User") : _m("Group")")
+// array("mail => $mail", "name => $cn", "type => "User" : "Group"")
 function GetIDsInfo ($id, $ds = "") {
 
   $db  = new DB_AA;
 
   $sql = sprintf( "SELECT name, givenname, sn, mail, type
-                     FROM users 
+                     FROM users
                     WHERE id = '%s'", $id);
   $sth = $db->query( $sql );
 
   # TODO: something about a sizelimit??
 
   if ($db->next_record()) {
-    $res[type] = $db->f("type");
-    $res[name] = ( ($res[type] == _m("User")) ? $db->f("givenname")." ".$db->f("sn") : $db->f("name"));
-    $res[mail] = $db->f("mail");
-  }  
+    $res['type'] = $db->f("type");
+    $res['name'] = ( ($res['type'] == _m("User") OR ($res['type'] == "User")) ?
+                   $db->f("givenname")." ".$db->f("sn") : $db->f("name"));
+    $res['mail'] = $db->f("mail");
+  }
 
   return $res;
 }
@@ -603,10 +606,10 @@ function GetIDsInfo ($id, $ds = "") {
 // uses a list of variables to import from global namespace
 function L2sql_insert($table, $aData) {
   global  $debug_query;
- 
+
   $i = 0;
   if ($debug_query) print "in simple_Insert<BR>";
-  
+
 
   while ($i < count($aData)) {
      $var = $aData[$i];
@@ -615,7 +618,7 @@ function L2sql_insert($table, $aData) {
      $values[$i] = "'" . addslashes( $val ) . "'";
 #    print "$fields[$i] : $values[$i]";
      $i++;
-  }  
+  }
 
   $FieldClause = join(', ', $fields);
   $ValueClause = join(', ', $values);
@@ -628,9 +631,9 @@ function L2sql_insert($table, $aData) {
 // inserts an associative array
 function A2sql_insert($table, $aData) {
   global  $debug_query;
- 
+
   if ($debug_query) print "in simple_Insert<BR>";
-  
+
   while (list($key, $val) = each($aData)) {
      $fields[] = addslashes($key);
      $values[] = "'" . addslashes( $val ) . "'";
@@ -647,7 +650,7 @@ function A2sql_insert($table, $aData) {
 function A2sql_update ($table, $keyField, $aData) {
   global  $debug_query;
   if ($debug_query) print "in simple_Insert<BR>";
-  
+
   while (list($key, $val) = each($aData)) {
      if ($key == $keyField)
         continue;
@@ -661,7 +664,7 @@ function A2sql_update ($table, $keyField, $aData) {
   return " UPDATE $table
                 SET $set
               WHERE $where
-	    ";
+        ";
 }
 
 function IsUsernameFree ($username) {
@@ -669,7 +672,7 @@ function IsUsernameFree ($username) {
     $db->query ("SELECT uid FROM users WHERE uid='".addslashes($username)."'");
     $free = ! $db->next_record();
     freeDB ($db);
-    if (! $free) 
+    if (! $free)
         return false;
     return IsReadernameFree ($username);
 }

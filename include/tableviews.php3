@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,9 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Settings for each table view (see doc/tabledit.html for more info)       
+// Settings for each table view (see doc/tabledit.html for more info)
 
-function GetTableView ($viewID) {        
+function GetTableView ($viewID) {
     global $auth, $slice_id;
     $db = new DB_AA;
 
@@ -36,8 +36,8 @@ function GetTableView ($viewID) {
             "after" => "</i>"),
         "caption" => array (
             "before" => "<b>",
-            "after" => "</b>"));            
-    
+            "after" => "</b>"));
+
     /* ------------------------------------------------------------------------------------
        alerts_admin
     */
@@ -52,7 +52,7 @@ function GetTableView ($viewID) {
         "mainmenu" => "sliceadmin",
         "submenu" => "te_alerts_admin",
         "buttons_down" => array ("update"=>1),
-        "attrs" => array ("table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"),    
+        "attrs" => array ("table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"),
         "type" => "edit",
         "readonly" => false,
         "addrecord" => false,
@@ -78,19 +78,19 @@ function GetTableView ($viewID) {
                 "view" => array (
                     "readonly" => true,
                     "type" => "date",
-                    "size" => array ("cols" => 6), 
+                    "size" => array ("cols" => 6),
                     "format" => "j.m.y G:i")),
             "last_delete" => array (
                 "caption" => _m ("last delete not confirmed"),
                 "view" => array (
                     "readonly" => true,
                     "type" => "date",
-                    "size" => array ("cols" => 6), 
+                    "size" => array ("cols" => 6),
                     "format" => "j.m.y G:i"))),
         "help" => _m (
             "This table sets handling of not confirmed users. It's accessible only
             to superadmins.
-            You can delete not confirmed users after a number of days and / or send them an email 
+            You can delete not confirmed users after a number of days and / or send them an email
             demanding them to do confirmation
             after a smaller number of days. To switch either of the actions off,
             set number of days to 0. The two last fields are for your information only.<br>
@@ -98,8 +98,8 @@ function GetTableView ($viewID) {
             To run the script, you must have cron set up with a row running
             misc/alerts/admin_mails.php3.<br>
             For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."));
-    }        
-    
+    }
+
     /* ------------------------------------------------------------------------------------
        polls_designs
     */
@@ -112,7 +112,7 @@ function GetTableView ($viewID) {
         "readonly" => true,
         "addrecord" => false,
         "where" => "(pollsModuleID='". q_pack_id($slice_id)."')",
-        "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_POLLS_EDIT_DESIGN),
+        "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_EDIT_DESIGN),
         "title" => _m ("Polls Design"),
         "caption" => _m("Polls Design"),
         "attrs" => $attrs_browse,
@@ -157,7 +157,7 @@ function GetTableView ($viewID) {
     }
 } // end of GetTableView
 
-// ----------------------------------------------------------------------------------        
+// ----------------------------------------------------------------------------------
 
 // user function for confirmed
 function te_au_confirm ($val) {

@@ -42,16 +42,9 @@ $tree = new cattree( $db, $start );
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
-echo '<title>'. _m('Category Tree') .'</title>
-<script language="JavaScript" type="text/javascript"> <!--
-  function ReturnParam(param) {
-      window.opener.document.itemsform.elements[\'akce_param\'].value = param;
-      window.opener.document.itemsform.submit()
-      window.close();
-  }
-  // -->
-</script>
-
+echo '  <title>'. _m('Category Tree') .'</title>';
+IncludeManagerJavascript();
+echo '
 </head>
 <body>
   <p>'. _m('Select category'). '</p>';

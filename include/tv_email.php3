@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -24,30 +24,30 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
-function ShowEmailAliases () {    
+function ShowEmailAliases () {
     $ali[] = array (
-        "group" => _m("Aliases for Alerts Alert"), 
+        "group" => _m("Aliases for Alerts Alert"),
         "aliases" => array (
             "_#FILTERS_" => _m("complete filter text"),
             "_#HOWOFTEN" => _m("howoften")." (".join(", ",get_howoften_options()).")",
             "_#COLLFORM" => _m("Anonym Form URL (set in Alerts Admin - Settings)"),
             "_#UNSBFORM" => _m("Unsubscribe Form URL"),
         ));
-        
+
     $ali[] = array (
-        "group" => _m("Aliases for Alerts Welcome"), 
+        "group" => _m("Aliases for Alerts Welcome"),
         "aliases" => array (
             "_#HOWOFTEN" => _m("howoften")." (".join(", ",get_howoften_options()).")",
             "_#COLLFORM" => _m("Collection Form URL (set in Alerts Admin - Settings)"),
             "_#CONFIRM_" => _m("email confirmed"),
         ));
 
-    // these aliases are used in include/slicewiz.php3        
+    // these aliases are used in include/slicewiz.php3
     $ali[] = array (
         "group" => _m("Aliases for Slice Wizard Welcome"),
         "aliases" => array (
             "_#SLICNAME" => _m("Slice name"),
-            "_#NAME____" => _m("New user name"),            
+            "_#NAME____" => _m("New user name"),
             "_#LOGIN___" => _m("New user login name"),
             "_#ROLE____" => _m("New user role (editor / admin)"),
             "_#ME_NAME_" => _m("My name"),
@@ -59,25 +59,22 @@ function ShowEmailAliases () {
     while (list (, $aligroup) = each ($ali)) {
         echo "<TR><TD class=tabtit colspan=2><B>&nbsp;$aligroup[group]&nbsp;</B></TD></TR>";
         reset ($aligroup["aliases"]);
-        while (list ($alias, $desc) = each ($aligroup["aliases"])) 
+        while (list ($alias, $desc) = each ($aligroup["aliases"]))
             echo "<TR><TD class=tabtxt>&nbsp;$alias&nbsp;</TD>
                 <TD class=tabtxt>&nbsp;$desc&nbsp;</TD></TR>";
     }
     echo "</TABLE>";
 }
-    
-// Settings for emails table views 
-/** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
+
+// Settings for emails table views
+/** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */
 function GetEmailTableView ($viewID, $processForm = false)
 {
     global $auth, $slice_id, $db;
     global $attrs_edit, $attrs_browse, $format, $langs;
 
     if ($viewID == "email_edit") {
-        global $LANGUAGE_CHARSETS, $LANGUAGE_NAMES;
-        reset ($LANGUAGE_CHARSETS);
-        while (list ($l,$charset) = each ($LANGUAGE_CHARSETS))
-            $mylangs[$l] = $LANGUAGE_NAMES[$l]." (".$charset.")";
+        $mylangs = GetEmailLangs();
         return  array (
         "table" => "email",
         "type" => "edit",
@@ -88,7 +85,7 @@ function GetEmailTableView ($viewID, $processForm = false)
         "caption" => _m("Email template"),
         "addrecord" => false,
         "gotoview" => "email",
-        "where" => GetEmailWhere(),        
+        "where" => GetEmailWhere(),
         "cond" => 1,
         "triggers" => array ("AfterInsert" => "EmailAfterInsert"),
         "fields" => array (
@@ -136,12 +133,9 @@ function GetEmailTableView ($viewID, $processForm = false)
     // ------------------------------------------------------------------------------------
     // email: this view browses emails, it is currently used in Alerts module
     //        but may be added anywhere else
-    
+
     if ($viewID == "email") {
-        global $LANGUAGE_CHARSETS, $LANGUAGE_NAMES;
-        reset ($LANGUAGE_CHARSETS);
-        while (list ($l,$charset) = each ($LANGUAGE_CHARSETS))
-            $mylangs[$l] = $LANGUAGE_NAMES[$l]." (".$charset.")";
+        $mylangs = GetEmailLangs();
         return  array (
         "table" => "email",
         "type" => "browse",
@@ -154,7 +148,7 @@ function GetEmailTableView ($viewID, $processForm = false)
         "buttons_left" => array ("delete_checkbox"=>1,"edit"=>1),
         "gotoview" => "email_edit",
         "cond" => 1,
-        "where" => GetEmailWhere(),        
+        "where" => GetEmailWhere(),
         "fields" => array (
             "description" => array (
                 "caption" => _m("description")),
@@ -164,7 +158,7 @@ function GetEmailTableView ($viewID, $processForm = false)
                 "caption" => _m("body"),
                 "view" => array (
                     "maxlen" => 100,
-                    "type" => "text", 
+                    "type" => "text",
                     "size" => array ("rows"=>8))),
             "header_from" => array (
                 "caption" => _m("from")),
@@ -176,17 +170,17 @@ function GetEmailTableView ($viewID, $processForm = false)
                 "caption" => _m("sender"))
         ));
     }
-}            
+}
 
 function GetEmailWhere () {
-	global $auth, $db;
-    if (IsSuperadmin ()) 
+    global $auth, $db;
+    if (IsSuperadmin ())
         return 1;
     else {
-        $myslices = GetUserSlices();    
+        $myslices = GetUserSlices();
         if (is_array ($myslices)) {
             reset ($myslices);
-            while (list ($my_slice_id, $perms) = each ($myslices)) 
+            while (list ($my_slice_id, $perms) = each ($myslices))
                 if (strchr ($perms, PS_FULLTEXT))
                     $restrict_slices[] = q_pack_id($my_slice_id);
             return "owner_module_id IN ('".join("','",$restrict_slices)."')";
@@ -196,7 +190,7 @@ function GetEmailWhere () {
     return $retval;
 }
 
-function EmailAfterInsert($varset) {   
+function EmailAfterInsert($varset) {
     ShowRefreshWizardJavaScript();
 }
 ?>

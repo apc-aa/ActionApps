@@ -317,8 +317,8 @@ function send2mailList ($d_item_id, $new_id) {
     if ($db->next_record()) {
         $item_params = split_escaped (":", $db->f("text"), "#:");
         list ($vid, $maillist) = $item_params;
-      // Don't do this if there is a field, but no vid in it  
-      if ($vid) { 
+      // Don't do this if there is a field, but no vid in it
+      if ($vid) {
         // get discussion item content
         $columns = GetDiscussionContentSQL (
             "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
@@ -358,9 +358,10 @@ function send2mailList ($d_item_id, $new_id) {
             $mail = "";
             while (list ($part, $field) = each ($mail_parts)) {
                 $s = $view_info [$field];
-                for ($i=2; $i < 9; $i ++)
+                for ($i=2; $i < 9; $i ++) {
                     $s = str_replace ("_#ITEMPAR".($i+1), $item_params [$i], $s);
-                    $CurItem->setformat ($s);
+                }
+                $CurItem->setformat($s);
                 $mail [$part] = $CurItem->get_item();
             }
 

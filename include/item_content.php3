@@ -61,8 +61,13 @@ class ItemContent {
 
     // Set by unpacked item ID
     function setByItemID ($item_id, $ignore_reading_password = false) {
-        $this->content = GetItemContent ($item_id, false, $ignore_reading_password);
-        $this->content = $this->content [$item_id];
+        if ( !$item_id ) return false;
+        $this->content = GetItemContent($item_id, false, $ignore_reading_password);
+        $this->content = is_array($this->content) ? reset($this->content) : null;
+    }
+
+    function is_empty() {
+        return !is_array($this->content);
     }
 
     function getContent() {
@@ -231,9 +236,6 @@ class ItemContent {
                 return array(0=>NOT_STORE,1=>$id);
           }
       }
-      //huhl("insert:".$insert);
-      //huhl("action:".$actionIfItemExists);
-      //huhl("id:".$id);
 
       $added_to_db=StoreItem( $id, $slice_id, $this->content, $fields, $insert, true, false ); // invalidatecache, not feed
       return $added_to_db ? array(0=> ($insert ? INSERT : UPDATE) ,1=>$id) : false;

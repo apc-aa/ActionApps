@@ -57,8 +57,10 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
     if (!$_m_backup[$mgettext_domain] && $cache)
         $_m_backup[$mgettext_domain] = $_m;
 
-    $mgettext_domain = $filename;
+    if( $mgettext_domain == $filename )
+        return;                             // allready loaded
 
+    $mgettext_domain = $filename;
     if ($cache) {
         $_m = $_m_backup[$mgettext_domain];
         if ($_m) return;
@@ -93,7 +95,7 @@ function _m ($id, $params = 0) {
 
     if (is_array ($params)) {
         $foo = "#$&*-";
-        $retval = str_replace ("\%", $foo, $retval);
+        $retval = str_replace ('\%', $foo, $retval);
         for ($i = 0; $i < count ($params); $i ++)
             $retval = str_replace ("%".($i+1), $params[$i], $retval);
         $retval = str_replace ($foo, "%", $retval);

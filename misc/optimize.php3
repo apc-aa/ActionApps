@@ -1,21 +1,21 @@
 <?php
 /**
- * Database maintainance script. It optimizes database tables. 
+ * Database maintainance script. It optimizes database tables.
  * This script could be called from cron.php3 - see AA -> Cron and set there
  * someting like:
  *                  32  2  *  *  2    misc/optimize.php3   key=passw
  *
- * The script must be called with key=passw parameter, where passw is first five 
- * chracters of database password (see DB_PASSWORD variable in config.php3). 
+ * The script must be called with key=passw parameter, where passw is first five
+ * chracters of database password (see DB_PASSWORD variable in config.php3).
  * This is security check - noone then can run the script icidentaly (or with
  * bad thoughts). The setting above runs the script each Monday 2:38 AM
  *
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -35,12 +35,12 @@ http://www.apc.org/
 
 # need config.php3 to set db access, and phplib, and probably other stuff
 $AA_INC_PATH = "../include/";
-#$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/"; 
+#$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/";
 
-require $GLOBALS[AA_INC_PATH]."config.php3";
+require_once $GLOBALS['AA_INC_PATH']."config.php3";
 
-require $GLOBALS[AA_INC_PATH]."locsess.php3";   # DB_AA definition
-require $GLOBALS[AA_INC_PATH]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";   # DB_AA definition
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 
 # init used objects
 $db = new DB_AA;
@@ -48,7 +48,7 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 set_time_limit(160);
 
-if ( substr( DB_PASSWORD, 0, 5 ) != $key ) 
+if ( substr( DB_PASSWORD, 0, 5 ) != $key )
     exit;                 // We need first five characters of database password
                           // Noone then can run the script icidentaly (or with
                           // bad thoughts)

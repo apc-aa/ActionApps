@@ -34,7 +34,8 @@ require_once "../include/constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>"._m("Param Wizard Summary")."</TITLE>";
-echo "</HEAD><BODY>";
+echo "<style> a {color: #CCCCFF}; </style>
+    </HEAD><BODY>";
 
 $list = $$mylist;
 
@@ -55,7 +56,7 @@ if (!is_array ($list)) {
     exit;
 }
 
-echo "<a id='top'>";
+echo "<a id='top'> </a>";
 echo "<h1>".$list["name"]."s</h1>\n";
 
 echo '<FORM action="param_wizard_list.php3" method="get">'."\n";
@@ -99,13 +100,13 @@ while (list ($name, $item) = each ($list["items"])) {
         while (list (,$param) = each ($params)) {
             echo "<TR>";
             echo "<TD><B>".nl($param[name])."</B></TD><TD>";
-			switch($param[type]) {
-			case "INT":  echo " ("._m("integer number").")"; break;
-			case "STR":  echo " ("._m("any text").")"; break;
-			case "STRID":echo " ("._m("field id").")"; break;
-			case "BOOL": echo " ("._m("boolean: 0=false,1=true").")"; break;
+            switch($param[type]) {
+            case "INT":  echo " ("._m("integer number").")"; break;
+            case "STR":  echo " ("._m("any text").")"; break;
+            case "STRID":echo " ("._m("field id").")"; break;
+            case "BOOL": echo " ("._m("boolean: 0=false,1=true").")"; break;
             default : echo "&nbsp;";
-			}
+            }
             echo "</TD>
               <TD>".nl(processSlashes($param[desc]))."</TD>
               <TD>".nl($param[example])."</TD></TR>\n";
@@ -121,8 +122,8 @@ function nl ($s) { return $s ? $s : "&nbsp;"; }
 
 function processSlashes ($s)
 {
-	$s = str_replace ("\\<", HTMLSpecialChars("<"), $s);
-	$s = str_replace ("\\>", HTMLSpecialChars(">"), $s);
-	return $s;
+    $s = str_replace ("\\<", HTMLSpecialChars("<"), $s);
+    $s = str_replace ("\\>", HTMLSpecialChars(">"), $s);
+    return $s;
 }
 ?>

@@ -367,4 +367,3 @@ function LinkVote(link1, link2, changetag) {
   img2.width = 1; */
 }
 
-
