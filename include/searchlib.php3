@@ -1,4 +1,5 @@
 <?php
+require $GLOBALS[AA_INC_PATH]."sql_parser.php3";
 define("SEARCHLIB_PHP3_INC",1);
 
 //$Id$
@@ -53,26 +54,27 @@ function GetWhereExp( $field, $operator, $querystring ) {
   }               
 
   switch( $operator ) {
-    case 'LIKE':   $bgn='%';  $end='%';  $op='LIKE';    break;
-    case 'RLIKE':  $bgn='%';  $end='';   $op='LIKE';    break;
-    case 'LLIKE':  $bgn='';   $end='%';  $op='LIKE';    break;
-    case 'XLIKE':  $bgn='';   $end='';   $op='LIKE';    break;
+    case 'LIKE':   
+    case 'RLIKE':  
+    case 'LLIKE':  
+    case 'XLIKE':
+    case '=':
+    	$syntax = new Syntax($field, $operator, lex( trim($querystring) ) );
+      $ret = $syntax->S();
+      if( $ret == "_SYNTAX_ERROR" ) {
+        if( $GLOBALS['debug'] )
+          echo "<br>Query syntax error: ". $GLOBALS['syntax_error'];
+        return "1=1";
+      }
+      return ( $ret ? " ($ret) " : "1=1" );    
     case 'BETWEEN': 
-                   $arr = explode( ",", $querystring );
-                   return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
-    
-    default:       $bgn='';  $end='';  $op=$operator; break;
+      $arr = explode( ",", $querystring );
+      return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
+    default:
+      $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ? 
+                                 substr( $querystring, 1, -1 ) : $querystring ;
+      return " ($field $operator '$str') ";
   }  
-
-  $arr = explode( " OR ", $querystring );
-  $delim = "";
-  while( list( ,$v) = each($arr) ) {
-    $str = ( ($v[0] == '"') OR ($v[0] == "'") ) ? substr( $v, 1, -1 ) : $v ;
-    $ret .= "$delim ($field $op '$bgn$str$end')";
-    $delim = ' OR ';
-  }
-    
-  return $ret;
 }  
 
 function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE" ) {
@@ -138,14 +140,14 @@ if( $debug ) {
       }    
       if( $cond_flds != '' ) {
         $tbl = 'c'.$tbl_count++;
-        # fill arrays to be able construce select command
-        $select_tables[] = "content as $tbl";          
+        # fill arrays to be able construct select command
+        $select_tables[] = "LEFT JOIN content as $tbl ON $tbl.item_id=item.id";          
         $select_conds[] = GetWhereExp( "$tbl.$store",
                                           $cond['operator'], $cond['value'] );
         if ($field_count>1) 
-          $select_join[] = "$tbl.item_id=item.id AND $tbl.field_id IN ($cond_flds)";
+          $select_join[] = "$tbl.field_id IN ($cond_flds)";
          else {
-          $select_join[] = "$tbl.item_id=item.id AND $tbl.field_id=$cond_flds";
+          $select_join[] = "$tbl.field_id=$cond_flds";
                       # mark this field as sortable (store without apostrofs)
           $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  
         }  
@@ -173,8 +175,8 @@ if( $debug ) {
         if( !$sortable[ $fid ] ) {           # this field is not joined, yet
           $tbl = 'c'.$tbl_count++;
           # fill arrays to be able construce select command
-          $select_tables[] = "content as $tbl";          
-          $select_join[] = "$tbl.item_id=item.id AND $tbl.field_id='$fid'";
+          $select_tables[] = "LEFT JOIN content as $tbl ON $tbl.item_id=item.id";          
+          $select_join[] = "$tbl.field_id='$fid'";
                         # mark this field as sortable (store without apostrofs)
           $sortable[$fid] = $tbl;
         }  
@@ -209,8 +211,8 @@ if( $debug ) echo "<br>OK<br>";
         if( !$sortable[ $fid ] ) {           # this field is not joined, yet
           $tbl = 'c'.$tbl_count++;
           # fill arrays to be able construce select command
-          $select_tables[] = "content as $tbl";          
-          $select_join[] = "$tbl.item_id=item.id AND $tbl.field_id='$fid'";
+          $select_tables[] = "LEFT JOIN content as $tbl ON $tbl.item_id=item.id";          
+          $select_join[] = "$tbl.field_id='$fid'";
                         # mark this field as sortable (store without apostrofs)
           $sortable[$fid] = $tbl;
         }  
@@ -223,10 +225,23 @@ if( $debug ) echo "<br>OK<br>";
     }
   }      
 
+if( $debug ) {
+  echo "<br><br>select_tables:";
+  print_r($select_tables);
+  echo "<br><br>select_join:";
+  print_r($select_join);
+  echo "<br><br>select_conds:";
+  print_r($select_conds);
+  echo "<br><br>select_order:";
+  print_r($select_order);
+  echo "<br><br>select_group:";
+  print_r($select_group);
+}  
+  
   # construct query --------------------------
   $SQL = "SELECT DISTINCT item.id FROM item ";
   if( isset($select_tables) AND is_array($select_tables))
-    $SQL .= ", ". implode (", ", $select_tables);
+    $SQL .= " ". implode (" ", $select_tables);
 
   $SQL .= " WHERE ";                                         # slice ----------
   if( $slice_id )
@@ -808,6 +823,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.21  2001/10/24 16:43:37  honzam
+search expressions with AND, OR, NOT, (, ) allowed in conditions; fixed bug in search (INNER JOIN replaced by LEFT JOIN to content table
+
 Revision 1.20  2001/10/05 10:56:48  honzam
 slice.php3 allows grouping items
 
