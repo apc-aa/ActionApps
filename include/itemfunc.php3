@@ -171,14 +171,17 @@ function show_fnc_txt($varname, $field, $value, $param, $html){
 }
 
 function show_fnc_fld($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+   echo $field[input_before];
+   $maxlength = 255;
+   $fieldsize = 60;
+   if (!empty($param)) 
+     list($maxlength, $fieldsize) = split('[ ,:]', $param, 2);
 
-  $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
-
-  FrmInputText($varname, $field[name], $value[0][value], 255,60, 
-               $field[required], $field[input_help], $field[input_morehlp], 
-               $htmlstate );
-}
+   $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
+   FrmInputText($varname, $field[name], $value[0][value], $maxlength,
+                $fieldsize, $field[required], $field[input_help],
+                $field[input_morehlp], $htmlstate );
+ }
 
 function show_fnc_rio($varname, $field, $value, $param, $html) {
   global $db;
@@ -366,6 +369,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.8  2001/04/09 21:00:36  honzam
+added sife and maxlength parameters to field input type
+
 Revision 1.7  2001/03/30 11:54:35  honzam
 offline filling bug and others small bugs fixed
 
