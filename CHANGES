@@ -1,10 +1,16 @@
+04/23/03 - added support for convertors from DOC/XLS/PPT/.. to HTML
+(honzam) - fixed page scroller's 'All' feature - now works also from other
+           than first page
+         - updated and fixed Links module
+         - fixed errors in set*() functions in item_content.php3
 04/22/03 - tried to fix the bug with email notification of new items
 04/18/03 - updated the alerts.xml and anonym.xml files (jakub)
 04/15/03 - corrected text on wizard for file uploading - (mitra)
 04/15/03 - fixed bug in include/item.php3 (addslashes needed in a query) -pep
 04/15/03 - fixed require bug in util.php3 (uses writelog) (mitra)
 04/14/03 - added unsubscribe option to Alerts (_#UNSBFORM)
-(jakub)  - added "Show Not So Nice" to Anonym Wizard to be used when "Show" does not work
+(jakub)  - added "Show Not So Nice" to Anonym Wizard to be used when "Show" does
+           not work
 04/14/03 - fixed bug in StoreItem for image fields (duplicated)
 (mitra)  - removed some global $db, involved changing args to some fnctns
 04/13/03 - fixed import to allow for just slice data,
@@ -15,7 +21,7 @@
 04/10/03 - new CountHit function, so displaying fulltext is quicker
 (honzam) - improved slice selectbox - better titles for different slice types
          - fixed "live checkbox" - works again
-         - fixed date validation/filling with default value (fix mainly for 
+         - fixed date validation/filling with default value (fix mainly for
            anonymous posting)
          - fixed bug with not shown scroller in site module
          - fixed triggers problem - it did not work properly
