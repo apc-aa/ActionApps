@@ -20,10 +20,22 @@ http://www.apc.org/
 */
 
 // messages for init_page:
-$no_slice_id = true;  
+$no_slice_id = true;
 $require_default_lang = true;
 
 require_once "../include/init_page.php3";
+
+function GetModuleTemplateSelecbox($type, $g_modules) {
+    if (isset($g_modules) AND is_array($g_modules) ) {
+        reset ($g_modules);
+        while (list ($mid,$mod) = each ($g_modules)) {
+            if( $mod['type']==$type )
+                $ret .=  "\n  <OPTION value=\"x$mid\">".$mod['name']."</OPTION>";
+        }
+    }
+    return $ret ? "<SELECT name=\"template[$type]\">$ret\n</SELECT>" : false;
+}
+
 
 // the parts used by the slice wizard are in the included file
 
@@ -36,10 +48,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 ?>
  <TITLE><?php echo _m("Slice Administration");?></TITLE>
 </HEAD>
-<?php 
+<?php
   echo "<H1><B>" . _m("Create New Slice / Module") ."</B></H1>";
   PrintArray($err);
-  echo $Msg;  
+  echo $Msg;
 ?>
 
 <center>
@@ -59,18 +71,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php  reset ($MODULES);
     while (list ($type, $module) = each ($MODULES)) {
         if ($module["hide_create_module"]) continue;
-        echo "<TR><TD class=tabtxt><B>"._mdelayed($module['name'])."</B></TD><TD>";
         if ($module["show_templates"]) {
-            echo "<SELECT name=\"template[$type]\">";
-            reset ($g_modules);
-            while (list ($mid,$mod) = each ($g_modules)) {
-                if( $mod['type']==$type )
-                    echo "<OPTION value=\"x$mid\">".$mod['name']."</OPTION>";
-            }        
-            echo "</SELECT>";
-        } else
-            echo "&nbsp;";
-        echo "</TD><TD>
+            $templ_sb = GetModuleTemplateSelecbox($type, $g_modules);
+            if (!$templ_sb) continue;
+        }
+        echo "<TR><TD class=tabtxt><B>"._mdelayed($module['name'])."</B></TD><TD>".
+             ($module["show_templates"] ? $templ_sb : "&nbsp;").
+             "</TD><TD>
             <INPUT TYPE=SUBMIT NAME='create[$type]' value='"._m("Add")."'></TD></TR>";
     }
 ?>
@@ -81,9 +88,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td align="center">
-<?php 
+<?php
   echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
-?>   
+?>
 </td></tr>
 </table>
 </FORM>

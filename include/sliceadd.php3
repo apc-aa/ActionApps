@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@ http://www.apc.org/
 
 function cmp ($a, $b) {
   return strcmp($a["name"], $b["name"]);
-} 
+}
 
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
     MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"), "standalone");
@@ -34,12 +34,12 @@ while( $db->next_record() ) {
     if ( $db->f(template) ) {
         $templates[unpack_id128( $db->f(id) )][value] = unpack_id128( $db->f(id) ) ."{". $db->f(lang_file);
         $templates[unpack_id128( $db->f(id) )][name]  = $db->f(name);
-    } 
+    }
     else {
         $temp_slices[unpack_id128( $db->f(id) )][value] = unpack_id128( $db->f(id) ) ."{". $db->f(lang_file);
         $temp_slices[unpack_id128( $db->f(id) )][name]  = $db->f(name);
-    }  
-}    
+    }
+}
 
 echo '
     <table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
@@ -55,11 +55,11 @@ if( isset( $templates ) AND is_array( $templates ) AND
     }
 
   if( isset( $templates ) AND is_array( $templates )) {
-    usort($templates, "cmp"); 
+    usort($templates, "cmp");
     echo "<tr><td class=tabtxt><b>". _m("Template") ."</b>";
-    echo "</td><td><select name=\"template_id\">";	
+    echo "</td><td><select name=\"template_id\">";
     reset($templates);
-    while(list(,$v) = each($templates)) { 
+    while(list(,$v) = each($templates)) {
       echo "<option value=\"". htmlspecialchars($v[value])."\"";
       echo "> ". htmlspecialchars($v[name]) ." </option>";
     }
@@ -67,28 +67,30 @@ if( isset( $templates ) AND is_array( $templates ) AND
     if ($wizard)
          echo '<input type="radio" name="template_slice_radio" value="template" checked>';
     else echo '<input type="SUBMIT" name="template_slice_sel[template]" value="'._m("Add").'" checked>';
-    echo "</td></tr>";
+    echo '<input type="hidden" name="no_slice_id" value="1"></td></tr>';
   } else
     echo "<tr><td class=tabtxt colspan=2>". _m("No templates") ."</td></tr>";
-        
+
 
   if( isset( $temp_slices ) AND is_array( $temp_slices )) {
-    usort($temp_slices, "cmp"); 
-    echo "<tr><td class=tabtxt><b>". _m("Slice") ."</b>";
-    echo "</td>\n <td><select name=\"template_id2\">";	
+    usort($temp_slices, "cmp");
+    $out =  "<tr><td class=tabtxt><b>". _m("Slice") ."</b>";
+    $out .= "</td>\n <td><select name=\"template_id2\">";
     reset($temp_slices);
-    while(list(,$v) = each($temp_slices)) { 
-      if( substr( $v['value'], 0, 32 ) == '41415f436f72655f4669656c64732e2e' ) 
+    while(list(,$v) = each($temp_slices)) {
+      if( substr( $v['value'], 0, 32 ) == '41415f436f72655f4669656c64732e2e' )
         continue;    // 'Action Aplication Core' slice - do not use as template
-      echo "<option value=\"". htmlspecialchars($v[value])."\"";
-      echo "> ". htmlspecialchars($v[name]) ." </option>";
+      $slice_sb .= "<option value=\"". htmlspecialchars($v[value])."\"";
+      $slice_sb .= "> ". htmlspecialchars($v[name]) ." </option>";
     }
-    echo '</select></td><td>';
-    if ($wizard)
-         echo '<input type="radio" name="template_slice_radio" value="slice" checked>';
-    else echo '<input type="SUBMIT" name="template_slice_sel[slice]" value="'._m("Add").'">';
-    echo '<input type="hidden" name="no_slice_id" value="1">
-        </td></tr>';
+    if( $slice_sb ) {
+      echo $out . $slice_sb . '</select></td><td>';
+      if ($wizard)
+          echo '<input type="radio" name="template_slice_radio" value="slice" checked>';
+      else
+          echo '<input type="SUBMIT" name="template_slice_sel[slice]" value="'._m("Add").'">';
+      echo '</td></tr>';
+    }
   } else
     echo "<tr><td class=tabtxt colspan=2>". _m("No slices") ."</td></tr>";
 
