@@ -62,6 +62,11 @@ class zids {
 
     # Constructor can be called with an array, or a zid
     function zids($initial = null, $inittype = "z"){  # constructor
+        $this->refill($initial, $inittype);
+    }
+    
+    # Refills the array, may be called with an array, or a zid
+    function refill($initial = null, $inittype = "z"){
         global $debug;
         #$inittype is for where type is known
         # Note it refers to the type of ELEMENTS if its an array
