@@ -592,8 +592,7 @@ if ($action_selected != "0")
         $markedaction["5-view"] = L_VIEW_FULLTEXT;
       
     if (is_array ($markedaction) && count ($markedaction)) {  
-        echo "<img src='".$AA_INSTAL_PATH."images/blank.gif' width=1>
-            <img src='".$AA_INSTAL_PATH."images/arrow_ltr.gif'>
+        echo "<img src='".$AA_INSTAL_PATH."images/arrow_ltr.gif'>
             <a href='javascript:SelectVis()'>".L_SELECT_VISIBLE."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
             
           // click "go" does not use markedform, it uses itemsfrom above...
