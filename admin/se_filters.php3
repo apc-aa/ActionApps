@@ -22,7 +22,7 @@ http://www.apc.org/
 # se_filters.php3 - feeding filters settings
 # expected $slice_id for edit slice
 # optionaly $import_id for selected imported slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Filters update succesfull)
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Filters update successful)
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -118,10 +118,10 @@ function ChangeImport()
 
 function AllCategClick() {
   for( i=1; i<=<?php echo $imp_count?>; i++ ) {
+    DisableClick('document.f.all_categories','document.f.chbox_'+i)
     if( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> )
-      DisablerClick('document.f.all_categories','document.f.categ_'+i)
-    DisablerClick('document.f.all_categories','document.f.approved_'+i)
-    DisablerClick('document.f.all_categories','document.f.chbox_'+i)
+      DisableClick('document.f.all_categories','document.f.categ_'+i)
+    DisableClick('document.f.all_categories','document.f.approved_'+i)
   }  
 }
 
@@ -129,29 +129,44 @@ function InitPage() {
   AllCategClick()
 }
 
-function DisablerClick(enablername,enablewhat) {
-  eval(enablewhat).disabled=eval(enablername).checked;
+function DisableClick(cond,what) {
+     eval(what).disabled=eval(cond).checked;
+     // property .disabled supported only in MSIE 4.0+
 }   
 
 function UpdateFilters(slice_id, import_id) {
   var url = "<?php echo $sess->url(self_base() . "se_filters2.php3")?>"
+  var done = 0
   url += "&slice_id=" + slice_id
   url += "&import_id=" + import_id
-  if(ChBoxState('document.f.all_categories')) {
+  if((typeof document.f.all_categories == 'undefined') ||   // no import cats
+     (ChBoxState('document.f.all_categories'))) {
+    done = 1
     if( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
       url += "&all=1&C=" + escape(SelectValue('document.f.categ_0'))
       url += "-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
+    } else {
+      url += "&all=1&C=0-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
     }
-  }else{
+  } else {
     for (var i = 1; i <= <?php echo $imp_count?>; i++) {
       if(ChBoxState('document.f.chbox_'+i)) {
-        url += "&T%5B%5D=" + escape(SelectValue('document.f.categ_'+i))
+        done = 1
+        if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
+           url += "&T%5B%5D=" + escape(SelectValue('document.f.categ_'+i))
+        } else {
+           url += "&T%5B%5D=0"
+        }
         url += "&F%5B%5D=" +  escape(HiddenValue('document.f.hid_'+i))         
         url += "-" + (ChBoxState('document.f.approved_'+i) ? 1 : 0)
       }  
     }    
   }  
-  document.location=url
+  if (done == 0) {
+    alert ( "<?php echo L_FLT_NONE ?>" )
+  } else {
+    document.location=url
+  }
 }  
 // -->
 </SCRIPT>
@@ -185,11 +200,18 @@ function UpdateFilters(slice_id, import_id) {
 	<td width="30%" class=tabtxt align=center><b><?php echo L_FLT_TO ?></b></td>
 	<td width="30%" class=tabtxt align=center><b><?php echo L_FLT_APPROVED ?></b></td>
 </tr>  
+
 <tr>
-<td align="CENTER">
-<?php FrmChBoxEasy("all_categories", $all_categories, "OnClick=\"AllCategClick()\"");?>  
+<?php
+if ($imp_count) {
+   echo "<td align=center>";
+   FrmChBoxEasy("all_categories", $all_categories, "OnClick=\"AllCategClick()\"");
+   echo "</td>"; 
+}
+?>
+<td class=tabtxt <?php if (!$imp_count) { echo "colspan=2 align=center"; } ?>><?php echo L_ALL_CATEGORIES ?></td>
 </td>
-<td class=tabtxt><b><?php echo L_ALL_CATEGORIES ?></b></td>
+
 <TD><?php 
   if( isset($to_categories) AND is_array($to_categories) )
     FrmSelectEasy("categ_0", $to_categories, $categ_0);
@@ -210,7 +232,7 @@ while($db->next_record()) {
   echo "<tr><td align=CENTER>";
   $chboxname = "chbox_". $i;
    FrmChBoxEasy($chboxname, $chboxcat[$id] );
-  echo "</td>\n<td class=tabtxt><b>". $db->f(name). "</b></td><TD>";
+  echo "</td>\n<td class=tabtxt>". $db->f(name). "</td><TD>";
   $selectname = "categ_". $i;
   if( isset($to_categories) AND is_array($to_categories) )
      FrmSelectEasy($selectname, $to_categories, $selcat[$id]); 
@@ -225,8 +247,17 @@ while($db->next_record()) {
 }  
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:00  madebeer
-Initial revision
+Revision 1.4  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.3  2000/07/17 13:40:11  kzajicek
+Alert box when no input category selected
+
+Revision 1.2  2000/07/14 14:09:04  kzajicek
+Fixed faulty behaviour caused by nonexistent in or out categories.
+
+Revision 1.1.1.1  2000/06/21 18:40:00  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

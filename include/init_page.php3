@@ -32,7 +32,7 @@ require $GLOBALS[AA_INC_PATH] . "locauth.php3";
 require $GLOBALS[AA_INC_PATH] . "scroller.php3";  
 
 $new_sliceid = $slice_id;
-
+ 
 if( $encap ) // we can't use AA_CP_Session - it uses more Header information
   page_open(array("sess" => "AA_SL_Session", "auth" => "AA_CP_Auth"));
  else 
@@ -70,8 +70,15 @@ $sess->register("slice_id");
 $sess->register("r_config_type");
 $sess->register("r_slice_config");      // stores many config parameters for slice (WDDX in slices.config field)
 $sess->register("r_slice_headline");    // stores headline of slice
-$sess->register("r_slice_view_url");      // url of slice
+$sess->register("r_slice_view_url");    // url of slice
 $sess->register("r_stored_slice");      // id of slice which values are in r_slice_headline ,r_slice_config and r_slice_view_url
+$sess->register("r_hidden");            // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
+
+if( $unset_r_hidden OR 
+   ($r_hidden["hidden_acceptor"] != (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF))) {
+  unset( $r_hidden );    // only acceptor can read this values. 
+                         // For others they are destroyed.
+}
 
 $ldap_slices = GetUsersSlices( $auth->auth[uid] );
 
@@ -116,39 +123,68 @@ if( !$Add_slice AND !$New_slice ) {
   }  
   $p_slice_id = q_pack_id($slice_id);
 
-
   if( $slice_id != $r_stored_slice ) {                     // it is not cached - we must get it
-    $SQL= " SELECT * FROM slices WHERE id='$p_slice_id'";  // check for hedline and slice type
+    $SQL= " SELECT * FROM slices WHERE id='$p_slice_id'";  // check for headline and slice type
     $db->query($SQL);
     if($db->next_record()) {
       $r_slice_headline = $db->f(headline);
       $r_config_type[$slice_id] = $db->f(type);
-      if(!$db->f(config)) {
+      if ($db->f(config)) {
+        // in config field are stored many parameters of this slice
+        $r_slice_config = wddx_deserialize($db->f(config));
+      } else {
         $r_slice_config = wddx_deserialize(DEFAULT_SLICE_CONFIG);
-        huh('This slice have not config string (WDDX). The reason is:<br>
-                1) You have not new column "config" in "slices" table or<br>
-                2) This is old slice, where "config" string is not used.<br>
-                The default values are used.');
       }
-      else
-        $r_slice_config = wddx_deserialize($db->f(config));            // in config field are stored many parameters of this slice
       $r_stored_slice = $slice_id;
       $r_slice_view_url = ($db->f(slice_url)=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                       : $db->f(slice_url));
     }
   }  
 
-  if( CONFIG_FILE != $ActionAppConfig[$r_config_type[$slice_id]][file] ) { // The config file not loaded
+  // The config file not loaded -> the slice type was changed
+  if( CONFIG_FILE != $ActionAppConfig[$r_config_type[$slice_id]][file] ) {
+//echo CONFIG_FILE . "!= ". $ActionAppConfig[$r_config_type[$slice_id]][file];
     page_close();             // save variables
-    $netscape = (r=="") ? "r=1" : "r=".++$r;   // special parameter for Natscape to reload page
-  	header("Location: ". con_url($sess->url($PHP_SELF),$netscape));
-   	exit;
+    // Netscape does not reload when URL does not change
+
+    $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+
+    if( $free )  // anonymous login
+      if( $encap ) {
+        $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+        echo '<SCRIPT Language="JavaScript"><!--
+                document.location = "'. $sess->url($to_go_url) .'";
+              // -->
+             </SCRIPT>';
+      } else
+        go_url( $sess->url($PHP_SELF));
+    else 
+      go_url( $sess->url($PHP_SELF));
+    exit;
   }
 }
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:39  madebeer
-Initial revision
+Revision 1.7  2000/11/20 16:45:58  honzam
+fixed bug with anonymous posting to other aplications than news
+
+Revision 1.6  2000/11/15 16:20:41  honzam
+Fixed bugs with anonymous posting via SSI and bad viewed item in itemedit
+
+Revision 1.5  2000/10/10 18:28:00  honzam
+Support for Web.net's extended item table
+
+Revision 1.4  2000/08/03 15:36:52  kzajicek
+The WDDX warning deleted, there are other potential redirects in other files
+
+Revision 1.3  2000/08/03 15:18:41  kzajicek
+The WDDX warning is printed after possible header() call
+
+Revision 1.2  2000/08/03 12:36:21  honzam
+Session variable r_hidden used instead of HIDDEN html tag.
+
+Revision 1.1.1.1  2000/06/21 18:40:39  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:24  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

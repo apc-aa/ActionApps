@@ -94,9 +94,9 @@ class easy_scroller {
 	function navarray() {
 		if(!$this->itmcnt) return array();
     $pgcnt = $this->pageCount();
-		$mp = floor(($this->current - 1) / $this->metapage);
-		$from = max(1, $mp * $this->metapage);
-		$to = min(($mp + 1) * $this->metapage + 1, $pgcnt + 0);
+		$mp = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
+		$from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
+		$to = min(($mp + 1) * SCROLLER_LENGTH + 1, $pgcnt);
 		if($this->current > 1)
 			$arr[L_PREV] = $this->Relative(-1);
 		if($from > 1) $arr["1"] = $this->Absolute(1);
@@ -131,8 +131,11 @@ class easy_scroller {
 }  
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:28  madebeer
-Initial revision
+Revision 1.2  2000/08/03 12:28:20  honzam
+SCROLLER_LENGTH constant bug fixed - the length is accepted now
+
+Revision 1.1.1.1  2000/06/21 18:40:28  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:15  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

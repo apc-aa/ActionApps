@@ -27,19 +27,31 @@ http://www.apc.org/
 
 $encap = ( ($encap=="false") ? false : true );
 
+if( $edit OR $add )         # parameter for init_page - we edited new item so 
+  $unset_r_hidden = true;   # clear stored content
+  
+require "../include/init_page.php3";
+require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require $GLOBALS[AA_INC_PATH]."date.php3";
+require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."feeding.php3";
+
+if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
+                               #       and REDIRECT_STRING_UNESCAPED
+
+QuoteVars("post");  // if magicquotes are not set, quote variables
+GetHidden();        // unpacks variables from $r_hidden session var.
+unset($r_hidden);
+$r_hidden["hidden_acceptor"] = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+                    // only this script accepts r_hidden variable
+                    // - if it don't match - unset($r_hidden) (see init_page.pgp3)
+
 if( $ins_preview )
   $insert = true;
 if( $upd_preview )
   $update = true;
   
 $add = !( $update OR $cancel OR $insert OR $edit );
-
-require "../include/init_page.php3";
-
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
 function LoadDefault($add,$insert,$update,$show, $variable, $value) {
   if( $add OR (!$show AND $insert) OR (!$show AND $update) ) 
@@ -48,7 +60,13 @@ function LoadDefault($add,$insert,$update,$show, $variable, $value) {
 
 if($cancel) {
   if( $anonymous )  // anonymous login
-    go_url( $r_slice_view_url );
+    if( $encap ) {
+      echo '<SCRIPT Language="JavaScript"><!--
+              document.location = "'. $r_slice_view_url .'";
+            // -->
+           </SCRIPT>';
+    } else
+      go_url( $r_slice_view_url );
    else 
     go_url( $sess->url(self_base() . "index.php3"));
 }    
@@ -59,12 +77,19 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 $publishdate = new datectrl("publish_date", 1, 8);
 $expirydate = new datectrl("expiry_date", 0, 15, true);
+
+if( defined("EXTENDED_ITEM_TABLE") ) {
+  $startdate = new datectrl("start_date", 1, 8);
+  $enddate = new datectrl("end_date", 1, 8);
+}
+
 $varset = new Cvarset();
 
 //lookup (slice) 
 $SQL= " SELECT * FROM slices WHERE id='".q_pack_id($slice_id)."'";
 $db->query($SQL);
 if ($db->next_record()){ 
+  $slicetype = $db->f(type);
   $show = UnpackFieldsToArray($db->f(edit_fields), $itemedit_fields);
   $needed = UnpackFieldsToArray($db->f(needed_fields), $itemedit_fields);
   LoadDefault($add,$insert,$update,$show[language_code],&$language_code, quote($db->f(d_language_code)));
@@ -78,6 +103,7 @@ if ($db->next_record()){
   LoadDefault($add,$insert,$update,$show[img_height],&$img_height, quote($db->f(d_img_height)));
   LoadDefault($add,$insert,$update,$show[source],&$source, quote($db->f(d_source)));
   LoadDefault($add,$insert,$update,$show[source_href],&$source_href, quote($db->f(d_source_href)));
+  LoadDefault($add,$insert,$update,$show[redirect],&$redirect, quote($db->f(d_redirect)));
   LoadDefault($add,$insert,$update,$show[place],&$place, quote($db->f(d_place)));
   LoadDefault($add,$insert,$update,$show[html_formatted],&$html_formatted, quote($db->f(d_html_formatted)));
   LoadDefault($add,$insert,$update,$show[posted_by],&$posted_by, quote($db->f(d_posted_by)));
@@ -95,7 +121,14 @@ if ($db->next_record()){
     $publishdate->setdate($publish_date);
   if( $expiry_date != "")
     $expirydate->setdate($expiry_date);
-} 
+
+  if( defined("EXTENDED_ITEM_TABLE") ) {
+    if( $start_date != "")
+      $startdate->setdate($start_date);
+    if( $end_date != "")
+      $enddate->setdate($end_date);
+  }    
+}
 
 if($update) {
   $SQL= " SELECT items.*, fulltexts.full_text FROM items,fulltexts 
@@ -112,7 +145,7 @@ if($update) {
 // poor checkbox doesn't have value if unchecked
 $link_only = ($link_only ? 1 : 0);  
 $highlight = ($highlight ? 1 : 0); 
-$html_formatted = ($html_formatted ? 1 : 0 ); 
+$html_formatted = ($html_formatted ? 1 : 0 );
 
 // validate input data
 if( $insert || $update )
@@ -126,6 +159,7 @@ if( $insert || $update )
     ValidateInput("place", L_PLACE, &$place, &$err, $needed[place], "text");
     ValidateInput("source", L_SOURCE, &$source, &$err, $needed[source], "text");
     ValidateInput("source_href", L_SOURCE_HREF, &$source_href, &$err, $needed[source_href], "url");
+    ValidateInput("redirect", L_REDIRECT, &$redirect, &$err, $needed[redirect], "url");
     ValidateInput("img_src", L_IMG_SRC, &$img_src, &$err, $needed[img_src], "text");
     ValidateInput("img_width", L_IMG_WIDTH, &$img_width, &$err, $needed[img_width], "text");
     ValidateInput("img_height", L_IMG_HEIGHT, &$img_height, &$err, $needed[img_height], "text");
@@ -136,23 +170,45 @@ if( $insert || $update )
     ValidateInput("cp_code", L_CP_CODE, &$cp_code, &$err, $needed[cp_code], "text");
     ValidateInput("status_code", L_STATUS_CODE, &$status_code, &$err, $needed[status_code], "number");
     ValidateInput("category_id", L_CATEGORY_ID, &$category_id, &$err, $needed[category_id], "id");
-  
+
     $publishdate->ValidateDate (L_PUBLISH_DATE, &$err);
     $expirydate->ValidateDate (L_EXPIRY_DATE, &$err);
+  
+
+    if( defined("EXTENDED_ITEM_TABLE") ) {
+      ValidateInput("source_desc", L_SOURCE_DESC, &$source_desc, &$err, $needed[source_desc], "text");
+      ValidateInput("source_address", L_SOURCE_ADDRESS, &$source_address, &$err, $needed[source_address], "text");
+      ValidateInput("source_city", L_SOURCE_CITY, &$source_city, &$err, $needed[source_city], "text");
+      ValidateInput("source_prov", L_SOURCE_PROV, &$source_prov, &$err, $needed[source_prov], "text");
+      ValidateInput("source_country", L_SOURCE_COUNTRY, &$source_country, &$err, $needed[source_country], "text");
+      ValidateInput("time", L_TIME, &$time, &$err, $needed[time], "text");
+      ValidateInput("con_name", L_CON_NAME, &$con_name, &$err, $needed[con_name], "text");
+      ValidateInput("con_email", L_CON_EMAIL, &$con_email, &$err, $needed[con_email], "text");
+      ValidateInput("con_phone", L_CON_PHONE, &$con_phone, &$err, $needed[con_phone], "text");
+      ValidateInput("con_fax", L_CON_FAX, &$con_fax, &$err, $needed[con_fax], "text");
+      ValidateInput("loc_name", L_LOC_NAME, &$loc_name, &$err, $needed[loc_name], "text");
+      ValidateInput("loc_address", L_LOC_ADDRESS, &$loc_address, &$err, $needed[loc_address], "text");
+      ValidateInput("loc_city", L_LOC_CITY, &$loc_city, &$err, $needed[loc_city], "text");
+      ValidateInput("loc_prov", L_LOC_PROV, &$loc_prov, &$err, $needed[loc_prov], "text");
+      ValidateInput("loc_country", L_LOC_COUNTRY, &$loc_country, &$err, $needed[loc_country], "text");
+
+      $startdate->ValidateDate (L_START_DATE, &$err, $needed[start_date]);
+      $enddate->ValidateDate (L_END_DATE, &$err, $needed[end_date]);
+    }    
 
     if( count($err) > 1)
       break;
 
-    if(($img_download <> "none")&&($img_download <> "")){        // see if the file exists downloaded picture;
-      $dest_file = $img_download_name;
-      if( file_exists(IMG_DOWNLOAD_PATH.$img_download_name) )
-        $dest_file = new_id().substr(strrchr($img_download_name, "." ), 0 );
+    if(($img_upload <> "none")&&($img_upload <> "")){        // see if the uploaded picture exists
+      $dest_file = $img_upload_name;
+      if( file_exists(IMG_UPLOAD_PATH.$img_upload_name) )
+        $dest_file = new_id().substr(strrchr($img_upload_name, "." ), 0 );
 
-      if(!copy($img_download,IMG_DOWNLOAD_PATH.$dest_file)){     // copy the file from the temp directory to the upload directory, and test for success
-        $err["Image"] = L_CANT_UPLOAD;          // error array (Init - just for initializing variable
+      if(!copy($img_upload,IMG_UPLOAD_PATH.$dest_file)){     // copy the file from the temp directory to the upload directory, and test for success
+        $err["Image"] = MsgErr(L_CANT_UPLOAD);          // error array (Init - just for initializing variable
         break;
       }   
-      $img_src = IMG_DOWNLOAD_URL.$dest_file;
+      $img_src = IMG_UPLOAD_URL.$dest_file;
     }
   
     if( count($err) > 1)
@@ -173,6 +229,7 @@ if( $insert || $update )
     $varset->add("html_formatted", "number", $html_formatted);
     $varset->add("source", "quoted", $source);
     $varset->add("source_href", "quoted", $source_href);
+    $varset->add("redirect", "quoted", $redirect);
     $varset->add("place", "quoted", $place);
     $varset->add("highlight", "number", $highlight);
     $varset->add("posted_by", "quoted", $posted_by);
@@ -183,17 +240,36 @@ if( $insert || $update )
     $varset->add("contact1", "unpacked", $contact1);
     $varset->add("contact2", "unpacked", $contact2);
     $varset->add("contact3", "unpacked", $contact3);
+  
+    if( defined("EXTENDED_ITEM_TABLE") ) {
+      $varset->add("source_desc", "quoted", $source_desc); 
+      $varset->add("source_address", "quoted", $source_address); 
+      $varset->add("source_city", "quoted", $source_city); 
+      $varset->add("source_prov", "quoted", $source_prov);     
+      $varset->add("source_country", "quoted", $source_country);
+      $varset->add("start_date", "text", $startdate->getdate());    
+      $varset->add("end_date", "text", $enddate->getdate());  
+      $varset->add("time", "quoted", $time);
+      $varset->add("con_name", "quoted", $con_name);
+      $varset->add("con_email", "quoted", $con_email);
+      $varset->add("con_phone", "quoted", $con_phone); 
+      $varset->add("con_fax", "quoted", $con_fax); 
+      $varset->add("loc_name", "quoted", $loc_name);
+      $varset->add("loc_address", "quoted", $loc_address);
+      $varset->add("loc_city", "quoted", $loc_city);
+      $varset->add("loc_prov", "quoted", $loc_prov);    
+      $varset->add("loc_country", "quoted", $loc_country); 
+    }  
     
     if( $update )
     {
-      $varset->add("created_by", "quoted", $created_by);
       $SQL = "UPDATE items SET ". $varset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
-      $db->query($SQL);
-      if ($db->affected_rows() == 0) {
-        $err["DB"] = "<div class=err>". L_ITEM_NOT_CHANGED ."</div>";
+//huh($SQL);
+      if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+        $err["DB"] = MsgErr( L_ITEM_NOT_CHANGED );
         break;
       }     
-      $db->query("update fulltexts set full_text = '". $full_text ."' where ft_id='".q_pack_id($id)."'");
+      $db->query("UPDATE fulltexts SET full_text = '". $full_text ."' WHERE ft_id='".q_pack_id($id)."'");
       if( $status_code == 1 )  //Approved bin
         FeedItem($id, $db);
     }    
@@ -205,10 +281,10 @@ if( $insert || $update )
       $varset->add("created_by", "text", $auth->auth["uid"]);
       $varset->add("post_date", "quoted", $post_date);
   
-      $db->query("INSERT INTO items " . $varset->makeINSERT() );
-      if ($db->affected_rows() == 0) {
-        $err["DB"] .= "<div class=err>". L_CANT_ADD_ITEM ."</div>";
-        break;
+      $SQL = "INSERT INTO items " . $varset->makeINSERT();
+      if (!$db->query($SQL)) {
+        $err["DB"] .= MsgErr( L_CANT_ADD_ITEM );
+        break;   # not necessary - we have set the halt_on_error
       }   
       $SQL="INSERT INTO fulltexts (ft_id, full_text) 
             VALUES ('". q_pack_id($id) ."', '". $full_text ."')";
@@ -218,8 +294,17 @@ if( $insert || $update )
     }
   } while(false);
   if( count($err) <= 1) {
+//huh("OK");    
+    page_close(); 
+
     if( $anonymous )  // anonymous login
-      go_url( $r_slice_view_url );
+      if( $encap ) {
+        echo '<SCRIPT Language="JavaScript"><!--
+                document.location = "'. $r_slice_view_url .'";
+              // -->
+             </SCRIPT>';
+      } else
+        go_url( $r_slice_view_url );
      elseif( $ins_preview OR $upd_preview ) 
       go_url( con_url($sess->url(self_base() .  "preview.php3"), "slice_id=$slice_id&sh_itm=$id"));
      else 
@@ -256,8 +341,8 @@ while($db->next_record()) {
 }
 
 if($edit) {
-  $SQL = "select items.*, fulltexts.full_text from items, fulltexts 
-                where fulltexts.ft_id = items.master_id AND id='".q_pack_id($id)."'";
+  $SQL = "SELECT items.*, fulltexts.full_text FROM items, fulltexts 
+                WHERE fulltexts.ft_id = items.master_id AND id='".q_pack_id($id)."'";
 	$db->query($SQL);
 	if($db->next_record()) {
     $tmp_slice_id = $slice_id;  
@@ -271,6 +356,12 @@ if($edit) {
     $id = $tmp_id;  
 		$publishdate->setdate($db->f("publish_date"));
 		$expirydate->setdate($db->f("expiry_date"));
+
+    if( defined("EXTENDED_ITEM_TABLE") ) {
+  		$enddate->setdate($db->f("end_date"));
+  		$startdate->setdate($db->f("start_date"));
+    }
+
     $category_id = unpack_id($db->f("category_id")); 
   }
 }
@@ -285,10 +376,60 @@ if( !$encap ) {
 PrintArray($err);
 echo $Msg;  
 
+// the itemedit FORM is done on a type by type basis.
+// if there isn't a slice-specific form page, use the default form page
+// the slice specific page will be named like: itemedit-en_news.php3
+// if you want to create one of these, just copy itemedit-default.php3 to the
+// the file and make your edits.
+
+$formparams = ($encap ? 
+  ' method="get" ' : ' enctype="multipart/form-data" method=post" ');
+$includefile = ($AA_INC_PATH . 'itemedit-' .$slicetype. '.php3');
+
+if (! file_exists($includefile))
+     $includefile = ($AA_INC_PATH . 'itemedit-default.php3');
+include ($includefile);
+
+if( !$encap ) 
+  echo '</body></html>';
+page_close(); 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:57  madebeer
-Initial revision
+Revision 1.13  2000/12/05 14:20:35  honzam
+Fixed bug with Netscape - not allowed method POST - in annonymous posting.
+
+Revision 1.12  2000/11/17 19:08:03  madebeer
+itemedit now creates the form on a application type specific basis.
+
+Revision 1.11  2000/11/15 16:20:41  honzam
+Fixed bugs with anonymous posting via SSI and bad viewed item in itemedit
+
+Revision 1.10  2000/10/10 18:28:00  honzam
+Support for Web.net's extended item table
+
+Revision 1.8  2000/08/17 15:14:32  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
+Revision 1.7  2000/08/03 12:31:19  honzam
+Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
+
+Revision 1.6  2000/07/17 15:50:08  kzajicek
+Do not print empty info for new articles
+
+Revision 1.5  2000/07/13 14:12:58  kzajicek
+SQL keywords to uppercase
+
+Revision 1.4  2000/07/13 10:12:18  kzajicek
+iIf possible, print real name instead of uid (number with sql, dn with ldap).
+
+Revision 1.3  2000/07/13 10:02:22  kzajicek
+created_by should not be changed, it is a constant value.
+
+Revision 1.2  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
+Revision 1.1.1.1  2000/06/21 18:39:57  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:46  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -317,149 +458,3 @@ also added Id and Log keywords to all .php3 and .inc files
 
 */
 ?>
-<center>
-<form enctype="multipart/form-data" method=post action="<?php echo $sess->url( ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF) ?>">
-
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_ITEM_HDR?></b>
-</td>
-</tr>
-<tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
-<?
-  FrmInputText("headline", L_HEADLINE, safe($headline), 254, 60, true);
-  if($show[abstract])
-    FrmTextarea("abstract", L_ABSTRACT, safe($abstract), 4, 60, $needed[abstract]);
-
-  if( ($db->f(id) == $db->f(master_id)) AND $show[full_text])  {  // base item or new item
-    if($show[html_formatted]) {  ?>
-      <tr>
-        <td valign=top class=tabtxt><b><?php 
-          echo L_FT_FORMATTING;
-          Needed($needed[html_formatted]);
-          ?></b></td>
-        <?php 
-          $foo=$html_formatted;           
-          $checkhtml=($foo>0)?"checked":""; $checkplain=(!($foo>0))?"checked":"";              
-        ?>
-        <td><input type=radio name=html_formatted value=1 <?php echo $checkhtml ?>><?php echo L_FT_FORMATTING_HTML?>
-            <input type=radio name=html_formatted value=0 <?php echo $checkplain?>><?php echo L_FT_FORMATTING_PLAIN?>   
-        </td>
-      </tr><?php
-    }  
-    FrmTextarea("full_text", L_FULL_TEXT, safe($full_text), 8, 60, $needed[full_text]);
-  }
-  if($show[highlight])
-    FrmInputChBox("highlight", L_HIGHLIGHT, $highlight, false, "", 1, $needed[highlight]);
-  if($show[link_only])
-    FrmInputChBox("link_only", L_LINK_ONLY, $link_only, false, "", 1, $needed[link_only]);
-  if($show[hl_href])
-    FrmInputText("hl_href", L_HL_HREF, safe($hl_href), 254, 60, $needed[hl_href]);
-  if($show[place])
-    FrmInputText("place", L_PLACE, safe($place), 254, 60, $needed[place]);
-  if($show[source])
-    FrmInputText("source", L_SOURCE, safe($source), 254, 60, $needed[source]);
-  if($show[source_href])
-    FrmInputText("source_href", L_SOURCE_HREF, safe($source_href), 254, 60, $needed[source_href]);
-  if($show[status_code]) {?>
-    <tr>
-      <td class=tabtxt><b> <?php
-         echo L_STATUS_CODE;
-         Needed($needed[status_code]);
-       ?></b></td>
-      <?php
-       $foo=$status_code;           
-       $check1=($foo==1)?"checked":"";
-       $check2=($foo==2)?"checked":"";
-       $check3=($foo==3)?"checked":"";              
-      ?>
-      <td><input type=radio name=status_code value=1 <?php echo $check1 ?>><?php echo L_ACTIVE_BIN ?><br><input type=radio name=status_code value=2 <?php echo $check2 ?>><?php echo L_HOLDING_BIN ?><br><input type=radio name=status_code value=3 <?php echo $check3 ?>><?php echo L_TRASH_BIN ?>
-      </td>
-    </tr><?php
-  }  
-  if($show[language_code])
-    FrmInputSelect("language_code", L_LANGUAGE_CODE, $languages, $language_code, $needed[language_code]); 
-  if($show[cp_code])
-    FrmInputSelect("cp_code", L_CP_CODE, $codepages, $cp_code, $needed[cp_code]); 
-  if( isset($categories) AND is_array($categories) AND $show[category_id])
-    FrmInputSelect("category_id", L_CATEGORY, $categories, $category_id, $needed[category_id]);
-
-  if($show[img_src])
-    FrmInputText("img_src", L_IMG_SRC, safe($img_src), 254, 60, $needed[img_src]);
-  if($show[img_width])
-    FrmInputText("img_width", L_IMG_WIDTH, safe($img_width), 254, 60, $needed[img_width]);
-  if($show[img_height])
-    FrmInputText("img_height", L_IMG_HEIGHT, safe($img_height), 254, 60, $needed[img_height]);
-  if($show[img_download])
-    FrmInputFile("img_download", L_IMG_DOWNLOAD, 40, $needed[img_download]);
-  if($show[posted_by])
-    FrmInputText("posted_by", L_POSTED_BY, safe($posted_by), 254, 60, $needed[posted_by]);
-  if($show[e_posted_by])
-    FrmInputText("e_posted_by", L_E_POSTED_BY, safe($e_posted_by), 254, 60, $needed[e_posted_by]);
-  if($show[publish_date]) { ?>
-    <tr>
-      <td class=tabtxt><b><?php
-        echo L_PUBLISH_DATE;
-        Needed($needed[publish_date]) ?></b></td>
-      <td><?php echo $publishdate->pselect(); ?><?php echo $err["publish_date"] ?>
-      </td>
-    </tr><?php
-  }
-  if($show[expiry_date]) { ?>
-    <tr>
-      <td class=tabtxt><b><?php 
-        echo L_EXPIRY_DATE;
-        Needed($needed[expiry_date]) ?></b></td>
-      <td><?php echo $expirydate->pselect(); ?><?php echo $err["expiry_date"] ?>
-      <div class=tabhlp>Expiry date is date, when item stops to be viewed on web</div> <!-- This is an example of help (for Klara) -->
-      </td>
-    </tr><?php
-  }    
-  if($show[edit_note]) 
-    FrmTextarea("edit_note", L_EDIT_NOTE, safe($edit_note), 4, 60, $needed[edit_note]); ?>
-<tr>
-  <td colspan=2>
-  <?php 
-  if(DEBUG_FLAG) {
-    echo '<I>';
-    echo L_POSTDATE.": ".(datetime2date(dequote($post_date)));
-    echo  " ".L_CREATED_BY.": $created_by";
-    echo "<br>";
-    echo  L_LASTEDIT." $edited_by";
-    echo " ".L_AT." ". dequote($last_edit); 
-    echo '</I>';
-  }  
-  if( ($db->f(id) != $db->f(master_id)) ) 
-    echo "<input type=hidden name=feeded value=1>";
-  ?>
-  <input type=hidden name=post_date value="<?php echo $post_date ?>">
-  <input type=hidden name=created_by value="<?php echo $created_by ?>">
-  <input type=hidden name=edited_by value="<?php echo $edited_by ?>">
-  <input type=hidden name=last_edit value="<?php echo $last_edit ?>">
-  <input type=hidden name=slice_id value="<?php echo $slice_id ?>">
-  <input type=hidden name=anonymous value="<?php echo (($free OR $anonymous) ? true : "") ?>">
-  <input type=hidden name="MAX_FILE_SIZE" value="<?php echo IMAGE_DOWNLOAD_MAX_SIZE ?>">
-  </td>
-</tr>
-</table></td></tr>
-<tr><td align=center>
-<?php if($edit || $update || ($insert && $added_to_db)) { ?>
-   <input type=submit name=update value="<?php echo L_POST ?>">
-   <input type=submit name=upd_preview value="<?php echo L_POST_PREV ?>">
-   <input type=reset value="<?php echo L_RESET ?>">
-   <input type=hidden name=id value="<?php echo $id ?>">
-<?php } else { ?>
-   <input type=submit name=insert value="<?php echo L_INSERT ?>">
-   <input type=submit name=ins_preview value="<?php echo L_POST_PREV ?>">
-<?php } ?>
-<input type=submit name=cancel value="<?php echo L_CANCEL ?>">
-</td>
-</tr>
-</table>
-<input type=hidden name=encap value="<?php echo ($encap ? "true" : "false")?>">
-</form>
-</center>
-<?php
-if( !$encap ) 
-  echo '</body></html>';
-page_close(); ?>

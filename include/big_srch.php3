@@ -100,8 +100,11 @@ while($db->next_record())
 */
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:22  madebeer
-Initial revision
+Revision 1.2  2000/10/16 12:52:18  honzam
+Big search form can be customized via style sheets
+
+Revision 1.1.1.1  2000/06/21 18:40:22  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:12  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -127,12 +130,12 @@ config.inc
 
 <FORM method=get action="<?php echo $sess->MyUrl($slice_id, $encap, true);?>">
 <P>
- <TABLE border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+ <TABLE class=srchouter border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
   <TR>
    <TD>
-    <TABLE width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
-     <TR bgcolor="#584011" align="center">
-      <TD colspan=2 class=srchtit><?php echo L_SRCH_KW ?>&nbsp;&nbsp; 
+    <TABLE class=srchinner width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+     <TR class=srchtoptr bgcolor="#584011" align="center">
+      <TD class=srchtoptd colspan=2 class=srchtit><?php echo L_SRCH_KW ?>&nbsp;&nbsp; 
        <INPUT type="Text" name=search[keyword] <?php
          if( $search[keyword]!="" ) echo " value=".$search[keyword];?> size="30">&nbsp;&nbsp;
        <SELECT name="search[type]"> 
@@ -142,9 +145,9 @@ config.inc
        <A href="<? echo HELPPAGE?>#search"><IMG src="images/help.gif" width=23 height=20 border=0 valign="right" alt=""></A>
       </TD>
      </TR>
-     <TR>
-      <TD width="70%">
-       <TABLE><?php
+     <TR class=srchinnertr>
+      <TD class=srchinnertd width="70%">
+       <TABLE class=srchinner><?php
          if( $show[slice] )
            SrchFrmSelect("slice", L_SRCH_SLICE, $slices, $search[slice]);
          if( $show[category] )
@@ -162,8 +165,8 @@ config.inc
            echo "<tr><td>&nbsp;</td></tr>"; ?>
        </table>
       </td>
-      <td>
-       <table><?php
+      <td class=srchinnertd>
+       <table class=srchinner><?php
          if( $show[headline] )
            SrchFrmFields("0", L_SRCH_HEADLINE, "headline", $s_col[headline]);
          if( $show[abstract] )
@@ -180,7 +183,8 @@ config.inc
     </table>
    </td>
   </tr>  
-  <tr><td align="center">
+  <tr class=srchoutertr>
+   <td class=srchoutertd align="center">
    <input type=hidden name=srch value=1>
    <input type=hidden name=big value=1><?php 
    if( !$show[slice] )
