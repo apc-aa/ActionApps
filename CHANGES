@@ -1,3 +1,5 @@
+02/20/03 - added the mailman feature, which creates files with lists of 
+           email addresses (jakub)
 02/20/03 - added new input type field for itemedit - Hidden
 (honzam) - added new alias function f_o which displaye "New" or "Old"
            or such text for the item
@@ -41,6 +43,7 @@
            allow to view them in a table (jakub)
 02/17/03 - finished the Alert module which cooperates with the Reader management
            slice, added events to event_handler (jakub)
+>>>>>>> 1.126
 02/16/03 - removed include of nonexistant en_site_lang.php3 from modedit (mitra)
          - added roles to um_util.php3.PrintModuleAddRow - possibly wrong
          - fixed bug in init_page stopping non-superusers logging in

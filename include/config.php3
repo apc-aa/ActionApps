@@ -268,5 +268,11 @@ define("ALERTS_EMAIL", "aaadmin@somewhere.com");
 // ------------------------------------------------------------------
 // XMGETTEXT language files - this setting is needed only for AA developers
 // who want to run xmgettext (see misc/mgettext/index.php3). 
-$XMGETTEXT_DESTINATION_DIR = "/www/apc-aa/php_rw/lang/";
+$XMGETTEXT_DESTINATION_DIR = "/www/php_rw/lang/";
+
+// ------------------------------------------------------------------
+// MAILMAN synchronization dir. In this directory are placed the
+// files with lists of email addresses which processes mailman.
+// The dir must exist, it is not created by the mailman.php3 script.
+$MAILMAN_SYNCHRO_DIR = "/www/mailman/";
 ?>
