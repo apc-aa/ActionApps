@@ -347,11 +347,7 @@ if( OPTIMIZE_FOR_MYSQL )       // if no mySQL - go to item no (mySQL use LIMIT)
 $db->query($SQL);
 $db2 = new DB_AA; 	 // open BD	(for subqueries "feeded into" in long format)
 
-?>
-
-<center>
-<?php
-                     
+echo "<center>";
 echo "$Msg <br>";
 
 $col_count = count($r_slice_config["admin_fields"]);
@@ -441,7 +437,7 @@ while($db->next_record()){
         break;  
       case "html_formatted":
         SelectIconIf($db->f(html_formatted), "../images/html.gif", L_HTML_FORMATTED,
-                                             "../images/spacer.gif", ""); 
+                                             "../images/text.gif", ""); 
         break;  
       case "highlight":
         SelectIconIf($db->f(highlight), "../images/highlt.gif", L_HIGHLIGHTED,
@@ -580,6 +576,9 @@ echo '
 
 /*
 $Log$
+Revision 1.6  2000/08/03 12:38:01  honzam
+HTML formated pictures for admin interface added
+
 Revision 1.5  2000/07/25 13:23:36  kzajicek
 Fixed small inaccuracy in OpenPreview (Netscape only).
 
