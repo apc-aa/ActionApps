@@ -46,8 +46,10 @@ http://www.apc.org/
                      // output (display only items with 
                      //       "restrict" field = "res_val"
 #res_val             // see restrict
-#exact               // if set, "restrict" field must match res_val exactly (=)
-                     // otherwise substring is sufficient (LIKE '%res_val%')
+#exact               // = 1: "restrict" field must match res_val exactly (=)
+                     // undefined: substring is sufficient (LIKE '%res_val%')
+                     // = 2: the same as 1, but the res_val is taken as 
+                     // expression (like: "environment or (toxic and not fuel)")
 #als[]               // user alias definition. Parameter 'als[MY_ALIAS]=Summary'
                      // defines alias _#MY_ALIAS. If used, it prints 'Summary'.
 #lock                // used in join with "key" for multiple slices on one page
@@ -337,7 +339,7 @@ if($query) {              # complex query - posted by big search form ---
   if( !$scrl )
     $scr->current = 1;
 }
-elseif(isset($conds) AND is_array($conds)) {     # posted by query form ----------------
+elseif( (isset($conds) AND is_array($conds)) OR isset($group_by)) {     # posted by query form ----------------
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","conds", "sort", "group_by")); # store in session
 
   reset($conds); 
@@ -352,10 +354,18 @@ elseif(isset($conds) AND is_array($conds)) {     # posted by query form --------
       $conds[$k]['operator'] = 'LIKE';
   }    
 
-  if(isset($group_by)) {
-    $sort_tmp[] = array ( "$group_by" => 'a' );
+
+  if( isset($group_by) ) {
+    $groupdirection = 'a';
+    if( substr($group_by,-1) == '-' ) {
+      $groupdirection = "d";
+      $group_by = substr($group_by,0,-1);
+    }
+    if( substr($group_by,-1) == '+' )   # just skip
+      $group_by = substr($group_by,0,-1);
+    $sort_tmp[] = array ( "$group_by" => $groupdirection );
     $slice_info["group_by"] = $group_by;
-  }  
+  }    
 
   if(isset($sort)) {
     if( !is_array($sort) ) {
@@ -382,7 +392,7 @@ elseif(isset($conds) AND is_array($conds)) {     # posted by query form --------
     echo "<div>$item_ids</div>";
   if( !$scrl )
     $scr->current = 1;
-  $slice_info[category_sort] = false;      # do not sort by categories    
+  $slice_info[category_sort] = false;      # do not sort by categories
 }
 elseif($easy_query) {     # posted by easy query form ----------------
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
@@ -424,7 +434,7 @@ else {
   }
   elseif ( $restrict ) { 
     $res_field = $restrict;
-    $res_value = $res_val;
+    $res_value = (( (($res_val[0] == '"') OR ($res_val[0] == "'" )) AND ($exact != 2)) ? $res_val : "'$res_val'");
   } else {             # no parameters - initial settings ---
     $res_field = "";
     $res_value = "";
@@ -500,6 +510,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.28  2001/10/24 16:45:17  honzam
+search expressions with AND, OR, NOT, (, ) allowed in conditions; group_by parametr extension for direction specification (+/-)
+
 Revision 1.27  2001/10/17 21:55:56  honzam
 fixed bug in url passed aliases
 
