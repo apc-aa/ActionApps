@@ -632,7 +632,13 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
 "f_i"=>array("name"=>_m("image src"),
     "desc"=>_m("prints <i>the field</i> as image source (\<img src=...\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. ")),
 "i_s"=>array("name"=>_m("image size"),
-    "desc"=>_m("prints <i>the field</i> as image width (height='xxx' width='yyy') empty string if cant work out, does not special case URLs from uploads directory, might do later! ")),
+    "desc"=>_m("prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if cant work out, does not special case URLs from uploads directory, might do later! "),
+    "params"=>array(
+        array("name"=>_m("information"),
+        "desc"=>_m("specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML atributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)"),
+        "type"=>"STR",
+        "example"=>"html"))),
+
 "f_y"=>array("name"=>_m("expanded string"),
     "desc"=>_m("expands the string in the parameter"),
     "params"=>array(
@@ -898,8 +904,18 @@ $TRANS_ACTIONS["items"]["value"] = array (
     "desc"=>_m("Store parameter instead of the input field") ,
     "params"=>array(
         array("name"=>_m("string parameter"),
+              "type"=>"STR")));
+
+$TRANS_ACTIONS["items"]["string2id"] = array (
+    "name"=>_m("Store as long id"),
+    "desc"=>_m("Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided. From the same string (and the same parameter) we create allways the same id."),
+    "params"=>array(
+        array("name"=>_m("string to add"),
+              "desc"=>_m("this parameter will be added to the string before conversion (the reason is to aviod empty strings and also in order we do not generate allways the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."),
+              "example"=>"This string is up to you (any length)",
               "type"=>"STR"))
     );
+
 $TRANS_ACTIONS["items"]["storeparsemulti"] = array (
     "name"=>_m("Split input field by string"),
     "desc"=>_m("Split input field by string parameter and store the result as multi-value.") ,
