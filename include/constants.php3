@@ -55,6 +55,10 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "sk_news_lang.php3" => "sk_news_lang.php3",
                          "de_news_lang.php3" => "de_news_lang.php3",
                          "ro_news_lang.php3" => "ro_news_lang.php3");
+                         
+# MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and 
+# specifies how many items from the begining we have to search
+define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
   
 $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom",

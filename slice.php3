@@ -69,8 +69,12 @@ http://www.apc.org/
 #optionaly sel_ids    // if set, show only discussion comments in $ids[] array
 #optionaly ids[]      // array of discussion comments to show in fulltext mode (ids['x'.$id])
 #optionaly all_ids    // if set, show all discussion comments
-#optionally hideFulltext // if set, don't show fulltext part
+#optionally hideFulltext  // if set, don't show fulltext part
 #optionally neverAllItems // if set, don't show anything when everything would be shown (if no conds[] are set)
+#optionally group_n   // displayes only the n-th group (in listings where items 
+                      // are grouped by some field (category, for example)) 
+                      // good for display all the items of last magazine issue 
+                      // ( group_n=1 )
 
 # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
@@ -477,8 +481,8 @@ if( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) { 
     $foo = GetSortArray( $group_by );
     $sort_tmp[] = $foo;
     $slice_info["group_by"] = key($foo);
-  }    
-
+  }
+  
   if(isset($sort)) {
     if( !is_array($sort) )
       $sort_tmp[] = GetSortArray( $sort );
@@ -582,20 +586,23 @@ $debugtimes[]=microtime();*/
                       $k => 1 );
   }                    
 
-  if( $slice_info[category_sort] ) {
+  if( $slice_info['category_sort'] ) {
     $group_field = GetCategoryFieldId( $fields );
     $grp_odir = (($order==$group_field) AND ($orderdirection!='d')) ? 'a':'d';
     $srt[] = array ( $group_field => $grp_odir );
   }  
-  else if ($slice_info[group_by]) 
-  	$srt[] = array ( $slice_info[group_by] => ($slice_info[gb_direction] == 'd' ? 'd' : 'a'));
+  elseif ($slice_info['group_by']) 
+  	$srt[] = array ( $slice_info['group_by'] => 
+      (strstr('aAdD19',$slice_info['gb_direction']) ? $slice_info['gb_direction'] : 'a'));
+      # validate content - a,A=the same - ascending; d,D=the same - descending
+      # 1 - ascending by priority, 9 - descending by priority (for fields using constants)
 
   if( $order )
-    $srt[] = array ( $order => (( $orderdirection == 'd' ) ? 'd' : 'a'));
+    $srt[] = array ( $order => (( strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
 
   # time order the fields in compact view
   $srt[] = array ( 'publish_date....' => (($timeorder == "rev") ? 'a' : 'd') );
-   
+
   $item_ids=QueryIDs($fields, $slice_id, $cnds, $srt, $group_by, "ACTIVE", $slices, $neverAllItems);
 
 // p_arr_m($debugtimes);
@@ -613,10 +620,12 @@ if( $ids_cnt > 0 ) {
   $scr->countPages( count( $item_ids ) );
 
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, $item_ids,
-              $scr->metapage * ($scr->current - 1), $scr->metapage, $sess->MyUrl($slice_id, $encap) );
+              $scr->metapage * ($scr->current - 1), 
+              ($group_n ? -$group_n : $scr->metapage),  # negative number used for displaying n-th group
+              $sess->MyUrl($slice_id, $encap) );
   $itemview->print_view();
     
-	if( ($scr->pageCount() > 1) AND !$no_scr)
+	if( ($scr->pageCount() > 1) AND !$no_scr AND !$group_n)
     $scr->pnavbar();
 }  
 else 

@@ -63,7 +63,7 @@ class itemview{
     $this->fields = $fields;
     $this->ids = $ids;
     $this->from_record = $from;      # number or text "random[:<weight_field>]"
-    $this->num_records = $number;
+    $this->num_records = $number;    # negative number used for displaying n-th group of items only
     $this->clean_url = $clean_url;
     $this->disc = $disc;
     $this->use_short_ids = $use_short_ids;
@@ -83,7 +83,9 @@ class itemview{
               $this->num_records.
               $this->clean_url.
               $this->ids[0];
-    for( $i=$this->from_record; $i<$this->from_record+$this->num_records; $i++)
+    $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  # negative used for displaying n-th group of items only
+                                        $this->from_record+$this->num_records );
+    for( $i=$this->from_record; $i<$number_of_ids; $i++)
       $keystr .= $this->ids[$i];
     $keystr .=serialize($this->disc);
     $keystr .=serialize($this->aliases);
@@ -288,7 +290,7 @@ class itemview{
   function unaliasWithScroller($txt, $item) {
     # get HTML code, unalias it and add scroller, if needed
     $txt = $item->unalias( $txt, "");
-    if( ereg("^(.*)[{]scroller:?([^}]*)[}](.*)$", $txt, $parts) ) {
+    if( ereg("^(.*)[{]scroller:?([^}]*)[}](.*)$", $txt, $parts) AND !($this->num_records<0)) { #negative is for n-th grou display
       $viewScr = new view_scroller($this->slice_info['vid'],
                                    $this->clean_url,
                                    $this->num_records,
@@ -334,7 +336,11 @@ class itemview{
 
     # fill the foo_ids - ids to itemids to get from database
     if( substr($this->from_record, 0, 6) != 'random') {
-      for( $i=(integer)$this->from_record; $i<($this->from_record+$this->num_records); $i++){
+      # negative num_record used for displaying n-th group of items only
+      $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  
+                                        $this->from_record+$this->num_records );
+    
+      for( $i=(integer)$this->from_record; $i<$number_of_ids; $i++){
         if( $this->ids[$i] )
           $foo_ids[] = $this->ids[$i];
       }
@@ -419,8 +425,12 @@ class itemview{
         
       default:                         # compact view
         $oldcat = "_No CaTeg";
-      	
-        for( $i=0; $i<$this->num_records; $i++ ) {
+        $group_n = 0;                  # group counter (see group_n slice.php3 parameter)
+  
+        # negative num_record used for displaying n-th group of items only
+        $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  
+                                        $this->num_records );
+        for( $i=0; $i<$number_of_ids; $i++ ) {
           # display banner, if you have to
           if( $this->slice_info['banner_parameters'] && 
               ($this->slice_info['banner_position']==$i) )
@@ -445,18 +455,24 @@ class itemview{
           
             # print category name if needed
           if($this->group_fld AND ($catname != $oldcat)) {
-            if ($oldcat != "_No CaTeg") {
-                $CurItem->setformat( $this->slice_info[category_bottom] );
-                $out .= $CurItem->get_item();
-            }           
+            if( $this->num_records >= 0 ) {
+              if ($oldcat != "_No CaTeg") {
+                  $CurItem->setformat( $this->slice_info[category_bottom] );
+                  $out .= $CurItem->get_item();
+              }           
+              $CurItem->setformat( $this->slice_info[category_format] );
+        
+              $out .= $this->slice_info[category_top];
+              $out .= $CurItem->get_item();
+            } else {
+              $group_n++;
+            }  
             $oldcat = $catname;
-            
-            $CurItem->setformat( $this->slice_info[category_format] );
-      
-            $out .= $this->slice_info[category_top];
-            $out .= $CurItem->get_item();
           }  
-          
+
+          if( ($this->num_records < 0) AND ($group_n != -$this->num_records )) 
+            continue;    # we have to display just -$this->num_records-th group 
+
             # print item
           $CurItem->setformat( 
              (!($i%2) AND $this->slice_info[even_odd_differ]) ?

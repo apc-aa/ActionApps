@@ -7,6 +7,7 @@ non-profit WWW sites and 'Usenet-like' sharing of articles between sites.
 
 News
 ====
+06/14/2002 - stable v2.2.0 of APC ActionApps released
 10/08/2001 - stable v2.0.0 of APC ActionApps released
 06/04/2001 - stable v1.8.0 of APC ActionApps released
 
@@ -61,6 +62,9 @@ See http://apc-aa.sourceforge.net/aa/doc/ for recent documentation,
 or look in the doc/ subdirectory.
 
 $Log$
+Revision 1.5  2002/07/08 20:23:00  honzam
+new 'group_n' parameter for slice.php3 allowing display of first (second, ...) category only
+
 Revision 1.4  2001/11/18 06:15:51  madebeer
 added links to documentation
 
