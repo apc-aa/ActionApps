@@ -1,4 +1,5 @@
-11/05/03 - fixed bug in error message in init_page (mitra)
+11/05/03 - fixed discussion  to mailing list where field present but unfilled
+(mitra)  - fixed bug in error message in init_page
 10/30/03 - removed utf8 encode and decode in RSS_restrict and decode (mitra)
 --------------------
 11/04/03 - v2.6.0 - stable release

@@ -317,7 +317,8 @@ function send2mailList ($d_item_id, $new_id) {
     if ($db->next_record()) {
         $item_params = split_escaped (":", $db->f("text"), "#:");
         list ($vid, $maillist) = $item_params;
-
+      // Don't do this if there is a field, but no vid in it  
+      if ($vid) { 
         // get discussion item content
         $columns = GetDiscussionContentSQL (
             "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
@@ -338,7 +339,6 @@ function send2mailList ($d_item_id, $new_id) {
             send_mail_from_table_inner ($mail_id, $maillist, $CurItem);
             return;
         }
-
         $db->query("SELECT * FROM view WHERE id=$vid");
         if ($db->next_record()) {
             $view_info = $db->Record;
@@ -377,8 +377,9 @@ function send2mailList ($d_item_id, $new_id) {
             $db->next_record();
             $mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
             $mail->send (array ($maillist));
-        }
-    }
+        } #view found
+      } # vid present
+    } # DiscussionMailList Field present
 }
 
 ?>
