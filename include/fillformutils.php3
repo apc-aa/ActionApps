@@ -64,16 +64,36 @@ function packID (unpackedID) {
 	params: fields = array of controls' names */ ?>
 	
 function prooveFilled (formName, fields) {
-	myform = document.forms[formName];
+	var myform = document.forms[formName];
 	for (var i=0; i < fields.length; ++i) {
-		control = myform[fields[i]];
-		if (control.value == "") {
-			control.focus();
+		val = getControlValue (formName, fields[i]);
+		if (val == "") {
+			myform[fields[i]].focus();
 			alert ("You didn't fill in some required field.");
 			return false;
 		}
 	}
 	return true;
+}
+
+<?php /* gets array of 3-items arrays (field name, parent field name, parent field value)
+	if (parent_field_name contains parent_field_value) 
+	or (parent_field_name is filled and parent_field_value is empty)
+	then proove field_name is filled
+	params: fields = array of controls' names */ ?>
+
+function prooveFilledIf (formName, fields) {
+	var myform = document.forms[formName];
+	for (var i=0; i < fields.length; ++i) {
+		parVal = getControlValue (formName, fields[i][1]);
+		val = fields[i][2];
+		proove = (val == "" && parVal != "") || (parVal == val);
+		if (!proove) {
+			myform[fields[i][0]].focus;
+			alert ("You didn't fill in some required field.");
+			return false;
+		}
+	}
 }
 
 function getSelected (selectBox) {
@@ -158,7 +178,7 @@ function getAADate (formName,dateField,emptyValue) {
 		html is usually 'h' for HTML, 't' for Plain text, 0 when not needed 
 */ ?>
 
-function setControlOrAADate (formName, controlName, newValue, datePrefix, html) {
+function setControlOrAADate (formName, controlName, newValue, datePrefix, html, timeZone) {
 	if (getControlByName (formName, controlName) != null) {
 		setControl (formName, controlName, newValue);
 		if (html) setControl (formName, controlName+'html', html);
@@ -169,7 +189,10 @@ function setControlOrAADate (formName, controlName, newValue, datePrefix, html) 
 		myName = datePrefix + controlName;
 		if (getControlByName (formName, myName+'_day') != null) { 
 			var myDate = new Date ();
-			myDate.setTime (newValue * 1000);
+            var timeStamp = new Number(newValue);
+            timeStamp += (myDate.getTimezoneOffset()/60 - timeZone) * 3600;
+			myDate.setTime (timeStamp * 1000);
+            //alert ("Date coming to JavaScript is "+timeStamp+". That means "+myDate);
 			setControl(formName,myName+'_day',myDate.getDate());
 			setControl(formName,myName+'_month',myDate.getMonth()+1);
 			setControl(formName,myName+'_year',getYearNetscapeSafe(myDate));
@@ -206,7 +229,7 @@ function setControl (formName, controlName, newValue) {
 	if (myControl != null) {
 		if (typeof (myControl.type) == "undefined") {
 			// multiple checkboxes
-      for (var iCtrl = 0; iCtrl < myControl.length; ++iCtrl) {
+		  	for (var iCtrl = 0; iCtrl < myControl.length; ++iCtrl) {
 				if (myControl[iCtrl].value == newValue) {
 					if (myControl[iCtrl].type == "checkbox" || myControl[iCtrl].type == "radio") 
 						myControl[iCtrl].checked = 1;
@@ -227,6 +250,18 @@ function setControl (formName, controlName, newValue) {
 	}
 }
 
+function getControlValue (formName, controlName) {
+	var myControl = getControlByName (formName, controlName);
+	if (myControl != null) {
+		if (myControl.type.substr(0,6) == "select")
+			return getSelected (myControl);
+		else if (myControl.type == "checkbox")
+			return myControl.checked ? 1 : 0;
+		else return myControl.value;
+	}
+	else return "";
+}
+	
 // -->
 </SCRIPT>
 

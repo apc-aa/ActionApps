@@ -129,6 +129,7 @@ function fillConds () {
 
 function safeChars ($str) {
   for ($i=0; $i < strlen ($str); ++$i) {
+    if ($str[$i] == "\n") $retVal .= "\\n";
     if (ord($str[$i]) > 31) 
 		if ($str[$i] == "'" ) $retVal .= "\\'";
 		else $retVal .= $str[$i];
@@ -156,6 +157,7 @@ function fillForm () {
 	
     $oldcontent = GetItemContent($my_item_id);
     $oldcontent4id = $oldcontent[$my_item_id];   
+    $timezone = (mktime (0,0,0,1,1,98) - gmmktime (0,0,0,1,1,98)) / 3600;
 
 	echo "
 	function fillForm () 
@@ -175,7 +177,7 @@ function fillForm () {
 					&& $field_id != "slice_id........"
 					&& $myvalue != "") 
 					echo "setControlOrAADate ('$form','$control_id','$myvalue','tdctr_','".
-					($field[flag] & FLAG_HTML ? "h" : "t")."');\n";
+					($field[flag] & FLAG_HTML ? "h" : "t")."',$timezone);\n";
 			}
 		}
 	}
