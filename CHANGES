@@ -1,3 +1,31 @@
+11/02/02 - constants could be sorted by click on column name on constants admin 
+           page
+         - cosmetic changes in design
+11/03/02 - new 'site' module
+         - more customization of window for related item selection (Backward 
+           link, optional buttons and design based on Item Manager interface)
+         - new _#SLI_NAME alias introduced
+         - new utility to import constants to database directly from an array 
+           (misc/file2slice/array2constants.php3)
+         - fixed bug in f_d alias function - absolute date range now works as 
+           expected
+10/25/02 - new possibility for selectbox with presets - newly written constant
+           can be added automaticaly into 'preset' constants group
+         - first version of Live checkbox - checbox changing database directly 
+           from Item Manager
+         - new possibility to use 'login' as default or inserted value for field
+         - related item view accepts view conditions now
+         - related item view also do not display expired items
+         - rows returned/afected is displayed on debug output (&debug=1 in url) 
+10/24/02 - new AA Finder admin page - finds views and slices
+10/18/02 - added mathematical functions for aliases (thanks to Stano and Jakub)
+10/14/02 - new possibility to send emails from discussion (discusion2mail view)
+10/11/02 - send admin emails to non-committed users
+10/03/02 - added span to active scroller page.
+         - new cron admin pages
+         - constants.description database field changed to TEXT
+09/27/02 - minor bug fix: util.php3 / html2text (used in alerts sending) does 
+           not comprime all empty lines to one line end any more.
 09/26/02 - nested aliases work in f_v alias function too
          - renamed all defaults aliases, which ends by '#' character (_#ITEM_ID#
            => _#ITEM_ID_) - there was problem with colon ':' escaping '#:'. 
@@ -15,7 +43,7 @@
 07/25/02 - hierarchical constants: added check not to allow users to select one 
            constant twice
 07/23/02 - fixed minor bug, added als[] to scroller sessions
-07/23/02 - added 5th param to hier const field type, Level Names
+         - added 5th param to hier const field type, Level Names
 07/22/02 - added sorting (and grouping) by constant-priority to view
 07/21/02 - better names for uploaded files
 07/18/02 - bug fix: sort didn't work with scroller
