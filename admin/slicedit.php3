@@ -80,7 +80,11 @@ $owner = unpack_id($db->f("owner"));  // correct ids
 trace("=","","post id and owner");
 
 $mlxctrl = $db->f(MLX_SLICEDB_COLUMN);  // should we use unpack_id here...
-
+$SQL = "SELECT `name`,`id` FROM slice ORDER BY name";
+$db->query($SQL);
+while ($db->next_record()) {
+  $mlx_slices[unpack_id128($db->f('id'))] = $db->f('name');
+}
 
 if( $slice_id == "" ) {         // load default values for new slice
   $name = "";
@@ -159,9 +163,10 @@ if ($slice_id == "") {
       $PERMS_STATE, $permit_offline_fill, false);
   FrmInputSelect("lang_file", _m("Language"), $biglangs, $lang_file, false);
 //mimo change
-  //print("<h2>lang_control:".$db->f("lang_control")."</h2>");
-  FrmInputText(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlxctrl, 40,40, false, "", 
-  	"http://mimo.gn.apc.org/mlx/");
+  //print("<h2>mlxctrl:".$mlxctrl."</h2>");
+  //FrmInputText(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlxctrl, 40,40, false, "", 
+  FrmInputSelect(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlx_slices, $mlxctrl, false, "", 
+  	  	"http://mimo.gn.apc.org/mlx/");
 //
 
   if ($superadmin) {
