@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * filldisc.php3 - writes a discussion item into the discussion table
  * expected parameters (usually from a HTML form):
@@ -14,16 +14,16 @@
  *          $d_free2
  *          $d_url_address
  *          $d_url_description
- * 
+ *
  * date and remote address(IP) of client is set by script.
  *
  * @package UserInput
  * @version $Id$
- * @author 
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @author
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -42,31 +42,31 @@ http://www.apc.org/
 */
 
 
-/** 
- * Handle with PHP magic quotes - quote the variables if quoting is set off 
+/**
+ * Handle with PHP magic quotes - quote the variables if quoting is set off
  * @param mixed $val the variable or array to quote (add slashes)
  * @return mixed the quoted variables (with added slashes)
  */
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
-  }  
+  }
   for (reset($val); list($k, $v) = each($val); )
     $ret[$k] = Myaddslashes($v, $n+1);
   return $ret;
-}    
+}
 
-if (!get_magic_quotes_gpc()) { 
-  // Overrides GPC variables 
+if (!get_magic_quotes_gpc()) {
+  // Overrides GPC variables
   if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
+      $$k = Myaddslashes($v);
 }
 
 /** APC-AA configuration file */
@@ -118,6 +118,10 @@ $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'");
 $GLOBALS[pagecache]->invalidateFor("slice_id=".unpack_id128($slice_id));  # invalidate old cached values
 
 updateDiscussionCount($d_item_id);        // update a count of the comments belong to the item
+
+// special discussion setting
+if ( $_POST['all_ids'] )
+    $url = str_replace('&sh_itm', "&all_ids=".$_POST['all_ids'].'&sh_itm', $url);
 go_url( $url);
 
 ?>
