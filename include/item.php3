@@ -474,14 +474,23 @@ class item {
     c) using the single item_id from b), find the content record that has the
        fulltext blurb
      */
-      $SQL = "SELECT c2.text AS text 
+      if ($fieldToMatch == "id..............") {
+	// Special case id... its not a real field
+      	$fqsqlid = q_pack_id($stringToMatch);
+      	$SQL = "SELECT c2.text AS text 
+                FROM content c2 
+                WHERE 
+                     c2.field_id    = '$fieldToReturn' AND
+                     c2.item_id     = '$fqsqlid'";
+      } else {	
+      	$SQL = "SELECT c2.text AS text 
                 FROM item LEFT JOIN content c1 ON item.id = c1.item_id 
                           LEFT JOIN content c2 ON item.id = c2.item_id
                 WHERE slice_id  = '$p_blurbSliceId' AND
                      c1.field_id    = '$fieldToMatch' AND
                      c2.field_id    = '$fieldToReturn' AND
                      c1.text        = '$stringToMatch'";
-
+      }
       $db3->query($SQL);
       return ( $db3->next_record() ? $db3->f('text') : "" );
     }
@@ -793,6 +802,13 @@ This creates an alias for Slice ID ( like _#this), called _#slice and can be use
 
 /*
 $Log$
+Revision 1.38  2002/04/04 01:00:59  mitraearth
+Extended f_q so that if field is specified as id.............. then it
+will do a different SQL lookup and return the field as expected. Note that
+you do not need to specify a slice-id as the id is unique. This allows
+a paramater of for example "::id..............:full_text......." to print
+the full_text field of a related item.
+
 Revision 1.37  2002/03/14 11:20:45  mitraearth
 [[ User Validation for add item / edit item (itemedit.php3). ]]
 

@@ -260,7 +260,7 @@ define("L_PARAM_WIZARD_FUNC_F_Q_PAR1_NAME","blurbSliceId");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR1_DESC","unpacked slice id of the slice where the blurb text is stored");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR1_EXAMPLE","41415f436f72655f4669656c64732e2e");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_NAME","fieldToMatch");
-define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_DESC","field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_DESC","field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>, use 'id..............' for Related field");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_EXAMPLE","headline........");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR3_NAME","fieldToReturn");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR3_DESC","field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)");
@@ -298,6 +298,13 @@ define("L_PARAM_WIZARD_INPUT_hco_PAR3_EXAMPLE","0");
 
 /*
 $Log$
+Revision 1.7  2002/04/04 01:00:59  mitraearth
+Extended f_q so that if field is specified as id.............. then it
+will do a different SQL lookup and return the field as expected. Note that
+you do not need to specify a slice-id as the id is unique. This allows
+a paramater of for example "::id..............:full_text......." to print
+the full_text field of a related item.
+
 Revision 1.6  2002/03/06 12:32:09  honzam
 preparation for hierarchical constant editor
 
