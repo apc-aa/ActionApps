@@ -232,9 +232,14 @@ function AddGroup ($group, $flags = 0) {
   if ($group["description"]) $record["description"] = $group["description"];
 
   // add data to directory
-  $r=@ldap_add($ds, "cn=$group[name]," . $aa_default_ldap[groups], $record);
+  $group_dn = "cn=$group[name]," . $aa_default_ldap[groups];
+  $r=@ldap_add($ds, $group_dn, $record);
   ldap_close($ds);
-  return $r; 
+  if ($r) { 
+     return $group_dn;
+  } else {
+     return false;
+  }
 }
 
 // deletes a group in LDAP permission system
@@ -677,6 +682,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.6  2000/07/28 14:46:32  kzajicek
+GroupAdd now returns group_id on success and false on error.
+
 Revision 1.5  2000/07/28 14:37:33  kzajicek
 Unified behaviour of DelUser, DelGroup in LDAP and SQL. Default is now
 delete any links to removed subject in permission system (to keep integrity).
