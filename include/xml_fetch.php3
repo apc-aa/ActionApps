@@ -81,11 +81,56 @@ function http_fetch($url, $d=null) {
     return trim($data);
 }
 
+/** Get APC Feed definitions (from nodes and external_feeds tables)
+ *  Returns array('feed_id'=>array( feed_informations_like: url, password... ))
+ */
+function apcfeeds() {
+    global $debugfeed;
+    $db = getDB();
+    // select all incoming feeds from table external_feeds
+    $SQL="SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name
+            FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name";
+    if ($debugfeed >= 8) print("\n<br>$SQL");
+    $db->query($SQL);
+
+    $feeds=array();
+    while ($db->next_record()) {
+        $fi                       = $db->f('feed_id');
+        $feeds[$fi]               = $db->Record;
+        $feeds[$fi]['field_type'] = FEEDTYPE_APC;
+    }
+    freeDB($db);
+    if ($debugfeed >= 8) { print("\n<br>feeds="); print_r($feeds); }
+    return $feeds;
+}
+
+/** Get APC Feed definitions (from nodes and external_feeds tables)
+ *  Returns array('feed_id'=>array( feed_informations_like: url, password... ))
+ */
+function rssfeeds() {
+    global $debugfeed;
+    $db = getDB();
+    $SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds";
+    if ($debugfeed >= 8) print("\n<br>$SQL");
+    $db->query($SQL);
+
+    $rssfeeds=array();
+    while ($db->next_record()) {
+        $fi                               = $db->f('feed_id');
+        $rssfeeds[$fi]                    = $db->Record;
+        $rssfeeds[$fi]['feed_type']       = FEEDTYPE_RSS;
+        $rssfeeds[$fi]['remote_slice_id'] = q_pack_id(attr2id($rssfeeds[$fi]['server_url']));
+    }
+    freeDB($db);
+    if ($debugfeed >= 9) { print("\n<br>rssfeeds="); print_r($rssfeeds); }
+    return $rssfeeds;
+}
+
 /** Process one feed and returns parsed RSS (both AA and other)
  *  in $feed["aa_rss"] */
-function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
+function onefeedFetchAndParse($feed_id, &$feed, $debugfeed, $display_only=false) {
     // Can use l_slice_id (older) or l_slice (newer)
-    $l_slice = new slice(unpack_id128($feed[slice_id]));
+    $l_slice = new slice(unpack_id128($feed['slice_id']));
 
     set_time_limit(240); // Allow 4 minutes per feed
 
@@ -95,28 +140,38 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
         // for APC feeds we need to list all categories, which we want receive
         $feed['ext_categs'] = GetExternalCategories($feed_id); // used by oneFeedStore
 
-        /* now we use another approach for APC feeds - we will get all items
+        // select external categories in format
+        // array('unpacked_cat_id'=> array( 'value'=>, 'name'=>, 'approved'=>, 'target_category_id'=>))
+        $cat_ids = array();
+        if ($feed['ext_categs'] && is_array($feed['ext_categs'])) {
+            foreach ( $feed['ext_categs'] as $ext_cat_id => $ext_cat ) {
+                if ( $ext_cat['target_category_id'] ) {  // the feeding is set for this categor
+                    $cat_ids[] = $ext_cat_id;
+                }
+            }
+        }
+
+        /* Mention, that $cat_ids now contaion also AA_Other_Categor, which is
+           used on oposite site of feeding as command to send all categories.
+           The category list is sent from historical reasons (AA before 2.8
+           do not send category informations without this array().
+           Current AA use another approach for APC feeds - we will get all items
            regardless on category. The filtering we will do after that.
            This approach means more data to be transfered, but on the other hand
            there is no need to update filters after any category addition
-           (Honzam 04/26/04)
+           (Honzam 04/26/04) */
 
-            // select external categories in format
-            // array('unpacked_cat_id'=> array( 'value'=>, 'name'=>, 'approved'=>, 'target_category_id'=>))
-            $cat_ids = array();
-            if ($feed['ext_categs'] && is_array($feed['ext_categs'])) {
-                foreach ( $feed['ext_categs'] as $ext_cat_id => $ext_cat ) {
-                    if ( $ext_cat['target_category_id'] ) {
-                        $cat_ids[] = $k;
-                    }
-                }
-            }
-        */
+
         $feed["DebugName"] = "APC Feed #$feed_id: $feed[name] : $feed[remote_slice_name] -> ".$l_slice->name();
         if ($debugfeed >= 1) print("\n<br>".$feed["DebugName"]);
 
         // now we have cat_ids[] array => we can ask for data
-        $categories2fed = null; // implode(" ",$cat_ids) // older version (see above) (Honzam 04/26/04)
+        $categories2fed = implode(" ",$cat_ids);
+
+        // temporary solution - remove next line please - Honza
+        $categories2fed = (($debugfeed == 1) ? null : implode(" ",$cat_ids));
+
+
         $xml_data = xml_fetch( $feed['server_url'], ORG_NAME, $feed['password'], $feed['user_id'], unpack_id128($feed['remote_slice_id']),  $feed['newest_item'], $categories2fed);
     } else {   // not FEEDTYPE_APC
         $feed["DebugName"] = "RSS Feed #$feed_id: $feed[name]: -> ".$l_slice->name();
@@ -125,6 +180,13 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
 
         $xml_data = http_fetch($feed['server_url']);
     }
+
+    // Special option - it only dispays fed data
+    if ( $display_only ) {
+        echo $xml_data;
+        return false;
+    }
+
     if (!$xml_data) {
         writeLog("CSN","No data returned for ". $feed["DebugName"]);
         if ($debugfeed >= 1) print("\n<br>$feed[DebugName]: no data returned");
@@ -152,7 +214,7 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
     return true;
 }
 
-function onefeedStore($feed_id, $feed, $debugfeed, $fill) {
+function onefeedStore($feed_id, $feed, $debugfeed) {
     global $db;
     $l_slice_id = unpack_id128($feed['slice_id']);        // local slice id
     $l_slice    = new slice($l_slice_id);
@@ -173,7 +235,7 @@ function onefeedStore($feed_id, $feed, $debugfeed, $fill) {
     // update items
     if (isset($aa_rss['items'])) {
         if ($debugfeed >= 8) print("\n<br>onefeed: there are some items to update");
-        xmlUpdateItems($feed_id, $feed, $aa_rss, $l_slice_id, $r_slice_id, $l_slice, $feed['ext_categs'], $l_categs,$debugfeed,$fill);
+        xmlUpdateItems($feed_id, $feed, $aa_rss, $l_slice_id, $r_slice_id, $l_slice, $feed['ext_categs'], $l_categs,$debugfeed);
         if ($feed['feed_type'] == FEEDTYPE_APC) {
             //update the newest item
             $SQL = "UPDATE external_feeds SET newest_item='".$aa_rss['channels'][$r_slice_id]['timestamp']."'
@@ -183,64 +245,80 @@ function onefeedStore($feed_id, $feed, $debugfeed, $fill) {
     }
 }
 
-/** Translates remote category to local one using external ext_categs array
- *  r_cat_id - remote category id
- */
-function translateCategory( $r_cat_id, &$ext_categs, &$l_categs ) {
+function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs, &$l_categs ) {
 
-    $default_cat = unpack_id128('AA_Other_Categor');
+    // we have set mapping for this category
+    $ext_category = ( isset($ext_categs[$remote_cat_id]) ? $ext_categs[$remote_cat_id] :
+                                                           $ext_categs[UNPACKED_AA_OTHER_CATEGOR] );
 
-    if ( isset( $ext_categs[$r_cat_id] ) ) {
-        // category mapping is set
-        $target_category_id = $ext_categs[$r_cat_id]['target_category_id'];
-    } elseif ( $ext_categs[$default_cat] ) {
-        // category mapping is not set, but we have defined default category
-        $target_category_id = $ext_categs[$default_cat]['target_category_id'];
-    } else {
-        // category not defined and setting for default caterory is not set
-        return null;
+    $local_cat_id = $ext_categs[$remote_cat_id]['target_category_id'];
+    $approved     = $ext_categs[$remote_cat_id]['approved'];
+    if ( $local_cat_id == UNPACKED_AA_THE_SAME_CATE ) {
+        // we have to not rename the category - return original name
+        return array( $remote_cat_value, $approved );
     }
-
-    if ( $target_category_id == unpack_id128('AA_The_Same_Cate') ) {
-        return  'other category';  // TODO: Return remote value
-    } else {
-        return $l_categs[$target_category_id]['value'];
-    }
+    // return local category name or empty value for "not feed"
+    return array( $l_categs[$local_cat_id]['value'], $approved );
 }
 
+/** Translates remote categories to local one using external ext_categs array
+ *  $category_field - field id for category (category.......1)
+ *  $item           - data for current item. This will be updated by the values
+ *                    for new categories ( $category_field )
+ *  $ext_categs     - remote categories array (structure with name, value,
+ *                    target_category_id, approved)
+ *  $l_categs       - local categories array [id] => (name, value, parent_id)
+ */
+function translateCategories( $category_field, &$item, &$ext_categs, &$l_categs ) {
 
-/*
-    This part of code above should be replaced by translateCategory() function.
-
-    if (!isset($item['categories']) ) {
-        $first_cat = current($ext_categs);        // get first category (categories are sorted by name)
-        $approved  = $first_cat['approved'];
-        $item['fields_content'][$cat_field_id][]['value'] = $l_categs[$first_cat['target_category_id']]['value'];
-
-    } else {
-        $approved = $ext_categs[$item['categories'][0]]['approved'];
-        foreach ( $item['categories'] as $cat_id ) {
-            $item['fields_content'][$cat_field_id][]['value'] = $l_categs[$ext_categs[$cat_id]['target_category_id']]['value'];
-            // flag ???
+    $return_approved = null;
+    // Create [id] => value array of all items categories
+    if ( isset($item['categories']) AND is_array($item['categories']) ) {
+        // This categories are regular categories on remote slice, so it
+        // should have value defined
+        // This categories are set in special $item[categories] array
+        foreach ( $item['categories'] as $r_cid ) {
+            list( $new_cat, $approved ) = translteFeedCatid2Value($r_cid, $ext_categs[$r_cid]['value'], $ext_categs, $l_categs );
+            if ( is_null( $return_approved ) ) {
+                $return_approved = $approved ;
+            }
+            $used_values[trim($ext_categs[$r_cid]['value'])] = true; // mark it
+            if ( $new_cat ) {
+                // create new $content4id entry for categories
+                $new_categories[] = array( 'value' => $new_cat );
+            }
         }
-        $status_code_id = GetBaseFieldId( $aa_rss['fields'], "status_code" );
-        // set status_code - according to the settings of ef_categories table
-        // RSS feeds have approved set from default_rss_map
-        $item['fields_content'][$status_code_id][0]['value'] = $approved ? 1 : 2;
+    }
+    if ( $category_field AND is_array($item['fields_content'][$cat_field_id]) ) {
+        // Now do the same also for "dirty" categories - categories, which are
+        // not in the list of current remote categories (item has another than
+        // listed category - strange, but obvious (due feedin, importing, ...)
+        foreach ( $item['fields_content'][$cat_field_id] as $r_value ) {
+            if ( !$used_values[trim($r_value)] ) {
+                list( $new_cat, $approved ) = translteFeedCatid2Value( UNPACKED_AA_OTHER_CATEGOR, $r_value, $ext_categs, $l_categs );
+                if ( is_null( $return_approved ) ) {
+                    $return_approved = $approved ;
+                }
+                if ( $new_cat ) {
+                    // create new $content4id entry for categories
+                    $new_categories[] = array( 'value' => $new_cat );
+                }
+            }
+        }
     }
 
+    // And now somethig completely different - substitute old categories with new ones
+    $item['fields_content'][$category_field] = $new_categories;
+
+    return $return_approved;
 }
 
-*/
-
-/** Stores items to the table item
- *  $fill will control whether it stores for FEEDTYPE_RSS, but is currently not
- *  implemented for FEEDTYPE_APC
- */
-function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_sliceobj, &$ext_categs, &$l_categs, $debugfeed, $fill) {
+/** Stores items to the table item */
+function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_sliceobj, &$ext_categs, &$l_categs, $debugfeed) {
     global $db, $varset, $itemvarset, $default_rss_map;
 
     if ($debugfeed >= 8) print("\n<br>xmlUpdateItems");
+
     $lf             = $l_sliceobj->fields();
     $l_slice_fields = $lf[0];
 
@@ -253,6 +331,7 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
 
     /** Now import all items to the slice */
     while (list($item_id, $item) = each($aa_rss['items'])) {
+
         // Create new item id (always the same for item-slice pair)
         $new_item_id = string2id($item_id . $l_slice_id);
 
@@ -262,6 +341,7 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
                 if ($debugfeed >= 4) print("\n<br>skipping duplicate: ".$aa_rss['items'][$item_id]['title']);
                 continue;
         }
+
         $varset     = new Cvarset;
         $itemvarset = new CVarset;
 
@@ -274,26 +354,16 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
 
         /** Apply filters - rename categories and bin (approved/holding/trash) */
         if ($feed['feed_type'] == FEEDTYPE_APC) { // Use the APC specific fields from the item
-            // set categories
-            reset($ext_categs);
-            $cat_field_id = GetBaseFieldId( $aa_rss['fields'], "category" );
 
-            if (!isset($item['categories']) ) {
-                $first_cat = current($ext_categs);        // get first category (categories are sorted by name)
-                $approved  = $first_cat['approved'];
-                $item['fields_content'][$cat_field_id][]['value'] = $l_categs[$first_cat['target_category_id']]['value'];
+            $cat_field_id   = GetBaseFieldId( $aa_rss['fields'], "category" );
+            $status_code_id = GetBaseFieldId( $aa_rss['fields'], "status_code" );
 
-            } else {
-                $approved = $ext_categs[$item['categories'][0]]['approved'];
-                foreach ( $item['categories'] as $cat_id ) {
-                    $item['fields_content'][$cat_field_id][]['value'] = $l_categs[$ext_categs[$cat_id]['target_category_id']]['value'];
-                    // flag ???
-                }
-                $status_code_id = GetBaseFieldId( $aa_rss['fields'], "status_code" );
-                // set status_code - according to the settings of ef_categories table
-                // RSS feeds have approved set from default_rss_map
-                $item['fields_content'][$status_code_id][0]['value'] = $approved ? 1 : 2;
-            }
+            // apply categories mapping. $item is updated accordingly
+            $approved = translateCategories( $cat_field_id, $item, $ext_categs, $l_categs );
+
+            // set status_code - according to the settings of ef_categories table
+            // RSS feeds have approved set from default_rss_map
+            $item['fields_content'][$status_code_id][0]['value'] = $approved ? 1 : 2;
         }
 
         // create $content4id from $item['fields_content']
@@ -302,56 +372,60 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
         if (!$map && ($feed['feed_type'] == FEEDTYPE_RSS)) {
             $map = $default_rss_map;
         }
+
         while (list($to_field_id,$v) = each($map)) {
             switch ($v['feedmap_flag']) {
                 case FEEDMAP_FLAG_VALUE:
-                    if ($debugfeed >= 9) print("\n<br>Setting default $to_field_id to ".$v['value']);
-                    $content4id[$to_field_id][0]['value'] = quote($v['value']);
-                    break;
+                            if ($debugfeed >= 9) print("\n<br>Setting default $to_field_id to ".$v['value']);
+                            $content4id[$to_field_id][0]['value'] = quote($v['value']);
+                            break;
                 case FEEDMAP_FLAG_EXTMAP:   // Check this really works when val in from_field_id
                 case FEEDMAP_FLAG_RSS:
-                    $values = map1field($v['value'],$item,$channel);
-                    if (isset($values) && is_array($values)) {
-                        // quote all values
-                        while (list($k,$v2) = each($values)) {
-                            $values[$k]['value'] = quote($v2['value']);
-                        }
-                        $content4id[$to_field_id] = $values;
-                    }
-                    break;
+                            $values = map1field($v['value'],$item,$channel);
+                            if (isset($values) && is_array($values)) {
+                                // quote all values
+                                while (list($k,$v2) = each($values)) {
+                                    $values[$k]['value'] = quote($v2['value']);
+                                }
+                                $content4id[$to_field_id] = $values;
+                            }
+                            break;
             } //switch
         } //while each($map)
+
         if ($debugfeed >= 3) print("\n<br>      " . $content4id['headline........'][0]['value']);
         if ($debugfeed >= 8) { print("\n<br>xmlUpdateItems:content4id="); print_r($content4id); }
-        if ($fill) {
-            if (! StoreItem( $new_item_id, $l_slice_id, $content4id, $l_slice_fields, true, true, false )) {
-                print("\n<br>xmlUpdateItems:StoreItem failed");
-            }
-            else {
-                # insert, invalidatecache, not feed
-                // set the item to be recevied from remote node (todo - set via content4id)
-                $SQL = "UPDATE item SET externally_fed='".quote($feed['name'])
-                     ."' WHERE id='".q_pack_id($new_item_id)."'";
-                // Update relation table to show where came from
-                AddRelationFeed($new_item_id,$item_id);
-                if ($debugfeed >= 8) print("\n<br>xmlUpdateItems:$SQL");
-                $db->query($SQL);
-            }
+        if (! StoreItem( $new_item_id, $l_slice_id, $content4id, $l_slice_fields, true, true, false )) {
+            print("\n<br>xmlUpdateItems:StoreItem failed");
+        }
+        else {
+            # insert, invalidatecache, not feed
+            // set the item to be recevied from remote node (todo - set via content4id)
+            $SQL = "UPDATE item SET externally_fed='".quote($feed['name'])
+                 ."' WHERE id='".q_pack_id($new_item_id)."'";
+            // Update relation table to show where came from
+            AddRelationFeed($new_item_id,$item_id);
+            if ($debugfeed >= 8) print("\n<br>xmlUpdateItems:$SQL");
+            $db->query($SQL);
         }
     } // while $aa_rss['items']
 }
 
 /** Process one feed RSS or APC
- *  @param  $feed_id - id of feed (it is autoincremented number from 1 ...
- *                   - RSS and APC feeds could have the same id :-(
- *          $feed    - feed definition array (server_url, password, ...)
+ *  @param  $feed_id   - id of feed (it is autoincremented number from 1 ...
+ *                     - RSS and APC feeds could have the same id :-(
+ *          $feed      - feed definition array (server_url, password, ...)
  *          $debugfeed - just for debuging purposes
- *          $fill    - with false the resulting items are not sroted in DB
- *                     (for RSS at least)
+ *          $fire      - write   - feed and write the items to the databse
+ *                       test    - proccesd without write anything to the database
+ *                       display - only display the data from the feed
+ *
  */
-function onefeed($feed_id, $feed, $debugfeed, $fill = true) {
-    if ( onefeedFetchAndParse($feed_id, $feed, $debugfeed) ) {
-        onefeedStore($feed_id, $feed, $debugfeed, $fill);
+function onefeed($feed_id, $feed, $debugfeed, $fire = 'write') {
+    if (onefeedFetchAndParse($feed_id, $feed, $debugfeed, $fire=='display')) {
+        if ( $fire=='write' ) {
+            onefeedStore($feed_id, $feed, $debugfeed);
+        }
         if ($debugfeed >= 8) print("\n<br>onefeed: done");
     }
 }
@@ -390,49 +464,50 @@ function field2arr($field) {
 // how to interpret it.
 function map1field($value,$item,$channel) {
     global $debugfeed;
-          if ($debugfeed >= 8) print("\n<br>xmlclient:map1field:$value");
-          if (ereg("(.*)\|(.*)",$value,$vals)) {  // Process alternatives, first if non-blank else second
-            $try1 = map1field($vals[1],$item,$channel);
-            if ($try1[0]['value']) { return $try1; }
-            return map1field($vals[2],$item,$channel);
-          } elseif (ereg("^DATE\((.*)\)$",$value,$vals)) { // Postprocess to turn into unix
-            $try1 = map1field($vals[1],$item,$channel);
-            if ($debugfeed >= 9) huhl($try1);
-            if (isset($try1) && is_array($try1) && $try1[0]['value'])
-                # Often won't work cos not iso8601
-                # Wed, 25 Feb 2004 17:19:37 EST   - BAD
-                # 2004-02-25 17:19:37+10:00   GOOD
-                $try1[0]['value'] =  iso8601_to_unixstamp($try1[0]['value']);
-            if ($try1[0]['value'] == -1) $try1[0]['value'] = null;
-            if ($debugfeed >= 9) huhl($try1);
-            return $try1;
-          } elseif ($value == "NOW") {
-            return array (0 => array ( value => time(), flag => 0, format => 1 ));
-          } elseif (ereg("CHANNEL/(.*)",$value,$vals)) {
-            return array ( 0 => field2arr($channel[$vals[1]]));
-          } elseif (ereg("ITEM/(.*)",$value,$vals)) {
-            return array ( 0 => field2arr($item[$vals[1]]));
-          } elseif (ereg("DC/(.*)",$value,$vals)) {
-            // Dont believe DC fields can be HTML
-            return array ( 0 => array ( value => $item['dc'][$vals[1]], flag => 0, format => 1 ));
-          } elseif ($value == "CONTENT") {
-       // Note this code is repeated above in map1field
-                return array (0 => contentvalue($item));
-          } else {
-            return $item['fields_content'][$value];
-          }
+    if ($debugfeed >= 8) print("\n<br>xmlclient:map1field:$value");
+    if (ereg("(.*)\|(.*)",$value,$vals)) {  // Process alternatives, first if non-blank else second
+        $try1 = map1field($vals[1],$item,$channel);
+        if ($try1[0]['value']) { return $try1; }
+        return map1field($vals[2],$item,$channel);
+    } elseif (ereg("^DATE\((.*)\)$",$value,$vals)) { // Postprocess to turn into unix
+        $try1 = map1field($vals[1],$item,$channel);
+        if ($debugfeed >= 9) huhl($try1);
+        if (isset($try1) && is_array($try1) && $try1[0]['value'])
+        # Often won't work cos not iso8601
+        # Wed, 25 Feb 2004 17:19:37 EST   - BAD
+        # 2004-02-25 17:19:37+10:00   GOOD
+        $try1[0]['value'] =  iso8601_to_unixstamp($try1[0]['value']);
+        if ($try1[0]['value'] == -1) $try1[0]['value'] = null;
+        if ($debugfeed >= 9) huhl($try1);
+        return $try1;
+    } elseif ($value == "NOW") {
+        return array (0 => array ( value => time(), flag => 0, format => 1 ));
+    } elseif (ereg("CHANNEL/(.*)",$value,$vals)) {
+        return array ( 0 => field2arr($channel[$vals[1]]));
+    } elseif (ereg("ITEM/(.*)",$value,$vals)) {
+        return array ( 0 => field2arr($item[$vals[1]]));
+    } elseif (ereg("DC/(.*)",$value,$vals)) {
+        // Dont believe DC fields can be HTML
+        return array ( 0 => array ( value => $item['dc'][$vals[1]], flag => 0, format => 1 ));
+    } elseif ($value == "CONTENT") {
+        // Note this code is repeated above in map1field
+        return array (0 => contentvalue($item));
+    } else {
+        return $item['fields_content'][$value];
+    }
 }
 
 // Extract the content from where the parser put it, and return as a value array.
-function contentvalue ($item) {
-                $flag="";
-                if (isset($item['content']['HTML'])) { // choose HTML content first
-                    $flag = FLAG_HTML;
-                    $cont_flag = HTML;
-                } else {   // otherwise PLAIN. Other formats are not supported,
-                    $cont_flag= PLAIN;      // but they can be added in future
-                }
-                return array("value"=>$item['content'][$cont_flag], "flag"=>$flag);
+function contentvalue($item) {
+    $flag="";
+    if (isset($item['content'][HTML])) { // HTML is constant!!!
+        // choose HTML content first
+        $flag      = FLAG_HTML;
+        $cont_flag = HTML;
+    } else {   // otherwise PLAIN. Other formats are not supported,
+        $cont_flag = PLAIN;      // but they can be added in future
+    }
+    return array("value"=>$item['content'][$cont_flag], "flag"=>$flag);
 }
 
 ?>

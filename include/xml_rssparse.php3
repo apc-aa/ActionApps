@@ -72,6 +72,25 @@ function decode($v) {
     return $encoder->Convert($v, $GLOBALS['g_source_encoding'], $GLOBALS['g_slice_encoding']);
 }
 
+/** Function decides if the string could be utf-8 or not */
+function seems_utf8($str) {
+    for ($i=0; $i<strlen($str); $i++) {
+        if (ord($str[$i]) < 0x80) continue; # 0bbbbbbb
+        elseif ((ord($str[$i]) & 0xE0) == 0xC0) $n=1; # 110bbbbb
+        elseif ((ord($str[$i]) & 0xF0) == 0xE0) $n=2; # 1110bbbb
+        elseif ((ord($str[$i]) & 0xF8) == 0xF0) $n=3; # 11110bbb
+        elseif ((ord($str[$i]) & 0xFC) == 0xF8) $n=4; # 111110bb
+        elseif ((ord($str[$i]) & 0xFE) == 0xFC) $n=5; # 1111110b
+        else return false; # Does not match any model
+        for ($j=0; $j<$n; $j++) { # n bytes matching 10bbbbbb follow ?
+            if ((++$i == strlen($str)) || ((ord($str[$i]) & 0xC0) != 0x80)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 function nsName2abbrevname($name) {
     global $module2abbrev; // Static array above
     ereg("(.+):([^:]+)",$name,$nameparts);
@@ -277,35 +296,46 @@ function charD($parser, $data) {
 // Parse feed, return array or false on failure
 // $GLOBALS['g_slice_encoding'] - destination slice encoding - must be set
 function aa_rss_parse($xml_data) {
-  global $aa_rss,
-        $cur_tag, $aa_rss, $channel, $category, $field, $item,
-         $fulltext_content, $fielddata,$content_format;
-  $aa_rss = array();   // Clear out, or will just append to previous parse!
+    global $aa_rss,
+    $cur_tag, $aa_rss, $channel, $category, $field, $item,
+    $fulltext_content, $fielddata,$content_format;
 
-  // Older versions of AA RSS do not contain XML encoding setting and uses
-  // iso-8859-1. New versions (>=2.8) uses encoding setting and utf-8
-  if ( strpos( substr($xml_data,0,100), 'encoding="UTF-8"' ) ) {
-      $GLOBALS['g_source_encoding'] = 'iso-8859-1';
-  } else {
-      $GLOBALS['g_source_encoding'] = 'utf-8';
-  }
-  $xml_parser = xml_parser_create_ns($GLOBALS['g_source_encoding']);
 
-  $cur_tag = null; $channel = null; $category = null; $field = null;
-  $item=null; $fulltext_content = null; $fielddata = null;
-  $content_format=null;
-  xml_set_element_handler($xml_parser, "startElement", "endElement");
-  xml_set_character_data_handler($xml_parser,"charD");
-  if (!xml_parse($xml_parser, $xml_data)) {
-    $err = sprintf("XML parse error: %s at line %d",
-            xml_error_string(xml_get_error_code($xml_parser)),
-            xml_get_current_line_number($xml_parser));
-    print("\nXML_RSSPARSE:ERR:$err");
-    return false;
-  }
-  if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Parsed ok array=",$aa_rss);
-  xml_parser_free($xml_parser);
-  return $aa_rss;
+    if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Parsing ...");
+
+    // Older versions of AA RSS do not contain XML encoding setting but uses
+    // utf-8 (but only for iso-8859-1 slices - as supported by php.
+    // New versions (>=2.8) uses encoding setting and utf-8 and works well with
+    // slices in other encoding
+    if ( strpos( substr($xml_data,0,100), 'encoding="UTF-8"' ) ) {
+        $GLOBALS['g_source_encoding'] = 'utf-8';
+    } else {
+        $GLOBALS['g_source_encoding'] = ( seems_utf8($xml_data) ? 'utf-8' : 'iso-8859-1');
+        if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Encoding not specified, used: ".$GLOBALS['g_source_encoding'] );
+    }
+
+    // Destination slice encoding should be set in aa_rss_parse caller function.
+    // If not set, we probably want to parse data for current slice (node list, ... )
+    if ( !$GLOBALS['g_slice_encoding'] ) {
+        $GLOBALS['g_slice_encoding'] = getSliceEncoding($GLOBALS['slice_id']);
+    }
+    $xml_parser = xml_parser_create_ns($GLOBALS['g_source_encoding']);
+
+    // Clear out, or will just append to previous parse!
+    // unset do not works for GLOBAL variables!!!
+    $cur_tag = $channel = $category = $field = $item = $fulltext_content = $fielddata = $content_format = null;
+    $aa_rss = array();
+
+    xml_set_element_handler($xml_parser, "startElement", "endElement");
+    xml_set_character_data_handler($xml_parser,"charD");
+    if (!xml_parse($xml_parser, $xml_data)) {
+        $err = sprintf("XML parse error: %s at line %d", xml_error_string(xml_get_error_code($xml_parser)), xml_get_current_line_number($xml_parser));
+        print("\nXML_RSSPARSE:ERR:$err");
+        return false;
+    }
+    if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Parsed ok array=",$aa_rss);
+    xml_parser_free($xml_parser);
+    return $aa_rss;
 }
 
 /*

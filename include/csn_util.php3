@@ -29,6 +29,9 @@ define("FEEDTYPE_APC",0);
 define("ERR_NO_SLICE","Error 1");
 define("ERR_PASSWORD","Error 2");
 
+define( 'UNPACKED_AA_THE_SAME_CATE', unpack_id128('AA_The_Same_Cate') );
+define( 'UNPACKED_AA_OTHER_CATEGOR', unpack_id128('AA_Other_Categor') );
+
 $CONTENT_FORMATS = array("http://www.isi.edu/in-notes/iana/assignments/media-types/text/html" => HTML,
                          "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain"=> PLAIN);
 
@@ -47,10 +50,13 @@ function getSliceEncoding($slice_id) {
 
 /** Get categories from table ef_categories
  *  ef_categories is used only for APC type of feedin (APC RSS) and the change
- *  would by tricky, since theer could unfortunatelly be two feeds with the same
+ *  would by tricky, since there could unfortunatelly be two feeds with the same
  *  id (one APC and one other RSS)
+ *  @param $add_other - if there are external categories it will add default
+ *                      (AA_Other_Categor) category to the array (if not present
+ *                      already
  */
-function GetExternalCategories($feed_id) {
+function GetExternalCategories($feed_id, $add_other=false) {
     global $db;
     $db->query("SELECT category_id, category, category_name, target_category_id, approved
                   FROM ef_categories
@@ -61,6 +67,14 @@ function GetExternalCategories($feed_id) {
             "name"               => $db->f('category_name'),
             "approved"           => $db->f('approved'),
             "target_category_id" => unpack_id128($db->f('target_category_id')));
+    }
+    if ( $add_other AND (count($ext_categs)>0) AND !isset($ext_categs[unpack_id('AA_Other_Categor')])) {
+        $ext_categs[UNPACKED_AA_OTHER_CATEGOR] = array(
+            "value"              => 'AA_Other_Categor',
+            "name"               => _m('Other categories'),
+            "approved"           => false,
+            "target_category_id" => ''  // default is umpapped, not UNPACKED_AA_THE_SAME_CATE
+            );
     }
     return $ext_categs;
 }
