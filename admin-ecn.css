@@ -17,9 +17,9 @@ SELECT {
   font-size: 10pt;
  }
 
-TD, INPUT, TEXTAREA {  
+.tabtxt, TD, INPUT, TEXTAREA {  
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 8pt;
+  font-size: 10pt;
  }
 
 H1, .tablename {
@@ -120,11 +120,6 @@ H1, .tablename {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
   color: #FFFFFF;
-}
-
-.tabtxt {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: small;
 }
 
 .tabhlp {

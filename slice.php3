@@ -270,6 +270,48 @@ if($query) {              # complex query - posted by big search form ---
   if( !$scrl )
     $scr->current = 1;
 }
+elseif(isset($conds) AND is_array($conds)) {     # posted by easy query form ----------------
+  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","conds", "sort")); # store in session
+
+  reset($conds); 
+  while( list( $k , $cond) = each( $conds )) {
+    if( !isset($cond) OR !is_array($cond) ) {
+      $conds[$k] = false;
+      continue;             # bad condition - ignore
+    }
+    if( !$cond['value'] )
+      $conds[$k]['value'] = current($cond);
+    if( !$cond['operator'] )
+      $conds[$k]['operator'] = 'LIKE';
+  }    
+
+  if(isset($sort)) {
+    if( !is_array($sort) ) {
+      $sort_tmp[] = array ( '$sort' => 'd' );
+    } else {  
+      reset($sort); 
+      while( list( $k , $srt) = each( $sort )) {
+        if( isset($srt))
+          if( is_array($srt) )
+            $sort_tmp[$k] = array( key($srt) => (( strtoupper(current($srt)) == "D" ) ? 'd' : 'a'));
+           else
+            $sort_tmp[] =  array( $srt => 'a' );
+      }
+    }
+  }  
+  if( isset($sort_tmp) )
+    $sort = $sort_tmp;
+   else 
+    $sort[] = array ( 'pub_date........' => 'd' );
+
+  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, "" );
+
+  if( isset($item_ids) AND !is_array($item_ids))
+    echo "<div>$item_ids</div>";
+  if( !$scrl )
+    $scr->current = 1;
+  $slice_info[category_sort] = false;      # do not sort by categories    
+}
 elseif($easy_query) {     # posted by easy query form ----------------
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
                       "easy_query", "qry", "srch_relev")); # store in session
@@ -342,20 +384,20 @@ $debugtimes[]=microtime();*/
   if( isset($conditions) AND is_array($conditions) ) {
     reset($conditions);
     while( list( $k, $v) = each( $conditions ))
-      $conds[]=array( 'operator' => ($exact ? '=' : 'LIKE'),
+      $cnds[]=array( 'operator' => ($exact ? '=' : 'LIKE'),
                       'value' => $v,
                       $k => 1 );
   }                    
 
   if( $slice_info[category_sort] )
-    $sort[] = array ( GetCategoryFieldId( $fields ) => 'a' );
+    $srt[] = array ( GetCategoryFieldId( $fields ) => 'a' );
 
   if( $order )
-    $sort[] = array ( $order => (( $orderdirection == "DESC" ) ? 'd' : 'a'));
-  $sort[] = array ( 'pub_date........' => 'd' );
+    $srt[] = array ( $order => (( $orderdirection == "DESC" ) ? 'd' : 'a'));
+  $srt[] = array ( 'pub_date........' => 'd' );
 
     
-  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by );
+  $item_ids=QueryIDs($fields, $slice_id, $cnds, $srt, $group_by );
 
 // p_arr_m($debugtimes);
 // echo "<br>old: ". (double)((double)($debugtimes[1]) - (double)($debugtimes[0]));
@@ -388,6 +430,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.20  2001/05/25 16:10:52  honzam
+New search parameters in slice.php3, which uses beter search function
+
 Revision 1.19  2001/05/18 13:41:02  honzam
 New View feature, new and improved search function (QueryIDs)
 
