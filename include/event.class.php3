@@ -103,8 +103,11 @@ class aaevent {
     function get_handlers() {
         // TODO - read the events from database instead of this static definition
         $this->handlers   = array();
-        $this->handlers[] = new aahandler('Event_LinkNew',
+        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',
                                           array('type'       => 'LINK_NEW',
+                                                'slice_type' => 'Links'));
+        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',
+                                          array('type'       => 'LINK_UPDATED',
                                                 'slice_type' => 'Links'));
         $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',
                                           array('type'       => 'ITEM_UPDATED',
@@ -123,14 +126,18 @@ class aaevent {
  *  @param array  &$ret_params  - category set, where to assign link - modified
  *                                array[] = category_id
  *  @param string  $params      - global category name or false
+ *  @param string  $params2     - old (previous) global category name or false
  */
-function Event_LinkNew( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     global $db, $LINK_TYPE_CONSTANTS;
 
     // quite Econnectonous code
-    $name = $params;              // name of general category is in params
+    $name    = $params;              // name of general category is in params
+    $oldname = $params2;             // name of old general category in params2
 
-    if( !( trim($name)) )
+    // if new link type is not general (global) category or general category 
+    // was already set - return
+    if( !( trim($name)) OR trim($oldname) )
         return false;
 
     // get all informations about general categories
