@@ -89,16 +89,16 @@ function ParseViewParameters($query_string="") {
                  $use_short_ids = true;
                break;
     case 'c':  if( $command[1] ) 
-                 $param_conds[$command[1]] = $command[2];
+                 $param_conds[$command[1]] = stripslashes($command[2]);
                if( $command[3] ) 
-                 $param_conds[$command[3]] = $command[4];
+                 $param_conds[$command[3]] = stripslashes($command[4]);
                if( $command[5] ) 
-                 $param_conds[$command[5]] = $command[6];
+                 $param_conds[$command[5]] = stripslashes($command[6]);
                break;
     case 'd':  $i=1;
                while( $command[$i] ) {
                  $conds[]=array( 'operator' => $command[$i+1],
-                                 'value' => $command[$i+2],
+                                 'value' => stripslashes($command[$i+2]),
                                  $command[$i] => 1 );
                  $i += 3;
                }
@@ -684,6 +684,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.21  2001/12/12 18:43:22  honzam
+Added possibility to quote queries in c- command
+
 Revision 1.20  2001/11/26 11:10:36  honzam
 als parameter parsed in cmd parameter for view.php3
 
