@@ -30,8 +30,9 @@ define("L_SEARCH_TIP", "List is limitted to 5 users.<br>If some user is not in l
 define("L_USERNAME", "Username:");
 define("L_PASSWORD", "Password:");
 define("L_LOGINNOW", "Login now");
-define("L_BAD_LOGIN", "Either your username or your password are invalid.");
+define("L_BAD_LOGIN", "Either your username or your password is not valid.");
 define("L_TRY_AGAIN", "Please try again!");
+define("L_BAD_HINT", "If you are sure you type correct password, please e-mail <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.");
 define("LOGIN_PAGE_BEGIN",
  '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML>
@@ -114,6 +115,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.4  2000/07/26 16:01:48  kzajicek
+More descriptive message for "login failed"
+
 Revision 1.3  2000/07/12 14:26:40  kzajicek
 Poor printing of the SSI statement fixed
 

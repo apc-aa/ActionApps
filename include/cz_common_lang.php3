@@ -32,6 +32,7 @@ define("L_PASSWORD", "Heslo:");
 define("L_LOGINNOW", "Pøihlásit se");
 define("L_BAD_LOGIN", "Uživatelské jméno èi heslo je neplatné.");
 define("L_TRY_AGAIN", "Zkuste to znovu!");
+define("L_BAD_HINT", "Pokud urèitì zadáváte správné heslo, kontaktujte <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.");
 define("LOGIN_PAGE_BEGIN",
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML>
@@ -113,6 +114,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.5  2000/07/26 16:01:48  kzajicek
+More descriptive message for "login failed"
+
 Revision 1.4  2000/07/12 14:26:40  kzajicek
 Poor printing of the SSI statement fixed
 
