@@ -243,7 +243,15 @@ function AddslashesArray($val) {
     return addslashes($val);
   }  
   for (reset($val); list($k, $v) = each($val); )
-    $ret[$k] = Myaddslashes($v);
+    $ret[$k] = AddslashesArray($v);
+  return $ret;
+}    
+
+function StripslashesArray($val) {
+  if (!is_array($val)) 
+    return stripslashes($val);
+  for (reset($val); list($k, $v) = each($val); )
+    $ret[$k] = StripslashesArray($v);
   return $ret;
 }    
 
@@ -1358,8 +1366,8 @@ function setdefault (&$var, $default) {
  * @author Jakub Adamek, Econnect, December 2002
  */
 function add_post2shtml_vars ($delete = true) {
-    global $db, $debug, $post2shtml_id;
-    
+    global $db, $post2shtml_id;
+    global $debug;
     add_vars();
     if (!$post2shtml_id) return;
     if (!is_object ($db)) $db = new DB_AA;
@@ -1389,7 +1397,7 @@ function get_email_types () {
     return array (
         "alerts welcome" => _m("alerts welcome"),
         "alerts alert" => _m("alerts alert"),
-        "alerts access" => _m("alerts single usage access"));
+    );
 }
 
 /// @return array month names
