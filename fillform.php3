@@ -148,10 +148,18 @@ function fillForm () {
 	$item_pid = addslashes(pack_id($my_item_id));
 	$SQL = "SELECT * FROM item WHERE id='$item_pid'";
 	$db->query($SQL);
-	if (!$db->next_record()) return;
+	if (!$db->next_record()) {
+        echo "
+        var fillform_fields = new Array ();
+        function fillForm() {} \n"; 
+        return;
+    }
 	# are we allowed to update this item?
 	if (!($db->f("flags") & ITEM_FLAG_ANONYMOUS_EDITABLE)) {
-		echo "<!-- This item isn't allowed to be changed anonymously. -->";
+		echo "
+        <!-- This item isn't allowed to be changed anonymously. -->
+        var fillform_fields = new Array ();
+        function fillForm() {} \n"; 
 		return;
 	}
 	
@@ -160,9 +168,9 @@ function fillForm () {
     $timezone = (mktime (0,0,0,1,1,98) - gmmktime (0,0,0,1,1,98)) / 3600;
 
 	echo "
-	function fillForm () 
-	{";
+    var fillform_fields = new Array (\n";
 	
+    $first = true;
 	if (is_array ($oldcontent4id)) {
 		reset ($oldcontent4id);
 		while (list ($field_id,$field_array) = each ($oldcontent4id)) {
@@ -175,15 +183,25 @@ function fillForm () {
 				if (substr ($field_id, 0, 15) != "password......." 
 					&& $field_id != "id.............."
 					&& $field_id != "slice_id........"
-					&& $myvalue != "") 
-					echo "setControlOrAADate ('$form','$control_id','$myvalue','tdctr_','".
-					($field[flag] & FLAG_HTML ? "h" : "t")."',$timezone);\n";
+					&& $myvalue != "") {
+                    if (!$first) echo ",\n"; else $first = false;
+					echo "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','".
+					($field[flag] & FLAG_HTML ? "h" : "t")."',$timezone)";
+                }
 			}
 		}
 	}
 	
-	echo "}\n";
-	if (!isset ($notrun)) echo "\n fillForm ();\n";
+    echo "); 
+	function fillForm () 
+	{ 
+        for (i=0; i < fillform_fields.length; ++i) { 
+            var item = fillform_fields[i]; 
+            setControlOrAADate (item[0],item[1],item[2],item[3],item[4],item[5]); 
+        } 
+    }";
+    global $notrun;
+	if (!isset ($notrun)) echo "fillForm ();";
 }
 ?>
 
