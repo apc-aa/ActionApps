@@ -10,6 +10,7 @@ objectclass: person
 cn: aa
 sn: Toolkit
 description: Account used by AA to access LDAP DB
+
 dn: ou=People,ou=AA
 objectclass: top
 objectclass: organizationalUnit
