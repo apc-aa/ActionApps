@@ -119,7 +119,9 @@ function saveDate (formName,dateField,targetField,emptyValue) {
  params: startYear is the top year in the year select box */ ?>
  
 function setDay (formName,dateField,startYear,myDate) {
-	document.forms[formName][dateField+"_day"].selectedIndex   = myDate.getDate()-1;
+	tryDate = new Date (2000,1,1);
+	dayShift = 1-tryDate.getDate();
+	document.forms[formName][dateField+"_day"].selectedIndex   = myDate.getDate()-dayShift-1;
 	document.forms[formName][dateField+"_month"].selectedIndex = myDate.getMonth();
 	document.forms[formName][dateField+"_year"].selectedIndex  = getYearNetscapeSafe(myDate)-startYear;
 }
@@ -204,7 +206,7 @@ function setControl (formName, controlName, newValue) {
 	if (myControl != null) {
 		if (typeof (myControl.type) == "undefined") {
 			// multiple checkboxes
-		  	for (var iCtrl = 0; iCtrl < myControl.length; ++iCtrl) {
+      for (var iCtrl = 0; iCtrl < myControl.length; ++iCtrl) {
 				if (myControl[iCtrl].value == newValue) {
 					if (myControl[iCtrl].type == "checkbox" || myControl[iCtrl].type == "radio") 
 						myControl[iCtrl].checked = 1;
@@ -214,7 +216,8 @@ function setControl (formName, controlName, newValue) {
 		}
         else if (myControl.type.substr (0,6) == "select") 
 			for (var i = 0; i < myControl.options.length; i++) {
-				if (myControl.options[i].value == newValue) 
+				if ( (myControl.options[i].value == newValue) || 
+             ((myControl.options[i].value == "") && (myControl.options[i].text == newValue))) 
 					myControl.options[i].selected = true;
 			}
 		else if (myControl.type == "checkbox")  

@@ -22,7 +22,7 @@ http://www.apc.org/
 	Created by Jakub Adamek, January 2002
 	
 	Params:
-		my_item_id .. short ID of the item
+		my_item_id .. long ID of the item
 		fillConds=1 .. generates the fillConds code (otherwise, generate fillForm code)
 		notrun=1 .. doesn't run the JavaScript function
 		form=formname .. look for the controls in the form formname. If not set, will use 'f'.
@@ -102,8 +102,13 @@ function fillConds () {
 	if (is_array ($conds)) {
 		reset ($conds);
 		while (list ($i,$cond) = each ($conds)) {
-			if (isset ($cond["value"]))
-				echo "setControl ('$form','conds[$i][value]',\"".$cond["value"]."\");\n";
+    	if (is_array($cond)) {
+    		reset ($cond);
+        while( list($k, $v) = each($cond) ) {
+          if( $v AND ($k != 'operator') )
+     				echo "setControl ('$form','conds[$i][$k]',\"$v\");\n";
+        }
+      }    
 		}
 	}
 	
@@ -123,12 +128,18 @@ function fillConds () {
 /* * * * * * * * * * * FILL FORM * * * * * * * * * */
 
 function safeChars ($str) {
-  for ($i=0; $i < strlen ($str); ++$i)
+  for ($i=0; $i < strlen ($str); ++$i) {
     if (ord($str[$i]) > 31) 
-		if ($str[$i] == '"') $retVal .= '\\"';
+		if ($str[$i] == "'" ) $retVal .= "\\'";
 		else $retVal .= $str[$i];
+  }
   return $retVal;
 }
+
+/* I had troubles with the packed IDs because some chars from them appear as
+	single quote - of course it depends on used char-encoding and therefore
+	is hard to solve. I have forbidden id and slice_id to appear and hope this
+	is enough. */
 
 function fillForm () {
 	global $form, $conds, $dateConds, $my_item_id, $db;
@@ -156,8 +167,13 @@ function fillForm () {
 			reset ($field_array);
 			while (list (,$field) = each ($field_array)) {
 				$myvalue = safeChars ($field[value]);
+				//$control_id = $field_id;
 				$control_id = 'v'.unpack_id ($field_id);
-				if ($myvalue != "") 
+				// field password.......x is used to authenticate item edit
+				if (substr ($field_id, 0, 15) != "password......." 
+					&& $field_id != "id.............."
+					&& $field_id != "slice_id........"
+					&& $myvalue != "") 
 					echo "setControlOrAADate ('$form','$control_id','$myvalue','tdctr_','".
 					($field[flag] & FLAG_HTML ? "h" : "t")."');\n";
 			}
@@ -165,7 +181,6 @@ function fillForm () {
 	}
 	
 	echo "}\n";
-	
 	if (!isset ($notrun)) echo "\n fillForm ();\n";
 }
 ?>
