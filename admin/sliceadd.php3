@@ -59,7 +59,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php  reset ($MODULES);
     while (list ($type, $module) = each ($MODULES)) {
         if ($module["hide_create_module"]) continue;
-        echo "<TR><TD class=tabtxt><B>".$module['name']."</B></TD><TD>";
+        echo "<TR><TD class=tabtxt><B>"._mdelayed($module['name'])."</B></TD><TD>";
         if ($module["show_templates"]) {
             echo "<SELECT name=\"template[$type]\">";
             reset ($g_modules);
@@ -88,7 +88,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </table>
 </FORM>
 </center>
-<?php echo _m("<br><br><br><br>") ?>
+<?php echo "<br><br><br><br>"; ?>
 <?php echo "</body></html>";
 page_close()?>
 

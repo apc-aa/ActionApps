@@ -102,7 +102,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </table>
 </FORM>
 </center>
-<?php echo _m("<br><br><br><br>") ?>
+<?php echo "<br><br><br><br>"; ?>
 </BODY>
 </HTML>
 <?php page_close()?>

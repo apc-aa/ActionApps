@@ -180,8 +180,8 @@ if ( $show_func_used ['fil'])  # uses fileupload?
 
 echo "<form name=inputform $html_form_type method=post action=\""
     .($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PASS_PARAM).'"'
-    .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>'
-    .'<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center" class="inputtab">'; ?>
+    .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>
+    <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center" class="inputtab">'; ?>
 <tr><td class=tabtit align="center"><b>&nbsp;</b></td></tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" class="inputtab2">
@@ -195,12 +195,10 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
   <?php
   $r_hidden["slice_id"] = $slice_id;
   $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
-  # the slice_id is not needed here, but it helps, if someone will try to create
-  # anonymous posted form (posted to filler.php3) - there must be slice_id
   $sess->hidden_session();
-  echo '<input type=hidden name="slice_id" value="'. $slice_id .'">';
-  echo '<input type=hidden name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
-  echo '<input type=hidden name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
+  echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
+  echo '<input type="hidden" name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
+  echo '<input type="hidden" name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
   </td>
 </tr>
 </table></td></tr>
