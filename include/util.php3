@@ -25,6 +25,14 @@ http://www.apc.org/
 
 require $GLOBALS[AA_INC_PATH]."constants.php3";
 
+function get_aa_url ($href) {
+    global $AA_INSTAL_PATH;
+    $res = $AA_INSTAL_PATH.$href;
+    if (strstr ($href,"?")) $res .= "&"; else $res .= "?";
+    $res .= "AA_CP_Session=".$GLOBALS[AA_CP_Session];
+    return $res;
+}    
+
 function get_admin_url ($href) {
     global $AA_INSTAL_PATH;
     $res = $AA_INSTAL_PATH."admin/".$href;
