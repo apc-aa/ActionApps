@@ -413,7 +413,7 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
       $k = $v;
     echo "<option value=\"". htmlspecialchars($k)."\"";
     if ((string)$selected == (string)$k) 
-      echo " selected";
+      echo ' selected class="sel_on"';
     echo "> ". htmlspecialchars($v) ." </option>";
   }
   reset($arr);
@@ -460,7 +460,7 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25,
   while(list($k, $v) = each($arr)) {
     echo "<option value=\"". htmlspecialchars($usevalue ? $v : $k)."\"";
     if ((string)$val == (string)(($usevalue OR $secondfield) ? $v : $k))
-      echo " selected";
+      echo ' selected class="sel_on"';
     echo "> ". htmlspecialchars($v) ." </option>";
   }
   reset($arr);
@@ -593,7 +593,7 @@ function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_
       $i++;
       echo "<option value=\"". htmlspecialchars($usevalue ? $v : $k)."\"";
       if ((string)$val == (string)(($usevalue OR $secondfield) ? $v : $k))
-        echo " selected";
+        echo ' selected class="sel_on"';
       echo "> ";
       if ($numbered ==1) { echo htmlspecialchars($i.". ".$v); }
       else { echo htmlspecialchars($v); }
@@ -641,12 +641,14 @@ function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
       <tr align=left><td align='CENTER' valign='TOP'>
       <SELECT name=\"".$name."_1\" size=$size ".getTriggers("select",$name).">\n";
 
-  reset($arr);
-  while (list($k,$v) = each($arr)) {
-    if (!($selected[$k])) {
-      echo "<option value=\"". htmlspecialchars($k)."\"> ".htmlspecialchars($v)." </option>\n";
-    }
-  }
+  if( isset($arr) and is_array($arr) ) {     
+      reset($arr);
+      while (list($k,$v) = each($arr)) {
+        if (!($selected[$k])) {
+          echo "<option value=\"". htmlspecialchars($k)."\"> ".htmlspecialchars($v)." </option>\n";
+        }
+      }
+  }    
   echo "
         </SELECT>
       </td>
@@ -656,20 +658,24 @@ function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
       <SELECT multiple name=\"".$name."[]\" size=$size  ".getTriggers("select",$name).">";
 
   $option_no=0;
-  while(list($k, $v) = each($selected)) {
-    echo "<option value=\"". htmlspecialchars($k)."\"> ".htmlspecialchars($arr[$k])." </option>\n";
-    $option_no++;
-  }
+  
+  if( isset($selected) and is_array($selected) ) {     
+      reset($selected);
+      while(list($k, $v) = each($selected)) {
+        echo "<option value=\"". htmlspecialchars($k)."\"> ".htmlspecialchars($arr[$k])." </option>\n";
+        $option_no++; 
+      }
+  }    
   if ($option_no == 0) {
     echo '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
   }
   echo "
       </SELECT>";
-  echo "
-  <script language=\"javascript\" type=\"text/javascript\"><!--
-    listboxes[listboxes.length] = '$name';
+  echo '
+  <script language="javascript" type="text/javascript"><!--
+  listboxes[listboxes.length] = \''. $name .'[]\';
   //--></script>
-  ";
+  ';
 
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
@@ -801,7 +807,7 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
     while(list($k, $v) = each($arr)) { 
       echo "<option value='". htmlspecialchars($k) ."'";
       if ($selected[$k]) 
-        echo " selected";
+        echo ' selected class="sel_on"';
       echo ">".htmlspecialchars($v)."</option>";
       $option_no++;
     }
@@ -846,7 +852,7 @@ function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
   while(list($k, $v) = each($arr)) { 
     $retval .= "  <option value=\"". htmlspecialchars($k)."\"";
     if ((string)$selected == (string)$k) 
-      $retval .= " selected";
+      $retval .= ' selected class="sel_on"';
     $retval .= ">". htmlspecialchars( is_array($v) ? $v['name'] : $v ) ."</option>\n";
   }
   $retval .= "</select>\n";
@@ -886,7 +892,7 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
   while(list($k, $v) = each($arr)) {
     echo "<option value=\"". htmlspecialchars($k)."\"";
     if ((string)$val == (string)$k)
-      echo " selected";
+      echo ' selected class="sel_on"';
     echo "> ". htmlspecialchars($v) ." </option>";
   }
   reset($arr);
