@@ -87,11 +87,7 @@ function go_return_or_url($url,$usejs,$addsess,$add_param="") {
     global $return_url,$sess;
     if ($return_url) {
         if ($usejs) {
-            echo '
-            <SCRIPT Language="JavaScript"><!--
-                  document.location = "'. expand_return_url($addsess) .'";
-            // -->
-            </SCRIPT>';
+            FrmJavascript( 'document.location = "'. expand_return_url($addsess) .'";');
         } else {
             go_url(expand_return_url($addsess));
         }
@@ -749,11 +745,16 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
 
 /** Basic function to get item content. Use this function, not direct SQL queries.
 *
-*   @param bool $ignore_reading_password
+*   @param bool  $ignore_reading_password
 *       Use carefully only when you are sure the data is used safely and not viewed
 *       to unauthorized persons.
+*   @param array $fields2get
+*       restrict return fields only to listed fields (so the content4id array
+*       is not so big)
+*       like: array('headline........', 'category.......1')
+*       (only content table fields are restricted (yet))
 */
-function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false) {
+function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
 
     trace("+","GetItemContent",$zids);
@@ -820,17 +821,25 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
     # construct WHERE query to content table if used short_ids
     if( $use_short_ids) {
-        if (count($translate) > 1)
-             $sel_in = " IN ( $new_sel_in ) ";
-        else $sel_in = " = $new_sel_in ";
+        $sel_in = (count($translate) > 1) ?
+                       " IN ( $new_sel_in ) " : " = $new_sel_in ";
+    }
+
+    if ( isset( $fields2get ) AND is_array( $fields2get ) AND (count($fields2get)>0 )) {
+        $restrict_field = join( "','", $fields2get );
+        $restrict_cond  = (count($fields2get) > 1) ?
+                       " AND field_id IN ( '". $restrict_field ."' ) " :
+                       " AND field_id = '$restrict_field' ";
     }
 
     # get content from content table
+
     # feeding - don't worry about it - when fed item is updated, informations
     # in content table is updated too
 
     $SQL = "SELECT * FROM content
-             WHERE item_id $sel_in ORDER BY content.number"; # usable just for constants
+             WHERE item_id $sel_in $restrict_cond
+             ORDER BY content.number"; # usable just for constants
 
     $db->tquery($SQL);
 
@@ -960,83 +969,59 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
 
 # fills array by headlines of items in specified slice (unpacked_id => headline)
 # $tagprefix is array as defined in itemfunc.php3
-function GetItemHeadlines( $sid="", $slice_field="headline........",
-    $zids="", $type="all", $tagprefix=null, $timecond="normal") {
-    global $db,$debug;
-  if (!is_object ($db)) $db = new DB_AA;
+function GetItemHeadlines( $sid, $headline_field="",
+    $restrict_zids=false, $frombins=AA_BIN_ACTIVE, $conds="", $sort="", $tagprefix=null) {
 
-  $psid = q_pack_id( $sid );
-  $time_now = time();
-  if ($slice_field=="") $slice_field="headline.";
+    if (!$headline_field) {
+        $headline_field = GetHeadlineFieldID($sid, "headline.");
+    }
+    if (!$headline_field ) {
+        return;
+    }
 
-  if ( $sid ) {
-    if ( !($headline_fld = GetHeadlineFieldID($sid, $slice_field)) )
-      return false;
-  } else {
-    $headline_fld = 'headline........';
-  }
+    $slice = new slice($sid);
+    $conds = String2Conds( $conds );
+    $sort  = String2Sort( $sort );
 
-  # Allow passing an array, this is how is used from show_fnc_freeze_iso and show_fnc_iso
-  if (isset($zids) && is_array($zids))
-    $zids = new zids($zids); # Don't guess the type, could be l or t
+    $zids  = QueryZIDs($slice->fields('record'), $sid, $conds, $sort, "", $frombins, "", 0, $restrict_zids);
 
-  if( $type == "all" ) {                          # select all items from slice
-    $cond = " AND item.slice_id = '". q_pack_id( $sid ) ."' ";
-    $sort_order = "ORDER BY text";
-  } elseif (isset($zids) && is_object($zids) && ($zids->count() > 0)) {
-    if ($debug) huhl("Getting sql from ",$zids);
-    $cond .= ' AND ' . $zids->sqlin();
-    $sort_order = '';
-  } else {
-    return false;
-  }
+    if ( $zids->count() <= 0 ) {
+        return false;
+    }
 
-  $restrict = (( $timecond == 'all' ) ?
-                 "" :
-                 " AND expiry_date > '$time_now' AND publish_date <= '$time_now' ");
+    $content = GetItemContent($zids, false, false, array($headline_field) );
+    $item = new item('',$slice->aliases());
+    $item->setformat( '{'.$headline_field.'}' );  // we can specify the format in future
+    for ( $i=0; $i<$zids->count(); $i++ ) {
+        $iid = $zids->short_or_longids($i);
+        $item->set_data($content[$iid]);
+        $ret[$iid] = substr($item->get_item(), 0, 50);
+    }
 
-  $SQL = "SELECT id, text FROM content, item
-           WHERE item.id=content.item_id
-             $cond
-             AND field_id = '$headline_fld'
-             AND status_code='1'
-             $restrict
-        GROUP BY text $sort_order";
+    if (!(isset($restrict_zids) && is_object($restrict_zids) && ($restrict_zids->onetype() == 't') && isset($tagprefix))) {
+        return $ret;
+    }
 
-  $headlines = GetTable2Array($SQL, "id", true);
+    // following code is just for tagged ids
+    // (I hope it works, but I can't test it, since I do not want to use it.)
+    // Honza 8/27/04
 
-  # See if need to Put the tags back on the ids
-  if (isset($zids) && is_object($zids) && ($zids->onetype() == 't') && isset($tagprefix)) {
-       $tags = $zids->gettags() ;
+
+    // See if need to Put the tags back on the ids
+    $tags = $restrict_zids->gettags() ;
+    if ( !isset($tags) ) {
+        return $ret;
+    }
+
     while (list(,$v) = each($tagprefix)) {
         $t2p[$v["tag"]] = $v["prefix"];
     }
-  }
 
-  // we want headlines in the same order than in zids
-  if (isset($zids) && is_object($zids)) {
-      for( $i=0; $i<$zids->count(); $i++ ) {
-        $u_id = $zids->longids($i);
-        $p_id = $zids->packedids($i);
-        if (isset($headlines[$p_id]['text'])) {
-            $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
-                = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
-                    . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
-        }
-      }
-  } elseif( is_array($headlines) ) { // $type == 'all'
-      foreach( $headlines as $p_id => $val ) {
-        $u_id = unpack_id($p_id);
-        if (isset($headlines[$p_id]['text'])) {
-            $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
-                = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
-                  . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
-        }
-      }
-  }
-
-  if ($debug)  huhl("GetItemHeadlines found ",$arr);
-  return $arr;
+    // we want headlines in the same order than in zids
+    foreach ( $ret as $u_id => $headline ) {
+        $new_ret[$tags[$u_id] . $u_id] = $t2p[$tags[$u_id]]. $headline;
+    }
+    return $new_ret;
 }
 
 // -------------------------------------------------------------------------------
@@ -1194,9 +1179,7 @@ function HtmlPageBegin($stylesheet='default', $js_lib=false) {
       <META http-equiv="Content-Type" content="text/html; charset='
         .$GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()].'">
 ';
-    if ($js_lib) echo '
-      <script language="JavaScript" type="text/javascript" src="'. get_aa_url("javascript/js_lib.js",false) .'"></script>
-';
+    if ($js_lib) FrmJavascriptFile( 'javascript/js_lib.js' );
 }
 
 // use instead of </body></html> on pages which show menu
@@ -1808,13 +1791,7 @@ function ShowWizardFrames ($aa_url, $wizard_url, $title, $noframes_html="") {
 
 /** Shows JavaScript which updates the Wizard frame, if it exists. */
 function ShowRefreshWizardJavaScript() {
-    echo '
-    <script language="JavaScript"><!--
-        if (top.wizardFrame != null)
-            top.wizardFrame.wizard_form.submit();
-    //-->
-    </script>
-    ';
+    FrmJavascript( 'if (top.wizardFrame != null) top.wizardFrame.wizard_form.submit();' );
 }
 
 function GetAAImage ($filename, $alt='', $width=0, $height=0) {
@@ -1872,6 +1849,15 @@ class contentcache {
     // used for global cache of contents
     var $content;
 
+    /** "class function" obviously called as cattree::global_instance();
+     *  This function makes sure, there is global instance of the class
+     */
+    function global_instance() {
+        if ( !isset($GLOBALS['contentcache']) ) {
+            $GLOBALS['contentcache'] = new contentcache;
+        }
+    }
+
     // set new value for key $key
     function set($access_code, $val) {
         $this->content[md5($access_code)] = $val;
@@ -1914,14 +1900,11 @@ class contentcache {
 /**  */
 function IncludeManagerJavascript() {
     global $AA_INSTAL_PATH, $sess;
-    echo '
-    <script language="JavaScript" type="text/javascript"> <!--
+    FrmJavascript( '
         var aa_instal_path        = "'. $AA_INSTAL_PATH .'";
         var aa_live_checkbox_file = "'. $sess->url($AA_INSTAL_PATH."live_checkbox.php3") .'";
-        var aa_live_change_file   = "'. $sess->url($AA_INSTAL_PATH."live_change.php3") .'";
-        //-->
-    </script>
-    <script language="JavaScript" type="text/javascript" src="'.$AA_INSTAL_PATH.'javascript/manager.js"></script>';
+        var aa_live_change_file   = "'. $sess->url($AA_INSTAL_PATH."live_change.php3") .'"; ');
+    FrmJavascriptFile( 'javascript/manager.js' );
 }
 
 /** If $value is set, returns $value - else $else */
@@ -1950,4 +1933,6 @@ if (!function_exists("file_get_contents")) {
     return $data;
   }
 }
+
+
 ?>

@@ -275,10 +275,26 @@ array("name"=>_m("Select Box"),
         "desc"=>_m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"),
         "type"=>"BOOL",
         "example"=>"0"),
-        array("name"=>_m("show all"),
-        "desc"=>_m("used only for slices - if set (=1), then all items are shown (including expired and pending ones)"),
-        "type"=>"BOOL",
-        "example"=>"0")));
+        array("name"=>_m("Show items from bins"),
+        "desc"=>_m("(for slices only) To show items from selected bins, use following values:<br>".
+                   "Active bin - '%1'<br>".
+                   "Pending bin - '%2'<br>".
+                   "Expired bin - '%3'<br>".
+                   "Holding bin - '%4'<br>".
+                   "Trash bin - '%5'<br>".
+                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
+                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+        "type" => "INT",
+        "example" => "3"),
+        array("name"=>_m("Filtering conditions"),
+        "desc"=>_m("(for slices only) Conditions for filtering items in selection. Use conds[] array."),
+        "type"=>"STR",
+        "example"=>"conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+        array("name"=>_m("Sort by"),
+        "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
+        "type"=>"STR",
+        "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+        ));
 $INPUT_TYPES["items"]["pre"]=
 array("name"=>_m("Text Field with Presets"),
     "desc"=>_m("Text field with values names list. When you choose a name from the list, the appropriate value is printed in the text field"),
@@ -310,7 +326,27 @@ array("name"=>_m("Text Field with Presets"),
         array("name"=>_m("add2constant"),
         "desc"=>_m("if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"),
         "type"=>"BOOL",
-        "example"=>"0")));
+        "example"=>"0"),
+        array("name"=>_m("Show items from bins"),
+        "desc"=>_m("(for slices only) To show items from selected bins, use following values:<br>".
+                   "Active bin - '%1'<br>".
+                   "Pending bin - '%2'<br>".
+                   "Expired bin - '%3'<br>".
+                   "Holding bin - '%4'<br>".
+                   "Trash bin - '%5'<br>".
+                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
+                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+        "type" => "INT",
+        "example" => "3"),
+        array("name"=>_m("Filtering conditions"),
+        "desc"=>_m("(for slices only) Conditions for filtering items in selection. Use conds[] array."),
+        "type"=>"STR",
+        "example"=>"conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+        array("name"=>_m("Sort by"),
+        "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
+        "type"=>"STR",
+        "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+        ));
 $INPUT_TYPES["items"]["tpr"]=
 array("name"=>_m("Text Area with Presets"),
     "desc"=>_m("Text area with values names list. When you choose a name from the list, the appropriate value is printed in the text area"),
@@ -334,7 +370,31 @@ array("name"=>_m("Radio Button"),
         array("name"=>_m("Move right"),
         "desc"=>_m("Should the function move right or down to the next value?"),
         "type"=>"BOOL",
-        "example"=>"1")));
+        "example"=>"1"),
+        array("name"=>_m("Slice field"),
+        "desc"=>_m("(for slices only) Slice field, which will be displayed in the select box. If not specified, in select box are displayed headlines."),
+        "type"=>"STRID",
+        "example"=>_m("category........")),
+        array("name"=>_m("Show items from bins"),
+        "desc"=>_m("(for slices only) To show items from selected bins, use following values:<br>".
+                   "Active bin - '%1'<br>".
+                   "Pending bin - '%2'<br>".
+                   "Expired bin - '%3'<br>".
+                   "Holding bin - '%4'<br>".
+                   "Trash bin - '%5'<br>".
+                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
+                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+        "type" => "INT",
+        "example" => "3"),
+        array("name"=>_m("Filtering conditions"),
+        "desc"=>_m("(for slices only) Conditions for filtering items in selection. Use conds[] array."),
+        "type"=>"STR",
+        "example"=>"conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+        array("name"=>_m("Sort by"),
+        "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
+        "type"=>"STR",
+        "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+        ));
 $INPUT_TYPES["items"]["dte"]=
 array("name"=>_m("Date"),
     "desc"=>_m("you can choose an interval from which the year will be offered"),
@@ -362,22 +422,72 @@ $INPUT_TYPES["items"]["mch"]=
 array("name"=>_m("Multiple Checkboxes"),
     "desc"=>_m("Multiple choice checkbox group. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"),
     "params"=>array (
-        array("name"=>_m("Columns"),
-        "desc"=>_m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."),
-        "type"=>"INT",
-        "example"=>"3"),
-        array("name"=>_m("Move right"),
-        "desc"=>_m("Should the function move right or down to the next value?"),
-        "type"=>"BOOL",
-        "example"=>"1")));
+    array("name"=>_m("Columns"),
+    "desc"=>_m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."),
+    "type"=>"INT",
+    "example"=>"3"),
+    array("name"=>_m("Move right"),
+    "desc"=>_m("Should the function move right or down to the next value?"),
+    "type"=>"BOOL",
+    "example"=>"1"),
+    array("name"=>_m("Slice field"),
+    "desc"=>_m("(for slices only) Slice field, which will be displayed in the select box. If not specified, in select box are displayed headlines."),
+    "type"=>"STRID",
+    "example"=>_m("category........")),
+    array("name"=>_m("Show items from bins"),
+    "desc"=>_m("(for slices only) To show items from selected bins, use following values:<br>".
+               "Active bin - '%1'<br>".
+               "Pending bin - '%2'<br>".
+               "Expired bin - '%3'<br>".
+               "Holding bin - '%4'<br>".
+               "Trash bin - '%5'<br>".
+               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
+               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+    "type" => "INT",
+    "example" => "3"),
+    array("name"=>_m("Filtering conditions"),
+    "desc"=>_m("(for slices only) Conditions for filtering items in selection. Use conds[] array."),
+    "type"=>"STR",
+    "example"=>"conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+    array("name"=>_m("Sort by"),
+    "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
+    "type"=>"STR",
+    "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+    ));
+
 $INPUT_TYPES["items"]["mse"]=
 array("name"=>_m("Multiple Selectbox"),
     "desc"=>_m("Multiple choice select box. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"),
     "params"=>array(
-        array("name"=>_m("Row count"),
-        "desc"=>"",
-        "type"=>"INT",
-        "example"=>"5")));
+    array("name"=>_m("Row count"),
+    "desc"=>"",
+    "type"=>"INT",
+    "example"=>"5"),
+    array("name"=>_m("Slice field"),
+    "desc"=>_m("(for slices only) Slice field, which will be displayed in the select box. If not specified, in select box are displayed headlines."),
+    "type"=>"STRID",
+    "example"=>_m("category........")),
+    array("name"=>_m("Show items from bins"),
+    "desc"=>_m("(for slices only) To show items from selected bins, use following values:<br>".
+               "Active bin - '%1'<br>".
+               "Pending bin - '%2'<br>".
+               "Expired bin - '%3'<br>".
+               "Holding bin - '%4'<br>".
+               "Trash bin - '%5'<br>".
+               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
+               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+    "type" => "INT",
+    "example" => "3"),
+    array("name"=>_m("Filtering conditions"),
+    "desc"=>_m("(for slices only) Conditions for filtering items in selection. Use conds[] array."),
+    "type"=>"STR",
+    "example"=>"conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+    array("name"=>_m("Sort by"),
+    "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
+    "type"=>"STR",
+    "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+    ));
+
 $INPUT_TYPES["items"]["fil"]=
 array("name"=>_m("File"),
     "desc"=>_m("File upload - a text field with the file find button"),
@@ -421,15 +531,15 @@ array("name"=>_m("Related Item Window"),
         array("name"=>_m("Show headlines from selected bins"),
         "desc"=>_m("To show headlines in related window from selected bins.<br>".
                    "Use this values for bins:<br>".
-                   "active bin - '%1'<br>".
-                   "expired bin - '%2'<br>".
-                   "pending bin - '%3'<br>".
-                   "holding bin - '%4'<br>".
-                   "trash bin - '%5'<br>".
+                   "Active bin - '%1'<br>".
+                   "Pending bin - '%2'<br>".
+                   "Expired bin - '%3'<br>".
+                   "Holding bin - '%4'<br>".
+                   "Trash bin - '%5'<br>".
                    "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
-                   "for this combination is counted like 1+2+4&nbsp;=&nbsp;7", array( AA_BIN_ACTIVE, AA_BIN_EXPIRED, AA_BIN_PENDING, AA_BIN_HOLDING, AA_BIN_TRASH)),
+                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
         "type" => "INT",
-        "example" => "7"),
+        "example" => "3"),
         array("name"=>_m("Filtering conditions - unchangeable"),
         "desc"=>_m("Conditions for filtering items in related items window. This conds user can't change."),
         "type"=>"STR",
@@ -455,7 +565,31 @@ array("name"=>_m("Two Windows"),
     array("name"=>_m("Title of \"Selected\" selectbox"),
     "desc"=>"",
     "type"=>"STR",
-    "example"=>_m("Selected"))));
+    "example"=>_m("Selected")),
+    array("name"=>_m("Slice field"),
+    "desc"=>_m("(for slices only) Slice field, which will be displayed in the select box. If not specified, in select box are displayed headlines."),
+    "type"=>"STRID",
+    "example"=>_m("category........")),
+    array("name"=>_m("Show items from bins"),
+    "desc"=>_m("(for slices only) To show items from selected bins, use following values:<br>".
+               "Active bin - '%1'<br>".
+               "Pending bin - '%2'<br>".
+               "Expired bin - '%3'<br>".
+               "Holding bin - '%4'<br>".
+               "Trash bin - '%5'<br>".
+               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
+               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+    "type" => "INT",
+    "example" => "3"),
+    array("name"=>_m("Filtering conditions"),
+    "desc"=>_m("(for slices only) Conditions for filtering items in selection. Use conds[] array."),
+    "type"=>"STR",
+    "example"=>"conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+    array("name"=>_m("Sort by"),
+    "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
+    "type"=>"STR",
+    "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+    ));
 
 $INPUT_TYPES["items"]["hid"]=
     array("name"=>_m("Hidden field"),
@@ -511,15 +645,15 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
     "desc"=>_m("prints abstract (if exists) or the beginning of the <b>fulltext</b>"),
     "params"=>array(
         array("name"=>_m("length"),
-        "desc"=>_m("number of characters from the <b>fulltext</b> field"),
+        "desc"=>_m("max number of characters grabbed from the <b>fulltext</b> field"),
         "type"=>"INT",
         "example"=>"80"),
         array("name"=>_m("fulltext"),
-        "desc"=>_m("field id of fulltext field (like full_text.......)"),
+        "desc"=>_m("field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself."),
         "type"=>"STRID",
         "example"=>_m("full_text.......")),
         array("name"=>_m("paragraph"),
-        "desc"=>_m("take first paragraph (text until \<BR\> or \<P\> or \</P\) if shorter then <b>length</b>"),
+        "desc"=>_m("take first paragraph (text until \<BR\> or \<P\> or \</P\> or at least '.' (dot)) if shorter then <b>length</b>"),
         "type"=>"BOOL",
         "example"=>"1"))),
 "f_b"=>array("name"=>_m("extended fulltext link"),

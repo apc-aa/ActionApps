@@ -87,22 +87,8 @@ if ( $design ) {
     $format = null;   //default manager format will be used (and _#AA_ACTIO alias expanded)
 }
 
-if (isset($showcondsro)) {
-    if (isset($conds)) { unset($conds); }
-    $showcondsro = stripslashes(rawurldecode($showcondsro));
-    parse_str($showcondsro);
-    $conds_ro = $conds;
-    ParseMultiSelectConds($conds_ro);
-    ParseEasyConds($conds_ro);
-}
-if (isset($showcondsrw)) {
-    if (isset($conds)) { unset($conds); }
-    $showcondsrw = stripslashes(rawurldecode($showcondsrw));
-    parse_str($showcondsrw);
-    $conds_rw = $conds;
-    ParseMultiSelectConds($conds_rw);
-    ParseEasyConds($conds_rw);
-}
+$conds_ro = String2Conds( rawurldecode($showcondsro) );
+$conds_rw = String2Conds( rawurldecode($showcondsrw) );
 
 $manager_settings = array(
      'show'     =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,

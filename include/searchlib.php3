@@ -168,6 +168,39 @@ function ParseMultiSelectConds(&$conds)
     }
 }
 
+
+/** Returns $conds[] array, which is created from conds[] 'url' string
+ *  like conds[0][category........]=first&conds[1][switch.........1]=1
+ */
+function String2Conds( $conds_string ) {
+    $conds = false;
+    if (isset($conds_string)) {
+        parse_str($conds_string, $aa_query_arr);
+        // we also need PHP to think a['key'] is the same as a[key], that's why we
+        // call NormalizeArrayIndex()
+        $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
+        $conds = $aa_query_arr['conds'];
+        ParseMultiSelectConds($conds);
+        ParseEasyConds($conds,'RLIKE');
+    }
+    return $conds;
+}
+
+/** Returns $sort[] array, which is created from sort[] 'url' string
+ *  like sort[0][headline........]=a&sort[2][publish_date....]=d
+ */
+function String2Sort( $sort_string ) {
+    $sort = false;
+    if (isset($sort_string)) {
+        parse_str($sort_string, $aa_query_arr);
+        // we also need PHP to think a['key'] is the same as a[key], that's why we
+        // call NormalizeArrayIndex()
+        $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
+        $sort = $aa_query_arr['sort'];
+    }
+    return $sort;
+}
+
 # function finds group_id in field.input_show_func parameter
 function GetConstantGroup( $input_show_func ) {
   $INPUT_SHOW_FUNC_TYPES = inputShowFuncTypes();
