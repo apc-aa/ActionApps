@@ -112,6 +112,9 @@ function default_fnc_variable($param) {
 function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
     global $varset, $itemvarset, $slice_id ;
 
+
+//huhl( 'insert_fnc_qte(',$item_id, $field, $value, $param, $additional );
+
     // if input function is 'selectbox with presets' and add2connstant flag is set,
     // store filled value to constants
     $fnc = ParseFnc($field["input_show_func"]);   # input show function
@@ -156,12 +159,13 @@ function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
         // ... which is not correct because in 'in_item_tbl' database field
         // we store REAL database field names from aadb.item table (honzam)
         if( ($field["in_item_tbl"] == 'expiry_date') &&
-            (date("Hi",$value['value']) == "0000") )
+            (date("Hi",$value['value']) == "0000") ) {
 
-        // $value['value'] += 86399;
-        // if time is not specified, take end of day 23:59:59
-        // !!it is not working for daylight saving change days !!!
-        $value['value'] = mktime(23,59,59,date("m",$value['value']),date("d",$value['value']),date("Y",$value['value']));
+            // $value['value'] += 86399;
+            // if time is not specified, take end of day 23:59:59
+            // !!it is not working for daylight saving change days !!!
+            $value['value'] = mktime(23,59,59,date("m",$value['value']),date("d",$value['value']),date("Y",$value['value']));
+        }
 
         // field in item table
         $itemvarset->add( $field["in_item_tbl"], "quoted", $value['value']);
@@ -549,8 +553,8 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     //$GLOBALS[debugsi] = 1;
     $debugsi=$GLOBALS[debugsi];
     if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id, fields size=",count($fields));
-    if (!is_object ($varset)) $varset = new CVarset();
-    if (!is_object ($itemvarset)) $itemvarset = new CVarset();
+    if (!is_object($varset))     $varset     = new CVarset();
+    if (!is_object($itemvarset)) $itemvarset = new CVarset();
 
     if ( !( $id AND is_array($fields) AND is_array($content4id)) ) {
         if ($GLOBALS[errcheck]) huhl("Warning: StoreItem ". sliceid2name($slice_id) . " failed parameter check id='",$id,"' content=".$content4id);
@@ -807,178 +811,7 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
 }
 
 // ----------------------------------------------------------------------------
-/** Returns Javascript for Add / Edit item
-*/
-function GetFormJavascript ($show_func_used, $js_proove_fields) {
-global $slice_id, $sess;
 
-    $retval = '
-    <script language="JavaScript" type="text/javascript"><!--
-    ';
-
-    $retval .= '
-      // array of listboxes where all selection should be selected
-      var listboxes=Array();
-      var myform = document.inputform;
-
-      function SelectAllInBox( listbox ) {
-          for (var i = 0; i < document.inputform[listbox].length; i++) {
-             // select all rows without the wIdThTor one, which is only for <select> size setting
-             document.inputform[listbox].options[i].selected =
-               ( document.inputform[listbox].options[i].value != "wIdThTor" );
-          }
-      }
-
-      // before submit the form we need to select all selections in some
-      // listboxes (2window, relation) in order the rows are sent for processing
-      function BeforeSubmit() {
-          for(var i = 0; i < listboxes.length; i++)
-              SelectAllInBox( listboxes[i] );
-          return proove_fields ();
-      }
-      ';
-
-      if ($show_func_used['iso']) $retval .= '
-
-      var relatedwindow;  // window for related stories
-
-      function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw) {
-        if ((relatedwindow != null) && (!relatedwindow.closed)) {
-          relatedwindow.close()    // in order to preview go on top after open
-        }
-        relatedwindow = open( "'. get_admin_url('related_sel.php3') . '&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design + "&frombins=" + frombins + "&showcondsro=" + conds + "&showcondsrw=" + condsrw, "relatedwindow", "scrollbars=1, resizable=1, width=500");
-      }
-
-      function removeItem(selectbox) {
-          s=selectbox.selectedIndex;
-          for (i=s; i<selectbox.length; i++) {
-              if (selectbox.options[i].value != "wIdThTor") {
-                  selectbox.options[i].value = selectbox.options[i+1].value;
-                  selectbox.options[i].text  = selectbox.options[i+1].text;
-              }
-          }
-      }
-
-      function moveItem(selectbox, type) {
-        len = selectbox.length;
-        s = selectbox.selectedIndex;
-        if (type == "up") {
-            s2 = s-1;
-            if (s2 < 0) { s2 = 0;}
-        } else {
-            s2 = s+1;
-            if (selectbox.options[s2].value == "wIdThTor") {
-              s2 = s;
-            }
-            if (s2 >= len-1) { s2 = len-1; }
-        }
-        dummy_val = selectbox.options[s2].value;
-        dummy_txt = selectbox.options[s2].text;
-        selectbox.options[s2].value = selectbox.options[s].value;
-        selectbox.options[s2].text = selectbox.options[s].text;
-        selectbox.options[s].value = dummy_val;
-        selectbox.options[s].text  = dummy_txt;
-        selectbox.selectedIndex = s2;
-      }
-      ';
-
-      if ($show_func_used['wi2']) $retval .= '
-
-      function MoveSelected(left, right) {
-        var i=eval(left).selectedIndex;
-        if( !eval(left).disabled && ( i >= 0 ) )
-        {
-          var temptxt = eval(left).options[i].text;
-          var tempval = eval(left).options[i].value;
-          var length = eval(right).length;
-          if( (length == 1) && (eval(right).options[0].value==\'wIdThTor\') ){  // blank rows are just for <select> size setting
-            eval(right).options[0].text = temptxt;
-            eval(right).options[0].value = tempval;
-          } else
-            eval(right).options[length] = new Option(temptxt, tempval);
-          eval(left).options[i] = null;
-          if( eval(left).length != 0 )
-            if( i==0 )
-              eval(left).selectedIndex=0;
-            else
-              eval(left).selectedIndex=i-1;
-        }
-      }
-      ';
-
-      if ($show_func_used['pre'] || $show_func_used['tpr']) $retval .= '
-
-      function add_to_line(inputbox, value) {
-        if (inputbox.value.length != 0) {
-          inputbox.value=inputbox.value+","+value;
-        } else {
-          inputbox.value=value;
-        }
-      }
-      ';
-
-      if ($show_func_used['txt']) $retval .= '
-
-      // This script invokes Word/Excel convertor (used in textareas on inputform)
-      // You must have the convertor it installed
-      // @param string aa_instal_path - relative path to AA on server (like"/apc-aa/")
-      // @param string textarea_id    - textarea fomr id (like "v66756c6c5f746578742e2e2e2e2e2e31")
-      function CallConvertor(aa_instal_path, textarea_id) {
-        page = aa_instal_path + "misc/msconvert/index.php3?inputid=" + textarea_id;
-        conv = window.open(page,"convwindow","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
-        conv.focus();
-      }
-      ';
-
-    $retval .= $js_proove_fields;
-
-    // field javascript feature (see /include/javascript.php3)
-    $javascript = getJavascript($GLOBALS["slice_id"]);
-    if ($javascript)
-        $retval .= $javascript;
-
-    $retval .= '
-
-    // -->
-    </script>'."\n\n";
-
-    // special includes for HTMLArea
-    // we need to include some scripts
-    // switchHTML(name) - switch radiobuttons from Plain text to HTML
-    // showHTMLAreaLink(name) - displays "edit in htmarea" link
-    // generateArea(name, tableop, spell, rows, cols) - create HTMLArea from textarea
-    // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
-    if ($show_func_used['txt'] || $show_func_used['edt']) {
-        $retval .= '
-                <script type="text/javascript" src="'.get_aa_url("misc/htmlarea/htmlarea.js", false).'"></script>
-                <script type="text/javascript" src="'.get_aa_url("misc/htmlarea/dialog.js", false).'"></script>
-                <script type="text/javascript" src="'.get_aa_url("misc/htmlarea/popupwin.js", false).'"></script>
-                <script type="text/javascript" src="'.get_aa_url("misc/htmlarea/lang/".get_mgettext_lang().".js", false).'"></script>
-                <script type="text/javascript" src="'.get_aa_url("misc/htmlarea/aafunc.js", false).'"></script>
-                <script type="text/javascript"><!--
-                    // global variables used in HTMLArea
-                    var _editor_url = "'.get_aa_url("misc/htmlarea/", false).'";
-                    var long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", false).'";
-                    HTMLArea.loadPlugin("TableOperations"); // table operations plugin
-                    ';
-        if (AA_HTMLAREA_SPELL_CGISCRIPT != "") {
-            $retval .= 'HTMLArea.loadPlugin("SpellChecker"); // spellchecker plugin';
-        }
-        $retval .= '
-                //--></script>
-                <link rel="stylesheet" href="'.get_aa_url("misc/htmlarea/htmlarea.css", false).'" type="text/css">
-                ';
-    }
-
-    if ($javascript) {
-        $retval .= '
-        <script language="javascript" src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/fillform.js"></script>'."\n\n";
-    }
-
-    return $retval;
-}
-
-// ----------------------------------------------------------------------------
 /** Validates new content, sets defaults, reads dates from the 3-selectbox-AA-format,
 *   sets global variables:
 *       $show_func_used to a list of show func used in the form.
@@ -1015,14 +848,16 @@ function ValidateContent4Id(&$err, $slice_id, $action, $id=0, $do_validate=true,
     }
 
     // error array (Init - just for initializing variable
-    if (!is_array ($err))
+    if (!is_array ($err)) {
         $err["Init"] = "";
+    }
 
       # get slice fields and its priorities in inputform
     list($fields, $prifields) = GetSliceFields($slice_id);
 
-    if (!is_array($prifields))
+    if (!is_array($prifields)) {
         return;
+    }
 
     // javascript for input validation
     $js_proove_fields = get_javascript_field_validation (). "

@@ -129,7 +129,7 @@ class inputform {
             echo '
                 <title>'. $this->page_title .'</title>
               </head>
-              <body id="body_white_color">
+              <body onload="HTMLArea.init()">
                 <H1><B>' . $this->page_title .'</B></H1>';
             PrintArray( $this->messages['err'] );     // prints err or OK messages
 
@@ -199,7 +199,7 @@ class inputform {
             $buttons['ins_preview']     = array('type'=>'submit', 'value'=>_m("Insert & View"));
         }
         $buttons['cancel']              = array('type'=>'button', 'value'=>_m("Cancel"),
-                                                'add'=>'onclick="document.location=\''.$this->cancel_url.'\'"');
+                                                'url'=> $this->cancel_url);
         FrmTabEnd( $buttons, $sess, $slice_id );
 
         if ( $GLOBALS['g_formpart'] ) {
@@ -317,6 +317,11 @@ class aainputfield {
     var $html_rb_show;     // show HTML/Plaintext radiobutton?
 
     var $valid;            // validation function used (this function we added in order we can use this class for AA Admin forms as well)
+    var $dbfield;          // contains name of database field. It is often
+                           // empty, so we will use varname, but there are some
+                           // cases, where we use different database field than
+                           // the varname (for examlpe "name" is good database
+                           // column name, but wrong for HTML form)
 
     // --- private ---
     var $result;           // result string (depends on result_mode if variables are as aliases or it is expanded)
@@ -369,7 +374,8 @@ class aainputfield {
                       'const_arr'     => null,
                       'result_mode'   => 'expand',
                       'html_rb_show'  => false,
-                      'valid'         => 'text'
+                      'valid'         => 'text',
+                      'dbfield'       => null
                     );
     }
 
@@ -460,8 +466,10 @@ class aainputfield {
     }
 
     /** input_type manipulation functions */
-    function get_inputtype()      {  return $this->input_type; }
-    function set_inputtype($type) {  $this->input_type = $type; }
+    function get_inputtype()      { return $this->input_type; }
+    function set_inputtype($type) { $this->input_type = $type; }
+
+    function getDbfield()         { return get_if($this->dbfield, $this->varname()); }
 
     /** Grabs common variables from object. Internal function used as shortcut
       * in most of input functions (maybe all)
@@ -873,15 +881,9 @@ class aainputfield {
         $this->html_radio($showhtmlarea ? false : 'convertors');
         $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']." cols=\"$cols\"".getTriggers("textarea",$name).">$val</textarea>\n";
         if ($showhtmlarea) {
-            $tarea .= '
-            <script type="text/javascript" language="javascript"><!--
-                generateArea("'.$name.'", true, '.(AA_HTMLAREA_SPELL_CGISCRIPT ? "true" : "false").', "'.$rows.'", "'.$cols.'", "'.$sess->id.'");
-            //--></script>';
+            $tarea .= getFrmJavascript( 'htmlareas[htmlareas.length] = Array("'.$name.'", true, '.(AA_HTMLAREA_SPELL_CGISCRIPT ? "true" : "false").', "'.$rows.'", "'.$cols.'", "'.$sess->id.'");');
         } elseif ( $showrich_href ) {
-                        $tarea .= '
-            <script type="text/javascript" language="javascript"><!--
-                showHTMLAreaLink("'.$name.'");
-            //--></script>';
+            $tarea .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
         }
         $this->echovar($tarea);
         $this->helps('plus');
@@ -1052,16 +1054,18 @@ class aainputfield {
         }
         $this->echoo("</tr>\n <tr><td valign=\"bottom\"><center>
           <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\" )'>
+          <input type='button' value='". _m("Select") ."' onclick='Dialog(\"". Inputform_url('add=1', '', 'ac934c8440c73b34687c6306efa4c37e', 'close_dialog', '') ."\", function(param) {
+            if (!param) {	// user must have pressed Cancel
+                return false;
+            } else {
+                alert(param);
+          }}, null)'>
           &nbsp;&nbsp;");
 /*              <input type='button' value='". _m("Delete") ."' size='250'
             onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
                      document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'>*/
-        $this->echoo("<input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>
-          <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
-
-             listboxes[listboxes.length] = '$name'
-            // -->
-          </SCRIPT>\n" );
+        $this->echoo("<input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>\n");
+        $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
         $this->echoo("</td></tr></table>\n");
         $this->helps('plus');
     }
@@ -1097,13 +1101,11 @@ class aainputfield {
         $out .= "<OPTION value='wIdThTor'>$widthTxt";
         $out .= "</SELECT>";
         $this->echovar($out);
-        $this->echoo("</TD></TR></TABLE>
-          <script language=\"javascript\" type=\"text/javascript\"><!--\n
+        $this->echoo("</TD></TR></TABLE>\n");
+        $this->echoo(getFrmJavascript("
             hcInit();
             hcDeleteLast ('$name');
-            listboxes[listboxes.length] = '$name';
-            // -->\n
-            </script>\n");
+            listboxes[listboxes.length] = '$name';"));
         $this->helps('plus');
     }
 
@@ -1228,12 +1230,7 @@ class aainputfield {
         $out  .= '</select>';
         $this->echovar( $out, 'selected' );
 
-        $this->echoo('
-          <script language="javascript" type="text/javascript"><!--
-            listboxes[listboxes.length] = \''. $name .'\';
-            //-->
-          </script>
-          ');
+        $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
         $this->echoo("
         </td></tr></table>");
         $this->helps('plus');
@@ -1855,7 +1852,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                         // (used for FrmTabSeparator, to not duplicate hiddens)
                         break;
                     }
-                    echo '&nbsp;<input type="'.  ($properties['type'] ? $properties['type'] : 'hidden') .
+                    echo '&nbsp;<input type="'.  $type .
                          '" name="'.  $name .
                          '" value="'. $properties['value'] . ($properties['accesskey'] ? "  (".$accesskey_pref."+".$properties['accesskey'].")  " : "").
                          '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>&nbsp;';
@@ -1937,6 +1934,25 @@ function getFrmJavascript( $jscode ) {
     ';
 }
 
+
+/** Stores the javascript to the dababase cache in order we can call this
+ *  javascript as external file.
+ *  The idea of this is: External js files are cached by the browser so it is
+ *  better to store the js code in the database, assign an ID to this record
+ *  (=keystr) and then call it as external file with this ID as parameter
+ */
+function getFrmJavacrtiptCached( $jscode, $name ) {
+    $keystr = serialize($jscode);
+
+    if ( !$GLOBALS['pagecache']->get($keystr) ) {  // not in cache, yet
+        $str2find = ",js=$name";
+        $GLOBALS['pagecache']->store($keystr, $jscode, $str2find);
+    }
+    $keyid = $GLOBALS['pagecache']->getKeyId($keystr);
+    return getFrmJavascriptFile( 'cached.php3?keystr='.$keyid );
+}
+
+
 function getFrmCSS( $stylecode ) {
     return '
     <style type="text/css">  <!--
@@ -1948,7 +1964,81 @@ function getFrmCSS( $stylecode ) {
 
 function FrmJavascript( $jscode )  { echo getFrmJavascript( $jscode );  }
 function FrmJavascriptFile( $src ) { echo getFrmJavascriptFile( $src ); }
+function FrmJavacrtiptCached( $jscode, $name ) { echo getFrmJavacrtiptCached( $jscode, $name ); }
 function FrmCSS( $stylecode )      { echo getFrmCSS( $stylecode );      }
+
+/** Returns Javascript for Add / Edit item */
+function GetFormJavascript($show_func_used, $js_proove_fields) {
+    global $slice_id, $sess;
+
+    $retval  = getFrmJavascriptFile( 'javascript/inputform.js' );
+
+    $jscode .= $js_proove_fields;
+    // field javascript feature (see /include/javascript.php3)
+    $javascript = getJavascript($GLOBALS["slice_id"]);
+    if ($javascript) {
+        $jscode .= $javascript;
+    }
+    $retval .= getFrmJavascript( $jscode );
+
+
+    // special includes for HTMLArea
+    // we need to include some scripts
+    // switchHTML(name) - switch radiobuttons from Plain text to HTML
+    // showHTMLAreaLink(name) - displays "edit in htmarea" link
+    // generateArea(name, tableop, spell, rows, cols) - create HTMLArea from textarea
+    // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
+
+    $retval .= getFrmJavascript('
+                // global variables used in HTMLArea
+                var _editor_url = "'.get_aa_url("misc/htmlarea/", false).'";
+                var long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", false).'";
+                var _editor_lang = "'.get_mgettext_lang().'";'
+                );
+    // HtmlArea scripts should be loaded allways - we use Dialog() function
+    // from it ...
+    $retval .= getFrmJavascriptFile('misc/htmlarea/htmlarea.js');
+    $retval .= getFrmJavascriptFile('misc/htmlarea/popups/popup.js');
+    $retval .= getFrmJavascriptFile('misc/htmlarea/aafunc.js');
+
+    if ($show_func_used['txt'] || $show_func_used['edt']) {
+        $retval .= getFrmJavascript('
+                    HTMLArea.loadPlugin("FullPage");
+                    HTMLArea.loadPlugin("TableOperations");
+                    HTMLArea.loadPlugin("CSS");
+                    HTMLArea.loadPlugin("ContextMenu");
+                    HTMLArea.loadPlugin("HtmlTidy");
+                    HTMLArea.loadPlugin("ListType");
+                 // HTMLArea.loadPlugin("ImageManager");
+                    HTMLArea.loadPlugin("SpellChecker");
+                    HTMLArea.loadPlugin("InsertFile");
+
+                    function initDocument() {
+                        for(var i = 0; i < htmlareas.length; i++) {
+                            generateArea(htmlareas[i][0], htmlareas[i][1], htmlareas[i][2], htmlareas[i][3], htmlareas[i][4], htmlareas[i][5]);
+                        }
+                    }
+
+                    HTMLArea.onload = initDocument;'
+                    );
+    }
+
+    if ($javascript) {
+        $retval .= getFrmJavascriptFile('javascript/fillform.js' );
+    }
+
+    return $retval;
+}
+
+/**  */
+function IncludeManagerJavascript() {
+    global $AA_INSTAL_PATH, $sess;
+    FrmJavascript( '
+        var aa_instal_path        = "'. $AA_INSTAL_PATH .'";
+        var aa_live_checkbox_file = "'. $sess->url($AA_INSTAL_PATH."live_checkbox.php3") .'";
+        var aa_live_change_file   = "'. $sess->url($AA_INSTAL_PATH."live_change.php3") .'"; ');
+    FrmJavascriptFile( 'javascript/manager.js' );
+}
 
 /** returns one row with one radiobutton - asociated to bookmark (stored search)
  *  or item list
