@@ -240,43 +240,47 @@ function getToken($input, $i, $length) {
 }
 
 function preProcess($toks) {
-	Reset($toks);
-	while ( List($ind,$val) = Each($toks) ) {
-	
-		// UNKNOWN will be set for strings not delimeted by apostrofs,
-		// we can't say: "it is string" (see "and", ...)
-		if ( $val["type"] == TOKEN_TYPE_UNKNOWN ) {
-			$lower = StrToLower($val["value"]);
-			// Strings AND, OR, NOT in meaning as strings must be quoted ( "and" )
-			if ( $lower=="and" ) {
-				$val["value"] = "and";
-				$val["type"]  = TOKEN_TYPE_OPERATOR_AND;
-			}
-			else if ( $lower=="or" ) {
-				$val["value"] = "or";
-				$val["type"]  = TOKEN_TYPE_OPERATOR_OR;
-			}
-			else if ( $lower=="not" ) {
-				$val["value"] = "not";
-				$val["type"]  = TOKEN_TYPE_OPERATOR_NOT;
-			}
-			else $val["type"] = TOKEN_TYPE_STRING;
-		}
-//		else if ( $val["type"] == TOKEN_TYPE_OPERATOR ) {
-//			if ( $val["value"] == "+" ) $val["value"] = "and";
-//			else if ( $val["value"] == "-" ) $val["value"] = "not";
-//		}
-		$newtoks[] = $val;		
-	}
-	Reset($newtoks);
-	while ( $t1 = Current($newtoks) ) {
-		$newtoks2[] = $t1;
-		$t2 = Next($newtoks);
-		if ($t1["type"]==TOKEN_TYPE_STRING) {
-			if ( ($t2) && (($t2["type"]==TOKEN_TYPE_STRING) || ($t2["type"]==TOKEN_TYPE_LEFT_PARENTHESIS) || ($t2["type"]==TOKEN_TYPE_OPERATOR_NOT)))
-				$newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"and", "i"=>$t1["i"], "type"=>TOKEN_TYPE_OPERATOR_AND);
-		}
-	}
+  if( isset($toks) AND is_array($toks) ) {
+    Reset($toks);
+    while ( List($ind,$val) = Each($toks) ) {
+
+      // UNKNOWN will be set for strings not delimeted by apostrofs,
+      // we can't say: "it is string" (see "and", ...)
+      if ( $val["type"] == TOKEN_TYPE_UNKNOWN ) {
+        $lower = StrToLower($val["value"]);
+        // Strings AND, OR, NOT in meaning as strings must be quoted ( "and" )
+        if ( $lower=="and" ) {
+          $val["value"] = "and";
+          $val["type"]  = TOKEN_TYPE_OPERATOR_AND;
+        }
+        else if ( $lower=="or" ) {
+          $val["value"] = "or";
+          $val["type"]  = TOKEN_TYPE_OPERATOR_OR;
+        }
+        else if ( $lower=="not" ) {
+          $val["value"] = "not";
+          $val["type"]  = TOKEN_TYPE_OPERATOR_NOT;
+        }
+        else $val["type"] = TOKEN_TYPE_STRING;
+      }
+  //		else if ( $val["type"] == TOKEN_TYPE_OPERATOR ) {
+  //			if ( $val["value"] == "+" ) $val["value"] = "and";
+  //			else if ( $val["value"] == "-" ) $val["value"] = "not";
+  //		}
+      $newtoks[] = $val;
+    }
+  }
+  if( isset($newtoks) AND is_array($newtoks) ) {
+    Reset($newtoks);
+    while ( $t1 = Current($newtoks) ) {
+      $newtoks2[] = $t1;
+      $t2 = Next($newtoks);
+      if ($t1["type"]==TOKEN_TYPE_STRING) {
+        if ( ($t2) && (($t2["type"]==TOKEN_TYPE_STRING) || ($t2["type"]==TOKEN_TYPE_LEFT_PARENTHESIS) || ($t2["type"]==TOKEN_TYPE_OPERATOR_NOT)))
+          $newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"and", "i"=>$t1["i"], "type"=>TOKEN_TYPE_OPERATOR_AND);
+      }
+    }
+  }
 	$newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"end of input", "i"=>65536, "type"=>TOKEN_TYPE_EOF);
 	return $newtoks2;
 }
