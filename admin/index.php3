@@ -160,9 +160,9 @@ switch( $action ) {  // script post parameter
         if( isset($chb) AND is_array($chb) ) {
           reset( $chb );
           while( list($it_id,) = each( $chb ) ) {
-//          huh("Item: $it_id -> $sl_id <br>/n");
             $it_id = substr($it_id,1);  // remove beginning 'x'
-            FeedItemTo($it_id, $sl_id, $fields, ($approvedfeed[$sl_id] ? 'y':'n'), 0);
+//          huh("Item: $it_id ($slice_id) -> $sl_id <br>/n");
+            FeedItemTo($it_id, $slice_id, $sl_id, $fields, ($approvedfeed[$sl_id] ? 'y':'n'), 0);
           }  
         }
       }
@@ -458,6 +458,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.24  2001/06/15 21:17:41  honzam
+fixed bug in manual feeding, fulltext f_b alias function improved
+
 Revision 1.23  2001/06/03 15:58:21  honzam
 small fixes, better user interface
 

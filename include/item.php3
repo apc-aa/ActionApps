@@ -124,9 +124,9 @@ class item {
   }    
 
   # get link from url and text
-  function getahref($url, $txt) { 
+  function getahref($url, $txt, $add="") { 
     if( $url AND $txt )
-      return '<a href="'. htmlspecialchars($url) .'">'. 
+      return '<a href="'. htmlspecialchars($url) .'" $add>'. 
                           htmlspecialchars($txt).'</a>';
     return htmlspecialchars($txt); 
   }
@@ -226,6 +226,7 @@ class item {
   #                  - this page should contain SSI include ../slice.php3 too
   #    txt           - if txt is field_id content is shown as link, else txt
   #    condition_fld - field id - if no content of this field, no link
+  #    addition      - additional parameter to <a tag (like target=_blank)
   function f_b($col, $param="") { 
     $p = ParamExplode($param);
     if( $this->columns[$p[4]][0][value] )   # condition field filled
@@ -235,7 +236,7 @@ class item {
     $txt = ( ( $this->columns[$p[3]] ) ? 
                $this->columns[$p[3]][0][value] : $p[3] );
                
-    return $this->getahref($url,$txt);
+    return $this->getahref($url,$txt,$p[5]);
   }    
 
   # converts text to html or escape html (due to html flag)
@@ -370,6 +371,9 @@ class item {
 
 /*
 $Log$
+Revision 1.19  2001/06/15 21:17:40  honzam
+fixed bug in manual feeding, fulltext f_b alias function improved
+
 Revision 1.18  2001/06/15 20:05:16  honzam
 little search imrovements and bugfixes
 
