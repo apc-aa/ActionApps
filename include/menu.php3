@@ -1,4 +1,4 @@
-<?php # navbar - application navigation bar 
+<?php 
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -19,8 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* Author: Jakub Adamek (but the menu structure is the old one, not mine) */
-    
 # $r_slice_headline - should be defined
 # $slice_id - should be defined
 # $r_slice_view_url - should be defined
@@ -35,9 +33,7 @@ http://www.apc.org/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
-if (!defined ("AA_MENU_INCLUDED"))
-    define("AA_MENU_INCLUDED","1");
-else return;
+require $GLOBALS[AA_INC_PATH]."menu_util.php3";
 
 $aamenus["view"] = array (
     "label" => L_VIEW_SLICE,
@@ -92,19 +88,24 @@ $aamenus ["sliceadmin_submenu"] = array (
     "level"=>"submenu",
     
     "items"=>array (
+
     "header1" => L_MAIN_SET,
     "main" => array ("label"=>L_SLICE_SET, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"slicedit.php3?slice_id=$slice_id", "show_always"=>1), 
     "category" => array("label"=>L_CATEGORY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY), "href"=> "se_constant.php3"),
     "fields" => array ("label"=>L_FIELDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fields.php3?slice_id=$slice_id"), 
     "notify" => array ("label"=>L_NOTIFY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"se_notify.php3?slice_id=$slice_id"), 
+
     "header2" => L_PERMISSIONS,
     "addusers"=> array ("label"=>L_PERM_ASSIGN, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ADD_USER), "href"=> "se_users.php3?adduser=1&slice_id=$slice_id"),
     "users"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS), "href"=>"se_users.php3?slice_id=$slice_id", "label"=>L_PERM_CHANGE),
+
     "header3" => L_DESIGN,
     "compact"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_COMPACT), "href"=>"se_compact.php3?slice_id=$slice_id", "label"=>L_COMPACT),
     "fulltext"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"se_fulltext.php3?slice_id=$slice_id", "label"=>L_FULLTEXT),
     "views"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"se_views.php3?slice_id=$slice_id", "label"=>L_VIEWS),
     "config"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CONFIG), "href"=>"se_admin.php3?slice_id=$slice_id", "label"=>L_SLICE_CONFIG),
+    //"alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"alerts_collections.php3", "label"=>L_ALERTS_COLLECTIONS),
+
     "header4" => L_FEEDING,
     "nodes"=>array("cond"=>isSuperadmin(), "href"=>"se_nodes.php3?slice_id=$slice_id", "label"=>L_NODES_MANAGER),
     "import"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_import.php3?slice_id=$slice_id", "label"=>L_INNER_IMPORT),
@@ -112,6 +113,7 @@ $aamenus ["sliceadmin_submenu"] = array (
     "n_export"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_inter_export.php3?slice_id=$slice_id", "label"=>L_INTER_EXPORT),
     "filters"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_filters.php3?slice_id=$slice_id", "label"=>L_FILTERS),   
     "mapping"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_mapping.php3?slice_id=$slice_id", "label"=>L_MAP),
+
     "header5" => L_MISC,
     "field_ids" => array ("label"=>L_FIELD_IDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fieldid.php3?slice_id=$slice_id"),    
     "javascript" => array ("label"=>L_F_JAVASCRIPT, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_javascript.php3")
@@ -160,103 +162,4 @@ $aamenus["aaadmin_submenu"] = array (
     "te_wizard_welcome" => array ("label"=>L_EDIT_WIZARD_WELCOME, "cond"=>IsSuperadmin(), "href"=>"te_wizard_welcome.php3"),
     "te_wizard_template" => array ("label"=>L_EDIT_WIZARD_TEMPLATE, "cond"=>IsSuperadmin(), "href"=>"te_wizard_template.php3")
 ));
-
-// ----------------------------------------------------------------------------------------
-//                                SHOW MENU
-    
-function showMenu ($smmenus,$activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
-{
-    global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad;
-    global $debug;
-    if ($debug) { echo "<p><font color=purple>showMenu:activeMain=$activeMain;activeSubmenu=$activeSubmenu;showMain=$showMain;showSub=$showSub:</font></p>";  }
-    if( $useOnLoad )
-        echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
-    else
-        echo '<body background="'. COLOR_BACKGROUND .'">';
-   
-    if( !$slice_id )
-        $r_slice_headline = L_NEW_SLICE_HEAD;
-
-    $nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$AA_INSTAL_PATH.'images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
-
-    if ($showMain) {
-        echo "
-        <TABLE border=0 cellpadding=0 cellspacing=0>
-            <TR><TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=122 height=1></TD>
-                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=300 height=1></TD>
-                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=267 height=1></TD>
-            </TR>
-            <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
-                <TD height=43 colspan=2 align=center valign=middle class=slicehead>
-                    ".$smmenus[$activeMain]["title"]."  -  $r_slice_headline</TD>
-            </TR>
-            <TR><td align=center class=navbar>";
-                            
-        $first = true;
-        reset ($smmenus);
-        while (list ($aamenu,$aamenuprop) = each ($smmenus)) {
-            if ($aamenuprop["level"] == "main") {
-                if ($first) $first = false;
-                else echo " | ";
-                if (!isset ($aamenuprop["cond"])) $aamenuprop["cond"] = 1;
-                if ($slice_id && $aamenuprop["cond"] && $aamenu != $activeMain) {
-                     $href = $aamenuprop["exact_href"];
-                     if (!$href) $href = get_admin_url($aamenuprop["href"]);                    
-                     echo "<a href=\"$href\">"
-                         ."<span class=nbenable>$aamenuprop[label]</span></a>";
-                }
-                else echo "<span class=nbdisable>$aamenuprop[label]</span>";
-            }
-        }
-        
-        echo "</td><TD valign=center class=navbar>";
-        PrintModuleSelection();
-        echo "</TD></TR></TABLE>";
-    }
-
-    if ($showSub) {
-        $submenu = $smmenus[$activeMain]["submenu"];
-        if ($submenu)
-            showSubmenu ($smmenus[$submenu], $activeSubmenu);
-    }
-}   
-
-// ----------------------------------------------------------------------------------------
-//                                SHOW SUBMENU
-
-function showSubmenu (&$aamenu, $active)
-{
-    global $AA_INSTAL_PATH, $slice_id,$debug;
-    if ($debug) { echo "<p><font color=purple>showSubmenu:active=$active</font></p>"; }
-    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">';
-
-    $aamenuitems = $aamenu["items"];
-    reset ($aamenuitems);
-    while (list ($itemshow, $item) = each ($aamenuitems)) {
-        if (substr($itemshow,0,6) == "header") 
-            echo '<tr><td>&nbsp;</td></tr>
-      <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>
-                  <tr><td class=leftmenu>'.$item.'</td></tr>
-                  <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>';
-        else if (substr($itemshow,0,4) == "line")
-            echo '<tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>';
-        else {
-            echo '<tr><td width="122" valign="TOP">&nbsp;&nbsp;';
-            if (!isset ($item["cond"])) $item["cond"] = 1;
-            if (($slice_id || $item["show_always"]) 
-                && $itemshow != $active && $item["cond"]) {
-                echo '<a href="';
-                if ($item["exact_href"]) echo $item["exact_href"]; 
-                else echo get_admin_url($item["href"]);
-                echo '" class=leftmenuy>'.$item["label"].'</a>';
-            }  
-            else echo "<span class=leftmenun>".$item["label"]."</span>";
-            echo "</td></tr>";
-        }
-    }
-  
-    echo '<tr><td>&nbsp;</td></tr>
-          <tr><td height="'.$aamenu["bottom_td"].'">
-          <tr><td class=copymsg ><small>'. L_COPYRIGHT .'</small>
-          </td></tr></table>';
-}
+?>
