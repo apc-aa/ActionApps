@@ -98,14 +98,14 @@ $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
                                "bool" => L_INPUT_VALIDATE_BOOL);
 
 $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
-                             "dte" => L_INPUT_INSERT_DTE, 
-                             "cns" => L_INPUT_INSERT_CNS, 
-                             "num" => L_INPUT_INSERT_NUM, 
-                             "boo" => L_INPUT_INSERT_BOO, 
-                             "uid" => L_INPUT_INSERT_UID, 
-                             "now" => L_INPUT_INSERT_NOW, 
+                             "boo" => L_INPUT_INSERT_BOO,
                              "fil" => L_INPUT_INSERT_FIL,
-                             "nul" => L_INPUT_INSERT_NUL);
+                             "uid" => L_INPUT_INSERT_UID, 
+                             "now" => L_INPUT_INSERT_NOW
+                           /*"dte" => L_INPUT_INSERT_DTE, 
+                             "cns" => L_INPUT_INSERT_CNS, 
+                             "num" => L_INPUT_INSERT_NUM,
+                             "nul" => L_INPUT_INSERT_NUL*/);
                              
 $ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
                             "f_d" => L_ALIAS_FUNC_D,
@@ -133,6 +133,9 @@ $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                                                    
 /*
 $Log$
+Revision 1.5  2001/02/25 08:50:38  madebeer
+removed some insert functions
+
 Revision 1.4  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
