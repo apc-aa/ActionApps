@@ -92,7 +92,7 @@ function Cancel() {
 <?php
   $useOnLoad = true;
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu ("sliceadmin", "n_export");
+  showMenu ($aamenus, "sliceadmin", "n_export");
 
   echo "<H1><B>" . L_EXPORT_TIT . "</B></H1>";
   PrintArray($err);

@@ -261,7 +261,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 <?php 
 	require $GLOBALS[AA_INC_PATH]."menu.php3"; 
-    showMenu ("aaadmin","sliceimp");
+    showMenu ($aamenus, "aaadmin","sliceimp");
 ?>
 <?php echo $pom ?>
 <form name=formular method=post action="<?php echo $sess->url("sliceimp.php3") ?>" 

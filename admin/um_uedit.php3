@@ -227,7 +227,7 @@ include $GLOBALS[AA_INC_PATH]."js_lib.js";
 
 <?php
   require $GLOBALS[AA_INC_PATH]."menu.php3";   //show navigation column depending on $show   
-  showMenu ("aaadmin", $usr_new ? "u_new" : "u_edit");
+  showMenu ($aamenus, "aaadmin", $usr_new ? "u_new" : "u_edit");
 
   echo "<H1><B>". ( $usr_new ? L_NEW_USER : L_EDIT_USER )."</B></H1>";
   PrintArray($err);

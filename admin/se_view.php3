@@ -255,7 +255,7 @@ echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
 require $GLOBALS[AA_INC_PATH]."menu.php3";
-showMenu("sliceadmin","");
+showMenu ($aamenus, "sliceadmin","");
 
 echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
 PrintArray($err);

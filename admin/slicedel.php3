@@ -58,7 +58,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 $useOnLoad = ($new_compact ? true : false);
 require $GLOBALS[AA_INC_PATH]."menu.php3";
-showMenu("aaadmin","slicedel");
+showMenu ($aamenus, "aaadmin","slicedel");
 
 echo "<H1><B>" . L_A_DELSLICE . "</B></H1>";
 echo $Msg;

@@ -111,7 +111,7 @@ function UpdateImportExport(slice_id)
 <?php
   $useOnLoad = true;
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu ("sliceadmin", "import");
+  showMenu ($aamenus, "sliceadmin", "import");
   
   echo "<H1><B>" . L_A_SLICE_IMP . "</B></H1>";
   PrintArray($err);

@@ -37,7 +37,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     </HEAD>
 <?php
     require $GLOBALS[AA_INC_PATH]."menu.php3"; 
-    showMenu ("aaadmin","te_wizard_template");
+    showMenu ($aamenus, "aaadmin","te_wizard_template");
     
     echo "<H1><B>" . L_EDIT_WIZARD_TEMPLATE . "</B></H1>";
     PrintArray($err);

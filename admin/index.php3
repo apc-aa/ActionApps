@@ -389,7 +389,7 @@ if( $open_preview )
   echo '<body>';
 
 require $GLOBALS[AA_INC_PATH]."menu.php3";
-showMenu ("itemmanager", "", $navbar != "0", $leftbar != "0");
+showMenu ($aamenus, "itemmanager", "", $navbar != "0", $leftbar != "0");
 
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
 switch( $r_bin_state ) {

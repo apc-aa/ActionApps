@@ -202,7 +202,7 @@ function RealyDelete() {
 
 <?php
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu("aaadmin",$usr_new? "g_new" : "g_edit");
+  showMenu ($aamenus, "aaadmin",$usr_new? "g_new" : "g_edit");
 
   echo "<H1><B>". ( $grp_new ? L_NEW_GROUP : L_EDIT_GROUP )."</B></H1>";
   PrintArray($err);

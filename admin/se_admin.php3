@@ -107,7 +107,7 @@ function Defaults() {
 
 <?php
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu ("sliceadmin", "config");
+  showMenu ($aamenus, "sliceadmin", "config");
 
   echo "<H1><B>" . L_A_ADMIN . "</B></H1>";
   PrintArray($err);

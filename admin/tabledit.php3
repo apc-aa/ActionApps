@@ -20,7 +20,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     </HEAD>
 <?php
     require $GLOBALS[AA_INC_PATH]."menu.php3"; 
-    showMenu ("aaadmin","tabledit");
+    showMenu ($aamenus, "aaadmin","tabledit");
     
     echo "<H1><B>" . L_EDIT_WIZARD_WELCOME . "</B></H1>";
     PrintArray($err);

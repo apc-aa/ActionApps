@@ -135,7 +135,7 @@ function Cancel() {
 <?php
   $useOnLoad = true;
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu("sliceadmin","nodes");
+  showMenu ($aamenus, "sliceadmin","nodes");
 
   echo "<H1><B>" . L_NODES_ADMIN_TIT . "</B></H1>";
   PrintArray($err);

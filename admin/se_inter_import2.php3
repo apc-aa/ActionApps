@@ -87,7 +87,7 @@ function Cancel() {
 <?php
   $useOnLoad = true;
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu("sliceadmin","n_import");
+  showMenu ($aamenus, "sliceadmin","n_import");
 
   echo "<H1><B>" . L_IMPORT_TIT. "</B></H1>";
   PrintArray($err);

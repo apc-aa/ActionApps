@@ -168,7 +168,7 @@ function Submit() {
 <?php
   $useOnLoad = true;
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu("sliceadmin","mapping");
+  showMenu ($aamenus, "sliceadmin","mapping");
 
   echo "<H1><B>" . L_MAP_TIT . "</B></H1>";
   PrintArray($err);

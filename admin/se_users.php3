@@ -99,7 +99,7 @@ HtmlPageBegin();   // Prints HTML start page tags
 </HEAD>
 <?php
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu ("sliceadmin", $show_adduser ? "addusers" : "users");
+  showMenu ($aamenus, "sliceadmin", $show_adduser ? "addusers" : "users");
 
   echo "<H1><B>".L_A_PERMISSIONS."</B></H1>";
 //  PrintArray($err);

@@ -125,7 +125,7 @@ function Defaults() {
 
 <?php
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu ("sliceadmin", "fulltext");
+  showMenu ($aamenus, "sliceadmin", "fulltext");
   
   echo "<H1><B>" . L_A_FULLTEXT . "</B></H1>&nbsp;&nbsp;" . L_A_FULLTEXT_HELP;
   PrintArray($err);

@@ -105,7 +105,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php 
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu("sliceadmin","search");
+  showMenu ($aamenus, "sliceadmin","search");
   
   echo "<H1><B>" . L_A_SEARCH_EDT . "</B></H1>";
   PrintArray($err);

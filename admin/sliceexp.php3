@@ -128,7 +128,7 @@ function b_export_date_onchange(vstup)
 
 <?php
 	require $GLOBALS[AA_INC_PATH]."menu.php3";
-    showMenu("aaadmin","sliceexp");
+    showMenu ($aamenus, "aaadmin","sliceexp");
 ?>
 
 <h1><b><?php echo L_E_EXPORT_TITLE ?></b></h1>

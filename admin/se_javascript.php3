@@ -62,7 +62,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php 
   require $GLOBALS[AA_INC_PATH]."menu.php3"; 
-  showMenu ("sliceadmin","javascript");
+  showMenu ($aamenus, "sliceadmin","javascript");
   
   echo "<H1><B>" . L_F_JAVASCRIPT . "</B></H1>";
   PrintArray($err);

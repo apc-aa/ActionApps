@@ -224,7 +224,7 @@ function UpdateFilters(slice_id, import_id) {
 <?php
   $useOnLoad = true;
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu ("sliceadmin", "filters");
+  showMenu ($aamenus, "sliceadmin", "filters");
   
   echo "<H1><B>" . L_A_FILTERS_FLT . "</B></H1>";
   PrintArray($err);

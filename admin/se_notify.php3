@@ -215,7 +215,7 @@ while ($row = mysql_fetch_array ($result)){
 HtmlPageBegin();
 echo '<TITLE> '. L_A_NOTIFY_TIT. '</TITLE></HEAD>';
   require $GLOBALS[AA_INC_PATH]."menu.php3";
-  showMenu("sliceadmin","notify");
+  showMenu ($aamenus, "sliceadmin","notify");
   
   echo "<H1><B>" . L_A_NOTIFY_TIT . "</B></H1>";
   PrintArray($err);
