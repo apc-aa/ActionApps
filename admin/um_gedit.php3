@@ -226,9 +226,9 @@ if( !$add_submit AND !$grp_new) {?>
   <tr><td>
   <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
   <?php
-  
+
   # User - group membership -----------------------------------------
-  
+
   echo '<tr><td width=190 align=center>'. L_ALL_USERS .'</td>
                   <td width=60>&nbsp;</td>
                   <td width=190 align=center>'. L_GROUPS_USERS .'</td></tr>
@@ -251,8 +251,8 @@ if( !$add_submit AND !$grp_new) {?>
 
   $mod_types = PrintModulePermModificator($selected_group);   # shared with um_gedit.php3
 
-}  
-      
+}
+
 echo '<tr><td align="center">';
 
 if( $grp_new OR $add_submit ){
@@ -268,6 +268,9 @@ echo '<input type=hidden name=posted_users value=0>';  // to this variable store
 echo '<input type=hidden name=submit_action value=0>';  // to this variable store "add_submit" or "update_submit" (by javascript)
 echo '</td></tr></table></FORM>';
 
-PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
+if( !$add_submit AND !$grp_new) {
+  PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
+}
 
+HtmlPageEnd();
 page_close(); ?>

@@ -288,9 +288,9 @@ if( !$add_submit AND !$usr_new) {
   # User - permissions -----------------------------------------
 
   $mod_types = PrintModulePermModificator($selected_user);   # shared with um_gedit.php3
-      
+
 }
-      
+
 echo '<tr><td align="center">';
 
 if( $usr_new OR $add_submit ){
@@ -306,6 +306,9 @@ echo '<input type=hidden name=posted_groups value=0>';  // to this variable stor
 echo '<input type=hidden name=submit_action value=0>';  // to this variable store "add_submit" or "update_submit" (by javascript)
 echo '</td></tr></table></FORM>';
 
-PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
+if( !$add_submit AND !$usr_new) {
+  PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
+}
 
+HtmlPageEnd();
 page_close(); ?>
