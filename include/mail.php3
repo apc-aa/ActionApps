@@ -69,16 +69,8 @@ function html2text ($html) {
     }    
 
     // Strip diacritics
-    $strip_diacritics = array (
-    "áäèïéìíåòóöøšúùüıÁÄÈÏÉÌÍÅÒÓÖØŠÚÙÜİ",
-    "aacdeeilnoorstuuuyzAACDEEILNOORSTUUUYZ");
-    
-    for ($i = 0; $i < strlen($strip_diacritics[0]); $i ++) {
-        $search[] = $strip_diacritics[0][$i];
-        $replace[] = $strip_diacritics[1][$i];
-    }
-    
-    $html = str_replace ($search, $replace, $html);
+    $html = strtr( $html, "áäèïéìíåòóöøšúùüıÁÄÈÏÉÌÍÅÒÓÖØŠÚÙÜİ", 
+                          "aacdeeilnoorstuuuyzAACDEEILNOORSTUUUYZ");
                 
     // Replace URL references <a href="http://xy">Link</a> => Link {http://xy}
     /* We can't directly use preg_replace, because it would find the first <a href
@@ -93,10 +85,14 @@ function html2text ($html) {
     list (, $html) = each ($html_parts);
     while (list (, $html_part) = each ($html_parts)) {
         list (, $html_ahref) = each ($html_ahrefs[0]);
-        $html .= preg_replace ("'$ahref(.*)</[ \t]*a[ \t]*>'si", 
-            "\\2 {\\1}", $html_ahref . $html_part);
+        preg_match ( "'$ahref(.*)</[ \t]*a[ \t]*>(.*)'si", $html_ahref. $html_part , $matches);
+        if ( $matches[1] == $matches[2] ) {
+            $html .= $matches[1]. $matches[3];
+        } else {
+            $html .= $matches[2]. ' {'. $matches[1] .'}'. $matches[3];
+        }
     }
-    
+
     $search_replace = array (
         // Strip out leading white space
         "'[\r\n][ \t]+'" => "",
@@ -106,7 +102,7 @@ function html2text ($html) {
         "'</table>'si"   => "\n",
         // If the previous commands added too much whitespace, delete it
         "'\\n\\n\\n+'si" => "\n\n",
-        "'<br>'si"       => "\n",
+        "'<br[^>]{0,2}>'si"       => "\n",   // <br> as well as <br />
         "'</p>'si"       => "\n\n",
         "'</h[1-9]>'si"  => "\n\n",
         // Strip out javascript
@@ -125,7 +121,7 @@ function html2text ($html) {
     reset ($search_replace);
     while (list ($search, $replace) = each ($search_replace)) 
         $html = preg_replace ($search, $replace, $html);
-        
+
     return $html;
 }
 
@@ -193,7 +189,7 @@ function send_mail_from_table_inner ($mail_id, $to, &$item) {
     $mail = new HtmlMail;
     if ($record["html"])
         $mail->setHtml ($record["body"], html2text ($record["body"]));
-    else $mail->setText ($record["body"]);
+    else $mail->setText (html2text( nl2br($record["body"])));
     $mail->setSubject ($record["subject"]);
     $mail->setBasicHeaders ($record, "");
     $mail->setTextCharset ($LANGUAGE_CHARSETS [$record["lang"]]);
