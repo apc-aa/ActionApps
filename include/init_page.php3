@@ -106,7 +106,8 @@ else page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
 if($nobody) {           
     $username = $free;
     $password = $freepwd;
-    if( $auth->auth["uid"] != $auth->auth_validatelogin()) {
+    $auth->auth["uid"] = $auth->auth_validatelogin();
+    if( !$auth->auth["uid"] ) {
         echo _m("Either your username or your password is not valid.");
         exit;
     }

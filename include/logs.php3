@@ -27,10 +27,18 @@ http://www.apc.org/
 function writeLog($event, $params="" ) {
   global $db, $auth, $LOG_EVENTS;
   
+  $params = addslashes($params);
+  
   $SQL = "INSERT into log SET time='". time() ."', 
                               user='". $auth->auth["uid"] ."',
                               type='$event',
                               params='$params'";
   $db->query($SQL);
-}                                
+}
+
+function getLogEvents($event, $from="", $to="", $group_by_param=false) {
+
+}
+    
+
 ?>
