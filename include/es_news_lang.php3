@@ -246,7 +246,7 @@ define("L_NEW_SLICE_HEAD", "Nuevo canal");
 define("L_ERR_USER_CHANGE", "No se puede cambiar de usuario");
 define("L_PUBLISHED", "Publicado");
 define("L_EXPIRED", "Expirado");
-define("L_NOT_PUBLISHED", "No publicne(" aun");
+define("L_NOT_PUBLISHED", "No publicne(\" aun\")");
 define("L_EDIT_USER", "Editar Usuario");
 define("L_EDITUSER_HDR", L_EDIT_USER);
 
