@@ -366,10 +366,10 @@ if( !$where_used )
 echo "'</td></tr>
 <tr><td colspan=4><input type=submit name='hierarch' value='".L_CONSTANT_HIERARCH_EDITOR."'></td></tr>
 <tr>
- <td class=tabtxt align=center><b>". L_CONSTANT_NAME ."</b><br>". L_CONSTANT_NAME_HLP ."</td>
- <td class=tabtxt align=center><b>". L_CONSTANT_VALUE ."</b><br>". L_CONSTANT_VALUE_HLP ."</td>
- <td class=tabtxt align=center><b>". L_CONSTANT_PRI ."</b><br>". L_CONSTANT_PRI_HLP ."</td>
- <td class=tabtxt align=center><b>". L_CONSTANT_CLASS . "</b><br>". L_CONSTANT_CLASS_HLP ."</td>
+ <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('name')\">". L_CONSTANT_NAME ."</a></b><br>". L_CONSTANT_NAME_HLP ."</td>
+ <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('value')\">". L_CONSTANT_VALUE ."</a></b><br>". L_CONSTANT_VALUE_HLP ."</td>
+ <td class=tabtxt align=center><b><a href=\"javascript:SortPri()\">". L_CONSTANT_PRI ."</a></b><br>". L_CONSTANT_PRI_HLP ."</td>
+ <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('class')\">". L_CONSTANT_CLASS ."</a></b><br>". L_CONSTANT_CLASS_HLP ."</td>
 </tr>
 <tr><td colspan=4><hr></td></tr>";
 
@@ -396,6 +396,8 @@ for( $j=0; $j<10; $j++) {
   $i++;
 }  
 
+$lastIndex = $i-1;    // lastindex used in javascript (below) to get number of rows
+
 echo '</table>
 <tr><td align="center">
   <input type=hidden name="update" value=1>
@@ -413,6 +415,47 @@ echo '</table>
             document.f.submit();
         }
     }
+
+  var data2sort;
+
+  function GetFormData( col2sort ) {
+    var i,element,varname;
+    data2sort = null;
+    data2sort = new Array();
+    for( i=0; i<='. $lastIndex .'; i++ ) {
+      element = "document.f.elements[\'"+col2sort+"["+i+"]\']";
+      // add rownumber at the end of the text (to be able to get old possition)
+      data2sort[i] = eval(element).value + " ~~"+i;
+    }
+  }
+
+  function SortConstants( col2sort ) {
+    var i,element,element2, text,row,counter=10;
+    GetFormData(col2sort);
+    data2sort.sort();
+    for( i=0; i<='. $lastIndex .'; i++ ) {
+      text = data2sort[i];
+      row = text.substr(text.lastIndexOf(" ~~")+3);
+      element = "document.f.elements[\'pri["+row+"]\']";
+      element2 = "document.f.elements[\'"+col2sort+"["+row+"]\']";
+      if( eval(element2).value == "" ) 
+        eval(element).value = 9000;
+       else { 
+        eval(element).value = counter;
+        counter += 10;
+      }  
+    }
+  }
+
+  function SortPri( ) {
+    var i,element,counter=10;
+    for( i=0; i<='. $lastIndex .'; i++ ) {
+      element = "document.f.elements[\'pri["+i+"]\']";
+      eval(element).value = counter;
+      counter += 10;
+    }
+  }
+
 //-->
 </SCRIPT>
 </BODY>
