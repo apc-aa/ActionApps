@@ -59,11 +59,11 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
               <input type='radio' name='$htmlvar' value='t'".
               (( $html==2 ) ? " checked>" : ">" ). L_PLAIN_TEXT."</input><br>";
   }    
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>\n";
   if ( SINGLE_COLUMN_FORM )
-    echo "</tr><tr>";
+    echo "</tr><tr align=left>";
   echo "<td>$htmlrow<input type=\"Text\" name=\"$name\" size=$size
           maxlength=$maxsize value=\"$val\">";
   PrintMoreHelp($morehlp);
@@ -78,11 +78,11 @@ function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=
     $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); $morehlp=safe($morehlp);
   }
   
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>";
   if (SINGLE_COLUMN_FORM)
-    echo "</tr><tr>";
+    echo "</tr><tr align=left>";
   echo "<td>$val";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
@@ -94,11 +94,11 @@ function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=
 function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
   $name=safe($name); $txt=safe($txt); $val=safe($val);
 
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
-    echo "</tr><tr>";
+    echo "</tr><tr align=left>";
   echo "<td><input type=\"Password\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"></td></tr>\n";
 }
 
@@ -108,11 +108,11 @@ function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
                       $hlp="", $morehlp="" ){
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
-    echo "</tr><tr>";
+    echo "</tr><tr align=left>";
   echo "<td><input type=\"file\" name=\"$name\" size=$size accept=\"$accepts\">";  // /**/
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
@@ -136,11 +136,11 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
   if( $single )
     $colspan = "colspan=2";
 
-  echo "<tr><td class=tabtxt $colspan><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt $colspan><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM OR $single)
-    echo "</tr><tr>";
+    echo "</tr><tr align=left>";
   echo "<td $colspan>$htmlrow<textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
@@ -155,13 +155,13 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false,
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
   $morehlp=safe($morehlp);
 
-  echo "<tr>";
+  echo "<tr align=left>";
   if( !$changeorder ) {
     echo "<td class=tabtxt colspan=$colspan><b>$txt</b>";
     Needed($needed);
     echo "</td>\n  ";
     if (SINGLE_COLUMN_FORM)
-      echo "</tr><tr>";
+      echo "</tr><tr align=left>";
   }  
   echo "<td><input type=\"checkbox\" name=\"$name\" $add ";
   if($checked)
@@ -172,7 +172,7 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false,
   echo"</td>";
   if( $changeorder ) {
     if (SINGLE_COLUMN_FORM)
-      echo "</tr><tr>";
+      echo "</tr><tr align=left>";
     echo "<td class=tabtxt colspan=$colspan><b>$txt</b>";
     Needed($needed);
     echo "</td>\n  ";
@@ -196,11 +196,11 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
                         $hlp="", $morehlp="") {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
-    echo "</tr><tr>";
+    echo "</tr><tr align=left>";
   echo "<td><select name=\"$name\">";	
   reset($arr);
   while(list($k, $v) = each($arr)) { 
@@ -227,11 +227,11 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25,
   if( !$size )
     $size = 25;
 
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
-    echo "</tr><tr>";
+    echo "</tr><tr align=left>";
   echo "<td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\">
           <select name=\"foo_$name\" onchange=\"$name.value=this.options[this.selectedIndex].value\">";	
   reset($arr);
@@ -255,12 +255,12 @@ function FrmTwoBox($name, $txt, $arr, $val, $maxsize=254, $size=25,
 
 /*  TODO 
 
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
-    echo "</tr><tr>";
-  echo "<table border="0" cellspacing="0" cellpadding="0"><tr>
+    echo "</tr><tr align=left>";
+  echo "<table border="0" cellspacing="0" cellpadding="0"><tr align=left>
       <td align='CENTER' valign='TOP'>
       <SELECT name="export_n" size=8 class=tabtxt>
         <?php
@@ -297,7 +297,7 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
                        $hlp="", $morehlp="") {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n <td>";	
   reset($arr);
@@ -320,7 +320,7 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
                        $hlp="", $morehlp="") {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n <td>";	
   reset($arr);
@@ -344,7 +344,7 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
           $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0) {
   $name=safe($name); $size=safe($size); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n <td><select name=\"$name\" size=\"$size\" multiple>";	
   $option_no = 0;
@@ -463,6 +463,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.18  2001/11/29 08:37:27  mitraearth
+Fix a bug where tables get centered instead of left aligned in IE6
+
 Revision 1.17  2001/10/24 16:48:10  honzam
 fixed bug with unspecified maxlength parameter
 
