@@ -15,6 +15,18 @@
 <a href="#feeding">How works the internal feeding?</a><br><br>
 <a href="#aliases">How to create new alias function?</a><br><br>
 <a href="#parent">How to link parent item?</a><br><br>
+<a href="#constant">How the 'Display' and the 'Store in Database' parts of the category/constant is supposed to be used?</a><br><br>
+<a href="#category">What is the parent category?</a><br><br>
+<a href="#search">How to setup searchform?</a><br><br>
+<a href="#alias">What is the Prameters in Alias Function definition</a><br><br>
+<a href="#javascript">What does it means the "JavaScript item exchange" View?</a><br><br>
+<a href="#"></a><br><br>
+<a href="#"></a>
+<a href="#"></a>
+<a href="#"></a>
+
+
+
 
 <a name="newaa"></a>
 <h3>How to create new Action Aplication</h3>
@@ -323,9 +335,236 @@ names begins with f_ and they are three letters long (just like f_a()).</p>
 &lt;a href="/apc-aa/go.php3?sh_itm=_#ITEM_ID#&amp;type=fed"&gt;fed from&lt;/a&gt;
 </code><br><br>
 or such link to your index (or fulltext) design (Admin -> Design -> Index -> Odd Rows). This will point to fulltext of parent item or to the fulltext of the same item, if the item is not fed.</p>
+<br>
+
+<a name="constant"></a>
+<h3>How the 'Display' and the 'Store in Database' parts of the category/constant is supposed to be used?</h3>
+
+<p>Categories are done the same way as other constants are. The table for them looks:
+
+<pre>
+<code>
+CREATE TABLE constant (
+   id char(16) NOT NULL,
+   group_id char(16) NOT NULL,
+   name char(150) NOT NULL,
+   value char(150) NOT NULL,
+   class char(16),
+   pri smallint(5) DEFAULT '100' NOT NULL,
+   PRIMARY KEY (id),
+   KEY group_id (group_id)
+);
+</code></pre>
+
+<p>Constants in this table are divided into groups by group_id, so all 
+constants in group "CZECH_REGIONS" have the same group_id. 
+The group_id is then assigned to specified field on field setting 
+page (se_inputform.php3).</p>
+
+<p>Each constant has two important field - name and value. Name 
+should be used in input form for displaying the constant (in select 
+box, ...). The value is the string, which is then stored in database 
+as item (table content).</p>
+
+<p>The class_id field is used just by categories and not other 
+constants. There is stored identifier of parent - APC wide - 
+categories.</p>
+
+<p>The Pri field is for prioritize the constants in each group (for sorting in
+select box ...)</p>
+<br>
+
+<a name="category"></a>
+<h3>What is the parent category?</h3>
+
+<p>The APC AA has a Two Layer category system:
+
+<p>1) One set of broad categories set at the network level<br>
+
+These are useful so that people can 'browse' and find the information they
+are looking for without a specialized understanding of the content area.
+
+<p>2) Totally flexible page-specific categories<br>
+ 
+<p>Individual page owners can setup any specialized categories that work for
+them.  They 'map' their specialized categories to the APC-wide parent
+categories.
+ 
+<p>We also want to be able to map between different languages, so
+categories can be displayed in the local language, but stored as a
+universal constant.
+<br>
+
+<a name="search"></a>
+<h3>How to setup searchform?</h3>
+<p>In current AA version 1.8 it is possible to create searchform manualy in HTML. There is no possibility to create it automaticaly as it is known from AA v1.2., yet</p>
+<p>Form example:</p>
+<pre><code>
+&lt;form action="index.shtml" method="get" name="sf" id="sf"&gt;
+
+Search Author: 
+ &lt;input type="text" name="conds[0][created_by......]"&gt;&lt;br&gt;
+
+Search in Headline and Fulltext:
+ &lt;input type="text" name="conds[1][value]"&gt;
+ &lt;input type="hidden" name="conds[1][operator]" value="LIKE"&gt;
+ &lt;input type="hidden" name="conds[1][headline........]" value="1"&gt;
+ &lt;input type="hidden" name="conds[1][full_text.......]" value="1"&gt;&lt;br&gt;
+
+ &lt;input type="hidden" name="sort[0][headline........]" value="a"&gt;
+
+ &lt;input type="submit" value="Search" &gt;
+&lt;/form&gt;
+</code></pre>
+
+<p>Let's notice:
+<ul>
+ <li>The <b>action</b> atribute on first row points to some file, where slice.php3 script is included (by SSI)</li>
+ <li>There are two search fields - each of them uses a bit different syntax.<br>First field defines first search condition - conds[0]. The last index is field_id of searched field. Such syntax is easy and is good, if you want to
+ <ul>
+  <li>search only in one field for that specified phrase<br></li>
+  <li>use standard searching operator, which is 'LIKE' (it means, that if the phrase is "los" the search function finds items with field content "los", "Carlos" or "lost"</li>
+ </ul><br>
+Second field defines the second search condition. Between each condition is allways AND operator - selected item must allways pass each specified condition.<br>
+There is used extended syntax in second condition. In extended sytnax we allways use as last index to conds[]<br>
+- <b>value</b> atribut, where search phrase is specified (conds[0][value]="Prague")<br>
+- <b>operator</b> atribut, where operator for that condition is specified. If <b>operator</b> is not specified, 'LIKE' is used as default. The posibilities are:<ul>
+<li>= - equal</li>
+<li>&lt;&gt; - not equal</li>
+<li>&lt; - less than</li>
+<li>&gt; - more than</li>
+<li>&lt;= - less or equal</li>
+<li>&gt;= - more or equal</li>
+<li>LIKE - substring search (SQL: LIKE '%phrase%')</li>
+<li>RLIKE - substring which begins with phrase (SQL: LIKE 'phrase%')</li>
+<li>LLIKE - substring which ends with phrase (SQL: LIKE '%phrase')</li>
+<li>XLIKE - string (SQL: LIKE 'phrase')</li>
+</ul><br>
+- <b>&lt;field_id&gt;</b> atributes, where are specified ids of fields, where to search (note, that there can be specified more than one field. The value for those atributes are allways 1 - as shown in example)<br>
+</li>
+<li>It is possible to specify search order of found items. For this purpose is there sort[] variable, where the last index specifies the id of field we wont sort listing by. The value can by either<br>
+- <b>a</b> - for ascending order (default)<br>
+- <b>d</b> - for descending order<br>
+If no sort[] variable is defined, items are sorted by <i>Publish date</i> - descending<br>
+As we can see, there is possibilty to specify more than one sort field. In this case the items are sorted primarily by sort[0] field, secondary by sort[1] field ...</li>
+</ul>
+</p>
+
+<p>Date values are passed in UNIX timestamp (no of seconds since 1.1.1970)</p>
+<p>You can see the example on <a href="http://www.apc.org/actionapps/english/demo/search.shtml">APC Demo Site</a>, where publish date field is used too.</p>
+
+<br>
+
+<a name="alias"></a>
+<h3>What is the Prameters in Alias Function definition</h3>
+<p>When we setting up aliases for database field on se_fields.php3 page, we sometimes need to change the behavior of alias in som way or we need to pass some parameter for alias handling function such as f_f. The Parameters field is the right place, how to do it. The list of parameters for each alias function follows.<br>
+In some cases we need to pass more than one parameter to alias function. In such case the aliases are separated by colon character. If we need to use colon inside parameter, we just use #: string instead of : character.<br>
+</p>
+<table align=center cellpadding=3 border=0>
+<tr><td class=tabtit>Function</td><td class=tabtit>Parameter</td><td class=tabtit>Description</td></tr>
+<tr><td valign=top class=tabfnc>f_0</td><td clospan=2>null function (nothing shown)</td></tr>
+<tr><td>&nbsp;</td><td> none </td><td>&nbsp;</td></tr>
+
+<tr><td valign=top class=tabfnc>f_h</td><td clospan=2>print field content due to html flag set (escape html special characters or just print)</td></tr>
+<tr><td>&nbsp;</td><td> none </td><td>&nbsp;</td></tr>
+
+<tr><td valign=top class=tabfnc>f_d</td><td clospan=2>prints date in user defined format</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>format</td><td>format string just like in PHP (like "m-d-Y") - see <a href="http://php.net/date">PHP manual</a></td></tr>
+
+<tr><td valign=top class=tabfnc>f_i</td><td clospan=2>prints image scr (&lt;img src=...) - NO_PICTURE for none (the functionality of this alias function can be created as conditional f_c function as well)</td></tr>
+<tr><td valign=top class=tabfnc>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
+
+<tr><td valign=top class=tabfnc>f_n</td><td clospan=2>unpacked id</td></tr>
+<tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
+
+<tr><td valign=top class=tabfnc>f_g</td><td clospan=2>prints image height atribut (img height=...) or clears it (the functionality of this alias function can be created as conditional f_c function as well)</td></tr>
+<tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
+
+<tr><td valign=top class=tabfnc>f_w</td><td clospan=2>prints image width atribut (&lt;img width=...) or clears it</td></tr>
+<tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
+
+<tr><td valign=top class=tabfnc>f_a</td><td clospan=2>prints abstract or grabed fulltext text field</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>length</td><td>length - number of characters taken from field_id (like "80:full_text.......")</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>field_id</td><td>id of fulltex field</td></tr>
+
+<tr><td valign=top class=tabfnc>f_f</td><td clospan=2>prints link to fulltext (hedline url)</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>link_only</td><td>field id (like "link_only.......") where switch between external and internal item is stored</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>redirect</td><td>url of another page which shows the content of item (like "link_only.......:http#://www.ecn.cz/articles/solar.shtml") (note the #: in previous example!)<br>
+this page should contain SSI include ../slice.php3 of course</td></tr>
+
+<tr><td valign=top class=tabfnc>f_b</td><td clospan=2>prints text with link to fulltext - more general version of f_f function<br>param: link_only:url_field:redirect:txt:condition_fld (hedline url)</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>link_only</td><td>field id (like "link_only.......") where switch between external and internal item is stored</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>url_field</td><td>field id of external url for link_only<br>
+(like hl_href.........)</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>redirect</td><td>url of another page which shows the content of item (like "link_only.......:http#://www.ecn.cz/articles/solar.shtml") (note the #: in previous example!)<br>
+this page should contain SSI include ../slice.php3 of course</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>txt</td><td>if txt is field_id content is shown as link, else txt</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>condition_fld</td><td>field id - if no content of this field, no link</td></tr>
+
+<tr><td valign=top class=tabfnc>f_t</td><td clospan=2>converts text to html or escape html (due to html flag)</td></tr>
+<tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
+
+<tr><td valign=top class=tabfnc>f_s</td><td clospan=2>print database field or default value if empty (the functionality of this alias function can be created as conditional f_c function as well)</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>default</td><td>default value (like "javascript: window.alert('No source url specified')")</td></tr>
+
+<tr><td valign=top class=tabfnc>f_l</td><td clospan=2>prints field as link, if field_id in $param is defined, else prints just field</td></tr>
+<tr><td valign=top class=tabfnc>&nbsp;</td><td class=tabparam>field_id</td><td>field_id of possible link (like "source_href.....")</td></tr>
+
+
+<tr><td valign=top class=tabfnc>f_e</td><td clospan=2>_#ITEMEDIT used on admin page index.php3 for itemedit url</td></tr>
+<tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
+
+<tr><td valign=top class=tabfnc>f_c</td><td clospan=2>prints "begin".field."end" if field="condition", else prints "none"<br>
+if no cond_col specified - this $col is used<br>
+param: condition:begin:end:none:cond_col</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>condition</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>begin</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>end</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>none</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>cond_col</td><td>&nbsp;</td></tr>
+
+</table>
+<br>
+
+<a name="javascript"></a>
+<h3>What does it means the "JavaScript item exchange" View?</h3>
+<p>Javascript item echchange View is just name of type of View. It works exactly as standard view, but primary ussage for that type is to show items on any page around the Internet. On destination page should contain HTML tag like:
+</p>
+<code>
+&lt;SCRIPT LANGUAGE="JavaScript" SRC="http://aa.ecn.cz/apc-aa/view.php3?vid=1"&gt;&lt;/SCRIPT&gt;
+</code>
+
+<p>This tag includes the output of view to any page on Internet (there is no restriction to one serever).</p>
+
+<p>Because such tag requires javascript as output of view.php3, the format strings for the view (Admin -&gt; View) should look like:</p>
+
+<b>Top HTML</b>:<br>
+
+document.write("&lt;TABLE WIDTH='100%' BORDER='0' CELLPADDING='2' BGCOLOR='#FFFFFF'&gt;")<br><br>
+
+<b>Odd Rows</b>:<br>
+document.write("&lt;TR&gt;&lt;TD VALIGN='TOP'&gt;_#PUB_DATE&lt;/TD&gt;&lt;TD&gt;&lt;a href='_#HDLN_URL'&gt;_#HEADLINE&lt;/a&gt;&lt;/TD&gt;&lt;/TR&gt;")<br><br>
+
+<b>Bottom HTML</b>:<br>
+document.write("&lt;/TABLE&gt;")<br>
+
+<p>You can see the example on <a href="http://www.apc.org/actionapps/english/demo/jsexchange.html">APC Demo Site</a></p>
+
+
+<a name=""></a>
+<h3></h3>
 
 
 <br>
+<a name=""></a>
+<h3></h3>
+
+
+<br>
+<a name=""></a>
+<h3></h3>
+
+<br><br>
 <a href="index.html">Other documentation</a><br>
 
 </body>
