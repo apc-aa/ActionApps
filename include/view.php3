@@ -95,30 +95,7 @@ class itemview{
     }  
     $sel_in .= ( ($delim=="") ? "'')" : ")"); 
     
-       # get content from item table
-    $SQL = "SELECT * FROM item WHERE id IN $sel_in";
-    $db->query($SQL);
-    while( $db->next_record() ) {
-      reset( $db->Record );
-      while( list( $key, $val ) = each( $db->Record )) {
-        if( EReg("^[0-9]*$", $key))
-          continue;
-        $content[unpack_id($db->f(id))][$key][] = array("value" => $val);
-      }  
-    }  
-
-       # get content from content table
-       # feeding - don't worry about it - when fed item is updated, informations
-       # in content table is updated too
-
-    $db->query("SELECT * FROM content 
-                 WHERE item_id IN $sel_in");  # usable just for constants
-    while( $db->next_record() ) {
-      $content[unpack_id($db->f(item_id))][$db->f(field_id)][] = 
-        array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
-               "flag"=> $db->f(flag) );
-    }
-    
+    $content = GetItemContent($sel_in);
 
     $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
 
@@ -205,6 +182,9 @@ class itemview{
 
 /*
 $Log$
+Revision 1.7  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
 Revision 1.6  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 

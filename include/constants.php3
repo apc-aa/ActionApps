@@ -104,7 +104,7 @@ $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "now" => L_INPUT_INSERT_NOW
                            /*"dte" => L_INPUT_INSERT_DTE, 
                              "cns" => L_INPUT_INSERT_CNS, 
-                             "num" => L_INPUT_INSERT_NUM,
+                             "num" => L_INPUT_INSERT_NUM, 
                              "nul" => L_INPUT_INSERT_NUL*/);
                              
 $ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
@@ -133,6 +133,9 @@ $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                                                    
 /*
 $Log$
+Revision 1.6  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
 Revision 1.5  2001/02/25 08:50:38  madebeer
 removed some insert functions
 

@@ -5,12 +5,12 @@
 <center>
 <form <?php echo $formparams ?> action="<?php echo ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF ?>">
 
-<table class=inouter border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table class=inouter border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr class=inoutertr><td class=inoutertd><b>&nbsp;<?php echo L_ITEM_HDR ?></b>
 </td>
 </tr>
 <tr><td>
-<table class=ininner width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table class=ininner width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?
 
   FrmInputText("headline", L_HEADLINE, safe($headline), 254, 60, true);
@@ -224,6 +224,9 @@ if($edit || $update || ($insert && $added_to_db)) { ?>
 
 <?php
 // $Log$
+// Revision 1.4  2001/02/26 17:22:30  honzam
+// color profiles, itemmanager interface changes
+//
 // Revision 1.3  2000/12/05 14:20:36  honzam
 // Fixed bug with Netscape - not allowed method POST - in annonymous posting.
 //

@@ -20,17 +20,20 @@ http://www.apc.org/
 */
 
  if( $useOnLoad )
-   echo '<body OnLoad="InitPage()" background="#F5F0E7" link="#D20000" vlink="#D20000">';
+   echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'" link="#D20000" vlink="#D20000">';
   else
-   echo '<body background="#F5F0E7" link="#D20000" vlink="#D20000">';
+   echo '<body background="'. COLOR_BACKGROUND .'" link="#D20000" vlink="#D20000">';
 
 $settings_page = true;
 require $GLOBALS[AA_INC_PATH] . "navbar.php3";
 require $GLOBALS[AA_INC_PATH] . "leftbar_se.php3";
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:47  madebeer
-Initial revision
+Revision 1.2  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
+Revision 1.1.1.1  2000/06/21 18:40:47  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:26  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

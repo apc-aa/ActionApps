@@ -61,6 +61,9 @@ $nb_usermng = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
 
 /*
 $Log$
+Revision 1.6  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
 Revision 1.5  2001/02/23 11:18:04  madebeer
 interface improvements merged from wn branch
 
@@ -99,8 +102,6 @@ config.inc
 
 */
 ?>
-
-<form name=nbform enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <TABLE border=0 cellpadding=0 cellspacing=0>
   <TR>
     <TD><IMG src="../images/spacer.gif" width=122 height=1></TD>
@@ -116,8 +117,10 @@ config.inc
     <td align=center class=navbar><?php echo " $nb_view | $nb_additem | $nb_manager | $nb_settings | $nb_usermng "; ?></td>
     <TD align=center class=navbar><?php
       if( is_array($slices) AND (count($slices) > 1) ) {
-        echo "<span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>";
-        echo "<select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"slice_id=").'"+this.options[this.selectedIndex].value\'>';	
+        echo "<form name=nbform enctype=\"multipart/form-data\" method=post 
+                    action=\"". $sess->url($PHP_SELF) ."\">
+              <span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>
+              <select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"slice_id=").'"+this.options[this.selectedIndex].value\'>';	
         reset($slices);
         while(list($k, $v) = each($slices)) { 
           echo "<option value=\"". htmlspecialchars($k)."\"";
@@ -127,10 +130,9 @@ config.inc
         }
         if( !$slice_id )   // new slice
           echo '<option value="new" selected> '. L_NEW_SLICE_HEAD .'</option>';
-        echo "</select>\n";
+        echo "</select></form>\n";
       } else
         echo "&nbsp;"; ?>
     </TD>
   </TR>
 </TABLE>
-</form>

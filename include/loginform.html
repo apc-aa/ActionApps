@@ -3,7 +3,7 @@ echo LOGIN_PAGE_BEGIN ?>
   <title>Login form</title>
  </head>
 
-<body bgcolor="#F5F0E7" link="#D20000" vlink="#D20000">
+<body bgcolor="<?php echo COLOR_TABTITBG ?>" link="#D20000" vlink="#D20000">
 <center>
 <h1><?php echo L_LOGIN ?></h1>
 
@@ -14,7 +14,7 @@ echo LOGIN_PAGE_BEGIN ?>
  $qs= eregi_replace( "relogin=true","",$qs);  
 ?> 
 <form action="<?php echo $qs ?>" method=post>
-<center><table border=0 bgcolor="#EBDABE" cellspacing=0 cellpadding=4>
+<center><table border=0 bgcolor="<?php echo COLOR_TABBG ?>" cellspacing=0 cellpadding=4>
  <tr valign=top align=left>
   <td><?php echo L_USERNAME ?></td>
   <td><input type="text" name="username"

@@ -19,7 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
 require($GLOBALS[AA_INC_PATH] . "perm_core.php3"); // allways included!
 
 // choice of the permission system library
@@ -64,8 +63,11 @@ class AA_CP_Auth extends Auth {
 }
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:36  madebeer
-Initial revision
+Revision 1.2  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
+Revision 1.1.1.1  2000/06/21 18:40:36  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:21  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

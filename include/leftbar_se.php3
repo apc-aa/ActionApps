@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.8  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
 Revision 1.7  2001/02/23 11:18:04  madebeer
 interface improvements merged from wn branch
 
@@ -55,7 +58,7 @@ added $Id $Log and $Copyright to some stray files
 
 */
 ?>
-<table width="122" border="0" cellspacing="0" bgcolor="#EBDABE" cellpadding="1" align="LEFT" class="leftmenu">
+<table width="122" border="0" cellspacing="0" bgcolor="<?php echo COLOR_TABBG ?>" cellpadding="1" align="LEFT" class="leftmenu">
   <tr><td>&nbsp;</td></tr>
   <tr><td valign="TOP">
   <?php
@@ -139,6 +142,13 @@ added $Id $Log and $Copyright to some stray files
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_fulltext.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_FULLTEXT."</a></td>"; 
    else 
     echo "<span class=leftmenun>&nbsp;&nbsp;". L_FULLTEXT ."</span></td>";?>
+  </tr>
+  <tr><td valign="TOP">
+  <?php
+  if( $show["views"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT) ) 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_views.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_VIEWS."</a></td>"; 
+   else 
+    echo "&nbsp;&nbsp;<span class=leftmenun>". L_VIEWS ."</span></td>"; ?>
   </tr>
   <tr><td valign="TOP">
   <?php

@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.5  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
 Revision 1.4  2001/02/23 11:18:04  madebeer
 interface improvements merged from wn branch
 
@@ -43,25 +46,7 @@ added $Id $Log and $Copyright to some stray files
 
 */
 ?>
-<table width="122" border="0" cellspacing="0" bgcolor="#EBDABE" cellpadding="1" align="LEFT" class="leftmenu">
-  <tr><td>&nbsp;</td></tr>
-  <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
-  <tr><td class=leftmenu><?php echo L_CHANGE_MARKED ?></td></tr>
-  <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
-  <?php
-  if( ($r_bin_state != "app")  AND 
-      ($r_bin_state != "appb") AND 
-      ($r_bin_state != "appc") AND 
-      CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT))
-    echo "<tr><td><img src='../images/spacer.gif' width=5 height=1 border=0 alt=''><a href=\"javascript:SubmitItems('app')\" class=leftmenuy>".L_MOVE_TO_ACTIVE_BIN."</a></td></tr>"; 
-  if( ($r_bin_state != "hold") AND 
-      CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD))
-    echo "<tr><td><img src='../images/spacer.gif' width=5 height=1 border=0 alt=''><a href=\"javascript:SubmitItems('hold')\" class=leftmenuy>".L_MOVE_TO_HOLDING_BIN."</a></td></tr>"; 
-  if( ($r_bin_state != "trash") AND 
-       CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH))
-    echo "<tr><td><img src='../images/spacer.gif' width=5 height=1 border=0 alt=''><a href=\"javascript:SubmitItems('trash')\" class=leftmenuy>".L_MOVE_TO_TRASH_BIN."</a></td></tr>"; 
-  echo "<tr><td><img src='../images/spacer.gif' width=5 height=1 border=0 alt=''><a href=\"javascript:OpenFeedForm()\" class=leftmenuy>".L_FEED."</a></td></tr>";
-  echo "<tr><td><img src='../images/spacer.gif' width=5 height=1 border=0 alt=''><a href=\"javascript:OpenPreview()\" class=leftmenuy>".L_VIEW_FULLTEXT."</a></td></tr>";?>
+<table width="122" border="0" cellspacing="0" bgcolor="<?php echo COLOR_TABBG ?>" cellpadding="1" align="LEFT" class="leftmenu">
   <tr><td>&nbsp;</td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <tr><td class=leftmenu><?php echo L_OTHER_ARTICLES ?></td></tr>

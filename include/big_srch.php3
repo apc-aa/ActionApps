@@ -95,6 +95,9 @@ while($db->next_record())
 */
 /*
 $Log$
+Revision 1.5  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
 Revision 1.4  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 
@@ -131,11 +134,11 @@ config.inc
 
 <FORM method=get action="<?php echo $sess->MyUrl($slice_id, $encap, true);?>">
 <P>
- <TABLE class=srchouter border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+ <TABLE class=srchouter border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
   <TR>
    <TD>
-    <TABLE class=srchinner width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
-     <TR class=srchtoptr bgcolor="#584011" align="center">
+    <TABLE class=srchinner width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+     <TR class=srchtoptr bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
       <TD class=srchtoptd colspan=2 class=srchtit><?php echo L_SRCH_KW ?>&nbsp;&nbsp; 
        <INPUT type="Text" name=search[keyword] <?php
          if( $search[keyword]!="" ) echo " value=".$search[keyword];?> size="30">&nbsp;&nbsp;

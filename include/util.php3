@@ -305,6 +305,36 @@ function GetFieldType($id) {
   return substr($id, 0, strpos($id, "."));
 }  
 
+# fills content arr with current content of $sel_in items (comma separated ids)
+function GetItemContent($sel_in) {
+  global $db;
+
+    # get content from item table
+  $SQL = "SELECT * FROM item WHERE id IN $sel_in";
+  $db->query($SQL);
+  while( $db->next_record() ) {
+    reset( $db->Record );
+    while( list( $key, $val ) = each( $db->Record )) {
+      if( EReg("^[0-9]*$", $key))
+        continue;
+      $content[unpack_id($db->f(id))][$key][] = array("value" => $val);
+    }  
+  }  
+
+   # get content from content table
+   # feeding - don't worry about it - when fed item is updated, informations
+   # in content table is updated too
+
+  $db->query("SELECT * FROM content 
+               WHERE item_id IN $sel_in");  # usable just for constants
+  while( $db->next_record() ) {
+    $content[unpack_id($db->f(item_id))][$db->f(field_id)][] = 
+      array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
+             "flag"=> $db->f(flag) );
+  }
+  return $content;
+}  
+
 # in_array is available since PHP4
 if (substr(PHP_VERSION, 0, 1) < "4") {
   function in_array($needle,$haystack)
@@ -331,7 +361,7 @@ function PrintAliasHelp($aliases) {
   ?>
   <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HLP ?></b></td></tr>
   <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
   <?php
   $count = 0;
   while ( list( $ali,$v ) = each( $aliases ) ) 
@@ -351,6 +381,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.16  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
 Revision 1.15  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 

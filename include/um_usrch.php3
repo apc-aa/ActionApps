@@ -66,8 +66,11 @@ http://www.apc.org/
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:49  madebeer
-Initial revision
+Revision 1.2  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
+Revision 1.1.1.1  2000/06/21 18:40:49  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:27  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -92,10 +95,10 @@ config.inc
 ?>
 <!-- Select user form -->
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
- <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+ <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
   <tr><td class=tabtit><b>&nbsp;<?php echo L_USERS?></b></td></tr>
   <tr><td>
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
      <tr>
     	<td>&nbsp;</td>
     	<td><input type=Text name=usr value="<?php echo $usr?>"></td>

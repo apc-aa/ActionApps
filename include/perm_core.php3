@@ -218,8 +218,19 @@ function IfSlPerm($perm) {
   return CheckPerms( $auth->auth["uid"], "slice", $slice_id, $perm);
 }  
 
+// Checks if logged user is superadmin
+function IsSuperadmin() {
+  global $auth;
+    # check all superadmin's global permissions
+  return ( CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)
+       AND CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_MANAGE_ALL_SLICES));
+}
+
 /*
 $Log$
+Revision 1.6  2001/02/26 17:22:30  honzam
+color profiles, itemmanager interface changes
+
 Revision 1.5  2001/01/22 17:32:49  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 
