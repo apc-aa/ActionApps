@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 #
-# Functions for parsing XML documents used in item exchange system (like 
+# Functions for parsing XML documents used in item exchange system (like
 # Cross-Server Netvorking (node2node feeding) and off-line filling)
 #
 
@@ -29,16 +29,22 @@ define("WDDX_BAD_PACKET", 2);
 
 # is packet already stored in database?
 function IsDuplicated( $packet, $db ) {
-  $SQL = "SELECT * FROM offline WHERE digest='". md5($packet) ."'";
-  $db->query($SQL);
-  return ( $db->next_record() ? 1 : 0 );
-}  
+    if ( is_array($packet) || is_object($packet)) {
+        $packet = serialize($packet);
+    }
+    $SQL = "SELECT * FROM offline WHERE digest='". md5($packet) ."'";
+    $db->query($SQL);
+    return ( $db->next_record() ? 1 : 0 );
+}
 
 # is packet already stored in database?
 function RegisterItem( $id, $packet, $db ) {
-  $SQL = "INSERT INTO offline ( id, digest, flag ) VALUES ( '$id', '". md5($packet) ."', '' )";
-  $db->query($SQL);
-}  
+    if (is_array($packet) || is_object($packet)) {
+        $packet = serialize($packet);
+    }
+    $SQL = "INSERT INTO offline ( id, digest, flag ) VALUES ( '$id', '". md5($packet) ."', '' )";
+    $db->query($SQL);
+}
 
 # gets one item stored in WDDX format and stored it in database
 function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
@@ -56,42 +62,42 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
 
   # prepare content4id array before call StoreItem function
   while(list($key,$val) = each($vals)) {
-    if( isset($val) AND is_array($val) ) {  
+    if( isset($val) AND is_array($val) ) {
       switch( $val[0] ) {   # field type - defines action to do with content
-        case "base64": 
+        case "base64":
           $content4id[$key][0]['value'] = quote( base64_decode($val[2]));
                                            # $val[1] is filename - not used now
           break;
         default:                           # store multiple values
-          reset($val);                     
+          reset($val);
           $i=0;
           while(list(,$v) = each($val)) {
             $content4id[$key][$i]['value'] = quote($v);
             $content4id[$key][$i++]['flag'] |= FLAG_OFFLINE;  # mark as offline filled
-          }  
+          }
       }
-    }      
-    else                                   # if not array - just store content 
+    }
+    else                                   # if not array - just store content
       $content4id[$key][0]['value'] = quote($val);
     $content4id[$key][0]['flag'] |= FLAG_OFFLINE;      # mark as offline filled
-  }  
+  }
 
     # fill required fields if not set
   $content4id["status_code....."][0]['value'] = ($bin2fill==1 ? 1 : 2);
-  if( !$content4id["post_date......."] ) 
+  if( !$content4id["post_date......."] )
     $content4id["post_date......."][0]['value'] = time();
   if( !$content4id["publish_date...."] )
     $content4id["publish_date...."][0]['value'] = time();
   if( !$content4id["expiry_date....."] )
     $content4id["expiry_date....."][0]['value'] = time()+157680000;
-  if( !$content4id["last_edit......."] ) 
+  if( !$content4id["last_edit......."] )
     $content4id["last_edit......."][0]['value'] = time();
   $content4id["flags..........."][0]['value'] = ITEM_FLAG_OFFLINE;
-    
+
   StoreItem( $id, $slice_id, $content4id, $fields, true, true, true );
                                         # insert, invalidatecache, feed
   RegisterItem( q_pack_id($id), $packet, $db );
   return WDDX_OK;
-}  
+}
 
 ?>

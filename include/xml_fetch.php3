@@ -100,11 +100,11 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
   set_time_limit(240); // Allow 4 minutes per feed
   if ($feed[feed_type] == FEEDTYPE_APC) {
 	//select external categories
-	$feed[ext_categs] = GetExternalCategories($feed_id); // used by oneFeedStore
+	$feed['ext_categs'] = GetExternalCategories($feed_id); // used by oneFeedStore
 	$cat_ids=array();
-	if ($ext_categs && is_array($ext_categs)) {
-    	while (list ($k, ) = each($ext_categs)) {
-      		if (!$ext_categs[$k][target_category_id])
+	if ($feed['ext_categs'] && is_array($feed['ext_categs'])) {
+    	while (list ($k, ) = each($feed['ext_categs'])) {
+      		if (!$feed['ext_categs'][$k]['target_category_id'])
         		continue;
       		$cat_ids[] = $k;
     	}
@@ -152,26 +152,27 @@ function onefeedStore($feed_id,$feed,$debugfeed,$fill) {
 
     // note l_categs only used for FEEDTYPE_APC
     $l_categs = GetGroupConstants( $l_slice_id );        
-    if ($feed[feed_type] == FEEDTYPE_APC) {
-	    updateCategories($feed_id, $l_categs, $feed[ext_categs],
-            $aa_rss[channels][$r_slice_id][categories],$aa_rss[categories]);
-	    updateFieldsMapping($feed_id, $l_slice->fields(), 
-                $l_slice_id, $r_slice_id,
-            $aa_rss[channels][$r_slice_id][fields],$aa_rss[fields]);
+    if ($feed['feed_type'] == FEEDTYPE_APC) {
+	    updateCategories($feed_id, $l_categs, $feed['ext_categs'],
+                         $aa_rss['channels'][$r_slice_id]['categories'],
+                         $aa_rss['categories']);
+	    updateFieldsMapping($feed_id, $l_slice->fields(), $l_slice_id, $r_slice_id,
+                            $aa_rss['channels'][$r_slice_id]['fields'],$aa_rss['fields']);
     }
   
     // update items
     if (isset($aa_rss[items])) {
-      if ($debugfeed >= 8) print("\n<br>onefeed: there are some items to update");
+        if ($debugfeed >= 8) print("\n<br>onefeed: there are some items to update");
         xmlUpdateItems($feed_id, $feed, $aa_rss, $l_slice_id, $r_slice_id, $l_slice, 
-      $ext_categs, $l_categs,$debugfeed,$fill);
-	  if ($feed[feed_type] == FEEDTYPE_APC) {
-	    //update the newest item
-		$SQL = "UPDATE external_feeds SET newest_item='"
-                .$aa_rss[channels][$r_slice_id][timestamp]."' WHERE feed_id='$feed_id'";
-    	$db->tquery($SQL);
-	  }
-  }
+                       $feed['ext_categs'], $l_categs,$debugfeed,$fill);
+	    if ($feed['feed_type'] == FEEDTYPE_APC) {
+	        //update the newest item
+		    $SQL = "UPDATE external_feeds 
+                       SET newest_item='".$aa_rss['channels'][$r_slice_id]['timestamp']."'
+                     WHERE feed_id='$feed_id'";
+    	    $db->tquery($SQL);
+	    }
+    }
 }
 
 // stores items to the table item
