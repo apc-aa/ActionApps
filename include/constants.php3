@@ -135,8 +135,15 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "sk" => "Slovenština",
                          "ja" => "Japanian");
 
-/// number of items in editor window
+/** Number of items in editor window */
 define("EDIT_ITEM_COUNT", 20);
+
+/** Constant used in QueryZids() - defines time steps in query (seconds). We do
+ *  not want to ask database with current timestamp, because then each query is
+ *  completely different and MySQL can't use its cache.
+ */
+define("QUERY_DATE_STEP", 1000);
+
 
 define("DEFAULT_FULLTEXT_HTML", '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT>'
                                .'<BR><B>_#PUB_DATE</B> <BR>_#FULLTEXT');

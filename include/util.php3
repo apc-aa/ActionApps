@@ -663,28 +663,15 @@ function GetFieldNo($id) {
 
 // helper function for GetItemContent and such functions
 function itemContent_getWhere($zids, $use_short_ids=false) {
-  if( $zids and is_array($zids) and (count($zids)>0)) { # Backward compat. array plus flag
-    if( $use_short_ids )
-      $sel_in = " IN (". implode( ",", $zids). ")";
-    else
-      $sel_in = " IN (" . implode(",", array_map("qq_pack_id",$zids)). ")";
-  } elseif ($zids and is_object($zids) and ($zids->count()>0)) {
-      $use_short_ids = $zids->use_short_ids();
-      $sel_in = " IN ("
-           . implode( ",",
-            ($use_short_ids ? $zids->shortids() : $zids->qq_packedids()))
-           .")";
-      if ($zids->onetype() == "t") {
-          $settags = true;  # Used below
-      }
-  } elseif($zids) {   # Its just one one id, look at the $use_short_ids flag
-    if( $use_short_ids )
-      $sel_in = "='$zids'";
-     else
-      $sel_in = "='".q_pack_id($zids)."'";
-  }
-
-  return array( $sel_in, $settags );
+    // convert array or single value to zids
+    if ( !is_object($zids) ) {
+        $zids = new zids( $zids, $use_short_ids ? 's' : 'l' );
+    }
+    $sel_in = $zids->sqlin( false );
+    if ($zids->onetype() == "t") {
+        $settags = true;  # Used below
+    }
+    return array( $sel_in, $settags );
 }
 
 /** Basic function to get item content. Use this function, not direct SQL queries.
@@ -769,9 +756,8 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     # feeding - don't worry about it - when fed item is updated, informations
     # in content table is updated too
 
-    $SQL = "SELECT content.* FROM content INNER JOIN item
-            ON item.id = content.item_id
-            WHERE item_id $sel_in ORDER BY content.number"; # usable just for constants
+    $SQL = "SELECT * FROM content
+             WHERE item_id $sel_in ORDER BY content.number"; # usable just for constants
 
     $db->tquery($SQL);
 

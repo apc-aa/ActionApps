@@ -161,7 +161,7 @@ function ParseMultiSelectConds (&$conds)
                 reset ($cond['value']);
                 while (list (,$val) = each ($cond['value'])) {
                     $newcond = $cond;
-                    $newcond['value'] = '"'.addslashes ($val).'"'; 
+                    $newcond['value'] = '"'.addslashes ($val).'"';
                     unset ($newcond['valuejoin']);
                     $conds[] = $newcond;
                 }
@@ -378,7 +378,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
             serialize($slices). $neverAllItems.
             ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
             $defaultCondsOperator;
-  $cache_condition = $use_cache AND !$nocache;
+  $cache_condition = ($use_cache AND !$nocache);
 
   if ( $res = CachedSearch( $cache_condition, $keystr )) {
       return $res;
@@ -574,15 +574,17 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
     if (!$slicesText) return new zids();
   }
 
-  $now = now();                                              # select bin -----
+  $now = ((int)(now()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP;     // round up
+  if( $debug ) echo "<br>--$now - ". now();
+
   switch( $type ) {
     case 'ACTIVE':  $SQL .= " item.status_code=1 AND
-        ( item.publish_date <= '$now' OR item.publish_date IS NULL ) ";
+        ( item.publish_date <= '$now' ) ";
                     # condition can specify expiry date (good for archives)
                     if( !( $ignore_expiry_date &&
                            defined("ALLOW_DISPLAY_EXPIRED_ITEMS") &&
                            ALLOW_DISPLAY_EXPIRED_ITEMS) )
-                      $SQL .= " AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
+                      $SQL .= " AND (item.expiry_date > '$now') ";
                     break;
     case 'EXPIRED': $SQL .= " item.status_code=1 AND
                               item.expiry_date <= '$now' ";
@@ -605,6 +607,11 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
 
   if( isset($select_group) )                                 # group by -------
     $SQL .= " GROUP BY $select_group";
+
+  $SQL .= " -- AA slice_id: $slice_id";
+  if ($GLOBALS['slice_info']) $SQL .= ", slice_name: ". $GLOBALS['slice_info']['name'];
+  if ($GLOBALS['vid'])        $SQL .= ", vid: ".        $GLOBALS['vid'];
+  if ($GLOBALS['view_info'])  $SQL .= ", view_name: ".  $GLOBALS['view_info']['name'];
 
   // if neverAllItems is set, return empty set if no conds[] are used
   return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr,
@@ -660,7 +667,7 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
                   ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
                   $defaultCondsOperator;
 
-    $cache_condition = $use_cache AND !$nocache;
+    $cache_condition = ($use_cache AND !$nocache);
     if ( $res = CachedSearch( $cache_condition, $keystr )) {
         return $res;
     }

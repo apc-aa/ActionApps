@@ -343,15 +343,18 @@ class zids {
   # Return appropriate SQL for including in WHERE clause
   # Note that some code still does this by hand,
   function sqlin( $add_column = true ) {
-    if ($this->count() == 0) return "";
-    if ( $add_column )
-        $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
-    if ($this->use_short_ids())
-        return "$column IN ("
-            . implode(",", array_map( "qquote", $this->shortids())) . ")";
-    else
-        return "$column IN ("
-            . implode(",", $this->qqq_packedids()) . ") ";
+      if ($this->count() == 0) return "";
+      if ( $add_column ) {
+          $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
+      }
+      $id_list = implode(",", $this->use_short_ids() ?
+                                    array_map( "qquote", $this->shortids()) :
+                                    $this->qqq_packedids() );
+
+      // '=' is much quicker than 'IN ()' in MySQL 4.0.x
+      // - don't ask me why, please. Honza
+      return (($this->count() == 1) ? " $column = $id_list " :
+                                      " $column IN ($id_list) ");
   }
 
   /** Sorts zids array in the same order as the zids are in $sort_zids */
