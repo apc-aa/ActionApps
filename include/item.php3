@@ -401,7 +401,8 @@ class item {
     trace("+","unalias",htmlentities($text));
     // just create variables and set initial values
     $maxlevel = 0;
-    $level = 0;
+    $level    = 0;
+    $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
 #   return $this->old_unalias_recurent( $text, $remove, $level, $maxlevel );
     $ret = new_unalias_recurent($text, $remove, $level, $maxlevel, $this ); # Note no itemview param
     trace("-");

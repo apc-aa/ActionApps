@@ -42,49 +42,42 @@ $varset = new Cvarset();
 $field_types = GetTable2Array("SELECT * FROM field
                                 WHERE slice_id='AA_Core_Fields..'");
 
-function ShowField($id, $name, $pri, $required, $show, $type="", $alias="") {
+function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $separate=false) {
     global $sess, $field_types, $AA_CP_Session;
     $name = safe($name); $pri=safe($pri);
-    if (substr ($id,0,6) == "alerts")
-        echo "<tr class=tabtxt_field_alerts>";
-    else echo "<tr class=tabtxt>";
-    echo "
-    <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>";
-    if( $type=="new" ){
-        echo '<td>
-             <select name="ftype">';
-        reset($field_types);
-        while(list($k, $v) = each($field_types)) {
-            echo '<option value="'. htmlspecialchars($k).'"> '.
-                              htmlspecialchars($v[name]) ." </option>";
-        }
-        echo "</select>\n
-              </td>";
+
+    $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');
+    if ( $separate ) {
+        $rowclass .= ' separator';
     }
-    else
+    echo "<tr class=\"$rowclass\">
+      <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>";
+    if ( $type=="new" ) {
+        echo '<td>
+              <select name="ftype">';
+        foreach ( $field_types as $k => $v) {
+            echo '<option value="'. htmlspecialchars($k).'"> '.
+                 htmlspecialchars($v['name']) ." </option>";
+        }
+        echo "</select>\n </td>";
+    } else {
         echo "<td>$id</td>";
+    }
     echo "
         <td><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
         <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
-    if( $type=="new")
-        echo "<td>&nbsp;</td><td>&nbsp;</td>";
-    else {
+    if ( $type=="new") {
+        echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
+    } else {
         echo "<td><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
-        if( $type=="in_item_tbl" )
+        if( $type=="in_item_tbl" ) {
             echo "<td>". _m("Delete") ."</td>";
-        else
+        } else {
             echo "<td><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
-
-        if (is_array ($alias))
-            echo "<td><font size='-2'>".join($alias," ")."</font></td>";
-/*        for ($i = 0; $i < count ($alias); ++$i) {
-            if ($alias[$i] != "_#UNDEFINE" && $alias[$i])
-//               $ali = "<a href='se_inputform.php3?fid=$id&AA_CP_Session=$AA_CP_Session#alias".($i+1)."'>$alias[$i]</a>";
-               $ali = $alias[$i];
-            else $ali = "";
-            echo "<td><font size='-2'>$ali</font></td>";
-        }*/
+        }
+        $alias_list = (is_array ($alias) ? join($alias," ") : '');
+        echo "<td class=\"tabhlp\">$alias_list</td>";
     }
     echo "</tr>\n";
 }
@@ -174,7 +167,7 @@ if( $update )
 }
 
   # lookup fields
-$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, alias2, alias3
+$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, alias2, alias3, input_before
         FROM field
         WHERE slice_id='$p_slice_id' ORDER BY input_pri";
 $s_fields = GetTable2Array($SQL);
@@ -200,9 +193,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
-  
-  
-  
+
+
+
 ?>
 
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
@@ -221,24 +214,23 @@ $form_buttons = array("update", "cancel"=>array("url"=>"se_fields.php3"));
 </tr>
 <tr><td colspan=8><hr></td></tr>
 <?php
-  if( isset($s_fields) and is_array($s_fields)) {
-    reset($s_fields);
-    while( list(, $v) = each($s_fields)) {
-    $type = ( $v[in_item_tbl] ? "in_item_tbl" : "" );
-    if( $update ) # get values from form
-      ShowField($v[id], $name[$v[id]], $pri[$v[id]], $req[$v[id]], $shw[$v[id]], $type,
-        array ($v[alias1], $v[alias2], $v[alias3]));
-    else
-      ShowField($v[id], $v[name], $v[input_pri], $v[required], $v[input_show], $type,
-        array ($v[alias1], $v[alias2], $v[alias3]));
-    }
-  }
-    # one row for possible new field
-  ShowField("New_Field", "", "1000", false, true, "new");
+if( isset($s_fields) and is_array($s_fields)) {
+    foreach ( $s_fields as $v) {
+        $type = ( $v['in_item_tbl'] ? "in_item_tbl" : "" );
 
-  FrmTabEnd( $form_buttons, $sess, $slice_id);
-  
-  echo '</form>';
+        if( $update ) {# get values from form
+            ShowField($v['id'], $name[$v['id']], $pri[$v['id']], $req[$v['id']], $shw[$v['id']], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false);
+        } else {
+            ShowField($v['id'], $v['name'], $v['input_pri'], $v['required'], $v['input_show'], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false);
+        }
+    }
+}
+
+// one row for possible new field
+ShowField("New_Field", "", "1000", false, true, "new", "", true);
+FrmTabEnd( $form_buttons, $sess, $slice_id);
+
+echo '</form>';
 
 HtmlPageEnd();
 page_close()?>

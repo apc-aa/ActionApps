@@ -99,6 +99,23 @@ function stringexpand_user($field='') {
             return get_if($auth_user_info[$auth_user]->getValue($field), "");
     }
 }
+
+/** Expands {formbreak:xxxxxx} alias - split of inputform into parts
+ *  @param $part_name - name of the part (like 'Related Articles').
+ */
+function stringexpand_formbreak($part_name='') {
+    $GLOBALS['g_formpart']++;  // Nothing to print, it just increments part counter
+    if ( $part_name ) { // remember part name
+        $GLOBALS['g_formpart_names'][$GLOBALS['g_formpart']] = $part_name;
+    }
+}
+
+/** Expands {formpart:} alias - prints number of current form part */
+function stringexpand_formpart($part_name='') {
+    return get_if($GLOBALS['g_formpart'],'0');  // Just print part counter
+}
+
+
 # text = [ decimals [ # dec_point [ thousands_sep ]]] )
 function parseMath($text) {
     // get format string, need to add and remove # to
@@ -331,6 +348,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {#comments}
     # {debug}
     # {inputvar:<field_id>:part:param}
+    # {formbreak:part_name}
+    # {formpart:}
     # {view.php3?vid=12&cmd[12]=x-12-34}
     # {dequote:already expanded and quoted string}
     # {fnctn:xxx:yyyy}   - expand $eb_functions[fnctn]
