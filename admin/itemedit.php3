@@ -75,13 +75,13 @@ if($cancel) {
            </SCRIPT>';
     } else
       go_url( $r_slice_view_url );
-  } 
+  }
   else if ($return_url)
     echo '<SCRIPT Language="JavaScript"><!--
             document.location = "'. $return_url.'";
             // -->
-           </SCRIPT>';			
-  else 
+           </SCRIPT>';
+  else
     go_url( con_url($sess->url(self_base() .  "index.php3"), "slice_id=$slice_id"));
 }
 $db = new DB_AA;
@@ -378,7 +378,7 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
   # the slice_id is not needed here, but it helps, if someone will try to create
   # anonymous posted form (posted to filler.php3) - there must be slice_id
   $sess->hidden_session();
-  echo '<input type=hidden name="slice_id" value="'. $slice_id .'">'; 
+  echo '<input type=hidden name="slice_id" value="'. $slice_id .'">';
   echo '<input type=hidden name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
   echo '<input type=hidden name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
   </td>
@@ -413,14 +413,18 @@ if($edit || $update || ($insert && $added_to_db)) { ?>
 } else { ?>
    <input type=submit name=insert accesskey=S value="<?php echo L_INSERT." $accesskey"?>">
    <input type=submit name=ins_preview value="<?php echo L_INSERT_PREV ?>"><?php
-} ?>
-&nbsp;<input type=submit name=cancel value="<?php echo L_CANCEL ?>">
+}
+$cancel_url = ($anonymous  ? $r_slice_view_url :
+              ($return_url ? $return_url :
+                             con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id")));
+?>
+&nbsp;<input type=button name=cancel value="<?php echo L_CANCEL ?>" onclick="document.location='<?php echo $cancel_url ?>'">
 </td>
 </tr>
 </table>
 </form>
 <?php
-if( !$encap ) 
+if( !$encap )
     echo "</body></html>";
-page_close(); 
+page_close();
 ?>
