@@ -738,6 +738,7 @@ class item {
 
   # prints "begin".$col."end" if $col="condition", else prints "none"
   # if no cond_col specified - $col is used
+  # if pskip_col == 1, skips $col
   # param: condition:begin:end:none:cond_col
   # if pararam begins with "!", condition is negated
   function f_c($col, $param="") { 
@@ -747,13 +748,14 @@ class item {
     }  
     
     $p = ParamExplode($param);
-    list ($pcond, $pbegin, $pend, $pnone, $pccol) = $this->subst_aliases($p);
+    list ($pcond, $pbegin, $pend, $pnone, $pccol, $pskip_col) = $this->subst_aliases($p);
 
     $cond = ( $p[4] ? $pccol : $this->subst_alias($col) );
     if( $cond != $pcond )
       $negate = !$negate;
-    return  ($negate ? $pnone : 
-      $pbegin. DeHtml($this->getval($col), $this->getval($col,'flag')) .$pend); 
+    if (!$pskip_col) 
+        $coltxt = DeHtml($this->getval($col), $this->getval($col,'flag'));
+    return  ($negate ? $pnone : $pbegin. $coltxt .$pend); 
   }
   
   # calls user defined function in file /include/usr_aliasfnc.php3
