@@ -56,6 +56,10 @@ define("PS_EDIT_ALL_ITEMS", "T");  // permission to change all items
 define("PS_USERS", "U");           // permission to manage users
 define("PS_FULLTEXT", "X");        // permission to change item fulltext view
 
+# permissions for "site" module. The letters are the same as for slice module.
+define("PS_MODW_EDIT_CODE", PS_EDIT_ALL_ITEMS);
+define("PS_MODW_SETTINGS", PS_EDIT);
+
 // numbers 1,2,... in perms record (objectclass apcacl atribute apcaci in LDAP)
 // on resolving permissions are this numbers replaced by real permissions defined in $perms_roles_perms
 $perms_roles_id = array("AUTHOR"=>"1",            // can write items and edit his items
@@ -231,50 +235,4 @@ function IsSuperadmin() {
   return $r_superuser[AA_ID];
 }
 
-/*
-$Log$
-Revision 1.9  2001/09/27 16:05:59  honzam
-Generalized permission handling for future support for more modules
-
-Revision 1.8  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.7  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.6  2001/02/26 17:22:30  honzam
-color profiles, itemmanager interface changes
-
-Revision 1.5  2001/01/22 17:32:49  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.3  2000/08/01 14:32:33  kzajicek
-AA-super access level takes precedence
-
-Revision 1.2  2000/07/28 15:11:41  kzajicek
-Functions DeleteUserComplete and buggy DeleteGroupComlete are now
-obsolete, DelUser and DelGroup do the job.
-
-Revision 1.1.1.1  2000/06/21 18:40:43  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:25  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.9  2000/06/12 19:58:36  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.8  2000/06/09 15:14:12  honzama
-New configurable admin interface
-
-Revision 1.7  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.6  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-*/
 ?>

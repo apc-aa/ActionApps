@@ -48,13 +48,10 @@ if (!get_magic_quotes_gpc()) {
   $$k = Myaddslashes($v); 
 }
 
-if($encap == "false")    # used in itemedit for anonymous form
-  $encap = false;        # it must be here, because the variable is rewriten
-                         # if the get_magic_quotes_gpc()==false (see above)
+# modules other than slices are in deeper directory -> $directory_depth
+require "$directory_depth../include/config.php3";
 
-require "../include/config.php3";
-
-if($free)                # anonymous authentication
+if($free)            // anonymous authentication
   $nobody = true;
 
 require $GLOBALS[AA_INC_PATH] . "locauth.php3";
@@ -103,9 +100,10 @@ $sess->register("p_slice_id");
 $sess->register("r_config_file");
 $sess->register("r_slice_headline");    // stores headline of slice
 $sess->register("r_slice_view_url");    // url of slice
-$sess->register("r_stored_slice");      // id of slice which values are in r_slice_headline, r_slice_view_url
+$sess->register("r_stored_module");     // id of module which values are in r_slice_headline, r_slice_view_url
 $sess->register("r_hidden");            // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
 $sess->register("r_profile");           // stores profile for loged user and current slice
+$sess->register("wrong_language_file"); // cares about the infinite loop with wrong language file
 //$sess->register("r_fields");            // array of fields for current slice
 
 if( !$save_hidden ) {      # sometimes we need to not unset hidden - popup for related stories ...
@@ -116,69 +114,76 @@ if( !$save_hidden ) {      # sometimes we need to not unset hidden - popup for r
   }
 }  
 
-$ldap_slices = GetUsersSlices( $auth->auth[uid] );
+$perm_slices = GetUsersSlices( $auth->auth[uid] );
 
-if( !$New_slice AND !$Add_slice AND is_array($ldap_slices) AND (reset($ldap_slices)=="") ) {
+if( !$New_slice AND !$Add_slice AND is_array($perm_slices) AND (reset($perm_slices)=="") ) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS, "standalone");
   exit;
 }  
 
 $db  = new DB_AA;
 
-// lookup (not deleted slices) 
-$SQL= " SELECT id, name FROM slice WHERE deleted<1 ORDER BY name";
+# if we want to use random number generator, we have to use srand just once per 
+# script. That's why we called it here. Do not use it on other places in scripts
+srand((double)microtime()*1000000);      
+
+# get all modules
+$SQL= "SELECT id, name, type, deleted FROM module ORDER BY name";
 $db->query($SQL);
-while($db->next_record()) 
-  $all_slices[unpack_id($db->f(id))] = $db->f(name);
+while($db->next_record()) {
+  $up = unpack_id($db->f('id'));
+  
+  # g_modules is global array which holds user editable modules
+  # hide the deleted slices (if the user is not superadmin)
 
-if( $ldap_slices == "all" ) {  // super admin - permission to manage all slices (deleted too)
-  $SQL= " SELECT id, name FROM slice ORDER BY name";
-  $db->query($SQL);
-  while($db->next_record()) {
-    $up = unpack_id($db->f(id));
-    $g_slices[$up] = $db->f(name);
-  }
-} else {
-  # find names for slice ids and hide the deleted ones
-  reset($ldap_slices);  
-  while( list($slid,) = each($ldap_slices) ) {
-    if( $all_slices[$slid] != "" )  
-      $g_slices[$slid] = $all_slices[$slid];
-  }  
-}  
-
+  #        superadmin         or       user have permission to the slice
+  if( ($perm_slices == "all") OR ( !$db->f('deleted') AND $perm_slices[$up] ) )
+    $g_modules[$up] = array('name' => $db->f('name'),
+                            'type' => ( ($db->f('type') AND $MODULES[$db->f('type')] ) ? $db->f('type') : 'S'));
+}
+  
 if( !$Add_slice AND !$New_slice ) {
-  if( !is_array($g_slices)) {   // this slice was deleted
+  if( !is_array($g_modules)) {   // this slice was deleted
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
   }  
   if(!$slice_id) {       // user is here for the first time -  find any slice for him
-    reset($g_slices);
-    $slice_id = key($g_slices);
+    reset($g_modules);
+    $slice_id = key($g_modules);   # the variable slice_id (p_slice_id respectively)
+                                   # do not hold just id of slices, but it possibly
+                                   # holds id of any module. The name comes from
+                                   # history, when there was no other modules 
+                                   # than slices
+                                   
       # skip AA Core Field slice, if possible
-    if( ($slice_id == "41415f436f72655f4669656c64732e2e") AND next($g_slices) ) 
+    if( ($slice_id == "41415f436f72655f4669656c64732e2e") AND next($g_modules) ) 
       # 41415f436f72655f4669656c64732e2e is unpacked "AA_Core_Fields.."
-      $slice_id = key($g_slices);
+      $slice_id = key($g_modules);
     $p_slice_id = q_pack_id($slice_id);
   }    
 
-  if( !isset($g_slices[$slice_id])) {   // this slice was deleted
+  if( !isset($g_modules[$slice_id])) {   # this module was deleted
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
   }  
   $p_slice_id = q_pack_id($slice_id);
-  if( $slice_id != $r_stored_slice ) {                     // it is not cached - we must get it
+  if( $slice_id != $r_stored_module ) {  # it is not cached - we must get it
 
-    # Get slice information and store it to session veriables
-    $SQL= " SELECT * FROM slice WHERE id='$p_slice_id'"; 
+    # go to main administration script for the module, if the module changed
+    $module_change = ($r_stored_module AND ($g_modules[$slice_id]['type'] != $g_modules[$r_stored_module]['type']));
+
+    # Get module informations and store them to session variables
+    $r_slice_headline = $g_modules[$slice_id]['name'];
+
+#    $SQL= "SELECT * FROM ". $MODULES[ $g_modules[$slice_id]['type'] ]['table'] . 
+    $SQL= "SELECT * FROM module ". 
+          " WHERE id='$p_slice_id'"; 
     $db->query($SQL);
     if($db->next_record()) {
-      $r_slice_headline = $db->f(name);
-      $r_config_file[$slice_id] = $db->f(lang_file);
-      $r_stored_slice = $slice_id;
-      $r_slice_view_url = ($db->f(slice_url)=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
-                                      : $db->f(slice_url));
-      list($r_fields,) = GetSliceFields($slice_id);
+      $r_config_file[$slice_id] = $db->f('lang_file');
+      $r_stored_module = $slice_id;
+      $r_slice_view_url = ($db->f('slice_url')=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
+                                      : $db->f('slice_url'));
     }
 
     # Get user profile for the slice
@@ -206,105 +211,45 @@ if( !$Add_slice AND !$New_slice ) {
 //print_r( $r_profile );
   }  
   
-  // The config file not loaded -> the slice type was changed
-  if( CONFIG_FILE != $r_config_file[$slice_id] ) {
-    page_close();             // save variables
-
-
-    if( $free )  // anonymous login
-      if( $encap ) {
-        $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
-        echo '<SCRIPT Language="JavaScript"><!--
-                document.location = "'. $sess->url($to_go_url) .'";
-              // -->
-             </SCRIPT>';
-      } else
-        go_url( $sess->url($PHP_SELF));
-    else 
-      go_url( $sess->url($PHP_SELF));
+  # if we switch to another module type, we should go to module main page
+  if( $module_change ) {
+    page_close();
+	//if ($g_modules[$slice_id]['type'] != 'S') { echo "Chacha"; exit; }
+    go_url( $sess->url($MODULES[$g_modules[$slice_id]['type']]['directory']."index.php3") );
     exit;
   }
+
+	// The config file not loaded -> the slice type was changed
+  	if( CONFIG_FILE != $r_config_file[$slice_id] ) {
+    	if (++$wrong_language_file == 3) {
+			echo "<b>WRONG LANGUAGE FILE</b>: you must have<br>
+				 define(\"CONFIG_FILE\",\"file_name.php3\") in the language file, with file_name.php3 replaced by the real file name (which seems to be ".$r_config_file[$slice_id].").";
+			page_close();
+			exit;
+		}
+
+	    page_close();             // save variables
+
+    	if( $free )  {// anonymous login
+	    	if( $encap ) {
+		        $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+        		echo '<SCRIPT Language="JavaScript"><!--
+                		document.location = "'. $sess->url($to_go_url) .'";
+		              // -->
+        		     </SCRIPT>';
+	        } else
+      			go_url( $sess->url($PHP_SELF));
+		} else 
+      		go_url( $sess->url($PHP_SELF));
+	    exit;
+    }
 }
-/*
-$Log$
-Revision 1.20  2002/03/06 12:39:36  honzam
-include this file just once
 
-Revision 1.19  2002/01/15 13:04:34  honzam
-fixed bug of not displayed inputform for systems with 'magic quotes' off
+# if we switch to another module type, we should go to module main page
+if( $module_change ) {
+  page_close();
+  go_url( $sess->url($MODULES[$g_modules[$slice_id]['type']]['directory']."index.php3") );
+  exit;
+}
 
-Revision 1.18  2002/01/10 13:56:58  honzam
-fixed bug in user profiles
-
-Revision 1.17  2001/12/18 12:19:14  honzam
-new user profile feature, scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.16  2001/09/27 15:57:59  honzam
-Starting with slice other than AA Core for admins, New related stories support
-
-Revision 1.15  2001/05/18 13:55:04  honzam
-New View feature, new and improve d search function (QueryIDs)
-
-Revision 1.14  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.13  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-Revision 1.11  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.10  2001/01/10 15:49:16  honzam
-Fixed problem with unpack_id (No content Error on index.php3)
-
-Revision 1.9  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.8  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.7  2000/11/20 16:45:58  honzam
-fixed bug with anonymous posting to other aplications than news
-
-Revision 1.6  2000/11/15 16:20:41  honzam
-Fixed bugs with anonymous posting via SSI and bad viewed item in itemedit
-
-Revision 1.5  2000/10/10 18:28:00  honzam
-Support for Web.net's extended item table
-
-Revision 1.4  2000/08/03 15:36:52  kzajicek
-The WDDX warning deleted, there are other potential redirects in other files
-
-Revision 1.3  2000/08/03 15:18:41  kzajicek
-The WDDX warning is printed after possible header() call
-
-Revision 1.2  2000/08/03 12:36:21  honzam
-Session variable r_hidden used instead of HIDDEN html tag.
-
-Revision 1.1.1.1  2000/06/21 18:40:39  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:24  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.10  2000/06/12 19:58:36  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.9  2000/06/09 15:14:11  honzama
-New configurable admin interface
-
-Revision 1.8  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.7  2000/03/29 15:54:47  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.6  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>

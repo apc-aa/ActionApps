@@ -23,21 +23,6 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-/*
-$Log$
-Revision 1.2  2001/10/08 16:41:21  honzam
-bugfix: no slices were displayed
-
-Revision 1.1.1.1  2000/06/21 18:39:54  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:45  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.2  2000/06/12 21:40:56  madebeer
-added $Id $Log and $Copyright to some stray files
-
-*/
 ?>
 <title><?php echo L_FEEDTO_TITLE ?></title>
 </head><?php
@@ -53,12 +38,14 @@ echo '<body>
 
 $i=1;     // slice checkbox counter
 $app=1;   // approved checkbox conter
-if( is_array($g_slices) AND (count($g_slices) > 1) ) {
-  reset($g_slices);
-  while(list($k, $v) = each($g_slices)) { // you can feed only if you have autor or editor perms in destination slices
-    if ( ((string)$slice_id != (string)$k) AND    
+if( is_array($g_modules) AND (count($g_modules) > 1) ) {
+  reset($g_modules);
+  while(list($k, $v) = each($g_modules)) { # you can feed only if you have autor or editor perms in destination slices
+    if( $v['type'] != 'S' )                
+      continue;                            # we can feed just between slices ('S')
+    if( ((string)$slice_id != (string)$k) AND    
           CheckPerms( $auth->auth["uid"], "slice", $k, PS_EDIT_SELF_ITEMS) ) {
-      echo '<tr><td>'. safe($v). '</td>
+      echo '<tr><td>'. safe($v['name']). '</td>
             <td align=center><input type=checkbox name=s'. $i++ .' value="'. $k .'"></td>';
       if( CheckPerms( $auth->auth["uid"], "slice", $k, PS_ITEMS2ACT) )
         echo '<td align=center><input type=checkbox name=a'. $app++ .' value="'. $k .'"></td>';

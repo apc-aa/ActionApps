@@ -23,7 +23,7 @@ http://www.apc.org/
 # $slice_id - should be defined
 # $r_slice_view_url - should be defined
 # $editor_page or $usermng_page or $settings_page - should be defined
-# $g_slices - should be defined
+# $g_modules - should be defined
 
 if( !$slice_id )
   $r_slice_headline = L_NEW_SLICE_HEAD;
@@ -59,55 +59,6 @@ $nb_usermng = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
   '<span class=nbdisable>'. L_USER_MANAGEMENT .'</span>' :
   '<a href="'. $sess->url("um_uedit.php3") .'"><span class=nbenable>'. L_USER_MANAGEMENT .'</span></a>');
 
-/*
-$Log$
-Revision 1.8  2001/09/27 16:00:39  honzam
-New related stories support
-
-Revision 1.7  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.6  2001/02/26 17:22:30  honzam
-color profiles, itemmanager interface changes
-
-Revision 1.5  2001/02/23 11:18:04  madebeer
-interface improvements merged from wn branch
-
-Revision 1.4  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.3  2000/07/12 14:38:19  kzajicek
-Switch to slice printed only when meaningful
-
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.1.1.1  2000/06/21 18:40:42  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:25  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.7  2000/06/12 19:58:36  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.6  2000/06/09 15:14:12  honzama
-New configurable admin interface
-
-Revision 1.5  2000/05/30 09:11:39  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.4  2000/03/29 15:54:47  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.3  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>
 <TABLE border=0 cellpadding=0 cellspacing=0>
   <TR>
@@ -123,23 +74,9 @@ config.inc
   <TR>
     <td align=center class=navbar><?php echo " $nb_view | $nb_additem | $nb_manager | $nb_settings | $nb_usermng "; ?></td>
     <TD align=center class=navbar><?php
-      if( is_array($g_slices) AND (count($g_slices) > 1) ) {
-        echo "<form name=nbform enctype=\"multipart/form-data\" method=post 
-                    action=\"". $sess->url($PHP_SELF) ."\">
-              <span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>
-              <select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=").'"+this.options[this.selectedIndex].value\'>';	
-        reset($g_slices);
-        while(list($k, $v) = each($g_slices)) { 
-          echo "<option value=\"". htmlspecialchars($k)."\"";
-          if ( ($slice_id AND (string)$slice_id == (string)$k)) 
-            echo " selected";
-          echo "> ". htmlspecialchars($v) ." </option>";
-        }
-        if( !$slice_id )   // new slice
-          echo '<option value="new" selected> '. L_NEW_SLICE_HEAD .'</option>';
-        echo "</select></form>\n";
-      } else
-        echo "&nbsp;"; ?>
+
+PrintModuleSelection(); ?>
+
     </TD>
   </TR>
 </TABLE>

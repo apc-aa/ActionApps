@@ -52,6 +52,9 @@ if( $db->f(deleted) < 1 )
 $SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_delslice'";
 $db->query($SQL);
 
+$SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_delslice'";
+$db->query($SQL);
+
 # delete fields
 $SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_delslice'";
 $db->query($SQL);
@@ -100,20 +103,5 @@ page_close();                                // to save session variables
 go_url(con_url($sess->url(self_base() . "slicedel.php3"), 
                                           "Msg=".rawurlencode(L_DELSLICE_OK)));
 
-/*
-$Log$
-Revision 1.4  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.3  2001/03/20 15:24:05  honzam
-working version of slice deletion
-
-Revision 1.2  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.1  2001/02/26 17:26:08  honzam
-color profiles
-
-*/
 ?>
 
