@@ -22,10 +22,10 @@
 <a href="#javascript">What does it means the "JavaScript item exchange" View?</a><br><br>
 <a href="#sliceparam">Which parameters can I use with slice.php3</a><br><br>
 <a href="#viewparam">Which parameters can I use with view.php3</a><br><br>
-<a href="#ids">How to make item url shorter?</a>
-<a href="#"></a>
-<a href="#"></a>
-<a href="#"></a>
+<a href="#ids">How to make item url shorter?</a><br><br>
+<a href="#archive">How to display archive (expired items)?</a><br><br>
+<a href="#"></a><br><br>
+<a href="#"></a><br><br>
 <a href="#"></a>
 
 
@@ -248,11 +248,14 @@
   define( "FLAG_FEED", 2 );<br>
   define( "FLAG_FREEZE", 4 );<br>
   define( "FLAG_OFFLINE", 8 );<br>
+  define( "FLAG_UPDATE", 16 );<br>
   <br>
   # states of feed field of field table<br>
   define( "STATE_FEEDABLE", 0 );<br>
   define( "STATE_UNFEEDABLE", 1 );<br>
   define( "STATE_FEEDNOCHANGE", 2 );<br>
+  define( "STATE_FEEDABLE_UPDATE",3);<br>
+  define( "STATE_FEEDABLE_UPDATE_LOCKED",4);<br>
   <br>
   # relation table flags<br>
   define( "REL_FLAG_FEED", 2 ); # 2 - just to be compatible with content table<br>
@@ -272,6 +275,10 @@
   <li>feedable, but locked (<i>STATE_FEEDNOCHANGE</i>) - field is copied to new 
     slice, but the flag <i>FLAG_FREEZE</i> is set for the field, so user in new 
     slice can display the content of this field, but she can't change the value</li>
+  <li>feedable with update(<i>STATE_FEEDABLE_UPDATE</i>) - the same as STATE_FEEDABLE, but if content of source field is changed, the content of destination field is updated too. Editor of destination slice can change value of such field, but after someone change the field in source slice, the value is rewritten.<br>
+  <li>feedable with update and locked (<i>STATE_FEEDABLE_UPDATE_LOCKED</i>) - the same as STATE_FEEDABLE_UPDATE, but editor of destination slice can't chahge value of such field.<br>
+    <br>
+  </li>
 </ul>
 These setting can be done on <font color="#663333">"Admin" -> "Main settings - 
 Fields" -> "Edit" -> "Feeding"</font> page.<br>
@@ -296,13 +303,7 @@ Depending on <i>field</i> table flags, the flags for <i>content</i> table are se
   The ralation table will be used for another purposes in future too (for holding 
   discussion threads, ...), so each record for feeding if flaged as <i>REL_FLAG_FEED</i>.<br>
   <br>
-  <b>Note</b>: The information from relation table could be used for <i>content 
-  sharing</i> in the future. The <i>content sharing</i> means, that if the content 
-  is changed in source slice, it is changed in destination slice too. For that 
-  purpose could be new <i>STATE_FEED&amp;UPDATE</i> flag itroduced. After updating 
-  the content of such field, the <i>relation</i> table is checked for depending 
-  items (= fed items from this item) and the appropriate fields are updated too. 
-  (or is there other solution?)</p>
+</p>
 <br><br>
 
 <a name="aliases"></a>
@@ -493,7 +494,7 @@ modificators are now:
 <tr><td class=tabtit>Operator modificator</td><td class=tabtit>Usage</td><td class=tabtit>Description</td></tr>
 <tr><td valign=top class=tabfnc>d</td><td>d:&gt;=</td><td>Used for english style datum transformation. If used, the "value" can be in format like '06/24/2001' or '10 September 2000' see <a href="http://php.net/strtotime">strtotime</a> PHP function definition</td></tr>
 <tr><td valign=top class=tabfnc>e</td><td>e:&gt;=</td><td>Used for european style datum transformation. If used, the "value" can be in format like '24.12.2001'</td></tr>
-<tr><td valign=top class=tabfnc>-</td><td>-:&gt;=</td><td>Used for comparison with current time. If used, the "value" is substracted from current time (time()) and result value is used in comparison. The value should be in seconds. This modifier is good for displaying items newer than two days, for example.</td></tr>
+<tr><td valign=top class=tabfnc>m</td><td>m:&gt;=</td><td>Used for comparison with current time. If used, the "value" is substracted from current time (time()) and result value is used in comparison. The value should be in seconds. This modifier is good for displaying items newer than two days, for example.</td></tr>
 </table><br>
 - <b>&lt;field_id&gt;</b> atributes, where are specified ids of fields, where to search (note, that there can be specified more than one field. The value for those atributes are allways 1 - as shown in example)<br><br></li>
 <li>It is possible to specify search order of found items. For this purpose is there sort[] variable, where the last index specifies the id of field we wont sort listing by. The value can by either<br>
@@ -657,6 +658,7 @@ document.write("&lt;/TABLE&gt;")<br>
 <tr><td valign=top class=tabfnc nowrap>cmd[23]=i-<i>24</i>-<i>7464647</i></td><td><i>view</i> number <i>23</i> has to display item <i>7464647</i> in format defined in view <i>24</i></td></tr>
 <tr><td valign=top class=tabfnc>cmd[23]=c-<i>1</i>-<i>ICT</i></td><td>display <i>view</i> no <i>23</i> in place of view no <i>23</i> (that's normal), but change <i>value</i> for condition <i>1</i> to "<i>ICT</i>"</td></tr>
 <tr><td valign=top class=tabfnc nowrap>cmd[23]=c-<i>1</i>-<i>ICT</i>-<i>2</i>-<i>Jane</i></td><td>the same as above, but there are redefined two conditions. All three conditions could be redefined</td></tr>
+<tr><td valign=top class=tabfnc>cmd[23]=d-<i>headline........</i>-<i>LIKE</i>-<i>Profit</i>-<i>source.........1</i>-<i>=</i>-<i>Ecn</i>-<i>publish_date....</i>-<i>m:&gt;</i>-<i>86400</i></td><td>displays <i>view</i> no 23 and redefines the conditions. The conditions are in format <i>field</i>-<i>operator</i>-<i>value</i>. For list of possible <i>operators</i> see <a href="#search">search</a> caption. The <i>operators</i> could be with its <a href="#opmodifiers">modifiers</a>, too. The unlimited number of conditions should be there specified. The speciefied conditions allways replaces all conditions specified in view definition (through admin interface). There are three diferences from <i>cmd[]-c</i> command - 1)operators and fields are specified, 2) default view conditions are ingnored, 3) there can be unlimitted number of conditions. The example would show items in which the <i>headline</i> contains '<i>Profit</i>' and <i>source</i> field is '<i>Ecn</i>' and the item is newer that one day.</td></tr>
 <tr><td valign=top class=tabfnc>als[alias]</td><td>user alias definition - you can define your own aliases in url (for both - slice.php3 and view.php3). Aliases names MUST!!! be 8 characters long. Don't forgot, that the alias value have to be urlencoded.<br><i>Example:</i> als[MY_ALIAS]=Summary%20Page (or maybe better: als%5BMY_ALIAS%5D=Summary%20Page)<br>defines alias _#MY_ALIAS. If used in formatstring ('Admin - Design Index' for example), it prints 'Summary Page'</td></tr>
 </table>
 <br><br>
@@ -693,7 +695,22 @@ http://kalendar.ecn.cz/index.shtml?x=27968
 scrollers and it is need not to be sent, if you want to point to some 
 article.</p>
 
+<br><br>
+<a name="archive"></a>
+<h3>How to display archive (expired items)?</h3>
+<p>The expired items normaly is not visible on public website. However, the possibility to show expired items is sometimes usefull - mainly for archives. On the other hand, the display of expired items could be unwanted feature for some purposes.</p>
+<p>There are two steps to do:
+<ol>
+  <li>Check, if display of expired items is permitted by setting ALLOW_DISPLAY_EXPIRED_ITEMS constant to true in config.php3</li>
+  <li>Define search condition where '<i>expiry_date.....</i>' is specified. How to define search conditionf look on <a href="#search">search</a> and <i>cmd[]-c</i> or <i>cmd[]-d</i> <a href="#viewparam">parameters to view.php3</a><br>  Example of view.php3 parameter: .../view.php3?vid=23&amp;cmd[23]=d-expiry_date.....-e:>-1.1.1998</li>
+</ol></p>
 
+
+
+
+<br><br>
+<a name=""></a>
+<h3></h3>
 
 <br><br>
 <a name=""></a>

@@ -30,6 +30,12 @@ http://www.apc.org/
                      #   condition 1 to "Environment".
                      # cmd[23]=c-1-Environment-2-Jane means the same as above, 
                      #   but there are redefined two conditions
+                     # cmd[23]=d-headline........-LIKE-Profit-publish_date....-m:>-86400
+                     #   generalized version of cmd[]-c
+                     #      - fields and operators specifed
+                     #      - unlimited number of conditions
+                     #      - all default conditions from view definition are 
+                     #        completely redefined by the specified ones
 #optionaly als[]     # user alias - see slice.php3 for more details
 
 require "./include/config.php3";
@@ -147,6 +153,14 @@ switch ($command[0]) {
              if( $command[5] ) 
                $param_conds[$command[5]] = $command[6];
              break;
+  case 'd':  $i=1;
+             while( $command[$i] ) {
+               $conds[]=array( 'operator' => $command[$i+1],
+                               'value' => $command[$i+2],
+                               $command[$i] => 1 );
+               $i += 3;
+             }
+             break;
 }              
 
 # gets view data
@@ -190,7 +204,9 @@ switch( $view_info['type'] ) {
   case 'list':
   case 'rss':
   case 'script':
-    $conds = GetViewConds($view_info, $param_conds);
+
+    if (! $conds )  # conds could be defined via cmd[]=d command
+      $conds = GetViewConds($view_info, $param_conds);
     $sort  = GetViewSort($view_info);
     list($fields,) = GetSliceFields($slice_id);
     $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by );
@@ -217,6 +233,9 @@ switch( $view_info['type'] ) {
 
 /*
 $Log$
+Revision 1.7  2001/08/02 20:04:53  honzam
+new - stronger - view condition redefining parameter cmd[]-d
+
 Revision 1.6  2001/07/31 16:32:50  honzam
 Added '-' operator modifier for relative time conditions. The operator was implemented to view definition too (se_view.php3)
 

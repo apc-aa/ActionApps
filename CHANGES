@@ -1,3 +1,6 @@
+08/02/01 - new cmd[]-d parameter to view.php3 which is much stronger condition
+           defining parameter than cmd[]-c
+         - possibility to display expired items (for archves, ...)  
 07/31/01 - new - display condition redefining parameter to view.php3 (cmd[]=c)
          - added LIKE operator for view conditions
          - added '-' operator modifier for relative time conditions. 
