@@ -43,6 +43,7 @@ if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
+#$debugimport=1;
 
 // Prooves whether this ID already exists in the slices table,
 // changes the ID to a new chosen one
@@ -251,15 +252,16 @@ if ($Cancel)
 	go_url( $sess->url(self_base() . "index.php3"));
 	
 $IDconflict = false;
+if ($debugimport) huhl("Slice_def=",htmlentities($slice_def));
 $slice_def_bck = $slice_def = stripslashes($slice_def);
 $imported_count = 0;
-
 
 // insert xml parser
 require_once "./sliceimp_xml.php3";
 
 # import via exported file
 if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
+  if ($debugimport) huhl("Importing a file");
   $dirname = IMG_UPLOAD_PATH;
   $fileman_used=false;
   $dest_file = $_FILES['slice_def_file']['name'];

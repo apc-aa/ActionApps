@@ -112,13 +112,14 @@ function si_err($str) {
 // Create and parse data
 function sliceimp_xml_parse($xml_data,$dry_run=false,
         $force_this_slice=false) { 
+    global $debugimport;
     set_time_limit(600); // This can take a while
     $xu = new xml_unserializer();
-    #huhl("Importing data=",$xml_data);
+    if ($debugimport) huhl("Importing data=",htmlentities($xml_data));
     $i = $xu->parse($xml_data);  // PHP data structure
-    #huhl("Parsed data=",$i);
+    if ($debugimport) huhl("Parsed data=",$i);
     $s = $i["SLICEEXPORT"][0];
-    if (! isset($s)) si_err(_m("\nERROR: File doesn't contain SLICEEXPORT"));
+    if (! $s) si_err(_m("\nERROR: File doesn't contain SLICEEXPORT"));
     if ($s[PROCESS]) {
         $v = $s[PROCESS] . "_preimport"; 
         print("\nPre-processing with $v");

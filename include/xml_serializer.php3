@@ -90,7 +90,7 @@ class xml_unserializer {
         $this->chardata = "";
         $this->top = null;
         $this->coding = "";
-        #$this->debug = true;
+        $this->debug = false;
         $this->parser = xml_parser_create();
         xml_set_object($this->parser, $this);
         xml_set_element_handler($this->parser, "startElement", "endElement");
@@ -106,13 +106,17 @@ class xml_unserializer {
     }
 
     function startElement($parser, $name, $attrs) {
+        global $debugimport;
         if ($this->debug) { huhl("\n:start='".$name."'",$attrs,$this); }
         array_push($this->stack,$this->top);
         array_push($this->namestack,$this->name);
+        array_push($this->codingstack,$this->coding);
         if ($attrs["CODING"]) {
             $this->coding = $attrs["CODING"];
             unset($attrs["CODING"]);
-        }
+        } else {
+            $this->coding = "";
+        } 
         if (($name == "T" || is_callable($name . "_xml_unserialize")) 
              && isset($attrs["TNAME"])) {  
             $this->name = $attrs["TNAME"];
@@ -125,7 +129,7 @@ class xml_unserializer {
         } 
         else $this->top = null;
         $this->chardata = "";
-#    print("\nSTART:$name: els=");print_r($this->stack);print("Top=");print_r($this->top);
+#        if ($debugimport) huhl("START:$name: els=",$this->stack,"Top=",$this->top); 
     }
 
     // End Element, two choices, either data, or attributes.
@@ -151,6 +155,7 @@ class xml_unserializer {
             $t = $this->top; 
             $this->top = array_pop($this->stack);
             $this->name = array_pop($this->namestack);
+            $this->coding= array_pop($this->codingstack);
             if ($this->chardata) { 
                 $t["CHARDATA"] = $this->chardata; 
                 $this->chardata = "";
@@ -175,9 +180,9 @@ class xml_unserializer {
             } else { // Came from structure export, name from attribute
                 $this->top[$n] = $this->chardata; // possibly empty
             }
-            $this->chardata = ""; $this->coding="";
+            $this->chardata = ""; $this->coding = "";
         }
-    #    print("\nEND:$name: els=");print_r($this->stack);print("Top=");print_r($this->top);
+        if ($this->debug)  huhl("END:$name: els=",$this->stack,"Top=",$this->top);
     }
 
     function charD($parser, $data) {
