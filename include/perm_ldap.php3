@@ -249,7 +249,7 @@ function AddGroup ($group, $flags = 0) {
 
 // deletes a group in LDAP permission system
 // $group_id is DN
-function DelGroup ($group_id, $flags = 2) {
+function DelGroup ($group_id, $flags = 3) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -690,6 +690,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.11  2000/08/14 09:22:17  kzajicek
+Fixed incorrect default for in DelGroup
+
 Revision 1.10  2000/08/11 17:12:48  kzajicek
 E-mail is not required
 

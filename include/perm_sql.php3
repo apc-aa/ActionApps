@@ -433,7 +433,7 @@ function AddGroup ($group, $flags = 0) {
 
 // deletes an group in permission system
 // $group_id is DN
-function DelGroup ($group_id, $flags = 2) {
+function DelGroup ($group_id, $flags = 3) {
   $db  = new DB_AA;
   
   // cancel other people's membership in this group
@@ -621,6 +621,9 @@ function A2sql_update ($table, $keyField, $aData) {
 
 /*
 $Log$
+Revision 1.12  2000/08/14 09:22:17  kzajicek
+Fixed incorrect default for in DelGroup
+
 Revision 1.11  2000/08/09 15:13:24  kzajicek
 Fixed incorrect default for  in DelUser
 
