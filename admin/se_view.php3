@@ -43,8 +43,10 @@ function show_digest_filters ()
         FrmInputText("filters[$rowid][description]", _m("Alerts Selection")." ".($irow+1)." "._m("Description"), $db->f("description"), 100, 50, false);
         $condrows = 1 + strlen ($db->f("conds")) / 50;
         if ($condrows > 4) $condrows = 4;
-        FrmTextarea("filters[$rowid][conds]", "conds[]", $db->f("conds"), $condrows, 50, false); 
+        FrmTextarea("filters[$rowid][conds]", "conds[]", $db->f("conds"), $condrows, 50, false,
+            "", "http://apc-aa.sourceforge.net/faq/#215"); 
     }
+    FrmStaticText ("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
 }
 
 function store_digest_filters ()
