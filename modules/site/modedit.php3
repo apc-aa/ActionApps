@@ -29,6 +29,7 @@ if( $template['W'] )
 
 $directory_depth = "../";
 require "../../include/init_page.php3";
+require $GLOBALS[AA_INC_PATH]."en_site_lang.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
