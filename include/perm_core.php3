@@ -305,7 +305,7 @@ function IsCatPerm($perm, $cat_path) {
 
     // go from leaves to root and check, if some permisions are defined
     // if defined on some level - stop and check
-    for( $i=$myIndex-1; $i>0; $i--) {
+    for( $i=$myIndex-1; $i>=0; $i--) {
         $perm2cat = $permission_to["slice"][Links_Category2SliceID($parents[$i])];
 
         if( $perm2cat ) {      // specific perms are set
