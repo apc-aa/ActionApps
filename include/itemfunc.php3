@@ -47,7 +47,6 @@ function default_fnc_($param) {
   return "";
 }
 
-
 /*
 Code Added by Ram Prasad on 05-March-2002
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,9 +55,9 @@ Function:
 return the query string variable( as specified in the field settings) as default value
 */      
 // Begin Ram's Code
-function default_fnc_variable($param) 
-{
-	return ($GLOBALS[$param]);
+function default_fnc_variable($param) {
+  # this should be changed - we can't display any global variable to any sliceadmin
+  return ($GLOBALS[$param]);
 }
 // End of Ram's Code
 # ----------------------- insert functions ------------------------------------
@@ -68,7 +67,7 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
 
   #huh( "insert_fnc_qte($item_id, $field, $value, $param)"); 
   #p_arr_m($field);
-  
+
   if( $field[in_item_tbl] ) {
     if( ($field[in_item_tbl] == 'expiry_date') && 
         (date("Hi",$value['value']) == "0000") )
@@ -233,11 +232,13 @@ function show_fnc_freeze_txt($varname, $field, $value, $param, $html) {
 
 function show_fnc_edt($varname, $field, $value, $param, $html){
   echo $field[input_before];
-  $rows      = ($param ? $param : 4);
+  list($rows, $cols) = explode(':', $param);
+  if ($rows == 0) $rows = 10;
+  if ($cols == 0) $cols = 70;
   $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
 	$list_fnc_edt [] = $field['name'];
   FrmRichEditTextarea($varname, $field['name'], $value[0]['value'], 
-   $rows, 60, $field[required], $field[input_help], $field[input_morehlp], 
+   $rows, $cols, $field[required], $field[input_help], $field[input_morehlp], 
    false, $htmlstate );
 	global $list_fnc_edt;
 	$list_fnc_edt[] = $varname;
@@ -525,7 +526,7 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
   # in StoreItem() function.
   if( !$insert AND !$content4id['status_code.....'][0]['value'] )
     $content4id['status_code.....'][0]['value'] = max(1,$oldcontent4id['status_code.....'][0]['value']);
-	
+
   if (!$insert)
     $content4id["flags..........."][0]['value'] = $oldcontent4id["flags..........."][0]['value'];
 
@@ -740,129 +741,4 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 	}
 }	
 
-/*
-$Log$
-Revision 1.25  2002/03/14 11:20:45  mitraearth
-[[ User Validation for add item / edit item (itemedit.php3). ]]
-
-(by Setu)
- - new selection "User" at admin->field->edit(any field)->validation.
- - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
- - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
- - It can validate the value and return new value for the field.
-
- - Related files:
-   - admin/itemedit.php3
-   - include/constants.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_VALIDATE_USER" for User Validation.
-
-* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
-
-[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
-(by Ram)
- - if the field is blank, it can load default value from URL query strings.
- - new selection "Variable" in admin->field->edit(any field)->Default:
- - "parameter" is the name of variable in URL query strings
-   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
-
- - Related files:
-   - include/constant.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_DEFAULT_VAR" for Default by variable.
-   - include/itemfunc.php3
-     - new function "default_fnc_variable()" for "Default by variable"
-
-
-[[ admin/index.php3 ]]
-(by Setu)
- - more switches to allow admin/index.php3 to be called from another program (with return_url).
-   - sort_filter=1
-   - action_selected=1
-     - "feed selected" is not supported.
-     - "view selected" is not supported.
- - scroller now works with return_url.
-   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
-     - scr_st3_Mv
-     - scr_st3_Go
- - more changes to work with &return_url.
-
- - related files:
-   - admin/index.php3
-   - include/item.php3
-     - new function make_return_url()
-     - new function sess_return_url()
-
-* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
-
-[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
-(by Setu)
- - it supports "&return_url=...." to jump to another web page after  submission.
- - related files:
-   - admin/slicedit.php3
-
-Revision 1.24  2002/03/12 16:23:28  honzam
-fixed bug with fileupload in php 4.1.2
-
-Revision 1.23  2002/03/06 12:44:08  honzam
-fix for daylight svaing change days
-
-Revision 1.22  2002/02/05 21:42:14  honzam
-prepare for anonymous item edit feature
-
-Revision 1.21  2002/01/10 13:50:05  honzam
-new possibilty to anonymously edit items on public sites
-
-Revision 1.20  2001/12/21 11:44:56  honzam
-fixed bug of includes in e-mail notify
-
-Revision 1.19  2001/12/20 00:27:18  honzam
-Fixed bugs in notify - now works with PHP3
-
-Revision 1.18  2001/12/18 16:47:27  honzam
-fixed profile bug
-
-Revision 1.17  2001/12/18 16:27:05  honzam
-new WYSIWYG richtext editor for inputform (IE5+), new possibility to join fields when fields are fed to another slice, new notification e-mail possibility (notify new item in slice, bins, ...)
-
-Revision 1.15  2001/09/27 16:02:23  honzam
-Filename in file upload correction, New related stories support, New "Preselect" input option
-
-Revision 1.14  2001/08/03 10:09:30  honzam
-if no time in expiry date is specified, the end of day is stored
-
-Revision 1.13  2001/07/09 09:28:44  honzam
-New supported User defined alias functions in include/usr_aliasfnc.php3 file
-
-Revision 1.12  2001/06/12 16:00:55  honzam
-date inputs support time, now
-new multivalue input possibility - <select multiple>
-
-Revision 1.11  2001/06/03 16:00:49  honzam
-multiple categories (multiple values at all) for item now works
-
-Revision 1.10  2001/05/23 23:07:00  honzam
-fixed bug of not updated list of item in Item manager after item edit
-
-Revision 1.9  2001/04/10 02:00:32  keb
-Added explanation for Text Field parameters.
-Handle case of multiple parameter delimiters, e.g. " : " or ", ".
-
-Revision 1.8  2001/04/09 21:00:36  honzam
-added sife and maxlength parameters to field input type
-
-Revision 1.7  2001/03/30 11:54:35  honzam
-offline filling bug and others small bugs fixed
-
-Revision 1.6  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.5  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.1  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-*/
 ?>

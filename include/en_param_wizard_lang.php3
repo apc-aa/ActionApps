@@ -41,19 +41,21 @@ define("L_PARAM_WIZARD_INPUT_USING_CONSTANTS","<br><br>It uses the Constants sel
 */
 
 define("L_PARAM_WIZARD_INPUT_NAME","Input Type");
-
 define("L_PARAM_WIZARD_INPUT_txt_NAME","Text Area");
 define("L_PARAM_WIZARD_INPUT_txt_DESC","Text area with 60 columns");
 define("L_PARAM_WIZARD_INPUT_txt_PAR0_NAME","row count");
 define("L_PARAM_WIZARD_INPUT_txt_PAR0_DESC","");
 define("L_PARAM_WIZARD_INPUT_txt_PAR0_EXAMPLE","20");
 define("L_PARAM_WIZARD_INPUT_edt_NAME","Rich Edit Area");
-define("L_PARAM_WIZARD_INPUT_edt_DESC","Rich edit text area with 60 columns. This operates the same way as Text Area in browsers which don't support the Microsoft TriEdit library. In IE 5.0 and higher and in Netscape 4.76 and higher (after installing the necessary features) it uses the TriEdit to provide an incredibly powerful HTML editor.<br><br>
+define("L_PARAM_WIZARD_INPUT_edt_DESC","Rich edit text area. This operates the same way as Text Area in browsers which don't support the Microsoft TriEdit library. In IE 5.0 and higher and in Netscape 4.76 and higher (after installing the necessary features) it uses the TriEdit to provide an incredibly powerful HTML editor.<br><br>
 The code for this editor is taken from the Wysiwyg open project (http://www.unica.edu/uicfreesoft/) and changed to fullfill our needs. See http://www.unica.edu/uicfreesoft/wysiwyg_web_edit/Readme_english.txt on details how to prepare Netscape.<br><br>
 The javascript code needed to provide the editor is saved in two HTML files, so that the user doesn't have to load it every time she reloads the Itemedit web page.");
 define("L_PARAM_WIZARD_INPUT_edt_PAR0_NAME","row count");
 define("L_PARAM_WIZARD_INPUT_edt_PAR0_DESC","");
-define("L_PARAM_WIZARD_INPUT_edt_PAR0_EXAMPLE","20");
+define("L_PARAM_WIZARD_INPUT_edt_PAR0_EXAMPLE","10");
+define("L_PARAM_WIZARD_INPUT_edt_PAR1_NAME","column count");
+define("L_PARAM_WIZARD_INPUT_edt_PAR1_DESC","");
+define("L_PARAM_WIZARD_INPUT_edt_PAR1_EXAMPLE","70");
 define("L_PARAM_WIZARD_INPUT_fld_NAME","Text Field");
 define("L_PARAM_WIZARD_INPUT_fld_DESC","A text field.");
 define("L_PARAM_WIZARD_INPUT_fld_PAR0_NAME","max characters");
@@ -148,6 +150,9 @@ define("L_PARAM_WIZARD_FUNC_F_A_PAR0_EXAMPLE","80");
 define("L_PARAM_WIZARD_FUNC_F_A_PAR1_NAME","fulltext");
 define("L_PARAM_WIZARD_FUNC_F_A_PAR1_DESC","field id of fulltext field (like full_text.......)");
 define("L_PARAM_WIZARD_FUNC_F_A_PAR1_EXAMPLE","full_text.......");
+define("L_PARAM_WIZARD_FUNC_F_A_PAR2_NAME","paragraph");
+define("L_PARAM_WIZARD_FUNC_F_A_PAR2_DESC","take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\) if shorter then <b>length</b>");
+define("L_PARAM_WIZARD_FUNC_F_A_PAR2_EXAMPLE","full_text.......");
 define("L_PARAM_WIZARD_FUNC_F_F_NAME","fulltext link");
 define("L_PARAM_WIZARD_FUNC_F_F_DESC","Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"");
 define("L_PARAM_WIZARD_FUNC_F_F_PAR0_NAME","link only");
@@ -260,7 +265,7 @@ define("L_PARAM_WIZARD_FUNC_F_Q_PAR1_NAME","blurbSliceId");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR1_DESC","unpacked slice id of the slice where the blurb text is stored");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR1_EXAMPLE","41415f436f72655f4669656c64732e2e");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_NAME","fieldToMatch");
-define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_DESC","field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>, use 'id..............' for Related field");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_DESC","field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_EXAMPLE","headline........");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR3_NAME","fieldToReturn");
 define("L_PARAM_WIZARD_FUNC_F_Q_PAR3_DESC","field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)");
@@ -277,48 +282,16 @@ define("L_PARAM_WIZARD_FUNC_F_X_PAR2_NAME","default");
 define("L_PARAM_WIZARD_FUNC_F_X_PAR2_DESC","if no content matches, use this string as return value");
 define("L_PARAM_WIZARD_FUNC_F_X_PAR3_EXAMPLE","No such option");
 
-/* new values */
+define("L_PARAM_WIZARD_FUNC_F_J_NAME","substring with case change");
+define("L_PARAM_WIZARD_FUNC_F_J_DESC","prints a part of <i>the field</i>");
+define("L_PARAM_WIZARD_FUNC_F_J_PAR0_NAME","start");
+define("L_PARAM_WIZARD_FUNC_F_J_PAR0_DESC","position of substring start (0=first, 1=second, -1=last,-2=two from end)");
+define("L_PARAM_WIZARD_FUNC_F_J_PAR0_EXAMPLE","0");
+define("L_PARAM_WIZARD_FUNC_F_J_PAR1_NAME","count");
+define("L_PARAM_WIZARD_FUNC_F_J_PAR1_DESC","count of characters (0=until the end)");
+define("L_PARAM_WIZARD_FUNC_F_J_PAR1_EXAMPLE","1");
+define("L_PARAM_WIZARD_FUNC_F_J_PAR2_NAME","case");
+define("L_PARAM_WIZARD_FUNC_F_J_PAR2_DESC","upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change");
+define("L_PARAM_WIZARD_FUNC_F_J_PAR2_EXAMPLE","");
 
-define("L_PARAM_WIZARD_INPUT_hco_NAME","Hierachical Constants");
-define("L_PARAM_WIZARD_INPUT_hco_DESC",
-"Select boxes (one for each level) allowing to choose constants in a hierarchical way. 
-Under them there is another select box in which are stored the constants chosen.");
-define("L_PARAM_WIZARD_INPUT_hco_PAR0_NAME","level count");
-define("L_PARAM_WIZARD_INPUT_hco_PAR0_DESC","count of boxes shown");
-define("L_PARAM_WIZARD_INPUT_hco_PAR0_EXAMPLE","3");
-define("L_PARAM_WIZARD_INPUT_hco_PAR1_NAME","box width");
-define("L_PARAM_WIZARD_INPUT_hco_PAR1_DESC","width of boxes - count of 'm' characters (e.g. 5 = 'mmmmm')");
-define("L_PARAM_WIZARD_INPUT_hco_PAR1_EXAMPLE","40");
-define("L_PARAM_WIZARD_INPUT_hco_PAR2_NAME","target size");
-define("L_PARAM_WIZARD_INPUT_hco_PAR2_DESC","number of lines in the target box");
-define("L_PARAM_WIZARD_INPUT_hco_PAR2_EXAMPLE","5");
-define("L_PARAM_WIZARD_INPUT_hco_PAR3_NAME","horizontal levels");
-define("L_PARAM_WIZARD_INPUT_hco_PAR3_DESC","if 1, shows levels' boxes horizontally");
-define("L_PARAM_WIZARD_INPUT_hco_PAR3_EXAMPLE","0");
-
-/*
-$Log$
-Revision 1.7  2002/04/04 01:00:59  mitraearth
-Extended f_q so that if field is specified as id.............. then it
-will do a different SQL lookup and return the field as expected. Note that
-you do not need to specify a slice-id as the id is unique. This allows
-a paramater of for example "::id..............:full_text......." to print
-the full_text field of a related item.
-
-Revision 1.6  2002/03/06 12:32:09  honzam
-preparation for hierarchical constant editor
-
-Revision 1.4  2001/12/26 22:11:37  honzam
-Customizable 'No item found' message. Added missing language constants.
-
-Revision 1.3  2001/12/18 11:49:26  honzam
-new WYSIWYG richtext editor for inputform (IE5+)
-
-Revision 1.2  2001/11/26 11:07:30  honzam
-No session add option for itemlink in alias
-
-Revision 1.1  2001/10/24 18:44:10  honzam
-new parameter wizard for function aliases and input type parameters
-
-*/
 ?>

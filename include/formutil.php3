@@ -199,7 +199,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
 # On browsers which do support it, loads a special rich text editor with many
 # advanced features based on triedit.dll
 # On the other browsers, loads a normal text area
-function FrmRichEditTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
+function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $needed=false, 
                      $hlp="", $morehlp="", $single="", $html=false) {
   global $BName; 
   if (! richEditShowable()) {
@@ -229,7 +229,7 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false
 			$val = str_replace ($find, $rep, $val);
   }
   echo "<td $colspan>";
-	/*
+/*
 	$nom_editor = "edt$name";
 	$idi_edit = 'eng';
 	$editor_height = 150;
@@ -237,38 +237,38 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false
 	$document_complet = 0;
 	$content_inicial = "$val";
 	include "../misc/wysiwyg/wysiwyg_web_edit.php3";
-	*/
+*/
 	//	$scriptStart = "<script language=javascript src=\"". AA_INSTAL_URL. "misc/wysiwyg/richedt_";
 	$scriptStart = "<script language=javascript src=\"../misc/wysiwyg/richedt_";
 	echo $scriptStart . ($BName == "MSIE " ? "ie.js\">" : "ns.js\">").
 	"</script>
 	<script>
 		var edt$name"."_doc_complet = 0;
-			var edt = \"edt$name\";
+ 		var edt = \"edt$name\";
+        var richHeight = ".($rows * 22).";
+        var richWidth = ".($cols * 8).";
 	</script>";
 	echo $scriptStart . ($BName == "MSIE " ? "ie.html\">" : "ns.html\">");
-	   echo "</script>";
-	
-	echo "<script language =javascript >
-	 edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100);
-	 function edt$name"."_inicial(){ ".
-	 ($BName == "MSIE "
-		? "if( document[\"edt$name\"]){ 
-	  	   obj_editor = document.edt$name;
-			   document.edt$name.DocumentHTML = '$val';"
-	  : "if( window[\"PropertyAccessor\"] && window[\"edt$name\"]){ 
-	 		   obj_editor = edt$name;
-	 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",'$val');").
-	 	"    clearInterval(edt$name"."_timerID);
-	    } 
-	    return true;
-	 } 
-	 </script>	";
-		echo "<input type=hidden name=\"$name\" value='$val'>\n";
-		//echo "<textarea name=\"$name\">$val</textarea>\n";
-	  $htmlvar = $name."html";
-		echo "<input type=hidden name=\"$htmlvar\" value=\"h\">\n";
-	//	echo "<input type=text name=\"$htmlvar\" value=\"h\">\n";
+    echo "</script>";
+
+echo "<script language =javascript >
+ edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100);
+ function edt$name"."_inicial(){ ".
+ ($BName == "MSIE "
+	? "if( document[\"edt$name\"]){ 
+  	   obj_editor = document.edt$name;
+		   document.edt$name.DocumentHTML = \"$val\";"
+  : "if( window[\"PropertyAccessor\"] && window[\"edt$name\"]){ 
+ 		   obj_editor = edt$name;
+ 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",\"$val\");").
+ 	"    clearInterval(edt$name"."_timerID);
+    } 
+    return true;
+ } 
+ </script>	";
+	echo "<input type=hidden name=\"$name\" value=\"$val\">\n";
+        $htmlvar = $name."html";
+ 	echo "<input type=hidden name=\"$htmlvar\" value=\"h\">\n";
 		
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
@@ -347,7 +347,7 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
 # table for use within <form> and <table> tag
 function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, 
                            $needed=false, $hlp="", $morehlp="") {
-  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+  $name=safe($name); $val=safe($val); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   if( !$maxsize )
     $maxsize = 254;
@@ -587,102 +587,4 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
     default:       return true;
   }  
 }    
-
-/*
-$Log$
-Revision 1.23  2002/03/14 23:35:51  mitraearth
-OK - it wasn't my mistake, it was honza's and constedit_utl.php3 can now
-be "required"
-
-Revision 1.22  2002/03/14 22:25:57  mitraearth
-Commented out include of constedit_util until find what it should be.
-
-Revision 1.21  2002/03/06 12:35:22  honzam
-fixed bug in Richedit
-
-Revision 1.20  2002/02/12 15:45:36  jakubadamek
-Repaired Rich Edit Text Area.
-
-Revision 1.19  2001/12/18 11:49:26  honzam
-new WYSIWYG richtext editor for inputform (IE5+)
-
-Revision 1.18  2001/11/29 08:37:27  mitraearth
-
-Fix a bug where tables get centered instead of left aligned in IE6
-
-Revision 1.17  2001/10/24 16:48:10  honzam
-fixed bug with unspecified maxlength parameter
-
-Revision 1.16  2001/09/27 15:53:39  honzam
-New related stories support, New "Preselect" input option
-
-Revision 1.15  2001/06/12 16:00:55  honzam
-date inputs support time, now
-new multivalue input possibility - <select multiple>
-
-Revision 1.14  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.13  2001/04/04 18:27:44  honzam
-Morehelp question mart in itemedit opens new window.
-
-Revision 1.12  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.11  2001/03/07 14:34:01  honzam
-fixed bug with radiobuttons dispaly
-
-Revision 1.10  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.9  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
-
-Revision 1.8  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.7  2000/12/23 19:56:50  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
-
-Revision 1.6  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.5  2000/11/17 19:05:20  madebeer
-added SINGLE_COLUMN_FORM
-
-Revision 1.4  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
-
-Revision 1.3  2000/08/29 11:29:58  honzam
-Better validation of id (1-32 chars) and password (any character).
-
-Revision 1.2  2000/08/03 12:31:19  honzam
-Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
-
-Revision 1.1.1.1  2000/06/21 18:40:38  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:23  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.8  2000/06/12 19:58:36  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.7  2000/05/30 09:11:39  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.6  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.5  2000/03/29 15:54:47  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.4  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>
