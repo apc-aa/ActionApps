@@ -143,7 +143,7 @@ if( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_do
     unset( $r_hidden );    
 
 $after_login = !$no_slice_id && !$slice_id;
-$perm_slices = GetUsersSlices( $auth->auth[uid] );
+$perm_slices = GetUserSlices();
 
 if( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_login ) {
     require_once $GLOBALS["AA_INC_PATH"] . "sessionobj.php3"; 

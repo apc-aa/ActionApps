@@ -36,6 +36,7 @@ require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once "send_emails.php3";
 require_once "tableviews.php3";
 
 if ($cmd["modedit"]["update"]) 
@@ -85,13 +86,14 @@ $tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."im
 $err = $tabledit->view ();
 if ($err) echo "<b>$err</b>";
 
-if (!$err && $tview == "send_emails") {
-    require_once "send_emails.php3";
+if (!$err && $tview == "send_emails") 
     ShowCollectionAddOns();
-}
 
 if (!$err && $tview == "email_edit") 
     ShowEmailAliases();
+    
+if (!$err && $tview == "acf")
+    ShowSelectionTable();       
 
 if ($no_slice_id)
     echo "</BODY></HTML>";

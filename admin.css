@@ -231,6 +231,13 @@ TD.leftmenuy {
 	color: #4A4A4A;
 }
 
+.tabtxt_field_alerts {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+    background-color : #ADD8E6;
+	color: #4A4A4A;
+}    
+
 .tabhlp {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
@@ -268,5 +275,5 @@ TD.leftmenuy {
        background: #213F21;
        font-family: Verdana, Arial, Helvetica, sans-serif;
        font-size: 8pt;
-       color: #999999;
-}
+       color: white;
+}       

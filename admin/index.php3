@@ -31,6 +31,7 @@ require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
+FetchSliceReadingPassword();
 $now = now();
 
 function MoveItems($chb,$status) {

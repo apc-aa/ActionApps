@@ -650,14 +650,19 @@ function GetItemContent($zids, $use_short_ids=false) {
       $sel_in = "='".q_pack_id($zids)."'";
   } else 
     return false;
-
+       
   # get content from item table
   $delim = "";
   $id_column = ($use_short_ids ? "short_id" : "id");   
-  $SQL = "SELECT * FROM item WHERE $id_column $sel_in";
+  $SQL = "SELECT item.*, slice.reading_password 
+      FROM item INNER JOIN slice ON item.slice_id = slice.id
+      WHERE item.$id_column $sel_in";
   $db->tquery($SQL);
   $n_items = 0;
   while( $db->next_record() ) {
+    // proove permissions for password-read-protected slices
+    if ($db->f("reading_password") && $db->f("reading_password") != $GLOBALS["slice_pwd"])
+        continue;
     $n_items = $n_items+1;
     reset( $db->Record );
     if( $use_short_ids ) {
@@ -1499,4 +1504,19 @@ function ShowWizardFrames ($aa_url, $wizard_url, $title, $noframes_html="") {
 </body></noframes>
 </html>';
 }
+
+function GetAAImage ($filename, $alt) {
+    $filename = $GLOBALS["AA_BASE_PATH"]."images/$filename";
+    $size = @GetImageSize ($filename);
+    return "<img border=0 src=\"$filename\" alt=\"$alt\" ".$size[3].">";
+} 
+
+/// On many places in Admin panel, it is secure to read sensitive data => use this function
+function FetchSliceReadingPassword() {
+    global $slice_id, $slice_pwd, $db;
+    $db->query ("SELECT reading_password FROM slice WHERE id='".q_pack_id($slice_id)."'");
+    if ($db->next_record())
+        $slice_pwd = $db->f("reading_password");
+}
+        
 ?>

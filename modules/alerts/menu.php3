@@ -119,7 +119,7 @@ function get_aamenus ()
             "label"=>_m("Send emails")),
         "synchro"=>array("cond"=>IfSlPerm(PS_USERS),
        		"href" => "modules/alerts/synchro.php3",
-    		"label" => _m("Sync with reader slice")),
+    		"label" => _m("Reader management")),
 
         "header2" => _m("Common"),
 		"email"=>array ("cond"=>IfSlPerm(PS_USERS),

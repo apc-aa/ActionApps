@@ -118,4 +118,60 @@ function showCollectionAddOns ()
     echo "</TD></TR></TABLE><br><br>\n";
 }
 
+function showSelectionTable () 
+{
+    global $sess;
+    $db = new DB_AA;
+    $db->query (
+        "SELECT view.slice_id, slice.name AS slice_name, 
+            alerts_filter.vid, view.name AS view_name,
+            alerts_filter.id AS fid, view.type AS view_type,
+            alerts_filter.description AS filter_name
+         FROM slice INNER JOIN view ON slice.id = view.slice_id
+         INNER JOIN alerts_filter ON alerts_filter.vid = view.id
+         ORDER BY slice.name, view.name, alerts_filter.id");
+    $myslices = GetUserSlices();
+    while ($db->next_record()) {
+        $a[$db->f("slice_id")]["name"] = $db->f("slice_name");
+        $av = &$a[$db->f("slice_id")]["views"];
+        $av[$db->f("vid")]["name"] = $db->f("view_name");
+        $av[$db->f("vid")]["type"] = $db->f("view_type");
+        $av[$db->f("vid")]["filters"][$db->f("fid")] = $db->f("filter_name");
+    }
+    
+    //echo "<BR><B>"._m("Selections ordered by slice and view:")."</B><BR>";
+    echo "<BR><TABLE border=1 cellpadding=3 cellspacing=0>
+        <TR class=tabtit><TD><B>"._m("Slice")."</B></TD>
+        <TD><B>"._m("View (Selection set)")."</B></TD>
+        <TD><B>"._m("Selections")."</B></TD></TR>";
+    reset ($a);
+    while (list ($slice_id, $slice) = each ($a)) {
+        if (! IsSuperadmin() && ! strchr ($myslices [unpack_id128($slice_id)], PS_FULLTEXT)) 
+            continue;
+        echo "<TR><TD class=tabtxt rowspan=".count($slice["views"]).">
+            <A href=\"".$sess->url($GLOBALS["AA_INSTAL_PATH"]
+                ."admin/index.php3?slice_id=".unpack_id ($slice_id))."\">"
+                .$slice["name"]."</A></TD>";
+        reset ($slice["views"]);
+        $first_view = true;
+        while (list ($vid, $view) = each ($slice["views"])) {
+            if (! $first_view)
+                echo "<TR>";
+            $first_view = false;
+            echo "<TD class=tabtxt>
+                <A href=\"".$sess->url($GLOBALS["AA_INSTAL_PATH"]
+                ."admin/se_view.php3?slice_id=".unpack_id ($slice_id)
+                ."&change_page=se_view.php3"
+                ."&change_params[view_id]=".$vid
+                ."&change_params[view_type]=".$view["type"])
+                ."\">".$view["name"]."</A></TD><TD class=tabtxt>";
+            reset ($view["filters"]);
+            while (list ($fid, $filter) = each ($view["filters"]))
+                echo "f".$fid." ".$filter."<br>";
+            echo "</TD></TR>";    
+        }
+    }
+    echo "</TABLE>";
+}
+         
 ?>

@@ -68,10 +68,10 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                         slice INNER JOIN
                         view ON slice.id = view.slice_id INNER JOIN
                         alerts_filter DF ON DF.vid = view.id";
-        $SQL .= " ORDER BY slice.name, DF.description";  
+        $SQL .= " ORDER BY DF.description";  
         $db->tquery ($SQL);
         global $sess;
-        $myslices = GetUsersSlices( $auth->auth["uid"] );    
+        $myslices = GetUserSlices();    
         while ($db->next_record()) {
             $txt = HTMLSpecialChars ($db->f("fdesc"));
             if (IsSuperadmin() || strchr ($myslices [unpack_id128($db->f("slice_id"))], PS_FULLTEXT)) {
@@ -82,7 +82,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                     ."&change_page=se_view.php3"
                     ."&change_params[view_id]=".$db->f("view_id")
                     ."&change_params[view_type]=".$db->f("view_type"))
-                    ."'>".$txt."</a>";
+                    ."'>".$txt." ("."f".$db->f("filterid").")"."</a>";
             }
             $filters[$db->f("filterid")] = $txt;
         }        
@@ -195,7 +195,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                     "source"=>GetUserEmails("alerts alert")))),
             "type" => array ("default" => "Alerts", "view" => array ("type"=>"hide")),
             "id" => array (
-                "default" => pack_id128(new_id()),                 
+                "default" => "ahoj\"ahoj\"ahojik",
                 "view" => array("type"=>"text", "unpacked" => true, "readonly" => true)),
             "created_at" => array (
                 "caption" => _m("created at"),
@@ -233,6 +233,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "attrs" => $attrs_edit,
 		"messages" => array (
 	        "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")),
+        "help" => _m("Here you send the Alert emails manually."),
         "fields" => array (
             "emailid_alert" => array (
                 "table" => "alerts_collection",
@@ -320,7 +321,7 @@ function FindAlertsFilterPermissions() {
     if (IsSuperadmin()) 
         return 0;
     
-    $myslices = GetUsersSlices( $auth->auth["uid"] );
+    $myslices = GetUserSlices();
     reset ($myslices);
     while (list ($my_slice_id, $perms) = each ($myslices)) 
         if (strchr ($perms, PS_FULLTEXT))

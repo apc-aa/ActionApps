@@ -237,7 +237,8 @@ function showSubmenu (&$aamenu, $active)
             else if (($slice_id || $item["show_always"]) && $item["cond"]) {
                 if ($item["exact_href"]) $href = $item["exact_href"]; 
                 else $href = get_aa_url($item["href"]);
-                if ($slice_id) $href = con_url ($href, "slice_id=$slice_id");
+                if ($slice_id && !$item["no_slice_id"]) 
+                    $href = con_url ($href, "slice_id=$slice_id");
                 echo '<a href="'.$href.'" class=leftmenuy>'.$item["label"]."</a>\n";
             }  
             else echo "<span class=leftmenun>".$item["label"]."</span>\n";

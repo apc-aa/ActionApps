@@ -139,8 +139,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
       $PERMS_STATE, $permit_offline_fill, false);
   FrmInputSelect("lang_file", _m("Language"), $biglangs, $lang_file, false);
   if ($superadmin) {
-      FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $fileman_access, false);
-      FrmInputText("fileman_dir", _m("File Manager Directory"), $fileman_dir, 99, 25, false);
+      FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $fileman_access, false, "", "http://apc-aa.sourceforge.net/faq/#1106");
+      FrmInputText("fileman_dir", _m("File Manager Directory"), $fileman_dir, 99, 25, false,
+        "", "http://apc-aa.sourceforge.net/faq/#1106");
   }
     
     // Reader Management specific settings (Jakub, 7.2.2003)
@@ -154,10 +155,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
         while ($db->next_record())
             $slicefields[$db->f("id")] = $db->f("name");
         FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, 
-            $auth_field_group, false);
+            $auth_field_group, false, "", "../doc/reader.html#auth_field_group");
         FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields,
-            $mailman_field_lists, false);
+            $mailman_field_lists, false, "", "../doc/reader.html#mailman");
     }
+    
+    FrmInputText ("reading_password", _m("Password for Reading"), $reading_password, 
+        100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
 ?>
 </table>
 <tr><td align="center">

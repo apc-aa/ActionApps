@@ -40,7 +40,11 @@ function set_collectionid () {
             $collectionid = $db->f("id");    
             $collectionprop = $db->Record;
         }
-        else { echo "Can't find collection for $slice_id. Bailing out."; exit; }
+        else { 
+            echo "Can't find collection with module_id=$slice_id ("
+                .HTMLEntities(pack_id($slice_id))."). Bailing out.<br>"; 
+            exit; 
+        }
     }
 }
 

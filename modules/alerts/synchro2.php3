@@ -223,7 +223,7 @@ function getReaderManagementSlices ()
 	global $db, $required_fields_in_reader_management, $slice_id,
            $collectionprop;
 	
-	$slices = GetUsersSlices();
+	$slices = GetUserSlices();
 	$SQL = "SELECT id, name FROM slice WHERE type='ReaderManagement' 
         AND id <> '".addslashes($collectionprop["sliceid"])."'";
 	if (is_array ($slices)) {

@@ -110,7 +110,7 @@ function UseShowResult($txt) {
 /**
  * Outputs a notification page when an error occurs.
  * If the err_url parameter is passed, redirects to the specified URL,
- * and passes $txt as the URL parameter named "err".
+ * and passes $txt as the URL parameter named "result".
  * else generates an error page with the $txt message.
  * @param string $txt error message to print
  */
@@ -126,7 +126,7 @@ function SendErrorPage($txt) {
     }
     
     else if (! $GLOBALS["use_post2shtml"]) 
-       go_url( con_url($GLOBALS["err_url"], "err=".substr(serialize($txt),0,200)));
+       go_url( con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000)));
     
     else UseShowResult ($txt);
 }  
@@ -176,7 +176,7 @@ if (count ($err_valid) > 1) {
     reset ($err_valid);
     while (list ($field_zid, $msg) = each ($err_valid)) {
         $zids->refill ($field_zid);
-        $err["validate"][$zids->packedids (0)] = $msg;
+        $result["validate"][$zids->packedids (0)] = $msg;
     }
 }
 
@@ -207,7 +207,7 @@ if ($insert) {
     $content4id["status_code....."][0][value] = $bin2fill;
 }    
 
-else if (!is_array ($err)) {
+else if (!is_array ($result)) {
     // Proove we are permitted to update this item. 
     switch ($slice_info["permit_anonymous_edit"]) {
     case ANONYMOUS_EDIT_NOT_ALLOWED: $permok = false; break;
@@ -239,10 +239,10 @@ else if (!is_array ($err)) {
     }
     
     if (! $permok)
-        $err["permissions"] = _m("You are not allowed to update this item.");
+        $result["permissions"] = _m("You are not allowed to update this item.");
 }
 
-if( is_array ($err)) SendErrorPage( $err ); 
+if( is_array ($result)) SendErrorPage( $result ); 
 
  # update database
 else if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, 

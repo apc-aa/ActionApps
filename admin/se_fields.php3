@@ -45,11 +45,13 @@ $field_types = GetTable2Array("SELECT * FROM field
 function ShowField($id, $name, $pri, $required, $show, $type="", $alias="") {
     global $sess, $field_types, $AA_CP_Session;
     $name = safe($name); $pri=safe($pri);
+    if (substr ($id,0,6) == "alerts")
+        echo "<tr class=tabtxt_field_alerts>";  
+    else echo "<tr class=tabtxt>";
     echo "
-    <tr>
     <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>";
     if( $type=="new" ){
-        echo '<td class=tabtxt>
+        echo '<td>
              <select name="ftype">';	
         reset($field_types);
         while(list($k, $v) = each($field_types)) { 
@@ -60,28 +62,28 @@ function ShowField($id, $name, $pri, $required, $show, $type="", $alias="") {
               </td>";
     } 
     else 
-        echo "<td class=tabtxt>$id</td>";
+        echo "<td>$id</td>";
     echo "  
-        <td class=tabtxt><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>
+        <td><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
         <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
     if( $type=="new")
-        echo "<td class=tabtxt>&nbsp;</td><td class=tabtxt>&nbsp;</td>";
+        echo "<td>&nbsp;</td><td>&nbsp;</td>";
     else { 
-        echo "<td class=tabtxt><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
+        echo "<td><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
         if( $type=="in_item_tbl" )
-            echo "<td class=tabtxt>". _m("Delete") ."</td>";
+            echo "<td>". _m("Delete") ."</td>";
         else 
-            echo "<td class=tabtxt><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
+            echo "<td><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
             
         if (is_array ($alias)) 
-            echo "<td class=tabtxt><font size='-2'>".join($alias," ")."</font></td>";
+            echo "<td><font size='-2'>".join($alias," ")."</font></td>";
 /*        for ($i = 0; $i < count ($alias); ++$i) {
             if ($alias[$i] != "_#UNDEFINE" && $alias[$i]) 
 //               $ali = "<a href='se_inputform.php3?fid=$id&AA_CP_Session=$AA_CP_Session#alias".($i+1)."'>$alias[$i]</a>";
                $ali = $alias[$i];
             else $ali = "";
-            echo "<td class=tabtxt><font size='-2'>$ali</font></td>";
+            echo "<td><font size='-2'>$ali</font></td>";
         }*/
     }  
     echo "</tr>\n";

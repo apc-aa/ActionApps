@@ -622,9 +622,9 @@ $tablelist = array( 'active_sessions' => "(
                         javascript text,                                 
                         fileman_access varchar(20) default NULL,
                         fileman_dir varchar(50) default NULL,                          
-                        auth_postfix varchar(20) NOT NULL,
                         auth_field_group varchar(16) NOT NULL,
                         mailman_field_lists varchar(16) NOT NULL,
+                        reading_password varchar(100) NOT NULL,
                         PRIMARY KEY (id)
                       )",
                       'slice_owner' => "(

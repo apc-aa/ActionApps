@@ -167,31 +167,31 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
     $record = $db->Record;
     reset ($record);
     
-    if (is_array ($aliases)) {
-        // I don't know how to work with unaliasing. Thus I try to pretend
-        // having an item. 
-        reset ($aliases);
-        while (list ($alias, $translate) = each ($aliases)) {
-            // I create the "columns"
-            $cols[$alias][0] = array (
-                "value" => $translate,
-                "flag" => FLAG_HTML);
-            // and "aliases" 
-            $als [$alias] = array ("fce"=>"f_h", "param"=>$alias);
-        }
-        $item = new Item ("", $cols, $als, "", "" ,"");
+    if (! is_array ($aliases)) 
+        $aliases = array ("_#dUmMy__aLiAsSs#_" => "");
 
-        while (list ($key, $value) = each ($record)) 
-            $record[$key] = $item->unalias ($value);
-            
-        /* // Mitra's version, not working:
-        while (list ($key, $value) = each ($record)) {
-            $level = 0; $maxlevel = 0;
-    	    $record[$key] = new_unalias_recurent($value, "", $level, 
-                $maxlevel, null, null, $aliases);
-        }
-        */    
+    // I try to pretend having an item. 
+    reset ($aliases);
+    while (list ($alias, $translate) = each ($aliases)) {
+        // I create the "columns"
+        $cols[$alias][0] = array (
+            "value" => $translate,
+            "flag" => FLAG_HTML);
+        // and "aliases" 
+        $als [$alias] = array ("fce"=>"f_h", "param"=>$alias);
     }
+    $item = new Item ("", $cols, $als, "", "" ,"");
+
+    while (list ($key, $value) = each ($record)) 
+        $record[$key] = $item->unalias ($value);
+        
+    /* // Mitra's version, not working:
+    while (list ($key, $value) = each ($record)) {
+        $level = 0; $maxlevel = 0;
+	    $record[$key] = new_unalias_recurent($value, "", $level, 
+            $maxlevel, null, null, $aliases);
+    }
+    */    
     
     if (! is_array ($to)) 
         $tos = array ($to);

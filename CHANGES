@@ -1,3 +1,12 @@
+03/08/03 - added links to Alerts modules to Item Manager submenu (jakub)
+03/08/03 - added some ? help icons to slice settings (jakub)
+03/08/03 - added the Reading Password slice setting, see FAQ (jakub)
+03/08/03 - added Alerts section to Item Manager submenu (jakub)
+03/08/03 - created the file-lock synchronization mechanism, 
+           see include/file_lock.php3 (jakub)
+03/08/03 - added a new feature "Mailman: create list", see doc/reader.html (jakub)
+03/07/03 - joined the Slice Wizard Welcome emails with other emails, added "email templates" to
+           menu (jakub)
 03/06/03 - fixed (?) design of index.php3 with <tr><td> around item manager view (jakub)
 03/06/03 - changed some labels in Alerts (jakub)
 03/06/03 - fixed filler.php3 so that it does not call ErrPage when everything OK (jakub)

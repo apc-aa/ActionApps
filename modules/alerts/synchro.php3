@@ -80,8 +80,13 @@ echo '
 <table border="1" cellspacing="0" cellpadding="10" align="center" width="440">
 	<tr><td class=tabtxt>
 	<h2>'._m("Choose Reader Management Slice").'</h2>
-	'._m("This Alerts Collection takes user data from the slice").": <b>".$slice_name.'</b><br><br>
-	'._m("Change to: ");
+	'._m("This Alerts Collection takes user data from the slice").":<br><b>";
+if ($slice_set) echo "
+    <a href=\"".$sess->url($GLOBALS["AA_INSTAL_PATH"]."admin/index.php3?slice_id="
+    .unpack_id ($collectionprop["slice_id"]))."\">".$slice_name.'</a>';
+else echo $slice_name;
+echo '</b><br><br>'
+    ._m("Change to: ");
 
 FrmSelectEasy ("change_to", getReaderManagementSlices(), unpack_id ($collectionprop["slice_id"]));
 

@@ -57,7 +57,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false,
             $val = unpack_id ($val);
             break;
         case 'form':
-            $val = q_pack_id ($val);
+            $val = pack_id ($val);
         }
         
     }

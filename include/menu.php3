@@ -30,7 +30,7 @@ http://www.apc.org/
     cond        if not satisfied, don't show the label linked
                 slice_id is included in the cond automatically
     href        link, relative to aa/
-    exact_href  link, absolute (use either exact_href or href, not both)
+    exact_href  link, absolute (use either exact_href or href, not both)    
 */
 
 require_once $GLOBALS["AA_INC_PATH"]."menu_util.php3";
@@ -99,6 +99,7 @@ function get_aamenus ()
             href        link, relative to aa/
             exact_href  link, absolute (use either exact_href or href, not both)
             show_always don't include slice_id in cond
+            no_slice_id don't add slice_id to the URL
     */
 
     $aamenus ["sliceadmin_submenu"] = array (
@@ -142,14 +143,14 @@ function get_aamenus ()
 		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
 			"href" => "admin/tabledit.php3?set_tview=email", "label"=>_m("Email templates")),
     ));
-/*    
+    
     $slice_info = GetSliceInfo ($slice_id);
     if ($slice_info ["mailman_field_lists"]) 
         $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = array (
             "cond"=>IfSlPerm(PS_FIELDS),
             "href"=>"admin/mailman_create_list.php3",
             "label"=>_m("Mailman: create list"));
-*/
+
     $aamenus["itemmanager_submenu"] = array(
         "bottom_td"=>200,
         "level"=>"submenu",
@@ -170,9 +171,50 @@ function get_aamenus ()
             "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash")),
         "line" => "",
     ));
+    
+    if (IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+        $db = new DB_AA;
+        $items = &$aamenus["itemmanager_submenu"]["items"];
+        
+        // Add associated Alerts to Item Manager submenu 
+        if ($slice_info["type"] == "ReaderManagement" ) {
+            $db->query ("SELECT module_id, module.name FROM alerts_collection AC
+                INNER JOIN module ON AC.module_id = module.id
+                WHERE slice_id='".q_pack_id($slice_id)."'");
+            AddAlertsModules ($items, $db, _m("Alerts"),
+                    _m("List of Alerts modules using this slice as Reader Management."));
+        }                
+            
+        $db->query ("SELECT DISTINCT AC.module_id, module.name FROM alerts_collection AC
+            INNER JOIN module ON AC.module_id = module.id
+            INNER JOIN alerts_collection_filter ACF ON AC.id = ACF.collectionid
+            INNER JOIN alerts_filter AF ON AF.id = ACF.filterid
+            INNER JOIN view ON view.id = AF.vid
+            WHERE view.slice_id = '".q_pack_id($slice_id)."'");
+        AddAlertsModules ($items, $db, _m("Alerts Sent"),
+                _m("List of Alerts modules sending items from this slice."));
+    }
 
     // left menu for aaadmin is common to all modules, so it is shared 
     require_once $GLOBALS["AA_INC_PATH"]."menu_aa.php3";
     return $aamenus;
 }
+
+function AddAlertsModules (&$submenu, &$db, $header, $help) {
+    global $auth;
+    if ($db->num_rows()) {
+        $submenu["header3"] = $header."&nbsp;&nbsp;&nbsp;"
+            .GetAAImage ("help50.gif", $help);
+        $i = 100;
+        while ($db->next_record()) {
+            $submenu["item".$i] = array (
+            "cond"=>CheckPerms( $auth->auth["uid"], "slice", 
+                unpack_id($db->f("moduleid")), PS_FIELDS),                    "href"=>"modules/alerts/index.php3?slice_id=".unpack_id($db->f("module_id")),
+            "no_slice_id"=>1,
+            "label"=>$db->f("name"));
+            $i ++;
+        }
+    }
+}                
+    
 ?>

@@ -113,6 +113,7 @@ function MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue ) {
         WHERE slice.type = 'ReaderManagement'
         AND (field.input_show_func LIKE '___:$group_id:%'
         OR  field.input_show_func LIKE '___:$group_id')");
+    $slices = array();
     while ($db->next_record())
         $slices[] = unpack_id ($db->f("id"));        
     foreach ($slices as $slice_id)

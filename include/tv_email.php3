@@ -52,7 +52,7 @@ function ShowEmailAliases () {
             "_#ME_MAIL_" => _m("My email"),
          ));
 
-    echo "<TABLE border=0 cellspacing=0 cellpadding=0>";
+    echo "<BR><TABLE border=0 cellspacing=0 cellpadding=0>";
     reset ($ali);
     while (list (, $aligroup) = each ($ali)) {
         echo "<TR><TD class=tabtit colspan=2><B>&nbsp;$aligroup[group]&nbsp;</B></TD></TR>";
@@ -83,7 +83,7 @@ function GetEmailTableView ($viewID, $processForm = false)
         //"buttons_down" => array ("add"=>1, "update"=>1),
         "readonly" => false,
         "attrs" => $attrs_edit,
-        "caption" => _m("Email"),
+        "caption" => _m("Email template"),
         "addrecord" => false,
         "gotoview" => "email",
         "where" => GetEmailWhere(),        
@@ -145,7 +145,7 @@ function GetEmailTableView ($viewID, $processForm = false)
         //"buttons_down" => array ("add"=>1, "update"=>1),
         "readonly" => true,
         "attrs" => $attrs_browse,
-        "caption" => _m("Email"),
+        "caption" => _m("Email templates"),
         "buttons_down" => array ("add"=>1,"delete_all"=>1),
         "buttons_left" => array ("delete_checkbox"=>1,"edit"=>1),
         "gotoview" => "email_edit",
@@ -179,7 +179,7 @@ function GetEmailWhere () {
     if (IsSuperadmin ()) 
         return 1;
     else {
-        $myslices = GetUsersSlices( $auth->auth["uid"] );    
+        $myslices = GetUserSlices();    
         if (is_array ($myslices)) {
             reset ($myslices);
             while (list ($my_slice_id, $perms) = each ($myslices)) 

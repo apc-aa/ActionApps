@@ -10,6 +10,12 @@
 
 /* TABLE EDIT STYLES */
 
+.te_help {
+    font-size: xx-small;
+    color: #FFFFFF;
+	background: #589868;
+}
+
 .te_help_link {
 	font-size: xx-small;
 	font-weight: bold;

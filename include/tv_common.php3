@@ -74,7 +74,7 @@ function SelectModule ($all = false) {
     if (IsSuperadmin() || $all) 
         $where = 1;
     else {
-        $myslices = GetUsersSlices( $auth->auth["uid"] );
+        $myslices = GetUserSlices();
         reset ($myslices);
         while (list ($my_slice_id, $perms) = each ($myslices)) 
             if (strchr ($perms, PS_FULLTEXT))

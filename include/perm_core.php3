@@ -261,7 +261,7 @@ function JoinAA_SlicePerm($slice_perm, $aa_perm) {
   }
 }
 
-function GetUsersSlices( $user_id = "current") {
+function GetUserSlices( $user_id = "current") {
   global $permission_uid, $permission_to, $auth;
 
   if ($user_id == "current")
@@ -407,7 +407,7 @@ function GetUserEmails ($type = "", $user_id = "current") {
     global $auth, $db;
     if ($user_id == "current")
         $user_id = $auth->auth["uid"];
-    $slices = GetUsersSlices ($user_id);
+    $slices = GetUserSlices ($user_id);
     $where = "WHERE 1";
     if ($type) $where .= " AND type='$type'";
     if ($slices == "all")
