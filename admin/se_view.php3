@@ -40,8 +40,8 @@ function show_digest_filters ()
         if ($irow <= $db->num_rows()) $db->next_record();
         $rowid = $db->f("id");
         if (!$rowid) $rowid = "new$irow";
-        FrmTextarea("filters[$rowid][conds]", L_FILTER." ".($irow+1), $db->f("conds"), 3, 50, false); 
-        FrmTextarea("filters[$rowid][description]", L_DESCRIPTION, $db->f("description"), 2, 50, false);
+        FrmInputText("filters[$rowid][description]", L_FILTER." ".($irow+1)." ".L_DESCRIPTION, $db->f("description"), 100, 50, false);
+        FrmTextarea("filters[$rowid][conds]", L_FILTER." ".($irow+1)." conds[]", $db->f("conds"), 3, 50, false); 
     }
 }
 

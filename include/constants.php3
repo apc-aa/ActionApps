@@ -477,6 +477,7 @@ $VIEW_TYPES['calendar'] = array ('name' => L_CALENDAR_VIEW,
 #                              "aditional" => L_V_ADITIONAL );
 
 $VIEW_TYPES['digest']  = array( "name" => L_ALERTS_VIEW,
+                              "function:digest_filters" => "",
                               "before" => L_V_BEFORE ,
                               "odd" => L_V_ODD ,
                               "even_odd_differ" => L_V_EVENODDDIF ,
@@ -492,8 +493,7 @@ $VIEW_TYPES['digest']  = array( "name" => L_ALERTS_VIEW,
                               "group_title" => L_V_GROUP ,
                               "group_bottom" => L_V_GROUP_BOTTOM ,
                               "listlen" => L_V_MAXLISTLEN,
-                              "noitem_msg" => L_V_NO_ITEM,
-                              "function:digest_filters" => "" );
+                              "noitem_msg" => L_V_NO_ITEM);
 
 # modification - options for modification field of views
 # alias - which aliases to show
