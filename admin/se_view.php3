@@ -158,6 +158,7 @@ $lookup_op = array( "<"  => "<",
                     ">"  => ">",
                     ">=" => ">=",
                     "LIKE"  => "substring (LIKE)",
+                    "RLIKE"  => "begins with ... (RLIKE)",
                     "ISNULL"  => "not set",
                     "m:<" => "< now() - x [in seconds]",
                     "m:>" => "> now() - x [in seconds]");
