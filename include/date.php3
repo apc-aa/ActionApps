@@ -1,3 +1,4 @@
+
 <?php # -*-mode: Fundamental; tab-width: 4; -*-
 //$Id$
 /* 
@@ -48,12 +49,18 @@ class datectrl {
 
 	# process form data
 	function update() {
-		if(isset($GLOBALS["tdctr_" . $this->name . "_day"])) 
-			$this->day = $GLOBALS["tdctr_" . $this->name . "_day"];
-		if(isset($GLOBALS["tdctr_" . $this->name . "_month"])) 
-			$this->month = $GLOBALS["tdctr_" . $this->name . "_month"];
-		if(isset($GLOBALS["tdctr_" . $this->name . "_year"])) 
-			$this->year = $GLOBALS["tdctr_" . $this->name . "_year"];
+    $dayvar   = "tdctr_" . $this->name . "_day";
+    $monthvar = "tdctr_" . $this->name . "_month";
+    $yearvar  = "tdctr_" . $this->name . "_year";
+		if(isset($GLOBALS[$dayvar])) 
+			$this->day = $GLOBALS[$dayvar];
+		if(isset($GLOBALS[$monthvar])) 
+			$this->month = $GLOBALS[$monthvar];
+		if(isset($GLOBALS[$yearvar])) 
+			$this->year = $GLOBALS[$yearvar];
+    return (    isset($GLOBALS[$dayvar])
+             OR isset($GLOBALS[$monthvar]) 
+             OR isset($GLOBALS[$yearvar]) );
 	}	
 	
 	# set date, format form db
@@ -94,7 +101,7 @@ class datectrl {
   {
     if( $this->get_date() > 0 ) 
       return true;
-    $err["$this->name"] = MsgErr(L_ERR_IN." $inputName");
+    $err[$this->name] = MsgErr(L_ERR_IN." $inputName");
     return false;
   }  
                    
@@ -144,6 +151,10 @@ class datectrl {
 }
 /*
 $Log$
+Revision 1.5  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.4  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

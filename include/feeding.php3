@@ -30,7 +30,7 @@ function GetFieldMap($slice_id, $destination, $fields_from) {
   $p_destination = q_pack_id($destination);
   $p_slice_id = q_pack_id($slice_id);
 
-  list($fields_to,) = GetSliceFields($p_destination);
+  list($fields_to,) = GetSliceFields($destination);
 
   $SQL = "SELECT from_field_id, to_field_id from feedmap WHERE from_slice_id = '$p_slice_id'
                                   AND to_slice_id = '$p_destination'";
@@ -67,19 +67,21 @@ function FeedItemTo($item_id, $destination, $fields, $approved, $tocategory=0,
            WHERE relation.destination_id = item.id
              AND item.slice_id = '$p_destination'
              AND source_id='$p_item_id'
-             AND flag & 1";   // 1. bit - feed
+             AND flag & ". REL_FLAG_FEED;   //  feed
   $db->query($SQL);
   if( $db->next_record() )    // the item is already fed
     return false;           // maybe we can update the item somehow
 
   $map = GetFieldMap($slice_id, $destination, $fields);
 
-  #echo "map:<br>";
-  #p_arr_m($map);
+#echo "map:<br>";
+#p_arr_m($map);
   
   if( !$content )
-    $content = GetItemContent("('".q_pack_id($item_id)."')");
-
+    $content = GetItemContent($item_id);
+    
+  $content4id = $content[$item_id];   # shortcut
+    
   $catfieldid = GetCategoryFieldId( $fields );
 
   if( $catfieldid AND ( (string)$tocategory != "0" ) ) {
@@ -89,49 +91,60 @@ function FeedItemTo($item_id, $destination, $fields, $approved, $tocategory=0,
       $destinationcat = $db->f(value);
   }    
 
-  #huh( "Catfield: $catfieldid - $destinationcat");
+#huh( "Catfield: $catfieldid - $destinationcat");
       
   $varset = new Cvarset;
   $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
   $id = new_id();
   $p_id = q_pack_id($id);
 
-  reset($content);
-  while(list($key,$val) = each($content[$item_id])) {
-    # add to content table or prepare itemvarset for addition in item table
-    
-    if( $map[$key] ) {
-      if( $map[$key] == $catfieldid ) {     # category mapping
-        if( (string)$tocategory != "0" )    # if 0 - don't change category
-          $val[0][value] = $destinationcat;
-      }    
-      insert_fnc_qte($id, $fields[$map[$key]], quote($val[0][value]), "", true); 
-    }  
-  }                                                          
-  
-  # store prepared data to item table 
-  $itemvarset->add("id", "unpacked", $id);
-  $itemvarset->set("slice_id", $destination, "unpacked");
-  $itemvarset->set("status_code", ($approved=='y' ? 1 : 2), "quoted");
-  $itemvarset->ifnoset("post_date", $content[$item_id][post_date][0][value], "quoted");
-  $itemvarset->ifnoset("publish_date", $content[$item_id][publish_date][0][value], "quoted");
-  $itemvarset->ifnoset("expiry_date", $content[$item_id][expiry_date][0][value], "quoted");
-  $itemvarset->ifnoset("highlight", $content[$item_id][highlight][0][value], "quoted");
-  $itemvarset->ifnoset("posted_by", $content[$item_id][posted_by][0][value], "quoted");
-  $itemvarset->ifnoset("edited_by", $content[$item_id][edited_by][0][value], "quoted");
-  $itemvarset->ifnoset("last_edit", $content[$item_id][last_edit][0][value], "quoted");
+  # prepare new4id array before call StoreItem function
+  while(list($key,$val) = each($content4id)) {
+    $newfld = $map[$key];
+    if( !$newfld OR                              # feed only mapped fields
+        ($fields[$key][feed]==STATE_UNFEEDABLE)) # and fields with perms to feed
+      continue;  
+      
+    $new4id[$newfld] = $val;
 
-  $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
-  $db->query($SQL);
+      # update flags
+    $new4id[$newfld][0][flag] |= FLAG_FEED;      # mark as fed
+    if( ($fields[$key][feed]==STATE_FEEDNOCHANGE ))
+      $new4id[$newfld][0][flag] |= FLAG_FREEZE;  # don't allow to change 
+    
+      # category mapping    
+    if( $newfld == $catfieldid ) {
+      if( (string)$tocategory != "0" )    # if 0 - don't change category
+        $new4id[$newfld][0][value] = $destinationcat;
+    }
+    $new4id[$newfld][0][value]=quote($new4id[$newfld][0][value]);
+  }  
+
+    # fill required fields if not set
+  $new4id["status_code....."][0][value] = ($approved=='y' ? 1 : 2);
+  if( !$new4id["post_date......."] )
+    $new4id["post_date......."] = $content4id["post_date......."];
+  if( !$new4id["publish_date...."] ) 
+    $new4id["publish_date...."] = $content4id["publish_date...."];
+  if( !$new4id["expiry_date....."] )
+    $new4id["expiry_date....."] = $content4id["expiry_date....."];
+  if( !$new4id["highlight......."] )
+    $new4id["highlight......."] = $content4id["highlight......."];
+  if( !$new4id["posted_by......."] ) 
+    $new4id["posted_by......."] = $content4id["posted_by......."];
+  if( !$new4id["edited_by......."] )
+    $new4id["edited_by......."] = $content4id["edited_by......."];
+  if( !$new4id["last_edit......."] ) 
+    $new4id["last_edit......."] = $content4id["last_edit......."];
+
+  StoreItem( $id, $destination, $new4id, $fields, true, true, false );
+                                        # insert, invalidatecache, not feed
   
   # update relation table - stores where is what fed
   $SQL = "INSERT INTO relation SET destination_id='$p_id',
                                    source_id='$p_item_id',
-                                   flag = '1'";            // 1. bit - feed
+                                   flag = '". REL_FLAG_FEED ."'";  // feed bit
   $db->query($SQL);
-
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-  $cache->invalidateFor("slice_id=$destination");  # invalidate cached values
 
   return true;
   
@@ -155,9 +168,13 @@ function GetSlicesIntoExportItem($slice_id, $from_category_id) {
   #    huh("<br>--$akt-----From: $from_category_id----<br>");
     
     if ( $slices[$akt][approved] == "y" ) {   // if yes then continue feeding down
-      $SQL = "SELECT to_id, category_id, all_categories, to_approved, to_category_id 
-                FROM feeds 
-              WHERE from_id='". q_pack_id($akt) ."'";
+      $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
+                     feeds.to_approved, feeds.to_category_id 
+                FROM feeds, slice LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
+              WHERE feeds.from_id = slice.id
+                AND feeds.from_id='". q_pack_id($akt) ."'
+                AND (slice.export_to_all=1 
+                 OR  feedperms.to_id = feeds.to_id)";  # check perms to feed, too
       $db->query($SQL);
   #    huh("akt == y<br>");
       while($db->next_record()) {
@@ -183,10 +200,11 @@ function FeedItem($item_id, $fields) {
   global $db, $slice_id;    
 
   # get item field definition
-  $content = GetItemContent("('".q_pack_id($item_id)."')");
+  $content = GetItemContent($item_id);
+  $content4id = $content[$item_id];   # shortcut
 
   # if not approved - exit
-  if( $content[$item_id][status_code][0][value] != '1' )
+  if( $content4id["status_code....."][0][value] != '1' )
     return false;
 
   # get this item category_id
@@ -196,7 +214,7 @@ function FeedItem($item_id, $fields) {
   if($cat_group AND $cat_field) {
     $SQL = "SELECT id FROM constant 
              WHERE group_id = '$cat_group' 
-               AND value = '". $content[$item_id][$cat_field][0][value] ."'";
+               AND value = '". $content4id[$cat_field][0][value] ."'";
     $db->query($SQL);
     if( $db->next_record() )
       $cat_id = unpack_id($db->f(id));
@@ -215,8 +233,33 @@ function FeedItem($item_id, $fields) {
   while( list($slice,$atribs) = each($slices) )
     FeedItemTo($item_id, $slice, $fields, $atribs[approved], $atribs[category], $content);
 }
+
+# completely deletes item content from database with all subsequencies
+# but not deleted item from item table !!!
+function DeleteItem($db, $id) {
+  $p_itm_id = q_pack_id($id);
+
+  # delete content
+  $SQL = "DELETE LOW_PRIORITY FROM content WHERE item_id='$p_itm_id'";
+  $db->query($SQL);
+
+  # delete offline
+  $SQL = "DELETE LOW_PRIORITY FROM offline WHERE id='$p_itm_id'";
+  $db->query($SQL);
+
+  # delete feeding relation
+  $SQL = "DELETE LOW_PRIORITY FROM relation WHERE (source_id='$p_itm_id'
+                                               OR destination_id='$p_itm_id')
+                                              AND flag & ".REL_FLAG_FEED;
+  $db->query($SQL);
+}  
+
 /*
 $Log$
+Revision 1.8  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.7  2001/03/07 14:34:01  honzam
 fixed bug with radiobuttons dispaly
 

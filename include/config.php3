@@ -18,7 +18,7 @@
 # this path with a slash!
 # Example:
 # $AA_INC_PATH = "/home/httpd/html/aa/include/";
-$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa/include/"; 
+$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa2/include/"; 
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
@@ -32,17 +32,17 @@ define("DEFAULT_ORG_ID", "apc-aa.sourceforge.org");
 
 # DB Access Configuration
 define("DB_HOST", "localhost");
-define("DB_NAME", "aadb");
-define("DB_USER", "aadbuser");
-define("DB_PASSWORD", "");
+define("DB_NAME", "aa-db");
+define("DB_USER", "aa-user");
+define("DB_PASSWORD", "somepasswd");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
+define("AA_ID", "420224311780abcd420224311780abcd");
 #define("AA_ID", "000111222333444555666777888999A9");
-define("AA_ID", "120224311780abcd420224311780zxab");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
-define("PERM_LIB", "sql");
+define("PERM_LIB", "ldap");
 
 # LDAP Configuration
 define("LDAP_HOST", "localhost");
@@ -52,9 +52,10 @@ define("LDAP_BASEDN", "ou=AA");
 define("LDAP_PEOPLE", "ou=People,ou=AA");
 define("LDAP_GROUPS", "ou=AA");
 define("LDAP_ACLS", "ou=ACLs,ou=AA");
+define("LDAP_PORT", 3000);
 
 # e-mail for bug reporting contact
-define("ERROR_REPORTING_EMAIL", "madebeer@igc.apc.org");
+define("ERROR_REPORTING_EMAIL", "technical@ecn.cz");
 
 # set this directive to true, if you use MySQL 
 # (uses LIMIT clause in SELECTs)
@@ -88,10 +89,6 @@ define("CACHE_TTL", 600 );
 
 # The frequency in which the cache is checked for old values (in seconds)
 define("CACHE_PURGE_FREQ", 1000);
-
-# Language: uncomment one language  file
-require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
-# require ($GLOBALS[AA_INC_PATH] . "cz_common_lang.php3");  # Czech
 
 # If you use Web.net's extended items table, uncomment this definition
 define("EXTENDED_ITEM_TABLE", "1");
@@ -137,8 +134,12 @@ define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
       # You can redefine the colors in styles too
     define("ADMIN_CSS","admin-ecn.css");           # style for admin interface
     define("ADM_SLICE_CSS","adm_slice.css");       # style for public view of 
-                                                   # not encapsulated slices
   */
+
+# Language: uncomment one language  file
+require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
+# require ($GLOBALS[AA_INC_PATH] . "cz_common_lang.php3");  # Czech
+
 // ------------------------------------------------------------------
 // developer SITE_CONFIG
 

@@ -264,6 +264,7 @@ define("L_UNSELECT_ALL", "Unselect all");
 define("L_SELECT_VISIBLE", "Select all items");
 define("L_UNSELECT_VISIBLE", "Unselect all items");
 
+define("L_SLICE_ADM", "Slice Administration");
 define("L_A_FILTERS_FLT", L_A_FILTERS_TIT);
 define("L_A_COMPACT", L_A_COMPACT_TIT);
 define("L_A_FULLTEXT", L_A_FULLTEXT_TIT);
@@ -382,6 +383,7 @@ define("L_INPUT_SHOW_SEL","Select Box");
 define("L_INPUT_SHOW_RIO","Radio Button");
 define("L_INPUT_SHOW_DTE","Date");
 define("L_INPUT_SHOW_CHB","Check Box");
+define("L_INPUT_SHOW_MCH", "Multiple Checkboxes");
 define("L_INPUT_SHOW_FIL","File Upload");
 define("L_INPUT_SHOW_NUL","Do not show");
                               
@@ -472,21 +474,46 @@ define("L_EVEN_ROW_HLP", "You can define different code for odd and ever rows
                          <br>first red, second black, for example");
 
 define("L_SLICE_URL", "URL of .shtml page (often leave blank)");
+define( "L_BRACKETS_ERR", "Brackets doesn't match in query: ");
 define("L_A_SLICE_ADD_HELP", "To create the new Slice, please choose a template.
         The new slice will inherit the template's default fields.  
         You can also choose a non-template slice to base the new slice on, 
         if it has the fields you want."); 
 define("L_REMOVE_HLP", "Removes epmty brackets etc. Use ## as delimeter.");
 
-// not appended to other lang files
 define("L_COMPACT_HELP", "Use these boxes ( and the tags listed below ) to control what appears on summary page");
 define("L_A_FULLTEXT_HELP", "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item");
+define("L_PROHIBITED", "Not allowed");
+define("L_HTML", "HTML");
+define("L_PLAIN_TEXT", "Plain text");
+define("L_A_DELSLICE", "Admin - Delete Slice");
+define("L_DELSLICE_TIT", L_A_DELSLICE);
+define("L_DELSLICE_HDR", "Select slice to delete");
+define("L_DEL_SLICE_HLP","<p>You can delete only slices, which is matched as &quot;<b>deleted</b>&quot; on &quot;<b>". L_SLICE_SET ."</b>&quot; page.</p>");
+define("L_A_DELSLICE", L_DELSLICE_TIT);
+define("L_DELETE_SLICE", "Do you realy want to delete this slice and all its fields and all its items?");
+define("L_NO_SLICE_TO_DELETE", "No slice marked for deletion");
+define("L_NO_SUCH_SLICE", "Bad slice id");
+define("L_NO_DELETED_SLICE", "Slice is not marked for deletion");
+define("L_DELSLICE_OK", "Slice successfully deleted, tables are optimized");
+define("L_DEL_SLICE", "Delete Slice");
+define("L_FEED_STATE", "Feeding mode");
+define( "L_STATE_FEEDABLE", "Feed" );
+define( "L_STATE_UNFEEDABLE", "Do not feed" );
+define( "L_STATE_FEEDNOCHANGE", "Feed locked" );
+define( "L_INPUT_FEED_MODES_HLP", "Should be the content of this field copied to another slice if it is fed?");
+
+// not appended to other lang files
 //define("", "");
 
 // ------------------------- New ----------------------------
 
 /*
 $Log$
+Revision 1.33  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.32  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

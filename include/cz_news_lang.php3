@@ -74,7 +74,7 @@ define("L_IMP_EXPORT", "Povolit zasílání zpráv do webíku:");
 define("L_ADD_NEW_ITEM", "Nová zpráva");
 define("L_DELETE_TRASH", "Vysypat koš");
 define("L_VIEW_FULLTEXT", "Zobraz zprávu");
-define("L_FULLTEXT", "Text zprávy");
+define("L_FULLTEXT", "Celá zpráva");
 define("L_HIGHLIGHTED", "Dùležitá zpráva");
 define("L_A_FIELDS_EDT", "Správa webíku - Nastavení polí");
 define("L_FIELDS_HDR", "Pole zpráv");
@@ -98,9 +98,9 @@ define("L_SLICE_NAME", "Jméno");
 define("L_DELETED", "Vymazán");
 define("L_D_LISTLEN", "Poèet vypisovaných zpráv");  // slice
 define("L_ERR_CANT_CHANGE", "Nepodaøilo se zmìnit nastavení webíku");
-define("L_ODD_ROW_FORMAT", "Liché øádky");
-define("L_EVEN_ROW_FORMAT", "Sudé øádky");
-define("L_EVEN_ODD_DIFFER", "Použij odlišný HTML kód pro sudé øadky");
+define("L_ODD_ROW_FORMAT", "Lichý záznam");
+define("L_EVEN_ROW_FORMAT", "Sudý záznam");
+define("L_EVEN_ODD_DIFFER", "Odlišný HTML kód pro sudé záznamy");
 define("L_CATEGORY_TOP", "Horní HTML kód pro kategorii");
 define("L_CATEGORY_FORMAT", "Nadpis kategorie");
 define("L_CATEGORY_BOTTOM", "Spodní HTML kód pro kategorii");
@@ -282,7 +282,6 @@ define("L_SRCH_FULL_TEXT", L_FULL_TEXT);
 define("L_SRCH_EDIT_NOTE", L_EDIT_NOTE);
 define("L_SLICES_HDR", L_SLICE);
 define("L_A_SEARCH_EDT", L_A_SEARCH_TIT);
-define("L_A_SLICE_TIT", L_SLICE_ADM);
 define("L_A_FIELDS_TIT", L_A_FIELDS_EDT);
 define("L_SLICE_SET", L_SLICE);
 define("L_FULLTEXT_REMOVE", L_COMPACT_REMOVE);
@@ -424,6 +423,7 @@ define("L_INPUT_SHOW_SEL","Select Box");
 define("L_INPUT_SHOW_RIO","Radio Button");
 define("L_INPUT_SHOW_DTE","Date");
 define("L_INPUT_SHOW_CHB","Check Box");
+define("L_INPUT_SHOW_MCH", "Multiple Checkboxes");
 define("L_INPUT_SHOW_FIL","File Upload");
 define("L_INPUT_SHOW_NUL","Do not show");
                               
@@ -477,15 +477,14 @@ $L_MONTH = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 		'Èervenec', 'Srpen', 'Záøí', 'Øíjen', 'Listopad', 'Prosinec');
 
 define("L_NO_CATEGORY_FIELD","Pole kategorie není v tomto webíku definováno.<br>  Pøidejte pole kategorie do webíku na stránce Políèka.");
-define("L_PERMIT_ANONYMOUS_POST","Povolit anonymní vkládání");
-define("L_PERMIT_OFFLINE_FILL","Povolit off-line plnìní");
+define("L_PERMIT_ANONYMOUS_POST","Anonymní vkládání");
+define("L_PERMIT_OFFLINE_FILL","Off-line plnìní");
 define("L_SOME_CATEGORY", "<kategorie>");
 
 define( "L_BRACKETS_ERR", "Brackets doesn't match in query: ");
-define("L_SLICE_ADM","Administration Menu");
-// this one is not new. I moved it below L_SLICE_ADM
+define("L_SLICE_ADM","Administrace webíku - Menu");
 define("L_A_SLICE_TIT", L_SLICE_ADM);
-define("L_A_SLICE_ADD_HELP", "To create the new Slice, please choose a template.  The new slice will inherit the template's default fields.  You can also choose a non-template slice to base the new slice on, if it has the fields you want.");
+define("L_A_SLICE_ADD_HELP", "Nový webík mùžete vytvoøit na základì šablony, nebo zkopírovat nastavení z již existujícího webíku (vytvoøí se pøesná kopie vèetnì nastavení .");
 
 define("L_ALIAS_FUNC_A", "abstrakt");
 define("L_ALIAS_FUNC_D", "datum");
@@ -512,18 +511,43 @@ define("L_ALIAS_HELP_HLP", "Nápovìdný textík pro tento alias");
 define("L_ALIAS2", "Alias 2"); 
 define("L_ALIAS3", "Alias 3"); 
 
-define("L_TOP_HLP", "HTML code which appears at the top of slice area");
-define("L_FORMAT_HLP", "Put here the HTML code combined with aliases form bottom of this page
-                     <br>The aliase will be substituted by real values from database when it will be posted to page");
-define("L_BOTTOM_HLP", "HTML code which appears at the bottom of slice area");
-define("L_EVEN_ROW_HLP", "You can define different code for odd and ever rows
-                         <br>first red, second black, for example");
+define("L_TOP_HLP", "HTML kód, který se zobrazí pøed kódem webíku");
+define("L_FORMAT_HLP", "Sem patøí HTML kód v kombinaci s aliasy uvedenými dole na stránce
+                     <br>Aliasy budou v okamžiku zobrazování na web nahrazemy skuteènými hodnotami z databáze");
+define("L_BOTTOM_HLP", "HTML kód, který se zobrazí za vlasním kódem webíku");
+define("L_EVEN_ROW_HLP", "TIP: Rozlišením sudých a lichých záznamù lze docílit napøíklad odlièení øádkù jinými barvami pozadí
+                         <br>první tøeba zelený, druhý žlutý, atd.");
 
-define("L_REMOVE_HLP", "Odstraní prázdné závorky atd. Použijte ## jako oddelovac.");
+define("L_REMOVE_HLP", "Odstraní prázdné závorky atd. Použijte ## jako oddìlovaè.");
 
+define("L_COMPACT_HELP", "Na této stránce lze nastavit, co se objeví na stránce pøehledu zpráv");
+define("L_A_FULLTEXT_HELP", "Na této stránce lze nastavit, co se objeví na stránce pøi prohlížení tìla zprávy");
+define("L_PROHIBITED", "Zakázáno");
+define("L_HTML", "HTML");
+define("L_PLAIN_TEXT", "Prostý text");
+define("L_A_DELSLICE", "Správa webíku - Vymazání webíku");
+define("L_DELSLICE_TIT", L_A_DELSLICE);
+define("L_DELSLICE_HDR", "Vyber webík pro smazání");
+define("L_DEL_SLICE_HLP","<p>Lze vymazat jen webíky, které byly oznaèeny pro vymazání na stránce &quot;<b>". L_SLICE_SET ."</b>&quot;</p>");
+define("L_A_DELSLICE", L_DELSLICE_TIT);
+define("L_DELETE_SLICE", "Opravdy chcete vymazat tento webík a všechny jeho zprávy?");
+define("L_NO_SLICE_TO_DELETE", "Žádný webík nebyl oznaèen za vymazaný");
+define("L_NO_SUCH_SLICE", "Špatné èíslo webíku");
+define("L_NO_DELETED_SLICE", "Webík není oznaèen za vymazaný");
+define("L_DELSLICE_OK", "Webík byl vymazán, tabulky byly optimalizovány");
+define("L_DEL_SLICE", "Smazat Webík");
+define("L_FEED_STATE", "Sdílení tohoto pole");
+define( "L_STATE_FEEDABLE", "Kopírovat obsah" );
+define( "L_STATE_UNFEEDABLE", "Nekopirovat" );
+define( "L_STATE_FEEDNOCHANGE", "Kopírovat nemìnitelnì" );
+define( "L_INPUT_FEED_MODES_HLP", "Má se kopírovat obsah tohoto políèka do dalších webíkù pøi výmìnì zpráv mezi webíky?");
     
 /*
 $Log$
+Revision 1.25  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.24  2001/02/20 13:25:16  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 

@@ -22,6 +22,10 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.10  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.9  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 
@@ -65,26 +69,19 @@ added $Id $Log and $Copyright to some stray files
   <tr><td>&nbsp;</td></tr>
   <tr><td valign="TOP">
   <?php
-  if( $slice_id )
-    echo   '&nbsp;&nbsp;<a href="'. con_url($sess->url("itemedit.php3"),"encap=false&add=1"). '" class=leftmenuy>'. L_ADD_NEW_ITEM .'</a>';
-   else 
-    echo   '&nbsp;&nbsp;<span class=leftmenun>'. L_ADD_NEW_ITEM ."</span></td>";?>
-  </tr>
-  <tr><td valign="TOP">
-  <?php
   if( IfSlPerm(PS_ADD) )
     echo   '&nbsp;&nbsp;<a href="'. $sess->url("sliceadd.php3"). '" class=leftmenuy>'. L_NEW_SLICE .'</a>';
    else 
     echo   '&nbsp;&nbsp;<span class=leftmenun>'. L_NEW_SLICE ."</span></td>";?>
   </tr>
   <tr><td valign="TOP">
-  <?php /*
-  if( $show["delslice"] AND IsSuperadmin() )
+  <?php 
+  if( $show["slicedel"] AND IsSuperadmin() )
     echo   '&nbsp;&nbsp;<a href="'. $sess->url("slicedel.php3"). '" class=leftmenuy>'. L_DEL_SLICE .'</a>';
    else 
-    echo   '&nbsp;&nbsp;<span class=leftmenun>'. L_DEL_SLICE ."</span></td>"; */?>
-<!--   </tr>
-  <tr><td valign="TOP"> -->
+    echo   '&nbsp;&nbsp;<span class=leftmenun>'. L_DEL_SLICE ."</span></td>";?>
+  </tr>
+  <tr><td valign="TOP">
   <?php
   if( ($slice_id AND IfSlPerm(PS_DELETE_ITEMS) ))
     echo   '&nbsp;&nbsp;<a href="'. $sess->url("index.php3?Delete=trash") .  '" class=leftmenuy>'. L_DELETE_TRASH .'</a>';

@@ -41,7 +41,7 @@ function RegisterItem( $id, $packet, $db ) {
 }  
 
 # gets one item stored in WDDX format and stored it in database
-function StoreWDDX2DB( $packet, $slice_id, $fields ) {
+function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
   global $db, $itemvarset, $varset;
 
   if( IsDuplicated( $packet, $db ) )
@@ -54,44 +54,40 @@ function StoreWDDX2DB( $packet, $slice_id, $fields ) {
   # update database
   $id = new_id();
 
-  reset($vals);
+  # prepare content4id array before call StoreItem function
   while(list($key,$val) = each($vals)) {
-    if( isset($val) and is_array($val) ) {  
+    if( isset($val) AND is_array($val) ) {  
       switch( $val[0] ) {   # field type - defines action to do with content
         case "base64": 
-          $value = base64_decode($val[2]);  # $val[1] is filename - not used now
+          $content4id[$key][0][value] = quote( base64_decode($val[2]));
+                                           # $val[1] is filename - not used now
           break;
       }
     }      
-    else
-      $value = $val;        # if not array - just store content 
+    else                                   # if not array - just store content 
+      $content4id[$key][0][value] = quote($val);
+    $content4id[$key][0][flag] |= FLAG_OFFLINE;      # mark as offline filled
+  }  
 
-    # add to content table or prepare itemvarset for addition in item table
-    insert_fnc_qte($id, $fields[$key], quote($value), "", true); 
-  }                                                          
-  
-  # store prepared data to item table 
-  $itemvarset->add("id", "unpacked", $id);
-  $itemvarset->add("slice_id", "unpacked", $slice_id);
-  $itemvarset->ifnoset("status_code", "1", "quoted");
-  $itemvarset->ifnoset("post_date", time()+157680000, "quoted"); // 5 years
-  $itemvarset->ifnoset("publish_date", time(), "quoted");
-  $itemvarset->ifnoset("last_edit", time(), "quoted");
-  $itemvarset->ifnoset("expiry_date", time()+157680000, "quoted"); // 5 years
-  $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
-  
-  $db->query($SQL);
+    # fill required fields if not set
+  $content4id["status_code....."][0][value] = ($bin2fill==1 ? 1 : 2);
+  if( !$content4id["post_date......."] ) $content4id["post_date......."] = time();
+  if( !$content4id["publish_date...."] ) $content4id["publish_date...."] = time();
+  if( !$content4id["expiry_date....."] ) $content4id["expiry_date....."] = time()+157680000;
+  if( !$content4id["last_edit......."] ) $content4id["last_edit......."] = time();
 
+  StoreItem( $id, $slice_id, $content4id, $fields, true, true, true );
+                                        # insert, invalidatecache, feed
   RegisterItem( q_pack_id($id), $packet, $db );
-  
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-  $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-
   return WDDX_OK;
 }  
 
 /*
 $Log$
+Revision 1.4  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.3  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

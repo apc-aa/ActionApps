@@ -86,7 +86,8 @@ $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
                                 "rio" => L_INPUT_SHOW_RIO, 
                                 "dte" => L_INPUT_SHOW_DTE, 
                                 "chb" => L_INPUT_SHOW_CHB, 
-                                "fil" => L_INPUT_SHOW_FIL, 
+                                "mch" => L_INPUT_SHOW_MCH,
+                                "fil" => L_INPUT_SHOW_FIL,
                                 "nul" => L_INPUT_SHOW_NUL);
                               
 $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
@@ -120,7 +121,7 @@ $ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
                             "f_t" => L_ALIAS_FUNC_T,
                             "f_w" => L_ALIAS_FUNC_W,
                             "f_0" => L_ALIAS_FUNC_0);
-
+                            
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "1"   => LOG_EVENTS_,
                       "2"   => LOG_EVENTS_,
@@ -130,9 +131,30 @@ $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "6"   => LOG_EVENTS_,
                       "7"   => LOG_EVENTS_,
                       "8"   => LOG_EVENTS_);
-                                                   
+
+# content table flags
+define( "FLAG_HTML", 1 );
+define( "FLAG_FEED", 2 );
+define( "FLAG_FREEZE", 4 );
+define( "FLAG_OFFLINE", 8 );
+
+# states of feed field of field table
+define( "STATE_FEEDABLE", 0 );
+define( "STATE_UNFEEDABLE", 1 );
+define( "STATE_FEEDNOCHANGE", 2 );
+
+# relation table flags
+define( "REL_FLAG_FEED", 2 );    # 2 - just to be compatible with content table
+
+$INPUT_FEED_MODES = array ( STATE_FEEDABLE => L_STATE_FEEDABLE,
+                            STATE_UNFEEDABLE => L_STATE_UNFEEDABLE,
+                            STATE_FEEDNOCHANGE => L_STATE_FEEDNOCHANGE);
 /*
 $Log$
+Revision 1.7  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.6  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 

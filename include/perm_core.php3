@@ -119,7 +119,7 @@ function ResolvePerms($perms) {
 // save all permissions for specified user to session variable
 function CachePermissions($user_id) {
   global $permission_uid, $permission_to_slice, $permission_to_aa, $sess, 
-         $r_superuser;
+         $perms_roles_id, $r_superuser;
 
   $sess->register(permission_uid);
   $sess->register(permission_to_slice);
@@ -225,7 +225,7 @@ function IfSlPerm($perm) {
 
 // Checks if logged user is superadmin
 function IsSuperadmin() {
-  global $auth;
+  global $auth, $r_superuser;
     # check all superadmin's global permissions
   if($permission_uid != $auth->auth["uid"]) 
     CachePermissions($auth->auth["uid"]);
@@ -234,6 +234,10 @@ function IsSuperadmin() {
 
 /*
 $Log$
+Revision 1.8  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.7  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

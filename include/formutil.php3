@@ -44,16 +44,23 @@ function PrintMoreHelp( $txt ) {
 # Prints html tag <input type=text .. to 2-column table
 # for use within <form> and <table> tag
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
-                      $hlp="", $morehlp="") {
+                      $hlp="", $morehlp="", $html=false) {
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
   $morehlp=safe($morehlp);
 
+  if( $html ){
+    $htmlvar = $name."html";
+    $htmlrow = "<input type='radio' name='$htmlvar' value='h'".
+              (( $html==1 ) ? " checked>" : ">" ). L_HTML."</input>
+              <input type='radio' name='$htmlvar' value='t'".
+              (( $html==2 ) ? " checked>" : ">" ). L_PLAIN_TEXT."</input><br>";
+  }    
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>\n";
   if ( SINGLE_COLUMN_FORM )
     echo "</tr><tr>";
-  echo "<td><input type=\"Text\" name=\"$name\" size=$size
+  echo "<td>$htmlrow<input type=\"Text\" name=\"$name\" size=$size
           maxlength=$maxsize value=\"$val\">";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
@@ -62,7 +69,7 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
 
 # Prints two static text to 2-column table
 # for use within <table> tag
-function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=1){
+function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=1 ){
   if( $safing ) {
     $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); $morehlp=safe($morehlp);
   }
@@ -111,18 +118,26 @@ function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
 # Prints html tag <textarea .. to 2-column table
 # for use within <form> and <table> tag
 function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
-                     $hlp="", $morehlp="", $single="") {
+                     $hlp="", $morehlp="", $single="", $html=false) {
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
   $morehlp=safe($morehlp);
 
+  if( $html ){
+    $htmlvar = $name."html";
+    $htmlrow = "<input type='radio' name='$htmlvar' value='h'".
+              (( $html==1 ) ? " checked>" : ">" ). L_HTML."</input>
+              <input type='radio' name='$htmlvar' value='t'".
+              (( $html==2 ) ? " checked>" : ">" ). L_PLAIN_TEXT."</input><br>";
+  }    
   if( $single )
     $colspan = "colspan=2";
+
   echo "<tr><td class=tabtxt $colspan><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM OR $single)
     echo "</tr><tr>";
-  echo "<td $colspan><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>";
+  echo "<td $colspan>$htmlrow<textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo "</td></tr>\n";
@@ -220,6 +235,29 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
   echo "</td></tr>\n";
 }  
 
+# Prints html tag <input type="radio" .. to 2-column table
+# for use within <form> and <table> tag
+function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
+                       $hlp="", $morehlp="") {
+  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
+  echo "<tr><td class=tabtxt><b>$txt</b>";
+  Needed($needed);
+  echo "</td>\n <td>";	
+  reset($arr);
+  while(list($k, $v) = each($arr)) { 
+    echo "<input type='checkbox' name='$name'
+                 value='". htmlspecialchars($k) ."'";
+    if ($selected[$k]) 
+      echo " checked";
+    echo ">".htmlspecialchars($v);
+  }
+  reset($arr);
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}  
+
 # Prints html tag <select .. 
 function FrmSelectEasy($name, $arr, $selected="", $add="") { 
   $name=safe($name); # safe($add) - NO! - do not safe it
@@ -300,6 +338,10 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.12  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.11  2001/03/07 14:34:01  honzam
 fixed bug with radiobuttons dispaly
 

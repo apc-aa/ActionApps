@@ -25,7 +25,7 @@ http://www.apc.org/
 
 require $GLOBALS[AA_INC_PATH]."constants.php3";
 
-// Shift to another page (must be before any output fro script)
+// Shift to another page (must be before any output from script)
 function go_url($url, $add_param="") {
   if( $add_param != "" )
     $url = con_url( $url, rawurlencode($add_param));
@@ -266,8 +266,9 @@ function GetConstants($group, $db) {
 }     
 
 # gets slice fields
-function GetSliceInfo($p_slice_id) {
+function GetSliceInfo($slice_id) {
   global $db;
+  $p_slice_id = q_pack_id($slice_id);
   $db->query("SELECT * FROM slice WHERE id='$p_slice_id'");
   return  ($db->next_record() ? $db->Record : false);
 }  
@@ -289,8 +290,10 @@ function GetTable2Array($SQL, $db, $idcol="id") {
 
 # function returns two arrays - SliceFields (key is field_id)
 #                               Priorities  (field_id sorted by priority
-function GetSliceFields($p_slice_id) {
+function GetSliceFields($slice_id) {
   global $db;
+
+  $p_slice_id = q_pack_id($slice_id);
   $SQL = "SELECT * FROM field WHERE slice_id='$p_slice_id' ORDER BY input_pri";
   $db->query($SQL);
   while($db->next_record()) {
@@ -316,18 +319,36 @@ function GetFieldNo($id) {
 }
 
 # fills content arr with current content of $sel_in items (comma separated ids)
-function GetItemContent($sel_in) {
+function GetItemContent($ids) {
   global $db;
 
+  if( $ids and is_array($ids) ) {
+    $sel_in = " IN (";
+    $delim = "";
+    reset($ids);
+    while( list( ,$v) = each ($ids) ) {
+      if( $v ) {
+        $sel_in .= $delim. "'".q_pack_id($v)."'";
+        $delim = ",";
+      }  
+    }  
+    $sel_in .= ( ($delim=="") ? "'')" : ")");
+  } elseif($ids) {
+    $sel_in = "='".q_pack_id($ids)."'";
+  } else 
+    return false;
+
     # get content from item table
-  $SQL = "SELECT * FROM item WHERE id IN $sel_in";
+  $SQL = "SELECT * FROM item WHERE id $sel_in";
   $db->query($SQL);
   while( $db->next_record() ) {
     reset( $db->Record );
+    $foo_id = unpack_id($db->f(id));
     while( list( $key, $val ) = each( $db->Record )) {
       if( EReg("^[0-9]*$", $key))
         continue;
-      $content[unpack_id($db->f(id))][$key][] = array("value" => $val);
+      $content[$foo_id][substr($key."................",0,16)][] = 
+                                                        array("value" => $val);
     }  
   }  
 
@@ -336,7 +357,7 @@ function GetItemContent($sel_in) {
    # in content table is updated too
 
   $db->query("SELECT * FROM content 
-               WHERE item_id IN $sel_in");  # usable just for constants
+               WHERE item_id $sel_in");  # usable just for constants
   while( $db->next_record() ) {
     $content[unpack_id($db->f(item_id))][$db->f(field_id)][] = 
       array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
@@ -360,6 +381,7 @@ function GetCategoryGroup($slice_id) {
     return false; 
 }    
 
+# returns field id of field which stores category (obviously "category........")
 function GetCategoryFieldId( $fields ) {
   $no = 10000;
   if( isset($fields) AND is_array($fields) ) {
@@ -377,10 +399,9 @@ function GetCategoryFieldId( $fields ) {
   return CreateFieldId("category", $no);
 }  
 
-# in_array is available since PHP4
+# in_array and compact is available since PHP4
 if (substr(PHP_VERSION, 0, 1) < "4") {
-  function in_array($needle,$haystack)
-  {
+  function in_array($needle,$haystack){
     for($i=0;$i<count($haystack) && $haystack[$i] !=$needle;$i++);
     return ($i!=count($haystack));
   }
@@ -423,6 +444,10 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.18  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.17  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

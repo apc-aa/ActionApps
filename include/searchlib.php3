@@ -25,10 +25,12 @@ http://www.apc.org/
 
 // returns array of item ids matching the conditions in right order
   # items_cond - SQL string added to WHERE clause to item table query
-function GetItemAppIds($fields, $db, $p_slice_id, $conditions, 
+function GetItemAppIds($fields, $db, $slice_id, $conditions, 
                        $pubdate_order="DESC", $order_fld="", $order_dir="", 
-                       $items_cond="" ) {
+                       $items_cond="", $exact=true ) {
 
+  $p_slice_id = q_pack_id($slice_id);
+  
   if( isset($conditions) AND is_array($conditions)) {
     $set=0;
     $where = "";
@@ -38,14 +40,19 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
       if( !$fields[$fid] )    // bad condition - field not exist
         continue;
 
-//huh("list( $fid, $val )");
+# huh("list( $fid, $val )");
 //p_arr_m($fields);
       if( $fields[$fid][in_item_tbl] )
-        $where .= " AND (". $fields[$fid][in_item_tbl] ."='$val')";
+        $where .= " AND (". $fields[$fid][in_item_tbl] .
+                  ($exact ? "='$val')": " LIKE '%$val%')");
        else {
         $content_fld = ($fields[$fid][text_stored] ? "text" : "number");
-        $SQL="SELECT item_id FROM content WHERE $content_fld ='$val'";
-//huh( $SQL );
+        $SQL="SELECT item_id FROM content, item 
+               WHERE content.item_id = item.id
+                 AND item.slice_id = '$p_slice_id'
+                 AND content.field_id = '". $fields[$fid][id] ."'
+                 AND ($content_fld". ($exact ? "='$val')": " LIKE '%$val%')");
+# huh( $SQL );
         $db->query($SQL);
         while( $db->next_record() ) {
           $posible[unpack_id($db->f(item_id))] .= '.';
@@ -53,13 +60,16 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
         $set++;
       }  
     }
-//huh("WHERE: $where");
+
+# p_arr_m($posible);
+    
+# huh("WHERE: $where");
 //    if($where != "" )
 //      $where .= ")";
   }    
       
   $de = getdate(time());
-  $item_SQL = "SELECT item.id FROM item ";
+  $item_SQL = "SELECT item.id as id FROM item ";
   if( $order_fld AND !$fields[$order_fld][in_item_tbl] ) {
     $order_content_fld = ($fields[$order_fld][text_stored] ? "text" : "number");
     $item_SQL .= " LEFT JOIN content ON item.id=content.item_id ";
@@ -83,11 +93,12 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
 
 //  $item_SQL .= " LIMIT 0,100";
 
+# huh($item_SQL);
   $db->query($item_SQL);     
 
   if( $set ) {    # just for speed up the processing
     while( $db->next_record() ) {
-      if( strlen($posible[$unid = unpack_id($db->f(id))]) == $set);   #all conditions passed
+      if( strlen($posible[$unid = unpack_id($db->f(id))]) == $set)   #all conditions passed
         $arr[] = $unid;
     }
   } else  {
@@ -282,10 +293,10 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
 
   # to date     
   if( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $to, $part))
-    $cond = " AND (publish_date <= '". mktime(0,0,0,$part[1],$part[2],$part[3]). "') ";
+    $cond = " AND (publish_date <= '". mktime(23,59,59,$part[1],$part[2],$part[3]). "') ";
   elseif( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $to, $part))
-    $cond = " AND (publish_date <= '". mktime(0,0,0,$part[1],$part[2],"20".$part[3]). "') ";
-      
+    $cond = " AND (publish_date <= '". mktime(23,59,59,$part[1],$part[2],"20".$part[3]). "') ";
+       
   $distinct = ( $relevance ? "" : "DISTINCT" );
     
   $SQL = "SELECT $distinct id from item, content WHERE item.id=content.item_id
@@ -524,6 +535,10 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.9  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.8  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

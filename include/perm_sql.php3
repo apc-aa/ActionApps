@@ -71,6 +71,10 @@ function AuthenticateUsername($username, $password, $flags = 0) {
      $slength = 2;                                       // Standard DES
   }
   
+  // if( ALL_PERMS AND DEBUG_FLAG) // just for testnig on windows with no crypt
+  //   return $id;                 // remove it !!!
+
+
   $cryptpw = crypt($password, substr($row[password], 0, $slength));
   
   // if the passwords match, return the authenticated userid, otherwise false
@@ -621,6 +625,10 @@ function A2sql_update ($table, $keyField, $aData) {
 
 /*
 $Log$
+Revision 1.14  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.13  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

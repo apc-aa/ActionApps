@@ -33,32 +33,26 @@ function GetAliasesFromFields($fields) {
     return false;
 
   #  Standard aliases
-  $aliases["_#ITEM_ID#"] = array("fce" => "f_n:id",
-                                 "param" => "id",
+  $aliases["_#ITEM_ID#"] = array("fce" => "f_n:id..............",
+                                 "param" => "id..............",
                                  "hlp" => L_ITEM_ID_ALIAS);
   $aliases["_#EDITITEM"] = array("fce" => "f_e",
-                                 "param" => "id",
+                                 "param" => "id..............",
                                  "hlp" => L_EDITITEM_ALIAS);
 
   # database stored aliases
   while( list( ,$val) = each($fields) ) {
     if( $val[alias1] )
       $aliases[$val[alias1]] = array("fce" => $val[alias1_func],
-                                     "param" => ( ($val[in_item_tbl] != "") ? 
-                                                      $val[in_item_tbl] :
-                                                      $val[id] ),
+                                     "param" => ( $val[id] ),
                                      "hlp" => $val[alias1_help]);
     if( $val[alias2] )
       $aliases[$val[alias2]] = array("fce" => $val[alias2_func],
-                                     "param" => ( ($val[in_item_tbl] != "") ? 
-                                                      $val[in_item_tbl] :
-                                                      $val[id] ),
+                                     "param" => ( $val[id] ),
                                      "hlp" => $val[alias2_help]);
     if( $val[alias3] )
       $aliases[$val[alias3]] = array("fce" => $val[alias3_func],
-                                     "param" => ( ($val[in_item_tbl] != "") ? 
-                                                      $val[in_item_tbl] :
-                                                      $val[id] ),
+                                     "param" => ( $val[id] ),
                                      "hlp" => $val[alias3_help]);
   }                                   
   return($aliases);
@@ -103,7 +97,7 @@ class item {
   # print due to html flag set (escape html special characters or just print)
   # param: 0
   function f_h($col, $param="") { 
-    return ( ($this->columns[$col][0][flag] & 2) ? 
+    return ( ($this->columns[$col][0][flag] & FLAG_HTML) ? 
       $this->columns[$col][0][value] : 
       htmlspecialchars( $this->columns[$col][0][value] ) );
   }    
@@ -175,16 +169,16 @@ class item {
                 $this->columns[$col][0][value] :
                 NO_OUTER_LINK_URL);
     if( $p[1] )      # redirecting to another page 
-      return con_url( $p[1], "sh_itm=".unpack_id($this->columns["id"][0][value]));
+      return con_url( $p[1], "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
      else 
       return con_url( $this->clean_url,          # show on this page
-                      "sh_itm=".unpack_id($this->columns["id"][0][value]));
+                      "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
   }    
 
   # converts text to html or escape html (due to html flag)
   # param: 0
   function f_t($col, $param="") { 
-    return ( ($this->columns[$col][0][flag] & 2) ? 
+    return ( ($this->columns[$col][0][flag] & FLAG_HTML) ? 
       $this->columns[$col][0][value] : txt2html($this->columns[$col][0][value]) );
   }
 
@@ -209,7 +203,7 @@ class item {
     global $sess;
     return con_url($sess->url("itemedit.php3"),
                    "encap=false&edit=1&id=".
-                   unpack_id( $this->columns["id"][0][value]));
+                   unpack_id( $this->columns["id.............."][0][value]));
   }                 
 
   # ----------------- alias function definition end --------------------------
@@ -222,7 +216,6 @@ class item {
 
   function get_item() {
   // format string
-
     $out = $this->format;
     $remove = $this->remove;
     $out = $this->unalias($out, $remove);
@@ -298,6 +291,10 @@ class item {
 
 /*
 $Log$
+Revision 1.10  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.9  2001/02/20 13:25:16  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 

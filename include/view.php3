@@ -84,22 +84,14 @@ class itemview{
     if( !( isset($this->ids) AND is_array($this->ids) ))
       return;
 
-
-    $sel_in = "(";
-    $delim = "";
     for( $i=$this->from_record; $i<$this->from_record+$this->num_records; $i++){
-      if( $this->ids[$i] !="" ) {
-        $sel_in .= $delim. "'".q_pack_id($this->ids[$i])."'";
-        $delim = ",";
-      }  
+      if( $this->ids[$i] )
+        $foo_ids[] = $this->ids[$i];
     }  
-    $sel_in .= ( ($delim=="") ? "'')" : ")"); 
     
-    $content = GetItemContent($sel_in);
+    $content = GetItemContent($foo_ids);
 
     $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
-
-//p_arr_m($content);
 
     switch ( $view_type ) {
       case "fulltext":  
@@ -132,11 +124,13 @@ class itemview{
       default:                         # compact view
         $oldcat = "_No CaTeg";
         $out = $this->slice_info[compact_top];
+        $group_by_field = GetCategoryFieldId( $this->fields );
+        
         for( $i=0; $i<$this->num_records; $i++ ) {
           $iid = $this->ids[$this->from_record+$i];
           if( !$iid )
             continue;                                     # iid = unpacked item id 
-          $catname = $content[$iid]["category........"][0][value];
+          $catname = $content[$iid][$group_by_field][0][value];
               
           $CurItem->columns = $content[$iid];   # set right content for aliases
           
@@ -182,6 +176,10 @@ class itemview{
 
 /*
 $Log$
+Revision 1.9  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.8  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

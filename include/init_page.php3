@@ -140,7 +140,7 @@ if( !$Add_slice AND !$New_slice ) {
       $r_stored_slice = $slice_id;
       $r_slice_view_url = ($db->f(slice_url)=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                       : $db->f(slice_url));
-      list($r_fields,) = GetSliceFields($p_slice_id);
+      list($r_fields,) = GetSliceFields($slice_id);
     }
   }  
   
@@ -165,6 +165,10 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.14  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.13  2001/02/20 13:25:16  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 

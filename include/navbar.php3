@@ -51,7 +51,7 @@ $nb_view = (!$slice_id ?
   '<span class=nbenable>'. L_VIEW_SLICE .'</span>' :
   " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". L_VIEW_SLICE .'</span></a>');
 
-$nb_logo = '<span class=nblogo> <IMG SRC=../images/action.gif ALT="'. L_LOGO .'"></span>';
+$nb_logo = '<a href="'. AA_INSTAL_URL .'"><img src="../images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
 
 $nb_go = '<span class=nbenable>'. L_GO .'</span>';
 
@@ -61,6 +61,10 @@ $nb_usermng = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
 
 /*
 $Log$
+Revision 1.7  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.6  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 

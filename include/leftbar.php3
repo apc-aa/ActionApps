@@ -22,6 +22,10 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.6  2001/03/20 16:10:37  honzam
+Standardized content management for items - filler, itemedit, offline, feeding
+Better feeding support
+
 Revision 1.5  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 
@@ -53,9 +57,9 @@ added $Id $Log and $Copyright to some stray files
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <?php
   if( $slice_id AND ($r_bin_state != "app"))
-    echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=app"). '" class=leftmenuy>'. L_ACTIVE_BIN .'</a></td></tr>';
+    echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=app"). '" class=leftmenuy>'. L_ACTIVE_BIN .'</a> ('.$item_bin_cnt[1].')</td></tr>';
    else
-    echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_ACTIVE_BIN .'</td></tr>';
+    echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_ACTIVE_BIN .' ('.$item_bin_cnt[1].')</td></tr>';
   if( !$apple_design ) {
     if( $slice_id AND ($r_bin_state != "appb"))
       echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=appb"). '" class=leftmenuy>'. L_ACTIVE_BIN_PENDING_MENU .'</a></td></tr>';
@@ -67,13 +71,13 @@ added $Id $Log and $Copyright to some stray files
       echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_ACTIVE_BIN_EXPIRED_MENU .'</td></tr>';
   }  
   if( $slice_id AND ($r_bin_state != "hold")) 
-    echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=hold"). '" class=leftmenuy>'. L_HOLDING_BIN .'</a></td></tr>';
+    echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=hold"). '" class=leftmenuy>'. L_HOLDING_BIN .'</a> ('.$item_bin_cnt[2].')</td></tr>';
    else
-    echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_HOLDING_BIN .'</td></tr>';
+    echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_HOLDING_BIN .' ('.$item_bin_cnt[2].')</td></tr>';
   if( $slice_id AND ($r_bin_state != "trash")) 
-    echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=trash"). '" class=leftmenuy>'. L_TRASH_BIN .'</a></td></tr>';
+    echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=trash"). '" class=leftmenuy>'. L_TRASH_BIN .'</a> ('.$item_bin_cnt[3].')</td></tr>';
    else
-    echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_TRASH_BIN .'</td></tr>';?>
+    echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_TRASH_BIN .' ('.$item_bin_cnt[3].')</td></tr>';?>
   <tr><td>&nbsp;</td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <tr><td class=leftmenu><?php echo L_MISC ?></td></tr>
