@@ -1,13 +1,18 @@
-11/03/03 - Added spanish language file to site module
-(pep)    - Fixed bug: admin/param_wizard.php3 and se_inputform.php3 now
+11/04/03 - added "Noticias ES" template and view templates in sql_update
+(honzam) - fixed get_aamenus() redeclare error
+         - better general categories handling in Links module
+         - fixed PHP warning of not existing array in slice import
+11/03/03 - added Spanish language file to site module
+(pep)    - fixed bug: admin/param_wizard.php3 and se_inputform.php3 now
            load the param wizard language file
-	 - Fixed bug: include/mgettext.php3 did not allow multiple included
-	   files for a language
-         - Improved the spanish translation
+         - fixed bug: include/mgettext.php3 did not allow multiple included
+           files for a language
+         - improved the spanish translation
+10/30/03 - fixed RSS feeds to work in PHP <4.3.0 (honzam)
 10/30/03 - fixed bug with $scr->current in slice.php3 (setu)
-10/24/03 - fixed bug with state variable expanding in site module 
+10/24/03 - fixed bug with state variable expanding in site module
 (mitra)  - parseUser becomes stringexpand_user
-10/19/03 - Added mapping to RSS, 
+10/19/03 - Added mapping to RSS,
 (mitra)    Added debugpermissions and associatioed reporting
            Fixed bug with http fetching in php>4.3.0
 10/16/03 - 'Fixed bug in searchlib.php3 - multiple values joined by AND operator

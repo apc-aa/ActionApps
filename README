@@ -10,6 +10,7 @@ non-profit WWW sites and 'Usenet-like' sharing of articles between sites.
 
 News
 ====
+11/04/2003 - stable v2.6.0 of APC ActionApps released
 11/18/2002 - stable v2.4.0 of APC ActionApps released
 06/14/2002 - stable v2.2.0 of APC ActionApps released
 10/08/2001 - stable v2.0.0 of APC ActionApps released
@@ -26,6 +27,7 @@ Features
 - Content Pooling: Swap content with other ActionApps users on any server
 - Classify articles using built-in categories (or create your own)
 - Search engine included
+- Alerts and Links modules included
 - Multilingual support: English, Spanish, Czech, Slovak, Deutch, Romanian and
   Japan included (easy to add new languages)
 
