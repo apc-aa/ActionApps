@@ -259,8 +259,9 @@ class item {
   # prints $col as link, if field_id in $param is defined, else prints just $col
   # param: field_id of possible link (like "source_href.....")
   function f_l($col, $param="") { 
-    return $this->getahref($this->columns[$param][0][value], 
-                    $this->columns[$col][0][value]);
+    $p = ParamExplode($param);
+    return $this->getahref($this->columns[$p[0]][0][value], 
+                           $this->columns[$col][0][value],$p[1]);
   }
 
   # _#ITEMEDIT used on admin page index.php3 for itemedit url
@@ -382,6 +383,9 @@ class item {
 
 /*
 $Log$
+Revision 1.22  2001/07/09 17:46:40  honzam
+user alias function - better parameters parsing
+
 Revision 1.21  2001/07/09 09:28:44  honzam
 New supported User defined alias functions in include/usr_aliasfnc.php3 file
 
