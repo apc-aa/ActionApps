@@ -25,6 +25,18 @@ class DB_AA extends DB_Sql {
   var $Database = DB_NAME;
   var $User     = DB_USER;
   var $Password = DB_PASSWORD;
+
+  function dquery($SQL) {
+    echo "<br>$SQL";
+    $this->query("explain ".$SQL);
+    echo "<table><tr><td><b>table</b></td> <td><b>type</b></td><td><b>possible_keys</b></td><td><b>key</b></td><td><b>key_len</b></td><td><b>ref</b></td><td><b>rows</b></td><td><b>Extra</b></td></tr>";
+    while( $this->next_record() ) 
+      printf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", 
+              $this->f('table'), $this->f('type'), $this->f('possible_keys'), $this->f('key'), $this->f('key_len'), $this->f('ref'), $this->f('rows'), $this->f('Extra'));
+    echo "</table>";
+    $this->query($SQL);
+  } 
+
   function halt($msg) {
     if( $this->Halt_On_Error == "no" )
       return;
@@ -238,6 +250,9 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
+Revision 1.11  2001/11/26 11:09:07  honzam
+new debug function dquery
+
 Revision 1.10  2001/10/01 16:21:38  honzam
 bugs with non existant tables in sql_update fixed
 
