@@ -252,7 +252,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   global $QueryIDsCount;
 
   $db = new DB_AA;
-  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
+  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ,"QueryZIDS");
 
   if( $use_cache AND !$nocache ) {
     #create keystring from values, which exactly identifies resulting content

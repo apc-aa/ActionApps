@@ -40,9 +40,12 @@ class PageCache  {
   var $lastClearTime=0;  # timestamp of last purging of cache database (removed obsolete cache informations) 
   var $clearFreq=600;    # number of seconds between database cleaning
   var $db;               # database identificator
+  var $caller;           # just for debugging
   
   # PageCache class constructor
-  function PageCache($db, $ct=600, $cf=600) {
+  function PageCache($db, $ct=600, $cf=600,$caller="") {
+    if ($GLOBALS[debugcache]) huhl("Cache:new:$caller:$ct,$cf");
+    $this->caller = $caller; // Just for debugging
     $this->db = $db;
     $this->cacheTime = $ct;
     $this->clearFreq = $cf;
@@ -65,20 +68,13 @@ class PageCache  {
     if ($GLOBALS[debugcache]) huhl("Cache:get:$keyString");
     if( ENABLE_PAGE_CACHE ) {
       $db = $this->db;
-//      if( $GLOBALS['debug'] )
-//        echo "<br>PageCache - KeyString: $keyString";
       $SQL = "SELECT * FROM pagecache WHERE id='".md5($keyString)."'";
-      if( $GLOBALS['debug'] ) 
-        $db->dquery($SQL);
-      else 
-      $db->query($SQL);
+      $db->tquery($SQL);
       if($db->next_record()) {
-//  echo 'c-+ ';
         if( (time() - $this->cacheTime) < $db->f("stored") ) {
-//  echo 'c-0 ';
+          if ($GLOBALS[debugcache]) huhl("found:str2find=".$db->f(str2find));
           return $db->f(content);
         }  
-//  echo 'c-X ';    
       }
     }  
     return false;    
@@ -86,7 +82,7 @@ class PageCache  {
   
   # cache informations based on $keyString
   function store($keyString, $content, $str2find="") {
-    if ($GLOBALS[debugcache]) huhl("Cache:store:$keystring:$str2find");
+    if ($GLOBALS[debugcache]) huhl("Cache:store:$str2find:",$this->caller);
     if( ENABLE_PAGE_CACHE ) {
       $db = $this->db;
       $tm = time();
@@ -103,7 +99,7 @@ class PageCache  {
 
   # clears all old cached data
   function purge() {
-    if ($GLOBALS[debugcache]) huhl("Cache:purge");
+    if ($GLOBALS[debugcache]) huhl("Cache:purge:".$this->caller);
     $db = $this->db;
     $tm = time();
     $SQL = "DELETE FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'";

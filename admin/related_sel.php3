@@ -43,7 +43,7 @@ if( $sid )
 
 
 $slice_info = GetSliceInfo($r_sid);
-$config_arr = unserialize( $slice_info["config"] );
+$config_arr = unserialize($slice_info["config"] );
 
 // $r_r_admin_order, $r_r_admin_order - controls article ordering 
 // $r_r_admin_order contains field id

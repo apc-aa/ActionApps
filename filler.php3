@@ -52,6 +52,7 @@ http://www.apc.org/
  * @param mixed $val the variable or array to quote (add slashes)
  * @return mixed the quoted variables (with added slashes)
  */
+//$GLOBALS[debug]=0; $GLOBALS[errcheck] =1;
 
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
@@ -150,7 +151,6 @@ function SendOkPage() {
 }  
 
 # init used objects
-
 if( !$slice_id ) SendErrorPage(array ("fatal"=>_m("Slice ID not defined"))); 
 
 $p_slice_id = q_pack_id($slice_id);
@@ -250,8 +250,9 @@ else if (!is_array ($err)) {
  # update database
 if (!is_array ($err)) {
 	if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, 
-                          true, true, $oldcontent4id ))     # insert, invalidatecache, feed
+          true, true, $oldcontent4id )) {     # insert, invalidatecache, feed
         $err["store"] = _m("Some error in store item.");
+    }
     else $err["success"] = $insert ? "insert" : "update";    
 }        
                           

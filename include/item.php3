@@ -384,10 +384,12 @@ class item {
     if (! isField($col)) 
         huhe("Warning: i_s: $col is not a field, don't wrap it in { } ");
     $f = $this->columns[$col][0][value];
-    if (! $f) { huhe("Warning: i_s: no file"); return ""; }  # No picture
+    if (! $f) { return ""; }  # No picture, common don't warn (expanding inside switch)
     # Could speed up a little with a test for URLs in uploads directory here
 #PHP>4.0.5 supports URLs so no need to skip URLs
+if ($GLOBALS[debug]) huhl("Going for image",$f);
     $a = getimagesize($f);
+if ($GLOBALS[debug]) huhl("Got for image",$a);
     if (! $a)
         huhe("Warning: getimagesize couldn't get width from '$f'");
     return($a[3]);  #height="xxx" width="yyy"

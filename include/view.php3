@@ -272,7 +272,7 @@ function ParseBannerParam(&$view_info, $banner_param) {
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
   global $db, $nocache, $debug;
-  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
+  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ,"GetView");
   if ($debug) huhl("GetView:",$view_param);
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param);
@@ -281,10 +281,15 @@ function GetView($view_param) {
     return $res;
   } 
   
+  $str2find_save = $GLOBALS[str2find_passon]; //Save str2find from same level
+  $GLOBALS[str2find_passon] = ""; // clear it for caches stored further down
   $res = GetViewFromDB($view_param, $cache_sid);
+  $str2find_this = ",slice_id=$cache_sid";
+  if (!strstr($GLOBALS[str2find_passon],$str2find_this)) 
+    $GLOBALS[str2find_passon] .= $str2find_this; // append our str2find
     // Note cache_sid set by GetViewFromDB
-  $cache->store($keystr, $res, "slice_id=$cache_sid");
-
+  $cache->store($keystr, $res, $GLOBALS[str2find_passon]);
+  $GLOBALS[str2find_passon] .= $str2find_save; // and append saved for above
   return $res;
 }
 

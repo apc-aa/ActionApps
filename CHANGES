@@ -1,3 +1,7 @@
+03/04/03 - added display of GD types in test.php3
+(mitra)  - remove warning on no picture in i_s - common when expanding
+         - Added some debugging to PageCache
+         - Added stack of values for properly invalidating nested views
 02/27/03 - fixed bug of not storing related items
 (honzam) - fixed bug with wrong display multiple checkboxes input 
            when "move down" is ON
