@@ -91,6 +91,11 @@ define("L_NEW_GROUP", "Nová skupina");
 define("L_EDIT_GROUP", "Editace Skupiny");
 
 // application not specific strings
+
+define("NO_PICTURE_URL", "http://aa.ecn.cz/aa/images/pixel_blank.gif");  // image used when 
+  // there is img_source in html format string but no img_source is stored in database 
+  // (you can use blank pixel for none picture)
+
 define("NO_SOURCE_URL", "javascript: window.alert('Nebylo zadáno')"); 
 define("L_ALLCTGS", "Všechny kategorie");
 define("L_BAD_INC", "Špatný parametr inc - soubor mùže být v tomtéž adresáøi, kde je .shtml soubor - smi obsahovat jen znaky a cisla");
@@ -151,6 +156,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.10  2000/12/05 14:01:58  honzam
+Better help for upload image alias
+
 Revision 1.9  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

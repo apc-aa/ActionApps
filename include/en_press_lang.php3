@@ -241,7 +241,7 @@ define("L_HLP_PUB_DATE",'alias for Publish Date');
 define("L_HLP_EXP_DATE",'alias for Expiry date');
 define("L_HLP_ABSTRACT",'alias for Summary<br>(if there is no summary in database, first Grab_length characters from Press release are used)');
 define("L_HLP_FULLTEXT",'alias for Press release<br>(HTML tags are striped or not depending on HTML formated item setting)');
-define("L_HLP_IMAGESRC",'alias for Picture URL<br>(if there is no image url defined in database, default url is used instead (see NO_PICTURE_URL constant in en_*_lang.php3 file))<div class=example><em>Example: </em>&lt;img src="_#IMAGESRC"&gt;</div>');
+define("L_HLP_IMAGESRC",'alias for Picture URL<br>(if there is no image url defined in database, default url is used instead (see NO_PICTURE_URL constant in en_*_lang.php3 file (transparent pixel, maybe)))<div class=example><em>Example: </em>&lt;img src="_#IMAGESRC"&gt;</div>');
 define("L_HLP_SOURCE",'alias for Source Name<br>(see _#LINK_SRC for text source link)');
 define("L_HLP_SRC_URL",'alias for Source URL<br>(if there is no source url defined in database, default source url is displayed (see NO_SOURCE_URL constant in en_*_lang.php3 file))<br>Use _#LINK_SRC for text source link.<div class=example><em>Example: </em>&lt;a href"_#SRC_URL#"&gt;&lt;img src="source.gif"&gt;&lt;/a&gt;</div>');
 define("L_HLP_LINK_SRC",'alias for Source Name with link.<br>(substituted by &lt;a href="_#SRC_URL#"&gt;_#SOURCE##&lt;/a&gt; if Source URL defined, otherwise _#SOURCE## only)');
@@ -474,9 +474,6 @@ define("L_NOT_PUBLISHED", "Not published, yet");
 define("L_EDIT_USER", "Edit User");
 define("L_EDITUSER_HDR", L_EDIT_USER);
 define("L_USER_ID", "User Id");
-define("NO_PICTURE_URL", "http://web.ecn.cz/aauser/images/no_pict.gif");  // image used when 
-  // there is img_source in html format string but no img_source is stored in database 
-  // (you can use blank pixel for none picture)
 define("NO_SOURCE_URL", "javascript: window.alert('No source url specified')"); 
 define("NO_OUTER_LINK_URL", "javascript: window.alert('No outer url specified')");
 
@@ -618,6 +615,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.20  2000/12/05 14:01:19  honzam
+Better help for upload image alias
+
 Revision 1.19  2000/11/16 11:48:39  madebeer
 11/16/00 a- changed admin leftbar menu order and labels
          b- changed default article editor field order & fields

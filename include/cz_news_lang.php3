@@ -33,8 +33,9 @@ define("HTML_PAGE_BEGIN",
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
                
 define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
-define("IMG_UPLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
-define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
+define("IMG_UPLOAD_URL", "http://aa.ecn.cz/img_upload/");
+define("IMG_UPLOAD_PATH", "/raid/www/htdocs/aa.ecn.cz/img_upload/");
+define("IMG_UPLOAD_TYPE", "image/*");
 define("EDITOR_GRAB_LEN", 200);                 // not used, i think
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -225,7 +226,7 @@ define("L_HLP_PUB_DATE",'alias pro datum zveřejnění');
 define("L_HLP_EXP_DATE",'alias pro datum vypršení platnosti příspěvku');
 define("L_HLP_ABSTRACT",'alias pro abstrakt<br>(pokud abstrabt není v databázi vyplněn, pak se zobrazi <i>Grab_length</i> znaků z textu příspěvku)');
 define("L_HLP_FULLTEXT",'alias pro text příspěvku<br>(text může být HTML formátovaný či nikoliv - vše se řídí zaškrtnutím políčka HTML kód)');
-define("L_HLP_IMAGESRC",'alias pro URL obrázku<br>(pokud není odkaz na obrázek v databázi, použije se standardní obrázek (viz konstanta NO_PICTURE_URL v souboru cz_*_lang.php3))<div class=example><em>Příklad: </em>&lt;img src="_#IMAGESRC"&gt;</div>');
+define("L_HLP_IMAGESRC",'alias pro URL obrázku<br>(pokud není odkaz na obrázek v databázi, použije se standardní obrázek (viz konstanta NO_PICTURE_URL v souboru cz_*_lang.php3 - treba prazdny pixel))<div class=example><em>Příklad: </em>&lt;img src="_#IMAGESRC"&gt;</div>');
 define("L_HLP_SOURCE",'alias pro zdroj<br>(viz také _#LINK_SRC)');
 define("L_HLP_SRC_URL",'alias pro URL zdroje<br>(pokud URL zdroje neni zadano, pouzile se standardni URL (viz konstanta NO_SOURCE_URL v souboru cz_*_lang.php3))<br>Pouzijte _#LINK_SRC pro odkaz na zdroj včetně jména zdroje.<div class=example><em>Příklad: </em>&lt;a href"_#SRC_URL#"&gt;&lt;img src="source.gif"&gt;&lt;/a&gt;</div>');
 define("L_HLP_LINK_SRC",'alias pro zdroj včetně odkazu.<br>(pokud URL zdroje je vyplneno, alias je nahrazen &lt;a href="_#SRC_URL#"&gt;_#SOURCE##&lt;/a&gt;, jinak se použije jen _#SOURCE##)');
@@ -458,9 +459,6 @@ define("L_NOT_PUBLISHED", "Dosud nepublikováno");
 define("L_EDIT_USER", "Editace uživatele");
 define("L_EDITUSER_HDR", L_EDIT_USER);
 define("L_USER_ID", "Id uživatele");
-define("NO_PICTURE_URL", "http://web.ecn.cz/aauser/images/no_pict.gif");  // image used when 
-  // there is img_source in html format string but no img_source is stored in database 
-  // (you can use blank pixel for none picture)
 define("NO_SOURCE_URL", "javascript: window.alert('Nebylo zadáno url zdroje')"); 
 define("NO_OUTER_LINK_URL", "javascript: window.alert('Nebylo zadáno url odkazu ven')");
 
@@ -634,6 +632,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
 
 /*
 $Log$
+Revision 1.18  2000/12/05 14:01:58  honzam
+Better help for upload image alias
+
 Revision 1.17  2000/11/13 10:41:14  honzam
 Fixed bad order for default setting of show fields and needed fields
 

@@ -90,6 +90,10 @@ define("L_NEW_GROUP", "New Group");
 define("L_EDIT_GROUP", "Edit Group");
 
 // application not specific strings
+define("NO_PICTURE_URL", "http://aa.ecn.cz/aa/images/pixel_blank.gif");  // image used when 
+  // there is img_source in html format string but no img_source is stored in database 
+  // (you can use blank pixel for none picture)
+
 define("L_ALLCTGS", "All categories");
 define("L_NO_SUCH_FILE", "No such file");
 define("L_BAD_INC", "Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters");
@@ -137,6 +141,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.11  2000/12/05 14:01:19  honzam
+Better help for upload image alias
+
 Revision 1.10  2000/11/16 11:48:39  madebeer
 11/16/00 a- changed admin leftbar menu order and labels
          b- changed default article editor field order & fields
