@@ -57,6 +57,10 @@ function GetWhereExp( $field, $operator, $querystring ) {
     case 'RLIKE':  $bgn='%';  $end='';   $op='LIKE';    break;
     case 'LLIKE':  $bgn='';   $end='%';  $op='LIKE';    break;
     case 'XLIKE':  $bgn='';   $end='';   $op='LIKE';    break;
+    case 'BETWEEN': 
+                   $arr = explode( ",", $querystring );
+                   return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
+    
     default:       $bgn='';  $end='';  $op=$operator; break;
   }  
 
@@ -91,10 +95,11 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
 
   # select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
-  global $db;
+  global $db, $debug;
 
-//p_arr_m($conds);p_arr_m($sort);p_arr_m($group_by);
-
+if( $debug ) {
+  p_arr_m($conds);p_arr_m($sort);p_arr_m($group_by);
+}
   
   # parse conditions ----------------------------------
   if( isset($conds) AND is_array($conds)) {
@@ -252,7 +257,10 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   if( isset($select_group) )                                 # group by -------
     $SQL .= " GROUP BY $select_group";
 
-// huh($SQL);
+if( $debug ) {
+ huh($SQL);
+}
+
 
   # get result --------------------------
   $db->query($SQL);
@@ -790,6 +798,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.19  2001/10/04 13:56:47  honzam
+New BETWEEN operator, debug listings on demand
+
 Revision 1.18  2001/09/27 16:08:51  honzam
 Better support for dates in "<=", ">" comparison
 
