@@ -27,6 +27,9 @@ require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
 require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."item_content.php3";
 require_once $GLOBALS["AA_INC_PATH"]."event_handler.php3";
+require_once $GLOBALS["AA_INC_PATH"]."event.class.php3";   // newer and better than event_handler.php3
+
+if( !is_object($event) ) $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
 
 # ----------------------- functions for default item values -------------------
 function default_fnc_now($param) {
@@ -950,9 +953,8 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
 *   @return true on success, false otherwise
 */
 function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
-                    $invalidatecache=true, $feed=true, $oldcontent4id="" )
-{
-    global $varset, $itemvarset;
+                    $invalidatecache=true, $feed=true, $oldcontent4id="" ) {
+    global $varset, $itemvarset, $event;
     $debugsi=$GLOBALS[debugsi];
 #$GLOBALS[debug] = 1;
     if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id, fields size=",count($fields));
@@ -1053,12 +1055,10 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     /* Alerts module uses moved2active as the time when
        an item was moved to the active bin */
     $oldItemContent = new ItemContent ($oldcontent4id);
-    if( $insert ||
-      ( $itemvarset->get('status_code') != $oldItemContent->getStatusCode()
-        && $itemvarset->get('status_code') >= 1))
-    {
+    if ( $insert || ( $itemvarset->get('status_code') != $oldItemContent->getStatusCode()
+                                    && $itemvarset->get('status_code') >= 1)) {
         $itemvarset->add("moved2active", "number",
-            $itemvarset->get('status_code') > 1 ? 0 : time ());
+                          $itemvarset->get('status_code') > 1 ? 0 : time ());
     }
 
     // update item table
@@ -1087,14 +1087,14 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     if( $feed )
         FeedItem($id, $fields);
 
+    $itemContent = new ItemContent($id);
     if ($insert) {
-        $itemContent = new ItemContent ($content4id);
-        $itemContent->setStatusCode ($itemvarset->get('status_code'));
-        Event_ItemAfterInsert ($id, $slice_id, $itemContent);
+        Event_ItemAfterInsert ($id, $slice_id, $itemContent);  // older form of events - should be rewriten to $event class events
+        $event->comes('ITEM_NEW', $slice_id, 'S', $foo, $itemContent);  // new form event
+    } else {
+        Event_ItemAfterUpdate ($id, $slice_id, $itemContent, $oldItemContent); // old for event
+        $event->comes('ITEM_UPDATED', $slice_id, 'S', $foo, $itemContent, $oldItemContent); // new form event
     }
-    else Event_ItemAfterUpdate ($id, $slice_id, new ItemContent ($content4id),
-        $oldItemContent);
-
     if ($debugsi) huhl("StoreItem err=",$err);
     return true;
 } // end of StoreItem
@@ -1202,7 +1202,6 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="")
 /** Returns Javascript for Add / Edit item
 */
 function GetFormJavascript ($show_func_used, $js_proove_fields) {
-    global $sess;
 
     $retval = '
     <script language="JavaScript"><!--
@@ -1246,7 +1245,7 @@ function GetFormJavascript ($show_func_used, $js_proove_fields) {
         if ((relatedwindow != null) && (!relatedwindow.closed)) {
           relatedwindow.close()    // in order to preview go on top after open
         }
-        relatedwindow = open( "'. $sess->url("related_sel.php3") . '&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design, "relatedwindow", "scrollbars=1, resizable=1, width=500");
+        relatedwindow = open( "'. get_admin_url('related_sel.php3') . '&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design, "relatedwindow", "scrollbars=1, resizable=1, width=500");
       }';
 
       if ($show_func_used['wi2']) $retval .= '

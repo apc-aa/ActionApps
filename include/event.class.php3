@@ -231,14 +231,12 @@ function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $pa
     $otazka   = trim($params->getValue('abstract.......1'));
     $odpoved  = trim($params->getValue('abstract.......2'));
     $send     = trim($params->getValue('switch.........2'));
-    
-    if ( $email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1')) ) { 
-        $item = GetItemFromId($short_id, true);        
+
+    if ( $email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1')) ) {
+        $item = GetItemFromId($short_id, true);
         return send_mail_from_table_inner (8, $email, $item) > 0 ;
     }
     return false;
 }
-
-
 
 ?>
