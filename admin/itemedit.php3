@@ -24,6 +24,7 @@ http://www.apc.org/
 # optionaly encap="false" if this form is not encapsulated into *.shtml file
 # optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
+
 $encap = ( ($encap=="false") ? false : true );
 
 if( $edit OR $add )         # parameter for init_page - we edited new item so
@@ -36,6 +37,8 @@ require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
+require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
+//require_once $GLOBALS["AA_INC_PATH"]."inputform.class.php3";
 
 // needed for field JavaScript to work
 
@@ -77,9 +80,8 @@ if($cancel) {
   else
     go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
 }
-#$db = new DB_AA;
+$db = new DB_AA;
 
-# These aren't used here , would be better to create where used like $db!
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
 
@@ -88,8 +90,14 @@ else if ($insert) $action = "insert";
 else if ($update) $action = "update";
 else $action = "edit";
 
+// ValidateContent4Id() sets GLOBAL!! variables:
+//   $show_func_used   - list of show func used in the form
+//   $js_proove_fields - JavaScript code for form validation
+//   list ($fields, $prifields) = GetSliceFields ()
+//   $oldcontent4id
 ValidateContent4Id ($err, $slice_id, $action, $id);
-$slice_info = GetSliceInfo ($slice_id);
+
+$slice = new slice($slice_id);
 
   # update database
 if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
@@ -97,7 +105,7 @@ if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
   # prepare content4id array before call StoreItem function
   $content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
 
-  if ($slice_info["permit_anonymous_edit"] == ANONYMOUS_EDIT_NOT_EDITED_IN_AA
+  if ($slice->getfield('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_EDITED_IN_AA
    && ($content4id["flags..........."][0]['value'] & ITEM_FLAG_ANONYMOUS_EDITABLE))
     $content4id["flags..........."][0]['value'] -= ITEM_FLAG_ANONYMOUS_EDITABLE;
 
@@ -107,6 +115,7 @@ if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
   $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                             true, true, $oldcontent4id );     # invalidatecache, feed
 
+//echo "</pre>"; exit;
   if( count($err) <= 1) {
     page_close();
     if( $anonymous )  // anonymous login
@@ -148,100 +157,43 @@ if($edit) {
             $err, "standalone");
     exit;
   }
+
   $content4id = $content[$id];
 }
 
-//print_r($content);
+$r_hidden["slice_id"] = $slice_id;
+$r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
 
 # print begin ---------------------------------------------------------------
-
 if( !$encap ) {
-  HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-  echo '
-    <style>
-        #body_white_color { color: #000000; }
-    </style>';
-  echo GetFormJavascript ($show_func_used, $js_proove_fields);
-  echo '
-    <title>'.( $edit=="" ? _m("Add Item") : _m("Edit Item")). '</title>
-  </head>
-  <body id="body_white_color">
-    <H1><B>' . ( $edit=="" ? _m("Add Item") : _m("Edit Item")) . '</B></H1>';
+    $inputform_settings = array(
+        'display_aa_begin_end' => true,
+        'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")),
+
+        // next two variables are used for GetFormJavascript() function - javascript
+        // validation when display_aa_begin_end is true
+        'show_func_used'       => $show_func_used,
+        'js_proove_fields'     => $js_proove_fields);
 }
 
-PrintArray($err);
-echo $Msg;
+$inputform_settings['messages']            = array('err' => $err);
+$inputform_settings['form_action']         = ($DOCUMENT_URI != "" ? $DOCUMENT_URI :
+                                             $PHP_SELF . ($return_url ? "?return_url=".urlencode($return_url) : ''));
 
-$PASS_PARAM=$PHP_SELF;
-if ($return_url)
-  $PASS_PARAM .= "?return_url=".urlencode($return_url);
+$inputform_settings['form4update']         = $edit || $update || ($insert && $added_to_db);
+$inputform_settings['show_preview_button'] = (($post_preview!=0) OR !isset($post_preview));
 
-if ( $show_func_used ['fil'])  # uses fileupload?
-  $html_form_type = 'enctype="multipart/form-data"';
+$inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
+                                              ($return_url ? expand_return_url(1) :
+                                              get_admin_url("index.php3?slice_id=$slice_id")));
 
-echo "<form name=inputform $html_form_type method=post action=\""
-    .($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PASS_PARAM).'"'
-    .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>
-    <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center" class="inputtab">'; ?>
-<tr><td class=tabtit align="center"><b>&nbsp;</b></td></tr>
-<tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" class="inputtab2">
-<?php
-if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
-  echo "<tr><td>$errmsg</td></tr>";
+if( $inputform_settings['form4update'] )  $r_hidden["id"] = $id;
 
-?>
-<tr>
-  <td colspan=2>
-  <?php
-  $r_hidden["slice_id"] = $slice_id;
-  $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
-  $sess->hidden_session();
-  echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
-  echo '<input type="hidden" name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">';
-  echo '<input type="hidden" name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
-  </td>
-</tr>
-</table></td></tr>
-<tr><td align=center><?php
+if( $vid ) $inputform_settings['template'] = $vid;
 
-// is the accesskey working?
-detect_browser();
-if ($BPlatform == "Macintosh") {
-    if ($BName == "MSIE"
-        || ($BName == "Netscape" && $BVersion >= "6"))
-        $accesskey = "(ctrl+S)";
-}
-else {
-    if ($BName == "MSIE"
-        || ($BName == "Netscape" && $BVersion > "5"))
-       $accesskey = "(alt+S)";
-};
+//AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
+$form = new inputform($inputform_settings);
+$form->printForm($content4id, $fields, $prifields, $edit, $slice_id);
 
-if($edit || $update || ($insert && $added_to_db)) {
-    echo '<input type=submit name=update accesskey=S value="'._m("Update")." ".$accesskey.'"> ';
-    if ((!($post_preview==0)) or (!(isset($post_preview))))
-        echo "<input type=submit name=upd_preview value='"._m("Update & View")."'> ";
-	echo '
-    <input type=submit name=insert value="'._m("Insert as new").'">
-    <input type=reset value="'._m("Reset form").'">';
-    $r_hidden["id"] = $id;
-} else {
-	echo '
-    <input type=submit name=insert accesskey=S value="'._m("Insert")." ".$accesskey.'">
-    <input type=submit name=ins_preview value="'._m("Insert & View").'">';
-}
-$cancel_url = ($anonymous  ? $r_slice_view_url :
-              ($return_url ? expand_return_url(1) :
-                             con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id")));
-echo '
-    <input type=button name=cancel value="'._m("Cancel").'"
-	onclick="document.location=\''.$cancel_url.'\'">
-</td>
-</tr>
-</table>
-</form>';
-if( !$encap )
-    echo "</body></html>";
 page_close();
 ?>

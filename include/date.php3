@@ -89,11 +89,11 @@ class datectrl {
 
 	# set date, format form integer
 	function setdate_int($date) {
-    $d = getdate($date);
-  	$this->year = $d[year];
-		$this->month = $d[mon];
-		$this->day = $d[mday];
-		$this->time = $d[hours].":".$d[minutes].":".$d[seconds] ;
+        $d = getdate($date);
+        $this->year = $d["year"];
+		$this->month = $d["mon"];
+		$this->day = $d["mday"];
+		$this->time = $d["hours"].":".$d["minutes"].":".$d["seconds"] ;
 	}
 
     # get stored date as integer
@@ -123,7 +123,7 @@ class datectrl {
 	# print select box for day
 	function getdayselect() {
 		$at = getdate(time());
-		$sel =  ($this->day != 0 ? $this->day : $at[mday]);
+		$sel =  ($this->day != 0 ? $this->day : $at["mday"]);
 		for($i = 1; $i <= 31; $i++)
 			$ret .= "<option value=\"$i\"".
               (($i == $sel) ? ' selected class="sel_on"' : "") . ">$i</option>";
@@ -134,7 +134,7 @@ class datectrl {
 	function getmonthselect() {
 		$L_MONTH = monthNames();
 		$at = getdate(time());
-		$sel =  ($this->month != 0 ? $this->month : $at[mon]);
+		$sel =  ($this->month != 0 ? $this->month : $at["mon"]);
 		for($i = 1; $i <= 12; $i++) {
 			$ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">".
              $L_MONTH[$i] ."</option>";
@@ -145,9 +145,9 @@ class datectrl {
 	# print select box for year
 	function getyearselect() {
 		$at = getdate(time());
-    $from = ( $this->from_now ? $at[year] - $this->y_range_minus :
+        $from = ( $this->from_now ? $at["year"] - $this->y_range_minus :
                                 $this->y_range_minus );
-    $to   = ( $this->from_now ? $at[year] + $this->y_range_plus :
+        $to   = ( $this->from_now ? $at["year"] + $this->y_range_plus :
                                 $this->y_range_plus );
 		for($i = $from; $i <= $to; $i++) {
 			$ret .= "<option value=\"$i\"" . (($i == $this->year) ? ' selected class="sel_on"':"").
@@ -181,7 +181,7 @@ class datectrl {
 
 	# print complete date control
 	function getselect () {
-		return $this->getdayselect(). $this->getmonthselect(). $this->getyearselect(). $this->gettimeselect();
+		return $this->get_datestring().$this->getdayselect(). $this->getmonthselect(). $this->getyearselect(). $this->gettimeselect();
 	}
 
 	# print complete date control
@@ -189,4 +189,13 @@ class datectrl {
 		echo $this->getselect();
 	}
 }
+
+function datum($name, $val, $y_range_minus=5, $y_range_plus=5, $from_now=false,
+               $display_time=false) {
+    $dc = new datectrl($name, $y_range_minus, $y_range_plus, $from_now, $display_time);
+    $dc->setdate_int($val);
+    return $dc->getselect();
+}    
+
+
 ?>

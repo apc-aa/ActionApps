@@ -135,6 +135,16 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "sk" => "Slovenština",
                          "ja" => "Japanian");
 
+/** Standard Reader Management field IDs defined in Reader Minimal Template */
+define ("FIELDID_USERNAME",      "headline........");
+define ("FIELDID_PASSWORD",      "password........");
+define ("FIELDID_EMAIL",         "con_email.......");
+define ("FIELDID_FIRST_NAME",    "text...........1");
+define ("FIELDID_LAST_NAME",     "text...........2");
+define ("FIELDID_MAIL_CONFIRMED","switch..........");
+define ("FIELDID_ACCESS_CODE",   "text...........3");
+define ("FIELDID_HOWOFTEN",      "alerts1");
+define ("FIELDID_FILTERS",       "alerts2");
 
 /** Translate sort codes from views to slice
  *  (we use numbers in views from historical reason)
@@ -689,7 +699,16 @@ function getViewTypes () {
                                "cond3cond" => " " ,
                                "listlen" => _m("Listing length") ,
                                "noitem_msg" => _m("HTML code for \"No item found\" message")
-                             )
+                             ),
+        // View used for creating input forms
+        'inputform' => array( 'name' => _m("Input Form"),
+//                         "before" => _m("Top HTML") ,
+                         "odd" => _m("New item form template") ,
+                         "even_odd_differ" => _m("Use different template for editing") ,
+                         "even" => _m("Edit item form template"),
+                         "remove_string" => _m("Remove strings") ,
+//                         "after" => _m("Bottom HTML") ,
+                        ),
     );
 }
 
@@ -745,6 +764,7 @@ function getViewTypesInfo() {
 
     $VIEW_TYPES_INFO['static']     = array('aliases' => 'none');
     $VIEW_TYPES_INFO['script']     = array('aliases' => 'field');
+    $VIEW_TYPES_INFO['inputform']  = array('aliases' => '');
     return $VIEW_TYPES_INFO;
 }
 
@@ -768,6 +788,21 @@ define ("COUNTHIT_PROBABILITY", 1000);
 // how much links check in one run (for links module link checker)
 define ("LINKS_VALIDATION_COUNT", 100);
 
+/** constants for manager class used in $manager->show */
+define("MGR_ACTIONS", 2);        // show actions
+define("MGR_SB_SEARCHROWS", 4);  // show search rows in searchbar
+define("MGR_SB_ORDERROWS", 8);   // show order rows in searchbar
+define("MGR_SB_BOOKMARKS", 16);  // show bookmarks in searchbar
+
+/** constants for bins, used in new QueryZIDS function */
+define("AA_BIN_ACTIVE", 1);
+define("AA_BIN_PENDING", 2);
+define("AA_BIN_EXPIRED", 4);
+define("AA_BIN_HOLDING", 8);
+define("AA_BIN_TRASH", 16);
+
+/** HTMLArea constants */
+define("AA_HTMLAREA_SPELL_CGISCRIPT",""); // path for spellchecker cgi script (read misc/htmlarea/readme.aa)
 
 function getFilemanAccesses ()
 { return array (
