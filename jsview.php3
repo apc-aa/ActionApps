@@ -69,11 +69,16 @@ $db3 = new DB_AA; 		 // open BD
 
 $html_code = GetView(ParseViewParameters());          # get view content
 $html_code = str_replace( '"', '\"', $html_code );    # backslash quotes
+$html_code = str_replace( "\r\n", '\n', $html_code ); # remove newlines
+$html_code = str_replace( "\n", '\n', $html_code );   # remove newlines
 echo 'document.write("'. $html_code .'");';           # print it as javascript
 exit;
 
 /*
 $Log$
+Revision 1.2  2001/11/20 21:58:01  honzam
+fixed bug of newlines in javascript code
+
 Revision 1.1  2001/11/12 15:00:07  honzam
 no message
 
