@@ -104,6 +104,8 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "sk_news_lang.php3" => "sk_news_lang.php3",
                          "de_news_lang.php3" => "de_news_lang.php3",
                          "ro_news_lang.php3" => "ro_news_lang.php3",
+                         "ru_news_lang.php3" => "ru_news_lang.php3",
+                         "vn_news_lang.php3" => "vn_news_lang.php3",
                          "ja_news_lang.php3" => "ja_news_lang.php3");
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -114,6 +116,8 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "es" => "iso-8859-1",
                             "de" => "iso-8859-1",
                             "ro" => "iso-8859-2",
+                            "ru" => "windows-1251",
+                            "vn" => "utf-8",
                             "sk" => "windows-1250",
                             "ja" => "EUC-JP");
 
@@ -125,6 +129,8 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "es" => "Espanol",
                          "de" => "Deutsch",
                          "ro" => "Romanian",
+                         "ru" => "Russian",
+                         "vn" => "Vietnamese",
                          "sk" => "Slovenština",
                          "ja" => "Japanian");
 
