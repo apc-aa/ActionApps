@@ -1,3 +1,8 @@
+03/31/03 - updated all language files with xmgettext
+(jakub)    and added some Czech translations 
+03/29/03 - improved the Anonym Form Wizard 
+(jakub)  - improved the Send Email Wizard, now it allows using field aliases             
+         - added links to reader.html and anonym.html to doc/index.html
 03/28/03 - fixed bug with sliceobj that broke RSS
 (mitra)  - changed debugging in itemfunc & 
          - fixed bug searchlib not showing items with no exp or publish date

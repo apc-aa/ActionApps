@@ -2,7 +2,7 @@
 # $Id$
 # Language: CZ
 # This file was created automatically by the Mini GetText environment
-# on 24.3.2003 12:59
+# on 29.3.2003 12:42
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -219,7 +219,7 @@ $_m["APC ActionApps - URL Check"]
 
 # modules/links/check_url.php3, row 102
 # modules/links/linkedit.php3, row 478
-# include/util.php3, row 1016
+# include/util.php3, row 1028
 $_m["Back"]
   = "Zpìt";
 
@@ -904,91 +904,95 @@ $_m["begins with"]
 $_m["is"]
   = "pøesný výraz";
 
-# include/util.php3, row 689, 732
+# include/util.php3, row 704, 745
 $_m["Error: Missing Reading Password"]
   = "";
 
-# include/util.php3, row 1008
+# include/util.php3, row 1020
 $_m["Toolkit news message"]
   = "Vzkaz z Toolkitu";
 
-# include/util.php3, row 1026
+# include/util.php3, row 1038
 $_m["Use these aliases for database fields"]
   = "";
 
-# include/util.php3, row 1035
+# include/util.php3, row 1047
 $_m["Edit"]
   = "";
 
-# include/util.php3, row 1242
+# include/util.php3, row 1254
 $_m["Internal error. File upload: Dir does not exist?!"]
   = "";
 
-# include/util.php3, row 1245
+# include/util.php3, row 1257
 $_m["File with this name already exists."]
   = "";
 
-# include/util.php3, row 1254, 1260
+# include/util.php3, row 1266, 1272
 $_m["Can't upload Image"]
   = "";
 
-# include/util.php3, row 1467
+# include/util.php3, row 1479
 $_m["alerts alert"]
   = "";
 
-# include/util.php3, row 1468
+# include/util.php3, row 1480
 $_m["alerts welcome"]
   = "";
 
-# include/util.php3, row 1469
+# include/util.php3, row 1481
 $_m["slice wizard welcome"]
   = "";
 
-# include/util.php3, row 1476
+# include/util.php3, row 1482
+$_m["other"]
+  = "";
+
+# include/util.php3, row 1489
 $_m["January"]
   = "leden";
 
-# include/util.php3, row 1476
+# include/util.php3, row 1489
 $_m["February"]
   = "únor";
 
-# include/util.php3, row 1476
+# include/util.php3, row 1489
 $_m["March"]
   = "bøezen";
 
-# include/util.php3, row 1476
+# include/util.php3, row 1489
 $_m["April"]
   = "duben";
 
-# include/util.php3, row 1476
+# include/util.php3, row 1489
 $_m["May"]
   = "kvìten";
 
-# include/util.php3, row 1476
+# include/util.php3, row 1489
 $_m["June"]
   = "èerven";
 
-# include/util.php3, row 1477
+# include/util.php3, row 1490
 $_m["July"]
   = "èervenec";
 
-# include/util.php3, row 1477
+# include/util.php3, row 1490
 $_m["August"]
   = "srpen";
 
-# include/util.php3, row 1477
+# include/util.php3, row 1490
 $_m["September"]
   = "záøí";
 
-# include/util.php3, row 1477
+# include/util.php3, row 1490
 $_m["October"]
   = "øíjen";
 
-# include/util.php3, row 1477
+# include/util.php3, row 1490
 $_m["November"]
   = "listopad";
 
-# include/util.php3, row 1477
+# include/util.php3, row 1490
 $_m["December"]
   = "prosinec";
 

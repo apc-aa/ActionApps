@@ -2,7 +2,7 @@
 # $Id$
 # Language: DE
 # This file was created automatically by the Mini GetText environment
-# on 24.3.2003 12:59
+# on 29.3.2003 12:41
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -63,18 +63,6 @@ $_m["AA"]
 
 # modules/site/menu.php3, row 70
 $_m["AA Administration"]
-  = "";
-
-# modules/site/moddelete.php3, row 35
-$_m["You don't have permissions to delete a site."]
-  = "";
-
-# modules/site/moddelete.php3, row 39
-$_m["Module not found."]
-  = "";
-
-# modules/site/moddelete.php3, row 64
-$_m["Slice successfully deleted, tables are optimized"]
   = "";
 
 # modules/site/modedit.php3, row 51
@@ -183,6 +171,18 @@ $_m["Spot name"]
 
 # modules/site/util.php3, row 147
 $_m["Submit"]
+  = "";
+
+# modules/site/moddelete.php3, row 35
+$_m["You don't have permissions to delete a site."]
+  = "";
+
+# modules/site/moddelete.php3, row 39
+$_m["Module not found."]
+  = "";
+
+# modules/site/moddelete.php3, row 64
+$_m["Slice successfully deleted, tables are optimized"]
   = "";
 
 ?>

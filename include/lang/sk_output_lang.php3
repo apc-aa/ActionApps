@@ -2,7 +2,7 @@
 # $Id$
 # Language: SK
 # This file was created automatically by the Mini GetText environment
-# on 24.3.2003 13:00
+# on 29.3.2003 12:42
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -27,8 +27,8 @@ $_m["No such file"]
 $_m["Invalid slice number or slice was deleted"]
   = "";
 
-# ./slice.php3, row 504
-# include/view.php3, row 323
+# ./slice.php3, row 506
+# include/view.php3, row 327
 $_m["No item found"]
   = "Nenalezena žádná zpráva";
 
@@ -230,19 +230,19 @@ $_m["Constant description"]
 $_m["Constant level (used for hierachical constants)"]
   = "";
 
-# include/item.php3, row 849
+# include/item.php3, row 850
 $_m["on"]
   = "";
 
-# include/item.php3, row 849
+# include/item.php3, row 850
 $_m["off"]
   = "";
 
-# include/item.php3, row 884
+# include/item.php3, row 885
 $_m["Back"]
   = "Spät";
 
-# include/item.php3, row 885
+# include/item.php3, row 886
 $_m["Home"]
   = "";
 
