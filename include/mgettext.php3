@@ -50,16 +50,19 @@ function get_mgettext_lang () {
 function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
     global $_m, $mgettext_lang, $mgettext_domain;
 
+    if( $mgettext_domain == $filename )
+        return;                             // allready loaded
+    
     // store strings into backup and look for new strings in backup
     if (!$_m_backup[$mgettext_domain] && $cache)
         $_m_backup[$mgettext_domain] = $_m;
 
-    if( $mgettext_domain == $filename )
-        return;                             // allready loaded
-    
     $mgettext_domain = $filename;
-    $_m = $_m_backup[$mgettext_domain];
-    if ($_m) return;
+
+    if ($cache) {
+        $_m = $_m_backup[$mgettext_domain];
+        if ($_m) return;
+    }
     
     if ( !is_file($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";

@@ -1,3 +1,9 @@
+11/03/03 - Added spanish language file to site module
+(pep)    - Fixed bug: admin/param_wizard.php3 and se_inputform.php3 now
+           load the param wizard language file
+	 - Fixed bug: include/mgettext.php3 did not allow multiple included
+	   files for a language
+         - Improved the spanish translation
 10/30/03 - fixed bug with $scr->current in slice.php3 (setu)
 10/24/03 - fixed bug with state variable expanding in site module 
 (mitra)  - parseUser becomes stringexpand_user
