@@ -79,6 +79,8 @@ function GetWhereExp( $field, $operator, $querystring ) {
       return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
     case 'ISNULL': 
       return ( " (($field IS NULL) OR ($field='0')) ");
+    case 'NOTNULL': 
+      return ( " (($field IS NOT NULL) AND ($field<>'')) ");
     default:
       $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ? 
                                  substr( $querystring, 1, -1 ) : $querystring ;
