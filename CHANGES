@@ -1,3 +1,50 @@
+09/06/04 - List of "related" items in inputform could be now filtered for most
+(honzam)   input types. You can specify:
+             - Conditions in conds[] array
+             - Ordering of items in sort[] array
+             - Bins from which you want to display items
+             - Field to be shown (as option).
+           This works for: Selectbox, Multiple selectbox, Multiple checkboxes,
+           Two boxes, Radio buttons, and Text field with presets input types
+           (sponsored by Philip King, thanks)
+         - new "Form parts" feature - you can split the inputform to two or more
+           subforms, where you can switch from one to another by clicking
+           on the tab header. see {formbreak} alias in bottom HTML code
+           for field. (sponsored by GreenNet, thanks)
+         - List of "related" items in inputform could be now filtered for most
+           input types. You can specify:
+             - Conditions in conds[] array
+             - Ordering of items in sort[] array
+             - Bins from which you want to display items
+             - Field to be shown (as option).
+           This works for: Selectbox, Multiple selectbox, Multiple checkboxes,
+           Two boxes, Radio buttons, and Text field with presets input types
+         - charset conversion now works in case both charsets are the same,
+           as well
+09/03/04 - new French language support (submitted by Marek Tichy)
+(honzam) - dview parameter (discussion design switcher) for slice.php3 now
+           accepts "0":    dview=0 - no discussion printed
+         - new slice.php3 all_scr=1 url parameter - scroller show also "All"
+           option to show all items on one page.' slice.php3
+         - added short_id and id field definitions - it allows searchbar in
+           Item Manager to create filter also on Short id field
+         - date format fix for cross server exchange - fixes wrong user data
+           format
+         - added "Show" button which displays output of the view in view admin
+         - dates in discussion admin contains also year, now
+         - fixed bug in File upload Input type - it didn't show "Browse" button,
+           if "Accept" input parameter wasn't specified. Now it uses default */*
+         - "Field to show" could be specified in Multiple Selectbox input type
+           for slices
+         - new _#PAGEINDX alias - index of item within a page (it begins from 0
+           on each page listed by pagescroller) as opposite to _#ITEMINDX which
+           contains index of item within whole listing
+         - better paragraph detection in f_a alias function
+         - new url_base parameter for Link module l_p alias function
+         - new AA_USE_NON_PERSISTENT_CONNECT configuration option - use MySQL
+           persistent connections or not?
+         - bugfix - moving spots up and down in site module admin now work
+           correctly also for last spot in the sequence
 05/27/04 - new /misc/charset/convert.php3 script, which allows you to encode
 (honzam)   a text to another character encoding. It is usable outside of AA.
            The ussage on shtml page:
@@ -154,7 +201,7 @@
            from Zamir.net
 03/26/04 - small fixes and improvements to sql_update.php3 (pep)
 03/14/04 - added stringexpand_sessurl to expand {sessurl:xxxx}
-(mitra)  - added admin_notiem_msg to sql_update.php3
+         - added admin_notiem_msg to sql_update.php3
          - removed new DB_AA in itemedit.php3
          - removed extra } in sliceexp.php3
          - added stringexpand_sessurl
@@ -163,7 +210,7 @@
          - added admin/view.php3, like view.php3 but inside admin i/f
          - added editbrief.php3, change specific fields of specific items
 02/26/04 - fixed rss to ignore unparsable dates (and use Now)
-(mitra)  - rss2.0 dates still need handling in xml_fetch
+         - rss2.0 dates still need handling in xml_fetch
 02/16/04 - uploaded new developer's version of AA (unstable yet). Changes:
 (honzam) - used HTMLAREA 3 (http://www.interactivetools.com/products/htmlarea)
            instead of old RichText Editor
