@@ -103,7 +103,7 @@ if ($GrpSrch || $UsrSrch) {
   } else {  
     reset($addable);
     while( list($usr_id,$usr) = each($addable)) {
-      if(!$slce_users[$usr_id])                         // show only new users
+      if(!$slice_users[$usr_id])                         // show only new users
         PrintAddableUser($usr, $usr_id, $curr_role, true);
        else 
         PrintAddableUser($usr, $usr_id, $curr_role, false);
@@ -116,6 +116,9 @@ if ($GrpSrch || $UsrSrch) {
 }
 /*
 $Log$
+Revision 1.3  2000/07/27 13:57:09  kzajicek
+Fixed typo in variable name
+
 Revision 1.2  2000/07/17 12:27:51  kzajicek
 Language changes
 
