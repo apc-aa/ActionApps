@@ -261,20 +261,23 @@ function GetDestinationFileName($dirname, $uploaded_name) {
 /** Insert function for File Upload.
 *   @return Array of fields stored inside this function as thumbnails.
 */
+// There are three cases here
+// 1: uploaded - overwrites any existing value, does resampling etc
+// 2: file name left over from existing record, just stores the value
+// 3: newly entered URL, this is not distinguishable from case #2 so 
+//    its just stored, and no thumbnails etc generated, this could be
+//    fixed later (mtira)
 function insert_fnc_fil($item_id, $field, $value, $param, $fields="") 
 {
     global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR, $debugupload;
 #$debugupload=1;
-    $filevarname = "v".unpack_id($field["id"])."x";
-    if ($debugupload) huhl("filevarname=",$filevarname);
-    if ($debugupload) huhl("fields=",$fields);
+if ($debugupload) huhl("field=",$field,"value=",$value,"param=",$param,"Globals=",$GLOBALS);
+  $filevarname = "v".unpack_id($field["id"])."x";
+  if ($debugupload) huhl("filevarname=",$filevarname);
+#    if ($debugupload) huhl("fields=",$fields);
 
-    // look if the uploaded picture exists
-    if($GLOBALS[$filevarname."_name"] == "none" || $GLOBALS[$filevarname."_name"] == "") {
-        // Don't warn unless debugging, its normal if file not changed onedit
-        if ($debugupload) { huhe("Warning: File not uploaded"); exit; }
-        return; # was continue: but that doesn't make sense
-    }
+  // look if the uploaded picture existsnn
+  if (!($GLOBALS[$filevarname."_name"] == "none" || $GLOBALS[$filevarname."_name"] == "")) {
     $params=explode(":",$param);
   
     // look if type of file is allowed
@@ -380,13 +383,13 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
     } // params[3]
 
     $value["value"] = "$dirurl/$dest_file";    
-
-    // store link to uploaded file or specified file URL if nothing was uploaded
-    if($debugupload) huhl("Setting field ", $field[id], " to ", $value[value]);
-    insert_fnc_qte( $item_id, $field, $value, "");
+  } // File uploaded
+  // store link to uploaded file or specified file URL if nothing was uploaded
+  if($debugupload) huhl("Setting field ", $field[id], " to ", $value[value]);
+  insert_fnc_qte( $item_id, $field, $value, "");
    
-    // return array with fields that were filled with thumbnails  (why?)
-    return $thumb_arr;
+  // return array with fields that were filled with thumbnails  (why?)
+  return $thumb_arr;
 } // end of insert_fnc_fil
 
 // -----------------------------------------------------------------------------
@@ -917,7 +920,7 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
   if (!$insert)
     $content4id["flags..........."][0]['value'] = $oldcontent4id["flags..........."][0]['value'];
 
-    
+    if ($debugupload)    exit;
   return $content4id; 
 }
 
