@@ -30,7 +30,6 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 //require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
 
-
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
@@ -58,13 +57,20 @@ if( $deleteGroup && $group_id && !$category ) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
+function myQuery (&$db, $SQL)
+{
+    global $debug;
+    if ($debug) $db->dquery ($SQL);
+    else $db->query ($SQL);
+}
+
 // Check permissions
 if (! $category && $group_id ) {
     $SQL = "SELECT * FROM constant_slice INNER JOIN slice 
     	ON constant_slice.slice_id = slice.id 
     	WHERE group_id='$group_id'";
-    
-    $db->query ($SQL);
+
+    myQuery ($db, $SQL);
       
     if ($db->next_record() && !CheckPerms( $auth->auth["uid"], "slice", unpack_id($db->f("slice_id")), PS_FIELDS)) {
         MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS_GROUP." (".$db->f("name").")", "admin");
@@ -102,13 +108,13 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
 
 function propagateChanges ($cid, $newvalue, $short=true)
 {
-	global $db, $group_id, $Msg;
+	global $db, $group_id, $Msg, $debug;
 	$db->query ("SELECT value FROM constant WHERE ".
 		($short ? "short_id=$cid" : "id='$cid'"));
 	if (!$db->next_record()) return;
 	$oldvalue = addslashes($db->f("value"));
 	if ($oldvalue == $newvalue) return;
-	$db->query ("
+	myQuery ($db, "
 		SELECT item_id,field_id
 		FROM content, field WHERE field.id=content.field_id
 		AND (field.input_show_func LIKE '___:$group_id:%'
@@ -118,7 +124,7 @@ function propagateChanges ($cid, $newvalue, $short=true)
 	$cnt = 0;
 	while ($db->next_record()) {
 		++$cnt;
-		$db1->query ("
+		myQuery ($db1, "
 			UPDATE content SET text='$newvalue'
 			WHERE item_id='".$db->f("item_id")."' 
 			AND field_id='".$db->f("field_id")."' 
@@ -149,7 +155,7 @@ if( $update )
       if( count($err) > 1)
         break;
       $SQL = "SELECT * FROM constant WHERE group_id = '$new_group_id'";
-      $db->query($SQL);
+      myQuery ($db, $SQL);
       if( $db->next_record() )
         $err["DB"] = L_CONSTANT_GROUP_EXIST;
        else {
@@ -164,15 +170,15 @@ if( $update )
 	if ($group_id) {
 		 // if there is no group owner, promote this slice to owner
 		 $db->query ("SELECT * FROM constant_slice WHERE group_id='$group_id'");
-		 if (!$db->next_record()) $db->query ("
+		 if (!$db->next_record()) myQuery ($db, "
 			INSERT INTO constant_slice (slice_id,group_id,propagate)
 			VALUES ('$p_slice_id','$group_id',".($propagate_changes ? 1 : 0).");");
 		 else {
-		 	$db->query ("
+		 	myQuery ($db, "
 		 		UPDATE constant_slice SET propagate=".($propagate_changes ? 1 : 0)."
 			WHERE group_id = '$group_id'");
 			if ($new_owner_id) {
-				$db->query ("
+				myQuery ($db, "
 			  		UPDATE constant_slice SET slice_id='".addslashes(pack_id($new_owner_id))."'
 					WHERE group_id = '$group_id'");
 				$chown = 0;
@@ -188,7 +194,7 @@ if( $update )
                                        value='$group_id',
                                        class='',
                                        pri='100'";
-      $db->query($SQL);
+      myQuery ($db, $SQL);
     }  
   
     reset($name);
@@ -299,9 +305,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </tr>";
 
 # Find slices, where the constant group is used 
-if( $group_id ) {
+if( $group_id && $where_used ) {
   $delim = '';
-  $db->query ("
+  myQuery ($db, "
   	SELECT slice.name FROM slice, field 
      WHERE slice.id = field.slice_id
        AND field.input_show_func LIKE '%$group_id%'");
@@ -309,17 +315,15 @@ if( $group_id ) {
     $using_slices .= $delim. $db->f('name');
     $delim = ', ';
   }
-  if( $using_slices ) {
-    echo "
-        <tr><td><b>".L_CONSTANT_USED."</b></td>
-          <td colspan=3>$using_slices</td>
-        </tr>";
-  }      
+  echo "
+      <tr><td><b>".L_CONSTANT_USED."</b></td>
+        <td colspan=3>$using_slices</td>
+      </tr>";
 }
 
 
 # Find the slice owner of this group
-$db->query ("
+myQuery ($db, "
 	SELECT * FROM constant_slice INNER JOIN slice 
 	ON constant_slice.slice_id = slice.id 
 	WHERE group_id='$group_id'");
@@ -349,7 +353,8 @@ else {
 }
 	
 echo"</td></tr>
-<tr><td colspan=4><input type=checkbox name='propagate_changes'".($db->f("propagate") ? " checked" : "").">".L_CONSTANT_PROPAGATE."</td></tr>
+<tr><td colspan=4><input type=checkbox name='propagate_changes'".($db->f("propagate") ? " checked" : "").">".L_CONSTANT_PROPAGATE."
+    &nbsp;&nbsp;<input type=submit name='where_used' value='".L_CONSTANT_WHERE_USED."'</td></tr>
 <tr><td colspan=4><input type=submit name='hierarch' value='".L_CONSTANT_HIERARCH_EDITOR."'></td></tr>
 <tr>
  <td class=tabtxt align=center><b>". L_CONSTANT_NAME ."</b><br>". L_CONSTANT_NAME_HLP ."</td>

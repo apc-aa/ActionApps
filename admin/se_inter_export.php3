@@ -90,10 +90,8 @@ function Cancel() {
 </HEAD>
 <BODY>
 <?php
-  $xx = ($slice_id!="");
   $useOnLoad = true;
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "nodes"=>isSuperadmin(), "n_import"=>$xx, "n_export"=>false,"filters"=>$xx, "mapping"=>$xx);
+  $show["n_export"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   echo "<H1><B>" . L_EXPORT_TIT . "</B></H1>";
   PrintArray($err);

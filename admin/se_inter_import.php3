@@ -108,7 +108,6 @@ function Submit() {
   echo "<H1><B>" . L_IMPORT_TIT . "</B></H1>";
   PrintArray($err);
   echo $Msg;
-
 ?>
 <form method=post name="f" action="<?php echo $sess->url(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
   <table width="400" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">

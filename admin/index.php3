@@ -395,6 +395,7 @@ if ($navbar != "0") {
   require $GLOBALS[AA_INC_PATH] . "navbar.php3";
 }
 if ($leftbar != "0") {
+  $menu = "itemmanager";
   require $GLOBALS[AA_INC_PATH] . "leftbar.php3";
 }
 ######

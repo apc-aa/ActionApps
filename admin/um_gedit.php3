@@ -201,9 +201,8 @@ function RealyDelete() {
 </HEAD>
 
 <?php
-  $xx = ($slice_id!="");
-  $show = Array("u_new"=>$xx, "u_edit"=>$xx, "g_new"=>$xx, "g_edit"=>$xx);
-  require $GLOBALS[AA_INC_PATH]."um_inc.php3";   //show navigation column depending on $show variable
+  if ($usr_new) $show["g_new"] = false; else $show["g_edit"] = false;
+  require $GLOBALS[AA_INC_PATH]."aa_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>". ( $grp_new ? L_NEW_GROUP : L_EDIT_GROUP )."</B></H1>";
   PrintArray($err);

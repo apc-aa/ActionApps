@@ -31,40 +31,47 @@ if( !$slice_id )
 if( $editor_page )
   $nb_context = L_ARTICLE_MANAGER;
  elseif( $settings_page )
-  $nb_context = L_ADMIN;
+  $nb_context = L_SLICE_ADMIN;
  elseif( $usermng_page )
-  $nb_context = L_USER_MANAGEMENT;
+  $nb_context = L_AA_ADMIN;
 
+function get_url ($href) {
+    $res = AA_INSTAL_URL."admin/".$href;
+    if (strstr ($href,"?")) $res .= "&"; else $res .= "?";
+    $res .= "AA_CP_Session=".$GLOBALS[AA_CP_Session];
+    return $res;
+}
+  
 $nb_manager = ( (!$slice_id OR $editor_page)  ? 
   '<span class=nbdisable>'. L_ARTICLE_MANAGER .'</span>':
-  '<a href="'. $sess->url("index.php3?Tab=app"). '"><span class=nbenable>'. L_ARTICLE_MANAGER .'</span></a>');
+  '<a href="'. get_url("index.php3?Tab=app"). '"><span class=nbenable>'. L_ARTICLE_MANAGER .'</span></a>');
 
 $nb_additem = (( !$slice_id ) ?
   '<span class=nbdisable>'. L_ADD_NEW_ITEM .'</span>':
-  '<a href="'. con_url($sess->url("itemedit.php3"),"encap=false&add=1"). '"><span class=nbenable>'. L_ADD_NEW_ITEM .'</span></a>');
+  '<a href="'. get_url("itemedit.php3?encap=false&add=1"). '"><span class=nbenable>'. L_ADD_NEW_ITEM .'</span></a>');
 
 $nb_settings = ( (!$slice_id OR $settings_page OR !IfSlPerm(PS_EDIT) ) ?
-  '<span class=nbdisable>'. L_SETTINGS .'</span>':
-  '<a href="'. $sess->url("slicedit.php3") .'"><span class=nbenable>'. L_SETTINGS .'</span></a>');
+  '<span class=nbdisable>'. L_SLICE_ADMIN2 .'</span>':
+  '<a href="'. get_url("slicedit.php3") .'"><span class=nbenable>'. L_SLICE_ADMIN2 .'</span></a>');
 
 $nb_view = (!$slice_id ?
   '<span class=nbenable>'. L_VIEW_SLICE .'</span>' :
   " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". L_VIEW_SLICE .'</span></a>');
 
-$nb_logo = '<a href="'. AA_INSTAL_URL .'"><img src="../images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
+$nb_logo = '<a href="'. AA_INSTAL_URL .'"><img src="'.AA_INSTAL_URL.'images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
 
 $nb_go = '<span class=nbenable>'. L_GO .'</span>';
 
-$nb_usermng = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
-  '<span class=nbdisable>'. L_USER_MANAGEMENT .'</span>' :
-  '<a href="'. $sess->url("um_uedit.php3") .'"><span class=nbenable>'. L_USER_MANAGEMENT .'</span></a>');
+$nb_aasettings = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
+  '<span class=nbdisable>'. L_AA_ADMIN2 .'</span>' :
+  '<a href="'. get_url("um_uedit.php3") .'"><span class=nbenable>'. L_AA_ADMIN2 .'</span></a>');
 
 ?>
 <TABLE border=0 cellpadding=0 cellspacing=0>
   <TR>
-    <TD><IMG src="../images/spacer.gif" width=122 height=1></TD>
-    <TD><IMG src="../images/spacer.gif" width=300 height=1></TD>
-    <TD><IMG src="../images/spacer.gif" width=267 height=1></TD>
+    <TD><IMG src="<?php echo AA_INSTAL_URL ?>images/spacer.gif" width=122 height=1></TD>
+    <TD><IMG src="<?php echo AA_INSTAL_URL ?>images/spacer.gif" width=300 height=1></TD>
+    <TD><IMG src="<?php echo AA_INSTAL_URL ?>images/spacer.gif" width=267 height=1></TD>
   </TR>
   <TR>
     <TD rowspan=2 align=center class=nblogo> <?php echo $nb_logo; ?></td>
@@ -72,11 +79,8 @@ $nb_usermng = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
     <?php echo "$nb_context  -  $r_slice_headline "; ?></TD>
   </TR>
   <TR>
-    <td align=center class=navbar><?php echo " $nb_view | $nb_additem | $nb_manager | $nb_settings | $nb_usermng "; ?></td>
-    <TD align=center class=navbar><?php
-
-PrintModuleSelection(); ?>
-
+    <td align=center class=navbar><?php echo " $nb_view | $nb_additem | $nb_manager | $nb_settings | $nb_aasettings "; ?></td>
+    <TD align=center class=navbar><?php PrintModuleSelection(); ?>
     </TD>
   </TR>
 </TABLE>

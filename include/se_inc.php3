@@ -26,6 +26,6 @@ http://www.apc.org/
 
 $settings_page = true;
 require $GLOBALS[AA_INC_PATH] . "navbar.php3";
-require $GLOBALS[AA_INC_PATH] . "leftbar_se.php3";
+require $GLOBALS[AA_INC_PATH] . "leftbar.php3";
 
 ?>

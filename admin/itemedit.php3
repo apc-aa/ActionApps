@@ -38,6 +38,7 @@ require $GLOBALS[AA_INC_PATH]."feeding.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 require $GLOBALS[AA_INC_PATH]."notify.php3";
+//require $GLOBALS[AA_INC_PATH]."javascript.php3";
 if( file_exists( $GLOBALS[AA_INC_PATH]."usr_validate.php3" ) ) {
   include( $GLOBALS[AA_INC_PATH]."usr_validate.php3" );
 }
@@ -172,7 +173,7 @@ if( ($insert || $update) AND (count($err)<=1)
 
   if( $insert )
     $id = new_id();
-
+	
   $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert, 
                             true, true );     # invalidatecache, feed
  
@@ -268,8 +269,8 @@ if( !$encap ) {
       function BeforeSubmit() {
         for(var i = 0; i < listboxes.length; i++) 
           SelectAllInBox( listboxes[i] );';
-			  if ( richEditShowable() )	echo 'saveRichEdits();';
-				echo '
+        if ( richEditShowable() )	echo 'saveRichEdits();';            
+        echo '
         return true;  
       }    
     

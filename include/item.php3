@@ -91,8 +91,11 @@ function GetAliasesFromFields($fields, $additional="") {
   }
 
   #add additional aliases
-  if( isset( $additional ) AND is_array( $additional ) ) 
-    $aliases += $additional;
+  if( is_array( $additional ) ) {
+      reset ($additional);
+      while (list($k,$v) = each($additional))
+          $aliases[$k] = $v;
+  }
   
   return($aliases);
 }  
@@ -352,9 +355,10 @@ class item {
       $fce = $parts[2];
       return $this->$fce($parts[1], $parts[3]);
     } 
-    if( substr($out, 0, 7) == "switch(" )
+    if( substr($out, 0, 7) == "switch(" ) {
       # replace switches
       return $this->parseSwitch( substr($out,7) );
+    }
     elseif( substr($out, 0, 1) == "#" )
       # remove comments
       return "";
