@@ -129,6 +129,8 @@ function TableUpdate ($table, $join, $key_value, $val, $columns, $error_msg="", 
         }
         $db->query ("UPDATE $tab SET ".$varset->makeUPDATE()." WHERE $where");
     }
+    
+    return true;
 }
 
 // -----------------------------------------------------------------------------------
