@@ -186,6 +186,12 @@ function make_return_url($prifix,$r1="") {
 	return "";
 }
 
+# helper function for f_e:link_*  (links module admin page link) - honzam
+function Links_admin_url($script, $add) {
+    global $sess, $AA_INSTAL_EDIT_PATH;
+    return $sess->url($AA_INSTAL_EDIT_PATH. "modules/link/$script?$add");
+}
+
 class item {    
   var $item_content;   # associative array with names of columns and values from item table
   var $columns;        # associative array with names of columns and values of current row 
@@ -662,19 +668,36 @@ class item {
         if( !is_array( $slice_info ) )
           $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));
         return $slice_info[$col];
+      case "link_edit":
+        return get_aa_url('modules/links/linkedit.php3?lid='. $this->getval('id'));
+      case "link_go_categ":
+        $cat_names = $this->columns['cat_name'];
+        $cat_ids   = $this->columns['cat_id'];
+        if( !is_array($cat_names) )
+          return "";
+        while ( list($k, $cat) = each($cat_names) ) {
+          $ret .= $delim. '<a href="javascript:SwitchToCat('. $cat_ids[$k]['value']. ')">'.$cat['value'].'</a>';
+         //          $ret .= $delim. '<a href="'.  get_aa_url('modules/links/index.php3?GoCateg='. $cat_ids[$k]['value']). '">'.$cat['value'].'</a>';
+          $delim = ', ';        
+        }  
+        return $ret;
       case "add":
     	$add="add=1";
 	// drop through to default
       default:  {
 	// If Session is set, then append session id, otherwise append slice_id and it will prompt userid
           return con_url(
-		isset($sess) ? $sess->url($admin_path ."itemedit.php3") 
-		: ($admin_path . "itemedit.php3" . ((isset($AA_CP_Session)) ? ("?AA_CP_Session=" . $AA_CP_Session) : "" )),
-		(isset($add) ? $add : "edit=1").
-		"&encap=false&id=". unpack_id128( $this->getval('id..............') ).
-		  (isset($sess) ? "" : ("&change_id=". unpack_id128($this->getval('slice_id........')))).
-             		   make_return_url("&return_url=",$p[1]) );	// it return "" if return_url is not defined.
-	}
+                   isset($sess) ? 
+                     $sess->url($admin_path ."itemedit.php3")	: 
+                     ($admin_path . "itemedit.php3" . 
+                         ((isset($AA_CP_Session)) ?
+                             ("?AA_CP_Session=" . $AA_CP_Session) : "" )),
+                   (isset($add) ? $add : "edit=1").
+                   "&encap=false&id=". unpack_id128($this->getval('id..............')).
+                   (isset($sess) ? 
+                       "" : ("&change_id=". unpack_id128($this->getval('slice_id........')))).
+                   make_return_url("&return_url=",$p[1]) );	// it return "" if return_url is not defined.
+                }
     }
   }                 
 
@@ -823,6 +846,14 @@ class item {
       # the last option can be definned as default
     return $p[$second+1];
   } 
+  
+  # prints 'New' (or something similar) for new items
+  # Parameters: <time_in_minutes>:<text_to_print_if_newer>:<text_to_print_if_older>
+  #   (this alias will be probably used with expiry date field)
+  function f_o($col, $param="") {
+    $p = $this->subst_aliases( ParamExplode($param) );
+    return ((time() - $this->getval($col)) < $p[0]*60) ? $p[1] : $p[2];  // time in minutes
+  }
   
   # ----------------- alias function definition end --------------------------
 
