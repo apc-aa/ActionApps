@@ -24,7 +24,6 @@ http://www.apc.org/
 #
 
 require $GLOBALS[AA_INC_PATH]."constants.php3";
-require $GLOBALS[AA_INC_PATH]."menu.php3";
 
 function get_admin_url ($href) {
     global $AA_INSTAL_PATH;
