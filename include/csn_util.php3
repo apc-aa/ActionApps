@@ -46,6 +46,8 @@ function GetExternalCategories($feed_id) {
 }
 
 // get external mapping from remote slice to local slice = returns two array
+// map_to = from_field_id -> from_field_name  (but just for fields with flag = FEEDMAP_FLAG_MAP
+// map_from = to_field_id -> { feedmap_flag => flag, value => from_field_id|value, from_field_name 
 function GetExternalMapping($l_slice_id, $r_slice_id) {
   global $db;
 
