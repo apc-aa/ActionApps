@@ -192,13 +192,14 @@ class tabledit {
             
         else {      
             echo "<TABLE ".$this->view["attrs"]["table"].">";
-            $td = "<TD class=te_".$this->type."_td>";
+            $td = "<TD class=te_".substr($this->type,0,1)."_td>";
 
             if ($this->type == "browse") {
+                echo "<TR>";
                 if (is_array ($this->view["buttons_left"]))
-                    echo "<TR><TD class=te_browse_td"
+                    echo "<TD class=te_b_td"
                         ." colspan=".count($this->view["buttons_left"]).">&nbsp;</TD>\n";   
-                else echo "<TR>\n";
+                else echo "\n";
                 $this->showClickableColumnHeaders ($record_count);
             }
             
@@ -221,13 +222,15 @@ class tabledit {
 
             reset ($records);
             reset ($all_keys);
+            $irow = 0;
             while (list (, $record) = each ($records)) {                
                 $new_record = $record == "new";
                 list (,$key) = each ($all_keys);
+                $irow ++;
     
                 if ($this->type == "browse") {
                     echo "<TR>";
-                    $this->ShowButtons ($new_record, $key, $fnname, $formname, "left");
+                    $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "left");
                 }
                 else {
                     $formname = "tv_".$this->viewID."_".$key;
@@ -241,16 +244,16 @@ class tabledit {
                         echo "<INPUT TYPE=hidden NAME='val[$key][$col]' VALUE='".str_replace("'","\\'",$val)."'>";
                 }
                 
-                $this->ShowColumnValues ($record, $new_record, $key);
+                $this->ShowColumnValues ($record, $new_record, $key, $irow);
                 
                 if ($this->type == "browse") echo "</TR>";
                 else {
-                    $this->ShowButtons ($new_record, $key, $fnname, $formname, "down", $all_keys);
+                    $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "down", $all_keys);
                     echo "</FORM>";
                 }
             }
             if ($this->type == "browse") {
-                $this->ShowButtons ($new_record, $key, $fnname, $formname, "down", $all_keys);
+                $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "down", $all_keys);
                 echo "</FORM>";
             }
             echo "</TABLE>";
@@ -283,13 +286,13 @@ class tabledit {
     // -----------------------------------------------------------------------------------
 
     function showClickableColumnHeaders ($record_count) {
-        $td = "<TD class=te_".$this->type."_td>";
+        $td = "<TD class=te_".substr($this->type,1,1)."_td>";
         reset ($this->cols);
         while (list ($colname,$column) = each ($this->cols)) 
             if ($column["view"]["type"] != "hide") {
             if ($record_count > 1) {
                  echo "$td<a href='".$this->getAction($this->gotoview2())."&cmd[".$this->viewID."]"
-                     ."[orderby][$colname]=1'><span class=te_browse_column_header>$column[caption]</span>\n";
+                     ."[orderby][$colname]=1'><span class=te_b_col_head>$column[caption]</span>\n";
                  if ($this->orderby == $colname) {
                      echo "&nbsp;<img src='".$this->imagepath;
                      if ($this->orderdir == 'd')
@@ -299,9 +302,9 @@ class tabledit {
                  }
                  echo "</a>";
             }
-            else echo "$td<span class=te_browse_column_header>$column[caption]</span>\n";
+            else echo "$td<span class=te_b_col_head>$column[caption]</span>\n";
             if ($column["hint"])
-                echo "<br>\n<span class=te_browse_column_hint>".$column["hint"]."</span>";
+                echo "<br>\n<span class=te_b_col_hint>".$column["hint"]."</span>";
             echo "</TD>\n";
             }
         echo "</TR>\n";        
@@ -334,7 +337,7 @@ class tabledit {
         $this->setDefault ($this->view["messages"]["no_item"], _m("Nothing to be shown."));
         $this->setDefault ($this->view["readonly"],  true);
                        
-        $this->view["attrs"]["table"] .= " class=te_".$this->type."_table ";
+        $this->view["attrs"]["table"] .= " class=te_".substr($this->type,0,1)."_table ";
         
         reset ($this->cols);
         while (list ($colname) = each ($this->cols)) {
@@ -456,9 +459,11 @@ class tabledit {
     
     // -----------------------------------------------------------------------------------
 
-    function ShowColumnValues ($record, $new_record, $key)
+    function ShowColumnValues ($record, $new_record, $key, $irow)
     {
-        $td = "<TD class=te_".$this->type."_td>";
+        if ($this->type == "browse") 
+            $td = "<TD class=te_b_row".($irow % 2 ? "1" : "2").">";
+        else $td .= "<TD class=te_e_td>";
         reset ($this->cols);
         while (list ($colname,$column) = each ($this->cols)) {
             $cview = $column["view"];
@@ -469,9 +474,9 @@ class tabledit {
                 continue;
                                    
             if ($this->type == "edit") {
-                echo "<TR>$td<span class=te_edit_column_header>".$column["caption"]."</span><br>\n";
+                echo "<TR>$td<span class=te_e_col_head>".$column["caption"]."</span><br>\n";
                 if ($column["hint"])
-                    echo "<span class=\"te_edit_column_hint\">".$column["hint"]."</span>";
+                    echo "<span class=\"te_e_col_hint\">".$column["hint"]."</span>";
                 echo "</TD>\n";
 			}
         
@@ -598,7 +603,7 @@ class tabledit {
 
     // -----------------------------------------------------------------------------------
     
-    function ShowButtons ($new_record, $key, $fnname, $formname, $place="left", $all_keys="") {                
+    function ShowButtons ($new_record, $key, $fnname, $formname, $irow, $place="left", $all_keys="") {                
                 
         // "new" is label for new record, "new_name" is command for new record, 
         // "view" is view on which $this->cmd operates, "gotoview" is view which will be shown                
@@ -656,7 +661,7 @@ class tabledit {
             return;
 
         if ($place == "down")
-            echo "<TR><TD colspan=100 class=te_".$this->type."_td align=center>\n";
+            echo "<TR><TD colspan=100 class=te_".substr($this->type,0,1)."_td align=center>\n";
             
         reset ($this->view["buttons_$place"]);
         while (list ($button,$use) = each ($this->view["buttons_$place"])) {
@@ -664,7 +669,7 @@ class tabledit {
             if (!$use || !$bt)
                 continue;
             if ($place == "left") 
-                echo "<TD class=te_browse_td>";
+                echo "<TD class=te_b_row".($irow % 2 ? "1" : "2").">";
             switch ($bt["name"]) {
                 case "add":
                     $url = $this->getAction($bt[gotoview])."&cmd[$bt[gotoview]][show_new]=1";
