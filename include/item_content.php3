@@ -109,39 +109,43 @@ class ItemContent {
     function setExpiryDate($value) { $this->setItemValue ("expiry_date", $value); }
 
     /*------------------------ */
-    function setFieldValues($field_id,$v) {
+    function setFieldValue($field_id,$v) {
         $this->content[$field_id] = $v;
     }
 
-    /** Sets the content with CSV data */
-    function importCSVData($csvRec, $fieldNames) {
+    /** Set the content with CSV data */
+    function setFromCSVArray(&$csvRec, &$fieldNames) {
         $i = 0;
+        reset($fieldNames);
         while (list ($k, ) = each($fieldNames)) {
         $this->content[$k][0][value] = $csvRec[$i];
         $i++;
         }
     }
+
     /**
     Exports item content to CSV. TODO
     */
     function export2CSV() {}
 
     /**
-    Transforms $itemContent according to the $trans_actions.
+    Transform $itemContent according to the transformation actions $trans_actions and slice fields $slice_fields
     */
-    function transform(&$itemContent, $trans_actions, $slice_fields) {
-        while (list ($field_id, ) = each($slice_fields)) {
-            $err = $trans_actions->transform($itemContent,$field_id,$this->content[$field_id]);
-            if ($err)
-                return $err;
-        }
-    }
+     function transform(&$itemContent, &$trans_actions, &$slice_fields) {
+          return $trans_actions->transform($itemContent,$slice_fields,$this);
+       }
 
-    /** Shows item in one row in a table
+    /** Show the item in one row in a table according to the order specified by slice fields $slf
     */
-    function showAsRowInTable($tr_att="") {
+    function showAsRowInTable(&$slf,$tr_att="") {
+
       echo "<tr ".$tr_att." >";
-      while (list($k,$v) = each($this->content)) {
+      reset($slf);
+      while (list($k,) = each($slf)) {
+          if (!($v = $this->content[$k]))
+            echo "<td></td>";
+          else {
+
             echo "<td>";
             unset($s);
             while (list (,$v2) = each ($v)) {
@@ -155,6 +159,7 @@ class ItemContent {
             echo "[ ". implode(", ",$s) . " ]";
             }
             echo "</td>";
+          }
         }
         echo "</tr>";
     }
@@ -165,7 +170,7 @@ class ItemContent {
       b) or "new_id" : store the item with different (unique random) id
       c) otherwise : do nothing
     */
-    function storeToDB($slice_id,$fields, $items_id ="", $actionIfItemExists="update") {
+    function storeToDB($slice_id,&$fields, $actionIfItemExists=STORE_WITH_NEW_ID) {
 
       require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
       require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
@@ -175,27 +180,38 @@ class ItemContent {
       $itemvarset = new Cvarset();
       $db = new DB_AA;
 
-      $insert = true;
-      $id = new_id();		// we suppose, that item is not already stored in the DB
+      $id = $this->getItemValue ("id");
+      if ($id == "new id") {		// if the item has no id => set up an unique new id
+        $id = new_id();
+        $insert = true;
+      }
+      else {
+        // Check duplicity
+        $p_id = q_pack_id($id);
+        $SQL= "SELECT id FROM item WHERE item.id='$p_id'";
+        $insert = $db->query($SQL) ? false: true;
+      }
+      if ($insert == false) {	// if the item is already in the DB :
 
-      if (isset($items_id)) {
-          if ($items_id[$this->getItemID()]) {
-              // item is already stored
-              switch ($actionIfItemExists) {
-                  case "update" : { // item  should be updated
-                      $insert = false;
-                      $id = $items_id[$this->getItemID()];
-                      break;
-                  }
-                  case "new_id" :
-                    break; // item should be stored with new id
-                  default:
-                    return;	// do nothing
+          switch ($actionIfItemExists) {
+              case UPDATE : { 		// the item  will be updated
+                  break;
               }
+              case STORE_WITH_NEW_ID : {
+                $id = new_id();	 	// the item should be stored with a new id
+                $insert = true;
+                break;
+              }
+              case NOT_STORE:
+                default: 		// NOT_STORE or any other value => do not store the item
+                return array(0=>NOT_STORE,1=>$id);
           }
       }
+      //huhl("insert:".$insert);
+      //huhl("action:".$actionIfItemExists);
+      //huhl("id:".$id);
 
-      $added_to_db=StoreItem( $id, $slice_id, $this->content, $fields, $insert, true, false ); // invalidatecache, feed
-      return $added_to_db;
+      $added_to_db=StoreItem( $id, $slice_id, $this->content, $fields, $insert, true, false ); // invalidatecache, not feed
+      return $added_to_db ? array(0=> ($insert ? INSERT : UPDATE) ,1=>$id) : false;
     }
 }
