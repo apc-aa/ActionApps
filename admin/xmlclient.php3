@@ -19,21 +19,29 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
-# Cross-Server Networking - client module
-
-/* Debugging
-    There is a lot of debugging code in here, since this tends to be hard to debug
-    Call with debugfeed=n parameter for different levels
-    1	just errors that indicate a malfunction somewhere
-    2	a list of feeds as they are processed
-    3	+ list of messages recieved
-    4	+ a list of messages rejected
-    9	lots and lots more
-
-    This program can be called as for example:
-    apc-aa/admin/xmlclient.php3?debugfeed=9&rssfeed_id=16
-*/
+/** Cross-Server Networking - client module
+ *
+ * @params feed_id    - id of APC RSS Feed to proceed
+ *         rssfeed_id - id of non-APC RSS Feed to proceed
+ *         fill       - if fill=0 no data is written to the database
+ *         time       - you can redefine the time for APC feeds from which you
+ *                      want to feed items. Format: 2003-05-03T15:31:36+02:00
+ *         url        - you can redefine the url of the feed
+ *         debugfeed  - display debug nmessages
+ *         display    - display the source of APC RSS feed
+ *
+ * Debugging
+ *   There is a lot of debugging code in here, since this tends to be hard to debug
+ *   Call with debugfeed=n parameter for different levels
+ *   1	just errors that indicate a malfunction somewhere
+ *   2	a list of feeds as they are processed
+ *   3	+ list of messages recieved
+ *   4	+ a list of messages rejected
+ *   9	lots and lots more
+ *
+ *   This program can be called as for example:
+ *   apc-aa/admin/xmlclient.php3?debugfeed=9&rssfeed_id=16
+ */
 
 # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
@@ -72,74 +80,44 @@ require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
 require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
 
-
-/** Get APC Feed definitions (from nodes and external_feeds tables)
- *  Returns array('feed_id'=>array( feed_informations_like: url, password... ))
- */
-function apcfeeds() {
-    global $debugfeed;
-    $db = getDB();
-    // select all incoming feeds from table external_feeds
-    $SQL="SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name
-            FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name";
-    if ($debugfeed >= 8) print("\n<br>$SQL");
-    $db->query($SQL);
-
-    $feeds=array();
-    while ($db->next_record()) {
-        $fi                       = $db->f('feed_id');
-        $feeds[$fi]               = $db->Record;
-        $feeds[$fi]['field_type'] = FEEDTYPE_APC;
-    }
-    freeDB($db);
-    if ($debugfeed >= 8) { print("\n<br>feeds="); print_r($feeds); }
-    return $feeds;
-}
-
-/** Get APC Feed definitions (from nodes and external_feeds tables)
- *  Returns array('feed_id'=>array( feed_informations_like: url, password... ))
- */
-function rssfeeds() {
-    global $debugfeed;
-    $db = getDB();
-    $SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds";
-    if ($debugfeed >= 8) print("\n<br>$SQL");
-    $db->query($SQL);
-
-    $rssfeeds=array();
-    while ($db->next_record()) {
-        $fi                               = $db->f('feed_id');
-        $rssfeeds[$fi]                    = $db->Record;
-        $rssfeeds[$fi]['feed_type']       = FEEDTYPE_RSS;
-        $rssfeeds[$fi]['remote_slice_id'] = q_pack_id(attr2id($rssfeeds[$fi]['server_url']));
-    }
-    freeDB($db);
-    if ($debugfeed >= 9) { print("\n<br>rssfeeds="); print_r($rssfeeds); }
-    return $rssfeeds;
-}
-
-
 if ($debugfeed >= 8) print("\n<br>XMLCLIENT STARTING");
+
+// prepare Get variables
+
+if ( $_GET['display'] ) {
+    $fire = 'display';
+} elseif ( isset($_GET['fill']) AND ($_GET['fill']==0) ) {
+    $fire = 'test';
+} else {
+    $fire = 'write';   // default
+}
 
 if ($feed_id) {          // just one specified APC feed
 
     $feeds = apcfeeds(); // get all apc feeds definitions
-    onefeed($feed_id, $feeds[$feed_id], $debugfeed);  // feed selected feed
+    if ( $_GET['time'] ) {
+        $feeds[$feed_id]['newest_item'] = $_GET['time'];
+    }
+    onefeed($feed_id, $feeds[$feed_id], $debugfeed, $fire);  // feed selected feed
 
 } elseif ($rssfeed_id) { // just one specified RSS feed
 
     $rssfeeds = rssfeeds();
-    onefeed($rssfeed_id, $rssfeeds[$rssfeed_id], $debugfeed);   // Not sure if its safe for feed_id to be same as for APC feeds
+    if ( $_GET['url'] ) {
+        $rssfeeds[$feed_id]['server_url'] = $_GET['url'];
+    }
+    onefeed($rssfeed_id, $rssfeeds[$rssfeed_id], $debugfeed, $fire);   // Not sure if its safe for feed_id to be same as for APC feeds
 
 } else {                 // all RSS and APC feeds
 
     $apcfeeds = apcfeeds();
     foreach ( $apcfeeds as $feed_id => $feed ) {
-        onefeed($feed_id, $feed, $debugfeed);
+        onefeed($feed_id, $feed, $debugfeed, $fire);
     }
+
     $rssfeeds = rssfeeds();
     foreach ( $rssfeeds as $feed_id => $feed ) {
-        onefeed($feed_id, $feed, $debugfeed);
+        onefeed($feed_id, $feed, $debugfeed, $fire);
     }
 }
 

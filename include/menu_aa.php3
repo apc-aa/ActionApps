@@ -51,13 +51,17 @@ $aamenus["aaadmin_submenu"] = array (
     "te_wizard_welcome" => array("label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=email"),
     "te_wizard_template"=> array("label"=>_m("Templates"), "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=wt"),
 
-    "header8"     =>_m("Misc"),
+    "header8"     =>_m("Feeds"),
+    "rsstest"     => array("label"=>_m("RSS test"),        "cond"=>IsSuperadmin(),        "href"=>"admin/rsstest.php3"),
+    "aarsstest"   => array("label"=>_m("AA RSS test"),     "cond"=>IsSuperadmin(),        "href"=>"admin/aarsstest.php3"),
+    "testrss"     => array("label"=>_m("Run feeding"),     "cond"=>IsSuperadmin(),        "href"=>"admin/xmlclient.php3?debugfeed=4"),
+
+    "header9"     =>_m("Misc"),
     "te_cron"     => array("label"=>_m("Cron"),            "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=cron"),
     "te_log"      => array("label"=>_m("View Log"),        "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=log"),
     "te_searchlog"=> array("label"=>_m("View SearchLog"),  "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=searchlog"),
     "aafinder"    => array("label"=>_m("AA finder"),       "cond"=>IsSuperadmin(),        "href"=>"admin/aafinder.php3"),
     "xmgettext"   => array("label"=>_m("Mgettext"),        "cond"=>IsSuperadmin(),        "exact_href"=>"../misc/mgettext/index.php3"),
-    "testrss"     => array("label"=>_m("RSS test"),        "cond"=>IsSuperadmin(),        "href"=>"admin/xmlclient.php3?debugfeed=4"),
     "summarize"   => array("label"=>_m("Summarize"),       "cond"=>IsSuperadmin(),        "href"=>"admin/summarize.php3")
 #    "oneoff" => array("label"=>_m("One Off Code"), "cond"=>IsSuperadmin(), "href"=>"admin/oneoff.php3"),
 #    "console" => array("label"=>_m("Console"), "cond"=>IsSuperadmin(), "href"=>"admin/console.php3"),
