@@ -363,8 +363,8 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25,
           <select name=\"foo_$name\" onchange=\"$name.value=this.options[this.selectedIndex].value\">";	
   reset($arr);
   while(list($k, $v) = each($arr)) { 
-    echo "<option value=\"". htmlspecialchars($k)."\"";
-    if ((string)$val == (string)$k) 
+    echo "<option value=\"". htmlspecialchars($v)."\"";
+    if ((string)$val == (string)$v) 
       echo " selected";
     echo "> ". htmlspecialchars($v) ." </option>";
   }
