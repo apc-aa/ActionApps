@@ -59,6 +59,8 @@ class zids {
         var $a; # Array of ids of type specified in $t
             # Note encapsulation broken in itemview which sets this directly
         var $type;  # Type of $a
+        var $l2s;   // array used for translation from 'long' to 'short' type
+        var $s2l;   // array used for translation from 'short' to 'long' type
 
     # Constructor can be called with an array, or a zid
     function zids($initial = null, $inittype = "z"){  # constructor
@@ -178,7 +180,6 @@ class zids {
 
     # Quick check to warn if item doesn't exist
     function warnid($i=null,$warnstr="") {
-        #huhl("zids:$warnstr:$i",$this);
         if( (isset($i) and !(isset($this->a[$i]))) ) {
             huhe("Warning: zids: $warnstr, item $i doesn't exist, returning null");
             return true;
@@ -194,6 +195,8 @@ class zids {
         case "p":  return (isset($i) ? unpack_id128($this->a[$i])
                         : array_map("unpack_id128", $this->a));
         case "t":  return (isset($i) ? id_t2l($this->a[$i]) : array_map("id_t2l", $this->a));
+        case 's':  $trans = $this->translate('l');
+                   return (isset($i) ? $trans[$i] : $trans );
         default:
         print("ERROR - zids:longids(): can't handle type $this->type conversion to longids - ask mitra");
         $this->printobj();
@@ -204,10 +207,12 @@ class zids {
     function packedids($i=null) {
         if ($this->warnid($i,"packedids")) return null;
         switch ($this->type) {
-            case "p": return (isset($i) ? $this->a[$i] : $this->a);
-            case "l": return (isset($i) ? pack_id128($this->a[$i]) : array_map("pack_id128",$this->a));
-            case "t": return (isset($i) ? pack_id128(id_t2l($this->a[$i]))
+            case 'p': return (isset($i) ? $this->a[$i] : $this->a);
+            case 'l': return (isset($i) ? pack_id128($this->a[$i]) : array_map("pack_id128",$this->a));
+            case 't': return (isset($i) ? pack_id128(id_t2l($this->a[$i]))
                                 : array_map("pack_id128", $this->longids()));
+            case 's': $trans = $this->translate('l');
+                      return ( isset($i) ? pack_id128($trans[$i]) : array_map("pack_id128", $trans));
         default:
             print("ERROR - zids:packedids(): can't handle type $this->type conversion to packedds - ask mitra");
             return false;
@@ -263,12 +268,10 @@ class zids {
 
     function shortids($i=null) {
         if ($this->warnid($i,"shortids")) return null;
-        switch($this->type) {
-            case "s":  return (isset($i) ? $this->a[$i] : $this->a);
-        default:
-            print("ERROR - zids:shortids(): can't handle type $this->type conversion to shortids - ask mitra");
-            return false;
-        }
+        if ( $this->type == 's' ) return (isset($i) ? $this->a[$i] : $this->a);
+        $l_zids = new zids( $this->longids(),'l');  // convert to long (for translation)
+        $trans = $l_zids->translate('s');
+        return isset($i) ? $trans[$i] : $trans;
     }
 
     # Return either short id, or a long id, depending on use_short_ids()
@@ -349,7 +352,57 @@ class zids {
             . implode(",", $this->qqq_packedids()) . ") ";
   }
 
-} #class ids
+  /** Sorts zids array in the same order as the zids are in $sort_zids */
+  function sort_and_restrict_as_in($sort_zids) {
+      $translation = $this->get_translation($sort_zids->onetype());
+      foreach ( $sort_zids->a as $zid ) {
+          if ( $translation[$zid] )  $ret[] = $translation[$zid];
+      }
+      $this->a = $ret;
+  }
+
+  /** fills $s2l and $l2s array used for translation 'long' <-> 'short' and
+   *  return array of zids in 'long' (for $type=='l') or short form
+   */
+  function translate($type) {
+      $db = getDB();
+      $SQL = "SELECT id, short_id FROM item WHERE ". $this->sqlin();
+      $db->tquery($SQL);
+      while( $db->next_record() ) {
+          $unpacked_id = unpack_id128($db->f('id'));
+          $this->l2s[$unpacked_id] = $db->f('short_id');
+          $this->s2l[$db->f('short_id')] = $unpacked_id;
+      }
+      freeDB($db);
+      // we need it in the same order as in source
+      foreach ( $this->a as $idx => $zid ) {
+          $ret[] = ($type=='l') ? $this->s2l[$zid] :
+                   ($type=='p') ? pack_id128($this->s2l[$zid]) :
+                                  $this->l2s[$zid] ;
+      }
+      return $ret;
+  }
+
+  function get_translation($from_type) {
+      if ( $this->count() <= 0 )
+          return array();
+
+      $trans = $this->get_retyped($from_type);
+      foreach ( $this->a as $idx => $zid ) {
+          $ret[$trans[$idx]] = $zid;
+      }
+      return $ret;
+  }
+
+  function get_retyped($to_type) {
+    switch($to_type) {
+          case "p": return $this->packedids();
+          case "l": return $this->longids();
+          case "s": return $this->shortids();
+    }
+    return array();
+  }
+} #class zids
 
 # This guesses the type from the length of the id,
 # short should be == 16 and long == 32 but there is or was somewhere a bug

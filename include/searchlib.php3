@@ -273,10 +273,14 @@ function CachedSearch($cache_condition, $keystr) {
  * @param string $keystr           - id_string which identifies cache content
  * @param string $cache_del_str    - string used to delete cache
  * @param bool   $empty_result_condition - have we return empty set?
+ * @param zids   $sort_zids        - used for sorting zids to right order
+ *                                 - if specified, return zids are sorted
+ *                                   in the same order as in $sort_zids
  * @return zids from SQL query;
  */
 function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_del_str,
-                         $zid_type='s', $empty_result_condition=false ) {
+                         $zid_type='s', $empty_result_condition=false,
+                         $sort_zids=null ) {
     global $pagecache, $QueryIDsCount, $debug;
     $db = getDB();
 
@@ -289,6 +293,10 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_del_str,
     }
     $zids = new zids($arr, $zid_type);
     $QueryIDsCount = count($arr);
+
+    if( is_object($sort_zids) ) {
+        $zids->sort_and_restrict_as_in($sort_zids);
+    }
 
     if( $cache_condition )
         $pagecache->store($keystr, serialize($zids), $cache_del_str);
@@ -371,6 +379,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
             ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
             $defaultCondsOperator;
   $cache_condition = $use_cache AND !$nocache;
+
   if ( $res = CachedSearch( $cache_condition, $keystr )) {
       return $res;
   }
@@ -384,7 +393,6 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   ParseEasyConds ($conds, $defaultCondsOperator);
 
   if( $debug ) huhl("Conds=",$conds,"Sort=",$sort, "Group by=",$group_by,"Slices=",$slices);
-
 
   # parse conditions ----------------------------------
   if( is_array($conds)) {
@@ -437,9 +445,9 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   }
 
   # parse sort order ----------------------------
-  if( ! is_array($sort))
-    $select_order = 'item.publish_date DESC';   # default item order
-  else {
+  if( !is_array($sort) ) {
+    $select_order =  is_object($restrict_zids) ? '' : 'item.publish_date DESC';   # default item order
+  } else {
     reset($sort);
     $delim='';
     while( list( , $srt) = each( $sort )) {
@@ -494,8 +502,6 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
       }
     }
   }
-
-
 
   # parse group by parameter ----------------------------
   if( isset($group_by) AND is_array($group_by)) {
@@ -594,7 +600,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   if( isset($select_conds) AND is_array($select_conds))      # conditions -----
     $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
 
-  if( isset($select_order) )                                 # order ----------
+  if( $select_order )                                 # order ----------
     $SQL .= " ORDER BY $select_order";
 
   if( isset($select_group) )                                 # group by -------
@@ -603,7 +609,11 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   // if neverAllItems is set, return empty set if no conds[] are used
   return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr,
                   "slice_id=$slice_id,slice_id=".  @join(',slice_id=', $slices),
-                  'p', !is_array($select_conds) && $neverAllItems );
+                  'p', !is_array($select_conds) && $neverAllItems,
+                  // last parameter is used for sorting zids to right order
+                  // - if no order specified and restrict_zids are specified,
+                  // return zids in unchanged order
+                  (is_object($restrict_zids) AND !$select_order) ? $restrict_zids : null);
 }
 
 
