@@ -7,10 +7,10 @@
  *
  * $Id$
  *
- */ 
+ */
 
 class DB_Sql {
-  
+
   /* public: connection parameters */
   var $Host     = "";
   var $Database = "";
@@ -38,7 +38,7 @@ class DB_Sql {
   /* private: link and query handles */
   var $Link_ID  = 0;
   var $Query_ID = 0;
-  
+
 
 
   /* public: constructor */
@@ -66,22 +66,29 @@ class DB_Sql {
       $User     = $this->User;
     if ("" == $Password)
       $Password = $this->Password;
-      
+
     /* establish connection, select database */
     if ( 0 == $this->Link_ID ) {
-    
-      $this->Link_ID=mysql_pconnect($Host, $User, $Password);
-      if (!$this->Link_ID) {
-        $this->halt("pconnect($Host, $User, \$Password) failed.");
-        return 0;
-      }
 
-      if (!@mysql_select_db($Database,$this->Link_ID)) {
-        $this->halt("cannot use database ".$this->Database);
-        return 0;
-      }
+        if ( defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT ) {
+            $method = 'connect';
+            $this->Link_ID = mysql_connect($Host, $User, $Password);
+        } else {
+            $method = 'pconnect';
+            $this->Link_ID = mysql_pconnect($Host, $User, $Password);
+        }
+
+        if (!$this->Link_ID) {
+            $this->halt("$method($Host, $User, \$Password) failed.");
+            return 0;
+        }
+
+        if (!@mysql_select_db($Database,$this->Link_ID)) {
+            $this->halt("cannot use database ".$this->Database);
+            return 0;
+        }
     }
-    
+
     return $this->Link_ID;
   }
 
@@ -152,7 +159,7 @@ class DB_Sql {
     else {
       $this->halt("seek($pos) failed: result has ".$this->num_rows()." rows");
 
-      /* half assed attempt to save the day, 
+      /* half assed attempt to save the day,
        * but do not consider this documented or even
        * desireable behaviour.
        */
@@ -167,7 +174,7 @@ class DB_Sql {
   /* public: table locking */
   function lock($table, $mode="write") {
     $this->connect();
-    
+
     $query="lock tables ";
     if (is_array($table)) {
       while (list($key,$value)=each($table)) {
@@ -188,7 +195,7 @@ class DB_Sql {
     }
     return $res;
   }
-  
+
   function unlock() {
     $this->connect();
 
@@ -234,7 +241,7 @@ class DB_Sql {
   /* public: sequence numbers */
   function nextid($seq_name) {
     $this->connect();
-    
+
     if ($this->lock($this->Seq_Table)) {
       /* get sequence number (locked) and increment */
       $q  = sprintf("select nextid from %s where seq_name = '%s'",
@@ -242,7 +249,7 @@ class DB_Sql {
                 $seq_name);
       $id  = @mysql_query($q, $this->Link_ID);
       $res = @mysql_fetch_array($id);
-      
+
       /* No current value, make one */
       if (!is_array($res)) {
         $currentid = 0;
@@ -308,11 +315,11 @@ class DB_Sql {
       if (!$id)
         $this->halt("Metadata query failed.");
     } else {
-      $id = $this->Query_ID; 
+      $id = $this->Query_ID;
       if (!$id)
         $this->halt("No query specified.");
     }
- 
+
     $count = @mysql_num_fields($id);
 
     // made this IF due to performance (one if is faster than $count if's)
@@ -326,7 +333,7 @@ class DB_Sql {
       }
     } else { // full
       $res["num_fields"]= $count;
-    
+
       for ($i=0; $i<$count; $i++) {
         $res[$i]["table"] = @mysql_field_table ($id, $i);
         $res[$i]["name"]  = @mysql_field_name  ($id, $i);
@@ -336,7 +343,7 @@ class DB_Sql {
         $res["meta"][$res[$i]["name"]] = $i;
       }
     }
-    
+
     // free the result only if we were called on a table
     if ($table) @mysql_free_result($id);
     return $res;
