@@ -64,7 +64,7 @@ function Item_MoveItem($status, $item_arr, $akce_param) {
     return false;                                     // OK - no error
 }
 
-/** Export items to another slice
+/** Export (Copy) items to another slice
  *  @param $slice      slice object - slice, from which we export
  *  @param $item_arr   array, where keys are unpacked ids of items prefixed by
  *                     'x' character (javascript purposes only)
@@ -87,6 +87,48 @@ function Item_Feed($slice, $item_arr, $akce_param) {
     }
     return false;                                  // OK - no error
 }
+
+/** Move items to another slice
+ *  @param $slice      slice object - slice, from which we export
+ *  @param $item_arr   array, where keys are unpacked ids of items prefixed by
+ *                     'x' character (javascript purposes only)
+ *  @param $akce_param unpacked id of slice, where items should be moved
+ */
+function Item_Move2Slice($slice, $item_arr, $akce_param) {
+    global $event, $auth, $slice_id, $pagecache;
+    if (strlen($akce_param) < 1) {
+        return _m('No slice selected');
+    }
+
+    if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
+        return _m("You have not permissions to remove items");
+    }
+
+    $db = getDB();
+    foreach ( $item_arr as $it_id => $foo ) {
+        $item_ids[] = pack_id(substr($it_id,1));      // remove initial 'x'
+    }
+
+    if ($item_ids AND (strlen($akce_param) < 1)) {
+        $p_dest_slice = pack_id($akce_param);
+        $SQL = "UPDATE item SET slice_id = '$p_dest_slice' ".
+               "WHERE id IN ('".join_and_quote("','",$item_ids)."')";
+
+        // TODO set also moved2active flag according to status of the moved
+        //       items (moved2active used by E-mail Alerts
+        // $moved2active = ( ($status == 1) ? $now : 0 );
+        // $SQL .= ", moved2active = $moved2active";
+        $db->tquery ($SQL);
+
+        // TODO: $event->comes('ITEMS_MOVED', $slice_id, 'S', $item_ids, $status );
+    }
+    $pagecache->invalidateFor("slice_id=$slice_id");    // invalidate old cached values
+    $pagecache->invalidateFor("slice_id=$akce_param");  // invalidate old cached values
+
+    freeDB($db);
+    return false;                                     // OK - no error
+}
+
 
 /**
  *  Handler for DeleteTrash switch - Delete all items in the trash bin
