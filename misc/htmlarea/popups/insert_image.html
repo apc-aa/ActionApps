@@ -11,6 +11,16 @@ window.resizeTo(400, 100);
 
 function Init() {
   __dlg_init();
+  var param = window.dialogArguments;
+  if (param) {
+      document.getElementById("f_url").value = param["f_url"];
+      document.getElementById("f_alt").value = param["f_alt"];
+      document.getElementById("f_border").value = param["f_border"];
+      document.getElementById("f_align").value = param["f_align"];
+      document.getElementById("f_vert").value = param["f_vert"];
+      document.getElementById("f_horiz").value = param["f_horiz"];
+      window.ipreview.location.replace(param.f_url);
+  }
   document.getElementById("f_url").focus();
 };
 

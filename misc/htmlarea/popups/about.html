@@ -1,8 +1,8 @@
 <!--
 
-(c) dynarch.com, 2003
+(c) dynarch.com, 2003-2004
 Author: Mihai Bazon, http://dynarch.com/mishoo
-Distributed under GNU GPL or as part of HTMLArea 3.0.
+Distributed as part of HTMLArea 3.0
 
 "You are not expected to understand this...  I don't neither."
 
@@ -14,7 +14,9 @@ Distributed under GNU GPL or as part of HTMLArea 3.0.
 -->
 
 <html style="height: 100%">
-<head><title>About HTMLArea</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>About HTMLArea</title>
 <script type="text/javascript" src="popup.js"></script>
 <script type="text/javascript">
 window.resizeTo(450, 250);
@@ -42,6 +44,7 @@ function selectTab(idx) {
 var editor = null;
 function initDocument() {
   editor = window.dialogArguments;
+  HTMLArea = window.opener.HTMLArea;
 
   var plugins = document.getElementById("plugins");
   var j = 0;
@@ -49,7 +52,7 @@ function initDocument() {
 	  "<thead><tr>" +
 	  "<td>Name</td>" +
 	  "<td>Developer</td>" +
-	  "<td>Sponsor</td>" +
+	  "<td>Sponsored by</td>" +
 	  "<td>License<sup>*</sup></td>" +
 	  "</tr></thead><tbody>";
   for (var i in editor.plugins) {
@@ -68,15 +71,17 @@ function initDocument() {
 		  "<p><sup>*</sup> License \"htmlArea\" means that the plugin is distributed under the same terms " +
 		  "as HTMLArea itself.  Such plugins are likely to be those included in the official " +
 		  "HTMLArea distribution</p>";
-	  plugins.innerHTML = html;
+	  plugins.innerHTML = "<p>The following plugins have been loaded.</p>" + html;
   } else {
 	  plugins.innerHTML = "<p>No plugins have been loaded</p>";
   }
 
+  plugins.innerHTML += "<p>User agent reports:<br/>" + navigator.userAgent + "</p>";
+
   var content = document.getElementById("content");
   if (window.innerHeight) {
     CONTENT_HEIGHT_DIFF = window.innerHeight - 250;
-    CONTENT_WIDTH_DIFF = window.innerWidth - 400;
+    CONTENT_WIDTH_DIFF = window.innerWidth - content.offsetWidth;
   } else {
     CONTENT_HEIGHT_DIFF = document.body.offsetHeight - 250;
     CONTENT_WIDTH_DIFF = document.body.offsetWidth - 400;
@@ -87,7 +92,7 @@ function initDocument() {
   for (var i = bar.firstChild; i; i = i.nextSibling) {
     TABS.push(i);
     i.__msh_tab = j;
-    i.onclick = function() { selectTab(this.__msh_tab); };
+    i.onmousedown = function(ev) { selectTab(this.__msh_tab); HTMLArea._stopEvent(ev || window.event); };
     var area = document.getElementById("tab-area-" + j);
     if (/tab-current/.test(i.className)) {
       CURRENT_TAB = j;
@@ -104,7 +109,7 @@ window.onresize = function() {
   var content = document.getElementById("content");
   if (window.innerHeight) {
     content.style.height = (window.innerHeight - CONTENT_HEIGHT_DIFF) + "px";
-    //content.style.width = (window.innerWidth - CONTENT_WIDTH_DIFF) + "px";
+    content.style.width = (window.innerWidth - CONTENT_WIDTH_DIFF) + "px";
   } else {
     content.style.height = (document.body.offsetHeight - CONTENT_HEIGHT_DIFF) + "px";
     //content.style.width = (document.body.offsetWidth - CONTENT_WIDTH_DIFF) + "px";
@@ -124,8 +129,8 @@ padding: 0px; margin: 0px; }
 
   p { margin: 0.5em 0px; }
 
-  h1 { font-family: georgia,"times new roman",serif; font-size: 130%; margin: 0px; border-bottom: 1px solid #6a6; }
-  h2 { font-family: georgia,"times new roman",serif; font-size: 110%; margin: 0.7em 0px; }
+  h1 { font: bold 130% georgia,"times new roman",serif; margin: 0px; border-bottom: 1px solid #6a6; }
+  h2 { font: bold 110% georgia,"times new roman",serif; margin: 0.7em 0px; }
 
   thead {
     font-weight: bold;
@@ -223,7 +228,7 @@ class="letter letter3">M</span><span
 class="letter letter4">L</span>Area <span class="letter">/&gt;</span>
 <span class="version"><% $version.$release %></span></div>
 <div class="release">Compiled on <% $time %></div>
-<div class="visit">http://dynarch.com/htmlarea/ [latest milestone release]</div>
+<div class="visit">Go to http://dynarch.com/htmlarea/ [latest milestone release]</div>
 </div>
 
 </td></tr>
@@ -233,50 +238,76 @@ class="letter letter4">L</span>Area <span class="letter">/&gt;</span>
 <div id="tab-areas">
 
 <div id="tab-area-0">
-<h1>HTMLArea</h1>
-<p>A free WYSIWYG editor replacement for <tt>&lt;textarea&gt;</tt> fields.</p>
 
-<p>For full source code and docs, visit:<br />
-<a href="http://www.interactivetools.com/products/htmlarea/" target="_blank"
->http://www.interactivetools.com/products/htmlarea/</a></p>
+  <h1>HTMLArea</h1>
+  
+  <p>A free WYSIWYG editor replacement for <tt>&lt;textarea&gt;</tt> fields.<br />
+  For Mozilla 1.3+ (any platform) or Internet Explorer 5.5+ (Windows).
+  </p>
 
-<p>&copy; 2002, 2003 <a href="http://interactivetools.com" target="_blank">interactivetools.com</a>, inc. All Rights Reserved.</p>
+  <p style="text-align: center"
+  >&copy; 2002-2004 <a href="http://interactivetools.com" target="_blank">interactivetools.com</a>, inc.<br />
+  &copy; 2003-2004 <a href="http://dynarch.com" target="_blank">dynarch.com</a> LLC.<br />
+  All Rights Reserved.</p>
 
-<p>Version 3.0 developed and maintained by <a
-href="http://dynarch.com/mishoo/" title="http://dynarch.com/mishoo/" target="_blank">mishoo</a> / <a
+  <h2>Project resources</h2>
+
+  <ul>
+  <li><a href="http://sourceforge.net/projects/itools-htmlarea/" target="_blank"
+  >Project page</a> (@ sourceforge.net)</li>
+  <li><a href="http://sourceforge.net/cvs/?group_id=69750" target="_blank"
+  >Anonymous CVS access</a> (@ sourceforge.net)</li>
+  <li><a href="http://sourceforge.net/tracker/?atid=525656&group_id=69750&func=browse" target="_blank"
+  >Bug system</a> (@ sourceforge.net)</li>
+  <li><a href="http://www.interactivetools.com/forum/gforum.cgi?forum=14;" target="_blank"
+  >Forum</a> (@ interactivetools.com)</li>
+  <li><a href="http://www.dynarch.com/htmlarea/" target="_blank"
+  >Last public release</a> (@ dynarch.com)</li>
+  </ul>
+
+  <p>
+  For download section please see the <a href="http://sourceforge.net/projects/itools-htmlarea/" target="_blank"
+  >project page @ SourceForge</a>.
+  </p>
+
+<p style="margin-top: 1em; text-align: center;">Version 3.0 developed and maintained by <a
+href="http://dynarch.com/mishoo/" title="http://dynarch.com/mishoo/" target="_blank">Mihai Bazon</a> / <a
 href="http://dynarch.com" title="http://dynarch.com/" target="_blank">dynarch.com</a></p>
 
 </div>
 
 <div id="tab-area-1">
-<h1>Credits</h1>
+<h1>Thank you</h1>
 
-<p>HTMLArea version 3.0 is developed and maintained by <a
-href="http://dynarch.com" target="_blank">dynarch.com</a> (<a
-href="http://dynarch.com/mishoo/" target="_blank">Mihai&nbsp;Bazon</a>) for
-<a href="http://interactivetools.com"
-target="_blank">interactivetools.com</a>.  It is a complete rewrite of
-htmlArea 2 featuring cross-browser compatibility and W3 compliance (where
-possible).  InteractiveTools has financed HTMLArea 3.0 until it's Alpha stage.</p>
+  <p>
+  <a href="http://dynarch.com" target="_blank">dynarch.com</a> would like to thank the following
+  companies/persons for their <em>donations</em> to support development of HTMLArea (listed alphabetically):
+  </p>
 
-<h2>Special thanks to</h2>
+  <ul>
+    <li><a href="http://www.computerlove.co.uk" target="_blank">Code Computer Love Ltd.</a> (UK)</li>
+    <li><a href="http://www.neomedia.ro" target="_blank">Neomedia</a> (Romania)</li>
+    <li><a href="http://www.os3.it" target="_blank">OS3</a> (Italy)</li>
+    <li><a href="http://www.softwerk.net" target="_blank">SoftWerk</a> (Italy)</li>
+  </ul>
 
-<table class="sponsors" cellspacing="0px" cellpadding="0px" style="border-collapse: collapse; width: 99%;">
-<tr>
-<td class="sponsor"><a href="http://www.os3.it" target="_blank">Fabio Rotondo</a></td>
-<td>for making considerable donations, bug reporting, Italian translation.</td>
-</tr>
-</table>
+  <p>Also many thanks to all people at InteractiveTools.com
+  <a href="http://www.interactivetools.com/forum/gforum.cgi?forum=14;">HTMLArea forums</a> for
+  contributing translations, feedback, bug reports and fixes.</p>
 
-<p>Also many thanks to all people who submitted translations.</p>
+  <p>
+  Last but not least, this project wouldn't have existed without
+  <a href="http://interactivetools.com" target="_blank">InteractiveTools.com</a>.
+  </p>
 
 </div>
 
 <div id="tab-area-2">
 <h1>htmlArea License (based on BSD license)</h1>
 
-<p style="text-align: center">Copyright (c) 2002, 2003, interactivetools.com, inc.<br />
-All rights reserved.</p>
+<p style="text-align: center">© 2002-2004, interactivetools.com, inc.<br />
+  © 2003-2004 dynarch.com LLC<br />
+  All rights reserved.</p>
 
 <p>
 Redistribution and use in source and binary forms, with or without
@@ -335,7 +366,7 @@ POSSIBILITY OF SUCH DAMAGE.
 <div id="tabbar"
 ><div class="tab tab-current"
 >About</div><div class="tab"
->Credits</div><div class="tab"
+>Thanks</div><div class="tab"
 >License</div><div class="tab"
 >Plugins</div></div>
 <button type="button" onclick="__dlg_close(null);">I agree it's cool</button>
