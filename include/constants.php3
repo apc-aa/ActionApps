@@ -59,7 +59,11 @@ $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "odd_row_format", "even_row_format", "compact_top", "compact_bottom",
    "category_top", "category_format", "category_bottom", "config", "slice_url",
    "lang_file", "fulltext_remove", "compact_remove", "notify_sh_offer", 
-   "notify_sh_accept", "notify_sh_remove", "notify_holding_item",
+   "notify_sh_accept", "notify_sh_remove", "notify_holding_item_s", 
+   "notify_holding_item_b", "notify_holding_item_edit_s", 
+   "notify_holding_item_edit_b", "notify_active_item_edit_s", 
+   "notify_active_item_edit_b", "notify_active_item_s", "notify_active_item_b",
+   "noitem_msg", 
    "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove");
 
 $SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template", 
@@ -84,6 +88,7 @@ $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
                               "now" => L_INPUT_DEFAULT_NOW);
   
 $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
+																"edt" => L_INPUT_SHOW_EDT,
                                 "fld" => L_INPUT_SHOW_FLD, 
                                 "sel" => L_INPUT_SHOW_SEL, 
                                 "pre" => L_INPUT_SHOW_PRE, 
@@ -376,6 +381,7 @@ define ("FEEDMAP_FLAG_MAP", 0);
 define ("FEEDMAP_FLAG_VALUE", 1);
 define ("FEEDMAP_FLAG_EMPTY", 2);
 define ("FEEDMAP_FLAG_EXTMAP", 3);
+define ("FEEDMAP_FLAG_JOIN", 4);
                       
 define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in slice table
 
@@ -383,6 +389,9 @@ require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 
 /*
 $Log$
+Revision 1.23  2001/12/18 12:30:50  honzam
+new notification e-mail possibility (notify new item in slice, bins, ...), new possibility to join fields when fields are fed to another slice
+
 Revision 1.22  2001/12/12 18:38:02  honzam
 Better item table flags setting
 

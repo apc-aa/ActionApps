@@ -10,7 +10,7 @@ body { margin-left: 4px;
        background: #213F21;
        font-family: Verdana, Arial, Helvetica, sans-serif;
        font-size: 8pt;
-	color: #FFFFFF;
+			 color: #FFFFFF;
 }
 
 .login { 
@@ -42,6 +42,7 @@ H1 {
 	font-size: 8pt;
 	background: #A8C8B0; 
 	color: #FFFFFF;
+	vertical-align: middle;
 }
 
 .nbviewlp {
@@ -79,6 +80,7 @@ H1 {
 	font-size: 8pt;
 /*   background: #EBDABE; */
 	color: #4A4A4A;
+	vertical-align: middle;
 }
 
 .example {
@@ -100,26 +102,34 @@ H1 {
 	color: #FFFFFF;
 	font-weight : bold;
 	background: #589868;
+	width: 100%;
+	vertical-align: middle;
 }
 
 .leftmenu  {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: x-small;
-	font-weight : bold;
+	font-size: 8pt;
+/*	font-weight : bold; */
 	background: #A8C8B0;
 	color: #4A4A4A;
 }
 
+TD.leftmenu {
+  font-weight: bold;
+}
+
 .leftmenuy  {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: x-small;
+/*  font-size: x-small; */
+  font-size: 8pt;
         background: #A8C8B0;
+	font-weigth: normal;
   color: #000000;
 }
 
 .leftmenun  {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: x-small;
+/*	font-size: x-small; */
         background: #A8C8B0;
   color: #4A4A4A;
 }
@@ -161,10 +171,30 @@ H1 {
   background: #589868;
 }
 
+.tablename .leftmenuy {
+  font-weight: normal;
+  background: #589868;
+}
+
+/*
+TABLE {
+  width: 80%;
+}
+
+TD.leftmenuy {
+  width: 80%
+}
+*/
+
+/* TD.tabtit {
+  border-bottom: 1pt solid black;
+} */
+
 .tabtit {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
   color: #FFFFFF;
+	background: #589868;
 }
 
 .tabtxt {
