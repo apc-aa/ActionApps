@@ -356,41 +356,16 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
     //echo "zids"; print_r ($zids);
     if ($zids->count() == 0)
         return "";
-<<<<<<< alerts_sending.php3
-        
-=======
 
-    if (! $cached_view_settings [$vid]) {
-        $view_info = GetViewInfo($vid);
-        list($fields) = GetSliceFields (unpack_id ($view_info ["slice_id"]));
-        $slice_info = GetSliceInfo (unpack_id ($view_info ["slice_id"]));
-        $cached_view_settings[$vid] = array (
-            "lang" => substr ($slice_info["lang_file"],0,2),
-            "info" => $view_info,
-            "fields" => $fields,
-            "aliases" => GetAliasesFromFields ($fields),
-            "format" => GetViewFormat ($view_info),
-        );
-    }
-
->>>>>>> 1.11
     if (! isset ($cached_filter_settings [$filter_settings])) {
         $set = &get_view_settings_cached ($vid);
         // set language
         bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".
             $set["lang"]."_alerts_lang.php3", true);
         // $set["info"]["aditional2"] stores item URL
-<<<<<<< alerts_sending.php3
-        $itemview = new itemview( $db, $set["format"], $set["fields"], 
-            $set["aliases"], $zids, 0, 9999, $set["info"]["aditional2"]);                          
-        $items_text = $itemview->get_output ("view");        
-=======
-        //global $debug;        $debug = 1;
-        //echo "<i>";print_r ($zids->a);echo"</i>";
         $itemview = new itemview( $db, $set["format"], $set["fields"],
             $set["aliases"], $zids, 0, 9999, $set["info"]["aditional2"]);
         $items_text = $itemview->get_output ("view");
->>>>>>> 1.11
     //echo "<h1>items $items_text</h1>"; print_r ($set["format"]); exit;
         //if (! strstr ($filter_settings, ","))
         $cached_filter_settings [$filter_settings] = $items_text;
@@ -428,11 +403,7 @@ function get_filter_text_4_reader ($readerContent, $filters, $cid)
 
     // add dummy filter
     $filters[99999] = "dummy";
-<<<<<<< alerts_sending.php3
-  
-=======
 
->>>>>>> 1.11
     for (reset ($filters); list ($filterid, $fprop) = each ($filters); ) {
         // Send items from filters with "group" not set when the view changes.
         if ($last_fprop["vid"] != $fprop["vid"]
