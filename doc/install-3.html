@@ -247,15 +247,10 @@ create this database, you need a <EM>ldif</EM> format file which can be translat
 into the database by the ldapmodify command. There is an example ldif file,
 namely <CODE>LDIF.ini</CODE>, in the doc/ directory. Edit this file to suit your
 needs according to the following instructions.
-<P>The initial ldif file should contain five objects:
+<P>The initial ldif file should contain two objects:
 <UL>
 <LI>Your base object</LI>
 <LI>The Action Applications account object (used by Action Applications to access the ldap server)</LI>
-<LI>A group object for Action Applications administrators (superadmins)</LI>
-<LI>One initial superadmin account object which is the initial member 
-of the group of superadmins</LI>
-<LI>The Action Applications APCACL object (Action Applications access control storage object)
-of Action Applications administrators</LI>
 </UL>
 
 Objects are separated by blank lines. Each line consists of a keyword,
@@ -265,10 +260,8 @@ attributes.
 <P>Edit these spots:
 <UL>
 <LI>Everywhere: replace
-all occurances of the
-example "dc=ecn,dc=apc,dc=org" base dn with your own one
-(hopefully your
-editor has a good search and replace function).</LI>
+occurances of the
+example "dc=ecn,dc=apc,dc=org" base dn with your own one</LI>
 <LI>root object (first block)
 <DL>
 <DT><B>o: Econnect</B><DD><P>Replace "Econnect" with your organization name.
@@ -281,35 +274,6 @@ organization.
 <LI>Action Applications account object (second block)
 <P>No modifications
 </LI>
-<LI>Action Applications administrator (superadmin) group object (third block)
-<DL>
-<DT><B>member</B><DD><P>Fill in the dn of the personal initial member object
-(see below)
-</DL>
-</LI>
-<LI>Initial superadmin account object (forth block)
-<DL>
-<DT><B>dn</B><DD><P>Replace "uid=karel" with "uid=XXX" where XXX is a user id
-for the initial administrator group member
-(for example, use qour first name).
-<DT><B>cn</B><DD><P>Fill in the canonical name of the initial member.
-<DT><B>sn</B><DD><P>Fill in the surname of the initial member.
-<DT><B>uid</B><DD><P>Repeat the user id from above.
-<DT><B>mail</B><DD><P>Fill in an email address of the initial member.
-</DL>
-</LI>
-<LI>The APCACL object (Action Applications access control storage) (fifth block)
-For this object you need to invent a unique identifier. The 
-identifier should consist of 32 characters only containing
-characters from the set <EM>0123456789abcdef</EM>. This is your
-<EM>aa id</EM>. You will need it later again.
-<DL>
-<DT><B>dn</B><DD><P>Replace the string after "apcobjectid=" up to the next
-comma with your aa id.
-<DT><B>apcobjectid</B><DD><P>Replace the content with your aa id.
-<DT><B>description</B><DD><P>Put in "Action Applications at ..." where ... is your organization.
-</DL>
-</LI>
 </UL>
 <P>Having made these modifications, we can tell the ldap server to create
 the objects:
@@ -321,12 +285,6 @@ the objects:
 adding new entry dc=ecn,dc=apc,dc=org
 
 adding new entry cn=aalduser,dc=ecn,dc=apc,dc=org
-
-adding new entry cn=Action Applications Admins,dc=ecn,dc=apc,dc=org
-
-adding new entry uid=moritz,dc=ecn,dc=apc,dc=org
-
-adding new entry apcobjectid=000111222333444555666777888999Action Applications,dc=ecn,dc=apc,dc=org
 </PRE>
 <HR>
 </CODE></BLOCKQUOTE>
@@ -355,19 +313,14 @@ If you get an error message or nothing, check the
 <P>
 <H3>LDAP passwords</H3>
 
-<P>There are no less than three passwords we must maintain for the ldap
+<P>There are two passwords we must maintain for the ldap
 server. We refer to them as the <EM>root dn password</EM>, which is used
-to access the LDAP root account; the 
-<EM>initial superadmin account password</EM>, which is used to access the
-initial Action Applications superadmin account; and the 
+to access the LDAP root account and the 
 <EM>aalduser account password</EM>, which the Action Applications use to 
 access the aalduser account and the LDAP server.
 <P>We should now set the root dn password in 
-<CODE>/etc/openldap/slapd.conf</CODE> as well as for the initial
-superadmin
-account password. To do this, first set the initial superadmin
-account password
-using ldappasswd, then make a query to the ldap server so we get an 
+<CODE>/etc/openldap/slapd.conf</CODE>. To do this, first set the aalduser account
+password using ldappasswd, then make a query to the ldap server so we get an 
 encrypted version of the password back, and 
 copy and paste the encrypted password into the sldap.conf file.
 When you issue the following commands, the password given after the -w 
@@ -377,19 +330,16 @@ new password, enter the new root dn password you want to set. And remind it!
 <BLOCKQUOTE><CODE>
 <HR>
 <PRE>
-% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -t "uid=moritz,dc=ecn,dc=apc,dc=org" -H ssha
+% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha
 New password: 
 Re-enter new password: 
-% ldapsearch -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -L uid=moritz
-dn: uid=moritz,dc=ecn,dc=apc,dc=org
+% ldapsearch -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -L cn=aa
+dn: cn=aalduser,dc=ecn,dc=apc,dc=org
 objectclass: top
 objectclass: person
-objectclass: organizationalperson
-objectclass: inetorgperson
-cn: Moritz Both
-sn: Both
-uid: moritz
-mail: moritz@aldebaran.de
+cn: aa
+sn: Toolkit
+description: Account used by AA to access LDAP DB
 userpassword: {ssha}1KoDEQd/MrY+JPnFgotki5AZrCyfGZYr
 </PRE>
 <HR>
@@ -399,16 +349,12 @@ This is the encrypted version of the new root dn password you entered.
 Paste this string (including the "{ssha}") into the rootpw: line in
 <CODE>/etc/openldap/slapd.conf</CODE>. 
 After the next server restart, the old root dn password "password" 
-will no longer work,
-instead, you use the password you just entered.
-<P>If you want, you can change the password for the initial superadmin account 
-again
-so it is different from the root dn password.
-<P>Try to access the ldap server using your initial superadmin account:
+will no longer work, instead, you use the password you just entered.
+<P>Try to access the ldap server using the aalduser account:
 <BLOCKQUOTE><CODE>
 <HR>
 <PRE>
-% ldapsearch -D "uid=moritz,dc=ecn,dc=apc,dc=org" -W -L objectclass=\*
+% ldapsearch -D "cn=aalduser,dc=ecn,dc=apc,dc=org" -W -L objectclass=\*
 Enter LDAP Password: 
 </PRE>
 <HR>
@@ -417,7 +363,9 @@ Enter LDAP Password:
 You should get all the objects that are stored. In case of an error message,
 check the spelling of the command line... errors most likely have to do with
 spelling errors.
-<P><B>Finally</B>, set a aalduser account password.
+<P><B>Now</B> you can change the password for the aalduser account 
+again so it is different from the root dn password:
+<P>
 <BLOCKQUOTE><CODE>
 <HR>
 <PRE>

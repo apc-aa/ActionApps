@@ -2,7 +2,7 @@
 <report>
 <title>Installation of APC Action Applications
 <author>Moritz Both, <tt/mb@aldebaran.de/
-<date>2000/08/01, v0.9
+<date>2000/09/12, v0.10
 <abstract>
 "Big picture" description of the installation process of the APC Action
 Applications
@@ -498,15 +498,10 @@ into the database by the ldapmodify command. There is an example ldif file,
 namely <tt/LDIF.ini/, in the doc/ directory. Edit this file to suit your
 needs according to the following instructions.
 
-The initial ldif file should contain five objects:
+The initial ldif file should contain two objects:
 <itemize>
 <item>Your base object
 <item>The Action Applications account object (used by Action Applications to access the ldap server)
-<item>A group object for Action Applications administrators (superadmins)
-<item>One initial superadmin account object which is the initial member 
-	of the group of superadmins
-<item>The Action Applications APCACL object (Action Applications access control storage object)
-of Action Applications administrators
 </itemize>
 Objects are separated by blank lines. Each line consists of a keyword,
 followed by a colon, followed by a value. The first line of each object
@@ -516,10 +511,8 @@ attributes.
 Edit these spots:
 <itemize>
 <item>Everywhere: replace
-	all occurances of the
+	occurances of the
 	example "dc=ecn,dc=apc,dc=org" base dn with your own one
-	(hopefully your
-	editor has a good search and replace function).
 <item>root object (first block)
 	<descrip>
 	<tag/o: Econnect/ Replace "Econnect" with your organization name.
@@ -531,32 +524,6 @@ Edit these spots:
 <item>Action Applications account object (second block)
 <p>
 No modifications
-<item>Action Applications administrator (superadmin) group object (third block)
-	<descrip>
-	<tag/member/ Fill in the dn of the personal initial member object
-		(see below)
-	</descrip>
-<item>Initial superadmin account object (forth block)
-	<descrip>
-	<tag/dn/ Replace "uid=karel" with "uid=XXX" where XXX is a user id
-		for the initial administrator group member
-		(for example, use qour first name).
-	<tag/cn/ Fill in the canonical name of the initial member.
-	<tag/sn/ Fill in the surname of the initial member.
-	<tag/uid/ Repeat the user id from above.
-	<tag/mail/ Fill in an email address of the initial member.
-	</descrip>
-<item>The APCACL object (Action Applications access control storage) (fifth block)
-	For this object you need to invent a unique identifier. The 
-	identifier should consist of 32 characters only containing
-	characters from the set <em/0123456789abcdef/. This is your
-	<em/aa id/. You will need it later again.
-	<descrip>
-	<tag/dn/ Replace the string after "apcobjectid=" up to the next
-		comma with your aa id.
-	<tag/apcobjectid/ Replace the content with your aa id.
-	<tag/description/ Put in "Action Applications at ..." where ... is your organization.
-	</descrip>
 </itemize>
 
 Having made these modifications, we can tell the ldap server to create
@@ -568,11 +535,6 @@ adding new entry dc=ecn,dc=apc,dc=org
 
 adding new entry cn=aalduser,dc=ecn,dc=apc,dc=org
 
-adding new entry cn=Action Applications Admins,dc=ecn,dc=apc,dc=org
-
-adding new entry uid=moritz,dc=ecn,dc=apc,dc=org
-
-adding new entry apcobjectid=000111222333444555666777888999Action Applications,dc=ecn,dc=apc,dc=org
 </code></tscreen>
 
 
@@ -596,20 +558,15 @@ If you get an error message or nothing, check the
 
 <sect1>LDAP passwords
 <p>
-There are no less than three passwords we must maintain for the ldap
+There are two passwords we must maintain for the ldap
 server. We refer to them as the <em/root dn password/, which is used
-to access the LDAP root account; the 
-<em/initial superadmin account password/, which is used to access the
-initial Action Applications superadmin account; and the 
+to access the LDAP root account and the 
 <em/aalduser account password/, which the Action Applications use to 
 access the aalduser account and the LDAP server.
 
 We should now set the root dn password in 
-<tt>/etc/openldap/slapd.conf</tt> as well as for the initial
-superadmin
-account password. To do this, first set the initial superadmin
-account password
-using ldappasswd, then make a query to the ldap server so we get an 
+<tt>/etc/openldap/slapd.conf</tt>. To do this, first set the aalduser account
+password using ldappasswd, then make a query to the ldap server so we get an 
 encrypted version of the password back, and 
 copy and paste the encrypted password into the sldap.conf file.
 When you issue the following commands, the password given after the -w 
@@ -617,19 +574,16 @@ switches must match the <em/old/ root dn password which is still defined
 in clear text in <tt>/etc/openldap/slapd.conf</tt>. When prompted for the
 new password, enter the new root dn password you want to set. And remind it!
 <tscreen><code>
-% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -t "uid=moritz,dc=ecn,dc=apc,dc=org" -H ssha
+% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha
 New password: 
 Re-enter new password: 
-% ldapsearch -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -L uid=moritz
-dn: uid=moritz,dc=ecn,dc=apc,dc=org
+% ldapsearch -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -L cn=aa
+dn: cn=aalduser,dc=ecn,dc=apc,dc=org
 objectclass: top
 objectclass: person
-objectclass: organizationalperson
-objectclass: inetorgperson
-cn: Moritz Both
-sn: Both
-uid: moritz
-mail: moritz@aldebaran.de
+cn: aa
+sn: Toolkit
+description: Account used by AA to access LDAP DB
 userpassword: {ssha}1KoDEQd/MrY+JPnFgotki5AZrCyfGZYr
 </code></tscreen>
 
@@ -638,23 +592,20 @@ This is the encrypted version of the new root dn password you entered.
 Paste this string (including the "{ssha}") into the rootpw: line in
 <tt>/etc/openldap/slapd.conf</tt>. 
 After the next server restart, the old root dn password "password" 
-will no longer work,
-instead, you use the password you just entered.
+will no longer work, instead, you use the password you just entered.
 
-If you want, you can change the password for the initial superadmin account 
-again
-so it is different from the root dn password.
-
-Try to access the ldap server using your initial superadmin account:
+Try to access the ldap server using the aalduser account:
 <tscreen><code>
-% ldapsearch -D "uid=moritz,dc=ecn,dc=apc,dc=org" -W -L objectclass=\*
+% ldapsearch -D "cn=aalduser,dc=ecn,dc=apc,dc=org" -W -L objectclass=\*
 Enter LDAP Password: 
 </code></tscreen>
 You should get all the objects that are stored. In case of an error message,
 check the spelling of the command line... errors most likely have to do with
 spelling errors.
 
-<bf/Finally/, set a aalduser account password.
+<bf/Now/ you can change the password for the aalduser account 
+again so it is different from the root dn password:
+
 <tscreen><code>
 % ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha -W
 </code></tscreen>
@@ -923,22 +874,7 @@ the http server must be able to read it. Read the chapter on
 <ref id="security"> for a possible solution for this problem.</bf>
 
 Point your Web browser to 
-<url url="http://localhost/aa/admin/sliceadd.php3">. You should see the
-login page.
-
-There is just one question open: What is login name and password of the 
-initial superadmin account (which you need to create the first slice)? 
-The answer depends on the permission system 
-you use.
-
-<itemize>
-<item>If you are using the LDAP based permission system, the superadmin 
-account is the one you created when you edited the initial LDIF data file.
-At that time, you have also set a password for this account.
-<item>If you are using the sql based permission system, there is no
-initial superadmin account so far. To create one, follow the instructions
-below.
-</itemize>
+<url url="http://localhost/aa/admin/setup.php3">. This page helps you to create your initial superadmin account.
 
 <sect>Creating a superadmin account
 <p>
@@ -947,30 +883,16 @@ slices in addition to the rights any slice administrator has.
 
 Creating a superadmin account will be necessary whenever you don't have
 one left.
-This is the case at installation time if you are using the
-sql based permission system, and in case you have accidently deleted
+This is the case at installation time and in case you have accidently deleted
 the last superadmin account or accidently revoked the superadmin 
 privilege from the last superadmin account.
-To create a superadmin account, follow these steps.
-<itemize>
-<item>copy the file doc/doit.php3 to the include/ directory of the Action Applications.
-<item>edit config.php3 and insert two lines right behind the 
-<tt/&lt;?php/ line at the top. Replace the quoted words with your own 
-choice of superadmin account name and password:
-<tscreen><code>
-define (ADMIN_USER, "administrator");
-define (ADMIN_PASS, "password");
-</code></tscreen>
-<item>Point your web browser to 
-<url url="http://localhost/aa/include/doit.php3">.
-The superadmin account is created in this step.
-<item><bf>Delete the <tt/doit.php3/ file from the include/ directory and
-remove the lines you added from <tt/config.php3/!</bf>
-</itemize>
-You should be able to log in now. Try the page to add a slice 
-<url url="http://localhost/aa/admin/sliceadd.php3">. Log in with your
+To create a superadmin account, click on Init and fill in the form
+Superadmin account. Fields marked with an asterisk are required. Click on the 
+Create button.
+
+Now you should see a page with a congratulation and a link <em/Add Slice/. Follow this link. You will be asked for login name and password - log in with your
 (new) superadmin account and read on in the next section to see how to
-start.
+create a slice.
 
 <sect>Your first test slice
 <sect1>Creating the first test slice

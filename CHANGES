@@ -1,12 +1,13 @@
-08/17/00 - New possibility of redirected view of item. Alias _#HDLN_URL now
-           points to External link (if link_only=true) or on redirect url 
-           (if specified) or on the same page. The redirected url should
-           contain <!-- #include ...slice.php3 --> again, but with other look.
-           database modifications necessary: 
+08/17/00 - new option to present items on their own pages with possible
+           variant design. Alias _#HDLN_URL now points to External link 
+           (if link_only=true) or to the "Show on URL" value (if specified) or 
+           to the current URL. The file pointed by "Show on URL" must contain 
+           the same SSI directive (<!--#include ... slice.php3-->).
+           Necessary database modifications: 
               ALTER TABLE items ADD redirect VARCHAR (255);
               ALTER TABLE slices ADD d_redirect VARCHAR (255) ;
-         - new parameter inc for slice.php3 script (used for displaying static
-           page insear of slice data
+         - new parameter inc for slice.php3 script (used for displaying an 
+           arbitrary static page instead of the dynamic slice data)
            Usage: http://web.ecn.cz/slice.shtml?inc=http://www.ecn.cz/info.txt
 08/14/00 - fixed "membership of zeros" problem visible in SQL permissions
 08/11/00 - added setup script setup.php3 

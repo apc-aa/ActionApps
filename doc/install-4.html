@@ -40,21 +40,7 @@ the http server must be able to read it. Read the chapter on
 <A HREF="install-6.html#security">security</A>
  for a possible solution for this problem.</B>
 <P>Point your Web browser to 
-<A HREF="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/sliceadd.php3</A>. You should see the
-login page.
-<P>There is just one question open: What is login name and password of the 
-initial superadmin account (which you need to create the first slice)? 
-The answer depends on the permission system 
-you use.
-<P>
-<UL>
-<LI>If you are using the LDAP based permission system, the superadmin 
-account is the one you created when you edited the initial LDIF data file.
-At that time, you have also set a password for this account.</LI>
-<LI>If you are using the sql based permission system, there is no
-initial superadmin account so far. To create one, follow the instructions
-below.</LI>
-</UL>
+<A HREF="http://localhost/aa/admin/setup.php3">http://localhost/aa/admin/setup.php3</A>. This page helps you to create your initial superadmin account.
 <P>
 <H2><A NAME="ss4.2">4.2 Creating a superadmin account</A>
 </H2>
@@ -63,36 +49,15 @@ below.</LI>
 slices in addition to the rights any slice administrator has.
 <P>Creating a superadmin account will be necessary whenever you don't have
 one left.
-This is the case at installation time if you are using the
-sql based permission system, and in case you have accidently deleted
+This is the case at installation time and in case you have accidently deleted
 the last superadmin account or accidently revoked the superadmin 
 privilege from the last superadmin account.
-To create a superadmin account, follow these steps.
-<UL>
-<LI>copy the file doc/doit.php3 to the include/ directory of the Action Applications.</LI>
-<LI>edit config.php3 and insert two lines right behind the 
-<CODE>&lt;?php</CODE> line at the top. Replace the quoted words with your own 
-choice of superadmin account name and password:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-define (ADMIN_USER, "administrator");
-define (ADMIN_PASS, "password");
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-</LI>
-<LI>Point your web browser to 
-<A HREF="http://localhost/aa/include/doit.php3">http://localhost/aa/include/doit.php3</A>.
-The superadmin account is created in this step.</LI>
-<LI><B>Delete the <CODE>doit.php3</CODE> file from the include/ directory and
-remove the lines you added from <CODE>config.php3</CODE>!</B></LI>
-</UL>
-
-You should be able to log in now. Try the page to add a slice 
-<A HREF="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/sliceadd.php3</A>. Log in with your
+To create a superadmin account, click on Init and fill in the form
+Superadmin account. Fields marked with an asterisk are required. Click on the 
+Create button.
+<P>Now you should see a page with a congratulation and a link <EM>Add Slice</EM>. Follow this link. You will be asked for login name and password - log in with your
 (new) superadmin account and read on in the next section to see how to
-start.
+create a slice.
 <P>
 <H2><A NAME="ss4.3">4.3 Your first test slice</A>
 </H2>
