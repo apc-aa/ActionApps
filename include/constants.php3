@@ -259,6 +259,7 @@ function inputShowFuncTypes () {
         "tpr" => GetInputShowFuncTypesDef( _m("Textarea with Presets"),       false, 'fnc:const:param' ),
         "edt" => GetInputShowFuncTypesDef( _m("Rich Edit Text Area"),         false, 'fnc:param' ),
         "fld" => GetInputShowFuncTypesDef( _m("Text Field"),                  false, 'fnc:param' ),
+        "mfl" => GetInputShowFuncTypesDef( _m("Multiple Text Field"),         true,  'fnc:param' ),
         "pre" => GetInputShowFuncTypesDef( _m("Text Field with Presets"),     false, 'fnc:const:param' ),
         "sel" => GetInputShowFuncTypesDef( _m("Select Box"),                  false, 'fnc:const:param' ),
         "rio" => GetInputShowFuncTypesDef( _m("Radio Button"),                false, 'fnc:const:param' ),

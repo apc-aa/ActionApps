@@ -182,8 +182,11 @@ function MoveElement(id, d, direction) {
 }
 
 var popupwindows = Array();
+var popup_date = new Date();         // we need just to create unique id for the
+var popupwindows_id = popup_date.getTime();   // popups (think of popup in popup)
+
 function OpenWindowTop(url) {
-    popupwindows[popupwindows.length] = open(url,'popup'+popupwindows.length,'scrollbars=1,resizable=1');
+    popupwindows[popupwindows.length] = open(url,'popup'+popupwindows_id+popupwindows.length,'scrollbars=1,resizable=1');
 }
 
 //moves selected row of left listbox to the right one

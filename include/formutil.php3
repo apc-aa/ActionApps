@@ -468,7 +468,7 @@ class aainputfield {
             }
             $format = IsField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
             $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix);
-            return $sid; // in most cases not very impotant information, but used in related() input type
+            return $sid; // in most cases not very impotant information, but used in inputRelatION() input type
         } else {
             $this->const_arr = GetConstants($constgroup, 'pri', $slice_field);
         }
@@ -562,6 +562,7 @@ class aainputfield {
                                $this->staticText();       break;
             case 'freeze_wi2':
             case 'freeze_mse':
+            case 'freeze_mfl':
             case 'freeze_mch': $this->value_modified = $this->implodaval();
                                $this->staticText();       break;
             case 'freeze_pwd': $this->value_modified = $this->value[0] ? "*****" : "";
@@ -592,6 +593,18 @@ class aainputfield {
             case 'normal_fld': $this->inputText(get_if($this->param[0],255), // maxlength
                                                 get_if($this->param[1],60)); // fieldsize
                                break;
+            case 'anonym_mfl':
+            case 'normal_mfl': list($actions, $rows) = $this->param;
+                               $actions = get_if($actions, 'MDAC'); // move, delete, add, change
+                               $this->varname_modify('[]');         // use slightly modified varname
+
+                               // prepare value array for selectbox
+                               foreach ( $this->value as $content ) {
+                                   $this->const_arr[$content['value']] = $content['value'];
+                               }
+                               $this->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
+                               break;
+
             case 'anonym_txt':
             case 'normal_txt': $this->textarea(get_if($this->param[0],4), 60);
                                break;
@@ -618,10 +631,10 @@ class aainputfield {
                                $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str);  // move_right
                                break;
             case 'anonym_mse':
-            case 'normal_mse': list(,$size, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
-                               $size = ($size < 1) ? 5 : $size;
+            case 'normal_mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
+                               $rows = ($rows < 1) ? 5 : $rows;
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->inputMultiSelect($size, $slice_field, $whichitems, $conds_str, $sort_str);
+                               $this->inputMultiSelect($rows, $slice_field, $whichitems, $conds_str, $sort_str);
                                break;
             case 'anonym_fil':
             case 'normal_fil': list($accepts, $text, $hlp) = $this->param;
@@ -647,7 +660,7 @@ class aainputfield {
                                break;
             case 'anonym_iso':
             case 'normal_iso':
-            case 'freeze_iso': list(, $selectsize, $mode, $design, $tp, $movebuttons, $whichitems, $conds, $condsrw) = $this->param;
+            case 'freeze_iso': list(, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw) = $this->param;
                                $mode      = get_if($mode,'AMB');         # AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
                                $tp        = get_if($tp,  'AMB');         # Default to use the AMP table
                                $tagprefix = ( isset($GLOBALS['tps'][$tp])              ? $GLOBALS['tps'][$tp] :
@@ -662,18 +675,18 @@ class aainputfield {
                                    $this->value_modified = $this->implodaval('<br>');
                                    $this->staticText();
                                } else {
-                                   $this->related($selectsize, $sid, $mode, $design, $movebuttons, $whichitems, $conds, $condsrw);
+                                   $this->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design, $actions, $whichitems, $conds, $condsrw);
                                }
                                break;
             case 'anonym_hco':
-            case 'normal_hco': list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, $levelNames) = $this->param;
+            case 'normal_hco': list($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames) = $this->param;
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
+                               $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
                                break;
             case 'anonym_wi2':
-            case 'normal_wi2': list($constgroup, $size, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
+            case 'normal_wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->twoBox(get_if($size,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str);
+                               $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str);
                                break;
             case 'anonym_pwd':  // handled in passwordModify
             case 'normal_pwd': list($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) = $this->param;
@@ -843,7 +856,7 @@ class aainputfield {
     *                     (and perhaps BUTTON and SUBMIT also, but I do not see
     *                      any usage) - added by Jakub, 28.1.2003
     */
-    function inputText($maxsize=254, $size=25, $type="text") {
+    function inputText($maxsize=255, $size=25, $type="text") {
         list($name,$val,$add) = $this->prepareVars();
         $val     = htmlspecialchars($val);
         $maxsize = get_if( $maxsize, 254 );
@@ -856,7 +869,6 @@ class aainputfield {
                         " maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">" );
         $this->helps('plus');
     }
-
 
     /**
     * Prints two static text to 2-column table
@@ -983,13 +995,15 @@ class aainputfield {
     }
 
     /** returns select options created from given array */
-    function get_options( &$arr, $usevalue=false, $testval=false, $restrict='all', $add_empty=false) {
+    function get_options( &$arr, $usevalue=false, $testval=false, $restrict='all', $add_empty=false, $do_not_select=false) {
         $selectedused = false;
-        if( isset($arr) && is_array($arr) ) {
+        $select_string = ( $do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
+
+        if (isset($arr) && is_array($arr)) {
             foreach ( $arr as $k => $v ) {
                 if( $usevalue ) $k = $v;    // special parameter to use values instead of keys
                 $select_val = $testval ? $v : $k;
-                $selected   = $this->if_selected($select_val, ' selected class="sel_on"');
+                $selected = $this->if_selected($select_val, $select_string);
                 if ($selected != '') {
                     $selectedused = true;
                     $already_selected[(string)$select_val] = true;  // flag
@@ -1022,14 +1036,14 @@ class aainputfield {
     * Prints html tag <select multiple .. to 2-column table
     * for use within <form> and <table> tag
     */
-    function inputMultiSelect($size=6, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
+    function inputMultiSelect($rows=6, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $size                 = get_if($size, 6);
+        $rows                 = get_if($rows, 6);
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
 
         $this->field_name('plus');
-        $ret ="<select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";
+        $ret ="<select name=\"$name\" size=\"$rows\" multiple".getTriggers("select",$name).">";
         $ret .= $this->get_options( $this->const_arr, false, false, 'all', !$this->required);
         $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
@@ -1044,15 +1058,30 @@ class aainputfield {
     /**
     * Prints html tag <select multiple .. and "Add" relation button
     * to 2-column table for use within <form> and <table> tag
+    * @param $mode    - which buttons to show in related item window:
+    *                     'A'dd, add 'M'utual, 'B'ackward
+    *        $actions - which action to show:
+    *                     'M'ove (up and down),
+    *                     'D'elete relation,
+    *                     add 'R'elation,
+    *                     add 'N'ew related item
+    *                     'E'dit related item
+    *                     'A'dd text field (you can type the value - see mft)
+    *                     'C'hange the value (by typing - see mft input type)
     */
-    function inputRelation($size=6, $sid='', $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
+    function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $size                 = get_if($size, 6);
+        $rows                 = get_if($rows, 6);
+        // backward compatibility - 0 means "not show move buttons", 1 - "show"
+        $actions              = get_if($actions, 'DR');
+        $actions              = str_replace(array('0','1'), array('DR','MDR'),(string)$actions);
+        $movebuttons          = (strpos($actions,'M') !== false);
+
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
 
         $this->field_name('plus');
-        $ret ="<select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";
-        $ret .= $this->get_options( $this->const_arr, false, false, 'all', false);
+        $ret ="<select name=\"$name\" size=\"$rows\" multiple".getTriggers("select",$name).">";
+        $ret .= $this->get_options( $this->const_arr, false, false, 'all', false, true);
         $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
         while( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
@@ -1061,7 +1090,8 @@ class aainputfield {
         $ret .= "</select>";
 
         $this->echoo('<table border="0" cellspacing="0"><tr>');
-        if ($movebuttons) { $this->echoo("\n <td rowspan=\"2\">");
+        if ($movebuttons) {
+            $this->echoo("\n <td rowspan=\"2\">");
         } else {
             $this->echoo("\n <td>");
         }
@@ -1077,10 +1107,26 @@ class aainputfield {
              " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
              $this->echoo("</td>");
         }
-        $this->echoo("</tr>\n <tr><td valign=\"bottom\"><center>
-          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>\n");
-        $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' size='250' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");
-        $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>\n");
+        $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">\n");
+        if (strpos($actions,'R') !== false) {
+            $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>\n");
+        }
+        if (strpos($actions,'N') !== false) {
+            $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");
+        }
+        if (strpos($actions,'E') !== false) {
+            $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Edit") ."' onclick=\"EditItemInPopup('". Inputform_url(false, null, $sid, 'close_dialog', null, $name) .  "', document.inputform['".$name."']);\">\n");
+        }
+        if (strpos($actions,'D') !== false) {
+            $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
+        }
+        // used mainly by mft
+        if (strpos($actions,'A') !== false) {
+            $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"sb_AddValue(document.inputform['".$name."'], '"._m('Enter the value')."');\">\n");
+        }
+        if (strpos($actions,'C') !== false) {
+            $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Change") ."' onclick=\"sb_EditValue(document.inputform['".$name."'], '"._m('Enter the value')."');\">\n");
+        }
         $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
         $this->echoo("</td></tr></table>\n");
         $this->helps('plus');
@@ -1091,9 +1137,9 @@ class aainputfield {
     * Prints html tag <select multiple .. and "Add" relation button
     * to 2-column table for use within <form> and <table> tag
     */
-    function inputRelation2($size=6, $sid='', $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
+    function inputRelation2($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $size                 = get_if($size, 6);
+        $rows                 = get_if($rows, 6);
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
 
         $this->field_name('plus');
@@ -1129,7 +1175,7 @@ class aainputfield {
             ";
             $this->echovar( $var_code, 'buttons' );
         } else {
-            $ret ="<select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";
+            $ret ="<select name=\"$name\" size=\"$rows\" multiple".getTriggers("select",$name).">";
             $ret .= $this->get_options( $this->const_arr, false, false, 'all', false);
             $option_no = count($this->const_arr) + ($this->required ? 0:1);
             // add blank rows if asked for
@@ -1155,10 +1201,10 @@ class aainputfield {
                  " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
                  $this->echoo("</td>");
             }
-            $this->echoo("</tr>\n <tr><td valign=\"bottom\"><center>
+            $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"center\">
               <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
               &nbsp;&nbsp;");
-            $this->echoo("<input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>\n");
+            $this->echoo("<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
             $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
             $this->echoo("</td></tr></table>\n");
         }
@@ -1169,12 +1215,12 @@ class aainputfield {
     /**
     *  shows boxes allowing to choose constant in a hiearchical way
     */
-    function hierarchicalConstant($group_id, $levelCount, $boxWidth, $size, $horizontal=0, $firstSelect=0, $levelNames="") {
+    function hierarchicalConstant($group_id, $levelCount, $boxWidth, $rows, $horizontal=0, $firstSelect=0, $levelNames="") {
         static $hcid = 0;
         $hcid++;   // this is hc identifier
         list($name,$val,$add) = $this->prepareVars('multi');
         $levelCount = get_if( $levelCount, 3 );
-        $size       = get_if( $size      , 5 );
+        $rows       = get_if( $rows      , 5 );
 
         $this->field_name('plus');
         $this->echoo( getHierConstInitJavaScript($hcid, $group_id, $levelCount, "inputform", false) );
@@ -1186,7 +1232,7 @@ class aainputfield {
             <TABLE border=0 cellpadding=2 width='100%'><TR>
             <TD align=center><b><span class=redtext>Selected:<span></b><BR><BR><INPUT TYPE=BUTTON VALUE='Delete' onclick='hcDelete(\"$name\")'></TD>
             <TD>");
-        $out = "<SELECT name='$name' MULTIPLE size=$size".getTriggers("select",$name).">";
+        $out = "<SELECT name='$name' MULTIPLE size=$rows".getTriggers("select",$name).">";
             if (is_array($val)) {
                 $constants_names = GetConstants($group_id);
                 foreach( $val as $v) {
@@ -1291,14 +1337,10 @@ class aainputfield {
         $this->helps('plus');
     }
 
-    function related($size, $sid, $mode, $design, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
-        $this->inputRelation($size, $sid, MAX_RELATED_COUNT, $mode, $design, $movebuttons, $whichitems, $conds, $condsrw);
-    }
-
     /**
     * Prints two boxes for multiple selection for use within <form> and <table> tag
     */
-    function twoBox($size, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
+    function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
@@ -1312,7 +1354,7 @@ class aainputfield {
           <tr align=left><td align='CENTER' valign='TOP'>");
 
         $offername = str_replace("[]", "", $name). '_1';
-        $out  = "<select name=\"".$offername."\" size=$size ".getTriggers("select",$name).">\n";
+        $out  = "<select name=\"".$offername."\" size=$rows ".getTriggers("select",$name).">\n";
         $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), AA_WIDTHTOR );
         $out  .= '</select>';
         $this->echovar( $out, 'unselected' );
@@ -1322,8 +1364,8 @@ class aainputfield {
               <br><br>&nbsp;&nbsp;<input type=\"button\" VALUE=\"  <<  \" onClick = \"MoveSelected(document.inputform['".$name."'],document.inputform.".$offername.")\" align=center>&nbsp;&nbsp;</td>
           <td align=\"CENTER\" valign=\"TOP\">");
 
-        $out = "<select multiple name=\"".$name."\" size=$size  ".getTriggers("select",$name).">";
-        $out .= get_if( $this->get_options( $this->const_arr, false, false, 'selected'), AA_WIDTHTOR );
+        $out = "<select multiple name=\"".$name."\" size=$rows  ".getTriggers("select",$name).">";
+        $out .= get_if( $this->get_options( $this->const_arr, false, false, 'selected', false, true), AA_WIDTHTOR );
         $out  .= '</select>';
         $this->echovar( $out, 'selected' );
 
@@ -1477,20 +1519,20 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", 
 /** Prints html tag <select multiple .. to 2-column table
  *  for use within <form> and <table> tag
  */
-function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5, $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
+function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
     $input = new aainputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     if ( $relation ) {
-        $input->inputRelation($size, $relation, $minrows, $mode, $design);
+        $input->inputRelation($rows, $relation, $minrows, $mode, $design);
     } else {
-        $input->inputMultiSelect($size);
+        $input->inputMultiSelect($rows);
     }
     $input->print_result();
 }
 
 /** Print boxes allowing to choose constant in a hiearchical way */
-function FrmHierarchicalConstant($name, $txt, $value, $group_id, $levelCount, $boxWidth, $size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") {
+function FrmHierarchicalConstant($name, $txt, $value, $group_id, $levelCount, $boxWidth, $rows, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") {
     $input = new aainputfield($value, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->hierarchicalConstant($group_id, $levelCount, $boxWidth, $size, $horizontal, $firstSelect, $levelNames);
+    $input->hierarchicalConstant($group_id, $levelCount, $boxWidth, $rows, $horizontal, $firstSelect, $levelNames);
     $input->print_result();
 }
 
@@ -1536,17 +1578,17 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
     $input->print_result();
 }
 
-function FrmRelated($name, $txt, $arr, $size, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="") {
+function FrmRelated($name, $txt, $arr, $rows, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="") {
     $input = new aainputfield('', $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    $input->inputRelation($size, $relation, $minrows, $mode, $design);
+    $input->inputRelation($rows, $relation, $minrows, $mode, $design);
     $input->print_result();
 }
 
 /** Prints two boxes for multiple selection for use within <form> and <table> */
-function FrmTwoBox($name, $txt, $arr, $val, $size, $selected, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
+function FrmTwoBox($name, $txt, $arr, $val, $rows, $selected, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
     // $val is not used - there is only from historical reasons and should be removed accross files
     $input = new aainputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    $input->twoBox($size,$wi2_offer,$wi2_selected);
+    $input->twoBox($rows,$wi2_offer,$wi2_selected);
     $input->print_result();
 }
 
@@ -2089,6 +2131,10 @@ function GetFormJavascript($show_func_used, $js_proove_fields) {
     // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
 
     $retval .= getFrmJavascript('
+                // global variables used by multi-value selectboxes
+                var maxcount = '. MAX_RELATED_COUNT .';
+                var relmessage = "'._m("There are too many items.") .'";
+
                 // global variables used in HTMLArea
                 var _editor_url = "'.get_aa_url("misc/htmlarea/", false).'";
                 var long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", false).'";

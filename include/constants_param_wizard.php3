@@ -263,6 +263,26 @@ array("name"=>_m("Text Field"),
         "desc"=>_m("width of the field in characters (size parameter)"),
         "type"=>"INT",
         "example"=>"30")));
+
+$INPUT_TYPES["items"]["mfl"]=
+array("name"=>_m("Multiple Text Field"),
+    "desc"=>_m("Text field input type which allows you to enter more than one (multiple) values into one field (just like if you select multiple values from Multiple Selectbox). The new values are filled by popup box."),
+    "params"=>array(
+        array("name"=>_m("Show Actions"),
+        "desc"=>_m("Which action buttons to show:
+                       <br>M - Move (up and down)
+                       <br>D - Delete value,
+                       <br>A - Add new value
+                       <br>C - Change the value
+                       <br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."),
+        "type"=>"STR",
+        "example"=>"MDAC"),
+        array("name"=>_m("Row count"),
+        "desc"=>_m("Number of rows (values) displayed at once"),
+        "type"=>"INT",
+        "example"=>"6")
+        ));
+
 $INPUT_TYPES["items"]["sel"]=
 array("name"=>_m("Select Box"),
     "desc"=>_m("A selectbox field with a values list.<br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice, usually with the f_v alias function)"),
@@ -513,7 +533,11 @@ array("name"=>_m("Related Item Window"),
         "type"=>"INT",
         "example"=>"15"),
         array("name"=>_m("Buttons to show"),
-        "desc"=>_m("Defines, which buttons to show in item selection:<br>A - 'Add'<br>M - 'Add Mutual<br>B - 'Backward'.<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."),
+        "desc"=>_m("Defines, which buttons to show in item selection:
+                       <br>A - Add
+                       <br>M - add Mutual
+                       <br>B - Backward
+                       <br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."),
         "type"=>"STR",
         "example"=>_m("AMB")),
         array("name"=>_m("Admin design"),
@@ -524,10 +548,15 @@ array("name"=>_m("Related Item Window"),
         "desc"=>_m("Selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."),
         "type"=>"STR",
         "example"=>_m("AMB")),
-        array("name"=>_m("Show move buttons"),
-        "desc"=>_m("Show buttons for moving items up and down"),
-        "type"=>"BOOL",
-        "example"=>"1"),
+        array("name"=>_m("Show Actions"),
+        "desc"=>_m("Which action buttons to show:
+                       <br>M - Move (up and down)
+                       <br>D - Delete relation,
+                       <br>R - add Relation to existing item
+                       <br>N - insert new item in related slice and make it related
+                       <br>Use 'DR' (default), 'NMDR', just 'N' or any other combination. The order of letters N,M,D,R is not important."),
+        "type"=>"STR",
+        "example"=>"MDR"),
         array("name"=>_m("Show headlines from selected bins"),
         "desc"=>_m("To show headlines in related window from selected bins.<br>".
                    "Use this values for bins:<br>".

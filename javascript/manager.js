@@ -224,27 +224,6 @@ function ReplaceFirstChar( str, ch ) {
     return   ch + str.substring(1,str.length);
 }
 
-function AddSelectOption( starget, stext, svalue) {
-    for( i=0; i < maxcount; i++ ) {
-        if( eval(starget).options[i].value == 'wIdThTor' ) break;
-    }
-    if( i < maxcount ) {
-        eval(starget).options[i].text = stext;
-        eval(starget).options[i].value = svalue;
-    } else {
-        alert(relmessage);
-    }
-}
-
-function SelectRelations(var_id, tag, prefix, taggedid, headline) {
-/* new version ...
-    var var_container = 'relation'+var_id;
-    var content       = GetContent('dynamic'+var_id, window.opener.document);
-    SetContent(var_container,content+'<tr><td><img src="up.gif" width="16" height="16"><img src="down.gif" width="16" height="16"></td><td>'+prefix + headline+'<input type="hidden" name="'+var_id+'[]" value="'+taggedid+'"></td><td>2</td></tr>',window.opener.document);
-    */
-    AddSelectOption( 'window.opener.document.inputform.elements["'+var_id+'"]', prefix + headline, taggedid);
-}
-
 function SetCookie(name, value) {
    var expires = new Date();
    expires.setTime (expires.getTime() + (1000 * 60 * 60 * 24 * 1)); // a day

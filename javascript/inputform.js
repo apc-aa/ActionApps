@@ -28,7 +28,7 @@ function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, relwi
     relatedwindow = open( relwind_url + "&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design + "&frombins=" + frombins + "&showcondsro=" + conds + "&showcondsrw=" + condsrw, "relatedwindow", "scrollbars=1, resizable=1, width=500");
 }
 
-function removeItem(selectbox) {
+function sb_RemoveItem(selectbox) {
     s=selectbox.selectedIndex;
     for (i=s; i<selectbox.length; i++) {
         if (selectbox.options[i].value != "wIdThTor") {
@@ -36,6 +36,76 @@ function removeItem(selectbox) {
             selectbox.options[i].text  = selectbox.options[i+1].text;
         }
     }
+}
+
+function sb_GetSelectedValue(selectbox) {
+    return selectbox.options[selectbox.selectedIndex].value;
+}
+
+function sb_SetValue(selectbox, index, text, value) {
+    if (index=='new') {
+        // find "empty" row
+        for( i=0; i < maxcount; i++ ) { // maxcount is global as well as relmessage
+            if( selectbox.options[i].value == 'wIdThTor' ) break;
+        }
+        if ( i >= maxcount ) {
+            alert(relmessage);
+            return;
+        }
+        index = i;
+    }
+    if ((text != null) && (value != null)) {
+        if (value == '') {
+            value = 'wIdThTor';
+        }
+        selectbox.options[index].value = value;
+        selectbox.options[index].text  = text;
+    }
+}
+
+function sb_UpdateValue(selectbox, old_value, text, value) {
+    // find row to update (contains old_value)
+    for ( i=0; i < selectbox.length; i++ ) {
+        if ( selectbox.options[i].value == old_value )
+        {
+            sb_SetValue(selectbox, i, text, value);
+            break;
+        }
+    }
+}
+
+function sb_AddValue(selectbox, text) {
+    new_val = prompt(text, '');
+    if (new_val != null) {
+        sb_SetValue(selectbox, 'new', new_val, new_val);
+    }
+}
+
+function sb_EditValue(selectbox, text) {
+    val     = sb_GetSelectedValue(selectbox);
+    // wIdThTor is special AA constant, which behaves as empty string, but the
+    // width of selectbox is not zero for it
+    new_val = prompt(text, (val=='wIdThTor') ? '' : val);
+    if (new_val != null) {
+        sb_SetValue(selectbox, selectbox.selectedIndex, new_val, new_val);
+    }
+}
+
+function EditItemInPopup(inputformurl, selectbox) {
+    OpenWindowTop(inputformurl+'&id='+sb_GetSelectedValue(selectbox));
+}
+
+function SelectRelations(var_id, tag, prefix, taggedid, headline) {
+/* new version ...
+    var var_container = 'relation'+var_id;
+    var content       = GetContent('dynamic'+var_id, window.opener.document);
+    SetContent(var_container,content+'<tr><td><img src="up.gif" width="16" height="16"><img src="down.gif" width="16" height="16"></td><td>'+prefix + headline+'<input type="hidden" name="'+var_id+'[]" value="'+taggedid+'"></td><td>2</td></tr>',window.opener.document);
+    */
+    sb_SetValue( window.opener.document.inputform.elements[var_id], 'new', prefix + headline, taggedid);
+}
+
+function UpdateRelations(var_id, tag, prefix, taggedid, headline) {
+    sb_UpdateValue( window.opener.document.inputform.elements[var_id], taggedid, prefix + headline, taggedid);
 }
 
 function moveItem(selectbox, type) {
