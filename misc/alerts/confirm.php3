@@ -34,9 +34,14 @@ if ($id) {
     $db->query ("SELECT confirm,email FROM alerts_user WHERE confirm='$id'");
     $db->next_record();
     if ($db->num_rows()) { 
-        if ($db->query ("UPDATE alerts_user SET confirm = '' WHERE confirm='$id'"))
-            go_url ("index.php3?Msg="._m("Congratulations. Your subscription is finished.")."&lang=$lang&show_email=".$db->f("email"));
+        $db->query ("UPDATE alerts_user SET confirm = '' WHERE confirm='$id'");
+        $msg = _m("Congratulations. Your subscription is finished.");        
+        go_url ("index.php3?Msg=$msg&lang=$lang&show_email=".$db->f("email"));
     }   
+    else {
+        $msg = _m("Your code is not valid any more. Please subscribe again.");
+        go_url ("subscribe.php3?Msg=$msg&lang=$lang");
+    }
 }
    
 AlertsPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

@@ -71,7 +71,11 @@ function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname
     $db = new DB_AA;
     $varset = new CVarset();
 
-    $confirm = gensalt(20);
+    do {
+        $confirm = gensalt(4);
+        $db->query ("SELECT * FROM alerts_user WHERE confirm='$confirm'");
+    } while ($db->num_rows());
+    
     $varset->add("email", "quoted", $email);
     $varset->add("confirm", "text", $confirm);
 
@@ -81,6 +85,7 @@ function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname
         $varset->add("firstname", "quoted", $firstname);
         $varset->add("lastname", "quoted", $lastname);
         $varset->add("lang", "text", $lang);
+        $varset->add("sessiontime", "number", time());
         
         $SQL = "INSERT INTO alerts_user ".$varset->makeINSERT();
         if (!$db->query ($SQL)) return _m("ERROR adding user to alerts_user");
@@ -92,7 +97,7 @@ function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname
     }        
 
     $subject = _m("Welcome to APC e-mail alerts");   
-    $url = AA_INSTAL_URL."misc/alerts/confirm.php3?id=$confirm&lang=$lang";
+    $url = AA_INSTAL_URL."ac.php3?id=$confirm&l=$lang";
     $message = _m("<p>Hello,</p>"
         ."<p>please confirm your subscription by clicking on URL:</p>"
         ."%1"
@@ -106,7 +111,8 @@ function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname
     $headers = alerts_email_headers ($db->Record, "");
     $to  = email_address ($firstname." ".$lastname, $email);
 
-    mail_html_text ($to, $subject, $message, $headers, CHARSET, 0); 
+    global $LANGUAGE_CHARSETS;
+    mail_html_text ($to, $subject, $message, $headers, $LANGUAGE_CHARSETS[get_mgettext_lang()], 0); 
     return "";
 }
 
@@ -363,11 +369,17 @@ function execute_edit_collections ($add_showme, $user=false)
 function copy_user_collection ($userid, $cid)
 {
     global $db;
+    $varset = new CVarset();
     $db->query ("SELECT * FROM alerts_collection WHERE id=".$cid." AND showme=1");
     if ($db->num_rows() == 1) {
         $db->next_record();
-        $db->tquery ("INSERT INTO alerts_collection (description, showme)
-                     VALUES ('".$db->f("description")."', 0);");
+        $varset->set("description",$db->f("description"),"text");        
+        $varset->set("mail_from", $db->f("mail_from"),"text");
+        $varset->set("mail_reply_to", $db->f("mail_reply_to"),"text");
+        $varset->set("mail_errors_to", $db->f("mail_errors_to"),"text");
+        $varset->set("mail_sender", $db->f("mail_sender"),"text");
+        $varset->set("showme", 0, "number");
+        $db->tquery ("INSERT INTO alerts_collection ".$varset->makeINSERT());
         $newcid = get_last_insert_id ($db, "alerts_collection");
        
         CopyTableRows ("alerts_collection_filter", "collectionid = $cid", 

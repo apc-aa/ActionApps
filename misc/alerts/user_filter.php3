@@ -48,7 +48,7 @@ function process_data ()
     global $change_user, $chuser, $change_password, $Err, $howoften, $filter, $db, $user, $addpredefcol, $add,
         $alerts_session, $lang;
     $howoften_options = get_howoften_options();
-    
+
     if ($change_user) {
         $db->query ("UPDATE alerts_user 
             SET firstname='$chuser[firstname]', lastname='$chuser[lastname]', lang='$chuser[lang]'
@@ -102,15 +102,21 @@ process_data();
    ---------------------------------------------------------------------------------------- */      
 
 AlertsPageBegin();   
+
+function get_form () {
+    global $form_counter, $lang, $alerts_session, $ss;
+    $form_counter ++;
+    return "<FORM NAME=f$form_counter ACTION='user_filter.php3' METHOD=post>
+        <input type=hidden name='lang' value='$lang'>
+        <input type=hidden name='alerts_session' value='$alerts_session'>
+        <input type=hidden name='ss' value='$ss'>\n";
+}
    
 echo "<TITLE>". _m("AA Alerts") ."</TITLE>
 </HEAD>
-<BODY>
-    <FORM NAME=login ACTION='user_filter.php3' METHOD=post>
-    <input type=hidden name='lang' value='$lang'>
-    <input type=hidden name='alerts_session' value='$alerts_session'>
-    <input type=hidden name='ss' value='$ss'>
-    <table width='540' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>$ac_trstart<TD class=tabtxt>";
+<BODY>";
+echo get_form();
+echo "<table width='540' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>$ac_trstart<TD class=tabtxt>";
     
 echo $Msg;
 PrintArray ($Err);
@@ -151,6 +157,7 @@ $ac_trstart<TD>
    <p align=center><INPUT TYPE=SUBMIT NAME='change_password' VALUE='"._m("Change password")."'></p>
 </TD>$ac_trend
 </TABLE>
+</FORM>
 <br>";
 
 /* -------------------------------------------------------------------------------    
@@ -210,8 +217,10 @@ $SQL = "SELECT C.id AS cid, C.description AS cdesc,
     
     ORDER BY C.description, C.id, CF.myindex";
 
+echo get_form();
 print_js_options_filters();
 print_edit_collections ($SQL, "user_filter.php3", true);
+echo "</FORM>";
 
 // -------------------------------------------------------------------------------    
 // subscribed digests     
@@ -225,6 +234,7 @@ $table_header = "
 $howoften_options = get_howoften_options ();
 $howoften_options["0"] = _m("unsubscribe");
 
+echo get_form();
 reset ($digests);
 if ($show_filters)
 while (list (,$digest) = each ($digests)) {
@@ -245,10 +255,12 @@ while (list (,$digest) = each ($digests)) {
 }
 
 unset ($howoften_options["0"]);
+echo "</FORM>";
 
 // -------------------------------------------------------------------------------    
 
 // Predefined collections
+echo get_form();
 echo "$ac_trstart<td colspan=2>&nbsp;</td>$ac_trend";
 echo "$ac_trstart<td colspan=2><h3>"._m("Add")."</h3></td>$ac_trend";
 
@@ -270,11 +282,13 @@ if ($db->num_rows()) {
     echo "&nbsp;&nbsp;<INPUT TYPE=SUBMIT VALUE='"._m("Add")."'>";
     echo "</TD>$ac_trend"; 
 }
+echo "</FORM>";
 
 // -------------------------------------------------------------------------------    
 
 // Predefined filters
 
+echo get_form();
 $filters = array ();
 reset ($digests);
 while (list ($slice_id,$digest) = each ($digests)) {    
@@ -296,11 +310,13 @@ if (count ($filters)) {
 }
 
 echo "$ac_trstart<td colspan=2>&nbsp;</td>$ac_trend";
+echo "</FORM>";
 
 // -------------------------------------------------------------------------------    
 
 // New collection
 
+echo get_form();
 echo "$ac_trstart<td colspan=2><hr></td>$ac_trend";
 print_add_collection (true);
 echo "$ac_trstart<td colspan=2><hr></td>$ac_trend";

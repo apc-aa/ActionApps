@@ -31,7 +31,7 @@ require "./lang.php3";
 
 if ($email) {
     alerts_subscribe ($email, $lang, $password, $firstname, $lastname);
-    go_url ("index.php3?Msg="._m("An email with subscription informations was sent to you."));
+    go_url ("index.php3?lang=$lang&ss=$ss&Msg="._m("An email with subscription informations was sent to you."));
 }
 
 AlertsPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -47,7 +47,7 @@ echo "<TITLE>". _m("Subscribe to AA Alerts") ."</TITLE>
     PrintArray ($Err);
 
     echo "
-    <FORM NAME=login ACTION='subscribe.php3?ss=$ss' METHOD=post>
+    <FORM NAME=login ACTION='subscribe.php3?lang=$lang&ss=$ss' METHOD=post>
        <p align=left><b>"._m("We will send an e-mail message to the address given. Follow the instructions in it to complete your subscription.")."</b></p>
        <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
          <TR><TD class=tabtxt><B>"._m("E-mail").":</B></TD>
