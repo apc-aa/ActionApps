@@ -1196,4 +1196,18 @@ function join_escaped ($pattern, $strings, $escape_pattern)
     }
     return $retval;
 }
+
+function stripslashes_magic ($str)
+{
+  if( get_magic_quotes_gpc() )
+    return stripslashes ($str);
+  else return $str;
+}    
+
+function addslashes_magic ($str)
+{
+  if( get_magic_quotes_gpc() )
+    return $str;
+  else return addslashes ($str);
+}    
 ?>
