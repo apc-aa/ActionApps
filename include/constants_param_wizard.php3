@@ -406,7 +406,12 @@ $FIELD_FUNCTIONS = array ("name"=>L_PARAM_WIZARD_FUNC_NAME,
 		"type"=>"STR",
 		"example"=>L_PARAM_WIZARD_FUNC_F_S_PAR0_EXAMPLE))),
 "f_t"=>array("name"=>L_PARAM_WIZARD_FUNC_F_T_NAME,
-	"desc"=>L_PARAM_WIZARD_FUNC_F_T_DESC),
+	"desc"=>L_PARAM_WIZARD_FUNC_F_T_DESC,
+	"params"=>array(
+		array("name"=>L_PARAM_WIZARD_FUNC_F_T_PAR0_NAME,
+		"desc"=>L_PARAM_WIZARD_FUNC_F_T_PAR0_DESC,
+		"type"=>"STR",
+		"example"=>L_PARAM_WIZARD_FUNC_F_T_PAR0_EXAMPLE))),
 "f_x"=>array("name"=>L_PARAM_WIZARD_FUNC_F_X_NAME,
 	"desc"=>L_PARAM_WIZARD_FUNC_F_X_DESC,
 	"params"=>array(
