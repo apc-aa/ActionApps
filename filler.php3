@@ -55,7 +55,6 @@ http://www.apc.org/
 //$GLOBALS[debug]=0; $GLOBALS[errcheck] =1;
 
 $debugfill=$GLOBALS[debugfill];
-
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -119,20 +118,27 @@ function UseShowResult($txt,$url) {
  * @param string $txt error message to print
  */
 function SendErrorPage($txt) {
-    if( !$GLOBALS["err_url"] ) {
-        echo HtmlPageBegin("");
-        echo "</head><body>";
-        if( is_array( $txt ) ) {
-            PrintArray($txt);
-        } else echo $txt;
-        echo "</body></html>";
-        exit;
+  if( !$GLOBALS["err_url"] ) {
+    if ($GLOBALS[debugfill]) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$GLOBALS["err_url"] ); 
+    echo HtmlPageBegin("");
+    echo "</head><body>";
+    if( is_array( $txt ) ) {
+      PrintArray($txt);
+    } else echo $txt;
+    echo "</body></html>";
+    exit;
+  }
+
+  else {
+    if (! $GLOBALS["use_post2shtml"]) {
+      $posturl = con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000));
+      if ($GLOBALS[debugfill]) huhl("Going to post2shtml posturl=",$posturl);
+      go_url($posturl);
+    } else {
+        if ($GLOBALS[debugfill]) huhl("Show result with url=",$GLOBALS["err_url"], " txt=",$txt);
+        UseShowResult ($txt,$GLOBALS["err_url"]);
     }
-
-    else if (! $GLOBALS["use_post2shtml"])
-       go_url( con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000)));
-
-    else UseShowResult ($txt,$GLOBALS["err_url"]);
+  } 
 }
 
 /**
@@ -151,6 +157,8 @@ function SendOkPage($txt) {
     else UseShowResult($txt,$GLOBALS["ok_url"]);
 }
 
+#$debugfill=1;
+if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER"); 
 
 # init used objects
 #if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
@@ -160,7 +168,6 @@ $p_slice_id = q_pack_id($slice_id);
 $slice_info = GetSliceInfo($slice_id);
 
 if( !$slice_info ) SendErrorPage(array ("fatal"=>_m("Bad slice ID")));
-
 // if you want to edit an item from an anonymous form, prepare its ID into
 // the my_item_id hidden field
 if (!$my_item_id) {
@@ -171,6 +178,7 @@ else {
     $db->query ("SELECT id FROM item WHERE id='".q_pack_id($my_item_id)."'");
     $insert = ! $db->next_record();
 }
+if ($debugfill) huhl("Debugfill insert=",$insert);
 
 ValidateContent4Id ($err_valid, $slice_id, $insert ? "insert" : "update", $my_item_id,
     ! $notvalidate, $notshown);
@@ -205,14 +213,17 @@ if (! $insert && is_array ($notshown)) {
 
 // put the item into the right bin
 $bin2fill = $slice_info["permit_anonymous_post"];
+if ($debugfill) huhl("bin2fill=",$bin2fill, " force_status_code=",$force_status_code);
 if( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
 // you may force to put the item into a higher bin (active < hold < trash)
 $bin2fill = max ($bin2fill, $force_status_code);
-$content4id["status_code....."][0]['value'] = $bin2fill;
+// Allow setting status code in form, but only below force or bin2fill
+$content4id["status_code....."][0]['value'] = max($bin2fill,$content4id["status_code....."][0]['value'] );
 
 if ($insert) {
     $content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
 } else if (!is_array ($result)) {
+  if ($debugfill) huhl("Perms=",$slice_info["permit_anonymous_edit"]);
     // Proove we are permitted to update this item.
     switch ($slice_info["permit_anonymous_edit"]) {
     case ANONYMOUS_EDIT_NOT_ALLOWED: $permok = false; break;
@@ -230,14 +241,24 @@ if ($insert) {
         $permok = true;
         break;
     case ANONYMOUS_EDIT_PASSWORD:
+      if ($debugfill) huhl("Checking Password"); 
         $permok = false;
         reset ($fields);
         while (list ($fid) = each($fields))
             if (substr ($fid,0,14) == "password......") {
-                $password = $content4id[$fid][0]['value'];
-                if (!$text_password && $password)
-                    $password = crypt($password, 'xx');
-                $permok = ($oldcontent4id[$fid][0]['value'] == $password);
+              $password = $content4id[$fid][0]['value'];
+              $crypt_password = crypt($password, 'xx');
+              $old_password = $oldcontent4id[$fid][0]['value'];
+              if ($debugfill) huhl("Checking password field=$fid = new=$password old=$old_password text_password=$text_password crypt=$crypt_password");
+                $permok = (
+                           // Old check, based on text_password flag
+                  ($text_password 
+                   ? ($password == $old_password)
+                   : ($crypt_password == $old_password))
+                  // Heuristic based on if old looks encrypted
+                  || ( (substr($old_password,0,2) != 'xx') 
+                       && ($old_password == $password)));
+                if ($debugfill) huhl("permok=$permok");
                 break;
             }
         break;
@@ -253,14 +274,14 @@ if ($debugfill) huhl("result=",$result);
 // for fillform.php3 to interpret and display
 
 
-#if ($debugfill) huhl("content4id=",$content4id);
 if ($debugfill) huhl("Going to Store Item");
+if ($debugfill) huhl("content4id=",$content4id);
 if( is_array ($result))
     SendErrorPage( $result );
  # update database
 else if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert,
           true, true, $oldcontent4id )) { # insert, invalidatecache, feed
-    if ($debugfill) huhl("Filler: sending error");
+         if ($debugfill) huhl("Filler: sending error");
     SendErrorPage ( array ("store" => _m("Some error in store item.")));
   }
   else {

@@ -118,6 +118,19 @@ function editslicefields($sid) {
     return "<a href=\"se_fields.php3?AA_CP_Session=$AA_CP_Session&change_id=$sid\"> Edit fields </a>";
 }
 
+function url_slicefieldcopy($field) {
+    global $AA_CP_Session;
+    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid&slicefieldcopy=$field\"> -> </a>";
+}
+
+function url_copyfield($field) {
+    global $AA_CP_Session;
+    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid&copyfield=$field\"> Copy Field </a>";
+}
+function url_showfield($field) {
+    global $AA_CP_Session;
+    return "not shown <a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid&showfield=$field\"> (show it) </a>";
+}
 function comparewith($sid) {
     global $AA_CP_Session;
     return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid\"> Compare </a>";
@@ -130,11 +143,49 @@ function mapslice() {
     if (!$nearest) $nearest = $nr[$slice_id];
     if ($nearest) {
         $sno = $sao[$nearest];
-        print("<a name=\"$sid\"></a>$sid: '" . $so->name() . "' closest to <a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'<br>".editslicefields($sid));
+        print("<a name=\"$sid\"></a><font color=purple>$sid: '" . $so->name() . "'</font> closest to <font color=red><a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'</font><br>".editslicefields($sid));
+        // Here is where we do any actions that change things, before doing
+        // a comparisom
+        if ($GLOBALS["copyfield"]) do_copyfield();
+        if ($GLOBALS["showfield"]) do_showfield();
+        // and now the comparisom
         compareSlices($so,$sno,1);
     } else {
         print "summarize.php3 needs configuring for closest slice to $sid";
     }
+}
+
+function copyslicefield($new) {
+  global $slice_id,$nearest,$slicefieldcopy;
+  $db = getDB();
+  $SQL = "UPDATE slice SET ".$slicefieldcopy."='".quote($new)."' WHERE id='".q_pack_id($slice_id)."'";
+  $db -> tquery($SQL);
+  freeDB($db);
+}
+
+function do_showfield() {
+  global $showfield,$slice_id,$nearest;
+  $db = getDB();
+  $GLOBALS[debug]=1;
+  $SQL = "UPDATE field SET input_show=1 WHERE (id='".$showfield."') AND (slice_id='".q_pack_id($slice_id)."')";
+  $db -> tquery($SQL);
+  $GLOBALS[debug]=0;
+  freeDB($db);
+}
+
+function do_copyfield() {
+  global $copyfield,$slice_id,$nearest;
+  $db = getDB();
+  $SQL = "CREATE TEMPORARY TABLE temp1 SELECT * FROM field WHERE (id='".$copyfield."') AND (slice_id='".q_pack_id($nearest)."')";
+  $db -> tquery($SQL);
+  $SQL = "UPDATE temp1 SET slice_id = '".q_pack_id($slice_id)."'";
+  $db -> tquery($SQL);
+  $SQL = "INSERT INTO field SELECT * FROM temp1";
+  $db -> tquery($SQL);
+  $SQL = "DROP TABLE temp1";
+  $db -> tquery($SQL);
+  print "<P>Copied field $copyfield from $nearest</P>";
+  freeDB($db);
 }
 
 function mapslices() {
@@ -193,7 +244,7 @@ function compareSlices($st,$sm,$pr) {
     reset($fm[0]);
     while (list($fmn,$fma) = each($fm[0])) {
         if (! $ft[0][$fmn]) {
-            if ($pr) print("<li>Missing field $fmn</li>\n");
+            if ($pr) print("<li>Missing field $fmn".url_copyfield($fmn)."\n");
             $score += $scoreAddOrMiss;
         }
     }
@@ -206,7 +257,7 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
     $score = 0;
     $opened = 0;
     if ((($ft["input_show"] == 0) && ($ft["required"] == 0)) && (($fm["input_show"] == 1) || ($fm["required"] == 1))) {
-        if ($pr) print("<li>$pre field: $fn : " . (($fm["input_show"] == 1) ? "not shown " : "") . (($fm["required"] == 1) ? "not required " : "")) . "</li>\n" ;
+        if ($pr) print("<li>$pre field: $fn : " . (($fm["input_show"] == 1) ? url_showfield($fn) : "") . (($fm["required"] == 1) ? "not required " : "")) . "</li>\n" ;
         $score += $scoreUnshown;
     } else {
       $fixer="";
@@ -274,11 +325,17 @@ function compareSliceTableFields($st,$sm,$pr) {
         if ($ftv == $fm[$ftk]) continue; // They match
         if (!$opened && $pr) { print("<li>slice fields differ (".editsliceinfo($ft)."</a>)<ul>\n"); $opened = 1; }
         if($pr) {
+          if ($GLOBALS["slicefieldcopy"] == $ftk) {
+            copyslicefield($fm[$ftk]);
+            print("<li>$ftk copied</li>\n");
+          } else {
             print("<li>$ftk: " . qenc($fm[$ftk],$hf,$unp,"red")
-                . " -> " . qenc($ftv,$hf,$unp,"purple")
+                  . url_slicefieldcopy($ftk)
+                . qenc($ftv,$hf,$unp,"purple")
                 . "</li>\n");
             $fixert .= "&$ftk=" . urlencode($fm[$ftk]);
             $fixerm .= "&$ftk=" . urlencode($ftv);
+          }
         }
         $score++;
       } //while
@@ -323,6 +380,8 @@ function setnr() {
  $blogfaq = "4b88f1c5e5a94e1e379d12f247a252b3";
  $alerts = "c338bb154f445afb84307f35f5facd9d"; //bbkm
 
+ //AppTour 
+ $nr["7bb93902675177d09b65183c49ea1e23"] = $directory;
 //BIN
  $nr[$blogfaq] = $blog;
  $nr["1b5d8a892fc9e6867ab841bec079984d"] = $import;
@@ -332,7 +391,7 @@ function setnr() {
  $nr[$blog] = $newstemplate;
  $nr[$faq] = $blog;
 // Events
- $nr["aefcbfdbe065cf09d6dd51753c7c0a97"] = $blog;
+ $nr["aefcbfdbe065cf09d6dd51753c7c0a97"] = $blogfaq;
  $nr["6b509741ed05cbd59f9a708ed817996a"] = $calendar;
 // KM
  $nr["665c74e7fc97171dc2c6fecfca3b80a2"] = $newstemplate;
@@ -347,6 +406,7 @@ function setnr() {
 //SART
  $nr["e8e885b0143c1ccee94d576d488210da"] = $import;
  $nr["420a65b68496d0f869b5519ff0f7b0c0"] = $blogfaq;
+ $nr["cd516ce72af5d7c74f6e3d6531a6c48c"] = $directory;
 //Alerts
  $nr["98122b72f41dcd4ac5724f91e9bd85c0"] = $alerts;
  $nr["635a1206228867bfc5d7e3feb1d950c8"] = $alerts;

@@ -41,7 +41,7 @@ class DB_AA extends DB_Sql {
   }
 
   function dquery($SQL) {
-    echo "<br>$SQL";
+    echo "<br>".htmlentities($SQL);
 
     $SelectQuery = (strpos( " ".$SQL, "SELECT") == 1);
     // only SELECT queries can be explained
