@@ -36,7 +36,7 @@ if ($send_passwd && $email) {
     if ($db->num_rows() == 0) $Err[] = _m("This email is not registered with Alerts.");
     else {
         $db->next_record();
-        alerts_subscribe ($email, "");
+        alerts_subscribe ($email, $lang, "");
         $Msg = _m("OK. Password was sent.");
     }
 }
@@ -63,7 +63,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
 </HEAD>
 <BODY>
-    <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABTITBG." align='center'><TR><TD>
+    <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
+    <TR><TD class=tabtxt>
     
     <h1>"._m("Login to Personal settings for Alerts sending")."</h1>";
     
@@ -76,7 +77,7 @@ echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
     <FORM NAME=login ACTION='index.php3' METHOD=post>
        <input type=hidden name=lang value=\"$lang\">
        <p align=right><a href='subscribe.php3?lang=$lang'><font size=+1><b>"._m("New user? Subscribe!")."</b></font></a></p>
-       <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABTITBG." align='center'>
+       <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
          <TR><TD class=tabtxt><B>"._m("E-mail").":</B></TD>
             <TD class=tabtxt><INPUT TYPE=text NAME=email VALUE='$email' SIZE=50></TD></TR>
          <TR><TD class=tabtxt><B>"._m("Password").":</B></TD>

@@ -31,7 +31,7 @@ http://www.apc.org/
         
 require "./lang.php3";
 
-$err = alerts_subscribe ($email, $password, $firstname, $lastname, $lang);
+$err = alerts_subscribe ($email, $lang, $password, $firstname, $lastname);
 if ($err) echo $err;
 else echo "OK. User subscribed.";    
 ?>

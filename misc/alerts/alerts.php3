@@ -67,7 +67,7 @@ function create_filter_text ($ho)
     reset ($slices);
     while (list ($p_slice_id, $slice) = each ($slices)) {
         $slice_id = unpack_id ($p_slice_id);
-        list($fields,) = GetSliceFields($slice_id);
+        list($fields) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);       
         // set language
         bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$slice["lang"]."_alerts_lang.inc");

@@ -30,12 +30,11 @@ require "./lang.php3";
 require $GLOBALS[AA_INC_PATH]."/formutil.php3";
 
 $show_filters = false;
-
-if ($signout) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email");
       
 $db = new DB_AA;
 
 $user = AlertsUser ($alerts_session);
+if ($signout) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&lang=$lang");
 if (!$user) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&Msg="._m("Your session has expired. Please login again."));
 else bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$user["lang"]."_alerts_lang.inc");
 
@@ -110,7 +109,7 @@ echo "<TITLE>". _m("AA Alerts") ."</TITLE>
     <FORM NAME=login ACTION='user_filter.php3' METHOD=post>
     <input type=hidden name='lang' value='$lang'>
     <input type=hidden name='alerts_session' value='$alerts_session'>
-    <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABTITBG." align='center'>$ac_trstart<TD>";
+    <table width='540' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>$ac_trstart<TD class=tabtxt>";
     
 echo $Msg;
 PrintArray ($Err);
@@ -127,7 +126,7 @@ echo "<p><b>"._m("Welcome, %1", array ($welcome))."</b></p>";
 echo "
 </TD>$ac_trend
 $ac_trstart<TD>
-   <table border='0' cellspacing='0' cellpadding='3' bgcolor=".COLOR_TABTITBG." align='center'>
+   <table border='0' cellspacing='0' cellpadding='3' bgcolor=".COLOR_TABBG." align='center'>
      $ac_trstart<TD class=tabtxt><B>"._m("First name").":</B></TD>
         <TD class=tabtxt><INPUT TYPE=text NAME='chuser[firstname]' VALUE='$user[firstname]'></TD>$ac_trend
      $ac_trstart<TD class=tabtxt><B>"._m("Last name").":</B></TD>
@@ -137,7 +136,7 @@ $ac_trstart<TD>
 </TD>    
 
 <TD>
-   <table border='0' cellspacing='0' cellpadding='3' bgcolor=".COLOR_TABTITBG." align='center'>
+   <table border='0' cellspacing='0' cellpadding='3' bgcolor=".COLOR_TABBG." align='center'>
      $ac_trstart<TD class=tabtxt><B>"._m("New password").":</B></TD>
         <TD class=tabtxt><INPUT TYPE=password NAME='chuser[password]'></TD>$ac_trend
      $ac_trstart<TD class=tabtxt><B>"._m("Retype password").":</B></TD>
@@ -152,7 +151,7 @@ $ac_trstart<TD>
                                     SUBSCRIPTIONS
    -------------------------------------------------------------------------------  */
 
-echo "<table width='440' border='0' cellspacing='0' cellpadding='2' bgcolor=".COLOR_TABTITBG." align='center'>";
+echo "<table width='540' border='0' cellspacing='0' cellpadding='2' bgcolor=".COLOR_TABBG." align='center'>";
 
 //echo "$ac_trstart<td colspan=2><h2>"._m("Subscriptions")."</h2></td>$ac_trend";
 
@@ -214,8 +213,8 @@ print_edit_collections ($SQL, "user_filter.php3", true);
 //echo "$ac_trstart<td colspan=2><h3>"._m("Subscribed Filters")."</h3></td>$ac_trend
 
 $table_header = "
-   $ac_trstart<td class=tabtit><b>"._m("Filter")."</b></td>
-   <td class=tabtit><b>"._m("How often")."</b></td>$ac_trend";
+   $ac_trstart<td class=tabtxt><b>"._m("Filter")."</b></td>
+   <td class=tabtxt><b>"._m("How often")."</b></td>$ac_trend";
 
 $howoften_options = get_howoften_options ();
 $howoften_options["0"] = _m("unsubscribe");
@@ -253,7 +252,7 @@ $db->tquery ("SELECT description, id FROM alerts_collection
 
 if ($db->num_rows()) {
     echo "$ac_trstart<td colspan=1><b>"._m("Add predefined collection")."</b></td>
-           <td class=tabtit><b>"._m("How often")."</b></td>$ac_trend";
+           <td class=tabtxt><b>"._m("How often")."</b></td>$ac_trend";
     
     while ($db->next_record())
         $predef_col [$db->f("id")] = $db->f("description");              
@@ -282,7 +281,7 @@ while (list ($slice_id,$digest) = each ($digests)) {
 if ($show_filters)
 if (count ($filters)) {
     echo "$ac_trstart<td><b>"._m("Add predefined filter")."</b></td>
-    <td class=tabtit><b>"._m("How often")."</b></td>$ac_trend";
+    <td class=tabtxt><b>"._m("How often")."</b></td>$ac_trend";
     echo "$ac_trstart<td class=tabtxt>"; 
     FrmSelectEasy ("add[f][id]", $filters);
     echo "</td><td class=tabtxt>";

@@ -39,6 +39,7 @@ function AlertsUser ($session) {
     // expires after 600 seconds
     if ($db->next_record()) {
         $GLOBALS["email"] = $db->f("email");
+        $GLOBALS["lang"] = $db->f("lang");
         if ($db->f("sessiontime") > time() - 600) {
             $db->query ("UPDATE alerts_user SET sessiontime=".time());
             return $db->Record;
@@ -60,7 +61,7 @@ function email_address ($name, $email) {
 /*  Function: alerts_subscribe
     Purpose:  Adds new user to alerts and sends him e-mail to confirm. 
 */
-function alerts_subscribe ($email, $password="", $firstname="", $lastname="", $lang="en")
+function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname="")
 {
     global $Err, $ALERTS_SUBSCRIPTION_COLLECTION;
 
@@ -90,17 +91,14 @@ function alerts_subscribe ($email, $password="", $firstname="", $lastname="", $l
     }        
 
     $subject = _m("Welcome to APC e-mail alerts");   
-    $url = AA_INSTAL_URL."misc/alerts/confirm.php3";
+    $url = AA_INSTAL_URL."misc/alerts/confirm.php3?id=$confirm";
     $message = _m("<p>Hello,</p>"
-        ."<p>please confirm your subscription on</p>"
+        ."<p>please confirm your subscription by clicking on URL:</p>"
         ."%1"
-        ."<p>Write the code</p>"
-        ."%2"
-        ."<p>into the box so that we can see you did not subscribe by mistake and your e-mail is working.</p>"
+        ."<p>or copy the URL to your web browser so that we can see you did not subscribe by mistake and your e-mail is working.</p>"
         ."<p>Yours<br>"
         ."&nbsp; &nbsp; &nbsp;APC Alerts moderators</p>"
-        , array ("<p align=center><a href='$url'>$url</a></p>"
-                ,"<p>$confirm</p>"));
+        , array ("<p align=center><a href='$url'>$url</a></p>"));
         
     $db->query ("select * from alerts_collection where description='$ALERTS_SUBSCRIPTION_COLLECTION'");
     $db->next_record();   
@@ -116,11 +114,11 @@ function alerts_subscribe ($email, $password="", $firstname="", $lastname="", $l
 
 // HTML for Add filter. You must call print_js_options_filters() before using this function.
 
-$ac_filler = "<td class=tabtit>&nbsp;</td>";
+$ac_filler = "<td class=tabtxt>&nbsp;</td>";
 $ac_trstart = "<tr>$ac_filler";
 $ac_trend = "$ac_filler</tr>";
     
-function print_addfilter ($label, $collection, $index, $class="tabtit")
+function print_addfilter ($label, $collection, $index, $class="tabtxt")
 {
     global $ac_trstart, $ac_trend; 
     if ($class != -1) echo $ac_trstart.'<td class='.$class.' colspan=2>';
@@ -142,7 +140,7 @@ function print_add_collection ($user=false)
 {
     global $ac_trstart, $ac_trend;
     
-    echo $ac_trstart.'<td class=tabtit colspan=2>'.'<b>'._m("Create new collection").':&nbsp;</b>
+    echo $ac_trstart.'<td class=tabtxt colspan=2>'.'<b>'._m("Create new collection").':&nbsp;</b>
       <input type="text" name="cdesc[new]" value="'._m("New collection").'">&nbsp;&nbsp;';
 
     $button_add = '<input type="submit" name="change[-1]" value="'._m("Create").'">';
@@ -202,7 +200,7 @@ function print_edit_collections ($SQL, $script, $user=false)
             array ("name"=>$db->f("name"), "fdesc"=>$db->f("fdesc"));
     }
     
-    echo $ac_trstart.'<td class=tabtit colspan=2><b>'._m("Remove filters by setting order to 0.").'</b></td>'.$ac_trend;
+    echo $ac_trstart.'<td class=tabtxt colspan=2><b>'._m("Remove filters by setting order to 0.").'</b></td>'.$ac_trend;
 
     reset ($allfilters);
     while (list ($cid, $collection) = each ($allfilters)) {
@@ -210,7 +208,7 @@ function print_edit_collections ($SQL, $script, $user=false)
         $button_delete = '<input type="submit" name="delete['.$cid.']" value="'._m("Delete").'">';
 
         echo $ac_trstart.'<td colspan=2><hr></td>'.$ac_trend;
-        echo $ac_trstart.'<td class=tabtit colspan=2><b>'
+        echo $ac_trstart.'<td class=tabtxt colspan=2><b>'
             ._m("Collection").': </b><input type="text" name="cdesc['.$cid.']" value="'.$collection["cdesc"].'" size="30">&nbsp;&nbsp;';
         if ($user) {
             echo '<b>'._m("How often").':</b> ';
@@ -225,7 +223,7 @@ function print_edit_collections ($SQL, $script, $user=false)
         while (list ($fid, $filter) = each ($collection["filters"])) {
             echo $ac_trstart.'<td class=tabtxt>'._m("Filter").':&nbsp;&nbsp;<b>';
             //if (!$user) echo "$fid. ";
-            echo $filter["name"].' -- '.$filter["fdesc"].'</b></td>'
+            echo $filter["name"].' - '.$filter["fdesc"].'</b></td>'
                 .'<td class=tabtxt>'._m("Order").':&nbsp;'
                 .'<input type="text" name="order['.$cid.']['.$fid.']" value="'.$irow.'" size="1"></td>'.$ac_trend;
             $irow ++;

@@ -21,8 +21,7 @@ http://www.apc.org/
 
 /* Shows the confirmation web page and confirms user in Alerts. 
    Global parameters:
-       $confirmid - ID to look for in database (required)
-       $confirm - code appropriate to given ID
+       $id - ID to look for in database (required)
        $lang - set language 
 */
 
@@ -30,11 +29,11 @@ require "./lang.php3";
 
 $db = new DB_AA;
 
-if ($confirm) {
-    $db->query ("SELECT confirm,email FROM alerts_user WHERE confirm='$confirm'");
+if ($id) {
+    $db->query ("SELECT confirm,email FROM alerts_user WHERE confirm='$id'");
     $db->next_record();
     if ($db->num_rows()) { 
-        if ($db->query ("UPDATE alerts_user SET confirm = '' WHERE confirm='$confirm'"))
+        if ($db->query ("UPDATE alerts_user SET confirm = '' WHERE confirm='$id'"))
             go_url ("index.php3?Msg="._m("Congratulations. Your subscription is finished.")."&show_email=".$db->f("email"));
     }   
 }
@@ -43,14 +42,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "<TITLE>". _m("Subscribe to E-mail Alerts") ."</TITLE>
 </HEAD>
 <BODY>
-    <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABTITBG." align='center'><TR><TD>
+    <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
+    <TR><TD class=tabtxt>
     <h1>"._m("Finish your subscription to AA Alerts")."</h1>";
 
-if ($confirm) 
+if ($id) 
     echo _m("The code given is not OK. Please try it again. Don't use any spaces.");
 echo "
 <FORM NAME=confirm ACTION='confirm.php3' METHOD=post>
-     <INPUT TYPE=hidden NAME=confirmid VALUE='$confirmid'>
      <B>Code:</B> <INPUT TYPE=text NAME=confirm>
      <INPUT TYPE=SUBMIT VALUE="._m("Submit").">
 </FORM>";

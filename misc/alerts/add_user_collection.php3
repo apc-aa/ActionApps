@@ -54,7 +54,7 @@ if (!$email || !$howoften || !$collectionid || !$lang) error (_m("Missing requir
 $db = new DB_AA;
 $db->query ("SELECT * FROM alerts_user WHERE email='".addslashes($email)."'");
 if (!$db->num_rows()) {
-    $err = alerts_subscribe ($email, $password, $firstname, $lastname);
+    $err = alerts_subscribe ($email, $lang, $password, $firstname, $lastname);
     if ($err) error ($err);
     $db->query ("SELECT * FROM alerts_user WHERE email='".addslashes($email)."'");
 }
@@ -96,11 +96,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "
 </HEAD>
 <BODY>
-    <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABTITBG." align='center'><TR><TD>
+    <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
+    <TR><TD class=tabtxt>
     <b>"._m("You have been successfully subscribed to AA Alerts for %1.",
         array (join (", ",$cdesc)))."</b><br><br>";
         
-$url = AA_INSTAL_URL."misc/alerts";
+$url = AA_INSTAL_URL."misc/alerts?lang=$lang&show_email=$email";
 $url = "<a href=\"$url\">$url</a>";
 
 if ($confirm)

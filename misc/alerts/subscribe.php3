@@ -29,7 +29,7 @@ http://www.apc.org/
 require "./lang.php3";
 
 if ($email) {
-    alerts_subscribe ($email, $password, $firstname, $lastname);
+    alerts_subscribe ($email, $lang, $password, $firstname, $lastname);
     go_url ("index.php3?Msg="._m("An email with subscription informations was sent to you."));
 }
 
@@ -37,7 +37,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "<TITLE>". _m("Subscribe to AA Alerts") ."</TITLE>
 </HEAD>
 <BODY>
-    <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABTITBG." align='center'><TR><TD>
+    <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
+    <TR><TD class=tabtxt>
     
     <h1>"._m("Subscribe to AA Alerts")."</h1>";
     
@@ -47,7 +48,7 @@ echo "<TITLE>". _m("Subscribe to AA Alerts") ."</TITLE>
     echo "
     <FORM NAME=login ACTION='subscribe.php3' METHOD=post>
        <p align=left><b>"._m("We will send an e-mail message to the address given. Follow the instructions in it to complete your subscription.")."</b></p>
-       <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABTITBG." align='center'>
+       <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
          <TR><TD class=tabtxt><B>"._m("E-mail").":</B></TD>
             <TD class=tabtxt><INPUT TYPE=text NAME=email VALUE='$email' SIZE=50></TD></TR>
          <TR><TD class=tabtxt><B>"._m("Password").":</B></TD>
