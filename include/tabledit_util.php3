@@ -1,16 +1,16 @@
 <?php
 /**
  * Several functions needed by the @link Tabledit class.
- * DOCUMENTATION: @link doc/tabledit.html, 
- *                @link doc/tabledit_developer.html, 
+ * DOCUMENTATION: @link doc/tabledit.html,
+ *                @link doc/tabledit_developer.html,
  *                @link doc/tableview.html
  * @package TableEdit
  * @version $Id$
  * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications 
+ * @copyright (c) 2002-3 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2003 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2003 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -35,37 +35,37 @@ require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 /** Processes TableEdit form data. To be called in each script using TableEdit before
 *   showing the TableEdit class.
 */
-function ProcessFormData ($getTableViewsFn, $val, &$cmd) 
-{   
+function ProcessFormData ($getTableViewsFn, $val, &$cmd)
+{
     global $err, $debug, $tabledit_formdata_processed;
-    
+
     if ($tabledit_formdata_processed)
         return;
     $tabledit_formdata_processed = true;
-    
+
     if (!is_array ($cmd)) return;
-    if ($debug) 
+    if ($debug)
     { echo "cmd: ";print_r ($cmd); echo "<br>val: ";print_r($val); echo"<br>"; }
 
     reset ($cmd);
     while (list ($myviewid, $com) = each ($cmd)) {
         $myview = $getTableViewsFn ($myviewid, "form");
-        SetColumnTypes ($myview["fields"], $primary_aliases, $myview["table"], 
+        SetColumnTypes ($myview["fields"], $primary_aliases, $myview["table"],
             $myview["join"], false, $primary);
         reset ($com);
-        while (list ($command, $par) = each ($com)) {                
+        while (list ($command, $par) = each ($com)) {
             switch ($command) {
             case "update":
                 if (current ($par)) {
                     RunColumnFunctions ($val[key($par)], $myview["fields"], $myview["table"], $myview["join"]);
                     $ok = true;
-                    if (key($par) == $GLOBALS[new_key]) {                       
+                    if (key($par) == $GLOBALS[new_key]) {
                         $ok = ProcessInsert ($myviewid, $myview, $primary_aliases, $val, $cmd);
                         if ($ok) $GLOBALS["Msg"] = _m("Insert was successfull.");
                     }
                     else {
                         $ok = TableUpdate (
-                            $myview["table"], $val[key($par)], 
+                            $myview["table"], $val[key($par)],
                             $myview["fields"], $primary_aliases, $myview["primary"],
                             $myview["messages"]["error_update"], $myview["triggers"]);
                         if ($ok) $GLOBALS["Msg"] = _m("Update was successfull.");
@@ -79,9 +79,9 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
                     $ok = true;
                     while (list ($key, $vals) = each ($val)) {
                         RunColumnFunctions ($vals, $myview["fields"], $myview["table"], $myview["join"]);
-                        if ($key != $GLOBALS[new_key])                        
+                        if ($key != $GLOBALS[new_key])
                             $ok = $ok && TableUpdate (
-                                $myview["table"], $vals, 
+                                $myview["table"], $vals,
                                 $myview["fields"], $primary_aliases, $myview["primary"],
                                 $myview["messages"]["error_update"], $myview["triggers"]);
                     }
@@ -102,7 +102,7 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
                 if ($ok) $GLOBALS["Msg"] = _m("Delete was successfull.");
                 break;
             case "delete":
-                if (TableDelete ($myview["table"], key($par), $myview["fields"], $primary_aliases, 
+                if (TableDelete ($myview["table"], key($par), $myview["fields"], $primary_aliases,
                     $myview["messages"]["error_delete"], $myview["triggers"]))
                     $GLOBALS["Msg"] = _m("Delete was successfull.");
                 break;
@@ -110,13 +110,13 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
                 break;
             }
         }
-    }    
+    }
     PrintArray($err);
 }
 
 // -----------------------------------------------------------------------------------
 
-/** 
+/**
 * Enhances the column information.
 *
 * Appends ["type"] to each column, with column type.
@@ -124,15 +124,15 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
 *
 * @param array $columns  The "fields" part of a TableView, see @link ../tableview.html
 * @param array $primary  Input array ("tablename" => array ("primary_field1", "primary_field2", ...)).
-*                        Use only for tables with more than 1 primary key.                        
-* @param array $primary_aliases Output array with a complete list of field aliases of primary fields 
+*                        Use only for tables with more than 1 primary key.
+* @param array $primary_aliases Output array with a complete list of field aliases of primary fields
 *                       in all tables.
 */
-function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="", 
+function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
     $default_readonly=false, $primary="") {
     global $db;
     $primary_aliases = array ();
-    
+
     // set column defaults and find all tables used in $columns
     reset ($columns);
     while (list ($colname) = each ($columns)) {
@@ -140,21 +140,21 @@ function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
         setDefault ($column["table"], $default_table);
         setDefault ($column["field"], $colname);
         setDefault ($column["caption"], $colname);
-        setDefault ($column["view"]["readonly"], 
-            $default_readonly 
-            || $column["view"]["type"] == "userdef" 
+        setDefault ($column["view"]["readonly"],
+            $default_readonly
+            || $column["view"]["type"] == "userdef"
             || $column["view"]["type"] == "calculated");
-        if ($column["view"]["type"] == "date") 
+        if ($column["view"]["type"] == "date")
             $cols = strlen (date ($column["view"]["format"], "31.12.1970"));
         setDefault ($column["view"]["size"]["rows"], 4);
         setDefault ($column["view"]["html"], false);
         setDefault ($column["view"]["type"], $column["type"]);
         if ($column["view"]["type"] == "hidden")
             $column["view"]["type"] = "hide";
-        
+
         $tables [$column["table"]] = 1;
     }
-    
+
     reset ($tables);
     while (list ($table) = each ($tables)) {
         $cols = $db->metadata ($table);
@@ -163,15 +163,15 @@ function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
             // find the column
             reset ($columns);
             unset ($cprop);
-            while (list ($alias) = each ($columns)) 
-                if ($columns[$alias]["field"] == $col["name"] 
+            while (list ($alias) = each ($columns))
+                if ($columns[$alias]["field"] == $col["name"]
                     && $columns[$alias]["table"] == $table) {
                     $cprop = &$columns[$alias];
                     break;
                 }
-                
+
             // is this column a part of join condition? if yes, it must be created
-            $is_join_part = false;    
+            $is_join_part = false;
             if ($join[$table]) {
                 reset ($join[$table]["joinfields"]);
                 while (list (, $join_childf) = each ($join[$table]["joinfields"]))
@@ -180,7 +180,7 @@ function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
                         break;
                     }
             }
-                        
+
             // is it a part of the primary key?
             if ($primary && $primary[$table])
                  $is_primary = my_in_array ($col["name"], $primary[$table]);
@@ -192,10 +192,10 @@ function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
                     $cprop = &$columns[$alias];
                     $cprop["table"] = $table;
                     $cprop["field"] = $col["name"];
-                    $cprop["view"]["type"] = "hide";                              
+                    $cprop["view"]["type"] = "hide";
                 }
                 else {
-                    if ($is_join_part) 
+                    if ($is_join_part)
                     { echo "Define only the child (left) fields for join tables! Wrong alias: $alias"; exit; }
                     else if ($cprop["view"]["type"] == "ignore")
                     { echo "<h2>Column type for a primary key part must not be IGNORE.</h2>"; exit; }
@@ -216,7 +216,7 @@ function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
                 $cprop["not_null"] = 1;
 
             $_cols = $col["len"] ? min (80, $col["len"]) : 40;
-            setDefault ($cprop["view"]["size"]["cols"], $_cols);                
+            setDefault ($cprop["view"]["size"]["cols"], $_cols);
         }
     }
 }
@@ -227,20 +227,20 @@ function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
 */
 function TableDelete ($table, $key, $columns, $primary_aliases, $error_msg="", $triggers="", $be_cautious=1) {
     global $db, $err;
-    $varset = new CVarset;    
+    $varset = new CVarset;
     $vals = GetKeyValues ($key, $primary_aliases[$table], $columns);
     reset ($vals);
-    while (list ($column, $val) = each ($vals)) 
+    while (list ($column, $val) = each ($vals))
         $varset->addkey ($column, "text", $val);
     if ($be_cautious) {
         $db->query($varset->makeSELECT ($table));
         if ($db->num_rows() != 1) {
-			$err[] = $error_msg ? $error_msg : 
+            $err[] = $error_msg ? $error_msg :
                 "Error deleting from $table. ".$varset->makeSELECT($table)." returned ".$db->num_rows()." rows instead of 1.";
-			return false;
-		}
+            return false;
+        }
     }
-    if (! callTrigger ($triggers, "BeforeDelete", $varset))       
+    if (! callTrigger ($triggers, "BeforeDelete", $varset))
         return false;
     $retval = $db->query($varset->makeDELETE ($table));
     callTrigger ($triggers, "AfterDelete", $varset);
@@ -254,13 +254,13 @@ function TableDelete ($table, $key, $columns, $primary_aliases, $error_msg="", $
 * @param  array $primary see SetColumnTypes
 * @return true if successfull, false if not
 */
-function TableUpdate ($default_table, $val, $columns, $primary_aliases, $primary="", $error_msg="", 
+function TableUpdate ($default_table, $val, $columns, $primary_aliases, $primary="", $error_msg="",
     $triggers = "", $be_cautious=1) {
-    global $db, $err;    
+    global $db, $err;
 
     if (!ProoveVals ($val, $columns))
         return false;
-        
+
     // prepare varsets with primary key values
     reset ($primary_aliases);
     while (list ($table, $primary) = each ($primary_aliases)) {
@@ -268,27 +268,27 @@ function TableUpdate ($default_table, $val, $columns, $primary_aliases, $primary
         AddKeyValues ($varset, $val, $primary, $columns);
         $varsets [$table] = $varset;
     }
-    
+
     // add non-key values
     reset ($columns);
     while (list ($alias, $col) = each ($columns)) {
-        if (isset ($val[$alias])) {        	
+        if (isset ($val[$alias])) {
             $varset = &$varsets[$col["table"]];
             $value = $val[$alias];
             if (!$col["primary"]) {
                 if (is_field_type_numerical ($col["type"])) {
-    				if ($value == "" && !$col["not_null"])
-    					$value = "NULL";
+                    if ($value == "" && !$col["not_null"])
+                        $value = "NULL";
                     $varset->add($col["field"],"number",$value);
-    			}
-                else $varset->add($col["field"],"quoted",$value);         
+                }
+                else $varset->add($col["field"],"quoted",$value);
             }
         }
     }
-    
+
     // run varsets
     reset ($varsets);
-    while (list ($table) = each ($varsets)) {        
+    while (list ($table) = each ($varsets)) {
         $varset = &$varsets[$table];
         if ($be_cautious) {
             $db->query($varset->makeSELECT ($table));
@@ -303,18 +303,18 @@ function TableUpdate ($default_table, $val, $columns, $primary_aliases, $primary
         callTrigger ($triggers, "AfterUpdate", $varset);
     }
 
-    $GLOBALS["Msg"] = _m("Update was successfull.");    
+    $GLOBALS["Msg"] = _m("Update was successfull.");
     return true;
 }
 
 // -----------------------------------------------------------------------------------
 
 /** Inserts a record */
-function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_aliases, 
+function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_aliases,
     $primary="", $error_msg="", $triggers="", $be_cautious=1) {
     global $db, $err;
 
-    if (!ProoveVals ($val, $columns)) 
+    if (!ProoveVals ($val, $columns))
         return "";
 
     // prepare varsets with primary key values
@@ -324,27 +324,27 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
         AddKeyValues ($varset, $val, $primary, $columns);
         $varsets [$table] = $varset;
     }
-    
+
     // add non-key values
     reset ($columns);
     while (list ($alias, $col) = each ($columns)) {
-        if (isset ($val[$alias])) {        	
+        if (isset ($val[$alias])) {
             $varset = &$varsets[$col["table"]];
             $value = $val[$alias];
             if (!$col["primary"]) {
                 if (is_field_type_numerical ($col["type"])) {
-    				if ($value == "" && !$col["not_null"])
-    					$value = "NULL";
+                    if ($value == "" && !$col["not_null"])
+                        $value = "NULL";
                     $varset->set($col["field"],$value,"number");
-    			}
-                else $varset->set($col["field"],$value,"quoted");         
+                }
+                else $varset->set($col["field"],$value,"quoted");
             }
         }
     }
-    
+
     // run varsets
     reset ($varsets);
-    while (list ($table) = each ($varsets)) {        
+    while (list ($table) = each ($varsets)) {
         $varset = &$varsets[$table];
         $auto_inc = false;
         reset ($primary_aliases[$table]);
@@ -354,24 +354,24 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
 
         if (!$auto_inc && $be_cautious) {
             $db->query($varset->makeSELECT ($table));
-            if ($db->num_rows() > 0) { 
+            if ($db->num_rows() > 0) {
                 $err[] = $error_msg ? $error_msg : "Error in TableInsert ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 0.";
                 return "";
             }
         }
         if (! callTrigger ($triggers, "BeforeInsert", $varset))
             return "";
-        $db->query($varset->makeINSERT ($table)); 
+        $db->query($varset->makeINSERT ($table));
         callTrigger ($triggers, "AfterInsert", $varset);
-        
-        if ($table == $key_table) {    
+
+        if ($table == $key_table) {
             if ($auto_inc) $newkey = get_last_insert_id ($db, $table);
             else $newkey = GetKey ($primary_aliases[$table], $columns, $varset);
             $where = $varset->makeWHERE ($table);
         }
     }
-    
-    $GLOBALS["Msg"] = _m("Insert was successfull.");    
+
+    $GLOBALS["Msg"] = _m("Insert was successfull.");
     return $newkey;
 }
 
@@ -380,7 +380,7 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
 /** Processes insert
 * @return true on success, false on fail */
 function ProcessInsert ($myviewid, $myview, $primary_aliases, $val, &$cmd) {
-    // WARNING: a bit hackish: after inserting an item, the command is changed 
+    // WARNING: a bit hackish: after inserting an item, the command is changed
     TableInsert ($newkey, $where, $myview["table"], $val[$GLOBALS[new_key]],
                 $myview["fields"], $primary_aliases, $myview["primary"], $myview["messages"]["error_insert"],
                 $myview["triggers"]);
@@ -396,15 +396,15 @@ function ProcessInsert ($myviewid, $myview, $primary_aliases, $val, &$cmd) {
 // -----------------------------------------------------------------------------------
 
 function RunColumnFunctions (&$val, $columns, $table, $join) {
-    if (!is_array ($val)) 
+    if (!is_array ($val))
         return;
-        
+
     // change the values for appropriate column types
-    reset ($val);        
+    reset ($val);
     while (list ($col, $value) = each ($val))
-        // defined in tabledit_column.php3 
+        // defined in tabledit_column.php3
         ColumnFunctions ($columns[$col]["view"], $val[$col], "form");
-        
+
     // copy values between joining fields
     if (is_array ($join)) {
         reset ($join);
@@ -412,7 +412,7 @@ function RunColumnFunctions (&$val, $columns, $table, $join) {
             reset ($joinprop["joinfields"]);
             while (list ($masterf, $childf) = each ($joinprop["joinfields"])) {
                 // find master and child field alias
-                reset ($columns);                
+                reset ($columns);
                 while (list ($alias, $cprop) = each ($columns)) {
                     if ($cprop["field"] == $masterf && $cprop["table"] == $table)
                         $mastera = $alias;
@@ -423,7 +423,7 @@ function RunColumnFunctions (&$val, $columns, $table, $join) {
                 $val[$childa] = $val[$mastera];
             }
         }
-    }    
+    }
 }
 
 // -----------------------------------------------------------------------------------
@@ -457,31 +457,33 @@ function GetKey ($primary, $columns, $varset)
         $val = $varset->get ($columns[$alias]["field"]);
         if ($columns[$alias]["view"]["unpacked"])
             $key[] = unpack_id ($val);
-        else $key[] = htmlentities ($val); 
-    }
-    return join_escaped (":",$key,"#:");
-}
-            
-function GetKeyFromRecord ($primary, $columns, $record)
-{
-    reset ($primary);
-    while (list ($alias) = each ($primary)) {
-        $val = $record[$alias];
-        if ($columns[$alias]["view"]["unpacked"])
-            $key[] = unpack_id ($val);
-        else $key[] = htmlentities ($val); 
+        else $key[] = htmlentities ($val);
     }
     return join_escaped (":",$key,"#:");
 }
 
-// -----------------------------------------------------------------------------------    
+function GetKeyFromRecord($primary, $columns, $record)
+{
+    if ( !isset($primary) OR !is_array($primary)) {
+        echo _m('Table do not have set primary key on single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit').'<br>';
+        return;
+    }
+    foreach ($primary as $alias => $v) {
+        $val   = $record[$alias];
+        $key[] = ($columns[$alias]["view"]["unpacked"] ? unpack_id($val) :
+                                                         htmlentities($val));
+    }
+    return join_escaped(":",$key,"#:");
+}
+
+// -----------------------------------------------------------------------------------
 
 /** creates where condition from key fields values separated by :
 * Warning: send $columns processed with GetColumnTypes
 *
 * @param $auto_increment ... include auto increment fields
 */
-function AddKeyValues (&$varset, $val, $primary, $columns, $auto_increment = true) 
+function AddKeyValues (&$varset, $val, $primary, $columns, $auto_increment = true)
 {
     if (!is_array ($primary)) { echo "error in AddKeyValues"; exit; }
 
@@ -494,13 +496,13 @@ function AddKeyValues (&$varset, $val, $primary, $columns, $auto_increment = tru
     }
 }
 
-// -----------------------------------------------------------------------------------    
+// -----------------------------------------------------------------------------------
 
 function GetKeyValues ($key_val, $primary, $columns)
 {
     $keys = split_escaped (":", $key_val, "#:");
     reset ($keys);
-    
+
     reset ($primary);
     while (list ($alias) = each ($primary)) {
         list (,$value) = each ($keys);
@@ -512,7 +514,7 @@ function GetKeyValues ($key_val, $primary, $columns)
     return $retval;
 }
 
-// -----------------------------------------------------------------------------------    
+// -----------------------------------------------------------------------------------
 
 function CreateWhereCondition ($key_val, $primary, $columns, $table)
 {
@@ -520,29 +522,29 @@ function CreateWhereCondition ($key_val, $primary, $columns, $table)
 
     $keys = GetKeyValues ($key_val, $primary, $columns);
     reset ($keys);
-    while (list ($colname, $value) = each ($keys)) 
+    while (list ($colname, $value) = each ($keys))
         $varset->addkey ($colname, "text", $value);
     return $varset->makeWHERE($table);
 }
-    
-// -----------------------------------------------------------------------------------    
+
+// -----------------------------------------------------------------------------------
 
 function PrintJavaScript_Validate () {
     global $_javascript_validate_printed;
     if ($_javascript_validate_printed) return;
     else $_javascript_validate_printed = 1;
-    
+
     echo '
     <script language="JavaScript" type="text/javascript">
     <!--'
         . get_javascript_field_validation ()."
-        
+
         function validate_number (txtfield, minval, maxval, required) {
             if (!validate (txtfield, 'number', required))
                 return false;
             var val = txtfield.value;
             var err = '';
-            if (val > maxval || val < minval) 
+            if (val > maxval || val < minval)
                 err = '"._m("Wrong value: a number between %1 and %2 is expected.",array("'+minval+'","'+maxval+'"))."';
             if (err != '') {
                 alert (err);
@@ -551,22 +553,22 @@ function PrintJavaScript_Validate () {
             }
             else return true;
         }
-        
+
         function confirmDelete (url) {
             if (confirm ('"._m("Are you sure you want to permanently DELETE this record?")."'))
                 goto_url (url);
         }
-        
+
         function goto_url (url)
         { window.location = url; }
-        
+
         function exec_commit (formname, ctrlName) {
-            var f=document.forms[formname]; 
-            f[ctrlName].value=1; 
+            var f=document.forms[formname];
+            f[ctrlName].value=1;
             f.submit();
         }
     // -->
-    </script>";   
+    </script>";
 }
 
 function GetEditedKey ($tview) {
@@ -576,7 +578,7 @@ function GetEditedKey ($tview) {
         global $tabledit_cmd;
         $edit = $tabledit_cmd[$tview]["edit"];
         if (!is_array ($edit)) { echo "Error calling GetEditedKey ($tview)"; exit; }
-    }        
+    }
     reset ($edit);
     return key($edit);
 }

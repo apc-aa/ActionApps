@@ -78,10 +78,8 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
         return $res;
     }
     $LINKS_FIELDS = GetLinkFields();
-    ParseEasyConds($conds, $LINKS_FIELDS);
-    if( $debug ) huhl( "<br>Conds after ParseEasyConds():", $conds, "<br>--");
 
-    $where_sql    = MakeSQLConditions($LINKS_FIELDS, $conds, $join_tables, 'IsFieldSupported', $type);
+    $where_sql    = MakeSQLConditions($LINKS_FIELDS, $conds, $LINKS_FIELDS, $join_tables, 'IsFieldSupported', $type);
     $order_by_sql = MakeSQLOrderBy(   $LINKS_FIELDS, $sort,  $join_tables, 'IsFieldSupported', $type);
 
     $SQL = ( ($type=='unasigned') ?
@@ -118,11 +116,13 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
                                     AND (links_link_cat.base = \'y\')
                                     AND (links_links.folder < 2) ';
                           break;
-        case 'changed':   $SQL .= ' AND (   (     (links_link_cat.proposal = \'y\')
+        case 'changed':   $SQL .= ' AND (   (     ((links_link_cat.proposal = \'y\')
+                                                OR (links_link_cat.proposal_delete = \'y\'))
                                               AND (links_link_cat.state <> \'hidden\')
                                               AND (links_link_cat.base = \'n\'))
                                           OR
-                                            (     (links_changes.rejected =\'n\')
+                                            (     (links_changes.rejected <>\'y\')
+                                              AND (links_link_cat.base = \'y\')
                                               AND (links_link_cat.proposal = \'n\')))
                                     AND (links_links.folder < 2) ';
                           break;
@@ -170,10 +170,8 @@ function Links_QueryCatZIDs($cid, $conds, $sort="", $subcat=false, $type="app") 
         return $res;
     }
     $CATEGORY_FIELDS = GetCategoryFields();
-    ParseEasyConds($conds, $CATEGORY_FIELDS);
-    if( $debug ) huhl( "<br>Conds after ParseEasyConds():", $conds, "<br>--");
 
-    $where_sql    = MakeSQLConditions($CATEGORY_FIELDS, $conds, $foo);
+    $where_sql    = MakeSQLConditions($CATEGORY_FIELDS, $conds, $CATEGORY_FIELDS, $foo);
     $order_by_sql = MakeSQLOrderBy(   $CATEGORY_FIELDS, $sort,  $foo);
 
     if ( $subcat ) {  // this is not obvious ussage - used for category search

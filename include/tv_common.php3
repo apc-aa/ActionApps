@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -41,19 +41,19 @@ reset ($LANGUAGE_CHARSETS);
 while (list ($l) = each ($LANGUAGE_CHARSETS))
     $langs[$l] = $l;
 */
-global $LANGUAGE_NAMES;    
+global $LANGUAGE_NAMES;
 reset ($LANGUAGE_NAMES);
 while (list ($l, $langname) = each ($LANGUAGE_NAMES)) {
     $biglangs[$l."_news_lang.php3"] = $langname;
     $langs[$l] = $langname;
 }
 
-// ----------------------------------------------------------------------------------        
+// ----------------------------------------------------------------------------------
 
 function CreateWhereFromList ($column, $list, $type="number") {
     if (!is_array ($list)) return "1";
     if (count ($list) == 0) return "0";
-    if ($type == "number") 
+    if ($type == "number")
          return $column." IN (". join (",",$list). ")";
     else {
         $in = "";
@@ -66,30 +66,32 @@ function CreateWhereFromList ($column, $list, $type="number") {
     }
 }
 
-/**     
+/**
     @return array (unpacked module id => module name), e.g. to create a selectbox
     @param $all if you want all modules, otherwise only permitted are returned */
 function SelectModule ($all = false) {
     global $db, $auth;
-    if (IsSuperadmin() || $all) 
-        $where = 1;
-    else {
+    if (IsSuperadmin() || $all) {
+        $where = '1';
+    } else {
+        // get all slices where we have edit permission
         $myslices = GetUserSlices();
-        reset ($myslices);
-        while (list ($my_slice_id, $perms) = each ($myslices)) 
-            if (strchr ($perms, PS_FULLTEXT))
-                $restrict_slices[] = q_pack_id($my_slice_id);
-        if (is_array ($restrict_slices)) 
-            $where = "id IN ('".join("','",$restrict_slices)."')";
-        else $where = 0;
+        if ( isset($myslices) AND is_array($myslices) ) {
+            $zids = new zids(null,'l');
+            foreach ( $myslices as $my_slice_id => $perm) {
+                if (IfSlPerm(PS_FULLTEXT, $my_slice_id)) {
+                    $zids->add($my_slice_id);
+                }
+            }
+        }
+        $where = $zids->sqlin('id');
     }
-    
-    $db->query("SELECT id, name FROM module
-        WHERE $where AND type = 'Alerts'
-        ORDER BY name");
-    while ($db->next_record()) 
-        $retval[unpack_id128($db->f("id"))] = $db->f("name");
-    return $retval;
+
+    $SQL = "SELECT id, name FROM module
+             WHERE ($where AND type = 'Alerts')
+                   OR id = '".q_pack_id($GLOBALS['slice_id'])."'
+             ORDER BY name";
+    return GetTable2Array($SQL, $key="unpack:id", 'name');
 }
 
 ?>

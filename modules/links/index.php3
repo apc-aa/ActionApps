@@ -202,11 +202,13 @@ function Links_CountLinkInBins($cat_path) {
              WHERE links_links.id = links_link_cat.what_id
                AND links_link_cat.category_id = links_categories.id
                AND ((path = '$cat_path') OR (path LIKE '$cat_path,%'))
-               AND (   (     (links_link_cat.proposal = 'y')
+               AND (   (     ( (links_link_cat.proposal = 'y')
+                            OR (links_link_cat.proposal_delete = 'y'))
                          AND (links_link_cat.state <> 'hidden')
                          AND (links_link_cat.base = 'n'))
                      OR
-                       (     (links_changes.rejected ='n')
+                       (     (links_changes.rejected <> 'y')
+                         AND (links_link_cat.base = 'y')
                          AND (links_link_cat.proposal = 'n')))
                AND (links_links.folder < 2)";
     $db->tquery($SQL);

@@ -336,7 +336,6 @@ else {
 ?>
 <tr><td colspan=3><a href="javascript:SelectChboxes('chbox_')"><?php echo _m('Select all');?></td><td><a href="javascript:SelectChboxes('approved_')"><?php echo _m('Select all');?></td></tr>
 <?php
-}
 FrmTabEnd($form_buttons,$sess, $slice_id);
 ?>
 </FORM>

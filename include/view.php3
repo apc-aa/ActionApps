@@ -518,8 +518,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $itemview->parameter('start_cat',   $view_param['start_cat']);
 
       if ( !isset($zids) || $zids->count() <= 0) {
-        # $ret = $noitem_msg;
-        $ret = $itemview->unaliasWithScroller($noitem_msg);
+          $ret = $itemview->unaliasWithScroller($noitem_msg);
           return $ret;
       }
 

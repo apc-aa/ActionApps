@@ -48,7 +48,7 @@ function PrintRadioBookmarkRow( $name, $value, $safe=true, $bookparams="") {
     <tr>
       <td align=center><input type=\"radio\" name=\"group\" value=\"$value\" $checked></td>";
       if ((string)$value == (string)"testuser") {
-          echo "<td colspan=6>"; 
+          echo "<td colspan=6>";
       } else {
           echo "<td>";
       }
@@ -70,7 +70,7 @@ function PrintRadioBookmarkRow( $name, $value, $safe=true, $bookparams="") {
               echo "<td>". date("j.n.Y G:i:s",$last_edited). "</td>";
              if (is_array($lastused)) {
                  rsort($lastused);
-                 $last_used = $lastused[key($lastused)]["time"];                 
+                 $last_used = $lastused[key($lastused)]["time"];
                  echo "<td>". date("j.n.Y G:i:s",$last_used). "</td>";
              }
           } else {
@@ -141,7 +141,7 @@ $items=$chb;
 
 if ( !$send AND !$list ) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
-    unset($r_wm_state);       // clear if it was filled    
+    unset($r_wm_state);       // clear if it was filled
     $r_wm_state['items'] = $items;
     $lang = get_mgettext_lang();
     $html = 1;
@@ -196,7 +196,7 @@ if ( !$send AND !$list ) {               // for the first time - directly from i
             $mails_sent = send_mail_from_table ($mail_id, $good_mail);
             $Msg = MsgOK(_m("Email sucessfully sent (Users: %1, Valid emails: %2, Emails sent: %3)",
                                                array($users_count, $good_mail_count, $mails_sent)));
-                                               
+
             if ((string)$group == (string)"user") {
                 $sel = "LIST";
             } elseif ((string)$group == (string)"testuser") {
@@ -227,8 +227,6 @@ echo '
   <h1>'. _m("Bulk Email Wizard") .'</h1>
   <form name=mailform>';
 
-//echo "<pre>"; print_r($searchbar->bookmarks); echo "</pre>";
-  
 PrintArray($err);
 echo $Msg;
 
@@ -238,9 +236,9 @@ FrmTabCaption( (is_array($items) ? _m("Recipients") : ( _m("Stored searches for 
 if( isset($items) AND is_array($items) ) {
     PrintRadioBookmarkRow( _m('Selected users').' ('.count($items).')', 'user');
 } else {
-    echo "<tr><td></td><td><b>"._m("Group Name")."</b></td><td><b>". _m("Created by"). "</td><td><b>" 
+    echo "<tr><td></td><td><b>"._m("Group Name")."</b></td><td><b>". _m("Created by"). "</td><td><b>"
          ._m("Created on"). "</b></td><td><b>". _m("Last updated") ."</b></td><td><b>"._m("Last used"). "</b></td></tr>";
-    $book_arr = $searchbar->getBookmarkNames();    
+    $book_arr = $searchbar->getBookmarkNames();
     if ( isset($book_arr) AND is_array($book_arr) ) {
         foreach ( $book_arr as $k => $v ) {
             $bookparams = $searchbar->getBookmarkParams($k);
@@ -290,7 +288,7 @@ echo '
     foreach ($items as $key=>$it) {
       echo '<input type="hidden" name="items['.$key.']" value="">';
     }
-echo '  
+echo '
   </form>
  </body>
 </html>';

@@ -1,14 +1,14 @@
 <?php
 /**
  * Functions for preparing the Filters and Collections output and sending Alerts with new messages.
- * 
+ *
  * @package Alerts
  * @version $Id$
  * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
- * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2002 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2002 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -40,26 +40,26 @@ require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 // -------------------------------------------------------------------------------------
 /**  Creates Filter output. Called from send_emails().
 *    Finds and formats items.
-*    WARNING:  the function does not check when were the items sent last time, 
+*    WARNING:  the function does not check when were the items sent last time,
 *              call it only once a day / week / month. In fact, this function
 *              works completely the same for any how often (only that it writes
-*              the values to the appropriate field). 
+*              the values to the appropriate field).
 *
 * The only exception are the "instant" messages: If the paramter $item_id
 * contains an unpacked item ID, nothing or a message containing just that item is sent.
 *
-* @param bool $update    decides whether alerts_filter_howoften.last would be updated, 
+* @param bool $update    decides whether alerts_filter_howoften.last would be updated,
 *                        i.e. whether this is only a debug trial or the real life
-* @param $ho = how often 
+* @param $ho = how often
 * @return array ($filterid => new items)
 */
 
-function create_filter_text ($ho, $collectionid, $update, $item_id)
+function create_filter_text($ho, $collectionid, $update, $item_id)
 {
     // the view.aditional field stores info about grouping by selections
     $SQL = "
     SELECT F.conds, view.slice_id, view.aditional, view.aditional3,
-        F.id AS filterid, F.vid, slice.name AS slicename, 
+        F.id AS filterid, F.vid, slice.name AS slicename,
         slice.lang_file, CH.last
         FROM alerts_filter F INNER JOIN
              alerts_collection_filter CF ON CF.filterid = F.id INNER JOIN
@@ -68,13 +68,15 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
              slice ON slice.id = view.slice_id
         WHERE CH.howoften='$ho'
         AND CH.collectionid='$collectionid'";
-    $db = getDB();    
+    $db = getDB();
     if ($item_id) {
         $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
         if (!$db->next_record())
             { freeDB($db); return ""; }
         $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
     }
+
+
 
     // fill alerts_collection_howoften.last in cases the row for this period
     // (= how_often) not exist, yet
@@ -89,73 +91,71 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
         $myview["filters"][$db->f("filterid")] = array ("conds"=>$db->f("conds"));
         // Group by selections?
         $myview["group"] = $db->f("aditional");
-        if (! $myview["group"])
+        if (! $myview["group"]) {
             // Sort variable for the whole view
             $myview["sort"] = $db->f("aditional3");
+            $test = "ok:".$myview["sort"];
+        }
     }
-    if (! is_array ($slices)) { freeDB($db);  return; }
-        
-    // The function needs global $conds and $sort, because it does some
-    // wizardry with add_vars().
-    global $debug_alerts, $conds, $sort;
+    if (! is_array($slices)) { freeDB($db);  return; }
+
+    global $debug_alerts;
     $howoften_options = get_howoften_options();
 
     // first I create a hierarchical array $slices and than use it instead of the recordset
 
     $now = time();
 
-    reset ($slices);
-    while (list ($p_slice_id, $slice) = each ($slices)) {
-        $slice_id = unpack_id128($p_slice_id);
-        list ($fields) = GetSliceFields ($slice_id);
+    foreach ( $slices as $p_slice_id => $slice ) {
+        $slice_id     = unpack_id128($p_slice_id);
+        list($fields) = GetSliceFields($slice_id);
 
-/* this query is carefully made to include only items, which:
-     a) 1. were moved to active between $last and $now
-        2. and were active (not expired nor pending) between $last and $now,
-            i.e. publish_date <= $now AND expiry_date >= $last
-     b) 1. were moved to active before $last
-        2. and were active (not expired nor pending) between $last and $now
-        3. and were not active until $last,
-            i.e. publish_date > $last
+        /*
+        this query is carefully made to include only items, which:
+         a) 1. were moved to active between $last and $now
+            2. and were active (not expired nor pending) between $last and $now,
+                i.e. publish_date <= $now AND expiry_date >= $last
+         b) 1. were moved to active before $last
+            2. and were active (not expired nor pending) between $last and $now
+            3. and were not active until $last,
+                i.e. publish_date > $last
 
-   The field moved2active is filled whenever an item is moved from other bin to Active bin
-       or when it is a new item inserted into Active bin.
-   The field is cleared whenever the item is moved from Active bin to another one.
-*/
+       The field moved2active is filled whenever an item is moved from other bin
+           to Active binor when it is a new item inserted into Active bin.
+       The field is cleared whenever the item is moved from Active bin
+           to another one.
+        */
 
         $SQL = "SELECT id FROM item ";
 
-        if ($item_id)
+        if ($item_id) {
             $SQL .= "WHERE id = '".q_pack_id($item_id)."'";
-
-        else $SQL .=
+        } else {
+            $SQL .=
             "WHERE publish_date <= $now AND expiry_date >= $last "  # a) 2. and b) 2.
                ."AND ((moved2active BETWEEN $last AND $now) "       # a) 1.
                      ."OR (moved2active < $last "                   # b) 1.
                          ."AND publish_date > $last) "              # b) 3.
                    .")";
-        $db->query ($SQL);
+        }
+        $db->query($SQL);
 
         $all_ids = "";
-        while ($db->next_record())
+        while ($db->next_record()) {
             $all_ids[] = $db->f("id");
+        }
 
-        reset ($slice["views"]);
-        while (list ($vid, $view) = each ($slice["views"])) {
-
-            reset ($view["filters"]);
-            while (list ($fid, $filter) = each ($view["filters"])) {
-                $dbconds = $filter["conds"];
-                if ($debug_alerts) echo "<br>Slice ".$slice["name"].", conds ".$dbconds."<br>";
-                $conds = ""; $sort = "";
-                add_vars ($dbconds, "", array ("conds"=>1,"sort"=>1));
-                if ($debug_alerts) { print_r ($conds); echo "<br>"; }
-
-                $zids = new zids (null, "p");
+        foreach ($slice["views"] as $vid => $view) {
+            foreach ($view["filters"] as $fid => $filter) {
+                parse_str( $filter["conds"], $dbconds_arr);
+                $conds = $dbconds_arr['conds'];
+                $sort  = $dbconds_arr['sort'];
+                $zids  = new zids (null, "p");
                 if (is_array ($all_ids)) {
                     // find items for the given filter
+                    if ($debug_alerts) { print_r ($conds); echo "----<br>"; $GLOBALS['debug']=1; }
                     $zids = QueryZIDs ($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, new zids( $all_ids,'p' ));
-                    if ($debug_alerts) echo "<br>Item IDs count: ".$zids->count()."<br>";
+                    if ($debug_alerts) { $GLOBALS['debug']=0; echo "<br>Item IDs count: ".$zids->count()."<br>"; }
                 }
 
                 $retval[$fid] = array (
@@ -193,7 +193,7 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
 */
 function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
 {
-    global $LANGUAGEn_CHARSETS;
+    global $LANGUAGEn_CHARSETS, $debug_alerts;
 
     $db = getDB();
     if (is_array ($collection_ids))
@@ -223,7 +223,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
         $filters = "";
         while ($db->next_record()) {
             $filters[$db->f("filterid")] = &$unordered_filters[$db->f("filterid")];
-		}
+        }
 
         // Find all users who should receive anything
         if (! is_array ($emails)) {
@@ -275,7 +275,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                 $GLOBALS["debug_email"] = 0;
                 if (send_mail_from_table($collection["emailid_alert"],
                     $email, $alias))
-                    $email_count ++;
+                    $email_count++;
             }
         }
     }
@@ -285,27 +285,26 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
 
 // -------------------------------------------------------------------------------------
 /**  Initializes the "last" field (which tells when were the Alerts last time sent)
-*   for all unfilled filter / howoften combinations 
+*   for all unfilled filter / howoften combinations
 *   to a value depending on howoften, i.e. to one week ago for weekly etc.
-*/    
+*/
 function initialize_last ()
 {
     $now = getdate ();
-    
+
     $init["instant"] = time();
     // one day ago
-    $init["daily"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon], $now[mday]-1);
+    $init["daily"]   = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-1);
     // one week (7 days) ago
-    $init["weekly"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon], $now[mday]-7);
+    $init["weekly"]  = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-7);
     // one month ago
-    $init["monthly"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon]-1);
+    $init["monthly"] = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon']-1);
 
-    $db = getDB();
+    $db  = getDB();
     $db2 = getDB();
- 
-    $hos = get_howoften_options();   
-    reset ($hos);
-    while (list ($ho) = each ($hos)) {
+
+    $hos = get_howoften_options();
+    foreach ($hos as $ho => $v ) {
         // fill alerts_collection_howoften.last in cases the row for this period
         // (= how_often) not exist, yet
         $db->query("SELECT C.id FROM alerts_collection C LEFT JOIN
@@ -314,28 +313,28 @@ function initialize_last ()
         while ($db->next_record())
             $db2->query("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
                 VALUES ('".$db->f("id")."', '$ho', ".$init[$ho].")");
-        
+
         // the same as above, but for rows, which exist but with last=0
         $db->query("SELECT C.id FROM alerts_collection C INNER JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id
             WHERE last=0 AND howoften='$ho'");
-        while ($db->next_record()) 
+        while ($db->next_record())
             $db2->query("UPDATE alerts_collection_howoften SET last=".$init[$ho]
                 ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
     }
     freeDB($db);
     freeDB($db2);
-}           
+}
 
 // -------------------------------------------------------------------------------------
 
 function get_view_settings_cached ($vid) {
     global $cached_view_settings;
-    if (! $vid) 
+    if (! $vid)
         return "";
     if (! $cached_view_settings [$vid]) {
         $view_info = GetViewInfo($vid);
-        list($fields) = GetSliceFields (unpack_id ($view_info ["slice_id"]));        
+        list($fields) = GetSliceFields (unpack_id ($view_info ["slice_id"]));
         $slice_info = GetSliceInfo (unpack_id ($view_info ["slice_id"]));
         $cached_view_settings[$vid] = array (
             "lang" => substr ($slice_info["lang_file"],0,2),
@@ -350,9 +349,9 @@ function get_view_settings_cached ($vid) {
 
 // -------------------------------------------------------------------------------------
 /** Warning: This function caches all combinations of selections. If there
-*   are too many different combinations, memory may be exhausted. 
+*   are too many different combinations, memory may be exhausted.
 *
-*   TODO: Rewrite this function using a DB table. 
+*   TODO: Rewrite this function using a DB table.
 *
 *   @param string $filter_settings  One or more filter IDs separted by comma ",".
 */
@@ -368,7 +367,7 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
         $set = &get_view_settings_cached ($vid);
         // set language
         bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".
-            $set["lang"]."_alerts_lang.php3", true);            
+            $set["lang"]."_alerts_lang.php3", true);
         // $set["info"]["aditional2"] stores item URL
         $item_url = $set["info"]["aditional2"];
         if (! $item_url) $item_url = "You didn't set the item URL in the view $vid settings!";
@@ -384,7 +383,7 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
 
   //  echo "items $items_text"; exit;
     return $items_text;
-}        
+}
 
 // -------------------------------------------------------------------------------------
 /** Used in send_emails(). Finds filter text for the given reader.
@@ -418,18 +417,17 @@ function get_filter_text_4_reader ($readerContent, $filters, $cid)
         if ($last_fprop["vid"] != $fprop["vid"]
           && is_array ($filter_ids)
           && $user_zids->count()) {
-            // WARNING - HACK: we need to sort the zids according to the common 
+            // WARNING - HACK: we need to sort the zids according to the common
             // sort[]: we use the same global trick as in create_filter_text
             if ($last_fprop["sort"]) {
-                global $sort;
-                $sort = "";
-                add_vars ($last_fprop["sort"], "", array ("sort"=>1));
-                $set = &get_view_settings_cached ($last_fprop["vid"]);
-                $user_zids = QueryZIDs ($set["fields"], 
+                parse_str( $last_fprop["sort"], $dbconds_arr);
+                $sort = $dbconds_arr['sort'];
+                $set  = &get_view_settings_cached ($last_fprop["vid"]);
+                $user_zids = QueryZIDs ($set["fields"],
                     unpack_id ($set["info"]["slice_id"]),
                     "", $sort, "", "ACTIVE", "", 0, $user_zids);
-            }                
-          
+            }
+
             $user_text .= get_filter_output_cached (
                 $last_fprop["vid"], join (",",$filter_ids), $user_zids);
             $filter_ids = "";

@@ -342,9 +342,11 @@ class zids {
 
   # Return appropriate SQL for including in WHERE clause
   # Note that some code still does this by hand,
-  function sqlin( $add_column = true ) {
-      if ($this->count() == 0) return "";
-      if ( $add_column ) {
+  function sqlin( $column = 'short_or_long' ) {
+      if ($this->count() == 0) {
+          return $column ? '0' : ' = "" ';
+      }
+      if ( $column == 'short_or_long' ) {
           $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
       }
       $id_list = implode(",", $this->use_short_ids() ?

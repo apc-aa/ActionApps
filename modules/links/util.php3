@@ -227,30 +227,6 @@ function FillCategoryInfo($category) {
     }
 }
 
-# get information from view table, where information for viewing are stored
-function Links_GetViewInfo($view_id, $server_url) {
-    global $db;
-
-    if ($view_id)
-        $test = " (id = $view_id) ";
-    elseif (!$server_url)
-        $test = " (id = ".DEFAULT_BASE_CATEGORY." )";
-    elseif (strlen($server_url) <= 4)
-        $test = " (server_name = '$server_url') ";
-    else
-        $test = ( (StrCaseCmp(SubStr($server_url, 0, 4), "www.") == 0) ?
-            " (server_name = '". Substr($server_url,4) . "') " :
-      " (server_name = '$server_url') " );
-
-    $SQL = " SELECT * FROM links_views WHERE $test";
-    $db->query($SQL);
-
-    if ($db->next_record())
-       return $db->Record;
-
-    return false;
-}
-
 # get information from profile table, where user setting are stored
 function GetProfileInfo($uid) {
     global $db;

@@ -223,4 +223,5 @@ endif;
 </TABLE>
 <?php
 HtmlPageEnd();
-page_close();  ?>
+page_close();
+?>

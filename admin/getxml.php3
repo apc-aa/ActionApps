@@ -33,17 +33,6 @@ http://www.apc.org/
 #          $categories          - a list of local categories ids separated by space (can be empty)
 
 
-/*
-function ech($text) {
-  if( isset($text) and is_array($text) ) {
-    echo "<div><font color=blue>";
-    print_r( $text );
-    echo "</font></div>";
-  } else
-    echo "<div><font color=blue>$text</font></div>";
-}
-*/
-
 # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
@@ -397,8 +386,6 @@ if (!$slice_id) {                           // feed establishing mode
   }
   $time = unixstamp_to_iso8601($time);
 
-//ech( $ids );
-
   if ($ids) {
     $content = GetItemContent($ids);     // get the content of all items
 
@@ -424,7 +411,6 @@ if (!$slice_id) {                           // feed establishing mode
                                // => skip the item
       }
     }
-//ech( $ids );
     $xml_items_refs = GetXMLItemsRefs($ids);
   }
   GetXMLFields( $slice_id, $slice_fields, $xml_fields_refs,  $xml_fields);   // get fields and fields refs

@@ -141,11 +141,20 @@ class Cvarset {
   }
 
     # set variables values due to array
-  function setFromArray($arr){
-    reset( $this->vars );
-    while ( list( $varname, $variable ) = each($this->vars) ){
-      $this->set($varname, $arr[$varname]);
-    }
+  function setFromArray($arr) {
+      foreach( $this->vars as $varname => $variable ) {
+          $this->set($varname, $arr[$varname]);
+      }
+  }
+
+  /** fills varset with data grabed from database ($db->Record) */
+  function resetFromRecord($record) {
+      $this->clear();
+      foreach ( $record as $name => $value ) {
+          if ( !is_numeric($name) ) {
+              $this->add($name, 'text', $value);
+          }
+      }
   }
 
     # add variable to varset
