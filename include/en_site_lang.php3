@@ -91,5 +91,6 @@ define("L_GO", "Go");
 define("L_ADD", "Add");
 define("L_ID", "Id");
 define("L_SELECT_OWNER","Select owner");
-
+define("L_SITE_URL_HLP1", "The file will probably contain just the following include:");
+define("L_SITE_STATE_FILE_HLP", "Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php.");
 ?>

@@ -194,18 +194,20 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
-  FrmStaticText(L_ID, $module_id);
+  FrmStaticText(L_ID, $module_id, false);
   FrmInputText("name", L_SITE_NAME, $name, 99, 25, true);
-  FrmInputText("slice_url", L_SITE_URL, $slice_url, 254, 25, false);
+  $include_cmd = "<!--#include virtual=\"${AA_INSTAL_PATH}modules/site/site.php3?site_id=$module_id\"-->";
+  FrmInputText("slice_url", L_SITE_URL, $slice_url, 254, 25, false,
+               L_SITE_URL_HLP1. "$include_cmd" );
   FrmInputSelect("owner", L_OWNER, $slice_owners, $owner, false);
   if( !$owner ) {
     FrmInputText("new_owner", L_NEW_OWNER, $new_owner, 99, 25, false);
     FrmInputText("new_owner_email", L_NEW_OWNER_EMAIL, $new_owner_email, 99, 25, false);
-  }  
-  if( $superadmin ) 
+  }
+  if( $superadmin )
     FrmInputChBox("deleted", L_DELETED, $deleted);
 //  FrmInputSelect("lang_file", L_LANG_FILE, $LANGUAGE_FILES, $lang_file, false);
-  FrmInputText("state_file", L_STATE_FILE, $state_file, 99, 25, false);
+  FrmInputText("state_file", L_STATE_FILE, $state_file, 99, 25, false, L_SITE_STATE_FILE_HLP);
 ?>
 </table>
 <tr><td align="center">
