@@ -72,7 +72,7 @@ trace("=","site.php3","precachecheck");
 #                    (in seconds)
 
 # create keystring from values, which exactly identifies resulting content
-$key_str = $apc_state['state'];
+$key_str = $apc_state['state'].$site_id;
 if( is_array($slices4cache) && !$nocache && ($res = $GLOBALS[pagecache]->get($key_str)) ) {
   echo $res;
   if( $debug ) {
