@@ -111,7 +111,7 @@ $show_adduser = $adduser || $GrpSrch || $UsrSrch;    // show add user form?
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_USERS_TIT;?></TITLE>
+ <TITLE><?php echo L_A_PERMISSIONS;?></TITLE>
 </HEAD>
 <?php
   $xx = ($slice_id!="");
@@ -119,7 +119,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
                 "addusers"=>!$show_adduser, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
-  echo "<H1><B>".L_A_SLICE_USERS."</B></H1>";
+  echo "<H1><B>".L_A_PERMISSIONS."</B></H1>";
 //  PrintArray($err);
   echo $Msg;
 
@@ -166,7 +166,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     
     <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
     <tr>
-     <td class=tabtit><b>&nbsp;<?php echo L_CURRENT_USERS ?></b></td>
+     <td class=tabtit><b>&nbsp;<?php echo L_PERM_CURRENT ?></b></td>
     </tr>
     <tr><td>
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">  <?php
@@ -201,8 +201,11 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   }  
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:03  madebeer
-Initial revision
+Revision 1.2  2000/07/17 12:27:51  kzajicek
+Language changes
+
+Revision 1.1.1.1  2000/06/21 18:40:03  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:51  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

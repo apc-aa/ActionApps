@@ -190,9 +190,12 @@ define("L_ROLE_SUPER", "Super");
 define("L_SLICE_ADM", "Slice Administration");
 define("L_MAIN_SET", "Main settings");
 define("L_SLICE_SET", L_SLICE);
-define("L_USER_MNG", "User management");
-define("L_USER_PERMS", "Pemissions");
-define("L_USER_ADD", "Add User");
+define("L_PERMISSIONS", "Permissions");
+define("L_PERM_CHANGE", "Change");
+define("L_PERM_ASSIGN", "Assign");
+define("L_PERM_NEW", "Search user or group");
+define("L_PERM_SEARCH", "Assign new permissions");
+define("L_PERM_CURRENT", "Change current permissions");
 define("L_USER_NEW", "New User");
 define("L_DESIGN", "Design");
 define("L_COMPACT", "Compact");
@@ -267,7 +270,7 @@ define("L_SEARCH_OK", "Search fields update succesfull");
 define("L_ADMINPAGE", "Back to Main Administration Page");
 define("L_NO_CATEGORY", "No category defined");
 define("L_NO_IMPORTED_SLICE", "There are no imported slices");
-define("L_NO_USERS", "There are no such user");
+define("L_NO_USERS", "No user (group) found");
 define("L_AND", "AND");
 define("L_OR", "OR");
 define("L_SRCH_ALL", L_ALL);
@@ -296,8 +299,11 @@ define("DEFAULT_COMPACT_REMOVE", "()");
 define("DEFAULT_FULLTEXT_REMOVE", "()");
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:34  madebeer
-Initial revision
+Revision 1.2  2000/07/17 12:29:56  kzajicek
+Language changes
+
+Revision 1.1.1.1  2000/06/21 18:40:34  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:20  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

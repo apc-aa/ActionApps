@@ -296,6 +296,7 @@ define("L_USER_FIRSTNAME", "First name");
 define("L_USER_SURNAME", "Surname");
 define("L_USER_MAIL", "E-mail");
 define("L_A_USERS_TIT", "Slice Administration - User Management");
+define("L_A_PERMISSIONS", "Slice Administration - Permissions");
 
 define("L_ROLE_AUTHOR", "Author");
 define("L_ROLE_EDITOR", "Editor");
@@ -304,9 +305,12 @@ define("L_ROLE_SUPER", "Super");
 
 define("L_SLICE_ADM", "Slice Administration");
 define("L_MAIN_SET", "Main settings");
-define("L_USER_MNG", "User management");
-define("L_USER_PERMS", "Pemissions");
-define("L_USER_ADD", "Add User");
+define("L_PERMISSIONS", "Permissions");
+define("L_PERM_CHANGE", "Change");
+define("L_PERM_ASSIGN", "Assign");
+define("L_PERM_NEW", "Search user or group");
+define("L_PERM_SEARCH", "Assign new permissions");
+define("L_PERM_CURRENT", "Change current permissions");
 define("L_USER_NEW", "New User");
 define("L_DESIGN", "Design");
 define("L_COMPACT", "Compact");
@@ -365,9 +369,9 @@ define("L_SEARCH_OK", "Search fields update succesfull");
 define("L_ADMINPAGE", "Back to Main Administration Page");
 define("L_NO_CATEGORY", "No category defined");
 define("L_NO_IMPORTED_SLICE", "There are no imported slices");
-define("L_NO_USERS", "No users found");
+define("L_NO_USERS", "No user (group) found");
 
-define("L_TOO_MUCH_USERS", "Too much users found.");
+define("L_TOO_MUCH_USERS", "Too much users or groups found.");
 define("L_MORE_SPECIFIC", "Try to be more specific.");
 define("L_REMOVE", "Remove");
 define("L_ID", "Id");
@@ -521,6 +525,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.4  2000/07/17 12:29:56  kzajicek
+Language changes
+
 Revision 1.3  2000/07/12 11:06:26  kzajicek
 names of image upload variables were a bit confusing
 

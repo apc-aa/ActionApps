@@ -322,9 +322,12 @@ define("L_ROLE_SUPER", "Super");
 define("L_SLICE_ADM", "Správa webíku");
 define("L_MAIN_SET", "Hlavní nastavení");
 define("L_SLICE_SET", L_SLICE);
-define("L_USER_MNG", "Správa uživatelù");
-define("L_USER_PERMS", "Nastavení práv");
-define("L_USER_ADD", "Pøidat uživatele");
+define("L_PERMISSIONS", "Nastavení práv");
+define("L_PERM_CHANGE", "Zmìna souèasných práv");
+define("L_PERM_ASSIGN", "Nová osoba/skupina");
+define("L_PERM_NEW", "Hledej uživatele nebo skupinu");
+define("L_PERM_SEARCH", "Pøiøazení nových práv");
+define("L_PERM_CURRENT", "Zmìna souèasných práv");
 define("L_USER_NEW", "Nový uživatel");
 define("L_DESIGN", "Vzhled");
 define("L_COMPACT", "Pøehled zpráv");
@@ -378,7 +381,7 @@ define("L_ASSIGN", "Pøiøadit");
 define("L_ADMINPAGE", "Zpìt na hlavní nastavení");
 define("L_NO_CATEGORY", "Nebyla definována kategorie");
 define("L_NO_IMPORTED_SLICE", "Nebyl nastaven žádný webík pro pøíjem zpráv");
-define("L_NO_USERS", "Nebyl nalezen žádný uživatel");
+define("L_NO_USERS", "Nebyl nalezen žádný uživatel (skupina)");
 define("L_AND", "A");
 define("L_OR", "Nebo");
 define("L_SRCH_KW", "Vyhledat");
@@ -540,6 +543,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.4  2000/07/17 12:29:56  kzajicek
+Language changes
+
 Revision 1.3  2000/07/12 11:06:26  kzajicek
 names of image upload variables were a bit confusing
 

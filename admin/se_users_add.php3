@@ -43,7 +43,7 @@ function PrintAddableUser($usr,$usr_id, $editor_role, $new_usr=true) {  // in LD
 ?>
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_USER_ADD ?></b></td></tr>
+<tr><td class=tabtit><b>&nbsp;<?php echo L_PERM_NEW ?></b></td></tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <tr>
@@ -63,7 +63,7 @@ if ($GrpSrch || $UsrSrch) {
     $addable = FindGroups($grp);
    else
     $addable = FindUsers($usr); ?>
-  <tr><td class=tabtit><b>&nbsp;<?php echo L_USER_ADD ?></b></td></tr>
+  <tr><td class=tabtit><b>&nbsp;<?php echo L_PERM_SEARCH ?></b></td></tr>
   <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE"><?php 
 
@@ -116,8 +116,11 @@ if ($GrpSrch || $UsrSrch) {
 }
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:04  madebeer
-Initial revision
+Revision 1.2  2000/07/17 12:27:51  kzajicek
+Language changes
+
+Revision 1.1.1.1  2000/06/21 18:40:04  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:52  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
