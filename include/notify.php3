@@ -23,9 +23,12 @@ http://www.apc.org/
 # utility for notifying people of evets by email
 #
 
+if (!defined("NOTIFY_INCLUDED"))
+     define ("NOTIFY_INCLUDED",1);
+else return;
 
-if( !defined("ITEM_PHP3_INC") ) { include $GLOBALS[AA_INC_PATH]."item.php3"; }
-if( !defined("VIEW_PHP3_INC") ) { include $GLOBALS[AA_INC_PATH]."view.php3"; }  
+require $GLOBALS[AA_INC_PATH]."item.php3";
+require $GLOBALS[AA_INC_PATH]."view.php3"; 
 
 // notify users of an event
 function email_notify($slice_id, $event, $item_id, $extra = ""){

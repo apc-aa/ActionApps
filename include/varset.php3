@@ -29,8 +29,6 @@ else return;
 #         - simplifies database manipulation 
 #
 
-define("VARSET_PHP3_INC",1);
-
 class Cvariable {
   var $name;
   var $type;

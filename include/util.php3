@@ -513,6 +513,8 @@ function GetFieldNo($id) {
 # fills content arr with current content of $sel_in items (comma separated ids)
 function GetItemContent($ids, $use_short_ids=false) {
   global $db;
+  
+  if (!is_object ($db)) $db = new DB_AA;
 
   # construct WHERE clausule
   if( $ids and is_array($ids) ) {

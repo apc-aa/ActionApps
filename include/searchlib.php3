@@ -1,6 +1,9 @@
 <?php
 require $GLOBALS[AA_INC_PATH]."sql_parser.php3";
-define("SEARCHLIB_PHP3_INC",1);
+
+if (!defined ("SEARCHLIB_INCLUDED"))
+   	  define ("SEARCHLIB_INCLUDED",1);
+else return;
 
 //$Id$
 /* 

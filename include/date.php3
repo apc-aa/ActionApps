@@ -33,8 +33,6 @@ require $GLOBALS[AA_INC_PATH]."javascript.php3";
 #	Dropdown lists for Date, Month, Year
 #
 
-define("DATE_PHP3_INC",1);
-
 class datectrl {
 	var $name;
 	var $time;

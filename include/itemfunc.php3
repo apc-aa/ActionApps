@@ -18,6 +18,10 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require $GLOBALS[AA_INC_PATH]."notify.php3";
  
 # ----------------------- functions for default item values -------------------
 function default_fnc_now($param) {
@@ -590,6 +594,10 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true ) {
   global $db, $varset, $itemvarset;
 
+  if (!is_object ($db)) $db = new DB_AA;  
+  if (!is_object ($varset)) $varset = new CVarset();
+  if (!is_object ($itemvarset)) $itemvarset = new CVarset();
+
 /*  if( $slice_id == '50443b7564df3ac6d5e40defaecb5a75') {
     print_r($content4id);
 	print_r($fields);
@@ -636,6 +644,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
           # add to content table or to itemvarset
         $fncname($id, $f, $v, $fnc[param]); 
           # do not store multiple values if field is not marked as multiple
+          # ERRORNOUS
         if( !$f[multiple]!=1 ) 
           continue;
       }

@@ -31,7 +31,9 @@ http://www.apc.org/
 #      PRIMARY KEY (id), KEY (stored)
 #  );
 
-define("PAGECACHE_PHP3_INC",1);
+if (!defined ("PAGECACHE_INCLUDED"))
+	define ("PAGECACHE_INCLUDED",1);
+else return;
 
 class PageCache  {
   var $cacheTime=600;    # number of seconds to store cached informations

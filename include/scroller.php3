@@ -23,7 +23,9 @@ http://www.apc.org/
 #	Class scroller
 #	Implements navigation bar for scrolling through long lists
 #
-define("SCROLLER_PHP3_INC",1);
+if (!defined ("SCROLLER_INCLUDED"))
+	define ("SCROLLER_INCLUDED",1);
+else return;
 
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
 // break year for short year description is 1950

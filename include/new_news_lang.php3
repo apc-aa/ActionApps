@@ -320,4 +320,6 @@ define("L_V_MAIL_ERRORS_TO","Errors-To:");
 define("L_V_MAIL_SENDER","Sender:");
 define("L_V_MAIL_SUBJECT","Mail Subject:");
 define("L_V_MAIL_BODY","Mail Body:");
+
+define("L_AUTO_CHECKBOX", "Auto Update Checkbox");
 ?>

@@ -18,7 +18,9 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-define("ITEM_PHP3_INC",1);
+if (!defined("ITEM_INCLUDED"))
+     define ("ITEM_INCLUDED",1);
+else return;
 
 if( file_exists( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" ) ) {
   include( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" );
@@ -897,6 +899,17 @@ class item {
 	return $text;
   }
 
+  # live checkbox -- updates database immediately on clicking but does not reload the page
+  function f_k ($col, $param = "")
+  {
+    global $AA_INSTAL_PATH;
+    $short_id = $this->columns["short_id........"][0]["value"];
+    $name = "live_checkbox[".$short_id."][$col]";
+    $img = $this->getval($col) ? "on" : "off";
+    return "<a href='javascript:LiveCheckbox (\"$name\");'>
+    <img name='$name' src='".$AA_INSTAL_PATH."images/cb_".$img.".gif' border=0 alt='"._m("on")."'></a>";
+  }
+  
   # transformation function - transforms strings to another strings
   # Parameters: <from1>:<to1>:<from2>:<to2>:<default>
   #   if $col==<from1> the function returns <to1> 

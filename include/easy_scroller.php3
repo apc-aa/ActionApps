@@ -25,7 +25,9 @@ http://www.apc.org/
 # No SQL filters support (as in scroller.php3)
 #
 
-define("EASY_SCROLLER_PHP3_INC",1);
+if (!defined ("EASY_SCROLLER_INCLUDED"))
+      define ("EASY_SCROLLER_INCLUDED",1);
+else return;
 
 class easy_scroller {
 	var $classname = "easy_scroller";
