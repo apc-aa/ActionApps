@@ -1,3 +1,42 @@
+04/25/02 - module interface introduced (not only slices, but other modules are 
+           now possible to do. see /modules directory for module listing)
+         - new 'inline' aliases definition (in {} brckets)
+         - new 'propagate changes' possibility for constants
+         - new hierarchy constant editor
+         - new calendar view
+         - new possibility to search across more slices
+         - support for 'group by' setting in admin interface (not only 
+           categories) for slice.php3  (Admin -> Design -> Index)
+         - more configurable discussions - button definition, separator
+         - added css class to scroller
+         - new view scroller for use in views
+         - better newlines handling in joining feeds FEED_MAP_JOIN
+         - better handling of urls (optional 'http://') in url fields
+         - new f_j alias function for lowercase/upercase conversion
+         - possibility to redefine author (created_by........) from anonymous 
+           postig form
+         - new possibility to display random item in view
+         - possibility to use shorted set[] and cmd[] parameters in view
+         - banner display support in middle of shown items (banner parameter for
+           view.php3)
+         - possibility to redefine 'no item found' message by set[] url 
+           parameter in view.php3
+         - anonymous posting timezone correction bugfix, checbox now works, ...
+         - new scr_url parameter good for php included slice.php;
+         - sort[] parameter is not depend on conds[] now in slice.php3
+         - text inputboxes are checked for wrong HTML characters
+         - some display design corrections and other bugfixes
+         - new debuglog function for write debug output into file
+         - itemview moved to separate file
+         - support for on-view discussions;
+         - removed logs from files
+03/12/02 - new romanian language support (Thanks to Mihály Bakó, StrawberryNet 
+           Foundation), 
+         - new_news_lang.php3 file introduced for better support of many 
+           language versions
+         - fixed bug with file-upload in php 4.1.2
+         - aliases added to pagecache lookup for views - bugfix
+02/08/02 - corrected slovak language file by Norbert Brazda
 02/05/02 - the message 'no item found' can be redefined
          - added new parametrs to view - from, to, page and slice_id.
          - new transformation alias function f_x
