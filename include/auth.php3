@@ -1,6 +1,7 @@
 <?php
 /**
- * Auth module related functions: Event handlers and Auth maintenance.
+ * Auth feature (mod_auth_mysql) related functions: 
+ * Event handlers and maintenance.
  *
  * @package ReaderInput
  * @version $Id$
@@ -27,7 +28,6 @@ http://www.apc.org/
 */
 
 require_once "config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 

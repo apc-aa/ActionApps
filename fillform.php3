@@ -252,16 +252,21 @@ function fillForm () {
         
     if ($slice_info["type"] == "ReaderManagement") {
         if ($slice_info["permit_anonymous_edit"] == ANONYMOUS_EDIT_HTTP_AUTH) {
-            $db->tquery (
-                "SELECT item.id FROM content INNER JOIN item 
-                 ON content.item_id = item.id
-                 WHERE item.slice_id='".q_pack_id($slice_id)."'
-                 AND content.field_id='".FIELDID_USERNAME."'
-                 AND content.text='".addslashes($_SERVER["REMOTE_USER"])."'");
-            if ($db->num_rows() != 1) 
-            { echo "<!--HTTP AUTH USER not OK-->"; return; }
-            $db->next_record();
-            $my_item_id = unpack_id ($db->f("id"));
+            if (! $_SERVER["REMOTE_USER"])
+                ; // if no user is sent, this is perhaps the subscribe page
+                  // which is out of the protected folder
+            else {
+                $db->tquery (
+                  "SELECT item.id FROM content INNER JOIN item 
+                   ON content.item_id = item.id
+                   WHERE item.slice_id='".q_pack_id($slice_id)."'
+                   AND content.field_id='".FIELDID_USERNAME."'
+                   AND content.text='".addslashes($_SERVER["REMOTE_USER"])."'");
+                if ($db->num_rows() != 1) 
+                { echo "<!--HTTP AUTH USER not OK-->"; return; }
+                $db->next_record();
+                $my_item_id = unpack_id ($db->f("id"));
+            }
         }
         // access code
         else if ($GLOBALS["ac"]) {

@@ -1,6 +1,8 @@
 <?php
 /**
- * Various event handlers.
+ * Various event handlers. These handlers help to link different
+ * parts of AA, like Reader management slices with special Reader
+ * related features (Auth, Alerts, Mailman) or sending notifications.
  *
  * @package UserInput
  * @version $Id$
@@ -27,6 +29,7 @@ http://www.apc.org/
 */
 
 require_once $GLOBALS["AA_INC_PATH"]."auth.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mailman.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/event.php3";
 
 /** Called on updating an existing item. 
@@ -60,6 +63,7 @@ function Event_ItemAfterUpdate( $item_id, $slice_id, &$itemContent,
 {
     AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
     AlertsSendInstantAlert( $item_id, $slice_id );
+    MailmanCreateSynchroFiles ($slice_id);
     
     // notifications 
     switch ($itemContent->getStatusCode()) {
@@ -76,6 +80,7 @@ function Event_ItemAfterInsert( $item_id, $slice_id, &$itemContent )
     AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );    
     AlertsSendWelcome( $item_id, $slice_id, $itemContent );
     AlertsSendInstantAlert( $item_id, $slice_id );
+    MailmanCreateSynchroFiles ($slice_id);
     
     // notifications 
     switch ($itemContent->getStatusCode()) {
@@ -90,6 +95,7 @@ function Event_ItemsBeforeDelete( $item_ids, $slice_id ) {
        because they should be deleted on moving to Trash bin. But it is 
        perhaps better to make sure. */
     AuthDeleteReaders( $item_ids, $slice_id );
+    MailmanCreateSynchroFiles ($slice_id);
     return true;
 }
 
@@ -103,6 +109,7 @@ function Event_ItemsBeforeMove( $item_ids, $slice_id, $new_status ) {
 */
 function Event_ItemsAfterMove( $item_ids, $slice_id, $new_status ) {
     AuthUpdateReaders( $item_ids, $slice_id );
+    MailmanCreateSynchroFiles( $slice_id );
 } 
 
 /** Called on propagating a change in a constant value.
@@ -118,6 +125,7 @@ function Event_ItemsBeforePropagateConstantChanges (
 function Event_ItemsAfterPropagateConstantChanges (
     $constant_id, $oldvalue, $newvalue) {    
     AuthChangeGroups ($constant_id, $oldvalue, $newvalue);
+    MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue );
 }    
 
 ?>
