@@ -72,6 +72,13 @@ if( $add || $update ) {
         ValidateInput("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post, $err, false, "number");
         ValidateInput("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill, $err, false, "number");
         ValidateInput("lang_file", L_LANG_FILE, $lang_file, $err, true, "text");
+        ValidateInput("fileman_access", L_FILEMAN_ACCESS, $fileman_access, $err, true, "text");
+        ValidateInput("fileman_dir", L_FILEMAN_DIR, $fileman_dir, $err, false, "filename");
+
+        if ($fileman_dir) {
+            $db->query ("SELECT * FROM slice WHERE fileman_dir='$fileman_dir' AND id <> '".q_pack_id($slice_id)."'");
+            if ($db->num_rows()) $err[] = L_FILEMAN_DIR_USED;
+        }
     
         if( count($err) > 1)
           break;
@@ -101,6 +108,8 @@ if( $add || $update ) {
             $varset->add("template", "number", $template);
           $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
           $varset->add("permit_offline_fill", "number", $permit_offline_fill);
+          $varset->add("fileman_access", "text", $fileman_access);
+          $varset->add("fileman_dir", "text", $fileman_dir);
     
           $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
           if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
@@ -154,6 +163,8 @@ if( $add || $update ) {
           $varset->set("template", $template, "number");
           $varset->set("permit_anonymous_post", $permit_anonymous_post, "number");
           $varset->set("permit_offline_fill", $permit_offline_fill, "number");
+          $varset->set("fileman_access", $fileman_access, "text");
+          $varset->set("fileman_dir", $fileman_dir, "quoted");
     
              # create new slice
           if( !$db->query("INSERT INTO slice" . $varset->makeINSERT() )) {
