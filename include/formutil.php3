@@ -114,7 +114,7 @@ class inputform {
         $this->messages             = $settings['messages'];
         $this->result_mode          = $settings['result_mode'];  // if not supplied, standard form is used
         $this->template             = $settings['template'];
-	$this->formheading          = $settings['formheading']; //aded for MLX
+    $this->formheading          = $settings['formheading']; //aded for MLX
     }
 
     function printForm($content4id, $fields, $prifields, $edit, $slice_id) {
@@ -153,11 +153,11 @@ class inputform {
         }
 
 //        debug( $form, $GLOBALS['contentcache']);
-	//added for MLX
+    //added for MLX
         // print the inputform
         $CurItem = new item($content4id, GetAliasesFromFields($fields), '', $form, $remove_string);   # just prepare
-        
-	$out = $CurItem->get_item();
+
+    $out = $CurItem->get_item();
 
         FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"' );
         $parts = $GLOBALS['g_formpart'];
@@ -172,9 +172,9 @@ class inputform {
             FrmTabs( $tabs, 'formtabs' );
         }
 
-	if($this->formheading) // added for mlx tab
-		echo $this->formheading;
-	
+    if($this->formheading) // added for mlx tab
+        echo $this->formheading;
+
 
         echo $out;
 
@@ -182,7 +182,7 @@ class inputform {
             // print tabs for form switching
             FrmTabs( $tabs, 'formtabs' );
         }
-	
+
 
         $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );
         $buttons['encap']               = array('value' => (($encap) ? "true" : "false"));
@@ -273,8 +273,8 @@ class inputform {
                 $field_html_flag = (((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
             }            // Display the field
             $aainput = new aainputfield($field_value, $field_html_flag, $field_mode);
-	    //fix -- otherwise $field_value keeps array
-	    unset($field_value);
+        //fix -- otherwise $field_value keeps array
+        unset($field_value);
             $aainput->setFromField($f);
 
             // do not return template for anonymous form wizard
@@ -1075,13 +1075,15 @@ class aainputfield {
     *  shows boxes allowing to choose constant in a hiearchical way
     */
     function hierarchicalConstant($group_id, $levelCount, $boxWidth, $size, $horizontal=0, $firstSelect=0, $levelNames="") {
+        static $hcid = 0;
+        $hcid++;   // this is hc identifier
         list($name,$val,$add) = $this->prepareVars('multi');
         $levelCount = get_if( $levelCount, 3 );
         $size       = get_if( $size      , 5 );
 
         $this->field_name('plus');
-        $this->echoo( getHierConstInitJavaScript ($group_id, $levelCount, "inputform", false) );
-        $this->echoo( getHierConstBoxes ($levelCount, $horizontal, $name, false, $firstSelect, $boxWidth, $levelNames) );
+        $this->echoo( getHierConstInitJavaScript($hcid, $group_id, $levelCount, "inputform", false) );
+        $this->echoo( getHierConstBoxes($hcid, $levelCount, $horizontal, $name, false, $firstSelect, $boxWidth, $levelNames));
 
         $widthTxt = str_repeat("m",$boxWidth);
 
@@ -1103,8 +1105,8 @@ class aainputfield {
         $this->echovar($out);
         $this->echoo("</TD></TR></TABLE>\n");
         $this->echoo(getFrmJavascript("
-            hcInit();
-            hcDeleteLast ('$name');
+            hcInit($hcid);
+            hcDeleteLast('$name');
             listboxes[listboxes.length] = '$name';"));
         $this->helps('plus');
     }
@@ -2000,6 +2002,8 @@ function GetFormJavascript($show_func_used, $js_proove_fields) {
     $retval .= getFrmJavascriptFile('misc/htmlarea/htmlarea.js');
     $retval .= getFrmJavascriptFile('misc/htmlarea/popups/popup.js');
     $retval .= getFrmJavascriptFile('misc/htmlarea/aafunc.js');
+    $retval .= getFrmJavascriptFile('javascript/constedit.js');
+
 
     if ($show_func_used['txt'] || $show_func_used['edt']) {
         $retval .= getFrmJavascript('

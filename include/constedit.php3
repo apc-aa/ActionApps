@@ -16,7 +16,10 @@ if (!$group_id) exit;
 ?>
 
 <?php
-    showHierConstInitJavaScript ($group_id, $levelCount);
+    FrmJavascriptFile('javascript/constedit.js');
+    $hcid = 0;  // identifier of HC (used, wher multiple HCE are on one page
+
+    showHierConstInitJavaScript($hcid, $group_id, $levelCount);
 ?>
 <input type=hidden name='hcalldata' value=''>
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
@@ -28,7 +31,7 @@ if (!$group_id) exit;
 
 <?php if ($hide_value) echo '<input type="hidden" name="hcfValue">'; ?>
 
-<?php showHierConstBoxes ($levelCount, $levelsHorizontal, "", true, 0, 0, $levelNames); ?>
+<?php showHierConstBoxes($hcid, $levelCount, $levelsHorizontal, "", true, 0, 0, $levelNames); ?>
 
 <table border=0>
     <tr><td>
@@ -49,14 +52,14 @@ if (!$group_id) exit;
          <td><textarea name='hcfDesc' cols=45 rows=5 wrap='soft'></textarea></td></tr>"; ?>
     </td></tr>
     <tr><td valign=center align=center colspan=2>
-        <input type="button" value="Update" onClick="hcUpdateMe();">&nbsp;&nbsp;
-        <input type="button" value="Delete" onClick="hcDeleteMe(false);">&nbsp;&nbsp;
-        <input type="button" value="Delete With All Children" onClick="hcDeleteMe(true);">&nbsp;&nbsp;<br>
+        <input type="button" value="Update" onClick="hcUpdateMe('<?php echo $hcid ?>');">&nbsp;&nbsp;
+        <input type="button" value="Delete" onClick="hcDeleteMe('<?php echo $hcid ?>', false);">&nbsp;&nbsp;
+        <input type="button" value="Delete With All Children" onClick="hcDeleteMe('<?php echo $hcid ?>', true);">&nbsp;&nbsp;<br>
         <input type="checkbox" name="hcDoDelete">
         <?php echo _m("Check to confirm deleting"); ?>
     </td></tr>
     <tr><td colspan=2><hr></td></tr>
-    <tr><td colspan=2 align=center><input type=button onClick="hcSendAll();" value="<?php echo _m("Save all changes to database")?>"></td></tr>
+    <tr><td colspan=2 align=center><input type=button onClick="hcSendAll('<?php echo $hcid ?>');" value="<?php echo _m("Save all changes to database")?>"></td></tr>
     <tr><td class=tabtxt align=center colspan=2><?php echo _m("View settings") ?>: <input type="checkbox" name='hierarch' checked><?php echo _m("Hierarchical") ?>&nbsp;
 <input type="checkbox" name="hide_value" <?php if ($hide_value) echo "checked"; echo ">"._m("Hide value")?>&nbsp;
 <input type="checkbox" name="levelsHorizontal" <?php if ($levelsHorizontal) echo "checked"; echo ">"._m("Levels horizontal"); ?>&nbsp;&nbsp;
@@ -66,13 +69,8 @@ if (!$group_id) exit;
 </td></tr></table>
 </form>
 
-<script language=javascript>
-<!--
-    hcInit();
-// -->
-</script>
-
 <?php
+FrmJavascript("hcInit($hcid);");
 HTMLPageEnd();
 page_close();
 exit;
