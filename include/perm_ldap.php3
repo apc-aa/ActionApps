@@ -232,8 +232,9 @@ function AddGroup ($group, $flags = 0) {
   $record["objectclass"][0]   = "top";
   $record["objectclass"][1]   = "groupOfNames";
   $record["cn"] = $group["name"];
-  $record["member"] = "";
-  
+  $record["member"] = LDAP_BINDDN;     // in order to be compatible with LDAP 
+                                       // schema where member is required
+
   if ($group["description"]) $record["description"] = $group["description"];
 
   // add data to directory
@@ -402,8 +403,8 @@ function DelGroupMember ($group_id, $id, $flags = 0) {
   }
   
   if (sizeof($new["member"]) == 0) {
-     $new["member"][] = "";
-  }
+     $new["member"][] = LDAP_BINDDN;   // in order to be compatible with LDAP 
+  }                                    // schema where member is required
 
   $r=ldap_mod_replace($ds, $group_id, $new);
   ldap_close($ds);
@@ -690,6 +691,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.16  2001/12/12 18:42:01  honzam
+Fixed bug of not allowed empty group in LDAP
+
 Revision 1.15  2001/03/30 11:54:35  honzam
 offline filling bug and others small bugs fixed
 
