@@ -132,20 +132,4 @@ define( "L_DELETE_WDDX"," Zmazaù ");
 // copyright message for all screens
 define( "L_COPYRIGHT", 'Copyright (C) 2001 the <a href="http://www.apc.org">Association for Progressive  Communications (APC)</a>'); 
 
-// tranformation from english style datum (3/16/1999 or 3/16/99) to timestamp
-// break year for short year description is 1970
-function userdate2sec ($dttm, $time="") {
-  if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $dttm, $part))
-    if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $dttm, $part))
-      return "";
-  if( !ereg("^ *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *$", $time, $tpart))
-    return mktime(0,0,0,$part[1],$part[2],$part[3]);
-   else
-    return mktime($tpart[1],$tpart[2],$tpart[3],$part[1],$part[2],$part[3]);
-}
-
-function dateExample() {
-	return "mm/dd/yyyy";
-}
-
 ?>

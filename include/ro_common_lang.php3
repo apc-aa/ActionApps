@@ -137,35 +137,9 @@ define( "L_COPYRIGHT", 'Copyright (C) 2001 the
 
 define("DEFAULT_CODEPAGE","iso-8859-2");
 
-            
 # ------------------- New constants (not in other lang files ------------------
 
-// transformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
-// break year for short year description is 1950
-function userdate2sec ($dttm, $time="") {
-  if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $dttm, $part))
-    if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $dttm, $part))
-      return "";
-  if( !ereg("^ *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *$", $time, $tpart))
-    return mktime(0,0,0,$part[1],$part[2],$part[3]);
-   else
-    return mktime($tpart[1],$tpart[2],$tpart[3],$part[1],$part[2],$part[3]);
-}
-
-function dateExample() {
-	return "mm/dd/yyyy";
-}
-
-                   
 /*
-$Log$
-Revision 1.2  2002/04/25 11:16:50  honzam
-removed logs from files
-
-Revision 1.1  2002/03/12 16:28:38  honzam
-new romanian language supprt (Thanks to Mihály Bakó, StrawberryNet Foundation), new_news_lang.php3 file introduced for better support of many language versions
-
-
 Translation 1.0  2002/03/08 15:44:20  Mihály Bakó, StrawberryNet Foundation
 */
 ?>

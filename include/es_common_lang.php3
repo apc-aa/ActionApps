@@ -138,22 +138,5 @@ define( "L_COPYRIGHT", 'Copyright (C) 2001 the
 						<a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>'); 
 
 define("DEFAULT_CODEPAGE","iso-8859-1");
-
-
-            
-// transformación de estilo de fecha (3/16/1999 o 3/16/99) a formato de mySQL 
-function userdate2sec ($dttm, $time="") {
-  if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $dttm, $part))
-    if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $dttm, $part))
-      return "";
-  if( !ereg("^ *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *$", $time, $tpart))
-    return mktime(0,0,0,$part[1],$part[2],$part[3]);
-   else
-    return mktime($tpart[1],$tpart[2],$tpart[3],$part[1],$part[2],$part[3]);
-}
-
-function dateExample() {
-	return "mm/dd/aaaa";
-}
-                   
+                  
 ?>
