@@ -334,7 +334,11 @@ if( $sh_itm OR $x OR $o ) {
       $format['id'] = $p_slice_id;                  // set slice_id because of caching
 
       $itemview = new itemview($format, "", $aliases, null,"", "", $sess->MyUrl($slice_id, $encap), $disc);
-      $itemview->print_discussion();
+      $itemview->print_discussion('nocache');  // discussions should not be
+      // cached or even better (TODO) discussions should have its separate slice
+      // which is cached independently form the item itself through standard
+      // AA caching
+
     }
   }
   ExitPage();
