@@ -27,6 +27,12 @@ else return;
 # parameter Add_slice - lost slice_id (so no slice context)
 # parameter New_slice - used in sliceadd.php3 page
 #                     - do not unset slice_id but slice_id could not be defined
+/* @param $change_id .. change to another slice / module
+   @param $change_page .. when going to another module type, the script usually jumps to index.php3
+                             you can choose another page from admin dir, e.g. change_page=se_view.php3
+   @param $change_params .. array of parameters to be given to $change_page,
+                            e.g. change_params[vid]=8
+*/
 
  # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
@@ -235,8 +241,7 @@ if( !$Add_slice AND !$New_slice ) {
   # but not if we are jumping with the Jump module
   if( $module_change && !$jumping) {
     page_close();
-	//if ($g_modules[$slice_id]['type'] != 'S') { echo "Chacha"; exit; }
-    go_url( $sess->url($MODULES[$g_modules[$slice_id]['type']]['directory']."index.php3") );
+    go_other_module_entry_page ();
     exit;
   }
 
@@ -266,8 +271,21 @@ if( !$Add_slice AND !$New_slice ) {
 # but not if we are jumping with the Jump module
 if( $after_login || ($module_change && !$jumping)) {
   page_close();
-  go_url( $sess->url($MODULES[$g_modules[$slice_id]['type']]['directory']."index.php3") );
+  go_other_module_entry_page ();
   exit;
 }
+
+function go_other_module_entry_page ()
+{
+    global $slice_id, $change_page, $change_params, $MODULES, $g_modules, $sess;
+    $page = $change_page ? $change_page : "index.php3";
+    $page = $sess->url($MODULES[$g_modules[$slice_id]['type']]['directory'].$page);
+    if ($change_params) {
+        reset ($change_params);
+        while (list ($param, $val) = each ($change_params))
+            $page .= "&$param=$val";
+    }
+    go_url($page);
+}    
 
 ?>
