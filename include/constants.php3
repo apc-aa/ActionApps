@@ -226,21 +226,10 @@ function inputShowFuncTypes ()
                     'paramformat' => 'fnc' ),
     "hco" => array( 'name' => _m("Hierachical constants"), #hierarchy constant
                     'multiple' => false,
-                    'paramformat' => 'fnc:const:param' ));
-}
-
-function inputValidateTypes ()
-{
-    return array ("text" => _m("Text"),
-                   "url" => _m("URL"),
-                   "e-mail" => _m("E-mail"),
-                   "number" => _m("Number"),
-                   "id" => _m("Id"),
-                   "date" => _m("Date"),
-                   "bool" => _m("Boolean"),
-                   "user" => _m("User"),
-				   "reader" => _m("Reader Username = proove uniqueness"),
-				   "reader mail" => _m("Reader E-mail = proove uniqueness"));	//added 03/01/02,setu
+                    'paramformat' => 'fnc:const:param' ),
+    "pwd" => array( 'name' => _m("Password and Change password"), #hierarchy constant
+                    'multiple' => false,
+                    'paramformat' => 'fnc:param' ));
 }
                              
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
