@@ -21,6 +21,10 @@ http://www.apc.org/
 
 /*
 	Author: Jakub Adámek
+    
+    Params: $list = name of an array defined in constants_param_wizard.php3
+                    (or anywhere else, but must be included into this script)
+            $item = name of the first index in the $$list array
 	
 	This program should become a parameter wizard:
 	useful when choosing a field layout (text area, text field, ...)
