@@ -19,15 +19,18 @@ require $GLOBALS[AA_INC_PATH]."tableviews.php3";
 
 // ----------------------------------------------------------------------------------------    
 
-$tableview = $tableviews[$set["tview"]];
+$sess->register("tview");
+if ($set_tview) $tview = $set_tview;
+
+$tableview = GetTableView($tview);
         
 if (!is_array ($tableview)) {
-    MsgPage ($sess->url(self_base())."index.php3", "Bad Table view ID: ".$set["tview"]);
+    MsgPage ($sess->url(self_base()."index.php3"), "Bad Table view ID: ".$tview);
     exit;
 }
     
 if (! $tableview["cond"] ) {
-    MsgPage ($sess->url(self_base())."index.php3", L_NO_PS_ADD, "standalone");
+    MsgPage ($sess->url(self_base()."index.php3"), L_NO_PS_ADD, "standalone");
     exit;
 }
 
@@ -45,24 +48,38 @@ if ($tableview["help"])
     echo '<table border="0" cellspacing="0" cellpadding="5"><tr><td class="tabtit">'
         .$tableview["help"]
         .'</td></tr></table><br>';
-   
-if ($cmd["update"]) {
-    $tview = key ($cmd["update"]);
-    $key = key ($cmd["update"][$tview]);      
-    TableUpdate ($tableviews[$tview]["table"], $key, $val, $tableviews[$tview]["fields"]);
-}
-    
-else if ($cmd["delete"]) {
-    $tview = key ($cmd["delete"]);
-    $key = key ($cmd["delete"][$tview]);      
-    TableDelete ($tableviews[$tview]["table"], $key, $tableviews[$tview]["fields"]);
+
+if (is_array ($cmd)) {        
+    reset ($cmd);
+    while (list ($myviewid, $com) = each ($cmd)) {
+        if ($com["update"]) {
+            $key = key ($com["update"]);      
+            $myview = GetTableView ($myviewid);
+            $error = TableUpdate ($myview["table"], $key, $val, $myview["fields"]);
+            if ($error) PrintArray ($err);
+        }
+        // WARNING: a bit hackish: after inserting an item, the command is changed to edit it
+        if ($com["insert"]) {
+            $myview = GetTableView ($myviewid);
+            $newkey = TableInsert ($myview["table"], $val, $myview["fields"]);
+            unset ($cmd[$myviewid]["insert"]);
+            // show inserted record again
+            //if ($myview["type"] == "edit")
+            $cmd[$myviewid]["edit"][$newkey] = 1;
+        }
+        if ($com["delete"]) {
+            $key = key ($com["delete"]);      
+            $myview = GetTableView ($myviewid);
+            TableDelete ($myview["table"], $key, $myview["fields"]);
+        }
+    }
 }
   
 $script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
 
-$tabledit = new tabledit ($set["tview"], $script, $cmd, $tableview);
+$tabledit = new tabledit ($tview, $script, $cmd, $tableview, AA_INSTAL_URL."images/", $sess, "", "", "GetTableView");
 $err = $tabledit->view ($where);
-$err .= $tabledit->ShowChildren($tableviews);
 
 if ($err) echo "<b>$err</b>";
+page_close ();
 ?>
