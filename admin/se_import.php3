@@ -112,7 +112,7 @@ function UpdateImportExport(slice_id)
   echo $Msg;
 
 $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "accesskey"=>"S",
-                                      "add"=>"onClick = \"UpdateImportExport(\'".$slice_id."\')\""),
+                                      "add" =>"onClick=\"UpdateImportExport('".$slice_id."')\""),
                        "cancel"=>array("url"=>"se_fields.php3"));
 
 ?>

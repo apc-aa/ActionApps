@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 if(!IfSlPerm(PS_FEEDING)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "admin");
   exit;
-}  
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $catVS = new Cvarset();
@@ -45,7 +45,7 @@ if( ($slice_info[export_to_all] ? 1:0) != ($to_all ? 1:0) ) {
   $SQL= "UPDATE slice SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
   $db->query($SQL);
   writeLog( ($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), $slice_id);
-}  
+}
 
 // ------------------------ Export --------------------------
 // feeding lookup
@@ -59,10 +59,10 @@ do {
   if( isset($E) AND is_array($E) ) {  // Export to any slice
     reset($E);
     while( list(,$val) = each($E) ) {
-      if( $feedto[$val] ) {          
+      if( $feedto[$val] ) {
         $feedto[$val] = false;      // this feed is allready in database => don't change
         continue;
-      }  
+      }
       $expVS->clear();
       $expVS->add("from_id", "unpacked", $slice_id);
       $expVS->add("to_id", "unpacked", $val);
@@ -72,15 +72,15 @@ do {
       }
       writeLog("FEED_ENBLE", "$slice_id,$val");
     }
-  }        
+  }
   reset($feedto);
   while( list($to,$val) = each($feedto) ) {   // delete removed feeds
     if( $val ) {
       $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id='". q_pack_id($to). "'";
       $db->query( $SQL );
       writeLog("FEED_DSBLE", "$slice_id,$val");
-    }  
-  }  
+    }
+  }
 } while(false);
 
 // ------------------------ Import --------------------------
@@ -95,10 +95,10 @@ do {
   if( isset($I) AND is_array($I) ) {  // insert to categories
     reset($I);
     while( list(,$val) = each($I) ) {
-      if( $feedfrom[$val] ) {          
+      if( $feedfrom[$val] ) {
         $feedfrom[$val] = false;      // this feed is allready in database => don't change
         continue;
-      }  
+      }
       $catVS->clear();
       $catVS->add("to_id", "unpacked", $slice_id);
       $catVS->add("from_id", "unpacked", $val);
@@ -112,15 +112,15 @@ do {
       writeLog("FEED_ADD", "$slice_id,$val");
     }
   }
-  
+
   reset($feedfrom);
   while( list($from,$val) = each($feedfrom) ) {   // delete removed feeds
     if( $val ) {
       $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id='". q_pack_id($from). "'";
       $db->query( $SQL );
       writeLog("FEED_DEL", "$slice_id,$val");
-    }  
-  }  
+    }
+  }
 } while(false);
 
 
@@ -134,4 +134,4 @@ if( count($err) <= 1 ) {
 
 page_close();
 
-?> 
+?>
