@@ -1,3 +1,7 @@
+01/23/03 - doc/install Recommended php4.0.6 or later, 
+         - instructions for non-shell accounts
+         - added notes to install-3 that these packages are often preinstalled
+         - added admin/test.php3 to CVS to enable checking options
 01/23/03 - stringexpand - fixed bug in math
 01/23/03 - commented out insecure default_fnc_variable (mitra)
          - fixed zids.guesstype to allow for buggy shorter ids (14 or 15 char) 

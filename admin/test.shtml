@@ -1,0 +1,10 @@
+<HTML>
+<HEAD>
+<TITLE>Testing server side includes</TITLE>
+</HEAD>
+<BODY>
+Including a PHP page from SHTML. You should see standard php info beneath here
+
+<!--#include virtual="./test.php3" -->
+
+</BODY></HTML>
