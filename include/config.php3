@@ -75,6 +75,10 @@ define("SCROLLER_LENGTH", 7);
 # Would you like to display debug messagess?
 define("DEBUG_FLAG", true);
 
+# If you use Web.net's extended items table, uncomment this definition
+
+# define("EXTENDED_ITEM_TABLE", "1");
+
 if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
   echo "you must set AA_INC_PATH and other variables in config.php3 !";
 };
@@ -83,12 +87,9 @@ if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
 require ($AA_INC_PATH . "en_common_lang.php3");  # English
 # require ($AA_INC_PATH . "cz_common_lang.php3");  # Czech
 
-define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
-
 # The folloging items have to be changed or added if you create new
 # action applications. For a first time installation, you don't need
 # to care about them.
-
 
 define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
 
@@ -97,6 +98,7 @@ define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
 #    we can say, type is the same as application
 # "News (En)" is name of this slice type (application)
 # "en_news_lang.php3" is the name of use language file for this slice type
+
 $ActionAppConfig[en_news][name] = "News (En)";
 $ActionAppConfig[en_news][file] = "en_news_lang.php3";
 
@@ -111,6 +113,12 @@ $ActionAppConfig[en_all][file] = "en_all_lang.php3";
 
 $ActionAppConfig[en_press_rel][name] = "Press release publisher (En)";
 $ActionAppConfig[en_press_rel][file] = "en_press_lang.php3";
+
+$ActionAppConfig[en_jobs_rel][name] = "Jobs listing (En)";
+$ActionAppConfig[en_jobs_rel][file] = "en_jobs_lang.php3";
+
+$ActionAppConfig[en_events_rel][name] = "Events (En)";
+$ActionAppConfig[en_events_rel][file] = "en_events_lang.php3";
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG

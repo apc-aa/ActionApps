@@ -51,6 +51,28 @@ $aliases["_#IMG_HGHT"] = array("fce"=>"f_g", "param"=>"", "hlp" => L_HLP_IMG_HGH
 $aliases["_#ITEM_ID#"] = array("fce"=>"f_n", "param"=>"id", "hlp" => L_HLP_ITEM_ID);
 $aliases["_#CATEG_ID"] = array("fce"=>"f_n", "param"=>"category_id", "hlp" => L_HLP_CATEGORY_ID);
 
+
+if( defined("EXTENDED_ITEM_TABLE") ) {
+  $aliases["_#SRC_DEST"] = array("fce"=>"f_h", "param"=>"source_desc", "hlp" => L_HLP_SOURCE_DESC);
+  $aliases["_#SRC_ADDR"] = array("fce"=>"f_h", "param"=>"source_address", "hlp" => L_HLP_SOURCE_ADDRESS);
+  $aliases["_#SRC_CITY"] = array("fce"=>"f_h", "param"=>"source_city", "hlp" => L_HLP_SOURCE_CITY);
+  $aliases["_#SRC_PROV"] = array("fce"=>"f_h", "param"=>"source_prov", "hlp" => L_HLP_SOURCE_PROV);
+  $aliases["_#SRC_CNTR"] = array("fce"=>"f_h", "param"=>"source_country", "hlp" => L_HLP_SOURCE_COUNTRY);
+  $aliases["_#STR_DATE"] = array("fce"=>"f_h", "param"=>"start_date", "hlp" => L_HLP_START_DATE);
+  $aliases["_#END_DATE"] = array("fce"=>"f_h", "param"=>"end_date", "hlp" => L_HLP_END_DATE);
+  $aliases["_#TIME####"] = array("fce"=>"f_h", "param"=>"time", "hlp" => L_HLP_TIME);
+  $aliases["_#CON_NAME"] = array("fce"=>"f_h", "param"=>"con_name", "hlp" => L_HLP_CON_NAME);
+  $aliases["_#CON_MAIL"] = array("fce"=>"f_h", "param"=>"con_email", "hlp" => L_HLP_CON_EMAIL);
+  $aliases["_#CON_TEL#"] = array("fce"=>"f_h", "param"=>"con_phone", "hlp" => L_HLP_CON_PHONE);
+  $aliases["_#CON_FAX#"] = array("fce"=>"f_h", "param"=>"con_fax", "hlp" => L_HLP_CON_FAX);
+  $aliases["_#LOC_NAME"] = array("fce"=>"f_h", "param"=>"loc_name", "hlp" => L_HLP_LOC_NAME);
+  $aliases["_#LOC_ADDR"] = array("fce"=>"f_h", "param"=>"loc_address", "hlp" => L_HLP_LOC_ADDRESS);
+  $aliases["_#LOC_CITY"] = array("fce"=>"f_h", "param"=>"loc_city", "hlp" => L_HLP_LOC_CITY);
+  $aliases["_#LOC_PROV"] = array("fce"=>"f_h", "param"=>"loc_prov", "hlp" => L_HLP_LOC_PROV);
+  $aliases["_#LOC_CNTR"] = array("fce"=>"f_h", "param"=>"loc_country", "hlp" => L_HLP_LOC_COUNTRY);
+}
+
+
 function txt2html($txt) {          #converts plain text to html
   $txt = nl2br(htmlspecialchars($txt));
 //  $txt = ERegI_Replace('  ', ' &nbsp;', $txt);
@@ -238,6 +260,9 @@ function PrintAliasHelp() {
 
 /*
 $Log$
+Revision 1.4  2000/10/10 18:28:00  honzam
+Support for Web.net's extended item table
+
 Revision 1.3  2000/08/17 15:17:55  honzam
 new possibility to redirect item displaying (for database changes see CHANGES)
 

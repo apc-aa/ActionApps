@@ -67,6 +67,12 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 $publishdate = new datectrl("publish_date", 1, 8);
 $expirydate = new datectrl("expiry_date", 0, 15, true);
+
+if( defined("EXTENDED_ITEM_TABLE") ) {
+  $startdate = new datectrl("start_date", 1, 8);
+  $enddate = new datectrl("end_date", 1, 8);
+}
+
 $varset = new Cvarset();
 
 //lookup (slice) 
@@ -104,6 +110,13 @@ if ($db->next_record()){
     $publishdate->setdate($publish_date);
   if( $expiry_date != "")
     $expirydate->setdate($expiry_date);
+
+  if( defined("EXTENDED_ITEM_TABLE") ) {
+    if( $start_date != "")
+      $startdate->setdate($start_date);
+    if( $end_date != "")
+      $enddate->setdate($end_date);
+  }    
 } 
 
 if($update) {
@@ -121,7 +134,7 @@ if($update) {
 // poor checkbox doesn't have value if unchecked
 $link_only = ($link_only ? 1 : 0);  
 $highlight = ($highlight ? 1 : 0); 
-$html_formatted = ($html_formatted ? 1 : 0 ); 
+$html_formatted = ($html_formatted ? 1 : 0 );
 
 // validate input data
 if( $insert || $update )
@@ -146,9 +159,31 @@ if( $insert || $update )
     ValidateInput("cp_code", L_CP_CODE, &$cp_code, &$err, $needed[cp_code], "text");
     ValidateInput("status_code", L_STATUS_CODE, &$status_code, &$err, $needed[status_code], "number");
     ValidateInput("category_id", L_CATEGORY_ID, &$category_id, &$err, $needed[category_id], "id");
-  
+
     $publishdate->ValidateDate (L_PUBLISH_DATE, &$err);
     $expirydate->ValidateDate (L_EXPIRY_DATE, &$err);
+  
+
+    if( defined("EXTENDED_ITEM_TABLE") ) {
+      ValidateInput("source_desc", L_SOURCE_DESC, &$source_desc, &$err, $needed[source_desc], "text");
+      ValidateInput("source_address", L_SOURCE_ADDRESS, &$source_address, &$err, $needed[source_address], "text");
+      ValidateInput("source_city", L_SOURCE_CITY, &$source_city, &$err, $needed[source_city], "text");
+      ValidateInput("source_prov", L_SOURCE_PROV, &$source_prov, &$err, $needed[source_prov], "text");
+      ValidateInput("source_country", L_SOURCE_COUNTRY, &$source_country, &$err, $needed[source_country], "text");
+      ValidateInput("time", L_TIME, &$time, &$err, $needed[time], "text");
+      ValidateInput("con_name", L_CON_NAME, &$con_name, &$err, $needed[con_name], "text");
+      ValidateInput("con_email", L_CON_EMAIL, &$con_email, &$err, $needed[con_email], "text");
+      ValidateInput("con_phone", L_CON_PHONE, &$con_phone, &$err, $needed[con_phone], "text");
+      ValidateInput("con_fax", L_CON_FAX, &$con_fax, &$err, $needed[con_fax], "text");
+      ValidateInput("loc_name", L_LOC_NAME, &$loc_name, &$err, $needed[loc_name], "text");
+      ValidateInput("loc_address", L_LOC_ADDRESS, &$loc_address, &$err, $needed[loc_address], "text");
+      ValidateInput("loc_city", L_LOC_CITY, &$loc_city, &$err, $needed[loc_city], "text");
+      ValidateInput("loc_prov", L_LOC_PROV, &$loc_prov, &$err, $needed[loc_prov], "text");
+      ValidateInput("loc_country", L_LOC_COUNTRY, &$loc_country, &$err, $needed[loc_country], "text");
+
+      $startdate->ValidateDate (L_START_DATE, &$err);
+      $enddate->ValidateDate (L_END_DATE, &$err);
+    }    
 
     if( count($err) > 1)
       break;
@@ -194,6 +229,26 @@ if( $insert || $update )
     $varset->add("contact1", "unpacked", $contact1);
     $varset->add("contact2", "unpacked", $contact2);
     $varset->add("contact3", "unpacked", $contact3);
+  
+    if( defined("EXTENDED_ITEM_TABLE") ) {
+      $varset->add("source_desc", "quoted", $source_desc); 
+      $varset->add("source_address", "quoted", $source_address); 
+      $varset->add("source_city", "quoted", $source_city); 
+      $varset->add("source_prov", "quoted", $source_prov);     
+      $varset->add("source_country", "quoted", $source_country);
+      $varset->add("start_date", "text", $startdate->getdate());    
+      $varset->add("end_date", "text", $enddate->getdate());  
+      $varset->add("time", "quoted", $time);
+      $varset->add("con_name", "quoted", $con_name);
+      $varset->add("con_email", "quoted", $con_email);
+      $varset->add("con_phone", "quoted", $con_phone); 
+      $varset->add("con_fax", "quoted", $con_fax); 
+      $varset->add("loc_name", "quoted", $loc_name);
+      $varset->add("loc_address", "quoted", $loc_address);
+      $varset->add("loc_city", "quoted", $loc_city);
+      $varset->add("loc_prov", "quoted", $loc_prov);    
+      $varset->add("loc_country", "quoted", $loc_country); 
+    }  
     
     if( $update )
     {
@@ -282,6 +337,12 @@ if($edit) {
     $id = $tmp_id;  
 		$publishdate->setdate($db->f("publish_date"));
 		$expirydate->setdate($db->f("expiry_date"));
+
+    if( defined("EXTENDED_ITEM_TABLE") ) {
+  		$enddate->setdate($db->f("end_date"));
+  		$startdate->setdate($db->f("start_date"));
+    }
+
     $category_id = unpack_id($db->f("category_id")); 
   }
 }
@@ -396,6 +457,77 @@ echo $Msg;
       </td>
     </tr><?php
   }    
+
+  if( defined("EXTENDED_ITEM_TABLE") ) {
+    if($show[source_desc])
+      FrmTextarea("source_desc", L_SOURCE_DESC, safe($source_desc), 8, 60, $needed[source_desc]);
+    if($show[source_address]) 
+      FrmInputText("source_address",L_SOURCE_ADDRESS, safe($source_address), 254, 60, $needed[source_address]);
+    if($show[source_city])
+      FrmInputText("source_city", L_SOURCE_CITY, safe($source_city), 254, 60, $needed[source_city]);
+    if($show[source_prov])
+      FrmInputText("source_prov", L_SOURCE_PROV, safe($source_prov), 254, 60, $needed[source_prov]);
+    if($show[source_country])
+      FrmInputText("source_country", L_SOURCE_COUNTRY, safe($source_country), 254, 60, $needed[source_country]);
+    
+    if($show[start_date]) { ?>
+      <tr> 
+       <td class=tabtxt><b><?php
+        echo L_START_DATE;
+        Needed($needed[start_date])?>
+        </b></td>
+       <td><?php 
+        echo $startdate->pselect();
+        echo $err["start_date"] ?> 
+       </td>
+      </tr><?php 
+    } 
+    if($show[end_date]) { ?> 
+      <tr> 
+       <td class=tabtxt><b><?php 
+        echo L_END_DATE; 
+        Needed($needed[end_date]) ?>
+        </b></td> 
+       <td><?php
+        echo $enddate->pselect(); 
+        echo $err["end_date"] ?> 
+       </td> 
+      </tr><?php  
+    } 
+    if($show[time]) 
+      FrmInputText("time", L_TIME, safe($time), 254, 60, $needed[time]); 
+    
+    if($show[con_name]) 
+      FrmInputText("con_name", L_CON_NAME, safe($con_name), 254, 60, $needed[con_name]);
+    if($show[con_email])
+      FrmInputText("con_email",L_CON_EMAIL, safe($con_email), 254, 60, $needed[con_email]); 
+    if($show[con_phone])
+      FrmInputText("con_phone", L_CON_PHONE, safe($con_phone), 254, 60, $needed[con_phone]); 
+    if($show[con_fax]) 
+      FrmInputText("con_fax", L_CON_FAX, safe($con_fax), 254, 60, $needed[con_fax]); 
+    
+    if($show[loc_name]) 
+      FrmInputText("loc_name",L_LOC_NAME, safe($loc_name), 254, 60, $needed[loc_name]); 
+    if($show[loc_address]) 
+      FrmInputText("loc_address", L_LOC_ADDRESS, safe($loc_address), 254, 60, $needed[loc_address]); 
+    if($show[loc_city])
+      FrmInputText("loc_city", L_LOC_CITY, safe($loc_city), 254, 60, $needed[loc_city]);
+    if($show[loc_prov]) 
+      FrmInputText("loc_prov", L_LOC_PROV, safe($loc_prov), 254, 60, $needed[loc_prov]); 
+    if($show[loc_country]) 
+      FrmInputText("loc_country", L_LOC_COUNTRY, safe($loc_country), 254, 60, $needed[loc_country]);
+
+// if($show[con_name]) 
+//   FrmInputText("con_name", L_CON_NAME, safe($con_name), 254, 60, $needed[con_name]); 
+// if($show[con_email]) 
+//   FrmInputText("con_email", L_CON_EMAIL, safe($con_email), 254, 60, $needed[con_email]);
+// if($show[con_phone]) 
+//   FrmInputText("con_phone", L_CON_PHONE, safe($con_phone), 254, 60,$needed[con_phone]);
+// if($show[con_fax])
+//   FrmInputText("con_fax", L_CON_FAX, safe($con_fax), 254, 60, $needed[con_fax]);
+
+  }
+  
   if($show[edit_note]) 
     FrmTextarea("edit_note", L_EDIT_NOTE, safe($edit_note), 4, 60, $needed[edit_note]); ?>
 <tr>
@@ -448,8 +580,8 @@ if( !$encap )
 page_close(); 
 /*
 $Log$
-Revision 1.9  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+Revision 1.10  2000/10/10 18:28:00  honzam
+Support for Web.net's extended item table
 
 Revision 1.8  2000/08/17 15:14:32  honzam
 new possibility to redirect item displaying (for database changes see CHANGES)

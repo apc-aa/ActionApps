@@ -551,14 +551,54 @@ define("L_ACTIVE_BIN_PENDING", "Aktuální - Pøipravené");
 define("L_ACTIVE_BIN_EXPIRED_MENU", "... expirované");
 define("L_ACTIVE_BIN_PENDING_MENU", "... pøipravené");
 
+define("L_SOURCE_DESC", "Org Description");
+define("L_SOURCE_ADDRESS", "Street Adress");
+define("L_SOURCE_CITY", "City");
+define("L_SOURCE_PROV", "Province/State");
+define("L_SOURCE_COUNTRY", "Country");
+define("L_TIME", "Time");
+define("L_CON_NAME", "Contact Name");
+define("L_CON_EMAIL", "Contact E-mail");
+define("L_CON_PHONE", "Contact phone");
+define("L_CON_FAX", "Contact FAX");
+define("L_LOC_NAME", "Location Name");
+define("L_LOC_ADDRESS", "Location Street Address");
+define("L_LOC_CITY", "Location City");
+define("L_LOC_PROV", "Location Province/State");
+define("L_LOC_COUNTRY", "Location Country");
+define("L_START_DATE", "Start Date");
+define("L_END_DATE", "End Date");
+
+define("L_HLP_SOURCE_DESC", "Alias for Org Description");
+define("L_HLP_SOURCE_ADDRESS", "Alias for Street Adress");
+define("L_HLP_SOURCE_CITY", "Alias for City");
+define("L_HLP_SOURCE_PROV", "Alias for Province/State");
+define("L_HLP_SOURCE_COUNTRY", "Alias for Country");
+define("L_HLP_TIME", "Alias for Time");
+define("L_HLP_CON_NAME", "Alias for Contact Name");
+define("L_HLP_CON_EMAIL", "Alias for Contact E-mail");
+define("L_HLP_CON_PHONE", "Alias for Contact phone");
+define("L_HLP_CON_FAX", "Alias for Contact FAX");
+define("L_HLP_LOC_NAME", "Alias for Location Name");
+define("L_HLP_LOC_ADDRESS", "Alias for Location Street Address");
+define("L_HLP_LOC_CITY", "Alias for Location City");
+define("L_HLP_LOC_PROV", "Alias for Location Province/State");
+define("L_HLP_LOC_COUNTRY", "Alias for Location Country");
+define("L_HLP_START_DATE", "Alias for Start Date");
+define("L_HLP_END_DATE", "Alias for End Date");
+
 //----------------------------
-//define("", "");   //prepared for new constants
+//define("", "");
+//prepared for new constants
  
 $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven', 
 		'Èervenec', 'Srpen', 'Záøí', 'Øíjen', 'Listopad', 'Prosinec');
 
 /*
 $Log$
+Revision 1.14  2000/10/10 18:28:00  honzam
+Support for Web.net's extended item table
+
 Revision 1.13  2000/08/17 15:17:55  honzam
 new possibility to redirect item displaying (for database changes see CHANGES)
 

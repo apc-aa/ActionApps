@@ -145,12 +145,16 @@ if( !$Add_slice AND !$New_slice ) {
     page_close();             // save variables
     // Netscape does not reload when URL does not change
     $netscape = (r=="") ? "r=1" : "r=".++$r;
-    header("Location: ". con_url($sess->url($PHP_SELF),$netscape));
+    $url_foo = con_url($sess->url($PHP_SELF),$netscape);
+    header("Location: $url_foo");
     exit;
   }
 }
 /*
 $Log$
+Revision 1.5  2000/10/10 18:28:00  honzam
+Support for Web.net's extended item table
+
 Revision 1.4  2000/08/03 15:36:52  kzajicek
 The WDDX warning deleted, there are other potential redirects in other files
 

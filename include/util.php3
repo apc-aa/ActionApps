@@ -23,12 +23,18 @@ http://www.apc.org/
 # Miscellaneous utility functions
 #
 
-  // list of text fields in items table (used in feeding.php3 for inserting into database)
-$item_fields_text = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height", "redirect");
-$item_fields_num  = array("status_code", "link_only", "html_formatted", "highlight" );
-
-  // list of fields in packed array of shown fields in itemedit.php3
-$itemedit_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_upload=>L_IMG_UPLOAD, redirect=>L_REDIRECT );
+if( defined("EXTENDED_ITEM_TABLE") ) {
+  $item_fields_text = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height", "redirect", "source_desc", "source_address", "source_city", "source_prov", "source_country", "start_date", "end_date", "time", "con_name", "con_email", "con_phone", "con_fax", "loc_name", "loc_address", "loc_city", "loc_prov", "loc_country");
+  $item_fields_num  = array("status_code", "link_only", "html_formatted", "highlight" );
+    // list of fields in packed array of shown fields in itemedit.php3
+  $itemedit_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_upload=>L_IMG_UPLOAD, redirect=>L_REDIRECT, con_name=>L_CON_NAME, con_email=>L_CON_EMAIL, con_phone=>L_CON_PHONE, con_fax=>L_CON_FAX, source_desc=>L_SOURCE_DESC, source_address=>L_SOURCE_ADDRESS, source_city=>L_SOURCE_CITY, source_prov=>L_SOURCE_PROV, source_country=>L_SOURCE_COUNTRY, start_date=>L_START_DATE, end_date=>L_END_DATE, time=>L_TIME, loc_name=>L_LOC_NAME, loc_address=>L_LOC_ADDRESS, loc_city=>L_LOC_CITY, loc_prov=>L_LOC_PROV, loc_country=>L_LOC_COUNTRY );
+} else {
+    // list of text fields in items table (used in feeding.php3 for inserting into database)
+  $item_fields_text = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height", "redirect");
+  $item_fields_num  = array("status_code", "link_only", "html_formatted", "highlight" );
+    // list of fields in packed array of shown fields in itemedit.php3
+  $itemedit_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_upload=>L_IMG_UPLOAD, redirect=>L_REDIRECT );
+}
 
   // list of fields in packed array of shown fields in big_srch.php3
 $shown_search_fields = array( slice=>L_SRCH_SLICE, category=>L_SRCH_CATEGORY, author=>L_SRCH_AUTHOR, language=>L_SRCH_LANGUAGE, from=>L_SRCH_FROM, to=>L_SRCH_TO, headline=>L_SRCH_HEADLINE, abstract=>L_SRCH_ABSTRACT, full_text=>L_SRCH_FULL_TEXT, edit_note=>L_SRCH_EDIT_NOTE);
@@ -204,10 +210,8 @@ function pack_id ($unpacked_id){
 }
 
 # returns packed and quoted md5 id
-function q_pack_id ($unpacked_id, $debug=""){
-  if( $debug ) echo " unpacked: ". $unpacked_id;
+function q_pack_id ($unpacked_id){
   $foo = pack_id($unpacked_id);
-  if( $debug ) echo " foo: ". $foo;
   return (quote($foo));
 } 
   
@@ -327,8 +331,8 @@ if (substr(PHP_VERSION, 0, 1) < "4") {
 
 /*
 $Log$
-Revision 1.8  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+Revision 1.9  2000/10/10 18:28:00  honzam
+Support for Web.net's extended item table
 
 Revision 1.7  2000/08/23 12:29:58  honzam
 fixed security problem with inc parameter to slice.php3

@@ -24,7 +24,6 @@ require $GLOBALS[AA_INC_PATH] . "varset.php3";
 require $GLOBALS[AA_INC_PATH] . "item.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
 
-//huh("-=-$action==");
 function MoveItems($chb,$status) {
   global $db;
 //p_arr_m($chb);
@@ -585,6 +584,9 @@ echo '
 
 /*
 $Log$
+Revision 1.10  2000/10/10 18:28:00  honzam
+Support for Web.net's extended item table
+
 Revision 1.9  2000/10/10 10:01:45  honzam
 default sorting of items is the newset first
 
