@@ -788,11 +788,13 @@ function HtmlPageBegin() {
   echo HTML_PAGE_BEGIN;
 }  
 
+include $GLOBALS[AA_INC_PATH] . "menu.php3";
+
 # Displays page with message and link to $url
 #   url - where to go if user clicks on Back link on this message page
 #   msg - displayed message
 #   mode - items/admin/standalone for surrounding of message
-function MsgPage($url, $msg, $mode="standalone") {
+function MsgPage($url, $msg, $mode="standalone", $menu="") {
   global $sess, $auth, $slice_id;
 
   if( !isset($sess) AND ($mode!="standalone")) {
@@ -810,10 +812,11 @@ function MsgPage($url, $msg, $mode="standalone") {
 
   switch( $mode ) {
     case "items":    // Message page on main page (index.php3) or such page
-      include $GLOBALS[AA_INC_PATH] . "se_inc.php3";
+    case "sliceadmin":
+      showMenu ($aamenus, "sliceadmin", $menu);
       break;
     case "admin":    // Message page on admin pages (se_*.php3) or such page
-      include $GLOBALS[AA_INC_PATH] . "aa_inc.php3";
+      showMenu ($aamenus, "aaadmin", $menu);
       break;
   }    
 
@@ -1044,7 +1047,10 @@ function html2text ($html) {
     }
 
     // strip HTML tags
-    $search = array ("'<script[^>]*?>.*?</script>'si",  // Strip out javascript
+    $search = array (
+                 "'<br>'si",
+                 "'</p>'si",
+                 "'<script[^>]*?>.*?</script>'si",  // Strip out javascript
                  "'<[\/\!]*?[^<>]*?>'si",           // Strip out html tags
                  "'([\r\n])[\s]+'",                 // Strip out white space
                  "'&(quot|#34);'i",                 // Replace html entities
@@ -1054,7 +1060,10 @@ function html2text ($html) {
                  "'&(nbsp|#160);'i",
                  "'&#(\d+);'e");                    // evaluate as php
 
-    $replace = array ("",
+    $replace = array (
+                  "\n",
+                  "\n",
+                  "",
                   "",
                   "\\1",
                   "\"",
@@ -1068,10 +1077,11 @@ function html2text ($html) {
 }
 
 /*  Function:    mail_html_text
+    Author:      Jakub Adámek
     Purpose:     sends safely HTML messages
     Parameters:  same as PHP mail(), plus $charset 
-                 $use_base64 - set to 0 if you want to pass the message 8 bit
-    Description: some e-mail clients don't understand HTML. This function Creates a multipart message containing both the HTML and the plain-text version of the message (by leaving out the HTML tags). */
+                 $use_base64 - set to 0 if you want to pass the message 8 bit encoded
+    Description: some e-mail clients don't understand HTML. This function creates a multipart message containing both the HTML and the plain-text version of the message (by leaving out the HTML tags). Each e-mail client displays what it understands better (and hides all the rest of the message). */
 
 function mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1) {
     $boundary = "-------AA-MULTI-".gensalt (20)."------";
