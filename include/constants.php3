@@ -68,6 +68,15 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "ro" => "iso-8859-2",
                             "sk" => "windows-1250",
                             "ja" => "EUC-JP");
+                            
+$LANGUAGE_NAMES = array ("cz" => "Èeština",
+                         "en" => "English",
+                         "es" => "Espanol",
+                         "de" => "Deutsch",
+                         "ro" => "Romanian",
+                         "sk" => "Slovenština",
+                         "ja" => "Japanian");
+                            
                          
 # MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and 
 # specifies how many items from the begining we have to search
