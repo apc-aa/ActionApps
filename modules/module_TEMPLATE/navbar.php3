@@ -1,7 +1,7 @@
 <?php # navbar - application navigation bar for the module
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -27,14 +27,14 @@ http://www.apc.org/
 
 
 
-# This is the definition of main navigation bar. The navigation bar can be 
-# slightly different for the modules, but in general it should look the 
+# This is the definition of main navigation bar. The navigation bar can be
+# slightly different for the modules, but in general it should look the
 # way for all the modules. There should be APC-AA logo, name of page, module
 # switching dropdown menu, ...
 
 if( !$module_id )
   $r_slice_headline = _m("New slice");
-  
+
 if( $editor_page )
   $nb_context = _m("Code&nbsp Manager");
  elseif( $settings_page )
@@ -43,11 +43,11 @@ if( $editor_page )
   $nb_context = _m("Users");
 
 # modules are in directory one level deeper than scripts in /admin/...
-# if the '/admin' is in path, this navbar is called just after swithing to 
+# if the '/admin' is in path, this navbar is called just after swithing to
 # this module - it is called from slice's /admin directory
 $nb_backpath = ( (strpos($PHP_SELF, '/admin/') > 0 ) ? '' : '../' );
-  
-$nb_manager = ( $editor_page ? 
+
+$nb_manager = ( $editor_page ?
   '<span class=nbdisable>'. _m("Code&nbsp Manager") .'</span>':
   '<a href="'. $sess->url("index.php3"). '"><span class=nbenable>'. _m("Code&nbsp Manager") .'</span></a>');
 
@@ -59,7 +59,7 @@ $nb_view = (!$r_slice_view_url ?
   '<span class=nbenable>'. _m("View site") .'</span>' :
   " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". _m("View site") .'</span></a>');
 
-$nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. _m("APC Action Applications") .'"></a>';
+$nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. _m("APC ActionApps") .'"></a>';
 
 $nb_go = '<span class=nbenable>'. _m("Go") .'</span>';
 
@@ -90,6 +90,9 @@ echo "</TD></TR></TABLE>";
 
 /*
 $Log$
+Revision 1.5  2003/10/24 00:00:32  honzam
+Action Application replaced by ActionApps name
+
 Revision 1.4  2003/01/27 14:20:22  jakubadamek
 fixed language constants
 

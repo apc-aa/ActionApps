@@ -1,32 +1,32 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-	<title>Action Aplication AAdb Database Description</title>
+    <title>ActionApps AAdb Database Description</title>
   <style type="text/css"> <!--
     BODY {
       font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
       font-size : 9pt;
-    } 
+    }
     H2 {
       font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
       font-size : 12pt;
       border-top-style : solid;
-    } 
+    }
     CODE {
       font-family : "Courier New", Courier, monospace;
       font-size : 10pt;
-    } 
+    }
     .description {
       font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
       margin-left: 44px;
       font-size : 9pt;
     } -->
-  </style> 
+  </style>
 
 </head>
 
 <body>
-<h1>Action Aplication AAdb Database Description</h1>
+<h1>ActionApps AAdb Database Description</h1>
 This is the commented <b>aadb</b> database dump (see <a href="AAdb_ER.html">AAdb E-R diagram</a>).<br>
 
 <h2>Most important tables</h2>
@@ -85,8 +85,8 @@ This is the commented <b>aadb</b> database dump (see <a href="AAdb_ER.html">AAdb
 );
 
 <p>Slices table holds values for slices data (interesting, isn't?). There are two types of such data.<br><ul type="disc">
-	<li>Parameters of slice (like type ...)</li>
-	<li>Default values for new created items in this slice</li>
+    <li>Parameters of slice (like type ...)</li>
+    <li>Default values for new created items in this slice</li>
 </ul></p>
 
 <h3>CREATE TABLE <b>slices</b> (</h3>
@@ -111,10 +111,10 @@ This is the commented <b>aadb</b> database dump (see <a href="AAdb_ER.html">AAdb
    <code><b>category_sort</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">Boolean value - set if compact view should be sorted by category.</div>
    <code><b>category_format</b> mediumtext,</code><br><div class="description">HTML code with aliases for category headline. This HTML code is shown only if category_sort field is set to 1 (true)</div>
    <code><b>compact_remove</b> varchar(255),</code><br><div class="description">The remove strings for compact view. The purpose of remove string is to remove rubbish from result live page - like empty braces etc. The way how it works is:<ul type="disc">
-	<li>The format string (like fulltext_format, odd_row_format) is searched for aliases.</li>
-	<li>If corresponding value for matched alias is empty, alias is removed from format string (so there should arise rubbish).</li>
-	<li>The modified format string is searched for remove strings. If search is successful the all matches are removed from format string.</li>
-	<li>At the end we substitute all remaining aliases with database fields.</li>
+    <li>The format string (like fulltext_format, odd_row_format) is searched for aliases.</li>
+    <li>If corresponding value for matched alias is empty, alias is removed from format string (so there should arise rubbish).</li>
+    <li>The modified format string is searched for remove strings. If search is successful the all matches are removed from format string.</li>
+    <li>At the end we substitute all remaining aliases with database fields.</li>
 </ul> </div>
    <code><b>fulltext_remove</b> varchar(255),</code><br><div class="description">The remove strings for fulltext view. (see compact_remove)</div>
    <code><b>edit_fields</b> varchar(40),</code><br><div class="description">This is the string field, but the sense of this string should be interpretted as array of boolean values. Each boolean value ("y" / "n") corresponds to one field of item table. The value of "y" (yes) means "show corresponding field on itemedit.php3 page (input item form)". For corresponding fields see en_news_lang.php3.</div>

@@ -1,73 +1,73 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <!-- saved from url=(0043)install-3.html -->
-<HTML><HEAD><TITLE>Installation of APC Action Applications: Installation of Other Packages needed by Action Applications</TITLE>
+<HTML><HEAD><TITLE>Installation of APC ActionApps: Installation of Other Packages needed by ActionApps</TITLE>
 <META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-4.html" 
-rel=next><LINK href="install-2.html" rel=previous><LINK href="install.html#toc3" 
+<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-4.html"
+rel=next><LINK href="install-2.html" rel=previous><LINK href="install.html#toc3"
 rel=contents>
 <!-- $Id$ -->
 </HEAD>
-<BODY><A href="install-4.html">Next</A> <A 
-href="install-2.html">Previous</A> <A 
-href="install.html#toc3">Contents</A> 
+<BODY><A href="install-4.html">Next</A> <A
+href="install-2.html">Previous</A> <A
+href="install.html#toc3">Contents</A>
 <HR>
 
-<H2><A name=install_other></A><A name=s3>3. Installation of Other Packages 
-needed by Action Applications</A></H2>
+<H2><A name=install_other></A><A name=s3>3. Installation of Other Packages
+needed by ActionApps</A></H2>
 <H2><A name=ss3.1>3.1 Platform</A> </H2>
-<P>The installation instructions given here are intended for use with RedHat 
-Linux. We used version 6.0 and 6.2. This specifically means that the 
-<EM>rpm</EM> tool is used wherever possible. 
-<P><EM>If your system does not support the rpm tool</EM>, most procedures will 
-be quite different from what is shown here. You will probably have to do most 
-installations by building the software itself. It is beyond the scope of this 
-document to describe that although necessary configurations options will be 
-mentioned. 
+<P>The installation instructions given here are intended for use with RedHat
+Linux. We used version 6.0 and 6.2. This specifically means that the
+<EM>rpm</EM> tool is used wherever possible.
+<P><EM>If your system does not support the rpm tool</EM>, most procedures will
+be quite different from what is shown here. You will probably have to do most
+installations by building the software itself. It is beyond the scope of this
+document to describe that although necessary configurations options will be
+mentioned.
 <P>
 <H2><A name=ss3.2>3.2 MySQL database back end</A> </H2>
-<P>Check if you have already MySQL 3.22.32 or newer installed: 
+<P>Check if you have already MySQL 3.22.32 or newer installed:
 <BLOCKQUOTE><CODE>
   <HR>
   <PRE>% rpm -q MySQL</PRE>
   <HR>
   </CODE></BLOCKQUOTE>
-<P>If MySQL has been installed from source ,then RPM will report it is not installed, 
-  try &quot;ps efax | grep mysql&quot; to see if it is running, and if it is then 
-  either &quot;/usr/sbin/mysqld -V&quot; will report the version on newer versions. 
-  If this doesn't exist then running the client with, &quot;mysql&quot; should 
+<P>If MySQL has been installed from source ,then RPM will report it is not installed,
+  try &quot;ps efax | grep mysql&quot; to see if it is running, and if it is then
+  either &quot;/usr/sbin/mysqld -V&quot; will report the version on newer versions.
+  If this doesn't exist then running the client with, &quot;mysql&quot; should
   report the version number it is connected to.
-<P>If it is not installed or if the version used is too old, install it. If you 
-  don't have a CD with MySQL RPM files, download it from <A 
-href="http://www.mysql.com/downloads/mysql.html">http://www.mysql.com/downloads/mysql.html</A>. 
-  (MySQL is <EM>not</EM> included in RedHat Linux.) Use the stable release version. 
-  Get files from the "standard binary RPMs" part: "<EM>Server for ... systems</EM>", 
-  "<EM>Client programs for ... systems</EM>" and "<EM>Include files and libraries 
-  for development for ... systems</EM>". (The latter is needed re recompile php 
-  if this has to be done, see below.) 
-<P>As root, install the RPMs: 
+<P>If it is not installed or if the version used is too old, install it. If you
+  don't have a CD with MySQL RPM files, download it from <A
+href="http://www.mysql.com/downloads/mysql.html">http://www.mysql.com/downloads/mysql.html</A>.
+  (MySQL is <EM>not</EM> included in RedHat Linux.) Use the stable release version.
+  Get files from the "standard binary RPMs" part: "<EM>Server for ... systems</EM>",
+  "<EM>Client programs for ... systems</EM>" and "<EM>Include files and libraries
+  for development for ... systems</EM>". (The latter is needed re recompile php
+  if this has to be done, see below.)
+<P>As root, install the RPMs:
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE># rpm -Uv MySQL-3.22.32-1.i386.rpm
 </PRE>
   <HR>
-  </CODE></BLOCKQUOTE>This command will install the MySQL database server, create 
-some administrative tables and already start the server itself. It also creates 
-a file in <CODE>/etc/rc.d/init.d/</CODE> and symbolic links in 
-<CODE>/etc/rc.d/rc?.d/</CODE> so the server is started and stopped properly on 
-system start and shutdown. 
-<P>Also install the MySQL client tools and the development files and &quot;shared&quot; 
-  : 
-<BLOCKQUOTE><CODE> 
+  </CODE></BLOCKQUOTE>This command will install the MySQL database server, create
+some administrative tables and already start the server itself. It also creates
+a file in <CODE>/etc/rc.d/init.d/</CODE> and symbolic links in
+<CODE>/etc/rc.d/rc?.d/</CODE> so the server is started and stopped properly on
+system start and shutdown.
+<P>Also install the MySQL client tools and the development files and &quot;shared&quot;
+  :
+<BLOCKQUOTE><CODE>
   <HR>
   </CODE>
   <PRE><code># rpm -Uv MySQL-client-3.23.43-1.i386.rpm
 # rpm -Uv MySQL-devel-3.23.43-1.i386.rpm<br>#rpm -Uv MySQL-shared-3.23.43-1.i386.rpm</code></PRE>
   <CODE><HR>
   </CODE></BLOCKQUOTE>
-Since the server is now running, it can be accessed. It is a 
-good idea to immediately set a password for the MySQL root user. Remind the 
-password - better not use <EM>mysqlpass</EM> for obvious reasons. We will refer 
-to this password as the <EM>mysql root password</EM>. 
+Since the server is now running, it can be accessed. It is a
+good idea to immediately set a password for the MySQL root user. Remind the
+password - better not use <EM>mysqlpass</EM> for obvious reasons. We will refer
+to this password as the <EM>mysql root password</EM>.
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE># mysqladmin -u root password 'mysqlpass'
@@ -78,7 +78,7 @@ to this password as the <EM>mysql root password</EM>.
 <P>
 <H2><A name=ss3.3>3.3 OpenLDAP</A> </H2>
 <H3>Package Installation</H3>
-<P>Note: You only need the OpenLDAP server if you decided to use LDAP as the 
+<P>Note: You only need the OpenLDAP server if you decided to use LDAP as the
 permission system. Only do this if you know what you are doing.  Generally, people use mysql as
 their permission system<P>
 
@@ -86,9 +86,9 @@ If you to install OpenLDAP, see the <a href="ldap.html">apc-aa LDAP page</a>
 
 <P>
 <H2><A name=ss3.4>3.4 Installing the Apache Web Server</A> </H2>
-<P>Use the RPM that comes from RedHat. We have had success with the versions 
-1.3.9 and 1.3.12. You need to install the "devel" packages, too. 
-<P>To find out which version of apache httpd you have, use: 
+<P>Use the RPM that comes from RedHat. We have had success with the versions
+1.3.9 and 1.3.12. You need to install the "devel" packages, too.
+<P>To find out which version of apache httpd you have, use:
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE>% httpd -v
@@ -97,133 +97,133 @@ Server built:   Apr  7 1999 17:17:41
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
-<P>To install the apache web server, use these commands. Not that in this 
-example, the apache itself was already installed, but the development package 
-was missing (this is the default case for RedHat Linux). 
+<P>To install the apache web server, use these commands. Not that in this
+example, the apache itself was already installed, but the development package
+was missing (this is the default case for RedHat Linux).
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE># rpm -Uv /mnt/cdrom/RedHat/RPMS/apache-1.3.9-7.i386.rpm 
+<PRE># rpm -Uv /mnt/cdrom/RedHat/RPMS/apache-1.3.9-7.i386.rpm
 package apache-1.3.9-7 is already installed
-# rpm -Uv /mnt/cdrom/RedHat/RPMS/apache-devel-1.3.9-7.i386.rpm 
+# rpm -Uv /mnt/cdrom/RedHat/RPMS/apache-devel-1.3.9-7.i386.rpm
 apache-devel-1.3.9-7
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
-<P>Configuring the web server is a task for a later point in time because RPM 
-will do part of this work. 
+<P>Configuring the web server is a task for a later point in time because RPM
+will do part of this work.
 <P>
 <H2><A name=php_install></A><A name=ss3.5>3.5 PHP3</A> </H2>
 <H3>PHP installation</H3>
-<P>php runs within the apache web server as a module. We need a version of php 
-  which includes support for <EM>two optional php modules</EM>, namely ldap and 
-  mysql. These modules provide access to ldap and mysql databases, respectively, 
-  from php programs. (If you don't use ldap with the Action Applications, you 
-  will not need the ldap php support.) 
-<P>There are many ways to install all this, and many can generate a lot of trouble. 
-  The cleanest and easiest way is, again, to use RPMs. 
-<P><b>Note that these instructions were written for installing PHP3. PHP4 has 
-  been tested and works, but noone so-far has followed these installation instructions, 
-  which have been edited for consistency with php4. An updated version of this 
+<P>php runs within the apache web server as a module. We need a version of php
+  which includes support for <EM>two optional php modules</EM>, namely ldap and
+  mysql. These modules provide access to ldap and mysql databases, respectively,
+  from php programs. (If you don't use ldap with the ActionApps, you
+  will not need the ldap php support.)
+<P>There are many ways to install all this, and many can generate a lot of trouble.
+  The cleanest and easiest way is, again, to use RPMs.
+<P><b>Note that these instructions were written for installing PHP3. PHP4 has
+  been tested and works, but noone so-far has followed these installation instructions,
+  which have been edited for consistency with php4. An updated version of this
   section for PHP4 would be welcome.</b>
-<P><b>There where problems with the RedHat RPM's for PHP4, and some other configuration 
+<P><b>There where problems with the RedHat RPM's for PHP4, and some other configuration
   problems which are detailed at the end of this section.</b>
-<P> 
+<P>
 <H3>Testing php installation</H3>
-<P>First, create a test WWW page to find out the status of php support on your 
-  system. This can be done easily by executing this command (assuming <CODE>/home/httpd/html</CODE> 
-  is your DocumentRoot directory: 
+<P>First, create a test WWW page to find out the status of php support on your
+  system. This can be done easily by executing this command (assuming <CODE>/home/httpd/html</CODE>
+  is your DocumentRoot directory:
 <BLOCKQUOTE><CODE>
   <HR>
   <PRE>echo "&lt;?php phpinfo() ?&gt;" &gt; /home/httpd/html/test.php</PRE>
   <HR>
   </CODE></BLOCKQUOTE>
-Access the page with a web browser (http://localhost/test.php). 
+Access the page with a web browser (http://localhost/test.php).
 <UL>
-  <LI>If you see a page beginning with <CODE>PHP Version</CODE>, you have a working 
-    php. Browse through the <CODE>Configuration</CODE> section. Look for an extension 
-    named <CODE>MySQL</CODE> and, if you are using the LDAP permission system, 
-    for one named <CODE>LDAP</CODE>. If both are there, you are lucky because 
+  <LI>If you see a page beginning with <CODE>PHP Version</CODE>, you have a working
+    php. Browse through the <CODE>Configuration</CODE> section. Look for an extension
+    named <CODE>MySQL</CODE> and, if you are using the LDAP permission system,
+    for one named <CODE>LDAP</CODE>. If both are there, you are lucky because
     the php setup id complete; otherwise, you must install the missing parts.
-  <li>If you see the string <code>php phpinfo() ?</code>, you do not have php4 
-    installed or at least it is not enabled. In which case, you can try again 
-    with a test file test.php3 which will work if the PHP3 is installed. APC-AA 
-    should work with this. 
+  <li>If you see the string <code>php phpinfo() ?</code>, you do not have php4
+    installed or at least it is not enabled. In which case, you can try again
+    with a test file test.php3 which will work if the PHP3 is installed. APC-AA
+    should work with this.
 </UL>
 <P>
 <H3>Installing PHP</H3>
-<P>Unfortunately, as of this writing, there is no mysql support for php which 
-comes as an rpm made by RedHat. There are some mysql modules for php on the 
-RedHat server, but they are all for older versions of php. 
-<P>RedHat 6.1 and 6.2 above have a php rpm which is prepared for inclusion of 
-other php modules. The ldap module is provided. The mysql module is not 
-provided, but it is possible to build the mysql module. The advantage of going 
-this way is that you will have the RPMs which are easy to install on all your 
-machines and that the RPM install scripts will manage necessary configuration 
-file changes by themselves. The disadvantage is that the RPM build process 
-requires some more packages installed. This is described in the next section. 
-<P>If you don't want to use RPMs, you must build PHP the traditional way. This 
-is described in the sections following the next section. 
+<P>Unfortunately, as of this writing, there is no mysql support for php which
+comes as an rpm made by RedHat. There are some mysql modules for php on the
+RedHat server, but they are all for older versions of php.
+<P>RedHat 6.1 and 6.2 above have a php rpm which is prepared for inclusion of
+other php modules. The ldap module is provided. The mysql module is not
+provided, but it is possible to build the mysql module. The advantage of going
+this way is that you will have the RPMs which are easy to install on all your
+machines and that the RPM install scripts will manage necessary configuration
+file changes by themselves. The disadvantage is that the RPM build process
+requires some more packages installed. This is described in the next section.
+<P>If you don't want to use RPMs, you must build PHP the traditional way. This
+is described in the sections following the next section.
 <P>
 <H3>Building the PHP RPMs including mysql</H3>
 <P>
 <OL>
-  <LI>To build the PHP RPMs including the mysql support, you need the following 
-  packages installed which you find at www.redhat.com: 
+  <LI>To build the PHP RPMs including the mysql support, you need the following
+  packages installed which you find at www.redhat.com:
   <UL>
-    <LI>apache-devel 
-    <LI>imap-devel 
+    <LI>apache-devel
+    <LI>imap-devel
     <LI>openldap-devel [ only if you are building openldap ]
     <LI>postgresql-devel [ only if you think you may want to use postgresql with this webserver ]
-    <LI>MySQL-devel 
-    <LI>apache-devel (version 1.3.9 or newer) 
+    <LI>MySQL-devel
+    <LI>apache-devel (version 1.3.9 or newer)
     <LI>and there must be a general development environment. </LI></UL>
-  <LI>In order to build RPMs, you need an RPM build environment. For a quick 
-  setup of this, use the following commands: 
+  <LI>In order to build RPMs, you need an RPM build environment. For a quick
+  setup of this, use the following commands:
   <BLOCKQUOTE><CODE>
     <HR>
 <PRE>% mkdir ~/rpmbuild ~/rpmbuild/RPMS ~/rpmbuild/SRPMS ~/rpmbuild/BUILD ~/rpmbuild/SOURCES ~/rpmbuild/SPECS; echo "%_topdir ${HOME}/rpmbuild" &gt;~/.rpmmacros
 </PRE>
     <HR>
     </CODE></BLOCKQUOTE>
-  <LI>You need the php source RPM from RedHat and install it (do not install it 
-  before you have the RPM build environment): 
+  <LI>You need the php source RPM from RedHat and install it (do not install it
+  before you have the RPM build environment):
   <BLOCKQUOTE><CODE>
     <HR>
 <PRE>% rpm -Uv php-3.0.15-2.src.rpm
 </PRE>
     <HR>
-    </CODE></BLOCKQUOTE>In this example, the php source rpm version 3.0.15-2 was 
-  used. 
-  <LI>Edit the file <CODE>~/rpmbuild/SPECS/php.spec</CODE>. This file is the 
-  description used by rpm to build the php packages, and the mysql section is 
-  commented out (this is the reason for the fact that there is no mysql module 
-  for php on the RedHat server). You need to uncomment all lines which concern 
-  mysql, and you need to add a section describing the mysql package. There is a 
-  patch which does the right thing for the version 3.0.15-2; the patch can be 
-  found in the Action Applications doc directory as <CODE>php-spec.patch</CODE>. 
-  To apply this patch, copy it to the <CODE>~/rpmbuild/SPECS</CODE> directory 
-  and use this command: 
+    </CODE></BLOCKQUOTE>In this example, the php source rpm version 3.0.15-2 was
+  used.
+  <LI>Edit the file <CODE>~/rpmbuild/SPECS/php.spec</CODE>. This file is the
+  description used by rpm to build the php packages, and the mysql section is
+  commented out (this is the reason for the fact that there is no mysql module
+  for php on the RedHat server). You need to uncomment all lines which concern
+  mysql, and you need to add a section describing the mysql package. There is a
+  patch which does the right thing for the version 3.0.15-2; the patch can be
+  found in the ActionApps doc directory as <CODE>php-spec.patch</CODE>.
+  To apply this patch, copy it to the <CODE>~/rpmbuild/SPECS</CODE> directory
+  and use this command:
   <BLOCKQUOTE><CODE>
     <HR>
 <PRE>% cd ~/rpmbuild/SPECS; patch &lt; php-spec.patch
 </PRE>
     <HR>
     </CODE></BLOCKQUOTE>
-  <LI>Run the rpm build process: 
+  <LI>Run the rpm build process:
   <BLOCKQUOTE><CODE>
     <HR>
 <PRE>% rpm -ba ~/rpmbuild/SPECS/php.spec
 </PRE>
     <HR>
-    </CODE></BLOCKQUOTE>This will take some time. After everything is done, you 
-  will find all the RPMs in the directory <CODE>~/rpmbuild/RPMS/i386/</CODE>. 
+    </CODE></BLOCKQUOTE>This will take some time. After everything is done, you
+  will find all the RPMs in the directory <CODE>~/rpmbuild/RPMS/i386/</CODE>.
   </LI></OL>
-<P>If you had already php installed, better uninstall it before you install the 
-new versions. 
+<P>If you had already php installed, better uninstall it before you install the
+new versions.
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE># rpm --erase --nodeps php php-manual php-mysql php-ldap php-pgsql php-imap
-# rpm -iv php-3.0.15-2.i386.rpm php-manual-3.0.15-2.i386.rpm php-mysql-3.0.15-2.i386.rpm php-ldap-3.0.15-2.i386.rpm 
+# rpm -iv php-3.0.15-2.i386.rpm php-manual-3.0.15-2.i386.rpm php-mysql-3.0.15-2.i386.rpm php-ldap-3.0.15-2.i386.rpm
 php-3.0.15-2
 php-manual-3.0.15-2
 php-mysql-3.0.15-2
@@ -231,23 +231,23 @@ php-ldap-3.0.15-2
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
-<P>On installation, RPM will edit the apache web server configurations file 
-(<CODE>/etc/httpd/conf/httpd.conf</CODE>) and php initialization file 
-(<CODE>/etc/httpd/php.ini</CODE>) automatically. 
+<P>On installation, RPM will edit the apache web server configurations file
+(<CODE>/etc/httpd/conf/httpd.conf</CODE>) and php initialization file
+(<CODE>/etc/httpd/php.ini</CODE>) automatically.
 <P>
 <H3>Building PHP3 without RPMs</H3>
-<P>If you don't want to use RPM for PHP3 installation, you can as well build it 
-from the scratch. If you want to do this, you will need 
+<P>If you don't want to use RPM for PHP3 installation, you can as well build it
+from the scratch. If you want to do this, you will need
 <UL>
-  <LI>The PHP3 sources themselves. get them from <A 
-  href="http://www.php.net/downloads.php">http://www.php.net/downloads.php</A>. 
-  <LI>The apache development files installed (apache-devel) 
-  <LI>The mysql development files installed (MySQL-devel) 
-  <LI>The openldap development files installed (openldap-devel) if you plan to 
+  <LI>The PHP3 sources themselves. get them from <A
+  href="http://www.php.net/downloads.php">http://www.php.net/downloads.php</A>.
+  <LI>The apache development files installed (apache-devel)
+  <LI>The mysql development files installed (MySQL-devel)
+  <LI>The openldap development files installed (openldap-devel) if you plan to
   use LDAP as the permission system. </LI></UL>
-<P>Unpack the PHP3 distribution, change into that directory, configure and 
-build. This example shows a build <EM>with</EM> the LDAP module; remove the 
-<CODE>--with-ldap</CODE> if you don't use LDAP: 
+<P>Unpack the PHP3 distribution, change into that directory, configure and
+build. This example shows a build <EM>with</EM> the LDAP module; remove the
+<CODE>--with-ldap</CODE> if you don't use LDAP:
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE>% tar xvfz php-3.0.16.tar.gz
@@ -264,61 +264,61 @@ chmod 755 /usr/lib/apache/libphp3.so
   </CODE></BLOCKQUOTE>
 <P>
 <H2><A name=ss3.6>3.6 Configuring the apache web server</A> </H2>
-<P>During the PHP3 installation using RPMs, most of the configuration work for 
-the web server is already done. If you didn't use RPM to install PHP3, you might 
-have to do the following steps. (It does no harm to double check if everything 
-is configured correctly anyway.) 
-<P>The configuration for the apache takes place in the file 
-<CODE>/etc/httpd/conf/httpd.conf</CODE>. 
-<P>You will need the statement <CODE>Options +Includes</CODE> there. This 
-enables the so-called <EM>server side includes</EM> (SSI) which are used by the 
-page the users read (which contain the actual content). <B>This can be a 
-security problem</B> because whoever can edit these pages can run any command on 
-your web server. (<EM>IncludesNOEXEC</EM> is not enough.) You might want to 
-consider to enable this only for the directories where it is needed with 
-<EM>&lt;Directory&gt;</EM> statements. See also the chapter on <A 
-href="install-6.html#security">security</A> . 
-<P>In <CODE>/etc/httpd/conf/httpd.conf</CODE>, make sure these lines are not 
-commented out: 
+<P>During the PHP3 installation using RPMs, most of the configuration work for
+the web server is already done. If you didn't use RPM to install PHP3, you might
+have to do the following steps. (It does no harm to double check if everything
+is configured correctly anyway.)
+<P>The configuration for the apache takes place in the file
+<CODE>/etc/httpd/conf/httpd.conf</CODE>.
+<P>You will need the statement <CODE>Options +Includes</CODE> there. This
+enables the so-called <EM>server side includes</EM> (SSI) which are used by the
+page the users read (which contain the actual content). <B>This can be a
+security problem</B> because whoever can edit these pages can run any command on
+your web server. (<EM>IncludesNOEXEC</EM> is not enough.) You might want to
+consider to enable this only for the directories where it is needed with
+<EM>&lt;Directory&gt;</EM> statements. See also the chapter on <A
+href="install-6.html#security">security</A> .
+<P>In <CODE>/etc/httpd/conf/httpd.conf</CODE>, make sure these lines are not
+commented out:
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE>AddType application/x-httpd-php3 .php3
 </PRE>
   <HR>
-  </CODE></BLOCKQUOTE>and 
+  </CODE></BLOCKQUOTE>and
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE>AddType text/html .shtml
 AddHandler server-parsed .shtml
 </PRE>
   <HR>
-  </CODE></BLOCKQUOTE>"Commented out" means That they are prepended by a "#". 
-Remove the leading "#" from the lines if it is there. 
-<P>Add <CODE>index.php3</CODE> to the tt/DirectoryIndex/ line: 
+  </CODE></BLOCKQUOTE>"Commented out" means That they are prepended by a "#".
+Remove the leading "#" from the lines if it is there.
+<P>Add <CODE>index.php3</CODE> to the tt/DirectoryIndex/ line:
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE>DirectoryIndex index.html index.shtml index.cgi index.php3
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
-<P>Restart the web server to reread the configuration files: 
+<P>Restart the web server to reread the configuration files:
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE># /etc/rc.d/init.d/httpd restart
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
-<P>After these configuration steps, PHP should work. You can test this by 
-browsing to your test page ( <A 
-href="http://localhost/test.php3">http://localhost/test.php3</A>) again. 
+<P>After these configuration steps, PHP should work. You can test this by
+browsing to your test page ( <A
+href="http://localhost/test.php3">http://localhost/test.php3</A>) again.
 <P>
 <H2><A name=ss3.7>3.7 PHPLIB installation</A> </H2>
-<P>Get PHPLIB from <A 
-href="http://sourceforge.net/projects/phplib">http://sourceforge.net/projects/phplib</A>. 
-  Unpack it, create a directory at the same level as your http conf directory 
-  and extract the files from phplib's php directory to the new directory: For 
-  example, if your configuration files are in /etc/httpd/conf then create /etc/httpd/phplib. 
-  Action Apps have been tested with version 7.2b and 7.2d of phplib. 
+<P>Get PHPLIB from <A
+href="http://sourceforge.net/projects/phplib">http://sourceforge.net/projects/phplib</A>.
+  Unpack it, create a directory at the same level as your http conf directory
+  and extract the files from phplib's php directory to the new directory: For
+  example, if your configuration files are in /etc/httpd/conf then create /etc/httpd/phplib.
+  ActionApps have been tested with version 7.2b and 7.2d of phplib.
 <BLOCKQUOTE><CODE>
   <HR>
   </CODE>
@@ -330,11 +330,11 @@ Password:
 </code></PRE>
   <CODE><HR>
   </CODE></BLOCKQUOTE>
-<P>You need to edit the php.ini (or php3.ini) to include phplib, and check one 
-  or two configuration lines, this file is typically either <code>/etc/httpd/php.ini 
-  </code>or <code>/usr/local/lib/php.ini</code> 
-<P> Edit that file so the lines looks something like this: 
-<BLOCKQUOTE><CODE> 
+<P>You need to edit the php.ini (or php3.ini) to include phplib, and check one
+  or two configuration lines, this file is typically either <code>/etc/httpd/php.ini
+  </code>or <code>/usr/local/lib/php.ini</code>
+<P> Edit that file so the lines looks something like this:
+<BLOCKQUOTE><CODE>
   <HR>
   </CODE>
   <PRE><code>include_path    =  /home/httpd/phplib:.:/usr/local/lib/php                 ; UNIX: "/path1:/path2"  Windows: "\path1;\path2"
@@ -353,7 +353,7 @@ magic_quotes_gpc = On                 ; needed to avoid various bugs with untest
 <P>
 <P>
 <HR>
-<A href="install-4.html">Next</A> <A 
-href="install-2.html">Previous</A> <A 
-href="install.html#toc3">Contents</A> 
+<A href="install-4.html">Next</A> <A
+href="install-2.html">Previous</A> <A
+href="install.html#toc3">Contents</A>
 </BODY></HTML>

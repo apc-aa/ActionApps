@@ -1,310 +1,310 @@
 <!doctype html public "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
-	<title>Action Applications - Developers notes</title>
+    <title>ActionApps - Developers notes</title>
   <link rel=stylesheet type="text/css" href="devnotes.css">
 </head>
 <body>
 <H2>Preface</H2>
 <P>Look of pages is not final. We change it in near future.</P>
-<P>You can experiment with any slice. Users defined in LDAP 
-are from user1 to user500, most of them has password puser<EM>x</EM>, where x is 
+<P>You can experiment with any slice. Users defined in LDAP
+are from user1 to user500, most of them has password puser<EM>x</EM>, where x is
 user number (user54 - puser54).</P>
 <P>Please, send me any bugs you find. I will try to correct it.</P>
 <P>Ask me for whatever you want.</P>
-<P>We do not know exactly, what will be the difference between Action Alerts, Press 
-releases lists, Event&nbsp;lists and so on. As I think about it, it seems to me, that the 
-only difference is in database field names (somewhere I can call fulltext as 
-<EM>Full text of item</EM>, somewhere <EM>News text</EM>, somewhere <EM>Event description</EM>) 
-and database fields appearance (I don't need&nbsp;for example image in Press 
-releases  application, so I hide <EM>Image URL</EM>, <EM>Image width </EM>and 
+<P>We do not know exactly, what will be the difference between Action Alerts, Press
+releases lists, Event&nbsp;lists and so on. As I think about it, it seems to me, that the
+only difference is in database field names (somewhere I can call fulltext as
+<EM>Full text of item</EM>, somewhere <EM>News text</EM>, somewhere <EM>Event description</EM>)
+and database fields appearance (I don't need&nbsp;for example image in Press
+releases  application, so I hide <EM>Image URL</EM>, <EM>Image width </EM>and
 <EM>Image height </EM>fields from itemedit form). </P>
 <P>Sorry for my English.</P>
 <H2>&nbsp;</H2>
 <H2>Editor window</H2>
-<P>The editor window (<EM>index.php3</EM>) is the main 
-place, where authors and editors will control his items. The slice, which is 
-edited is specified by parameter <EM>slice_id </EM>                           within URL (link like<code> href="/apc-aa/admin/index.php3?slice_id=763e546ba2f36efb00abc346ce8af03c"</code>). 
+<P>The editor window (<EM>index.php3</EM>) is the main
+place, where authors and editors will control his items. The slice, which is
+edited is specified by parameter <EM>slice_id </EM>                           within URL (link like<code> href="/apc-aa/admin/index.php3?slice_id=763e546ba2f36efb00abc346ce8af03c"</code>).
 If no <EM>slice_id </EM>    is specified, the first slice, in which given user has any permission, is displayed.<br>
 <br>There are three tables (the look of this page should be changed, but the idea of three tables remains):</P>
 <dl>
-	<dt>Approved bin<dd>The only items in approved bin are shown on website 
-  (but not all - some of them are expired (red), some are not published yet 
-  (blue))<BR>                         
- <dt>Holding bin<dd>Kind of item storage. In this table should be stored 
-  feeded items or new items before editor move it to approved bin (= publish 
-  it)&lt;                      BR&gt;  
+    <dt>Approved bin<dd>The only items in approved bin are shown on website
+  (but not all - some of them are expired (red), some are not published yet
+  (blue))<BR>
+ <dt>Holding bin<dd>Kind of item storage. In this table should be stored
+  feeded items or new items before editor move it to approved bin (= publish
+  it)&lt;                      BR&gt;
  <dt>Trash bin<dd>The place of last rest of items before they are removed from database (by clicking  <i>Delete items in trash bin</i>)</dd>
 </dl>
-<P>Number of shown items depends on permission - author can see only his items, 
+<P>Number of shown items depends on permission - author can see only his items,
 editor and above can see all items. </P>
-<P>The headline of each column in the table is clickable - item are sorted by 
+<P>The headline of each column in the table is clickable - item are sorted by
 this column, then.</P>
 <P>
-There are filter field on the bottom of each 
+There are filter field on the bottom of each
 table.<BR>
          <br><STRONG>Example 1</STRONG>:<BR>
- 
+
 Write word <i>Sun</i> in <i>headline</i> column filter and submit. You will see only item with word <i>Sun</i> in the headline.</P>
-<P><STRONG>Example 2</STRONG>:<BR>   
- 
-Write <i>&gt;3/6/1999</i> in <i>post date</i> 
+<P><STRONG>Example 2</STRONG>:<BR>
+
+Write <i>&gt;3/6/1999</i> in <i>post date</i>
 column. You will see only items written after <EM>3/6/1999</EM>.</P>
-<P>If slice has any category defined, category column is displayed. If category 
-is shown in red, item is in category not defined for this slice (it could happen 
-if item is feeded from other slice or given category was removed from this 
+<P>If slice has any category defined, category column is displayed. If category
+is shown in red, item is in category not defined for this slice (it could happen
+if item is feeded from other slice or given category was removed from this
 slice). </P>
-<P>         
-                                           
+<P>
+
 Icons before <i>headline</i> means:<BR></P>
 <dl><dt>B/F<dd>Base item (item is written in this slice)/ Feeded item from other slice
- <dt>X/!<dd>Highlighted/not highlighted</dd> 
+ <dt>X/!<dd>Highlighted/not highlighted</dd>
 </dl>
 Again - design will be changed, idea remains.<br><br>
-There are "slice bar" on the top of the page in which 
-are&nbsp;links to specific actions. If given link is accessible depends on user 
-permissions. <EM>Author</EM> could only view slice and 
-switch to another slice, if he has any permission for another slice. 
+There are "slice bar" on the top of the page in which
+are&nbsp;links to specific actions. If given link is accessible depends on user
+permissions. <EM>Author</EM> could only view slice and
+switch to another slice, if he has any permission for another slice.
 <EM>Superuser </EM>
                                             can do anything.<br><br>
-The same situation is in <EM>Actions </EM>column. User see 
+The same situation is in <EM>Actions </EM>column. User see
 only actions, he has permission to (<EM>author </EM>
                 can't move items from bin to bin, so he don't see move icons).<br>
 <H2>Item Editing</H2>
-<P>Item editing page <EM>itemedit.php3 </EM>is accessible from main editor page 
-<EM>index.php3</EM>. This is the place, where <EM>authors</EM>, <EM>editors 
+<P>Item editing page <EM>itemedit.php3 </EM>is accessible from main editor page
+<EM>index.php3</EM>. This is the place, where <EM>authors</EM>, <EM>editors
 </EM>and other stuff can write or edit his items.</P>
-<P>Appearance of each edit field is controlled from Main slice settings - Field 
+<P>Appearance of each edit field is controlled from Main slice settings - Field
 page (see below).</P>
-<P>If you edit feeded item, you can't edit fulltext - fulltext goes always from 
+<P>If you edit feeded item, you can't edit fulltext - fulltext goes always from
 original item. </P>
 <P>Needed fields are shown with "!" after field name.</P>
 <P>Here is the meaning of each field: </P>
-      
+
 <table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
 <tr>
-	<td>Headline</td>
-	<td>headline (always needed)</td>
+    <td>Headline</td>
+    <td>headline (always needed)</td>
 </tr>
 <tr>
-	<td>Summary</td>
-	<td>summary (probably use in compact view of items (depends on slice administrator settings in Design - Compact page)</td>
+    <td>Summary</td>
+    <td>summary (probably use in compact view of items (depends on slice administrator settings in Design - Compact page)</td>
 </tr>
 <tr>
-	<td>Formatting</td>
-	<td>switches, if fulltext is in plain text (any html tags are ignored), or in  html code (HTML tags in fulltext are processed)</td>
+    <td>Formatting</td>
+    <td>switches, if fulltext is in plain text (any html tags are ignored), or in  html code (HTML tags in fulltext are processed)</td>
 </tr>
 <tr>
-	<td>full text</td>
-	<td>full text of item</td>
+    <td>full text</td>
+    <td>full text of item</td>
 </tr>
 <tr>
-	<td>Highlight</td>
-	<td>Author can specify, that item is important. Main use of this flag is, that you can select from database only highlighted items. Best example is "Example slice", where highlighted is used to mark items shown on Home page (see Incorporating slice into web part of this text). In each category page you can then show more items (highlighted and not highlighted).</td>
+    <td>Highlight</td>
+    <td>Author can specify, that item is important. Main use of this flag is, that you can select from database only highlighted items. Best example is "Example slice", where highlighted is used to mark items shown on Home page (see Incorporating slice into web part of this text). In each category page you can then show more items (highlighted and not highlighted).</td>
 </tr>
 <tr>
-	<td>External link checkbox</td>
-	<td>If checked, headline of item in compact view do not points to fulltext, but points to External link URL. Fulltext is inaccessible then. (More precisely I should not say <i>headline of item</i>, but <EM>_HL_HREF </EM>   alias (see Design - Compact part of this text))</td>
+    <td>External link checkbox</td>
+    <td>If checked, headline of item in compact view do not points to fulltext, but points to External link URL. Fulltext is inaccessible then. (More precisely I should not say <i>headline of item</i>, but <EM>_HL_HREF </EM>   alias (see Design - Compact part of this text))</td>
 </tr>
 <tr>
-	<td>Place</td>
-	<td>Place, where item raised (like London, California, Prague ...)</td>
+    <td>Place</td>
+    <td>Place, where item raised (like London, California, Prague ...)</td>
 </tr>
 <tr>
-	<td>Source</td>
-	<td>Company, where item raised (like APC, Reuters, Greenpeace, CNN, ...)</td>
+    <td>Source</td>
+    <td>Company, where item raised (like APC, Reuters, Greenpeace, CNN, ...)</td>
 </tr>
 <tr>
-	<td>Source URL</td>
-	<td>www link to source (like www.apc.org, www.cnn.com ...)</td>
+    <td>Source URL</td>
+    <td>www link to source (like www.apc.org, www.cnn.com ...)</td>
 </tr>
 <tr>
-	<td>Status</td>
-	<td>Bin (or table), where this item appears (approved bin, holding bin, trash bin)</td>
+    <td>Status</td>
+    <td>Bin (or table), where this item appears (approved bin, holding bin, trash bin)</td>
 </tr>
 <tr>
-	<td>Language</td>
-	<td>Language of this item</td>
+    <td>Language</td>
+    <td>Language of this item</td>
 </tr>
 <tr>
-	<td>Encoding</td>
-	<td>Used in HTML header meta tag in order to display correctly special national characters:<br> <code>&lt;meta http-equiv="Content-Type" content="text/html; charset=windows-1250"&gt;</code></td>
+    <td>Encoding</td>
+    <td>Used in HTML header meta tag in order to display correctly special national characters:<br> <code>&lt;meta http-equiv="Content-Type" content="text/html; charset=windows-1250"&gt;</code></td>
 </tr>
 <tr>
-	<td>Category</td>
-	<td>Assigns item to specified category</td>
+    <td>Category</td>
+    <td>Assigns item to specified category</td>
 </tr>
 <tr>
-	<td>Image URL</td>
-	<td>Link to any image, you want show with item (Images are not stored in database, in database is just link)</td>
+    <td>Image URL</td>
+    <td>Link to any image, you want show with item (Images are not stored in database, in database is just link)</td>
 </tr>
 <tr>
-	<td>Image width</td>
-	<td>Width of image, which can be used in &lt;IMG width=... &gt; tag</td>
+    <td>Image width</td>
+    <td>Width of image, which can be used in &lt;IMG width=... &gt; tag</td>
 </tr>
 <tr>
-	<td>Image height</td>
-	<td>Height of image, which can be used in &lt;IMG height=... &gt; tag</td>
+    <td>Image height</td>
+    <td>Height of image, which can be used in &lt;IMG height=... &gt; tag</td>
 </tr>
 <tr>
-	<td>Posted by</td>
-	<td>Author's name</td>
+    <td>Posted by</td>
+    <td>Author's name</td>
 </tr>
 <tr>
-	<td>E-mail</td>
-	<td>Author's e-mail</td>
+    <td>E-mail</td>
+    <td>Author's e-mail</td>
 </tr>
 <tr>
-	<td>Publish date</td>
-	<td>Before specified <i>publish date</i> the item is not shown on website even if is in Approved bin</td>
+    <td>Publish date</td>
+    <td>Before specified <i>publish date</i> the item is not shown on website even if is in Approved bin</td>
 </tr>
 <tr>
-	<td>Expiry date</td>
-	<td>After specified <i>expiry date</i> the item is not shown on website even if is in Approved bin</td>
+    <td>Expiry date</td>
+    <td>After specified <i>expiry date</i> the item is not shown on website even if is in Approved bin</td>
 </tr>
 <tr>
-	<td>Editor's note</td>
-	<td>There could be any editor's notes, probably not shown on web. Notes like "I corrected spelling errors" from editor, which edit given item.</td>
+    <td>Editor's note</td>
+    <td>There could be any editor's notes, probably not shown on web. Notes like "I corrected spelling errors" from editor, which edit given item.</td>
 </tr>
 </table>
 
 
 <H2> &nbsp;</H2>
-<H2>Slice administration</H2>Slice administration pages are 
+<H2>Slice administration</H2>Slice administration pages are
 accessible from <EM>index.php3</EM> page. It is accessible only to users, which have permission to. There are several types of slice admin pages listed in left menu column. Again, user can access only pages, which he have permission to. I start with Main slice settings - slice.
 
 
 <h3>Main slice settings - Slice</h3>
 <table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
 <tr>
-	<td>Headline</td>
-	<td>- slice name<br>- shown as headline in slice.php3 (slice view)</td>
+    <td>Headline</td>
+    <td>- slice name<br>- shown as headline in slice.php3 (slice view)</td>
 </tr>
 <tr>
-	<td>Short name</td>
-	<td>- should be short slice name used in slice-selection boxes etc.</td>
+    <td>Short name</td>
+    <td>- should be short slice name used in slice-selection boxes etc.</td>
 </tr>
 <tr>
-	<td>Slice URL</td>
-	<td> - URL of main slice page (homepage of this slice - probably page with slice.php3 include). It is used in calling slice view from buttons inside editor page (index.php3)</td>
+    <td>Slice URL</td>
+    <td> - URL of main slice page (homepage of this slice - probably page with slice.php3 include). It is used in calling slice view from buttons inside editor page (index.php3)</td>
 </tr>
 <tr>
-	<td>Deleted</td>
-	<td>Deleted slices are not shown in any select boxes, they are not searched - they looks like deleted, but they are still in the database. The access to it has only superuser, who can undelete it (uncheck this deleted checkbox).
+    <td>Deleted</td>
+    <td>Deleted slices are not shown in any select boxes, they are not searched - they looks like deleted, but they are still in the database. The access to it has only superuser, who can undelete it (uncheck this deleted checkbox).
  <br>(not implemented yet)</td>
 </tr>
 <tr>
-	<td>Listing length</td>
-	<td>- How many items is shown in compact view at the same time</td>
+    <td>Listing length</td>
+    <td>- How many items is shown in compact view at the same time</td>
 </tr>
 </table>
-<P>Follows default values for new items setting. These are the values, which is 
-shown to user (author) in <EM>itemedit.php3 </EM>window as default values, when 
-he want to add new item. Meaning of each field is described in <EM>itemedit.php3 
+<P>Follows default values for new items setting. These are the values, which is
+shown to user (author) in <EM>itemedit.php3 </EM>window as default values, when
+he want to add new item. Meaning of each field is described in <EM>itemedit.php3
 </EM>part of this text.</P>
-<P><STRONG>Hint:</STRONG> There you can specify the fixed values, which is 
-common to all items in your slice, too.<BR> <STRONG>For example</STRONG>: if you 
-want all included images in slice have the same size 150x120 pixels, you can 
-write number 150 in <EM>Image width input box </EM>and number 120 in <EM>Image 
-height input box </EM>and then remove <EM>Image width</EM> and <EM>Image height 
-input boxes </EM>from <EM>itemedit.php3 </EM>page (can be done on slice 
+<P><STRONG>Hint:</STRONG> There you can specify the fixed values, which is
+common to all items in your slice, too.<BR> <STRONG>For example</STRONG>: if you
+want all included images in slice have the same size 150x120 pixels, you can
+write number 150 in <EM>Image width input box </EM>and number 120 in <EM>Image
+height input box </EM>and then remove <EM>Image width</EM> and <EM>Image height
+input boxes </EM>from <EM>itemedit.php3 </EM>page (can be done on slice
 administration page Fields - see below).</P>
 <P>All changes are valid after click on <EM>Update </EM>
         button, but I think it is clear enough.
 <br></P>
 
 <h3>Main slice settings - Category</h3>
-<P>There are two listboxes on this page. In the left one you can see categories 
-used in all slices in the database or the selected slice only. You can use these 
-categories by clicking the arrow between listboxes, or you can made your own 
+<P>There are two listboxes on this page. In the left one you can see categories
+used in all slices in the database or the selected slice only. You can use these
+categories by clicking the arrow between listboxes, or you can made your own
 categories, by clicking the <EM>New </EM>button.</P>
-<P>The advantage of using foreign categories is simplier feeding of items from 
-other slices, that uses the same categories (see feeding part of this text). The 
-category name can be renamed by clicking <EM>Rename </EM>button, but I will 
-restrict this possibility in near future. Drawback of present approach is, that 
-any user of given category can change name of category, but the change is 
+<P>The advantage of using foreign categories is simplier feeding of items from
+other slices, that uses the same categories (see feeding part of this text). The
+category name can be renamed by clicking <EM>Rename </EM>button, but I will
+restrict this possibility in near future. Drawback of present approach is, that
+any user of given category can change name of category, but the change is
 applied to all slices that uses this category. It is bad, I think.</P>
-<P>You can also remove category from slice with <EM>Delete </EM>button (removes 
+<P>You can also remove category from slice with <EM>Delete </EM>button (removes
 just from this slice, not from database). </P>
-<P>If you don't want to use categories in this slice, left the right listbox 
+<P>If you don't want to use categories in this slice, left the right listbox
 free. </P>
 <P>Again, all changes are valid after click on <EM>Update </EM>         button.
 <br></P>
 
 <h3>Main slice settings - Fields</h3>
-<P>There is list of fields, which may be shown in itemedit page, on this page. 
-There are two checkboxes for every field - <EM>show </EM>and <EM>needed</EM>. 
+<P>There is list of fields, which may be shown in itemedit page, on this page.
+There are two checkboxes for every field - <EM>show </EM>and <EM>needed</EM>.
 </P>
-<P>If <EM>show </EM>is checked for given field, the field is shown in itemedit 
-page and author of item can edit it. Failing which the field is hidden from 
-author, and author can't change it (this field is filled with present default 
-value specified in Main slice settings - Slice (see hint in Main slice settings 
+<P>If <EM>show </EM>is checked for given field, the field is shown in itemedit
+page and author of item can edit it. Failing which the field is hidden from
+author, and author can't change it (this field is filled with present default
+value specified in Main slice settings - Slice (see hint in Main slice settings
 - Slice part)).</P>
-<P>The <EM>needed</EM> checkbox tells, if given field is 
-liable, so author can't left it unfilled (this field is shown with exclamation 
+<P>The <EM>needed</EM> checkbox tells, if given field is
+liable, so author can't left it unfilled (this field is shown with exclamation
 point in itemedit page and blank state of this item is checked then). </P>
 <P>&nbsp;</P>
 
 <h3>Main slice settings - Search form</h3>
-<P>On search form 
-setting page you can set a properties of search form, which can be shown on web 
+<P>On search form
+setting page you can set a properties of search form, which can be shown on web
 page within <EM>slice.php3</EM>
-                        (see <A href="#bigsrch">bigsrch</A> in 
-slice incorporating). There you can specify, which search field are shown to 
-user including fields where to search, and default settings for where to search 
+                        (see <A href="#bigsrch">bigsrch</A> in
+slice incorporating). There you can specify, which search field are shown to
+user including fields where to search, and default settings for where to search
 fields. </P>
 <P>&nbsp;</P>
 
 <h3>User management - Permissions</h3>
 <P>
 A few words as introduction:<br>
-Permission system is 
-based on LDAP. This comes from long debate across APC, and this is the result. 
-The idea is, that permission system is common for all APC members, and it is 
-shared by other applications, not just AA. However, all LDAP dependent functions 
-are grouped in one file - perm_ldap.php3, so it is very easy updateable for any 
-type of authentication (like SQL database etc.), but it is important to 
-developers, not users. For users is important, that we set up four different 
+Permission system is
+based on LDAP. This comes from long debate across APC, and this is the result.
+The idea is, that permission system is common for all APC members, and it is
+shared by other applications, not just AA. However, all LDAP dependent functions
+are grouped in one file - perm_ldap.php3, so it is very easy updateable for any
+type of authentication (like SQL database etc.), but it is important to
+developers, not users. For users is important, that we set up four different
 roles, with different permissions. </P>
-                                                                                        
+
 <table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
 <tr>
-	<td>Role</td>
-	<td>Permission</td>
+    <td>Role</td>
+    <td>Permission</td>
 </tr>
 <tr>
-	<td>Author</td>
-	<td> write new item<br>
+    <td>Author</td>
+    <td> write new item<br>
       edit his own items</td>
 </tr>
 <tr>
-	<td>Editor</td>
-	<td>Author +<br>
+    <td>Editor</td>
+    <td>Author +<br>
       edit foreign items<br>
       move items between bins (approved, holding, trash)
       </td>
 </tr>
 <tr>
-	<td>Administrator</td>
-	<td>Editor +<br>
+    <td>Administrator</td>
+    <td>Editor +<br>
       managing his slice (they can access slice administration pages - slice settings, category settings ...)</td>
 </tr>
 <tr>
-	<td>Super</td>
-	<td>Administrator of all slices in database</td>
+    <td>Super</td>
+    <td>Administrator of all slices in database</td>
 </tr>
 </table>
 <P>
 From developers point of view, all permissions are made separately and roles are just aliases for different sets of permissions. It comes to this, that it is very easy to redefine roles (to add or take off any permission to any role). Maybe I'll make additional page, where superusers can set specific permissions to given user (not just a role) in future.<br><br>
 
-There are list of users (or groups of users), who has any permission to this slice (it means any change permission as is authors permission to write item, not the permission to view slice, which belongs to anybody).<br>You can change role for given user, 
+There are list of users (or groups of users), who has any permission to this slice (it means any change permission as is authors permission to write item, not the permission to view slice, which belongs to anybody).<br>You can change role for given user,
 but there are some constraints. </P>
-           
-<ul><li>It is impossible to change role of user, which has bigger permission as you. 
+
+<ul><li>It is impossible to change role of user, which has bigger permission as you.
 <li>You can give to other user only permissions, you have.
-<li>Nobody can cut-off permission for any 
+<li>Nobody can cut-off permission for any
 superuser.</li>      </ul>
-<P>You can also delete user from this slice, which means cut-off his permission 
+<P>You can also delete user from this slice, which means cut-off his permission
 to this slice, not from permission system of course. </P>
 <P>&nbsp;</P>
 
@@ -345,7 +345,7 @@ $perms_roles_perms = array("AUTHOR"=&gt;PS_EDIT_SELF_ITEMS,
                                      PS_ITEMS2ACT.
                                      PS_ITEMS2HOLD.
                                      PS_ITEMS2TRASH.
-                                     PS_EDIT_ALL_ITEMS,           
+                                     PS_EDIT_ALL_ITEMS,
                            "ADMINISTRATOR"=&gt;PS_EDIT.
                                             PS_CATEGORY.
                                             PS_FIELDS.
@@ -353,7 +353,7 @@ $perms_roles_perms = array("AUTHOR"=&gt;PS_EDIT_SELF_ITEMS,
                                             PS_USERS.
                                             PS_COMPACT.
                                             PS_FULLTEXT.
-                                            PS_FEEDING.           
+                                            PS_FEEDING.
                                             PS_ADD_USER.
                                             PS_DELETE_ITEMS.
                                             PS_ITEMS2ACT.
@@ -369,7 +369,7 @@ $perms_roles_perms = array("AUTHOR"=&gt;PS_EDIT_SELF_ITEMS,
                                     PS_USERS.
                                     PS_COMPACT.
                                     PS_FULLTEXT.
-                                    PS_FEEDING.           
+                                    PS_FEEDING.
                                     PS_ADD_USER.
                                     PS_DELETE_ITEMS.
                                     PS_ITEMS2ACT.
@@ -384,22 +384,22 @@ $perms_roles_perms = array("AUTHOR"=&gt;PS_EDIT_SELF_ITEMS,
 
 
 <h3>User management - Add user</h3>
-<P>You can assign a permission role for existing user or group. First you must 
-seek for user (or group) and then you can add them to permission system of this 
-slice. Listing is limited to five users (or group) in order to prevent to 
+<P>You can assign a permission role for existing user or group. First you must
+seek for user (or group) and then you can add them to permission system of this
+slice. Listing is limited to five users (or group) in order to prevent to
 listing of all users of Econnect (for example).</P>
-<P>From listing are cut-off all current slice users. Organization select list 
-allows to change LDAP server, where to search for user. It means, that user can 
-be selected from other APC member organization as well. The authentication is 
-then done on appropriate LDAP server. Groups are implemented in LDAP too, all 
-functions support it, but there are no interface, how to assign user (or group) 
-to any group, yet. The groups of groups of groups of ... are implemented too, 
-the maximum depth of nesting is 16 (different number can be set very easy in 
+<P>From listing are cut-off all current slice users. Organization select list
+allows to change LDAP server, where to search for user. It means, that user can
+be selected from other APC member organization as well. The authentication is
+then done on appropriate LDAP server. Groups are implemented in LDAP too, all
+functions support it, but there are no interface, how to assign user (or group)
+to any group, yet. The groups of groups of groups of ... are implemented too,
+the maximum depth of nesting is 16 (different number can be set very easy in
 <EM>perm_ldap.php3 </EM>
 
-       
 
-                                   
+
+
 
                                                     - just redefine constant). The depth constant is necessary to as defence to cyclic nesting in group definition.
 <br></P>
@@ -410,16 +410,16 @@ You can create new user in LDAP (which means the new user of this APC node) - so
 <br></P>
 
 <h3>Design - Compact</h3>
-<P>This is very important page. There you can completely change the HTML code 
+<P>This is very important page. There you can completely change the HTML code
 for slice compact view.</P>
 <P><STRONG>Example: </STRONG></P>
 
 <table>
 <tr>
-	<td>slice.shtml:<BR></td>
+    <td>slice.shtml:<BR></td>
 </tr>
 <tr>
-	<td><pre>
+    <td><pre>
  &lt;html&gt;
   &lt;head&gt;
   ...
@@ -433,36 +433,36 @@ for slice compact view.</P>
  &lt;/html&gt;</pre></td>
 </tr>
 <tr>
-	<td>
+    <td>
       <P><BR>Slice compact design settings:<BR></P>   </td>
 </tr>
 <tr>
-	<td>
+    <td>
  <table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
   <tr>
-  	<td>Top HTML</td>
-  	<td><code>&lt;table&gt;</code></td>
+    <td>Top HTML</td>
+    <td><code>&lt;table&gt;</code></td>
   </tr>
   <tr>
-  	<td>Odd Rows</td>
-  	<td><code>&lt;tr&gt;&lt;td&gt;&lt;font face=Arial color="#808080" size=-2&gt;<span class=hlight>_POST_DATE</span> - &lt;/font&gt;<br>
+    <td>Odd Rows</td>
+    <td><code>&lt;tr&gt;&lt;td&gt;&lt;font face=Arial color="#808080" size=-2&gt;<span class=hlight>_POST_DATE</span> - &lt;/font&gt;<br>
        &lt;font color="#FF0000"&gt;&lt;strong&gt;&lt;a href="<span class=hlight>_HL_HREF</span>"&gt;<span class=hlight>_HEADLINE</span>&lt;/a&gt;&lt;/strong&gt;&lt;/font&gt;<br>
 &lt;font color=black size=-1&gt;<span class=hlight>_ABSTRACT</span>
 &lt;a href="<span class=hlight>_HL_HREF</span>"&gt;&lt;img src="images/fulltext.gif" width=65 height=14 alt="Full text" align=middle border=0&gt;&lt;/a&gt;&lt;br&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;</code>
 </td>
   </tr>
   <tr>
-  	<td>Bottom HTML</td>
-  	<td><code>&lt;/table&gt;</code></td>
+    <td>Bottom HTML</td>
+    <td><code>&lt;/table&gt;</code></td>
   </tr>
   </table>
 </td>
 </tr>
 <tr>
-	<td><BR>Result on HTML Page:<BR>   </td>
+    <td><BR>Result on HTML Page:<BR>   </td>
 </tr>
 <tr>
-	<td><code>&lt;table&gt;<br><hr>&lt;tr&gt;&lt;td&gt;&lt;font face=Arial color="#808080" size=-2&gt;<span class=hlight>1/1/1999</span> - &lt;/font&gt;<br>
+    <td><code>&lt;table&gt;<br><hr>&lt;tr&gt;&lt;td&gt;&lt;font face=Arial color="#808080" size=-2&gt;<span class=hlight>1/1/1999</span> - &lt;/font&gt;<br>
        &lt;font color="#FF0000"&gt;&lt;strong&gt;&lt;a href="<span class=hlight>http://web.ecn.cz/aauser/example/slice.shtml?sh_itm=efe015af18ae4f3fa53a51fa7853edf1</span>"&gt;<span class=hlight>Hello Ago</span>&lt;/a&gt;&lt;/strong&gt;&lt;/font&gt;<br>
 &lt;font color=black size=-1&gt;<span class=hlight>This is the item, where I send hello to Ago</span>
 &lt;a href="<span class=hlight>http://web.ecn.cz/aauser/example/slice.shtml?sh_itm=efe015af18ae4f3fa53a51fa7853edf1</span>"&gt;&lt;img src="images/fulltext.gif" width=65 height=14 alt="Full text" align=middle border=0&gt;&lt;/a&gt;&lt;br&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;<br><hr>
@@ -474,51 +474,51 @@ for slice compact view.</P>
 &lt;/table&gt;</code></td>
 </tr>
 </table>
-<P>As you can see, web designer just write HTML code and on place, where he want 
-to have some text from database, he put just an alias (or shortcut or how we can 
-call it). Each alias corresponds with one database field filled on itemedit 
+<P>As you can see, web designer just write HTML code and on place, where he want
+to have some text from database, he put just an alias (or shortcut or how we can
+call it). Each alias corresponds with one database field filled on itemedit
 page. </P>
 <P>We use the alias _HL_HREF twice in example above. Yes, it is possible.</P>
 <P>
-Except substitution of aliases program do one more thing 
-with given format string. If program detects, that URL alias (like _HL_HREF) is 
+Except substitution of aliases program do one more thing
+with given format string. If program detects, that URL alias (like _HL_HREF) is
 empty in the database, whole &lt;a&gt; tag (if any) is removed.<BR>
                                 <br><STRONG>Example:<BR><BR></STRONG>
 <table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
 <tr>
-	<td>Odd rows</td>
-	<td>Some HTML code &lt;a href="<SPAN 
-      class=hlight>_HL_HREF</SPAN>"&gt;<SPAN 
+    <td>Odd rows</td>
+    <td>Some HTML code &lt;a href="<SPAN
+      class=hlight>_HL_HREF</SPAN>"&gt;<SPAN
       class=hlight>_HEADLINE</SPAN>&lt;/a&gt; and HTML code continues</td>
 </tr>
 <tr>
-	<td>Database contents</td>
-	<td>
-      <P><SPAN class=hlight>_HL_HREF</SPAN>&nbsp;= ""<BR><SPAN 
-      class=hlight>_HEADLINE</SPAN>&nbsp;= "<FONT color=#0000ff>Item 
+    <td>Database contents</td>
+    <td>
+      <P><SPAN class=hlight>_HL_HREF</SPAN>&nbsp;= ""<BR><SPAN
+      class=hlight>_HEADLINE</SPAN>&nbsp;= "<FONT color=#0000ff>Item
       title</FONT>"</P></td>
 </tr>
 <tr>
-	<td>Result HTML code</td>
-	<td>Some HTML code&nbsp;<FONT color=#0000ff>Item 
-      title</FONT><SPAN class=hlight> </SPAN>and HTML code 
+    <td>Result HTML code</td>
+    <td>Some HTML code&nbsp;<FONT color=#0000ff>Item
+      title</FONT><SPAN class=hlight> </SPAN>and HTML code
 continues</td>
 </tr>
 </table></P>
-<P>Different even - odd row formatting is possible to define on this page too. 
-The best example is in Press.cz slice, where this possibility is used to 
+<P>Different even - odd row formatting is possible to define on this page too.
+The best example is in Press.cz slice, where this possibility is used to
 alternate item background.</P>
-<P>If items are sorted by category in compact view (see Sort items by category checkbox), 
-you can analogicaly specify the HTML code for category title. 
+<P>If items are sorted by category in compact view (see Sort items by category checkbox),
+you can analogicaly specify the HTML code for category title.
 </P>
-<P><STRONG>Note</STRONG>: I plan to change aliases names in near future in order to quicker text 
+<P><STRONG>Note</STRONG>: I plan to change aliases names in near future in order to quicker text
 substitution (it should be names with equal length).</P>
-<P><STRONG>Known bug</STRONG> : In this very strong formatting approach is not easy to remove 
-redundant characters from final HTML code. For example, to remove braces in case 
+<P><STRONG>Known bug</STRONG> : In this very strong formatting approach is not easy to remove
+redundant characters from final HTML code. For example, to remove braces in case
 database field&nbsp;is empty:</P>
 <P>
 <TABLE border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
-  
+
   <TR>
     <TD>Format string</TD>
     <TD>&lt;P&gt;_HEADLINE&lt;BR&gt;(_SOURCE)&lt;/P&gt;</TD></TR>
@@ -528,18 +528,18 @@ database field&nbsp;is empty:</P>
 <P>However, I will try to find any solution.</P>
 <P>&nbsp;</P>
 <H3>Design - Fulltext</H3>
-<P>There are no differences between compact view formatting and fulltext view 
+<P>There are no differences between compact view formatting and fulltext view
 formatting, so see above.</P>
 <P>&nbsp;</P>
 <H3>Feeding&nbsp;- Import &amp; Export</H3>
-<P>Feeding in slice context means copying one item from given slice to another 
-slice. In Feeding Import &amp; Export page you can specify, who can feed items 
+<P>Feeding in slice context means copying one item from given slice to another
+slice. In Feeding Import &amp; Export page you can specify, who can feed items
 from your slice and from what slice you want to import items.</P>
-<P>The top part of the page is used to permit exporting items to other slices 
-(not implemented yet!!! - anybody can feed from his slice). If there are no 
-slices in right listbox and Enable export to any slice is unchecked nobody can 
+<P>The top part of the page is used to permit exporting items to other slices
+(not implemented yet!!! - anybody can feed from his slice). If there are no
+slices in right listbox and Enable export to any slice is unchecked nobody can
 feed any item from your slice.</P>
-<P>In the bottom part of page you can specify, from which slice you will feed. 
+<P>In the bottom part of page you can specify, from which slice you will feed.
 After that, you should go to Feeding - Filters page.</P>
 <P>&nbsp;</P>
 <H3>Feeding&nbsp;- Filters</H3>
@@ -547,168 +547,168 @@ After that, you should go to Feeding - Filters page.</P>
 <ol><LI>
 <P>define, from which category of given slice you want to feed.</P>
 <LI>
-<P>into which category you want to feed (altogether or separately for 
+<P>into which category you want to feed (altogether or separately for
 each category)</P>
 <LI>
-<P>specify, if you want to feed right into approved bin (approved 
+<P>specify, if you want to feed right into approved bin (approved
 checked) or into holding bin approved unchecked)<BR></P></LI>
 </ol>
 <a name="#shtmlfile"><H2>&nbsp;</H2></a>
-<H2>How to incorporate slice into your 
+<H2>How to incorporate slice into your
 web site</H2>
 <P>There are two possibilities, how to create web site with slice. </P>
 <H3>1. Pure slice</H3>
-<P>You can view slice as is with no additional texts and graphics. It's done on 
+<P>You can view slice as is with no additional texts and graphics. It's done on
 URL like this:</P>
 <code>http://yourhost/apc-aa/slice.php3?slice_id=7a4812e153a0106931c888778daf446f</code>
   <H3>2. Encapsulated slice</H3>
-<P>More popular version of slice view should be 
-the encapsulated one. The slice is included into shtml page by SSI commands. The 
-advantage of this approach is, that webdesigner can define additional graphics 
-and text around slice - slice is just part of the page. The best example of 
-encapsulated slice is Example slice, I think. Here is listing of source 
+<P>More popular version of slice view should be
+the encapsulated one. The slice is included into shtml page by SSI commands. The
+advantage of this approach is, that webdesigner can define additional graphics
+and text around slice - slice is just part of the page. The best example of
+encapsulated slice is Example slice, I think. Here is listing of source
 code:<BR>
 
 <BR>
-<code>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 
-Transitional//EN"&gt;<BR>&lt;!-- saved from url=(0044)<A 
-href="http://web.ecn.cz/aauser/example/slice.shtml">http://web.ecn.cz/aauser/example/slice.shtml</A> 
---&gt;<BR>&lt;HTML&gt;<BR>&lt;HEAD&gt;<BR>&nbsp;&lt;TITLE&gt;Example NGO's 
-Slice&lt;/TITLE&gt;<BR>&nbsp;&lt;META content="text/html; charset=windows-1250" 
-http-equiv=Content-Type&gt;<BR>&nbsp;&lt;META content="Example of NGO's slice" 
-http-equiv=description&gt;<BR>&nbsp;&lt;LINK href="Example NGO's 
-Slice_soubory/example.css" rel=  
-stylesheet type=  
-  text/css&gt;&lt;BR&gt;&lt;/HEAD&gt;<BR>&lt;BODY aLink=#ffd700 
+<code>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0
+Transitional//EN"&gt;<BR>&lt;!-- saved from url=(0044)<A
+href="http://web.ecn.cz/aauser/example/slice.shtml">http://web.ecn.cz/aauser/example/slice.shtml</A>
+--&gt;<BR>&lt;HTML&gt;<BR>&lt;HEAD&gt;<BR>&nbsp;&lt;TITLE&gt;Example NGO's
+Slice&lt;/TITLE&gt;<BR>&nbsp;&lt;META content="text/html; charset=windows-1250"
+http-equiv=Content-Type&gt;<BR>&nbsp;&lt;META content="Example of NGO's slice"
+http-equiv=description&gt;<BR>&nbsp;&lt;LINK href="Example NGO's
+Slice_soubory/example.css" rel=
+stylesheet type=
+  text/css&gt;&lt;BR&gt;&lt;/HEAD&gt;<BR>&lt;BODY aLink=#ffd700
 background="Example NGO's Slice_soubory/back.gif"&gt;</P>
-<P>&lt;!-- Left 
-column --&gt;<BR>&lt;TABLE align=left border=0 cellPadding=0 
-width=150&gt;<BR>&nbsp; &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; 
-&lt;TD&gt;<BR>&lt;A&nbsp;href="<FONT 
-color=#0000ff>http://web.ecn.cz/aauser/example/slice.shtml?highlight=1</FONT>"&gt; 
-Home &lt;/A&gt;<BR>&lt;BR&gt;Shows highlighted items 
-only&lt;/TD&gt;<BR>   
-&lt;/TR&gt;<BR>&nbsp; 
-&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; 
-&lt;TD&gt;&amp;nbsp;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp; 
-&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;FORM action=<FONT 
-color=#0000ff>slice.shtml 
-</FONT>method=get&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-&lt;INPUT&nbsp;<FONT color=#0000ff>name=search[keyword] 
-</FONT>size=10&gt;<BR>&lt;INPUT alt=Search border= 0height=18&nbsp;name="" src="Example NGO's 
-Slice_soubory/go2.gif" type=image width=20&gt; 
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;INPUT <FONT 
-color=#0000ff>name=s_col[0]</FONT> type=hidden value=<FONT 
-color=#0000ff>headline</FONT>&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;  &lt;INPUT <FONT 
-color=#0000ff>name=s_col[1]&nbsp;</FONT>type=hidden value=<FONT 
-color=#0000ff>abstract</FONT>&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp; 
-&nbsp;&lt;INPUT <FONT color=#0000ff>name=s_col[2] 
-</FONT>type=hidden&nbsp;value=<FONT 
-color=#0000ff>full_text</FONT>&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;  &lt;INPUT 
-name=<FONT color=#330000><FONT color=#0000ff>srch</FONT> </FONT>type=hidden 
-value=<FONT color=#0000ff>1</FONT>&gt;<BR>&lt;A&nbsp;href="<FONT 
-color=#0000ff>http://web.ecn.cz/aauser/example/slice.shtml?bigsrch=1</FONT>"&gt; 
-Full&amp;nbsp;Search &lt;/A&gt;<BR>&nbsp; &lt;/FORM&gt;&lt; BR&gt; &nbsp;&lt;/TD&gt;&lt; 
-BR&gt; 
-&lt;/TR&gt;<BR>&nbsp; &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; 
-&lt;TD&gt;&amp;nbsp;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp; 
-&lt;TR&gt;<BR>  
-&nbsp;&nbsp;&nbsp;&lt;TD&gt;Categories:&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp; 
-&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;&amp;nbsp;&amp;nbsp;&lt;A 
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href="<FONT 
-color=#0000ff> http://web.ecn.cz/aauser/example/slice.shtml?cat_name=               "Solar"</FONT>&gt; Solar 
-energy&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp; 
-&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;&amp;nbsp;&amp;nbsp;&lt;A 
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href="<FONT 
-color=#0000ff>http://web.ecn.cz/aauser/example/slice.shtml?cat_name= "Ocean</FONT> 
-"&gt;Ocean&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp; 
-&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;&amp;nbsp;&amp;nbsp;&lt;A 
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href="<FONT 
-color=#0000ff> http://web.ecn.cz/aauser/example/slice.shtml?cat_name= 
-"Forests"</FONT>&gt;Forests&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp; 
-&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;&amp;nbsp;&amp;nbsp;&lt;A 
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href="<FONT 
-color=#0000ff> http://web.ecn.cz/aauser/example/slice.shtml?cat_name= 
+<P>&lt;!-- Left
+column --&gt;<BR>&lt;TABLE align=left border=0 cellPadding=0
+width=150&gt;<BR>&nbsp; &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp;
+&lt;TD&gt;<BR>&lt;A&nbsp;href="<FONT
+color=#0000ff>http://web.ecn.cz/aauser/example/slice.shtml?highlight=1</FONT>"&gt;
+Home &lt;/A&gt;<BR>&lt;BR&gt;Shows highlighted items
+only&lt;/TD&gt;<BR>
+&lt;/TR&gt;<BR>&nbsp;
+&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp;
+&lt;TD&gt;&amp;nbsp;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp;
+&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;FORM action=<FONT
+color=#0000ff>slice.shtml
+</FONT>method=get&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;INPUT&nbsp;<FONT color=#0000ff>name=search[keyword]
+</FONT>size=10&gt;<BR>&lt;INPUT alt=Search border= 0height=18&nbsp;name="" src="Example NGO's
+Slice_soubory/go2.gif" type=image width=20&gt;
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;INPUT <FONT
+color=#0000ff>name=s_col[0]</FONT> type=hidden value=<FONT
+color=#0000ff>headline</FONT>&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;  &lt;INPUT <FONT
+color=#0000ff>name=s_col[1]&nbsp;</FONT>type=hidden value=<FONT
+color=#0000ff>abstract</FONT>&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&lt;INPUT <FONT color=#0000ff>name=s_col[2]
+</FONT>type=hidden&nbsp;value=<FONT
+color=#0000ff>full_text</FONT>&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;  &lt;INPUT
+name=<FONT color=#330000><FONT color=#0000ff>srch</FONT> </FONT>type=hidden
+value=<FONT color=#0000ff>1</FONT>&gt;<BR>&lt;A&nbsp;href="<FONT
+color=#0000ff>http://web.ecn.cz/aauser/example/slice.shtml?bigsrch=1</FONT>"&gt;
+Full&amp;nbsp;Search &lt;/A&gt;<BR>&nbsp; &lt;/FORM&gt;&lt; BR&gt; &nbsp;&lt;/TD&gt;&lt;
+BR&gt;
+&lt;/TR&gt;<BR>&nbsp; &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp;
+&lt;TD&gt;&amp;nbsp;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp;
+&lt;TR&gt;<BR>
+&nbsp;&nbsp;&nbsp;&lt;TD&gt;Categories:&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp;
+&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;&amp;nbsp;&amp;nbsp;&lt;A
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href="<FONT
+color=#0000ff> http://web.ecn.cz/aauser/example/slice.shtml?cat_name=               "Solar"</FONT>&gt; Solar
+energy&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp;
+&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;&amp;nbsp;&amp;nbsp;&lt;A
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href="<FONT
+color=#0000ff>http://web.ecn.cz/aauser/example/slice.shtml?cat_name= "Ocean</FONT>
+"&gt;Ocean&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp;
+&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;&amp;nbsp;&amp;nbsp;&lt;A
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href="<FONT
+color=#0000ff> http://web.ecn.cz/aauser/example/slice.shtml?cat_name=
+"Forests"</FONT>&gt;Forests&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp;
+&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;&amp;nbsp;&amp;nbsp;&lt;A
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href="<FONT
+color=#0000ff> http://web.ecn.cz/aauser/example/slice.shtml?cat_name=
 "Genetic"</FONT>&gt;Genetic&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&lt;/TABLE&gt;</P>
 <P>
-&lt;!-- 
-Main column --&gt;<BR>&lt;TABLE width=440&gt;<BR>&nbsp; 
-&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-&lt;H1&gt;Example NGO's Slice&lt;/H1&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp; 
+&lt;!--
+Main column --&gt;<BR>&lt;TABLE width=440&gt;<BR>&nbsp;
+&lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;H1&gt;Example NGO's Slice&lt;/H1&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp;
 &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;</P>
 <P><FONT color=#0000ff>&lt;!--#include&nbsp;virtual="/apc-aa/slice.php3?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</FONT></P>
-<P>&nbsp;&nbsp;&nbsp; 
-&lt;/TD&gt;<BR>&nbsp;&nbsp;&lt;/TR&gt;<BR>&lt;/TABLE&gt;&lt;BR&gt;<BR>&lt;/BODY&gt;<BR>&lt;/HTML&gt;</P></CODE>In this short example you can see, 
-how encapsulate slice.php3 into shtml page. Important commands I highlighted in 
-blue. As you can see, you can control the content of slice.php3 by parameters 
+<P>&nbsp;&nbsp;&nbsp;
+&lt;/TD&gt;<BR>&nbsp;&nbsp;&lt;/TR&gt;<BR>&lt;/TABLE&gt;&lt;BR&gt;<BR>&lt;/BODY&gt;<BR>&lt;/HTML&gt;</P></CODE>In this short example you can see,
+how encapsulate slice.php3 into shtml page. Important commands I highlighted in
+blue. As you can see, you can control the content of slice.php3 by parameters
 added to URL. Here are the list of them: <BR><BR>
 
-                                        
+
 <table border=1 cellSpacing=2 valign="TOP" bgColor=#eeeeee>
 <tr>
-	<td>Parameter</td>
-	<td>Appearance</td>
-	<td>Description</td>
+    <td>Parameter</td>
+    <td>Appearance</td>
+    <td>Description</td>
  <td>Example</td>
 </tr>
 <tr>
-	<td>slice_id</td>
-	<td>required</td>
-	<td>determines, which slice to use</td>
+    <td>slice_id</td>
+    <td>required</td>
+    <td>determines, which slice to use</td>
  <td>slice_id=e2f6b2bf9c1687de7acccdb0f570209e</td>
 </tr>
 <tr>
-	<td>encap</td>
-	<td>required</td>
-	<td>if slice is encapsulated, this parameter must be set to 1 (or true)</td>
+    <td>encap</td>
+    <td>required</td>
+    <td>if slice is encapsulated, this parameter must be set to 1 (or true)</td>
  <td>encap=1</td>
 </tr>
 <tr>
-	<td>sh_itm</td>
-	<td>optional</td>
-	<td>if specified - item with selected id is shown as fulltext</td>
+    <td>sh_itm</td>
+    <td>optional</td>
+    <td>if specified - item with selected id is shown as fulltext</td>
  <td>sh_itm=45636afe6373ce836e566e890ab03418</td>
 </tr>
 <tr>
-	<td>srch</td>
-	<td>optional</td>
-	<td>true if this script have to show search results<br>In this case, additional variables may be filled:<br>
+    <td>srch</td>
+    <td>optional</td>
+    <td>true if this script have to show search results<br>In this case, additional variables may be filled:<br>
 <ul>
-	<li>search[keyword]  .. searched string
-	<li>search[type]     .. AND | OR
-	<li>search[slice] .. search in slice id (0 =         &gt;  all)
-	<li>search[category] .. search in category id 
-	<li>search[author]   .. search for author id
-	<li>search[lang]     .. search in language (language_code)
-	<li>search[from]     .. search items from this time was published
-	<li>search[to]       .. search items to this time was published
-	<li>srchflds .. array of columns to include in 
-        search (headline, abstract, full_text, edit_note)</li>                    
+    <li>search[keyword]  .. searched string
+    <li>search[type]     .. AND | OR
+    <li>search[slice] .. search in slice id (0 =         &gt;  all)
+    <li>search[category] .. search in category id
+    <li>search[author]   .. search for author id
+    <li>search[lang]     .. search in language (language_code)
+    <li>search[from]     .. search items from this time was published
+    <li>search[to]       .. search items to this time was published
+    <li>srchflds .. array of columns to include in
+        search (headline, abstract, full_text, edit_note)</li>
 </ul></td>
  <td>srch=1</td>
 </tr>
 <tr>
-	<td>highlight</td>
-	<td>optional</td>
-	<td>if true, shows only items with highlighted flag set (in compact view) - highlighted may by used as items shown on homepage - it could be from any category</td>
+    <td>highlight</td>
+    <td>optional</td>
+    <td>if true, shows only items with highlighted flag set (in compact view) - highlighted may by used as items shown on homepage - it could be from any category</td>
  <td>highlight=1</td>
 </tr>
 <tr>
-	<td><A name="#bigsrch">bigsrch</A></td>
-	<td>optional</td>
-	<td>true, if this script have to show big search form</td>
+    <td><A name="#bigsrch">bigsrch</A></td>
+    <td>optional</td>
+    <td>true, if this script have to show big search form</td>
  <td>bigsrch=1</td>
 </tr>
 <tr>
-	<td>cat_id</td>
-	<td>optional</td>
-	<td>if true, shows only items belongs to specified category (in compact view)</td>
+    <td>cat_id</td>
+    <td>optional</td>
+    <td>if true, shows only items belongs to specified category (in compact view)</td>
  <td>cat_id=a54bc8937eef4d210d9ae7a64e6f9c0b</td>
 </tr>
 <tr>
-	<td>cat_name</td>
-	<td>optional</td>
-	<td>if true, shows only items belongs to category in which name is specified phrase(in compact view)</td>
+    <td>cat_name</td>
+    <td>optional</td>
+    <td>if true, shows only items belongs to category in which name is specified phrase(in compact view)</td>
  <td>cat_name=Solar</td>
 </tr>
 </table>

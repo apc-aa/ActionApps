@@ -1,9 +1,9 @@
 <?php
 # make_rss.php3 - returns Rich Site Summary RDF file from slice
-# expected at least $slice_id 
+# expected at least $slice_id
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -31,14 +31,14 @@ require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
 
 function RSS_restrict($txt, $len) {
   return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
-}  
-  
+}
+
 $db = new DB_AA;
 
 if ($slice_id==""){
   echo "Error: slice_id not defined";
   exit;
-}  
+}
 
 $p_slice_id = q_pack_id($slice_id);
 
@@ -56,8 +56,8 @@ $db->query($SQL);
 if (!$db->next_record()){
   echo "Can't get slice info";
   exit;
-}  
- 
+}
+
 $title           = RSS_restrict( $db->f(name), 100);
 $link            = RSS_restrict( $db->f(slice_url), 500);
 $description     = RSS_restrict( $db->f(owner).": ".$db->f(name), 500);
@@ -71,17 +71,17 @@ echo "
     <description>$description</description>
     <language>$language</language>
     <lastBuildDate>$lastBuildDate</lastBuildDate>";
-    
+
 // RSS items - max 15 items - listed items due to script parameters
 $where = MakeWhere($p_slice_id, $cat_id, $highlight);
 
-$SQL = "SELECT items.id, items.headline, items.abstract, fulltexts.full_text 
-          FROM items, fulltexts WHERE $where AND fulltexts.ft_id=items.master_id 
+$SQL = "SELECT items.id, items.headline, items.abstract, fulltexts.full_text
+          FROM items, fulltexts WHERE $where AND fulltexts.ft_id=items.master_id
           ORDER BY publish_date";
-          
+
 $item_count = 1;
 $db->query($SQL);
-while($db->next_record()){ 
+while($db->next_record()){
   $title       = RSS_restrict( $db->f(headline), 100);
   $link_item   = RSS_restrict( con_url($link, "sh_itm=".unpack_id128($db->f(id))), 500);
   $description = RSS_restrict( ($db->f(abstract)=="" ? $db->f(full_text) : strip_tags($db->f(abstract))), 256);   // should be 500 but whole RSS file must be less than 8 kB
@@ -94,7 +94,7 @@ while($db->next_record()){
   if( ++$item_count > 15 )
     break;
 }
-    
+
 // RSS end
 echo "
   </channel>
