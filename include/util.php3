@@ -25,11 +25,25 @@ http://www.apc.org/
 
 require $GLOBALS[AA_INC_PATH]."constants.php3";
 
+function get_admin_url ($href) {
+    global $AA_INSTAL_PATH;
+    $res = $AA_INSTAL_PATH."admin/".$href;
+    if (strstr ($href,"?")) $res .= "&"; else $res .= "?";
+    $res .= "AA_CP_Session=".$GLOBALS[AA_CP_Session];
+    return $res;
+}
+
+// adds slash at the end of a directory name
+function endslash (&$s) {
+    if (strlen ($s) && substr ($s,-1) != "/")
+        $s .= "/";
+}
+
 function my_in_array ($needle, $array) {
+    if (!is_array ($array)) return false;
     if (function_exists ("in_array"))
         return in_array ($needle, $array);
     else {
-        if (!is_array ($array)) return false;
         reset ($array);
         while (list (,$val) = each ($array))
             if ($val == $needle) 

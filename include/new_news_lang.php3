@@ -178,7 +178,7 @@ define ("L_A_FIELD_IDS_TIT", "Admin - change Field IDs");
 define ("L_FIELD_IDS", "Change field IDs");
 define ("L_FIELD_IDS_CHANGED", "field IDs were changed");
 define ("L_V_MONTH_LIST", "Month list (separated by ,)");
-define ("L_F_JAVASCRIPT", "Field Javascript");
+define ("L_F_JAVASCRIPT", "Field Triggers");
 define ("L_FIELD_ALIASES", "Aliases");
 
 define('L_CONSTANT_WHERE_USED', 'Where are these constants used?');
@@ -196,5 +196,18 @@ define('L_VIEW_CREATE_TYPE', 'by&nbsp;type:');
 define('L_VIEW_CREATE_TEMPL', 'by&nbsp;template:');
 define('L_USE_AS_NEW', 'Use&nbsp;as&nbsp;new');
 define('L_SLICE_NOT_CONST', 'You selected slice and not constant group. It is unpossible to change slice. Go up in the list.');
-
+define('L_JS_HELP','Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3).');
+define('L_JS_FIELDS','Field IDs');
+define('L_JS_TRIGGERS','Triggers');
+define('L_JS_TRIG_HELP1','Write trigger functions like "aa_onSubmit (fieldid) { }"');
+define('L_JS_TRIG_HELP2','see FAQ</a> for more details and examples');
+define("L_JS_FIELD_TYPE", "Field Type");
+define("L_JS_POSSIBLE_TRIGGERS", "Triggers Available -- see some JavaScript help for when a trigger is run");
+define("L_DELETE_FILE","Delete permanently");
+define("L_FILL_GROUP_NAME","Fill group name before using hierarchical editor.");
+define("L_A_FTP_TIT","File Manager");
+define("L_DIRECTORY","Directory");
+define("L_FILE","File");
+define("L_RENAME","Rename");
+define("L_UPLOAD","Upload new file");
 ?>
