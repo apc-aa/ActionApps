@@ -1,12 +1,16 @@
-01/26/01 - added i_s as in {alias:{img_src.........}:i_s:} to generate height and width (mitra)
-01/26/01 - fixed bad url from slicedel2 to slicedel 
-01/25/01 - added warnings to GD tests (controlled by errcheck=1) (mitra)
-01/25/01 - restored en_news_lang.php3  (mitra)
-01/25/01 - restored en_site_lang.php3 since _m conversion not done completely
-01/24/01 - bug fix in slicedit.php3, mistyped URL sliceEdit.php3 (Jakub)
-01/24/01 - changed design of se_fields.php3 (Jakub)
-01/24/01 - added H2 to admin.css (Jakub)
-01/24/01 - fixed bug in code for non 128 bit ids (mitra)
+01/27/03 - fixed language constants in so many files, hopefully completely (jakub)
+01/27/03 - changed design of se_inputform.php3: added 2 new param wizards (jakub)
+01/27/03 - improved param wizard design with buttons (jakub)
+01/27/03 - fixed bug: slice was not deleted from module table (jakub)
+01/26/03 - added i_s as in {alias:{img_src.........}:i_s:} to generate height and width (mitra)
+01/26/03 - fixed bad url from slicedel2 to slicedel 
+01/25/03 - added warnings to GD tests (controlled by errcheck=1) (mitra)
+01/25/03 - restored en_news_lang.php3  (mitra)
+01/25/03 - restored en_site_lang.php3 since _m conversion not done completely
+01/24/03 - bug fix in slicedit.php3, mistyped URL sliceEdit.php3 (Jakub)
+01/24/03 - changed design of se_inputform.php3 (Jakub)
+01/24/03 - added H2 to admin.css (Jakub)
+01/24/03 - fixed bug in code for non 128 bit ids (mitra)
          - parameterised RelatedItemsWindow, using table in itemfunc (later
             will allow redefining that table)
 01/23/03 - doc/install Recommended php4.0.6 or later, (mitra)
