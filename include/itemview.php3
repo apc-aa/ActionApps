@@ -584,6 +584,11 @@ class itemview {
                                  $this->slice_info['compact_remove'] );
 
             $out .= $CurItem->get_item();
+
+            // return to QueryIDs* right values (could be changed by get_item(), if we use inner view
+            // TODO - do QueryIDs* better - not as global variables with such hacks
+            $GLOBALS['QueryIDsIndex']     = $zidx;  // So that _#ITEMINDX = f_e:itemindex can find it
+            $GLOBALS['QueryIDsPageIndex'] = $i;     // So that _#PAGEINDX = f_e:pageindex can find it
         }
         if ($category_top_html_printed) {
             $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $CurItem);
