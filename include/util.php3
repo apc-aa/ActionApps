@@ -845,43 +845,6 @@ function PrintAliasHelp($aliases) {
   <?php
 }
   
-/* creates a JavaScript variable modulesOptions, which allows to create another Module selectbox
-    without reprinting all the options */
-
-function PrintModuleSelection() {
-  global $slice_id, $g_modules, $sess, $PHP_SELF;
-
-  if( is_array($g_modules) AND (count($g_modules) > 1) ) {
-  
-    // create the modulesOptions content:
-    echo "<SCRIPT language=JAVASCRIPT>\n
-        <!--\n modulesOptions = ''\n";
-    reset($g_modules);
-    while(list($k, $v) = each($g_modules)) { 
-      echo "\t+'<option value=\"". htmlspecialchars($k)."\"";
-      if ( ($slice_id AND (string)$slice_id == (string)$k)) 
-        echo " selected";
-      echo ">". str_replace("'","`",safe($v['name'])) . "'\n";
-    }
-    if( !$slice_id )   // new slice
-      echo "\t+'<option value=\"new\" selected>". L_NEW_SLICE_HEAD + "'";
-    echo ";\n //-->\n </SCRIPT>";
-
-    // print the select box
-    echo "<form name=nbform enctype=\"multipart/form-data\" method=post
-                action=\"". $sess->url($PHP_SELF) ."\">
-          <span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>
-          <SCRIPT language=javascript><!--\n
-                document.writeln('<select name=slice_id onChange=\'document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\'>');\n
-                document.writeln(modulesOptions);\n
-                document.writeln('</select>');\n
-          //-->\n
-          </SCRIPT>
-          </form>\n";
-  } else
-    echo "&nbsp;"; 
-}  
-
 # function returns true if $fld fits the field scheme (used in unaliasing)
 function IsField($fld) {
   return( (strlen($fld)==16) && (ereg("^[a-z_]+\.+[0-9]*$",$fld)) );

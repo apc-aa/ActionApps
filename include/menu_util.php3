@@ -38,6 +38,42 @@ function HtmlPageEnd() {
 }
 
 // ----------------------------------------------------------------------------------------
+/* creates a JavaScript variable modulesOptions, which allows to create another Module selectbox
+    without reprinting all the options */
+
+function PrintModuleSelection() {
+  global $slice_id, $g_modules, $sess, $PHP_SELF;
+
+  if( is_array($g_modules) AND (count($g_modules) > 1) ) {
+  
+    // create the modulesOptions content:
+    echo "<SCRIPT language=JAVASCRIPT>\n
+        <!--\n modulesOptions = ''\n";
+    reset($g_modules);
+    while(list($k, $v) = each($g_modules)) { 
+      echo "\t+'<option value=\"". htmlspecialchars($k)."\"";
+      if ( ($slice_id AND (string)$slice_id == (string)$k)) 
+        echo " selected";
+      echo ">". str_replace("'","`",safe($v['name'])) . "'\n";
+    }
+    if( !$slice_id )   // new slice
+      echo "\t+'<option value=\"new\" selected>". L_NEW_SLICE_HEAD + "'";
+    echo ";\n //-->\n </SCRIPT>";
+
+    // print the select box
+    echo "
+          <span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>
+          <SCRIPT language=javascript><!--\n
+                document.writeln('<select name=slice_id onChange=\'document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\'>');\n
+                document.writeln(modulesOptions);\n
+                document.writeln('</select>');\n
+          //-->\n
+          </SCRIPT>\n";
+  } else
+    echo "&nbsp;"; 
+}  
+
+// ----------------------------------------------------------------------------------------
 //                                SHOW MENU
 
 /* PARAMS: $smmenus -- array with menu information, see menu.php3 for an example
@@ -48,7 +84,7 @@ function HtmlPageEnd() {
 */             
 function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
 {
-    global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad;
+    global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad, $sess;
     global $debug;
     
     // load the main AA menu (see menu.php3)
@@ -85,10 +121,13 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
                 <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=300 height=1></TD>
                 <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=267 height=1></TD>
             </TR>
+            <form name=nbform enctype=\"multipart/form-data\" method=post
+                action=\"". $sess->url($PHP_SELF) ."\">            
             <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
                 <TD height=43 colspan=2 align=center valign=middle class=slicehead>
                     ".$smmenus[$activeMain]["title"]."  -  $r_slice_headline</TD>
             </TR>
+            </form>
             <TR><td align=center class=navbar>";
                             
         $first = true;
