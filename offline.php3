@@ -34,6 +34,7 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 require $GLOBALS[AA_INC_PATH]."xmlparse.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
 function SendErrorPage($txt) {
   echo (L_OFFLINE_ERR_BEGIN . $txt . L_OFFLINE_ERR_END );
@@ -103,6 +104,9 @@ if( $error )
    
 /*
 $Log$
+Revision 1.4  2001/03/30 11:50:22  honzam
+offline filling bug and other smalll bugs fixed
+
 Revision 1.3  2001/03/20 15:23:09  honzam
 standardized content management for items - filler, itemedit, offline, feeding
 

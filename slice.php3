@@ -144,14 +144,12 @@ function ExitPage() {
 }  
 
 function StoreVariables( $vars ) {
-  global $r_state_vars;
-
-  unset($r_state_vars);
   if( isset($vars) AND is_array($vars) ) {
     reset($vars);
     while( list(,$v) = each( $vars ) )
-      $r_state_vars[$v] = $GLOBALS[$v];
+      $state_vars[$v] = $GLOBALS[$v];
   }
+  return $state_vars;
 }  
 
 function RestoreVariables() {
@@ -218,7 +216,7 @@ if (!$encap)
 # big search form -------------------------------------------------------------
 
 if( $bigsrch ) {
-  StoreVariables(array("bigsrch")); # store in session
+  $r_state_vars = StoreVariables(array("bigsrch")); # store in session
   $show = Array("slice"=>true, "category"=>true, "author"=>true, "lang"=>true, "headline"=>true,
                 "full_text"=>true, "abstract"=>true, "from"=>true, "to"=>true, "edit_note"=>true);
   require $GLOBALS[AA_INC_PATH]."big_srch.php3";
@@ -228,7 +226,7 @@ if( $bigsrch ) {
 # fulltext view ---------------------------------------------------------------
 
 if( $sh_itm ) {
-//  StoreVariables(array("sh_itm")); # store in session
+//  $r_state_vars = StoreVariables(array("sh_itm")); # store in session
   $aliases = GetAliasesFromFields($fields);
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
   $itemview->print_item();
@@ -237,7 +235,7 @@ if( $sh_itm ) {
 
 # multiple items fulltext view ------------------------------------------------
 if( $items  AND is_array($items) ) {   # shows all $items[] as fulltext one after one
-//  StoreVariables(array("items")); # store in session
+//  $r_state_vars = StoreVariables(array("items")); # store in session
   while(list($k,) = each( $items ))
     $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
   $aliases = GetAliasesFromFields($fields);
@@ -263,30 +261,34 @@ if( $scrl ) {      // comes from easy_scroller -----------
 }    
   
 if($query) {              # complex query - posted by big search form ---
-  StoreVariables(array("listlen","no_scr","scr_go","query")); # store in session
+  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","query")); # store in session
   $item_ids = ExtSearch ($query, $p_slice_id, 0);
   if( isset($item_ids) AND !is_array($item_ids))
     echo "<div>$item_ids</div>";   # it must be error message
-  $scr->current = 1;
+  if( !$scrl )
+    $scr->current = 1;
 }
 elseif($easy_query) {     # posted by easy query form ----------------
-  StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
-                      "easy_query", "srch_relev")); # store in session
+  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
+                      "easy_query", "qry", "srch_relev")); # store in session
+
   $item_ids = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, 
-                               $srch_from, $srch_to, $easy_query, $srch_relev);
+                               $srch_from, $srch_to, $qry, $srch_relev);
   if( isset($item_ids) AND !is_array($item_ids))
     echo "<div>$item_ids</div>";
-  $scr->current = 1;
+  if( !$scrl )
+    $scr->current = 1;
 }
 elseif($srch) {            # posted by bigsrch form -------------------
-  StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col")); # store in session
+  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col")); # store in session
   if( !$big )
     $search[slice] = $slice_id;
   $item_ids = SearchWhere($search, $s_col);
-  $scr->current = 1;
+  if( !$scrl )
+    $scr->current = 1;
 }
 else {
-  StoreVariables(array("listlen","no_scr","scr_go","order","cat_id", "cat_name",
+  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","order","cat_id", "cat_name",
                       "exact","restrict","res_val","highlight")); # store in session
   if( $cat_id ) {  // optional parameter cat_id - deprecated - slow ------
     $cat_group = GetCategoryGroup($slice_id);
@@ -355,6 +357,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.17  2001/03/30 11:50:22  honzam
+offline filling bug and other smalll bugs fixed
+
 Revision 1.16  2001/03/20 15:21:33  honzam
 Scrollers used in search output too, better parameters handling
 

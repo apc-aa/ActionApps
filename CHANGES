@@ -1,3 +1,10 @@
+03/30/01 - uploaded images goes to sepatrate directories (separated by slice)
+           (subdirectories under IMG_UPLOAD_PATH with name based on slice_id)
+         - offline filling bug fixed
+         - reversed HTML / Plaintext setting bug fixed
+03/23/01 - fixed problem with displaying quotes (["'\<>]) in se_input_form.php3
+         - multiple image (file) uploading into slice now works
+03/19/01 - updated FAQ.html to reflect v1.6
 03/17/01 - feeding now respects current setting of feeding permission (fixed 
            the "disable feeding doesn't terminate feeding" bug
          - new "Delete slice" admin page for superusers
