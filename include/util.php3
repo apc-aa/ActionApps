@@ -433,10 +433,14 @@ function detect_browser() {
 
  
 # debug function for printing debug messages
-function huh($msg) {
-  if(! $GLOBALS['debug'] )
-    return;
-  echo "<br>\n$msg";
+function huh($msg, $name="") {
+//  if(! $GLOBALS['debug'] )
+//    return;
+  if( @is_array($msg) OR @is_object($msg) ) {
+    echo "<br>\n$name";
+    print_r($msg);
+  } else  
+    echo "<br>\n$name$msg";
 }  
 
 # debug function for printing debug messages escaping HTML
@@ -531,8 +535,15 @@ function GetConstants($group, $db, $order='pri', $column='name') {
     $order_by = "ORDER BY $order";
   $db->query("SELECT name, value FROM constant 
                WHERE group_id='$group' $order_by");
-  while($db->next_record())
-    $arr[$db->f(value)] = $db->f($column);
+  while($db->next_record()) {
+    $key = $db->f('value');
+      // generate unique keys by adding space
+    while( $already_key[$key] ) {
+      $key .= ' ';                   // add space in order we get unique keys
+    }  
+    $already_key[$key] = true;       // mark the $key  
+    $arr[$key] = $db->f($column);
+  }  
   return $arr;
 }     
 
@@ -706,6 +717,11 @@ function GetItemContent($zids, $use_short_ids=false) {
   return $content;   // Note null returned above if no items found
 }  
 
+# fills content arr with current content of $sel_in items (comma separated short ids)
+function GetItemContent_Short($ids) {
+    GetItemContent($ids, true);
+}
+
 // -------------------------------------------------------------------------------
 
 function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
@@ -723,7 +739,7 @@ function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
 # fills array by headlines of items in specified slice (unpacked_id => headline)
 # $tagprefix is array as defined in itemfunc.php3
 function GetItemHeadlines( $db, $sid="", $slice_field="headline........", 
-    $zids="", $type="all", $tagprefix=null) {
+    $zids="", $type="all", $tagprefix=null, $timecond="normal") {
     global $debug;
   $psid = q_pack_id( $sid );
   $time_now = time();
@@ -749,16 +765,16 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........",
   else 
     return false;
 
-//  if( $cond == " AND id IN ( '' ) ")
-//    return false;
-  
+  $restrict = (( $timecond == 'all' ) ? 
+                 "" : 
+                 " AND expiry_date > '$time_now' AND publish_date <= '$time_now' ");
+    
   $SQL = "SELECT id, text FROM content, item 
            WHERE item.id=content.item_id
              $cond
              AND field_id = '$headline_fld'
-             AND status_code='1'
-             AND expiry_date > '$time_now'
-             AND publish_date <= '$time_now'
+             AND status_code='1' 
+             $restrict
         GROUP BY text
         ORDER BY text";
 
@@ -1121,8 +1137,17 @@ function filepath ($filename) {
     return substr ($filename,0,$i+1);
 }
 
-function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE")
-{
+
+/** 
+ * Transforms simplified version of conditions to th eextended syntax
+ * for example conds[0][headline........]='Hi' transforms into
+ * conds[0][headline........]=1,conds[0][value]='Hi',conds[0][operator]=LIKE
+ * 
+ * @param array $conds input/output - transformed conditions 
+ * @param array $defaultCondsOperator - could be scalar (default), but also 
+ *              array: field_id => array('operator'=>'LIKE')
+ */
+function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE") {
   if(is_array($conds)) {
     reset($conds); 
     while( list( $k, $cond) = each( $conds )) {
@@ -1134,9 +1159,14 @@ function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE")
         reset ($cond);
         $conds[$k]['value'] = current($cond);
       }
-      if( !isset($cond['operator']) )
-        $conds[$k]['operator'] = $defaultCondsOperator;
-
+      if( !isset($cond['operator']) ) {
+        if( is_array($defaultCondsOperator) AND 
+            is_array($defaultCondsOperator[key($cond)] ))
+          $conds[$k]['operator'] = isset($defaultCondsOperator[key($cond)]['operator']) ? 
+                              $defaultCondsOperator[key($cond)]['operator'] : 'LIKE';
+         else                     
+          $conds[$k]['operator'] = $defaultCondsOperator;
+      }    
       if (!isset($conds[$k]['value']) OR ($conds[$k]['value']=="")) 
         unset ($conds[$k]);      
     }    
