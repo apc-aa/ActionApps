@@ -61,8 +61,11 @@ $nb_usermng = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:42  madebeer
-Initial revision
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:42  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:25  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -102,8 +105,8 @@ config.inc
   <TR>
     <TD bgcolor=#584011 align=center> <?php echo $nb_view ?> </td>
     <td align=center class=navbar><?php echo "$nb_additem | $nb_manager | $nb_settings | $nb_usermng "; ?></td>
-    <TD height=21 rowspan=3 bgcolor=#EBDABE><?php
-      echo "<span class=nbdisable>". L_SWITCH_TO ."&nbsp; </span>";
+    <TD align=center class=navbar><?php
+      echo "<span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>";
       if( is_array($slices) AND (count($slices) > 1) ) {
         echo "<select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"slice_id=").'"+this.options[this.selectedIndex].value\'>';	
         reset($slices);

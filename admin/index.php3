@@ -19,7 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH] . "varset.php3";
 require $GLOBALS[AA_INC_PATH] . "item.php3";
@@ -51,6 +50,8 @@ if(isset($r_slice_id)) {
   if($slice_id != $r_slice_id) {
     $r_slice_id = $slice_id;
     $st1="";
+    $st1b="";
+    $st1c="";
     $st2="";
     $st3="";
   }  
@@ -60,17 +61,17 @@ if(isset($r_slice_id)) {
 }
 
 // $r_bin_state - controls display of editor pages. It should be:
-// app, hold, trash
+// app, appb, appc, hold, trash
 if(!isset($r_bin_state)) {
   $r_bin_state = "app";
-	 $sess->register(r_bin_state); 
+  $sess->register(r_bin_state); 
 }
 
 // $r_bin_show - controls complexity of display of editor pages. It should be:
 // short, long
 if(!isset($r_bin_show)) {
   $r_bin_show = "short";
-	 $sess->register(r_bin_show); 
+  $sess->register(r_bin_show); 
 }
 
 $perm_edit_all  = CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS);
@@ -150,6 +151,8 @@ switch( $action ) {  // script post parameter
 // script paramerer - table switching
 switch( $Tab ) {
   case "app":   $r_bin_state = "app";   break;
+  case "appb":  $r_bin_state = "appb";  break;
+  case "appc":  $r_bin_state = "appc";  break;
   case "hold":  $r_bin_state = "hold";  break;
   case "trash": $r_bin_state = "trash"; break;
 }  
@@ -251,17 +254,34 @@ $category_defined = isset($categories);
 
 switch( $r_bin_state ) {
   case "app":   $st_name = "st1";    // name of scroller for approved bin
-                $status_c = "1";
+                if( $apple_design )   // apple_design is old admin interface design with three bins Approved, Holding bin and Trash, where expired and pending items was shown by apples.
+                  $bin_condition = "status_code = 1";
+                 else 
+                  $bin_condition = "(status_code = 1) AND ".
+                                   "(publish_date <= '". date("Y-m-d"). " 23:59:59') AND ".
+                                   "(expiry_date > '". date("Y-m-d"). "')";
                 $table_icon = "../images/app.gif";
                 $table_name = L_ACTIVE_BIN;
                 break;
+  case "appb":  $st_name = "st1b";    // name of scroller for approved bin - pending
+                $bin_condition = "(status_code = 1) AND ".
+                                 "(publish_date > '". date("Y-m-d"). " 23:59:59') ";
+                $table_icon = "../images/app.gif";
+                $table_name = L_ACTIVE_BIN_PENDING;
+                break;
+  case "appc":  $st_name = "st1c";    // name of scroller for approved bin - expired
+                $bin_condition = "(status_code = 1) AND ".
+                                 "(expiry_date <= '". date("Y-m-d"). "')";
+                $table_icon = "../images/app.gif";
+                $table_name = L_ACTIVE_BIN_EXPIRED;
+                break;
   case "hold":  $st_name = "st2";    // name of scroller for holding bin
-                $status_c = "2";
+                $bin_condition = "status_code = 2";
                 $table_icon = "../images/hold.gif";
                 $table_name = L_HOLDING_BIN;
                 break;
   case "trash": $st_name = "st3";    // name of scroller for trash bin
-                $status_c = "3";
+                $bin_condition = "status_code = 3";
                 $table_icon = "../images/trsh.gif";
                 $table_name = L_TRASH_BIN;
                 break;
@@ -292,9 +312,9 @@ $st->addFilter("slice_id", "md5", $slice_id);
 
 $from = ( ( $perm_edit_all ) ?  
   "items, fulltexts left join categories on items.category_id=categories.id 
-     where ((status_code=$status_c) AND fulltexts.ft_id=items.master_id AND (". $st->sqlCondFilter().")) " :
+     where (($bin_condition) AND fulltexts.ft_id=items.master_id AND (". $st->sqlCondFilter().")) " :
   "items, fulltexts left join categories on items.category_id=categories.id 
-     where ((status_code=$status_c) AND fulltexts.ft_id=items.master_id AND created_by='".$auth->auth[uid]."' AND (". $st->sqlCondFilter().")) ");
+     where (($bin_condition) AND fulltexts.ft_id=items.master_id AND created_by='".$auth->auth[uid]."' AND (". $st->sqlCondFilter().")) ");
 
 $db->query("select count(*) as cnt from $from");
 $db->next_record();
@@ -536,8 +556,11 @@ echo '
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:55  madebeer
-Initial revision
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:39:55  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:46  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

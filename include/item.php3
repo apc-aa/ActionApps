@@ -49,6 +49,7 @@ $aliases["_#EDITNOTE"] = array("fce"=>"f_h", "param"=>"edit_note", "hlp" => L_HL
 $aliases["_#IMGWIDTH"] = array("fce"=>"f_w", "param"=>"", "hlp" => L_HLP_IMGWIDTH);
 $aliases["_#IMG_HGHT"] = array("fce"=>"f_g", "param"=>"", "hlp" => L_HLP_IMG_HGHT);
 $aliases["_#ITEM_ID#"] = array("fce"=>"f_n", "param"=>"id", "hlp" => L_HLP_ITEM_ID);
+$aliases["_#CATEG_ID"] = array("fce"=>"f_n", "param"=>"category_id", "hlp" => L_HLP_CATEGORY_ID);
 
 function txt2html($txt) {          #converts plain text to html
   $txt = nl2br(htmlspecialchars($txt));
@@ -86,7 +87,7 @@ class item {
   function f_x($col) { return $this->columns[$col]; }
   function f_d($col) { return datetime2date($this->columns[$col]); }
   function f_i($col) { return ( $this->columns["img_src"] ? $this->columns["img_src"] : NO_PICTURE_URL); }
-  function f_n($col) { return unpack_id( $this->columns["id"] ); }
+  function f_n($col) { return unpack_id( $this->columns[$col] ); }
   function f_g($col) { 
     global $out;
     if( !$this->columns["img_height"] ) {
@@ -150,7 +151,7 @@ class item {
   }  
 
   function unalias($out, $remove_string="") {
-    global $alias, $alias2column, $aliases, $debugtimes;
+    global $alias2column, $aliases, $debugtimes;
 
 //$debugtimes[] = "In: unalias".microtime();
 
@@ -234,8 +235,11 @@ function PrintAliasHelp() {
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:40  madebeer
-Initial revision
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:40  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:24  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

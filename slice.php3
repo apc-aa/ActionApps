@@ -28,8 +28,6 @@ http://www.apc.org/
 #optionaly cat_id    // select only items in category with id cat_id
 #optionaly cat_name  // select only items in category with name cat_name
 
-#$debugtimes["begin"]=microtime();
-
 $encap = ( ($encap=="false") ? false : true );
 
 require "./include/config.php3";
@@ -38,12 +36,10 @@ require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
-#$debugtimes["required"]=microtime();
 
 if ($encap){require $GLOBALS[AA_INC_PATH]."locsessi.php3";}
 else {require $GLOBALS[AA_INC_PATH]."locsess.php3";} 
 page_open(array("sess" => "AA_SL_Session"));
-#$debugtimes["page_open"]=microtime();
 $sess->register(r_highlight); 
 $sess->register(r_category); 
 $sess->register(r_unpacked_where); 
@@ -250,7 +246,10 @@ function CompactView($where, $catsel=false) {
     require $GLOBALS[AA_INC_PATH]."big_srch.php3";
   }
   elseif( $sh_itm ) {   // fulltext view
-    $SQL= "select items.*, fulltexts.full_text from items, fulltexts where fulltexts.ft_id=items.master_id AND (id='".q_pack_id($sh_itm)."')";
+    $SQL= "SELECT items.*, fulltexts.full_text, categories.name as category 
+             FROM items, fulltexts 
+             LEFT JOIN categories ON categories.id=items.category_id 
+             WHERE fulltexts.ft_id=items.master_id AND (items.id='".q_pack_id($sh_itm)."')";
     $db->query($SQL);
     if ($db->next_record()) {
       $CurItem = new item($foo,true,1,$sess->MyUrl($slice_id, $encap), $fulltext_format, $odd_row_format, $even_row_format, "", $grab_len, $compact_remove, $fulltext_remove);
@@ -324,11 +323,8 @@ function CompactView($where, $catsel=false) {
 //    p_arr_m($debugtimes);
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:52  madebeer
-Initial revision
-
-Revision 1.1.1.1  2000/06/12 21:49:44  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
 
 Revision 1.22  2000/06/12 19:57:51  madebeer
 added GPL LICENSE file, added copyright notice to all files that

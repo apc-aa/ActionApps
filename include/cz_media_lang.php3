@@ -215,7 +215,7 @@ define("L_A_ITEM_EDT", "Upravit èlánek");
 define("L_IMP_EXPORT", "Povolit zasílání èlánkù do webíku:");
 define("L_EXPORT_TO_ALL", "Povol zasílání èlánkù do jakéhokoliv webíku");
 define("L_IMP_IMPORT", "Pøijímat èlánky z webíku:");
-define("L_ADD_NEW_ITEM", "Pøidat nový èlánek");
+define("L_ADD_NEW_ITEM", "Nový èlánek");
 define("L_ERR_FEEDED_ITEMS", "V koši je èlánek, který byla zaslán jinému webíku - nemùže být odstranìn.");
 define("L_EDIT_ITEMS", "Editace èlánku");
 define("L_VIEW_FULLTEXT", "Zobraz èlánek");
@@ -389,9 +389,9 @@ define("L_MORE_SPECIFIC", "Zkuste zadat pøesnìjší údaje.");
 define("L_REMOVE", "Odstranit");
 define("L_ID", "Id");
 define("L_TYPE", "Typ");
-define("L_SETTINGS", "Nastavení webíku");
-define("L_LOGO", "Econnect logo");
-define("L_USER_MANAGEMENT", "Správa uživatelù");
+define("L_SETTINGS", "Nastavení");
+define("L_LOGO", "Econnect");
+define("L_USER_MANAGEMENT", "Uživatelé");
 define("L_ITEMS", "Správa pøíspìvkù");
 define("L_NEW_SLICE_HEAD", "Nový webík");
 define("L_ERR_USER_CHANGE", "Nelze zmìnit data uživatele - LDAP Error");
@@ -492,7 +492,7 @@ define("L_HEADLINE_PREVIEW", "Nadpis (preview po kliknutí)");
 define("L_EDIT_LINK", "&nbsp;");
 define("L_PREVIEW_LINK", "&nbsp;");
 define("L_ARTICLE_MANAGER", "Správa èlánkù");
-define("L_SWITCH_TO", "Zmìnit webík");
+define("L_SWITCH_TO", "Webík:");
 define("L_ADMIN", "Administrace");
 
 define("L_NO_PS_NEW_USER", "Nemáte právo vytvoøit uživatele");
@@ -525,30 +525,24 @@ define("L_FEEDTO_TITLE", "Pøedávání zpráv");
 define("L_FEED_TO", "Zaslat vybrané zprávy vybraným webíkùm");
 define("L_NO_PERMISSION_TO_FEED", "Nemáte právo zasílat zprávy");
 
+define("L_ACTIVE_BIN_EXPIRED", "Aktuální - Expirované");
+define("L_ACTIVE_BIN_PENDING", "Aktuální - Pøipravené");
+define("L_ACTIVE_BIN_EXPIRED_MENU", "... expirované");
+define("L_ACTIVE_BIN_PENDING_MENU", "... pøipravené");
+
 //----------------------------
 //define("", "");   //prepared for new constants
  
 $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven', 
 		'Èervenec', 'Srpen', 'Záøí', 'Øíjen', 'Listopad', 'Prosinec');
 
-# aliases used in fulltext and compact format in place of database fields
-# change only text after _# !!!
-# length of alias must! be!! 10 characters !!!
-# if you change it, change compact and fulltext format strings in database, too !
-# do not use _# inside alias !
-$alias = array("headline"=>"_#HEADLINE", "category"=>"_#CATEGORY", "hl_href"=>"_#HDLN_URL",
-               "post_date"=>"_#POSTDATE", "publish_date"=>"_#PUB_DATE",
-               "expiry_date"=>"_#EXP_DATE", "abstract"=>"_#ABSTRACT", "full_text"=>"_#FULLTEXT",
-               "img_src"=>"_#IMAGESRC", "source"=>"_#SOURCE##", "source_href"=>"_#SRC_URL#",
-               "place"=>"_#PLACE###", "posted_by"=>"_#POSTEDBY", "e_posted_by"=>"_#E_POSTED",
-               "created_by"=>"_#CREATED#", "edited_by"=>"_#EDITEDBY", "last_edit"=>"_#LASTEDIT",
-               "contact1"=>"_#CONTACT1", "contact2"=>"_#CONTACT2", "contact3"=>"_#CONTACT3",
-               "edit_note"=>"_#EDITNOTE", "img_width"=>"_#IMGWIDTH", "img_height"=>"_#IMG_HGHT");  
-  
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:25  madebeer
-Initial revision
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:25  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:13  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
