@@ -18,6 +18,10 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+if (!defined("ALERTS_CONSTANTS_INCLUDED"))
+    define("ALERTS_CONSTANTS_INCLUDED",1);
+else return;
  
 #
 # Used constants. Do not edit if you are not developer.
@@ -55,6 +59,13 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "sk_news_lang.php3" => "sk_news_lang.php3",
                          "de_news_lang.php3" => "de_news_lang.php3",
                          "ro_news_lang.php3" => "ro_news_lang.php3");
+
+$LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
+                            "en" => "iso-8859-1",
+                            "es" => "iso-8859-1",
+                            "de" => "iso-8859-1",
+                            "ro" => "iso-8859-2",
+                            "sk" => "windows-1250");
                          
 # MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and 
 # specifies how many items from the begining we have to search
@@ -523,6 +534,9 @@ $FILEMAN_ACCESSES = array (
     "0" => L_SUPERADMIN,
 //    "EDITOR" => L_EDITOR,
     "ADMINISTRATOR" => L_ADMINISTRATOR);
+    
+$ALERTS_DEFAULT_COLLECTION = "__default__";
+$ALERTS_SUBSCRIPTION_COLLECTION = "__subscription__";
 
 require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 ?>

@@ -13,20 +13,33 @@ http://www.apc.org/
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-&iacute;
-    $GLOBALS[mgettext_lang] = "es"; 
 */
 
-# // language file (one for all languages):
-# require $GLOBALS[AA_INC_PATH]."../php_rw/mgettext_lang.php3";
-$mgettext_langs = array ("en","cz","de","sk","ro","es");
-
-function set_mgettext_domain ($domain) {
-    $mgettext_lang = substr ($domain,0,2);
+function get_mgettext_lang () {
+    global $mgettext_lang;
+    if (!isset ($mgettext_lang))
+        return "en";
+    else return $mgettext_lang;
 }
 
-/*  Function: mgettext
-    Alias:    _m(), see below
+/* Function: bind_mgettext_domain
+   Purpose:  reads language constants from given file
+   Remarks:  use full file name 
+*/
+function bind_mgettext_domain ($filename) {
+    global $_m, $mgettext_lang;
+    
+    if (!file_exists ($filename)) {
+        echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
+        exit;
+    }
+    else {
+        $_m = "";
+        include $filename;        
+    }
+}
+
+/*  Function: _m
     Purpose:  basic function to get translations
               writes new language strings at the end of the language file 
     Params:   $id -- text to be translated
@@ -37,33 +50,12 @@ function set_mgettext_domain ($domain) {
     Return value: if translation in the active language ($mgettext_lang) does not yet exist,
                   returns $id    
 */
-
-function mgettext ($id, $params = 0) {
-    global $mgettext_lang, $mgettext_strings, $mgettext_langs;
+function _m ($id, $params = 0) {
+    global $_m;
     
-    $retval = $mgettext_strings[$id][$mgettext_lang];
-    if (!$retval) {
+    $retval = $_m[$id];
+    if (!$retval) 
         $retval = $id;
-/*        if (!$mgettext_strings[$id]) {
-            // Add the string to language file
-            $fd = @fopen ($GLOBALS[AA_INC_PATH]."../php_rw/mgettext_lang.php3","ab");
-            if ($fd) {
-                fputs ($fd, "\r\n");
-                fputs ($fd, "\$mgettext_strings \r\n");
-                fputs ($fd, "[\"".str_replace("\"","\\\"", $id)."\"] = array (\r\n");
-                reset ($mgettext_langs);
-                $first = true;
-                while (list (,$lang) = each ($mgettext_langs)) {
-                    if (!$first) fputs ($fd, ",\r\n");
-                    $first = false;
-                    $txt = $lang == "en" ? $id : "";
-                    fputs ($fd, "    \"$lang\"=>\"$txt\"");
-                }
-                fputs ($fd, ");\r\n");            
-                fclose ($fd);
-            }
-        }*/
-    }
     
     if (is_array ($params)) {
         $foo = "#$&*-";
@@ -75,11 +67,5 @@ function mgettext ($id, $params = 0) {
         
     return $retval;
 } 
-
-/* mgettext alias */
-
-function _m ($id, $params = 0) {
-    return mgettext ($id, $params);
-}
 
 ?>
