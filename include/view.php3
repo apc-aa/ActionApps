@@ -40,7 +40,12 @@ function GetAliasesFromUrl($to_arr = false) {
   return $ret;
 }  
 
-function ParseCommand($cmd) {
+function ParseCommand($cmd,$als=false) {
+  if( isset( $als ) AND is_array( $als ) ) {  # substitute url aliases in cmd
+    reset( $als );
+    while( list($k,$v) = each( $als ) )
+      $cmd = str_replace ($k, $v, $cmd);
+  }    
   $a = str_replace ("--", "__u>_.", $cmd);# dummy string
   $b = str_replace ("-", "##Sx", $a);     # Separation string is ##Sx
   $c = str_replace ("__u>_.", "-", $b);   # change "--" to "-"
@@ -69,7 +74,7 @@ function ParseViewParameters($query_string="") {
   add_vars($query_string);       # adds values from url (it's not automatical in SSIed script)
 
   # Parse parameters
-  $command = ParseCommand($cmd[ $vid ]);
+  $command = ParseCommand($cmd[ $vid ], $GLOBALS['als']);
   switch ($command[0]) {
     case 'v':  $vid = $command[1];
                break;
@@ -679,6 +684,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.20  2001/11/26 11:10:36  honzam
+als parameter parsed in cmd parameter for view.php3
+
 Revision 1.19  2001/11/05 18:43:38  honzam
 fixed bug with multiple ids passed to view in i and x option
 
