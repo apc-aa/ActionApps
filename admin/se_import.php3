@@ -36,49 +36,42 @@ if(!IfSlPerm(PS_FEEDING, "admin")) {
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
-// lookup all slices without this one
-$SQL= "SELECT id, name FROM slice WHERE id<>'$p_slice_id' ORDER BY name";
-$db->query($SQL);
-while($db->next_record())
-  $all_slices[unpack_id128($db->f(id))] = $db->f(name);
+              // lookup all slices without this one
+$SQL        = "SELECT id, name FROM slice WHERE id<>'$p_slice_id' ORDER BY name";
+$all_slices = GetTable2Array($SQL, 'unpack:id', 'name');
 
-// lookup export_to slice
-$SQL= "SELECT name, id FROM slice, feedperms WHERE slice.id=feedperms.to_id
-                   AND feedperms.from_id='$p_slice_id' ORDER BY name";
-$db->query($SQL);
-while($db->next_record())
-  $export_to[unpack_id($db->f(id))] = $db->f(name);
+              // lookup export_to slice
+$SQL        = "SELECT name, id FROM slice, feedperms WHERE slice.id=feedperms.to_id AND feedperms.from_id='$p_slice_id' ORDER BY name";
+$export_to  = GetTable2Array($SQL, 'unpack:id', 'name');
 
-// lookup importable slice
-$SQL= "SELECT name, id FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from_id
-       WHERE (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1) AND slice.id<>'$p_slice_id' ORDER BY name";
-$db->query($SQL);
-while($db->next_record())
-  $importable[unpack_id128($db->f(id))] = $db->f(name);
+              // lookup importable slice
+$SQL        = "SELECT name, id FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from_id
+                WHERE (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1) AND slice.id<>'$p_slice_id' ORDER BY name";
+$importable = GetTable2Array($SQL, 'unpack:id', 'name');
 
-// lookup imported slices
-$SQL= "SELECT name, id FROM slice, feeds
-        LEFT JOIN feedperms ON slice.id=feedperms.from_id
-        WHERE slice.id=feeds.from_id
-          AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
-          AND feeds.to_id='$p_slice_id' ORDER BY name";
+              // lookup imported slices
+$SQL        = "SELECT name, id FROM slice, feeds LEFT JOIN feedperms ON slice.id=feedperms.from_id
+                WHERE slice.id=feeds.from_id
+                  AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
+                  AND feeds.to_id='$p_slice_id' ORDER BY name";
+$imported   = GetTable2Array($SQL, 'unpack:id', 'name');
 
-$db->query($SQL);
-while($db->next_record())
-  $imported[unpack_id128($db->f(id))] = $db->f(name);
+              // lookup exported slices
+$SQL        = "SELECT name, id FROM slice, feeds LEFT JOIN feedperms ON slice.id=feedperms.to_id
+                WHERE slice.id=feeds.to_id
+                  AND feeds.from_id='$p_slice_id' ORDER BY name";
+$exported   = GetTable2Array($SQL, 'unpack:id', 'name');
 
-// export_to_all setting
-$SQL= "SELECT export_to_all FROM slice WHERE slice.id='$p_slice_id'";
-$db->query($SQL);
-if($db->next_record())
-  $export_to_all = $db->f(export_to_all);
+              // export_to_all setting
+$SQL        = "SELECT export_to_all FROM slice WHERE slice.id='$p_slice_id'";
+$export_to_all = GetTable2Array($SQL, 'aa_first', 'export_to_all');
+
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 // Include also js_lib.js javascript library
 HtmlPageBegin('default', true);
 ?>
  <TITLE><?php echo _m("Slice Administration");?></TITLE>
-
 
 <SCRIPT Language="JavaScript"><!--
 
@@ -125,11 +118,6 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
-/*
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Enable export to slice:") ?></b></td></tr>
-<tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">*/
   FrmTabCaption(_m("Enable export to slice:"));
 ?>
 <tr>
@@ -167,6 +155,9 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <tr><td colspan=3><table>
 <?php
   FrmInputChBox("export_to_all", _m("Enable export to any slice"), $export_to_all, true, "OnClick=\"ExportAllClick()\"");
+  if ( isset($exported) AND is_array($exported) ) {
+    FrmStaticText(_m("Currently exported to"), join('<br>',$exported));
+  }
 ?>
 </table></td></tr>
 <?php
