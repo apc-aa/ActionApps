@@ -694,12 +694,15 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
       case "link_edit":
         return get_aa_url('modules/links/linkedit.php3?lid='. $this->getval('id'));
       case "link_go_categ":
-        $cat_names = $this->columns['cat_name'];
-        $cat_ids   = $this->columns['cat_id'];
+        $cat_names       = $this->columns['cat_name'];
+        $cat_ids         = $this->columns['cat_id'];
+        $cat_highlight   = $this->columns['cat_state'];
         if( !is_array($cat_names) )
           return "";
         while ( list($k, $cat) = each($cat_names) ) {
-          $ret .= $delim. '<a href="javascript:SwitchToCat('. $cat_ids[$k]['value']. ')">'.$cat['value'].'</a>';
+          $print_cname =  ( ($cat_highlight[$k]['value']=='highlight') ? 
+                            '<b>'.$cat['value'].'</b>' : $cat['value'] ); 
+          $ret .= $delim. '<a href="javascript:SwitchToCat('. $cat_ids[$k]['value']. ")\">$print_cname</a>";
          //          $ret .= $delim. '<a href="'.  get_aa_url('modules/links/index.php3?GoCateg='. $cat_ids[$k]['value']). '">'.$cat['value'].'</a>';
           $delim = ', ';        
         }  

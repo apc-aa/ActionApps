@@ -224,7 +224,7 @@ function StoreTable2Content(&$db, &$content, $SQL, $prefix, $id_field) {
  * and stores it in the 'Abstract Data Structure' for use with 'item' class
  *
  * @see GetItemContent(), itemview class, item class
- * @param array $ids array if ids to get from database
+ * @param array $zids array if ids to get from database
  * @return array - Abstract Data Structure containing the links data
  *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
  */
@@ -291,6 +291,44 @@ function Links_GetLinkContent($zids) {
     StoreTable2Content($db, $content, $SQL, 'cat_', 'what_id');
     return $content;
 }
+
+
+
+/**
+ * Loads data from database for given category ids (called in itemview class)
+ * and stores it in the 'Abstract Data Structure' for use with 'item' class
+ *
+ * @see GetItemContent(), itemview class, item class
+ * @param array $zids array if ids to get from database
+ * @return array - Abstract Data Structure containing the links data
+ *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
+ */
+function Links_GetCategoryContent($zids) {
+    global $db;
+
+    if (!is_object($db))   $db = new DB_AA;
+    if ( !$zids )          return false;
+
+    // construct WHERE clausule
+    $sel_in = $zids->sqlin( false );
+
+    // get category data (including data of link changes)
+    $SQL = "SELECT * FROM links_categories WHERE id $sel_in";
+    $db->tquery($SQL);
+    while( $db->next_record() ) {
+        $foo_id = $db->f('id');
+        reset( $db->Record );
+        while( list( $key, $val ) = each( $db->Record )) {
+            if( is_int($key))
+                continue;
+            $content[$foo_id][$key][] = array('value' => $val);
+        }
+    }
+
+    return $content;
+}
+
+
 
 /**
  * Is current user anonymous (=public) user?

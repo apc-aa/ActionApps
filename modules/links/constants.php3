@@ -325,4 +325,31 @@ $LINK_ALIASES = array(
                           "param" => "cat_id",
                           "hlp" => _m('Category listing with links (for admin interface only)'))
 );
+
+
+/**
+ * List of fields, which will be listed in searchbar in Links Manager (search)
+ * (modules/links/index.php3)
+ */
+$CATEGORY_FIELDS = array(
+     'id'=>              array( 'name'  => _m('Id'),
+                                'field'=> 'links_categories.id',
+                                'operators'=> 'numeric'),
+     'name'=>            array( 'name'  => _m('Name'),
+                                'field'=> 'links_categories.name',
+                                'operators'=> 'text'),
+     'path'=>            array( 'name'  => _m('Path'),
+                                'field'=> 'links_categories.path',
+                                'operators'=> 'text'),
+     'link_count'=>      array( 'name'  => _m('Link Count'),
+                                'field'=> 'links_categories.link_count',
+                                'operators'=> 'numeric'),
+     'description'=>     array( 'name'  => _m('Description'),
+                                'field'=> 'links_categories.description',
+                                'operators'=> 'text'),
+     'note'=>            array( 'name'  => _m('Note'),
+                                'field'=> 'links_categories.note',
+                                'operators'=> 'text'));
+
+
 ?>

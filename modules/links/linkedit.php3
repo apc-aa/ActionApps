@@ -398,7 +398,7 @@ echo '
     FrmInputSelect( 'type', _m('Link type'), $link_types, $type, false,
                    _m('Select the type, if the link belongs to some special category'));
     printChange($type_change, $type);
-    FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
+//    FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
     FrmInputText( 'initiator', _m('Author\'s e-mail'),           $initiator,  250, 50, false);
     printChange($initiator_change, $initiator);
     FrmTextarea(  'note',  _m('Editor\'s note'),    $note, 3, 60, false,

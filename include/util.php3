@@ -166,15 +166,11 @@ function shtml_query_string() {
 # skips terminating backslashes
 function DeBackslash($txt) {
 	return str_replace('\\', "", $txt);        // better for two places
-}   
- 
-/** Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string) 
-*   to GLOBALS.
-*   @param array $restrict_vars  Array ("var name"=>1, ...) allows to 
-*       restrict the variables added, used  
-*       e.g. in alerts_sending to restrict to sort[] and conds[].
-*/
-function add_vars($query_string="", $debug="", $restrict_vars="") {
+}
+
+# adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
+# to GLOBALS
+function add_vars($query_string="", $debug="") {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
     $vars = explode('&', $varstring);
 
@@ -189,10 +185,8 @@ function add_vars($query_string="", $debug="", $restrict_vars="") {
             $lvalue = substr($var,0,$pos);
             $value  = substr($var,$pos+1);
             $arrindex = strstr ($lvalue,'[');
-            if (! $arrindex) { 
-                if (! is_array ($restrict_vars) || $restrict_vars[$lvalue]) {
-                    $GLOBALS[$lvalue]= $value;   # normal variable
-                }
+            if (!$arrindex) {
+                $GLOBALS[$lvalue]= $value;   # normal variable
                 continue;
             }
 
@@ -218,12 +212,10 @@ function add_vars($query_string="", $debug="", $restrict_vars="") {
                  else
                     $lindex .= "[$v]";
             }
-            if (! is_array ($restrict_vars) || $restrict_vars [$lvalue]) {
-                $evalcode = '$'.$lvalue.$lindex."=\$value;";
-                if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
-                    global $$lvalue;
-                    eval ($evalcode);
-                }
+            $evalcode = '$'.$lvalue.$lindex."=\$value;";
+            if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
+                global $$lvalue;
+                eval ($evalcode);
             }
         }
     }
@@ -536,10 +528,10 @@ function UnpackFieldsToArray($packed, $fields) {
 
 # function fills the array from constants table
 function GetConstants($group, $order='pri', $column='name') {
+  $db = getDB();
   if( $order )
     $order_by = "ORDER BY $order";
-  $db = getDB();
-  $db->query("SELECT name, value FROM constant 
+  $db->tquery("SELECT name, value FROM constant
                WHERE group_id='$group' $order_by");
   while($db->next_record()) {
     $key = $db->f('value');
@@ -549,20 +541,22 @@ function GetConstants($group, $order='pri', $column='name') {
     }
     $already_key[$key] = true;       // mark the $key
     $arr[$key] = $db->f($column);
-  }  
+  }
   freeDB($db);
   return $arr;
 }
 
 # gets fields from main table of the module
 function GetModuleInfo($module_id, $type) {
-  global $db, $MODULES;
+  global $MODULES;
   $p_module_id = q_pack_id($module_id);
 
-  if (!is_object($db)) $db = new DB_AA;
-  $db->query("SELECT * FROM " . $MODULES[$type]['table'] ."
+  $db = getDB();
+  $db->tquery("SELECT * FROM " . $MODULES[$type]['table'] ."
                WHERE id = '$p_module_id'");
-  return  ($db->next_record() ? $db->Record : false);
+  $ret = ($db->next_record() ? $db->Record : false);
+  freeDB($db);
+  return $ret;
 }
 
 # gets slice fields
@@ -770,8 +764,7 @@ function GetItemContent_Short($ids) {
  */
 function GetItemContentMinimal($zids) {
   global $db;
-
-  if (!is_object ($db)) $db = new DB_AA;
+  $db = getDB();
 
   # construct WHERE clause
   list($sel_in, $settags) = itemContent_getWhere($zids);
@@ -790,31 +783,35 @@ function GetItemContentMinimal($zids) {
     $content[$foo_id]['short_id........'][] = array("value" => $db->f("short_id"));
   }
 
+  freeDB($db);
   return ($n_items == 0) ? null : $content;   // null returned if no items found
 }
 
 // -------------------------------------------------------------------------------
 
 function GetHeadlineFieldID($sid, $slice_field="headline.") {
-  # get id of headline field  
-  $SQL = "SELECT id FROM field 
+  $db = getDB();
+
+  # get id of headline field
+  $SQL = "SELECT id FROM field
            WHERE slice_id = '". q_pack_id( $sid ) ."'
              AND id LIKE '$slice_field%'
         ORDER BY id";
-  $db = getDB();
   $db->query( $SQL );
-  $res = ( $db->next_record() ? $db->f(id) : false );
-  freeDB($db); 
-  return $res;
+  $ret = ( $db->next_record() ? $db->f(id) : false );
+  freeDB($db);
+  return $ret;
 }
 
 // -------------------------------------------------------------------------------
 
 # fills array by headlines of items in specified slice (unpacked_id => headline)
 # $tagprefix is array as defined in itemfunc.php3
-function GetItemHeadlines($sid="", $slice_field="headline........", 
+function GetItemHeadlines( $sid="", $slice_field="headline........",
     $zids="", $type="all", $tagprefix=null, $timecond="normal") {
-    global $debug;
+    global $db,$debug;
+  if (!is_object ($db)) $db = new DB_AA;
+
   $psid = q_pack_id( $sid );
   $time_now = time();
   if ($slice_field=="") $slice_field="headline.";
@@ -852,7 +849,7 @@ function GetItemHeadlines($sid="", $slice_field="headline........",
         GROUP BY text
         ORDER BY text";
 
-  $db = getDB(); $db->tquery($SQL);
+  $db->tquery($SQL);
 
   # See if need to Put the tags back on the ids
   if (isset($zids) && is_object($zids) && ($zids->onetype() == 't') && isset($tagprefix)) {
@@ -868,7 +865,6 @@ function GetItemHeadlines($sid="", $slice_field="headline........",
         = ((isset($tags) ? ($t2p[$tags[$i]]) : "")
             . substr($db->f(text), 0, 50));  #truncate long headlines
   }
-  freeDB($db);
   if ($debug)  huhl("GetItemHeadlines found ",$arr);
   return $arr;
 }
@@ -1094,29 +1090,28 @@ function CountHit($id) {
 
     if ( rand(0,COUNTHIT_PROBABILITY) == 1) {
         $logarray = getLogEvents("COUNT_HIT", $from="", $to="", true, true);
-        if ( isset($logarray) AND is_array($logarray) ) {
-            reset($logarray);
-            while(list(,$log) = each($logarray)) {
-                $myid = $log["params"];
-                $zid->refill($myid);
-                switch ($zid->onetype()) {
-                    case "l":
-                    case "t":
-                        $myid = $zid->q_packedids(0);
-                        $where = "(id='".$myid."')";
-                        break;
-                    case "s":
-                        $myid = $zid->shortids(0);
-                        $where = "(short_id='".$myid."')";
-                        break;
-                    default:
-                }
-                $zid->clear();
-                $SQL = "UPDATE item
-                           SET display_count=(display_count+".$log["count"].")
-                         WHERE $where";         
-                $db->tquery($SQL);
+        reset($logarray);
+        while(list(,$log) = each($logarray)) {
+            $myid = $log["params"];
+            $zid->refill($myid);
+            switch ($zid->onetype()) {
+                case "l":
+                case "t":
+                    $myid = $zid->q_packedids(0);
+                    $where = "(id='".$myid."')";
+                    break;
+                case "s":
+                    $myid = $zid->shortids(0);
+                    $where = "(short_id='".$myid."')";
+                    break;
+                default:
             }
+            $zid->clear();
+            $SQL = "UPDATE item
+                       SET display_count=(display_count+".$log["count"].")
+                     WHERE $where";
+            $db->tquery($SQL);
+//            echo $SQL;
         }
     }
 }

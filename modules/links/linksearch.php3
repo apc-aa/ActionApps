@@ -42,23 +42,10 @@ function IsLinkDataField($field) {
 }
 
 
-/* Function: QueryIDs
-   Purpose:  Finds item IDs for items to be shown in a slice / view
+/* Function: Links_QueryZIDs
+   Purpose:  Finds link IDs for links according to given  conditions
    Params:   $conds -- search conditions (see FAQ)
              $sort -- sort fields (see FAQ)
-             $slices -- array of slices in which to look for items
-             $slice_id -- older parameter, used only when $slices is not set,
-                          translated to $slices = array($slice_id)
-             $neverAllItems -- if no conds[] apply (all are wrong formatted or empty),
-                               generates an empty set
-             $restrict_ids -- if you want to choose only from a set of items
-                              (used by E-mail Alerts and related item view (for
-                               sorting and eliminating of expired items))
-                              ids are packed but not quoted in $restrict_ids or short
-             $defaultCondsOperator
-             $use_cache -- if set, the cache is searched , if the result isn't
-                           already known. If not, the result is found and stored into
-                           cache.
 
    Globals:  $debug=1 -- many debug messages
              $debugfields=1 -- useful mainly for multiple slices mode -- views info about field_ids
@@ -251,4 +238,178 @@ if( $debug ) {
 
   return $zids;
 }
+
+
+/* Function: Links_QueryCatZIDs
+   Purpose:  Finds category IDs for category according to given conditions
+   Params:   $conds -- search conditions (see FAQ)
+             $sort -- sort fields (see FAQ)
+
+   Globals:  $debug=1 -- many debug messages
+             $debugfields=1 -- useful mainly for multiple slices mode -- views info about field_ids
+                used in conds[] but not existing in some of the slices
+             $CategoryIDsCount -- set to the count of IDs returned
+             $nocache -- do not use cache, even if use_cache is set
+*/
+
+function Links_QueryCatZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app") {
+
+  # type sets status, pub_date and expiry_date according to specified type:
+  # app | changed | new | unasigned | trash | all
+  # if you want specify it yourselves in conds, set type to ALL
+
+  global $debug;                 # displays debug messages
+  global $nocache;               # do not use cache, if set
+  global $CategoryIDsCount;
+  global $LINKS_FIELDS;          # link fields definitions
+
+  $db = new DB_AA;
+
+  if( $use_cache AND !$nocache ) {
+    #create keystring from values, which exactly identifies resulting content
+    $keystr = $cat_path . $subcat.
+              serialize($conds).
+              serialize($sort).
+              $type;
+
+    if( $res = $GLOBALS[pagecache]->get($keystr)) {
+      $arr = unserialize($res);
+      $LinksIDsCount = count($arr);
+      if( $debug )
+        echo "<br>Cache HIT - return $LinksIDsCount IDs<br>";
+      return $arr;
+    }
+  }
+
+if( $debug ) {
+  echo "<br>Conds:"; print_r($conds);
+  echo "<br>--";
+  echo "<br>Sort:"; print_r($sort);
+  echo "<br>--";
+}
+
+  ParseEasyConds($conds, $CATEGORY_FIELDS);
+
+if( $debug ) {
+  echo "<br>Conds:"; print_r($conds);
+  echo "<br>--";
+}
+
+  # parse conditions ----------------------------------
+  if( isset($conds) AND is_array($conds)) {
+      reset($conds);
+      while( list( , $cond) = each( $conds )) {
+          if( !isset($cond) OR !is_array($cond) )
+              continue;                              // bad condition
+          reset($cond);
+          while( list( $fid, $v) = each( $cond )) {
+              $finfo = $CATEGORY_FIELDS[$fid];
+              if ( !isset($finfo) OR !is_array($finfo) )
+                  continue;                         // fid is not field
+              $link_conds[] = GetWhereExp( $finfo['field'],
+                                          $cond['operator'], $cond['value'] );
+              if( $finfo['table'] )
+                  $join_tables[$finfo['table']] = true;
+          }
+      }
+  }
+
+  # parse sort order ----------------------------
+  if( isset($sort) AND is_array($sort)) {
+      reset($sort);
+      while( list( , $srt) = each( $sort )) {
+          if( !isset($srt) OR !is_array($srt) )
+              continue;                              // bad sort order
+          $fid = key($srt);
+          $finfo = $LINKS_FIELDS[$fid];
+          if( !$finfo OR !is_array($finfo))  # bad field_id - skip
+              continue;
+          $link_order[] = $finfo['field'] .
+                          (stristr(current( $srt ), 'd') ? " DESC" : "");
+      }
+  }
+
+
+
+//------------------------------TODO   |   -----------------------------------
+//                                     V   -----------------------------------
+
+
+    $SQL = ( ($type=='unasigned') ?
+           'SELECT  DISTINCT links_links.id  FROM links_links
+              LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ' :
+           'SELECT  DISTINCT links_links.id  FROM links_links, links_link_cat, links_categories ');
+
+    if( $type == 'changed' ) {
+        $join_tables['changes'] = true;
+    }
+
+    if( $join_tables['regions'] )
+        $SQL .= ' LEFT JOIN links_link_reg ON links_links.id = links_link_reg.link_id
+                  LEFT JOIN links_regions ON links_regions.id = links_link_reg.region_id ';
+    if( $join_tables['languages'] )
+        $SQL .= ' LEFT JOIN links_link_lang ON links_links.id = links_link_lang.link_id
+                  LEFT JOIN links_languages ON links_languages.id = links_link_lang.lang_id ';
+    if( $join_tables['changes'] )
+        $SQL .= ' LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id ';
+
+
+    if( $type != 'unasigned' ) {
+        $SQL .= '  WHERE links_links.id = links_link_cat.what_id
+                     AND links_link_cat.category_id = links_categories.id ';
+
+        $SQL .= ( $subcat ? " AND ((path = '$cat_path') OR (path LIKE '$cat_path,%')) "
+                          : " AND (path = '$cat_path') ");
+    }
+
+    switch ($type) {
+        case 'all':       $SQL .= " AND (links_link_cat.proposal = 'n') ";
+                          break;
+        case 'new':       $SQL .= ' AND (links_link_cat.proposal = \'y\')
+                                    AND (links_link_cat.base = \'y\')
+                                    AND (links_links.folder < 2) ';
+                          break;
+        case 'changed':   $SQL .= ' AND (   (     (links_link_cat.proposal = \'y\')
+                                              AND (links_link_cat.state <> \'hidden\')
+                                              AND (links_link_cat.base = \'n\'))
+                                          OR
+                                            (     (links_changes.rejected =\'n\')
+                                              AND (links_link_cat.proposal = \'n\')))
+                                    AND (links_links.folder < 2) ';
+                          break;
+        case 'unasigned': $SQL .= ' WHERE (links_link_cat.category_id IS NULL)';
+                          break;
+        case 'app':
+        default:          $folder = Links_GetFolder($type);
+                          // folder string (like folder3) contains folder number
+
+                          $SQL .= " AND (links_link_cat.proposal = 'n') ";
+                          $SQL .= ($folder ?
+                                      " AND (links_links.folder = $folder) " :
+                                      " AND (links_links.folder < 2) " );
+    }
+
+    if( isset($link_conds) AND is_array($link_conds) )
+        $SQL .= ' AND ' . join(' AND ', $link_conds );
+
+    if( isset($link_order) AND is_array($link_order) )
+        $SQL .= ' ORDER BY '. join(', ', $link_order );
+
+  # get result --------------------------
+    $db->tquery($SQL);
+
+    while( $db->next_record() )
+      $arr[] = $db->f('id');
+
+  $LinksIDsCount = count($arr);
+
+  $zids = new zids($arr,"s");
+
+  if( $use_cache AND !$nocache )
+    $GLOBALS['pagecache']->store($keystr, serialize($zids), "cat_path=$cat_path");
+
+  return $zids;
+}
+
+
 ?>
