@@ -1,8 +1,10 @@
+07/10/03 - added user id to the user edit form (AA -> Edit User)
+(honzam) - fixed posted_by (Author permissions) problem
 07/08/03 - fixed huhe with multiple arguments
 (mitra)  - fixed isField to allow wider selection including alerts1....aZh12
 07/07/03 - updated spanish translations (more work needed)
 (pep)    - fixed posted_by field insert function on sql_update.php3
-07/05/03 - added defaults and default functions to importer.php3 
+07/05/03 - added defaults and default functions to importer.php3
 (mitra)  - don't send welcome inviting confirmation if already confirmed
          - removed $db paramater from "new itemview"
          - added link to editsliceinfo and colors in summarize
