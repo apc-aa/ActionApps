@@ -736,15 +736,16 @@ function expandFilenameWithHttp($parturl) {
       $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()),
                                DeQuoteColons($parturl));
            # filename do not use colons as separators => dequote before callig
-      if( !$filename || trim($filename)=="" )
-        return "";
+      if (!$filename || trim($filename)=="") {
+          return "";
+      }
 
       // if no http request - add server name
-      if( !(substr($filename, 0, 7) == 'http://') AND
-          !(substr($filename, 0, 8) == 'https://')   )
-        $filename = self_server().'/'. $filename;
+      if (!(substr($filename, 0, 7) == 'http://') AND !(substr($filename, 0, 8) == 'https://')) {
+          $filename = self_server(). (($filename{0}=='/') ? '' : '/'). $filename;
+      }
 
-      if (! $fp = @fopen( $filename, 'r' ))  {
+      if (! $fp = @fopen( $filename, 'r'))  {
         if ($errcheck) huhl("Unable to retrieve $filename");
         return "";
       }
