@@ -56,8 +56,15 @@ if (isset($_SERVER["argv"] )) {
     if ( $cmd_parameters['howoften'] ) {
         $howoften = $cmd_parameters['howoften'];
     }
+    // $fix - if set, then send only e-mail to not processed collections
+    if ( $cmd_parameters['fix'] ) {
+        $fix      = $cmd_parameters['fix'];
+    }
 }
 
+$frequency['daily']   = 24 * 60 * 60;
+$frequency['weekly']  =  7 * $frequency['daily'];
+$frequency['monthly'] = 31 * $frequency['daily'];
 
 //$debug = 1;
 
@@ -67,9 +74,17 @@ $howoften_options = get_howoften_options();
 
 if ($howoften_options[$howoften]) {
     initialize_last();
-    //echo "<h1>$ho</h1>";
-    writeLog("ALERTS", $howoften, 'Start' );
-    $mail_count = send_emails($howoften, "all", "all", true, "");
+    if ( $fix == 1) {
+         // send only e-mail to not processed collections
+         $SQL = "SELECT collectionid FROM alerts_collection_howoften
+                  WHERE howoften = '$howoften'
+                    AND last < ". (time() - $frequency[$howoften]);
+         $colections = GetTable2Array($SQL, '', 'collectionid');
+    } else {
+        $colections = 'all';
+    }
+    writeLog("ALERTS", $howoften, 'Start'. ($fix ? '(fix '. join(',',$colections) .')' : '(all)'));
+    $mail_count = send_emails($howoften, $colections, "all", true, "");
     writeLog("ALERTS", $howoften, 'Sent: '. ($mail_count+0)  );
     //echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
 }

@@ -160,7 +160,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
                 if (is_array ($all_ids)) {
                     // find items for the given filter
                     if ($debug_alerts) { print_r ($conds); echo "----<br>"; $GLOBALS['debug']=1; }
-                    $zids = QueryZIDs ($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, new zids( $all_ids,'p' ));
+                    $zids = QueryZIDs($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, new zids( $all_ids,'p' ));
                     if ($debug_alerts) { $GLOBALS['debug']=0; echo "<br>Item IDs count: ".$zids->count()."<br>"; }
                 }
 
@@ -197,10 +197,12 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
 *            If set to "all", all Alerts users are processed.
 *   @return count of emails sent
 */
-function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
+function send_emails($ho, $collection_ids, $emails, $update, $item_id)
 {
     global $debug_alerts;
 
+    /* get all (or just some, if $collection_ids specified) collections and put
+       the infop into $colls array */
     $db = getDB();
     if (is_array($collection_ids)) {
         $where = " WHERE AC.id IN ('".join ("','", $collection_ids)."')";
@@ -219,10 +221,13 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
         return;
     }
 
-    $readerContent = new ItemContent ();
+    $readerContent = new ItemContent();
 
     foreach ($colls as $cid => $collection) {
-        $unordered_filters = create_filter_text ($ho, $cid, $update, $item_id);
+        // get array of all filters of current collection ($cid)
+        // !if $update is set (default), then it updates date for lastsent - for
+        // collections
+        $unordered_filters = create_filter_text($ho, $cid, $update, $item_id);
 
         // find filters for this collection
         $db->tquery("SELECT CF.filterid
@@ -239,22 +244,22 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
 
         // Find all users who should receive anything
         if (! is_array ($emails)) {
-            $db->tquery("
-                SELECT id FROM item
-                WHERE slice_id = '".addslashes($collection["slice_id"])."'
-                  AND status_code = 1
-                  AND publish_date <= ".time()."
-                  AND expiry_date >= ".time());
 
+            // get all confirmed users for this collection and frequency
+            $slice = new slice(unpack_id128($collection["slice_id"]));
             $field_howoften = getAlertsField(FIELDID_HOWOFTEN, $cid);
+            $conds = array( array('operator'             => '=',
+                                  'value'                => $ho,
+                                  $field_howoften        => 1 ),
+                            array('operator'             => '=',
+                                  'value'                => 1,
+                                  FIELDID_MAIL_CONFIRMED => 1 ));
+            $zids  = QueryZIDs($slice->fields('record'), $slice->unpacked_id(), $conds);
+            writeLog("ALERTS", $ho, "Users for collection $cid: ". ((int)$zids->count()));
 
-            // loop through items might want to send
-            while ($db->next_record()) {
-                $readerContent->setByItemID( unpack_id( $db->f("id")), true);
-                if ( $readerContent->getValue( $field_howoften ) != $ho
-                     || ! $readerContent->getValue( FIELDID_MAIL_CONFIRMED )) {
-                    continue;
-                }
+            // loop through readers might want to send
+            for( $i=0, $zcount=$zids->count(); $i<$zcount; $i++) {
+                $readerContent->setByItemID( $zids->longids($i), true);
 
                 $user_text = get_filter_text_4_reader($readerContent, $filters, $cid);
 
@@ -262,23 +267,25 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                 if ($user_text) {
                     $alias["_#FILTERS_"] = $user_text;
                     $alias["_#HOWOFTEN"] = $ho;
-                    $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"],
+                    $alias["_#COLLFORM"] = alerts_con_url($collection["slice_url"],
                                            "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE));
-                    $alias["_#UNSBFORM"] = alerts_con_url ($collection["slice_url"],
+                    $alias["_#UNSBFORM"] = alerts_con_url($collection["slice_url"],
                                            "au=".$readerContent->getValue(FIELDID_ACCESS_CODE).
                                            "&c=".$cid);
 
                     if ($GLOBALS['debug_email']) {
                         huhl("\n<br>send_mail_from_table(".$collection["emailid_alert"].", ".$readerContent->getValue(FIELDID_EMAIL).", $alias)");
-                        $email_count++;
+                        $email_count[$cid]++;
                     } elseif (send_mail_from_table($collection["emailid_alert"], $readerContent->getValue(FIELDID_EMAIL), $alias)) {
-                        $email_count++;
+                        writeLog("ALERTS", $ho, "$cid: ". $readerContent->getValue(FIELDID_EMAIL));
+                        $email_count[$cid]++;
                     }
                 }
             }
 
         // Use the emails sent as param
         } else {
+            writeLog("ALERTS", $ho, "Emails for collection $cid: ". ((int)count($emails)));
             foreach ( (array)$emails as $email ) {
                 $alias["_#FILTERS_"] = get_filter_text_4_reader(null, $filters, $cid);
                 $alias["_#HOWOFTEN"] = $ho;
@@ -286,13 +293,17 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                 $alias["_#UNSBFORM"] = alerts_con_url($collection["slice_url"], "au=ABCDE&c=".$cid);
 
                 if (send_mail_from_table($collection["emailid_alert"], $email, $alias)) {
-                    $email_count++;
+                    $email_count[$cid]++;
                 }
             }
         }
+        writeLog("ALERTS", $ho, "Sent for collection $cid: ". ((int)$email_count[$cid]));
     }
     freeDB($db);
-    return $email_count;
+    foreach ( (array)$email_count as $num ) {
+        $total_emails += $num;
+    }
+    return $total_emails;
 }
 
 // -------------------------------------------------------------------------------------
@@ -402,7 +413,7 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
 *   second one is more difficult.
 *   @param object $readerContent  if null, use all filters
 */
-function get_filter_text_4_reader ($readerContent, $filters, $cid)
+function get_filter_text_4_reader($readerContent, $filters, $cid)
 {
     if ($readerContent) {
         $user_filters_value = $readerContent->getValues( getAlertsField(FIELDID_FILTERS, $cid));

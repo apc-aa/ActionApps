@@ -53,23 +53,24 @@ function is_howoften_option($howoften) {
     return $ho[$howoften];
 }
 
-function get_howoften_options ($include_instant = true) {
-    if ($include_instant)
+function get_howoften_options($include_instant = true) {
+    if ($include_instant) {
         $retval["instant"] = _m("instant");
-    $retval ["daily"] = _m("daily");
-    $retval ["weekly"]= _m("weekly");
-    $retval["monthly"]= _m("monthly");
+    }
+    $retval["daily"]   = _m("daily");
+    $retval["weekly"]  = _m("weekly");
+    $retval["monthly"] = _m("monthly");
     return $retval;
 }
 
-function get_bin_names () {
+function get_bin_names() {
     return array (
     1 => _m("Active"),
     2 => _m("Holding bin"),
     3 => _m("Trash bin"));
 }
 
-function new_user_id () {
+function new_user_id() {
     global $db;
     do {
         $new_id = new_numeric_id (32767);
