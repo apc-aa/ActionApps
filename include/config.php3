@@ -1,6 +1,6 @@
 <?php
 # $Id$
- 
+
 # Application wide configuration options
 
 # This is the Action Application main configuration file. In fact, this file
@@ -11,13 +11,23 @@
 # or in the form
 #    define("name", "value);
 
-# AA_INC_PATH defines the AA include directory. It must be an absolute
+# AA_BASE_PATH defines the AA directory. It must be an absolute
 # path. Normally this is the path to the directory where this file
-# (config.php3) is in. Remove the leading # sign in front of the line
-# and fill in the correct value between the quotes. Make sure to terminate
-# this path with a slash!
+# (slice.php3) is in. Fill in the correct value between the quotes.
+# Make sure to terminate this path with a slash!
 # Example:
-# $AA_INC_PATH = "/home/httpd/html/apc-aa/include/";
+# $AA_BASE_PATH = "/home/httpd/html/aa/";
+$AA_BASE_PATH = "/home/httpd/html/apc-aa/";
+
+$AA_INC_PATH = $AA_BASE_PATH."include/";        # do not change
+
+$_PHPLIB["libdir"] = $AA_INC_PATH.'phplib/';    # do not change
+                                                # PHPLib is the part of AA 
+                                                # since v >2.2.0. There is 
+                                                # no need to care about PHPLib
+
+# Server url relative path to base AA directory
+$AA_INSTAL_PATH = "/apc-aa/";
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
@@ -58,7 +68,7 @@ define("LDAP_PORT", 389);            // standard LDAP port: 389
 # e-mail for bug reporting contact
 define("ERROR_REPORTING_EMAIL", "webmaster@my.domain.org");
 
-# set this directive to true, if you use MySQL 
+# set this directive to true, if you use MySQL
 # (uses LIMIT clause in SELECTs)
 define("OPTIMIZE_FOR_MYSQL", true);
 
@@ -81,21 +91,21 @@ $USE_SHORT_URL = true;
 
 # Would you like to display debug messagess?
 define("DEBUG_FLAG", true);
-                                                        
+
 # pages with items are cached - the caching system is quite smart - it caches
 # only unchanged pages. However, You can switch caching off.
 define( "ENABLE_PAGE_CACHE", true );
 
 # CACHE_TTL defines the time in seconds the page will be stored in cache
-# (Time To Live) - in fact it can be infinity because of automatic cache 
+# (Time To Live) - in fact it can be infinity because of automatic cache
 # flushing on page change
 define("CACHE_TTL", 600 );
 
 # The frequency in which the cache is checked for old values (in seconds)
 define("CACHE_PURGE_FREQ", 1000);
 
-# If true, the expired items could be displayed by in specific query (good 
-# for archive display). If false, expired items are never shown 
+# If true, the expired items could be displayed by in specific query (good
+# for archive display). If false, expired items are never shown
 define("ALLOW_DISPLAY_EXPIRED_ITEMS", true);
 
 # If you use Web.net's extended items table, uncomment this definition
@@ -171,6 +181,7 @@ require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
 # require ($GLOBALS[AA_INC_PATH] . "sk_common_lang.php3");  # Slovak
 # require ($GLOBALS[AA_INC_PATH] . "de_common_lang.php3");  # Deutsch
 # require ($GLOBALS[AA_INC_PATH] . "ro_common_lang.php3");  # Romanian
+# require ($GLOBALS[AA_INC_PATH] . "ja_common_lang.php3");  # Japan
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG
@@ -208,7 +219,7 @@ switch ($HTTP_HOST) {
 #    $AA_INC_PATH = "/home/madebeer/public_html/include/";
      define (SITE_CONFIG, "config-ecn.inc"); break;
   // maybe ecn could make a name-based virtual host for honza malik ?
-  case "honzam.ecn.cz": 
+  case "honzam.ecn.cz":
 #    echo "4 path";
      $AA_INC_PATH = "/home/honzama/public_html/aa/include/";
      define (SITE_CONFIG, "config-ecn.inc"); break;
