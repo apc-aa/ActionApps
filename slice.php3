@@ -66,11 +66,12 @@ http://www.apc.org/
                       //Discussion parameters
 #optionaly add_disc   // if set, discussion comment will be added
 #optionaly parent_id  // parent id of added disc. comment
-#optionaly sel_ids    // if set, show only discussion comments in $ids[] array
-#optionaly ids[]      // array of discussion comments to show in fulltext mode (ids['x'.$id])
-#optionaly all_ids    // if set, show all discussion comments
-#optionally hideFulltext  // if set, don't show fulltext part
+#optionally sel_ids    // if set, show only discussion comments in $ids[] array
+#optionally ids[]      // array of discussion comments to show in fulltext mode (ids['x'.$id])
+#optionally all_ids    // if set, show all discussion comments
+#optionally hideFulltext // if set, don't show fulltext part
 #optionally neverAllItems // if set, don't show anything when everything would be shown (if no conds[] are set)
+#optionally defaultCondsOperator // replaces LIKE for conds with not specified operator
 #optionally group_n   // displayes only the n-th group (in listings where items 
                       // are grouped by some field (category, for example)) 
                       // good for display all the items of last magazine issue 
@@ -109,6 +110,8 @@ require $GLOBALS[AA_INC_PATH]."view.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
 require $GLOBALS[AA_INC_PATH]."discussion.php3";
+// function definitions:
+require $GLOBALS[AA_INC_PATH]."slice.php3";
 
 # $debugtimes[]=microtime();
 
@@ -119,10 +122,9 @@ page_open(array("sess" => "AA_SL_Session"));
 
 $sess->register(r_packed_state_vars); 
 $sess->register(slices);
-$sess->register(mapslices);
+$sess->register(defaultCondsOperator);
 
 $r_state_vars = unserialize($r_packed_state_vars);
-
 
 # there was problems with storing too much ids in session veriable, 
 # so I commented it out. It is not necessary to have it in session. The only
@@ -131,140 +133,6 @@ $r_state_vars = unserialize($r_packed_state_vars);
 
 //$sess->register(item_ids);    
 
-//-----------------------------Functions definition--------------------------------------------------- 
-
-function Page_HTML_Begin($cp, $title="") {  
-    echo '
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-    <HTML>
-    <HEAD>
-    <TITLE>'.$title.'</TITLE>
-    <LINK rel=StyleSheet href="<?php echo ADM_SLICE_CSS ?>" type="text/css" title="SliceCS">';
-    if ($cp) 
-        echo '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset='. $cp. '">';
-    echo '
-    </HEAD>
-    <BODY>';
-}
-
-# print closing HTML tags for page
-function Page_HTML_End(){ 
-    echo '
-    </BODY>
-    </HTML>';
-}
-
-function GetCategories($db,$p_slice_id){
- $SQL= " SELECT name, value FROM constant WHERE group_id='".$p_slice_id."'";
- $db->query($SQL);
- while ($db->next_record()){
-   $unpacked=unpack_id($db->f("value"));  
-   $arr[$unpacked]=$db->f("name");  
- }
- return $arr;  
-} 
- 
-function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps=true){
- if (sizeof($cats)>0)
- {   
-   echo "<form action=$url method=get>";
-   echo "<input type=hidden name=$sess_name value=$sess_id>";
-   if( !$encaps )    // not encapsulated - need to send slice_id
-   { echo "<input type=hidden name=slice_id value=$sli_id>";
-     echo "<input type=hidden name=encap value=".($encaps ? "true":"false").">";
-   }
-   echo L_SELECT_CATEGORY . "<select name=cat_id>";
-   $seloption=(($selected=="")?"selected":"");
-   echo '<option value="all" $seloption>'.L_ALLCTGS.'</option>';
-   while (list($id,$name)= each($cats)) {
-     $seloption=(($selected==$id)?"selected":"");
-     echo "<option value=$id $seloption>".htmlspecialchars($name)."</option>";  
-   }
-   echo "<input type=hidden name=scr_".$scr_name."_Go value=1>";
-   echo "<input type=submit name=Go value=Go>";
-   echo "</select>"; 
-   echo "</form>";  
- }
-}    
-
-function ExitPage() {
-  global $encap, $r_packed_state_vars, $r_state_vars;
-  if (!$encap)
-    Page_HTML_End();
-  $r_packed_state_vars = serialize($r_state_vars);
-  page_close();
-  exit;
-}  
-
-function StoreVariables( $vars ) {
-  if( isset($vars) AND is_array($vars) ) {
-    reset($vars);
-    while( list(,$v) = each( $vars ) )
-      $state_vars[$v] = $GLOBALS[$v];
-  }
-  return $state_vars;
-}  
-
-function RestoreVariables() {
-  global $r_state_vars;
-  if( isset($r_state_vars) AND is_array($r_state_vars) ) {
-    reset($r_state_vars);
-    while( list($k,$v) = each( $r_state_vars ) )
-      $GLOBALS[$k] = $v;
-  }
-}  
-
-# two purpose function - it loggs item view and it translates short_id to id
-function LogItem($id, $column) {
-  global $db;
-
-  CountHit($id, $column);
-
-  if( $column == "id" )
-    return $id;
-    
-  $SQL = "SELECT id, display_count FROM item WHERE short_id='$id'";
-  $db->query($SQL);
-  if( $db->next_record() )
-    return unpack_id( $db->f('id') );
-  return false;
-}  
-
-function GetSortArray( $sort ) {
-  if( substr($sort,-1) == '-' )
-    return array ( substr($sort,0,-1) => 'd' );
-  if( substr($sort,-1) == '+' )
-    return array ( substr($sort,0,-1) => 'a' );
-  return array ( $sort => 'a' );
-}    
-
-function SubstituteAliases( $als, &$var ) {
-  if( !isset( $als ) OR !is_array( $als ) )  # substitute url aliases in cmd
-    return;
-  reset( $als );
-  while( list($k,$v) = each( $als ) )
-    $var = str_replace ($k, $v, $var);
-}    
-
-function PutSearchLog ()
-{
-    global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, 
-        $searchlog;
-        
-    $httpquery = $QUERY_STRING_UNESCAPED.$REDIRECT_QUERY_STRING_UNESCAPED;
-    $httpquery = DeBackslash ($httpquery);
-    $httpquery = str_replace ("'", "\\'", $httpquery);
-    $db = new DB_AA;
-    $found_count = count ($GLOBALS[item_ids]);
-    list($usec, $sec) = explode(" ",microtime()); 
-    $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS[slice_starttime]); 
-    $user = $GLOBALS[HTTP_SERVER_VARS]['REMOTE_USER'];
-    $db->query (
-    "INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) 
-    VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");
-}
-
-//-----------------------------End of functions definition---------------------
 # $debugtimes[]=microtime();
 
 list($usec, $sec) = explode(" ",microtime()); 
@@ -300,6 +168,7 @@ if( $inc ) {                   # this section must be after add_vars()
   }  
 }  
 
+// Take any slice to work with
 if (!$slice_id && is_array($slices)) { 
     reset ($slices);
     $slice_id = current($slices); 
@@ -446,94 +315,59 @@ if(!is_object($scr)) {
      ($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap))."&",
      $slice_info[d_listlen]);
 }
-if( $listlen )    // change number of listed items
+
+// change number of listed items
+if( $listlen ) 
   $scr->metapage = $listlen;
-
-if( $scr_go )     // optional script parameter
+// optional script parameter
+if( $scr_go )  
   $scr->current = $scr_go;
+// comes from easy_scroller -----------
+if( $scrl && is_object ($scr)) 
+  $scr->update();    
   
-if( $scrl ) {      // comes from easy_scroller -----------
-  if (is_object($scr)) 
-    $scr->update();
-}    
+/* $easy_query .. easy query form
+   $srch .. bigsrch form ?? */
   
-if( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) {     # posted by query form ----------------
-  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","conds", "sort", "group_by")); # store in session
-
-  if(isset($conds) AND is_array($conds)) {
-    reset($conds); 
-    while( list( $k , $cond) = each( $conds )) {
-      if( !isset($cond) OR !is_array($cond) ) {
-        $conds[$k] = false;
-        continue;             # bad condition - ignore
-      }
-      if( !isset($cond['value']) && count ($cond) == 1 ) {
-        reset ($cond);
-        $conds[$k]['value'] = current($cond);
-      }
-      if( !isset($cond['operator']) )
-        $conds[$k]['operator'] = 'LIKE';
-      SubstituteAliases( $als, $conds[$k]['value'] );
-    }    
-  }
-
-  if( isset($group_by) ) {
-    $foo = GetSortArray( $group_by );
-    $sort_tmp[] = $foo;
-    $slice_info["group_by"] = key($foo);
-  }
-  
-  if(isset($sort)) {
-    if( !is_array($sort) )
-      $sort_tmp[] = GetSortArray( $sort );
-    else {  
-      ksort( $sort, SORT_NUMERIC); # it is not sorted and the order is important
-      reset($sort); 
-      while( list( $k , $srt) = each( $sort )) {
-        if( isset($srt))
-          if( is_array($srt) )
-            $sort_tmp[$k] = array( key($srt) => (( strtoupper(current($srt)) == "D" ) ? 'd' : 'a'));
-           else
-            $sort_tmp[] =  GetSortArray( $srt );
-      }
+if ( ($easy_query || $srch)
+    && ! (is_array($conds) OR isset($group_by) OR isset($sort))) {
+    
+    if($easy_query) {     # posted by easy query form ----------------
+    
+      $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
+                          "easy_query", "qry", "srch_relev")); # store in session
+    
+      $item_ids = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, 
+                                   $srch_from, $srch_to, $qry, $srch_relev);
+      if( isset($item_ids) AND !is_array($item_ids))
+        echo "<div>$item_ids</div>";
+      if( !$scrl )
+        $scr->current = 1;
     }
-  }  
-  if( isset($sort_tmp) )
-    $sort = $sort_tmp;
-   else 
-    $sort[] = array ( 'publish_date....' => 'd' );
-
-  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, "", "ACTIVE", $slices, $neverAllItems );
-
-  if( isset($item_ids) AND !is_array($item_ids))
-    echo "<div>$item_ids</div>";
-  if( !$scrl )
-    $scr->current = 1;
-  $slice_info[category_sort] = false;      # do not sort by categories
+    
+    elseif($srch) {            # posted by bigsrch form -------------------
+      $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col")); # store in session
+      if( !$big )
+        $search[slice] = $slice_id;
+      $item_ids = SearchWhere($search, $s_col);
+      if( !$scrl )
+        $scr->current = 1;
+    }
+    
+    else if ($debug) echo "ERROR: This branch should never be entered.";
 }
-elseif($easy_query) {     # posted by easy query form ----------------
 
-  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
-                      "easy_query", "qry", "srch_relev")); # store in session
+else { 
 
-  $item_ids = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, 
-                               $srch_from, $srch_to, $qry, $srch_relev);
-  if( isset($item_ids) AND !is_array($item_ids))
-    echo "<div>$item_ids</div>";
-  if( !$scrl )
-    $scr->current = 1;
-}
-elseif($srch) {            # posted by bigsrch form -------------------
-  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col")); # store in session
-  if( !$big )
-    $search[slice] = $slice_id;
-  $item_ids = SearchWhere($search, $s_col);
-  if( !$scrl )
-    $scr->current = 1;
-}
-else {
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+          Parse parameters posted by query form and from $slice_info
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","order","cat_id", "cat_name",
-                      "exact","restrict","res_val","highlight")); # store in session
+                      "exact","restrict","res_val","highlight","conds","group_by")); # store in session
+
+  // ***** CONDS *****
+
   if( $cat_id ) {  // optional parameter cat_id - deprecated - slow ------
     $cat_group = GetCategoryGroup($slice_id);
     $SQL = "SELECT value FROM constant
@@ -541,82 +375,99 @@ else {
                AND id = '". q_pack_id($cat_id) ."'";
     $db->query($SQL);
     if( $db->next_record() ) {
-      $res_field = GetCategoryFieldId( $fields );
-      $res_value = $db->f(value);
-      $exact = true;
+      $conds [] = array (GetCategoryFieldId( $fields )=>1,
+                        'value' => $db->f(value),
+                        'operator' => '=');
     }  
   }  
-  elseif ( $cat_name ) {  // optional parameter cat_name -------
-    $res_field = GetCategoryFieldId( $fields );
-    $res_value = $cat_name;
-  }
-  elseif ( $restrict ) { 
-    $res_field = $restrict;
-    $res_value = (( (($res_val[0] == '"') OR ($res_val[0] == "'" )) AND ($exact != 2)) ? $res_val : "'$res_val'");
-  } else {             # no parameters - initial settings ---
-    $res_field = "";
-    $res_value = "";
-  }  
-
-  # order the fields in compact view - how?
-  if( $order ) {
-    if( substr($order,-1) == '-' ) {
-      $orderdirection = "d";
-      $order = substr($order,0,-1);
-    }
-    if( substr($order,-1) == '+' )   # just skip
-      $order = substr($order,0,-1);
-  }    
+  elseif ( $cat_name )   // optional parameter cat_name -------
+    $conds [GetCategoryFieldId( $fields )] = $cat_name;
+    
+  elseif ( $restrict ) 
+    $conds [$restrict] = ($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 
+        ? $res_val : "'$res_val'";
   
-  if( $res_field != "" )
-    $conditions[$res_field] = $res_value;
   if( $highlight != "" )
-    $conditions['highlight.......'] = 1;
+    $conds['highlight.......'] = 1;
 
-/*$debugtimes[]=microtime();
-  $item_ids=GetItemAppIds($fields, $db, $slice_id, $conditions, $pubdate_order,    ($slice_info[category_sort] ? GetCategoryFieldId( $fields ) : $order),    $orderdirection, "", $exact );
-$debugtimes[]=microtime();*/
+  if(is_array($conds)) {
+    if (! isset ($defaultCondsOperator))
+      $defaultCondsOperator = 'LIKE'; 
+    ParseEasyConds ($conds, $defaultCondsOperator);
+    reset($conds); 
+    while( list( $k ) = each( $conds )) 
+      SubstituteAliases( $als, $conds[$k]['value'] );
+  }
+
+  // ***** SORT *****
   
-  # prepare parameters for QueryIDs()
-  if( isset($conditions) AND is_array($conditions) ) {
-    reset($conditions);
-    while( list( $k, $v) = each( $conditions ))
-      $cnds[]=array( 'operator' => ($exact ? '=' : 'LIKE'),
-                      'value' => $v,
-                      $k => 1 );
-  }                    
-
-  if( $slice_info['category_sort'] ) {
+  # order the fields in compact view 
+  if( $order ) 
+    list ($order, $orderdirection) = GetSortArray ($order);  
+    
+  if ($debug) 
+    echo "Group by: $group_by. Slice_info[category_sort] $slice_info[category_sort] slice_info[group_by] $slice_info[group_by]";
+    
+  if( $group_by ) {
+    $foo = GetSortArray( $group_by );
+    $sort_tmp[] = $foo;
+    $slice_info["group_by"] = key($foo);
+  }    
+  else if( $slice_info['category_sort'] ) {
     $group_field = GetCategoryFieldId( $fields );
     $grp_odir = (($order==$group_field) AND ($orderdirection!='d')) ? 'a':'d';
-    $srt[] = array ( $group_field => $grp_odir );
+    $sort_tmp[] = array ( $group_field => $grp_odir );
   }  
-  elseif ($slice_info['group_by']) 
-  	$srt[] = array ( $slice_info['group_by'] => 
+  else if ($slice_info['group_by']) 
+  	$sort_tmp[] = array ( $slice_info['group_by'] => 
       (strstr('aAdD19',$slice_info['gb_direction']) ? $slice_info['gb_direction'] : 'a'));
       # validate content - a,A=the same - ascending; d,D=the same - descending
       # 1 - ascending by priority, 9 - descending by priority (for fields using constants)
 
+  if(isset($sort)) {
+    if( !is_array($sort) )
+      $sort_tmp[] = GetSortArray( $sort );
+    else {  
+      ksort( $sort, SORT_NUMERIC); # it is not sorted and the order is important
+      reset($sort); 
+      while( list($k, $srt) = each( $sort )) {
+        if ($srt) {
+          if( is_array($srt) )
+            $sort_tmp[] = array( key($srt) => (strtolower(current($srt)) == "d" ? 'd' : 'a'));
+          else
+            $sort_tmp[] =  GetSortArray( $srt );
+        }
+      }
+    }
+  }  
+
   if( $order )
-    $srt[] = array ( $order => (( strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
+    $sort_tmp[] = array ( $order => (( strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
 
   # time order the fields in compact view
-  $srt[] = array ( 'publish_date....' => (($timeorder == "rev") ? 'a' : 'd') );
+  $sort_tmp[] = array ( 'publish_date....' => (($timeorder == "rev") ? 'a' : 'd') );
+ 
+  if( isset($sort_tmp) )
+    $sort = $sort_tmp;
+  else 
+    $sort[] = array ( 'publish_date....' => 'd' );
 
-  $item_ids=QueryIDs($fields, $slice_id, $cnds, $srt, $group_by, "ACTIVE", $slices, $neverAllItems);
+  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by], "ACTIVE", $slices, $neverAllItems );
 
-// p_arr_m($debugtimes);
-// echo "<br>old: ". (double)((double)($debugtimes[1]) - (double)($debugtimes[0]));
-// echo "<br>new: ". (double)((double)($debugtimes[3]) - (double)($debugtimes[2]));
+  if( isset($item_ids) AND !is_array($item_ids))
+    echo "<div>$item_ids</div>";
+  if( !$scrl )
+    $scr->current = 1;
+    
+  //$slice_info[category_sort] = false;      # do not sort by categories
+}
 
-}    
 if( !$srch AND !$encap AND !$easy_query ) {
   $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories 
   pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
 }
 
-$ids_cnt = count( $item_ids );
-if( $ids_cnt > 0 ) {
+if( count( $item_ids ) > 0 ) {
   $scr->countPages( count( $item_ids ) );
 
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, $item_ids,
