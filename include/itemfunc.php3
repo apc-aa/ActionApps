@@ -154,6 +154,15 @@ function insert_fnc_now($item_id, $field, $value, $param) {
   insert_fnc_qte($item_id, $field, array("value"=>now()), $param);
 }
 
+function GetDestinationFileName($dirname, $uploaded_name) {
+  $i=1;
+  $base = strchr($uploaded_name,'.') ? $uploaded_name : $uploaded_name.'.'; # we need dot in name
+  $dest_file = $uploaded_name;
+  while( file_exists("$dirname/$dest_file") )
+    $dest_file = str_replace('.', '_'.$i++.'.', $base);
+  return $dest_file;
+}
+  
   # File upload
 function insert_fnc_fil($item_id, $field, $value, $param) {
   $varname = 'v'.unpack_id($field[id]);
@@ -173,8 +182,7 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
         return L_CANT_CREATE_IMG_DIR;
       }    
 
-    if( file_exists("$dirname/$dest_file") )
-      $dest_file = new_id().substr(strrchr($dest_file, "." ), 0 );
+    $dest_file = GetDestinationFileName($dirname, $dest_file);
 
     # copy the file from the temp directory to the upload directory, and test for success    
 
