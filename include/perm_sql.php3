@@ -82,6 +82,21 @@ function AuthenticateUsername($username, $password, $flags = 0) {
   // echo "$row[password] (stored crypted, ", strlen($row[password]), ")<br>";
   // echo "$slength (salt length)<br>";  
   
+/* 
+  // Uncomment this if and only if you have problems with login after copying
+  // a database from one machine to another.
+  //
+  // This is a hack, if the user's stored password is the wrong length
+  // then its a copy of a database on a different architecture. 
+  // so let the user in, 
+  // It should then set the password to that entered.
+  if (strlen($row[password]) != strlen($cryptpw)
+        && (substr($row[password],0,3) == '$1$')) {
+    #echo "Hacked successfully...";
+    return $id;
+  }
+*/
+
   // The next substr looks odd, but $cryptpw is under 
   // certain circumstances 4 chars longer than $row[password]
   // (on zulle.pair.com, FreeBSD 2.2.7, PHP 3.0.16, crypt uses MD5 

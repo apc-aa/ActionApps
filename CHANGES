@@ -1,3 +1,4 @@
+06/14/03 - Added commented out in perm_sql for handling moved databases (mitra)
 06/13/03 - category and link design editable through admin interface
 (honzam) - fixed searching in links module
          - added link validity rank to link manager
