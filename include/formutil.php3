@@ -115,7 +115,7 @@ class inputform {
         $this->messages             = $settings['messages'];
         $this->result_mode          = $settings['result_mode'];  // if not supplied, standard form is used
         $this->template             = $settings['template'];
-        $this->formheading;	    = $settings['formheading'];
+        $this->formheading	    = $settings['formheading'];
     }
 
     function printForm($content4id, $fields, $prifields, $edit, $slice_id) {
