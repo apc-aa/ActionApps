@@ -1,9 +1,15 @@
+--------------------
+11/04/03 - v2.6.0 - stable release
+--------------------
+11/04/03 - updated install documentation (marek)
 11/04/03 - added "Noticias ES" template and view templates in sql_update
 (honzam) - fixed get_aamenus() redeclare error
          - better general categories handling in Links module
          - fixed PHP warning of not existing array in slice import
          - all language files regenerated
          - fixed problem with wrong url supplied after discussion reply
+         - modified config.php3 to allow easy setting virtual AA directories
+           for virtual servers
 11/03/03 - added Spanish language file to site module
 (pep)    - fixed bug: admin/param_wizard.php3 and se_inputform.php3 now
            load the param wizard language file
