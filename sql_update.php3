@@ -45,7 +45,7 @@ if (!get_magic_quotes_gpc()) {
 }
 
 # need config.php3 to set db access, and phplib, and probably other stuff
-$AA_INC_PATH = "/raid/www/htdocs/aa.ecn.cz/aaa/include/"; 
+$AA_INC_PATH = "/data/www/htdocs/aa.ecn.cz/aaa/include/"; 
 #$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/"; 
 
 require $GLOBALS[AA_INC_PATH]."config.php3";
@@ -405,7 +405,8 @@ $SQL_create_tmp_tables[] = "
      disc_app int(11) DEFAULT '0',
      externally_fed varchar(150) NOT NULL,
      PRIMARY KEY (id),
-     KEY short_id (short_id)
+     KEY short_id (short_id),
+     KEY slice_id (slice_id, status_code, publish_date)
   )";
   
 $SQL_create_tmp_tables[] = "
@@ -899,7 +900,7 @@ $SQL_templates[] = "INSERT INTO field VALUES( 'disc_app........', '', 'News_EN_t
 $SQL_view_templates[] = "REPLACE INTO view VALUES( '', 'AA_Core_Fields..', 'Discussion ...', 'discus', '<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', '<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=20%><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', '<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=http://work.ecn.cz/apc-aa/images/blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', '1', '</table></td></tr></table>_#BUTTONS#', '<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', NULL, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0', '23', NULL, '<img src=http://work.ecn.cz/apc-aa/images/i.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/l.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/t.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/blank.gif width=12 height=21>', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found')";
 $SQL_view_templates[] = "REPLACE INTO view VALUES ( '', 'AA_Core_Fields..', 'Constant view ...', 'const', '<table border=0 cellpadding=0 cellspacing=0>', '', '<tr><td>_#VALUE###</td></tr>', '0', '</table>', NULL, NULL, 'value', '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '10', NULL, '0', NULL, 'lt_languages', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found')";
 $SQL_view_templates[] = "REPLACE INTO view VALUES ( '', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"http://work.ecn.cz/apc-aa/view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', '0', '', '0', NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', '8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found')";
-
+$SQL_view_templates[] = "REPLACE INTO view ( slice_id, name, type, before, odd, after, order1, o1_direction, order2, o2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen,aditional,aditional2,aditional3,aditional4,aditional5,aditional6, noitem_msg) VALUES ( 'AA_Core_Fields..',  'rss',  'rss', '<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"<http://my.netscape.com/publish/formats/rss-0.91.dtd\>http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>',  ' <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>',  '</channel></rss>>',  'publish_date....',  '0',  'headline........',  '0', 'source..........', '',  '',  '',  '<',  '',  '',  '<',  '',  '15', 'NULL','NULL','NULL','NULL','NULL','NULL','NO ITEM FOUND')";
 
 if( !$update AND !$restore AND !$restore_now) {
   echo '
@@ -1188,6 +1189,9 @@ echo '<h2>Update OK</h2>
 
 /*
 $Log$
+Revision 1.13  2002/01/09 18:25:36  honzam
+better indexes for item table, fixed RSS view
+
 Revision 1.12  2001/12/18 11:42:21  honzam
 new user profile feature
 

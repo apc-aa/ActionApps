@@ -28,6 +28,7 @@ DROP TABLE IF EXISTS external_feeds ;
 DROP TABLE IF EXISTS ef_categories  ;
 DROP TABLE IF EXISTS ef_permissions ;
 
+# 01/08/02 - added index to item table
 # 11/26/01 - added profile table
 #          - added notify_holding_item_s, notify_holding_item_b, 
 #            notify_holding_item_edit_s, notify_holding_item_edit_b, 
@@ -328,7 +329,8 @@ CREATE TABLE item (
    disc_app int(11) DEFAULT '0',                 # number of approved discuss comments
    externally_fed char(150),
    PRIMARY KEY (id),
-   KEY short_id (short_id)
+   KEY short_id (short_id),
+   KEY slice_id (slice_id, status_code, publish_date)
 );
 
 # --------------------------------------------------------
@@ -899,28 +901,4 @@ INSERT INTO view VALUES ( '', 'AA_Core_Fields..', 'Constant view ...', 'const', 
 
 INSERT INTO view VALUES ( '', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"http://work.ecn.cz/apc-aa/view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', '0', '', '0', NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', '8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found');
 
-INSERT INTO view  
-( slice_id, name, type, before, odd, after, order1, o1_direction, 
-  order2, o2_direction, cond1field, cond1op, cond1cond, cond2field,
-cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen ) VALUES (
-'AA_Core_Fields..',  'rss',  'rss',  
-'<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\"
-            \"http://my.netscape.com/publish/formats/rss-0.91.dtd\">
-<rss version=\"0.91\">
-  <channel>
-    <title>_#RSS_TITL</title>
-    <link>_#RSS_LINK</link>
-    <description>_#RSS_DESC</description>
-    <lastBuildDate>_#RSS_DATE</lastBuildDate>
-    <language></language>
-
-',  '    <item>
-      <title>_#RSS_IT_T</title>
-      <link>_#RSS_IT_L</link>
-      <description>_#RSS_IT_D</description>
-    </item>
-',  '</channel>
-</rss>
-',  'publish_date....',  '0',  'headline........',  '0',
-'source..........',  
-'>',  '',  '',  '<',  '',  '',  '<',  '',  '15', NULL, NULL, NULL, NULL, NULL, 'No item found' ) ;
+INSERT INTO view ( slice_id, name, type, before, odd, after, order1, o1_direction, order2, o2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen,aditional,aditional2,aditional3,aditional4,aditional5,aditional6, noitem_msg) VALUES ( 'AA_Core_Fields..',  'rss',  'rss', '<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"<http://my.netscape.com/publish/formats/rss-0.91.dtd\>http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>',  ' <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>',  '</channel></rss>>',  'publish_date....',  '0',  'headline........',  '0', 'source..........', '',  '',  '',  '<',  '',  '',  '<',  '',  '15', 'NULL','NULL','NULL','NULL','NULL','NULL','NO ITEM FOUND');
