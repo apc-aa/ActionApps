@@ -8,6 +8,7 @@
          - new parameter inc for slice.php3 script (used for displaying static
            page insear of slice data
            Usage: http://web.ecn.cz/slice.shtml?inc=http://www.ecn.cz/info.txt
+08/14/00 - fixed "membership of zeros" problem visible in SQL permissions
 08/11/00 - added setup script setup.php3 
 08/07/00 - fixed a few compatibility problems with PHP4
 08/02/00 - fixed problem with zero scroller length error message
