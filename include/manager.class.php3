@@ -209,8 +209,10 @@ class manager extends storable_class {
 
     /** Sets listing length - number of items per page */
     function setListlen( $listlen ) {
-        if ( $this->scroller AND ($listlen > 0) )
+        if ( $this->scroller AND ($listlen > 0) ) {
             $this->scroller->metapage = $listlen;
+            $this->scroller->go2page(1);
+        }
     }
 
     /** Go to specified page (obviously 1) in scroller  */
@@ -237,8 +239,13 @@ class manager extends storable_class {
         // update scroller
         if ( isset($this->scroller) ) {
             $this->scroller->updateScr(sess_return_url($_SERVER['PHP_SELF'])."&"); // use $return_url if set.
-            if ( $_GET['listlen'] )
-                $this->scroller->metapage = $_GET['listlen'];
+            if ( $_GET['listlen'] ) {
+                $this->setListlen($_GET['listlen']);
+            }
+            // new search - go to first page
+            if ( $_POST['srchbr_akce']) {
+                $this->go2page(1);
+            }
         }
 
         // call custom searchbar function (if searchbar action invoked)
