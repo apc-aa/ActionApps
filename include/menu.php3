@@ -34,9 +34,10 @@ http://www.apc.org/
 */
 
 require $GLOBALS[AA_INC_PATH]."menu_util.php3";
+require $GLOBALS[AA_INC_PATH]."perm_core.php3";
 
 $aamenus["view"] = array (
-    "label" => L_VIEW_SLICE,
+    "label" => L_VIEW_SLICE, 
     "exact_href"  => $r_slice_view_url,
     "cond"  => 1,
     "level" => "main");    
@@ -104,7 +105,7 @@ $aamenus ["sliceadmin_submenu"] = array (
     "fulltext"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"se_fulltext.php3?slice_id=$slice_id", "label"=>L_FULLTEXT),
     "views"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"se_views.php3?slice_id=$slice_id", "label"=>L_VIEWS),
     "config"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CONFIG), "href"=>"se_admin.php3?slice_id=$slice_id", "label"=>L_SLICE_CONFIG),
-    //"alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"alerts_collections.php3", "label"=>L_ALERTS_COLLECTIONS),
+    "alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"alerts_collections.php3", "label"=>L_ALERTS_COLLECTIONS),
 
     "header4" => L_FEEDING,
     "nodes"=>array("cond"=>isSuperadmin(), "href"=>"se_nodes.php3?slice_id=$slice_id", "label"=>L_NODES_MANAGER),

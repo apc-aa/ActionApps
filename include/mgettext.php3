@@ -13,21 +13,17 @@ http://www.apc.org/
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/*  mini-gettext is a simple environment to handle multilingual support 
-
-    Set active language (e.g. Spanish) by 
+&iacute;
     $GLOBALS[mgettext_lang] = "es"; 
 */
 
-// language file (one for all languages):
-require $GLOBALS[AA_INC_PATH]."../php_rw/mgettext_lang.php3";
+# // language file (one for all languages):
+# require $GLOBALS[AA_INC_PATH]."../php_rw/mgettext_lang.php3";
 $mgettext_langs = array ("en","cz","de","sk","ro","es");
+
+function set_mgettext_domain ($domain) {
+    $mgettext_lang = substr ($domain,0,2);
+}
 
 /*  Function: mgettext
     Alias:    _m(), see below
@@ -48,7 +44,7 @@ function mgettext ($id, $params = 0) {
     $retval = $mgettext_strings[$id][$mgettext_lang];
     if (!$retval) {
         $retval = $id;
-        if (!$mgettext_strings[$id]) {
+/*        if (!$mgettext_strings[$id]) {
             // Add the string to language file
             $fd = @fopen ($GLOBALS[AA_INC_PATH]."../php_rw/mgettext_lang.php3","ab");
             if ($fd) {
@@ -66,7 +62,7 @@ function mgettext ($id, $params = 0) {
                 fputs ($fd, ");\r\n");            
                 fclose ($fd);
             }
-        }
+        }*/
     }
     
     if (is_array ($params)) {
@@ -86,57 +82,4 @@ function _m ($id, $params = 0) {
     return mgettext ($id, $params);
 }
 
-/*  Function: mgettext_constants2strings
-    Purpose:  replaces language constants to _m function calls
-    Params:   langfiles - list of file names (located in include/) with language constants
-              destdir - where processed files will be stored
-              dirs - directories to be processed
-
-    Example:
-    $langfiles = array ("en_news_lang.php3" => "en", "cz_news_lang.php3" => "cz", ...)
-    
-    TODO: the function is not at all working!!!!!! It was used with another params and 
-          now is under construction.
-*/
-
-function mgettext_constants2strings ($langfile, $destdir, $dirs) 
-{   
-    $constants = file ($langfile);
-    reset ($constants);
-    while (list (,$row) = each ($constants)) {        
-        if (strstr ($row,"define")) {
-            $quotes = 0;
-            $name = $value = "";
-            for ($i = strpos ($row,"define") + 7; $i < strlen ($row); $i ++) {
-                if ($row[$i] == '"' && $row[$i-1] != '\\')
-                    $quotes ++;
-                else if ($quotes == 1) $name .= $row[$i];
-                else if ($quotes == 3) $value .= $row[$i];
-            }
-            $const[$name] = $value;
-        }
-    }
-    reset ($mgettext_files);
-    while (list ($dir, $files) = each ($mgettext_files)) {
-        reset ($files);
-        if (!is_dir ($destdir.$dir))
-            mkdir ($destdir.$dir, 508);
-        while (list (,$file) = each ($files)) {
-            echo "Translating $filename to $destdir$dir$file<br>";
-            $filename = $mgettext_basedir.$dir.$file;
-            $content = file ($filename);
-                $fd = fopen ($destdir.$dir.$file, "w");
-            reset ($content);
-            while (list (,$row) = each ($content)) {
-                reset ($const);
-                while (list ($name,$value) = each ($const))
-                    if ($name != "")
-                        $row = preg_replace ("'([^A-Z0-9_])".$name."([^A-Z0-9_])'si", "\\1_m(\"$value\")\\2", $row);
-                fwrite ($fd, $row);
-            }
-            fclose ($fd);
-            chmod ($destdir.$dir.$file, 508);            
-        }
-    }          
-}
 ?>

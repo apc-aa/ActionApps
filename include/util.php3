@@ -458,8 +458,7 @@ function GetViewInfo($vid) {
 # function converts table from SQL query to array
 # $idcol specifies key column for array or "NoCoLuMn" for none
 function GetTable2Array($SQL, $db, $idcol="id") {
-  if ($GLOBALS[debug]) $db->dquery ($SQL);
-  else $db->query($SQL);
+  $db->tquery($SQL);
   if( $idcol == "NoCoLuMn") {
     while($db->next_record())
       $arr[] = $db->Record;
@@ -895,6 +894,7 @@ function is_field_type_numerical ($field_type) {
     return false;
 }
 
+// -----------------------------------------------------------------------------
 /*  function: CopyTableRows
     author:   Jakub Adámek
     purpose:  copies rows within a table changing only given columns and omitting given columns
@@ -924,7 +924,10 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $
 
     if ($GLOBALS[debug]) $rows = 0;
         
-    $data = GetTable2Array ("SELECT * FROM $table WHERE $where", $db);
+    $data = GetTable2Array ("SELECT * FROM $table WHERE $where", $db, "NoCoLuMn");
+    
+    if ($GLOBALS[debug]) { echo "data: "; print_r ($data); echo "<br>"; }
+    
     if (!is_array ($data))
         return true;
         
@@ -954,7 +957,7 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $
         
         if ($GLOBALS[debug]) { echo "Row $rows<br>"; $rows ++; }
         
-        if (!$db->query ("INSERT INTO $table ".$varset->makeINSERT()))
+        if (!$db->tquery ("INSERT INTO $table ".$varset->makeINSERT()))
 			return false;
     }
 	return true;
@@ -968,6 +971,8 @@ function get_last_insert_id ($db, $table)
     $db->next_record();
     return $db->f("lid");
 }
+
+// -----------------------------------------------------------------------------
 
 /* returns the suffix part of the filename (beginning with the last dot (.) in the filename) */
 

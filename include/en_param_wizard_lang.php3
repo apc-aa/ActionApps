@@ -206,7 +206,7 @@ define("L_PARAM_WIZARD_FUNC_F_A_PAR1_DESC","field id of fulltext field (like ful
 define("L_PARAM_WIZARD_FUNC_F_A_PAR1_EXAMPLE","full_text.......");
 define("L_PARAM_WIZARD_FUNC_F_A_PAR2_NAME","paragraph");
 define("L_PARAM_WIZARD_FUNC_F_A_PAR2_DESC","take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\) if shorter then <b>length</b>");
-define("L_PARAM_WIZARD_FUNC_F_A_PAR2_EXAMPLE","full_text.......");
+define("L_PARAM_WIZARD_FUNC_F_A_PAR2_EXAMPLE","1");
 define("L_PARAM_WIZARD_FUNC_F_F_NAME","fulltext link");
 define("L_PARAM_WIZARD_FUNC_F_F_DESC","Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"");
 define("L_PARAM_WIZARD_FUNC_F_F_PAR0_NAME","link only");

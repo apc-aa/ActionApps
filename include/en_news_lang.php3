@@ -782,6 +782,8 @@ define('L_RULE','Rule');
 
 define('L_ID_COUNT_ALIAS','number of found items');
 
+define("L_PARAM_WIZARD", "Param Wizard");
+
 // constants used in param wizard only:
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 // new constants to be translated are here. Leave this "require" always at the 

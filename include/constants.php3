@@ -70,11 +70,12 @@ $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "notify_holding_item_edit_b", "notify_active_item_edit_s", 
    "notify_active_item_edit_b", "notify_active_item_s", "notify_active_item_b",
    "noitem_msg", 
-   "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove");
+   "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove",
+   "fileman_dir","fileman_access","javascript","aditional");
 
 $SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template", 
    "even_odd_differ", "category_sort", "d_expiry_limit", "d_listlen",  
-   "email_sub_enable", "exclude_from_dir");
+   "email_sub_enable", "exclude_from_dir","permit_anonymous_post","permit_offline_fill",);
 
 $FIELD_FIELDS_TEXT = array(  "id", "type", "slice_id", "name", 
   "input_help", "input_morehlp", "input_default",
@@ -208,6 +209,8 @@ $INPUT_FEED_MODES = array ( STATE_FEEDABLE => L_STATE_FEEDABLE,
                           );
 
 # se_views.php3 - view field definition
+/* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
+
 $VIEW_FIELDS["name"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
 $VIEW_FIELDS["before"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
 $VIEW_FIELDS["even"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
@@ -311,12 +314,6 @@ $VIEW_TYPES['full'] = array( 'name' => L_FULLTEXT_VIEW,
                               "cond3field" => L_V_COND3FLD ,
                               "cond3op" => L_V_COND3OP ,
                               "cond3cond" => L_V_COND3COND ,
-                              "noitem_msg" => L_V_NO_ITEM );
-
-$VIEW_TYPES['digest'] = array( 'name' => L_DIGEST_VIEW,
-                              "before" => L_V_BEFORE ,
-                              "odd" => L_V_ODD ,
-                              "after" => L_V_AFTER ,
                               "noitem_msg" => L_V_NO_ITEM );
 
 $VIEW_TYPES['discus'] = array( 'name' => L_DISCUSSION_VIEW,
@@ -444,6 +441,25 @@ $VIEW_TYPES['calendar'] = array ('name' => L_CALENDAR_VIEW,
 #                              "flag" => L_V_FLAG ,
 // TODO                              "scroller" => L_V_SCROLLER ,
 #                              "aditional" => L_V_ADITIONAL );
+
+$VIEW_TYPES['digest']  = array( "name" => L_ALERTS_VIEW,
+                              "before" => L_V_BEFORE ,
+                              "odd" => L_V_ODD ,
+                              "even_odd_differ" => L_V_EVENODDDIF ,
+                              "even" => L_V_EVEN ,
+                              "after" => L_V_AFTER ,
+                              "remove_string" => L_V_REMOVE_STRING ,
+                              "order1" => L_V_ORDER1 ,
+                              "o1_direction" => L_V_ORDER1DIR ,
+                              "order2" => L_V_ORDER2 ,
+                              "o2_direction" => L_V_ORDER2DIR ,
+                              "group_by1" => L_V_GROUP_BY1 ,
+                              "g1_direction" => L_V_GROUP1DIR ,
+                              "group_title" => L_V_GROUP ,
+                              "group_bottom" => L_V_GROUP_BOTTOM ,
+                              "listlen" => L_V_MAXLISTLEN,
+                              "noitem_msg" => L_V_NO_ITEM,
+                              "function:digest_filters" => "" );
 
 # modification - options for modification field of views
 # alias - which aliases to show
