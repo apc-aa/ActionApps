@@ -466,9 +466,9 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
     # if there are predefined values in user profile, fill it. 
     # Fill it only if $insert (new item). Otherwise left there filled value
 
-    $profile_value = $GLOBALS['r_profile']['hide&fill'][$f['id']];
+    $profile_value = GetProfileProperty('hide&fill',$f['id']);
     if( !$profile_value )
-      $profile_value = $GLOBALS['r_profile']['fill'][$f['id']];
+      $profile_value = GetProfileProperty('fill',$f['id']);
   
     if( $profile_value ) {
       $x = GetFromProfile($profile_value);
@@ -650,8 +650,8 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
       $show_fnc_prefix = 'show_fnc_';
 
 	  if( !$f[input_show]                      # if set to not show - don't show
-        OR $GLOBALS['r_profile']['hide'][$f['id']]
-        OR $GLOBALS['r_profile']['hide&fill'][$f['id']] )
+        OR GetProfileProperty('hide',$f['id'])
+        OR GetProfileProperty('hide&fill',$f['id']) )
 	    continue;
       
 	  $fnc = ParseFnc($f[input_show_func]);   # input show function
@@ -662,8 +662,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
         # insert or new reload of form after error in inserting
         
         # first get values from profile, if there are some predefined value
-        if( $GLOBALS['r_profile']['predefine'][$f['id']] AND !$GLOBALS[$varname]) {
-          $x = GetFromProfile($GLOBALS['r_profile']['predefine'][$f['id']]);
+        $foo = GetProfileProperty('predefine',$f['id']);
+        if( $foo AND !$GLOBALS[$varname]) {
+          $x = GetFromProfile($foo);
           $GLOBALS[$varname] = $x[0];
           $GLOBALS[$htmlvarname] = $x[1];
         }
@@ -703,6 +704,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.18  2001/12/18 16:47:27  honzam
+fixed profile bug
+
 Revision 1.17  2001/12/18 16:27:05  honzam
 new WYSIWYG richtext editor for inputform (IE5+), new possibility to join fields when fields are fed to another slice, new notification e-mail possibility (notify new item in slice, bins, ...)
 
