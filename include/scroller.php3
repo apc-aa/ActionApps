@@ -48,6 +48,9 @@ class scroller {
 		$this->pgcnt = $pgcnt;
 		$this->urldefault = $url;
 		$this->filters = array();
+    $this->current = 1;
+    $this->metapage = 10;
+    $this->visible = 1;
 	}
 
 	# return part of a query string for move of $pages relative of current position
@@ -98,7 +101,7 @@ class scroller {
 	# keep current page within bounds
 	function checkBounds() {	
 		if($this->current < 1) $this->current = 1;
-		if($this->current > $this->pgcnt) $this->current = $this->pgcnt;
+		if($this->current > $this->pgcnt) $this->current = max($this->pgcnt,1);
 	}
 	
 	# adjust number of pages
@@ -254,6 +257,9 @@ class scroller {
 			
 /*
 $Log$
+Revision 1.5  2001/12/18 12:27:37  honzam
+fixed bug of not displayed items in admin interface
+
 Revision 1.4  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 
