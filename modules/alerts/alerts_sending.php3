@@ -136,7 +136,7 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
                 if ($item_id)
                     $SQL .= "WHERE id = '".q_pack_id($item_id)."'";
                     
-                else
+                else $SQL .=
                     "WHERE publish_date <= $now AND expiry_date >= $last "  # a) 2. and b) 2.
                        ."AND ((moved2active BETWEEN $last AND $now) "       # a) 1.
                              ."OR (moved2active < $last "                   # b) 1.
