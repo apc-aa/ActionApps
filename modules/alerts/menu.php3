@@ -1,6 +1,6 @@
 <?php
 //$Id$
-/* 
+/*
 Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
@@ -27,7 +27,7 @@ http://www.apc.org/
 
 /*  Top level (navigation bar) menu description:
     label       to be shown
-    cond        if not satisfied, don't show the label linked  
+    cond        if not satisfied, don't show the label linked
                 slice_id is included in the cond automatically
     href        link, relative to aa/
     exact_href  link, absolute (use either exact_href or href, not both)
@@ -36,7 +36,7 @@ http://www.apc.org/
 require_once $GLOBALS["AA_INC_PATH"]."menu_util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."perm_core.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
-require_once "util.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
@@ -54,30 +54,30 @@ function get_aamenus ()
         "title" => _m("Alerts - Add Users"),
         "href" => "modules/alerts/addusers.php3",
         "cond" => IfSlPerm (PS_USERS),
-        "level" => "main");    
-*/        
-    $aamenus["admin"] = array (    
+        "level" => "main");
+*/
+    $aamenus["admin"] = array (
         "label" => _m("Alerts Settings"),
         "title" => _m("Alerts Settings"),
         "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
-            .urlencode ($GLOBALS["slice_id"])."]=1", 
+            .urlencode ($GLOBALS["slice_id"])."]=1",
         "cond" => IfSlPerm (PS_USERS),
         "level" => "main",
-        "submenu" => "admin_submenu");        
-/*		
+        "submenu" => "admin_submenu");
+/*
 	$aamenus["filters"] = array (
 		"label" => _m("Filters"),
 		"title" => _m("Filters"),
-		"href"=>"modules/alerts/tabledit.php3?set_tview=acf", 
+		"href"=>"modules/alerts/tabledit.php3?set_tview=acf",
 		"cond" => IfSlPerm (PS_USERS),
 		"level" => "main",
         "submenu"=>"admin_submenu");
-        
+
 	$aamenus["send_emails"] = array (
 		"label" => _m("Send emails"),
 		"title" => _m("Send emails"),
         "href"=>"modules/alerts/tabledit.php3?set_tview=send_emails&cmd[send_emails][edit]["
-                .$GLOBALS["collectionid"]."]=1", 
+                .$GLOBALS["collectionid"]."]=1",
 		"cond" => IfSlPerm (PS_USERS),
 		"level" => "main",
         "submenu"=>"admin_submenu");
@@ -85,7 +85,7 @@ function get_aamenus ()
 	$aamenus["synchro"] = array (
 		"label" => _m("Synchro"),
 		"title" => _m("Slice synchro"),
-        "href"=>"modules/alerts/synchro.php3", 
+        "href"=>"modules/alerts/synchro.php3",
 		"cond" => IfSlPerm (PS_USERS),
 		"level" => "main",
         "submenu"=>"admin_submenu");
@@ -97,25 +97,25 @@ function get_aamenus ()
         "cond"  => IfSlPerm(PS_NEW_USER),
         "level" => "main",
         "submenu"=>"aaadmin_submenu");
-		              
+
     // left menu for aaadmin is common to all modules, so it is shared
     require_once $GLOBALS["AA_INC_PATH"]."menu_aa.php3";
-        
+
     $aamenus["admin_submenu"] = array (
         "bottom_td"=>200,
         "level"=>"submenu",
         "items"=> array(
         "header1"=>_m("Alerts Admin"),
   //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
-        "settings"=>array ("cond"=>IfSlPerm(PS_USERS), 
+        "settings"=>array ("cond"=>IfSlPerm(PS_USERS),
             "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
                 .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")),
-        "filters"=>array ("cond"=>IfSlPerm(PS_USERS), 
-            "href"=>"modules/alerts/tabledit.php3?set_tview=acf", 
+        "filters"=>array ("cond"=>IfSlPerm(PS_USERS),
+            "href"=>"modules/alerts/tabledit.php3?set_tview=acf",
             "label"=>_m("Selections")),
-        "send_emails"=>array ("cond"=>IfSlPerm(PS_USERS), 
+        "send_emails"=>array ("cond"=>IfSlPerm(PS_USERS),
             "href"=>"modules/alerts/tabledit.php3?set_tview=send_emails&cmd[send_emails][edit]["
-                .$GLOBALS["collectionid"]."]=1", 
+                .$GLOBALS["collectionid"]."]=1",
             "label"=>_m("Send emails")),
         "synchro"=>array("cond"=>IfSlPerm(PS_USERS),
        		"href" => "modules/alerts/synchro.php3",
