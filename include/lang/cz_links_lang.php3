@@ -41,6 +41,14 @@ $_m["Cetegory editor's note"]
   = "Poznámka editora kategorie";
 # End of unused messages
 
+
+$_m["<!--NewPublicLinkText-->"]
+  = "V tomto formuláøi pro vložení nového odkazu do katalogu KORMIDLO
+mùžete ale nemusíte vyplòovat všechna pole. Pro snadné zaøazení odkazu
+do katalogu však prosíme o vyplnìní pøedevším <b>URL</b> odkazu, <b>NÁZVU</b> a
+zaøazení odkazu do nìkteré <b>KATEGORIE</b>. Máte-li se stránkami zkušenosti,
+mùžete vyplnit také popis odkazu. Dìkujeme.";
+
 # modules/links/catedit.php3, row 39
 # modules/links/catedit2.php3, row 187
 $_m["No permission to edit category"]
@@ -882,7 +890,7 @@ $_m["Selected categories"]
 # modules/links/.#linkedit.php3.1.3, row 422
 # modules/links/.#linkedit.php3.1.9, row 427
 $_m["go to the category you want to select and click on the right arrow button to select"]
-  = " ";
+  = "Vyberte alespoò jednu kategorii, jinak se odkaz v kalalogu neobjeví!";
 
 # modules/links/linkedit.php3, row 475
 # modules/links/.#linkedit.php3.1.3, row 452

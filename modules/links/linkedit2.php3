@@ -165,16 +165,19 @@ function Links_UpdateCategoryAssignments($lid, $categs, $states) {
                 break;
             }
         }
-        if( !$assignAgain ) {  # delete candidate
-            if( !IsCatPerm ( PS_LINKS_DELETE_LINK, $oldAssignments[$i]['path'] )) {
-                $oldAssignments[$i]['proposal_delete'] = 'y';   # we can't delete it so
-                $newAssignments[] = $oldAssignments[$i];  #   we must create it again
+        if( $assignAgain ) {  # delete candidate
+            $newAssignments[$j] = $oldAssignments[$i];
+            if( IsCatPerm ( PS_LINKS_ADD_LINK, $oldAssignments[$i]['path'] )) {
+                $newAssignments[$j]['proposal_delete'] = 'n';
             }
-        } else
-        $newAssignments[$j] = $oldAssignments[$i];
+        } elseif (!IsCatPerm ( PS_LINKS_DELETE_LINK, $oldAssignments[$i]['path'] )) {
+            $oldAssignments[$i]['proposal_delete'] = 'y';  // we can't delete it so
+            $newAssignments[] = $oldAssignments[$i];       // we must create it again
+        }  // else if we have permission to unassign, do not add it again
     }
 
     # is there still base category ?
+    unset($baseDefined);
     for( $j=0; $j < count($newAssignments); $j++) {
         if( $newAssignments[$j] AND $newAssignments[$j]['base'] == 'y'
             AND $newAssignments[$j]['proposal'] == 'n' ) {
@@ -188,7 +191,7 @@ function Links_UpdateCategoryAssignments($lid, $categs, $states) {
         if( $newAssignments[$j]['proposal_delete'] == 'y' )
             continue;    # skip delete candidates
         if( IsCatPerm ( PS_LINKS_ADD_LINK, $newAssignments[$j]['path'] )) {
-            if( $baseDefined=="" ) {   # normal - not base link
+            if( isset($baseDefined) ) {   # normal - not base link
                 $newAssignments[$j]['base'] = (( $baseDefined == $j ) ? 'y' : 'n');
             } else {               # base link - first specified category
                 $newAssignments[$j]['base'] = 'y';
@@ -196,8 +199,8 @@ function Links_UpdateCategoryAssignments($lid, $categs, $states) {
             }
             if ($newAssignments[$j]['state']          != 'highlight')
                 $newAssignments[$j]['state']           = 'visible';
-                $newAssignments[$j]['proposal']        = 'n';
-                $newAssignments[$j]['proposal_delete'] = 'n';
+            $newAssignments[$j]['proposal']            = 'n';
+            $newAssignments[$j]['proposal_delete']     = 'n';
         }
         else {
             if($newAssignments[$j]['proposal']        != 'n')
