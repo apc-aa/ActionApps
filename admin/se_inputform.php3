@@ -68,7 +68,7 @@ if( $update ) {
     ValidateInput("input_help", _m("Help for this field"), $input_help, $err, false, "text");
     ValidateInput("input_morehlp", _m("More help"), $input_morehlp, $err, false, "text");
     ValidateInput("input_default", _m("Default"), $input_default, $err, false, "text");
-    ValidateInput("input_show_func", L_INPUT_SHOW_FUNC, $input_show_func_f, $err, false, "text");
+    ValidateInput("input_show_func", _m("Input show function"), $input_show_func_f, $err, false, "text");
 
 	$alias_err = _m("Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING.");
 	for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
@@ -290,32 +290,34 @@ echo "
       echo "<div class=tabhlp>". _m("Input field type in Add / Edit item.") ."</div>
             <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
              <tr>
-              <td class=tabtxt><b>". _m("Constants") ."</b> ";
+              <td class=tabtit><b>". _m("Constants") ."</b> ";
                FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
-      echo "   <div class=tabhlp>". _m("Choose a Constant Group or a Slice.") ."</div>
+      echo "   <div class=tabtit>". _m("Choose a Constant Group or a Slice.") ."</div>
               </td>
-              <td class=tabtxt>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>". _m("Edit") ."</a>
+              <td class=tabtit>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>". _m("Edit") ."</a>
                            <br>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>". _m("Use&nbsp;as&nbsp;new") ."</a>
                            <br>          <a href='". EditConstantURL(). "'>". _m("New") ."</a>
               </td>
              </tr>
             </table>
-            <div class=tabtxt><b>". _m("Parameters") ."</b>
-              <input type=\"Text\" name=\"input_show_func_p\" size=50 maxlength=240 value=\"". safe($input_show_func_p) ."\">
-            </div> 
-    	   <a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
-    		 ._m("Help: Parameter Wizard")."</b></a>
+            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
+                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+          	    <td class=tabhlp><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
+        		 ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
+            <input type=\"Text\" name=\"input_show_func_p\" size=50 maxlength=240 value=\"". safe($input_show_func_p) ."\">
       </td>
      </tr>  
      <tr><td colspan=4><hr></td></tr>
      <tr>
       <td class=tabtxt><b>". _m("Default") ."</b></td>
       <td class=tabtxt colspan=3>";
-        FrmSelectEasy("input_default_f", inputDefaultTypes(), $input_default_f);
+        FrmSelectEasy("input_default_f", getSelectBoxFromParamWizard ($DEFAULT_VALUE_TYPES), $input_default_f);
       echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>
-            <div class=tabtxt><b>". _m("Parameter") ."</b>
-              <input type=\"Text\" name=\"input_default\" size=50 value=\"". safe($input_default) ."\">
-            </div> 
+            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
+                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+          	    <td class=tabhlp><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
+        		 ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
+            <input type=\"Text\" name=\"input_default\" size=50 value=\"". safe($input_default) ."\">
       </td>
      </tr>  
      <tr><td colspan=4><hr></td></tr>
@@ -330,18 +332,18 @@ echo "
      <tr>
       <td class=tabtxt><b>". _m("Insert") ."</b></td>
       <td class=tabtxt colspan=3>";
-        FrmSelectEasy("input_insert_func_f", inputInsertTypes(), $input_insert_func_f);
-      echo "<div class=tabhlp>". _m("Defines how value is stored in database. Generally, use 'Text'.<BR>
-	  		<tt>Now</tt> inserts the current time, no matter what the user sets.  
-			<tt>User ID</tt> inserts the identity of the current user, no matter what the user sets.") ."</div>
-            <div class=tabtxt><b>". _m("Parameters") ."</b>
-              <input type=\"Text\" name=\"input_insert_func_p\" size=25 maxlength=240 value=\"". safe($input_insert_func_p) ."\">
-            </div> 
+        FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard ($INSERT_TYPES), $input_insert_func_f);
+      echo "<div class=tabhlp>". _m("Defines how value is stored in database.") ."</div>
+            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
+                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+          	    <td class=tabhlp><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
+        		 ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
+            <input type=\"Text\" name=\"input_insert_func_p\" size=50 maxlength=240 value=\"". safe($input_insert_func_p) ."\">
       </td>
      </tr>  
      <tr>
       <td class=tabtxt><b>HTML</b></td>
-	  <td class=tabtxt>
+	  <td class=tabtxt colspan=3>
 	  	<input type=\"checkbox\" name=\"html_show\"". ($html_show ? " checked" : "") .">
 	  	<b>". _m("Show 'HTML' / 'plain text' option") ."</b><br>
         <input type=\"checkbox\" name=\"html_default\"". ($html_default ? " checked" : "") .">

@@ -90,7 +90,6 @@ if (is_array($desc[params])) {
 </table>
 
 <form name="f" method=post onSubmit="self.close()" ?>
-<table width="95%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABTITBG ?>">
 <?php 
 
 ?>
@@ -140,8 +139,6 @@ if (is_array($desc[params])) {
 // -->
 </SCRIPT>
 
-</table>
-
 <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit>
 <?php 
@@ -154,12 +151,13 @@ if (is_array($desc[params])) {
 		echo "</td></tr></table></body></html>";
 		exit;
 	}
-?>
+
+echo '
 </td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<tr><td>
-<?php
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'.COLOR_TABBG.'">
+<tr><td class=tabtxt>';
+
 	// show the parameter boxes with hints
 
 	if (is_array($desc[params])):
@@ -186,27 +184,20 @@ if (is_array($desc[params])) {
 			$example .= $param[example];
 			++$iparam;
 		}
-		echo "</table><br>";
+		echo "</table>";
 
-		// write, reread, example params
-		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2>"
-		."<tr><td class = tabtxt align=center>"
-		."<a href='javascript:writeParams()'>"._m("Write params")."</a>"
-		."</td><td class = tabtxt align=center>"
-		."<a href='javascript:readParams()'>"._m("Reread params")."</a>"
-		."</td><td class = tabtxt align=center>"
-		."<a href='javascript:fillParams(\"$example\")'>"._m("Example params")."</a>";
 	else:
-		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2><tr><td>";
+		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2><tr><td class=tabtxt>";
 		$what = $$list;
 		printf (_m("This %s has no parameters.")."<br>", strtolower($what[name]));
+        echo "</td></tr></table>";
 	endif;
-?>
+
+echo "
+</td></tr></table>
 </td></tr>
-</table><br>
-</td></tr></table></td></tr>
-<tr><td class = tabtit>
-<?php 
+<tr><td class = tabtit height=30>";
+
 if (is_array ($desc[examples])) {
 	echo _m("Have a look at these examples of parameters sets:");
 	echo "<table width = \"100%\" border=1 cellspacing=1 cellpadding = 2>";
@@ -215,17 +206,21 @@ if (is_array ($desc[examples])) {
 		echo "<tr><td class = tabtit>";
 		echo $exm[desc];
 		echo "</td><td class = tabtit>";
-		echo "<a href=\"javascript:useExample($i)\">"._m("Show")."</a>\n";
-		echo "</td></tr>";
+		echo "<a href=\"javascript:useExample($i)\">"._m("Show")."</a></td></tr>";
 	}
 	echo "</table>";
 }
-?>
 	
-<?php $what = $$list; echo $what[hint] ?>
-<p align=center><input type=submit value="<?php echo _m("Close the wizard")?>"></p>
-</td></tr>
-</table><br>
+$what = $$list; 
+echo $what[hint];
+echo '
+<p align=center>
+<input type=button value="'._m("OK - Save").'" onclick="writeParams(); self.close()">&nbsp;&nbsp;
+<input type=button value="'._m("Cancel").'" onclick="self.close()">&nbsp;&nbsp;
+<input type=button value="'._m("Show example params").'" onclick="fillParams(\''.$example.'\')">
+</p>
+</td></tr></table>
 </form>
 </body>
-</html>
+</html>';
+?>
