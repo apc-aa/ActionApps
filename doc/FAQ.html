@@ -24,6 +24,8 @@
 <a href="#ids">How to make item url shorter?</a>
 <a href="#"></a>
 <a href="#"></a>
+<a href="#"></a>
+<a href="#"></a>
 
 
 
@@ -325,6 +327,46 @@ names begins with f_ and they are three letters long (just like f_a()).</p>
   <br>
 </ol>
 <br>
+<p>   If you find, that the new alias function is very proprietary (it is
+ unusable for other people, you can create file /include/usr_aliasfnc.php3, 
+ which is automaticaly included to code (if exists). There you can define your 
+ own alias functions. The example listing of /include/usr_aliasfnc.php3 
+ (the file should not be committed to CVS, because it is very proprietary and 
+ the content shoul not be shared between installations):</p>
+<pre>
+&lt;?php
+//usr_aliasfnc.php3
+
+define("USR_ALIASFNC_PHP3_INC",1);
+
+# prints czech date (for Ekolist pages)
+function usr_cz_date($columns, $col, $param="") { 
+  # columns - array of all field values for all ifelds in current item
+  # col - fileld id of field, for which the alias is defined
+  # param - possibly parameters to alias function passed in alias definition
+  #         parameter (usr_cz_date:parameter)
+
+  $dte = $columns[$col][0][value];
+  $month = array( 1 => 'ledna', 'února', 'bøezna', 'dubna', 'kvìtna', 'èervna', 
+                 'èervence', 'srpna', 'záøí', 'øíjna', 'listopadu', 'prosince');
+  $weekday = array("nedìle","pondìlí","úterý","støeda","ètvrtek","pátek","sobota");
+  $m = $month[   date("n", $dte) ];
+  $end = ( !$param ? '' :  ' ('. $weekday[ date("w", $dte) ]. ')');
+  
+  return date("j", $dte) .". $m ". date("Y", $dte). $end;
+}   
+?&gt;
+</pre>
+<p>Such alias function can be called by defining new alias for some field. Just 
+define alias name (as obvious), alias function should be "f_u - user function" 
+and the parameter should be the name of the function ("usr_cz_date" in our
+example). It is possible to pass parameters to the function. The parameters are 
+separated by colon (usr_cz_date:parameters).</p>
+
+
+
+
+<br>
 
 <a name="parent"></a>
 <h3>How to link parent item?</h3>
@@ -584,6 +626,7 @@ document.write("&lt;/TABLE&gt;")<br>
 <tr><td valign=top class=tabfnc>order</td><td>No</td><td>order field id - if other than publish date add minus sign for descending order<br><i>Example:</i> order=headline........-</td></tr>
 <tr><td valign=top class=tabfnc>timeorder</td><td>No</td><td>if <i>rev</i> - reverse publish date order (less priority than "order")<br><i>Example:</i> timeorder=rev</td></tr>
 <tr><td valign=top class=tabfnc>inc</td><td>No</td><td>for dispalying another file instead of slice data (for example some static html file)<br><i>Example:</i> inc=/contact.html</td></tr>
+<tr><td valign=top class=tabfnc>als[alias]</td><td>No</td><td>user alias definition - you can define your own aliases in url (for both - slice.php3 and view.php3). Aliases names MUST!!! be 8 characters long. Don't forgot, that the alias value have to be urlencoded.<br><i>Example:</i> als[MY_ALIAS]=Summary%20Page (or maybe better: als%5BMY_ALIAS%5D=Summary%20Page)<br>defines alias _#MY_ALIAS. If used in formatstring ('Admin - Design Index' for example), it prints 'Summary Page'</td></tr>
 <tr><td valign=top class=tabfnc>listlen</td><td>No</td><td>change number of listed items in compact view (aplicable in compact viewe only)<br><i>Example:</i> listlen=10</td></tr>
 <tr><td valign=top class=tabfnc>no_scr</td><td>No</td><td>if true, no page scroller is displayed<br><i>Example:</i> no_scr=1</td></tr>
 <tr><td valign=top class=tabfnc>scr_go</td><td>No</td><td>sets page scroller to specified page<br><i>Example:</i> scr_go=2</td></tr>

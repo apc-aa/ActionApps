@@ -447,7 +447,8 @@ define("L_ALIAS_FUNC_I", "f_i - zdroj obrázku");
 define("L_ALIAS_FUNC_L", "f_l - pole s odkazem");
 define("L_ALIAS_FUNC_N", "f_n - id");
 define("L_ALIAS_FUNC_S", "f_s - url");
-define("L_ALIAS_FUNC_T", "f_t - plný text");
+define("L_ALIAS_FUNC_T", "f_t - fulltext");
+define("L_ALIAS_FUNC_U", "f_u - uživatelská funkce");
 define("L_ALIAS_FUNC_W", "f_w - šíøka obrázku");
 define("L_ALIAS_FUNC_0", "f_0 - žádná");
 
@@ -571,9 +572,13 @@ define("L_SITEM_ID_ALIAS",'alias pro zkrácené èíslo èlánku');
 define("L_MAP_VALUE","-- Hodnota --");
 define("L_MAP_VALUE2","Hodnota");
 define("L_ORDER", "Seøadit");
+define("L_INSERT_AS_NEW","Vložit jako nový");
 
 /*
 $Log$
+Revision 1.35  2001/07/09 09:28:45  honzam
+New supported User defined alias functions in include/usr_aliasfnc.php3 file
+
 Revision 1.34  2001/06/24 16:46:22  honzam
 new sort and search possibility in admin interface
 

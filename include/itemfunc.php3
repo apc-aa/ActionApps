@@ -334,14 +334,19 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
         # fill the multivalues    
       reset($GLOBALS[$varname]);
       $i=0;
-      while( list(,$v) = each($GLOBALS[$varname]) )
-        $content4id[$pri_field_id][$i++][value] = $v;    # add to content array
-    } else
-      $content4id[$pri_field_id][0][value] = $GLOBALS[$varname];
-  
-    $content4id[$pri_field_id][0][flag] = ( $f[html_show] ? 
+      while( list(,$v) = each($GLOBALS[$varname]) ) {
+        $content4id[$pri_field_id][$i][value] = $v;    # add to content array
+        $content4id[$pri_field_id][$i][flag] = ( $f[html_show] ? 
                              (($GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
                              (($f[html_default]>0) ? FLAG_HTML : 0));
+        $i++;                     
+      }  
+    } else {
+      $content4id[$pri_field_id][0][value] = $GLOBALS[$varname];
+      $content4id[$pri_field_id][0][flag] = ( $f[html_show] ? 
+                             (($GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
+                             (($f[html_default]>0) ? FLAG_HTML : 0));
+    }  
   }
   return $content4id;
 }                                             
@@ -477,6 +482,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.13  2001/07/09 09:28:44  honzam
+New supported User defined alias functions in include/usr_aliasfnc.php3 file
+
 Revision 1.12  2001/06/12 16:00:55  honzam
 date inputs support time, now
 new multivalue input possibility - <select multiple>

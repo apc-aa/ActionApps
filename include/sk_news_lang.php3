@@ -485,21 +485,22 @@ define("L_SLICE_ADM","Administr·cia modulu - Menu");
 define("L_A_SLICE_TIT", L_SLICE_ADM);
 define("L_A_SLICE_ADD_HELP", "Nov˝ modul mÙûete vytvoriù na z·klade öablÛny, alebo skopÌrovaù nastavenia z uû existuj˙ceho modulu (vytvorÌ sa presn· kÛpia vr·tane nastavenÌ.");
 
-define("L_ALIAS_FUNC_A", "abstrakt");
-define("L_ALIAS_FUNC_B", "fulltext odkaz");
-define("L_ALIAS_FUNC_C", "podmienka");
-define("L_ALIAS_FUNC_D", "d·tum");
-define("L_ALIAS_FUNC_E", "edit·cia Ël·nku");
-define("L_ALIAS_FUNC_F", "odkaz na pln˝ text");
-define("L_ALIAS_FUNC_G", "v˝öka obr·zku");
-define("L_ALIAS_FUNC_H", "zobraziù");
-define("L_ALIAS_FUNC_I", "zdroj obr·zku");
-define("L_ALIAS_FUNC_L", "pole s odkazom");
-define("L_ALIAS_FUNC_N", "id");
-define("L_ALIAS_FUNC_S", "url");
-define("L_ALIAS_FUNC_T", "pln˝ text");
-define("L_ALIAS_FUNC_W", "öÌ¯ka obr·zku");
-define("L_ALIAS_FUNC_0", "- ûiadna -");
+define("L_ALIAS_FUNC_A", "f_a - abstrakt");
+define("L_ALIAS_FUNC_B", "f_b - fulltext odkaz");
+define("L_ALIAS_FUNC_C", "f_c - podmienka");
+define("L_ALIAS_FUNC_D", "f_d - d·tum");
+define("L_ALIAS_FUNC_E", "f_e - edit·cia Ël·nku");
+define("L_ALIAS_FUNC_F", "f_f - odkaz na pln˝ text");
+define("L_ALIAS_FUNC_G", "f_g - v˝öka obr·zku");
+define("L_ALIAS_FUNC_H", "f_h - zobraziù");
+define("L_ALIAS_FUNC_I", "f_i - zdroj obr·zku");
+define("L_ALIAS_FUNC_L", "f_l - pole s odkazom");
+define("L_ALIAS_FUNC_N", "f_n - id");
+define("L_ALIAS_FUNC_S", "f_s - url");
+define("L_ALIAS_FUNC_T", "f_t - pln˝ text");
+define("L_ALIAS_FUNC_U", "f_u - user function");
+define("L_ALIAS_FUNC_W", "f_w - öÌ¯ka obr·zku");
+define("L_ALIAS_FUNC_0", "f_0 - ûiadna -");
 
 define("L_ALIASES", "Aliasy pre polia v datab·ze");
 define("L_ALIAS1", "Alias 1"); 
@@ -618,9 +619,13 @@ define("L_SITEM_ID_ALIAS",'alias pro skr·tenÈ ËÌslo Ël·nku');
 define("L_MAP_VALUE","-- Hodnota --");
 define("L_MAP_VALUE2","Hodnota");
 define("L_ORDER", "Seradit");
+define("L_INSERT_AS_NEW","Vloûiù ako nov˝");
 
 /*
 $Log$
+Revision 1.4  2001/07/09 09:28:44  honzam
+New supported User defined alias functions in include/usr_aliasfnc.php3 file
+
 Revision 1.3  2001/06/24 16:46:22  honzam
 new sort and search possibility in admin interface
 

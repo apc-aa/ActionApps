@@ -123,6 +123,7 @@ $ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
                             "f_n" => L_ALIAS_FUNC_N,
                             "f_s" => L_ALIAS_FUNC_S,
                             "f_t" => L_ALIAS_FUNC_T,
+                            "f_u" => L_ALIAS_FUNC_U,
                             "f_w" => L_ALIAS_FUNC_W,
                             "f_0" => L_ALIAS_FUNC_0);
                             
@@ -376,6 +377,9 @@ define ("FEEDMAP_FLAG_EMPTY", 2);
                       
 /*
 $Log$
+Revision 1.15  2001/07/09 09:28:45  honzam
+New supported User defined alias functions in include/usr_aliasfnc.php3 file
+
 Revision 1.14  2001/06/21 14:15:44  honzam
 feeding improved - field value redefine possibility in se_mapping.php3
 

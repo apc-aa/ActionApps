@@ -447,6 +447,7 @@ define("L_ALIAS_FUNC_L", "f_l - Campo enlazado");
 define("L_ALIAS_FUNC_N", "f_n - Id");
 define("L_ALIAS_FUNC_S", "f_s - Url");
 define("L_ALIAS_FUNC_T", "f_t - Texto completo");
+define("L_ALIAS_FUNC_U", "f_u - user function");
 define("L_ALIAS_FUNC_W", "f_w - Ancho imagen");
 define("L_ALIAS_FUNC_0", "f_0 - Ninguno");
 
@@ -573,10 +574,13 @@ define("L_SITEM_ID_ALIAS",'alias para el "short" Id del ítem');
 define("L_MAP_VALUE","-- Value --");
 define("L_MAP_VALUE2","Value");
 define("L_ORDER", "Order");
-
+define("L_INSERT_AS_NEW","Insert as new");
 
 /*
 $Log$
+Revision 1.8  2001/07/09 09:28:44  honzam
+New supported User defined alias functions in include/usr_aliasfnc.php3 file
+
 Revision 1.7  2001/06/24 16:46:22  honzam
 new sort and search possibility in admin interface
 

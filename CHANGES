@@ -1,3 +1,9 @@
+07/04/01 - new support for custom alias function definitions 
+           (include/usr_aliasfnc.php3 - not in CVS! - you can create it)
+         - new user defined aliases (see url parameter 'als' to slice.php3)  
+         - new possibility to create item by copying old one 
+           ('Insert as new' in itemedit.php3 file)
+06/24/01 - new sort and search possibility in admin interface
 06/21/01 - fixed bug of constant assigning to field with multiple selectbox
          - feeding improved - field value redefine possibility 
            in se_mapping.php3

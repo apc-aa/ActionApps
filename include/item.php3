@@ -22,6 +22,10 @@ http://www.apc.org/
 
 define("ITEM_PHP3_INC",1);
 
+if( file_exists( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" ) ) {
+  include( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" );
+}  
+
 function txt2html($txt) {          #converts plain text to html
   $txt = nl2br(htmlspecialchars($txt));
 //  $txt = ERegI_Replace('  ', ' &nbsp;', $txt);
@@ -282,12 +286,19 @@ class item {
     if( $p[4] )
       $col = $p[4];
     if( $this->columns[$col][0][value] == $p[0] )
-      return ($negate ? htmlspecialchars($p[3]) : $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2]);
-    return  (!$negate ? htmlspecialchars($p[3]) : $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2]); 
+      return ($negate ? $p[3] : $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2]);
+    return  (!$negate ? $p[3] : $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2]); 
   }
   
-  # ----------------- alias function definition end --------------------------
+  # calls user defined function in file /include/usr_aliasfnc.php3
+  function f_u($col, $param="") { 
+    $p = ParamExplode($param);
+    $fnc = $p[0];
+    return $fnc($this->columns, $col, $param);
+  }  
   
+  # ----------------- alias function definition end --------------------------
+
   // function shows full text navigation (back, home)
   function show_navigation($home_url) {
     echo '<br><a href="javascript:history.back()">'. L_BACK .'</a> &nbsp; ';
@@ -371,6 +382,9 @@ class item {
 
 /*
 $Log$
+Revision 1.21  2001/07/09 09:28:44  honzam
+New supported User defined alias functions in include/usr_aliasfnc.php3 file
+
 Revision 1.20  2001/06/21 14:15:44  honzam
 feeding improved - field value redefine possibility in se_mapping.php3
 
