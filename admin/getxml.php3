@@ -99,7 +99,12 @@ $XML_BEGIN = '<'.'?xml version="1.0"?'. ">\n".
 //-------------------------- Function definitons -------------------------------
 
 function code($v, $html=true) {
-  return $html ? utf8_encode(htmlspecialchars($v)) : utf8_encode($v);
+  // TODO: This function is by no means correct - it handles correctly only
+  //       iso-8859-1 pages (slices/texts), which is wrong. Unfortunatelly PHP
+  //       do not support conversion form other charsets to UTF-8, yet, so we
+  //       have to use another XML encoding or use some conversion class for it
+  //  return $html ? utf8_encode(htmlspecialchars($v)) : utf8_encode($v);
+  return ($html ? htmlspecialchars($v) : $v);
 }
 
 function GetFlagFormat($flag) {
