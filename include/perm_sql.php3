@@ -61,10 +61,14 @@ function AuthenticateUsername($username, $password, $flags = 0) {
   $id  = $row[id];
   $uid = $row[uid];
   
-  if (defined(CRYPT_SALT_LENGTH)) {              // set by PHP
+  if (defined(CRYPT_SALT_LENGTH)) {                      // set by PHP
      $slength = CRYPT_SALT_LENGTH;
+  } else if (substr($row[password], 0, 3) == '$1$') {    // MD5
+     $slength = 12;
+  } else if (substr($row[password], 0, 3) == '$2$') {    // Extended DES (16)
+     $slength = 16;
   } else {
-     $slength = 2;
+     $slength = 2;                                       // Standard DES
   }
   
   $cryptpw = crypt($password, substr($row[password], 0, $slength));
@@ -595,6 +599,9 @@ function in_array($needle,$haystack)
 
 /*
 $Log$
+Revision 1.4  2000/07/21 14:34:20  kzajicek
+Sometimes we have to detect from the salt prefix what length of salt was used.
+
 Revision 1.3  2000/07/18 15:32:23  kzajicek
 The length of salt should be fixed. Easier is to let PHP to generate it.
 
