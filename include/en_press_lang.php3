@@ -75,7 +75,7 @@ define("DEFAULT_NEEDED_FIELDS",
  "n".  // status_code
  "n".  // language_code
  "n".  // cp_code
- "y".  // category_id
+ "n".  // category_id
  "n".  // img_src
  "n".  // img_width
  "n".  // img_height
@@ -308,6 +308,7 @@ define("L_USER_SURNAME", "Surname");
 define("L_USER_MAIL", "E-mail");
 define("L_USER_SUPER", "Superadmin account");
 define("L_A_USERS_TIT", "Slice Administration - User Management");
+define("L_A_PERMISSIONS", "Slice Administration - Permissions");
 
 define("L_ROLE_AUTHOR", "Author");
 define("L_ROLE_EDITOR", "Editor");
@@ -389,7 +390,7 @@ define("L_ID", "Id");
 define("L_TYPE", "Type");
 define("L_SETTINGS", "Admin");
 define("L_LOGO", "APC toolkit logo");
-define("L_USER_MANAGEMENT", "User management");
+define("L_USER_MANAGEMENT", "Users");
 define("L_ITEMS", "Item management page");
 define("L_NEW_SLICE_HEAD", "New slice");
 define("L_ERR_USER_CHANGE", "Can't change user - LDAP Error");
@@ -541,6 +542,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.11  2000/08/03 15:19:57  kzajicek
+Language changes
+
 Revision 1.10  2000/08/03 12:49:22  kzajicek
 English editing
 

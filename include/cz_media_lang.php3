@@ -323,7 +323,8 @@ define("L_USER_FIRSTNAME", "Jméno");
 define("L_USER_SURNAME", "Pøíjmení");
 define("L_USER_MAIL", "E-mail");
 define("L_USER_SUPER", "Administrativní úèet");
-define("L_A_USERS_TIT", "Správa webíku - Správa uživatelù");
+define("L_A_USERS_TIT", "Správa webíku - uživatelé");
+define("L_A_PERMISSIONS", "Správa webíku - pøístupová práva");
 
 define("L_ROLE_AUTHOR", "Autor");
 define("L_ROLE_EDITOR", "Editor");
@@ -555,6 +556,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.10  2000/08/03 15:19:56  kzajicek
+Language changes
+
 Revision 1.9  2000/08/03 12:49:22  kzajicek
 English editing
 
