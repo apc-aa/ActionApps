@@ -212,6 +212,76 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
   echo "</td></tr>\n";
 }  
 
+# Prints html tag <intup type=text ...> with <select ...> as presets to 2-column 
+# table for use within <form> and <table> tag
+function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, 
+                           $needed=false, $hlp="", $morehlp="") {
+  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
+  echo "<tr><td class=tabtxt><b>$txt</b>";
+  Needed($needed);
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "<td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\">
+          <select name=\"foo_$name\" onchange=\"$name.value=this.options[this.selectedIndex].value\">";	
+  reset($arr);
+  while(list($k, $v) = each($arr)) { 
+    echo "<option value=\"". htmlspecialchars($k)."\"";
+    if ((string)$val == (string)$k) 
+      echo " selected";
+    echo "> ". htmlspecialchars($v) ." </option>";
+  }
+  reset($arr);
+  echo "</select>";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}  
+
+# Prints two boxes for multiple selection for use within <form> and <table> tag
+function FrmTwoBox($name, $txt, $arr, $val, $maxsize=254, $size=25, 
+                           $needed=false, $hlp="", $morehlp="") {
+  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
+/*  TODO 
+
+  echo "<tr><td class=tabtxt><b>$txt</b>";
+  Needed($needed);
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "<table border="0" cellspacing="0" cellpadding="0"><tr>
+      <td align='CENTER' valign='TOP'>
+      <SELECT name="export_n" size=8 class=tabtxt>
+        <?php
+        reset($all_slices);
+        if( isset($export_to) AND is_array($export_to)) {
+          while(list($s_id,$name) = each($all_slices))
+            if( $export_to[$s_id] == "" )
+              echo "<option value=\"$s_id\"> $name </option>"; 
+        }else 
+          while(list($s_id,$name) = each($all_slices))
+            echo "<option value=\"$s_id\"> $name </option>"; 
+
+      </SELECT></td>
+      <td><input type="button" VALUE="  >>  " onClick = "MoveSelected('document.f.export_n','document.f.export_y')" align=center>
+          <br><br><input type="button" VALUE="  <<  " onClick = "MoveSelected('document.f.export_y','document.f.export_n')" align=center></td>
+      <td align="CENTER" valign="TOP">
+      <SELECT name="export_y" size=8 class=tabtxt>
+        <?php
+        if( isset($export_to) AND is_array($export_to)) {
+          reset($export_to);
+          while(list($s_id,$name) = each($export_to))
+            echo "<option value=\"$s_id\"> $name </option>"; 
+        }    
+      </SELECT>
+      </td>
+      </tr>
+
+*/
+}
+
 # Prints html tag <input type="radio" .. to 2-column table
 # for use within <form> and <table> tag
 function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
@@ -262,23 +332,46 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
 # Prints html tag <select multiple .. to 2-column table
 # for use within <form> and <table> tag
 function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5, 
-                       $needed=false, $hlp="", $morehlp="") {
+          $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0) {
   $name=safe($name); $size=safe($size); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n <td><select name=\"$name\" size=\"$size\" multiple>";	
-  reset($arr);
-  while(list($k, $v) = each($arr)) { 
-    echo "<option value='". htmlspecialchars($k) ."'";
-    if ($selected[$k]) 
-      echo " selected";
-    echo ">".htmlspecialchars($v)."</option>";
-  }
+  $option_no = 0;
+  if( isset($arr) && is_array($arr) ) {
+    reset($arr);
+    while(list($k, $v) = each($arr)) { 
+      echo "<option value='". htmlspecialchars($k) ."'";
+      if ($selected[$k]) 
+        echo " selected";
+      echo ">".htmlspecialchars($v)."</option>";
+      $option_no++;
+    }
+  }  
+  # add blank rows if asked for
+  while( $option_no++ < $minrows )  // if no options, we must set width of <select> box
+    echo '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
+  
   echo "</select>";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
+  if( $relation )       # all selection in this box should be selected on submit
+    echo "<br><center>
+          <input type='button' value='". L_ADD ."' onclick='OpenRelated(\"$name\", \"$relation\")'> 
+          <input type='button' value='". L_DELETE ."' 
+            onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
+                     document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'> 
+          <SCRIPT Language='JavaScript'><!--
+             listboxes[box_index++] = 'document.inputform.elements[\"$name\"]'
+            // -->
+           </SCRIPT>          
+          </center>";
   echo "</td></tr>\n";
+}  
+
+function FrmRelated($name, $txt, $arr, $size, $sid, $needed=false, $hlp="", $morehlp="") {
+  FrmInputMultiSelect($name, $txt, $arr, "", $size=5, $sid, $needed, $hlp, $morehlp, MAX_RELATED_COUNT);
 }  
 
 # Prints html tag <select .. 
@@ -361,6 +454,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.16  2001/09/27 15:53:39  honzam
+New related stories support, New "Preselect" input option
+
 Revision 1.15  2001/06/12 16:00:55  honzam
 date inputs support time, now
 new multivalue input possibility - <select multiple>
