@@ -288,7 +288,7 @@ class item {
   # the function substitutes all _#... aliases and then aplies "remove strings"
   # it searches for removal just in parts where all aliases are expanded
   # to empty string
-  function substitute_alias_and_remove( $text, $remove_arr ) {
+  function substitute_alias_and_remove( $text, $remove_arr=null ) {
     $piece = explode( "_#", $text );
     reset( $piece );
     $out = current($piece);   # initial sequence

@@ -124,7 +124,7 @@ function DeQuoteColons($text) {
 # Expand a single, syntax element.
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
-    global $als;
+    global $als,$debug;
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
     # bracket could look like:
@@ -146,15 +146,15 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       # replace switches
       return QuoteColons($level, $maxlevel, parseSwitch( substr($out,7) ));
       # QuoteColons used to mark colons, which is not parameter separators.
-	  }
+          }
     elseif( substr($out, 0, 5) == "math(" ) { #TODO REMOVE item
       # replace math
       return QuoteColons($level, $maxlevel,
         parseMath( # Need to unalias in case expression contains _#XXX or ( )
             new_unalias_recurent(substr($out,5),"",0,
-        		$maxlevel,$item,$itemview,$aliases)) );
+                        $maxlevel,$item,$itemview,$aliases)) );
 
-	  }
+          }
     elseif( substr($out, 0, 8) == "include(" ) {
       # include file
       if( !($pos = strpos($out,')')) )
@@ -175,30 +175,30 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       # QuoteColons used to mark colons, which is not parameter separators.
     }
     if( ereg("^scroller:?([^}]*)$", $out, $parts)) {
-	if (!isset($itemview) OR ($itemview->num_records<0) ) {   #negative is for n-th grou display
-		return "Scroller not valid without a view, or for group display"; }
-	$viewScr = new view_scroller($itemview->slice_info['vid'],
+        if (!isset($itemview) OR ($itemview->num_records<0) ) {   #negative is for n-th grou display
+                return "Scroller not valid without a view, or for group display"; }
+        $viewScr = new view_scroller($itemview->slice_info['vid'],
                                    $itemview->clean_url,
                                    $itemview->num_records,
                                    $itemview->idcount(),
                                    $itemview->from_record);
-	list( $begin, $end, $add, $nopage ) = ParamExplode($parts[1]);                         
-	return $viewScr->get( $begin, $end, $add, $nopage );
+        list( $begin, $end, $add, $nopage ) = ParamExplode($parts[1]);                         
+        return $viewScr->get( $begin, $end, $add, $nopage );
     }
     elseif( substr($out, 0, 1) == "#" )
       # remove comments
       return "";
     elseif( substr($out, 0,5) == "debug" ) {
-	# Note don't rely on the behavior of {debug} its changed by programmers for testing!
+        # Note don't rely on the behavior of {debug} its changed by programmers for testing!
         if (isset($item)) huhl("item=",$item);
-	if (isset($GLOBALS["apc_state"])) huhl("apc_state=",$GLOBALS["apc_state"]);
-	if (isset($itemview)) huhl("itemview=",$itemview);
-	if (isset($aliases)) huhl("aliases=",$aliases);
-	if (isset($als)) huhl("als=",$als);
-	#huhl("globals=",$GLOBALS);
+        if (isset($GLOBALS["apc_state"])) huhl("apc_state=",$GLOBALS["apc_state"]);
+        if (isset($itemview)) huhl("itemview=",$itemview);
+        if (isset($aliases)) huhl("aliases=",$aliases);
+        if (isset($als)) huhl("als=",$als);
+        #huhl("globals=",$GLOBALS);
     }
     elseif ( substr($out, 0,10) == "view.php3?" )
-	return QuoteColons($level, $maxlevel, 
+        return QuoteColons($level, $maxlevel, 
             GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
             # view do not use colons as separators => dequote before callig
     elseif (isset($item) && ($out == "unpacked_id.....")) {
@@ -215,24 +215,29 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # anything inside the value, and then makes sure any remaining quotes
     # don't interfere with caller
     elseif (isset($GLOBALS['apc_state'][$out])) {
-	return QuoteColons($level, $maxlevel, 
-	    new_unalias_recurent($GLOBALS['apc_state'][$out],"",$level+1,
-		$maxlevel,$item,$itemview,$aliases));
+        return QuoteColons($level, $maxlevel, 
+            new_unalias_recurent($GLOBALS['apc_state'][$out],"",$level+1,
+                $maxlevel,$item,$itemview,$aliases));
     }
     # Pass these in URLs like als[foo]=bar, 
     # Note that 8 char aliases like als[foo12345] will expand with _#foo12345
     elseif (isset($als[$out])) {
-	return QuoteColons($level, $maxlevel, 
-	    new_unalias_recurent($als[$out],"",$level+1,
-		$maxlevel,$item,$itemview,$aliases));
-	return QuoteColons($level, $maxlevel, $als[$out]);
+        return QuoteColons($level, $maxlevel, 
+            new_unalias_recurent($als[$out],"",$level+1,
+                $maxlevel,$item,$itemview,$aliases));
+        return QuoteColons($level, $maxlevel, $als[$out]);
     }
     elseif (isset($aliases[$out])) {   # look for an alias (this is used by mail)
-	return QuoteColons($level, $maxlevel, $aliases[$out]);
-    }  // Put the braces back around the text and quote them if we can't match it
+        return QuoteColons($level, $maxlevel, $aliases[$out]);
+    }
+    // Look for {_#.........} and expand now, rather than wait till top 
+    elseif ( isset($item) && (substr($out,0,2) == "_#")) {
+        return $item->substitute_alias_and_remove($out);
+    }
+     // Put the braces back around the text and quote them if we can't match
     else {
-	if ($debug)  huhl("Couldn't expand: \"{$out}\"");
-	return QuoteColons($level, $maxlevel, "{" . $out . "}");
+        if ($debug)  huhl("Couldn't expand: \"{$out}\"");
+        return QuoteColons($level, $maxlevel, "{" . $out . "}");
     }
 }
 
@@ -248,16 +253,16 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
 # Note ereg was 15 seconds on one multi-line example cf .002 secs
 #    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
     while (preg_match("/^(.*)[{]([^{}]+)[}](.*)$/s",$text,$vars)) {
-	if ($debug) huhl("Expanding:".isset($item).":$level:'$vars[2]'");
-	$t1 = expand_bracketed($vars[2],$level+1,$maxlevel,$item,$itemview,$aliases);
-	if ($debug) huhl("Expanded:$level:'$t1'");
-	$text = $vars[1] . $t1 . $vars[3];
+        if ($debug) huhl("Expanding:".isset($item).":$level:'$vars[2]'");
+        $t1 = expand_bracketed($vars[2],$level+1,$maxlevel,$item,$itemview,$aliases);
+        if ($debug) huhl("Expanded:$level:'$t1'");
+        $text = $vars[1] . $t1 . $vars[3];
         if ($debug) huhl("Continue with:$level:'$text'");
     }
     if (isset($item)) {
-	    return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));
+            return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));
     } else {
-	    return QuoteColons($level, $maxlevel, $text);
+            return QuoteColons($level, $maxlevel, $text);
     }
 }
 

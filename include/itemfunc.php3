@@ -228,7 +228,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
     
     // look if the uploaded picture exists
     if($GLOBALS[$filevarname."_name"] == "none" || $GLOBALS[$filevarname."_name"] == "") 
-        continue;
+        return; # was continue: but that doesn't make sense
 
     $params=explode(":",$param);
   

@@ -19,8 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require $GLOBALS[AA_INC_PATH]."en_site_lang.php3"; 
-
 # Miscellaneous utility functions for "site" module
 
 function AAPage($url=0, $add=0) {
