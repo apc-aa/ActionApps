@@ -11,7 +11,7 @@ define("L_USER",'user');  define("L_GROUP",'group');
 define("MAX_GROUPS_DEEP", 2);
 
 // this is only necessary for testing perm_sql.php3
-require("perm_sql.php3");
+require_once("perm_sql.php3");
 
 
 // ---------------------------------------------------------------
@@ -41,8 +41,11 @@ function uniq_array($haystack)
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:13  madebeer
-Initial revision
+Revision 1.2  2003/02/05 15:10:42  jakubadamek
+changing require to require_once
+
+Revision 1.1.1.1  2000/06/21 18:40:13  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:01  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

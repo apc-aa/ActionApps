@@ -91,7 +91,7 @@ function SendOkPage($txt) {
 //****************************************************************************
 
 // read the slice configuration
-require("./slices_conf.php3");
+require_once("./slices_conf.php3");
 $import = file($file_import);
 
 while (list ($line_num, $line) = each ($import)) {
