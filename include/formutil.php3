@@ -199,9 +199,74 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
   echo "</td></tr>\n";
 }
 
+/*  Function: RawRichEditTextarea
+    Purpose: Shows a rich edit text area - Wysiwyg editor
+    Params: 
+        $type = "class" | "iframe" (iframes are not completely implemented)
+        $doc_complet = do you edit complete documents or HTML fragments only? */
+
+function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="class", $doc_complet=0) {
+    if (!$BName) {
+        detect_browser();
+        $BName = $GLOBALS['BName'];
+    }
+
+    $name=safe($name); 
+
+    if( $html==2 ) // text only
+        $val = str_replace ("\r","",str_replace ("\n","",
+                nl2br (htmlspecialchars ($val,ENT_QUOTES))));
+    else {
+        $repl = array ("'"=>"\\'","\n"=>"\\n","\r"=>"\\r");
+        reset ($repl);
+        while (list ($find,$rep) = each ($repl))
+            $val = str_replace ($find, $rep, $val);
+    }
+ 
+    echo "<!-- Browser $BName -->";
+    if ($type == "iframe") 
+        $richedit = "richedit_iframe";
+    else if ($BName == "MSIE ") 
+        $richedit = "richedt_ie";
+    else $richedit = "richedit_ns";
+        
+	if ($GLOBALS[debug]) echo $richedit;
+    echo
+        "<script language=javascript> 
+        <!--
+		var edt$name"."_doc_complet = $doc_complet; 
+        var edt = \"edt$name\"; 
+ 		var edtdoc = \"edt$name.document\"; 
+        var richHeight = ".($rows * 22)."; 
+        var richWidth = ".($cols * 8)."; 
+        var imgpath = '../misc/wysiwyg/images/'; 
+        // -->
+	</script>
+    <script language=javascript src=\"../misc/wysiwyg/".$richedit.".js\">
+	</script>
+    <script language=javascript src=\"../misc/wysiwyg/".$richedit.".html\">
+	</script>";
+
+    echo "
+    <script language =javascript > 
+        <!-- 
+        edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100); 
+        var edt$name"."_content = '$val';
+        function edt$name"."_inicial() { 
+            change_state ('edt$name'); 
+            posa_contingut_html('edt$name',edt$name"."_content);
+            change_state ('edt$name');
+     	    clearInterval(edt$name"."_timerID); 
+            return true; 
+        } 
+        // --> 
+    </script>";
+}
+
 # On browsers which do support it, loads a special rich text editor with many
 # advanced features based on triedit.dll 
 # On the other browsers, loads a normal text area
+
 function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class", $needed=false, 
                      $hlp="", $morehlp="", $single="", $html=false) {
   global $BName; 
@@ -221,54 +286,12 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM OR $single)
     echo "</tr><tr>";
-
-  if( $html==2 ) // text only
-  	$val = str_replace ("\r","",str_replace ("\n","",
-		nl2br (htmlspecialchars ($val,ENT_QUOTES))));
-  else {
-    $repl = array ("'"=>'"',"\n"=>" ","\r"=>"");
-    reset ($repl);
-    while (list ($find,$rep) = each ($repl))
-        $val = str_replace ($find, $rep, $val);
-  }
   echo "<td $colspan>";
 
-    echo "<!-- UUUUU $BName -->";
-    if ($type == "iframe") 
-        $richedit = "richedit_iframe";
-    else if ($BName == "MSIE ") 
-        $richedit = "richedt_ie";
-    else $richedit = "richedit_ns";
-        
-	if ($GLOBALS[debug]) echo $richedit;
-    echo
-        "<script language=javascript> 
-        <!--
-		var edt$name"."_doc_complet = 0; 
-        var edt = \"edt$name\"; 
- 		var edtdoc = \"edt$name.document\"; 
-        var richHeight = ".($rows * 22)."; 
-        var richWidth = ".($cols * 8)."; 
-        var imgpath = '../misc/wysiwyg/images/'; 
-        // -->
-	</script>
-    <script language=javascript src=\"../misc/wysiwyg/".$richedit.".js\">
-	</script>
-    <script language=javascript src=\"../misc/wysiwyg/".$richedit.".html\">
-	</script>";
+  RawRichEditTextarea ($BName, $name, $val, $rows, $cols, $type);
 
     echo "
-    <script language =javascript > 
-        <!-- 
-        edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100); 
-        function edt$name"."_inicial() { 
-            posa_contingut_html('edt$name','$val');
-     	    clearInterval(edt$name"."_timerID); 
-            return true; 
-        } 
-        // --> 
-    </script> 
-	<input type=hidden name='$name' value='$val'> 
+  	<input type=hidden name='$name' value='$val'> 
  	<input type=hidden name='".$name."html' value='h'>";	
     
     PrintMoreHelp($morehlp);
@@ -651,6 +674,11 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
         return true;
       $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");                   
       return false; 
+    case "filename": if( !EReg("^[0-9a-zA-Z_]*$", $variable)) {
+                       $err[$variableName] = MsgErr(L_ERR_IN." $inputName");
+                       return false;
+                     }
+                     return true;
     case "url":
     case "all":    
     default:       return true;
