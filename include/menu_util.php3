@@ -45,10 +45,11 @@ function PrintModuleSelection() {
   global $slice_id, $g_modules, $sess, $PHP_SELF;
 
   if( is_array($g_modules) AND (count($g_modules) > 1) ) {
-  
+
     // create the modulesOptions content:
-    echo "<SCRIPT language=JAVASCRIPT>\n
-        <!--\n modulesOptions = ''\n";
+    echo "
+    <SCRIPT language=JAVASCRIPT><!-- 
+        var modulesOptions = ''\n";
     reset($g_modules);
     while(list($k, $v) = each($g_modules)) { 
       echo "\t+'<option value=\"". htmlspecialchars($k)."\"";
@@ -58,18 +59,13 @@ function PrintModuleSelection() {
     }
     if( !$slice_id )   // new slice
       echo "\t+'<option value=\"new\" selected>". L_NEW_SLICE_HEAD + "'";
-    echo ";\n //-->\n </SCRIPT>";
-
-    // print the select box
-    echo "
-          <span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>
-          <SCRIPT language=javascript><!--\n
-                document.writeln('<select name=slice_id onChange=\'document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\'>');\n
-                document.writeln(modulesOptions);\n
-                document.writeln('</select>');\n
-          //-->\n
-          </SCRIPT>\n";
-  } else
+    echo ";
+        document.write('<select name=slice_id onChange=\'document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\'>');
+        document.write(modulesOptions);
+        document.write('</select>');
+    //-->
+    </SCRIPT>\n";
+} else
     echo "&nbsp;"; 
 }  
 
@@ -119,15 +115,15 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
         <TABLE border=0 cellpadding=0 cellspacing=0 width=800>
             <TR><TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=122 height=1></TD>
                 <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=300 height=1></TD>
-                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=267 height=1></TD>
+                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=67 height=1></TD>
+                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=200 height=1></TD>
+            </TR>
+            <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
+                <TD height=43 colspan=3 align=center valign=middle class=slicehead>
+                    ".$smmenus[$activeMain]["title"]."  -  $r_slice_headline</TD>
             </TR>
             <form name=nbform enctype=\"multipart/form-data\" method=post
                 action=\"". $sess->url($PHP_SELF) ."\">            
-            <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
-                <TD height=43 colspan=2 align=center valign=middle class=slicehead>
-                    ".$smmenus[$activeMain]["title"]."  -  $r_slice_headline</TD>
-            </TR>
-            </form>
             <TR><td align=center class=navbar>";
                             
         $first = true;
@@ -138,20 +134,21 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
                 else echo " | ";
                 if (!isset ($aamenuprop["cond"])) $aamenuprop["cond"] = 1;
                 if ($aamenu == $activeMain)
-                    echo "<span class=nbactive>$aamenuprop[label]</span>";
+                    echo "<span class=nbactive>$aamenuprop[label]</span>\n";
                 else if ($slice_id && $aamenuprop["cond"]) {
                      $href = $aamenuprop["exact_href"];
                      if (!$href) $href = get_aa_url($aamenuprop["href"]);                    
                      echo "<a href=\"$href\">"
-                         ."<span class=nbenable>$aamenuprop[label]</span></a>";
+                         ."<span class=nbenable>$aamenuprop[label]</span></a>\n";
                 }
-                else echo "<span class=nbdisable>$aamenuprop[label]</span>";
+                else echo "<span class=nbdisable>$aamenuprop[label]</span>\n";
             }
         }
         
-        echo "</td><TD class=navbar>";
+        echo "</td><TD class=navbar align=right><span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span></TD>
+        <TD class=navbar>\n";
         PrintModuleSelection();
-        echo "</TD></TR></TABLE>
+        echo "</TD></TR></form></TABLE>
         </TD></TR><TR>";
     }
     
@@ -165,7 +162,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     }
     echo "
         <TD align=left valign=top>
-        <TABLE border=0 cellspacing=0 cellpadding=10><TR><TD align=left>";
+        <TABLE border=0 cellspacing=0 cellpadding=10><TR><TD align=left>\n";
 }   
 
 // ----------------------------------------------------------------------------------------
@@ -174,37 +171,37 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
 function showSubmenu (&$aamenu, $active)
 {
     global $AA_INSTAL_PATH, $slice_id,$debug;
-    if ($debug) { echo "<p><font color=purple>showSubmenu:active=$active</font></p>"; }
-    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">';
+    if ($debug) { echo "<p><font color=purple>showSubmenu:active=$active</font></p>\n"; }
+    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">'."\n";
 
     $aamenuitems = $aamenu["items"];
     reset ($aamenuitems);
     while (list ($itemshow, $item) = each ($aamenuitems)) {
         if (substr($itemshow,0,6) == "header") 
             echo '<tr><td>&nbsp;</td></tr>
-      <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>
+                  <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>
                   <tr><td class=leftmenu>'.$item.'</td></tr>
-                  <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>';
+                  <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
         else if (substr($itemshow,0,4) == "line")
-            echo '<tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>';
+            echo '<tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
         else {
-            echo '<tr><td width="122" valign="TOP">&nbsp;&nbsp;';
+            echo '<tr><td width="122" valign="TOP">&nbsp;';
             if (!isset ($item["cond"])) $item["cond"] = 1;
             if ($itemshow == $active)
-                echo "<span class=leftmenua>".$item["label"]."</span>";
+                echo "<span class=leftmenua>".$item["label"]."</span>\n";
             else if (($slice_id || $item["show_always"]) && $item["cond"]) {
                 echo '<a href="';
                 if ($item["exact_href"]) echo $item["exact_href"]; 
                 else echo get_aa_url($item["href"]);
-                echo '" class=leftmenuy>'.$item["label"].'</a>';
+                echo '" class=leftmenuy>'.$item["label"]."</a>\n";
             }  
-            else echo "<span class=leftmenun>".$item["label"]."</span>";
-            echo "</td></tr>";
+            else echo "<span class=leftmenun>".$item["label"]."</span>\n";
+            echo "</td></tr>\n";
         }
     }
   
     echo '<tr><td class=leftmenu>&nbsp;</td></tr>
           <tr><td class=leftmenu height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
           <tr><td class=copymsg ><small>'. L_COPYRIGHT .'</small></td></tr>
-          </table>';
+          </table>'."\n";
 }
