@@ -72,10 +72,24 @@ function AuthenticateUsername($username, $password, $flags = 0) {
   }
   
   $cryptpw = crypt($password, substr($row[password], 0, $slength));
+  
   // if the passwords match, return the authenticated userid, otherwise false
-  // echo "$cryptpw == $row[password])\n";
+  
+  // echo "$password (given)<br>";
+  // echo "$cryptpw (given crypted, ", strlen($cryptpw), ")<br>";
+  // echo "$row[password] (stored crypted, ", strlen($row[password]), ")<br>";
+  // echo "$slength (salt length)<br>";  
+  
+  // The next substr looks odd, but $cryptpw is under 
+  // certain circumstances 4 chars longer than $row[password]
+  // (on zulle.pair.com, FreeBSD 2.2.7, PHP 3.0.16, crypt uses MD5 
+  // and salt is 12 chars long).
 
-  return ($cryptpw == $row[password]) ? $id : false ;
+  if ($row[password] == substr($cryptpw,0,strlen($row[password]))) {
+     return $id;
+  } else {
+     return false;
+  }
 }
 
 // returns array(uid, name, description, owner)
@@ -615,6 +629,9 @@ function in_array($needle,$haystack)
 
 /*
 $Log$
+Revision 1.8  2000/08/02 12:30:07  kzajicek
+Added workaround for strange behaviour of crypt() on zulle.pair.com...
+
 Revision 1.7  2000/08/01 15:15:36  kzajicek
 Added support for membership in groups in GetIDPerms()
 
