@@ -220,6 +220,19 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     if( conid != "" )
       document.location=(url + "&group_id=" + escape(conid))
   }
+  /* Calls the parameters wizard. Parameters are as follows:
+  	list = name of the array containing all the needed data for the wizard
+	combo_list = a combobox of which the selected item will be shown in the wizard
+	text_param = the text field where the parameters are placed
+  */
+  function CallParamWizard(list, combo_list, text_param ) {
+  	page = "<?php echo $sess->url(self_base()."param_wizard.php3")?>"
+		+ "&list=" + list + "&combo_list=" + combo_list + "&text_param=" + text_param;
+	combo_list_el = document.f.elements[combo_list];
+	page += "&item=" + combo_list_el.options [combo_list_el.selectedIndex].value;
+    param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
+	param_wizard.focus();
+  }
 //-->
 </script>
 </HEAD>
@@ -251,6 +264,10 @@ echo "
       <td class=tabtxt><b>". L_INPUT_FUNC ."</b></td>
       <td class=tabtxt colspan=3>";
        FrmSelectEasy("input_show_func_f", $INPUT_SHOW_FUNC_TYPES, $input_show_func_f);
+	   ?>
+	   <a href='javascript:CallParamWizard ("INPUT_TYPES","input_show_func_f","input_show_func")'>
+		<?php echo L_PARAM_WIZARD_LINK."</a>";
+
       echo "<div class=tabhlp>". L_INPUT_SHOW_FUNC_F_HLP ."</div>
             <div class=tabtxt><b>". L_CONSTANTS ."</b> ";
         FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
@@ -331,81 +348,54 @@ echo "
   </tr>
   <tr>
    <td>
-    <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
-     <tr>
-      <td class=tabtxt><b>". L_ALIAS1 ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias1\" size=20 maxlength=10 value=\"". safe($alias1) ."\">
-      <div class=tabhlp>". L_ALIAS_HLP ."</div>
-      </td>
-     </tr>  
-     <tr>
-      <td class=tabtxt><b>". L_ALIAS_FUNC ."</b></td>
-      <td class=tabtxt colspan=3>";
-        FrmSelectEasy("alias1_func_f", $ALIAS_FUNC_TYPES, $alias1_func_f);
-      echo "<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
-            <div class=tabtxt><b>". L_PARAMETERS ."</b>
-              <input type=\"Text\" name=\"alias1_func\" size=25 maxlength=250 value=\"". safe($alias1_func) ."\">
-            </div> 
-            <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
-      </td>
-     </tr>  
-     <tr>
-      <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias1_help\" size=50 maxlength=254 value=\"". safe($alias1_help) ."\">
-      <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
-      </td>
-     </tr>
-     <tr><td colspan=4><hr></td></tr>
-  
-     <tr>
-      <td class=tabtxt><b>". L_ALIAS2 ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias2\" size=20 maxlength=10 value=\"". safe($alias2) ."\">
-      <div class=tabhlp>". L_ALIAS_HLP ."</div>
-      </td>
-     </tr>  
-     <tr>
-      <td class=tabtxt><b>". L_ALIAS_FUNC ."</b></td>
-      <td class=tabtxt colspan=3>";
-        FrmSelectEasy("alias2_func_f", $ALIAS_FUNC_TYPES, $alias2_func_f);
-      echo "<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
-            <div class=tabtxt><b>". L_PARAMETERS ."</b>
-              <input type=\"Text\" name=\"alias2_func\" size=25 maxlength=250 value=\"". safe($alias2_func) ."\">
-            </div> 
-            <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
-      </td>
-     </tr>  
-     <tr>
-      <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias2_help\" size=50 maxlength=254 value=\"". safe($alias2_help) ."\">
-      <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
-      </td>
-     </tr>
-     <tr><td colspan=4><hr></td></tr>
+    <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">";
 
+  $myarray = $FIELD_FUNCTIONS[items];
+  reset($myarray);
+  while (list($key,$val) = each($myarray)) 
+  	 $func_types[$key] = $key." - ".$val[name];
+  asort($func_types);
+
+for ($iAlias=1; $iAlias <= 3; ++$iAlias):
+		echo "
      <tr>
-      <td class=tabtxt><b>". L_ALIAS3 ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias3\" size=20 maxlength=10 value=\"". safe($alias3) ."\">
+      <td class=tabtxt><b>";
+	  eval ("echo L_ALIAS$iAlias;");
+	  echo "</b></td>
+      <td class=tabtxt colspan=3>
+	  <input type=\"Text\" name=\"alias$iAlias\" size=20 maxlength=10 value=\"";
+	  eval ("echo safe(\$alias$iAlias);");
+	  echo "\">
       <div class=tabhlp>". L_ALIAS_HLP ."</div>
       </td>
      </tr>  
      <tr>
       <td class=tabtxt><b>". L_ALIAS_FUNC ."</b></td>
       <td class=tabtxt colspan=3>";
-        FrmSelectEasy("alias3_func_f", $ALIAS_FUNC_TYPES, $alias3_func_f);
-      echo "<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
+	  
+        eval ("FrmSelectEasy(\"alias$iAlias"."_func_f\", \$func_types, \$alias$iAlias"."_func_f);");
+	   echo "<a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\", \"alias$iAlias"."_func\")'>".L_PARAM_WIZARD_LINK."</a>
+      		<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
             <div class=tabtxt><b>". L_PARAMETERS ."</b>
-              <input type=\"Text\" name=\"alias3_func\" size=25 maxlength=250 value=\"". safe($alias3_func) ."\">
+              <input type=\"Text\" name=\"alias$iAlias"."_func\" size=25 maxlength=250 value=\"";
+			  	  eval ("echo safe(\$alias$iAlias"."_func);");
+				echo "\">
             </div> 
             <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
       </td>
      </tr>  
      <tr>
       <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias3_help\" size=50 maxlength=254 value=\"". safe($alias3_help) ."\">
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias".$iAlias."_help\" size=50 maxlength=254 value=\"";
+		eval ("echo safe(\$alias$iAlias"."_help);");
+		echo "\">
       <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
       </td>
      </tr>
-     <tr><td colspan=4><hr></td></tr>
+     <tr><td colspan=4><hr></td></tr>";
+endfor;
+
+	echo "
     </table>
    </td>
   </tr>
@@ -423,6 +413,9 @@ echo "
 
 /*
 $Log$
+Revision 1.16  2001/10/24 18:44:11  honzam
+new parameter wizard for function aliases and input type parameters
+
 Revision 1.15  2001/09/27 16:07:39  honzam
 New related stories support, New constant view
 

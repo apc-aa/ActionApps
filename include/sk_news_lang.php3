@@ -364,9 +364,9 @@ define("L_VALIDATE", "Zkontrolova");
 define("L_FIELD_DELETE_OK", "Pole odstránené");
 
 define("L_WARNING_NOT_CHANGE","<p>POZOR: Tieto nastavenia by mal meni iba ten, kto vie èo robí!</p>");
-define("L_INPUT_SHOW_FUNC_F_HLP","Funkcia, ktorá sa pouije pre zobrazenie po¾a vo vstupnom formulári. Pre niektoré typy zobrazenia je moné poui parametre, ktoré nasledujú.");
-define("L_INPUT_SHOW_FUNC_C_HLP","Hodnoty, pouité v prípadì vstupnıch funkcií SELECT alebo RADIO.");
-define("L_INPUT_SHOW_FUNC_HLP","Parameter pouitı pre vstupné funkcie TEXT (<poèet riadkov>) alebo DATE (<mínus roky>'<plus roky>'<od teraz?>).");
+define("L_INPUT_SHOW_FUNC_F_HLP","Funkce, která se pouije pro zobrazení pole ve vstupním formuláøi. Nìkteré pouívají Konstanty, nìkteré pouívají Parametry. Více informací se dozvíte, kdy pouijete Prùvodce s Nápovìdou.");
+define("L_INPUT_SHOW_FUNC_C_HLP","Vyberte Skupinu Konstant nebo Webík.");
+define("L_INPUT_SHOW_FUNC_HLP","Parametry jsou oddìleny dvojteèkou (:) nebo (ve speciálních pøípadech) apostrofem (').");
 define("L_INPUT_DEFAULT_F_HLP","Funkcia, ktorá sa pouije pre generovanie defaultnıch hodnôt po¾a:<BR>Now - aktuálny dátum<BR>User ID - identifikátor prihláseného uivate¾a<BR>Text - text uvedenı v poli Parameter<br>Date - aktuálny dátum plus <Parametr> dní");
 define("L_INPUT_DEFAULT_HLP","Parameter pre defaulné hodnoty Text a Date (viï vyššie)");
 
@@ -444,28 +444,6 @@ define("L_NO_CATEGORY_FIELD","Pole kategórie nie je v tomto module definované.<b
 define("L_PERMIT_ANONYMOUS_POST","Anonymné vkladanie");
 define("L_PERMIT_OFFLINE_FILL","Off-line plnenie");
 define("L_SOME_CATEGORY", "<kategória>");
-
-
-define("L_ALIAS_FUNC_A", "f_a - abstrakt");
-define("L_ALIAS_FUNC_B", "f_b - fulltext odkaz");
-define("L_ALIAS_FUNC_C", "f_c - podmienka");
-define("L_ALIAS_FUNC_D", "f_d - dátum");
-define("L_ALIAS_FUNC_E", "f_e - editácia èlánku");
-define("L_ALIAS_FUNC_F", "f_f - odkaz na plnı text");
-define("L_ALIAS_FUNC_G", "f_g - vıška obrázku");
-define("L_ALIAS_FUNC_H", "f_h - zobrazi");
-define("L_ALIAS_FUNC_I", "f_i - zdroj obrázku");
-define("L_ALIAS_FUNC_L", "f_l - pole s odkazom");
-define("L_ALIAS_FUNC_M", "f_m - e-mail");
-define("L_ALIAS_FUNC_N", "f_n - id");
-define("L_ALIAS_FUNC_Q", "f_q - text (blurb) z jineho slice");
-define("L_ALIAS_FUNC_R", "f_r - rss util");
-define("L_ALIAS_FUNC_S", "f_s - url");
-define("L_ALIAS_FUNC_T", "f_t - plnı text");
-define("L_ALIAS_FUNC_U", "f_u - user function");
-define("L_ALIAS_FUNC_V", "f_v - poh¾ad");
-define("L_ALIAS_FUNC_W", "f_w - šíøka obrázku");
-define("L_ALIAS_FUNC_0", "f_0 - iadna -");
 
 define("L_ALIASES", "Aliasy pre polia v databáze");
 define("L_ALIAS1", "Alias 1"); 
@@ -770,8 +748,16 @@ define ("L_E_IMPORT_COUNT", "Poèet importovanıch šablon: %d.");
 define ("L_E_IMPORT_ADDED", "Pøidány byly:");
 define ("L_E_IMPORT_OVERWRITTEN", "Pøepsány byly:");
 
+require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
+
+define("L_PARAM_WIZARD_LINK", "Prùvodce s nápovìdou");
+
+
 /*
 $Log$
+Revision 1.9  2001/10/24 18:44:10  honzam
+new parameter wizard for function aliases and input type parameters
+
 Revision 1.8  2001/10/08 17:03:35  honzam
 Language constants fixes
 

@@ -361,9 +361,9 @@ define("L_VALIDATE", "Validar");
 define("L_FIELD_DELETE_OK", "Campo borrado con éxito");
 
 define("L_WARNING_NOT_CHANGE","<p>ATENCION: No cambie este parámetro a menos que esté seguro!</p>");
-define("L_INPUT_SHOW_FUNC_F_HLP","Función utilizada para mostrar en formato de entrada. Para algunos tipos Usted puede utilizar parámetros como sigue:");
-define("L_INPUT_SHOW_FUNC_C_HLP","Constantes utilizadas con la función de selección o botón de selección.");
-define("L_INPUT_SHOW_FUNC_HLP","Si se trata de entrada de texto, este es el número de filas.");
+define("L_INPUT_SHOW_FUNC_F_HLP","Function used for displaying in inputform. Some of them use the Constants,some of them use the Parameters. To get some more info, use the Wizard with Help.");
+define("L_INPUT_SHOW_FUNC_C_HLP","Choose a Constant Group or a Slice.");
+define("L_INPUT_SHOW_FUNC_HLP","Parameters are divided by double dot (:) or (in some special cases) by apostrophy (').");
 define("L_INPUT_DEFAULT_F_HLP","Qué función debe utilizarse por defecto:<BR>Ahora - la fecha es la predeterminada<BR>Id del usuario - Id usuario actual<BR>Texto - en parámetros del campo texto es el predeterminado<br>Fecha - por defecto se utiliza la fecha actual más <parametro> número de días");
 define("L_INPUT_DEFAULT_HLP","Si el tipo por defecto es texto, este especifica el texto por defecto<BR>Si el tipo por defecto es fecha, se establece la fecha por defecto como la fecha actual más el número de días que se especifique aquí.");
 
@@ -441,27 +441,6 @@ define("L_NO_CATEGORY_FIELD","No se ha definido campo de categoría para este can
 define("L_PERMIT_ANONYMOUS_POST","Permitir publicación anónima de ítems");
 define("L_PERMIT_OFFLINE_FILL","Permitir alimentación de ítems fuera de línea");
 define("L_SOME_CATEGORY", "<misma categoría>");
-
-define("L_ALIAS_FUNC_A", "f_a - Resumen");
-define("L_ALIAS_FUNC_B", "f_b - Enlace texto-completo");
-define("L_ALIAS_FUNC_C", "f_c - condición");
-define("L_ALIAS_FUNC_D", "f_d - Fecha");
-define("L_ALIAS_FUNC_E", "f_e - Editar ítem");
-define("L_ALIAS_FUNC_F", "f_f - Enlace texto-completo");
-define("L_ALIAS_FUNC_G", "f_g - Altura imagen");
-define("L_ALIAS_FUNC_H", "f_h - Imprimir");
-define("L_ALIAS_FUNC_I", "f_i - Fuente imagen");
-define("L_ALIAS_FUNC_L", "f_l - Campo enlazado");
-define("L_ALIAS_FUNC_M", "f_m - E-mail");
-define("L_ALIAS_FUNC_N", "f_n - Id");
-define("L_ALIAS_FUNC_Q", "f_q - text (blurb) from another slice");
-define("L_ALIAS_FUNC_R", "f_r - rss util");
-define("L_ALIAS_FUNC_S", "f_s - Url");
-define("L_ALIAS_FUNC_T", "f_t - Texto completo");
-define("L_ALIAS_FUNC_U", "f_u - user function");
-define("L_ALIAS_FUNC_V", "f_v - view");
-define("L_ALIAS_FUNC_W", "f_w - Ancho imagen");
-define("L_ALIAS_FUNC_0", "f_0 - Ninguno");
 
 define("L_ALIASES", "Cuando Usted accede a la administración de diseño, Usted utiliza el alias mostrado en este campo");
 define("L_ALIAS1", "Alias 1"); 
@@ -771,8 +750,14 @@ define ("L_E_IMPORT_COUNT", "Count of imported slices: %d.");
 define ("L_E_IMPORT_ADDED", "Added were:");
 define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 
+require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
+
+define("L_PARAM_WIZARD_LINK", "Wizard with help");
 /*
 $Log$
+Revision 1.13  2001/10/24 18:44:10  honzam
+new parameter wizard for function aliases and input type parameters
+
 Revision 1.12  2001/10/08 17:03:35  honzam
 Language constants fixes
 

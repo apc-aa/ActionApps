@@ -289,16 +289,16 @@ class item {
   #    condition_fld - field id - if no content of this field, no link
   #    addition      - additional parameter to <a tag (like target=_blank)
   function f_b($col, $param="") { 
-    $p = ParamExplode($param);
+    list ($link_only, $url_field, $redirect, $txt, $condition, $addition) = ParamExplode($param);
 //p_arr_m(  $this->columns );
 
     # last parameter - condition field
-    $url = $this->getitemurl($p[0], $p[1], $p[2], $this->columns[$p[4]][0][value]);
+    $url = $this->getitemurl($link_only, $url_field, $redirect, $this->columns[$condition][0][value]);
       
-    $txt = ( ( $this->columns[$p[3]] ) ? 
-               $this->columns[$p[3]][0][value] : $p[3] );
+    if ( $this->columns[$txt] ) 
+  		$txt = $this->columns[$txt][0][value];
                
-    return $this->getahref($url,$txt,$p[5]);
+    return $this->getahref($url,$txt,$addition);
   }    
 
   # prints 'blurb' (piece of text) based from another slice, 
@@ -623,6 +623,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.28  2001/10/24 18:44:10  honzam
+new parameter wizard for function aliases and input type parameters
+
 Revision 1.27  2001/10/24 16:46:24  honzam
 fixed bug with fourth parameter to f_c
 

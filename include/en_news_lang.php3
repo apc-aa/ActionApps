@@ -361,9 +361,9 @@ define("L_VALIDATE", "Validate");
 define("L_FIELD_DELETE_OK", "Field delete OK");
 
 define("L_WARNING_NOT_CHANGE","<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
-define("L_INPUT_SHOW_FUNC_F_HLP","Function used for displaying in inputform. For some types you can use parameters, which follows.");
-define("L_INPUT_SHOW_FUNC_C_HLP","Constants used with Select or Radio input function.");
-define("L_INPUT_SHOW_FUNC_HLP","Text Area - number of rows.<br>Text Field - maxlength and size (default is 255 : 60).");
+define("L_INPUT_SHOW_FUNC_F_HLP","Function used for displaying in inputform. Some of them use the Constants,some of them use the Parameters. To get some more info, use the Wizard with Help.");
+define("L_INPUT_SHOW_FUNC_C_HLP","Choose a Constant Group or a Slice.");
+define("L_INPUT_SHOW_FUNC_HLP","Parameters are divided by double dot (:) or (in some special cases) by apostrophy (').");
 define("L_INPUT_DEFAULT_F_HLP","Which function should be used as default:<BR>Now - default is current date<BR>User ID - current user ID<BR>Text - default is text in Parameter field<br>Date - as default is used current date plus <Parameter> number of days");
 define("L_INPUT_DEFAULT_HLP","If default-type is Text, this sets the default text.<BR>If the default-type is Date, this sets the default date to the current date plus the number of days you set here.");
 
@@ -441,27 +441,6 @@ define("L_NO_CATEGORY_FIELD","No category field defined in this slice.<br>Add ca
 define("L_PERMIT_ANONYMOUS_POST","Allow anonymous posting of items");
 define("L_PERMIT_OFFLINE_FILL","Allow off-line item filling");
 define("L_SOME_CATEGORY", "<some category>");
-
-define("L_ALIAS_FUNC_A", "f_a - abstract");
-define("L_ALIAS_FUNC_B", "f_b - fulltext link");
-define("L_ALIAS_FUNC_C", "f_c - condition");
-define("L_ALIAS_FUNC_D", "f_d - date");
-define("L_ALIAS_FUNC_E", "f_e - edit item");
-define("L_ALIAS_FUNC_F", "f_f - fulltext link");
-define("L_ALIAS_FUNC_G", "f_g - image height");
-define("L_ALIAS_FUNC_H", "f_h - print");
-define("L_ALIAS_FUNC_I", "f_i - image src");
-define("L_ALIAS_FUNC_L", "f_l - linked field");
-define("L_ALIAS_FUNC_M", "f_m - e-mail");
-define("L_ALIAS_FUNC_N", "f_n - id");
-define("L_ALIAS_FUNC_Q", "f_q - text (blurb) from another slice");
-define("L_ALIAS_FUNC_R", "f_r - rss util");
-define("L_ALIAS_FUNC_S", "f_s - url");
-define("L_ALIAS_FUNC_T", "f_t - fulltext");
-define("L_ALIAS_FUNC_U", "f_u - user function");
-define("L_ALIAS_FUNC_V", "f_v - show view");
-define("L_ALIAS_FUNC_W", "f_w - image width");
-define("L_ALIAS_FUNC_0", "f_0 - none");
 
 define("L_ALIASES", "When you go to Admin-Design, you use an Alias to show this field");
 define("L_ALIAS1", "Alias 1"); 
@@ -771,6 +750,9 @@ define ("L_E_IMPORT_COUNT", "Count of imported slices: %d.");
 define ("L_E_IMPORT_ADDED", "Added were:");
 define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 
+require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
+
+define("L_PARAM_WIZARD_LINK", "Wizard with help");
 
 // ------------------------- New ----------------------------
 // not appended to other lang files
@@ -779,6 +761,9 @@ define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 
 /*
 $Log$
+Revision 1.52  2001/10/24 18:44:10  honzam
+new parameter wizard for function aliases and input type parameters
+
 Revision 1.51  2001/10/08 17:03:35  honzam
 Language constants fixes
 

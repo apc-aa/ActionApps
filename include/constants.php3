@@ -115,27 +115,6 @@ $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "num" => L_INPUT_INSERT_NUM, 
                              "nul" => L_INPUT_INSERT_NUL*/);
                              
-$ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
-                            "f_b" => L_ALIAS_FUNC_B,
-                            "f_c" => L_ALIAS_FUNC_C,
-                            "f_d" => L_ALIAS_FUNC_D,
-                            "f_e" => L_ALIAS_FUNC_E,
-                            "f_f" => L_ALIAS_FUNC_F,
-                            "f_g" => L_ALIAS_FUNC_G,
-                            "f_h" => L_ALIAS_FUNC_H,
-                            "f_i" => L_ALIAS_FUNC_I,
-                            "f_l" => L_ALIAS_FUNC_L,
-                            "f_m" => L_ALIAS_FUNC_M,
-                            "f_n" => L_ALIAS_FUNC_N,
-			    "f_q" => L_ALIAS_FUNC_Q,
-			    "f_r" => L_ALIAS_FUNC_R,
-                            "f_s" => L_ALIAS_FUNC_S,
-                            "f_t" => L_ALIAS_FUNC_T,
-                            "f_v" => L_ALIAS_FUNC_V,
-                            "f_u" => L_ALIAS_FUNC_U,
-                            "f_w" => L_ALIAS_FUNC_W,
-                            "f_0" => L_ALIAS_FUNC_0);
-                            
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "1"   => LOG_EVENTS_,
                       "2"   => LOG_EVENTS_,
@@ -394,8 +373,13 @@ define ("FEEDMAP_FLAG_EXTMAP", 3);
                       
 define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in slice table
 
+require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
+
 /*
 $Log$
+Revision 1.19  2001/10/24 18:44:10  honzam
+new parameter wizard for function aliases and input type parameters
+
 Revision 1.18  2001/10/08 17:03:35  honzam
 Language constants fixes
 
