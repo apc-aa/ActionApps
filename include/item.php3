@@ -455,7 +455,7 @@ class item {
   function i_s($col, $param="") {
     if (! isField($col))
         huhe("Warning: i_s: $col is not a field, don't wrap it in { } ");
-    $f = $this->columns[$col][0][value];
+    $f = $this->columns[$col][0]['value'];
     if (! $f) { return ""; }  # No picture, common don't warn (expanding inside switch)
     # Could speed up a little with a test for URLs in uploads directory here
 #PHP>4.0.5 supports URLs so no need to skip URLs
@@ -635,14 +635,14 @@ class item {
     }
 
 
-// This function used to do a UTF8 encode, but since characters 
-// are coming out of a DB which I believe is iso-8859-1, they shouldn't 
-// be utf8 encoded. Unfortunately the internationalisation of AA isn't 
-// documented anywhere and noone responded to email about it. So this is 
+// This function used to do a UTF8 encode, but since characters
+// are coming out of a DB which I believe is iso-8859-1, they shouldn't
+// be utf8 encoded. Unfortunately the internationalisation of AA isn't
+// documented anywhere and noone responded to email about it. So this is
 // just a guess. If anyone who knows something about this is looking
-// at this comment, then you can replace this code with something 
+// at this comment, then you can replace this code with something
 // that intelligently looks at the database encoding before converting to
-// iso-8859-1. OR possibly better, output the encoding in the head of the RSS 
+// iso-8859-1. OR possibly better, output the encoding in the head of the RSS
 // via  a new alias - mitra@mitra.biz 30Oct03
 function RSS_restrict($txt, $len) {
 #    return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
@@ -1021,7 +1021,7 @@ function RSS_restrict($txt, $len) {
     return Links_GlobalCatPriority($this->getval($col));
   }
 
-  /** Link module - print current paht (or list of paths to categories specified
+  /** Link module - print current path (or list of paths to categories specified
    *       in $col (when <categs delimeter> is present)
    *  @param <start_level>:<format>:<delimeter>
    *         <start_level> - display path from level ... (0 is root)

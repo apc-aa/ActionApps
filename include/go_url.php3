@@ -43,7 +43,7 @@ function go_url($url, $add_param="") {
     if( $add_param != "" )
         $url = con_url( $url, rawurlencode($add_param));
     // special parameter for Netscape to reload page
-    $netscape = (rXn=="") ? "rXn=1" : "rXn=".++$rXn;
+    $netscape = ($rXn=="") ? "rXn=1" : "rXn=".++$rXn;
     header("Status: 302 Moved Temporarily");
     header("Location: ". con_url($url,$netscape));
     exit;

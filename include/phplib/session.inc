@@ -7,7 +7,7 @@
  *
  * $Id$
  *
- */ 
+ */
 
 class Session {
   var $classname = "Session";         ## Needed for object serialization.
@@ -87,9 +87,9 @@ class Session {
   function get_id($id = "") {
     global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $HTTP_POST_VARS, $QUERY_STRING;
     $newid=true;
- 
+
     $this->name = $this->cookiename==""?$this->classname:$this->cookiename;
- 
+
     if ( "" == $id ) {
       $newid=false;
       switch ($this->mode) {
@@ -105,12 +105,12 @@ class Session {
         break;
       }
     }
- 
+
     if ( "" == $id ) {
       $newid=true;
       $id = $this->that->ac_newid(md5(uniqid($this->magic)), $this->name);
     }
- 
+
     switch ($this->mode) {
       case "cookie":
         if ( $newid && ( 0 == $this->lifetime ) ) {
@@ -131,28 +131,28 @@ class Session {
         ;
       break;
     }
- 
+
     $this->id = $id;
   }
 
   ## put_id():
-  ## 
+  ##
   ## Stop using the current session id (unset cookie, ...) and
   ## abandon a session.
   function put_id() {
     global $HTTP_COOKIE_VARS;
- 
+
     $this->name = $this->cookiename==""?$this->classname:$this->cookiename;
- 
+
     switch ($this->mode) {
       case "inline":
         die("This has not been coded yet.");
       break;
- 
+
       case "get":
         die("This has not been coded yet.");
       break;
- 
+
       default:
             SetCookie($this->name, "", 0, "/", $this->cookie_domain);
             $HTTP_COOKIE_VARS[$this->name] = "";
@@ -163,7 +163,7 @@ class Session {
   ## delete():
   ##
   ## Delete the current session record and put the session id.
-  
+
   function delete() {
       $this->that->ac_delete($this->id, $this->name);
       $this->put_id();
@@ -171,18 +171,18 @@ class Session {
 
   ## url($url):
   ##
-  ## Helper function: returns $url concatenated with the current 
+  ## Helper function: returns $url concatenated with the current
   ## session $id.
-   
+
   function url($url){
     $url=ereg_replace("[&?]+$", "", $url);
- 
+
     switch ($this->mode) {
       case "get":
- 
+
         $url .= ( strpos($url, "?") != false ?  "&" : "?" ).
                 urlencode($this->name)."=".$this->id;
- 
+
       break;
       default:
         ;
@@ -205,7 +205,7 @@ class Session {
   function pself_url() {
     print $this->self_url();
   }
-  
+
   function hidden_session()
   {
     printf("<input type=\"hidden\" name=\"%s\" value=\"%s\">\n", $this->name, $this->id);
@@ -316,7 +316,7 @@ class Session {
     $this->release_lock();
     if(!$r) $this->that->ac_halt("Session: freeze() failed.");
   }
-  
+
   ## thaw:
   ##
   ## Reload frozen variables from the database and microwave them.
@@ -370,7 +370,7 @@ class Session {
   ## All this is support infrastructure for the start() method
   ##
 
-  function set_container(){   
+  function set_container(){
     $name = $this->that_class;
     $this->that = new $name;
 
@@ -381,10 +381,10 @@ class Session {
     $this->name = $this->cookiename==""?$this->classname:$this->cookiename;
   }
 
-  function release_token(){ 
+  function release_token(){
     global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $HTTP_HOST, $HTTPS;
     if (   isset($this->fallback_mode)
-    && ( "get" == $this->fallback_mode ) 
+    && ( "get" == $this->fallback_mode )
     && ( "cookie" == $this->mode )
     && ( ! isset($HTTP_COOKIE_VARS[$this->name]) ) ) {
       if ( isset($HTTP_GET_VARS[$this->name]) ) {
@@ -403,7 +403,7 @@ class Session {
         exit;
       }
     }
-  }   
+  }
 
   function put_headers() {
     # Allowing a limited amount of caching, as suggested by
@@ -411,7 +411,7 @@ class Session {
     #
     # Note that in HTTP/1.1 the Cache-Control headers override the Expires
     # headers and HTTP/1.0 ignores headers it does not recognize (e.g,
-    # Cache-Control). Mulitple Cache-Control directives are split into 
+    # Cache-Control). Mulitple Cache-Control directives are split into
     # mulitple headers to better support MSIE 4.x.
     #
     # Added pre- and post-check for MSIE 5.x as suggested by R.C.Winters,
@@ -420,7 +420,7 @@ class Session {
     switch ($this->allowcache) {
 
       case "passive":
-        $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";                             
+        $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
         header("Last-Modified: " . $mod_gmt);
         # possibly ie5 needs the pre-check line. This needs testing.
         header("Cache-Control: post-check=0, pre-check=0");
@@ -428,13 +428,13 @@ class Session {
 
       case "public":
         $exp_gmt = gmdate("D, d M Y H:i:s", time() + $this->allowcache_expire * 60) . " GMT";
-        $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";                             
+        $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
         header("Expires: " . $exp_gmt);
         header("Last-Modified: " . $mod_gmt);
         header("Cache-Control: public");
         header("Cache-Control: max-age=" . $this->allowcache_expire * 60);
       break;
- 
+
       case "private":
         $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -472,7 +472,7 @@ class Session {
 
   function start($sid = "") {
     $this->set_container();
-    $this->set_tokenname(); 
+    $this->set_tokenname();
     $this->release_token($sid);
     $this->put_headers();
     $this->get_id($sid);
