@@ -37,6 +37,12 @@ H1 {
   color: #FFFFFF;
 }
 
+H2 {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: small;
+  color: 0;
+}	
+
 .navbar {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
