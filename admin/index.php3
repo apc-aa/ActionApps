@@ -515,8 +515,7 @@ if( count( $item_ids ) > 0 ) {
     $st->pnavbar();
 }  
 else 
-  echo "<tr><td><div class=tabtxt>". L_NO_ITEM ."</div></td></td></table>";
-
+  echo "<tr><td><div class=tabtxt>". L_NO_ITEM_FOUND ."</div></td></td></table>";
 
 ######## add by setu 2002-0206 #######
 ### Action for Marked item ###
@@ -630,6 +629,9 @@ echo "  </body>
 /*
 
 $Log$
+Revision 1.35  2002/03/06 12:42:58  honzam
+bugfix
+
 Revision 1.34  2002/02/12 10:11:47  mitraearth
 FILE: apc-aa/admin/index.php3
 Changed by: Setu

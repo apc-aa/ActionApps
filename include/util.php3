@@ -326,6 +326,7 @@ function huhw($msg) {
 
 #Prints all values from array
 function PrintArray($a){
+ if (is_array ($a))
  while ( list( $key, $val ) = each( $a ) )
    echo $val;
 }
@@ -788,6 +789,9 @@ function GetProfileProperty($property, $id=0) {
 
 /*
 $Log$
+Revision 1.31  2002/03/06 12:42:58  honzam
+bugfix
+
 Revision 1.30  2002/02/05 21:52:33  honzam
 fixed bug of not working param_wizard on some domains
 
