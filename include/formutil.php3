@@ -124,8 +124,8 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
   echo "</td>\n";
   if ( SINGLE_COLUMN_FORM )
     echo "</tr><tr align=left>";
-  echo "<td>$htmlrow<input type=\"$type\" name=\"$name\" size=$size
-          maxlength=$maxsize value=\"$val\"".getTriggers("input",$name).">";
+  echo "<td>$htmlrow<input type=\"$type\" name=\"$name\" size=$size "
+          ."maxlength=$maxsize value=\"$val\"".getTriggers("input",$name).">";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo "</td></tr>\n";
@@ -691,27 +691,59 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
   echo "</td></tr>\n";
 }  
 
+/// Used in FrmInputMultiChBox
+function OneChBox (&$k, &$v, &$name, &$selected) {
+    echo "<nobr><input type='checkbox' name='$name'
+         value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
+    if ($selected[$k])
+        echo " checked";
+    echo ">".htmlspecialchars($v)."</nobr>";
+}
+
 /**
 * Prints html tag <input type="radio" .. to 2-column table
 * for use within <form> and <table> tag
 */
 function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
-                            $hlp="", $morehlp="") {
+                            $hlp="", $morehlp="", $ncols=0, $move_right=true) {
     $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
     
     echo "<tr align=left><td class=tabtxt><b>$txt</b>";
     Needed($needed);
     echo "</td>\n <td>";
+    
     if (is_array ($arr)) {
-        reset($arr);
-        while(list($k, $v) = each($arr)) {
-            echo "<nobr><input type='checkbox' name='$name'
-                 value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
-            if ($selected[$k])
-                echo " checked";
-            echo ">".htmlspecialchars($v)."</nobr>";
+        if (! $ncols) {
+            reset($arr);
+            while(list($k, $v) = each($arr)) 
+                OneChBox ($k, $v, $name, $selected);
+        } else {
+            for ($i = 0, reset ($arr); list ($k,$v) = each ($arr); $i ++)
+                $matrix [$i % $ncols][$i / $ncols] = array ($k=>$v);               
+    
+            $nrows = ceil (count ($arr) / $ncols);
+            echo '<table border="0" cellspacing="0">';
+            for ($irow = 0; $irow < $nrows; $irow ++) {
+                echo '<tr>';
+                for ($icol = 0; $icol < $ncols; $icol ++) {
+                    echo '<td>';
+                    if ($move_right) 
+                         $arr = $matrix [$icol][$irow];
+                    else $arr = $matrix [$irow][$icol];
+                    if (!is_array ($arr))
+                        echo "&nbsp;";
+                    else {
+                        reset ($arr);
+                        OneChBox (key($arr), current($arr), $name, $selected);
+                    }
+                    echo '</td>';
+                }
+                echo '</tr>';
+            }            
+            echo '</table>';
         }
     }
+                
     PrintMoreHelp($morehlp);
     PrintHelp($hlp);
     echo "</td></tr>\n";
@@ -785,6 +817,22 @@ function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
   }
   $retval .= "</select>\n";
   return $retval;
+}  
+
+function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
+  $name=safe($name); // safe($add) - NO! - do not safe it
+
+  reset($arr);
+  while(list($k, $v) = each($arr)) { 
+    $retval .= "<input type=radio name=\"$name\" value=\"". htmlspecialchars($k)."\"";
+    if (!$selected) $selected = $k;
+    if ((string)$selected == (string)$k) 
+        $retval .= " selected";
+    $retval .= "> ". htmlspecialchars( is_array($v) ? $v['name'] : $v );
+    if ($new_line) $retval .= "<br>";
+    $retval .= "\n";
+  }
+  echo $retval;
 }  
 
 function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $morehelp="",  $rows=4, $cols=60) {
@@ -937,6 +985,13 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
                        return false;
                      }
                      return true;
+                     
+    case "e-unique": // validate email ...
+                     if( !EReg("^.+@.+\..+",Chop($variable)))
+                       { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
+                         return false;
+                       }    
+                     // ... and proceed to "unique"
                      
     case "unique":
     
