@@ -255,7 +255,7 @@ function RealyDelete() {
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align=center>
  <tr><td class=tabtit><b>&nbsp;<?php echo L_USERS?></b></td></tr>
  <tr><td>
-   <form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+   <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
             <td>&nbsp;</td>
@@ -268,7 +268,7 @@ function RealyDelete() {
   </td>
  </tr>
  <tr>
-  <td><form enctype="multipart/form-data" name=f2 method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+  <td><form name=f2 method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
             <td class=tabtxt><b><?php echo L_USER ?></b></td>
@@ -312,7 +312,7 @@ do {
 } while(false);
 
 ?>
-<form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;
 <?php
@@ -392,6 +392,9 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.9  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.8  2001/02/26 17:26:08  honzam
 color profiles
 

@@ -32,6 +32,9 @@ http://www.apc.org/
   
 /*
 $Log$
+Revision 1.3  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.2  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 
@@ -58,7 +61,7 @@ config.inc
 
 */
 ?>
-<form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
  <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
   <tr><td class=tabtit><b>&nbsp;<?php echo L_GROUPS?></b></td></tr>
   <tr><td>

@@ -92,7 +92,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;
 ?>
-<form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_NEWUSER_HDR?></b>
 </td>
@@ -118,6 +118,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.6  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.5  2001/03/20 15:27:03  honzam
 Changes due to "slice delete" feature
 

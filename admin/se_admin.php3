@@ -115,7 +115,7 @@ function Defaults() {
   PrintArray($err);
   echo $Msg;
 ?>
-<form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_ADMIN_HDR?></b>
 </td>
@@ -144,6 +144,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.9  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.8  2001/03/30 11:52:53  honzam
 reverse displaying HTML/Plain text bug and others smalll bugs fixed
 

@@ -442,6 +442,7 @@ define("L_PERMIT_OFFLINE_FILL","Allow off-line item filling");
 define("L_SOME_CATEGORY", "<some category>");
 
 define("L_ALIAS_FUNC_A", "abstract");
+define("L_ALIAS_FUNC_B", "fulltext link");
 define("L_ALIAS_FUNC_C", "condition");
 define("L_ALIAS_FUNC_D", "date");
 define("L_ALIAS_FUNC_E", "edit item");
@@ -512,6 +513,9 @@ define("L_CANT_CREATE_IMG_DIR","Can't create directory for image uploads");
 
 /*
 $Log$
+Revision 1.38  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.37  2001/04/17 21:32:08  honzam
 New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
 

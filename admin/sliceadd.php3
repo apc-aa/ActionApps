@@ -55,7 +55,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 ?>
 
 <center>
-<form enctype="multipart/form-data" method=post action="<?php echo $sess->url("slicedit.php3") ?>">
+<form method=post action="<?php echo $sess->url("slicedit.php3") ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_SELECT_APP?></b>
 </td>
@@ -107,6 +107,9 @@ if( isset( $templates ) AND is_array( $templates ) AND
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
 /*
 $Log$
+Revision 1.5  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.4  2001/02/26 17:26:08  honzam
 color profiles
 

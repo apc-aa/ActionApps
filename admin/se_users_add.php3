@@ -44,7 +44,7 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
 }
 
 ?>
-<form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_PERM_NEW ?></b></td></tr>
 <tr><td>
@@ -119,6 +119,9 @@ if ($GrpSrch || $UsrSrch) {
 }
 /*
 $Log$
+Revision 1.6  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.5  2001/02/26 17:26:08  honzam
 color profiles
 

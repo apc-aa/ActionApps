@@ -119,7 +119,7 @@ function UpdateImportExport(slice_id)
   PrintArray($err);
   echo $Msg;
 ?>
-<form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_IMP_EXPORT ?></b></td></tr>
 <tr><td>
@@ -210,6 +210,9 @@ function UpdateImportExport(slice_id)
 <?php
 /*
 $Log$
+Revision 1.7  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.6  2001/03/20 15:28:53  honzam
 Fixed "terminate feeding after canceling permissions" bug + changes due to "slice delete" feature
 

@@ -141,9 +141,9 @@ function FeedItemTo($item_id, $destination, $fields, $approved, $tocategory=0,
                                         # insert, invalidatecache, not feed
   
   # update relation table - stores where is what fed
-  $SQL = "INSERT INTO relation ( destination_id, source_id,   flag )
-               VALUES ( '$p_id', '$p_item_id', '". REL_FLAG_FEED ."' )";
-
+  $SQL = "INSERT INTO relation SET destination_id='$p_id',
+                                   source_id='$p_item_id',
+                                   flag = '". REL_FLAG_FEED ."'";  // feed bit
   $db->query($SQL);
 
   return true;
@@ -256,6 +256,9 @@ function DeleteItem($db, $id) {
 
 /*
 $Log$
+Revision 1.10  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.9  2001/04/17 21:32:08  honzam
 New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
 

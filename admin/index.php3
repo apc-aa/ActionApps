@@ -381,7 +381,7 @@ echo "<table border=0 cellspacing=0 class=login width=460>" .
      "<TD align=center class=tablename width=436> $table_name </TD></TR>".
  "</table>";
 
-echo '<form name="itemsform" enctype="multipart/form-data" method=post action="'. $sess->url($PHP_SELF) .'">'.
+echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
 '<table width="460" border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
 
                          
@@ -460,6 +460,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.20  2001/05/10 10:01:42  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.19  2001/03/20 15:31:11  honzam
 Feeding support, Fixed bug in preview selection, Item counting for each bin
 

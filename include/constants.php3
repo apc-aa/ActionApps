@@ -49,6 +49,7 @@ $DEFAULT_SEARCH_IN = array( headline=>L_SRCH_HEADLINE, abstract=>L_SRCH_ABSTRACT
 # ---  
 
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
+                         "es_news_lang.php3" => "es_news_lang.php3",
                          "cz_news_lang.php3" => "cz_news_lang.php3");
   
 $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
@@ -109,6 +110,7 @@ $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "nul" => L_INPUT_INSERT_NUL*/);
                              
 $ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
+                            "f_b" => L_ALIAS_FUNC_B,
                             "f_c" => L_ALIAS_FUNC_C,
                             "f_d" => L_ALIAS_FUNC_D,
                             "f_e" => L_ALIAS_FUNC_E,
@@ -151,16 +153,176 @@ $INPUT_FEED_MODES = array ( STATE_FEEDABLE => L_STATE_FEEDABLE,
                             STATE_UNFEEDABLE => L_STATE_UNFEEDABLE,
                             STATE_FEEDNOCHANGE => L_STATE_FEEDNOCHANGE);
 
+# se_views.php3 - view field definition
+$VIEW_FIELDS["name"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["before"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["even"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["odd"]             = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["after"]           = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["group_title"]     = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["type"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"seltype" );
+$VIEW_FIELDS["parameter"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selgrp" );
+$VIEW_FIELDS["img1"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["img2"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["img3"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["img4"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["order1"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["order2"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["group_by1"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["group_by2"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["selected_item"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["cond1field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["cond2field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["cond3field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["cond1op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"op" );
+$VIEW_FIELDS["cond2op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"op" );
+$VIEW_FIELDS["cond3op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"op" );
+$VIEW_FIELDS["cond1cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["cond2cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["cond3cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["listlen"]         = array( "validate"=>"number", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["flag"]            = array( "validate"=>"number", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+$VIEW_FIELDS["scroller"]        = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
+$VIEW_FIELDS["even_odd_differ"] = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
+$VIEW_FIELDS["o1_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
+$VIEW_FIELDS["o2_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
+$VIEW_FIELDS["g1_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
+$VIEW_FIELDS["g2_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
+
 # se_views.php3 - view types
-$VIEW_TYPES = array ( 'list'   => L_COMPACT_VIEW,
-                      'full'   => L_FULLTEXT_VIEW,
-                      'digest' => L_DIGEST_VIEW,
-                      'discus' => L_DISCUSSION_VIEW,
-                      'seetoo' => L_RELATED_VIEW,
-                      'static' => L_STATIC_PAGE);
+$VIEW_TYPES['list']  = array( "name" => L_COMPACT_VIEW,
+                              "before" => L_V_BEFORE ,
+                              "even" => L_V_EVEN ,
+                              "odd" => L_V_ODD ,
+                              "after" => L_V_AFTER ,
+                              "group_title" => L_V_GROUP ,
+                              "type" => L_V_TYPE ,
+#                              "parameter" => L_V_PARAMETER ,
+#                              "img1" => L_V_IMG1 ,
+#                              "img2" => L_V_IMG2 ,
+#                              "img3" => L_V_IMG3 ,
+#                              "img4" => L_V_IMG4 ,
+                              "order1" => L_V_ORDER1 ,
+                              "order2" => L_V_ORDER2 ,
+                              "o1_direction" => L_V_ORDER1DIR ,
+                              "o2_direction" => L_V_ORDER2DIR ,
+                              "group_by1" => L_V_GROUP_BY1 ,
+                              "group_by2" => L_V_GROUP_BY2 ,
+                              "g1_direction" => L_V_GROUP1DIR ,
+                              "g2_direction" => L_V_GROUP2DIR ,
+#                              "selected_item" => L_V_SELECTED ,
+                              "cond1field" => L_V_COND1FLD ,
+                              "cond2field" => L_V_COND2FLD ,
+                              "cond3field" => L_V_COND3FLD ,
+                              "cond1op" => L_V_COND1OP ,
+                              "cond2op" => L_V_COND2OP ,
+                              "cond3op" => L_V_COND3OP ,
+                              "cond1cond" => L_V_COND1COND ,
+                              "cond2cond" => L_V_COND2COND ,
+                              "cond3cond" => L_V_COND3COND ,
+                              "listlen" => L_V_LISTLEN ,
+#                              "flag" => L_V_FLAG ,
+                              "scroller" => L_V_SCROLLER ,
+                              "even_odd_differ" => L_V_EVENODDDIF);
+
+$VIEW_TYPES['full'] = array( 'name' => L_FULLTEXT_VIEW,
+                              "before" => L_V_BEFORE ,
+                              "even" => L_V_EVEN ,
+                              "after" => L_V_AFTER ,
+                              "type" => L_V_TYPE ,
+                              "cond1field" => L_V_COND1FLD ,
+                              "cond2field" => L_V_COND2FLD ,
+                              "cond3field" => L_V_COND3FLD ,
+                              "cond1op" => L_V_COND1OP ,
+                              "cond2op" => L_V_COND2OP ,
+                              "cond3op" => L_V_COND3OP ,
+                              "cond1cond" => L_V_COND1COND ,
+                              "cond2cond" => L_V_COND2COND ,
+                              "cond3cond" => L_V_COND3COND);
+
+$VIEW_TYPES['digest'] = array( 'name' => L_DIGEST_VIEW,
+                              "before" => L_V_BEFORE ,
+                              "even" => L_V_EVEN ,
+                              "after" => L_V_AFTER);
+
+$VIEW_TYPES['discus'] = array( 'name' => L_DISCUSSION_VIEW,
+                              "before" => L_V_BEFORE ,
+                              "even" => L_V_EVEN ,
+                              "odd" => L_V_ODD ,
+                              "after" => L_V_AFTER ,
+                              "selected_item" => L_V_SELECTED ,
+                              "type" => L_V_TYPE ,
+                              "img1" => L_V_IMG1 ,
+                              "img2" => L_V_IMG2 ,
+                              "img3" => L_V_IMG3 ,
+                              "img4" => L_V_IMG4 ,
+                              "even_odd_differ" => L_V_EVENODDDIF ,
+                              "o1_direction" => L_V_ORDER1DIR);
+
+$VIEW_TYPES['seetoo'] = array( 'name' => L_RELATED_VIEW,
+                              "before" => L_V_BEFORE ,
+                              "even" => L_V_EVEN ,
+                              "odd" => L_V_ODD ,
+                              "after" => L_V_AFTER ,
+                              "type" => L_V_TYPE ,
+                              "order1" => L_V_ORDER1 ,
+                              "order2" => L_V_ORDER2 ,
+                              "selected_item" => L_V_SELECTED ,
+                              "listlen" => L_V_LISTLEN ,
+                              "even_odd_differ" => L_V_EVENODDDIF ,
+                              "o1_direction" => L_V_ORDER1DIR ,
+                              "o2_direction" => L_V_ORDER2DIR);
+
+$VIEW_TYPES['digest'] = array( 'name' => L_DIGEST_VIEW,
+                              "before" => L_V_BEFORE ,
+                              "even" => L_V_ITEM ,
+                              "after" => L_V_AFTER);
+
+$VIEW_TYPES['const'] = array( 'name' => L_CONSTANT_VIEW,
+                              "before" => L_V_BEFORE ,
+                              "even" => L_V_CONSTANNT ,
+                              "odd" => L_V_ODD ,
+                              "after" => L_V_AFTER ,
+                              "selected_item" => L_V_SELECTED ,
+                              "parameter" => L_V_PARAMETER ,
+                              "order1" => L_V_ORDER1 ,
+                              "listlen" => L_V_LISTLEN ,
+                              "even_odd_differ" => L_V_EVENODDDIF ,
+                              "o1_direction" => L_V_ORDER1DIR);
+
+$VIEW_TYPES['rss'] = array( 'name' => L_RSS_VIEW,
+                              "before" => L_V_BEFORE ,
+                              "even" => L_V_EVEN ,
+                              "after" => L_V_AFTER ,
+                              "order1" => L_V_ORDER1 ,
+                              "order2" => L_V_ORDER2 ,
+                              "cond1field" => L_V_COND1FLD ,
+                              "cond2field" => L_V_COND2FLD ,
+                              "cond3field" => L_V_COND3FLD ,
+                              "cond1op" => L_V_COND1OP ,
+                              "cond2op" => L_V_COND2OP ,
+                              "cond3op" => L_V_COND3OP ,
+                              "cond1cond" => L_V_COND1COND ,
+                              "cond2cond" => L_V_COND2COND ,
+                              "cond3cond" => L_V_COND3COND ,
+                              "listlen" => L_V_LISTLEN ,
+                              "o1_direction" => L_V_ORDER1DIR ,
+                              "o2_direction" => L_V_ORDER2DIR);
+
+$VIEW_TYPES['static'] = array( 'name' => L_STATIC_PAGE, 
+                              "even" => L_V_EVEN );
+
+$VIEW_TYPES_TYPES['list'] = array ( '1'=>'search', '2'=>'parameter', '3'=>'statistic', '4'=>'all in thread', '5'=>'related', '6'=>'keyword related' );
+$VIEW_TYPES_TYPES['full'] = array ( '11'=>'newest', '12'=>'newest with condition', '13'=>'oldest with condition', '14'=>'id', '15'=>'parameter');
+$VIEW_TYPES_TYPES['discus'] = array ( '21'=>'timeorder', '22'=>'reverse timeorder', '23'=>'thread' );
+$VIEW_TYPES_TYPES['seetoo'] = array ( '31'=>'related', '32'=>'keyword with OR', '33'=>'keyword with AND' );
+                      
                       
 /*
 $Log$
+Revision 1.10  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.9  2001/04/17 21:32:08  honzam
 New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
 

@@ -298,7 +298,7 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
                      return false;
                    }
                    return true;
-    case "number": if( !EReg("^[0-9]+$",Chop($variable)) || ($variable > 32767))
+    case "number": if( !EReg("^[0-9]+$",Chop($variable)) )
                    { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
@@ -338,6 +338,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.14  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.13  2001/04/04 18:27:44  honzam
 Morehelp question mart in itemedit opens new window.
 

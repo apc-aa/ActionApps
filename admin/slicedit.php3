@@ -287,7 +287,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;
 ?>
-<form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_SLICES_HDR?></b>
 </td>
@@ -334,6 +334,9 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.19  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.18  2001/03/20 16:01:13  honzam
 HTML / Plain text selection implemented
 Standardized content management for items - filler, itemedit, offline, feeding

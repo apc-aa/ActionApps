@@ -95,6 +95,27 @@ class item {
     $this->bottom = $bottom;
   }
   
+  # get item url - take in mind: item_id, external links and redirection
+  function getitemurl($extern, $extern_url, $redirect) {
+    if( $extern AND $this->columns[$extern][0][value] )       # link_only
+      return ($this->columns[$extern_url][0][value] ? 
+                $this->columns[$extern_url][0][value] :
+                NO_OUTER_LINK_URL);
+    if( $redirect )      # redirecting to another page 
+      return con_url( $redirect, "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
+     else 
+      return con_url( $this->clean_url,          # show on this page
+                      "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
+  }    
+
+  # get link from url and text
+  function getahref($url, $txt) { 
+    if( $url AND $txt )
+      return '<a href="'. htmlspecialchars($url) .'">'. 
+                          htmlspecialchars($txt).'</a>';
+    return htmlspecialchars($txt); 
+  }
+
   # --------------- functions called for alias substitution -------------------
 
   # null function
@@ -171,15 +192,28 @@ class item {
   #             - this page should contain SSI include ../slice.php3 too
   function f_f($col, $param="") { 
     $p = ParamExplode($param);
-    if( $p[0] AND $this->columns[ $p[0]][0][value] )       # link_only
-      return ($this->columns[$col][0][value] ? 
-                $this->columns[$col][0][value] :
-                NO_OUTER_LINK_URL);
-    if( $p[1] )      # redirecting to another page 
-      return con_url( $p[1], "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
-     else 
-      return con_url( $this->clean_url,          # show on this page
-                      "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
+    return $this->getitemurl($p[0], $col, $p[1]);
+  }    
+
+  # prints text with link to fulltext (hedline url)
+  # param: link_only:url_field:redirect:txt:condition_fld
+  #    link_only     - field id (like "link_only.......")
+  #    url_field     - field id of external url for link_only 
+  #                  - (like hl_href.........)
+  #    redirect      - url of another page which shows the content of item 
+  #                  - this page should contain SSI include ../slice.php3 too
+  #    txt           - if txt is field_id content is shown as link, else txt
+  #    condition_fld - field id - if no content of this field, no link
+  function f_b($col, $param="") { 
+    $p = ParamExplode($param);
+    if( $this->columns[$p[4]][0][value] )   # condition field filled
+//p_arr_m(  $this->columns );
+      $url = $this->getitemurl($p[0], $p[1], $p[2]);
+      
+    $txt = ( ( $this->columns[$p[3]] ) ? 
+               $this->columns[$p[3]][0][value] : $p[3] );
+               
+    return $this->getahref($url,$txt);
   }    
 
   # converts text to html or escape html (due to html flag)
@@ -198,10 +232,8 @@ class item {
   # prints $col as link, if field_id in $param is defined, else prints just $col
   # param: field_id of possible link (like "source_href.....")
   function f_l($col, $param="") { 
-    if( $this->columns[$param][0][value] AND $this->columns[$col][0][value] )
-      return '<a href="'. htmlspecialchars($this->columns[$param][0][value]) .'">'.
-              htmlspecialchars($this->columns[$col][0][value]).'</a>';
-    return htmlspecialchars($this->columns[$col][0][value]); 
+    return $this->getahref($this->columns[$param][0][value], 
+                    $this->columns[$col][0][value]);
   }
 
   # _#ITEMEDIT used on admin page index.php3 for itemedit url
@@ -214,9 +246,12 @@ class item {
   }                 
 
   # prints "begin".$col."end" if $col="condition", else prints "none"
-  # param: condition:begin:end:none
+  # if no cond_col specified - $col is used
+  # param: condition:begin:end:none:cond_col
   function f_c($col, $param="") { 
     $p = ParamExplode($param);
+    if( $p[4] )
+      $col = $p[4];
     if( $this->columns[$col][0][value] != $p[0] )
       return $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2];
     return htmlspecialchars($p[3]); 
@@ -232,20 +267,13 @@ class item {
 
   function get_item() {
   // format string
+    $out = $this->format;
     $remove = $this->remove;
-    $format = $this->top;
-    $out = $this->unalias($format, $remove);
-    $format = $this->format;
-    $out .= $this->unalias($format, $remove);
-    $format = $this->bottom;
-    $out .= $this->unalias($format, $remove);
+    $out = $this->unalias($out, $remove);
     return $out;
   }  
 
   function unalias($out, $remove_string="") {
-    if( !$out )
-      return "";
-      
     $piece = explode("_#",$out);
     if( !is_array($piece))
       $piece = array($out);
@@ -314,6 +342,9 @@ class item {
 
 /*
 $Log$
+Revision 1.12  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.11  2001/04/17 21:32:08  honzam
 New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
 

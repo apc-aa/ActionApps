@@ -185,7 +185,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;  
 ?>
-<form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HDR?></b>
 </td>
@@ -244,6 +244,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.10  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.9  2001/04/04 18:27:44  honzam
 Morehelp question mart in itemedit opens new window.
 

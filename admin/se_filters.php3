@@ -192,7 +192,7 @@ function UpdateFilters(slice_id, import_id) {
   echo $Msg;
   
 ?>
-<form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_FLT_SETTING ?></b></td></tr>
 <tr><td>
@@ -260,6 +260,9 @@ if( $imp_group ) {
 } 
 /*
 $Log$
+Revision 1.10  2001/05/10 10:01:43  honzam
+New spanish language files, removed <form enctype parameter where not needed, better number validation
+
 Revision 1.9  2001/03/20 15:28:53  honzam
 Fixed "terminate feeding after canceling permissions" bug + changes due to "slice delete" feature
 
