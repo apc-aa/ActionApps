@@ -420,10 +420,7 @@ class itemview{
       default:                         # compact view
         $oldcat = "_No CaTeg";
       	
-        # get top HTML code, unalias it and add scroller, if needed
-        $out = $this->unaliasWithScroller($this->slice_info[compact_top], $CurItem);
         for( $i=0; $i<$this->num_records; $i++ ) {
-
           # display banner, if you have to
           if( $this->slice_info['banner_parameters'] && 
               ($this->slice_info['banner_position']==$i) )
@@ -437,6 +434,14 @@ class itemview{
             $catname = substr ($catname, 0, $this->slice_info[gb_header]);
               
           $this->set_columns ($CurItem, $content, $iid);   # set right content for aliases
+
+          # get top HTML code, unalias it and add scroller, if needed
+          if( !$top_html_already_printed ) {   
+            $out = $this->unaliasWithScroller($this->slice_info[compact_top], $CurItem);
+            # we move printing of top HTML here, in order we can use aliases 
+            # data from the first found item
+            $top_html_already_printed = true;
+          }  
           
             # print category name if needed
           if($this->group_fld AND ($catname != $oldcat)) {
@@ -463,7 +468,9 @@ class itemview{
         if($this->group_fld) {
             $CurItem->setformat( $this->slice_info[category_bottom] );
             $out .= $CurItem->get_item();
-        }           
+        }
+        if( !$top_html_already_printed )   # print top HTML even no item found
+          $out = $this->unaliasWithScroller($this->slice_info[compact_top], $CurItem);
         $out .= $this->unaliasWithScroller($this->slice_info[compact_bottom], $CurItem);
     }
     return $out;

@@ -605,9 +605,12 @@ class item {
 
   # standard aliases to generate RSS .91 compliant meta-information
   function f_r($col, $param="") { 
-    global $slice_id, $p_slice_id, $db2;
+    global $db2;
     static $title, $link, $description; 
 
+    $p_slice_id = $this->getval('slice_id........');
+    $slice_id = unpack_id( $p_slice_id );
+    
     if (! $title) {
       if ($slice_id==""){ echo "Error: slice_id not defined"; exit; }
 
@@ -759,8 +762,7 @@ class item {
     This creates an alias for Slice ID ( like _#this), called _#slice and can be used in f_v 
     */      
     // Begin Ram's Code
-    global $slice_id;
-    $param = str_replace("_#slice",$slice_id,$param);
+    $param = str_replace("_#slice", $this->getval('slice_id........'), $param);
     // End Ram's Code
 
     while( $part = strstr( $part, "_#" )) {  # aliases for field content

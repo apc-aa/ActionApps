@@ -250,7 +250,6 @@ function GetView($view_param) {
 # return view result based on parameters
 function GetViewFromDB($view_param, &$cache_sid) {
   global $db;
-  global $slice_id, $p_slice_id;  # f_r needs to know slice_id - that's why it is global
 
   $vid = $view_param["vid"];
   $als = $view_param["als"];
