@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -40,30 +40,30 @@ require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
 if ( $sid ) {
   $sess->register(r_sid);
   $r_sid = $sid;
-  $sess->register(r_design);  // we are here for the first time  
+  $sess->register(r_design);  // we are here for the first time
   $r_design = $design;        // (not scroller or filters) => store $design
-}  
+}
 
 
 $slice_info = GetSliceInfo($r_sid);
 $config_arr = unserialize($slice_info["config"] );
 
-// $r_r_admin_order, $r_r_admin_order - controls article ordering 
+// $r_r_admin_order, $r_r_admin_order - controls article ordering
 // $r_r_admin_order contains field id
 // $r_r_admin_order_dir contains 'd' for descending order, 'a' for ascending
 if(!isset($r_r_admin_order)) {
-  $r_r_admin_order = ( $config_arr["admin_order"] ? 
+  $r_r_admin_order = ( $config_arr["admin_order"] ?
                      $config_arr["admin_order"] : "publish_date...." );
-  $r_r_admin_order_dir = ( $config_arr["admin_order_dir"] ? 
+  $r_r_admin_order_dir = ( $config_arr["admin_order_dir"] ?
                          $config_arr["admin_order_dir"] : "d" );
-  $sess->register(r_r_admin_order); 
-  $sess->register(r_r_admin_order_dir); 
+  $sess->register(r_r_admin_order);
+  $sess->register(r_r_admin_order_dir);
 
   // $r_r_admin_search, $r_r_admin_search_field - controls article filter
   // $r_r_admin_search contains search string
   // $r_r_admin_search_field contains field id
-  $sess->register(r_r_admin_search); 
-  $sess->register(r_r_admin_search_field); 
+  $sess->register(r_r_admin_search);
+  $sess->register(r_r_admin_search_field);
 }
 
 $p_sid= q_pack_id($r_sid);
@@ -76,7 +76,7 @@ else
 if( $akce == "filter" ) { // edit the first one
     $r_r_admin_order = ( $admin_order ? $admin_order : "publish_date...." );
     $r_r_admin_order_dir = ( $admin_order_dir ? "d" : "a");
-    
+
     $r_r_admin_search = $admin_search;
     $r_r_admin_search_field = $admin_search_field;
 }
@@ -96,16 +96,16 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     if( i < <?php echo MAX_RELATED_COUNT ?> ) {
       eval(starget).options[i].text = stext;
       eval(starget).options[i].value = svalue;
-    } else 
+    } else
       alert( "<?php echo _m("There are too many related items. The number of related items is limited."); # the maximum number of related stories is here jut because
                                              # we can't create new Option in to itemedit.hpp3 window
-                                             # from this window in JavaScript 
+                                             # from this window in JavaScript
                                              ?>" );
-  }    
+  }
 
 function SelectRelations(tag, prefix, taggedid, headline) {
-    AddSelectOption( 'window.opener.document.inputform.elements["<?php echo $var_id ?>"]', 
-                prefix + headline, taggedid); 
+    AddSelectOption( 'window.opener.document.inputform.elements["<?php echo $var_id ?>"]',
+                prefix + headline, taggedid);
   }
 
 // -->
@@ -125,9 +125,9 @@ $st = $$st_name;   // use right scroller
 if(is_object($st)) {
   $st->updateScr($sess->url($PHP_SELF) . "&var_id=$var_id&");
 }else {
-  $st = new scroller($st_name, $sess->url($PHP_SELF) . "&var_id=$var_id&");	
+  $st = new scroller($st_name, $sess->url($PHP_SELF) . "&var_id=$var_id&");
   $st->metapage=($listlen ? $listlen : EDIT_ITEM_COUNT);
-  $sess->register($st_name); 
+  $sess->register($st_name);
 }
 
 # if user sets search condition
@@ -137,7 +137,7 @@ if( $r_r_admin_search )
                   $r_r_admin_search_field => 1 );
 
 # set user defined sort order
-$sort[] = array ( $r_r_admin_order => $r_r_admin_order_dir); 
+$sort[] = array ( $r_r_admin_order => $r_r_admin_order_dir);
 
 $zids=QueryZIDs($fields, $r_sid, $conds, $sort, "", $bin_condition);
 
@@ -149,7 +149,7 @@ if( !$mode )
 for( $i=0; $i<strlen($mode); $i++) {
     $m1 = substr($mode,$i,1);
     $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#JS_HEAD_')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
-}   
+}
 
 
 $format_strings = array ( "compact_top"=>"",
@@ -169,11 +169,11 @@ $format_strings = array ( "compact_top"=>"",
 # design - boolean - use standard or admin design
 if($r_design) {
   $format_strings["compact_top"]    = $slice_info['admin_format_top'];
-  $format_strings["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">', 
+  $format_strings["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">',
                                                   $mode_string, $slice_info['admin_format']);
   $format_strings["compact_remove"] = $slice_info['admin_remove'];
   $format_strings["compact_bottom"] = $slice_info['admin_format_bottom'];
-}  
+}
 
 
 
@@ -190,45 +190,36 @@ echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
 '<table width="460" border="0" cellspacing="0" cellpadding="2" bgcolor="#F5F0E7">';
 
 if( isset($zids) && ($zids->count() > 0) ) {
-  if( $r_design )
+  if( $r_design ) {
     $aliases = GetAliasesFromFields($fields);
-   else {                     # define just used aliases, including HEADLINE
-    $aliases["_#ITEM_ID_"] = array("fce" => "f_n:id..............",
-                                   "param" => "id..............",
-                                   "hlp" => "");
-    $aliases["_#SITEM_ID"] = array("fce" => "f_h",
-                                   "param" => "short_id........",
-                                   "hlp" => "");
-    $aliases["_#HEADLINE"] = array("fce" => "f_e:safe",
-                                   "param" => GetHeadlineFieldID($r_sid),
-                                   "hlp" => "");
-    $aliases["_#JS_HEAD_"] = array("fce" => "f_e:javascript",
-                                   "param" => GetHeadlineFieldID($r_sid),
-                                   "hlp" => "");
-  }                                 
+  }  // if it is not 'Admin design', we need just following aliases
+  if ( !isset($aliases["_#ITEM_ID_"]) ) $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............");
+  if ( !isset($aliases["_#SITEM_ID"]) ) $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........");
+  if ( !isset($aliases["_#HEADLINE"]) ) $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($r_sid));
+  if ( !isset($aliases["_#JS_HEAD_"]) ) $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($r_sid));
 
   $nocache=1;
-  
+
   $itemview = new itemview($format_strings, $fields, $aliases, $zids,
               $st->metapage * ($st->current-1), $st->metapage, "" );
   $itemview->print_view();
-    
+
   $st->countPages( $zids->count() );
 
   echo '</table><br>';
 
-	if($st->pageCount() > 1)
+    if($st->pageCount() > 1)
     $st->pnavbar();
-}  
-else 
+}
+else
   echo "<tr><td><div class=tabtxt>". _m("No item found") ."</div></td></td></table>";
-  
+
 echo '<input type=hidden name=akce value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
 echo '</form>';
 
 # user defined sorting and filtering ---------------------------------------
 echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
-      <table width="460" border="0" cellspacing="0" cellpadding="0" 
+      <table width="460" border="0" cellspacing="0" cellpadding="0"
       class=leftmenu bgcolor="'. COLOR_TABBG .'">';
 
 reset( $fields );
@@ -237,13 +228,13 @@ while( list ($k, $v ) = each( $fields ) ) {
   if( $v[text_stored] )
     $lookup_text_fields[$k] = $v[name];
 }
-    
+
   #order
 echo "<tr>
        <td class=leftmenuy><b>". _m("Order") ."</b></td>
        <td class=leftmenuy>";
 FrmSelectEasy('admin_order', $lookup_fields, $r_r_admin_order);
-echo "<input type='checkbox' name='admin_order_dir'". 
+echo "<input type='checkbox' name='admin_order_dir'".
      ( ($r_r_admin_order_dir=='d') ? " checked> " : "> " ) . _m("Descending"). "</td>
      <td rowspan=2 align='right' valign='middle'><a
       href=\"javascript:document.filterform.submit()\" class=leftmenuy>". _m("Go") ."</a> </td></tr>";
@@ -260,6 +251,6 @@ echo "<input type='Text' name='admin_search' size=20
       </form></center>";
   echo "</body></html>";
 
-  $$st_name = $st;   // to save the right scroller 
+  $$st_name = $st;   // to save the right scroller
   page_close();
 ?>
