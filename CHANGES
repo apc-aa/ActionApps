@@ -1,3 +1,10 @@
+12/20/02 - fixed problem with LiveCheckbox (image path/mozilla refresh) (honzam)
+         - fixed bug of ignored conditions, when conds[x][value] was 0 (honzam)
+12/17/02 - input type "selectbox with presets" with the "adding" parameter ads 
+           new constant into constants group WITH PRIORITY NUMBER SET TO 
+           MAX(pri)+10  (honzam)
+12/15/02 - date fields posted from anonymous form takes date from Defaults, if 
+           it is send as empty and the field is not marked as REQUIRED (honzam)
 12/13/02 - Removed output from cron (mitra)
 12/11/02 - Allowed - and . in filemanager names in formutils and added err msg (mitra)
 12/11/02 - fixed bug so Slice Admins can add/edit RSS feeds, not just superadmin (mitra)
