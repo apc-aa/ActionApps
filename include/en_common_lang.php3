@@ -66,7 +66,7 @@ define("L_PASSWORD", "Password:");
 define("L_LOGINNOW", "Login now");
 define("L_BAD_LOGIN", "Either your username or your password is not valid.");
 define("L_TRY_AGAIN", "Please try again!");
-define("L_BAD_HINT", "If you are sure you type correct password, please e-mail <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.");
+define("L_BAD_HINT", "If you are sure you have typed the correct password, please e-mail <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.");
 define("LOGIN_PAGE_BEGIN",
  '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML>
@@ -149,6 +149,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.7  2000/08/15 16:20:40  kzajicek
+en_common_lang.php3
+
 Revision 1.6  2000/08/14 12:41:50  kzajicek
 *** empty log message ***
 
