@@ -26,6 +26,7 @@ http://www.apc.org/
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require $GLOBALS[AA_INC_PATH]."csn_util.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -34,6 +35,7 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "admin");
   exit;
 }  
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
@@ -48,6 +50,17 @@ $SQL= "SELECT name, id FROM slice, feeds
 $db->query($SQL);
 while($db->next_record())
   $impslices[unpack_id($db->f(id))] = $db->f(name);
+
+// lookup external slices
+$SQL = "SELECT remote_slice_id, remote_slice_name, feed_id
+        FROM external_feeds
+        WHERE slice_id='$p_slice_id' ORDER BY remote_slice_name";
+$db->query($SQL);
+
+while($db->next_record()) {
+  $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(remote_slice_name);
+  $remote_slices[unpack_id($db->f(remote_slice_id))] = $db->f(feed_id);
+}
 
 if( !isset($impslices) OR !is_array($impslices)){
   MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE, "admin");
@@ -66,17 +79,24 @@ if( $group ) {
   $db->query("SELECT id, name FROM constant 
                WHERE group_id='$group'
                ORDER BY pri");
-  $first_time = true;
   while($db->next_record()) {
-    if( $first_time ) {          // in order to The Same to be first in array
-      $to_categories["0"] = L_THE_SAME;
-      $first_time = false;
-    } 
     $to_categories[unpack_id($db->f(id))] = $db->f(name);
   }  
 }
 
-// lookup (from_categories) 
+// lookup (from_categories) and preset form values
+if ($feed_id = $remote_slices[$import_id]) {
+  $ext_categs = GetExternalCategories($feed_id);
+  $imp_count = sizeof($ext_categs);
+
+  if ($ext_categs && is_array($ext_categs)) {
+    while (list ($id,$v) = each($ext_categs)) {
+      $chboxcat[$id] = ($v[target_category_id] != "");
+      $selcat[$id] = $v[target_category_id];
+      $chboxapp[$id] = $v[approved];
+    }
+  }
+} else {
 $imp_group = GetCategoryGroup($import_id);
 
 // count number of imported categories
@@ -100,8 +120,7 @@ while($db->next_record()) {
     $chboxapp[unpack_id($db->f(category_id))] = $db->f(to_approved);
   }
 }    
-    
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+}
 ?>
  <TITLE><?php echo L_A_FILTERS_TIT;?></TITLE>
 <SCRIPT Language="JavaScript"><!--
@@ -149,6 +168,7 @@ function UpdateFilters(slice_id, import_id) {
   var done = 0
   url += "&slice_id=" + slice_id
   url += "&import_id=" + import_id
+  url += "&feed_id=<?php echo $feed_id ?>"
   if((typeof document.f.all_categories == 'undefined') ||   // no import cats
      (ChBoxState('document.f.all_categories'))) {
     done = 1
@@ -182,10 +202,8 @@ function UpdateFilters(slice_id, import_id) {
 </SCRIPT>
 </HEAD>
 <?php
-  $xx = ($slice_id!="");
   $useOnLoad = true;
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>false,"mapping"=>$xx);
+  $show ["filters"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   echo "<H1><B>" . L_A_FILTERS_FLT . "</B></H1>";
   PrintArray($err);
@@ -233,21 +251,16 @@ if ($imp_count) {
 <tr><td colspan=4><hr></td></tr>
 <?php
 
+function PrintOneRow($id, $cat_name, $i) {
+  global $chboxcat, $selcat, $chboxapp, $to_categories;
 
-if( $imp_group ) {
-  $db->query("SELECT id, name, value FROM constant 
-               WHERE group_id='$imp_group'
-               ORDER BY name");
-  $i=1;
-  while($db->next_record()) {
-    $id = unpack_id($db->f(id));
     echo "<tr><td align=CENTER>";
     $chboxname = "chbox_". $i;
      FrmChBoxEasy($chboxname, $chboxcat[$id] );
-    echo "</td>\n<td class=tabtxt>". $db->f(name). "</td><TD>";
+  echo "</td>\n<td class=tabtxt>". $cat_name. "</td><TD>";
     $selectname = "categ_". $i;
     if( isset($to_categories) AND is_array($to_categories) )
-       FrmSelectEasy($selectname, $to_categories, $selcat[$id]); 
+     FrmSelectEasy($selectname, $to_categories, isset($selcat[$id]) ? $selcat[$id] : $id);
      else   
        echo "<span class=tabtxt>". L_NO_CATEGORY ."</span>";
     echo "</td>\n<TD align=CENTER>";
@@ -255,11 +268,33 @@ if( $imp_group ) {
      FrmChBoxEasy($chboxname, $chboxapp[$id] );
     echo "<input type=hidden name=hid_$i value=$id>";
     echo "</td></tr>";
-    $i++;
+}
+
+if ($feed_id) {
+  if (isset($ext_categs) && is_array($ext_categs)) {
+    $i=1;
+    reset($ext_categs);
+    while (list($id,$v) = each($ext_categs)) {
+      PrintOneRow($id,$v[name],$i++);
+    }
+  }
+}
+else {
+  if( $imp_group ) {
+    $db->query("SELECT id, name, value FROM constant
+               WHERE group_id='$imp_group'
+               ORDER BY name");
+    $i=1;
+    while($db->next_record()) {
+      PrintOneRow(unpack_id($db->f(id)),$db->f(name),$i++);
+    }
   }
 } 
 /*
 $Log$
+Revision 1.13  2001/09/27 13:09:53  honzam
+New Cross Server Networking now is working (RSS item exchange)
+
 Revision 1.12  2001/05/21 13:52:31  honzam
 New "Field mapping" feature for internal slice to slice feeding
 

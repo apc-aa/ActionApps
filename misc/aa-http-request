@@ -1,0 +1,9 @@
+#!/bin/sh
+TMPFILE=/tmp/aa.$$
+HOST=localhost.localdomain
+(
+touch $TMPFILE
+sleep 1;
+echo "GET /apc-aa/admin/xmlclient.php3";
+while true; do sleep 5; test -f $TMPFILE || break; done
+) | (telnet $HOST 80; rm -f $TMPFILE)

@@ -98,18 +98,12 @@ define("L_NO_SUCH_FILE", "No such file");
 define("L_BAD_INC", "Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters");
 define("L_SELECT_CATEGORY", "Select Category ");
 define("L_NO_ITEM", "No item found");
-define("L_VIEW_SLICE", "View site");
 define("L_SLICE_INACCESSIBLE", "Invalid slice number or slice was deleted");
 define("L_APP_TYPE", "Slice type");
 define("L_SELECT_APP", "Select slice type");
 define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
 define( "L_ICON_LEGEND", '');
-
-define( "L_SLICE_HINT", '
-                  <br>
-                  To include slice in your webpage type next line to your shtml code:
-                  ');
 
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Undefined" );
@@ -134,7 +128,6 @@ define( "L_WDDX_BAD_PACKET","Wrong data (WDDX packet)");
 define( "L_WDDX_OK","Item OK - stored in database");
 define( "L_CAN_DELETE_WDDX_FILE","Now you can dalete local file. ");
 define( "L_DELETE_WDDX"," Delete ");
-define( "L_NO_SUCH_VIEW", "No such view (bad or missing view id or deleted slice)");
 
 // copyright message for all screens
 define( "L_COPYRIGHT", 'Copyright (C) 2001 the 
@@ -168,6 +161,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.21  2001/09/27 13:09:53  honzam
+New Cross Server Networking now is working (RSS item exchange)
+
 Revision 1.20  2001/09/14 19:02:45  madebeer
 view static - now allows aliases from URL
 checkin of sql statements to use RSS

@@ -49,8 +49,11 @@ define("HTML_PAGE_BEGIN",
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
                
 # aa toolkit specific labels
-define("L_ITEM_ID_ALIAS",'alias pro číslo článku');
-define("L_EDITITEM_ALIAS",'alias používaný v administrativních stránkách index.php3 pro URL itemedit.php3');
+define("L_VIEW_SLICE", "Zobraz");
+define( "L_SLICE_HINT", '<br>Webík zahrnete do své *.shtml stránky přidáním 
+                             následující řádky v HTML kódu: ');
+define("L_ITEM_ID_ALIAS","alias pro číslo článku");
+define("L_EDITITEM_ALIAS","alias používaný v administrativních stránkách index.php3 pro URL itemedit.php3");
 define("L_LANG_FILE","Použitý language soubor");
 define("L_PARAMETERS","Parametry");
 define("L_SELECT_APP","Vyber aplikaci");
@@ -284,7 +287,7 @@ define("L_FULLTEXT_REMOVE", L_COMPACT_REMOVE);
 
 define("L_FEED", "Výměna zpráv");
 define("L_FEEDTO_TITLE", "Předat zprávu do webíku");
-define("L_FEED_TO", "Předat vybrné zprávy do zvolených webíku");
+define("L_FEED_TO", "Předat vybrané zprávy do zvolených webíku");
 define("L_NO_PERMISSION_TO_FEED", "Nelze");
 define("L_NO_PS_CONFIG", "Nemáte právo nastavovat configurační parametry tohoto webíku");
 define("L_SLICE_CONFIG", "Administrace");
@@ -336,7 +339,7 @@ define("L_ACTIVE_BIN_PENDING", "Aktuální - Připravené");
 define("L_ACTIVE_BIN_EXPIRED_MENU", "... expirované");
 define("L_ACTIVE_BIN_PENDING_MENU", "... připravené");
  
-define("L_FIELD_PRIORITY", "Priorita");
+define("L_FIELD_PRIORITY", "Řazení");
 define("L_FIELD_TYPE", "Typ");
 define("L_CONSTANTS", "Hodnoty");
 define("L_DEFAULT", "Default");
@@ -379,6 +382,10 @@ define("L_INPUT_SHOW_CHB","Check Box");
 define("L_INPUT_SHOW_MCH", "Multiple Checkboxes");
 define("L_INPUT_SHOW_MSE", "Multiple Selectbox");
 define("L_INPUT_SHOW_FIL","File Upload");
+define("L_INPUT_SHOW_ISI","Related Item Select Box");
+define("L_INPUT_SHOW_ISO","Related Item Window");
+define("L_INPUT_SHOW_WI2","Two Boxes");
+define("L_INPUT_SHOW_PRE","Select Box with Presets");
 define("L_INPUT_SHOW_NUL","Do not show");
                               
 define("L_INPUT_VALIDATE_TEXT","Text");
@@ -393,6 +400,7 @@ define("L_INPUT_INSERT_QTE","Text");
 define("L_INPUT_INSERT_DTE","Date");
 define("L_INPUT_INSERT_CNS","Constant");
 define("L_INPUT_INSERT_NUM","Number");
+define("L_INPUT_INSERT_IDS","Item IDs");
 define("L_INPUT_INSERT_BOO","Boolean");
 define("L_INPUT_INSERT_UID","User ID");
 define("L_INPUT_INSERT_NOW","Now");
@@ -412,8 +420,8 @@ define("L_INPUT_VALIDATE_HLP","Funkce pro kontrolu vstupu (validace)");
 
 define("L_CONSTANT_NAME", "Jméno");
 define("L_CONSTANT_VALUE", "Hodnota");
-define("L_CONSTANT_PRIORITY", "Priorita");
-define("L_CONSTANT_PRI", "Priorita");
+define("L_CONSTANT_PRIORITY", "Řazení");
+define("L_CONSTANT_PRI", "Řazení");
 define("L_CONSTANT_GROUP", "Skupina hodnot");
 define("L_CONSTANT_GROUP_EXIST", "Tato skupina hodnot již existuje");
 define("L_CONSTANTS_OK", "Změna hodnot úspěšně provedena");
@@ -445,10 +453,12 @@ define("L_ALIAS_FUNC_G", "f_g - výška obrázku");
 define("L_ALIAS_FUNC_H", "f_h - zobrazit");
 define("L_ALIAS_FUNC_I", "f_i - zdroj obrázku");
 define("L_ALIAS_FUNC_L", "f_l - pole s odkazem");
+define("L_ALIAS_FUNC_M", "f_m - e-mail");
 define("L_ALIAS_FUNC_N", "f_n - id");
 define("L_ALIAS_FUNC_S", "f_s - url");
 define("L_ALIAS_FUNC_T", "f_t - fulltext");
 define("L_ALIAS_FUNC_U", "f_u - uživatelská funkce");
+define("L_ALIAS_FUNC_V", "f_v - pohled");
 define("L_ALIAS_FUNC_W", "f_w - šířka obrázku");
 define("L_ALIAS_FUNC_0", "f_0 - žádná");
 
@@ -465,7 +475,7 @@ define("L_ALIAS3", "Alias 3");
 
 define("L_TOP_HLP", "HTML kód, který se zobrazí před kódem webíku");
 define("L_FORMAT_HLP", "Sem patří HTML kód v kombinaci s aliasy uvedenými dole na stránce
-                     <br>Aliasy budou v okamžiku zobrazování na web nahrazemy skutečnými hodnotami z databáze");
+                     <br>Aliasy budou v okamžiku zobrazování na web nahrazeny skutečnými hodnotami z databáze");
 define("L_BOTTOM_HLP", "HTML kód, který se zobrazí za vlasním kódem webíku");
 define("L_EVEN_ROW_HLP", "TIP: Rozlišením sudých a lichých záznamů lze docílit například odličení řádků jinými barvami pozadí
                          <br>první třeba zelený, druhý žlutý, atd.");
@@ -574,8 +584,179 @@ define("L_MAP_VALUE2","Hodnota");
 define("L_ORDER", "Seřadit");
 define("L_INSERT_AS_NEW","Vložit jako nový");
 
+// constnt view constants
+define("L_CONST_NAME_ALIAS", "Jméno");
+define("L_CONST_VALUE_ALIAS", "Hodnota");
+define("L_CONST_PRIORITY_ALIAS", "Řazení");
+define("L_CONST_GROUP_ALIAS", "Skupina hodnot");
+define("L_CONST_CLASS_ALIAS", "Nadkategorie (použitelné jen pro kategorie)");
+define("L_CONST_COUNTER_ALIAS", "Pořadové číslo hodnoty");
+define("L_CONST_ID_ALIAS", "Identifikační číslo hodnoty");
+
+define('L_V_CONSTANT_GROUP','Skupina hodnot');
+define("L_NO_CONSTANT", "Hodnota nenalezena");
+
+// Discussion constants.
+define("L_DISCUS_SEL","Zobrazit diskusi");
+define("L_DISCUS_EMPTY"," -- žádná -- ");
+define("L_DISCUS_HTML_FORMAT","Diskusi formátovat v HTML");
+define("L_EDITDISC_ALIAS","Alias používaný v administrativních stránkách index.php3 pro URL discedit.php3");
+
+define("L_D_SUBJECT_ALIAS","Alias pro předmět příspěvku");
+define("L_D_BODY_ALIAS"," Alias pro text příspěvku");
+define("L_D_AUTHOR_ALIAS"," Alias pro autora příspěvku");
+define("L_D_EMAIL_ALIAS","Alias pro e-mail autora");
+define("L_D_WWWURL_ALIAS","Alias pro adresu WWW stránek autora ");
+define("L_D_WWWDES_ALIAS","Alias for popis WWW stránek autora");
+define("L_D_DATE_ALIAS","Alias pro datum a čas poslání příspěvku");
+define("L_D_REMOTE_ADDR_ALIAS","Alias pro IP adresu autorova počítače");
+define("L_D_URLBODY_ALIAS","Alias pro odkaz na text příspěvku<br>
+                             <i>Užití: </i>v kódu pro přehledové zobrazení příspěvku<br>
+                             <i>Příklad: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>");
+define("L_D_CHECKBOX_ALIAS","Alias pro checkbox pro vybrání příspěvku");
+define("L_D_TREEIMGS_ALIAS","Alias pro obrázky");
+define("L_D_ALL_COUNT_ALIAS","Alias pro počet všech příspěvků k danému článku");
+define("L_D_APPROVED_COUNT_ALIAS","Alias pro počet schválených příspěvků k danému článku");
+define("L_D_URLREPLY_ALIAS","Alias pro odkaz na formulář<br>
+                             <i>Užití: </i>v kódu pro plné znění příspěvku<br>
+                             <i>Příklad: </i>&lt;a href=_#URLREPLY&gt;Odpovědět&lt;/a&gt;");
+define("L_D_URL","Alias pro odkaz na diskusi<br>
+                             <i>Užití: </i>v kódu formuláře<br>
+                             <i>Příklad: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">");
+define("L_D_ID_ALIAS"," Alias pro číslo příspěvku<br>
+                             <i>Užití: </i>v kódu formuláře<br>
+                             <i>Příklad: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">");
+define("L_D_ITEM_ID_ALIAS"," Alias pro číslo článku<br>
+                             <i>Užití: </i>v kódu formuláře<br>
+                             <i>Příklad: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">");
+
+define("L_D_BUTTONS","Alias pro tlačítka Zobraz vše, Zobraz vybrané, Přidej nový<br>
+                             <i>Užití: </i>ve spodním HTML kódu");
+
+define("L_D_COMPACT" , "HTML kód pro přehledové zobrazení příspěvku");
+define("L_D_SHOWIMGS" , "Zobrazit obrázky");
+define("L_D_ORDER" , "Seřadit");
+define("L_D_FULLTEXT" ,"HTML kód pro plné znění příspěvku");
+
+define("L_D_ADMIN","Správa zpráv - Správa diskusních příspěvků");
+define("L_D_NODISCUS","Žádné diskusní příspěvky");
+define("L_D_TOPIC","Titulek");
+define("L_D_AUTHOR","Autor");
+define("L_D_DATE","Datum");
+define("L_D_ACTIONS","Akce");
+define("L_D_DELETE","Smazat");
+define("L_D_EDIT","Editovat");
+define("L_D_HIDE","Skrýt");
+define("L_D_APPROVE","Schválit");
+
+define("L_D_EDITDISC","Správa zpráv - Správa diskusních příspěvků - Editace příspěvku");
+define("L_D_EDITDISC_TABTIT","Editace příspěvku");
+define("L_D_SUBJECT","Předmět");
+define("L_D_AUTHOR","Autor");
+define("L_D_EMAIL","E-mail");
+define("L_D_BODY","Text příspěvku");
+define("L_D_URL_ADDRESS","WWW autora - URL");
+define("L_D_URL_DES","WWW autora - popis");
+define("L_D_REMOTE_ADDR","IP adresa počítače autora");
+
+define('L_D_SELECTED_NONE',"Nebyl vybrán žádný příspěvek");
+define("L_D_DELETE_COMMENT","Přejete si smazat příspěvek?");
+
+define("L_D_FORM","HTML kód formuláře pro poslání příspěvku");
+define("L_D_BACK","Zpět");
+define("L_D_ITEM","Článek: ");
+define("L_D_ADMIN2","Správa diskusních příspěvků");
+
+define("L_D_SHOW_SELECTED","Zobraz vybrané");
+define("L_D_SHOW_ALL","Zobraz vše");
+define("L_D_ADD_NEW","Přidej nový");
+
+define("L_TOO_MUCH_RELATED","Je vybráno příliš mnoho souvisejících článků.");
+define("L_SELECT_RELATED","Výběr souvisejících článků");
+define("L_SELECT_RELATED_1WAY","Ano");
+define("L_SELECT_RELATED_2WAY","Vzájemně");
+
+// - Cross server networking --------------------------------------
+
+define("L_INNER_IMPORT","Lokální výměna");
+define("L_INTER_IMPORT","Příjem z uzlů");
+define("L_INTER_EXPORT","Zasílání do uzlů");
+
+define("L_NODES_MANAGER","Uzly");
+define("L_NO_PS_NODES_MANAGER","Nemáte práva pro správu uzlů");
+define("L_NODES_ADMIN_TIT","Správa uzlů");
+define("L_NODES_LIST","Seznam uzlů");
+define("L_NODES_ADD_NEW","Přidání uzlu");
+define("L_NODES_EDIT","Editace uzlu");
+define("L_NODES_NODE_NAME","Jméno uzlu ");
+define("L_NODES_SERVER_URL","URL serveru");
+define("L_NODES_PASWORD","Heslo");
+define("L_SUBMIT","Poslat");
+define("L_NODES_SEL_NONE","Nebyl vybrán uzel");
+define("L_NODES_CONFIRM_DELETE","Opravdu chcete smazat uzel?");
+define("L_NODES_NODE_EMPTY","Jméno uzlu musí být vyplněno");
+
+define("L_IMPORT_TIT","Správa přijímaných webíků");
+define("L_IMPORT_LIST","Seznam přijímaných webíků do webíku ");
+define("L_IMPORT_CONFIRM_DELETE","Opravdu chcete zruąit příjem z tohoto webíku?");
+define("L_IMPORT_SEL_NONE","Nebyl zvolen webík");
+define("L_IMPORT_NODES_LIST","Seznam uzlů");
+define("L_IMPORT_CREATE","Přijímat webíky z tohoto uzlu");
+define("L_IMPORT_NODE_SEL","Nebyl vybrán uzel");
+define("L_IMPORT_SLICES","Seznam přijímaných webíků");
+define("L_IMPORT_SLICES2","Seznam dostupných webíků z uzlu ");
+define("L_IMPORT_SUBMIT","Zvolte webík");
+define("L_IMPORT2_OK","Příjem z webíku úspěąně vytvořen");
+define("L_IMPORT2_ERR","Příjem z webíku byl jiľ vytvořen");
+
+define("L_AA_RSS_ERROR","Nepodařilo se navázat spojení nebo chybná data. Kontaktuje administrátora");
+
+define("L_EXPORT_TIT","Správa povolení zasílání webíků");
+define("L_EXPORT_CONFIRM_DELETE","Opravdu chcete zruąit povolení zasílání tohoto webíku?");
+define("L_EXPORT_SEL_NONE","Nebyl zvolen uzel a uľivatel");
+define("L_EXPORT_LIST","Seznam uzlů a uľivatelů, kam bude zasílán webík ");
+define("L_EXPORT_ADD","Přidejte uzel a uľivatele");
+define("L_EXPORT_NAME","Jméno uľivatele");
+define("L_EXPORT_NODES","Seznam uzlů");
+
+define("L_RSS_TITL", "Jméno webíku pro RSS");
+define("L_RSS_LINK", "Odkaz na webík pro RSS");
+define("L_RSS_DESC", "Krátký popisek (vlastník a jméno) webíku pro RSS");
+define("L_RSS_DATE", "Datum v RSS přehledu je generováno v datovém formátu RSS");
+
+
+//Jakub: nove promenne
+define("L_NO_PS_EXPORT_IMPORT", "Nemáte právo exportovat / importovat webíky");
+define("L_EXPORT_SLICE", "Export");
+define("L_IMPORT_SLICE", "Import");
+define("L_EXPIMP_SET", "Struktura webíku");
+define("L_E_EXPORT_TITLE", "Export struktury webíku do jiného Toolkitu");
+define("L_E_EXPORT_TITLE_BACKUP", "Export struktury webíku do Backupu");
+define("L_E_EXPORT_TEXT_TITLE", "Export struktury webíku - tento text uložte do souboru");
+define("L_E_EXPORT_MEMO", "Můžete exportovat do jiného Toolkitu (export aktuální šablony, zvolíte si nový identifikátor), "
+			."nebo do Backupu (export více šablon najednou)");
+define("L_E_EXPORT_MEMO_ID","Zvolte nový identifikátor šablony o délce přesně 16 znaků: ");
+define("L_E_EXPORT_SWITCH", "Export do Backupu");
+define("L_E_EXPORT_SWITCH_BACKUP", "Export do jiného Toolkitu");
+define("L_E_EXPORT_CLICK_REF","Klepnutím sem ");
+define("L_E_EXPORT_CLICK_TEXT","zobrazíte text kódující šablonu. Ten uložte do souboru (buď pomocí Copy a Paste, nebo v Internet Exploreru pomocí Uložit jako) a soubor pak můžete použít pro import.");
+define("L_E_EXPORT_MEMO1", "Nyní jste v Exportu do jiného Toolkitu. Chcete-li exportovat do Backupu, stiskněte ");
+define("L_E_EXPORT_MEMO1_BACKUP", "Nyní jste v Exportu do Backupu. Chcete-li exportovat do jiného Toolkitu, stiskněte ");
+define("L_E_EXPORT_TITLE_IDLENGTH", "Délka identifikátoru musí být 16 znaků, a ne ");
+
+define("L_E_IMPORT_TITLE", "Import struktury webíků");
+define("L_E_IMPORT_SEND", "Odeslat soubor se strukturou webíků");
+define("L_E_IMPORT_MEMO", "Import struktury webíku proběhne takto: Napište jméno souboru nebo ho najděte "
+			."a stiskněte tlačítko Odeslat. <br>"
+			."Struktura webíku s definicemi políček se načte a přidá do Toolkitu.");
+define("L_E_IMPORT_OPEN_ERROR","Neznámá chyba při otevírání souboru.");
+define("L_E_IMPORT_WRONG_FILE","Text není v pořádku. Zkontrolujte, že jste ho správně zkopírovali z Exportu.");
+
 /*
 $Log$
+Revision 1.36  2001/09/27 13:09:53  honzam
+New Cross Server Networking now is working (RSS item exchange)
+
 Revision 1.35  2001/07/09 09:28:45  honzam
 New supported User defined alias functions in include/usr_aliasfnc.php3 file
 

@@ -27,16 +27,19 @@ http://www.apc.org/
 require "../include/init_page.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base()."index.php3"), L_NO_PS_FEEDING);
   exit;
 }
 
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require $GLOBALS[AA_INC_PATH]."csn_util.php3";
+
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
-// lookup (slices)
+$p_slice_id = q_pack_id($slice_id);
+
+// lookup internal slices
 $SQL= "SELECT name, id FROM slice, feeds
         LEFT JOIN feedperms ON slice.id=feedperms.from_id
         WHERE slice.id=feeds.from_id
@@ -46,30 +49,61 @@ $db->query($SQL);
 while($db->next_record())
   $impslices[unpack_id($db->f(id))] = $db->f(name);
 
+// lookup external slices
+$SQL = "SELECT remote_slice_id, remote_slice_name
+        FROM external_feeds
+        WHERE slice_id='$p_slice_id'";
+$db->query($SQL);
+while($db->next_record()) {
+  $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(remote_slice_name);
+  $remote_slices[unpack_id($db->f(remote_slice_id))] = 1;       // mark slice as external
+}
+
 if( !isset($impslices) OR !is_array($impslices)){
   MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE);
   exit;
 }
 
+// set from_slice_id
 if( $from_slice_id == "" ) {
   reset($impslices);
   $from_slice_id = key($impslices);
 }
 $p_from_slice_id = q_pack_id($from_slice_id);
 
-$from_fields[L_MAP_NOTMAP] = L_MAP_NOTMAP;
-$from_fields[L_MAP_VALUE] = L_MAP_VALUE;
-$SQL= "SELECT id, name FROM field WHERE slice_id='$p_from_slice_id' ORDER BY name";
-$db->query($SQL);
-while($db->next_record())
-  $from_fields[$db->f(id)] = $db->f(name);
+// get mapping from table
+list($map_to,$field_map) = GetExternalMapping($slice_id, $from_slice_id );
 
+// find out list of "to fields"
 $SQL= "SELECT id, name FROM field WHERE slice_id='$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
   $to_fields[$db->f(id)] = $db->f(name);
 
-$field_map = GetFieldMapping($from_slice_id,$slice_id,$from_fields,$to_fields);
+// find out list of "from fields"
+$from_fields[L_MAP_NOTMAP] = L_MAP_NOTMAP;
+$from_fields[L_MAP_VALUE] = L_MAP_VALUE;
+
+if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
+$SQL= "SELECT id, name FROM field WHERE slice_id='$p_from_slice_id' ORDER BY name";
+$db->query($SQL);
+while($db->next_record())
+  $from_fields[$db->f(id)] = $db->f(name);
+}
+else {                                     // remote fields : from feedmap table
+  if (isset($map_to) && is_array($map_to)) {
+    while (list($k,$v) = each($map_to)) {
+      $from_fields[$k] = $v;
+    }
+  }
+}
+
+reset( $to_fields ) ;
+while( list( $k, $v ) = each( $to_fields ) ) {
+  if(!isset($field_map[$k]))
+     $field_map[$k] =  $from_fields[$k] ? array("feedmap_flag"=>FEEDMAP_FLAG_MAP,"value"=>$k)  :
+                                          array("feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"value"=>"") ;
+}
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -113,11 +147,10 @@ function Submit() {
 </SCRIPT>
 
 </HEAD>
+<BODY>
 <?php
-  $xx = ($slice_id!="");
   $useOnLoad = true;
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx, "mapping"=>false);
+  $show ["mapping"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   echo "<H1><B>" . L_MAP_TIT . "</B></H1>";
   PrintArray($err);
@@ -150,14 +183,16 @@ function Submit() {
            while (list($f_id, $f_name) = each($to_fields)) {
              echo "<tr><td class=tabtxt><b>$f_name</b></td>\n";
              echo "<td>";
-
              $val = "";
+
              switch ($field_map[$f_id][feedmap_flag]) {
                case FEEDMAP_FLAG_VALUE :
                  $sel = L_MAP_VALUE;
-                 $val = htmlspecialchars($field_map[$f_id][val]); break;
+                 $val = htmlspecialchars($field_map[$f_id][value]); break;
                case FEEDMAP_FLAG_EMPTY: $sel =  L_MAP_NOTMAP; break;
-               case FEEDMAP_FLAG_MAP : $sel = $field_map[$f_id][val];
+               case FEEDMAP_FLAG_MAP :
+               case FEEDMAP_FLAG_EXTMAP :
+                  $sel = $field_map[$f_id][value];
              }
              FrmSelectEasy("fmap[$f_id]",$from_fields,$sel);
              echo "</td><td class=tabtxt> <input type=text name=\"fval[$f_id]\" value=\"$val\"></input></td>";
@@ -167,7 +202,7 @@ function Submit() {
       </table>
     </td></tr>
     <tr><td align="center">
-      <input type=hidden name="slice_id" value="<?php echo $slice_id ?>">
+      <input type=hidden name="ext_slice" value="<?php echo $remote_slices[$from_slice_id]; ?>" >
       <input type=button value="<?php echo L_UPDATE ?>" onClick = "Submit()" align=center>&nbsp;&nbsp;
       <input type=button VALUE="<?php echo L_CANCEL ?>" onClick = "Cancel()">
      </td></tr>

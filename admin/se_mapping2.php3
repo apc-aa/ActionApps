@@ -24,9 +24,12 @@ http://www.apc.org/
 #          $from_slice_id for id of imported slice
 #          $fmap - array of fields mapping
 #          $fval - array of field value
+#          $extslice
 
 require "../include/init_page.php3";
+
 require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."csn_util.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
@@ -36,6 +39,9 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
 $p_from_slice_id= q_pack_id($from_slice_id);
 
 $err["Init"] = "";       // error array (Init - just for initializing variable)
+
+// save old values
+list($map_to,$field_map) = GetExternalMapping($slice_id, $from_slice_id );
 
 // First we DELETE current fields mapping and then INSERT new.
 $db->query("DELETE FROM feedmap WHERE from_slice_id = '$p_from_slice_id' AND to_slice_id = '$p_slice_id' ");
@@ -50,17 +56,46 @@ while (list($to_field_id,$val) = each($fmap)) {
     $catVS->add("from_slice_id", "unpacked", $from_slice_id);
     $catVS->add("to_slice_id", "unpacked", $slice_id);
   $catVS->add("to_field_id", "quoted",$to_field_id);
+  $catVS->add("from_field_name", "quoted", $map_to[$val]);
+
   switch ($val) {
-    case L_MAP_NOTMAP : $flag = FEEDMAP_FLAG_EMPTY; break;
-    case L_MAP_VALUE:  $flag = FEEDMAP_FLAG_VALUE ; $catVS->add("value", "quoted", $fval[$to_field_id]); break;
-    default:            $flag = FEEDMAP_FLAG_MAP ;  $catVS->add("from_field_id", "quoted", $val );
+    case L_MAP_NOTMAP :
+      $flag = FEEDMAP_FLAG_EMPTY;
+      break;
+    case L_MAP_VALUE:
+      $flag = FEEDMAP_FLAG_VALUE ;
+      $catVS->add("value", "quoted", $fval[$to_field_id]); break;
+    case  FEEDMAP_FLAG_EXTMAP :
+    case  FEEDMAP_FLAG_MAP :
+      $flag = ($ext_slice) ? FEEDMAP_FLAG_EXTMAP : FEEDMAP_FLAG_MAP ;
+      $catVS->add("from_field_id", "quoted", $val );
+      unset($map_to[$val]);
+      break;
   }
   $catVS->add("flag", "quoted",$flag);
+
+  $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
+  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+    $err["DB"] .= MsgErr("Can't add fields mapping");
+  }
+}
+
+// Write external fields, which did not mapped.
+if ($map_to && is_array($map_to)) {
+  while (list($from_field_id,) = each($map_to)) {
+    $catVS->clear();
+    $catVS->add("from_slice_id", "unpacked", $from_slice_id);
+    $catVS->add("to_slice_id", "unpacked", $slice_id);
+    $catVS->add("from_field_id", "quoted", $from_field_id );
+    $catVS->add("from_field_name", "quoted", $map_to[$from_field_id] );
+
+    $catVS->add("flag", "quoted",FEEDMAP_FLAG_EXTMAP);
     $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
     if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
       $err["DB"] .= MsgErr("Can't add fields mapping");
   }
  }
+}
 
 go_url( $sess->url(self_base() . "se_mapping.php3") . "&from_slice_id=".rawurlencode($from_slice_id) .
         "&Msg=" . rawurlencode(MsgOK(L_MAP_OK)));

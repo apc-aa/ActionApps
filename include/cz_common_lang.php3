@@ -99,7 +99,6 @@ define("L_BAD_INC", "Špatný parametr inc - soubor mùže být v tomtéž adresáøi, kd
 define("L_NO_SUCH_FILE", "Soubor nenalezen");
 define("L_SELECT_CATEGORY", "Zvol Kategorii ");
 define("L_NO_ITEM", "Nenalezena žádná zpráva");
-define("L_VIEW_SLICE", "Zobraz webík");
 define("L_SLICE_INACCESSIBLE", "Špatné identifikaèní èíslo webíku, nebo byl webík vymazán");
 define("L_APP_TYPE", "Typ webíku");
 define("L_SELECT_APP", "Zvol typ webíku");
@@ -107,11 +106,6 @@ define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
 define( "L_ICON_LEGEND", '');
                            
-define( "L_SLICE_HINT", '
-                  <br>
-                  Webík zahrnete do své *.shtml stránky pøidáním následující øádky v HTML kódu:
-                  ');
-
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
@@ -163,6 +157,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.18  2001/09/27 13:09:53  honzam
+New Cross Server Networking now is working (RSS item exchange)
+
 Revision 1.17  2001/06/05 08:58:02  honzam
 default codepage for slice not hard-coded now - moved to *_common_lang
 

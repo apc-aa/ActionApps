@@ -101,19 +101,12 @@ define("L_NO_SUCH_FILE", "No existe el archivo");
 define("L_BAD_INC", "Parámetro inc errado - el archivo a incluir debe estar en el mismo directorio que este archivo .shtml y debe contener solamente caracteres alfanuméricos ");
 define("L_SELECT_CATEGORY", "Seleccione la Categoria ");
 define("L_NO_ITEM", "No se encuentra");
-define("L_VIEW_SLICE", "Ver Canal");
 define("L_SLICE_INACCESSIBLE", "Número de canal inválido o el canal fue borrado");
 define("L_APP_TYPE", "Tipo de Canal");
 define("L_SELECT_APP", "Seleccione Tipo de Canal");
 define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
 define( "L_ICON_LEGEND", '');
-
-
-define( "L_SLICE_HINT", '
-                  <br>
-                  Para incluir el contenido publicado aquí escriba en su página shtml:
-                  ');
 
 // textos de grabación de eventos (logs)
 define( "LOG_EVENTS_UNDEFINED", "No definido" );
@@ -168,6 +161,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.5  2001/09/27 13:09:53  honzam
+New Cross Server Networking now is working (RSS item exchange)
+
 Revision 1.4  2001/06/05 08:58:02  honzam
 default codepage for slice not hard-coded now - moved to *_common_lang
 

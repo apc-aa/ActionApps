@@ -28,9 +28,11 @@ http://www.apc.org/
 #          $F[] array of imported categories, plus string "-0" or "-1" in order to approved checked
 #          $T[] array of categories into which we should import (corresponds to F[] array)
 #             if $T[]==0 then import to the same category as source item category
+#          $feed_id
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."csn_util.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "admin");
@@ -48,6 +50,51 @@ $p_import_id= q_pack_id($import_id);
 
 $err["Init"] = "";       // error array (Init - just for initializing variable)
 $catVS = new Cvarset();
+
+if ($feed_id) {
+  // setting filters from external slice
+
+  if ($ext_categs = GetExternalCategories($feed_id)) {
+
+    // delete current filters and then insert new
+    $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");
+
+    if ($all) {                           // all categories
+      $to_id = ParseIdA($C, &$app);
+      while (list($id, ) = each($ext_categs)) {
+        $ext_categs[$id][target_category_id] = $to_id;
+        $ext_categs[$id][approved] = $app;
+      }
+    }
+    else {                                // individual categories
+      while (list($id, ) = each($ext_categs)) {
+        $ext_categs[$id][target_category_id] = "";
+        $ext_categs[$id][approved] = 0;
+      }
+
+      while (list($index,$id ) = each($F)) {
+        $from_cat = ParseIdA($id, &$app);
+        $ext_categs[$from_cat][target_category_id] = $T[$index];
+        $ext_categs[$from_cat][approved] = $app;
+      }
+    }
+
+    reset($ext_categs);
+    while (list ($id,$v) = each($ext_categs)) {
+      $catVS->clear();
+      $catVS->add("category", "quoted", $v[value]);
+      $catVS->add("category_name", "quoted", $v[name]);
+      $catVS->add("category_id", "unpacked", $id);
+      $catVS->add("feed_id", "number", $feed_id);
+      $catVS->add("target_category_id", "unpacked", $v[target_category_id]);
+      $catVS->add("approved", "number", $v[approved]);   // zero = the same category
+      $SQL = "INSERT INTO ef_categories" . $catVS->makeINSERT();
+        if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+        $err["DB"] .= MsgErr("Can't add import from $val");
+      }
+    }
+  }
+} else {
 
 // First we DELETE current filters and then INSERT new.
 // We can't use UPDATE because the count of old and new rows can be different.
@@ -90,6 +137,7 @@ if ($all) {                                         // all_categories
     }
   }
 }        
+}
 
 if( count($err) <= 1 )
   go_url( $sess->url(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOK(L_IMPORT_OK)));
@@ -99,6 +147,9 @@ else
 page_close();
 /*
 $Log$
+Revision 1.6  2001/09/27 13:09:53  honzam
+New Cross Server Networking now is working (RSS item exchange)
+
 Revision 1.5  2001/05/18 13:50:09  honzam
 better Message Page handling (not so much)
 

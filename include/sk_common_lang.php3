@@ -99,7 +99,6 @@ define("L_BAD_INC", "Zl˝ parameter inc - soubor mÙûe byù v rovnakom adres·ri, kd
 define("L_NO_SUCH_FILE", "S˙bor nen·jden˝");
 define("L_SELECT_CATEGORY", "Zvoæ kategÛriu ");
 define("L_NO_ITEM", "éiadna spr·va");
-define("L_VIEW_SLICE", "Zobraz modul");
 define("L_SLICE_INACCESSIBLE", "ZlÈ identifikaËnÈ ËÌslo modulu, alebo bol modul vymazan˝");
 define("L_APP_TYPE", "Typ modulu");
 define("L_SELECT_APP", "Vyber typ modulu");
@@ -107,11 +106,6 @@ define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
 define( "L_ICON_LEGEND", '');
                            
-define( "L_SLICE_HINT", '
-                  <br>
-                  Modul zahrniete do vaöej *.shtml str·nky pridanÌm nasleduj˙ceho riadku v HTML kÛde:
-                  ');
-
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
@@ -158,6 +152,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.2  2001/09/27 13:09:53  honzam
+New Cross Server Networking now is working (RSS item exchange)
+
 Revision 1.1  2001/06/12 16:07:22  honzam
 new feeding modes -  "Feed & update" and "Feed & update & lock"
 

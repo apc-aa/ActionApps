@@ -48,6 +48,9 @@ define("HTML_PAGE_BEGIN",
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">');
     
 # etiquetas específicas de las aa 
+define("L_VIEW_SLICE", "Ver Canal");
+define( "L_SLICE_HINT", '<br>Para incluir el contenido publicado aquí 
+                             escriba en su página shtml: ');
 define("L_ITEM_ID_ALIAS",'alias para el Id del ítem');
 define("L_EDITITEM_ALIAS",'alias usado en la página de administración index.php3 para el url de edición del ítem'); 
 define("L_LANG_FILE","Archivo de idioma utilizado");
@@ -378,6 +381,10 @@ define("L_INPUT_SHOW_CHB","Selección");
 define("L_INPUT_SHOW_MCH", "Selección múltiple");
 define("L_INPUT_SHOW_MSE", "Caja selección múltiple");
 define("L_INPUT_SHOW_FIL","Archivo");
+define("L_INPUT_SHOW_ISI","Related Item Select Box");   # added 08/22/01
+define("L_INPUT_SHOW_ISO","Related Item Window");       # added 08/22/01
+define("L_INPUT_SHOW_WI2","Two Boxes");                 # added 08/22/01
+define("L_INPUT_SHOW_PRE","Select Box with Presets");   # added 08/22/01
 define("L_INPUT_SHOW_NUL","No muestre");
                               
 define("L_INPUT_VALIDATE_TEXT","Texto");
@@ -392,6 +399,7 @@ define("L_INPUT_INSERT_QTE","Texto");
 define("L_INPUT_INSERT_DTE","Fecha");
 define("L_INPUT_INSERT_CNS","Constante");
 define("L_INPUT_INSERT_NUM","Número");
+define("L_INPUT_INSERT_IDS","ID");
 define("L_INPUT_INSERT_BOO","Boleano");
 define("L_INPUT_INSERT_UID","Id usuario");
 define("L_INPUT_INSERT_NOW","Ahora");
@@ -444,10 +452,12 @@ define("L_ALIAS_FUNC_G", "f_g - Altura imagen");
 define("L_ALIAS_FUNC_H", "f_h - Imprimir");
 define("L_ALIAS_FUNC_I", "f_i - Fuente imagen");
 define("L_ALIAS_FUNC_L", "f_l - Campo enlazado");
+define("L_ALIAS_FUNC_M", "f_m - E-mail");
 define("L_ALIAS_FUNC_N", "f_n - Id");
 define("L_ALIAS_FUNC_S", "f_s - Url");
 define("L_ALIAS_FUNC_T", "f_t - Texto completo");
 define("L_ALIAS_FUNC_U", "f_u - user function");
+define("L_ALIAS_FUNC_V", "f_v - view");
 define("L_ALIAS_FUNC_W", "f_w - Ancho imagen");
 define("L_ALIAS_FUNC_0", "f_0 - Ninguno");
 
@@ -576,8 +586,151 @@ define("L_MAP_VALUE2","Value");
 define("L_ORDER", "Order");
 define("L_INSERT_AS_NEW","Insert as new");
 
+// Constant view constants
+define("L_CONST_NAME_ALIAS", "Constant name");
+define("L_CONST_VALUE_ALIAS", "Constant value");
+define("L_CONST_PRIORITY_ALIAS", "Constant priority");
+define("L_CONST_GROUP_ALIAS", "Constant group id");
+define("L_CONST_CLASS_ALIAS", "Category class (for categories only)");
+define("L_CONST_COUNTER_ALIAS", "Constant number");
+define("L_CONST_ID_ALIAS", "Constant unique id");
+
+define('L_V_CONSTANT_GROUP','Constant Group');
+define("L_NO_CONSTANT", "Constant not found");
+
+// Discussion constants.
+define("L_DISCUS_SEL","Show discussion");
+define("L_DISCUS_EMPTY"," -- Empty -- ");
+define("L_DISCUS_HTML_FORMAT","Use HTML tags");
+define("L_EDITDISC_ALIAS",'Alias used on admin page index.php3 for edit discussion url');
+
+define("L_D_SUBJECT_ALIAS","Alias for subject of the discussion comment");
+define("L_D_BODY_ALIAS"," Alias for text of the discussion comment");
+define("L_D_AUTHOR_ALIAS"," Alias for written by");
+define("L_D_EMAIL_ALIAS","Alias for author's e-mail");
+define("L_D_WWWURL_ALIAS","Alias for url address of author's www site");
+define("L_D_WWWDES_ALIAS","Alias for description of author's www site");
+define("L_D_DATE_ALIAS","Alias for publish date");
+define("L_D_REMOTE_ADDR_ALIAS","Alias pro IP address of author's computer");
+define("L_D_URLBODY_ALIAS","Alias for link to text of the discussion comment<br>
+                             <i>Using: </i>in HTML code for index view of the comment<br>
+                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>");
+define("L_D_CHECKBOX_ALIAS","Alias for checkbox used for choosing discussion comment");
+define("L_D_TREEIMGS_ALIAS","Alias for images");
+define("L_D_ALL_COUNT_ALIAS","Alias for the number of all comments to the item");
+define("L_D_APPROVED_COUNT_ALIAS","Alias for the number of approve comments to the item");
+define("L_D_URLREPLY_ALIAS","Alias for link to a form<br>
+                             <i>Using: </i>in HTML code for fulltext view of the comment<br>
+                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;");
+define("L_D_URL","Alias for link to discussion<br>
+                             <i>Using: </i>in form code<br>
+                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">");
+define("L_D_ID_ALIAS"," Alias for item ID<br>
+                             <i>Using: </i>in form code<br>
+                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">");
+define("L_D_ITEM_ID_ALIAS"," Alias for comment ID<br>
+                             <i>Using: </i>in form code<br>
+                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">");
+
+define("L_D_BUTTONS","Alias for buttons Show all, Show selected, Add new<br>
+                             <i>Using: </i> in the Bottom HTML code");
+
+define("L_D_COMPACT" , "HTML code for index view of the comment");
+define("L_D_SHOWIMGS" , "Show images");
+define("L_D_ORDER" , "Order by");
+define("L_D_FULLTEXT" ,"HTML code for fulltext view of the comment");
+
+define("L_D_ADMIN","Discussion comments management");
+define("L_D_NODISCUS","No discussion comments");
+define("L_D_TOPIC","Title");
+define("L_D_AUTHOR","Author");
+define("L_D_DATE","Date");
+define("L_D_ACTIONS","Actions");
+define("L_D_DELETE","Delete");
+define("L_D_EDIT","Edit");
+define("L_D_HIDE","Hide");
+define("L_D_APPROVE","Approve");
+
+define("L_D_EDITDISC","Items managment - Discussion comments managment - Edit comment");
+define("L_D_EDITDISC_TABTIT","Edit comment");
+define("L_D_SUBJECT","Subject");
+define("L_D_AUTHOR","Author");
+define("L_D_EMAIL","E-mail");
+define("L_D_BODY","Text of discussion comment");
+define("L_D_URL_ADDRESS","Authors's WWW  - URL");
+define("L_D_URL_DES","Authors's WWW - description");
+define("L_D_HOSTNAME","IP address of authors's computer");
+
+define("L_D_SELECTED_NONE","No comment was selected");
+define("L_D_DELETE_COMMENT","Are you sure you want to delete selected comment?");
+
+define("L_D_FORM","HTML code of the form for posting comment");
+define("L_D_ITEM","Item: ");
+
+define("L_D_SHOW_SELECTED","Show selected");
+define("L_D_SHOW_ALL","Show all");
+define("L_D_ADD_NEW","Add new");
+
+define("L_TOO_MUCH_RELATED","There are too much related items. The number of related items is limitted.");
+define("L_SELECT_RELATED","Select related items");
+define("L_SELECT_RELATED_1WAY","Add");
+define("L_SELECT_RELATED_2WAY","Add&nbsp;mutual");
+
+define("L_D_BACK","Back");
+define("L_D_ADMIN2","Discussion comments managment");
+
+define("L_INNER_IMPORT","Inner Node Feeding");
+define("L_INTER_IMPORT","Inter Node Import");
+define("L_INTER_EXPORT","Inter Node Export");
+
+define("L_NODES_MANAGER","Nodes");
+define("L_NO_PS_NODES_MANAGER","You have not permissions to manage nodes");
+define("L_NODES_ADMIN_TIT","Remote node administration");
+define("L_NODES_LIST","Known remote nodes");
+define("L_NODES_ADD_NEW","Add new node");
+define("L_NODES_EDIT","Edit node data");
+define("L_NODES_NODE_NAME","Node name");
+define("L_NODES_SERVER_URL","Server URL");
+define("L_NODES_PASWORD","Password");
+define("L_SUBMIT","Submit");
+define("L_NODES_SEL_NONE","No selected node");
+define("L_NODES_CONFIRM_DELETE","Are you sure you want to delete the node?");
+define("L_NODES_NODE_EMPTY","Node name must be filled");
+
+define("L_IMPORT_TIT","Inter node import settings");
+define("L_IMPORT_LIST","Existing remote imports into the slice ");
+define("L_IMPORT_CONFIRM_DELETE","Are you sure you want to delete the import?");
+define("L_IMPORT_SEL_NONE","No selected import");
+define("L_IMPORT_NODES_LIST","All remote nodes");
+define("L_IMPORT_CREATE","Create new feed from node");
+define("L_IMPORT_NODE_SEL","No selected node");
+define("L_IMPORT_SLICES","List of remote slices");
+define("L_IMPORT_SLICES2","List of available slices from the node ");
+define("L_IMPORT_SUBMIT","Choose slice");
+define("L_IMPORT2_OK","The import was successfully created");
+define("L_IMPORT2_ERR","The import was already created");
+
+define("L_AA_RSS_ERROR","Cannot establish connection. Contact the  administrator of remote node");
+
+define("L_EXPORT_TIT","Inter node export settings");
+define("L_EXPORT_CONFIRM_DELETE","Are you sure you want to delete the export?");
+define("L_EXPORT_SEL_NONE","No selected export");
+define("L_EXPORT_LIST","Existing exports of the slice ");
+define("L_EXPORT_ADD","Insert new item");
+define("L_EXPORT_NAME","User name");
+define("L_EXPORT_NODES","Remote Nodes");
+
+define("L_RSS_TITL", "Title of Slice for RSS");
+define("L_RSS_LINK", "Link to the Slice for RSS");
+define("L_RSS_DESC", "Short description (owner and name) of slice for RSS");
+define("L_RSS_DATE", "Date RSS information is generated, in RSS date format");
+
+
 /*
 $Log$
+Revision 1.9  2001/09/27 13:09:53  honzam
+New Cross Server Networking now is working (RSS item exchange)
+
 Revision 1.8  2001/07/09 09:28:44  honzam
 New supported User defined alias functions in include/usr_aliasfnc.php3 file
 
