@@ -177,32 +177,49 @@ class Cvarset {
   function makeUPDATE($tablename = "")
   {
     reset($this->vars);
-    while ( list( $varname, $variable ) = each($this->vars) )
-    { 
-      if ($variable->iskey) 
-        $wheres[] = $varname ."=". $variable->getSQLValue();
-      $updates[] = $varname ."=". $variable->getSQLValue(); 
-    }  
+    while ( list( $varname, $variable ) = each($this->vars) ) {
+      //echo $varname." -> ".$variable->getSQLValue()."<br>";
+      if (!$variable->iskey) 
+          $updates[] = $varname ."=". $variable->getSQLValue(); 
+    }
     if ($tablename) 
         $retval = "UPDATE $tablename SET";
     $retval .= " " . join (", ", $updates);
-    if (is_array ($wheres))
-        $retval .= " WHERE " . join (" AND ", $wheres);    
+    $where = $this->makeWHERE();
+    if ($where)
+        $retval .= " WHERE ".$where;    
     return $retval;
   }
   
   function makeSELECT ($table)
   {
-    reset ($this->vars);
-    while (list ($varname, $variable) = each ($this->vars)) {
-      if ($variable->iskey) 
-        $wheres[] = $varname ."=". $variable->getSQLValue();
-    }
-    if (!is_array ($wheres)) 
+    $where = $this->makeWHERE();
+    if (!$where) 
       return "SELECT * FROM $table";
-    else return "SELECT * FROM $table WHERE ".join(" AND ",$wheres);
+    else return "SELECT * FROM $table WHERE ".$where;
   }
       
+  function makeDELETE ($table)
+  {
+    $where = $this->makeWHERE();
+    if (!$where) 
+      return "Error";
+    else return "DELETE FROM $table WHERE ".$where;
+  }
+  
+  function makeWHERE ($table="") 
+  {
+    reset ($this->vars);
+    $where = "";
+    while (list ($varname, $variable) = each ($this->vars))
+      if ($variable->iskey) {
+        if ($where) $where .= " AND ";
+        if ($table) $varname = $table.".".$varname;
+        $where .= $varname ."=". $variable->getSQLValue();        
+      }
+    return $where;
+  }
+
   /// This function looks into the given table and if the row exists
   /// it is updated, if not then inserted. Add always all key fields
   /// by addkey() to the varset before using this function.
