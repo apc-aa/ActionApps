@@ -1,4 +1,4 @@
-<?php 
+<?php
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -501,21 +501,21 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
-  echo "</td>\n <td>";	
+  echo "</td>\n <td>";
   if (is_array ($arr)) {
       reset($arr);
-      while(list($k, $v) = each($arr)) { 
-        echo "<input type='checkbox' name='$name'
+      while(list($k, $v) = each($arr)) {
+        echo "<nobr><input type='checkbox' name='$name'
                      value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
-        if ($selected[$k]) 
+        if ($selected[$k])
           echo " checked";
-        echo ">".htmlspecialchars($v);
+        echo ">".htmlspecialchars($v)."</nobr>";
       }
   }
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo "</td></tr>\n";
-}  
+}
 
 
 # Prints html tag <select multiple .. to 2-column table
