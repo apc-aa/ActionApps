@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -142,9 +142,9 @@ function Cancel() {
   echo "<H1><B>" . _m("Remote node administration") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
-  
+
   $form_buttons = array("submit","cancel"=>array("url"=>"se_fields.php3"));
-  
+
 ?>
 
 <form method="post" name="frm" action="<?php echo $sess->url($PHP_SELF) ?>" onsubmit="return checkData()">
@@ -173,20 +173,20 @@ function Cancel() {
 
     FrmTabSeparator(($new_mode=="insert" ? _m("Add new node") : _m("Edit node data")));
 
-?>    
+?>
     <tr><td><?php echo _m("Node name") ?></td>
         <td><input type="text" name="node_name" size=40 value="<?php echo safe($node_name)?>" ><br><?php echo _m("Your node name")?>: "<?php echo ORG_NAME ?>"
     <tr><td><?php echo _m("URL of the getxml.php3") ?></td>
-         <td><input type="text" name="server_url" size=40 value="<?php echo safe($server_url)?>" ><br><?php echo _m("Your getxml is")?>: "<?php echo $AA_INSTAL_PATH ?>admin/getxml.php3"
+        <td><input type="text" name="server_url" size=40 value="<?php echo safe($server_url)?>" ><br><?php echo _m("Your getxml is")?>: "<?php echo AA_INSTAL_URL ?>admin/getxml.php3"
     <tr><td><?php echo _m("Password") ?></td>
          <td><input type="text" name="password" size=40 value="<?php echo safe($password)?>" >
     <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">
     <input type="hidden" name="old_node_name" value="<?php echo safe($old_node_name) ?>">
     <input type="hidden" name="sel_node_name">
 <?php
-    FrmTabEnd($form_buttons, $sess, $slice_id); 
+    FrmTabEnd($form_buttons, $sess, $slice_id);
 
-    echo "  
+    echo "
     </form>";
 
 HtmlPageEnd();
