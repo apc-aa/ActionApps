@@ -24,6 +24,7 @@ http://www.apc.org/
 #
 
 require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
+require $GLOBALS[AA_INC_PATH]."javascript.php3";
 
 # if $condition, shows star
 function Needed( $condition=true ) {
@@ -63,7 +64,7 @@ function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $
 	echo "
 	<TABLE border=1 cellpadding=2 width='100%'><TR>
 	<TD align=center><B>Selected:</B><BR><BR><INPUT TYPE=BUTTON VALUE='Delete' onclick='hcDelete(\"$name\")'></TD>
-	<TD><SELECT name='$name' MULTIPLE size=$size>";
+	<TD><SELECT name='$name' MULTIPLE size=$size".getTriggers("select",$name).">";
 //    debuglog (serialize ($value));
     if (is_array ($value))
 	for ($i=0; $i < count($value); ++$i)
@@ -106,7 +107,7 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
   if ( SINGLE_COLUMN_FORM )
     echo "</tr><tr align=left>";
   echo "<td>$htmlrow<input type=\"Text\" name=\"$name\" size=$size
-          maxlength=$maxsize value=\"$val\">";
+          maxlength=$maxsize value=\"$val\"".getTriggers("input",$name).">";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo "</td></tr>\n";
@@ -154,7 +155,7 @@ function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
     echo "</tr><tr align=left>";
-  echo "<td><input type=\"file\" name=\"$name\" size=$size accept=\"$accepts\">";  // /**/
+  echo "<td><input type=\"file\" name=\"$name\" size=$size accept=\"$accepts\"".getTriggers("input",$name).">";  // /**/
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo "</td></tr>\n";
@@ -192,7 +193,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM OR $single)
     echo "</tr><tr align=left>";
-  echo "<td $colspan>$htmlrow<textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>";
+  echo "<td $colspan>$htmlrow<textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual".getTriggers("textarea",$name).">$val</textarea>";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo "</td></tr>\n";
@@ -201,13 +202,13 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
 # On browsers which do support it, loads a special rich text editor with many
 # advanced features based on triedit.dll 
 # On the other browsers, loads a normal text area
-function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $needed=false, 
+function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class", $needed=false, 
                      $hlp="", $morehlp="", $single="", $html=false) {
   global $BName; 
   if (! richEditShowable()) {
-		FrmTextarea($name, $txt, $val, $rows, $cols, $needed, $hlp, $morehlp, $single, $html, $BName != "MSIE ");
-		return;
-	}
+	 FrmTextarea($name, $txt, $val, $rows, $cols, $needed, $hlp, $morehlp, $single, $html, $BName != "MSIE ");
+     return;
+  }
 
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); 
   $morehlp=safe($morehlp);
@@ -225,35 +226,36 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $needed=fals
   	$val = str_replace ("\r","",str_replace ("\n","",
 		nl2br (htmlspecialchars ($val,ENT_QUOTES))));
   else {
-		$repl = array ("'"=>'"',"\n"=>" ","\r"=>"");
-		reset ($repl);
-		while (list ($find,$rep) = each ($repl))
-			$val = str_replace ($find, $rep, $val);
+    $repl = array ("'"=>'"',"\n"=>" ","\r"=>"");
+    reset ($repl);
+    while (list ($find,$rep) = each ($repl))
+        $val = str_replace ($find, $rep, $val);
   }
   echo "<td $colspan>";
-/*
-	$nom_editor = "edt$name";
-	$idi_edit = 'eng';
-	$editor_height = 150;
-	$editor_width= 700;
-	$document_complet = 0;
-	$content_inicial = "$val";
-	include "../misc/wysiwyg/wysiwyg_web_edit.php3";
-*/
-	//	$scriptStart = "<script language=javascript src=\"". AA_INSTAL_URL. "misc/wysiwyg/richedt_";
-	$scriptStart = "<script language=javascript src=\"../misc/wysiwyg/richedt_";
-	echo $scriptStart . ($BName == "MSIE " ? "ie.js\">" : "ns.js\">").
-	"</script> 
-	<script> 
+
+    echo "<!-- UUUUU $BName -->";
+    if ($type == "iframe") 
+        $richedit = "richedit_iframe";
+    else if ($BName == "MSIE ") 
+        $richedit = "richedt_ie";
+    else $richedit = "richedit_ns";
+        
+	if ($GLOBALS[debug]) echo $richedit;
+    echo
+        "<script language=javascript> 
+        <!--
 		var edt$name"."_doc_complet = 0; 
         var edt = \"edt$name\"; 
  		var edtdoc = \"edt$name.document\"; 
         var richHeight = ".($rows * 22)."; 
         var richWidth = ".($cols * 8)."; 
         var imgpath = '../misc/wysiwyg/images/'; 
+        // -->
+	</script>
+    <script language=javascript src=\"../misc/wysiwyg/".$richedit.".js\">
+	</script>
+    <script language=javascript src=\"../misc/wysiwyg/".$richedit.".html\">
 	</script>";
-	echo $scriptStart . ($BName == "MSIE " ? "ie.html\">" : "ns.html\">");
-    echo "</script> ";
 
     echo "
     <script language =javascript > 
@@ -292,7 +294,7 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false,
   echo "<td><input type=\"checkbox\" name=\"$name\" $add ";
   if($checked)
     echo " checked";
-  echo ">";
+  echo getTriggers("input",$name).">";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo"</td>";
@@ -327,7 +329,7 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
     echo "</tr><tr align=left>";
-  echo "<td><select name=\"$name\">";	
+  echo "<td><select name=\"$name\"".getTriggers("select",$name).">";	
   reset($arr);
   while(list($k, $v) = each($arr)) { 
     if( $usevalue )                    // special parameter to use values instead of keys
@@ -376,7 +378,7 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25,
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
     echo "</tr><tr align=left>";
-  echo "<td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\">
+  echo "<td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"".getTriggers("input",$name).">
           <select name=\"foo_$name\"";
   if ($secondfield) { 	  
     echo "onchange=\"$name.value=this.options[this.selectedIndex].text;";
@@ -457,7 +459,7 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
   reset($arr);
   while(list($k, $v) = each($arr)) { 
     echo "<input type='radio' name='$name'
-                 value='". htmlspecialchars($k) ."'";
+                 value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
     if ((string)$selected == (string)$k) 
       echo " checked";
     echo ">".htmlspecialchars($v);
@@ -481,7 +483,7 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
       reset($arr);
       while(list($k, $v) = each($arr)) { 
         echo "<input type='checkbox' name='$name'
-                     value='". htmlspecialchars($k) ."'";
+                     value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
         if ($selected[$k]) 
           echo " checked";
         echo ">".htmlspecialchars($v);
@@ -501,7 +503,7 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
-  echo "</td>\n <td><select name=\"$name\" size=\"$size\" multiple>";	
+  echo "</td>\n <td><select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";	
   $option_no = 0;
   if( isset($arr) && is_array($arr) ) {
     reset($arr);
@@ -574,7 +576,7 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
     echo "</tr><tr align=left>";
-  echo "<td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>
+  echo "<td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual".getTriggers("textarea",$name).">$val</textarea>
           <select name=\"foo_$name\"";
   echo "onchange=\"add_to_area($name, this.options[this.selectedIndex].value)\">";
   

@@ -233,13 +233,14 @@ function show_fnc_freeze_txt($varname, $field, $value, $param, $html) {
 
 function show_fnc_edt($varname, $field, $value, $param, $html){
   echo $field[input_before];
-  list($rows, $cols) = explode(':', $param);
+  list($rows, $cols, $type) = explode(':', $param);
   if ($rows == 0) $rows = 10;
   if ($cols == 0) $cols = 70;
+  if ($type == "") $type = "class";
   $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
 	$list_fnc_edt [] = $field['name'];
   FrmRichEditTextarea($varname, $field['name'], $value[0]['value'], 
-   $rows, $cols, $field[required], $field[input_help], $field[input_morehlp], 
+   $rows, $cols, $type, $field[required], $field[input_help], $field[input_morehlp], 
    false, $htmlstate );
 	global $list_fnc_edt;
 	$list_fnc_edt[] = $varname;
