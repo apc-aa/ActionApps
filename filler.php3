@@ -95,6 +95,7 @@ require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
+require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
 
 function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
@@ -163,6 +164,7 @@ if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER");
 #if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
 if( !$slice_id ) SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
 
+$slice      = new slice($slice_id);
 $p_slice_id = q_pack_id($slice_id);
 $slice_info = GetSliceInfo($slice_id);
 
@@ -182,8 +184,8 @@ if ($debugfill) huhl("Debugfill insert=",$insert);
 // Fills also global variable $oldcontent4id (which is NOT! DB quoted)
 // (so $oldcontent4id is incompatible with $content4id - should be fixed
 // by using ItemContent object in near future)
-ValidateContent4Id ($err_valid, $slice_id, $insert ? "insert" : "update", $my_item_id,
-    ! $notvalidate, $notshown);
+ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
+list($fields, $prifields) = $slice->fields();
 
 if( !(isset($prifields) AND is_array($prifields)) )
 SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
@@ -199,7 +201,7 @@ if (count($err_valid) > 1) {
 }
 
 // prepare content4id array before calling StoreItem (content4id is QUOTED!)
-$content4id    = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
+$content4id    = GetContentFromForm( $slice, $oldcontent4id, $insert );
 
 // just quote all $oldcontent4id values
 $foocontent4id = new ItemContent($oldcontent4id);
