@@ -31,8 +31,8 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 if($cancel)
   go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
+if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS)) {
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS);
   exit;
 }
 
@@ -87,7 +87,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <TITLE><?php echo L_EDITDISC;?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 function InitPage() {}
-}
 // -->
 </SCRIPT>
 
@@ -130,6 +129,9 @@ function InitPage() {}
 <?php page_close()
 /*
 $Log$
+Revision 1.2  2001/12/12 18:44:26  honzam
+Better permission setting for discussions administration
+
 Revision 1.1  2001/09/27 13:15:47  honzam
 New discussion support
 
