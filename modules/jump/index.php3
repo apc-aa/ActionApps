@@ -36,8 +36,9 @@ if ($db->next_record()) {
 	if (strchr ($dest,"?")) $dest .= "&"; else $dest .= "?";
     $instal_url = AA_INSTAL_URL;
 	$url = $instal_url.$dest."AA_CP_Session=$AA_CP_Session";
-    $change_id = $db->f("dest_slice_id");
-    //if ($change_id) $url .= "&change_id=".unpack_id($change_id);
+    $change_id = $db->f("dest_slice_id");  
+    if ($change_id) $url .= "&jumping=1&change_id=".unpack_id($change_id);
+    //echo $url; exit;
     go_url ($url);
 }
 else 

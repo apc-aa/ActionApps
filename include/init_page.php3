@@ -28,14 +28,13 @@ else return;
 # parameter New_slice - used in sliceadd.php3 page
 #                     - do not unset slice_id but slice_id could not be defined
 
-# handle with PHP magic quotes - quote the variables if quoting is set off
+ # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
-  if (!is_array($val)) {
-    return addslashes($val);
-  }  
-  for (reset($val); list($k, $v) = each($val); )
-    $ret[$k] = Myaddslashes($v, $n+1);
-  return $ret;
+    if (!is_array($val)) 
+        return addslashes($val);
+    for (reset($val); list($k, $v) = each($val); )
+        $ret[$k] = Myaddslashes($v, $n+1);
+    return $ret;
 }    
 
 if (!get_magic_quotes_gpc()) { 
@@ -48,12 +47,12 @@ if (!get_magic_quotes_gpc()) {
   $$k = Myaddslashes($v); 
 }
 
-# modules other than slices are in deeper directory -> $directory_depth
-require "$directory_depth../include/config.php3";
-
 if($encap == "false")    # used in itemedit for anonymous form
   $encap = false;        # it must be here, because the variable is rewriten
                          # if the get_magic_quotes_gpc()==false (see above)
+
+# modules other than slices are in deeper directory -> $directory_depth
+require "$directory_depth../include/config.php3";
 
 if($free)            // anonymous authentication
   $nobody = true;
@@ -86,11 +85,9 @@ if( $new_sliceid )
 if( $Add_slice )
   unset($slice_id);
 
-if( isset($slice_lang_file) ) {                             // used if new slice is created
-  include $GLOBALS[AA_INC_PATH] . $slice_lang_file;
-} elseif(isset($r_config_file) AND is_array($r_config_file) AND ($r_config_file[$slice_id] != "")) {
-  include $GLOBALS[AA_INC_PATH] . $r_config_file[$slice_id];
-} else {
+if(isset($r_lang_file) AND is_array($r_lang_file) AND ($r_lang_file[$slice_id] != "")) {
+  include $GLOBALS[AA_INC_PATH] . $r_lang_file[$slice_id];  # do not delete the curly braces - include in condition statement must be in braces!
+}else{
   include $GLOBALS[AA_INC_PATH] . DEFAULT_LANG_INCLUDE ;
 }
 
@@ -101,7 +98,7 @@ if( $slice_id )
   
 $sess->register("slice_id");
 $sess->register("p_slice_id");
-$sess->register("r_config_file");
+$sess->register("r_lang_file");
 $sess->register("r_slice_headline");    // stores headline of slice
 $sess->register("r_slice_view_url");    // url of slice
 $sess->register("r_stored_module");     // id of module which values are in r_slice_headline, r_slice_view_url
@@ -184,7 +181,7 @@ if( !$Add_slice AND !$New_slice ) {
           " WHERE id='$p_slice_id'"; 
     $db->query($SQL);
     if($db->next_record()) {
-      $r_config_file[$slice_id] = $db->f('lang_file');
+      $r_lang_file[$slice_id] = $db->f('lang_file');
       $r_stored_module = $slice_id;
       $r_slice_view_url = ($db->f('slice_url')=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                       : $db->f('slice_url'));
@@ -216,41 +213,39 @@ if( !$Add_slice AND !$New_slice ) {
   }  
   
   # if we switch to another module type, we should go to module main page
-  if( $module_change ) {
+  # but not if we are jumping with the Jump module
+  if( $module_change && !$jumping) {
     page_close();
 	//if ($g_modules[$slice_id]['type'] != 'S') { echo "Chacha"; exit; }
     go_url( $sess->url($MODULES[$g_modules[$slice_id]['type']]['directory']."index.php3") );
     exit;
   }
 
-	// The config file not loaded -> the slice type was changed
-  	if( CONFIG_FILE != $r_config_file[$slice_id] ) {
-    	if (++$wrong_language_file == 10) {
-			echo "<b>WRONG LANGUAGE FILE</b>: you must have<br>
-				 define(\"CONFIG_FILE\",\"file_name.php3\") in the language file, with file_name.php3 replaced by the real file name (which seems to be ".$r_config_file[$slice_id].").";
-			page_close();
-			exit;
-		}
-
-	    page_close();             // save variables
-
-    	if( $free )  {// anonymous login
-	    	if( $encap ) {
-		        $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
-        		echo '<SCRIPT Language="JavaScript"><!--
-                		document.location = "'. $sess->url($to_go_url) .'";
-		              // -->
-        		     </SCRIPT>';
-	        } else
-      			go_url( $sess->url($PHP_SELF));
-		} else 
-      		go_url( $sess->url($PHP_SELF));
-	    exit;
+	if( LANG_FILE != $r_lang_file[$slice_id] ) {
+  	if (++$wrong_language_file == 10) {
+      echo "<b>WRONG LANGUAGE FILE</b>: you must have<br>
+		    define(\"LANG_FILE\",\"file_name.php3\") in the language file, with file_name.php3 replaced by the real file name (which seems to be ".$r_lang_file[$slice_id].").";
+      page_close();
+      exit;
     }
+
+    page_close();             // save variables
+
+  	if( $free && $encap)  {// anonymous login
+      $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+   	  echo '<SCRIPT Language="JavaScript"><!--
+         		  document.location = "'. $sess->url($to_go_url) .'";
+              // -->
+            </SCRIPT>';
+    }
+    go_url( $sess->url($PHP_SELF));
+    exit;
+  }
 }
 
 # if we switch to another module type, we should go to module main page
-if( $module_change ) {
+# but not if we are jumping with the Jump module
+if( $module_change && !$jumping) {
   page_close();
   go_url( $sess->url($MODULES[$g_modules[$slice_id]['type']]['directory']."index.php3") );
   exit;
