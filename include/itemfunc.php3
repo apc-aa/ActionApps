@@ -145,7 +145,7 @@ function insert_fnc_ids($item_id, $field, $value, $param) {
 function insert_fnc_uid($item_id, $field, $value, $param) {
   global $auth;
   # if not $auth, it is from anonymous posting - 9999999999 is anonymous user
-  $val = (isset($auth) ?  $auth->auth["uid"] : "9999999999");
+  $val = (isset($auth) ?  $auth->auth["uid"] : ( (strlen($value['value'])>0) ? $value['value'] : "9999999999"));
   insert_fnc_qte($item_id, $field, array("value"=>$val) , $param);
 }
 
@@ -715,9 +715,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
           reset($GLOBALS[$varname]);
           $i=0;
           while( list(,$v) = each($GLOBALS[$varname]) )
-            $arr[$i++]['value'] = $v;
+            $arr[$i++]['value'] = safe($v);
         } else
-          $arr[0]['value'] = $GLOBALS[$varname];
+          $arr[0]['value'] = safe($GLOBALS[$varname]);
   	    $fncname($varname, $f, $arr, $fnc[param], $GLOBALS[$htmlvarname]==1);
       } else
    	    $fncname($varname, $f, $content4id[$pri_field_id], 
