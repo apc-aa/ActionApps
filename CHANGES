@@ -1,3 +1,5 @@
+10/16/03 - 'Fixed bug in searchlib.php3 - multiple values joined by AND operator
+(marek)    were not enclosed in speech marks.
 09/30/03 - loop through multivalues in stringexpand:
 (honzam)   {@category.......1},
            {@category.......1(const_name,const_value,_#MY_ALIAS):,:_#1 _#2 _#3}
