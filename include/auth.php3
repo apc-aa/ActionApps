@@ -1,15 +1,15 @@
 <?php
 /**
- * Auth feature (mod_auth_mysql) related functions: 
+ * Auth feature (mod_auth_mysql) related functions:
  * Event handlers and maintenance.
  *
  * @package ReaderInput
  * @version $Id$
  * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications 
+ * @copyright (c) 2002-3 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2003 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2003 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,6 @@ http://www.apc.org/
 
 //require_once "config.php3";
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
 if (!is_object( $db )) $db = new DB_AA;
 
@@ -47,18 +46,18 @@ function AuthDeleteReaders( $item_ids, $slice_id ) {
         .q_pack_id( $slice_id )."'");
     $db->next_record();
     if ($db->f("type") != "ReaderManagement" || ! $db->f("auth_field_group"))
-        return; 
+        return;
     $db->query ("
-        SELECT text FROM content 
+        SELECT text FROM content
         INNER JOIN item ON content.item_id = item.id
         WHERE field_id = '".FIELDID_USERNAME."'
         AND item.id IN ('".join_and_quote( "','", $item_ids)."')");
     while ($db->next_record())
         $usernames[] = $db->f("text");
-    $where = "WHERE username IN ('".join_and_quote( "','", $usernames)."')";        
+    $where = "WHERE username IN ('".join_and_quote( "','", $usernames)."')";
     $db->query ("DELETE FROM auth_user ".$where);
-    $db->query ("DELETE FROM auth_group ".$where);        
-} 
+    $db->query ("DELETE FROM auth_group ".$where);
+}
 
 // --------------------------------------------------------------------------
 /** Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
@@ -71,11 +70,11 @@ function AuthUpdateReaders( $item_ids, $slice_id ) {
     $db->next_record();
     if ($db->f("type") != "ReaderManagement" || ! $db->f("auth_field_group")) {
         freeDB($db);
-        return; 
+        return;
     }
 
     // This select follows the idea of QueryZIDs: it uses several times the
-    // table content to place several fields on one row.        
+    // table content to place several fields on one row.
     $SQL = AuthSelect ($db->f("auth_field_group"))
         ." AND item.id IN ('".join_and_quote( "','", $item_ids )."')";
     freeDB($db);
@@ -85,28 +84,28 @@ function AuthUpdateReaders( $item_ids, $slice_id ) {
             AuthUpdateReader ($reader["username"], $reader["password"], $reader["groups"]);
         else AuthDeleteReader ($reader["username"]);
     }
-    
+
     AuthMaintenance();
-} 
+}
 
 // --------------------------------------------------------------------------
 /** Adds readers moved automatically from Pending to Active, deletes readers moved from
-*   Active to Expired. Does some sanity checks also. Writes the results to 
-*   the table <em>auth_log</em>. 
+*   Active to Expired. Does some sanity checks also. Writes the results to
+*   the table <em>auth_log</em>.
 *
 *   This function should be called once a day from cron.
 */
 function AuthMaintenance() {
     $db = getDB();
-    
-    // Create the array $oldusers with user names 
+
+    // Create the array $oldusers with user names
     $db->query ("SELECT username FROM auth_user");
-    while ($db->next_record()) 
+    while ($db->next_record())
         $oldusers[$db->f("username")] = 1;
-    
+
     $slices = GetTable2Array (
         "SELECT * FROM slice WHERE type='ReaderManagement'");
-        
+
     // Work slice by slice
     reset( $slices );
     while( list ($slice_id, $slice) = each ($slices)) {
@@ -116,16 +115,16 @@ function AuthMaintenance() {
         $SQL = AuthSelect ($slice["auth_field_group"])
             ." AND slice_id = '".addslashes($slice_id)."'";
         $db->query ($SQL);
-        while ($db->next_record()) {        
+        while ($db->next_record()) {
             $olduser_exists = $oldusers [$db->f("username")];
             unset ($oldusers[$db->f("username")]);
-    
+
             // Add readers which should be in auth_user but are not
             // (perhaps moved recently from Pending to Active)
             if (AuthIsActive ($db->Record) && $db->f("groups")) {
                 if (! $olduser_exists) {
                     $result["readers added"] ++;
-                    AuthUpdateReader ($db->f("username"), $db->f("password"), 
+                    AuthUpdateReader ($db->f("username"), $db->f("password"),
                         $db->f("groups"));
                 }
             }
@@ -137,21 +136,21 @@ function AuthMaintenance() {
             }
         }
     }
-    
+
     // Sanity checks:
-    
+
     // Delete readers which are in no slice
     if (is_array( $oldusers ) && count( $oldusers )) {
         $result["not existing readers deleted"] = count( $oldusers );
         reset ($oldusers);
         while (list ($username) = each ($oldusers))
             $usernames[] = $username;
-        $where = "WHERE username IN ('".join_and_quote( "','", $usernames)."')";        
+        $where = "WHERE username IN ('".join_and_quote( "','", $usernames)."')";
         $db->query ("DELETE FROM auth_user ".$where);
-        $db->query ("DELETE FROM auth_group ".$where);        
+        $db->query ("DELETE FROM auth_group ".$where);
     }
-    
-    // Delete readers with no groups 
+
+    // Delete readers with no groups
     $db->query ("
         SELECT auth_user.username FROM auth_user LEFT JOIN auth_group
         ON auth_user.username = auth_group.username
@@ -160,11 +159,11 @@ function AuthMaintenance() {
         $result["Readers with no groups, deleted"] = $db->num_rows();
         while ($db->next_record())
             $usernames[] = $db->f("username");
-        $db->query ("DELETE FROM auth_user WHERE username IN 
+        $db->query ("DELETE FROM auth_user WHERE username IN
             ('".join_and_quote("','", $usernames)."')");
     }
-    
-    // Delete groups with username not from auth_user 
+
+    // Delete groups with username not from auth_user
     $db->query ("
         SELECT auth_group.username FROM auth_user RIGHT JOIN auth_group
         ON auth_user.username = auth_group.username
@@ -173,11 +172,11 @@ function AuthMaintenance() {
         $result["Readers in auth_group but not in auth_user, deleted"] = $db->num_rows();
         while ($db->next_record())
             $usernames[] = $db->f("username");
-        $db->query ("DELETE FROM auth_group WHERE username IN 
+        $db->query ("DELETE FROM auth_group WHERE username IN
             ('".join_and_quote("','", $usernames)."')");
-    }    
+    }
 
-    if ($GLOBALS["log_auth_results"]) {    
+    if ($GLOBALS["log_auth_results"]) {
         // Log the results
         if (!is_array ($result))
             $log = "Nothing changed.";
@@ -192,15 +191,15 @@ function AuthMaintenance() {
             VALUES ('".addslashes($log)."', ".time().")");
     }
     freeDB($db);
-}      
+}
 
 // --------------------------------------------------------------------------
 
 function AuthDeleteReader ($username) {
     global $db;
-    $db->query ("DELETE FROM auth_user WHERE username='".addslashes($username)."'");    
+    $db->query ("DELETE FROM auth_user WHERE username='".addslashes($username)."'");
     AuthUpdateGroups ($username);
-}  
+}
 
 // --------------------------------------------------------------------------
 
@@ -209,16 +208,16 @@ function AuthUpdateReader ($username, $password, $groups) {
     $db->query ("REPLACE INTO auth_user (username, passwd, last_changed)
         VALUES ('".addslashes($username)."',
                 '".addslashes($password)."', ".time().")");
-    AuthUpdateGroups ($username, $groups);                
-}        
+    AuthUpdateGroups ($username, $groups);
+}
 
 // --------------------------------------------------------------------------
 
 function AuthIsActive ($reader) {
-    return $reader["status_code"] == SC_ACTIVE 
+    return $reader["status_code"] == SC_ACTIVE
            && $reader["publish_date"] <= time()
            && $reader["expiry_date"] >= time();
-}           
+}
 
 // --------------------------------------------------------------------------
 
@@ -226,32 +225,32 @@ function AuthUpdateGroups ($username, $groups = "") {
     global $db;
     $username = addslashes ($username);
     $db->query ("DELETE FROM auth_group WHERE username='$username'");
-    if ($groups) foreach (split (";", $groups) as $group)        
+    if ($groups) foreach (split (";", $groups) as $group)
         $db->query ("INSERT INTO auth_group (username, groups, last_changed)
             VALUES ('$username','".addslashes($group)."',".time().")");
-}                
+}
 
 // --------------------------------------------------------------------------
 
 function AuthSelect ($auth_field_group) {
     return "
-    SELECT publish_date, expiry_date, status_code, groups.text AS groups, 
+    SELECT publish_date, expiry_date, status_code, groups.text AS groups,
            username.text AS username, password.text AS password
     FROM item, content AS groups, content AS username, content AS password
     WHERE groups.item_id = item.id
       AND groups.field_id = '".$auth_field_group."'
-      AND username.item_id = item.id 
+      AND username.item_id = item.id
       AND username.field_id = '".FIELDID_USERNAME."'
       AND password.item_id = item.id
       AND password.field_id = '".FIELDID_PASSWORD."'";
-}      
+}
 
 // --------------------------------------------------------------------------
 
 /** Called from Event_ItemsAfterPropagateConstantChanges(). */
 function AuthChangeGroups ($constant_id, $oldvalue, $newvalue) {
     global $db_usernames;
-    if (!is_object ($db_usernames)) 
+    if (!is_object ($db_usernames))
         $db_usernames = new DB_AA;
 
     if (empty ($newvalue) || $oldvalue == $newvalue)
@@ -259,23 +258,23 @@ function AuthChangeGroups ($constant_id, $oldvalue, $newvalue) {
     $db_usernames->query ("SELECT * FROM constant WHERE id='".q_pack_id ($constant_id)."'");
     if (!$db_usernames->next_record())
         return;
-    $group_id = $db_usernames->f("group_id");        
-    $db_usernames->query ("    
-		SELECT username.text
-		FROM slice INNER JOIN field ON slice.id=field.slice_id
+    $group_id = $db_usernames->f("group_id");
+    $db_usernames->query ("
+        SELECT username.text
+        FROM slice INNER JOIN field ON slice.id=field.slice_id
         INNER JOIN item ON slice.id = item.slice_id
         INNER JOIN content ON item.id=content.item_id AND field.id = content.field_id
         INNER JOIN content AS username ON username.item_id=item.id
         WHERE slice.type = 'ReaderManagement'
         AND slice.auth_field_group = field.id
-		AND (field.input_show_func LIKE '___:$group_id:%'
+        AND (field.input_show_func LIKE '___:$group_id:%'
         OR  field.input_show_func LIKE '___:$group_id')
-		AND content.text = '$newvalue'
+        AND content.text = '$newvalue'
         AND username.field_id='".FIELDID_USERNAME."'");
 
-    $newvalue = stripslashes ($newvalue);    
-        
-	while ($db_usernames->next_record()) 
-        AuthUpdateGroups ($db_usernames->f("text"), $newvalue);    
-}       
+    $newvalue = stripslashes ($newvalue);
+
+    while ($db_usernames->next_record())
+        AuthUpdateGroups ($db_usernames->f("text"), $newvalue);
+}
 ?>

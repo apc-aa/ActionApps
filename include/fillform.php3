@@ -25,7 +25,7 @@ http://www.apc.org/
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
 
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
+// require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
 function fillFormFromVars($fillConds) {
     global $err, $jsstart, $jsfinish;

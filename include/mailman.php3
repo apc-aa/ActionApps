@@ -1,15 +1,15 @@
 <?php
 /**
- * Mailman feature related functions: 
+ * Mailman feature related functions:
  * Event handlers.
  *
  * @package ReaderInput
  * @version $Id$
  * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications 
+ * @copyright (c) 2002-3 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2003 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2003 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,6 @@ http://www.apc.org/
 */
 
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
 if (!is_object( $db )) $db = new DB_AA;
 
@@ -44,7 +43,7 @@ define("SC_HOLDING_BIN", 2);
 */
 function MailmanCreateSynchroFiles ($slice_id) {
     global $db, $MAILMAN_SYNCHRO_DIR;
-           
+
     if (! @is_dir ($MAILMAN_SYNCHRO_DIR))
         return;
 
@@ -52,7 +51,7 @@ function MailmanCreateSynchroFiles ($slice_id) {
     $field = $slice_info["mailman_field_lists"];
     if ($slice_info["type"] != "ReaderManagement" || ! $field)
         return;
-        
+
     $db->tquery("SELECT email.text AS email, maillist.text AS maillist,
         mailconf.text AS mailconf
         FROM item INNER JOIN content email ON item.id = email.item_id
@@ -65,13 +64,13 @@ function MailmanCreateSynchroFiles ($slice_id) {
         AND item.status_code=1
         AND item.publish_date <= ".time()."
         AND item.expiry_date >= ".time());
-        
-    while ($db->next_record()) 
+
+    while ($db->next_record())
         if ($db->f("mailconf") && $db->f("mailconf") != "off")
             $maillist[$db->f("maillist")][] = $db->f("email");
-        
+
     // Add empty mailing lists
-    $db->query ("SELECT input_show_func FROM field 
+    $db->query ("SELECT input_show_func FROM field
         WHERE slice_id='".q_pack_id($slice_id)."' AND id='$field'");
     if (! $db->next_record())
         return;
@@ -79,14 +78,14 @@ function MailmanCreateSynchroFiles ($slice_id) {
     $db->query ("SELECT value FROM constant WHERE group_id='".addslashes($group_id)."'");
     while ($db->next_record())
         if (! $maillist[$db->f("value")])
-            $maillist[$db->f("value")] = array ();                
-        
-    endslash ($MAILMAN_SYNCHRO_DIR);            
+            $maillist[$db->f("value")] = array ();
+
+    endslash ($MAILMAN_SYNCHRO_DIR);
 
     if (!is_array ($maillist))
         return;
-            
-    // Write files    
+
+    // Write files
     reset ($maillist);
     while (list ($listname, $emails) = each ($maillist)) {
         // I don't want to use @fopen because I believe it is better to know
@@ -97,14 +96,14 @@ function MailmanCreateSynchroFiles ($slice_id) {
             fclose ($fd);
         }
     }
-}        
-   
-// --------------------------------------------------------------------------           
+}
+
+// --------------------------------------------------------------------------
 
 function MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue ) {
     global $db;
     $db->query ("SELECT group_id FROM constant WHERE id='".q_pack_id($constant_id)."'");
-    if (! $db->next_record()) 
+    if (! $db->next_record())
         return;
     $group_id = $db->f("group_id");
     $db->query ("SELECT slice.id FROM slice
@@ -114,9 +113,9 @@ function MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue ) {
         OR  field.input_show_func LIKE '___:$group_id')");
     $slices = array();
     while ($db->next_record())
-        $slices[] = unpack_id ($db->f("id"));        
+        $slices[] = unpack_id ($db->f("id"));
     foreach ($slices as $slice_id)
         MailmanCreateSynchroFiles ($slice_id);
 }
-      
+
 ?>

@@ -113,7 +113,6 @@ require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 if ($encap) require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";
 /** Main include file for using session management function on a page */
 else require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 /** Some functions pulled from here to allow inclusion elsewhere */
 require_once $GLOBALS["AA_INC_PATH"]."fillform.php3";
