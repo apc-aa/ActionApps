@@ -54,6 +54,14 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     // load the main AA menu (see menu.php3)
     if ($smmenus == "aamenus")
         $smmenus = get_aamenus();
+
+    // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
+    if ($activeMain == "aaadmin") {
+        if (substr (LANG_FILE, 4, 4) != "news") {
+            $lang = substr (LANG_FILE, 0, 2);
+            require $GLOBALS[AA_INC_PATH].$lang."_news_lang.php3";
+        }
+    }
          
     if( $useOnLoad )
         echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
@@ -90,7 +98,9 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
                 if ($first) $first = false;
                 else echo " | ";
                 if (!isset ($aamenuprop["cond"])) $aamenuprop["cond"] = 1;
-                if ($slice_id && $aamenuprop["cond"] && $aamenu != $activeMain) {
+                if ($aamenu == $activeMain)
+                    echo "<span class=nbactive>$aamenuprop[label]</span>";
+                else if ($slice_id && $aamenuprop["cond"]) {
                      $href = $aamenuprop["exact_href"];
                      if (!$href) $href = get_aa_url($aamenuprop["href"]);                    
                      echo "<a href=\"$href\">"
@@ -141,8 +151,9 @@ function showSubmenu (&$aamenu, $active)
         else {
             echo '<tr><td width="122" valign="TOP">&nbsp;&nbsp;';
             if (!isset ($item["cond"])) $item["cond"] = 1;
-            if (($slice_id || $item["show_always"]) 
-                && $itemshow != $active && $item["cond"]) {
+            if ($itemshow == $active)
+                echo "<span class=leftmenua>".$item["label"]."</span>";
+            else if (($slice_id || $item["show_always"]) && $item["cond"]) {
                 echo '<a href="';
                 if ($item["exact_href"]) echo $item["exact_href"]; 
                 else echo get_aa_url($item["href"]);

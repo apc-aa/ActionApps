@@ -342,7 +342,7 @@ function SubmitItems(act) {
 }
 
 function MarkedActionGo() {
-  var ms = document.markedform.markedaction;
+  var ms = document.itemsform.markedaction_select;
   switch( ms.options[ms.selectedIndex].value ) {
     case "1-app": SubmitItems('app'); 
                   break;
@@ -380,9 +380,14 @@ function OpenPreview() {
 
 function SelectVis(state) {
   var len = document.itemsform.elements.length
+  state = 2
   for( var i=0; i<len; i++ )
-    if( document.itemsform.elements[i].name.substring(0,3) == 'chb')  //items checkboxes
+    if( document.itemsform.elements[i].name.substring(0,3) == 'chb') { //items checkboxes
+      if (state == 2) {
+        state = ! document.itemsform.elements[i].checked;
+      }
       document.itemsform.elements[i].checked = state;    
+    }
 }
 
 function OpenFeedForm(){
@@ -391,33 +396,27 @@ function OpenFeedForm(){
   feedformwindow = open('<?php echo $sess->url("feed_to.php3")?>','feedform','scrollbars')
 }
 
-<?php //called by the f_k alias function (see item.php3) 
-echo '
+//called by the f_k alias function (see item.php3) 
 function CallLiveCheckbox (controlName) {
-    LiveCheckbox (
-        "itemsform", 
-        controlName, 
-        "'.$AA_INSTAL_PATH.'images/",
-        "'.$AA_INSTAL_PATH.'live_checkbox.php3",
-        "'._m("on").'",
-        "'._m("off").'",
-        "'._m("changing to on").'",
-        "'._m("changing to off").'",
-        "'._m("error: change failed").'",
-        "'._m("Please wait until the database change is made and the checkbox changes to ON.").'",
-        "'._m("Please wait until the database change is made and the checkbox changes to OFF.").'",
-        "'._m("Please wait until the other request is finished.").'");
-}'; ?>
+    myimg = document.itemsform[controlName];
+    myimg.src = "<?php echo $AA_INSTAL_PATH ?>images/cb_2off.gif";
+    
+    imgsrc = "<?php echo $AA_INSTAL_PATH ?>live_checkbox.php3?"
+        +controlName+"=1&no_cache="+Math.random()+"&AA_CP_Session=<?php echo $AA_CP_Session ?>";
+    setTimeout("ChangeImgSrc ('"+controlName+"','"+imgsrc+"')", 1);
+}
+
+function ChangeImgSrc (imageName, newsrc) {
+    document.itemsform [imageName].src = newsrc;
+}
   
 // -->
-</SCRIPT>
-<SCRIPT language=javascript src="<?php echo $AA_INSTAL_PATH ?>include/live_checkbox.js">
 </SCRIPT>
 
 </head> <?php
 
 require $GLOBALS[AA_INC_PATH]."menu.php3";
-showMenu ($aamenus, "itemmanager", "", $navbar != "0", $leftbar != "0");
+showMenu ($aamenus, "itemmanager", $r_bin_state, $navbar != "0", $leftbar != "0");
 
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
 switch( $r_bin_state ) {
@@ -496,127 +495,122 @@ $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
 echo "<center>";
 echo "$Msg <br>";
 
+# user definend sorting and filtering (add by setu 2002-0206)
+if ($sort_filter != "0") {
+      # echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
+      #if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";
+      // action URL with return_url if $return_url is set.
+    echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url="). '">
+          <table width="460" border="0" cellspacing="0" cellpadding="0" 
+          class=leftmenu bgcolor="'. COLOR_TABBG .'">';
+    
+    reset( $fields );
+    while( list ($k, $v ) = each( $fields ) ) {
+      $lookup_fields[$k] = $v[name];
+      if( $v[text_stored] )
+        $lookup_text_fields[$k] = $v[name];
+    }
+    
+      # filter
+    echo "<tr><td class=search>&nbsp;<b>". L_SEARCH ."</b></td><td>";
+
+    FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
+    echo "<input type='Text' name='admin_search' size=20
+          maxlength=254 value=\"". safe($r_admin_search). "\"></td>";
+    echo "<td rowspan=2 align='right' valign='middle'><a
+          href=\"javascript:document.filterform.submit()\" class=search>". L_GO ."</a>&nbsp;</td></tr>";
+    echo "<input type=hidden name=action value='filter'>";
+    
+      #order
+    echo "<tr><td class=search>&nbsp;<b>". L_ORDER ."</b></td>
+           <td class=leftmenuy>";
+    FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order);
+    echo "<input type='checkbox' name='admin_order_dir'". 
+         ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . L_DESCENDING. "</td></tr>";
+    
+    echo "</table></form></center><p></p>"; // workaround for align=left bug
+}
+    
 # ------- Caption -----------
 
-
+/*
 echo "<table border=0 cellspacing=0 class=login width=460>" .
      "<TR><TD width=24><img src='$table_icon' border=0 alt=''></TD>".
      "<TD align=center class=tablename width=436> $table_name </TD></TR>".
  "</table>";
-
+*/
 # echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
 // action URL with return_url if $return_url is set.
 echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url=") .'">'.
 '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
 
                          
-if( count( $item_ids ) > 0 ) {
-  $aliases = GetAliasesFromFields($fields);
+if( count( $item_ids ) == 0 ) {
+    echo "<tr><td><div class=tabtxt>". L_NO_ITEM_FOUND ."</div></td></table>";
+    HtmlPageEnd(); 
+    page_close();
+    exit;
+}
 
-  $itemview = new itemview( $db, $format_strings, $fields, $aliases, $item_ids,
-              $st->metapage * ($st->current-1), $st->metapage, $r_slice_view_url );
-  $itemview->print_view("NOCACHE");   # big security hole is open if we cache it
-                                      # (links to itemedit.php3 would stay with 
-                                      # session ids in cache - you bacame 
-                                      # another user !!!
-    
-  $st->countPages( count( $item_ids ) );
+$aliases = GetAliasesFromFields($fields);
 
-  echo '</table><br>';
+$itemview = new itemview( $db, $format_strings, $fields, $aliases, $item_ids,
+          $st->metapage * ($st->current-1), $st->metapage, $r_slice_view_url );
+$itemview->print_view("NOCACHE");   # big security hole is open if we cache it
+                                  # (links to itemedit.php3 would stay with 
+                                  # session ids in cache - you bacame 
+                                  # another user !!!
 
-	if($st->pageCount() > 1)
-    $st->pnavbar();
-}  
-else 
-  echo "<tr><td><div class=tabtxt>". L_NO_ITEM_FOUND ."</div></td></table>";
-  
-######## add by setu 2002-0206 #######
-### Action for Marked item ###
+$st->countPages( count( $item_ids ) );
 
 if ($action_selected != "0")
 {  
-echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
-echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
-echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
-echo '</form></center>';
-
-
-if( ($r_bin_state != "app")  AND 
-    ($r_bin_state != "appb") AND 
-    ($r_bin_state != "appc") AND 
-    CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT))
-  $markedaction["1-app"] = L_MOVE_TO_ACTIVE_BIN; 
-
-if( ($r_bin_state != "hold") AND 
-    CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD))
-  $markedaction["2-hold"] = L_MOVE_TO_HOLDING_BIN;
-  
-if( ($r_bin_state != "trash") AND 
-     CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH))
-  $markedaction["3-trash"] = L_MOVE_TO_TRASH_BIN;
-if ($feed_selected != "0")
-$markedaction["4-feed"] = L_FEED;
-if ($view_selected != "0")
-$markedaction["5-view"] = L_VIEW_FULLTEXT;
-  
-  // click "go" does not use markedform, it uses itemsfrom above...
-  // maybe this action is not used.
-echo "<center>
-      <form name=markedform method=post action=\"". $sess->url($PHP_SELF).
-	make_return_url("&return_url=").			// added by setu, 
-	"\">
-      <table border=0 cellspacing=0 class=login width=460>
-      <TR><TD align=center class=tablename>".
-      L_CHANGE_MARKED ." &nbsp; <select name=markedaction>";
-
-reset($markedaction);
-while(list($k, $v) = each($markedaction)) 
-  echo "<option value=\"". htmlspecialchars($k)."\"> ".
-           htmlspecialchars($v) ." </option>";
-echo "</select></td><td align='right' class=tablename>
-      <a href=\"javascript:MarkedActionGo()\" class=leftmenuy>".L_GO.
-      "</a> </TD></TR>".
- "</table></form>";
-}
-###############
-
-######## add by setu 2002-0206 #######
-# user definend sorting and filtering ---------------------------------------
-if ($sort_filter != "0") {
-  # echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
-  #if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";
-  // action URL with return_url if $return_url is set.
-  echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url="). '">
-      <table width="460" border="0" cellspacing="0" cellpadding="0" 
-      class=leftmenu bgcolor="'. COLOR_TABBG .'">';
-
-reset( $fields );
-while( list ($k, $v ) = each( $fields ) ) {
-  $lookup_fields[$k] = $v[name];
-  if( $v[text_stored] )
-    $lookup_text_fields[$k] = $v[name];
-}
+    echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
+    echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
+    echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
     
-  #order
-echo "<tr>
-       <td class=leftmenuy><b>". L_ORDER ."</b></td>
-       <td class=leftmenuy>";
-FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order);
-echo "<input type='checkbox' name='admin_order_dir'". 
-     ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . L_DESCENDING. "</td>
-     <td rowspan=2 align='right' valign='middle'><a
-      href=\"javascript:document.filterform.submit()\" class=leftmenuy>". L_GO ."</a> </td></tr>";
-
-  # filter
-echo "<tr><td class=leftmenuy><b>". L_SEARCH ."</b></td>
-     <td>";
-FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
-echo "<input type='Text' name='admin_search' size=20
-      maxlength=254 value=\"". safe($r_admin_search). "\"></td></tr></table>
-      <input type=hidden name=action value='filter'></form></center>";
-echo "<p></p>"; // workaround for align=left bug
+    if( ($r_bin_state != "app")  AND 
+        ($r_bin_state != "appb") AND 
+        ($r_bin_state != "appc") AND 
+        CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT))
+      $markedaction["1-app"] = L_MOVE_TO_ACTIVE_BIN; 
+    
+    if( ($r_bin_state != "hold") AND 
+        CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD))
+      $markedaction["2-hold"] = L_MOVE_TO_HOLDING_BIN;
+      
+    if( ($r_bin_state != "trash") AND 
+         CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH))
+      $markedaction["3-trash"] = L_MOVE_TO_TRASH_BIN;
+    if ($feed_selected != "0")
+        $markedaction["4-feed"] = L_FEED;
+    if ($view_selected != "0")
+        $markedaction["5-view"] = L_VIEW_FULLTEXT;
+      
+    if (is_array ($markedaction) && count ($markedaction)) {  
+        echo "<tr><td colspan=100 class=tabtxt><img src='../images/blank.gif' width=1>
+            <img src='../images/arrow_ltr.gif'>
+            <a href='javascript:SelectVis()'>".L_SELECT_VISIBLE."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
+            
+          // click "go" does not use markedform, it uses itemsfrom above...
+          // maybe this action is not used.
+        echo "<select name='markedaction_select'>
+              <option value=\"nothing\">".L_CHANGE_MARKED.":";
+        
+        reset($markedaction);
+        while(list($k, $v) = each($markedaction)) 
+          echo "<option value=\"". htmlspecialchars($k)."\"> ".
+                   htmlspecialchars($v);
+        echo "</select>&nbsp;&nbsp;<a href=\"javascript:MarkedActionGo()\" class=leftmenuy>".L_GO."</a>";
+    }
+    echo "</span></td></tr>";
 }
 
+echo '</table></form><br>';
+
+if($st->pageCount() > 1) 
+    $st->pnavbar();
+    
 HtmlPageEnd(); 
 
   $$st_name = $st;   // to save the right scroller 

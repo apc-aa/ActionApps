@@ -68,6 +68,13 @@ H1 {
 	color: #584011;
 }
 
+.nbactive {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+    background: #FFFFFF; 
+	#color: #000000;
+}
+
 .nbenable {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
@@ -132,6 +139,20 @@ TD.leftmenu {
 /*	font-size: x-small; */
         background: #A8C8B0;
   color: #4A4A4A;
+}
+
+.leftmenua  {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+/*	font-size: x-small; */
+    background: #FFFFFF;
+    color: #000000;
+}
+
+.search {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10 pt;
+    font-weight: bold;
+    color: #000000;
 }
 
 .subwindow  {
