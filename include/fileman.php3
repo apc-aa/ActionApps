@@ -213,53 +213,13 @@ function is_dir_empty ($dirname) {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-# File upload
-# returns: error description or empty string
-
-function fileman_move_uploaded_file ($varname, $destdir, $perms) 
-{
-    global $err;
-    
-    endslash ($destdir);    
-    if (!$GLOBALS[$varname]) return "No $varname?";
-    # get filename and replace bad characters
-    $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$varname."_name"]);
-
-    # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
-    $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
-    $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
-
-    if( !is_dir( $destdir )) 
-        return L_DIR_NOT_EXISTS;
-
-    if( file_exists("$destdir$dest_file") )
-        return L_FILE_NAME_EXISTS . $destdir . $dest_file;
-
-    # copy the file from the temp directory to the upload directory, and test for success    
-
-    # file uploads are handled differently in PHP >4.0.3
-    list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
-    if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
-        if (is_uploaded_file($GLOBALS[$varname])) 
-            if( !move_uploaded_file($GLOBALS[$varname], "$destdir$dest_file")) 
-                return L_CANT_UPLOAD;
-            else chmod ($destdir.$dest_file, $perms);
-    } 
-    else {   # for php 3.x and php <4.0.3
-        if (!copy($GLOBALS[$varname],"$destdir$dest_file")) 
-            return L_CANT_UPLOAD;
-        else chmod ($destdir.$dest_file, $perms);
-    }  
-}    
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset) {
     global $AA_CP_Session, $err,
         // set to the name of file which should be viewed by filedit.php3
         $fe_filename,
         // used in copy template
-        $fileman_dir;
+        $fileman_dir,
+        $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR;
    
     if (!$cmd) return;
     
@@ -309,7 +269,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         // Upload file
     else if ($cmd=='upload') {
         set_time_limit(FILEMAN_UPLOAD_TIME_LIMIT);
-        $uploaderr = fileman_move_uploaded_file ("uploadarg", $basedir.$directory, $FILEMAN_MODE_FILE);
+        $uploaderr = aa_move_uploaded_file ("uploadarg", $basedir.$directory, $FILEMAN_MODE_FILE);
         if ($uploaderr) $err[] = L_ERROR.": $uploaderr";
     }
     
@@ -372,7 +332,7 @@ function get_files_subtree ($mydir) {
 }
 
 function fileman_copy_template ($srcdir, $dstdir) {
-    global $slice_id;
+    global $slice_id, $FILEMAN_MODE_FILE;
     
     $aliases = array (
         "_#SLICE_ID" => $slice_id);
