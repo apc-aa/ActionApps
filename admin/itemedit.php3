@@ -25,17 +25,21 @@ http://www.apc.org/
 # optionaly encap="false" if this form is not encapsulated into *.shtml file
 # optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
-
 $encap = ( ($encap=="false") ? false : true );
 
+if( $edit OR $add )         # parameter for init_page - we edited new item so 
+  $unset_r_hidden = true;   # clear stored content
+  
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
-//p_arr_m($r_hidden);
-QuoteVars("post");  // if magicquotes are not set, qute variables
+if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
+                               #       and REDIRECT_STRING_UNESCAPED
+
+QuoteVars("post");  // if magicquotes are not set, quote variables
 GetHidden();        // unpacks variables from $r_hidden session var.
 unset($r_hidden);
 $r_hidden["hidden_acceptor"] = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
@@ -56,7 +60,13 @@ function LoadDefault($add,$insert,$update,$show, $variable, $value) {
 
 if($cancel) {
   if( $anonymous )  // anonymous login
-    go_url( $r_slice_view_url );
+    if( $encap ) {
+      echo '<SCRIPT Language="JavaScript"><!--
+              document.location = "'. $r_slice_view_url .'";
+            // -->
+           </SCRIPT>';
+    } else
+      go_url( $r_slice_view_url );
    else 
     go_url( $sess->url(self_base() . "index.php3"));
 }    
@@ -181,8 +191,8 @@ if( $insert || $update )
       ValidateInput("loc_prov", L_LOC_PROV, &$loc_prov, &$err, $needed[loc_prov], "text");
       ValidateInput("loc_country", L_LOC_COUNTRY, &$loc_country, &$err, $needed[loc_country], "text");
 
-      $startdate->ValidateDate (L_START_DATE, &$err);
-      $enddate->ValidateDate (L_END_DATE, &$err);
+      $startdate->ValidateDate (L_START_DATE, &$err, $needed[start_date]);
+      $enddate->ValidateDate (L_END_DATE, &$err, $needed[end_date]);
     }    
 
     if( count($err) > 1)
@@ -270,7 +280,8 @@ if( $insert || $update )
       $varset->add("created_by", "text", $auth->auth["uid"]);
       $varset->add("post_date", "quoted", $post_date);
   
-      if (!$db->query("INSERT INTO items " . $varset->makeINSERT() )) {
+      $SQL = "INSERT INTO items " . $varset->makeINSERT();
+      if (!$db->query($SQL)) {
         $err["DB"] .= MsgErr( L_CANT_ADD_ITEM );
         break;   # not necessary - we have set the halt_on_error
       }   
@@ -284,8 +295,15 @@ if( $insert || $update )
   if( count($err) <= 1) {
 //huh("OK");    
     page_close(); 
+
     if( $anonymous )  // anonymous login
-      go_url( $r_slice_view_url );
+      if( $encap ) {
+        echo '<SCRIPT Language="JavaScript"><!--
+                document.location = "'. $r_slice_view_url .'";
+              // -->
+             </SCRIPT>';
+      } else
+        go_url( $r_slice_view_url );
      elseif( $ins_preview OR $upd_preview ) 
       go_url( con_url($sess->url(self_base() .  "preview.php3"), "slice_id=$slice_id&sh_itm=$id"));
      else 
@@ -357,16 +375,18 @@ if( !$encap ) {
 PrintArray($err);
 echo $Msg;  
 
+$method = ($encap ? "get" : "post");
+
 ?>
 <center>
-<form enctype="multipart/form-data" method=post action="<?php echo $sess->url( ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF) ?>">
+<form enctype="multipart/form-data" method="<?php echo $method ?>" action="<?php echo $sess->url( ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF) ?>">
 
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_ITEM_HDR?></b>
+<table class=inouter border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<tr class=inoutertr><td class=inoutertd><b>&nbsp;<?php echo L_ITEM_HDR ?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table class=ininner width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?
   FrmInputText("headline", L_HEADLINE, safe($headline), 254, 60, true);
   if($show[abstract])
@@ -551,8 +571,9 @@ echo $Msg;
   $r_hidden["edited_by"] = $edited_by; 
   $r_hidden["last_edit"] = $last_edit;
   $r_hidden["slice_id"] = $slice_id;
-  $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
 
+  # anonymous must be in hidden and no in r_hidden - there is no session
+  echo '<input type=hidden name="anonymous" value="'. (($free OR $anonymous) ? "true" : "") .'">'; 
   echo '<input type=hidden name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
   echo '<input type=hidden name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
   </td>
@@ -580,6 +601,9 @@ if( !$encap )
 page_close(); 
 /*
 $Log$
+Revision 1.11  2000/11/15 16:20:41  honzam
+Fixed bugs with anonymous posting via SSI and bad viewed item in itemedit
+
 Revision 1.10  2000/10/10 18:28:00  honzam
 Support for Web.net's extended item table
 

@@ -110,6 +110,12 @@ H1 {
   color: #4A4A4A;
 }
 
+.inoutertd {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: #FFFFFF;
+}
+
 .tabtit {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;

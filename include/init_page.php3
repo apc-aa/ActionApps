@@ -74,10 +74,11 @@ $sess->register("r_slice_view_url");    // url of slice
 $sess->register("r_stored_slice");      // id of slice which values are in r_slice_headline ,r_slice_config and r_slice_view_url
 $sess->register("r_hidden");            // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
 
-//huh( $r_hidden["hidden_acceptor"]. " = ". (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF));
-if( $r_hidden["hidden_acceptor"] != (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF))
+if( $unset_r_hidden OR 
+   ($r_hidden["hidden_acceptor"] != (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF))) {
   unset( $r_hidden );    // only acceptor can read this values. 
                          // For others they are destroyed.
+}
 
 $ldap_slices = GetUsersSlices( $auth->auth[uid] );
 
@@ -152,6 +153,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.6  2000/11/15 16:20:41  honzam
+Fixed bugs with anonymous posting via SSI and bad viewed item in itemedit
+
 Revision 1.5  2000/10/10 18:28:00  honzam
 Support for Web.net's extended item table
 

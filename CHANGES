@@ -1,24 +1,52 @@
+11/15/00 - fixed problem with required Start date and End date 
+         - fixed bug of bad viewed item in itemedit
+         - fixed problem with annonymous posted item on encapsulated (SSI) page
+11/13/00 - fixed bad order for default setting of show fields and needed fields
+         - fixed problem with bad minutes in date() function
+         - list of items in admin interface is not centered
+11/08/00 - fixed problem with bad AA_SL_Sess id - bad copy QUERY_STRING to 
+           HTTP_GET_VARS
+10/16/00 - big search form can be customized via style sheets
+--------------------
+09/14/00 - v1.2.2
+--------------------
+10/10/00 - new application "Who's who", "Joblist", "Resource" 
+           (support for Web.net's extended item table)
+         - better backslashes handling for Query string parsing
+         - better database operations result checking
+         - messages abstraction via MsgOK(), MsgErr()
+         - default sortorded of items in adminstration is the newest first
 --------------------
 09/14/00 - v1.2.0
 --------------------
 08/29/00 - better validation of id (1-32 chars) and password (any character)
 08/23/00 - fixed security problem with inc parameter to slice.php3
-08/22/00 - fixed problem with lost session id AA_SL_Session in cgi mode (PHP4) 
+08/22/00 - fixed problem with lost session id AA_SL_Session in cgi (PHP4) 
+           instalation
 08/18/00 - new installation documentation
-08/17/00 - new option to present items on their own pages with possible
-           variant design. Alias _#HDLN_URL now points to External link 
-           (if link_only=true) or to the "Show on URL" value (if specified) or 
-           to the current URL. The file pointed by "Show on URL" must contain 
-           the same SSI directive (<!--#include ... slice.php3-->).
-           Necessary database modifications: 
+08/17/00 - New possibility of redirected view of item. Alias _#HDLN_URL now
+           points to External link (if link_only=true) or on redirect url 
+           (if specified) or on the same page. The redirected url should
+           contain <!-- #include ...slice.php3 --> again, but with other look.
+           database modifications necessary: 
               ALTER TABLE items ADD redirect VARCHAR (255);
               ALTER TABLE slices ADD d_redirect VARCHAR (255) ;
-         - new parameter inc for slice.php3 script (used for displaying an 
-           arbitrary static page instead of the dynamic slice data)
+         - new parameter inc for slice.php3 script (used for displaying static
+           page insear of slice data
            Usage: http://web.ecn.cz/slice.shtml?inc=http://www.ecn.cz/info.txt
+         - Search go through approved items only in searchlib
 08/14/00 - fixed "membership of zeros" problem visible in SQL permissions
+         - fixed incorrect default for in DelGroup
+         - added checking for empty groups with superadmin access in setup.php3
 08/11/00 - added setup script setup.php3 
+         - E-mail is not required for user in permission system
 08/07/00 - fixed a few compatibility problems with PHP4
+           (in_array defined optionaly, added semicolon to global declarations)
+08/03/00 - fixed bug in sort order in view.php3
+         - "No WDDX warning" removed as confusing
+         - session variable r_hidden used instead of HIDDEN html tag 
+           for security lacking data.
+         - magic quoting of posted variables if magic_quotes_gpc is off.
 08/02/00 - fixed problem with zero scroller length error message
          - partialy fixed problem with quoting values on machinech with no 
            magic_quotes_gpc = on
