@@ -6,8 +6,12 @@
 
 <body bgcolor="#FFFFFF" text="#000000">
 <h1>Table View grammar </h1>
+(c) Jakub Ad&aacute;mek, Econnect, September 2002 
+<p>$Id$</p>
 <p>This document describes the configuration array for the <a href="tabledit.html">TableEdit 
-  class</a>, called Table View.</p>
+  class</a>, called Table View. Many of the parameters have sensefull defaults, 
+  so that you may start by defining only the necessary ones and changing the other 
+  parameters later.</p>
 <p>The basic Table View grammar may be enhanced by other attributes, used in the 
   script calling TableEdit. In AA admin/tabledit.php3, there are already some 
   special attributes used, which are listed at the end of this file.</p>
@@ -39,7 +43,7 @@
   <li><a href="#aa">AA special Table View attributes</a></li>
 </ul>
 <h2>Table View Grammar</h2>
-<a name="tableview"></a>
+<a name="tableview"></a> 
 <table width="105%" border="1">
   <tr> 
     <td width="12%"><b>Attribute</b></td>
@@ -76,45 +80,6 @@
     <td width="21%"><code>true | false</code></td>
     <td width="56%">show an empty record, applies only with readonly views</td>
     <td width="11%">true</td>
-  </tr>
-  <tr> 
-    <td width="12%">buttons</td>
-    <td width="21%"><code>delete </code>=&gt; 1</td>
-    <td width="56%">show delete button at each record </td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">&nbsp;</td>
-    <td width="21%"><code>update </code>=&gt; 1</td>
-    <td width="56%">show update button </td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">&nbsp;</td>
-    <td width="21%"><code>edit</code> =&gt; 1</td>
-    <td width="56%">show edit button <span lang="en-us">(sensefull only in 
-    Browse view)</span></td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">&nbsp;</td>
-    <td width="21%"><code><span lang="en-us">cancel</span></code> =&gt; 1</td>
-    <td width="56%"><span lang="en-us">show cancel (exit) button (sensefull only 
-    in Edit view)</span></td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">buttons_big</td>
-    <td width="21%"><code>true | false</code></td>
-    <td width="56%">s<span lang="en-us">how big images (24x24 instead of 16x16)</span></td>
-    <td width="11%"><code>true</code> for <span lang="en-us">edit</span>, <code>false</code> for 
-    <span lang="en-us">browse</span></td>
-  </tr>
-  <tr> 
-    <td width="12%">button_add</td>
-    <td width="21%"><code>true | false</code></td>
-    <td width="56%">show insert button at the bottom of browse view</td>
-    <td width="11%">false</td>
   </tr>
   <tr> 
     <td width="12%">gotoview</td>
@@ -195,17 +160,86 @@
   </tr>
   <tr> 
     <td width="12%">fields</td>
-    <td width="21%"><code>array</code> (field_name1 =&gt; field1_params, ...)</td>
-    <td width="56%">field_name must be the real database name, field_params is 
-      an array of parameters for each field, see below</td>
+    <td width="21%"><code>array</code> (field_alias1 =&gt; field1_params, ...)</td>
+    <td width="56%">field_alias may be the real database field name or an alias, 
+      field_params is an array of parameters for each field, see <a href="#fieldparams">below</a></td>
     <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>join</td>
+    <td><code>array</code> (table_name1 =&gt; join1_params, ...)</td>
+    <td>allows to view joined records from several tables as it were one record. 
+      table_name must be the real database table name, join_params defines the 
+      join conditions, see <a href="#join">below</a></td>
+    <td>&nbsp;</td>
   </tr>
   <tr> 
     <td width="12%">children</td>
     <td width="21%"><code>array</code> (child_view_id1 =&gt; table1_params, ...)</td>
     <td width="56%">shows records from tables with relationship n:1, child_view_id 
-      is view ID of a view showing a child table, params are described below</td>
+      is view ID of a view showing a child table, params are described <a href="#child">below</a></td>
     <td width="11%">&nbsp;</td>
+  </tr>
+</table>
+<h3>Buttons</h3>
+<p>You usually don't need to set buttons. The defaults are set depending on other 
+  settings. For information about how defaults are set, you best see the source 
+  <code>include/tabledit.php3</code>, function SetDefaultButtons(). </p>
+<p>Only if you are not satisfied with the defaults, set your own. </p>
+<table width="105%" border="1">
+  <tr> 
+    <td width="12%"><b>Attribute</b></td>
+    <td width="21%"><b>Values</b></td>
+    <td width="56%"><b>Description</b></td>
+    <td width="11%"><b>Default</b></td>
+  </tr>
+  <tr> 
+    <td width="12%">buttons_down</td>
+    <td width="21%"><code>delete </code>=&gt; 1</td>
+    <td width="56%">show delete button (Edit view only) </td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>&nbsp;</td>
+    <td><code>edit</code> =&gt; 1</td>
+    <td>show edit button <span lang="en-us">(Edit view only)</span></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">&nbsp;</td>
+    <td width="21%"><code>update </code>=&gt; 1</td>
+    <td width="56%">show insert / update button (Edit view only)</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">&nbsp;</td>
+    <td width="21%"><code><span lang="en-us">cancel</span></code> =&gt; 1</td>
+    <td width="56%"><span lang="en-us">show cancel (exit) button (Edit view only)</span></td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>&nbsp;</td>
+    <td><code>delete_all </code>=&gt; 1</td>
+    <td>show delete all button (Browse view only) </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>&nbsp;</td>
+    <td><code>update_all </code>=&gt; 1</td>
+    <td>show update all button (Browse view only)</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>buttons_left</td>
+    <td><code>delete_checkbox</code> =&gt; 1</td>
+    <td>show delete checkbox <span lang="en-us">(Browse view only)</span></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>&nbsp;</td>
+    <td><code>edit</code> =&gt; 1</td>
+    <td>show edit button <span lang="en-us">(Browse view only)</span></td>
+    <td>&nbsp;</td>
   </tr>
 </table>
 <h2>Field Parameters Grammar</h2>
@@ -218,10 +252,22 @@
     <td width="8%"><b>Default</b></td>
   </tr>
   <tr> 
+    <td>table</td>
+    <td>&nbsp;</td>
+    <td>table owning this field</td>
+    <td>table of the Table View </td>
+  </tr>
+  <tr> 
+    <td>field</td>
+    <td>&nbsp;</td>
+    <td>database field name</td>
+    <td>field alias</td>
+  </tr>
+  <tr> 
     <td>caption</td>
     <td>&nbsp;</td>
     <td>column caption, in Edit view linked to sort items by this column</td>
-    <td>field name</td>
+    <td>field alias</td>
   </tr>
   <tr> 
     <td>hint</td>
@@ -268,7 +314,7 @@
   <tr> 
     <td>view_new_record</td>
     <td>&nbsp;</td>
-    <td>array with field view definition, applied on new records, see below</td>
+    <td>array with field view definition, applied on new records, see <a href="fieldview">below</a></td>
     <td>the same parameters as for all other records </td>
   </tr>
 </table>
@@ -283,17 +329,18 @@
   </tr>
   <tr> 
     <td width="12%">type</td>
-    <td width="20%"><code>hide | select | text | area | date | userdef</code></td>
+    <td width="20%"><code>hide | select | checkbox | text | area | date | userdef</code></td>
     <td width="55%">
       <p>hidden | select box | text edit box | text area | date special | user 
         defined function</p>
       <p>Date <span lang="en-us">works on a timestamp stored </span>i<span lang="en-us">n 
-      a numeric field in database. It </span>is <span lang="en-us">printed
-      </span>formatted with &quot;format&quot; and <span lang="en-us">users
-      </span>may<span lang="en-us"> change it</span> by 
-        typing a<span lang="en-us">nother</span> value in the same format.
-      <span lang="en-us">When using &quot;default&quot; in Field Parameters, give the 
-      numerical timestamp value.</span></p>
+        a numeric field in database. It </span>is <span lang="en-us">printed </span>formatted 
+        with &quot;format&quot; and <span lang="en-us">users </span>may<span lang="en-us"> 
+        change it</span> by typing a<span lang="en-us">nother</span> value in 
+        the same format. <span lang="en-us">When using &quot;default&quot; in 
+        Field Parameters, give the numerical timestamp value.</span></p>
+      <p>Checkbox is currently implemented as a select box with options Yes and 
+        No. </p>
       <p>User defined function is always used only to print the field value, always 
         shown readonly.</p>
     </td>
@@ -356,6 +403,29 @@
     unpacked, store it packed. When using &quot;default&quot; in Field Parameters, give 
     the&nbsp; packed unquoted value.</span></td>
     <td width="13%"><code><span lang="en-us">false</span></code></td>
+  </tr>
+</table>
+<h2>Join Grammar</h2>
+<p>If you want to view fields from several tables in one record, the tables must 
+  have some relationship 1:1 (one-to-one) or 1:n (one-to-many). Use the child 
+  table as the main table of the Table View. </p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><b>Attribute</b></td>
+    <td width="20%"><b>Values</b></td>
+    <td width="55%"><b>Description</b></td>
+  </tr>
+  <tr> 
+    <td>joinfields</td>
+    <td><code>array</code> (child_field1 =&gt; master_field1, ...)</td>
+    <td>field names defining the JOIN part of the underlying SELECT statement, 
+      i.e. SELECT TableView_table INNER JOIN join_table ON TableView_table.child_field1 
+      = join_table.master_field1 ...</td>
+  </tr>
+  <tr> 
+    <td>jointype</td>
+    <td>&quot;1 to 1&quot; or &quot;n to 1&quot;</td>
+    <td>join type (one-to-one or many-to-one)</td>
   </tr>
 </table>
 <h2>Child Table Grammar</h2>

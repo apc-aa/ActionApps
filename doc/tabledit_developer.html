@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Table Edit Developers</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<h1>Class TableEdit </h1>
+<h2>Remarks for Developers</h2>
+(c) Jakub Ad&aacute;mek, Econnect, September 2002 
+<p>$Id$</p>
+<h2>Row keys</h2>
+<p>To identify each record a unique key of the table is used. If the key consists 
+  of several fields, the field values are separated by colon. If the values contain 
+  a colon, it is escaped by #, i.e. &quot;:&quot; -&gt; &quot;#:&quot;.</p>
+<p>The new record is identified by __new__.</p>
+<h2>Global parameters</h2>
+<h3>string set_tview</h3>
+<p>Change the viewID of the shown TableView to this one.</p>
+<h3>array cmd</h3>
+<p>Array (viewID =&gt; viewCmd), where viewCmd in turn is an array with the following 
+  possible parts:</p>
+<dl>
+  <dt>viewCmd[&quot;update&quot;][$key] = 1</dt>
+  <dd>insert or update the record identified by $key</dd>
+  <dt>viewCmd[&quot;run_delete_all&quot;] = 1</dt>
+  <dd>delete all checked records</dd>
+  <dt>viewCmd[&quot;delete_all&quot;][$key] = 1</dt>
+  <dd>delete this record, if viewCmd[&quot;run_delete_all&quot;] == 1</dd>
+  <dt>viewCmd[&quot;edit&quot;][$key] = 1</dt>
+  <dd>show only this record. Used with Edit views. If the &quot;where&quot; restrictions 
+    do not include this record, nothing is shown.</dd>
+</dl>
+<h3>array val</h3>
+<p>Values of all records on the screen (record_key =&gt; recordVal), where record_key 
+  is the key as described above and recordVal is an array (field_alias =&gt; field_value).</p>
+</body>
+</html>
