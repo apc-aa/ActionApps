@@ -288,6 +288,7 @@ if( $r_state['link_id'] ) {                  // not new link
     }
 
     # now proposals from anonymous change link
+    /*
     if($changeIds) {
         $SQL= "SELECT path, id
                  FROM links_link_cat, links_categories
@@ -321,6 +322,7 @@ if( $r_state['link_id'] ) {                  // not new link
             }
         }
     }
+    */
 }
 
 $idx++;
@@ -355,7 +357,7 @@ if( !$r_state['link_id'] ) {  // add new link
     $url = "http://";
     // select current caterory
     $on_load = 'onLoad="GoToCategoryID('.$r_state['cat_id'].', eval(document.f.tree), \'patharea\', \'\');'.
-               'MoveCategoryTo('.$r_state['cat_id'].', \'document.f.selcat0\', \'document.f.selcatSelect0\');"';
+               'MoveCategoryTo('.$r_state['cat_id'].', \'selcat0\', \'document.f.selcatSelect0\');"';
 }
 
 
@@ -433,19 +435,22 @@ echo '
            <td align="CENTER" valign="TOP">'.
            $tree->getFrmTree(false, 'dblclick', $links_info['select_start'] ? $links_info['select_start'] : 2,
                                   'patharea', '', false, '', 15, 'f') .'</td>
-           <td  align="CENTER" colspan=2>';
+           <td  align="LEFT" valign="TOP" colspan=2>
+           <table border="0" width="100%" cellpadding="0" cellspacing="3">';
 
                 for( $i=0; $i<CATEGORIES_COUNT_TO_MANAGE; $i++ ) {
-                     echo '<a href="javascript:MoveSelectedTo(\'document.f.tree\', \'document.f.selcat'.$i.'\', \'document.f.selcatSelect'.$i.'\')"><img
-                           src="'.$AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a>&nbsp;<input
-                           type="text" name="selcat'.$i.'" value="'.$selcatValue[$i].'"
-                           size="60" readonly>&nbsp;<a href="javascript:DeleteField(\''.$i.'\')"><img
-                           src="'.$AA_INSTAL_PATH.'images/bx.gif" border="0" alt="delete"></a>'.$selcatPropAdd[$i].$selcatPropDel[$i].'
-                           <input type="hidden" name="selcatSelect'.$i.'" value="'.$selcatSelectValue[$i].'">
-                           <input type="hidden" name="selcatState'.$i.'" value="'.$selcatState[$i].'"><br>';
+                     echo '<tr><td width="1px"><a
+                     href="javascript:MoveSelectedTo(\'document.f.tree\',\'selcat'.$i.'\',\'document.f.selcatSelect'.$i.'\')"><img
+                     src="'.$AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td><td width="1px"><a
+                     href="javascript:DeleteField(\''.$i.'\')"><img src="'.$AA_INSTAL_PATH.'images/bx.gif" border="0"
+                     alt="delete"></a></td><td class="sel_title"><SMALL><DIV id=selcat'.$i.'>'.$selcatValue[$i].'</DIV>
+                     </td><td><small>'.$selcatPropAdd[$i].$selcatPropDel[$i].'
+                     <input type="hidden" name="selcatSelect'.$i.'" value="'.$selcatSelectValue[$i].'">
+                     <input type="hidden" name="selcatState'.$i.'" value="'.$selcatState[$i].'"></td></tr>';
                 }
 
-    echo '    </td>
+    echo '   </table>
+            </td>
           </tr>
          </table>
         </td>
