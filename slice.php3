@@ -220,24 +220,25 @@ if( $fview || $iview ) {
   if( $fview ) {                       # use formating from view for fulltext
     $fview_info = GetViewInfo($fview);
     if ($fview_info AND ($fview_info['deleted']<1)) {
-      $slice_info['fulltext_format'] = $fview_info['odd'];
-      $slice_info['fulltext_format_top'] = $fview_info['before'];
+      $slice_info['fulltext_format']        = $fview_info['odd'];
+      $slice_info['fulltext_format_top']    = $fview_info['before'];
       $slice_info['fulltext_format_bottom'] = $fview_info['after'];
-      $slice_info['fulltext_remove'] = $fview_info['remove_string'];
+      $slice_info['fulltext_remove']        = $fview_info['remove_string'];
 //      print_r( $slice_info );
     }
   }
   if( $iview ) {                       # use formating from view for index
     $iview_info = GetViewInfo($iview);
     if ($iview_info AND ($iview_info['deleted']<1)) {
-      $slice_info['group_by'] = $iview_info['group_by1'];
+      $slice_info['group_by']        = $iview_info['group_by1'];
+      $slice_info['gb_direction']    = $VIEW_SORT_DIRECTIONS[$iview_info['g1_direction']];  // views uses different sort codes (historical reasons)
       $slice_info['category_format'] = $iview_info['group_title'];
       $slice_info['category_bottom'] = $iview_info['group_bottom'];
-      $slice_info['compact_top'] = $iview_info['before'];
-      $slice_info['compact_bottom'] = $iview_info['after'];
-      $slice_info['compact_remove'] = $iview_info['remove_string'];
+      $slice_info['compact_top']     = $iview_info['before'];
+      $slice_info['compact_bottom']  = $iview_info['after'];
+      $slice_info['compact_remove']  = $iview_info['remove_string'];
       $slice_info['even_row_format'] = $iview_info['even'];
-      $slice_info['odd_row_format'] = $iview_info['odd'];
+      $slice_info['odd_row_format']  = $iview_info['odd'];
       $slice_info['even_odd_differ'] = $iview_info['even_odd_differ'];
     }
   }
@@ -459,9 +460,10 @@ else {
   else if ($slice_info['group_by']) {
     switch( (string)$slice_info['gb_direction'] ) {  # gb_direction is number
       case '1': $gbd = '1'; break;      # 1 (1)- ascending by priority
-      case '8': $gbd = 'd'; break;      # d (8) - descending
+      case 'd':                         #    d - descending - goes from view (iview) settings
+      case '8': $gbd = 'd'; break;      # d (8)- descending
       case '9': $gbd = '9'; break;      # 9 (9)- descending by priority (for fields using constants)
-      default:  $gbd = 'a';             # 2 (2) - ascending;
+      default:  $gbd = 'a';             # 2 (2)- ascending;
     }
     $sort_tmp[] = array ( $slice_info['group_by'] => $gbd);
   }

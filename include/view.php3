@@ -241,21 +241,21 @@ function GetViewConds($view_info, $param_conds) {
 }
 
 function GetViewSort($view_info, $param_sort="") {
+    global $VIEW_SORT_DIRECTIONS;
     // translate sort codes (we use numbers in views from historical reason)
     // '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
-    $SORT_DIRECTIONS = array( 0 => 'a', 1 => 'd', 2 => '1', 3 => '9' );
 
     if( $param_sort )
       $sort[] = GetSortArray( $param_sort );
     if( $view_info['group_by1'] )
-      $sort[] = array ( $view_info['group_by1'] => $SORT_DIRECTIONS[$view_info['g1_direction']]);
+      $sort[] = array ( $view_info['group_by1'] => $VIEW_SORT_DIRECTIONS[$view_info['g1_direction']]);
     if( $view_info['group_by2'] )
-      $sort[] = array ( $view_info['group_by2'] => $SORT_DIRECTIONS[$view_info['g2_direction']]);
+      $sort[] = array ( $view_info['group_by2'] => $VIEW_SORT_DIRECTIONS[$view_info['g2_direction']]);
 
     if( $view_info['order1'] )
-      $sort[] = array ( $view_info['order1'] => $SORT_DIRECTIONS[$view_info['o1_direction']]);
+      $sort[] = array ( $view_info['order1'] => $VIEW_SORT_DIRECTIONS[$view_info['o1_direction']]);
     if( $view_info['order2'] )
-      $sort[] = array ( $view_info['order2'] => $SORT_DIRECTIONS[$view_info['o2_direction']]);
+      $sort[] = array ( $view_info['order2'] => $VIEW_SORT_DIRECTIONS[$view_info['o2_direction']]);
 
     return $sort;
 }
