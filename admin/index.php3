@@ -586,6 +586,7 @@ FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
 echo "<input type='Text' name='admin_search' size=20
       maxlength=254 value=\"". safe($r_admin_search). "\"></td></tr></table>
       <input type=hidden name=action value='filter'></form></center>";
+echo "<p></p>"; // workaround for align=left bug
 }
  
 echo "  </body>
