@@ -1,3 +1,12 @@
+06/06/02 - added possibility to create constant group from another constant
+           group (clone template)
+         - fixed bug with wrong day number in month in cron.php3
+         - fixed bug with empty braces for cmd[] and set[] for view
+         - removed dependance on 'conds' url parameter for view
+         - fixed f_h function (no delimeter if empty value)
+         - fixed problem with AA_INCLUDE_URL on http/https servers - can't load 
+           css file... 
+         - new operator 'is set'-NOTNULL for conditions
 06/03/02 - added possibility to create view from template (any other view)
 06/01/02 - http/https problem fixed for admin images
          - fixed parsing arrays from .shtml URL parameters (unlimited depth)
