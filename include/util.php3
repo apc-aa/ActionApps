@@ -73,7 +73,7 @@ function go_url($url, $add_param="") {
     page_close();
   if( $add_param != "" )
     $url = con_url( $url, rawurlencode($add_param));
-  $netscape = (r=="") ? "r=1" : "r=".++$r;   // special parameter for Netscape to reload page
+  $netscape = (rXn=="") ? "rXn=1" : "rXn=".++$rXn;   // special parameter for Netscape to reload page
   header("Status: 302 Moved Temporarily");
 	header("Location: ". con_url($url,$netscape));
  	exit;
@@ -997,7 +997,7 @@ function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE")
       if( !isset($cond['operator']) )
         $conds[$k]['operator'] = $defaultCondsOperator;
 
-      if (! $conds[$k]['value']) 
+      if (!isset($conds[$k]['value']) OR ($conds[$k]['value']=="")) 
         unset ($conds[$k]);      
     }    
   }

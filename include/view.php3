@@ -44,23 +44,35 @@ function GetAliasesFromUrl($to_arr = false) {
   return $ret;
 }  
 
+/** 
+ * Separates 'cmd' parameters for current view into array. 
+ *
+ * Parameters are separated by '-'. To escape '-' character use '--' (then it 
+ * is not used as parameter separator. If you use aliases inside cmd[], then 
+ * the aliases are expanded by this function (depending on als[] alias array)
+ * @param string $cmd cmd[<vid>] string from url
+ * @param array $als array of aliases used to expand inside cmd 
+ *                   (als[] obviously comes from url, as well)
+ * @return array separated cmd parameters
+ */
 function ParseCommand($cmd,$als=false) {
   if( isset( $als ) AND is_array( $als ) ) {  # substitute url aliases in cmd
     reset( $als );
     while( list($k,$v) = each( $als ) )
       $cmd = str_replace ($k, $v, $cmd);
   }    
-  $a = str_replace ("--", "__u>_.", $cmd);# dummy string
-  $b = str_replace ("-", "##Sx", $a);     # Separation string is ##Sx
-  $c = str_replace ("__u>_.", "-", $b);   # change "--" to "-"
-  return explode( "##Sx", $c );
+  return split_escaped("-", $cmd, "--");
 }  
 
+/** 
+ * Separates 'set' parameters for current view into array. To escape ',' 
+ *                 character uses ',,'.
+ * @param string $set set[<vid>] string from url. 'set' parameters are in form 
+ *                    set[<vid>]=property1-value1,property2-value2
+ * @return array asociative array of properties
+ */
 function ParseSettings($set) {
-  $a = str_replace (",,", "__u>_.", $set);# dummy string
-  $b = str_replace (",", "##Sx", $a);     # Separation string is ##Sx
-  $c = str_replace ("__u>_.", ",", $b);   # change ",," to ","
-  $sets = explode( "##Sx", $c );
+  $sets = split_escaped(",", $set, ",,");
   if( !( isset($sets) AND is_array($sets) ))
     return false;
   reset($sets);
@@ -165,24 +177,31 @@ function ParseViewParameters($query_string="") {
 }
 
 
+/** 
+ * Helper function for GetViewConds() - resolves database x url conds conflict
+ */
+function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
+  if( $fld AND $op )
+    $conds[]=array( 'operator' => $op,
+                    'value' => ($param ? $param : $val),
+                     $fld => 1 );
+}                     
+    
+/** 
+ * Fills array with conditions defined through 
+ * 'Slice Admin' -> 'Design View - Edit' -> 'Conditions' setting
+ * @param array $view_info view definition from database in asociative array
+ * @param array $param_conds possibly redefinition of conds from url (cmd[]=c)
+ * @return array conditions array
+ */
 function GetViewConds($view_info, $param_conds) {
   # param_conds - redefines default condition values by url parameter (cmd[]=c)
-  if( $view_info['cond1field'] )
-    $conds[]=array( 'operator' => $view_info['cond1op'],
-                    'value' => ($param_conds[1] ? $param_conds[1] : 
-                                                  $view_info['cond1cond']),
-                     $view_info['cond1field'] => 1 );
-  if( $view_info['cond2field'] )
-    $conds[]=array( 'operator' => $view_info['cond2op'],
-                    'value' => ($param_conds[2] ? $param_conds[2] : 
-                                                  $view_info['cond2cond']),
-                     $view_info['cond2field'] => 1 );
-  if( $view_info['cond3field'] )
-    $conds[]=array( 'operator' => $view_info['cond3op'],
-                    'value' => ($param_conds[3] ? $param_conds[3] : 
-                                                  $view_info['cond3cond']),
-                     $view_info['cond3field'] => 1 );
-
+  ResolveCondsConflict($conds, $view_info['cond1field'], $view_info['cond1op'],
+                               $view_info['cond1cond'],  $param_conds[1]);
+  ResolveCondsConflict($conds, $view_info['cond2field'], $view_info['cond2op'],
+                               $view_info['cond2cond'],  $param_conds[2]);
+  ResolveCondsConflict($conds, $view_info['cond3field'], $view_info['cond3op'],
+                               $view_info['cond3cond'],  $param_conds[3]);
   return $conds;
 }                     
 
