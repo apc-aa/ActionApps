@@ -27,6 +27,7 @@ http://www.apc.org/
 	It works based on a configuration array called Table View, see tableviews.php3. 
 	The main features are:
 	
+    * highly configurable
 	* two basic view types: browse x edit
 	* insert, update, delete records
 	* input validation
@@ -258,17 +259,29 @@ class tabledit {
                 reset ($this->cols);
                 while (list ($colname,$column) = each ($this->cols)) 
                     if ($column["view"]["type"] != "hide") {
-                        echo "$td<a href='".$this->getAction($gotoview2)."&cmd[".$this->viewID."]"
-                            ."[orderby][$colname]=1'><b>$colname</b>";
-                        if ($this->orderby == $colname) 
-                            echo "&nbsp;<img src='".$this->imagepath
-                                .($this->orderdir=='d' ? "up" : "down").".gif' border=0>";                                                
-                        echo "</a><br>"
-                            ."<font size=-1>".$column["hint"]."</font></TD>\n";
+						if ($record_count > 1) {
+	                        echo "$td<a href='".$this->getAction($gotoview2)."&cmd[".$this->viewID."]"
+    	                        ."[orderby][$colname]=1'><b>$column[caption]</b>";
+	                        if ($this->orderby == $colname) {
+                                echo "&nbsp;<img src='".$this->imagepath;
+                                if ($this->orderdir == 'd')
+    	                             echo "down.gif' alt='"._m("order ascending")."'";
+                                else echo "up.gif' alt='"._m("order descending")."'";
+	                            echo " border=0>";                                                
+                            }
+	                        echo "</a><br>";
+						}
+						else echo "$td<b>$column[caption]</b>";
+                        if ($column["hint"])
+                            echo "<font class=te_hint>".$column["hint"]."</font>";
+                        echo "</TD>\n";
                     }
                 echo "</TR>";        
             }
             
+            $fnname = "prooveFields_".$this->viewID;
+            $this->ShowProoveFields ($fnname);
+
             // if $show_new is enabled, show empty record as last one
             $new_record = false;
             while (!$new_record) {
@@ -280,13 +293,11 @@ class tabledit {
                 $key = $new_record ? $new_key : GetKey ($this->cols, $db->Record);
     
                 $formname = "tv_".$this->viewID."_".$key;
-                $fnname = "prooveFields_".$this->viewID;
-                $this->ShowProoveFields ($fnname);
                 $onsubmit = "return $fnname (\"$formname\");";
                 if ($this->view["type"] == "browse") {
                     echo "<FORM name='$formname' method=post onSubmit='$onsubmit' action='".$this->getAction($gotoview2)."'>\n";
                     echo "<TR>";
-                    $this->ShowButtons ($gotoview, $gotoview2, $new_record, $key);
+                    $this->ShowButtons ($gotoview, $gotoview2, $new_record, $key, $fnname, $formname);
                 }
                 else echo "<FORM name='$formname' method=post onSubmit='$onsubmit' action='".$this->action."'>\n";
                             
@@ -353,11 +364,23 @@ class tabledit {
         
     // -----------------------------------------------------------------------------------
 
+    function setDefault (&$var, $def) {
+        if (!isset ($var)) $var = $def;
+    }
+    
     function SetViewDefaults () {
-        if (!isset ($this->view["addrecord"])) $this->view["addrecord"] = true;
-        if (!isset ($this->view["listlen"]))   $this->view["listlen"] = 15;
-        if (!isset ($this->view["search"]))    $this->view["search"] = $this->view["type"] == "browse";
-        if (!isset ($this->view["no_item_msg"])) $this->view["no_item_msg"] = _m("Nothing to be shown.");
+        $this->setDefault ($this->view["addrecord"], true);
+        $this->setDefault ($this->view["listlen"],   15);
+        $this->setDefault ($this->view["search"],    $this->view["type"] == "browse");
+        $this->setDefault ($this->view["messages"]["no_item"], _m("Nothing to be shown."));
+        
+        reset ($this->cols);
+        while (list ($colname) = each ($this->cols)) {
+            $column = &$this->cols[$colname];
+            $this->setDefault ($column["caption"], $colname);
+            $this->setDefault ($column["view"]["size"]["cols"], 40);
+            $this->setDefault ($column["view"]["size"]["rows"], 4);
+        }
     }        
     
     // -----------------------------------------------------------------------------------
@@ -481,8 +504,11 @@ class tabledit {
                  $readonly = $cview["readonly"];
             else $readonly = $this->view["readonly"];
                        
-            if ($this->view["type"] == "edit")
-                echo "<TR>$td<b>$colname</b><br><font size=-1>".$column["hint"]."</font></TD>\n";
+            if ($this->view["type"] == "edit") {
+                echo "<TR>$td<b>".$column["caption"]."</b><br>\n";
+                if ($column["hint"])
+                    echo "<font class=\"te_hint\">".$column["hint"]."</font></TD>\n";
+			}
         
             $type = $cview["type"];
             if (!$type) $type = $column["type"];                
@@ -495,10 +521,13 @@ class tabledit {
             echo $td;
             if (!$readonly) {
                 switch ($type) {
-                case 'blob': echo "<textarea name='val[$colname]' rows=5 cols=80>$val</textarea>"; break;
+                case 'area':
+                case 'blob': echo "<textarea name=\"val[$colname]\""
+                    ." rows=\"".$cview["size"]["rows"]."\" cols=\"".$cview["size"]["cols"]."\">\n"
+                    .$val."</textarea>"; break;
                 case 'select': FrmSelectEasy("val[$colname]", $cview["source"], $val); break;
-                case 'text': $cols = $cview["size"]["cols"];
-                default: echo "<INPUT type=text size=$cols name='val[$colname]'
+                case 'text':
+                default: echo "<INPUT type=\"text\" size=\"".$cview["size"]["cols"]."\" name=\"val[$colname]\"
                     value='".str_replace("'","\"",$val)."'>"; 
                 }
             }
@@ -513,32 +542,32 @@ class tabledit {
                 if ($cview["href_view"]) 
                     echo "<a href='".$this->getAction($cview["href_view"])
                         ."&cmd[".$cview["href_view"]."][edit]"
-                        ."[".str_replace("\"","\\\"",$record[$colname])."]=1'>".$val."</a>";
+                        ."[".str_replace("\"","\\\"",$record[$colname])."]=1'>".$val."</a>\n";
                 else echo $val;
             }        
-            echo "</TD>";
+            echo "</TD>\n";
             
             if ($this->view["type"] == "edit") echo "</TR>";
         }
     }
     
     // -----------------------------------------------------------------------------------
-
-    function ShowButtons ($gotoview, $gotoview2, $new_record, $key) {                
+    
+    function ShowButtons ($gotoview, $gotoview2, $new_record, $key, $fnname, $formname) {                
         // "new" is label for new record, "new_name" is command for new record, 
         // "view" is view on which $this->cmd operates, "gotoview" is view which will be shown                
         $buttons_text = array (
             "edit" => array (
-                "label" => L_EDIT, 
+                "label" => "<img border=0 src=\"".$this->imagepath."edit.gif\" alt=\""._m("edit")."\">", 
                 "view" => $gotoview, 
                 "gotoview" => $gotoview),
             "delete" => array (
-                "label" => L_DELETE, 
+                "label" => "<img border=0 src=\"".$this->imagepath."delete.gif\" alt=\""._m("delete")."\">", 
                 "view" => $this->viewID, 
                 "gotoview" => $gotoview2),
             "update" => array (
-                "label" => L_UPDATE, 
-                "new" => L_INSERT,
+                "label" => "<img border=0 src=\"".$this->imagepath."ok.gif\" alt=\""._m("update")."\">", 
+                "new" => "<img border=0 src=\"".$this->imagepath."ok.gif\" alt=\""._m("insert")."\">", 
                 "new_name" => "insert", 
                 "view" => $this->viewID, 
                 "gotoview" => $gotoview2, 
@@ -560,14 +589,14 @@ class tabledit {
                         else $label = "";
                         if ($bt["new_name"]) $button = $bt["new_name"];
                     }
-                    if ($bt["button"])
-                         echo $td."<INPUT type=submit name='cmd[".$this->viewID."][$button][$key]' value='$label'>\n";
-                    else {
-                        $url = $this->getAction($bt[gotoview])."&cmd[$bt[view]][$button][$key]=1";
-                        if ($button == "delete") $url = "javascript:confirmDelete (\"".$url."\");";
-                        if ($label) echo $td."<a href='$url'>".$label."</a></td>\n";                
-                        else echo $td."&nbsp;</td>\n";
-                    }
+                    echo $td;
+                    if ($bt["button"]) 
+                        echo "<INPUT type=hidden name='cmd[".$this->viewID."][$button][$key]' value='1'>\n";
+                    $url = $this->getAction($bt[gotoview])."&cmd[$bt[view]][$button][$key]=1";
+                    if ($button == "delete") $url = "javascript:confirmDelete (\"".$url."\");";
+                    if ($bt["button"]) $url = "javascript:if ($fnname (\"$formname\")) document.forms[\"$formname\"].submit();";
+                    if ($label) echo "<a href='$url'>".$label."</a></td>\n";                
+                    else echo "&nbsp;</td>\n";
                 }
             }
         }
@@ -651,7 +680,7 @@ function TableDelete ($table, $key_value, $columns, $error_msg="", $be_cautious=
     if ($be_cautious) {
         $db->query ("SELECT * FROM $table WHERE $where");
         if ($db->num_rows() != 1) {
-			$err[] = $error_msg ? $error_msg : _m("Error deleting from $table. ".$db->num_rows()." rows instead of 1.");
+			$err[] = $error_msg ? $error_msg : "Error deleting from $table. ".$db->num_rows()." rows instead of 1.";
 			return false;
 		}
     }

@@ -58,6 +58,7 @@ http://www.apc.org/
 
    "fields"* => (array of many)
         "field_name"* => (array of)
+			"caption" => linked to sort items by this column, default: field name
             "hint" => hint to be shown in Edit view
             "validate" => "number" | "email" | "filename"
             "validate_min" => useful only with validate=number
@@ -65,10 +66,11 @@ http://www.apc.org/
             "default" => default value (for new records)
             "required" => is the field required? default: false
             "view" => (array of) special view (if other than default)
-                "type" => view type = "select" | "blob" | "hide" | "text" | "date"
+                "type" => view type = "select" | "hide" | "text" | "area" | "date"
+                            (select box | hidden | text edit box | text area | date special)
                 "source" => required for "select", array of ("value"=>"option")
-                "size" => required for "text", array ("cols"=>..)
-                "format" => required for "date", usable only on readonly field
+                "size" => applies for "text","area", default: array ("cols"=>40,"rows"=>4)
+                "format" => required for "date", usable only on readonly field, PHP date() format
                 "readonly" => true | false  if not set, the default readonly is used   
                 "href_view" => applicable only with readonly=true, links the text to another table view
             "view_new_record" => the same as "view", applied only on empty new record
@@ -85,11 +87,18 @@ function GetTableView ($viewID) {
     $db = new DB_AA;
 
     $attrs_edit = array (
-            "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
-            "td"=>"class=tabtxt");
+        "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
+        "td"=>"class=tabtxt");
     $attrs_browse = array (
-            "table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
-            "td"=>"class=tabtxt");
+        "table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
+        "td"=>"class=tabtxt");
+    $format = array (
+        "hint" => array (
+            "before" => "<i>",
+            "after" => "</i>"),
+        "caption" => array (
+            "before" => "<b>",
+            "after" => "</b>"));
             
     /* ------------------------------------------------------------------------------------
        ww -- browse wizard welcomes
@@ -164,16 +173,22 @@ function GetTableView ($viewID) {
         "mainmenu" => "sliceadmin",
         "fields" => array (
             "description" => array (
+                "view" => array ("type" => "area", "size" => array("cols"=>60,"rows"=>2)),
+				"caption" => _m("description"),
                 "required" => true),
             "editorial" => "",
             "showme" => array (
+				"caption" => _m("standard"),
                 "default" => 1,
-                "view" => array ("readonly" => true),
+                "view" => array (
+					"readonly" => true,
+					"type"=>"select",
+					"source"=>array("0"=>_m("no"),"1"=>_m("yes"))),
                 "view_new_record" => array ("readonly" => true)),    
-            "mail_from" => "",
-            "mail_reply_to" => "",
-            "mail_errors_to" => "",
-            "mail_sender" => ""),
+            "mail_from" => array ("caption" => "From:", "hint"=>_m("mail header")),
+            "mail_reply_to" => array ("caption" => "Reply-To:"),
+            "mail_errors_to" => array ("caption" => "Errors-To:"),
+            "mail_sender" => array ("caption" => "Sender:")),
         "attrs" => $attrs_edit,
         "children" => array (
             "acf" => array (
@@ -222,6 +237,7 @@ function GetTableView ($viewID) {
 			"error_insert" => _m("Error inserting Filter. Perhaps it is already in the collection.")),
         "fields" => array (
             "filterid" => array (
+				"caption" => _m("filter"),
                 "view" => array (
                     "readonly" => true,
                     "type" => "select",
@@ -230,11 +246,11 @@ function GetTableView ($viewID) {
                     "type" => "select",
                     "source" => $new_filters)),
             "myindex" => array (
+				"caption" => _m("order"),
                 "validate" => "number",
                 "validate_min" => 1,
                 "validate_max" => 99,
                 "required" => true,
-                "hint" => _m("order"),
                 "default" => 1,
                 "view" => array (
                     "type" => "text",
@@ -244,7 +260,7 @@ function GetTableView ($viewID) {
     if ($viewID == "acu") {
         $db->query ("SELECT id, email FROM alerts_user");
         while ($db->next_record())
-            $alerts_users[$db->f("id")] = $db->f("id")." (".$db->f("email").")";
+            $alerts_users[$db->f("id")] = $db->f("email");
                     
         return  array (
         "table" => "alerts_user_filter",
@@ -261,6 +277,7 @@ function GetTableView ($viewID) {
 	        "no_item" => _m ("There are no users subscribed to this collection yet.")),
         "fields" => array (
             "userid" => array (
+				"caption" => _m("email"),
                 "view" => array (
                     "readonly" => true,
                     "href_view" => "au_edit",
@@ -268,7 +285,10 @@ function GetTableView ($viewID) {
                     "size" => array ("cols" => 4),
                     "source" => $alerts_users)),
             "howoften" => array (
-                "view" => array ("type" => "select", "source" => get_howoften_options ()))
+				"caption" => _m("how often"),
+                "view" => array (
+					"type" => "select", 
+					"source" => get_howoften_options ()))
         ));
     }
     
@@ -295,18 +315,21 @@ function GetTableView ($viewID) {
             "id" => array (
                 "view" => array ("readonly" => true)),
             "description" => array (
+				"caption" => _m("description"),
                 "view" => array ("type"=>"text","size"=>array("cols"=>30)),
                 "required" => true),
-            "showme" => array ("view" => array (
-                                    "type"=>"text",
-                                    "size"=>array("cols"=>8),
-                                    "readonly" => true),
-                               "hint" => _m("0 = special or user def")),
+            "showme" => array ("caption" => _m("standard"),
+							   "view" => array (
+									"type"=>"select",
+									"source"=>array("0"=>_m("no"),"1"=>_m("yes")),
+                                    "readonly" => true)),
             "editorial" => array ("view"=>array("type"=>"text","size"=>array("cols"=>35))),
-            "mail_from" => array ("view" => array ("type"=>"text","size"=>array("cols"=>15))),
-            "mail_reply_to" => array ("view" => array ("type"=>"text","size"=>array("cols"=>15))),
-            "mail_errors_to" => array ("view" => array ("type"=>"text","size"=>array("cols"=>15))),
-            "mail_sender" => array ("view" => array ("type"=>"text","size"=>array("cols"=>15)))),
+            "mail_from" => array (
+				"caption"=>"From:","hint"=>"mail header",
+				"view" => array ("type"=>"text","size"=>array("cols"=>15))),
+            "mail_reply_to" => array ("caption"=>"Reply-To:","view" => array ("type"=>"text","size"=>array("cols"=>15))),
+            "mail_errors_to" => array ("caption"=>"Errors-To:","view" => array ("type"=>"text","size"=>array("cols"=>15))),
+            "mail_sender" => array ("caption"=>"Sender:","view" => array ("type"=>"text","size"=>array("cols"=>15)))),
         "attrs" => $attrs_browse,
         "where" => CreateWhereFromList ("id", FindCollectionPermissions()));
     
@@ -335,12 +358,13 @@ function GetTableView ($viewID) {
         "submenu" => "te_alerts_users",
         "fields" => array (
             "email" => array (
+				"caption" => _m("email"),
                 "view" => array ("type"=>"text","size"=>array("cols"=>30)), 
                 "validate"=>"email",
                 "required" => true),
-            "firstname" => array ("view" => array ("type"=>"text","size"=>array("cols"=>8))),
-            "lastname" => array ("view" => array ("type"=>"text","size"=>array("cols"=>15))),
-            "lang" => array ("view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2)))),
+            "firstname" => array ("caption"=>_m("first name"),"view" => array ("type"=>"text","size"=>array("cols"=>8))),
+            "lastname" => array ("caption"=>_m("last name"),"view" => array ("type"=>"text","size"=>array("cols"=>15))),
+            "lang" => array ("caption"=>_m("language"),"view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2)))),
         "attrs" => $attrs_browse,
         "where" => CreateWhereFromList ("id", FindAlertsUserPermissions()),
 		"messages" => array (
@@ -363,11 +387,12 @@ function GetTableView ($viewID) {
         "submenu" => "te_alerts_users",
         "fields" => array (
             "email" => array ("view" => array ("type"=>"text","size"=>array("cols"=>30)),
+				"caption"=>_m("email"),
                 "validate"=>"email",
                 "required" => true),
-            "firstname" => array ("view" => array ("type"=>"text","size"=>array("cols"=>8))),
-            "lastname" => array ("view" => array ("type"=>"text","size"=>array("cols"=>15))),
-            "lang" => array ("view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2)))),
+            "firstname" => array ("caption"=>_m("first name"),"view" => array ("type"=>"text","size"=>array("cols"=>8))),
+            "lastname" => array ("caption"=>_m("last name"),"view" => array ("type"=>"text","size"=>array("cols"=>15))),
+            "lang" => array ("caption"=>_m("language"),"view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2)))),
         "attrs" => $attrs_edit,
         "children" => array (
             "auc" => array (
@@ -400,6 +425,7 @@ function GetTableView ($viewID) {
         "where" => CreateWhereFromList ("collectionid", FindCollectionPermissions()),
         "fields" => array (
             "collectionid" => array (
+				"caption"=>"collection",
                 "view" => array (
                     "readonly" => true,
                     "type" => "select",
@@ -412,6 +438,7 @@ function GetTableView ($viewID) {
                     "size" => array ("cols" => 4),
                     "source" => $alerts_collection_show)),
             "howoften" => array (
+				"caption"=>_m("how often"),
                 "view" => array ("type" => "select", "source" => get_howoften_options ()))
         ));        
     }
