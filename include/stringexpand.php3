@@ -223,7 +223,7 @@ function parseLoop($out, &$item) {
                     }
                     $dummy = str_replace("_#".($i+1), $par, $dummy);
                 }
-                $ret_str = $dummy;
+                $ret_str = $ret_str . ($ret_str ? $separator : "") . $dummy;
             }
         }
     }
