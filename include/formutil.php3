@@ -197,7 +197,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
 }
 
 # On browsers which do support it, loads a special rich text editor with many
-# advanced features based on triedit.dll
+# advanced features based on triedit.dll 
 # On the other browsers, loads a normal text area
 function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $needed=false, 
                      $hlp="", $morehlp="", $single="", $html=false) {
@@ -320,7 +320,7 @@ function FrmChBoxEasy($name, $checked=true, $add="") {
 # Prints html tag <select .. to 2-column table
 # for use within <form> and <table> tag
 function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
-                        $hlp="", $morehlp="") {
+                        $hlp="", $morehlp="", $usevalue=false) {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
@@ -331,6 +331,8 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
   echo "<td><select name=\"$name\">";	
   reset($arr);
   while(list($k, $v) = each($arr)) { 
+    if( $usevalue )                    // special parameter to use values instead of keys
+      $k = $v;
     echo "<option value=\"". htmlspecialchars($k)."\"";
     if ((string)$selected == (string)$k) 
       echo " selected";
@@ -346,25 +348,51 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
 # Prints html tag <intup type=text ...> with <select ...> as presets to 2-column 
 # table for use within <form> and <table> tag
 function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, 
-                           $needed=false, $hlp="", $morehlp="") {
+                           $needed=false, $hlp="", $morehlp="", $adding=0,
+						   $secondfield="", $usevalue=false) {
   $name=safe($name); $val=safe($val); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   if( !$maxsize )
     $maxsize = 254;
   if( !$size )
     $size = 25;
-
+  if ($secondfield) {
+    $varsecfield = 'v'. unpack_id($secondfield);
+  }
+  if ($adding) {
+    echo "\n<script language=\"JavaScript\">
+	<!--
+		function add_to_line(inputbox, value) {
+		  if (inputbox.value.length != 0) {
+		    inputbox.value=inputbox.value+\",\"+value;
+		  } else {
+		    inputbox.value=value;
+		  }	
+		}
+	//-->
+	</script>\n";
+  }
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
     echo "</tr><tr align=left>";
   echo "<td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\">
-          <select name=\"foo_$name\" onchange=\"$name.value=this.options[this.selectedIndex].value\">";	
+          <select name=\"foo_$name\"";
+  if ($secondfield) { 	  
+    echo "onchange=\"$name.value=this.options[this.selectedIndex].text;";
+    echo "$varsecfield.value=this.options[this.selectedIndex].value\">";	
+  } else {
+    if ($adding) {
+	  echo "onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">";
+	} else {
+	  echo "onchange=\"$name.value=this.options[this.selectedIndex].value\">";
+	}  
+  }
   reset($arr);
   while(list($k, $v) = each($arr)) { 
-    echo "<option value=\"". htmlspecialchars($v)."\"";
-    if ((string)$val == (string)$v) 
+    echo "<option value=\"". htmlspecialchars($usevalue ? $v : $k)."\"";
+    if ((string)$val == (string)(($usevalue OR $secondfield) ? $v : $k)) 
       echo " selected";
     echo "> ". htmlspecialchars($v) ." </option>";
   }
@@ -524,6 +552,45 @@ function FrmSelectEasy($name, $arr, $selected="", $add="") {
   }
   echo "</select>\n";
 }  
+
+function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $morehelp="",  $rows=4, $cols=60) {
+		
+  $name=safe($name); $val=safe($val); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
+  echo "\n<script language=\"JavaScript\">
+	<!--
+		function add_to_area(inputbox, value) {
+		  if (inputbox.value.length != 0) {
+		    inputbox.value=inputbox.value+\",\"+value;
+		  } else {
+		    inputbox.value=value;
+		  }	
+		}
+	//-->
+	</script>\n";
+
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
+  Needed($needed);
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr align=left>";
+  echo "<td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>
+          <select name=\"foo_$name\"";
+  echo "onchange=\"add_to_area($name, this.options[this.selectedIndex].value)\">";
+  
+  reset($arr);
+  while(list($k, $v) = each($arr)) { 
+    echo "<option value=\"". htmlspecialchars($k)."\"";
+    if ((string)$val == (string)$k) 
+      echo " selected";
+    echo "> ". htmlspecialchars($v) ." </option>";
+  }
+  reset($arr);
+  echo "</select>";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}
 
 # Validate users input. Error is reported in $err array
 function ValidateInput($variableName, $inputName, $variable, $err, $needed=false, $type="all") 
