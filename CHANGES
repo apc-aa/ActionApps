@@ -1,3 +1,4 @@
+07/25/03 - added test that function called by f_u is callable (mitra)
 07/19/03 - new "u_slice_id......" and "unpacked_id....." item fields (with
 (honzam)   unpacked ids) usable for unaliasing
          - new special "url" parameter used with "x" view.php3 cmd[] -

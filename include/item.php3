@@ -789,6 +789,10 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
   function f_u($col, $param="") {
     $p = ParamExplode($param);
     $fnc = $p[0];
+    if (!is_callable($fnc)) {
+        huhl("Field $col is defined with f_u and function '$fnc', but '$fnc' is not defined in apc-aa/include/usr_aliasfnc.php3");
+        return ""; 
+    }
     return $fnc($this->columns, $col, $param);
   }
 
