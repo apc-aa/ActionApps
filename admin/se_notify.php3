@@ -60,7 +60,7 @@ if(! $slice_id){
   exit;
 }
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT)) {
+if(!IfSlPerm(PS_EDIT)) {
   MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"), "standalone");
   exit;
 }

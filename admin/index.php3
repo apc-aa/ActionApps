@@ -156,8 +156,8 @@ if(!isset($r_admin_order) OR $change_id){ # we are here for the first time
     $listlen = GetProfileProperty('listlen',0);
 }
 
-$perm_edit_all  = CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS);
-$perm_edit_self = CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_SELF_ITEMS);
+$perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
+$perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
 if( !$perm_edit_all && !$perm_edit_self) {
   MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
@@ -209,7 +209,7 @@ if ($bodyonly == "1") {
 if ($akce) {
   switch( $akce ) {  // script post parameter
     case "app":
-      if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
+      if(!IfSlPerm(PS_ITEMS2ACT)) {
         MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to move items"), "items");
         exit;
       }
@@ -217,14 +217,14 @@ if ($akce) {
       FeedAllItems($chb, $fields);    // Feed all checked items
       break;
     case "hold":
-      if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
+      if(!IfSlPerm(PS_ITEMS2HOLD)) {
         MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to move items"), "items");
         exit;
       }
       MoveItems($chb,2);
       break;
     case "trash":
-      if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH)) {
+      if(!IfSlPerm(PS_ITEMS2TRASH)) {
         MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to move items"), "items");
         exit;
       }
@@ -297,7 +297,7 @@ switch( $More ) {
 
 if($Delete == "trash") {         // delete feeded items in trash bin
     // feeded items we can easy delete
-  if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_DELETE_ITEMS )) {
+  if(!IfSlPerm(PS_DELETE_ITEMS )) {
     MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to remove items"), "items");
     exit;
   }  
@@ -509,7 +509,7 @@ if ($sort_filter != "0") {
       // action URL with return_url if $return_url is set.
     echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url="). '">
           <input type="hidden" name="akce" value="filter">    
-          <table width="490" border="0" cellspacing="0" cellpadding="0" 
+          <table border="0" cellspacing="3" cellpadding="0" 
           class=leftmenu bgcolor="'. COLOR_TABBG .'">';
     
     reset( $fields );
@@ -524,20 +524,20 @@ if ($sort_filter != "0") {
     
       # filter
     echo "<tr><td class=search>&nbsp;".$searchimage."&nbsp;&nbsp;<b>"
-        . _m("Search") ."</b></td><td>";
+        . _m("Search") ."</b>&nbsp;</td><td>";
 
-    FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
     echo "<input type='Text' name='admin_search' size=20
-          maxlength=254 value=\"". safe($r_admin_search). "\">&nbsp;"
-          .$searchimage
-          ."</td></tr>";
+          maxlength=254 value=\"". safe($r_admin_search). "\">"
+         ."&nbsp;<b>"._m("in")."</b>&nbsp;";
+    FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
+    echo $searchimage."&nbsp;</td></tr>";
     echo "<input type=hidden name=action value='filter'>";
     
       #order
-    echo "<tr><td class=search>&nbsp;
-    <a href='javascript:document.filterform.submit()'>
-    <img src='../images/order.gif' alt='"._m("Order")."' border=0></a>&nbsp;&nbsp;<b>"
-        . _m("Order") ."</b></td><td class=leftmenuy>";
+    echo "<tr><td class=search align=left>&nbsp;"
+    ."<a href='javascript:document.filterform.submit()'>"
+    ."<img src='../images/order.gif' alt='"._m("Order")."' border=0></a>&nbsp;&nbsp;<b>"
+        . _m("Order") ."</b></td><td class=leftmenuy align=left>";
     FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order, "onchange='document.filterform.submit()'");
     echo "<input type='checkbox' name='admin_order_dir' onchange='document.filterform.submit()'". 
          ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . _m("Descending"). "</td></tr>";
@@ -590,15 +590,15 @@ if ($action_selected != "0")
     if( ($r_bin_state != "app")  AND 
         ($r_bin_state != "appb") AND 
         ($r_bin_state != "appc") AND 
-        CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT))
+        IfSlPerm(PS_ITEMS2ACT))
       $markedaction["1-app"] = _m("Move to Active"); 
     
     if( ($r_bin_state != "hold") AND 
-        CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD))
+        IfSlPerm(PS_ITEMS2HOLD))
       $markedaction["2-hold"] = _m("Move to Holding bin");
       
     if( ($r_bin_state != "trash") AND 
-         CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH))
+         IfSlPerm(PS_ITEMS2TRASH))
       $markedaction["3-trash"] = _m("Move to Trash");
     if ($feed_selected != "0")
         $markedaction["4-feed"] = _m("Export");

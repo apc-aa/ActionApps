@@ -29,7 +29,7 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING, "admin")) {
+if(!IfSlPerm(PS_FEEDING, "admin")) {
   MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
   exit;
 }  

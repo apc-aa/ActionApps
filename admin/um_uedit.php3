@@ -42,7 +42,7 @@ require $GLOBALS[AA_INC_PATH]."um_util.php3";
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
+if(!IfSlPerm(PS_NEW_USER)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
   exit;
 }

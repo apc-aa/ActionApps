@@ -126,7 +126,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
   
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
+if(!IfSlPerm(PS_FIELDS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }  
@@ -153,30 +153,32 @@ function ChangeFieldID ($old_id, $new_id)
         $SQL = "SELECT $keyfield,".join($settings[fields],",")." FROM $table 
                 WHERE $settings[slice_id] = '$p_slice_id'";
         $rows = GetTable2Array ($SQL, $db);
-        reset ($rows);
-        $i = 0;
-        while (list (,$row) = each ($rows)) {
-//            echo "Table $table, record ".$i++;
-            $varset->clear();
-            reset ($settings[fields]);
-            while (list (,$field) = each ($settings[fields])) {
-                $cont = $row[$field];
-//                echo $cont." ";
-                if (strstr ($cont, $old_id)) {
-                    $cont = str_replace ($old_id, $new_id, $cont);
-                    $varset->set ($field, $cont, "text");
+        if (is_array ($rows)) {
+            reset ($rows);
+            $i = 0;
+            while (list (,$row) = each ($rows)) {
+    //            echo "Table $table, record ".$i++;
+                $varset->clear();
+                reset ($settings[fields]);
+                while (list (,$field) = each ($settings[fields])) {
+                    $cont = $row[$field];
+    //                echo $cont." ";
+                    if (strstr ($cont, $old_id)) {
+                        $cont = str_replace ($old_id, $new_id, $cont);
+                        $varset->set ($field, $cont, "text");
+                    }
                 }
+                if ($varset->vars) {
+                    $SQL = "UPDATE $table SET ".$varset->makeUPDATE();
+                    $SQL .= " WHERE $keyfield = ";
+                    if ($settings[primary_type] == "text")
+                         $SQL .= "'".$row[$keyfield]."'";
+                    else $SQL .= $row[$keyfield];
+                    if ($settings[primary_part])
+                         $SQL .= " AND $settings[slice_id] = '$p_slice_id'";
+                    tryQuery ($db,$SQL);
+                }           
             }
-            if ($varset->vars) {
-                $SQL = "UPDATE $table SET ".$varset->makeUPDATE();
-                $SQL .= " WHERE $keyfield = ";
-                if ($settings[primary_type] == "text")
-                     $SQL .= "'".$row[$keyfield]."'";
-                else $SQL .= $row[$keyfield];
-                if ($settings[primary_part])
-                     $SQL .= " AND $settings[slice_id] = '$p_slice_id'";
-                tryQuery ($db,$SQL);
-            }           
         }
     }
 

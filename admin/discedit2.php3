@@ -31,7 +31,7 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 if($cancel)
   go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS)) {
+if(!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
   MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
   exit;
 }

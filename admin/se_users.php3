@@ -30,7 +30,7 @@ require $GLOBALS[AA_INC_PATH]."se_users.php3";
 require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 require $GLOBALS[AA_INC_PATH]."profile.php3";
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS)) {
+if(!IfSlPerm(PS_USERS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
   exit;
 }  

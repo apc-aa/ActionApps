@@ -36,13 +36,13 @@ $where_used = true;
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
+if(!IfSlPerm(PS_FIELDS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }  
 
 if( $categ OR $category ) {
-  if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY)) {
+  if(!IfSlPerm(PS_CATEGORY)) {
     MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change category settings"), "admin");
     exit;
   }  

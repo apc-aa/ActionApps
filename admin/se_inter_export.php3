@@ -24,7 +24,7 @@ http://www.apc.org/
 
 require "../include/init_page.php3";
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
+if(!IfSlPerm(PS_FEEDING)) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
