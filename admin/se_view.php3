@@ -66,7 +66,6 @@ function store_digest_filters ()
         $varset->add("description", "quoted", $filter["description"]);
         $varset->add("conds", "quoted", $filter["conds"]);
         $varset->add("vid", "number", $view_id);
-        $varset->add("showme", "number", 1);
 
         if (substr ($rowid,0,3) != "new") 
             $SQL = "UPDATE alerts_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";

@@ -51,7 +51,7 @@ $alerts_specific_fields = array (
 		"alias1_func" => "f_c:!:::&nbsp;",
 		"alias1_help" => _m("How often for {ALERNAME}"),
 	),
-	"alerts2" => array (
+/*	"alerts3" => array (
 		"name" => _m("Status"),
 		"input_help" => _m("Status for {ALERNAME}"),
 		"input_show_func" => "sel:", 
@@ -61,8 +61,8 @@ $alerts_specific_fields = array (
 		"alias1" => "_#STATCODE",
 		"alias1_func" => "f_h",
 		"alias1_help" => _m("Status for {ALERNAME}"),
-	),
-	"alerts4" => array (
+	),*/
+	"alerts2" => array (
 		"name" => _m("Filters"),
 		"input_help" => _m("Filters for {ALERNAME}"),
 		"input_show_func" => "mch:", 

@@ -56,7 +56,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         global $collectionid;
         $db->query("SELECT AF.description, AF.id FROM alerts_collection_filter ACF
             INNER JOIN alerts_filter AF ON AF.id = ACF.filterid
-            WHERE collectionid=$collectionid");
+            WHERE collectionid='$collectionid'");
         if ($db->num_rows()) {
             while ($db->next_record()) 
                 $collection_filters [$db->f("id")] = $db->f("description");
@@ -147,7 +147,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "title" => _m("Filters"),
         "cond" => IfSlPerm(PS_FULLTEXT),
         "orderby" => "myindex",
-        "where" => "collectionid = $collectionid",
+        "where" => "collectionid = '$collectionid'",
         "fields" => array (
             "collectionid" => array (
                 "view" => array ("type" => "hide"),
@@ -378,7 +378,7 @@ function FindAlertsUserPermissions () {
     
     $db->query("SELECT userid 
         FROM alerts_user_collection 
-        WHERE collectionid=$collectionid AND $where");
+        WHERE collectionid='$collectionid' AND $where");
     $retval = array ();
     while ($db->next_record()) 
         $retval[] = $db->f("userid");

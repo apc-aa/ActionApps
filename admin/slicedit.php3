@@ -128,6 +128,23 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
       FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $fileman_access, false);
       FrmInputText("fileman_dir", _m("File Manager Directory"), $fileman_dir, 99, 25, false);
   }
+    
+    // Reader Management specific settings (Jakub, 7.2.2003)
+  
+    $db->query("SELECT type FROM slice WHERE id='".q_pack_id($slice_id)."'");
+    $db->next_record();
+    $slicetype = $db->f("type");
+    if ($slicetype == 'ReaderManagement') {
+        $db->query ("SELECT id, name FROM field WHERE slice_id='".q_pack_id($slice_id)."'");
+        $slicefields[] = "";
+        while ($db->next_record())
+            $slicefields[unpack_id($db->f("id"))] = $db->f("name");
+        FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, 
+            $auth_field_group, false);
+        FrmInputText("auth_postfix", _m("Auth Group Postfix"), $auth_postfix, 99, 25, false);
+        FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields,
+            $mailman_field_lists, false);
+    }
 ?>
 </table>
 <tr><td align="center">

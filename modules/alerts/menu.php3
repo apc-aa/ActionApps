@@ -109,51 +109,6 @@ function get_aamenus ()
 		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
 			"href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Emails"))
     ));
-/*        
-    global $db, $collectionid;
-    
-    $db->query("SELECT status_code, COUNT(*) AS mycount 
-        FROM alerts_user_collection 
-        WHERE collectionid=$collectionid
-        GROUP BY status_code
-    ");
-    $now = time();
-    while ($db->next_record()) 
-        $item_bin_cnt [$db->f("status_code")] = $db->f("mycount");
-    $db->query("SELECT COUNT(*) AS mycount
-        FROM alerts_user_collection
-        WHERE collectionid=$collectionid
-        AND start_date > $now");
-    if ($db->next_record())
-        $item_bin_cnt_pend = $db->f("mycount");
-    $db->query("SELECT COUNT(*) AS mycount
-        FROM alerts_user_collection
-        WHERE collectionid=$collectionid
-        AND start_date <= $now AND expiry_date < $now");
-    if ($db->next_record())
-        $item_bin_cnt_exp = $db->f("mycount");
-        
-    $aamenus["usermanager_submenu"] = array(
-        "bottom_td"=>200,
-        "level"=>"submenu",
-        "items"=> array(
-        "header1"=>_m("Users"),
-        "app"=>array ("cond"=> 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=app", 
-            "label"=>"<img src='".$AA_INSTAL_PATH."images/ok.gif' border=0>".get_bin_name("app")." (".($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).")"),
-        "appb"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=appb", 
-            "label"=>"... ".get_bin_name("appb")." ($item_bin_cnt_pend)"),
-        "appc"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=appc", 
-            "label"=>"... ".get_bin_name("appc")." ($item_bin_cnt_exp)"),
-        "hold"=>array ("cond"=> 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=hold", 
-            "label"=>"<img src='".$AA_INSTAL_PATH."images/edit.gif' border=0>".get_bin_name("hold")." (".($item_bin_cnt[2]+0).")"),
-        "trash"=>array ("cond"=> 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=trash", 
-            "label"=>"<img src='".$AA_INSTAL_PATH."images/delete.gif' border=0>".get_bin_name("trash")." (".($item_bin_cnt[3]+0).")"),
-        "header2" => _m("Misc"),
-        "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"modules/alerts/index.php3?Delete=trash", 
-            "label"=>"<img src='".$AA_INSTAL_PATH."images/empty_trash.gif' border=0>"._m("Empty trash")),
-        "line" => ""
-    ));
-*/    
     return $aamenus;
 }
 ?>

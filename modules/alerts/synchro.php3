@@ -55,9 +55,9 @@ if ($change_to_cmd && pack_id ($change_to) != $collectionprop["sliceid"])	{
 		echo "<b>".delete_fields_from_slice ($collectionid, $collectionprop["sliceid"])."</b><br><br>";
     if ($change_to)
     	$db->query ("UPDATE alerts_collection SET sliceid='".q_pack_id($change_to)."' 
-	    	WHERE id=$collectionid");
+	    	WHERE id='$collectionid'");
     else $db->query ("UPDATE alerts_collection SET sliceid = NULL 
-	    	WHERE id=$collectionid");
+	    	WHERE id='$collectionid'");
 
 	$collectionprop["sliceid"] = pack_id ($change_to);
 }
@@ -101,7 +101,7 @@ echo '
 	<tr><td class=tabtxt>	
 	<h2>'._m("Add %1-specific fields to %2", 
 	  	     array ($collectionprop["name"], $slice_name)).'</h2>';
-echo _m("Adds only fields whose IDs don't yet exist in the slice.");
+echo _m("Adds only fields the IDs of which don't yet exist in the slice.");
 
 // Field table
 

@@ -76,6 +76,8 @@ function ShowAnonymousForm () {
     <input type="hidden" name="ok_url" value="http://FILL_YOUR_PAGE_URL.shtml">
     <!--'._m("Uncomment the following line to use your script to show results and errors.").'-->
     <!--<input type="hidden" name="show_result" value="http://FILL_YOUR_PAGE_URL.php3">-->
+    <!--'._m("Uncomment the following line to use HTTP authentification to choose the item in Reader Management.").'-->
+    <!--<input type="hidden" name="use_http_auth" value="1">-->
     
     <input type="hidden" name="slice_id" value="'.$slice_id.'">
     <input type="hidden" name="use_post2shtml" value="1">
