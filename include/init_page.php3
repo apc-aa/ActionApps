@@ -43,9 +43,13 @@ if (!get_magic_quotes_gpc()) {
   $$k = Myaddslashes($v); 
 }
 
+if($encap == "false")    # used in itemedit for anonymous form
+  $encap = false;        # it must be here, because the variable is rewriten
+                         # if the get_magic_quotes_gpc()==false (see above)
+
 require "../include/config.php3";
 
-if($free)            // anonymous authentication
+if($free)                # anonymous authentication
   $nobody = true;
 
 require $GLOBALS[AA_INC_PATH] . "locauth.php3";
@@ -218,6 +222,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.19  2002/01/15 13:04:34  honzam
+fixed bug of not displayed inputform for systems with 'magic quotes' off
+
 Revision 1.18  2002/01/10 13:56:58  honzam
 fixed bug in user profiles
 
