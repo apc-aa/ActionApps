@@ -171,6 +171,10 @@ function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
     // field in content table
     $varset->clear();
     if( $field["text_stored"] ) {
+        // do not store empty values in content table for text_stored fields
+        if ( !$value['value'] ) {
+            return false;
+        }
         $varset->add("text", "quoted", $value['value']);
         if (is_numeric($additional["order"])) {
             $varset->add("number", "quoted", $additional["order"]);
