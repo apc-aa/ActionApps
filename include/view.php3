@@ -32,10 +32,10 @@ function GetAliasesFromUrl($to_arr = false) {
     reset( $als );
     if( $to_arr ) {
       while( list($k,$v) = each( $als ) )
-        $ret["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+        $ret["_#".$k] = GetAliasDef( "f_s:$v" );
     } else {
       while( list($k,$v) = each( $als ) )
-        $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+        $aliases["_#".$k] = GetAliasDef( "f_s:$v" );
     }
   }
   return $ret;
@@ -207,22 +207,21 @@ function GetViewConds($view_info, $param_conds) {
 }
 
 function GetViewSort($view_info) {
+    // translate sort codes (we use numbers in views from historical reason)
+    // '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
+    $SORT_DIRECTIONS = array( 0 => 'a', 1 => 'd', 2 => '1', 3 => '9' );
 
-  # translate sort codes (we use numbers in views from historical reason)
-  # '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
-  $SORT_DIRECTIONS = array( 0 => 'a', 1 => 'd', 2 => '1', 3 => '9' );
+    if( $view_info['group_by1'] )
+      $sort[] = array ( $view_info['group_by1'] => $SORT_DIRECTIONS[$view_info['g1_direction']]);
+    if( $view_info['group_by2'] )
+      $sort[] = array ( $view_info['group_by2'] => $SORT_DIRECTIONS[$view_info['g2_direction']]);
 
-  if( $view_info['group_by1'] )
-    $sort[] = array ( $view_info['group_by1'] => $SORT_DIRECTIONS[$view_info['g1_direction']]);
-  if( $view_info['group_by2'] )
-    $sort[] = array ( $view_info['group_by2'] => $SORT_DIRECTIONS[$view_info['g2_direction']]);
+    if( $view_info['order1'] )
+      $sort[] = array ( $view_info['order1'] => $SORT_DIRECTIONS[$view_info['o1_direction']]);
+    if( $view_info['order2'] )
+      $sort[] = array ( $view_info['order2'] => $SORT_DIRECTIONS[$view_info['o2_direction']]);
 
-  if( $view_info['order1'] )
-    $sort[] = array ( $view_info['order1'] => $SORT_DIRECTIONS[$view_info['o1_direction']]);
-  if( $view_info['order2'] )
-    $sort[] = array ( $view_info['order2'] => $SORT_DIRECTIONS[$view_info['o2_direction']]);
-
-  return $sort;
+    return $sort;
 }
 
 function GetViewGroup($view_info) {
@@ -268,6 +267,28 @@ function ParseBannerParam(&$view_info, $banner_param) {
                                                      ($foo_fld ? $foo_fld : 1);
     }
 }
+
+function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
+    if( $to > 0 )
+        $listlen = max(0, $to - $from + 1);
+
+    if( $page ) {   // split listing to pages
+        // Format:  <page>-<number of pages>
+        $pos=strpos($page,'-');
+        if( $pos ) {
+            $no_of_pages = substr($page,$pos+1);
+            $page_n = substr($page,0,$pos)-1;    // count from zero
+            // to be last page shorter than others if there is bad number of items
+            $from = $page_n * floor($idscount/$no_of_pages);
+            $listlen = floor(($idscount*($page_n+1))/$no_of_pages) - floor(($idscount*$page_n)/$no_of_pages);
+        } else {
+            // second parameter is not specified - take listlen parameter
+            $from = $listlen * ($page-1);
+        }
+    }
+    return array( $listlen, $random ? $random : ($from ? $from : 0) );
+}
+
 
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
@@ -354,17 +375,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
       }
       trace("-");
       return $ret;
-    case 'const':
-      $format = GetViewFormat($view_info);
-      $aliases = GetConstantAliases($als);
-      $constantview = new constantview( $db, $format, $aliases,
-                            $view_info['parameter'], $view_info['order1'],
-                            ((($view_info['o1_direction'] == 1) ||
-                              ($view_info['o1_direction'] == 3))? 'DESC' : ''),
-                            ($listlen ? $listlen : $view_info['listlen']) );
-      $ret=$constantview->get_output_cached();
-      trace("-");
-      return $ret;
     case 'discus':
       // create array of discussion parameters
       $disc = array('ids'=> ($view_param["all_ids"] ? "" : $view_param["ids"]),
@@ -413,7 +423,26 @@ function GetViewFromDB($view_param, &$cache_sid) {
                       'value' => mktime (0,0,0,$month,1,$year),
                       $view_info['field2'] => 1 ));
         # Note drops through to next case
-        trace("=","","calendar - drop through"); 
+        trace("=","","calendar - drop through");
+
+    case 'const':
+      $format    = GetViewFormat($view_info);
+      $aliases   = GetConstantAliases($als);
+      if (! $conds )         # conds could be defined via cmd[]=d command
+          $conds = GetViewConds($view_info, $param_conds);
+      $sort      = GetViewSort($view_info);
+      $zids      = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
+      if ( !isset($zids) || $zids->count() <= 0)
+          return $noitem_msg;
+
+      list( $listlen, $list_from ) = GetListLength($listlen, $list_to,
+                      $list_from, $list_page, $zids->count(), $random);
+
+      $itemview = new itemview( $db, $format, $CATEGORY_FILEDS, $aliases,
+                                $zids, $list_from, $listlen, shtml_url(),
+                                "", 'GetConstantContent');
+      return $itemview->get_output_cached($itemview_type);
+
     case 'digest':
     case 'list':
     case 'rss':
@@ -459,39 +488,15 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $format['calendar_year'] = $year;
 
       if (isset($zids2) && ($zids2->count() > 0)) {
-
-        if( $list_to > 0 )
-          $listlen = max(0, $list_to-$list_from + 1);
-
-        if( $list_page ) {   # split listing to pages
-                             # Format:  <page>-<number of pages>
-          $pos=strpos($list_page,'-');
-          if( $pos ) {
-            $no_of_pages = substr($list_page,$pos+1);
-            $page_n = substr($list_page,0,$pos)-1;      #count from zero
-            $items = $zids2->count();
-            $items_plus = $items + ($no_of_pages-1); # to be last page shorter than others if there is not so good number of items
-//            $list_from = $page_n * floor($items_plus/$no_of_pages);
-//            $listlen = floor($items_plus/$no_of_pages);
-            $list_from = $page_n * floor($items/$no_of_pages);
-            $listlen = floor(($items*($page_n+1))/$no_of_pages) - floor(($items*$page_n)/$no_of_pages);
-          } else  # second parameter is not specified - take listlen parameter
-            $list_from = $listlen * ($list_page-1);
-        }
-
-        if( !$list_from )
-          $list_from = 0;
-
-//  function itemview( $db, $slice_info, $fields, $aliases, $zids, $from, $number,
-//                     $clean_url, $disc="", $get_content_funct='GetItemContent'){
+        list( $listlen, $list_from ) = GetListLength($listlen, $list_to, $list_from,
+                                       $list_page, $zids2->count(), $random);
 
         $itemview = new itemview( $db, $format, $fields, $aliases, $zids2,
-                                  $random ? $random : $list_from,
-                                  $listlen, shtml_url(), "",
+                                  $list_from, $listlen, shtml_url(), "",
                                   ($view_info['type'] == 'urls') ?
                                                'GetItemContentMinimal' : '');
 
-        $itemview_type = (($view_info['type'] == 'calendar') 
+        $itemview_type = (($view_info['type'] == 'calendar')
                             ? 'calendar' : 'view');
         $ret = $itemview->get_output_cached($itemview_type);
       }   #zids2->count >0
@@ -510,118 +515,4 @@ function GetViewFromDB($view_param, &$cache_sid) {
     return $ret;
   }                                             # uses call by reference
 }
-
-# ----------------------------------------------------------------------------
-#                        constants
-# ----------------------------------------------------------------------------
-
-
-# fills content arr with specified constant data
-function GetConstantContent( $group, $order='pri,name' ) {
-  global $db;
-
-  $db->query("SELECT * FROM constant
-               WHERE group_id='$group'
-               ORDER BY $order");
-  $i=1;
-  while($db->next_record()) {
-    $foo_id = unpack_id128($db->f(id));
-    $content[$foo_id]["const_name......"][] = array( "value"=> $db->f("name") );
-    $content[$foo_id]["const_value....."][] = array( "value"=> $db->f("value"),
-                                                     "flag" => FLAG_HTML );
-    $content[$foo_id]["const_priority.."][] = array( "value"=> $db->f("pri") );
-    $content[$foo_id]["const_group....."][] = array( "value"=> $db->f("group_id") );
-    $content[$foo_id]["const_class....."][] = array( "value"=> $db->f("class") );
-    $content[$foo_id]["const_counter..."][] = array( "value"=> $i++ );
-    $content[$foo_id]["const_id........"][] = array( "value"=> $db->f("id") );
-    $content[$foo_id]["const_descr....."][] = array( "value"=> $db->f("description"),
-                                                     "flag" => FLAG_HTML);
-    $content[$foo_id]["const_short_id.."][] = array( "value"=> $db->f("short_id") );
-    $content[$foo_id]["const_level....."][] = array( "value"=> strlen($db->f("ancestors"))/16);
-  }
-  return $content;
-}
-
-# ----------------------------------------------------------------------------
-#                        constantview class
-# ----------------------------------------------------------------------------
-
-class constantview{
-  var $db;
-  var $slice_info;               # record from slice database for current slice
-  var $aliases;                  # array of alias definitions
-  var $group;                    # id of constant group
-  var $order_fld;                # name of order field
-  var $order_dir;                # order direction (DESC)
-
-  function constantview( $db, $slice_info, $aliases, $group, $order_fld='pri', $order_dir='', $number=10000) {                   #constructor
-    $this->db = $db;
-    $this->slice_info = $slice_info;  # $slice_info is array with this fields:
-                                      #   compact_top, category_sort,
-                                      #   category_format, category_top,
-                                      #   category_bottom, even_odd_differ,
-                                      #   even_row_format, odd_row_format,
-                                      #   compact_remove, compact_bottom,
-    $this->aliases = $aliases;
-    $this->group = $group;
-    $this->order_fld = $order_fld;
-    $this->order_dir = $order_dir;
-    $this->num_records = $number;
-  }
-
-
-  function get_output_cached() {
-    trace("+","get_output_cached");
-    #create keystring from values, which exactly identifies resulting content
-    $keystr = serialize($this->slice_info).
-              $this->group.
-              $this->order_fld.
-              $this->order_dir.
-              $this->num_records;
-
-    if( $res = $GLOBALS[pagecache]->get($keystr) ) {
-        trace("-");
-        return $res;
-    }
-
-    #cache new value
-    $res = $this->get_output();
-
-    $GLOBALS[pagecache]->store($keystr, $res, "slice_id=".unpack_id128($this->slice_info["id"]));
-    trace("-");
-    return $res;
-  }
-
-  function get_output() {
-    $db = $this->db;
-    $content = GetConstantContent($this->group, $this->order_fld. " " .$this->order_dir);
-    $CurItem = new item("", "", $this->aliases, "", "", "");   # just prepare
-    $out = $this->slice_info[compact_top];
-
-    reset( $content );
-    $i=0;
-    while( list( $iid, $const_cont) = each( $content ) ) {
-      if( $const_cont["const_counter..."][0][value] > $this->num_records )
-        break;
-
-      $CurItem->columns = $const_cont;   # set right content for aliases
-            # print item
-      $CurItem->setformat(
-             (!($i%2) AND $this->slice_info[even_odd_differ]) ?
-             $this->slice_info[even_row_format] : $this->slice_info[odd_row_format],
-             $this->slice_info[compact_remove] );
-
-      $out .= $CurItem->get_item();
-      $i++;
-    }
-    $out .= $this->slice_info[compact_bottom];
-    return $out;
-  }
-
-  # print constant view
-  function print_constant() {
-    echo $this->get_output_cached();
-  }
-};
-
 ?>

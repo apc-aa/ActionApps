@@ -30,14 +30,16 @@ require_once $GLOBALS["AA_INC_PATH"]."logs.php3";
 require_once $GLOBALS["AA_INC_PATH"]."go_url.php3";
 require_once $GLOBALS["AA_INC_PATH"]."logs.php3";
 
-function get_aa_url ($href) {
+function get_aa_url($href) {
     global $AA_INSTAL_PATH, $sess;
-    return $sess->url ($AA_INSTAL_PATH.$href);
+    return is_object($sess) ? $sess->url($AA_INSTAL_PATH.$href) :
+                               $AA_INSTAL_PATH.$href;
 }
 
-function get_admin_url ($href) {
+function get_admin_url($href) {
     global $AA_INSTAL_PATH, $sess;
-    return $sess->url ($AA_INSTAL_PATH."admin/".$href);
+    return is_object($sess) ? $sess->url($AA_INSTAL_PATH."admin/".$href) :
+                               $AA_INSTAL_PATH."admin/".$href;
 }
 
 /// Adds slash at the end of a directory name if it is not yet there.
@@ -779,28 +781,67 @@ function GetItemContent_Short($ids) {
  * the item (used in URL listing view @see view_type['urls'])
  */
 function GetItemContentMinimal($zids) {
-  global $db;
   $db = getDB();
 
   # construct WHERE clause
   list($sel_in, $settags) = itemContent_getWhere($zids);
-  if(!$sel_in)
-    return false;
-
-  # get content from item table
-  $delim = "";
-  $SQL = "SELECT id, short_id FROM item WHERE id $sel_in";
-  $db->tquery($SQL);
-  $n_items = 0;
-  while( $db->next_record() ) {
-    $n_items++;
-    $foo_id = unpack_id128($db->f("id"));
-    $content[$foo_id]['id..............'][] = array("value" => $db->f("id"));
-    $content[$foo_id]['short_id........'][] = array("value" => $db->f("short_id"));
+  if($sel_in) {
+      # get content from item table
+      $delim = "";
+      $SQL = "SELECT id, short_id FROM item WHERE id $sel_in";
+      $db->tquery($SQL);
+      $n_items = 0;
+      while( $db->next_record() ) {
+          $n_items++;
+          $foo_id = unpack_id128($db->f("id"));
+          $content[$foo_id]['id..............'][] = array("value" => $db->f("id"));
+          $content[$foo_id]['short_id........'][] = array("value" => $db->f("short_id"));
+      }
   }
 
   freeDB($db);
   return ($n_items == 0) ? null : $content;   // null returned if no items found
+}
+
+/** Fills Abstract data srtructure for Constants */
+function GetConstantContent( $zids ) {
+  if( !$zids ) return false;
+  $db = getDB();
+
+  $SQL = 'SELECT * FROM constant WHERE short_id '. $zids->sqlin(false);
+  $db->tquery( $SQL );
+  $i=1;
+  while($db->next_record()) {
+    $coid = $db->f('short_id');
+    $content[$coid]["const_name"][]        = array( "value"=> $db->f("name") );
+    $content[$coid]["const_value"][]       = array( "value"=> $db->f("value"),
+                                                    "flag" => FLAG_HTML );
+    $content[$coid]["const_priority"][]    = array( "value"=> $db->f("pri") );
+    $content[$coid]["const_group"][]       = array( "value"=> $db->f("group_id") );
+    $content[$coid]["const_class"][]       = array( "value"=> $db->f("class") );
+    $content[$coid]["const_counter"][]     = array( "value"=> $i++ );
+    $content[$coid]["const_id"][]          = array( "value"=> unpack_id128($db->f("id") ));
+    $content[$coid]["const_description"][] = array( "value"=> $db->f("description"),
+                                                    "flag" => FLAG_HTML);
+    $content[$coid]["const_short_id"][]    = array( "value"=> $db->f("short_id") );
+    $content[$coid]["const_level"][]       = array( "value"=> strlen($db->f("ancestors"))/16);
+  }
+  freeDB($db);
+
+  return $content;
+}
+
+/** Just helper function for storing data from database to Abstract Data Structure */
+function StoreTable2Content(&$db, &$content, $SQL, $prefix, $id_field) {
+    $db->tquery($SQL);
+    while( $db->next_record() ) {
+        $foo_id = $db->f($id_field);
+        reset( $db->Record );
+        while( list( $key, $val ) = each( $db->Record )) {
+            if( !is_int($key))
+                $content[$foo_id][$prefix . $key][] = array('value' => $val);
+        }
+    }
 }
 
 // -------------------------------------------------------------------------------

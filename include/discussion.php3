@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -131,31 +131,25 @@ function GetButtons($empty, $script_loc) {
   return $out;
 }
 
-function GetAlias($fce, $param, $help) {
-  return  array( "fce"   =>   $fce,
-                 "param" =>   $param,
-                 "hlp"   =>   $help );
-}
-
 function GetDiscussionAliases() {
   #  Standard aliases
-  $aliases["_#SUBJECT_"] = GetAlias("f_h", "d_subject.......", _m("Alias for subject of the discussion comment"));
-  $aliases["_#BODY###_"] = GetAlias("f_t", "d_body..........", _m(" Alias for text of the discussion comment"));
-  $aliases["_#AUTHOR#_"] = GetAlias("f_h", "d_author........", _m(" Alias for written by"));
-  $aliases["_#EMAIL##_"] = GetAlias("f_h", "d_e_mail........", _m("Alias for author's e-mail"));
-  $aliases["_#WWW_URL_"] = GetAlias("f_h", "d_url_address...", _m("Alias for url address of author's www site"));
-  $aliases["_#WWW_DESC"] = GetAlias("f_h", "d_url_descript..", _m("Alias for description of author's www site"));
-  $aliases["_#DATE###_"] = GetAlias("f_d:d M  H:i",     "d_date..........", _m("Alias for publish date"));
-  $aliases["_#IP_ADDR_"] = GetAlias("f_h", "d_remote_addr...", _m("Alias pro IP address of author's computer"));
-  $aliases["_#CHECKBOX"] = GetAlias("f_h", "d_checkbox......", _m("Alias for checkbox used for choosing discussion comment"));
-  $aliases["_#TREEIMGS"] = GetAlias("f_h", "d_treeimages....", _m("Alias for images"));
-  $aliases["_#DITEM_ID"] = GetAlias("f_h", "d_item_id.......", _m(" Alias for comment ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"));
-  $aliases["_#ITEM_ID_"] = GetAlias("f_h", "d_item_id.......", _m(" Alias for comment ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"));
-  $aliases["_#DISC_ID_"] = GetAlias("f_h", "d_id............", _m(" Alias for item ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"));
-  $aliases["_#URL_BODY"] = GetAlias("f_h", "d_url_fulltext..", _m("Alias for link to text of the discussion comment<br>\n                             <i>Usage: </i>in HTML code for index view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"));
-  $aliases["_#URLREPLY"] = GetAlias("f_h", "d_url_reply.....", _m("Alias for link to a form<br>\n                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"));
-  $aliases["_#DISC_URL"] = GetAlias("f_h", "d_disc_url......", _m("Alias for link to discussion<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"));
-  $aliases["_#BUTTONS_"] = GetAlias("f_h", "d_buttons.......", _m("Alias for buttons Show all, Show selected, Add new<br>\n                             <i>Usage: </i> in the Bottom HTML code"));
+  $aliases["_#SUBJECT_"] = GetAliasDef("f_h",          "d_subject.......", _m("Alias for subject of the discussion comment"));
+  $aliases["_#BODY###_"] = GetAliasDef("f_t",          "d_body..........", _m("Alias for text of the discussion comment"));
+  $aliases["_#AUTHOR#_"] = GetAliasDef("f_h",          "d_author........", _m("Alias for written by"));
+  $aliases["_#EMAIL##_"] = GetAliasDef("f_h",          "d_e_mail........", _m("Alias for author's e-mail"));
+  $aliases["_#WWW_URL_"] = GetAliasDef("f_h",          "d_url_address...", _m("Alias for url address of author's www site"));
+  $aliases["_#WWW_DESC"] = GetAliasDef("f_h",          "d_url_descript..", _m("Alias for description of author's www site"));
+  $aliases["_#DATE###_"] = GetAliasDef("f_d:d M  H:i", "d_date..........", _m("Alias for publish date"));
+  $aliases["_#IP_ADDR_"] = GetAliasDef("f_h",          "d_remote_addr...", _m("Alias pro IP address of author's computer"));
+  $aliases["_#CHECKBOX"] = GetAliasDef("f_h",          "d_checkbox......", _m("Alias for checkbox used for choosing discussion comment"));
+  $aliases["_#TREEIMGS"] = GetAliasDef("f_h",          "d_treeimages....", _m("Alias for images"));
+  $aliases["_#DITEM_ID"] = GetAliasDef("f_h",          "d_item_id.......", _m("Alias for comment ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"));
+  $aliases["_#ITEM_ID_"] = GetAliasDef("f_h",          "d_item_id.......", _m("Alias for comment ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"));
+  $aliases["_#DISC_ID_"] = GetAliasDef("f_h",          "d_id............", _m("Alias for item ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"));
+  $aliases["_#URL_BODY"] = GetAliasDef("f_h",          "d_url_fulltext..", _m("Alias for link to text of the discussion comment<br>\n                             <i>Usage: </i>in HTML code for index view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"));
+  $aliases["_#URLREPLY"] = GetAliasDef("f_h",          "d_url_reply.....", _m("Alias for link to a form<br>\n                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"));
+  $aliases["_#DISC_URL"] = GetAliasDef("f_h",          "d_disc_url......", _m("Alias for link to discussion<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"));
+  $aliases["_#BUTTONS_"] = GetAliasDef("f_h",          "d_buttons.......", _m("Alias for buttons Show all, Show selected, Add new<br>\n                             <i>Usage: </i> in the Bottom HTML code"));
 
   return $aliases;
 }
@@ -178,7 +172,7 @@ function GetDiscussionFormat(&$view_info) {
                                                        '<input type=button name=sel_ids value="' ._m("Show selected"). '" onClick=showSelectedComments() class="discbuttons">');
   $format['d_all_butt'] = ( $view_info['aditional3'] ? $view_info['aditional3'] :
                                                        '<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">');
-  $format['d_add_butt'] = ( $view_info['aditional4'] ? $view_info['aditional4'] : 
+  $format['d_add_butt'] = ( $view_info['aditional4'] ? $view_info['aditional4'] :
                                                        '<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">');
   $format['images'] = array(
                          D_VLINE_IMG => $view_info['img1'],
@@ -303,29 +297,29 @@ function GetDiscussion2MailAliases() {
 }
 
 // -----------------------------------------------------------------------------------------
-/* This function sends new discussion items to one mail address 
+/* This function sends new discussion items to one mail address
    if a field with name DiscussionMailList
    exists and is filled with these parameters separated by ":" (use "#:" instead of verbatim ":")
-   
+
    view_id:mail_address:param3:param4:...
 */
 
 function send2mailList ($d_item_id, $new_id) {
     global $db;
-    $db->query("SELECT content.text FROM 
+    $db->query("SELECT content.text FROM
                  content INNER JOIN item ON item.id = content.item_id INNER JOIN
                  field ON content.field_id = field.id
                  AND field.slice_id = item.slice_id
                  WHERE item.id='".q_pack_id($d_item_id)."'
-                 AND field.name = 'DiscussionMailList'"); 
+                 AND field.name = 'DiscussionMailList'");
     if ($db->next_record()) {
         $item_params = split_escaped (":", $db->f("text"), "#:");
         list ($vid, $maillist) = $item_params;
-        
+
         $db->query("SELECT * FROM view WHERE id=$vid");
         if ($db->next_record()) {
             $view_info = $db->Record;
-                  
+
             $mail_parts = array (
                 "from" => "aditional",
                 "reply_to" => "aditional2",
@@ -333,16 +327,16 @@ function send2mailList ($d_item_id, $new_id) {
                 "sender" => "aditional4",
                 "subject" => "aditional5",
                 "body" => "even");
-   
+
             $html = $view_info[flag] & DISCUS_HTML_FORMAT;
             $aliases = GetDiscussionAliases();
             $columns = GetDiscussionContentSQL (
                 "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
-                $d_item_id, "", $vid, true, $html, "");       
+                $d_item_id, "", $vid, true, $html, "");
             reset ($columns);
             list (,$columns) = each ($columns);
-            $CurItem = new item("", $columns, $aliases, "", "", "");               
-             
+            $CurItem = new item("", $columns, $aliases, "", "", "");
+
             reset ($mail_parts);
             $mail = "";
             while (list ($part, $field) = each ($mail_parts)) {
@@ -352,7 +346,7 @@ function send2mailList ($d_item_id, $new_id) {
                 $CurItem->setformat ($s);
                 $mail [$part] = $CurItem->get_item();
             }
-            
+
             $mail = new HtmlMail;
             $mail->setSubject ($mail["subject"]);
             $mail->setHtml ($mail["body"], html2text ($mail["body"]));
@@ -360,12 +354,12 @@ function send2mailList ($d_item_id, $new_id) {
             if ($mail["reply_to"])  $mail->setHeader ("Reply-To", $mail["reply_to"]);
             if ($mail["errors_to"]) $mail->setHeader ("Errors-To", $mail["errors_to"]);
             if ($mail["sender"])    $mail->setHeader ("Sender", $mail["sender"]);
-                        
+
             $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
                          WHERE item.id='".q_pack_id($d_item_id)."'");
-            $db->next_record();                         
+            $db->next_record();
             $mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
-            $mail->send (array ($maillist));            
+            $mail->send (array ($maillist));
         }
     }
 }

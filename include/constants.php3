@@ -25,6 +25,19 @@ require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 # Used constants. Do not edit if you are not developer.
 #
 
+/** Field definition shortcut (used in constants.php3 for CONSTANT_FILEDS) */
+function GetFieldDef( $name, $field, $operators='text', $table=false) {
+    $ret = array('name' => $name, 'field' => $field, 'operators' => $operators);
+    if( $table )
+        $ret['table'] = $table;
+    return $ret;
+}
+
+/** Alias definition shortcut */
+function GetAliasDef( $fce, $field='', $hlp='') {
+    return array('fce' => $fce, 'param' => $field, 'hlp' => $hlp);
+}
+
   # There we can mention $FIELD_TYPES, but they are not defined in this file,
   # but in database as special slice with id 'AA_Core_Fields..'
 
@@ -176,67 +189,61 @@ $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
   "search_pri", "search_show", "search_ft_show", "search_ft_default",
   "content_edit", "html_default", "html_show", "input_show", "text_stored");
 
-/// @return array input show function types
-function inputShowFuncTypes ()
-{
-    return array (
-    "txt" => array( 'name' => _m("Text Area"), #textarea
-                    'multiple' => false,
-                    'paramformat' => 'fnc:param' ),
-    "tpr" => array( 'name' => _m("Textarea with Presets"), #textarea with preset
-                    'multiple' => false,
-                    'paramformat' => 'fnc:const:param' ),
-    "edt" => array( 'name' => _m("Rich Edit Text Area"), #rich text edit
-                    'multiple' => false,
-                    'paramformat' => 'fnc:param' ),
-    "fld" => array( 'name' => _m("Text Field"), #textfield
-                    'multiple' => false,
-                    'paramformat' => 'fnc:param' ),
-    "sel" => array( 'name' => _m("Select Box"), #selectbox
-                    'multiple' => false,
-                    'paramformat' => 'fnc:const:param' ),
-    "pre" => array( 'name' => _m("Select Box with Presets"), #selectbox with preset
-                    'multiple' => false,
-                    'paramformat' => 'fnc:const:param' ),
-    "rio" => array( 'name' => _m("Radio Button"), #radio button
-                    'multiple' => false,
-                    'paramformat' => 'fnc:const:param' ),
-    "dte" => array( 'name' => _m("Date"), #date
-                    'multiple' => false,
-                    'paramformat' => 'fnc:param' ),
-    "chb" => array( 'name' => _m("Check Box"), #check box
-                    'multiple' => false,
-                    'paramformat' => 'fnc' ),
-    "mch" => array( 'name' => _m("Multiple Checkboxes"), #multiple checkbox
-                    'multiple' => true,
-                    'paramformat' => 'fnc:const:param' ),
-    "mse" => array( 'name' => _m("Multiple Selectbox"), #multiple selectbox
-                    'multiple' => true,
-                    'paramformat' => 'fnc:const:param' ),
-    "wi2" => array( 'name' => _m("Two Boxes"), #2 windows
-                    'multiple' => true,
-                    'paramformat' => 'fnc:const:param' ),
-    "fil" => array( 'name' => _m("File Upload"), #file
-                    'multiple' => false,
-                    'paramformat' => 'fnc:param' ),
-  # "isi" => array( 'name' => _m("Related Item Select Box"), #
-  #                 'multiple' => true,
-  #                 'paramformat' => 'fnc:const:param' ),
-    "iso" => array( 'name' => _m("Related Item Window"),   #related items selectbox - outer
-                    'multiple' => true,
-                    'paramformat' => 'fnc:const:param' ),
-    "nul" => array( 'name' => _m("Do not show"), #
-                    'multiple' => false,
-                    'paramformat' => 'fnc' ),
-    "hco" => array( 'name' => _m("Hierachical constants"), #hierarchy constant
-                    'multiple' => false,
-                    'paramformat' => 'fnc:const:param'),
-    "pwd" => array( 'name' => _m("Password and Change password"), #
-                    'multiple' => false,
-                    'paramformat' => 'fnc:param' ),
-    "hid" => array( 'name' => _m("Hidden field"),       # hidden field (good for
-                    'multiple' => false,                # javascript triggers)
-                    'paramformat' => 'fnc'));
+
+/*
+    $content[$foo_id]["const_name......"][] = array( "value"=> $db->f("name") );
+    $content[$foo_id]["const_value....."][] = array( "value"=> $db->f("value"),
+                                                     "flag" => FLAG_HTML );
+    $content[$foo_id]["const_priority.."][] = array( "value"=> $db->f("pri") );
+    $content[$foo_id]["const_group....."][] = array( "value"=> $db->f("group_id") );
+    $content[$foo_id]["const_class....."][] = array( "value"=> $db->f("class") );
+    $content[$foo_id]["const_counter..."][] = array( "value"=> $i++ );
+    $content[$foo_id]["const_id........"][] = array( "value"=> unpack_id128($db->f("id") ));
+    $content[$foo_id]["const_descr....."][] = array( "value"=> $db->f("description"),
+                                                     "flag" => FLAG_HTML);
+    $content[$foo_id]["const_short_id.."][] = array( "value"=> $db->f("short_id") );
+    $content[$foo_id]["const_level....."][] = array( "value"=> strlen($db->f("ancestors"))/16);
+*/
+
+$CONSTANT_FIELDS = array(
+    'const_short_id'   => GetFieldDef( _m('Short Id'),    'constant.short_id',   'numeric'),
+    'const_name'       => GetFieldDef( _m('Name'),        'constant.name',       'text'),
+    'const_value'      => GetFieldDef( _m('Value'),       'constant.value',      'text'),
+    'const_priority'   => GetFieldDef( _m('Priority'),    'constant.pri',        'numeric'),
+    'const_group'      => GetFieldDef( _m('Group'),       'constant.group',      'text'),
+    'const_class'      => GetFieldDef( _m('Class'),       'constant.class',      'text'),
+//    'const_counter'     => GetFieldDef( _m('Counter'),     '',                    'numeric'),
+    'const_id'         => GetFieldDef( _m('Id'),          'constant.id',         'id'),
+    'const_descriptio' => GetFieldDef( _m('Description'), 'constant.description','text'),
+    'const_level'      => GetFieldDef( _m('Level'),       'constant.level',      'numeric'));
+
+    function GetInputShowFuncTypesDef( $name, $multiple, $paramformat) {
+    return array( 'name'=>$name, 'multiple'=>$multiple, 'paramformat'=>$paramformat);
+}
+
+    /// @return array input show function types
+function inputShowFuncTypes () {
+    return array (                   //        $name,                    $multiple,   $paramformat
+        "txt" => GetInputShowFuncTypesDef( _m("Text Area"),                   false, 'fnc:param' ),
+        "tpr" => GetInputShowFuncTypesDef( _m("Textarea with Presets"),       false, 'fnc:const:param' ),
+        "edt" => GetInputShowFuncTypesDef( _m("Rich Edit Text Area"),         false, 'fnc:param' ),
+        "fld" => GetInputShowFuncTypesDef( _m("Text Field"),                  false, 'fnc:param' ),
+        "sel" => GetInputShowFuncTypesDef( _m("Select Box"),                  false, 'fnc:const:param' ),
+        "pre" => GetInputShowFuncTypesDef( _m("Select Box with Presets"),     false, 'fnc:const:param' ),
+        "rio" => GetInputShowFuncTypesDef( _m("Radio Button"),                false, 'fnc:const:param' ),
+        "dte" => GetInputShowFuncTypesDef( _m("Date"),                        false, 'fnc:param' ),
+        "chb" => GetInputShowFuncTypesDef( _m("Check Box"),                   false, 'fnc' ),
+        "mch" => GetInputShowFuncTypesDef( _m("Multiple Checkboxes"),         true,  'fnc:const:param' ),
+        "mse" => GetInputShowFuncTypesDef( _m("Multiple Selectbox"),          true,  'fnc:const:param' ),
+        "wi2" => GetInputShowFuncTypesDef( _m("Two Boxes"),                   true,  'fnc:const:param' ),
+        "fil" => GetInputShowFuncTypesDef( _m("File Upload"),                 false, 'fnc:param' ),
+      # "isi" => GetInputShowFuncTypesDef( _m("Related Item Select Box"),     true,  'fnc:const:param' ),
+        "iso" => GetInputShowFuncTypesDef( _m("Related Item Window"),         true,' fnc:const:param' ),
+        "nul" => GetInputShowFuncTypesDef( _m("Do not show"),                 false, 'fnc' ),
+        "hco" => GetInputShowFuncTypesDef( _m("Hierachical constants"),       false, 'fnc:const:param'),
+        "pwd" => GetInputShowFuncTypesDef( _m("Password and Change password"),false, 'fnc:param' ),
+        "hid" => GetInputShowFuncTypesDef( _m("Hidden field"),                false, 'fnc')  # hidden field (good for javascript triggers
+    );
 }
 
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
@@ -272,9 +279,8 @@ define( "STATE_FEEDABLE_UPDATE_LOCKED",4);
 # relation table flags
 define( "REL_FLAG_FEED", 2 );    # 2 - just to be compatible with content table
 
-function inputFeedModes ()
-{
-  return array ( STATE_FEEDABLE => _m("Feed"),
+function inputFeedModes() {
+  return array( STATE_FEEDABLE => _m("Feed"),
                 STATE_UNFEEDABLE => _m("Do not feed"),
                 STATE_FEEDNOCHANGE => _m("Feed locked"),
                 STATE_FEEDABLE_UPDATE => _m("Feed & update"),
@@ -282,59 +288,63 @@ function inputFeedModes ()
               );
 }
 
-function getViewFields ()
-{
+function GetViewFieldDef( $validate, $insert, $type, $input, $value=false ) {
+    $ret = array( "validate"=>$validate, "insert"=>$insert, "type"=>$type, "input"=>$input );
+    if ( $value ) $ret['value'] =  $value;
+    return $ret;
+}
+
+function getViewFields() {
     # se_views.php3 - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
-
-    $VIEW_FIELDS["name"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-    $VIEW_FIELDS["before"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["even"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["even_odd_differ"] = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
-    $VIEW_FIELDS["odd"]             = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["after"]           = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["group_by1"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
-    $VIEW_FIELDS["g1_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
-    $VIEW_FIELDS["group_by2"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
-    $VIEW_FIELDS["g2_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
-    $VIEW_FIELDS["group_title"]     = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["group_bottom"]    = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["remove_string"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["modification"]    = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"seltype" );
-    $VIEW_FIELDS["parameter"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selgrp" );
-    $VIEW_FIELDS["img1"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-    $VIEW_FIELDS["img2"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-    $VIEW_FIELDS["img3"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-    $VIEW_FIELDS["img4"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-    $VIEW_FIELDS["order1"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
-    $VIEW_FIELDS["o1_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
-    $VIEW_FIELDS["order2"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
-    $VIEW_FIELDS["o2_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
-    $VIEW_FIELDS["selected_item"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["cond1field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"cond" );
-    $VIEW_FIELDS["cond1op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-    $VIEW_FIELDS["cond1cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-    $VIEW_FIELDS["cond2field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"cond" );
-    $VIEW_FIELDS["cond2op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-    $VIEW_FIELDS["cond2cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-    $VIEW_FIELDS["cond3field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"cond" );
-    $VIEW_FIELDS["cond3op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-    $VIEW_FIELDS["cond3cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-    $VIEW_FIELDS["listlen"]         = array( "validate"=>"number", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-    $VIEW_FIELDS["flag"]            = array( "validate"=>"number", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-    $VIEW_FIELDS["scroller"]        = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
-    $VIEW_FIELDS["aditional"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["aditional2"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["aditional3"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["aditional4"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["aditional5"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["aditional6"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["noitem_msg"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-    $VIEW_FIELDS["field1"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
-    $VIEW_FIELDS["field2"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
-    $VIEW_FIELDS["field3"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
-    $VIEW_FIELDS["calendar_type"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"select",
-                                             "values"=>array ("mon"=>_m("Month List"),"mon_table"=>_m("Month Table")));
+                                                 // $validate, $insert,  $type,   $input,  $value
+    $VIEW_FIELDS["name"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
+    $VIEW_FIELDS["before"]          = GetViewFieldDef("text",  "quoted", "text",  "area"   );
+    $VIEW_FIELDS["even"]            = GetViewFieldDef("text",  "quoted", "text",  "area"   );
+    $VIEW_FIELDS["even_odd_differ"] = GetViewFieldDef("",      "quoted", "bool",  "chbox"  );
+    $VIEW_FIELDS["odd"]             = GetViewFieldDef("text",  "quoted", "text",  "area"   );
+    $VIEW_FIELDS["after"]           = GetViewFieldDef("text",  "quoted", "text",  "area"   );
+    $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text",  "quoted", "text",  "order"  );
+    $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
+    $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text",  "quoted", "text",  "order"  );
+    $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
+    $VIEW_FIELDS["group_title"]     = GetViewFieldDef("text",  "quoted", "text",  "area"   );
+    $VIEW_FIELDS["group_bottom"]    = GetViewFieldDef("text",  "quoted", "text",  "area"   );
+    $VIEW_FIELDS["remove_string"]   = GetViewFieldDef("text",  "quoted", "text",  "area"   );
+    $VIEW_FIELDS["modification"]    = GetViewFieldDef("text",  "quoted", "text",  "seltype");
+    $VIEW_FIELDS["parameter"]       = GetViewFieldDef("text",  "quoted", "text",  "selgrp" );
+    $VIEW_FIELDS["img1"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
+    $VIEW_FIELDS["img2"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
+    $VIEW_FIELDS["img3"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
+    $VIEW_FIELDS["img4"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
+    $VIEW_FIELDS["order1"]          = GetViewFieldDef("text",  "quoted", "text",  "order"  );
+    $VIEW_FIELDS["o1_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
+    $VIEW_FIELDS["order2"]          = GetViewFieldDef("text",  "quoted", "text",  "order"  );
+    $VIEW_FIELDS["o2_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
+    $VIEW_FIELDS["selected_item"]   = GetViewFieldDef("text",  "quoted", "text",   "area"  );
+    $VIEW_FIELDS["cond1field"]      = GetViewFieldDef("text",  "quoted", "text",   "cond"  );
+    $VIEW_FIELDS["cond1op"]         = GetViewFieldDef("text",  "quoted", "text",   "none"  );
+    $VIEW_FIELDS["cond1cond"]       = GetViewFieldDef("text",  "quoted", "text",   "none"  );
+    $VIEW_FIELDS["cond2field"]      = GetViewFieldDef("text",  "quoted", "text",   "cond"  );
+    $VIEW_FIELDS["cond2op"]         = GetViewFieldDef("text",  "quoted", "text",   "none"  );
+    $VIEW_FIELDS["cond2cond"]       = GetViewFieldDef("text",  "quoted", "text",   "none"  );
+    $VIEW_FIELDS["cond3field"]      = GetViewFieldDef("text",  "quoted", "text",   "cond"  );
+    $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text",  "quoted", "text",   "none"  );
+    $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text",  "quoted", "text",   "none"  );
+    $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number","quoted", "text",   "field" );
+    $VIEW_FIELDS["flag"]            = GetViewFieldDef("number","quoted", "text",   "field" );
+    $VIEW_FIELDS["scroller"]        = GetViewFieldDef("",      "quoted", "bool",   "chbox" );
+    $VIEW_FIELDS["aditional"]       = GetViewFieldDef("text",  "quoted", "text",   "area"  );
+    $VIEW_FIELDS["aditional2"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
+    $VIEW_FIELDS["aditional3"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
+    $VIEW_FIELDS["aditional4"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
+    $VIEW_FIELDS["aditional5"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
+    $VIEW_FIELDS["aditional6"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
+    $VIEW_FIELDS["noitem_msg"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
+    $VIEW_FIELDS["field1"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
+    $VIEW_FIELDS["field2"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
+    $VIEW_FIELDS["field3"]          = GetViewFieldDef("text",  "quoted", "text",   "selfld");
+    $VIEW_FIELDS["calendar_type"]   = GetViewFieldDef("text",  "quoted", "text",   "select", array ("mon"=>_m("Month List"),"mon_table"=>_m("Month Table")));
     return $VIEW_FIELDS;
 }
 
@@ -457,12 +467,28 @@ function getViewTypes ()
                                   "odd" => _m("Odd Rows") ,
                                   "even" => _m("Even Rows") ,
                                   "after" => _m("Bottom HTML") ,
-    #                              "selected_item" => _m("HTML for Selected") ,
                                   "parameter" => _m("Constant Group") ,
                                   "order1" => _m("Sort primary") ,
+                                  "o1_direction" => " " ,
+                                  "order2" => _m("Sort secondary") ,
+                                  "o2_direction" => " " ,
+                                  "group_by1" => _m("Group by") ,
+                                  "g1_direction" => " " ,
+                                  "group_title" => _m("Group title format") ,
+                                  "group_bottom" => _m("Group bottom format") ,
+                                  "cond1field" => _m("Condition 1") ,
+                                  "cond1op" => " " ,
+                                  "cond1cond" => " " ,
+                                  "cond2field" => _m("Condition 2") ,
+                                  "cond2op" => " " ,
+                                  "cond2cond" => " " ,
+                                  "cond3field" => _m("Condition 3") ,
+                                  "cond3op" => " " ,
+                                  "cond3cond" => " " ,
                                   "listlen" => _m("Listing length") ,
-                                  "even_odd_differ" => _m("Use different HTML code for even rows") ,
-                                  "o1_direction" => " ");
+                                  "noitem_msg" => _m("HTML code for \"No item found\" message"),
+                                  "even_odd_differ" => _m("Use different HTML code for even rows")
+                               );
 
 
     $VIEW_TYPES['rss'] = array( 'name' => _m("RSS exchange"),
@@ -543,10 +569,10 @@ function getViewTypes ()
     #                              "flag" => _m("Flag") ,
     // TODO                              "scroller" => _m("Display page scroller") ,
     #                              "aditional" => _m("Additional") );
-    
+
     // this view uses also "aditonal" and "aditional3" for the "Group by" radio
     // buttons and for the sort[] box, see se_view.php3
-    
+
     $VIEW_TYPES['digest']  = array( "name" => _m("Alerts Selection Set"),
                                   "function:digest_filters" => "",
                                   "aditional2" => array (
@@ -602,7 +628,9 @@ function getViewTypes ()
 
 function getViewTypesInfo() {
     # modification - options for modification field of views
-    # alias - which aliases to show
+    # alias  - which aliases to show
+    # order  - 'easy' - show just Ascending/Descending
+    # fields - which fields show in selectboxes (slice / 'constant')
     $VIEW_TYPES_INFO['list'] = array('modification'=>array('1'=>'search',
                                                            '2'=>'parameter',
                                                            '3'=>'statistic',
@@ -630,10 +658,8 @@ function getViewTypesInfo() {
                                                              '33'=>'keyword with AND' ),
                                      'aliases' => 'field');
     $VIEW_TYPES_INFO['const'] = array('aliases' => 'const',
-                                      'order' => array('name'=>'name',
-                                                       'value'=>'value',
-                                                       'pri'=>'priority'));
-
+                                      'order' => 'easy',
+                                      'fields' => 'constant');
     $VIEW_TYPES_INFO['urls'] = array('aliases' => 'justids');
 
     $VIEW_TYPES_INFO['rss'] = array('aliases' => 'field');
@@ -665,6 +691,10 @@ $conds_not_field_names = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuej
 define ("NOT_EMAIL_WELCOME", -1);
 // CountHit probability - how offen write logged hits to item table
 define ("COUNTHIT_PROBABILITY", 50);
+
+// how much links check in one run (for links module link checker)
+define ("LINKS_VALIDATION_COUNT", 100);
+
 
 function getFilemanAccesses ()
 { return array (
