@@ -508,7 +508,7 @@ if ($sort_filter != "0") {
       #if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";
       // action URL with return_url if $return_url is set.
     echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url="). '">
-          <table width="460" border="0" cellspacing="0" cellpadding="0" 
+          <table width="490" border="0" cellspacing="0" cellpadding="0" 
           class=leftmenu bgcolor="'. COLOR_TABBG .'">';
     
     reset( $fields );
@@ -519,21 +519,26 @@ if ($sort_filter != "0") {
     }
     
       # filter
-    echo "<tr><td class=search>&nbsp;<img src='../images/search.gif' alt='".L_SEARCH."'>&nbsp;&nbsp;<b>"
+    echo "<tr><td class=search>&nbsp;
+    <a href='javascript:document.filterform.submit()'>
+    <img src='../images/search.gif' alt='".L_SEARCH."' border=0></a>&nbsp;&nbsp;<b>"
         . L_SEARCH ."</b></td><td>";
 
     FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
     echo "<input type='Text' name='admin_search' size=20
-          maxlength=254 value=\"". safe($r_admin_search). "\"></td>";
-    echo "<td rowspan=2 align='right' valign='middle'><a
-          href=\"javascript:document.filterform.submit()\" class=search>". L_GO ."</a>&nbsp;</td></tr>";
+          maxlength=254 value=\"". safe($r_admin_search). "\">&nbsp;
+          <a href='javascript:document.filterform.submit()'>
+          <img src='../images/search.gif' alt='".L_SEARCH."' border=0></a>
+          </td></tr>";
     echo "<input type=hidden name=action value='filter'>";
     
       #order
-    echo "<tr><td class=search>&nbsp;<img src='../images/order.gif' alt='".L_ORDER."'>&nbsp;&nbsp;<b>"
+    echo "<tr><td class=search>&nbsp;
+    <a href='javascript:document.filterform.submit()'>
+    <img src='../images/order.gif' alt='".L_ORDER."' border=0></a>&nbsp;&nbsp;<b>"
         . L_ORDER ."</b></td><td class=leftmenuy>";
-    FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order);
-    echo "<input type='checkbox' name='admin_order_dir'". 
+    FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order, "onchange='document.filterform.submit()'");
+    echo "<input type='checkbox' name='admin_order_dir' onchange='document.filterform.submit()'". 
          ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . L_DESCENDING. "</td></tr>";
     
     echo "</table></form></center><p></p>"; // workaround for align=left bug
