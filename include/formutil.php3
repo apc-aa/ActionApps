@@ -986,7 +986,7 @@ function FrmInputButtons( $buttons, $sess=false, $slice_id=false, $valign='middl
           echo '&nbsp;<input type="reset" value=" '. _m("Reset form") .' ">&nbsp;';
           break;
         default:
-          echo '&nbsp;<input type="'.  $properties['type'] .
+          echo '&nbsp;<input type="'.  ($properties['type'] ? $properties['type'] : 'hidden') .  // hidden is default
                           '" name="'.  $name .
                           '" value="'. $properties['value'] .
                           '" '. $properties['add'] . '>&nbsp;';
