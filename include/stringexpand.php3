@@ -129,6 +129,7 @@ $GLOBALS[eb_functions] = array (
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
     global $als,$debug,$errcheck;
+    
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
     # See http://apc-aa.sourceforge.net/faq#aliases for details
@@ -153,7 +154,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     #   {any text}                                       - return "any text"
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which are processed before expanding the function
-    if( isset($item) && ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
+    if( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
       if ($parts[1] && ! isField($parts[1])) 
@@ -182,7 +183,10 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), 
                                DeQuoteColons( substr($out, 8, $pos-8)));
            # filename do not use colons as separators => dequote before callig
-           
+      
+      if( !$filename || trim($filename)=="" )
+        return "";
+
       // if no http request - add server name
       if( !(substr($filename, 0, 7) == 'http://') AND 
           !(substr($filename, 0, 8) == 'https://')   )
@@ -286,13 +290,17 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
     if ($debug) huhl("<br>Unaliasing:$level:'",$text,"'\n");
 # Note ereg was 15 seconds on one multi-line example cf .002 secs
 #    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
+
     while (preg_match("/^(.*)[{]([^{}]+)[}](.*)$/s",$text,$vars)) {
         if ($debug) huhl("Expanding:".isset($item).":$level:'$vars[2]'");
+        
         $t1 = expand_bracketed($vars[2],$level+1,$maxlevel,$item,$itemview,$aliases);
+
         if ($debug) huhl("Expanded:$level:'$t1'");
         $text = $vars[1] . $t1 . $vars[3];
         if ($debug) huhl("Continue with:$level:'$text'");
     }
+    
     if (isset($item)) {
             return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));
     } else {
