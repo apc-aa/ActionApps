@@ -19,6 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once $GLOBALS["AA_INC_PATH"] . "mgettext.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "itemview.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "viewobj.php3";
 require_once $GLOBALS["AA_BASE_PATH"]. "modules/links/util.php3";
@@ -98,7 +99,7 @@ function ParseViewParameters($query_string="") {
     $query_string = str_replace( 'set[]', "set[".$parts[1]."]", $query_string );
   }
 
-  if( $debug ) huhl("ParseViewParameters: vid=$vid, query_string=$query_string");
+  if( $debug ) huhl("ParseViewParameters: vid=$vid, query_string=$query_string", "cmd:", $cmd, "set:", $set, "als:", $als);
 
   add_vars($query_string);       # adds values from url (it's not automatical in SSIed script)
 
@@ -188,6 +189,8 @@ function ParseViewParameters($query_string="") {
   $arr['param_conds'] = $param_conds;
 //  $arr['item_ids'] = $item_ids;
   $arr['zids'] = $zids;
+
+  if( $debug ) huhl($arr);
 
   return $arr;
 }
@@ -389,6 +392,10 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $slice_id = unpack_id128($view_info["slice_id"]);
     }
 
+  // Use right language (from slice settings) - languages are used for scroller (Next, ...)
+  $lang_file = substr(DEFAULT_LANG_INCLUDE, 0, 2);
+  bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/".$lang_file."_output_lang.php3");
+
     // At this point, view_info["slice_id"] = $slice_id
     // and view_param[slice_id] is empty or same
 
@@ -484,7 +491,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                 $zids, $list_from, $listlen, shtml_url(),
                                 "", $content_function);
       $itemview->parameter('category_id', $category_id);
-      return $itemview->get_output_cached($itemview_type);
+      $ret = $itemview->get_output_cached($itemview_type);
+      return $ret;
 
     case 'seetoo':
 

@@ -37,11 +37,11 @@ $_m["Bad inc parameter - included file must be in the same directory as this .sh
 
 # ./slice.php3, row 169
 $_m["No such file"]
-  = "";
+  = "Soubor nenalezen";
 
 # ./slice.php3, row 199
 $_m["Invalid slice number or slice was deleted"]
-  = "";
+  = "Webík s daným èíslem nenalezen. Možná že byl vymazán.";
 
 # ./slice.php3, row 507
 # include/view.php3, row 362
@@ -50,11 +50,11 @@ $_m["No item found"]
 
 # include/slice.php3, row 56
 $_m["Select Category "]
-  = "";
+  = "Zvol kategorii";
 
 # include/slice.php3, row 58
 $_m["All categories"]
-  = "";
+  = "Všechny kategorie";
 
 # include/discussion.php3, row 127, 172
 $_m["Show selected"]
@@ -74,11 +74,11 @@ $_m["Alias for subject of the discussion comment"]
 
 # include/discussion.php3, row 137
 $_m["Alias for text of the discussion comment"]
-  = "";
+  = "Alias pro text pøíspìvku";
 
 # include/discussion.php3, row 138
 $_m["Alias for written by"]
-  = "";
+  = "Alias pro autora";
 
 # include/discussion.php3, row 139
 $_m["Alias for author's e-mail"]
@@ -200,7 +200,7 @@ $_m["Date RSS information is generated, in RSS date format"]
 
 # include/item.php3, row 71
 $_m["Slice name"]
-  = "";
+  = "Jméno webíku";
 
 # include/item.php3, row 104
 $_m["Constant name"]
@@ -260,15 +260,15 @@ $_m["Home"]
 
 # include/scroller.php3, row 217
 $_m["All"]
-  = "";
+  = "Vše";
 
 # include/easy_scroller.php3, row 103, 187
 $_m["Previous"]
-  = "";
+  = "Pøedchozí";
 
 # include/easy_scroller.php3, row 114, 198
 $_m["Next"]
-  = "";
+  = "Další";
 
 # include/itemview.php3, row 272
 $_m["No comment was selected"]
