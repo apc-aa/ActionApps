@@ -196,13 +196,15 @@ class inputform {
             $profile = new aaprofile($auth->auth["uid"], $slice_id);  // current user settings
         }
 
+        $form4anonymous_wizard = is_array($show);
+
         foreach($prifields as $pri_field_id) {
             $f           = $fields[$pri_field_id];
             $varname     = 'v'. unpack_id($pri_field_id);
             $htmlvarname = $varname."html";
 
-            if ( (is_array($show)  AND !$show [$f['id']]) OR
-                 (!is_array($show) AND (!$f["input_show"] OR
+            if ( ($form4anonymous_wizard  AND !$show[$f['id']]) OR
+                 (!$form4anonymous_wizard AND (!$f["input_show"] OR
                                          $profile->getProperty('hide',$f['id']) OR
                                          $profile->getProperty('hide&fill',$f['id'])))) {
                 // do not show this field
@@ -213,7 +215,7 @@ class inputform {
 
             // field_mode - how to display the field
             $field_mode = !IsEditable($content4id[$pri_field_id], $f, $profile) ?
-                          'freeze' : (is_array($show) ? 'anonym' : 'normal');
+                          'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
 
             // $field_value and $field_html_flag
 
@@ -243,7 +245,9 @@ class inputform {
             // Display the field
             $aainput = new aainputfield($field_value, $field_html_flag, $field_mode);
             $aainput->setFromField($f);
-            $ret .= $aainput->get('template');
+
+            // do not return template for anonymous form wizard
+            $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template');
         }
         return $ret;
     }
@@ -472,52 +476,68 @@ class aainputfield {
             case 'freeze_tpr':
             case 'freeze_fil': $this->staticText();       break;
             case 'freeze_nul': break;
+
+            case 'anonym_nul':
             case 'normal_nul': break;
+            case 'anonym_chb':
             case 'normal_chb': $this->inputChBox();       break;
+            case 'anonym_hid':
             case 'normal_hid': $this->hidden();           break;
+            case 'anonym_fld':
             case 'normal_fld': $this->inputText(get_if($this->param[0],255), // maxlength
                                                 get_if($this->param[1],60)); // fieldsize
                                break;
+            case 'anonym_txt':
             case 'normal_txt': $this->textarea(get_if($this->param[0],4), 60);
                                break;
+            case 'anonym_edt':
             case 'normal_edt': $this->richEditTextarea(
                                           get_if($this->param[0],10),       // rows
                                           get_if($this->param[1],70),       // cols
                                           get_if($this->param[2],'class')); // type
                                $GLOBALS['list_fnc_edt'][] = $this->varname();
                                break;
+            case 'anonym_sel':
             case 'normal_sel': list(,$slice_field, $usevalue, $allitems) = $this->param;
                                $this->fill_const_arr($allitems, $slice_field);  // if we fill it there, it is not refilled in inputSel()
                                $this->inputSelect($usevalue);
                                break;
+            case 'anonym_rio':
             case 'normal_rio': $this->inputRadio($this->param[1],   // ncols
                                                  $this->param[2]);  // move_right
                                break;
+            case 'anonym_mch':
             case 'normal_mch': $this->varname_modify('[]');         // use slightly modified varname
                                $this->inputMultiChBox($this->param[1],   // ncols
                                                       $this->param[2]);  // move_right
                                break;
+            case 'anonym_mse':
             case 'normal_mse': $selectsize = ($this->param[1] < 1) ? 5 :  $this->param[1];
                                $this->varname_modify('[]');         // use slightly modified varname
                                $this->inputMultiSelect($selectsize);
                                break;
+            case 'anonym_fil':
             case 'normal_fil': list($accepts, $text, $hlp) = $this->param;
                                $this->inputFile($accepts, $text, $hlp);
                                break;
+            case 'anonym_dte':
             case 'normal_dte': if( strstr($this->param[0], "'")) {     // old format
                                    $this->param = explode("'",$this->param[0]);
                                }
                                list($y_range_minus, $y_range_plus, $from_now, $display_time) = $this->param;
                                $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_time);
                                break;
+            case 'anonym_pre':
             case 'normal_pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant) = $this->param;
                                # add2constant is used in insert_fnc_qte - adds new value to constant table
                                $this->fill_const_arr('active', $slice_field);  // if we fill it there, it is not refilled in inputSel()
                                $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue );
                                break;
+            case 'anonym_tpr':
             case 'normal_tpr': $this->textareaPreSelect(get_if($this->param[1],4),    // rows
                                                         get_if($this->param[2],60));  // cols
                                break;
+            case 'anonym_iso':
             case 'normal_iso':
             case 'freeze_iso': list(, $selectsize, $mode, $design, $tp, $movebuttons, $frombins, $conds, $condsrw) = $this->param;
                                $mode      = get_if($mode,'AMB');         # AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
@@ -537,10 +557,12 @@ class aainputfield {
                                    $this->related($selectsize, $sid, $mode, $design, $movebuttons, $frombins, $conds, $condsrw);
                                }
                                break;
+            case 'anonym_hco':
             case 'normal_hco': list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, $levelNames) = $this->param;
                                $this->varname_modify('[]');         // use slightly modified varname
                                $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
                                break;
+            case 'anonym_wi2':
             case 'normal_wi2': list($constgroup, $size, $wi2_offer, $wi2_selected) = $this->param;
                                $this->varname_modify('[]');         // use slightly modified varname
                                $this->twoBox(get_if($size,5), $wi2_offer, $wi2_selected);

@@ -115,7 +115,12 @@ function ShowAnonymousForm () {
     echo
     '<TABLE border="0" cellspacing="0" cellpadding="4" align="center" class="tabtxt">
     ';
-    ShowForm("", $fields, $prifields, 0, $show);
+
+    // Replaces old ShowForm("", $fields, $prifields, 0, $show);
+    $inputform_settings = array();
+    $form = new inputform($inputform_settings);
+    echo $form->getForm(false, $fields, $prifields, false, $show);
+
     echo '
     <tr><td colspan="10" align="center" class="tabtit">
         <input type="submit" name="send" value="'._m("Send").'"></td></tr>

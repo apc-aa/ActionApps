@@ -1,6 +1,7 @@
-05/17/04 - added possibility to preview the view from admin interface
+05/17/04 - anonymous form wizard works again
 (honzam) - added AA version info on title atribute of APC ActionApps logo
            in admin interface
+         - added possibility to preview the view from admin interface
          - fixed "category top" and "category bottom" HTML for category grouped
            views and slices - you can use aliases in both this fields and it
            behaves as you could expect, now
