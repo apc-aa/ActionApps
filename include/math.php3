@@ -25,8 +25,8 @@ http://www.apc.org/
     modified and moved to this file by Jakub Adámek
 */
 
-/* // TRY IT
-
+ // TRY IT
+/*
 $exps = array ("", "4/0", "2", "2*3", "(2*3)+6", "2*(3+6)", "2*3+6", "2^2^3", "((2+(2*3))+4)*10", "4-5", "5--2--3+7");
 reset ($exps);
 while (list (,$exp) = each ($exps))
@@ -52,19 +52,22 @@ function calculate ($exp)
     
     while (strstr($exp,"("))
         $exp = calculate_brackets ($exp);
+//	echo $exp;
     return calculate_without_brackets ($exp);
 }
 
 
 // return expression with resolved one of most inner brackets
 function calculate_brackets ($expr) {
+//echo $expr."<br>";
     $beg = strrpos ($expr, "(");
     $expr_beg = substr ($expr, 0, $beg);
     $expr_mid = substr ($expr, $beg+1);
     $end = strpos($expr_mid, ")");
     $expr_end = substr ($expr_mid, $end+1);
     $expr_mid = substr ($expr_mid, 0, $end);
-    
+//    echo $expr_beg.calculate_without_brackets ($expr_mid).$expr_end."<br>";
+//echo $expr_mid."<br><br>";
     return $expr_beg.calculate_without_brackets ($expr_mid).$expr_end;
 }
 
@@ -76,7 +79,7 @@ function calculate_without_brackets ($expr) {
 // recursively resolve operators in priority order
 function calculate_operator ($expr, $operator)
 {
-    $next_operator = array ("+" => bminus(), bminus() => "/", "/" => "*", "*" => "^");
+    $next_operator = array ("+" => bminus(), bminus() => "*", "*" => "/", "/" => "^");
 
     $parts = explode ($operator, $expr);
     for ($i = count ($parts)-1; $i >= 0; $i --) {
