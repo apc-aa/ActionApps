@@ -347,9 +347,10 @@ class itemview{
     $script_loc = $this->clean_url."&sh_itm=".$this->disc['item_id']; // location of the shtml with slice.php3 script
     $cnt = 0;     // count of discussion comments
 
+    $out .= $this->slice_info['d_top'];         // top html code
+
     if ($d_tree) {    // if not empty tree
 
-      $out .= $this->slice_info['d_top'];         // top html code
       $CurItem->setformat( $this->slice_info['d_compact']);
 
       if ($this->slice_info['d_showimages'] || $this->slice_info['d_order'] == 'thread') {  // show discussion in the thread mode
@@ -538,10 +539,10 @@ class itemview{
             $oldcat = $catname;
             
             $CurItem->setformat( $this->slice_info[category_format] );
+      
             $out .= $this->slice_info[category_top];
             $out .= $CurItem->get_item();
             $out .= $this->slice_info[category_bottom];
-            
           }  
           
             # print item
@@ -676,6 +677,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.18  2001/11/05 13:43:00  honzam
+fixed bug of wrong html code generated for empty comments table
+
 Revision 1.17  2001/10/17 21:53:46  honzam
 fixed bug in url passed aliases
 
