@@ -1,5 +1,7 @@
 03/31/03 - updated all language files with xmgettext
 (jakub)    and added some Czech translations 
+         - changed sql_update to work better with cron entries and updated
+           the alerts cron entries
 03/29/03 - improved the Anonym Form Wizard 
 (jakub)  - improved the Send Email Wizard, now it allows using field aliases             
          - added links to reader.html and anonym.html to doc/index.html

@@ -109,7 +109,7 @@ echo '
 	<h2>'._m("Add %1-specific fields to %2", 
 	  	     array ($collectionprop["name"], $slice_name)).'</h2>';
 echo _m("Adds only fields the IDs of which don't yet exist in the slice.
-    Refreshes the filters constant group if it already exists.");
+    Refreshes the constant group containing selections if it already exists.");
 
 // Field table
 

@@ -998,12 +998,29 @@ $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url
 $SQL_update_modules[] = "REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'http://domain.org/index.shtml', 'en_site_lang.php3', 1000000000, '', '', 0)";
 $SQL_update_modules[] = "REPLACE INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', 'template.php3', '".'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}'."', 0)";
 
-$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (1, '*',          '1', '*', '*', '*', 'misc/alerts/alerts.php3', 'howoften=daily&lang=en', NULL)";  
-$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (2, '*',          '1', '*', '*', '1', 'misc/alerts/alerts.php3', 'howoften=weekly&lang=en', NULL)"; 
-$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (3, '*',          '1', '1', '*', '*', 'misc/alerts/alerts.php3', 'howoften=monthly&lang=en', NULL)";
-$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (4, '*',          '1', '*', '*', '*', 'misc/alerts/admin_mails.php3', '', NULL)";        
-$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (5, '8,23,38,53', '*', '*', '*', '*', 'admin/xmlclient.php3', '', NULL)";
-$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (6, '38',         '2', '*', '*', '2', 'misc/optimize.php3', 'key=".substr( DB_PASSWORD, 0, 5 )."', NULL)";
+// Add the rows to cron only if no row with the script exists
+$SQL_cron[] = array (
+    "script" => 'modules/alerts/alerts.php3',
+    "sql" => array (
+        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) 
+         VALUES ('0-60/5', '*', '*', '*', '*', 'modules/alerts/alerts.php3', 'howoften=instant', NULL)",
+        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) 
+         VALUES ('*',      '1', '*', '*', '*', 'modules/alerts/alerts.php3', 'howoften=daily', NULL)",
+        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) 
+         VALUES ('*',      '1', '*', '*', '1', 'modules/alerts/alerts.php3', 'howoften=weekly', NULL)",
+        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) 
+         VALUES ('*',      '1', '1', '*', '*', 'modules/alerts/alerts.php3', 'howoften=monthly', NULL)"),
+    "script" => 'modules/alerts/alerts.php3');  
+$SQL_cron[] = array (
+    "sql" => array (
+        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) 
+         VALUES ('8,23,38,53', '*', '*', '*', '*', 'admin/xmlclient.php3', '', NULL)"),
+    "script" => 'admin/xmlclient.php3');  
+$SQL_cron[] = array (
+    "sql" => array (
+        "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) 
+         VALUES ('38',     '2', '*', '*', '2', 'misc/optimize.php3', 'key=".substr( DB_PASSWORD, 0, 5 )."', NULL)"),
+    "script" => 'misc/optimize.php3'); 
 
 $SQL_email_templates[] = "INSERT INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Welcome', 'Welcome to Econnect Alerts', 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'somebody@haha.cz', '', '', '', 'cz', 1, 'alerts welcome');";
 $SQL_email_templates[] = "INSERT INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Alert', '{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}', '_#FILTERS_\r\n<br><hr>\r\nTo change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'econnect@team.cz', '', '', '', 'cz', 1, 'alerts alert');";
@@ -1056,8 +1073,8 @@ if( !$update AND !$restore AND !$restore_now) {
                 "New fields (display_count, disc_count, disc_app) in v1.8 should be added to all slice definitions","");
   FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false,
                 "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice). The default site and poll module is also created/renewed with this option.","");
-  FrmInputChBox("alerts", "Add Alerts entries to Cron", true, false, "", 1, false,
-                "Alerts are run by cron.php3, 5 entries to table cron are added/renewed (4 for alerts, 1 for cross server networking).");
+  FrmInputChBox("cron", "Add entries to Cron", true, false, "", 1, false,
+                "Alerts, cross server networking and database optimization are run by cron.php3, their entries are added to table cron if not yet there.");
   FrmInputChBox("generic_emails", "Add generic email templates", true, false, "", 1, false,
                 "These are examples of each email type.");
   FrmStaticText("", "<hr>", false, "", "", false );
@@ -1341,18 +1358,18 @@ if( $update_modules ) {
   }  
 }
 
-if( $alerts ) {
+if( $cron ) {
   echo '<h2>Adding to Cron table</h2>';
-  $db->query("SELECT * FROM cron WHERE script='misc/alerts/alerts.php3'");
-  if ($db->num_rows())
-    echo "Some rows with script = misc/alerts/alerts.php3 exist already in table cron, not added.<br>";
-  else {
-      reset( $SQL_alerts );
-      while( list( ,$SQL) = each( $SQL_alerts ) ) {
-        safe_echo ($SQL);
-        $db->query( $SQL );
-      }  
-  }
+  reset( $SQL_cron );
+  while( list( ,$cron_entry) = each( $SQL_cron ) ) {              
+    $db->query("SELECT * FROM cron WHERE script='$cron_entry[script]'");
+    if (! $db->next_record()) {
+        foreach ($cron_entry["sql"] as $sql) {
+            safe_echo( $sql );
+            $db->query( $sql );
+        }
+    }
+  }  
 }
 
 if( $generic_emails ) {

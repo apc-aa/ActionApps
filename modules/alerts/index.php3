@@ -34,7 +34,7 @@ $session = $AA_CP_Session ? "AA_CP_Session=$AA_CP_Session"
     : "AA_SL_Session=$AA_SL_Session";
 $goto = $AA_INSTAL_PATH
 	."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
-    .$slice_id."]=1&".$session;
+    .$slice_id."]=1&slice_id=$slice_id&".$session;
 //echo $goto; exit;
 go_url ($goto);
 ?>
