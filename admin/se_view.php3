@@ -64,7 +64,7 @@ function ConditionFrm($name, $txt, $val) {
 
   $condvarname = substr($name,0,5)."cond";
   echo "<input type=\"Text\" name=\"$condvarname\" size=50
-          maxlength=254 value=\"". $vw_data[$condvarname] ."\">";
+          maxlength=254 value=\"". safe($vw_data[$condvarname]) ."\">";
 
   PrintMoreHelp(DOCUMENTATION_URL);
 //  PrintHelp($hlp);
@@ -207,18 +207,22 @@ echo $Msg;
 
 FrmStaticText(L_ID, $view_id );
 
+echo "<input type=hidden name='view_type' value='$view_type'>";
+
 reset($VIEW_TYPES[$view_type]);
 while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
+  if( !($value = $vw_data[$k]) && $VIEW_TYPES_INFO[$view_type][$k]['default'] )  // we can define default values for fields (see constants.php3)
+    $value = $VIEW_TYPES_INFO[$view_type][$k]['default'];
   switch ( $VIEW_FIELDS[$k]["input"] ) {
-    case "field":   FrmInputText($k, $v, $vw_data[$k], 254, 50, false, "", DOCUMENTATION_URL); break;
-    case "area":    FrmTextarea($k, $v, $vw_data[$k], 4, 50, false, "", DOCUMENTATION_URL); break;
-    case "seltype": FrmInputSelect($k, $v, $VIEW_TYPES_INFO[$view_type][modification], $vw_data[$k], false, "", DOCUMENTATION_URL); break;
-    case "selfld":  FrmInputSelect($k, $v, $lookup_fields, $vw_data[$k], false, "", DOCUMENTATION_URL); break;
-    case "selgrp":  FrmInputSelect($k, $v, $lookup_groups, $vw_data[$k], false, "", DOCUMENTATION_URL); break;
-    case "op":      FrmInputSelect($k, $v, $lookup_op, $vw_data[$k], false, "", DOCUMENTATION_URL); break;
-    case "chbox":   FrmInputChBox($k, $v, $vw_data[$k], true); break;
-    case "cond":    ConditionFrm($k, $v, $vw_data[$k]); break;
-    case "order":   OrderFrm($k, $v, $vw_data[$k], $VIEW_TYPES_INFO[$view_type][order] ? 
+    case "field":   FrmInputText($k, $v, $value, 254, 50, false, "", DOCUMENTATION_URL); break;
+    case "area":    FrmTextarea($k, $v, $value, 4, 50, false, "", DOCUMENTATION_URL); break;
+    case "seltype": FrmInputSelect($k, $v, $VIEW_TYPES_INFO[$view_type][modification], $value, false, "", DOCUMENTATION_URL); break;
+    case "selfld":  FrmInputSelect($k, $v, $lookup_fields, $value, false, "", DOCUMENTATION_URL); break;
+    case "selgrp":  FrmInputSelect($k, $v, $lookup_groups, $value, false, "", DOCUMENTATION_URL); break;
+    case "op":      FrmInputSelect($k, $v, $lookup_op, $value, false, "", DOCUMENTATION_URL); break;
+    case "chbox":   FrmInputChBox($k, $v, $value, true); break;
+    case "cond":    ConditionFrm($k, $v, $value); break;
+    case "order":   OrderFrm($k, $v, $value, $VIEW_TYPES_INFO[$view_type][order] ? 
                                      $VIEW_TYPES_INFO[$view_type][order] : $lookup_fields); break;
     case "none": break;
   }
@@ -230,10 +234,10 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
                    PrintAliasHelp(GetDiscussionAliases());
                 } else {
                   if( $r_fields )
-                  $fields = $r_fields;
-                else
-                  list($fields,) = GetSliceFields($slice_id);
-                PrintAliasHelp(GetAliasesFromFields($fields));
+                    $fields = $r_fields;
+                  else
+                    list($fields,) = GetSliceFields($slice_id);
+                  PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']));
                 }
                 break;
   case 'const': PrintAliasHelp(GetConstantAliases());
@@ -243,7 +247,6 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
 
 echo "<tr><td align='center'>
       <input type=hidden name=view_id value='$view_id'>
-      <input type=hidden name=view_type value='$view_type'>
       <input type=submit name=update value='". L_UPDATE ."'>&nbsp;&nbsp;<input
              type=submit name=cancel value='". L_CANCEL ."'></td></tr></table>
     </FORM><br>";
@@ -255,37 +258,4 @@ if( $view_id ) {
 }    
 echo "</BODY></HTML>";
 page_close();
-/*
-$Log$
-Revision 1.10  2002/01/15 13:06:04  honzam
-new ISNULL operator
-
-Revision 1.9  2001/11/26 11:03:43  honzam
-sort slice/constant in listbox by name
-
-Revision 1.8  2001/11/05 13:44:18  honzam
-fixed bug after switching to another slice
-
-Revision 1.7  2001/09/27 15:45:49  honzam
-Easiest left navigation bar editation, New constant view
-
-Revision 1.6  2001/08/02 20:04:54  honzam
-new - stronger - view condition redefining parameter cmd[]-d
-
-Revision 1.5  2001/07/31 16:32:51  honzam
-Added '-' operator modifier for relative time conditions. The operator was implemented to view definition too (se_view.php3)
-
-Revision 1.4  2001/07/31 15:20:12  honzam
-new - display condition redefining parameter to view.php3 (cmd[]=c)
-
-Revision 1.3  2001/06/03 15:58:21  honzam
-small fixes, better user interface
-
-Revision 1.2  2001/05/18 13:43:43  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.1  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-*/
 ?>
