@@ -3374,7 +3374,7 @@ $_m["Polls for AA"]
 # include/constants.php3, row 78
 # include/menu_util.php3, row 67
 $_m["Links"]
-  = "Kormidlo";
+  = "Správa odkazù";
 
 # include/constants.php3, row 179
 $_m["Text Area"]
@@ -4089,7 +4089,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only
 \n"
    ."            to superadmins.
 \n"
-   ."            You can delete not confirmed users after a number of days and / or send them an email 
+   ."            You can delete not confirmed users after a number of days and / or send them an email
 \n"
    ."            demanding them to do confirmation
 \n"

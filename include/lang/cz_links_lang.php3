@@ -95,7 +95,7 @@ $_m["Selected subcategories"]
 
 # modules/links/catedit.php3, row 105
 $_m["subcategories of this category"]
-  = "Pøidejte èi zrušte podkategorie této kategorie. Mùžete též crossreferencovat kategorii z jiné èásti katalogu.";
+  = "Pøidejte èi zrušte podkategorie této kategorie.<br>Z levého okna mùžete též crossreferencovat kategorii z jiné èásti katalogu.";
 
 # modules/links/catedit.php3, row 122
 $_m["Up"]
@@ -180,12 +180,12 @@ $_m["Select Category"]
   = "Vyber kategorii";
 
 # modules/links/cattree.php3, row 205
-$_m["Jdi"]
-  = "Pøidej kategorii";
+$_m["Switch to category"]
+  = "Jdi";
 
 # modules/links/check_url.php3, row 10
-$_m["Edit in bottom window"]
-  = "Edituj (ve spodním oknì)";
+$_m["Rewrites link in bottom form"]
+  = "Pøepíše odkaz ve formuláøi";
 
 # modules/links/check_url.php3, row 56
 $_m["URL"]
@@ -758,7 +758,7 @@ $_m["Unasigned"]
 
 # modules/links/menu.php3, row 114
 $_m["Bookmarks"]
-  = "Oblíbené, záložky";
+  = "Záložky odkazù";
 
 # modules/links/menu.php3, row 138
 $_m["Main settings"]
@@ -918,7 +918,7 @@ $_m["Use these aliases for database fields"]
 
 # include/util.php3, row 1047
 $_m["Edit"]
-  = "";
+  = "Edituj";
 
 # include/util.php3, row 1254
 $_m["Internal error. File upload: Dir does not exist?!"]
@@ -995,5 +995,53 @@ $_m["November"]
 # include/util.php3, row 1490
 $_m["December"]
   = "prosinec";
+
+# pridano rucne Honza
+
+$_m["Move to Active"]
+  = "Pøesunout mezi Aktivní";
+
+$_m["Move to Trash"]
+  = "Pøesunout do Koše";
+
+$_m["Move to Holding bin"]
+  = "Pøesunout do Zásobníku";
+
+$_m["Add to category"]
+  = "Pøidat do kategorie";
+
+$_m["Move to category"]
+  = "Pøesunout do kategorie";
+
+$_m["Trash"]
+  = "Koš";
+
+$_m["Holding bin"]
+  = "Zásobník";
+
+$_m["Editor's note"]
+  = "Poznámka";
+
+$_m["You can type any message here - it is never shown on the website"]
+  = "Poznámka pro správce - na webu se nikde neobjeví";
+
+$_m["Links"]
+  = "Správa odkazù";
+
+$_m["Polls"]
+  = "Ankety";
+
+$_m["Alerts"]
+  = "Zasílání e-mailù";
+
+$_m["Reader Management Slice"]
+  = "Správa ètenáøù";
+
+$_m["In category"]
+  = "Zaøazeno v kategorii";
+
+$_m["Link is not assigned to any category"]
+  = "Odkaz není zaøazen do žádné kategorie";
+
 
 ?>

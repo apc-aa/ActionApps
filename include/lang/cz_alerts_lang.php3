@@ -190,7 +190,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only
 \n"
    ."            to superadmins.
 \n"
-   ."            You can delete not confirmed users after a number of days and / or send them an email 
+   ."            You can delete not confirmed users after a number of days and / or send them an email
 \n"
    ."            demanding them to do confirmation
 \n"
@@ -382,12 +382,24 @@ $_m["%1 email(s) sent"]
 $_m["Slice"]
   = "Webík";
 
+$_m["Links"]
+  = "Správa odkazù";
+
+$_m["Polls"]
+  = "Ankety";
+
+$_m["Alerts"]
+  = "Zasílání e-mailù";
+
+$_m["Reader Management Slice"]
+  = "Správa ètenáøù";
+
 # modules/alerts/send_emails.php3, row 144
 $_m["View (Selection set)"]
   = "Pohled (Výbìry)";
 
 # modules/alerts/send_emails.php3, row 150
-$_m["Define selections in slices from which you want to send Alerts, 
+$_m["Define selections in slices from which you want to send Alerts,
 \n"
    ."        in views of type Alerts Selection Set"]
   = "Vytvoøte výbìry ve webícíh, z nichž chcete posílat novinky,\n"
