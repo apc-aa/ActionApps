@@ -175,7 +175,7 @@ function show_fnc_fld($varname, $field, $value, $param, $html) {
    $maxlength = 255;
    $fieldsize = 60;
    if (!empty($param)) 
-     list($maxlength, $fieldsize) = split('[ ,:]', $param, 2);
+     list($maxlength, $fieldsize) = split('[ ,:]+', $param, 2);
 
    $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
    FrmInputText($varname, $field[name], $value[0][value], $maxlength,
@@ -369,6 +369,10 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.9  2001/04/10 02:00:32  keb
+Added explanation for Text Field parameters.
+Handle case of multiple parameter delimiters, e.g. " : " or ", ".
+
 Revision 1.8  2001/04/09 21:00:36  honzam
 added sife and maxlength parameters to field input type
 

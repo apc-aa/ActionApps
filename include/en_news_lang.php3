@@ -368,7 +368,7 @@ define("L_FIELD_DELETE_OK", "Field delete OK");
 define("L_WARNING_NOT_CHANGE","<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
 define("L_INPUT_SHOW_FUNC_F_HLP","Function used for displaying in inputform. For some types you can use parameters, which follows.");
 define("L_INPUT_SHOW_FUNC_C_HLP","Constants used with Select or Radio input function.");
-define("L_INPUT_SHOW_FUNC_HLP","If input-type is Text Area, this is number of rows.");
+define("L_INPUT_SHOW_FUNC_HLP","Text Area - number of rows.<br>Text Field - maxlength and size (default is 255 : 60).");
 define("L_INPUT_DEFAULT_F_HLP","Which function should be used as default:<BR>Now - default is current date<BR>User ID - current user ID<BR>Text - default is text in Parameter field<br>Date - as default is used current date plus <Parameter> number of days");
 define("L_INPUT_DEFAULT_HLP","If default-type is Text, this sets the default text.<BR>If the default-type is Date, this sets the default date to the current date plus the number of days you set here.");
 
@@ -511,6 +511,10 @@ define("L_CANT_CREATE_IMG_DIR","Can't create directory for image uploads");
 
 /*
 $Log$
+Revision 1.36  2001/04/10 02:00:31  keb
+Added explanation for Text Field parameters.
+Handle case of multiple parameter delimiters, e.g. " : " or ", ".
+
 Revision 1.35  2001/03/30 11:54:35  honzam
 offline filling bug and others small bugs fixed
 
