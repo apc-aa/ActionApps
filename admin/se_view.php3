@@ -151,7 +151,8 @@ $lookup_op = array( "<"  => "<",
                     "="  => "=", 
                     "<>" => "<>", 
                     ">"  => ">",
-                    ">=" => ">=" );
+                    ">=" => ">=",
+                    "LIKE"  => "LIKE");
 
 # lookup group of constatnts
 $lookup_groups = GetConstants('lt_groupNames', $db);
@@ -245,6 +246,9 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.4  2001/07/31 15:20:12  honzam
+new - display condition redefining parameter to view.php3 (cmd[]=c)
+
 Revision 1.3  2001/06/03 15:58:21  honzam
 small fixes, better user interface
 

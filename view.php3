@@ -23,9 +23,13 @@ http://www.apc.org/
 #optionaly cmd[]     # command to modify the view
                      # cmd[23]=v-25 means: show view id 25 in place of id 23 
                      # cmd[23]=i-24-7464674747 means view 
-                     # number 23 has to display item 74.. in format defined
-                     # in view 24
-                     # - given by url (not working yet)
+                     #   number 23 has to display item 74.. in format defined
+                     #   in view 24
+                     # cmd[23]=c-1-Environment means display view no 23 in place 
+                     #   of view no 23 (that's normal), but change value for 
+                     #   condition 1 to "Environment".
+                     # cmd[23]=c-1-Environment-2-Jane means the same as above, 
+                     #   but there are redefined two conditions
 
 require "./include/config.php3";
 require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
@@ -52,18 +56,22 @@ function ExitPage() {
   exit;
 }  
 
-function GetViewConds($view_info) {
+function GetViewConds($view_info, $param_conds) {
+  # param_conds - redefines default condition values by url parameter (cmd[]=c)
   if( $view_info['cond1field'] )
     $conds[]=array( 'operator' => $view_info['cond1op'],
-                    'value' => $view_info['cond1cond'],
+                    'value' => ($param_conds[1] ? $param_conds[1] : 
+                                                  $view_info['cond1cond']),
                      $view_info['cond1field'] => 1 );
   if( $view_info['cond2field'] )
     $conds[]=array( 'operator' => $view_info['cond2op'],
-                    'value' => $view_info['cond2cond'],
+                    'value' => ($param_conds[2] ? $param_conds[2] : 
+                                                  $view_info['cond2cond']),
                      $view_info['cond2field'] => 1 );
   if( $view_info['cond3field'] )
     $conds[]=array( 'operator' => $view_info['cond3op'],
-                    'value' => $view_info['cond3cond'],
+                    'value' => ($param_conds[3] ? $param_conds[3] : 
+                                                  $view_info['cond3cond']),
                      $view_info['cond3field'] => 1 );
   return $conds;                   
 }                     
@@ -127,8 +135,17 @@ $db = new DB_AA; 		 // open BD
 $command = ParseCommand($cmd[$vid]);
 switch ($command[0]) {
   case 'v':  $vid = $command[1];
+             break;
   case 'i':  $vid = $command[1];
              $item_ids[] = $command[2];
+             break;
+  case 'c':  if( $command[1] ) 
+               $param_conds[$command[1]] = $command[2];
+             if( $command[3] ) 
+               $param_conds[$command[3]] = $command[4];
+             if( $command[5] ) 
+               $param_conds[$command[5]] = $command[6];
+             break;
 }              
 
 # gets view data
@@ -172,7 +189,7 @@ switch( $view_info['type'] ) {
   case 'list':
   case 'rss':
   case 'script':
-    $conds = GetViewConds($view_info);
+    $conds = GetViewConds($view_info, $param_conds);
     $sort  = GetViewSort($view_info);
     list($fields,) = GetSliceFields($slice_id);
     $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by );
@@ -199,6 +216,9 @@ switch( $view_info['type'] ) {
 
 /*
 $Log$
+Revision 1.5  2001/07/31 15:20:12  honzam
+new - display condition redefining parameter to view.php3 (cmd[]=c)
+
 Revision 1.4  2001/07/09 17:43:53  honzam
 url passed user aliases
 

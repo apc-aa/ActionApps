@@ -21,12 +21,12 @@
 <a href="#alias">What is the Prameters in Alias Function definition</a><br><br>
 <a href="#javascript">What does it means the "JavaScript item exchange" View?</a><br><br>
 <a href="#sliceparam">Which parameters can I use with slice.php3</a><br><br>
+<a href="#viewparam">Which parameters can I use with view.php3</a><br><br>
 <a href="#ids">How to make item url shorter?</a>
 <a href="#"></a>
 <a href="#"></a>
 <a href="#"></a>
 <a href="#"></a>
-
 
 
 
@@ -358,12 +358,10 @@ function usr_cz_date($columns, $col, $param="") {
 ?&gt;
 </pre>
 <p>Such alias function can be called by defining new alias for some field. Just 
-define alias name (as obvious), alias function should be "f_u - user function" 
+define alias name (as obvious), alias function should be "<a href="#f_u">f_u - user function</a>" 
 and the parameter should be the name of the function ("usr_cz_date" in our
 example). It is possible to pass parameters to the function. The parameters are 
 separated by colon (usr_cz_date:parameters).</p>
-
-
 
 
 <br>
@@ -586,6 +584,11 @@ param: condition:begin:end:none:cond_col</td></tr>
 This example is usable for example for Highlight field - it shows Yes or No depending on highlight field</td></tr>
 <tr><td>&nbsp;</td><td colspan=2><I>Example:</I> !:Email#:::<br>
 If e-mail field is filled, it shows "Email: email@apc.org" (for example), but if it is not filled, it shows nothing</td></tr>
+
+<tr><td valign=top class=tabfnc><a name="f_u">f_u</a></td><td clospan=2>calls user defined function (see <a href="#aliases">How to create new aliases</a>)</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>function</td><td>name of called function in include/usr_aliasfnc.php3 file</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>parameter</td><td>parameters passed to function</td></tr>
+
 </table>
 <br><br>
 
@@ -638,9 +641,25 @@ document.write("&lt;/TABLE&gt;")<br>
 <tr><td valign=top class=tabfnc>cat_name</td><td>No</td><td>select only items in category with name <i>cat_name</i> as substring<br>Deprecated - better to use <i>restrict</i> and <i>res_val</i> parameters</td></tr>
 <tr><td valign=top class=tabfnc>items[id]</td><td>No</td><td>array of items to show one after one as fulltext (<i>ids</i> are the long ones - see sh_itm)</td></tr>
 </table>
-
-
 <br><br>
+
+
+<a name="viewparam"></a>
+<h3>Which parameters can I use with view.php3</h3>
+<p>The only required parameter to view.php3 script is number of <i>view</i> to show. This parameter is given by vid url variable. All remaining parameters are optional.</p>
+<p>Each optional <i>view</i> parameter begins with cmd[x], where <i>x</i> is <i>view</i> number in which the parameter should be used. This is needed because of possibility to include more than view to one shtml page. What's why we need to tell, for which vie the command should work.</p>
+<table align=center cellpadding=3 border=0>
+<tr><td class=tabtit>Parameter</td><td class=tabtit>Description</td></tr>
+<tr><td valign=top class=tabfnc>vid=4</td><td>id of displayed view</td></tr>
+<tr><td valign=top class=tabfnc>cmd[23]=v-25</td><td>show <i>view</i> id 25 in place of <i>view</i> id 23</td></tr>
+<tr><td valign=top class=tabfnc nowrap>cmd[23]=i-24-7464647</td><td><i>view</i> number 23 has to display item 74.. in format defined in view 24</td></tr>
+<tr><td valign=top class=tabfnc>cmd[23]=c-1-ICT</td><td>display <i>view</i> no 23 in place of view no 23 (that's normal), but change <i>value</i> for condition 1 to "ICT"</td></tr>
+<tr><td valign=top class=tabfnc nowrap>cmd[23]=c-1-ICT-2-Jane</td><td>the same as above, but there are redefined two conditions. All three conditions could be redefined</td></tr>
+<tr><td valign=top class=tabfnc>als[alias]</td><td>user alias definition - you can define your own aliases in url (for both - slice.php3 and view.php3). Aliases names MUST!!! be 8 characters long. Don't forgot, that the alias value have to be urlencoded.<br><i>Example:</i> als[MY_ALIAS]=Summary%20Page (or maybe better: als%5BMY_ALIAS%5D=Summary%20Page)<br>defines alias _#MY_ALIAS. If used in formatstring ('Admin - Design Index' for example), it prints 'Summary Page'</td></tr>
+</table>
+<br><br>
+
+
 <a name="ids"></a>
 <h3>How to make item url shorter?</h3>
 <p><i>Why are slice IDs/item IDs so long? Would it be possible to have them shorter?</i></p>
