@@ -30,6 +30,8 @@ require $GLOBALS[AA_INC_PATH] . "notify.php3";
 require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
 require $GLOBALS[AA_INC_PATH] . "formutil.php3";
 
+$now = now();
+
 function MoveItems($chb,$status) {
   global $db, $auth;
   if( isset($chb) AND is_array($chb) ) {
@@ -37,7 +39,7 @@ function MoveItems($chb,$status) {
     while( list($it_id,) = each( $chb ) )
       $db->query("UPDATE item SET
        status_code = $status, 
-       last_edit   = '". now() ."',
+       last_edit   = '$now',
        edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999") ."'
                    WHERE id='".q_pack_id(substr($it_id,1))."'"); 
                    
@@ -269,6 +271,20 @@ $db->query("SELECT status_code, count(*) as cnt FROM item
 while( $db->next_record() )
   $item_bin_cnt[ $db->f(status_code) ] = $db->f(cnt);
 
+$db->query("SELECT count(*) as cnt FROM item 
+             WHERE slice_id = '$p_slice_id'
+               AND status_code=1 
+               AND expiry_date <= '$now' ");
+if( $db->next_record() )
+  $item_bin_cnt_exp = $db->f(cnt);
+
+$db->query("SELECT count(*) as cnt FROM item 
+             WHERE slice_id = '$p_slice_id'
+               AND status_code=1 
+               AND publish_date > '$now' ");
+if( $db->next_record() )
+  $item_bin_cnt_pend = $db->f(cnt);
+  
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 <title><?php echo L_EDITOR_TITLE ?></title>
@@ -340,8 +356,6 @@ if( $open_preview )
 $editor_page = true;
 require $GLOBALS[AA_INC_PATH] . "navbar.php3";
 require $GLOBALS[AA_INC_PATH] . "leftbar.php3";
-
-$de = getdate(time());
 
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
 switch( $r_bin_state ) {
@@ -558,6 +572,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.33  2002/02/05 21:40:33  honzam
+items are counted in all bins - including pending bin and expired bin
+
 Revision 1.32  2002/01/03 15:48:07  honzam
 No item table width limit
 

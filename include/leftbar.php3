@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.9  2002/02/05 21:40:33  honzam
+items are counted in all bins - including pending bin and expired bin
+
 Revision 1.8  2001/06/24 16:46:22  honzam
 new sort and search possibility in admin interface
 
@@ -63,25 +66,25 @@ added $Id $Log and $Copyright to some stray files
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <?php
   if( $slice_id AND ($r_bin_state != "app"))
-    echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=app"). '" class=leftmenuy>'. L_ACTIVE_BIN .'</a> ('.$item_bin_cnt[1].')</td></tr>';
+    echo '<tr><td class=leftmenuy><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=app"). '" class=leftmenuy>'. L_ACTIVE_BIN .'</a> ('.($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).')</td></tr>';
    else
-    echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_ACTIVE_BIN .' ('.$item_bin_cnt[1].')</td></tr>';
+    echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_ACTIVE_BIN .' ('.($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).')</td></tr>';
   if( !$apple_design ) {
     if( $slice_id AND ($r_bin_state != "appb"))
-      echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=appb"). '" class=leftmenuy>'. L_ACTIVE_BIN_PENDING_MENU .'</a></td></tr>';
+      echo '<tr><td class=leftmenuy><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=appb"). '" class=leftmenuy>'. L_ACTIVE_BIN_PENDING_MENU ."</a> ($item_bin_cnt_pend)</td></tr>";
      else
-      echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_ACTIVE_BIN_PENDING_MENU .'</td></tr>';
+      echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_ACTIVE_BIN_PENDING_MENU ." ($item_bin_cnt_pend)</td></tr>";
     if( $slice_id AND ($r_bin_state != "appc"))
-      echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=appc"). '" class=leftmenuy>'. L_ACTIVE_BIN_EXPIRED_MENU .'</a></td></tr>';
+      echo '<tr><td class=leftmenuy><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=appc"). '" class=leftmenuy>'. L_ACTIVE_BIN_EXPIRED_MENU ."</a> ($item_bin_cnt_exp)</td></tr>";
      else
-      echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_ACTIVE_BIN_EXPIRED_MENU .'</td></tr>';
+      echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_ACTIVE_BIN_EXPIRED_MENU ." ($item_bin_cnt_exp)</td></tr>";
   }  
   if( $slice_id AND ($r_bin_state != "hold")) 
-    echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=hold"). '" class=leftmenuy>'. L_HOLDING_BIN .'</a> ('.$item_bin_cnt[2].')</td></tr>';
+    echo '<tr><td class=leftmenuy><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=hold"). '" class=leftmenuy>'. L_HOLDING_BIN .'</a> ('.$item_bin_cnt[2].')</td></tr>';
    else
     echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_HOLDING_BIN .' ('.$item_bin_cnt[2].')</td></tr>';
   if( $slice_id AND ($r_bin_state != "trash")) 
-    echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=trash"). '" class=leftmenuy>'. L_TRASH_BIN .'</a> ('.$item_bin_cnt[3].')</td></tr>';
+    echo '<tr><td class=leftmenuy><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Tab=trash"). '" class=leftmenuy>'. L_TRASH_BIN .'</a> ('.$item_bin_cnt[3].')</td></tr>';
    else
     echo '<tr><td class=leftmenun><img src="../images/spacer.gif" width=5 height=1 border=0 alt="">'. L_TRASH_BIN .' ('.$item_bin_cnt[3].')</td></tr>';?>
   <tr><td>&nbsp;</td></tr>
