@@ -20,27 +20,53 @@ http://www.apc.org/
 */
 
 /*
-	Author: Jakub Adámek
+	Author: Jakub Adámek, Pavel Jisl
 	
 # Slice Import - XML parsing function
 #
 # Note: This parser does not check correctness of the data. It assumes, that xml document
 #       was exported by slice export and has the form of
 
-<sliceexport ...>
+<sliceexport version="1.0">
 ...
 <slice id="new id" name="new name">
 base 64 data
 </slice>
 </sliceexport>
+
+new version 1.1:
+
+<sliceexport version="1.1">
+<slice id="new id" name="new name">
+<slicedata gzip="1">
+if gzip parameter == 1 => gzipped base 64 slice struct
+                  == 0 => base 64 slice struct
+</slicedata>
+<data item_id="item id" gzip="1">
+base 64 data from item_id (w/wo gzip)
+</data>
+</slice>
+</sliceexport>
+
 */
 
 function startElement($parser, $name, $attrs) {
 	global $curname,
   	  	   $curid,
-		   $chardata;
-	
+		   $curdataid,
+		   $curdatagzip,
+		   $chardata,
+		   $gzipped,
+		   $expver;	
 	switch ($name) {
+		case "SLICEEXPORT":
+			reset ($attrs);
+			while (list($key, $val) = each($attrs)) {
+				switch ($key) {
+					case "VERSION": $expver = $val; break;
+				}	
+			}
+			break;	
 		case "SLICE": 		
 			$curid = ""; 
 			$curname = ""; 
@@ -53,6 +79,24 @@ function startElement($parser, $name, $attrs) {
 				}
 			}
 			break;
+		case "SLICEDATA":
+			$gzipped = "";
+			while (list($key, $val) = each($attrs)) {
+				switch ($key) {
+					case "GZIP": $gzipped = $val; break;
+				}
+			}		
+			break;
+		case "DATA":
+			$curdataid = "";
+			$curdatagzip = "";
+			while (list($key, $val) = each($attrs)) {
+				switch ($key) {
+					case "ITEM_ID": $curdataid = $val; break;
+					case "GZIP": $curdatagzip = $val; break;
+				}	
+			}
+			break;		
 	}
 	$chardata = "";
 }
@@ -60,22 +104,52 @@ function startElement($parser, $name, $attrs) {
 function endElement($parser, $name) {
   global $curname,
   		 $curid,
+     	 $curdataid,
+		 $curdatagzip,
 		 $chardata,
+		 $expver,
+		 $gzipped,
 		 $sess;
 
   switch ($name) {
-	case "SLICE":
-		$slice = unserialize (base64_decode($chardata));
-		if (!is_array($slice)) {
-			MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_WRONG_FILE, "standalone");
-			exit;
-		}
-		$slice["id"] = $curid;
-		$slice["name"] = $curname;
-		import_slice ($slice);
+  	case "SLICEDATA":
+			$chardata = base64_decode($chardata);
+			$chardata = $gzipped ? gzuncompress($chardata) : $chardata;
+			$slice = unserialize ($chardata);
+			if (!is_array($slice)) {
+				MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_WRONG_FILE, "standalone");
+				exit;
+			}
+			$slice["id"] = $curid;
+			$slice["name"] = $curname;
+			import_slice ($slice);	
 		break;
+	case "DATA":
+			$chardata = base64_decode($chardata);
+			$chardata = $curdatagzip ? gzuncompress($chardata) : $chardata;
+			$content4id = unserialize ($chardata);
+			if (!is_array($content4id)) {
+				MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_WRONG_FILE, "standalone");
+				exit;
+			}
+			import_slice_data($curid, $curdataid, $content4id, true, true);
+		break;
+	case "SLICE":
+		if ($expver == "1.0") {
+			$slice = unserialize (base64_decode($chardata));
+			if (!is_array($slice)) {
+				MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_WRONG_FILE, "standalone");
+				exit;
+			}
+			$slice["id"] = $curid;
+			$slice["name"] = $curname;
+			import_slice ($slice);
+		} else {
+		}
+	break;
+	case "SLICEEXPORT":
+	break;	
   }
-
   $chardata = "";
 }
 
@@ -84,6 +158,7 @@ function charD($parser, $data) {
 	$chardata .= $data;
 }
 
+// creates xml parser
 function sliceimp_xml_parse($xml_data) {
   $xml_parser = xml_parser_create();
   xml_set_element_handler($xml_parser, "startElement", "endElement");
@@ -97,4 +172,47 @@ function sliceimp_xml_parse($xml_data) {
   xml_parser_free($xml_parser);
   return "";
 }
+
+// creates SQL command for inserting
+function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_fields="", $add_values="")
+
+// fields - fields for creating query
+// table - name of table
+// pack_fields - whitch fields needs to be packed (some types of ids...)
+// only_fields - put in SQL command only some values from $fields
+// add_values - adds some another values, whitch aren't in $fields
+
+{
+	$sqlfields = "";
+	$sqlvalues = "";
+	reset($fields);
+	while (list($key,$val) = each($fields)) {
+		if (!is_array($val) && !is_int ($key)) {
+			if ((strstr($only_fields,";".$key.";")) || ($only_fields=="")) {
+				if ($sqlfields > "") {
+					$sqlfields .= ",\n";
+					$sqlvalues .= ",\n";
+				}
+				$sqlfields .= $key;
+		
+				if (strstr($pack_fields,";".$key.";"))
+					$val = pack_id ($val);
+				$sqlvalues .= '"'.addslashes($val).'"';
+			}	
+		}
+	}
+	
+	if ($add) {
+		$add = explode(",", $add_fields);
+		for ($i=0; $i<count($add); $i++) {
+			$dummy=explode("=",$add[$i]);
+			if ($sqlfields > "") {
+				$sqlfields .= ",\n". $dummy[0];
+				$sqlvalues .= ",\n". $dummy[1];
+			}	
+		}
+	}
+	return "INSERT INTO ".$table." (".$sqlfields.") VALUES (".$sqlvalues.")";
+}
+
 ?>

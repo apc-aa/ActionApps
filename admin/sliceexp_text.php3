@@ -32,7 +32,7 @@ http://www.apc.org/
 	slice array, in the form of a third-level associative array. 
 */
 
-
+require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
 
 function getRecord (&$array, &$record) 
 {
@@ -41,8 +41,11 @@ function getRecord (&$array, &$record)
 		if (!is_integer($key)) $array[$key] = $val;
 }	
 
-function exportOneSliceStruct ($slice_id, $b_export_type, $SliceID) {
+function exportOneSliceStruct ($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file) {
 global $db, $sess;
+	
+	$slice_id_bck = stripslashes(unpack_id($slice_id));
+	
 	$SQL = "SELECT * FROM slice WHERE id='$slice_id'";
 	$db->query($SQL);
 	if (!$db->next_record()) {
@@ -82,22 +85,71 @@ global $db, $sess;
 	
 		$slice["fields"][] = $new;
 	}
-	return $slice;
+    $slice_data = serialize($slice);
+	$slice_data = $b_export_gzip ? gzcompress($slice_data) : $slice_data;
+	$slice_data = HTMLEntities(base64_encode($slice_data));
+	fwrite($temp_file, "<slicedata gzip=\"".$b_export_gzip."\">\n$slice_data\n</slicedata>\n");	
 }
 
-function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data) 
+function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date) 
+{
+    $slice_id2 = unpack_id($slice_id);
+    list($fields,) = GetSliceFields($slice_id2);
+	if ($b_export_spec_date) {
+		$conds[0]["operator"] = "e:>=";
+		$conds[0]["publish_date...."] = 1;
+		$conds[0]["value"] = $b_export_from_date;
+		$conds[1]["operator"] = "e:<=";
+		$conds[1]["publish_date...."] = 1;
+		$conds[1]["value"] = $b_export_to_date;
+	} else {
+		$conds="";
+	}
+	$item_ids=QueryIDs($fields, $slice_id2, $conds, "", "", "ALL");
+	if (count($item_ids) == 0) { 
+		if ($b_export_spec_date) { fwrite($temp_file, "<comment>\nThere are no data in selected days (from ".$b_export_from_date." to ".$b_export_to_date.").\n</comment>\n");}
+		else {fwrite($temp_file, "<comment>\nThere are no data in slice.\n</comment>\n");}
+	} else {
+		reset($item_ids);	
+		$item_count = count($item_ids);
+		for ($i=0; $i<$item_count; $i++) {
+		   $content = GetItemContent($item_ids[$i]);
+		   fwrite($temp_file, "<data item_id=\"$item_ids[$i]\" gzip=\"$b_export_gzip\">\n");
+		   $e_temp = serialize($content);
+		   $e_temp = $b_export_gzip ? gzcompress($e_temp) : $e_temp;	
+		   $e_temp = HTMLEntities(base64_encode($e_temp));
+		   fwrite($temp_file, "$e_temp\n</data>\n");
+		   unset($myids);
+		   unset($e_temp);
+		}
+	}	
+}
+
+function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date) 
 {
 	global $db;
-	$header .= "<sliceexport version=\"1.1\">\n";
-	$header .= "<comment>This text contains exported slices definitions. You may import them to any Toolkit.</comment>\n";
+
+	$temp_file = tmpfile();
+	
+	fwrite($temp_file, "<sliceexport version=\"1.1\">\n");
+	fwrite($temp_file, "<comment>\nThis text contains exported slices definitions (and/or slices data). You may import them to any ActionApps.\n");
+	if ($b_export_type != L_E_EXPORT_SWITCH) {
+		fwrite($temp_file, "This text is exported slice data for use in another ActionApps instalation (new slice_id)\n");
+	} else {
+		fwrite($temp_file, "This text is backuped slice data with the same slice_id as is in the source slice\n");
+	}	
+	if ($b_export_spec_date && $b_export_data) {
+		fwrite($temp_file, "Exported data from ".$b_export_from_date." to ".$b_export_to_date."\n");
+	}		
+	fwrite($temp_file, "</comment>\n");
 	
 	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
-
+	
 	if ($b_export_type != L_E_EXPORT_SWITCH) {
 		unset ($export_slices);
 		$export_slices = array($slice_id);
 	}
-	
+
 	reset($export_slices);
 	while (list(,$slice_id_bck) = each($export_slices)) {
 		$slice_id = addslashes(pack_id($slice_id_bck));
@@ -106,52 +158,83 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 		$db->query($SQL);
 		while($db->next_record())
 			$slice_name = $db->f(name);
-	
+
+		if ($b_export_type != L_E_EXPORT_SWITCH) {
+			if (strlen ($SliceID) != 16) {
+				MsgPage($sess->url(self_base())."index.php3", L_E_EXPORT_TITLE_IDLENGTH.strlen($SliceID), "standalone");
+				exit;	
+			}
+			else $SliceIDunpack = unpack_id($SliceID);
+		}
+						
+		fwrite($temp_file, "<slice id=\"");
+		fwrite($temp_file, ($b_export_type != L_E_EXPORT_SWITCH ? $SliceIDunpack : unpack_id($slice_id)));
+		fwrite($temp_file, "\" name=\"".$slice_name."\">\n");	
+		
 		if ($b_export_struct) {
-			$slice_str = exportOneSliceStruct($slice_id, $b_export_type, $SliceID, $b_export_gzip);	
-			$slice_struct = serialize($slice_str);
-			$slice_struct = $b_export_gzip ? gzcompress($slice_struct) : $slice_struct;
-			$slice_struct = HTMLEntities(base64_encode($slice_struct));
+		// export of slice structure
+			exportOneSliceStruct($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file);	
 		}
-		if ($b_export_data) {
+		if ($b_export_data) {		  
+		// export of slice data
+		  exportOneSliceData($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date);
 		}
-		$export_text .= "<slice id=\"".unpack_id($slice_id)."\" name=\"".$slice_name."\">\n";
-		$export_text .= "<slicestuct gzip=\"".$b_export_gzip."\">\n$slice_struct\n</slicestruct>\n";
-		$export_text .= "</slice>\n\n\n";
+		fwrite($temp_file, "</slice>\n");
 	}	
 	
-	$export_text = $header.$export_text."</sliceexport>";
-	return $export_text;	
+	fwrite($temp_file, "</sliceexport>");
+	return $temp_file;
 }
 	
-function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID) {
-	
-	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
-	
-	$export_text = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data);
-		
-	header("Content-type: application/octec-stream");
-	header("Content-Disposition: attachment; filename=aaa.aaxml");
-	echo "$export_text";
-}
-
-function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data) 
+function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date) 
+// Export data to file:
+//   Opens browser's dialog to write file to disk...
 {	
 	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
 	
-	$export_text = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data);
+	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date);
+	
+	rewind($temp_file);
+		
+	header("Content-type: application/octec-stream");
+	header("Content-Disposition: attachment; filename=aaa.aaxml");
 
+	 while(!feof($temp_file)) {
+		   $buffer = fread($temp_file, 4096);
+		   echo $buffer;
+	 }
+	fclose($temp_file);
+}
+					
+function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date) 
+// Export data to text area in browser's window ...
+{		
+
+	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
+	
+	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date);
+	
+	rewind($temp_file);
+	
 	echo "
 		<tr><td class = tabtxt>
 		<FORM>
 		<b>".  L_E_EXPORT_TEXT_LABEL ."</b>
 		</P>
-		<TEXTAREA COLS = 80 ROWS = 20>". $export_text ."</TEXTAREA>
+		<TEXTAREA COLS = 80 ROWS = 20>";
+
+//		fpassthru($export_file);
+
+		 while(!feof($temp_file)) {
+			   $buffer = fread($temp_file, 4096);
+			   echo $buffer;
+		 }
+		fclose($temp_file);
+
+	echo "</TEXTAREA>
 		</FORM>
 		</P>
 		</tr></td>";
 }
 page_close();
 ?>
-
-	
