@@ -339,8 +339,8 @@ define("L_INSERT_PREV", "Insert & View");
 define("L_OK", "OK");
 define("L_ACTIVE_BIN_EXPIRED", "Expired");
 define("L_ACTIVE_BIN_PENDING", "Pending");
-define("L_ACTIVE_BIN_EXPIRED_MENU", "Expired");
-define("L_ACTIVE_BIN_PENDING_MENU", "Pending");
+define("L_ACTIVE_BIN_EXPIRED_MENU", "... expired");
+define("L_ACTIVE_BIN_PENDING_MENU", "... pending");
 
 define("L_FIELD_PRIORITY", "Priority");
 define("L_FIELD_TYPE", "Id");

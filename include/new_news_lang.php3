@@ -330,5 +330,6 @@ define("L_AUTO_CHECKBOX", "Auto Update Checkbox");
 define("L_SLI_NAME_ALIAS", "Slice name");
 define("L_CODE_MANAGER", "Code&nbsp Manager");
 define("L_SITE_SETTINGS", "Module Settings");
+define("L_ITEMS_PAGE", "Items Page");
 
 ?>

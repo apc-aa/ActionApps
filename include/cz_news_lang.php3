@@ -921,6 +921,7 @@ define("L_ALERTS","Zasílání zpráv");
 define("L_ALERTS_COLLECTIONS", "Kolekce");
 define("L_ALERTS_USERS","Uživatelé");
 define("L_ALERTS_UI","Uživatelské rozhraní.");
+define("L_ITEMS_PAGE", "Stránka s èlánky");
      
 // constants used in param wizard only:
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
