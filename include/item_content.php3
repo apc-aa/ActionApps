@@ -210,7 +210,7 @@ class ItemContent {
       b) or "new_id" : store the item with different (unique random) id
       c) otherwise : do nothing
     */
-    function storeToDB($slice_id,&$fields, $actionIfItemExists=STORE_WITH_NEW_ID) {
+    function storeToDB($slice_id,&$fields, $actionIfItemExists=STORE_WITH_NEW_ID, $invalidatecache = true) {
 
       require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
       require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
@@ -229,7 +229,8 @@ class ItemContent {
         // Check duplicity
         $p_id = q_pack_id($id);
         $SQL= "SELECT id FROM item WHERE item.id='$p_id'";
-        $insert = $db->query($SQL) ? false: true;
+        $db->query($SQL);
+        $insert = !$db->next_record();
       }
       if ($insert == false) {	// if the item is already in the DB :
 
@@ -248,7 +249,7 @@ class ItemContent {
           }
       }
 
-      $added_to_db=StoreItem( $id, $slice_id, $this->content, $fields, $insert, true, false ); // invalidatecache, not feed
+      $added_to_db = StoreItem( $id, $slice_id, $this->content, $fields, $insert, $invalidatecache, false ); // invalidatecache, not feed
       return $added_to_db ? array(0=> ($insert ? INSERT : UPDATE) ,1=>$id) : false;
     }
 }

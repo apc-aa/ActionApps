@@ -36,6 +36,23 @@ require_once $GLOBALS["AA_INC_PATH"]."import_util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 
+/** Returns key of the $array, which value is most similar to given $text */ 
+function findNearestText($text, $array) {
+    $max = -2;
+    if ( isset($array) AND is_array($array) ) {
+        $text = strtoupper($text);
+        foreach ( $array as $k => $v ) {
+            $distance = levenshtein( $text, strtoupper($v) );
+            if ( ($max == -2) OR ($distance < $max) ) {
+                $max = $distance;
+                $ret = $k;
+            }
+        }
+    }
+    return $ret;
+}
+
+
 if(!IfSlPerm(PS_FEEDING)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to setting "));
     exit;
@@ -48,15 +65,17 @@ if (!file_exists($fileName))
     MsgPage($sess->url(self_base()."se_csv_import.php3"), _m("File for import does not exists:").$fileName );
 
 $addParams = unserialize(base64_decode($addParamsSerial));
-if (!$addParams)
+if (!$addParams) {
     MsgPage($sess->url(self_base()."se_csv_import.php3"), _m("Invalid additional parameters for import"));
+}
 
-if (!isset($itemId))
+if (!isset($itemId)) {
     $itemId = "new";
+}
 
-if (!isset($actionIfItemExists))
+if (!isset($actionIfItemExists)) {
     $actionIfItemExists = STORE_WITH_NEW_ID;
-
+}
 
 //-----------------------------------------------------------------------------
 // Output items should contain just these slice fields
@@ -69,8 +88,12 @@ if ($upload || $preview) {
     $params['slice_id........']  = $slice_id;
 
     $actions['id..............'] = $itemId;
-    if ($itemId == 'old')
+    if ($itemId == 'old') {
+        // update items with the id specified in $itemIdMappedFrom field
         $mapping['id..............'] = $itemIdMappedFrom;
+        $actions['id..............'] = $itemIdMappedActions;
+        $params['id..............']  = $itemIdMappedParams;
+    }
 
     $trans_actions = new Actions($actions,$mapping, $html, $params);
 
@@ -99,7 +122,7 @@ if ($upload) {
         $numProcessed++;
 
         if (!$err) {
-            $res = $itemContent->StoreToDB($slice_id, $slice_fields,$actionIfItemExists);
+            $res = $itemContent->StoreToDB($slice_id, $slice_fields,$actionIfItemExists,false); // not invalidate cache
             if ($res == false)
                 $err = _m("Cannot store item to DB");
         }
@@ -119,15 +142,18 @@ if ($upload) {
     }
     // log
     $logMsg = "Slice " .$slice_id. ": Processed ". $numProcessed. ", Inserted ". $numInserted. ", Updated:". $numUpdated. ", Error: ". $numError. " items";
-    writeLog("FILE IMP.",$logMsg);
+    writeLog("CSV_IMPORT",$logMsg);
+    
+    // invalidate cache; 
+    $GLOBALS['pagecache']->invalidateFor("slice_id=".$GLOBALS['slice_id']);  # invalidate old cached values
 
     fclose($handle);
 
     // deletes  uploaded file, todo - uncomment
     if (unlink($fileName)) {
-        writeLog("FILE IMP.",_m("Ok : file deleted "). $fileName );
+        writeLog("CSV_IMPORT",_m("Ok : file deleted "). $fileName );
     } else {
-        writeLog("FILE IMP.",_m("Error: Cannot delete file"). $fileName );
+        writeLog("CSV_IMPORT",_m("Error: Cannot delete file"). $fileName );
     }
 
     $msg = _m("Added to slice"). $slice_id ." :<br><br>\n". $msg." <br><br>\n";
@@ -208,53 +234,50 @@ if ($preview) {
     FrmTabEnd("");
     // end preview
 }
+
+$form_buttons = array("preview"         => array( "type"      => "submit",
+                                                  "value"     => _m("Preview"),
+                                                  "accesskey" => "P"),
+                      "upload"          => array( "type"      => "submit",
+                                                  "value"     => _m("Finish"),
+                                                  "accesskey" => "S"),
+                      "fileName"        => array( "value"     => $fileName ),
+                      "addParamsSerial" => array( "value"     => $addParamsSerial )
+                     );
+
+
+echo '<form enctype="multipart/form-data" method=post name="f" action="'. $sess->url(self_base() . "se_csv_import2.php3") .'">';
+
+FrmTabCaption(_m("Mapping settings"));
 ?>
-
-<form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_csv_import2.php3")?>">
-<table width="600" border="0" cellspacing="0" cellpadding="1"
-       bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-
-    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Mapping settings") ?></b></td></tr>
-    <tr><td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-        <tr>
-          <td class=tabtxt><b><?php echo _m("To") ?></b></td>
-          <td class=tabtxt><b><?php echo _m("From") ?></b></td>
-          <td class=tabtxt><b><?php echo _m("Action") ?></b></td>
-          <td class=tabtxt><b><?php echo _m("Html") ?></b></td>
-          <td class=tabtxt><b><?php echo _m("Action parameters") ?></b></td>
+    <tr>
+      <td class=tabtxt><b><?php echo _m("To") ?></b></td>
+      <td class=tabtxt><b><?php echo _m("From") ?></b></td>
+      <td class=tabtxt><b><?php echo _m("Action") ?></b></td>
+      <td class=tabtxt><b><?php echo _m("Html") ?></b></td>
+      <td class=tabtxt><b><?php echo _m("Action parameters") ?></b></td>
       <td class=tabtxt><b><?php echo _m("Parameter wizard") ?></b></td>
-
      </tr>
 
        <?php
-       reset($outFields);
-           $inFields["__empty__"] = "     ";
-
-       reset($inFields);
-       while (list($f_id, $f_name) = each($outFields)) {
-         echo "<tr><td class=tabtxt><b>$f_name</b></td>\n";
-             echo "<td>";
-          FrmSelectEasy("mapping[$f_id]",$inFields,$preview ? $mapping[$f_id] : "__empty__");		// todo - multiple
-         echo "</td>";
-         echo "<td class=tabtxt>";
-          FrmSelectEasy("actions[$f_id]",$actionList,$preview ? $actions[$f_id] : "default");
-             echo "</td>";
-
-         echo "<td class=tabtxt ><input type=checkbox name=\"html[$f_id]\" "; if ($preview && $html[$f_id]) echo  "CHECKED";  echo  "></input></td>";
-         echo "<td class=tabtxt><input type=text name=\"params[$f_id]\" value=\""; if ($preview) echo stripslashes($params[$f_id]);  echo "\"></input></td>";
-         echo "<td class=tabhlp><a href='javascript:CallParamWizard(\"TRANS_ACTIONS\",\"actions[$f_id]\",\"params[$f_id]\")'><b>"
-                 ._m("Help: Parameter Wizard")."</b></a></td>";
-         echo "</tr>\n";
-             }
-        ?>
-      </table>
-    </td></tr>
-
-     <tr><td class=tabtit><b>&nbsp;</b></td></tr>
-
-     <tr><td>
-     <table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABBG ?>">
+       $inFields["__empty__"] = "     ";
+       foreach ( $outFields as $f_id => $f_name) {
+           echo "<tr><td class=tabtxt><b>$f_name</b></td>\n";
+           echo "<td>";
+           FrmSelectEasy("mapping[$f_id]",$inFields,$preview ? $mapping[$f_id] : findNearestText($f_name, $inFields));		// todo - multiple
+           echo "</td>";
+           echo "<td class=tabtxt>";
+           FrmSelectEasy("actions[$f_id]",$actionList,$preview ? $actions[$f_id] : "default");
+           echo "</td>";
+           
+           echo "<td class=tabtxt ><input type=checkbox name=\"html[$f_id]\" "; if ($preview && $html[$f_id]) echo  "CHECKED";  echo  "></input></td>";
+           echo "<td class=tabtxt><input type=text name=\"params[$f_id]\" value=\""; if ($preview) echo stripslashes($params[$f_id]);  echo "\"></input></td>";
+           echo "<td class=tabhlp><a href='javascript:CallParamWizard(\"TRANS_ACTIONS\",\"actions[$f_id]\",\"params[$f_id]\")'><b>"
+           ._m("Help: Parameter Wizard")."</b></a></td>";
+           echo "</tr>\n";
+       }
+       FrmTabSeparator(_m("Import options"));
+       ?>
 
        <tr><td class=tabtxt colspan=2>Setting item id:</td><tr>
 
@@ -263,7 +286,17 @@ if ($preview) {
        </tr>
        <tr>
        <td class=tabtxt align=center><input type="radio" <?php if ($itemId == "old") echo "CHECKED"; ?> NAME="itemId" value="old"></td>
-       <td class=tabtxt ><?php echo _m("Map item id from"); ?>&nbsp;<?php FrmSelectEasy("itemIdMappedFrom",$inFields,$preview ? $idFrom : $inFields[0]); ?></td>
+       <td class=tabtxt ><?php 
+         echo _m("Map item id from"). '&nbsp'; 
+         FrmSelectEasy("itemIdMappedFrom",$inFields,$preview ? $idFrom : $inFields[0]);
+         echo '<br>'; 
+         $mapping_options = array ( 'pack_id'   => _m('unpacked long id (pack_id)'),
+                                    'store'     => _m('packed long id (store)'),  
+                                    'string2id' => _m('string to be converted (string2id) - with param:'));
+         
+         FrmSelectEasy("itemIdMappedActions",$mapping_options, $preview ? $itemIdMappedActions : 'pack_id');
+         echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. ($preview ? $itemIdMappedParams : '').'"></input>'; 
+       ?></td>
 
     </tr>
 
@@ -281,17 +314,10 @@ if ($preview) {
             <td class=tabtxt align=center><input type="radio" <?php if ($actionIfItemExists== NOT_STORE) echo "CHECKED"; ?> NAME="actionIfItemExists" value=<?php echo NOT_STORE;?> </td>
         <td class=tabtxt ><?php echo _m("Do not store the item"); ?></td>
     </tr>
-        </table>
-    </td></tr>
-    <tr><td align="center">
-      <input type=submit name=preview value="<?php echo _m("Preview")?>" align=center>&nbsp;&nbsp;
-      <input type=submit name=upload  value="<?php echo _m("Finish")  ?>" >
-      <input type=hidden name=fileName value="<?php echo $fileName; ?>">
-      <input type=hidden name=addParamsSerial value="<?php echo $addParamsSerial; ?>">
-    </td></tr>
-  </table>
-</FORM>
-<?php
+    <?php
+
+    FrmTabEnd($form_buttons, $sess, $slice_id);
+    echo "</FORM>";
     HtmlPageEnd();
     page_close();
 ?>

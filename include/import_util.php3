@@ -105,52 +105,54 @@ class Actions {
     /** Transform the input item content to the output item content according
      *  to the actions
      */
-     function transform(&$itemContent,&$slice_fields,&$outputItemContent) {
+     function transform(&$itemContent, $slice_fields, &$outputItemContent) {
          global $auth;
-         // set item id
-         $v = ($this->actions['id..............']['action']->getAction() == 'new') ?
-               'new id' :
-               $itemContent->GetValue($this->actions['id..............']['from']);
-         $fieldVal[]['value'] = addslashes($v);
-         $outputItemContent->setFieldValue('id..............',$fieldVal);
+         
+         // id is not part of $slice_fields, unfortunatelly (should be changed)
+         if ( !isset($slice_fields['id..............']) ) {
+             $slice_fields['id..............'] = 'to be processed in next loop';
+         }
 
          foreach ( $slice_fields as $field_id => $foo ) {
-            $action = &$this->actions[$field_id];
-            unset( $fieldVal, $v);
-
-            // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
-            if (!$action || $action['action']->getAction() == "default") {
-                switch ($field_id) {
-                    case "display_count..." : $v = 0; break;
-                    case "status_code....." : $v = 1; break; // todo
-                    case "flags..........." : $v = ITEM_FLAG_OFFLINE; break;
-                    case "publish_date...." : $v =  time(); break;
-                    case "post_date......." : $v =  time(); break;
-                    case "last_edit......." : $v =  time(); break;
-                    case "expiry_date....." : $v =  mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
-                    case "posted_by......." : $v = $auth->auth['uid']; break;	// todo
-                    case "edited_by......." : $v = $auth->auth['uid']; break;	// todo
-                    default :
-                        if ( $action['from'] && ($action['from'] != '__empty__')) {
-                            $action['action']->setAction('store');
-                        } elseif ( $action['action']->getParams() ) {
-                            $action['action']->setAction('value');
-                        } else {
-                            $v = "";
-                        }
-                        break;
-                }
-            }
-            if ( isset($v) ) {   // $v is set in previous 'default' section
-                $fieldVal[]['value'] = addslashes($v);
-            } else {
-                // transform the input field to the output field according the action
-                $err = $action['action']->transform($itemContent,$action['from'],$this->globalParams,$fieldVal );
-                if ($err)
-                    return $err;
-            }
-            // store the output field to the output item content
-            $outputItemContent->setFieldValue($field_id,$fieldVal);
+             $action = &$this->actions[$field_id];
+             unset( $fieldVal, $v);
+ 
+             // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
+             if (!$action || $action['action']->getAction() == "default") {
+                 switch ($field_id) {
+                     case "display_count..." : $v = 0; break;
+                     case "status_code....." : $v = 1; break; // todo
+                     case "flags..........." : $v = ITEM_FLAG_OFFLINE; break;
+                     case "publish_date...." : $v =  time(); break;
+                     case "post_date......." : $v =  time(); break;
+                     case "last_edit......." : $v =  time(); break;
+                     case "expiry_date....." : $v =  mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
+                     case "posted_by......." : $v = $auth->auth['uid']; break;	// todo
+                     case "edited_by......." : $v = $auth->auth['uid']; break;	// todo
+                     case "id.............." : $v = $auth->auth['uid']; break;
+                     default :
+                         if ( $action['from'] && ($action['from'] != '__empty__')) {
+                             $action['action']->setAction('store');
+                         } elseif ( $action['action']->getParams() ) {
+                             $action['action']->setAction('value');
+                         } else {
+                             $v = "";
+                         }
+                         break;
+                 }
+             } elseif ($action['action']->getAction() == "new") {
+                 $v = 'new id';
+             }
+             if ( isset($v) ) {   // $v is set in previous 'default' section
+                 $fieldVal[]['value'] = addslashes($v);
+             } else {
+                 // transform the input field to the output field according the action
+                 $err = $action['action']->transform($itemContent,$action['from'],$this->globalParams,$fieldVal );
+                 if ($err)
+                     return $err;
+             }
+             // store the output field to the output item content
+             $outputItemContent->setFieldValue($field_id,$fieldVal);
         }
     }
 
@@ -207,12 +209,16 @@ class Action {
                 $fvalues[][value] = $itemContent->GetValue($from);		// todo - pokud neexistuje pole s $from , co delat?
                 break;
             }
+            case "pack_id": {
+                $fvalues[][value] = pack_id($itemContent->GetValue($from));		// todo - pokud neexistuje pole s $from , co delat?
+                break;
+            }
             case "removestring": {
                 $v =  $itemContent->GetValue($from);
                 $fvalues[][value] = $this->params ? ereg_replace($this->params, "", $v) :$v;
                 break;
             }
-                case "formatdate": {
+            case "formatdate": {
                 $v = strtotime($itemContent->GetValue($from));
                 if ($v == -1)
                     return "Invalid date: ".$itemContent->GetValue($from);
@@ -264,6 +270,14 @@ class Action {
                 }
                 break;
             }
+            case "string2id": {
+                // from the same string we create allways the same id. This is
+                // true in case user provide param (which is strongly 
+                // recommended or within the same slice (because used slice_id)
+                $string = $itemContent->GetValue($from) . get_if($this->params, $GLOBALS['slice_id']);
+                $fvalues[]['value'] = string2id($string);
+                break;
+            }
             case "not map": {
                 $fvalues[0]['value'] = "";
                 break;
@@ -290,7 +304,7 @@ class Action {
 
 /** Get List of actions */
 function getActions() {
-    $a = array("store","removestring","formatdate", "web", "storeparsemulti","value","default");
+    $a = array("store","removestring","formatdate", "web", "storeparsemulti","value","string2id","default");
     // not used:  "convertvalue","storemultiasone", "storeasmulti", "not map"
     foreach ( $a as $v ) { $actions[$v] = $v; }
     return $actions;
