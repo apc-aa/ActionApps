@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.15  2001/12/18 12:09:51  honzam
+new notification e-mail possibility (notify new item in slice, bins, ...)
+
 Revision 1.14  2001/10/05 07:50:46  madebeer
 made leftbar compatible with php3.  fixed missing comments in aadb.sql
 
@@ -93,7 +96,8 @@ function SetShow ($baritem)
      //if (gettype($show["main"])=="NULL") 
 
 SetShow ("slicedel"); SetShow ("config"); SetShow ("category"); SetShow ("fields");
-SetShow ("search"); SetShow ("users"); SetShow ("compact"); SetShow ("fulltext"); SetShow ("views");
+SetShow ("notify"); SetShow ("search"); SetShow ("users"); SetShow("compact"); 
+SetShow ("fulltext"); SetShow ("views"); 
 SetShow ("addusers"); SetShow ("newusers"); SetShow ("import"); 
 SetShow ("filters"); SetShow ("n_import"); SetShow ("n_export"); SetShow ("nodes");
 SetShow ("mapping"); SetShow ("sliceexp"); SetShow ("sliceimp");
@@ -152,7 +156,13 @@ while (list ($key, $val) = each ($show)) {
    else 
     echo "&nbsp;&nbsp;<span class=leftmenun>". L_FIELDS ."</span></td>"; ?>
   </tr>
-
+  <tr><td valign="TOP"> 
+  <?php 
+  if( $show["notify"]  AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT)) 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_notify.php3")."&slice_id=$slice_id\" class=leftmenuy>".L_NOTIFY."</a></td>"; 
+   else 
+    echo "&nbsp;&nbsp;<span class=leftmenun>". L_NOTIFY ."</span></td>"; ?>
+  </tr>
   <tr><td>&nbsp;</td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <tr><td class=leftmenu><?php echo L_PERMISSIONS ?></td></tr>
