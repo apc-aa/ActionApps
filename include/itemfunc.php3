@@ -354,7 +354,7 @@ function show_fnc_chb($varname, $field, $value, $param, $html) {
 
 function show_fnc_freeze_chb($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field['name'], $value[0]['value'] ? L_SET : L_UNSET );
+  FrmStaticText($field['name'], $value[0]['value'] ? _m("set") : _m("unset") );
 }
 
 function show_fnc_txt($varname, $field, $value, $param, $html){

@@ -154,9 +154,6 @@ function GetDiscussionAliases() {
   $aliases["_#URLREPLY"] = GetAlias("f_h", "d_url_reply.....", _m("Alias for link to a form<br>\n                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"));
   $aliases["_#DISC_URL"] = GetAlias("f_h", "d_disc_url......", _m("Alias for link to discussion<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"));
   $aliases["_#BUTTONS_"] = GetAlias("f_h", "d_buttons.......", _m("Alias for buttons Show all, Show selected, Add new<br>\n                             <i>Usage: </i> in the Bottom HTML code"));
-//  $aliases["_#SHOW_ALL"] = GetAlias("f_h", "d_show_all......", L_D_SHOW_ALL_ALIAS);
-//  $aliases["_#SHOW_SEL"] = GetAlias("f_h", "d_show_sel......", L_D_SHOW_SEL_ALIAS);
-//  $aliases["_#ADD_NEW#"] = GetAlias("f_h", "d_add_new.......", L_D_ADD_NEW_ALIAS);
 
   return $aliases;
 }

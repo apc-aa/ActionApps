@@ -47,7 +47,7 @@ function getHeadline($content4id) {
 
 # check permission to edit discussion - you must be Editor, at least
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ALL_ITEMS, "items");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to edit all items."), "items");
   exit;
 }  
 

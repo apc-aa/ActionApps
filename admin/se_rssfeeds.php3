@@ -133,7 +133,7 @@ function Submit(mode) {
 
 function checkData() {
   if (document.f.rssfeed_name.value=="") {
-     alert('<?php echo L_NODE_RSSFEED_EMPTY; ?>')
+     alert('<?php echo _m("Error: RSS node empty"); ?>')
      return false
   }
 }

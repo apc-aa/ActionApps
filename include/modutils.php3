@@ -129,9 +129,9 @@ function ExitIfCantDelete( $del, $db ) {
   $SQL = "SELECT deleted FROM module WHERE id='$p_del'";
   $db->query($SQL);
   if( !$db->next_record() )
-    go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". L_NO_SUCH_MODULE);
+    go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". _m("No such module."));
   if( $db->f(deleted) < 1 )
-    go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". L_NO_DELETED_MODULE);
+    go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". _m("No module flagged for deletion."));
 }
 
 # delete module from module table

@@ -167,7 +167,7 @@ if( $update )
       }
     } else {  
       if( !$db->query("INSERT INTO view ". $varset->makeINSERT())) {
-        $err["DB"] = MsgErr( L_ERR_CANT_ADD );
+        $err["DB"] = MsgErr( _m("Can't insert into view.") );
         break;   # not necessary - we have set the halt_on_error
       }
     }

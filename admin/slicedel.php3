@@ -31,7 +31,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!IsSuperadmin()) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_DEL_SLICE, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
   exit;
 }
 

@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-$show_needed_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_src=>L_IMG_UPLOAD, redirect=>L_REDIRECT );
+$show_needed_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>_m("Category ID"), img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_src=>L_IMG_UPLOAD, redirect=>L_REDIRECT );
 
 
 if( defined("EXTENDED_ITEM_TABLE") ) {
@@ -29,7 +29,7 @@ if( defined("EXTENDED_ITEM_TABLE") ) {
   $itemedit_fields  = array( headline=>array(L_HEADLINE, "",     "headline........"),
                              post_date=>array(L_POST_DATE, "",   "post_date.......", "dte"),
                              created_by=>array(L_CERATED_BY, "", "posted_by......."),
-                             edited_by=>array(L_EDITED_BY, "",   "edited_by......."),
+                             edited_by=>array(_m("Edited by"), "",   "edited_by......."),
                              last_edit=>array(L_LAST_EDIT, "",   "last_edit.......", "dte"),
                              abstract=>array(L_ABSTRACT, "", "abstract........"),
                              html_formatted=>array(L_HTML_FORMATTED, "", ""),
@@ -43,7 +43,7 @@ if( defined("EXTENDED_ITEM_TABLE") ) {
                              status_code=>array(L_STATUS_CODE, "d_status_code", "status_code....."), 
                              language_code=>array(L_LANGUAGE_CODE, "d_language_code", "lang_code......."), 
                              cp_code=>array(L_CP_CODE, "d_cp_code", "cp_code........."), 
-                             category_id=>array(L_CATEGORY_ID, "d_category_id", "category........"), 
+                             category_id=>array(_m("Category ID"), "d_category_id", "category........"), 
                              img_src=>array(L_IMG_SRC, "d_img_src", "file............"), 
                              img_width=>array(L_IMG_WIDTH, "d_img_width", "img_width......."), 
                              img_height=>array(L_IMG_HEIGHT, "d_img_height", "img_height......"), 
@@ -79,7 +79,7 @@ if( defined("EXTENDED_ITEM_TABLE") ) {
   $itemedit_fields  = array( headline=>array(L_HEADLINE, "",     "headline........"),
                              post_date=>array(L_POST_DATE, "",   "post_date.......", "dte"),
                              created_by=>array(L_CERATED_BY, "", "posted_by......."),
-                             edited_by=>array(L_EDITED_BY, "",   "edited_by......."),
+                             edited_by=>array(_m("Edited by"), "",   "edited_by......."),
                              last_edit=>array(L_LAST_EDIT, "",   "last_edit.......", "dte"),
                              abstract=>array(L_ABSTRACT, "", "abstract........"),
                              html_formatted=>array(L_HTML_FORMATTED, "", ""),
@@ -93,7 +93,7 @@ if( defined("EXTENDED_ITEM_TABLE") ) {
                              status_code=>array(L_STATUS_CODE, "d_status_code", "status_code....."), 
                              language_code=>array(L_LANGUAGE_CODE, "d_language_code", "lang_code......."), 
                              cp_code=>array(L_CP_CODE, "d_cp_code", "cp_code........."), 
-                             category_id=>array(L_CATEGORY_ID, "d_category_id", "category........"), 
+                             category_id=>array(_m("Category ID"), "d_category_id", "category........"), 
                              img_src=>array(L_IMG_SRC, "d_img_src", "file............"), 
                              img_width=>array(L_IMG_WIDTH, "d_img_width", "img_width......."), 
                              img_height=>array(L_IMG_HEIGHT, "d_img_height", "img_height......"), 
@@ -190,6 +190,9 @@ function huhu($txt) {
 
 /*
 $Log$
+Revision 1.3  2003/01/27 13:51:04  jakubadamek
+fixed language constants
+
 Revision 1.2  2003/01/21 07:02:05  mitraearth
 *** empty log message ***
 

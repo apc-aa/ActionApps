@@ -83,12 +83,12 @@ function b_export_date_onchange(vstup)
 	if ((tecka == 2 && rok == "") || (tecka > 2)) { error = 2;}
 	if (error == 1)
 	{
-		alert(<?php echo '"'.L_EXPORT_DATE_ERROR.'"' ?>);
+		alert(<?php echo '"'._m("Date export error").'"' ?>);
 		vstup.focus();
 	}
 	if (error == 2)
 	{
-		alert(<?php echo '"'.L_EXPORT_DATE_TYPE_ERROR.'"' ?>);
+		alert(<?php echo '"'._m("Date export error").'"' ?>);
 		vstup.focus();
 	}
 	document.forms["f"].b_export_spec_date.checked = true;

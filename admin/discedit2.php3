@@ -51,7 +51,7 @@ if ($update) {
     ValidateInput("body", _m("Text of discussion comment"), $body, $err, false, "text");
     ValidateInput("url_address", _m("Authors's WWW  - URL"), $url_address, $err, false, "url");
     ValidateInput("url_description", _m("Authors's WWW - description"), $url_description, $err, false, "text");
-    ValidateInput("remote_addr", L_D_REMOTE_ADDR, $remote_addr, $err, true, "text");
+    ValidateInput("remote_addr", _m("Remote address"), $remote_addr, $err, true, "text");
 
     if (count($err)<=1) {
       $varset->add("subject", "quoted", $subject);
@@ -84,7 +84,7 @@ if ($db->next_record())
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo L_EDITDISC;?></TITLE>
+<TITLE><?php echo _m("Edit discussion");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 function InitPage() {}
 // -->
@@ -111,7 +111,7 @@ function InitPage() {}
   FrmTextArea("body", _m("Text of discussion comment"), $body, 10, 40, false);
   FrmInputText("url_address",_m("Authors's WWW  - URL"), $url_address, 99, 50, false);
   FrmInputText("url_description", _m("Authors's WWW - description"), $url_description, 60, 25, false);
-  FrmInputText("remote_addr",L_D_REMOTE_ADDR, $remote_addr, 60, 25, false);
+  FrmInputText("remote_addr",_m("Remote address"), $remote_addr, 60, 25, false);
 ?>
 </table>
 <tr><td align="center">

@@ -270,12 +270,12 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
     else if ($cmd=='upload') {
         set_time_limit(FILEMAN_UPLOAD_TIME_LIMIT);
         $uploaderr = aa_move_uploaded_file ("uploadarg", $basedir.$directory, $FILEMAN_MODE_FILE);
-        if ($uploaderr) $err[] = L_ERROR.": $uploaderr";
+        if ($uploaderr) $err[] = _m("Error: ").": $uploaderr";
     }
     
     else if ($cmd=='copytmp') {
         $tmperr = fileman_copy_template (FILEMAN_BASE_DIR."templates/".$arg, FILEMAN_BASE_DIR.$fileman_dir);
-        if ($tmperr) $err[] = L_ERROR.": $tmperr";
+        if ($tmperr) $err[] = _m("Error: ").": $tmperr";
     }
 
     // Single file actions:

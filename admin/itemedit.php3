@@ -219,7 +219,7 @@ unset( $content4id );
 
 if($edit) {
   if( !(isset($fields) AND is_array($fields)) ) {
-    $err["DB"] = MsgErr(L_ERR_NO_FIELDS);
+    $err["DB"] = MsgErr(_m("Error: no fields."));
     MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"),
             $err, "standalone");
     exit;
@@ -353,17 +353,6 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
 <tr>
   <td colspan=2>
   <?php
-  if(DEBUG_FLAG && $id) {       //  do not print empty info for new articles
-/*    echo '<I>';
-    echo L_POSTDATE.": ".(sec2userdate(dequote($post_date)));
-    $userinfo = GetUser($created_by);
-    echo  " ".L_CREATED_BY.": ", $userinfo["cn"] ? $userinfo["cn"] : $created_by;
-    echo "<br>";
-    $userinfo = GetUser($edited_by);
-    echo  L_LASTEDIT . " ", $userinfo["cn"] ? $userinfo["cn"] : $edited_by;
-    echo " ".L_AT." ". dequote($last_edit); 
-    echo '</I>'; */
-  }  
   $r_hidden["slice_id"] = $slice_id;
   $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
   # the slice_id is not needed here, but it helps, if someone will try to create

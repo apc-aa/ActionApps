@@ -131,8 +131,8 @@ require $GLOBALS[AA_INC_PATH]."notify.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 require "./move_util.php3";
-
 
 class OLD_DB_AA extends DB_Sql {
   var $Host     = OLD_DB_HOST;
@@ -166,8 +166,8 @@ set_time_limit(160);
 
 do {
   if( !$owner ) {  # insert new owner
-    ValidateInput("new_owner", L_NEW_OWNER, $new_owner, $err, true, "text");
-    ValidateInput("new_owner_email", L_NEW_OWNER_EMAIL, $new_owner_email, $err, true, "email");
+    ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
+    ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 
     if( count($err) > 1)
       break;
@@ -197,13 +197,13 @@ do {
   $deleted = $oldinfo["deleted"];
   $d_expiry_limit = $oldinfo["d_expiry_limit"];
 
-  ValidateInput("name", L_SLICE_NAME, $name, $err, true, "text");
-  ValidateInput("owner", L_OWNER, $owner, $err, false, "id");
-  ValidateInput("slice_url", L_SLICE_URL, $slice_url, $err, false, "url");
-  ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, $err, true, "number");
-  ValidateInput("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post, $err, false, "number");
-  ValidateInput("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill, $err, false, "number");
-  ValidateInput("lang_file", L_LANG_FILE, $lang_file, $err, true, "text");
+  ValidateInput("name", _m("Title"), $name, $err, true, "text");
+  ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
+  ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
+  ValidateInput("d_listlen", _m("Listing length"), $d_listlen, $err, true, "number");
+  ValidateInput("permit_anonymous_post", _m("Allow anonymous posting of items"), $permit_anonymous_post, $err, false, "number");
+  ValidateInput("permit_offline_fill", _m("Allow off-line item filling"), $permit_offline_fill, $err, false, "number");
+  ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
 
   if( count($err) > 1)
     break;
@@ -447,6 +447,9 @@ else
 
 /*
 $Log$
+Revision 1.5  2003/01/27 13:51:04  jakubadamek
+fixed language constants
+
 Revision 1.4  2003/01/21 07:02:05  mitraearth
 *** empty log message ***
 

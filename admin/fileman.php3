@@ -48,7 +48,7 @@ require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 // FilemanPerms() is defined in perm_core.php3, it sets $fileman_dir
 if (!FilemanPerms($auth, $slice_id)) 
-    MsgPageMenu ("index.php3", L_NO_PS_FILEMAN, "admin:fileman");
+    MsgPageMenu ("index.php3", _m("No permissions for file manager."), "admin:fileman");
 
 $basedir = FILEMAN_BASE_DIR.$fileman_dir;
 

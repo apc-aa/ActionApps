@@ -63,7 +63,7 @@ global $db, $sess;
 	
 	if ($b_export_type != _m("Export to Backup")) {
 		if (strlen ($SliceID) != 16) {
-			MsgPage($sess->url(self_base())."index.php3", L_E_EXPORT_TITLE_IDLENGTH.strlen($SliceID), "standalone");
+			MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length: ").strlen($SliceID), "standalone");
 			exit;	
 		}
 		else $uid = unpack_id128($SliceID);
@@ -162,7 +162,7 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 
 		if ($b_export_type != _m("Export to Backup")) {
 			if (strlen ($SliceID) != 16) {
-				MsgPage($sess->url(self_base())."index.php3", L_E_EXPORT_TITLE_IDLENGTH.strlen($SliceID), "standalone");
+				MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length:").strlen($SliceID), "standalone");
 				exit;	
 			}
 			else $SliceIDunpack = unpack_id128($SliceID);
