@@ -1,13 +1,13 @@
 <?php
 //$Id$
-/* 
+/*
 
 *************************************************************************
 file_import --- Extension to APC-AA --- 2001-10-15 Udo SW
 This is a modified filler.php3, see from line 72
 *************************************************************************
 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -38,23 +38,23 @@ http://www.apc.org/
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
-  }  
+  }
   for (reset($val); list($k, $v) = each($val); )
     $ret[$k] = Myaddslashes($v, $n+1);
   return $ret;
-}    
+}
 
-if (!get_magic_quotes_gpc()) { 
-  // Overrides GPC variables 
+if (!get_magic_quotes_gpc()) {
+  // Overrides GPC variables
   if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
+      $$k = Myaddslashes($v);
 }
 
 require_once "../../include/config.php3";
@@ -74,19 +74,19 @@ function SendErrorPage($txt) {
   HtmlPageBegin("");
   echo "</head><body>";
   if( isset( $txt ) AND is_array( $txt ) )
-    PrintArray($txt);    
-   else 
+    PrintArray($txt);
+   else
     echo $txt;
   echo "</body></html>";
   exit;
-}  
+}
 
 function SendOkPage($txt) {
   if( $GLOBALS["ok_url"] )
     go_url($GLOBALS["ok_url"]);
   go_url($GLOBALS[HTTP_REFERER]);
   exit;
-}  
+}
 
 //****************************************************************************
 
@@ -98,62 +98,62 @@ while (list ($line_num, $line) = each ($import)) {
   // get rid of the CR-LF
   $line = str_replace("\r", "", $line);
   $line = str_replace("\n", "", $line);
-	
+
 	$aline = explode("\t", $line);
 	if ($line_num == 0) {
 // human readable field names in first line
     $afield = $aline;
   } else {
-	  for ($i=0;$i<count($aline);$i++) {	
+	  for ($i=0;$i<count($aline);$i++) {
 // assign content to associative array of apc-aa field names
 		  ${$afield[$i]} = addslashes($aline[$i]);
       ${$field[$afield[$i]]} = addslashes($aline[$i]);
     }
-    echo $line_num.": ".${$field["url"]}."<br>"; 
-//****************************************************************************	
+    echo $line_num.": ".${$field["url"]}."<br>";
+//****************************************************************************
 
-  
+
     if( !$slice_id )
       SendErrorPage(L_NO_SLICE_ID);
-    
+
     $error = "";
     $ok = "";
-    
+
     $p_slice_id = q_pack_id($slice_id);
     $slice_info = GetSliceInfo($slice_id);
-    
+
     if( !$slice_info )
       SendErrorPage(L_NO_SUCH_SLICE);
-    
-    $bin2fill = $slice_info["permit_anonymous_post"]; 
+
+    $bin2fill = $slice_info["permit_anonymous_post"];
     if( $bin2fill < 1 )
         SendErrorPage(L_ANONYMOUS_POST_ADMITED);
 
     $id = new_id();
-    ValidateContent4Id (&$err, $slice_id, "insert", 0, ! $notvalidate);
-    
+    ValidateContent4Id ($err, $slice_id, "insert", 0, ! $notvalidate);
+
     if( count($err)>1 )
       SendErrorPage( $err );
-    
+
     if( !(isset($prifields) AND is_array($prifields)) )
       SendErrorPage(L_NO_FIELDS);
-    
+
       # prepare content4id array before call StoreItem function
     $content4id = GetContentFromForm( $fields, $prifields );
-    
+
       # put an item to the right bin
     $content4id["status_code....."][0][value] = ($bin2fill==1 ? 1 : 2);
-    
+
     # update database
-    $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, true, 
+    $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, true,
                               true, true );     # insert, invalidatecache, feed
-    
+
     if( count($err) > 1)
-      SendErrorPage( $err );    
+      SendErrorPage( $err );
   }
   // end while
-  
-  
+
+
 }
 // end of a single import item
 
