@@ -63,11 +63,6 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'show_templates' => 1,
                    				'directory' => $AA_INSTAL_PATH ."modules/polls/",
                                 'menu' => $AA_BASE_PATH ."modules/polls/menu.php3"));
-/*$MODULES ['Auth'] = array ('table' => 'module',
-                           'name' => 'Auth',
-                           'directory' => $AA_INSTAL_PATH ."modules/auth/",
-                           'menu' => $AA_BASE_PATH ."modules/auth/menu.php3",
-                           'letter' => 'M');*/
 $MODULES['Alerts'] = array ('table' => 'module',
                             'name' => 'Alerts',
                             'directory' => $AA_INSTAL_PATH ."modules/alerts/",
@@ -135,6 +130,13 @@ define("DEFAULT_EVEN_ODD_DIFFER", false);
 define("DEFAULT_CATEGORY_SORT", true);
 define("DEFAULT_COMPACT_REMOVE", "()");
 define("DEFAULT_FULLTEXT_REMOVE", "()");
+
+define("ANONYMOUS_EDIT_NOT_ALLOWED", 0);
+define("ANONYMOUS_EDIT_ALL", 1);
+define("ANONYMOUS_EDIT_ONLY_ANONYMOUS", 2);
+define("ANONYMOUS_EDIT_NOT_EDITED_IN_AA", 3);
+define("ANONYMOUS_EDIT_PASSWORD", 4);
+define("ANONYMOUS_EDIT_HTTP_AUTH", 5);
                                                    
 # MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and
 # specifies how many items from the begining we have to search

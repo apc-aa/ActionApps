@@ -70,6 +70,7 @@ if( $add || $update ) {
         ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
         ValidateInput("d_listlen", _m("Listing length"), $d_listlen, $err, true, "number");
         ValidateInput("permit_anonymous_post", _m("Allow anonymous posting of items"), $permit_anonymous_post, $err, false, "number");
+        ValidateInput("permit_anonymous_edit", _m("Allow anonymous editing of items"), $permit_anonymous_edit, $err, false, "number");
         ValidateInput("permit_offline_fill", _m("Allow off-line item filling"), $permit_offline_fill, $err, false, "number");
         ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
         ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
@@ -107,6 +108,7 @@ if( $add || $update ) {
           if( $superadmin ) 
             $varset->add("template", "number", $template);
           $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
+          $varset->add("permit_anonymous_edit", "number", $permit_anonymous_edit);
           $varset->add("permit_offline_fill", "number", $permit_offline_fill);
           $varset->add("fileman_access", "text", $fileman_access);
           $varset->add("fileman_dir", "text", $fileman_dir);
@@ -163,6 +165,7 @@ if( $add || $update ) {
           $varset->set("d_listlen", $d_listlen, "number");
           $varset->set("template", $template, "number");
           $varset->set("permit_anonymous_post", $permit_anonymous_post, "number");
+          $varset->set("permit_anonymous_edit", $permit_anonymous_edit, "number");
           $varset->set("permit_offline_fill", $permit_offline_fill, "number");
           $varset->set("fileman_access", $fileman_access, "text");
           $varset->set("fileman_dir", $fileman_dir, "quoted");

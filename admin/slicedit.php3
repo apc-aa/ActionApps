@@ -29,6 +29,19 @@ require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 
+$PERMS_STATE = array( "0" => _m("Not allowed"),
+                      "1" => _m("Active"),
+                      "2" => _m("Hold bin") );
+
+$PERMS_ANONYMOUS_EDIT = array( 
+    ANONYMOUS_EDIT_NOT_ALLOWED => _m("Not allowed"),
+    ANONYMOUS_EDIT_ALL => _m("All items"),
+    ANONYMOUS_EDIT_ONLY_ANONYMOUS => _m("Only items posted anonymously"),
+    ANONYMOUS_EDIT_NOT_EDITED_IN_AA => _m("-\"- and not edited in AA"),
+    ANONYMOUS_EDIT_PASSWORD => _m("Authorized by a password field"),
+    ANONYMOUS_EDIT_HTTP_AUTH => _m("Readers, authorized by HTTP auth"),
+    );
+                               
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
@@ -74,9 +87,6 @@ $db->query($SQL);
 while ($db->next_record()) {
   $slice_owners[unpack_id128($db->f(id))] = $db->f(name);
 }
-$PERMS_STATE = array( "0" => _m("Not allowed"),
-                      "1" => _m("Active"),
-                      "2" => _m("Hold bin") );
 
 reset ($LANGUAGE_NAMES);
 while (list ($l, $langname) = each ($LANGUAGE_NAMES)) 
@@ -121,8 +131,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     FrmInputChBox("template", _m("Template"), $template);
     FrmInputChBox("deleted", _m("Deleted"), $deleted);
   }  
-  FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), $PERMS_STATE, $permit_anonymous_post, false);
-  FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"), $PERMS_STATE, $permit_offline_fill, false);
+  FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), 
+      $PERMS_STATE, $permit_anonymous_post, false);
+  FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), 
+      $PERMS_ANONYMOUS_EDIT, $permit_anonymous_edit, false, "", "../doc/anonym.html");
+  FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"), 
+      $PERMS_STATE, $permit_offline_fill, false);
   FrmInputSelect("lang_file", _m("Language"), $biglangs, $lang_file, false);
   if ($superadmin) {
       FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $fileman_access, false);
@@ -131,9 +145,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     
     // Reader Management specific settings (Jakub, 7.2.2003)
   
-    $db->query("SELECT type FROM slice WHERE id='".q_pack_id($slice_id)."'");
-    $db->next_record();
-    $slicetype = $db->f("type");
+    $slice_info = GetSliceInfo ($slice_id);
+    $slicetype = $slice_info["type"];
     if ($slicetype == 'ReaderManagement') {
         $db->query ("SELECT id, name FROM field WHERE slice_id='"
             .q_pack_id($slice_id)."' ORDER BY input_pri");

@@ -87,6 +87,7 @@ else if ($update) $action = "update";
 else $action = "edit";
 
 ValidateContent4Id ($err, $slice_id, $action, $id);
+$slice_info = GetSliceInfo ($slice_id);
 
   # update database
 if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
@@ -94,8 +95,8 @@ if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
   # prepare content4id array before call StoreItem function
   $content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
 
-  # remove the ANONYMOUS_EDITABLE flag
-  if ($content4id["flags..........."][0]['value'] & ITEM_FLAG_ANONYMOUS_EDITABLE)
+  if ($slice_info["permit_anonymous_edit"] == ANONYMOUS_EDIT_NOT_EDITED_IN_AA
+   && ($content4id["flags..........."][0]['value'] & ITEM_FLAG_ANONYMOUS_EDITABLE))
     $content4id["flags..........."][0]['value'] -= ITEM_FLAG_ANONYMOUS_EDITABLE;
 
   if( $insert )
