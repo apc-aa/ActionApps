@@ -791,15 +791,8 @@ function HtmlPageBegin() {
 # Displays page with message and link to $url
 #   url - where to go if user clicks on Back link on this message page
 #   msg - displayed message
-#   mode - items/admin/standalone for surrounding of message
-function MsgPage($url, $msg, $mode="standalone", $menu="") {
-  global $sess, $auth, $slice_id, $aamenus;
-
-  if( !isset($sess) AND ($mode!="standalone")) {
-    require $GLOBALS[AA_INC_PATH] . "locauth.php3";
-    page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
-  }
-    
+#   dummy - was used in past, now you should use MsgPageMenu from msgpage.php3 
+function MsgPage($url, $msg, $dummy="standalone") {   
   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
   ?>
   <title><?php echo L_MSG_PAGE ?></title>  
@@ -807,16 +800,6 @@ function MsgPage($url, $msg, $mode="standalone", $menu="") {
   <body>
 
   <?php
-
-  switch( $mode ) {
-    case "items":    // Message page on main page (index.php3) or such page
-    case "sliceadmin":
-      showMenu ($aamenus, "sliceadmin", $menu);
-      break;
-    case "admin":    // Message page on admin pages (se_*.php3) or such page
-      showMenu ($aamenus, "aaadmin", $menu);
-      break;
-  }    
 
   if( isset($msg) AND is_array($msg))
     PrintArray($msg);
@@ -934,7 +917,7 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $
         echo "<br>";
     }
 
-    global $db;
+    $db = new DB_AA;
     $varset = new CVarset();
 
     $columns = $db->metadata ($table);
@@ -975,6 +958,15 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $
 			return false;
     }
 	return true;
+}
+
+// -----------------------------------------------------------------------------
+
+function get_last_insert_id ($db, $table)
+{
+    $db->tquery ("SELECT LAST_INSERT_ID() AS lid FROM $table");
+    $db->next_record();
+    return $db->f("lid");
 }
 
 /* returns the suffix part of the filename (beginning with the last dot (.) in the filename) */
