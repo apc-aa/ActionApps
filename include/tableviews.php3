@@ -396,6 +396,62 @@ function GetTableView ($viewID) {
             misc/alerts/admin_mails.php3.<br>
             For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."));
     }        
+    
+    /* ------------------------------------------------------------------------------------
+       polls_designs
+    */
+    if ($viewID == "polls_designs") {
+        return  array (
+        "table" => "polls_designs",
+        "type" => "browse",
+        "mainmenu" => "modadmin",
+        "submenu" => "design",
+        "readonly" => true,
+        "addrecord" => false,
+        "where" => "(pollsModuleID='". q_pack_id($slice_id)."')",
+        "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_POLLS_EDIT_DESIGN),
+        "title" => _m ("Polls Design"),
+        "caption" => _m("Polls Design"),
+        "attrs" => $attrs_browse,
+        "gotoview" => "polls_designs_edit",
+        "fields" => array (
+            "designID" => array ("caption" => _m("Id")),
+            "name"     => array ("caption" => _m("Name")),
+            "comment"  => array ("caption" => _m("Comment"))
+        ));
+    }
+
+    if ($viewID == "polls_designs_edit") {
+        $retval = GetTableView ("polls_designs");
+        $retval["type"] = "edit";
+        $retval["attrs"] = $attrs_edit;
+        $retval["readonly"] = false;
+        $retval["gotoview"] = "polls_designs";
+        $retval["addrecord"] = false;
+        $retval["fields"] = array (
+            "designID"        => array ("caption" => _m("Id"),
+                                        "view" => array( "type"=>"text",
+                                                         "readonly" => true )),
+            "name"            => array ("caption" => _m("Name"),
+                                        "view" => array( "type"=>"text" ),
+                                        "required" => true ),
+            "comment"         => array ("caption" => _m("Comment"),
+                                        "view" => array( "type"=>"text" ),
+                                         "hint" => _m("design description (for administrators only)")),
+            "resultBarFile"   => array ("caption" => _m("Bar image"),
+                                        "view" => array( "type"=>"text" ),
+                                        "hint" => _m("url of image for bar")),
+            "resultBarWidth"  => array ("caption" => _m("Bar width"),
+                                        "hint" => _m("width of poll bar")),
+            "resultBarHeight" => array ("caption" => _m("Bar height"),
+                                        "hint" => _m("height of poll bar")),
+            "top"             => array ("caption" => _m("Top HTML")),
+            "answer"          => array ("caption" => _m("Answer HTML")),
+            "bottom"          => array ("caption" => _m("Bottom HTML")),
+            "params"          => array ("caption" => _m("Params"))
+            );
+        return $retval;
+    }
 } // end of GetTableView
             
 // ----------------------------------------------------------------------------------        
