@@ -225,7 +225,7 @@ function GetView($view_param) {
                             ($listlen ? $listlen : $view_info['listlen']) );
       return $constantview->get_output_cached();
   
-    case 'discus':
+    case 'discus': // TODO, use special parametres to slice.php3 instead of this
     case 'seetoo':
   
     case 'digest':
@@ -684,6 +684,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.22  2002/01/04 13:15:49  honzam
+new hide fulltext parameter for slice (good for discussion)
+
 Revision 1.21  2001/12/12 18:43:22  honzam
 Added possibility to quote queries in c- command
 

@@ -65,6 +65,7 @@ http://www.apc.org/
 #optionaly sel_ids    // if set, show only discussion comments in $ids[] array
 #optionaly ids[]      // array of discussion comments to show in fulltext mode (ids['x'.$id])
 #optionaly all_ids    // if set, show all discussion comments
+#optionally hideFulltext // if set, don't show fulltext part
 
 # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
@@ -304,7 +305,8 @@ if( $sh_itm OR $x ) {
     $sh_itm = LogItem($x,"short_id");
     
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
-  $itemview->print_item();
+  if (!isset ($hideFulltext))
+    $itemview->print_item();
 
   // show discussion if assigned
   if( $slice_info[vid] > 0 ) {
@@ -534,6 +536,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.32  2002/01/04 13:15:49  honzam
+new hide fulltext parameter for slice (good for discussion)
+
 Revision 1.31  2001/12/26 22:11:37  honzam
 Customizable 'No item found' message. Added missing language constants.
 

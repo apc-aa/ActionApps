@@ -313,71 +313,14 @@ echo "</form>
 
 /*
 $Log$
+Revision 1.3  2002/01/04 13:16:43  honzam
+new hide fulltext parameter for slice (good for discussion)
+
 Revision 1.2  2001/12/26 22:11:38  honzam
 Customizable 'No item found' message. Added missing language constants.
 
 Revision 1.1  2001/12/18 12:12:27  honzam
 new user profile feature
-
-Revision 1.16  2001/10/24 18:44:11  honzam
-new parameter wizard for function aliases and input type parameters
-
-Revision 1.15  2001/09/27 16:07:39  honzam
-New related stories support, New constant view
-
-Revision 1.14  2001/08/03 10:09:30  honzam
-if no time in expiry date is specified, the end of day is stored
-
-Revision 1.13  2001/06/21 14:15:45  honzam
-feeding improved - field value redefine possibility in se_mapping.php3
-
-Revision 1.12  2001/06/12 16:00:54  honzam
-date inputs support time, now
-new multivalue input possibility - <select multiple>
-
-Revision 1.11  2001/06/03 15:57:45  honzam
-multiple categories (multiple values at all) for item now works
-
-Revision 1.10  2001/05/21 13:52:31  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.9  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.8  2001/04/09 20:43:28  honzam
-fixed bug of not stored parameter for field input type in se_inputform.php3
-
-Revision 1.6  2001/03/20 15:27:03  honzam
-Changes due to "slice delete" feature
-
-Revision 1.5  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.4  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
-
-Revision 1.2  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.1.1.1  2000/06/21 18:39:59  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:49  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.12  2000/06/12 19:58:24  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.11  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.10  2000/04/24 16:45:02  honzama
-New usermanagement interface.
-
-Revision 1.9  2000/03/22 09:36:43  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
 */
 
 page_close()?>
