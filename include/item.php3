@@ -646,7 +646,8 @@ class item {
       if (! $p[1] ) 
         $redirect = strtr(AA_INSTAL_URL, ':', '#:') . 
                                   "slice.php3?slice_id=$slice_id&encap=false";
-      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
+//      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
+      return $this->RSS_restrict(strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/'),500) ;
     }
 
     if ( $foo = $this->getval($col))
