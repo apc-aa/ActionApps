@@ -18,8 +18,11 @@
 # Example:
 # $AA_BASE_PATH = "/home/httpd/html/aa/";
 # AA_BASE_DIR is only used in this file so that a single change is required for multiple AA versions
+$AA_SITE_PATH = "/home/httpd/html/";
 $AA_BASE_DIR = "apc-aa/";
-$AA_BASE_PATH = "/home/httpd/html/".$AA_BASE_DIR;
+$AA_BASE_PATH = $AA_SITE_PATH.$AA_BASE_DIR;
+
+$AA_HTTP_DOMAIN = "http://my.domain.org/";
 
 $AA_INC_PATH = $AA_BASE_PATH."include/";        # do not change
 
@@ -33,7 +36,7 @@ $AA_INSTAL_PATH = "/".$AA_BASE_DIR;
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
-define("AA_INSTAL_URL", "http://my.domain.org/".$AA_BASE_DIR);
+define("AA_INSTAL_URL", $AA_HTTP_DOMAIN .$AA_BASE_DIR);
 
 # URL or URL path to call admin/edititem.php etc.
 # this is the variable to make _#EDITITEM alias, etc.
@@ -131,8 +134,8 @@ define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
 
 # settings for file uploads
 define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
-define("IMG_UPLOAD_URL", "http://aa.ecn.cz/img_upload/");
-define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/img_upload/");
+define("IMG_UPLOAD_URL", $AA_HTTP_DOMAIN."img_upload/");
+define("IMG_UPLOAD_PATH", $AA_SITE_PATH."img_upload/");
 define("IMG_UPLOAD_TYPE", "image/*");
 define("IMG_UPLOAD_DIR_MODE", 508);    # mkdir perms (508 = 0774 in octal, but
                                        # octal value in constant don't work)
@@ -262,9 +265,9 @@ $FILEMAN_MODE_DIR = 0770;
 # create file perms
 $FILEMAN_MODE_FILE = 0664;
 # in this directory individual slice directories and directory "templates" are created
-define("FILEMAN_BASE_DIR","/www/apc-aa/wizard/"); 
+define("FILEMAN_BASE_DIR",$AA_SITE_PATH."apc-aa-files/");
 # URL path to the base directory
-define("FILEMAN_BASE_URL","http://work.ecn.cz/apc-aa/wizard/"); 
+define("FILEMAN_BASE_URL",$AA_HTTP_DOMAIN."apc-aa-files/");
 # time in seconds to allow to upload big files
 define("FILEMAN_UPLOAD_TIME_LIMIT",600);
 
