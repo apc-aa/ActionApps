@@ -131,6 +131,24 @@ function GetAliases4Type( $type, $additional="" ) {
     return($aliases);
 }
 
+
+/** Adds new $alias to $aliases array and creates fake field for it
+ *  (to $content4id array). The vaule for the field is set to $value (and $flag)
+ */
+function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML) {
+    // you can specify multiple value ($value is array then)
+    if( !is_array($value) ) {   $value = array($value);  }
+
+    do {
+        $colname = CreateFieldId( strtolower( substr( $alias,2,12 )));
+    } while ( isset($content4id[$colname]) );
+
+    foreach( $value as $v ) {
+        $content4id[$colname][] = array ("value" => $v, "flag" => $flag);
+    }
+    $aliases[$alias] = GetAliasDef("f_h", $colname, _m("Alias for %1",array($colname)));
+}
+
 # helper function for f_e
 # this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
 # added by setu@gwtech.org 2002-0211
@@ -207,7 +225,7 @@ class item {
   var $aliases;        // array of usable aliases
   var $parameters;     // optional additional parameters - copied from itemview->parameters
 
-  function item($ic, $cols, $ali, $c, $ff, $gl, $fr="", $top="", $bottom="", $param=false){   #constructor
+  function item($ic, $cols, $ali, $c='', $ff='', $gl='', $fr="", $top="", $bottom="", $param=false){   #constructor
     $this->item_content = $ic;
     $this->columns      = $cols;
     $this->aliases      = $ali;

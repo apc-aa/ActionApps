@@ -290,6 +290,7 @@ function updateDiscussionCount($item_id) {
 
 // -----------------------------------------------------------------------------------------
 
+/** used just for help display in admin/se_view.php3 */
 function GetDiscussion2MailAliases() {
   $aliases["_#ITEMPAR3"] = GetAlias("", "", _m("3rd parameter filled in DiscussionMailList field"));
   for ($i = 4; $i < 10; $i ++)
@@ -317,10 +318,34 @@ function send2mailList ($d_item_id, $new_id) {
         $item_params = split_escaped (":", $db->f("text"), "#:");
         list ($vid, $maillist) = $item_params;
 
+        // get discussion item content
+        $columns = GetDiscussionContentSQL (
+            "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
+            $d_item_id, "", $vid, true, $html, "");
+        $columns = reset($columns);  // get first element
+
+        // get aliases
+        $aliases = GetDiscussionAliases();
+        for ($i=2; $i < count($item_params); $i++) {
+            FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
+        }
+
+        $CurItem = new item("", $columns, $aliases, "", "", "");
+
+        // newer version based on email templates
+        if ( $vid{0} == 't' ) {   // email template
+            $mail_id = substr($vid,1);
+            send_mail_from_table_inner ($mail_id, $maillist, $CurItem);
+            return;
+        }
+
         $db->query("SELECT * FROM view WHERE id=$vid");
         if ($db->next_record()) {
             $view_info = $db->Record;
 
+            $html = $view_info[flag] & DISCUS_HTML_FORMAT;
+
+            // older and deprecated version with discussion view
             $mail_parts = array (
                 "from" => "aditional",
                 "reply_to" => "aditional2",
@@ -329,22 +354,13 @@ function send2mailList ($d_item_id, $new_id) {
                 "subject" => "aditional5",
                 "body" => "even");
 
-            $html = $view_info[flag] & DISCUS_HTML_FORMAT;
-            $aliases = GetDiscussionAliases();
-            $columns = GetDiscussionContentSQL (
-                "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
-                $d_item_id, "", $vid, true, $html, "");
-            reset ($columns);
-            list (,$columns) = each ($columns);
-            $CurItem = new item("", $columns, $aliases, "", "", "");
-
             reset ($mail_parts);
             $mail = "";
             while (list ($part, $field) = each ($mail_parts)) {
                 $s = $view_info [$field];
                 for ($i=2; $i < 9; $i ++)
                     $s = str_replace ("_#ITEMPAR".($i+1), $item_params [$i], $s);
-                $CurItem->setformat ($s);
+                    $CurItem->setformat ($s);
                 $mail [$part] = $CurItem->get_item();
             }
 
