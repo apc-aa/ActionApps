@@ -37,7 +37,6 @@ require_once $GLOBALS["AA_INC_PATH"] . "actions.php3";
 
 FetchSliceReadingPassword();
 
-// new manager class approach ------------------------------------------------
 /** Function corresponding with 'actions' (see below) - returns true if user
  *  has the permission for the action. (The function must be called right
  *  before we perform/display action in order we have all variables set (r_state)
@@ -66,6 +65,7 @@ function IsActionPerm($action) {
                                     ($current_bin != 'trash');
         case 'Feed':        return  ($GLOBALS['r_state']['feed_selected'] != "0");
         case 'Preview':     return  ($GLOBALS['r_state']['view_selected'] != "0");
+        case 'FillField':   return  IfSlPerm(PS_EDIT_ALL_ITEMS);
         case 'Email':       return  ($slice->type() == 'ReaderManagement');
         //--  switches      ------
         case 'DeleteTrash': return  IfSlPerm(PS_DELETE_ITEMS);
@@ -174,22 +174,20 @@ $manager_settings = array(
                                 'open_url'   => con_url($slice->getfield('slice_url'),'rXn=1'), // rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
                                 'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
                                ),
-         'Email'       => array('function'   => 'Item_Email',
-                                'name'       => _m('Send email'),
-                                'open_url'   => $sess->url("write_mail.php3"),
+         'FillField'   => array('name'       => _m('Modify content'),
+                                'open_url'   => $sess->url("search_replace.php3"),
                                 'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
                                ),
+         'Email'       => array('name'       => _m('Send email'),
+                                'open_url'   => $sess->url("write_mail.php3"),
+                                'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
+                               )
                          ),
      'switches'  => array(
          'DeleteTrash' => array('function'   => 'Item_DeleteTrash'),
          'Delete'      => array('function'   => 'Item_DeleteTrash'),
          'Tab'         => array('function'   => 'Item_Tab'),
          'GoBookmark'  => array('function'   => 'Item_GoBookmark')
-//         'SendEmail'   => array('function'   => 'Item_SendEmail',
-//                               'name'       => _m('Send email'),
-//                                'open_url'   => $sess->url("write_mail.php3"),
-//                                'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
-//                               )
                          ),
      'messages'  => array(
          'title'       => ($slice->type() == 'ReaderManagement') ?

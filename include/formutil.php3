@@ -145,11 +145,16 @@ class inputform {
         // get the default form and FILL CONTENTCACHE with fields
         $form = $this->getForm($content4id, $fields, $prifields, $edit);
 
+        // design of form could be customized by view
         if ( $this->template AND ($view_info = GetViewInfo($this->template))) {
+            // we can use different forms for 'EDIT' and 'ADD' item => (even/odd)
             $form =   ($edit AND $view_info['even_odd_differ']) ?
                                 $view_info['even'] : $view_info['odd'];
             $remove_string =    $view_info['remove_string'];
         }
+
+//        debug( $form, $GLOBALS['contentcache']);
+
         // print the inputform
         $CurItem = new item($content4id, GetAliasesFromFields($fields), '', $form, $remove_string);   # just prepare
         echo $CurItem->get_item();
@@ -192,8 +197,8 @@ class inputform {
         }
 
         foreach($prifields as $pri_field_id) {
-            $f = $fields[$pri_field_id];
-            $varname = 'v'. unpack_id($pri_field_id);
+            $f           = $fields[$pri_field_id];
+            $varname     = 'v'. unpack_id($pri_field_id);
             $htmlvarname = $varname."html";
 
             if ( (is_array($show)  AND !$show [$f['id']]) OR
@@ -219,8 +224,8 @@ class inputform {
                 # first get values from profile, if there are some predefined value
                 $foo = $profile->getProperty('predefine',$f['id']);
                 if( $foo AND !$GLOBALS[$varname]) {
-                    $x = $profile->parseContentProperty($foo);
-                    $GLOBALS[$varname] = $x[0];
+                    $x                     = $profile->parseContentProperty($foo);
+                    $GLOBALS[$varname]     = $x[0];
                     $GLOBALS[$htmlvarname] = $x[1];
                 }
 
@@ -598,8 +603,8 @@ class aainputfield {
             $htmlvar     = $this->varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
             $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" )."</input>";
+//        debug($this->varname, $this->html_flag, !$this->html_flag,$radio_html, $radio_plain );
             $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$this->varname."', '".$sess->id."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
-
             // conversions menu
             if( $convert AND ($convertor = $this->get_convertors())) {
                 $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="'. COLOR_TABBG ."\">\n   <tr><td>");
@@ -1805,6 +1810,124 @@ function GetHtmlTable( $content ) {
     return  $ret . '</table>';
 }
 
+
+/** returns one row with one radiobutton - asociated to bookmark (stored search)
+ *  or item list
+ *  $name  - dislpayed name of this option
+ *  $value - value for this option
+ *  $list_type - items preview type ('items' | 'users') @see usershow.php3
+ *  $safe - escape html entities in name?
+ */
+function getRadioBookmarkRow( $name, $value, $list_type, $list_text, $safe=true, $bookmark_id=null) {
+    global $slice_id, $items;
+
+    static $checked = ' checked';  // mark first option when no $group selected
+
+    if ( isset( $GLOBALS['group'] ) ) {
+        $checked = (((string)$GLOBALS['group'] == (string)$value) ? ' checked' : '');
+    }
+
+    if ( $safe ) $name = safe($name);
+    $out .= "
+    <tr>
+      <td align=center><input type=\"radio\" name=\"group\" value=\"$value\" $checked></td>";
+
+    $out .= ((string)$value == (string)"testuser") ? "<td colspan=6>" : "<td>";
+
+    $out .= "$name</td>";
+    // get data about bookmark (who created, last used, ...)
+    if (!is_null($bookmark_id)) {
+        $event    = getLogEvents("BM_%", "",   "", false, false, $bookmark_id);
+        $lastused = getLogEvents("EMAIL_SENT", "", "",    false, false, (string)$value);
+        if (is_array($event)) {
+            foreach ($event as $evkey => $evval) {
+                if ($evval["type"] == "BM_CREATE") {
+                    $created = $evval["time"];
+                    $createdby = $evval["user"];
+                }
+            }
+            rsort($event);
+            $last_edited = $event[key($event)]["time"];
+            $out .= "<td>". perm_username($createdby) . "</td><td>". date("j.n.Y G:i:s",$created). "</td>";
+            $out .= "<td>". date("j.n.Y G:i:s",$last_edited). "</td>";
+            if (is_array($lastused)) {
+                rsort($lastused);
+                $last_used = $lastused[key($lastused)]["time"];
+                $out .= "<td>". date("j.n.Y G:i:s",$last_used). "</td>";
+            } else {
+                $out .= "<td>". _m('Not used, yet'). "</td>";
+            }
+        } else {
+            $out .= "<td colspan=4></td>";
+        }
+    }
+    $out .= "<td>";
+    if ((string)$value != (string)"testuser") {
+        $grp = $value;
+        $js = "OpenUsershowPopup('".get_admin_url("usershow.php3")."&sid=$slice_id&group=$grp&type=$list_type')";
+        $out .= "<a href=\"javascript:$js;\">$list_text</a>";
+    }
+    $out .=  "</td>
+    </tr>";
+    $checked = '';  // static variable
+    return $out;
+}
+
+/** Allows select items group (used for bulk e-mails as well as for Find&Replace)
+ *   list_type - items preview type ('items' | 'users') @see usershow.php3
+ *   messages['view_items']     = _m("View Recipients")
+ *   messages['selected_items'] = _m('Selected users')
+ *   additional[] = array( 'text' => 'Test', 'varname'=>'testuser');
+ */
+function FrmItemGroupSelect( &$items, &$searchbar, $list_type, $messages, $additional) {
+    if ( isset($items) AND is_array($items) ) {
+        $out .= getRadioBookmarkRow( $messages['selected_items'].' ('.count($items).')', 'sel_item', $list_type, $messages['view_items']);
+    } elseif ( isset($searchbar) AND is_object($searchbar) ) {
+        $book_arr = $searchbar->getBookmarkNames();
+        if ( isset($book_arr) AND is_array($book_arr) ) {
+            $out .= "<tr><td></td><td><b>"._m("Group Name")."</b></td><td><b>". _m("Created by"). "</td><td><b>"
+                    ._m("Created on"). "</b></td><td><b>". _m("Last updated") ."</b></td><td><b>"._m("Last used"). "</b></td></tr>";
+            foreach ( $book_arr as $k => $v ) {
+                $bookparams = $searchbar->getBookmarkParams($k);
+                $out .= getRadioBookmarkRow( $v, $k, $list_type, $messages['view_items'], true, is_array($bookparams) ? $bookparams['id'] : null);
+            }
+        }
+    }
+    // aditional group (test one, for examle)
+    if ( isset($additional) AND is_array($additional) ) {
+        foreach ( $additional as $row ) {
+            $out .= getRadioBookmarkRow( $row['text'], $row['varname'], $list_type, $messages['view_items'], false);
+        }
+    }
+    echo $out;
+}
+
+/** Returns zids according to user selection of FrmItemGroupSelect */
+function getZidsFromGroupSelect($group, &$items, &$searchbar) {
+    global $slice_id;
+    if ( $group == 'sel_item' ) {  // user specified users
+        $zids = new zids(null, 'l');
+        $zids->set_from_item_arr($items);
+    } else {                   // user defined by bookmark
+        $slice = new slice($slice_id);
+        $searchbar->setFromBookmark($group);
+        $conds = $searchbar->getConds();
+        $zids=QueryZIDs($slice->fields('record'), $slice_id, $conds, "", "", 'ACTIVE');
+    }
+    return $zids;
+}
+
+/** Lists selected items to special form - used by manager.js to show items */
+function FrmItemListForm(&$items) {
+    $out = '<form name="itform" method="post">';
+    if (is_array($items)) {
+        foreach ($items as $key=>$it) {
+            $out .= '<input type="hidden" name="items['.$key.']" value="">';
+        }
+    }
+    $out .= "\n  </form>";
+    echo $out;
+}
 
 # Prints alias names as help for fulltext and compact format page
 function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $sess='', $slice_id='') {

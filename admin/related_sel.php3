@@ -72,25 +72,21 @@ for( $i=0; $i<strlen($mode); $i++) {
     $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#JS_HEAD_')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
 }
 
-$format = $slice->get_format_strings();
 $aliases = $slice->aliases();
+// special alias - will be automaticaly added as last column in manager view
+$aliases["_#AA_ACTIO"] = GetAliasDef( "f_t:$mode_string", "id..............");
 
-// if it is not 'Admin design', we need just following aliases
-if ( !isset($aliases["_#ITEM_ID_"]) ) $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............");
-if ( !isset($aliases["_#SITEM_ID"]) ) $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........");
-if ( !isset($aliases["_#HEADLINE"]) ) $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($module_id));
-if ( !isset($aliases["_#JS_HEAD_"]) ) $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($module_id));
-
-if ( !$design ) {
-    $format["odd_row_format"] = '<tr><td class="tabtxt">_#PUB_DATE&nbsp;</td><td class="tabtxt">_#HEADLINE</td><td class="tabtxt">'.$mode_string.'</td></tr>';
-    $format["even_row_format"] = '<tr><td class="tabtxteven">_#PUB_DATE&nbsp;</td><td class="tabtxteven">_#HEADLINE</td><td class="tabtxteven">'.$mode_string.'</td></tr>';
-    $format["even_odd_differ"] = 1;
-    $format["compact_top"] = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
-    <tr><td class="tabtitlight">'._m("Publish date").'</td><td class="tabtitlight">'._m("Headline").'</td><td class="tabtitlight">'._m("Actions").'</td></tr>';
+if ( $design ) {
+    $format  = $slice->get_format_strings();
+    // replace the checkbox with "action selection links"
+    // (we changed aliases _#ITEM_ID# to _#ITEM_ID_ so for backward
+    //  compatibility we need to replace both)
+    $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID_]" value="1">', $mode_string, $format['odd_row_format']);
+    $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">', $mode_string, $format['odd_row_format']);
 } else {
-    $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">',
-                                                  $mode_string, $format['odd_row_format']);
+    $format = null;   //default manager format will be used (and _#AA_ACTIO alias expanded)
 }
+
 if (isset($showcondsro)) {
     if (isset($conds)) { unset($conds); }
     $showcondsro = stripslashes(rawurldecode($showcondsro));
@@ -200,6 +196,7 @@ $r_state['related']['manager'] = $manager->getState();
 
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
 <tr><td align=center><input type=button value='". _m("Back") ."' onclick='window.close()'></td></tr></table>";
+
 HtmlPageEnd();
 page_close();
 
