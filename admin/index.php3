@@ -502,7 +502,7 @@ $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
 echo "<center>";
 echo "$Msg <br>";
 
-# user definend sorting and filtering (add by setu 2002-0206)
+# user definend sorting and filtering 
 if ($sort_filter != "0") {
       # echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
       #if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";
@@ -517,19 +517,19 @@ if ($sort_filter != "0") {
       if( $v[text_stored] )
         $lookup_text_fields[$k] = $v[name];
     }
+
+    $searchimage = "<a href='javascript:document.filterform.submit()'>"
+    ."<img src='../images/search.gif' alt='".L_SEARCH."' border=0></a>";
     
       # filter
-    echo "<tr><td class=search>&nbsp;
-    <a href='javascript:document.filterform.submit()'>
-    <img src='../images/search.gif' alt='".L_SEARCH."' border=0></a>&nbsp;&nbsp;<b>"
+    echo "<tr><td class=search>&nbsp;".$searchimage."&nbsp;&nbsp;<b>"
         . L_SEARCH ."</b></td><td>";
 
     FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
     echo "<input type='Text' name='admin_search' size=20
-          maxlength=254 value=\"". safe($r_admin_search). "\">&nbsp;
-          <a href='javascript:document.filterform.submit()'>
-          <img src='../images/search.gif' alt='".L_SEARCH."' border=0></a>
-          </td></tr>";
+          maxlength=254 value=\"". safe($r_admin_search). "\">&nbsp;"
+          .$searchimage
+          ."</td></tr>";
     echo "<input type=hidden name=action value='filter'>";
     
       #order
