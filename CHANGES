@@ -1,3 +1,19 @@
+01/04/05 - new implementation of pagecache - uses two tables - pagecache
+(honzam)   (as the old one) and pagecache_str2find table. It should bring much
+           quicker pagecache invalidation, when the content must be updated.
+           Database update (sql_update.php3) for new table is needed.
+12/30/04 - new "Toexecute" class used for e-mail sending - e-mails are not send
+(honzam)   in one run of the script. It is rather send from AA cron, so the load
+           of the server is lowered
+         - slice name displayed on itemedit form
+         - new possibility to change date for discussion comment from AA admin
+         - e-mail's "From:" address is required, now
+         - the "Errors-to:" header form generated e-mails is supplied
+         - fixed bug with anonymous form creation (thanks to Omar Martinez)
+         - fixed typo in view edit form
+         - fixed pagecache bug
+12/24/04 - {dictionary...} formating construct now do not search in SCRIPT,
+(honzam)   H1-6, A tags as well as  inside tags itself
 12/16/04 - new Input type: Multiple Text Field - allows to enter more than one
 (honzam)   (multiple) values into one field (just like when you select multiple
            values from Multiple Selectbox). The new values are filled in popup

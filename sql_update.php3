@@ -593,12 +593,19 @@ $tablelist = array(   'active_sessions' => "(
                       )",
                       'pagecache' => "(
                           id varchar(32) NOT NULL default '',
-                          str2find text,
                           content mediumtext,
                           stored bigint(20) NOT NULL default '0',
                           flag int(11) default NULL,
                           PRIMARY KEY  (id),
                           KEY stored (stored)
+                      )",
+                      'pagecache_str2find' => "(
+                          id bigint(20) NOT NULL auto_increment,
+                          pagecache_id varchar(32) NOT NULL default '',
+                          str2find text NOT NULL,
+                          PRIMARY KEY  (id),
+                          KEY pagecache_id (pagecache_id),
+                          KEY str2find (str2find(20))
                       )",
                       'perms' => "(
                           object_type char(30) NOT NULL default '',

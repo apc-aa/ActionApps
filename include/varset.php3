@@ -75,7 +75,7 @@ class Cvariable {
 class Cvarset {
     var $vars;  // array of variables
 
-    # constructor
+    /** constructor - also good for filling the varset */
     function Cvarset( $arr=null ) {
         foreach ( (array)$arr as $varname => $value ) {
             if ( $varname ) {
@@ -211,7 +211,7 @@ class Cvarset {
   }
 
   /** Makes SQL UPDATE clause from varset */
-  function makeUPDATE($tablename = "", $keyword = 'UPDATE')
+  function makeUPDATE($tablename = "")
   {
       foreach ( $this->vars as  $varname => $variable ) {
           if (!$variable->iskey) {
@@ -219,11 +219,10 @@ class Cvarset {
           }
       }
       if ($tablename) {
-          $retval = "$keyword $tablename SET";
+          $retval = "UPADTE $tablename SET";
       }
       $retval .= " " . join (", ", $updates);
-      $where = $this->makeWHERE();
-      if ($where) {
+      if ($where = $this->makeWHERE()) {     // assignment
           $retval .= " WHERE ".$where;
       }
       return $retval;
@@ -233,10 +232,22 @@ class Cvarset {
       return $this->_doQuery($this->makeUPDATE($tablename), $nohalt);
   }
 
+  /** Makes SQL UPDATE clause from varset */
+  function makeREPLACE($tablename = "")
+  {
+      foreach ( $this->vars as  $varname => $variable ) {
+          $updates[] = "`$varname`" ."=". $variable->getSQLValue();
+      }
+      if ($tablename) {
+          $retval = "REPLACE $tablename SET";
+      }
+      return $retval . " " . join (", ", $updates);
+  }
+
   function doREPLACE($tablename, $nohalt=null) {
       // TODO: REPLACE works for MySQL. For MS SQL and possibly other DB servers
       //       we need to use another SQL (SELECT + UPDATE/INSERT)
-      return $this->_doQuery($this->makeUPDATE($tablename, 'REPLACE'), $nohalt);
+      return $this->_doQuery($this->makeREPLACE($tablename), $nohalt);
   }
 
   function makeSELECT($table)
@@ -246,14 +257,20 @@ class Cvarset {
                        "SELECT * FROM $table");
   }
 
-  function makeDELETE($table)
+  function makeDELETE($table, $where=null)
   {
-      $where = $this->makeWHERE();
+      if ( is_null($where) ) {
+          $where = $this->makeWHERE();
+      }
       return ($where ? "DELETE FROM $table WHERE ".$where : 'Error');
   }
 
   function doDelete($tablename, $nohalt=null) {
       return $this->_doQuery($this->makeDELETE($tablename), $nohalt);
+  }
+
+  function doDeleteWhere($tablename, $where, $nohalt=null) {
+      return $this->_doQuery($this->makeDELETE($tablename, $where), $nohalt);
   }
 
   function makeWHERE($table="")

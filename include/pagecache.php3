@@ -31,6 +31,7 @@ http://www.apc.org/
  *   );
  */
 
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 
 class PageCache  {
     var $cacheTime     = 600; // number of seconds to store cached informations
@@ -68,10 +69,12 @@ class PageCache  {
         $SQL   = "SELECT * FROM pagecache WHERE id='$keyid'";
         $db->tquery($SQL);
         if ($db->next_record()) {
+            huhl($db->Record);
             if ( (time() - $this->cacheTime) < $db->f("stored") ) {
                 $ret = $db->f('content');
             }
         }
+        huhl("<br>ret:$ret");
         freeDB($db);
         return $ret;
     }
@@ -88,15 +91,14 @@ class PageCache  {
     function store($keyString, $content, $str2find) {
         global $cache_nostore;
         if( ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when
-            $db    = getDB();                         // {user:xxxx} alias is used
-            $tm    = time();
-            $keyid = $this->getKeyId($keyString);
-            $SQL   = "REPLACE pagecache SET id='$keyid',
-                              str2find='". quote($str2find->getStr2find()). "',
-                              content='". quote($content). "',
-                              stored='$tm',
-                              flag=''";
-            $db->tquery($SQL);
+                                                      // {user:xxxx} alias is used
+            $keyid  = $this->getKeyId($keyString);
+            $varset = new Cvarset( array( 'content' => $content,
+                                          'stored'  => time()));
+            $varset->addkey('id', 'text', $keyid);
+            $varset->doReplace('pagecache');
+            $str2find->store($keyid);
+
             if (rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
                 $this->purge();
@@ -108,33 +110,40 @@ class PageCache  {
 
     /** Clears all old cached data */
     function purge() {
-        $db  = getDB();
-        $tm  = time();
-        $SQL = "DELETE FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'";
-        $db->query_nohalt($SQL);
-        freeDB($db);
+        $varset = new Cvarset();
+        $tm   = time();
+        $keys = GetTable2Array("SELECT id FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'", '', 'id');
+        if (is_array($keys) AND (count($keys)>0)) {
+            $in_where = ' IN ('. join(',',$keys) .')';
+            $varset->doDeleteWhere('pagecache', "id $where", true);
+            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id $where", true);
+        }
     }
 
     /** Remove cached informations for all rows which have the $cond in str2find
      */
     function invalidateFor($cond) {
-        $db = getDB();
-
         // We do not want to report errors here. Sometimes this SQL leads to:
         //   "MySQL Error: 1213 (Deadlock found when trying to get lock; Try
         //    restarting transaction)" error.
         // It is not so big problem if we do not invalidate cache - much less than
         // halting the operation.
 
-        $SQL = "DELETE FROM pagecache WHERE str2find LIKE '%". quote($cond) ."%'";
-        $db->query_nohalt($SQL);
-        freeDB($db);
+        $varset = new Cvarset();
+        $keys = GetTable2Array("SELECT pagecache_id FROM pagecache_str2find WHERE str2find = '".quote($cond)."'", '', 'pagecache_id');
+        if (is_array($keys) AND (count($keys)>0)) {
+            $in_where = ' IN ('. join(',',$keys) .')';
+            $varset->doDeleteWhere('pagecache', "id $where", true);
+            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id $where", true);
+        }
     }
 
     /** Remove cached informations for all rows */
     function invalidate() {
         $db  = getDB();
         $SQL = "DELETE FROM pagecache";
+        $db->query_nohalt($SQL);
+        $SQL = "DELETE FROM pagecache_str2find";
         $db->query_nohalt($SQL);
         freeDB($db);
     }
@@ -172,6 +181,16 @@ class CacheStr2find {
     function clear() {
         unset($this->ids);
         $this->ids = array();
+    }
+
+    function store($keyid) {
+        $varset = new Cvarset( array( 'pagecache_id' => $keyid,
+                                      'str2find'  => ''));
+        $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'" );
+        foreach ((array)$this->ids as $id => $v) {
+            $varset->set('str2find', $id);
+            $varset->doInsert('pagecache_str2find');
+        }
     }
 
     function getStr2find() {
