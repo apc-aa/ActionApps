@@ -36,6 +36,9 @@ require "./xmgettext.php3";
 require "./translate.php3";
 require "./createlogs.php3";
 
+// list of all languages. Useful if you want e.g. update only one language file.
+$lang_list = array ("cz"=>1,"sk"=>1,"es"=>1,"en"=>1,"ro" => 1,"ja"=>1,"de"=>1);
+
 // $aadir is the source dir for updating translation files
 $aadir = $AA_BASE_PATH; 
 endslash ($aadir);
@@ -106,7 +109,7 @@ if (!$addlogs) $addlogs = false;
 
 /* $old_group, $old_lang_files and $log_files are used when creating log files
    which enable to include language constants into mgettext language files. */
-$old_group = "news";
+$old_group = "common";
 $old_lang_files = $aadir."include/??_".$old_group."_lang.php3"; 
 $log_files = $destdir."log_??_".$old_group."_lang.php3";
 
@@ -121,7 +124,7 @@ $translate_dirlist = array (".","include","admin","modules","modules/module_TEMP
         
 // Command called from the form:        
 if ($cmd == "create logs")
-    create_logs ($old_lang_files, $log_files);    
+    create_logs ($lang_list, $old_lang_files, $log_files);    
 else if ($cmd == "update language files" && is_array ($update)) 
     update_language_files ($aadir, $destdir, false);        
 else if ($cmd == "convert scripts")
@@ -131,7 +134,7 @@ else if ($cmd == "convert scripts")
 
 function update_language_files ($aadir, $destdir)
 {    
-    global $update, $lang_groups, $addlogs;
+    global $update, $lang_groups, $addlogs, $lang_list;
     //echo $aadir." ".$destdir;    @mkdir ($destdir, 0777);
 
     $logfile = $destdir."log_language_updates.php3";
@@ -152,8 +155,8 @@ function update_language_files ($aadir, $destdir)
             fclose ($fd);
             chmod ($logfile, 0664);
             if (!$addlogs)
-                xmgettext ($xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false);
-            else xmgettext ($xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false,
+                xmgettext ($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false);
+            else xmgettext ($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false,
                 $destdir."log_??_".$langfiles."_lang.php3");
         }
     }

@@ -27,18 +27,14 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-if (!isset($LANGUAGE_CHARSETS))
-    /// some useful constants, like $LANGUAGE_CHARSETS
-    require "../../include/constants.php3";
     
 $dir = "/raid/www/htdocs/work.ecn.cz/aa_jakub/";
 
 /** Creates a log containing old language file content to be added into mini-gettext language files. */    
-function create_logs ($old_lang_files, $log_files)
+function create_logs ($lang_list, $old_lang_files, $log_files)
 {    
-    global $LANGUAGE_CHARSETS;
-    while (list ($lang) = each ($LANGUAGE_CHARSETS)) {
+    reset ($lang_list);
+    while (list ($lang) = each ($lang_list)) {
         $old_lang_file = str_replace ("??", $lang, $old_lang_files);
         $logfile = str_replace ("??", $lang, $log_files);
         if (file_exists ($logfile) && filesize ($logfile) > 0)

@@ -25,9 +25,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!isset($LANGUAGE_CHARSETS))
-    require "../../include/constants.php3";
-
 /** Prints language file header. */    
 function lang_file_header ($fd, $lang)
 {    
@@ -69,10 +66,8 @@ function lang_file_header ($fd, $lang)
 *                         If empty, no logs are used.
 * $param bool   $add_source_links Should xmgettext add commentary specifying where was the message used?
 */             
-function xmgettext ($logfile, $lang_files, $files_base_dir, $files, $chmod = 0664, $stop_on_warning = true,
+function xmgettext ($lang_list, $logfile, $lang_files, $files_base_dir, $files, $chmod = 0664, $stop_on_warning = true,
     $old_logs = "", $add_source_links = true) {
-    global $LANGUAGE_CHARSETS;
-
     set_time_limit(10000);
     collect_messages ($logfile, $files_base_dir, $files, $messages, $warnings);
     
@@ -82,8 +77,8 @@ function xmgettext ($logfile, $lang_files, $files_base_dir, $files, $chmod = 066
         if ($stop_on_warning) exit; 
     }
     
-    reset ($LANGUAGE_CHARSETS);
-    while (list ($lang) = each ($LANGUAGE_CHARSETS)) {
+    reset ($lang_list);
+    while (list ($lang) = each ($lang_list)) {
         $langfile = str_replace ("??", $lang, $lang_files);
         // read the language constants
         $_m = "";
