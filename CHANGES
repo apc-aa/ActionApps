@@ -1,7 +1,10 @@
-02/10/05 - fixed LDAP configuration and documentation
+02/11/05 - other LDAP fixes for its new version - updated documentation
+(honzam)  and configuration (thanks to Jiri Reischig)
+         - e-mail is now marked as "required" on setup screen
+02/10/05 - fixed LDAP configuration and documentation (thanks to Jiri Reischig)
 (honzam) - view of constants now have also "Remove strings" option
 02/08/05 - updated LDAP documentation and LDAP config files for LDAP v.3
-(honzam)   (OpenLDAP v.2)
+(honzam)   (OpenLDAP v.2) (thanks to Jiri Reischig)
          - fixed e-mail validation functions to accept also domains like .museum
          - new modificator for f_t alias function - conds - allows you to call
            view with conds, just like:
