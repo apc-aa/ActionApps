@@ -24,16 +24,14 @@ http://www.apc.org/
 #
 
 # Find fields mapping. If not found apropriate fields, map is blank
-function GetFieldMap($slice_id, $destination, $fields_from) {
+function GetFieldMap2($from_slice_id, $to_slice_id, $fields_from, $fields_to) {
   global $db;
   
-  $p_destination = q_pack_id($destination);
-  $p_slice_id = q_pack_id($slice_id);
+  $p_from_slice_id = q_pack_id($from_slice_id);
+  $p_to_slice_id = q_pack_id($to_slice_id);
 
-  list($fields_to,) = GetSliceFields($destination);
-
-  $SQL = "SELECT from_field_id, to_field_id from feedmap WHERE from_slice_id = '$p_slice_id'
-                                  AND to_slice_id = '$p_destination'";
+  $SQL = "SELECT from_field_id, to_field_id from feedmap WHERE from_slice_id = '$p_from_slice_id'
+                                  AND to_slice_id = '$p_to_slice_id'";
   $db->query($SQL);
   while( $db->next_record() )
     $map[$db->f(from_field_id)] = $db->f(to_field_id);
@@ -41,13 +39,20 @@ function GetFieldMap($slice_id, $destination, $fields_from) {
   if( isset($fields_from) AND is_array($fields_from) ) {
     reset( $fields_from ) ;
     while( list( $k, $v ) = each( $fields_from ) ) {
-      if( $map[$k] )
+       if( isset($map[$k]) )
         $pair[$k] = $map[$k];               # set if mapped
        else                                 # if not mapped - store in the same       
         $pair[$k] = ( $fields_to[$k] ? $k : "" );  # if not exist - leave blank
     }
   }
   return $pair;  
+}
+
+# Find fields mapping. If not found apropriate fields, map is blank
+function GetFieldMap($slice_id, $destination, $fields_from) {
+  list($fields_to,) = GetSliceFields($destination);
+
+  return GetFieldMap2($slice_id,$destination,$fields_from,$fields_to);
 }
 
 function FeedItemTo($item_id, $destination, $fields, $approved, $tocategory=0, 
@@ -256,6 +261,9 @@ function DeleteItem($db, $id) {
 
 /*
 $Log$
+Revision 1.11  2001/05/21 13:52:32  honzam
+New "Field mapping" feature for internal slice to slice feeding
+
 Revision 1.10  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

@@ -83,7 +83,7 @@ echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>"; ?>
 $xx = ($slice_id!="");
 $useOnLoad = ($new_compact ? true : false);
 $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-              "views"=>false, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+              "views"=>false, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
 require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
 echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
@@ -123,6 +123,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.7  2001/05/21 13:52:32  honzam
+New "Field mapping" feature for internal slice to slice feeding
+
 Revision 1.6  2001/05/18 13:43:43  honzam
 New View feature, new and improved search function (QueryIDs)
 

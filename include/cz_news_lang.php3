@@ -551,9 +551,23 @@ define('L_CONSTANT_VIEW','Zobrazení konstant');
 define('L_RSS_VIEW','Výmìna zpráv RSS');
 define('L_STATIC_VIEW','Statická stránka');
 define('L_SCRIPT_VIEW','Javscript');
+
+define("L_MAP","Mapování");
+define("L_MAP_TIT","Správa webíku - výmìna zpráv - mapování polí");
+define("L_MAP_FIELDS","Mapování polí");
+define("L_MAP_TABTIT","Výmìna zpráv - mapování polí");
+define("L_MAP_FROM_SLICE","Mapování z webíku");
+define("L_MAP_FROM","Z");
+define("L_MAP_TO","Do");
+define("L_MAP_DUP","Nelze mapovat do stejného pole");
+define("L_MAP_NOTMAP","-- Nemapovat --");
+define("L_MAP_OK","Nastavení mapování polí úspì¹nì zmìnìno");
     
 /*
 $Log$
+Revision 1.30  2001/05/21 13:52:32  honzam
+New "Field mapping" feature for internal slice to slice feeding
+
 Revision 1.29  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 

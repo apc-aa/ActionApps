@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.12  2001/05/21 13:52:32  honzam
+New "Field mapping" feature for internal slice to slice feeding
+
 Revision 1.11  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 
@@ -191,6 +194,13 @@ added $Id $Log and $Copyright to some stray files
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_filters.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_FILTERS."</a></td>"; 
    else 
     echo "<span class=leftmenun>&nbsp;&nbsp;". L_FILTERS ."</span></td>";?>
+  </tr>
+  <tr><td valign="TOP">
+  <?php
+  if( $show["mapping"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING) ) 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_mapping.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_MAP."</a></td>"; 
+   else
+    echo "<span class=leftmenun>&nbsp;&nbsp;". L_MAP ."</span></td>";?>
   </tr>
   <tr><td>&nbsp;</td></tr>
   <tr><td height=110>&nbsp;</td>

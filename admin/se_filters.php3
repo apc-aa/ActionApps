@@ -185,7 +185,7 @@ function UpdateFilters(slice_id, import_id) {
   $xx = ($slice_id!="");
   $useOnLoad = true;
   $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>false);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>false,"mapping"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   echo "<H1><B>" . L_A_FILTERS_FLT . "</B></H1>";
   PrintArray($err);
@@ -260,6 +260,9 @@ if( $imp_group ) {
 } 
 /*
 $Log$
+Revision 1.12  2001/05/21 13:52:31  honzam
+New "Field mapping" feature for internal slice to slice feeding
+
 Revision 1.11  2001/05/18 13:50:09  honzam
 better Message Page handling (not so much)
 

@@ -554,14 +554,26 @@ define('L_RSS_VIEW','RSS exchange');
 define('L_STATIC_VIEW','Static page');
 define('L_SCRIPT_VIEW','Javscript item exchange');
 
+define("L_MAP","Mapping");
+define("L_MAP_TIT","Admin - Content Pooling - Fields' Mapping");
+define("L_MAP_FIELDS","Fields' mapping");
+define("L_MAP_TABTIT","Content Pooling - Fields' mapping");
+define("L_MAP_FROM_SLICE","Mapping from slice");
+define("L_MAP_FROM","From");
+define("L_MAP_TO","To");
+define("L_MAP_DUP","Cannot map to same field");
+define("L_MAP_NOTMAP","-- Not map --");
+define("L_MAP_OK","Fields' mapping update succesful");
+
 // ------------------------- New ----------------------------
 // not appended to other lang files
 //define("", "");
 
-
-
 /*
 $Log$
+Revision 1.40  2001/05/21 13:52:32  honzam
+New "Field mapping" feature for internal slice to slice feeding
+
 Revision 1.39  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 
