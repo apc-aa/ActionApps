@@ -435,8 +435,7 @@ do {
     echo "<br><b>Default settings for category field updatated</b>";
   }  
 
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-  $cache->invalidate();  # invalidate old cached values - all
+  $GLOBALS[pagecache]->invalidate();  # invalidate old cached values - all
 }while(false);
 if( count($err) > 1 ) {
   page_close();                                // to save session variables
@@ -447,6 +446,9 @@ else
 
 /*
 $Log$
+Revision 1.7  2003/03/11 23:43:26  mitraearth
+globalized pagecache
+
 Revision 1.6  2003/02/05 14:56:15  jakubadamek
 changing require to require_once, deleting the "if (defined) return" constructs and changing GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"]
 

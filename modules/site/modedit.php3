@@ -134,8 +134,7 @@ if( $add || $update ) {
         }
       }
     }
-    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed -
-    $cache->invalidate();  # invalidate old cached values - all
+    $GLOBALS[pagecache]->invalidate();  # invalidate old cached values - all
   }while(false);
 
   if( count($err) <= 1 ) {

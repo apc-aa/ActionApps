@@ -39,14 +39,14 @@ class PageCache  {
   var $cacheTime=600;    # number of seconds to store cached informations
   var $lastClearTime=0;  # timestamp of last purging of cache database (removed obsolete cache informations) 
   var $clearFreq=600;    # number of seconds between database cleaning
-  var $db;               # database identificator
+  //var $db;               # database identificator
   var $caller;           # just for debugging
   
   # PageCache class constructor
-  function PageCache($db, $ct=600, $cf=600,$caller="") {
+  function PageCache($ignoreddb, $ct=600, $cf=600,$caller="") {
     if ($GLOBALS[debugcache]) huhl("Cache:new:$caller:$ct,$cf");
     $this->caller = $caller; // Just for debugging
-    $this->db = $db;
+    //$this->db = $db;
     $this->cacheTime = $ct;
     $this->clearFreq = $cf;
   }  
@@ -67,15 +67,18 @@ class PageCache  {
   function get($keyString) {
     if ($GLOBALS[debugcache]) huhl("Cache:get:$keyString");
     if( ENABLE_PAGE_CACHE ) {
-      $db = $this->db;
+      $db = getDB(); 
       $SQL = "SELECT * FROM pagecache WHERE id='".md5($keyString)."'";
       $db->tquery($SQL);
       if($db->next_record()) {
         if( (time() - $this->cacheTime) < $db->f("stored") ) {
           if ($GLOBALS[debugcache]) huhl("found:str2find=".$db->f(str2find));
-          return $db->f(content);
+          $c = $db->f(content);
+          freeDB($db);
+          return $c;
         }  
       }
+      freeDB($db);
     }  
     return false;    
   }
@@ -84,7 +87,7 @@ class PageCache  {
   function store($keyString, $content, $str2find="") {
     if ($GLOBALS[debugcache]) huhl("Cache:store:$str2find:",$this->caller);
     if( ENABLE_PAGE_CACHE ) {
-      $db = $this->db;
+      $db = getDB();
       $tm = time();
       $SQL = "REPLACE pagecache SET id='".md5($keyString)."', 
                                  str2find='". quote($str2find). "',
@@ -94,33 +97,40 @@ class PageCache  {
       $db->query($SQL);
       if( ($this->lastClearTime + $this->clearFreq) < $tm )
         $this->purge();
+      freeDB($db);
     }    
   }      
 
   # clears all old cached data
   function purge() {
     if ($GLOBALS[debugcache]) huhl("Cache:purge:".$this->caller);
-    $db = $this->db;
+    $db = getDB();
     $tm = time();
     $SQL = "DELETE FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'";
     $db->query($SQL);
+    freeDB($db);
     $this->lastClearTime = $tm;
   }  
 
   # remove cached informations for all rows which have the $cond in str2find
   function invalidateFor($cond) {
     if ($GLOBALS[debugcache]) huhl("Cache:invalidateFor:$cond");
-    $db = $this->db;
+    $db = getDB();
     $SQL = "DELETE FROM pagecache WHERE str2find LIKE '%". quote($cond) ."%'";
     $db->query($SQL);
+    freeDB();
   }
 
   # remove cached informations for all rows
   function invalidate() {
     if ($GLOBALS[debugcache]) huhl("Cache:invalidate");
-    $db = $this->db;
+    $db = getDB();
     $SQL = "DELETE FROM pagecache";
     $db->query($SQL);
+    freeDB();
   }  
 }
+
+$GLOBALS[pagecache] = new PageCache(null,CACHE_TTL,CACHE_PURGE_FREQ); 
+
 ?>

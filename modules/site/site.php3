@@ -70,11 +70,9 @@ if( substr($site_info['state_file'],0,4) == 'http' ) {
 # CACHE_PURGE_FREQ - frequency in which the cache is checked for old values 
 #                    (in seconds)
 
-$sitecache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
-
 # create keystring from values, which exactly identifies resulting content
 $key_str = $apc_state['state'];
-if( is_array($slices4cache) && !$nocache && ($res = $sitecache->get($key_str)) ) {
+if( is_array($slices4cache) && !$nocache && ($res = $GLOBALS[pagecache]->get($key_str)) ) {
   echo $res;
   if( $debug ) {
     $timeend = getmicrotime();
@@ -102,7 +100,7 @@ echo $res;
 
 if (is_array($slices4cache) && !$nocache) {
   $clear_cache_str = "slice_id=". join(',slice_id=', $slices4cache);
-  $sitecache->store($key_str, $res, $clear_cache_str);
+  $GLOBALS[pagecache]->store($key_str, $res, $clear_cache_str);
 }  
 
 if( $debug ) {

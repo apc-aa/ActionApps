@@ -85,8 +85,7 @@ if( $update )
   $SQL = "UPDATE slices SET search_show = '$shown', search_default = '$default' WHERE id='$p_slice_id'";
   if (!$db->query($SQL))   # not necessary - we have set the halt_on_error
     $err["DB"] = MsgErr("Can't change fields");
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-  $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+  $GLOBALS[cache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     
   if( count($err) <= 1 )
     $Msg = MsgOK(_m("Search fields update successful"));

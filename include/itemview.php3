@@ -111,7 +111,6 @@ class itemview {
    
   function get_output_cached($view_type="") {  
     if ($GLOBALS[debug]) huhl("get_output_cached:".$view_type);
-    $cache = new PageCache($this->db, CACHE_TTL, CACHE_PURGE_FREQ,"get_output_cached");
 
     #create keystring from values, which exactly identifies resulting content
 
@@ -132,7 +131,7 @@ if (isset($this->zids))
             $keystr .= $this->zids->id($i);
         $keystr .=serialize($this->disc);
         $keystr .=serialize($this->aliases);
-        if( !$GLOBALS['nocache'] && ($res = $cache->get($keystr)) ) {
+        if( !$GLOBALS['nocache'] && ($res = $GLOBALS[pagecache]->get($keystr)) ) {
             return $res;
         }
 
@@ -144,7 +143,7 @@ if (isset($this->zids))
         $str2find_this = ",slice_id=".unpack_id128($this->slice_info["id"]);
         if (!strstr($GLOBALS[str2find_passon],$str2find_this)) 
             $GLOBALS[str2find_passon] .= $str2find_this; // append our str2find
-        $cache->store($keystr, $res, $GLOBALS[str2find_passon]);
+        $GLOBALS[pagecache]->store($keystr, $res, $GLOBALS[str2find_passon]);
         $GLOBALS[str2find_passon] .= $str2find_save;
         return $res;
   }  

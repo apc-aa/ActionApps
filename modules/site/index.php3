@@ -115,8 +115,7 @@ elseif( $content OR $name ) {
                               VALUES ('$p_module_id', '$r_spot_id', '$content')");
   $db->query($SQL);
 
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-  $cache->invalidate("slice_id=".site_id);  # invalidate old cached values
+  $GLOBALS[pagecache]->invalidate("slice_id=".site_id);  # invalidate old cached values
 
   if( $name )  # do not change to empty
     $tree->set( 'name', $r_spot_id, $name );

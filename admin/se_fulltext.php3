@@ -79,8 +79,7 @@ if( $update )
     $fulltext_format = dequote($fulltext_format);
     $fulltext_format_bottom = dequote($fulltext_format_bottom);
 
-    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     
   }while(false);
   if( count($err) <= 1 )

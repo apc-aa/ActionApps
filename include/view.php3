@@ -272,12 +272,11 @@ function ParseBannerParam(&$view_info, $banner_param) {
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
   global $db, $nocache, $debug;
-  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ,"GetView");
   if ($debug) huhl("GetView:",$view_param);
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param);
 
-  if( !$nocache && ($res = $cache->get($keystr)) ) {
+  if( !$nocache && ($res = $GLOBALS[pagecache]->get($keystr)) ) {
     return $res;
   } 
   
@@ -288,7 +287,7 @@ function GetView($view_param) {
   if (!strstr($GLOBALS[str2find_passon],$str2find_this)) 
     $GLOBALS[str2find_passon] .= $str2find_this; // append our str2find
     // Note cache_sid set by GetViewFromDB
-  $cache->store($keystr, $res, $GLOBALS[str2find_passon]);
+  $GLOBALS[pagecache]->store($keystr, $res, $GLOBALS[str2find_passon]);
   $GLOBALS[str2find_passon] .= $str2find_save; // and append saved for above
   return $res;
 }
@@ -520,7 +519,6 @@ class constantview{
     
 
   function get_output_cached() {  
-    $cache = new PageCache($this->db, CACHE_TTL, CACHE_PURGE_FREQ);
 
     #create keystring from values, which exactly identifies resulting content
     $keystr = serialize($this->slice_info).
@@ -529,13 +527,13 @@ class constantview{
               $this->order_dir. 
               $this->num_records;
       
-    if( $res = $cache->get($keystr) )
+    if( $res = $GLOBALS[pagecache]->get($keystr) )
       return $res;
 
     #cache new value 
     $res = $this->get_output();
 
-    $cache->store($keystr, $res, "slice_id=".unpack_id128($this->slice_info["id"]));
+    $GLOBALS[pagecache]->store($keystr, $res, "slice_id=".unpack_id128($this->slice_info["id"]));
     return $res;
   }  
               

@@ -131,10 +131,25 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     global $als,$debug,$errcheck;
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
+    # See http://apc-aa.sourceforge.net/faq#aliases for details
     # bracket could look like:
-    #   {alias:[<field id>]:<f_* function>[:parameters]} - return result of f_*
-    #   lots of other functions, not documented here!
-    #   {<field_id>}                                     - return content of field
+    # {alias:[<field id>]:<f_* function>[:parameters]} - return result of f_*
+    # {switch(testvalue)test:result:test2:result2:default}
+    # {math(<format>)expression}  
+    # {include(file)}
+    # {scroller.....}
+    # {#comments}
+    # {debug}
+    # {view.php3?vid=12&cmd[12]=x-12-34}
+    # {dequote:already expanded and quoted string}
+    # {fnctn:xxx:yyyy}   - expand $eb_functions[fnctn]
+    # {unpacked_id.....}
+    # {xxxx}                            
+    #   - looks for a field xxxx
+    #   - or in $GLOBALS[apc_state][xxxx]
+    #   - als[xxxx]
+    #   - aliases[xxxx]
+    # {_#ABCDEFGH}
     #   {any text}                                       - return "any text"
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which are processed before expanding the function

@@ -39,14 +39,13 @@ function CanChangeRole ($user_perm, $editor_perm, $role_perm) {
   
 function ChangeRole () {
   global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles, $db;   
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
   
   if( $UsrAdd ) {
     if( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false),
                        $editor_perms,
                        $perms_roles[$role]['perm']) ) {
       AddPerm($UsrAdd, $slice_id, "slice", $perms_roles[$role]['id']);
-      $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+      $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     }
   } elseif( $UsrDel ) {
     if( CanChangeRole(GetSlicePerms($UsrDel, $slice_id, false),
@@ -54,6 +53,6 @@ function ChangeRole () {
                       $perms_roles["AUTHOR"]['perm']) )  // smallest permission
       DelPerm($UsrDel, $slice_id, "slice");
       DelUserProfile($UsrDel, $slice_id); 
-      $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+      $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
   }
 }

@@ -65,8 +65,7 @@ if ($update) {
       $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
       $db->query($SQL);
 
-      $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed -
-      $cache->invalidateFor("slice_id=".$slice_id);  # invalidate old cached values
+      $GLOBALS[pagecache]->invalidateFor("slice_id=".$slice_id);  # invalidate old cached values
 
       go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
     }

@@ -115,8 +115,7 @@ if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
 send2mailList($d_item_id, $new_id);
 
 $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'");
-$cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed -
-$cache->invalidateFor("slice_id=".unpack_id128($slice_id));  # invalidate old cached values
+$GLOBALS[pagecache]->invalidateFor("slice_id=".unpack_id128($slice_id));  # invalidate old cached values
 
 updateDiscussionCount($d_item_id);        // update a count of the comments belong to the item
 go_url( $url);

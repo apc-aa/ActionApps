@@ -57,8 +57,7 @@ function MoveItems($chb,$status) {
         Event_ItemsAfterMove( $item_ids, $slice_id, $status );
     }
                                          // substr removes first 'x'
-    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
   }
 }  
 
@@ -318,8 +317,7 @@ if($Delete == "trash") {
         $db->query("DELETE FROM content WHERE item_id ".$wherein);
         $db->query("DELETE FROM item WHERE id ".$wherein);
 
-        $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ); 
-        $cache->invalidateFor("slice_id=$slice_id");  
+        $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  
    }
 }
 

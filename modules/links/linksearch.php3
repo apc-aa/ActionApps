@@ -95,7 +95,6 @@ function Links_QueryIDs($cat_path, $conds, $sort="", $subcat=false, $type="app")
   global $LINKS_FIELDS;          # link fields definitions
 
   $db = new DB_AA;
-  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
 
   if( $use_cache AND !$nocache ) {
     #create keystring from values, which exactly identifies resulting content
@@ -104,7 +103,7 @@ function Links_QueryIDs($cat_path, $conds, $sort="", $subcat=false, $type="app")
               serialize($sort).
               $type;
 
-    if( $res = $cache->get($keystr)) {
+    if( $res = $GLOBALS[pagecache]->get($keystr)) {
       $arr = unserialize($res);
       $LinksIDsCount = count($arr);
       if( $debug )
@@ -237,7 +236,7 @@ if( $debug ) {
   $zids = new zids($arr,"s");
 
   if( $use_cache AND !$nocache )
-    $cache->store($keystr, serialize($zids), "cat_path=$cat_path");
+    $GLOBALS[pagecache]->store($keystr, serialize($zids), "cat_path=$cat_path");
 
   return $zids;
 }

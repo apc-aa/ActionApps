@@ -1049,8 +1049,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     }  
     $db->query($SQL);
     if( $invalidatecache ) {
-        $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ,"StoreItem"); # database changed - 
-        $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+        $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     }  
 
     if( $feed )

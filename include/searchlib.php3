@@ -252,7 +252,6 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   global $QueryIDsCount;
 
   $db = new DB_AA;
-  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ,"QueryZIDS");
 
   if( $use_cache AND !$nocache ) {
     #create keystring from values, which exactly identifies resulting content
@@ -266,7 +265,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
               ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
               $defaultCondsOperator;
 
-    if( $res = $cache->get($keystr)) {
+    if( $res = $GLOBALS[pagecache]->get($keystr)) {
       $zids = unserialize($res);
       $QueryIDsCount = $zids->count();
       if( $debug )
@@ -518,7 +517,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   $zids = new zids($arr,"p");
 
   if( $use_cache AND !$nocache )
-    $cache->store($keystr, serialize($zids), "slice_id=$slice_id,slice_id=".
+    $GLOBALS[pagecache]->store($keystr, serialize($zids), "slice_id=$slice_id,slice_id=".
                                          join(',slice_id=', $slices));
 
   return $zids;

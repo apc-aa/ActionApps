@@ -53,8 +53,7 @@ if( $del ) {
     $err["DB"] = MsgErr("Can't change field");
     break;
   }
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-  $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+  $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
   $Msg = MsgOK(_m("Field delete OK"));
   go_url( $sess->url("./se_fields.php3") );  # back to field page
@@ -130,8 +129,7 @@ if( $update ) {
       $err["DB"] = MsgErr("Can't change field");
       break;
     }
-    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
     if( count($err) <= 1 ) {
       $Msg = MsgOK(_m("Fields update successful"));

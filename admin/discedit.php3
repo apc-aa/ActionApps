@@ -71,8 +71,7 @@ if ($mode == "hide" || $mode=="delete") {
   }
   updateDiscussionCount($item_id);        // update a count of the comments belong to the item
 
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed -
-  $cache->invalidateFor("slice_id=".$slice_id);  # invalidate old cached values
+  $GLOBALS[pagecache]->invalidateFor("slice_id=".$slice_id);  # invalidate old cached values
 
   $dcontent = GetDiscussionContent($item_id, "", "", false);       // refresh the content and the tree because of delete node
   $tree = GetDiscussionTree($dcontent);

@@ -68,8 +68,7 @@ if( $update )
       break;    # not necessary - we have set the halt_on_error
     }
 
-    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
     $admin_format_top = dequote($admin_format_top);
     $admin_format = dequote($admin_format);

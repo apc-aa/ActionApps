@@ -252,8 +252,7 @@ if( $update ) {
       }
     }
     
-    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     
     if( count($err) <= 1 )
       $Msg .= MsgOK(_m("Constants update successful"));

@@ -1,5 +1,7 @@
-03/10/03 - addedparamater to UseShowResult (was assuming err_url even on OK)
-03/10/03 - changed $db3 to getDB/freeDB to fix bug in item.php3
+03/11/03 - globalised pagecache to avoid multiple purges (mitra)
+03/11/03 - some more debugging code in image upload and manipulation (mitra)
+03/10/03 - addedparamater to UseShowResult (was assuming err_url even on OK) (mitra)
+03/10/03 - changed $db3 to getDB/freeDB to fix bug in item.php3 (mitra)
 03/10/03 - insert_fnc_fil now preserves previously uploaded file or URL (mitra)
 03/08/03 - removed duplicate new_id() from post2shtml and required util.php3 (mitra)
 03/08/03 - added links to Alerts modules to Item Manager submenu (jakub)
