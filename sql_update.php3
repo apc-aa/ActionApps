@@ -24,20 +24,28 @@ http://www.apc.org/
 # this script updates the database to last structure, create all tables, ...
 # can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
+/*
+# commented out DB Access Configuration, as this is set in config.php3
 
 # DB Access Configuration
 define("DB_HOST", "localhost");
 define("DB_NAME", "aa-db");
 define("DB_USER", "aa-user");          # user have to have MySQL permission to 
 define("DB_PASSWORD", "somepasswd");   # CREATE ana DROP tables
+*/
 
+# need config.php3 to set db access, and phplib, and probably other stuff
 $AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa/include/"; 
+#$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/"; 
+
+
+require $GLOBALS[AA_INC_PATH]."config.php3";
 
 require $GLOBALS[AA_INC_PATH]."locsess.php3";   # DB_AA definition
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 
-  # init used objects
+# init used objects
 $db = new DB_AA;
 $db2 = new DB_AA;
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -76,6 +84,66 @@ $tablelist = array("active_sessions",
                    "subscriptions", 
                    "users", 
                    "view");
+
+# this script copies data from old tables to temp tables, 
+# and then replaces the old tables with the temp tables.
+# if an old table is 'missing' it will cause an error, 
+# so here, we create missing old tables.
+
+$SQL_create_new_tables[] = "
+  CREATE TABLE IF NOT EXISTS feedmap (
+     from_slice_id char(16) NOT NULL,
+     from_field_id char(16) NOT NULL,
+     to_slice_id char(16) NOT NULL,
+     to_field_id char(16) NOT NULL,
+     flag int(11),
+     KEY from_slice_id (from_slice_id, to_slice_id)
+  )";
+
+$SQL_create_new_tables[] = "
+  CREATE TABLE IF NOT EXISTS view (
+     id int(10) unsigned NOT NULL auto_increment,
+     slice_id varchar(16) NOT NULL,
+     name varchar(50),                
+     type varchar(10),                
+     before text,
+     even text,
+     odd text,
+     even_odd_differ tinyint unsigned,
+     after text,
+     remove_string text,
+     group_title text,
+     order1 varchar(16),
+     o1_direction tinyint unsigned,
+     order2 varchar(16),
+     o2_direction tinyint unsigned,
+     group_by1 varchar(16),
+     g1_direction tinyint unsigned,
+     group_by2 varchar(16),
+     g2_direction tinyint unsigned,
+     cond1field varchar(16),
+     cond1op varchar(10),
+     cond1cond varchar(255),
+     cond2field varchar(16),
+     cond2op varchar(10),
+     cond2cond varchar(255),
+     cond3field varchar(16),
+     cond3op varchar(10),
+     cond3cond varchar(255),
+     listlen int(10) unsigned,
+     scroller tinyint unsigned,
+     selected_item tinyint unsigned,
+     modification int(10) unsigned,
+     parameter varchar(255),
+     img1 varchar(255),
+     img2 varchar(255),
+     img3 varchar(255),
+     img4 varchar(255),
+     flag int(10) unsigned,
+     aditional text,
+     PRIMARY KEY (id),
+     KEY slice_id (slice_id)
+  )";
 
 $SQL_create_tmp_tables[] = "
   CREATE TABLE tmp_active_sessions (
@@ -732,7 +800,15 @@ if( $dbcreate ) {
   while( list( ,$SQL) = each( $SQL_create_tmp_tables ) ) {
     echo $SQL."<br>";
     $db->query( $SQL );
-  }  
+  }
+
+  echo '<h2>Creating new tables that do not exist in database</h2>';
+  reset( $SQL_create_new_tables );
+  while( list( ,$SQL) = each( $SQL_create_new_tables ) ) {
+    echo $SQL."<br>";
+    $db->query( $SQL );
+  }
+  
 }
 
 if( $copyold ) {
@@ -741,6 +817,7 @@ if( $copyold ) {
   while( list( ,$t) = each( $tablelist ) ) {   # copy all tables
     $old_info = $db->metadata( $t );
     $tmp_info = $db->metadata( "tmp_$t" );
+    
     if( isset( $old_info ) AND is_array($old_info) ) {
       $delim = "";
       $field_list = "";
@@ -755,7 +832,7 @@ if( $copyold ) {
       echo $SQL."<br>";
       $db->query($SQL);
     }
-  }    
+}
 }
 
 if( $backup )
@@ -839,6 +916,10 @@ echo '<h2>Update OK</h2>';
 
 /*
 $Log$
+Revision 1.4  2001/06/05 18:24:08  madebeer
+adds tables that do not exist, to avoid errors.
+loads config.php3
+
 Revision 1.3  2001/06/04 10:53:37  honzam
 create table bug fixed for not updating reinstallation
 
