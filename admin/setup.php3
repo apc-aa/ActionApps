@@ -1,7 +1,7 @@
-<?php 
+<?php
 // $Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -25,23 +25,23 @@ http://www.apc.org/
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
-  }  
+  }
   for (reset($val); list($k, $v) = each($val); )
     $ret[$k] = Myaddslashes($v, $n+1);
   return $ret;
-}    
+}
 
-if (!get_magic_quotes_gpc()) { 
-  // Overrides GPC variables 
+if (!get_magic_quotes_gpc()) {
+  // Overrides GPC variables
   if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
+      $$k = Myaddslashes($v);
 }
 
 require_once ("../include/config.php3");
@@ -82,7 +82,7 @@ function SuperForm() {
       <tr><td>
          <table border="0" cellspacing="0" cellpadding="4" width="100%"
                 bgcolor="<?php echo COLOR_TABBG ?>" align=center>
-            <?php 
+            <?php
               FrmInputText("login", _m("Login name"), $login, 12, 30, true);
               FrmInputPwd("password1", _m("Password"), $password1, 12, 30, true);
               FrmInputPwd("password2", _m("Retype Password"), $password2, 12, 30, true);
@@ -97,7 +97,7 @@ function SuperForm() {
     </td></tr>
     </table>
   </form>
-  <?php 
+  <?php
 }
 
 function InitForm() {
@@ -112,7 +112,7 @@ function InitForm() {
    </form>
    <?php
 }
- 
+
 function HtmlEnd() {
    echo "</center></body></html>";
 }
@@ -120,6 +120,23 @@ function HtmlEnd() {
 ///////////////////////////////////////////////////////////////////////////
 
 page_open(array("sess" => "AA_SL_Session"));
+
+$db = new DB_AA;
+
+// Check if database is already created
+$store_halt = $db->Halt_On_Error;
+$db->Halt_On_Error = "report";
+$info = $db->metadata( 'active_sessions' );
+if( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
+    HtmlStart();
+    echo _m('Database is not configured correctly or the database is empty.<br>
+             Check please the database credentials in <b>include/config.php3</b>
+             file <br>or run <a href="../sql_update.php3">sql_update.php3</a> script,
+             which creates AA tables for you.');
+    HtmlEnd();
+    exit;
+}
+$db->Halt_On_Error = $store_halt;
 
 // Discover current state in AA object perms
 
@@ -153,12 +170,12 @@ HtmlStart();
 
 switch ($phase) {
 
-   case _m(" Init "): 
+   case _m(" Init "):
       if ($superusers || $supergroups) {
          NoAction();
          break;
       }
-      
+
       if (AddPermObject(AA_ID, "aa")) {
          SuperForm();
       } else {         // Either AA_ID exists or there is more severe error
@@ -172,9 +189,9 @@ switch ($phase) {
       if ($superusers || $supergroups) {
          NoAction();
          break;
-      } 
-      
-      if (isset($notusers)) {                 // Delete orphan permissions 
+      }
+
+      if (isset($notusers)) {                 // Delete orphan permissions
          while (list($key,$value) = each ($notusers)) {
             if (!DelPerm ($key, AA_ID, "aa")) {
                echo _m("Can't delete invalid permission."), "$key<br>";
@@ -183,22 +200,22 @@ switch ($phase) {
             }
          }
       }
-      
+
       // Print the account form
       SuperForm();
-      
+
       $recover = true;
       $sess->register("recover");
-      
+
       break;
 
-   case _m("Create"): 
+   case _m("Create"):
 
       if ($superusers || $supergroups) {
          NoAction();
          break;
       }
-   
+
       ValidateInput("login", _m("Login name"), $login, $err, true, "login");
       ValidateInput("password1", _m("Password"), $password1,
                     $err, true, "password");
@@ -207,7 +224,7 @@ switch ($phase) {
       ValidateInput("fname", _m("First name"), $fname, $err, true, "all");
       ValidateInput("lname", _m("Last name"), $lname, $err, true, "all");
       ValidateInput("email", _m("E-mail"), $email, $err, false, "email");
-   
+
       if( $password1 != $password2 ) {
          $err[$password1] = MsgErr(_m("Retyped password is not the same as the first one"));
       }
@@ -217,34 +234,34 @@ switch ($phase) {
          SuperForm();
          break;
       }
-      
+
       // Input data are OK, prepare the record
-   
+
       $super["uid"] = $login;
       $super["userpassword"] = $password1;
       $super["givenname"] = $fname;
       $super["sn"] = $lname;
-      if ($email) { 
+      if ($email) {
          $super["mail"][] = $email;
       } else {
          $super["mail"][] = "";
       }
-      
+
       // Try to create the account
-         
+
       $superid = AddUser($super);
-   
+
       if (!$superid) {               // No success :-(
          echo _m("It is impossible to add user to permission system");
          break;
       }
-      
+
       // Assign super admin privilege
-      
+
       AddPerm($superid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
-      
+
       // Check whether succefful
-      
+
       $perms = GetObjectsPerms(AA_ID, "aa");
 
       if ($perms[$superid]) {
@@ -265,9 +282,9 @@ switch ($phase) {
          NoAction();
          break;
       }
-      
+
       // Print the welcome page
-      
+
       InitForm();
       break;
 
