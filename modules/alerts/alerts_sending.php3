@@ -80,6 +80,8 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
         $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
     }
 
+    // fill alerts_collection_howoften.last in cases the row for this period
+    // (= how_often) not exist, yet
     initialize_last ();
 
     $db->query($SQL);
@@ -308,13 +310,16 @@ function initialize_last ()
     $hos = get_howoften_options();   
     reset ($hos);
     while (list ($ho) = each ($hos)) {
+        // fill alerts_collection_howoften.last in cases the row for this period
+        // (= how_often) not exist, yet
         $db->query("SELECT C.id FROM alerts_collection C LEFT JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id AND howoften='$ho'
             WHERE last IS NULL");
         while ($db->next_record())
             $db2->query("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
                 VALUES ('".$db->f("id")."', '$ho', ".$init[$ho].")");
-
+        
+        // the same as above, but for rows, which exist but with last=0
         $db->query("SELECT C.id FROM alerts_collection C INNER JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id
             WHERE last=0 AND howoften='$ho'");

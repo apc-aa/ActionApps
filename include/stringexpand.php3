@@ -104,7 +104,7 @@ function parseUser($field) {
     // this GLOBAL :-( variable is message for pagecache to NOT store views (or
     // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
     // cache's keyString.
-    $cache_nostore = true;             // GLOBAL!!!     
+    $cache_nostore = true;             // GLOBAL!!!
     switch ($field = trim($field)) {
         case '':         return $_SERVER['PHP_AUTH_USER'];
         case 'password': return $_SERVER['PHP_AUTH_PW'];
@@ -193,8 +193,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {switch(testvalue)test:result:test2:result2:default}
     # {math(<format>)expression}
     # {include(file)}
-    # {include:file} or {include:file:http} 
-    # {include:file:fileman|site} 
+    # {include:file} or {include:file:http}
+    # {include:file:fileman|site}
     # {scroller.....}
     # {#comments}
     # {debug}
@@ -280,7 +280,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $parts[0];
             if ($filedes = @fopen ($filename, "r")) {
                 $fileout = "";
-                while (!feof ($filedes)) 
+                while (!feof ($filedes))
                     $fileout .= fgets($filedes, 4096);
                 fclose($filedes);
             } else {
@@ -289,7 +289,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             }
             break;
           default:
-            if ($errcheck) huhl("Trying to expand include, but no valid hint in $out"); 
+            if ($errcheck) huhl("Trying to expand include, but no valid hint in $out");
             return("");
         }
         return QuoteColons($level, $maxlevel, $fileout);
@@ -378,9 +378,9 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     else {
         // Don't warn if { followed by non alphabetic, e.g. in Javascript
         if ($errcheck && ereg("^[a-zA-Z_0-9]",$out)) {
-            huhl("Couldn't expand: \"{$out}\""); 
+            huhl("Couldn't expand: \"{$out}\"");
             #trace("p");
-        } 
+        }
         return QuoteColons($level, $maxlevel, "{" . $out . "}");
     }
 }
@@ -425,24 +425,19 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
     global $debug;
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
-    if ($debug) huhl("<br>Unaliasing:$level:'",$text,"'\n");
 # Note ereg was 15 seconds on one multi-line example cf .002 secs
 #    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
 
     while (preg_match("/^(.*)[{]([^{}]+)[}](.*)$/s",$text,$vars)) {
-        if ($debug) huhl("Expanding:".isset($item).":$level:'$vars[2]'");
-
         $t1 = expand_bracketed($vars[2],$level+1,$maxlevel,$item,$itemview,$aliases);
 
-        if ($debug) huhl("Expanded:$level:'$t1'");
         $text = $vars[1] . $t1 . $vars[3];
-        if ($debug) huhl("Continue with:$level:'$text'");
     }
 
     if (isset($item)) {
-            return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));
+        return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));
     } else {
-            return QuoteColons($level, $maxlevel, $text);
+        return QuoteColons($level, $maxlevel, $text);
     }
 }
 

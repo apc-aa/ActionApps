@@ -55,7 +55,7 @@ function ValidateModuleFields( $name, $slice_url, $lang_file, $owner, &$err ) {
 
 # Updates or inserts all necessary fields to module table
 function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
-                            $type, $name, $slice_url, $lang_file, $owner, 
+                            $type, $name, $slice_url, $lang_file, $owner,
                             $deleted, $new_id="" ) {
   $varset->clear();
   if( $module_id )  {
@@ -78,7 +78,7 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
     $GLOBALS['r_slice_view_url'] = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                     : stripslashes($slice_url));
   } else {  // insert (add)
-    $module_id = ($new_id ? $new_id : new_id());   // sometimes we need specific 
+    $module_id = ($new_id ? $new_id : new_id());   // sometimes we need specific
                                                    // module_id (links module)
     $varset->set("id", $module_id, "unpacked");
     $varset->set("created_by", $auth->auth["uid"], "text");
@@ -131,9 +131,9 @@ function ExitIfCantDelete( $del, $db ) {
   $SQL = "SELECT deleted FROM module WHERE id='$p_del'";
   $db->query($SQL);
   if( !$db->next_record() )
-    go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". _m("No such module."));
+    go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No such module."))));
   if( $db->f(deleted) < 1 )
-    go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". _m("No module flagged for deletion."));
+    go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No module flagged for deletion."))));
 }
 
 # delete module from module table

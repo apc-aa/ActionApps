@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -22,10 +22,10 @@ http://www.apc.org/
 # SiteTree and Spot class definition
 $SPOT_VAR_NAMES = array ('id' => 'id',        # translation from long variable
                          'name' => 'n',       # names to the current - shorter
-                         'conditions' => 'c', 
-                         'variables' => 'v', 
-                         'parent' => 'p', 
-                         'positions' => 'po', 
+                         'conditions' => 'c',
+                         'variables' => 'v',
+                         'parent' => 'p',
+                         'positions' => 'po',
                          'choices' => 'ch',
                          'flag' => 'f');
 
@@ -40,45 +40,45 @@ class spot {
   var $f;           # flags
   # the names of variables are short in order the outpot of serialize() function
   # would be as short as possible
-  
+
   function spot( $id=false, $name=false, $conditions=false, $variables=false, $parent=false, $positions=false, $choices=false, $flag=false ) {
     $this->id = $id;
     $this->n = $name;
     $this->c = $conditions; # Array of conditions to match to be this
-                                     # branch executed     
-    
-    $this->v = $variables;   # Array of variable names used in 
+                                     # branch executed
+
+    $this->v = $variables;   # Array of variable names used in
                                      # branching. The only spots with variables
                                      # defined may branch the code
     $this->p = $parent;
     $this->po = $positions;
     $this->ch = $choices;
     $this->f = 1;
-  }  
-  
+  }
+
   function addInSequence($new_id) {
     $this->po[] = $new_id;
-  }  
+  }
 
   function addChoice($new_id) {
     $this->ch[] = $new_id;
-  }  
+  }
 
   function addVariable($name) {
     $this->v[$name] = $name;
-  }  
+  }
 
   function removeVariable($name) {
     unset( $this->v[$name] );
-  }  
+  }
 
   function addCondition($var, $cond) {
     $this->c[$var] = $cond;
-  }  
+  }
 
   function removeCondition($name) {
     unset( $this->c[$name] );
-  }  
+  }
 
   function isLeaf() {
     return ( (!is_array($this->ch) OR (count($this->ch)<1)) AND (count($this->po)<2) );
@@ -96,7 +96,7 @@ class spot {
         }
 	$priorsib = $v;  // Used for where to move pointer to
       }
-    }  
+    }
     #search in sequence
     if( isset($this->po) AND is_array($this->po) ) {
       reset($this->po);
@@ -104,10 +104,10 @@ class spot {
         if( $v == $spot_id ) {
           unset($this->po[$k]);
           return $priorsib;   // Returning prior sibling
-        }  
+        }
 	$priorsib = $v;  // Used for where to move pointer to
       }
-    }  
+    }
     return false;
   }
 
@@ -121,11 +121,11 @@ class spot {
             $this->ch[$k] = $this->ch[$k-1];
             $this->ch[$k-1] = $v;
             return true;
-          } else 
+          } else
             break;
-        }  
+        }
       }
-    }  
+    }
     #search in sequence
     if( isset($this->po) AND is_array($this->po) ) {
       reset($this->po);
@@ -135,12 +135,12 @@ class spot {
             $this->po[$k] = $this->po[$k-1];
             $this->po[$k-1] = $v;
             return true;
-          } else 
+          } else
             break;
-        }  
+        }
       }
-    }  
-    return false;    
+    }
+    return false;
   }
 
   function moveDown( $spot_id ) {
@@ -154,11 +154,11 @@ class spot {
             $this->ch[$k] = $this->ch[$k+1];
             $this->ch[$k+1] = $v;
             return true;
-          } else 
+          } else
             break;
-        }  
+        }
       }
-    }  
+    }
     #search in sequence
     if( isset($this->po) AND is_array($this->po) ) {
       $last = count($this->po)-1;
@@ -169,15 +169,15 @@ class spot {
             $this->po[$k] = $this->po[$k+1];
             $this->po[$k+1] = $v;
             return true;
-          } else 
+          } else
             break;
-        }  
+        }
       }
-    }  
+    }
     return false;
   }
 
-    
+
   function Name() { return $this->n; }
   function Id() { return $this->id; }
   function Conditions() { return $this->c; }
@@ -190,27 +190,27 @@ class spot {
   function set($what,$value) { $this->set_translated($GLOBALS['SPOT_VAR_NAMES'][$what], $value); }
 
   function conditionMatches(&$state) {
-    $i=0; 
+    $i=0;
     if( isset( $this->c ) AND is_array($this->c) ) {  #c is array of conditions
       reset($this->c);
       while( list($var, $cond) = each( $this->c ) ) {
         if( !ereg($cond, $state[$var]) ) {
           return false;
-        }  
-      }    
-    }      
-    return true;     
+        }
+      }
+    }
+    return true;
   }
 };
 
 class sitetree {
   var $tree; // Array of spots
   var $start_id;
-  
+
   function sitetree( $spot=false ) {
     $this->tree[1] = new spot( $spot['spot_id'], $spot['name'] ? $spot['name']:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], array($spot['spot_id']), $spot['flag'] );
     $this->start_id = $spot['spot_id'];
-  }  
+  }
 
   function addInSequence( $where, $name, $content=false, $conditions=false, $variables=false, $flag=false ) {
     $new_id = $this->new_id();
@@ -231,16 +231,16 @@ class sitetree {
 
   function new_id() {
     return( max(array_keys($this->tree))+1 );
-  }  
+  }
 
   function addChoice( $where, $name, $content=false, $conditions=false, $variables=false, $flag=false ) {
     $new_id = $this->new_id();
-    
+
     #get real parent
     $where_spot =& $this->tree[$where];
     if( !$where_spot->get('variables') )  # before creating choice must be defined the list of dependency variables
       return false;
-      
+
     $where_spot->addChoice($new_id);
     $this->tree[$new_id] = new spot( $new_id, $name, $conditions, $variables, $where, array($new_id), $flag );
     return true;
@@ -278,7 +278,7 @@ class sitetree {
     $where_spot =& $this->tree[$where];
     if( !$where_spot )
       return false;
-      
+
     $where_spot->addVariable($var);
     return true;
   }
@@ -288,28 +288,28 @@ class sitetree {
     $where_spot =& $this->tree[$where];
     if( !$where_spot )
       return false;
-      
+
     $where_spot->removeVariable($var);
     return true;
   }
 
   function addCondition( $where, $var, $cond ) {
     #get real parent
-    
+
     if( !$this->isChoice($where) )
       return false;
-      
+
     $where_spot =& $this->tree[$where];
     $where_spot->addCondition($var, $cond);
     return true;
   }
-  
+
   function removeCondition( $where, $var ) {
     #get real parent
     $where_spot =& $this->tree[$where];
     if( !$where_spot )
       return false;
-      
+
     $where_spot->removeCondition($var);
     return true;
   }
@@ -320,55 +320,55 @@ class sitetree {
     if( !$spot )
       return false;
 
-    $parent_spot_id = $spot->get('parent');  
+    $parent_spot_id = $spot->get('parent');
     if( !$parent_spot_id OR !($vars=$this->get('variables',$parent_spot_id)) )
       return false;
     return ( $vars );
-  }  
+  }
 
   function isOption( $spot_id ) {
     $spot =& $this->tree[$spot_id];
     if( !$spot )
       return false;
 
-    $parent_spot_id = $spot->get('parent');  
+    $parent_spot_id = $spot->get('parent');
     if( !$parent_spot_id OR !($choices=$this->get('choices',$parent_spot_id)) ) {
       return false;
     }
     if( isset($choices) AND is_array($choices) )
       while( list( ,$v) = each( $choices ))
-        if( $v == $spot_id ) 
+        if( $v == $spot_id )
           return $this->get('variables',$parent_spot_id);
     return false;
-  }  
-  
+  }
+
   // Find the spot from the tree, and then do a get on the spot.
   function get( $what, $id ) {
     $s =& $this->tree[$id];
     return $s ? $s->get($what) : false;
-  }  
+  }
 
   function set( $what, $id, $value ) {
     $s =& $this->tree[$id];
     if( $s )
       $s->set($what,$value);
-  }  
-    
+  }
+
   function getName( $id ) { return $this->get( 'name', $id ); }
   function exist( $id )  { return isset($this->tree[$id]); }
-  
+
   function haveBranches($id) {
     return $this->get( 'choices', $id ) ? true : false;
-  }  
+  }
 
   function isSequenceStart($id) {
     return $this->get( 'positions', $id ) ? true : false;
-  }  
-  
+  }
+
   function conditionMatches( $id, &$state ) {
     $s =& $this->tree[$id];
     return $s ? $s->conditionMatches($state) : false;
-  }  
+  }
 
   //Walk the tree, starting at $id, calling $function
   function walkTree(&$state, $id, $function, $method='cond', $depth=0) {
@@ -381,11 +381,11 @@ class sitetree {
     }
     reset( $positions );
     while( list( , $pos) = each($positions) ) {
-     if($pos) { 
+     if($pos) {
       // There is a bug that introduced empty positions
       // this is to skip them.
       $function($pos, $depth);
-      if( $this->haveBranches($pos) AND 
+      if( $this->haveBranches($pos) AND
          (($method == 'cond') OR !($current->get("flag") & MODW_FLAG_HIDE))) {
         $chcurrent =& $this->tree[$pos];
         $choices = $chcurrent->get("choices");
@@ -404,6 +404,6 @@ class sitetree {
       }
      }
     }
-  }    
-};    
+  }
+};
 ?>
