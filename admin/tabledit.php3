@@ -38,7 +38,7 @@ if ($set_tview) $tview = $set_tview;
 
 require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tv_misc.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tv_slice.php3";
+//require_once $GLOBALS["AA_INC_PATH"]."tv_slice.php3";
 
 if (substr ($tview,0,1) == "a") {
     $func = "GetTableView";
