@@ -124,12 +124,12 @@ H1, .tablename {
 
 .tabtxt {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: x-small;
+  font-size: small;
 }
 
 .tabhlp {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: xx-small;
+  font-size: x-small;
 }
 
 .taberr {
