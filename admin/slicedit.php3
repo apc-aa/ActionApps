@@ -116,6 +116,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   FrmInputSelect("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $PERMS_STATE, $permit_anonymous_post, false);
   FrmInputSelect("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $PERMS_STATE, $permit_offline_fill, false);
   FrmInputSelect("lang_file", L_LANG_FILE, $LANGUAGE_FILES, $lang_file, false);
+  if ($superadmin) {
+      FrmInputSelect("fileman_access", L_FILEMAN_ACCESS, $FILEMAN_ACCESSES, $fileman_access, false);
+      FrmInputText("fileman_dir", L_FILEMAN_DIR, $fileman_dir, 99, 25, false);
+  }
 ?>
 </table>
 <tr><td align="center">
