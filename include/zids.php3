@@ -77,8 +77,10 @@ class zids {
                         $this->a[] = $v[value];
                 }
             } else {
-                reset($initial);
-                $this->a = $initial;
+                if ($initial[0] != "") {
+                    reset($initial);
+                    $this->a = $initial;
+                }
             }
         } elseif ($initial) {  # Single id
                 $this->a[] = $initial;

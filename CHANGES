@@ -1,3 +1,5 @@
+02/01/03 - fixed bug with empty cmd[20]=x-20-   so returns empty set
+01/30/03 - added support for match field "short_id" to f_q (could still use return field) (mitra)
 01/30/03 - fixed bug in itemfunc where file not uploaded (mitra)
 01/30/03 - fixed bug in {math where parameters contain aliases (mitra)
 01/30/03 - allow time_limit parameter to extend PHP timeout on view.php3 (mitra)
