@@ -98,7 +98,7 @@ echo '</table>
 </td>
 <td valign=top><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">
 <tr><td class=tabtxt>'._m("Triggers").':</td></tr>
-<tr><td class=tabtit>'._m("Write trigger functions like").' \"aa_onSubmit (fieldid) { }\", <a href="http://apc-aa.sourceforge.net/faq/#triggers" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
+<tr><td class=tabtit>'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="http://apc-aa.sourceforge.net/faq/#triggers" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
 <tr><td class=tabtxt><table border="1" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">';
 echo '<tr><td class=tabtit><b>'._m("Field Type").'</b></td><td class=tabtxt><b>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</b></td></tr>';
 reset ($js_triggers);
