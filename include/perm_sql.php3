@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-//php_sql - functions for working with permissions with LDAP
+//php_sql - functions for working with permissions with SQL
 
 /* INSTALL notes
    to come -- basically createa a database with these tables/fields:
@@ -321,18 +321,22 @@ function AddUser($user, $flags = 0) {
 
 // deletes an user in permission system
 // $user_id is DN
-function DelUser ($user_id, $flags = 0) {
+function DelUser ($user_id, $flags = 2) {
 
   $db  = new DB_AA;
 
   // To keep integrity of AA we should also delete all references
   // to this user
   
-  if ($flags & 1) {            
+  if ($flags & 1) {
 
      // cancel membership in groups
      $db->query("delete from membership where memberid = $user_id");
-
+     
+  }
+  
+  if ($flags & 2) {
+  
      // cancel direct permissions
      $db->query("delete from perms where userid = $user_id");
 
@@ -409,16 +413,21 @@ function AddGroup ($group, $flags = 0) {
 
 // deletes an group in permission system
 // $group_id is DN
-function DelGroup ($group_id, $flags = 0) {
+function DelGroup ($group_id, $flags = 2) {
   $db  = new DB_AA;
+  
+  // cancel other people's membership in this group
+  $db->query("delete from membership where groupid = $group_id");
 
   // To keep integrity of AA we should also delete all references
-  // to this user
-  if ($flags & 1) {            
-     // cancel other people's membership in this group
-     $db->query("delete from membership where groupid = $group_id");
+  // to this group
+  
+  if ($flags & 1) {
      // cancel this group's membership in other groups
      $db->query("delete from membership where memberid = $group_id");
+  }
+  
+  if ($flags & 2) {
      // cancel direct permissions
      $db->query("delete from perms where userid = $group_id");
   }    
@@ -461,7 +470,7 @@ function DelGroupMember ($group_id, $id, $flags = 0) {
 
 // ----------------------------- PERMS -----------------------------------
 
-// creates a new object in LDAP
+// creates a new object
 function AddPermObject ($objectID, $objectType, $flags = 0) {
   // we don't need to do that in mysql
   return true;
@@ -600,6 +609,10 @@ function in_array($needle,$haystack)
 
 /*
 $Log$
+Revision 1.6  2000/07/28 14:37:33  kzajicek
+Unified behaviour of DelUser, DelGroup in LDAP and SQL. Default is now
+delete any links to removed subject in permission system (to keep integrity).
+
 Revision 1.5  2000/07/21 14:45:41  kzajicek
 Admin needs to see login names, not IDs (DB specific)
 

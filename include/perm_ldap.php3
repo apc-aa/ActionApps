@@ -122,7 +122,7 @@ function AddUser($user, $flags = 0) {
 
 // deletes an user in LDAP permission system
 // $user_id is DN
-function DelUser ($user_id, $flags = 1) {
+function DelUser ($user_id, $flags = 2) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -239,7 +239,7 @@ function AddGroup ($group, $flags = 0) {
 
 // deletes a group in LDAP permission system
 // $group_id is DN
-function DelGroup ($group_id, $flags = 0) {
+function DelGroup ($group_id, $flags = 2) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -677,6 +677,10 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.5  2000/07/28 14:37:33  kzajicek
+Unified behaviour of DelUser, DelGroup in LDAP and SQL. Default is now
+delete any links to removed subject in permission system (to keep integrity).
+
 Revision 1.4  2000/07/28 14:25:02  kzajicek
 DelUser and DelGroup now able to cancel assigned permissions.
 
