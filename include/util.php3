@@ -1100,7 +1100,7 @@ function MsgPage($url, $msg, $dummy="standalone") {
 }
 
 # Prints alias names as help for fulltext and compact format page
-function PrintAliasHelp($aliases) {
+function PrintAliasHelp($aliases, $fields=false) {
   global $sess;
   echo '
   <tr><td class=tabtit><b>&nbsp;'._m("Use these aliases for database fields").'</b></td></tr>
@@ -1113,6 +1113,8 @@ function PrintAliasHelp($aliases) {
     $aliasedit = ( !$v["fld"] ? "&nbsp;" :
       "<a href=\"". $sess->url(con_url("./se_inputform.php3",
                     "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
+    if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show'])
+        $ali = "<span class=\"disabled\">$ali</span>";
     echo "<tr><td nowrap>$ali</td><td>". $v[hlp] ."</td><td>$aliasedit</td></tr>";
   }
 

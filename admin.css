@@ -96,6 +96,10 @@ H2 {
 	vertical-align: middle;
 }
 
+.disabled { 
+	color: #808080;
+}
+
 .example {
 	font-family: Courier, sans-serif;
 	font-size: 8pt;

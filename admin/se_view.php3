@@ -384,7 +384,7 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
                         $fields = $r_fields;
                       else
                         list($fields,) = GetSliceFields($slice_id);
-                      PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']));
+                      PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']),$fields);
                       break;
   case 'justids':     PrintAliasHelp(GetAliasesFromFields('','','justids'));
                       break;

@@ -153,7 +153,7 @@ function Defaults() {
 ?>
 </table></td></tr>
 <?php
-  PrintAliasHelp(GetAliasesFromFields($fields));
+  PrintAliasHelp(GetAliasesFromFields($fields),$fields);
 ?>
 <tr><td align="center">
 <?php 

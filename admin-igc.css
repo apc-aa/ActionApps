@@ -30,14 +30,14 @@ H1 {
 .navbar {
 	font-family: Arial, Helvetica, sans;
 	font-size: small;
-  background: #EBDABE;
+    background: #EBDABE;
 	color: #584011;
 }
 
 .nbmenu {
 	font-family: Arial, Helvetica, sans;
 	font-size: small;
-  background: #F5F0E7;
+    background: #F5F0E7;
 	color: #584011;
 }
 
@@ -51,8 +51,12 @@ H1 {
 .nbdisable {
 	font-family: Arial, Helvetica, sans;
 	font-size: small;
-  background: #F5F0E7;
+    background: #F5F0E7;
 	color: #EBDABE;
+}
+
+.disabled { 
+	color: #808080;
 }
 
 .example {
