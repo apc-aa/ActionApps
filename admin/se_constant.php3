@@ -168,7 +168,7 @@ if( $group_id ) {
 
   # lookup apc categories classes
 $SQL = "SELECT name, value, pri FROM constant
-         WHERE group_id='lt_apcCategories' ORDER BY pri";
+         WHERE group_id='lt_apcCategories' ORDER BY name";
 $classes = GetTable2Array($SQL, $db, "value");
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -244,6 +244,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.13  2001/05/27 21:23:35  honzam
+Parent categories sorted by name, now
+
 Revision 1.12  2001/05/21 13:52:31  honzam
 New "Field mapping" feature for internal slice to slice feeding
 
