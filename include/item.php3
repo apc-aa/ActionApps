@@ -36,6 +36,9 @@ function GetAliasesFromFields($fields) {
   $aliases["_#ITEM_ID#"] = array("fce" => "f_n:id..............",
                                  "param" => "id..............",
                                  "hlp" => L_ITEM_ID_ALIAS);
+  $aliases["_#SITEM_ID"] = array("fce" => "f_h",
+                                 "param" => "short_id........",
+                                 "hlp" => L_SITEM_ID_ALIAS);
   $aliases["_#EDITITEM"] = array("fce" => "f_e",
                                  "param" => "id..............",
                                  "hlp" => L_EDITITEM_ALIAS);
@@ -106,11 +109,14 @@ class item {
       return ($this->columns[$extern_url][0][value] ? 
                 $this->columns[$extern_url][0][value] :
                 NO_OUTER_LINK_URL);
+    $url_param = ( $GLOBALS['USE_SHORT_URL'] ? 
+            "x=".$this->columns["short_id........"][0][value] :
+            "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
+
     if( $redirect )      # redirecting to another page 
-      return con_url( $redirect, "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
+      return con_url( $redirect, $url_param );
      else 
-      return con_url( $this->clean_url,          # show on this page
-                      "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
+      return con_url( $this->clean_url, $url_param );     # show on this page
   }    
 
   # get link from url and text
@@ -347,6 +353,9 @@ class item {
 
 /*
 $Log$
+Revision 1.14  2001/06/03 16:00:49  honzam
+multiple categories (multiple values at all) for item now works
+
 Revision 1.13  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 

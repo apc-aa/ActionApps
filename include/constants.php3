@@ -198,11 +198,6 @@ $VIEW_TYPES['list']  = array( "name" => L_COMPACT_VIEW,
                               "even_odd_differ" => L_V_EVENODDDIF ,
                               "even" => L_V_EVEN ,
                               "after" => L_V_AFTER ,
-                              "group_by1" => L_V_GROUP_BY1 ,
-                              "g1_direction" => L_V_GROUP1DIR ,
-#                              "group_by2" => L_V_GROUP_BY2 ,
-#                              "g2_direction" => L_V_GROUP2DIR ,
-                              "group_title" => L_V_GROUP ,
                               "remove_string" => L_V_REMOVE_STRING ,
 // TODO                              "modification" => L_V_MODIFICATION ,
 #                              "parameter" => L_V_PARAMETER ,
@@ -214,6 +209,11 @@ $VIEW_TYPES['list']  = array( "name" => L_COMPACT_VIEW,
                               "o1_direction" => L_V_ORDER1DIR ,
                               "order2" => L_V_ORDER2 ,
                               "o2_direction" => L_V_ORDER2DIR ,
+                              "group_by1" => L_V_GROUP_BY1 ,
+                              "g1_direction" => L_V_GROUP1DIR ,
+#                              "group_by2" => L_V_GROUP_BY2 ,
+#                              "g2_direction" => L_V_GROUP2DIR ,
+                              "group_title" => L_V_GROUP ,
 #                              "selected_item" => L_V_SELECTED ,
                               "cond1field" => L_V_COND1FLD ,
                               "cond1op" => L_V_COND1OP ,
@@ -366,6 +366,9 @@ $VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
                       
 /*
 $Log$
+Revision 1.12  2001/06/03 16:00:49  honzam
+multiple categories (multiple values at all) for item now works
+
 Revision 1.11  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 

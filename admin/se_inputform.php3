@@ -64,7 +64,7 @@ if( $update ) {
     ValidateInput("input_help", L_INPUT_HELP, $input_help, &$err, false, "text");
     ValidateInput("input_morehlp", L_INPUT_MOREHLP, $input_morehlp, &$err, false, "text");
     ValidateInput("input_default", L_INPUT_DEFAULT, $input_default, &$err, false, "text");
-    ValidateInput("input_show_func", L_INPUT_SHOW_FUNC, $input_show_func, &$err, false, "text");
+    ValidateInput("input_show_func", L_INPUT_SHOW_FUNC, $input_show_func_f, &$err, false, "text");
 
     ValidateInput("alias1", L_ALIAS1, $alias1, &$err, false, "alias");
     ValidateInput("alias1_help", L_ALIAS1_HELP, $alias1_help, &$err, false, "text");
@@ -83,7 +83,7 @@ if( $update ) {
     $varset->add("input_help", "quoted", $input_help);
     $varset->add("input_morehlp", "quoted", $input_morehlp);
     $varset->add("input_default", "quoted", "$input_default_f:$input_default");
-    $varset->add("multiple", "quoted", ($input_show_func=="mch") ? 1 : 0);
+    $varset->add("multiple", "quoted", ($input_show_func_f=="mch") ? 1 : 0);
 
     $varset->add("alias1", "quoted", $alias1);
     $varset->add("alias1_help", "quoted", $alias1_help);
@@ -118,6 +118,7 @@ if( $update ) {
                                          OR ($input_validate=="date")) ? 0:1));
     $SQL = "UPDATE field SET ". $varset->makeUPDATE() . 
            " WHERE id='$fid' AND slice_id='$p_slice_id'";
+
     if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
       $err["DB"] = MsgErr("Can't change field");
       break;
@@ -401,6 +402,9 @@ echo "
 
 /*
 $Log$
+Revision 1.11  2001/06/03 15:57:45  honzam
+multiple categories (multiple values at all) for item now works
+
 Revision 1.10  2001/05/21 13:52:31  honzam
 New "Field mapping" feature for internal slice to slice feeding
 

@@ -513,9 +513,9 @@ define('L_V_EVENODDDIF',L_EVEN_ODD_DIFFER);
 define('L_V_EVEN',L_EVEN_ROW_FORMAT);
 define('L_V_AFTER',L_COMPACT_BOTTOM);
 define('L_V_GROUP_BY1','Seskupit dle');
-define('L_V_GROUP1DIR','');
+define('L_V_GROUP1DIR',' ');
 define('L_V_GROUP_BY2',L_V_GROUP_BY1);
-define('L_V_GROUP2DIR','');
+define('L_V_GROUP2DIR',' ');
 define('L_V_GROUP','Nadpis skupiny');
 define('L_V_REMOVE_STRING',L_COMPACT_REMOVE);
 define('L_V_MODIFICATION','Typ');
@@ -525,19 +525,19 @@ define('L_V_IMG2','Obrázek 2');
 define('L_V_IMG3','Obrázek 3');
 define('L_V_IMG4','Obrázek 4');
 define('L_V_ORDER1','Seøadit');
-define('L_V_ORDER1DIR','');
+define('L_V_ORDER1DIR',' ');
 define('L_V_ORDER2','Seøadit druhotnì');
-define('L_V_ORDER2DIR','');
+define('L_V_ORDER2DIR',' ');
 define('L_V_SELECTED','Použít vybraný èlánek');
 define('L_V_COND1FLD','Podmínka 1');
-define('L_V_COND1OP','');
-define('L_V_COND1COND','');
+define('L_V_COND1OP',' ');
+define('L_V_COND1COND',' ');
 define('L_V_COND2FLD','Podmínka 2');
-define('L_V_COND2OP','');
-define('L_V_COND2COND','');
+define('L_V_COND2OP',' ');
+define('L_V_COND2COND',' ');
 define('L_V_COND3FLD','Podmínka 3');
-define('L_V_COND3OP','');
-define('L_V_COND3COND','');
+define('L_V_COND3OP',' ');
+define('L_V_COND3COND',' ');
 define('L_V_LISTLEN',L_D_LISTLEN);
 define('L_V_FLAG','Flag');
 define('L_V_SCROLLER','Zobrazit rolování stránek');
@@ -563,8 +563,16 @@ define("L_MAP_DUP","Nelze mapovat do stejného pole");
 define("L_MAP_NOTMAP","-- Nemapovat --");
 define("L_MAP_OK","Nastavení mapování polí úspì¹nì zmìnìno");
     
+define("L_STATE_FEEDABLE_UPDATE", "Kopírovat obsah a zmìny" );
+define("L_STATE_FEEDABLE_UPDATE_LOCKED", "Kopírovat obsah a zmìny nemìnitelnì");
+
+define("L_SITEM_ID_ALIAS",'alias pro zkrácené èíslo èlánku');
+
 /*
 $Log$
+Revision 1.31  2001/06/03 16:00:49  honzam
+multiple categories (multiple values at all) for item now works
+
 Revision 1.30  2001/05/21 13:52:32  honzam
 New "Field mapping" feature for internal slice to slice feeding
 

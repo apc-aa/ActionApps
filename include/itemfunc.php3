@@ -49,10 +49,10 @@ function default_fnc_($param) {
 
 # ----------------------- insert functions ------------------------------------
 
-function insert_fnc_qte($item_id, $field, $value, $param, $insert=true) {
+function insert_fnc_qte($item_id, $field, $value, $param) {
   global $varset, $itemvarset, $db;
 
-  #huh( "insert_fnc_qte($item_id, $field, $value, $param, $insert)"); 
+  #huh( "insert_fnc_qte($item_id, $field, $value, $param)"); 
   #p_arr_m($field);
 
   if( $field[in_item_tbl] ) {
@@ -69,54 +69,43 @@ function insert_fnc_qte($item_id, $field, $value, $param, $insert=true) {
     $varset->add("number", "quoted", $value[value]);
   $varset->add("flag", "quoted", $value[flag]);
 
-  if( !$insert ) {
-    $where = " item_id='". q_pack_id($item_id). "'
-                   AND field_id='". $field[id] . "'";
-       # if updating database with changed structure (new field added),
-       # the UPDATE is not enough - we must INSERT
-    $db->query("SELECT item_id FROM content WHERE $where");
-    if( $db->next_record() ) {
-      $db->query("UPDATE content SET ". $varset->makeUPDATE() ." WHERE $where");
-      return;
-    } # else continue to insert field
-  }    
-  # insert or update item but new field
+    # insert item but new field
   $varset->add("item_id", "unpacked", $item_id);
   $varset->add("field_id", "quoted", $field[id]);
   $SQL =  "INSERT INTO content" . $varset->makeINSERT();
   $db->query( $SQL );
 }
 
-function insert_fnc_dte($item_id, $field, $value, $param, $insert=true) {
-  insert_fnc_qte($item_id, $field, $value, $param, $insert);
+function insert_fnc_dte($item_id, $field, $value, $param) {
+  insert_fnc_qte($item_id, $field, $value, $param);
 }
 
-function insert_fnc_cns($item_id, $field, $value, $param, $insert=true) {
-  insert_fnc_qte($item_id, $field, $value, $param, $insert);
+function insert_fnc_cns($item_id, $field, $value, $param) {
+  insert_fnc_qte($item_id, $field, $value, $param);
 }
 
-function insert_fnc_num($item_id, $field, $value, $param, $insert=true) {
-  insert_fnc_qte($item_id, $field, $value, $param, $insert);
+function insert_fnc_num($item_id, $field, $value, $param) {
+  insert_fnc_qte($item_id, $field, $value, $param);
 }
 
-function insert_fnc_boo($item_id, $field, $value, $param, $insert=true) {
+function insert_fnc_boo($item_id, $field, $value, $param) {
   $value[value] = ( $value[value] ? 1 : 0 );
-  insert_fnc_qte($item_id, $field, $value, $param, $insert);
+  insert_fnc_qte($item_id, $field, $value, $param);
 }
 
-function insert_fnc_uid($item_id, $field, $value, $param, $insert=true) {
+function insert_fnc_uid($item_id, $field, $value, $param) {
   global $auth;
   # if not $auth, it is from anonymous posting - 9999999999 is anonymous user
   $val = (isset($auth) ?  $auth->auth["uid"] : "9999999999");
-  insert_fnc_qte($item_id, $field, array("value"=>$val) , $param, $insert);
+  insert_fnc_qte($item_id, $field, array("value"=>$val) , $param);
 }
 
-function insert_fnc_now($item_id, $field, $value, $param, $insert=true) {
-  insert_fnc_qte($item_id, $field, array("value"=>now()), $param, $insert);
+function insert_fnc_now($item_id, $field, $value, $param) {
+  insert_fnc_qte($item_id, $field, array("value"=>now()), $param);
 }
 
   # File upload
-function insert_fnc_fil($item_id, $field, $value, $param, $insert=true) {
+function insert_fnc_fil($item_id, $field, $value, $param) {
   $varname = 'v'.unpack_id($field[id]);
   $filevarname = $varname."x";
     
@@ -143,14 +132,14 @@ function insert_fnc_fil($item_id, $field, $value, $param, $insert=true) {
     $value["value"] = "$dirurl/$dest_file";
   }
   # store link to uploaded file or specified file URL if nothing was uploaded
-  insert_fnc_qte($item_id, $field, $value, "", $insert);
+  insert_fnc_qte($item_id, $field, $value, "");
 }    
 
-function insert_fnc_nul($item_id, $field, $value, $param, $insert=true) {
+function insert_fnc_nul($item_id, $field, $value, $param) {
 }
 
 # not defined insert func in field table (it is better to use insert_fnc_nul)
-function insert_fnc_($item_id, $field, $value, $param, $insert=true) {
+function insert_fnc_($item_id, $field, $value, $param) {
 }
 
 # ----------------------- show functions --------------------------------------
@@ -161,6 +150,11 @@ function show_fnc_chb($varname, $field, $value, $param, $html) {
                 $field[required], $field[input_help], $field[input_morehlp] );
 }
 
+function show_fnc_freeze_chb($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], $value[0][value] ? L_SET : L_UNSET );
+}
+
 function show_fnc_txt($varname, $field, $value, $param, $html){
   echo $field[input_before];
   $rows      = ($param ? $param : 4);
@@ -168,6 +162,11 @@ function show_fnc_txt($varname, $field, $value, $param, $html){
   FrmTextarea($varname, $field[name], $value[0][value], 
    $rows, 60, $field[required], $field[input_help], $field[input_morehlp], 
    false, $htmlstate );
+}
+
+function show_fnc_freeze_txt($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], $value[0][value]);
 }
 
 function show_fnc_fld($varname, $field, $value, $param, $html) {
@@ -181,7 +180,12 @@ function show_fnc_fld($varname, $field, $value, $param, $html) {
    FrmInputText($varname, $field[name], $value[0][value], $maxlength,
                 $fieldsize, $field[required], $field[input_help],
                 $field[input_morehlp], $htmlstate );
- }
+}
+
+function show_fnc_freeze_fld($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], $value[0][value]);
+}
 
 function show_fnc_rio($varname, $field, $value, $param, $html) {
   global $db;
@@ -191,20 +195,46 @@ function show_fnc_rio($varname, $field, $value, $param, $html) {
                 $field[required], $field[input_help], $field[input_morehlp] );
 }
 
+function show_fnc_freeze_rio($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], $value[0][value]);
+}
+
 function show_fnc_mch($varname, $field, $value, $param, $html) {
   global $db;
+
   $arr = GetConstants($param, $db); 
+
+  # fill selected array from value
+  if( isset($value) AND is_array($value) ) {
+    reset($value);   
+    while( list( ,$x ) = each( $value )) {
+      if( $x[value] )
+        $selected[$x[value]] = true;
+    }
+  }  
+  
   echo $field[input_before];
-  FrmInputMultiChBox($varname, $field[name], $arr, $value, 
+  FrmInputMultiChBox($varname."[]", $field[name], $arr, $selected, 
     $field[required], $field[input_help], $field[input_morehlp]);
 }
   
+function show_fnc_freeze_mch($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], implode (", ", $value));
+}
+
 function show_fnc_sel($varname, $field, $value, $param, $html) {
   global $db;
   $arr = GetConstants($param, $db); 
   echo $field[input_before];
   FrmInputSelect($varname, $field[name], $arr, $value[0][value],
                  $field[required], $field[input_help], $field[input_morehlp] );
+}
+
+function show_fnc_freeze_sel($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], $value[0][value]);
 }
 
 # $param is uploaded_file_type:field_name:help (like "image/*::Select image")
@@ -221,6 +251,11 @@ function show_fnc_fil($varname, $field, $value, $param, $html) {
                $arr[0], $arr[2], false );
 }
 
+function show_fnc_freeze_fil($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], $value[0][value]);
+}
+
 function show_fnc_dte($varname, $field, $value, $param, $html) {
   echo $field[input_before];
   if( strstr($param, "'"))
@@ -233,17 +268,34 @@ function show_fnc_dte($varname, $field, $value, $param, $html) {
                 $field[input_help], $field[input_morehlp], "0" );
 }
 
+function show_fnc_freeze_dte($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  $datectrl->setdate_int($value[0][value]);
+  FrmStaticText($field[name], $datectrl->get_datestring());
+}
+
 function show_fnc_nul($varname, $field, $value, $param, $html) {
+}
+
+function show_fnc_freeze_nul($varname, $field, $value, $param, $html) {
 }
 
 # -----------------------------------------------------------------------------
 
-function GetContentFromForm( $fields, $prifields ) {
+function IsEditable($fieldcontent, $field) {
+  return (!($fieldcontent[0][flag] & FLAG_FREEZE) AND $field[input_show]);
+}  
+  
+function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=true ) {
   if( !isset($prifields) OR !is_array($prifields) )
     return false;
   reset($prifields);
   while(list(,$pri_field_id) = each($prifields)) {
     $f = $fields[$pri_field_id];
+
+      # to content4id array add just displayed fields (see ShowForm())
+    if( !IsEditable($oldcontent4id[$pri_field_id], $f) AND !$insert )
+	    continue;
 
     $varname = 'v'. unpack_id($pri_field_id); # "v" prefix - database field var
     $htmlvarname = $varname."html";
@@ -271,7 +323,24 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
   if( !( $id AND isset($fields) AND is_array($fields)
         AND isset($content4id) AND is_array($content4id)) )
     return false;
-    
+
+  if( !$insert ) {  # remove old content first (just in content table - item is updated)
+    reset($content4id);
+    $delim="";
+    while(list($fid,) = each($content4id)) {
+      if ( !$fields[$fid]['in_item_tbl']) {
+        $in .= $delim."'$fid'";
+        $delim = ",";
+      }
+    }
+    if ( $in ) { # delete content just for displayed fields 
+      $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($id). "' 
+                                    AND field_id IN ($in)";
+      $db->query($SQL);
+    }  
+  }  
+
+//print_r($content4id);
 
   reset($content4id);
   while(list($fid,$cont) = each($content4id)) {
@@ -285,23 +354,28 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
       reset($cont);               # it must serve multiple values for one field
       while(list(,$v) = each($cont)) {
           # add to content table or to itemvarset
-        $fncname($id, $f, $v, $fnc[param], $insert); 
+        $fncname($id, $f, $v, $fnc[param]); 
           # do not store multiple values if field is not marked as multiple
         if( !$f[multiple]!=1 ) 
           continue;
-      } 
+      }
     }
   }
  
     # update item table
   if( !$insert ) {
     $itemvarset->add("slice_id", "unpacked", $slice_id);
+    $itemvarset->add("last_edit", "quoted", default_fnc_now(""));
+    $itemvarset->add("edited_by", "quoted", default_fnc_uid(""));
     $SQL = "UPDATE item SET ". $itemvarset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
   } else {
     $itemvarset->add("id", "unpacked", $id);
     $itemvarset->add("slice_id", "unpacked", $slice_id);
+    $itemvarset->add("flags", "quoted", "");
+    $itemvarset->add("display_count", "quoted", "0");
     $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
   }  
+
   $db->query($SQL);
 
   if( $invalidatecache ) {
@@ -340,13 +414,17 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
     $varname = 'v'. unpack_id($pri_field_id); # "v" prefix - database field var
     $htmlvarname = $varname."html";
 
-	  if(    ($content4id[$pri_field_id][0][flag] & FLAG_FREEZE)  
-        OR !$f[input_show])      # fed as unchangeable or set to not show
-	    continue;                  # fed fields or not shown fields do not show
+    if( !IsEditable($content4id[$pri_field_id], $f) ) # if fed as unchangeable 
+      $show_fnc_prefix = 'show_fnc_freeze_';            # display it only
+     else 
+      $show_fnc_prefix = 'show_fnc_';
+
+	  if( !$f[input_show] )        # if set to not show - don't show
+	    continue;
 
 	  $fnc = ParseFnc($f[input_show_func]);   # input show function
 	  if( $fnc ) {                     # call function
-	    $fncname = 'show_fnc_' . $fnc[fnc];
+	    $fncname = $show_fnc_prefix . $fnc[fnc];
 	      # updates content table or fills $itemvarset 
       if( !$edit ) {
         if( $f[multiple] AND isset($GLOBALS[$varname])
@@ -369,6 +447,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.11  2001/06/03 16:00:49  honzam
+multiple categories (multiple values at all) for item now works
+
 Revision 1.10  2001/05/23 23:07:00  honzam
 fixed bug of not updated list of item in Item manager after item edit
 

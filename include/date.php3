@@ -95,6 +95,11 @@ class datectrl {
     return  mktime (0,0,0,$this->month,$this->day,$this->year);
 	}
 
+  # get stored date as integer
+	function get_datestring() {
+    return  $this->day. " - ". $this->month. " - ". $this->year;
+	}
+
   # check if date is valid  
   function ValidateDate($inputName, &$err)
   {
@@ -150,6 +155,9 @@ class datectrl {
 }
 /*
 $Log$
+Revision 1.7  2001/06/03 16:00:49  honzam
+multiple categories (multiple values at all) for item now works
+
 Revision 1.6  2001/03/30 11:54:35  honzam
 offline filling bug and others small bugs fixed
 

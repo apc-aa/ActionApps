@@ -81,6 +81,13 @@ $itemvarset = new Cvarset();
 list($fields,$prifields) = GetSliceFields($slice_id);   
 
 if( isset($prifields) AND is_array($prifields) ) {
+
+  #it is needed to call IsEditable() function and GetContentFromForm()
+  if( $update ) { 
+    $oldcontent = GetItemContent($id);
+    $oldcontent4id = $oldcontent[$id];   # shortcut
+  }  
+
 	reset($prifields);
 	while(list(,$pri_field_id) = each($prifields)) {
     $f = $fields[$pri_field_id];
@@ -95,7 +102,7 @@ if( isset($prifields) AND is_array($prifields) ) {
       # validate input data
     if( $insert || $update )
     {
-      if( $f[input_show] AND !$f[feed] ) {
+      if( IsEditable($oldcontent4id[$pri_field_id], $f)) {
         switch( $f[input_validate] ) {
           case 'text': 
           case 'url':  
@@ -127,7 +134,9 @@ if( ($insert || $update) AND (count($err)<=1)
     AND isset($prifields) AND is_array($prifields) ) {
 
   # prepare content4id array before call StoreItem function
-  $content4id = GetContentFromForm( $fields, $prifields );
+  $content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
+
+// p_arr_m ( $content4id );
 
   if( $insert )
     $id = new_id();
@@ -256,6 +265,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.23  2001/06/03 15:57:45  honzam
+multiple categories (multiple values at all) for item now works
+
 Revision 1.22  2001/05/29 19:14:58  honzam
 copyright + AA logo changed
 

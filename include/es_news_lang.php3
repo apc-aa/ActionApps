@@ -515,9 +515,9 @@ define('L_V_EVENODDDIF',L_EVEN_ODD_DIFFER);
 define('L_V_EVEN',L_EVEN_ROW_FORMAT);
 define('L_V_AFTER',L_COMPACT_BOTTOM);
 define('L_V_GROUP_BY1','Group by');
-define('L_V_GROUP1DIR','');
+define('L_V_GROUP1DIR',' ');
 define('L_V_GROUP_BY2',L_V_GROUP_BY1);
-define('L_V_GROUP2DIR','');
+define('L_V_GROUP2DIR',' ');
 define('L_V_GROUP','Group title format');
 define('L_V_REMOVE_STRING',L_COMPACT_REMOVE);
 define('L_V_MODIFICATION','Type');
@@ -527,19 +527,19 @@ define('L_V_IMG2','View image 2');
 define('L_V_IMG3','View image 3');
 define('L_V_IMG4','View image 4');
 define('L_V_ORDER1','Sort primary');
-define('L_V_ORDER1DIR','');
+define('L_V_ORDER1DIR',' ');
 define('L_V_ORDER2','Sort secondary');
-define('L_V_ORDER2DIR','');
+define('L_V_ORDER2DIR',' ');
 define('L_V_SELECTED','Use selected item');
 define('L_V_COND1FLD','Condition 1');
-define('L_V_COND1OP','');
-define('L_V_COND1COND','');
+define('L_V_COND1OP',' ');
+define('L_V_COND1COND',' ');
 define('L_V_COND2FLD','Condition 2');
-define('L_V_COND2OP','');
-define('L_V_COND2COND','');
+define('L_V_COND2OP',' ');
+define('L_V_COND2COND',' ');
 define('L_V_COND3FLD','Condition 3');
-define('L_V_COND3OP','');
-define('L_V_COND3COND','');
+define('L_V_COND3OP',' ');
+define('L_V_COND3COND',' ');
 define('L_V_LISTLEN',L_D_LISTLEN);
 define('L_V_FLAG','Flag');
 define('L_V_SCROLLER','Display page scroller');
@@ -565,8 +565,17 @@ define("L_MAP_DUP","Cannot map to same field");
 define("L_MAP_NOTMAP","-- Not map --");
 define("L_MAP_OK","Fields' mapping update succesful");
 
+define("L_STATE_FEEDABLE_UPDATE", "Feed & update" );
+define("L_STATE_FEEDABLE_UPDATE_LOCKED", "Feed & update & lock" );
+
+define("L_SITEM_ID_ALIAS",'alias para el "short" Id del ítem');
+
+
 /*
 $Log$
+Revision 1.4  2001/06/03 16:00:49  honzam
+multiple categories (multiple values at all) for item now works
+
 Revision 1.3  2001/05/21 13:52:32  honzam
 New "Field mapping" feature for internal slice to slice feeding
 
