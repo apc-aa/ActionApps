@@ -160,8 +160,9 @@ function GetTableView ($viewID) {
             "description" => array (
                 "required" => true),
             "showme" => array (
+                "default" => 1,
                 "view" => array ("readonly" => true),
-                "view_new_record" => array ("readonly" => true, "default" => 1)),    
+                "view_new_record" => array ("readonly" => true)),    
             "mail_from" => "",
             "mail_reply_to" => "",
             "mail_errors_to" => "",
@@ -276,8 +277,7 @@ function GetTableView ($viewID) {
         "orderby" => "description",
         "fields" => array (
             "id" => array (
-                "view" => array ("readonly" => true),
-                "view_new_record" => array ("type"=>"hide")),
+                "view" => array ("readonly" => true)),
             "description" => array (
                 "view" => array ("type"=>"text","size"=>array("cols"=>30)),
                 "required" => true),

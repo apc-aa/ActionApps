@@ -258,7 +258,7 @@ class tabledit {
         if ($this->view["search"])  
             $this->ShowSearchRow ($gotoview2);
         
-        if (($this->view["readonly"] || $this->view["buttons"]["add"]) && $this->view["gotoview"]) {
+        if (($this->view["readonly"] || $this->view["button_add"]) && $this->view["gotoview"]) {
             echo "<br><br>
                 <FORM name='tv_".$this->viewID."_insert' method=post action='".$this->getAction($gotoview)."'>
                 <INPUT type=submit name='cmd[".$gotoview."][show_new]' value='".L_INSERT."'>

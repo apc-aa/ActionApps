@@ -77,7 +77,7 @@ if (is_array ($cmd)) {
   
 $script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
 
-$tabledit = new tabledit ($tview, $script, $cmd, $tableview, AA_INSTAL_URL."images/", $sess, "", "", "GetTableView");
+$tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."images/", $sess, "", "", "GetTableView");
 $err = $tabledit->view ($where);
 
 if ($err) echo "<b>$err</b>";
