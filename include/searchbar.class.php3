@@ -349,9 +349,9 @@ class searchbar extends storable_class{
             echo "<td class=\"tabtxteven\">".$this->search_fields[$fld]."</td>";
             echo "<td class=\"tabtxteven\">";
             switch ($oper) {
-                case "RLIKE" : echo _m('begins with'); break;
-                case "LIKE" : echo _m('contains'); break;
-                case "=" : echo _m('is'); break;
+                case "LIKE":  echo _m('contains');    break;
+                case "RLIKE": echo _m('begins with'); break;
+                case "=":     echo _m('is');          break;
             }
             echo "</td>";
             echo "<td class=\"tabtxteven\">".$val."</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
@@ -407,19 +407,10 @@ class searchbar extends storable_class{
                </td>
                <td colspan=\"2\">
                 <a href='javascript:SearchBarAction(\"".$this->form_name. "\", \"bookmark\", \""._m('Stored search name') ."\",".
-                    ( !IfSlPerm(PS_BOOKMARK) ? "\"false\"" : "\"". _m('You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?')) ."\")'>". _m('Store') ."</a>";
+                    ( !IfSlPerm(PS_BOOKMARK) ? "false" : '"'. _m('You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?').'"') .")'>". _m('Store') ."</a>";
               echo "</td>";
 
               if ($this->hint != "") {
-/*
-                  if ($this->hint_url != "") {
-                      $url = "<a href=\"$this->hint_url\" target=\"_blank\" title=\"".htmlspecialchars($this->hint)."\">".GetAAImage('help50.gif', htmlspecialchars($this->hint), 16, 12)."</a>";
-                  } else {
-                      $url = "<abbr title=\"".htmlspecialchars($this->hint)."\">".GetAAImage('help50.gif', htmlspecialchars($this->hint), 16, 12)."</abbr>";
-                  }
-
-                  echo "<td>$url</td>";
-*/
                   echo "<td>";
                   echo FrmMoreHelp($this->hint_url,"",$this->hint, true);
                   echo "</td>";
@@ -485,17 +476,17 @@ class searchbar extends storable_class{
                 var operator_names  = new Array();
                 var operator_values = new Array();
                 // text
-                operator_names[0]  = new Array(" '._m('begins with').' "," '._m('contains').' ", " '._m('is').' ");
-                operator_values[0] = new Array("RLIKE"                ,"LIKE"                  , "=");
+                operator_names[0]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ");
+                operator_values[0] = new Array(       "LIKE"         ,       "RLIKE"           ,        "=");
                 // numeric
                 operator_names[1]  = new Array(" = "," < "," > ", " <> ");
-                operator_values[1] = new Array("="  ,"<"  ,">"  , "<>");
+                operator_values[1] = new Array( "=" , "<" , ">" ,  "<>");
                 // date
                 operator_names[2]  = new Array(" < (12/24/2002) "," > (12/24/2002) ");
-                operator_values[2] = new Array("d:<"             ,"d:>");
+                operator_values[2] = new Array( "d:<"            , "d:>");
                 // constants
-                operator_names[3]  = new Array(" '._m('begins with').' "," '._m('contains').' ", " '._m('is').' ", " '._m("select ...").' ");
-                operator_values[3] = new Array("RLIKE"                ,"LIKE"                  , "=", "select");
+                operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m("select ...").' ");
+                operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,        "select");
 
                 var field_types    = "';
 
