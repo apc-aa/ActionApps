@@ -23,7 +23,7 @@ http://www.apc.org/
 
 // setup constats
 define("L_SETUP_PAGE_BEGIN", 
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
@@ -68,7 +68,7 @@ define("L_TRY_AGAIN", "Zkuste to znovu! (Try it again!)");
 define("L_BAD_HINT", "Pokud urèitì zadáváte správné heslo, kontaktujte <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.
 	(If you are sure you use the right password, contact ...)");
 define("LOGIN_PAGE_BEGIN",
-'<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+'<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="../'. ADMIN_CSS .'" 
@@ -110,7 +110,7 @@ define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
 // offline filling --------------
 define( "L_OFFLINE_ERR_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="./'.ADMIN_CSS.'" type="text/css">

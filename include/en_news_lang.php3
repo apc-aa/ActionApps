@@ -41,7 +41,7 @@ define("DEFAULT_FULLTEXT_REMOVE", "()");
 # HTML begin of admin page
 # You should set language of admin pages and possibly any meta tags
 define("HTML_PAGE_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">

@@ -25,7 +25,7 @@ http://www.apc.org/
 
 // setup constats
 define("L_SETUP_PAGE_BEGIN", 
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
@@ -69,7 +69,7 @@ define("L_BAD_LOGIN", "Numele utilizator sau parola nu este validã.");
 define("L_TRY_AGAIN", "Vã rog încercaþi din nou!");
 define("L_BAD_HINT", "Dacã sunteþi siguri cã aþi introdus parola corectã, trimiteþi e-mail la <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.");
 define("LOGIN_PAGE_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
@@ -110,7 +110,7 @@ define( "LOG_EVENTS_UNDEFINED", "Nedefinit" );
 
 // offline filling --------------
 define( "L_OFFLINE_ERR_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="./'.ADMIN_CSS.'" type="text/css">

@@ -23,7 +23,7 @@ http://www.apc.org/
 
 // setup constats
 define("L_SETUP_PAGE_BEGIN", 
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
@@ -67,7 +67,7 @@ define("L_BAD_LOGIN", "Either your username or your password is not valid.");
 define("L_TRY_AGAIN", "Please try again!");
 define("L_BAD_HINT", "If you are sure you have typed the correct password, please e-mail <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.");
 define("LOGIN_PAGE_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
@@ -108,7 +108,7 @@ define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
 // offline filling --------------
 define( "L_OFFLINE_ERR_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="./'.ADMIN_CSS.'" type="text/css">

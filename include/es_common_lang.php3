@@ -23,7 +23,7 @@ http://www.apc.org/
 
 // constantes de configuración
 define("L_SETUP_PAGE_BEGIN", 
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/SP">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//SP">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
@@ -69,7 +69,7 @@ define("L_BAD_HINT", "Si Usted está seguro que tecleo bien su clave de acceso, p
 
 
 define("LOGIN_PAGE_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/SP">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//SP">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
@@ -111,7 +111,7 @@ define( "LOG_EVENTS_UNDEFINED", "No definido" );
 
 // actualización fuera de línea --------------
 define( "L_OFFLINE_ERR_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/SP">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//SP">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="./'.ADMIN_CSS.'" type="text/css">

@@ -41,7 +41,7 @@ define("DEFAULT_FULLTEXT_REMOVE", "()");
 # HTML al comienzo de la págzo dde aML aistració 
 # Usted debe definir el lenguaje de las páginas de administración y posiblemente algunos meta-tags
 define("HTML_PAGE_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/SP">
+ '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//SP">
   <HTML>
   <HEAD>
   <LINK rel=StyleSheet href="'.AA_INSTAL_URL.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
