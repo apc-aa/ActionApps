@@ -1,18 +1,12 @@
 <?php
+
 // ----------------------------------------------------------------------------
 
 function showCollectionAddOns () 
 {
     global $example, $auth, $cmd, $db, $AA_INSTAL_PATH, $AA_CP_Session;
 
-    $edit = $cmd["ac_edit"]["edit"];
-    if (!is_array ($edit)) {
-        global $tabledit_cmd;
-        $edit = $tabledit_cmd["ac_edit"]["edit"];
-    }        
-    
-    reset ($edit);
-    $collectionid = key($edit);    
+    $collectionid = GetEditedKey ("ac_edit");        
     
     echo "<TABLE border=0 bgcolor=".COLOR_TABBG."><TR><TD class=tabtxt>
     <FORM NAME=\"example[form]\" METHOD=\"post\">

@@ -37,13 +37,15 @@ function GetTableView ($viewID) {
 
     // ------------------------------------------------------------------------------------
     // au: this is the user manager view 
-    if ($viewID == "au") return  array (
+    if ($viewID == "au") {        
+        $new_user_id = new_user_id();
+        return  array (
         "table" => "alerts_user_collection",
         "join" => array (
             "alerts_user" => array (
                 "joinfields" => array (
                     "userid" => "id"),
-                "jointype" => "exact 1 to 1")),                    
+                "jointype" => "n to 1")),                    
         "type" => "browse",
         "mainmenu" => "usermanager",
         "submenu" => $GLOBALS["Tab"],        
@@ -53,10 +55,15 @@ function GetTableView ($viewID) {
         //"help" => _m("To add users use the standard Alerts User Interface."),
         "gotoview" => "au_edit",
         "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
-        "title" => _m("Alerts Users"), 
-        "caption" => _m("Alerts Users"),
+        "title" => _m("Alerts User"), 
+        "caption" => _m("Alerts User"),
         "orderby" => "email",
         "fields" => array (
+            "_user_id_" => array (
+                "table" => "alerts_user",
+                "field" => "id",
+                "view" => array ("type" => "hide"),
+                "default" => $new_user_id),                        
             "email" => array (
                 "table" => "alerts_user",
 				"caption" => _m("email"),
@@ -65,8 +72,12 @@ function GetTableView ($viewID) {
                 "required" => true),
             "firstname" => array ("table" => "alerts_user", "caption"=>_m("first name"),"view" => array ("type"=>"text","size"=>array("cols"=>8))),
             "lastname" => array ("table" => "alerts_user", "caption"=>_m("last name"),"view" => array ("type"=>"text","size"=>array("cols"=>15))),
+            "owner_module_id" => array (
+                "table" => "alerts_user",
+                "caption" => _m("owner"),
+                "view" => array ("type"=>"select","source"=>SelectModule(true),"unpacked"=>true)),
             "confirm" => array ("caption" =>_m("confirmed"),"view" => array ("type" => "userdef", "function" => "te_au_confirm")),
-            "lang" => array ("table" => "alerts_user","caption"=>_m("language"),"view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2))),
+            //"lang" => array ("table" => "alerts_user","caption"=>_m("language"),"view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2))),
             "howoften" => array (
                 "view" => array ("type"=>"select","source"=>get_howoften_options()),
                 "caption" => _m("how often"))),
@@ -74,49 +85,71 @@ function GetTableView ($viewID) {
         "where" => CreateWhereFromList ("alerts_user.id", FindAlertsUserPermissions())." AND collectionid=$collectionid",
 		"messages" => array (
 	        "no_item" => _m("No user in this bin.")));
+    }
     
     // ------------------------------------------------------------------------------------
     // au_edit: this is the user edit view 
-    if ($viewID == "au_edit") return  array (
+    if ($viewID == "au_edit") {
+        $modules = SelectModule (false);
+        $keys = split_escaped (":", GetEditedKey ("au_edit"), "#:");
+        $userid = $keys[0];
+        $db->query("SELECT owner_module_id FROM alerts_user WHERE id = $userid");
+        $db->next_record();
+        $useredit = $modules[unpack_id($db->f("id"))] ? true : false;            
+
+        return  array (
         "table" => "alerts_user_collection",
         "join" => array (
             "alerts_user" => array (
                 "joinfields" => array (
                     "userid" => "id"),
-                "jointype" => "exact 1 to 1")),                    
+                "jointype" => "n to 1")),                    
         "type" => "edit",
         "mainmenu" => "usermanager",
-        "submenu" => $GLOBALS["Tab"],
-        "readonly" => !IsSuperadmin(),
-        //"buttons_down" => array (), //"update_all" => 1, "delete_all" => 1),
+        "submenu" => "",
+        "readonly" => false,
         "addrecord" => false,
-        //"help" => _m("To add users use the standard Alerts User Interface."),
         "gotoview" => "au",
         "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
         "title" => _m("Alerts Users"), 
         "caption" => _m("Alerts Users"),
         "orderby" => "email",
         "fields" => array (
+            "userid" => array (
+                "caption" => _m("user ID"),
+                "view" => array ("readonly" => true)),
             "email" => array (
                 "table" => "alerts_user",
 				"caption" => _m("email"),
-                "view" => array ("type"=>"text","size"=>array("cols"=>30)), 
+                "view" => array ("type"=>"text","size"=>array("cols"=>30),"readonly"=>!$useredit), 
                 "validate"=>"email",
                 "required" => true),
-            "firstname" => array ("table" => "alerts_user", "caption"=>_m("first name"),"view" => array ("type"=>"text","size"=>array("cols"=>8))),
-            "lastname" => array ("table" => "alerts_user", "caption"=>_m("last name"),"view" => array ("type"=>"text","size"=>array("cols"=>15))),
+            "firstname" => array ("table" => "alerts_user", "caption"=>_m("first name"),
+                "view" => array ("type"=>"text","size"=>array("cols"=>8),"readonly"=>!$useredit)),
+            "lastname" => array ("table" => "alerts_user", "caption"=>_m("last name"),
+                "view" => array ("type"=>"text","size"=>array("cols"=>15),"readonly"=>!$useredit)),
+            "owner_module_id" => array (
+                "table" => "alerts_user",
+                "caption" => _m("owner"),
+                "view" => array ("type"=>"select","source"=>SelectModule(!$useredit),"unpacked"=>true
+                    ,"readonly"=>!$useredit)),
+            "lang" => array ("table" => "alerts_user","caption"=>_m("language"),
+                "view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2),"readonly"=>$useredit)),
+            "organisation" => array (
+                "table" => "alerts_user",
+                "view"=>array("readonly"=>!$useredit),
+                "caption" => _m("organisation")),
+            "postal_code" => array ("table" => "alerts_user", "caption" => _m("postal code"),
+                "view"=>array("readonly"=>!$useredit)),
+            "year_of_birth" => array ("table" => "alerts_user", "caption" => _m("year of birth"),
+                "view"=>array("readonly"=>!$useredit)),
+            "remark" => array ("table" => "alerts_user", "caption" => _m("remark"),
+                "view"=>array("readonly"=>!$useredit)),
             "confirm" => array ("caption" =>_m("confirmation"),
                 "hint"=>_m("if empty, user is confirmed")),
-            "lang" => array ("table" => "alerts_user","caption"=>_m("language"),"view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2))),
             "howoften" => array (
                 "view" => array ("type"=>"select","source"=>get_howoften_options()),
                 "caption" => _m("how often")),
-            "organisation" => array (
-                "table" => "alerts_user",
-                "caption" => _m("organisation")),
-            "postal_code" => array ("table" => "alerts_user", "caption" => _m("postal code")),
-            "year_of_birth" => array ("table" => "alerts_user", "caption" => _m("year of birth")),
-            "remark" => array ("table" => "alerts_user", "caption" => _m("remark")),
             "start_date" => array ("caption"=>_m("start date"),
                 "view"=>array("type"=>"date","format"=>"j.m.Y")),
             "expiry_date" => array ("caption"=>_m("expiry date"),
@@ -127,14 +160,100 @@ function GetTableView ($viewID) {
         "attrs" => $attrs_edit,
         "where" => CreateWhereFromList ("alerts_user.id", FindAlertsUserPermissions())." AND collectionid=$collectionid",
 		"messages" => array (
-	        "no_item" => _m("No user in this bin.")));
+	        "no_item" => _m("No user in this bin.")),
+        "children" => array (
+            "aucf" => array (
+                 "header" => _m ("Filters"),
+                 "join" => array ("id" => "userid")
+             )
+         ));
+    }
+         
+    if ($viewID == "aucf") {
+        global $collectionid;
+        $db->query ("SELECT AF.description, AF.id FROM alerts_collection_filter ACF
+            INNER JOIN alerts_filter AF ON AF.id = ACF.filterid
+            WHERE collectionid=$collectionid");
+        if ($db->num_rows()) {
+            while ($db->next_record()) 
+                $collection_filters [$db->f("id")] = $db->f("description");
+            $no_filters = false;
+        }
+        else {
+            $collection_filters[-1] = _m("No filters found for this collection.");
+            $no_filters = true;
+        }
+        return  array (
+        "table" => "alerts_user_collection_filter",
+        "type" => "browse",
+        "readonly" => false, //$no_filters,
+        //"buttons_down" => array (), //"update_all" => 1, "delete_all" => 1),
+        "addrecord" => true,
+        "gotoview" => "au_edit",
+        "cond" => 0,
+        "orderby" => "myindex",
+        "search" => false,
+        "fields" => array (
+            "collectionid" => array (
+                "view" => array ("type"=>"hide"),
+                "default" => $collectionid),
+            "filterid" => array (
+                "caption" => _m("filter"),
+                "view" => array ("type"=>"select","source"=>$collection_filters)),
+            "myindex" => array (
+                "default" => 1,
+                "caption" => _m("order"))),
+        "attrs" => $attrs_browse,
+		"help" => _m("If 'all filters' is set to 'yes', no filters should be assigned to this user."));
+    }
+         
+    // ------------------------------------------------------------------------------------
 
+    if ($viewID == "acf") {
+        global $collectionid;
+        $db->query ("SELECT AF.description, AF.id FROM alerts_filter AF");
+        if ($db->num_rows()) {
+            while ($db->next_record()) 
+                $collection_filters [$db->f("id")] = $db->f("description");
+            $no_filters = false;
+        }
+        else {
+            $collection_filters[-1] = _m("No filters defined. You must define some.");
+            $no_filters = true;
+        }
+        return  array (
+        "table" => "alerts_collection_filter",
+        "type" => "browse",
+        "readonly" => false, //$no_filters,
+        //"buttons_down" => array (), //"update_all" => 1, "delete_all" => 1),
+        "addrecord" => true,
+        "gotoview" => "au_edit",
+        "mainmenu" => "admin",
+        "submenu" => "design",
+        "caption" => _m("Filters"),
+        "title" => _m("Filters"),
+        "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
+        "orderby" => "myindex",
+        "where" => "collectionid = $collectionid",
+        "fields" => array (
+            "collectionid" => array (
+                "view" => array ("type" => "hide"),
+                "default" => $collectionid),
+            "filterid" => array (
+                "caption" => _m("filter"),
+                "view" => array ("type"=>"select","source"=>$collection_filters)),
+            "myindex" => array (
+                "caption" => _m("order"),
+                "default" => 1)),
+        "attrs" => $attrs_browse);
+    }
+         
     /* ------------------------------------------------------------------------------------
        modedit 
        Alerts collection setting 
     */    
     
-    if ($viewID == "alerts_modedit") {
+    if ($viewID == "modedit") {
         $fix_howoften_options = get_howoften_options();
         $fix_howoften_options[""] = _m("don't fix");
         return  array (
@@ -143,7 +262,7 @@ function GetTableView ($viewID) {
             "alerts_collection" => array (
                 "joinfields" => array (
                     "id" => "moduleid"),
-                "jointype" => "exact 1 to 1")),                    
+                "jointype" => "1 to 1")),                    
         "type" => "edit",
         "readonly" => false,
         "cond" => IfSlPerm (PS_USERS),
@@ -196,7 +315,7 @@ function GetTableView ($viewID) {
             "type" => array ("default" => "Alerts", "view" => array ("type"=>"hide")),
             "id" => array (
                 "default" => pack_id(new_id()),                 
-                "view" => array("type"=>"text", "unpacked" => true)),
+                "view" => array("type"=>"text", "unpacked" => true, "readonly" => true)),
             "created_at" => array (
                 "caption" => _m("created at"),
                 "default"=>time(), 
@@ -396,7 +515,7 @@ function GetTableView ($viewID) {
        au_edit and its child auc
        Alerts user editing with her collections
     */        
-    if ($viewID == "au_edit") return  array (
+/*    if ($viewID == "au_edit") return  array (
         "table" => "alerts_user",
         "type" => "edit",
         "readonly" => !IsSuperadmin(),
@@ -531,6 +650,29 @@ function GetTableView ($viewID) {
 } // end of GetTableView
             
 // ----------------------------------------------------------------------------------        
+
+function SelectModule ($all = false) {
+    global $db, $auth;
+    if (IsSuperadmin() || $all) 
+        $where = 1;
+    else {
+        $myslices = GetUsersSlices( $auth->auth["uid"] );
+        reset ($myslices);
+        while (list ($my_slice_id, $perms) = each ($myslices)) 
+            if (strchr ($perms, PS_FULLTEXT))
+                $restrict_slices[] = q_pack_id($my_slice_id);
+        if (is_array ($restrict_slices)) 
+            $where = "id IN ('".join("','",$restrict_slices)."')";
+        else $where = 0;
+    }
+    
+    $db->query ("SELECT id, name FROM module
+        WHERE $where AND type IN ('Alerts','Auth')");
+    $retval = array ("" => _m("No owner"));
+    while ($db->next_record()) 
+        $retval[unpack_id($db->f("id"))] = $db->f("name");
+    return $retval;
+}
    
 function FindAlertsFilterPermissions() {   
     global $auth, $_filter_permissions;

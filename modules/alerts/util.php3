@@ -25,10 +25,13 @@ else return;
 
 if (!is_object ($db))   
     $db=new DB_AA;
-    
-$db->query ("SELECT id FROM alerts_collection WHERE moduleid='".q_pack_id($slice_id)."'");
-if ($db->next_record())
-    $collectionid = $db->f("id");    
+
+if (!$new_module) {
+    $db->query ("SELECT id FROM alerts_collection WHERE moduleid='".q_pack_id($slice_id)."'");
+    if ($db->next_record())
+        $collectionid = $db->f("id");    
+    else { echo "Can't find collection for $slice_id. Bailing out."; exit; }
+}
 
 function get_howoften_options () {
     return array (

@@ -65,7 +65,7 @@ function get_aamenus ()
     $aamenus["usermanager"] = array (
         "label" => _m("User Manager"),
         "title" => _m("Alerts User Manager"),
-        "href" => "admin/tabledit.php3?set_tview=au&setTab=app",
+        "href" => "modules/alerts/tabledit.php3?set_tview=au&setTab=app",
         "cond" => IfSlPerm (PS_USERS),
         "level" => "main",
         "submenu" => "usermanager_submenu");
@@ -73,7 +73,8 @@ function get_aamenus ()
     $aamenus["admin"] = array (    
         "label" => _m("Alerts Admin"),
         "title" => _m("Alerts Admin"),
-        "href" => "admin/tabledit.php3?set_tview=alerts_modedit&cmd[alerts_modedit][edit][".urlencode (pack_id ($GLOBALS["slice_id"]))."]=1",
+        "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
+            .urlencode ($GLOBALS["slice_id"])."]=1", 
         "cond" => IfSlPerm (PS_USERS),
         "level" => "main",
         "submenu" => "admin_submenu");        
@@ -95,8 +96,12 @@ function get_aamenus ()
         "items"=> array(
         "header1"=>_m("Alerts Admin"),
         "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
-        "design"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/tabledit.php3?set_tview=filters&cmd[filters][edit][$collectionid]=1", "label"=>_m("Design")),
-        "settings"=>array ("cond"=>IfSlPerm(PS_USERS), "href" => "admin/tabledit.php3?set_tview=alerts_modedit&cmd[alerts_modedit][edit][".urlencode (pack_id ($GLOBALS["slice_id"]))."]=1", "label"=>_m("Settings"))
+        "design"=>array ("cond"=>IfSlPerm(PS_USERS), 
+            "href"=>"modules/alerts/tabledit.php3?set_tview=acf", 
+            "label"=>_m("Design")),
+        "settings"=>array ("cond"=>IfSlPerm(PS_USERS), 
+            "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
+                .urlencode ($GLOBALS["slice_id"])."]=1", "label"=>_m("Settings"))
     ));
         
     global $db, $collectionid;
@@ -127,15 +132,15 @@ function get_aamenus ()
         "level"=>"submenu",
         "items"=> array(
         "header1"=>_m("Users"),
-        "app"=>array ("cond"=> 1, "href"=>"admin/tabledit.php3?set_tview=au&setTab=app", 
+        "app"=>array ("cond"=> 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=app", 
             "label"=>"<img src='".$AA_INSTAL_PATH."images/ok.gif' border=0>".get_bin_name("app")." (".($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).")"),
-        "appb"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/tabledit.php3?set_tview=au&setTab=appb", 
+        "appb"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=appb", 
             "label"=>"... ".get_bin_name("appb")." ($item_bin_cnt_pend)"),
-        "appc"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/tabledit.php3?set_tview=au&setTab=appc", 
+        "appc"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=appc", 
             "label"=>"... ".get_bin_name("appc")." ($item_bin_cnt_exp)"),
-        "hold"=>array ("cond"=> 1, "href"=>"admin/tabledit.php3?set_tview=au&setTab=hold", 
+        "hold"=>array ("cond"=> 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=hold", 
             "label"=>"<img src='".$AA_INSTAL_PATH."images/edit.gif' border=0>".get_bin_name("hold")." (".($item_bin_cnt[2]+0).")"),
-        "trash"=>array ("cond"=> 1, "href"=>"admin/tabledit.php3?set_tview=au&setTab=trash", 
+        "trash"=>array ("cond"=> 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=trash", 
             "label"=>"<img src='".$AA_INSTAL_PATH."images/delete.gif' border=0>".get_bin_name("trash")." (".($item_bin_cnt[3]+0).")"),
         "header2" => L_MISC,
         "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"modules/alerts/index.php3?Delete=trash", 

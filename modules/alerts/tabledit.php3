@@ -47,13 +47,21 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo '<LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.'/tabledit.css" type="text/css"  title="TableEditCSS">';
 echo "<TITLE>".$tableview["title"]."</TITLE></HEAD>";
 showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
+echo "<TABLE width='100%'><TR valign=center><TD>";
 echo "<H1><B>" . $tableview["caption"] . "</B></H1>";
+if ($tableview["children"]) {
+    echo "</TD><TD>";
+    reset ($tableview["children"]);
+    while (list ($chviewid, $child) = each ($tableview["children"])) 
+        echo "<FONT class='tabtxt'><B><a href='#$chviewid'>$child[header]</a></B></FONT> ";
+}
+echo "</TD></TR></TABLE>";
+
 PrintArray($err);
 echo $Msg;
-
 $script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
 
-$tabledit = new tabledit ($tview, $script, $cmd, $val, $tableview, $AA_INSTAL_PATH."images/", $sess, "", "", "GetTableView");
+$tabledit = new tabledit ($tview, $script, $cmd, $val, $tableview, $AA_INSTAL_PATH."images/", $sess, "GetTableView");
 $err = $tabledit->view ($where);
 
 if ($err) echo "<b>$err</b>";
