@@ -29,6 +29,27 @@ function myAlert (x) {
 	if (myAlertCount++ < 150) alert (x);
 }
 
+function dec2hex (dec) {
+    if (dec <= 0) return "0";
+    hex = "";
+    while (dec > 0) {
+        digit = dec % 16;
+        if (digit < 10)
+			 hex = String.fromCharCode (digit + 48) + hex; // '0' is 48 ASCII
+		else hex = String.fromCharCode (digit + 87) + hex; // 'a' is 97 ASCII
+        dec = Math.floor (dec / 16);
+    }
+    return hex;
+}      
+
+function unpackID (packedID)
+{
+    retval = "";
+    for (i = 0; i < packedID.length; i ++) 
+        retval += dec2hex (packedID.charCodeAt (i));
+    return retval;
+}
+
 function hex2dec (hex) {
 	hex = hex.toUpperCase();
 	dec = 0;
@@ -162,7 +183,10 @@ function getAADate (formName,dateField,emptyValue) {
 		return 0;
 }	 
 
-/* Sets the control, trying: 
+/* Function: setControlOrAADate
+   Purpose: sets different control types in a common way
+   
+   Sets the control, trying: 
 	1. given controlName - if succeeds, tries to set the HTML radio button as well
 	2. controlName + '[]' - usefull on multiple selectboxes, checkboxes, radios
 	3. AA date
@@ -245,6 +269,11 @@ function setControl (formName, controlName, newValue) {
 	}
 }
 
+/* Function: setControlArray
+   Purpose: sets multiple control types in a common way (multiple select box)
+   ToDo: implement multiple check-boxes 
+*/
+
 function setControlArray (formName, controlName, newArray) {
 	var myControl = getControlByName (formName, controlName);
 	if (myControl != null) {
@@ -267,6 +296,28 @@ function setControlArray (formName, controlName, newArray) {
     }
 }
 
+/* Function: getControlOrAADate
+   Purpose:  get value set in various form controls 
+   Works with: see getControlValue + AA three-select-boxes-date
+*/
+
+function getControlOrAADate (formName, controlName, datePrefix, emptyValue) {
+	var myControl = getControlByName (formName, controlName);
+	if (myControl != null) 
+        return getControlValue (formName, controlName);    
+    else {
+        var myControl = getControlByName (formName, datePrefix + controlName + '_day');
+        if (myControl != null)
+            return getAADate (formName, datePrefix + controlName, emptyValue) / 1000;
+        else return null;
+    }
+}
+
+/* Function: getControlValue
+   Purpose: get value set in various form controls
+   Works with: <input>,<select>,<check>
+*/
+   
 function getControlValue (formName, controlName) {
 	var myControl = getControlByName (formName, controlName);
 	if (myControl != null) {
@@ -276,8 +327,24 @@ function getControlValue (formName, controlName) {
 			return myControl.checked ? 1 : 0;
 		else return myControl.value;
 	}
-	else return "";
+	else return null;
 }
+
+/* ITEMEDIT.PHP3 field JavaScript functions */
+
+function getField (fieldID) {
+    return getControlOrAADate ('inputform','v'+unpackID(fieldID), 'tdctr_', '');
+}
+
+function setField (fieldID, newValue) {
+    var myDate = new Date();
+    setControlOrAADate ('inputform','v'+unpackID(fieldID),newValue,'tdctr_', 0, myDate.getTimezoneOffset()/60);
+}
+
+/* Miscellaneous */
+
+/* select all items in a multiple select box 
+   (items not selected are not sent when a form is submitted) */
 
 function selectAllInBox (formName, controlName) {
 	var myControl = getControlByName (formName, controlName);
