@@ -234,7 +234,7 @@ $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
   "content_edit", "html_default", "html_show", "input_show", "text_stored");
 
 
-function GetConstantFields() {  // function - we need trnslate _m() on use (not at include time)
+function GetConstantFields() {  // function - we need translate _m() on use (not at include time)
     return array(
         'const_short_id'    => GetFieldDef( _m('Short Id'),    'constant.short_id',   'numeric'),
         'const_name'        => GetFieldDef( _m('Name'),        'constant.name',       'text'),

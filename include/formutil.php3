@@ -446,7 +446,7 @@ class aainputfield {
             $this->const_arr = GetItemHeadlines( $sid, $slice_field, $zids, $whichitems, $conds, $sort, $tagprefix);
             return $sid; // in most cases not very impotant information, but used in related() input type
         } else {
-            $this->const_arr = GetConstants($constgroup);
+            $this->const_arr = GetConstants($constgroup, 'pri', $slice_field);
         }
         if ( !isset($this->const_arr) OR !is_array($this->const_arr) ) {
             $this->const_arr = array();

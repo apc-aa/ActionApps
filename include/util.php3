@@ -596,24 +596,35 @@ function AreSliceConstants($name) {
         return false;
 }
 
-# function fills the array from constants table
+/** Function fills the array from constants table
+ *  @param $column - column used as values. We can use 'name' as well as
+ *                   'const_name' for name of fields
+ */
 function GetConstants($group, $order='pri', $column='name', $keycolumn='value') {
-  $db = getDB();
-  if( $order )
-    $order_by = "ORDER BY $order";
-  $db->tquery("SELECT $keycolumn, $column FROM constant
-               WHERE group_id='$group' $order_by");
-  while($db->next_record()) {
-    $key = $db->f($keycolumn);
-      // generate unique keys by adding space
-    while( $already_key[$key] ) {
-      $key .= ' ';                   // add space in order we get unique keys
+    // we can use 'const_name' instedad of real name of the column 'name' => translate
+    $order     = str_replace( 'const_', '', $order);
+    $column    = str_replace( 'const_', '', $column);
+    $keycolumn = str_replace( 'const_', '', $keycolumn);
+
+    $db = getDB();
+    if ( $order )      { $order_by  = "ORDER BY $order"; }
+    if ( !$column )    { $column    = 'name';            }
+    if ( !$keycolumn ) { $keycolumn = 'value';           }
+    $fields = ($column==$keycolumn ? $column : "$keycolumn, $column");
+
+
+    $db->tquery("SELECT $fields FROM constant WHERE group_id='$group' $order_by");
+    while($db->next_record()) {
+        $key = $db->f($keycolumn);
+        // generate unique keys by adding space
+        while( $already_key[$key] ) {
+            $key .= ' ';                   // add space in order we get unique keys
+        }
+        $already_key[$key] = true;       // mark the $key
+        $arr[$key] = $db->f($column);
     }
-    $already_key[$key] = true;       // mark the $key
-    $arr[$key] = $db->f($column);
-  }
-  freeDB($db);
-  return $arr;
+    freeDB($db);
+    return $arr;
 }
 
 # gets fields from main table of the module
@@ -996,7 +1007,6 @@ function GetItemHeadlines( $sid, $headline_field="",
     // following code is just for tagged ids
     // (I hope it works, but I can't test it, since I do not want to use it.)
     // Honza 8/27/04
-
 
     // See if need to Put the tags back on the ids
     $tags = $restrict_zids->gettags() ;
