@@ -61,7 +61,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
         if ($module["hide_create_module"]) continue;
         echo "<TR><TD class=tabtxt><B>".$module['name']."</B></TD><TD>";
         if ($module["show_templates"]) {
-            echo "<SELECT name=\"template[$letter]\">";
+            echo "<SELECT name=\"template[$type]\">";
             reset ($g_modules);
             while (list ($mid,$mod) = each ($g_modules)) {
                 if( $mod['type']==$type )
