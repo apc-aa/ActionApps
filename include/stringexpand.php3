@@ -344,6 +344,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {include(file)}
     # {include:file} or {include:file:http}
     # {include:file:fileman|site}
+    # {include:file:readfile[:str_replace:<search>[;<search1>;..]:<replace>[:<replace1>;..]:<trim-to-tag>:<trim-from-tag>]}
+    # {include:file:eval} use at own risk!!
     # {scroller.....}
     # {#comments}
     # {debug}
@@ -452,6 +454,40 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
             if ($filedes = @fopen ($filename, "r")) {
                 $fileout = "";
+                while (!feof ($filedes)) {
+                    $fileout .= fgets($filedes, 4096);
+                }
+                fclose($filedes);
+                if($parts[5]) {
+                	$pos = strpos($fileout,$parts[5]);
+                	if($pos) 
+	                	$fileout = substr($fileout,$pos);
+                }
+                if($parts[6]) {
+			$pos = strpos($fileout,$parts[6]);
+			if($pos)
+				$fileout = substr($fileout,0,$pos);
+                }
+            	if($parts[2] == 'str_replace') {
+            		if(strpos($parts[3],';')) {
+            			$search = explode(";",$parts[3]);
+            			$replace = explode(";",$parts[4]);
+            		} else {
+            			$search = $parts[3];
+            			$replace = $parts[4];
+            		}
+            		if(is_array($search) || strlen($search))
+            			$fileout = str_replace($search,$replace,$fileout);
+            	}
+            } else {
+                if ($errcheck) huhl("Unable to read from file $filename");
+                return "";
+            }
+            break;
+          case "eval": //risky, dont use!!
+            $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
+            if ($filedes = @fopen ($filename, "r")) {
+                $fileout = "";
                 while (!feof ($filedes))
                     $fileout .= fgets($filedes, 4096);
                 fclose($filedes);
@@ -459,6 +495,11 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                 if ($errcheck) huhl("Unable to read from file $filename");
                 return "";
             }
+            $fileout = trim($fileout," <??>\n\r\t\0b");
+//            huhl("$fileout");
+            ob_start();
+            eval($fileout);
+            $fileout = ob_get_clean();
             break;
           default:
             if ($errcheck) huhl("Trying to expand include, but no valid hint in $out");

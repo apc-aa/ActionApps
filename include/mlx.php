@@ -137,7 +137,7 @@ class MLX
 //public:	
 	function MLX(&$slice) {
 		$this->slice = $slice;
-		$this->langSlice = $this->slice->getfield(MLX_SLICEDB_COLUMN);
+		$this->langSlice = unpack_id128($this->slice->getfield(MLX_SLICEDB_COLUMN));
 		list($this->ctrlFields,) = GetSliceFields($this->langSlice);
 	}
 	function &getCtrlFields() { return $this->ctrlFields; }
@@ -176,7 +176,7 @@ class MLX
 	//      			echo "<pre>"; print_r($content4mlxid); echo "</pre>";
 	//      			die;
 		//$this->dbg($content4mlxid);
-		$GLOBALS[errcheck] = 1;
+		//$GLOBALS[errcheck] = 1;
 		//$GLOBALS[debugsi] = 5;
 		StoreItem($id,$this->langSlice,$content4mlxid,
 			$this->ctrlFields,$insert,true,true);
@@ -347,7 +347,7 @@ class MLXView
 	var $supported_modes = array("MLX","ONLY","ALL");
 	///@param mlx is the thing set in the URL
 	///@param slice_id is a fallback in case mlx is missing
-	function MLXView($mlx,$slice_id=0) { 
+	function MLXView($mlx,$slice_id=0) {
 		if($mlx) {
 			$arr = explode("-",$mlx);
 			foreach($arr as $av) {
@@ -390,7 +390,8 @@ class MLXView
 		
 		if($this->mode != "MLX")
 			return;
-			
+		if($zidsObj->count() == 0)
+			return;
 		#create keystring from values, which exactly identifies resulting content
 		$keystr = $this->mode.serialize($this->language).$ctrlSliceID.$slice_id
 			. serialize($conds). serialize($sort)
@@ -423,7 +424,7 @@ class MLXView
 			$sql = "SELECT  c2.field_id,c2.text FROM `content` AS c1" //`field_id`,`text`
 				." LEFT JOIN `content` AS c2 ON ("
 				." c2.item_id=c1.text )"
-				." WHERE (c1.item_id='".$upContId."'"
+				." WHERE (c1.item_id='".quote($upContId)."'"
 				." AND c1.field_id='".MLX_CTRLIDFIELD."'"
 				." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."')";
 			$db->tquery($sql);

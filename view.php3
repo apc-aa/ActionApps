@@ -38,6 +38,7 @@ http://www.apc.org/
                     #        completely redefined by the specified ones
 #optionaly set[]    # setings to modify view behavior (can be combined with cmd)
                     # set[23]=listlen-20
+                    # set[23]=mlx-EN-FR-DE
                     #   - sets maximal number of viewed items in view 23 to 20
                     #   - there can be more settings (future) - comma separated
 #optionaly als[]    # user alias - see slice.php3 for more details

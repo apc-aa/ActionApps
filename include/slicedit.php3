@@ -120,9 +120,9 @@ if( $add || $update ) {
           $varset->add("auth_field_group", "text", $auth_field_group);
           $varset->add("mailman_field_lists", "text", $mailman_field_lists);
           $varset->add("reading_password", "text", $reading_password);
-//mimo
-	  //print("<br>$lang_control<br>");
-          $varset->add(MLX_SLICEDB_COLUMN, "quoted", $mlxctrl);
+//mlx
+	  //print("<br>$mlxctrl<br>");
+          $varset->add(MLX_SLICEDB_COLUMN, "quoted", q_pack_id($mlxctrl)); //store 16bytes packed
    
           $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
           if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error

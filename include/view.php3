@@ -451,10 +451,11 @@ function GetViewFromDB($view_param, &$cache_sid) {
        if(isMLXSlice($slice_info)) {  //mlx stuff, display the item's translation
           $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
           //make sure the lang info doesnt get reused with different view
-          $GLOBALS['mlxView'] = new MLXView($mlx,$slice_info[MLX_SLICEDB_COLUMN]);
-          $GLOBALS['mlxView']->preQueryZIDs($slice_info[MLX_SLICEDB_COLUMN],$conds,$slices); 
+          $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]));
+          $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices); 
           $zids3 = new zids($zids->longids());
-          $GLOBALS['mlxView']->postQueryZIDs($zids3,$slice_info[MLX_SLICEDB_COLUMN],$slice_id, $conds, $sort,
+          $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,
+                                             $conds, $sort,
                                              $slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
                                              $defaultCondsOperator,$GLOBALS['nocache']);
           $zids->a = $zids3->a;
@@ -603,17 +604,18 @@ function GetViewFromDB($view_param, &$cache_sid) {
     if(isMLXSlice($slice_info)) {
       $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
       //make sure the lang info doesnt get reused with different view
-      $GLOBALS['mlxView'] = new MLXView($mlx,$slice_info[MLX_SLICEDB_COLUMN]);
-      $GLOBALS['mlxView']->preQueryZIDs($slice_info[MLX_SLICEDB_COLUMN],$conds,$slices); 
+      $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]));
+      $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices); 
     }
     $zids2 =
         QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
                          $group_by, "ACTIVE", $slices, 0, $zids);
 
     if(isMLXSlice($slice_info)) { 
-      $GLOBALS['mlxView']->postQueryZIDs($zids2,$slice_info[MLX_SLICEDB_COLUMN],$slice_id, $conds, $sort,
-  		$slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
-  		$defaultCondsOperator,$GLOBALS['nocache']);
+      $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,
+                $conds, $sort,
+                $slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
+                $defaultCondsOperator,$GLOBALS['nocache']);
     }
     //end mlx stuff
 

@@ -512,13 +512,13 @@ else {
   if(isMLXSlice($slice_info)) {
     if(!$mlxView)
       $mlxView = new MLXView($mlx);
-    $mlxView->preQueryZIDs($slice_info[MLX_SLICEDB_COLUMN],$conds,$slices); 
+    $mlxView->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices); 
   }
   $zids=QueryZIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by],
                      "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator, true );
 
   if(isMLXSlice($slice_info)) { 
-    $mlxView->postQueryZIDs($zids,$slice_info[MLX_SLICEDB_COLUMN],$slice_id, $conds, $sort,
+    $mlxView->postQueryZIDs($zids,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id, $conds, $sort,
 		$slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
 		$defaultCondsOperator,$nocache);
   }

@@ -84,10 +84,11 @@ $SQL = "SELECT `name`,`id`,`".MLX_SLICEDB_COLUMN."` FROM slice ORDER BY name";
 $db->query($SQL);
 
 while ($db->next_record()) {
-  if(!$db->f(MLX_SLICEDB_COLUMN))
+  //__mlx_dbg($db->Record);
+  if(!$db->f(MLX_SLICEDB_COLUMN)) //could be a ctrl slice
     $mlx_slices[unpack_id128($db->f('id'))] = $db->f('name');
-  else
-    $mlx_ctrl_slices[$db->f(MLX_SLICEDB_COLUMN)] = $db->f('name');
+  else //is already ctrl slice
+    $mlx_ctrl_slices[unpack_id128($db->f(MLX_SLICEDB_COLUMN))] = $db->f('name');
 }
 //mlx end
 if( $slice_id == "" ) {         // load default values for new slice
@@ -172,7 +173,7 @@ if ($slice_id == "") {
   if($slice_id && isset($mlx_ctrl_slices[$slice_id]))
     FrmStaticText(_m("MLX Control Slice for").": ",$mlx_ctrl_slices[$slice_id],0,0,"http://mimo.gn.apc.org/mlx/");
   else
-    FrmInputSelect(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlx_slices, $mlxctrl, false, "", 
+    FrmInputSelect(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlx_slices, unpack_id128($mlxctrl), false, "", 
   	  	"http://mimo.gn.apc.org/mlx/");
 //
 
