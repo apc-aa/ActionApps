@@ -41,38 +41,49 @@ $varset = new Cvarset();
 $field_types = GetTable2Array("SELECT * FROM field 
                                 WHERE slice_id='AA_Core_Fields..'", $db);
 
-function ShowField($id, $name, $pri, $required, $show, $type="") {
-  global $sess, $field_types;
-  $name = safe($name); $pri=safe($pri);
-  echo "
-  <tr>
+function ShowField($id, $name, $pri, $required, $show, $type="", $alias="") {
+    global $sess, $field_types, $AA_CP_Session;
+    $name = safe($name); $pri=safe($pri);
+    echo "
+    <tr>
     <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>";
     if( $type=="new" ){
-      echo '<td class=tabtxt>
+        echo '<td class=tabtxt>
              <select name="ftype">';	
-	  reset($field_types);
-	  while(list($k, $v) = each($field_types)) { 
-	    echo '<option value="'. htmlspecialchars($k).'"> '. 
-		                        htmlspecialchars($v[name]) ." </option>";
-	  }
-	  echo "</select>\n
-          </td>";
-    } else 
-      echo "<td class=tabtxt>$id</td>";
+        reset($field_types);
+        while(list($k, $v) = each($field_types)) { 
+            echo '<option value="'. htmlspecialchars($k).'"> '. 
+                              htmlspecialchars($v[name]) ." </option>";
+        }
+        echo "</select>\n
+              </td>";
+    } 
+    else 
+        echo "<td class=tabtxt>$id</td>";
     echo "  
-    <td class=tabtxt><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>
-    <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
-    <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
+        <td class=tabtxt><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>
+        <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
+        <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
     if( $type=="new")
-      echo "<td class=tabtxt>&nbsp;</td><td class=tabtxt>&nbsp;</td>";
-     else { 
-      echo "<td class=tabtxt><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". L_EDIT ."</a></td>";
-      if( $type=="in_item_tbl" )
-        echo "<td class=tabtxt>". L_DELETE ."</td>";
-       else 
-        echo "<td class=tabtxt><a href=\"javascript:DeleteField('$id')\">". L_DELETE ."</a></td>";
-      echo "</tr>\n";
+        echo "<td class=tabtxt>&nbsp;</td><td class=tabtxt>&nbsp;</td>";
+    else { 
+        echo "<td class=tabtxt><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". L_EDIT ."</a></td>";
+        if( $type=="in_item_tbl" )
+            echo "<td class=tabtxt>". L_DELETE ."</td>";
+        else 
+            echo "<td class=tabtxt><a href=\"javascript:DeleteField('$id')\">". L_DELETE ."</a></td>";
+            
+        if (is_array ($alias)) 
+            echo "<td class=tabtxt><font size='-2'>".join($alias," ")."</font></td>";
+/*        for ($i = 0; $i < count ($alias); ++$i) {
+            if ($alias[$i] != "_#UNDEFINE" && $alias[$i]) 
+//               $ali = "<a href='se_inputform.php3?fid=$id&AA_CP_Session=$AA_CP_Session#alias".($i+1)."'>$alias[$i]</a>";
+               $ali = $alias[$i];
+            else $ali = "";
+            echo "<td class=tabtxt><font size='-2'>$ali</font></td>";
+        }*/
     }  
+    echo "</tr>\n";
 }
 
 if( $update )
@@ -153,9 +164,9 @@ if( $update )
 }    
 
   # lookup fields
-$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
-          FROM field
-         WHERE slice_id='$p_slice_id' ORDER BY input_pri";
+$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, alias2, alias3
+        FROM field
+        WHERE slice_id='$p_slice_id' ORDER BY input_pri";
 $s_fields = GetTable2Array($SQL, $db);
          
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -194,18 +205,21 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <td class=tabtxt align=center><b><?php echo L_NEEDED_FIELD ?></b></td>
  <td class=tabtxt align=center><b><?php echo L_FIELD_IN_EDIT ?></b></td>
  <td class=tabtxt colspan=2>&nbsp;</td>
+ <td class=tabtxt align=center><b><?php echo L_FIELD_ALIASES?></b></td>
 </tr>
-<tr><td colspan=7><hr></td></tr>
+<tr><td colspan=8><hr></td></tr>
 <?php
   if( isset($s_fields) and is_array($s_fields)) {
-  reset($s_fields);
-  while( list(, $v) = each($s_fields)) {
+    reset($s_fields);
+    while( list(, $v) = each($s_fields)) {
     $type = ( $v[in_item_tbl] ? "in_item_tbl" : "" );
     if( $update ) # get values from form
-      ShowField($v[id], $name[$v[id]], $pri[$v[id]], $req[$v[id]], $shw[$v[id]], $type);
+      ShowField($v[id], $name[$v[id]], $pri[$v[id]], $req[$v[id]], $shw[$v[id]], $type, 
+        array ($v[alias1], $v[alias2], $v[alias3]));
     else  
-      ShowField($v[id], $v[name], $v[input_pri], $v[required], $v[input_show], $type);
-  }
+      ShowField($v[id], $v[name], $v[input_pri], $v[required], $v[input_show], $type,
+        array ($v[alias1], $v[alias2], $v[alias3]));
+    }
   }  
     # one row for possible new field
   ShowField("New_Field", "", "1000", false, true, "new");

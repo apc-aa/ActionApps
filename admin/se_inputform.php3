@@ -367,12 +367,13 @@ echo "
 for ($iAlias=1; $iAlias <= 3; ++$iAlias):
 		echo "
      <tr>
-      <td class=tabtxt><b>";
+      <td class=tabtxt><a name='alias$iAlias'></a><b>";
 	  eval ("echo L_ALIAS$iAlias;");
 	  echo "</b></td>
       <td class=tabtxt colspan=3>
 	  <input type=\"Text\" name=\"alias$iAlias\" size=20 maxlength=10 value=\"";
-	  eval ("echo safe(\$alias$iAlias);");
+      $alias_name = "alias".$iAlias;
+	  echo safe($$alias_name);
 	  echo "\">
       <div class=tabhlp>". L_ALIAS_HLP ."</div>
       </td>
@@ -381,12 +382,14 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
       <td class=tabtxt><b>". L_ALIAS_FUNC ."</b></td>
       <td class=tabtxt colspan=3>";
 	  
-        eval ("FrmSelectEasy(\"alias$iAlias"."_func_f\", \$func_types, \$alias$iAlias"."_func_f);");
+       $alias_func_f = "alias".$iAlias."_func_f";
+       FrmSelectEasy("alias$iAlias"."_func_f", $func_types, $$alias_func_f);
 	   echo "<a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\", \"alias$iAlias"."_func\")'>".L_PARAM_WIZARD_LINK."</a>
       		<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
             <div class=tabtxt><b>". L_PARAMETERS ."</b>
               <input type=\"Text\" name=\"alias$iAlias"."_func\" size=25 maxlength=250 value=\"";
-			  	  eval ("echo safe(\$alias$iAlias"."_func);");
+                $alias_func = "alias".$iAlias."_func";
+			  	echo safe($$alias_func);
 				echo "\">
             </div> 
             <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
@@ -395,7 +398,8 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
      <tr>
       <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
       <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias".$iAlias."_help\" size=50 maxlength=254 value=\"";
-		eval ("echo safe(\$alias$iAlias"."_help);");
+        $alias_help = "alias".$iAlias."_help";
+		echo safe($$alias_help);
 		echo "\">
       <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
       </td>
