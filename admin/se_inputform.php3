@@ -398,7 +398,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
       $alias_name = "alias".$iAlias;
 	  if ($$alias_name) echo safe($$alias_name);
 	  else echo "_#";
-	  echo "\"> ". _m("_# + 8 UPPERCASE letters") ."</div>
+	  echo "\"> ". _m("_# + 8 UPPERCASE letters or _") ."</div>
       </td>
      </tr>  
      <tr>
@@ -409,6 +409,11 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
        FrmSelectEasy("alias$iAlias"."_func_f", $func_types, $$alias_func_f);
 	   echo "
 	   </td></tr>
+	 <tr><td class=tabtxt>&nbsp;</td>
+	   <td class=tabhlp colspan=3><strong>
+			<a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\", 
+				\"alias$iAlias"."_func\")'>"._m("Help: Parameter Wizard")."</a></strong>
+		</td></tr>  
 	 <tr><td class=tabtxt><b>". _m("Parameters") ."</b></td>
 	   <td class=tabtxt colspan=3>
               <input type=\"Text\" name=\"alias$iAlias"."_func\" size=60 maxlength=250 value=\"";
@@ -416,11 +421,6 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
 			  	echo safe($$alias_func);
 				echo "\">
        </td></tr>
-	 <tr><td class=tabtxt>&nbsp;</td>
-	   <td class=tabhlp colspan=3><strong>
-			<a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\", 
-				\"alias$iAlias"."_func\")'>"._m("Help: Parameter Wizard")."</a></strong>
-		</td></tr>  
      <tr>
       <td class=tabtxt><b>". _m("Description") ."</b></td>
       <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias".$iAlias."_help\" size=50 maxlength=254 value=\"";
