@@ -526,15 +526,16 @@ class itemview {
         # negative num_record used for displaying n-th group of items only
         $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records );
         for( $i=0; $i<$number_of_ids; $i++ ) {
-            $GLOBALS['QueryIDsIndex'] = $i;   # So that _#ITEMINDX = f_e:itemindex can find it
             # display banner, if you have to
             if( $this->slice_info['banner_parameters'] && ($this->slice_info['banner_position']==$i) ) {
                 $out .= GetView(ParseViewParameters($this->slice_info['banner_parameters']));
             }
 
-
             $zidx = $this->from_record+$i;
             if ($zidx >= $this->zids->count()) continue;
+            $GLOBALS['QueryIDsIndex']     = $zidx;  // So that _#ITEMINDX = f_e:itemindex can find it
+            $GLOBALS['QueryIDsPageIndex'] = $i;     // So that _#PAGEINDX = f_e:pageindex can find it
+
             $iid = $this->zids->short_or_longids($zidx);
             if( !$iid ) { huhe("Warning: itemview: got a null id"); continue; }
             # Note if iid is invalid, then expect empty answers
