@@ -174,4 +174,6 @@
 5/19/00  - MySQL perms fixed
 5/22/00  - sort order of items in compact view changed (newer items go first)
 5/29/00  - fixed bug for OPTIMIZED_FOR_MYSQL compact view - navigation bar are shown now
- 
+6/5/00   - removed expiry date default setting for slice (so now there is only expity limit in days)
+6/7/00   - new configurable admin interface (user can select columns in admin interface)
+6/12/00  - fixed bug of add new slice (it was caused by expiry date removing 6/5/00)

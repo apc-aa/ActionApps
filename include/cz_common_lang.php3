@@ -74,11 +74,6 @@ define( "L_ICON_LEGEND", '
                   <br>
                   <i>Legenda</i>
                   <TABLE BORDER=1>
-                  <TR>
-                  <TD><img src="../images/notpubl.gif" width=24 height=24 border=0 alt=""> Dosud nepublikováno</TD>
-                  <TD><img src="../images/publish.gif" width=24 height=24 border=0 alt=""> Publikovaná zpráva</TD>
-                  <TD><img src="../images/expired.gif" width=24 height=24 border=0 alt=""> Expirovaná zpráva</TD>
-                  </TR>
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/hlight.gif" border=0 alt=""> Dùležité</TD>
                   <TD COLSPAN=2><img src="../images/feed.gif" border=0 alt=""> Importováno</TD></TR>
@@ -89,8 +84,7 @@ define( "L_ICON_LEGEND", '
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/less.gif" border=0 alt=""> Ménì detailù</TD>
                   <TD COLSPAN=2><img src="../images/more.gif" border=0 alt=""> Více detailù</TD></TR>
-                  </TABLE>
-                  Kategorie zobrazené èervenì nejsou souèástí tohoto webíku (èlánek byl zøejmì importován z jiného webíku)<br><br>
+                  </TABLE><br>
                   Webík zahrnete do své *.shtml stránky pøidáním následujícího pøíkazu do HTML kódu:<br><code>&lt;!--#include virtual=&quot;/aa/slice.php3?slice_id='. $slice_id .'&quot;--&gt;
                   </code>');
 
@@ -117,8 +111,8 @@ function dateExample() {
 
 /*
 $Log$
-Revision 1.2  2000/07/01 07:03:13  kzajicek
-fixed typo
+Revision 1.3  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
 
 Revision 1.1.1.1  2000/06/21 18:40:23  madebeer
 reimport tree , 2nd try - code works, tricky to install
