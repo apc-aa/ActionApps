@@ -177,3 +177,11 @@
 6/5/00   - removed expiry date default setting for slice (so now there is only expity limit in days)
 6/7/00   - new configurable admin interface (user can select columns in admin interface)
 6/12/00  - fixed bug of add new slice (it was caused by expiry date removing 6/5/00)
+7/05/00  - miscellaneous bugs fixed
+7/11/00  - config.inc renamed to config.php3, old links to config.inc adjusted
+7/12/00  - fixed seek() error (OPTIMIZE_FOR_MYSQL == false)
+         - slice selector printed only when more slices available
+         - Article Manager prints real SSI line
+7/13/00  - created_by and created_at are no more zeroized during slice updates
+         - Article Editor prints people's names instead of UIDs
+7/14/00  - fixed filters bug (no defined categories)
