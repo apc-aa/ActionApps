@@ -17,8 +17,6 @@ require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation col
 require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 require $GLOBALS[AA_INC_PATH]."../misc/alerts/util.php3";
 
-require $GLOBALS[AA_INC_PATH]."tableviews.php3";
-
 // ----------------------------------------------------------------------------------------    
 
 if (!IsSuperadmin()) {
