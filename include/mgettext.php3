@@ -46,8 +46,12 @@ function get_mgettext_lang () {
 *                     You will need this behaviour only when using a script which 
 *                     several times changes the language,
 *                     e.g. sends a lot of emails in different languages. 
+*   @param $lang      If you want to include several language files,
+*                     you must tell mgettext not too free the 
+*                     translations from the previous lang file. You do so by
+*                     sending the language shortcut.
 */
-function bind_mgettext_domain ($filename, $cache = false) {
+function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
     global $_m, $mgettext_lang, $mgettext_domain;
 
     // store strings into backup and look for new strings in backup
@@ -62,7 +66,8 @@ function bind_mgettext_domain ($filename, $cache = false) {
 #        exit;
     }
     else {
-        $_m = "";
+        if ($lang != get_mgettext_lang())
+            $_m = "";
         include $filename;        
     }
 }

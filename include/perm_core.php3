@@ -283,10 +283,10 @@ function FilemanPerms ($auth, $slice_id) {
     if ($GLOBALS[debug]) echo "FILEMAN ACCESS ".$db->f("fileman_access");
     $perms_ok = false;
     if ($db->f("fileman_access") == "EDITOR" 
-        && CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS)) 
+        && IfSlPerm(PS_EDIT_ALL_ITEMS)) 
         $perms_ok = true;
     else if ($db->f("fileman_access") == "ADMINISTRATOR" 
-        && CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) 
+        && IfSlPerm(PS_FULLTEXT)) 
         $perms_ok = true;
         
     return $perms_ok;

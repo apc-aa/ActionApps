@@ -129,8 +129,11 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false,
                 value=\"".$val."\">"; 
             break;
         case 'show_ro':
-            if ($val) $show_val = date($cview["format"], $val); 
-            ShowColumnValueReadOnly ($cview, $show_val, $val, $name);
+            if ($val) {
+                $show_val = @date($cview["format"], $val); 
+                if (!$show_val) $show_val = $val;
+            }
+            ShowColumnValueReadOnly ($cview, $show_val, $show_val, $name);
             break;
         case 'form':                        
             $val = get_formatted_date ($val, $cview["format"]);

@@ -542,16 +542,17 @@ class tabledit {
             function $fnname (formname, keys) {
                 myform = document.forms[formname];
                 for (ikey = 0; ikey < keys.length; ikey ++) {
-                    name = 'val[' + keys [ikey] + ']';\n";                
+                    name = 'val[' + keys [ikey] + ']';
+                    \n";                
         reset ($this->cols);
         while (list ($colname, $column) = each ($this->cols)) {
             $req = $column["required"];
             if (!$req) $req = "0";
             if ($column["validate"] || $req != 0) {
                 if ($column["validate_min"] && $column["validate"] == "number") 
-                     echo "if (!validate_number(myform[name+'[".$colname."]'],".$column["validate_min"].",".$column["validate_max"].", $req))
+                     echo "if (!validate_number(myform,name+'[".$colname."]',".$column["validate_min"].",".$column["validate_max"].", $req))
                         return false;\n";
-                else echo "if (!validate(myform[name+'[".$colname."]'],\"".$column["validate"]."\", $req))
+                else echo "if (!validate(myform,name+'[".$colname."]',\"".$column["validate"]."\", $req))
                     return false;\n";
             }
         }
@@ -596,6 +597,7 @@ class tabledit {
                     ."[".str_replace("\"","\\\"",$val)."]=1'>";
             else if ($cview["href"])
                 $href = "<a href='".$cview["href"]."'>";
+            else $href = "";
 
             if ($visible && $href && $cview["readonly"]) 
                 echo $href;
@@ -609,7 +611,7 @@ class tabledit {
             ColumnFunctions ($cview, $val, "show", $name, $new_record, $record);
         
             if ($visible) {
-                if ($href) {
+                if ($href && !$new_record) {
                     if ($cview["readonly"]) 
                         echo "</a>\n";
                     else echo $href.
@@ -618,8 +620,12 @@ class tabledit {
                 }
 
                 echo "</TD>\n";                
-                if ($this->type == "edit") 
+                if ($this->type == "edit") {
                     echo "</TR>";
+                    if ($column["colspan_hint"]) 
+                        echo '<TR><TD colspan="2" class="te_e_td"><SPAN class="te_e_col_hint">'.
+                        $column["colspan_hint"].'</SPAN></TD></TR>';
+                }
             }
         }
     }

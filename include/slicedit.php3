@@ -23,7 +23,7 @@ require $GLOBALS[AA_INC_PATH]."se_users.php3";
 require $GLOBALS[AA_INC_PATH]."slicewiz.php3";
 
 if($slice_id) {  // edit slice
-  if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT)) {
+  if(!IfSlPerm(PS_EDIT)) {
     MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"), "standalone");
     exit;
   }
@@ -117,7 +117,6 @@ if( $add || $update ) {
             break;
           }
           $r_slice_headline = stripslashes($name);
-          $r_lang_file[$slice_id] = stripslashes($lang_file);
           $r_slice_view_url = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                           : stripslashes($slice_url));
         }
@@ -188,7 +187,6 @@ if( $add || $update ) {
             }
           }  
     
-          $r_lang_file[$slice_id] = $lang_file;
           $sess->register(slice_id);
     
           AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access

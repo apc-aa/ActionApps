@@ -89,7 +89,8 @@ $lang_groups ["output"] =
 // _param_wizard_lang.php3 language files, used only in the parameter wizard           
 $lang_groups ["param_wizard"] = 
     array ("admin/param_wizard.php3",
-           "include/constants_param_wizard.php3");
+           "include/constants_param_wizard.php3",
+           "doc/param_wizard_list.php3");
            
 /* ----------------------------------------------------------------------------
    CREATING MGETTEXT LANGUAGE FILES
@@ -113,13 +114,21 @@ $old_group = "common";
 $old_lang_files = $aadir."include/??_".$old_group."_lang.php3"; 
 $log_files = $destdir."log_??_".$old_group."_lang.php3";
 
+// directories from which to translate files (replace language constants by _m() calls)
+$translate_dirlist = array (".","include","admin","modules","modules/module_TEMPLATE",
+    "modules/jump", "modules/alerts", "misc/oldDb2db");
+/*
+// special settings for converting the site module
+$old_group = "site";
+$old_lang_files = $aadir."include/??_".$old_group."_lang.php3"; 
+$log_files = $destdir."log_??_".$old_group."_lang.php3";
+$translate_dirlist = array ("modules/site");
+// end of special
+*/
+
 /* The file taken as the base for translations, usually the English one.
    If you are using English messages in _m() calls in source code, use the English file. */
 $translate_lang_file = str_replace ("??","en",$old_lang_files);
-
-// directories from which to translate files (replace language constants by _m() calls)
-$translate_dirlist = array (".","include","admin","modules","modules/module_TEMPLATE",
-    "modules/jump","modules/site", "modules/alerts");
 // ---------------------------------------------------------------------------- 
         
 // Command called from the form:        

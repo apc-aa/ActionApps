@@ -36,6 +36,8 @@ function create_logs ($lang_list, $old_lang_files, $log_files)
     reset ($lang_list);
     while (list ($lang) = each ($lang_list)) {
         $old_lang_file = str_replace ("??", $lang, $old_lang_files);
+        if (!file_exists ($old_lang_file)) 
+            continue;    
         $logfile = str_replace ("??", $lang, $log_files);
         if (file_exists ($logfile) && filesize ($logfile) > 0)
             continue;       

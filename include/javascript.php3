@@ -31,10 +31,10 @@ $js_triggers = array (
     "textarea" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
     "form"=> array ("onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit"));
 
-function getJavascript ()
+$js_trig = getTrig();
+
+function getJavascript ($slice_id)
 {
-    global $slice_id;
-    
     $db = new DB_AA;
     if ($slice_id) {
         $p_slice_id = q_pack_id ($slice_id);
@@ -63,7 +63,7 @@ function getTrig ()
             $js_trig[$ctrig] = 1;
     }
     
-    $javascript = getJavascript();
+    $javascript = getJavascript($GLOBALS["slice_id"]);
     
     $ws = "[ \t\n\r]*";
     reset ($js_trig);
@@ -84,7 +84,9 @@ function getTriggers ($control, $unpacked_fieldid, $add="") {
         $unpacked_fieldid = substr ($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 2);
     if (substr ($unpacked_fieldid, -1) == "x")
     	$unpacked_fieldid = substr ($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 1);
-    $fieldid = pack_id (substr ($unpacked_fieldid,1));
+    if (preg_match("/^[0-9a-f]+$/", $unpacked_fieldid))
+        $fieldid = pack_id (substr ($unpacked_fieldid,1));
+    else $fieldid = $unpacked_fieldid;
     
     reset ($js_triggers[$control]);
     while (list (,$ctrig) = each ($js_triggers[$control])) {

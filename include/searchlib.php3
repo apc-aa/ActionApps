@@ -187,52 +187,62 @@ function GetConstantGroup( $input_show_func ) {
 
 // -------------------------------------------------------------------------------------------
 
-/* Function: QueryIDs
-   Purpose:  Finds item IDs for items to be shown in a slice / view
-   Params:   $conds -- search conditions (see FAQ)
-             $sort -- sort fields (see FAQ)
-             $slices -- array of slices in which to look for items
-             $slice_id -- older parameter, used only when $slices is not set,
-                          translated to $slices = array($slice_id)
-             $neverAllItems -- if no conds[] apply (all are wrong formatted or empty),
-                               generates an empty set
-             $restrict_ids -- if you want to choose only from a set of items
-                              (used by E-mail Alerts and related item view (for
-                               sorting and eliminating of expired items))
-                              ids are packed but not quoted in $restrict_ids or short
-             $defaultCondsOperator
-             $use_cache -- if set, the cache is searched , if the result isn't 
-                           already known. If not, the result is found and stored into 
-                           cache.
-
-   Globals:  $debug=1 -- many debug messages
-             $debugfields=1 -- useful mainly for multiple slices mode -- views info about field_ids
-                used in conds[] but not existing in some of the slices
-             $QueryIDsCount -- set to the count of IDs returned
-             $nocache -- do not use cache, even if use_cache is set
+/** Finds item IDs for items to be shown in a slice / view
+*
+*   @param string $slice_id older parameter, used only when $slices is not set,
+*                           translated to $slices = array($slice_id)
+*   @param array  $conds  search conditions (see FAQ)
+*   @param array  $sort   sort fields (see FAQ)
+*   @param array  $slices array of slices in which to look for items
+*   @param string $type 
+*       sets status, pub_date and expiry_date according to specified type:
+*       ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL.
+*       If you want to specify it in conds, set to ALL.
+*      
+*   @param bool   $neverAllItems 
+*       if no conds[] apply (all are wrong formatted or empty),
+*       should the function generate an empty set? 
+*       Otherwise all items from given slices are returned.
+*       
+*   @param array  $restrict_zids 
+*       ids are packed but not quoted in $restrict_ids or short.
+*       Use it if you want to choose only from a set of items
+*       (used by E-mail Alerts and related item view 
+*       (for sorting and eliminating of expired items)).
+*       
+*   @param string $defaultCondsOperator 
+*       replaces the default "LIKE" for conditions with no operator set
+*       
+*   @param bool   $use_cache should be the cache searched for the result?
+*   
+*   @return A zids object with a list of the ids that match the query.
+*
+*   @global  bool $debug (in) many debug messages
+*   @global  bool $debugfields (in) useful mainly for multiple slices mode -- views info about field_ids
+*               used in conds[] but not existing in some of the slices
+*   @global  int $QueryIDsCount (out) is set to the count of IDs returned
+*   @global  bool $nocache (in) do not use cache, even if use_cache is set
+*   
+*   Parameter format example: 
+*   <pre>
+*   conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
+*   conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
+*   conds[0][keywords........] = 1;
+*   conds[0][operator] = "=";
+*   conds[0][value] = "Prague";
+*   conds[1][source..........] = 1;   // and source field of that item is
+*   conds[1][operator] = "=";         // 'Econnect'
+*   conds[1][value] = "Econnect";
+*   sort[0][category........]='a';    // order items by category ascending
+*   sort[1][publish_date....]='d';    // and publish_date descending (secondary)
+*   sort[0][category........]='1';    // order items by category priority - ascending
+*   sort[0][category........]='9';    // order items by category priority - descending
+*   </pre>
 */
 
-# Get a zids object that contains a list of the ids that match the query.
 function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="", 
     $type="ACTIVE", $slices="", $neverAllItems=0, $restrict_zids=false, 
     $defaultCondsOperator = "LIKE", $use_cache=false ) {
-  # parameter format example:
-  # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
-  # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
-  # conds[0][keywords........] = 1;
-  # conds[0][operator] = "=";
-  # conds[0][value] = "Prague";
-  # conds[1][source..........] = 1;   // and source field of that item is
-  # conds[1][operator] = "=";         // 'Econnect'
-  # conds[1][value] = "Econnect";
-  # sort[0][category........]='a';    // order items by category ascending
-  # sort[1][publish_date....]='d';    // and publish_date descending (secondary)
-  # sort[0][category........]='1';    // order items by category priority - ascending
-  # sort[0][category........]='9';    // order items by category priority - descending
-
-  # type sets status, pub_date and expiry_date according to specified type:
-  # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
-  # if you want specify it yourselves in conds, set type to ALL
 
   # select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
@@ -242,9 +252,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   global $QueryIDsCount;
 
   $db = new DB_AA;
-
   $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
-
 
   if( $use_cache AND !$nocache ) {
     #create keystring from values, which exactly identifies resulting content
@@ -437,7 +445,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
            $slices = array ($slice_id);
   }
 
-  if( count($slices) >= 1 ) {
+  if( is_array ($slices) && count($slices) >= 1 ) {
       reset ($slices);
       $slicesText = "";
       while (list (,$slice) = each ($slices)) {

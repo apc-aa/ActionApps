@@ -537,6 +537,7 @@ function GetModuleInfo($module_id, $type) {
   global $db, $MODULES;
   $p_module_id = q_pack_id($module_id);
   
+  if (!is_object($db)) $db = new DB_AA;
   $db->query("SELECT * FROM " . $MODULES[$type]['table'] ."
                WHERE id = '$p_module_id'");
   return  ($db->next_record() ? $db->Record : false);
@@ -1145,17 +1146,11 @@ function GetTimeZone () {
 /** generates random string of given length (useful as MD5 salt) */
 function gensalt($saltlen)
 {    
- list($usec, $sec) = explode(' ', microtime());
- //srand ($sec + ((float) $usec * 100000));
- srand((double) microtime() * 1000000);
- $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
- $i=0;
- $salt=""; 
- while ($i<$saltlen) {
-     $salt.= substr ($salt_chars, rand (0,strlen($salt_chars)-1), 1);
-     $i++; 
- }
- return $salt;
+    srand((double) microtime() * 1000000);
+    $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
+    for ($i = 0; $i < $saltlen; $i ++) 
+        $salt .= $salt_chars [rand (0,strlen($salt_chars)-1)];
+    return $salt;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1345,11 +1340,15 @@ function setdefault (&$var, $default) {
 }
 
 /** Cooperates with the script post2shtml.php3, which allows to easily post variables
- * to PHP scripts SSI-included in a .shtml page. No parameters necessary. 
+ * to PHP scripts SSI-included in a .shtml page. 
+ *
+ * @param bool $delete Should delete the vars from database after recalling them?
+ *                     If you use the vars in several scripts included in one
+ *                     shtml page, delete them in the last script.
  *
  * @author Jakub Adamek, Econnect, December 2002
  */
-function add_post2shtml_vars () {
+function add_post2shtml_vars ($delete = true) {
     global $db, $debug, $post2shtml_id;
     
     add_vars();
@@ -1358,7 +1357,10 @@ function add_post2shtml_vars () {
     $db->query("SELECT * FROM post2shtml WHERE id='$post2shtml_id'");
     $db->next_record();
     $vars = unserialize ($db->f("vars"));
+    if ($delete)
+        $db->query("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
     $var_types = array ("post","get","files","cookie");
+
     reset ($var_types);
     while (list (,$var_type) = each ($var_types)) {
         if (is_array ($vars[$var_type])) {
@@ -1366,15 +1368,10 @@ function add_post2shtml_vars () {
             while (list ($var, $value) = each ($vars[$var_type])) {
                 global $$var;
                 $$var = $value;
-                if ($debug) { echo "<b>$var</b> = "; print_r ($value); echo "<br>"; }
+                if ($debug) { echo "<b>$var</b> = "; print_r ($value); echo "<br>\n"; }
             }
         }
-    }
-}
-
-function delete_post2shtml_vars ($post2sthml_id) {
-    global $db;
-    $db->query("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
+    }    
 }
 
 /** List of email types with translated description.

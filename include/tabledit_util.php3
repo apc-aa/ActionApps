@@ -239,7 +239,8 @@ function TableDelete ($table, $key, $columns, $primary_aliases, $error_msg="", $
 			return false;
 		}
     }
-    callTrigger ($triggers, "BeforeDelete", $varset);       
+    if (! callTrigger ($triggers, "BeforeDelete", $varset))       
+        return false;
     $retval = $db->query($varset->makeDELETE ($table));
     callTrigger ($triggers, "AfterDelete", $varset);
     return $retval;
@@ -295,7 +296,8 @@ function TableUpdate ($default_table, $val, $columns, $primary_aliases, $primary
                 return false;
             }
         }
-        callTrigger ($triggers, "BeforeUpdate", $varset);
+        if (! callTrigger ($triggers, "BeforeUpdate", $varset))
+            return false;
         $db->query($varset->makeUPDATE ($table));
         callTrigger ($triggers, "AfterUpdate", $varset);
     }
@@ -356,7 +358,8 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
                 return "";
             }
         }
-        callTrigger ($triggers, "BeforeInsert", $varset);
+        if (! callTrigger ($triggers, "BeforeInsert", $varset))
+            return "";
         $db->query($varset->makeINSERT ($table)); 
         callTrigger ($triggers, "AfterInsert", $varset);
         
@@ -433,7 +436,7 @@ function ProoveVals ($val, $columns) {
                 return false;
             if ($column["validate_min"] && $column["validate"] == "number") {
                 if ($val[$colname] < $column["validate_min"] || $val[$colname] > $column["validate_max"]) {
-                    $err[$colname] = "Value of $colname should be between $column[validate_min] and $column[validate_max].";
+                    $err[$colname] = _m("Value of %1 should be between %2 and %3.", array($colname,$column["validate_min"],$column["validate_max"]));
                     return false;
                 }
             }
@@ -450,7 +453,6 @@ function GetKey ($primary, $columns, $varset)
 {
     reset ($primary);
     while (list ($alias) = each ($primary)) {
-        echo $alias; 
         $val = $varset->get ($columns[$alias]["field"]);
         if ($columns[$alias]["view"]["unpacked"])
             $key[] = unpack_id ($val);
@@ -581,8 +583,9 @@ function GetEditedKey ($tview) {
 function CallTrigger ($triggers, $event, $varset) {
     if (is_array ($triggers) && $triggers[$event]) {
         $fn = $triggers[$event];
-        $fn ($varset);
+        return $fn ($varset);
     }
+    else return true;
 }
 
 

@@ -85,7 +85,7 @@ if( isset( $templates ) AND is_array( $templates ) AND
     if ($wizard)
          echo '<input type="radio" name="template_slice_radio" value="slice" checked>';
     else echo '<input type="SUBMIT" name="template_slice_sel[slice]" value="'._m("Add").'">';
-    echo '<input type="hidden" name="Add_slice" value="1">
+    echo '<input type="hidden" name="no_slice_id" value="1">
         </td></tr>';
   } else
     echo "<tr><td class=tabtxt colspan=2>". _m("No slices") ."</td></tr>";
