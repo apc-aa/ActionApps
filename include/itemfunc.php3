@@ -280,6 +280,7 @@ function GetDestinationFileName($dirname, $uploaded_name) {
 function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
 {
     global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR, $debugupload, $err;
+
 #$debugupload=1;
     if ($debugupload) huhl("insert_fnc_fil:field=",$field,"value=",$value,"param=",$param);
     if ($debugupload >= 5) huhl("Globals=",$GLOBALS);
@@ -364,28 +365,28 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
         return;
     }
     if ($params[3]!="") {
-            // get ids of field store thumbnails
-            $thumb_arr=explode("##",$params[3]);
+        // get ids of field store thumbnails
+        $thumb_arr=explode("##",$params[3]);
 
-            reset($thumb_arr);
-            while(list(,$thumb) = each($thumb_arr)) {
-                if($debugupload) huhl("Working on thumb=$thumb");
-                $num ++; // Note sets it initially to 1
-                //copy thumbnail
-                $f = $fields[$thumb];       // Array from fields
+        reset($thumb_arr);
+        while(list(,$thumb) = each($thumb_arr)) {
+            if($debugupload) huhl("Working on thumb=$thumb");
+            $num ++; // Note sets it initially to 1
+            //copy thumbnail
+            $f = $fields[$thumb];       // Array from fields
 
-                $fncpar = ParseFnc($f["input_insert_func"]);
-                $thumb_params=explode(":",$fncpar);  // (fnctn, type, width, height)
+            $fncpar = ParseFnc($f["input_insert_func"]);
+            $thumb_params=explode(":",$fncpar['param']);  // (type, width, height)
 
-                $dest_file_tmb=substr($dest_file,0,strrpos($dest_file,"."))
-                    ."_thumb$num".substr($dest_file,strrpos($dest_file,".")); // xxx_thumb1.jpg
+            $dest_file_tmb=substr($dest_file,0,strrpos($dest_file,"."))
+                ."_thumb$num".substr($dest_file,strrpos($dest_file,".")); // xxx_thumb1.jpg
 
-                if ($e = ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb",
-                        $thumb_params[2],$thumb_params[3])) {
-                    $err[$field["id"]] = $e;
-                    if ($debugupload) { huhl("Errors on nested ResampleImage = ",$err); exit; }
-                    return;
-                }
+            if ($e = ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb",
+                    $thumb_params[1],$thumb_params[2])) {
+                $err[$field["id"]] = $e;
+                if ($debugupload) { huhl("Errors on nested ResampleImage = ",$err); exit; }
+                return;
+            }
 
             // delete content just for displayed fields
             $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($item_id). "'
@@ -1459,8 +1460,8 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
             case 'email':
             case 'number':
             case 'id':
-                ValidateInput($varname, $f["name"], $$varname, $err,
-                          $f["required"] ? 1 : 0, $f["input_validate"]);
+                ValidateInput($varname, $f["name"], $$varname, $err, // status code is never required
+                    ($f["required"] AND ($pri_field_id!='status_code.....')) ? 1 : 0, $f["input_validate"]);
                 break;
             // necessary for 'unique' validation: do not validate if
             // the value did not change (otherwise would the value always

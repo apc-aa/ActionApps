@@ -1,3 +1,5 @@
+06/30/03 - fixed image resize functions
+(honzam) - fixed user profile setting where warning is no longer displayed
 06/26/03 - added Links module into sql_update.php3 and updated config.php3
 (honzam) - fixed Links to use new aliases
          - AAnoCONDITION could be used also with cmd[]=d (not only with cmd[]=c)

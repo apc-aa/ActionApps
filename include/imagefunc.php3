@@ -57,7 +57,7 @@ function CopyImage2Destination($simage, $dimage) {
 
 
 /**
- *  Resamles image
+ *  Resamples image
  *  @return false on success or text string with error message
  */
 function ResampleImage($simage,$dimage,$new_w,$new_h) {
@@ -93,11 +93,13 @@ function ResampleImage($simage,$dimage,$new_w,$new_h) {
     if (GetSupportedTypes($imginfo[2])) {
         if ($imginfo[2]<4 && $imginfo!=NULL) {
             // in GD2 ImageCreate goes monochrome
-            if (is_callable("ImageCreateTrueColor")
-                && $imageTable[$imginfo[2]][t])
-                $dst_img=ImageCreateTrueColor($new_w,$new_h);
-            else
+            if (  $imageTable[$imginfo[2]][t])
+                // test for is_callable("ImageCreateTrueColor") doesn't work
+                // GD < 2 have this function, but not implemented
+                $dst_img=@ImageCreateTrueColor($new_w,$new_h);
+            if (!$dst_img) {
                 $dst_img=ImageCreate($new_w,$new_h);
+            }
             $f="ImageCreateFrom".$imagetype;
             $src_img=$f($simage);
             if (!$src_img) return _m("ResampleImage unable to %1",array($f));
