@@ -38,7 +38,11 @@ require $GLOBALS[AA_INC_PATH]."feeding.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 require $GLOBALS[AA_INC_PATH]."notify.php3";
-//require $GLOBALS[AA_INC_PATH]."javascript.php3";
+require $GLOBALS[AA_INC_PATH]."javascript.php3";
+
+// needed for field JavaScript to work 
+$js_trig = getTrig();
+
 if( file_exists( $GLOBALS[AA_INC_PATH]."usr_validate.php3" ) ) {
   include( $GLOBALS[AA_INC_PATH]."usr_validate.php3" );
 }
@@ -309,9 +313,24 @@ if ($return_url)
 else
   $PASS_PARAM=$PHP_SELF;
 // End of Ram's Code
-?>
-<form name=inputform onsubmit="BeforeSubmit()" enctype="multipart/form-data" method=post action="<?php echo  ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PASS_PARAM ?>">
-<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
+
+// field javascript feature (see /include/javascript.php3)
+$javascript = getJavascript();
+if ($javascript) {
+    echo '
+    <script language="javascript">
+        <!--
+            '.$javascript.'
+        //-->
+    </script>
+    <script language="javascript" src="'.AA_INSTAL_URL.'/include/fillform.js">
+    </script>';
+}
+
+echo '<form name=inputform enctype="multipart/form-data" method=post action="'
+    .($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PASS_PARAM).'"'
+    .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"BeforeSubmit()")).'>'
+    .'<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center" class="inputtab">'; ?>
 <tr><td class=tabtit align="center"><b>&nbsp;<?php //echo L_ITEM_HDR?></b>
 </td>
 </tr>
