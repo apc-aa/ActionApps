@@ -565,9 +565,10 @@ function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
 
 function show_fnc_sel($varname, $field, $value, $param, $html) {
   global $db;
-   list($constgroup,$slice_field, $usevalue) =explode(':', $param);
+   list($constgroup,$slice_field, $usevalue, $allitems) =explode(':', $param);
   if( substr($param,0,7) == "#sLiCe-" ) { # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
+    $arr = GetItemHeadlines( $db,substr($constgroup, 7),$slice_field,'','all',
+                             null, ($allitems==1) ? 'all':'normal' );
     #add blank selection for not required field
     if( !$field["required"] )
       $arr[''] = " ";
@@ -766,6 +767,16 @@ function show_fnc_wi2($varname, $field, $value, $param, $html) {
 function show_fnc_freeze_wi2($varname, $field, $value, $param, $html) {
   echo $field["input_before"];
   FrmStaticText($field['name'], implode (", ", $value));
+}
+
+function show_fnc_hid($varname, $field, $value, $param, $html) {
+  echo $field['input_before'];
+  FrmHidden($varname, $value[0]['value'] );
+}
+
+function show_fnc_freeze_hid($varname, $field, $value, $param, $html) {
+  echo $field['input_before'];
+  FrmHidden($varname, $value[0]['value'] );
 }
 
 function show_fnc_pwd($varname, $field, $value, $param, $html) {

@@ -265,6 +265,10 @@ array("name"=>_m("Select Box"),
 		array("name"=>_m("use name"),
 		"desc"=>_m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"),
 		"type"=>"BOOL",
+		"example"=>"0"),
+		array("name"=>_m("show all"),
+		"desc"=>_m("used only for slices - if set (=1), then all items are shown (including expired and pending ones)"),
+		"type"=>"BOOL",
 		"example"=>"0")));
 $INPUT_TYPES["items"]["pre"]=
 array("name"=>_m("Text Field with Presets"),
@@ -404,14 +408,19 @@ array("name"=>_m("Two Windows"),
     "desc"=>"",
     "type"=>"STR",
     "example"=>_m("Selected"))));
+
+$INPUT_TYPES["items"]["hid"]=
+    array("name"=>_m("Hidden field"),
+	"desc"=>_m("The field value will be shown as &lt;input type='hidden'. You will probably set this filed by javascript trigger used on any other field."));
+
 $INPUT_TYPES["items"]["pwd"]=
-array("name"=>_m("Password and Change Password"),
-  "desc"=>_m("Password input boxes allowing to send password (for password-protected items)
+    array("name"=>_m("Password and Change Password"),
+          "desc"=>_m("Password input boxes allowing to send password (for password-protected items)
         and to change password (including the \"Retype password\" box).<br><br>
         When a user fills new password, it is checked against the retyped password,
         MD5-encrypted so that nobody may learn it and stored in the database.<br><br>
         If the field is not Required, shows a 'Delete Password' checkbox."),
-  "params"=>array(
+          "params"=>array(
     array("name"=>_m("Field size"),
           "desc"=>_m("Size of the three fields"),
           "type"=>"INT",
@@ -438,6 +447,7 @@ array("name"=>_m("Password and Change Password"),
           "example"=>_m("Retype the new password exactly the same as you entered into "
             ."\"Change Password\".")),
    ));  
+
 $INPUT_TYPES["items"]["nul"]=
 array("name"=>_m("Do not show"),
 	"desc"=>_m("This option hides the input field"));
@@ -621,6 +631,21 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
 		"desc"=>_m("additional text to the \"\<a\>\" tag"),
 		"type"=>"STR",
 		"example"=>_m("target=_blank")))),
+"f_o"=>array("name"=>_m("'New' sign"),
+	"desc"=>_m("prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time."),
+	"params"=>array(
+		array("name"=>_m("time"),
+		"desc"=>_m("Time in minutes from current time."),
+		"type"=>"INT",
+		"example"=>_m("1440")),
+		array("name"=>_m("newer text"),
+		"desc"=>_m("Text to be printed, if the date in <i>the filed</i> is newer than <i>current_time</i> - <b>time</b>."),
+		"type"=>"STR",
+		"example"=>_m("NEW")),
+		array("name"=>_m("older text"),
+		"desc"=>_m("Text to be printed, if the date in <i>the filed</i> is older than <i>current_time</i> - <b>time</b>"),
+		"type"=>"STR",
+		"example"=>_m("")))),
 "f_n"=>array("name"=>_m("id"),
 	"desc"=>_m("prints unpacked id (use it, if you watn to show 'item id' or 'slice id')")),
 "f_q"=>array("name"=>_m("text (blurb) from another slice"),
