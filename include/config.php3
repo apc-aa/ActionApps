@@ -89,30 +89,28 @@ define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
 # action applications. For a first time installation, you don't need
 # to care about them.
 
+
+define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
+
 # index names must be less than 20 characters (as is en_news)
-$ActionAppConfig[en_news][name] = "News";
+# "en_news" is slice type (each slice has its type stored in database)
+#    we can say, type is the same as application
+# "News (En)" is name of this slice type (application)
+# "en_news_lang.php3" is the name of use language file for this slice type
+$ActionAppConfig[en_news][name] = "News (En)";
 $ActionAppConfig[en_news][file] = "en_news_lang.php3";
-# $ActionAppConfig[news][file] = "cz_language.php3";    # Czech language news
 
-$ActionAppConfig[en_action_alerts][name] = "Action alerts";
-$ActionAppConfig[en_action_alerts][file] = "en_news_lang.php3";
+$ActionAppConfig[cz_news][name] = "News (Cz)";
+$ActionAppConfig[cz_news][file] = "cz_news_lang.php3";
 
-$ActionAppConfig[en_events][name] = "Events listings";
-$ActionAppConfig[en_events][file] = "en_news_lang.php3";
+$ActionAppConfig[cz_media][name] = "Media monitoring (Cz)";
+$ActionAppConfig[cz_media][file] = "cz_media_lang.php3";
 
-$ActionAppConfig[en_press_rel][name] = "Press release publisher";
+$ActionAppConfig[en_all][name] = "Article publisher (En)";  // maximalistic version of inpu form
+$ActionAppConfig[en_all][file] = "en_all_lang.php3";
+
+$ActionAppConfig[en_press_rel][name] = "Press release publisher (En)";
 $ActionAppConfig[en_press_rel][file] = "en_press_lang.php3";
-
-$ActionAppConfig[en_jobs][name] = "Job listing";
-$ActionAppConfig[en_jobs][file] = "en_news_lang.php3";
-
-$ActionAppConfig[en_addresses][name] = "Address list";
-$ActionAppConfig[en_addresses][file] = "en_news_lang.php3";
-
-$ActionAppConfig[en_media_mon][name] = "Media monitoring";
-$ActionAppConfig[en_media_mon][file] = "en_news_lang.php3";
-
-
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG
