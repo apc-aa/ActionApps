@@ -173,9 +173,25 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
     # get filename and replace bad characters
     $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
 
-    # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
-    $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
-    $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
+    # new behavior, added by Jakub on 2.8.2002 -- related to File Manager
+    $dirname = "";
+    $db = new DB_AA;
+    $db->query ("SELECT fileman_dir FROM slice WHERE id='".q_pack_id($GLOBALS["slice_id"])."'");
+    if ($db->num_rows() == 1) {
+        $db->next_record();
+        $fileman_dir = $db->f("fileman_dir");
+        if ($fileman_dir && is_dir (FILEMAN_BASE_DIR.$fileman_dir)) {
+            $dirname = FILEMAN_BASE_DIR.$fileman_dir."/items";
+            $dirurl = FILEMAN_BASE_URL.$fileman_dir."/items";
+            if (!is_dir ($dirname)) 
+               mkdir ($dirname, FILEMAN_MODE);
+        }
+    }
+    if (!$dirname) {
+        # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
+        $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
+        $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
+    }
 
     if( !is_dir( $dirname ))
       if( !mkdir( $dirname, IMG_UPLOAD_DIR_MODE ) ){
@@ -193,11 +209,13 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
         if( !move_uploaded_file($GLOBALS[$filevarname], "$dirname/$dest_file")) {
           return L_CANT_UPLOAD;
         }  
+        else chmod ("$dirname/$dest_file",IMG_UPLOAD_DIR_MODE);
       }
     } else {   # for php 3.x and php <4.0.3
       if(!copy($GLOBALS[$filevarname],"$dirname/$dest_file")) {
         return L_CANT_UPLOAD;
       }  
+      else chmod ("$dirname/$dest_file",IMG_UPLOAD_DIR_MODE);
     }  
     $value["value"] = "$dirurl/$dest_file";
   }
@@ -646,6 +664,14 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     $itemvarset->add("id", "unpacked", $id);
     $itemvarset->add("slice_id", "unpacked", $slice_id);
     $itemvarset->add("display_count", "quoted", "0");
+    
+    /* e-mail alerts */
+    if ($itemvarset->get('status_code') == 1) {
+        $itemvarset->add("alerts_daily", "number", 1);
+        $itemvarset->add("alerts_weekly", "number", 1);
+        $itemvarset->add("alerts_monthly", "number", 1);
+    }
+    
     $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
   }  
   $db->query($SQL);
