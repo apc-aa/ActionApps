@@ -1,0 +1,64 @@
+/* TABLE EDIT STYLES */
+
+.te_no_item_msg {
+    font-weight : bold;
+}
+
+.te_search_td {
+	background: #A8C8B0;
+	color: #4A4A4A;
+    font-weight : bolder;
+}
+
+.te_search_table {
+	background: #A8C8B0;
+	color: #4A4A4A;
+    border: thin solid White;
+}
+
+.te_child_header {
+; font-size: large; font-weight: bold
+; border-style: none; border-top-width: medium; border-bottom-width: medium}
+
+/* Browse view */
+
+.te_browse_table  {
+	background: #A8C8B0;
+	color: #4A4A4A;
+	border : thin solid White;
+}
+
+.te_browse_td  {
+	background: #A8C8B0;
+	color: #4A4A4A;
+}
+
+.te_browse_column_header {
+	font-weight : bold;
+}
+
+.te_browse_column_hint {
+	font : xx-small;
+}
+
+/* Edit view */
+
+.te_edit_table  {
+	background: #A8C8B0;
+	color: #4A4A4A;
+	border : thin solid White;
+}
+
+.te_edit_td {
+	background: #A8C8B0;
+	color: #4A4A4A;
+}
+
+.te_edit_column_header {
+	font-weight : bold;
+}
+
+.te_edit_column_hint {
+	font-size : x-small;
+}
+
