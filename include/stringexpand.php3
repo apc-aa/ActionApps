@@ -149,8 +149,8 @@ function parseMath($text) {
 # Do not change strings used, as they can be used to force an escaped character
 # in something that would normally expand it
 $QuoteArray = array(":" => "_AA_CoLoN_",
-		"(" => "_AA_OpEnPaR_", ")" => "_AA_ClOsEpAr_",
-		"{" => "_AA_OpEnBrAcE_", "}" => "_AA_ClOsEbRaCe_");
+        "(" => "_AA_OpEnPaR_", ")" => "_AA_ClOsEpAr_",
+        "{" => "_AA_OpEnBrAcE_", "}" => "_AA_ClOsEbRaCe_");
 $UnQuoteArray = array_flip($QuoteArray);
 
 
@@ -159,19 +159,19 @@ $UnQuoteArray = array_flip($QuoteArray);
 function QuoteColons($level, $maxlevel, $text) {
   global $QuoteArray, $UnQuoteArray; # Global so not built at each call
   if( $level > 0 )                  # there is no need to substitute on level 1
-	return strtr($text, $QuoteArray);
+    return strtr($text, $QuoteArray);
 
   #level 0 - return from unalias - change all back to ':'
   if( ($level == 0) AND ($maxlevel > 0) )  # maxlevel - just for speed optimalization
-	return strtr($text, $UnQuoteArray);
+    return strtr($text, $UnQuoteArray);
   return $text;
 }
 
 # Substitutes special AA 'colon' string back to colon ':' character
 # Used for parameters, where is no need colons are not parameter separators
 function DeQuoteColons($text) {
-	global $UnQuoteArray;
-	return strtr($text, $UnQuoteArray);
+    global $UnQuoteArray;
+    return strtr($text, $UnQuoteArray);
 }
 
 // In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax
@@ -341,13 +341,15 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         }
         return QuoteColons($level,$maxlevel,$ebres);
     }
-    if (isset($item) && ($out == "unpacked_id.....")) {
-        return QuoteColons($level, $maxlevel, $item->f_n('id..............'));
-    }
-    elseif( isset($item) && IsField($out) ) {
-//      return QuoteColons($level, $maxlevel, $item->getval($out));
-      return QuoteColons($level, $maxlevel, $item->f_h($out,"-"));
-      # QuoteColons used to mark colons, which is not parameter separators.
+    if (isset($item) ) {
+        if (($out == "unpacked_id.....") || ($out == "id..............")) {
+            return QuoteColons($level, $maxlevel, $item->f_n('id..............'));
+        } elseif ($out == "slice_id........") {
+            return QuoteColons($level, $maxlevel, $item->f_n('slice_id........'));
+        } elseif ( IsField($out) ) {
+            return QuoteColons($level, $maxlevel, $item->f_h($out,"-"));
+            # QuoteColons used to mark colons, which is not parameter separators.
+        }
     }
     # Look and see if its in the state variable in module site
     # note, this is ignored if apc_state isn't set, i.e. not in that module
@@ -404,7 +406,14 @@ function expandFilenameWithHttp($parturl) {
         if ($errcheck) huhl("Unable to retrieve $filename");
         return "";
       }
-      $fileout = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
+      $fileout = "";
+      do {   // this is needed since PHP 4.3.2 - remote files are read on PACKET
+             // by PACKET BASIS !!! (maybe we can use new file_get_contents() for
+             // php >= 4.3.0
+          $data = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
+          if (strlen($data) == 0) break;
+          $fileout .= $data;
+      } while(true);
       fclose( $fp );
       return $fileout;
 }
