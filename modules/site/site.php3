@@ -31,6 +31,7 @@ require "../../include/config.php3";
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3"; 
 require $GLOBALS[AA_INC_PATH]."pagecache.php3"; 
+require $GLOBALS[AA_INC_PATH]."stringexpand.php3";
 
 function IsInDomain( $domain ) {
   global $HTTP_HOST;
@@ -151,10 +152,11 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
 function ModW_StoreIDs($spot_id, $depth) {
   $GLOBALS['show_ids'][] = $spot_id;
 }  
-
+/* Deprecated - uses code in stringexpand.php3}
 function ModW_ParseSwitch($text, &$state) {
   $variable = strtok($text,")");
   $twos = ParamExplode( strtok("") );
+
 
   global $debug;
   if ( $debug == 2 ) {
@@ -170,7 +172,8 @@ function ModW_ParseSwitch($text, &$state) {
   }
   return "";
 }
-
+*/
+/* Deprecated uses stringexpand.php3 
 # Substitutes all colons with special AA string and back depending on unalias nesting.
 # Used to mark colons, which is not parameter separators.
 # The same as QuoteColons() in /include/item.php3
@@ -183,14 +186,16 @@ function ModW_QuoteColons($level, $maxlevel, $text) {
     return str_replace("_AA_CoLoN_", ":", $text);
   return $text;
 }
-
+*/
+/* Deprecated uses stringexpand.php3 
 # Substitutes special AA 'colon' string back to colon ':' character
 # Used for parameters, where is no need colons are not parameter separators
 function ModW_DeQuoteColons($text) {
   return str_replace("_AA_CoLoN_", ":", $text);
 }
-
-
+*/
+/* Deprecated uses stringexpand.php3 
+# See include/item.php3 for other places that {...} syntax is used, 
 function ModW_unalias_recurent(&$text, &$state, $level, &$maxlevel) {
 
   $maxlevel = max($level, $maxlevel);       # just for speed optimalization (ModW_QuoteColons)
@@ -215,6 +220,10 @@ function ModW_unalias_recurent(&$text, &$state, $level, &$maxlevel) {
   #   {any text}                                    - return "any text"
 
   # replace all variable aliases
+  if( substr($out, 0, 5) == "debug" ) {
+	print_r($state);
+	return "";
+  }
   if( (strlen($out)<=32) AND isset($state) AND is_array($state) AND isset($state[$out]) )
     return ModW_QuoteColons($level, $maxlevel, $state[$out]);
   # replace switches
@@ -231,12 +240,13 @@ function ModW_unalias_recurent(&$text, &$state, $level, &$maxlevel) {
   # else just print text
   return ModW_QuoteColons($level, $maxlevel, ($level>0) ? '{'.$out.'}' : $out);
 }
-
+*/
 function ModW_unalias( &$text, &$state ) {
   // just create variables and set initial values
   $maxlevel = 0;   
   $level = 0;
-  return ModW_unalias_recurent( $text, $state, $level, $maxlevel );
+  return new_unalias_recurent($text, "", $level, $maxlevel);
+#  return ModW_unalias_recurent( $text, $state, $level, $maxlevel );
 }
 
 exit;

@@ -1,9 +1,21 @@
-1/06/02 - changed cases of "action" to "akce" as form component name because its a 
-	property of "form". Bug shows up in Omniweb but not in IE (fee_to.php3,index.php3 related_sel.php3)
-1/05/02 - added utils.php3:huhl function for wrapping print_r
+1/06/02 - added "All" option to the scroller in item manager (sets listlen to 99999) (mitra)
+1/06/02 - changed cases of "action" to "akce" as form component name because its a  
+	property of "form". Bug shows up in Omniweb but not in IE (fee_to.php3,index.php3 related_sel.php3) (mitra)
+1/05/02 - added utils.php3:huhl function for wrapping print_r (mitra)
 	- changed richEditShowable to return false for macintosh (Mac IE 5.2 does not support either class or iframe versions of RichTextEdit)
+1/3/02	 - merged string expansion into include/stringexpand.php3 including (mitra)
+	 -- REMOVE strings from views are now applied to the RESULT, not the first parse, this might be significant/bad idea
+	 -- Behavior for extra { and } in the strings MIGHT be different before, the previous behavior looked inconsistent
+	 -- removed fake item kludge from include/mail.php3
+	 -- item.php3 (i.e. expansion in views) now supports "view.php3" syntax and expansion of apc_state
+	-- QuoteColons now handles { and } as well, this might not always be a good idea
+	 -- modules/site/site.php3 uses new unalias which means
+	 ---  it requires switch({m}) instead of switch(m)
+	 ---  it supports the {math ...} and {include...} syntax
+1/2/02   - fixed bug in site/index.php3 where cache not invalidated when site updated
 12/30/02 - spelling correction in L_TOO_MUCH_RELATED all *news_lang.php3 still in english (mitra)
 12/30/02 - warning comment on slice special case in item.php3 (mitra)
+12/29/02 - Added some comments in site/site and added simple example from sf.net (mitra)
 12/20/02 - fixed problem with LiveCheckbox (image path/mozilla refresh) (honzam)
          - fixed bug of ignored conditions, when conds[x][value] was 0 (honzam)
 12/17/02 - input type "selectbox with presets" with the "adding" parameter ads 

@@ -27,6 +27,7 @@ if( file_exists( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" ) ) {
 }
 
 require $GLOBALS[AA_INC_PATH]."math.php3";
+require $GLOBALS[AA_INC_PATH]."stringexpand.php3";
 
 function txt2html($txt) {          // converts plain text to html
   return nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));
@@ -138,34 +139,6 @@ function GetConstantAliases( $additional="" ) {
   return($aliases);
 }
 
-#explodes $param by ":". The "#:" means true ":" - don't separate
-function ParamExplode($param) {
-  $a = str_replace ("#:", "__-__.", $param);    # dummy string
-  $b = str_replace ("://", "__-__2", $a);       # replace all <http>:// too
-  $c = str_replace (":", "##Sx",$b);            # Separation string is ##Sx
-  $d = str_replace ("__-__.", ":", $c);         # change "#:" to ":"
-  $e = str_replace ("__-__2", "://", $d);         # change back "://"
-  return explode( "##Sx", $e );
-}
-
-# Substitutes all colons with special AA string and back depending on unalias nesting.
-# Used to mark colons, which is not parameter separators.
-function QuoteColons($level, $maxlevel, $text) {
-  if( $level > 1 )                  # there is no need to substitute on level 1
-    return str_replace(":", "_AA_CoLoN_", $text);
-
-  #level 0 - return from unalias - change all back to ':'
-  if( ($level == 0) AND ($maxlevel > 1) )  # maxlevel - just for speed optimalization
-    return str_replace("_AA_CoLoN_", ":", $text);
-  return $text;
-}
-
-# Substitutes special AA 'colon' string back to colon ':' character
-# Used for parameters, where is no need colons are not parameter separators
-function DeQuoteColons($text) {
-  return str_replace("_AA_CoLoN_", ":", $text);
-}
-
 # helper function for f_e
 # this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
 # added by setu@gwtech.org 2002-0211
@@ -209,8 +182,8 @@ function make_return_url($prifix) {
 }
 
 class item {    
-  var $item_content;   # asociative array with names of columns and values from item table
-  var $columns;        # asociative array with names of columns and values of current row 
+  var $item_content;   # associative array with names of columns and values from item table
+  var $columns;        # associative array with names of columns and values of current row 
   var $clean_url;      # 
   var $top;
   var $format;         # format string with aliases 
@@ -299,54 +272,6 @@ class item {
     return $this->$fce($ali_arr['param'], $function['param']);
   }
 
-  function parseSwitch($text) {
-    $variable = substr(strtok('_'.$text,")"),1);   # add and remove '_' - this 
-                                                   # is hack for empty variable 
-                                                   # (when $text begins with ')')
-    $twos = ParamExplode( strtok("") );
-    $i=0;
-    while( $i < count($twos) ) {
-      if( $i == (count($twos)-1)) {                # default option
-        return $twos[$i];
-      }
-      $val = trim($twos[$i]);
-      if( !$val OR ereg($val, $variable) ) {
-        return $twos[$i+1];
-      }
-      $i+=2;
-    }
-    return "";
-  }
-
-  function parseMath($text)
-  {
-  	$variable = strtok($text,")");
-    $twos = ParamExplode( strtok("") );
-	//print_r ($twos);
-	$i=0;$key=true;
-	while( $i < count($twos) ) {
-     $val = trim($twos[$i]);
-	
-	  if ($key)
-	  	{
-			if ($val) $ret.=str_replace("#:","",$val); $key=false;
-		}
-	  else
-	  	{	$val=str_replace ("{", "", $val);
-			$val=str_replace ("}", "", $val);
-            $val = calculate ($val); // defined in math.php3
-			
-			$format=explode("#",$variable);
-			$val=number_format($val, $format[0], $format[1], $format[2]);
-			
-			$ret.=$val;
-			$key=true;
-		}
-	 $i++;
-    }
-  	return $ret;
-  }
-    
   function remove_strings( $text, $remove_arr ) {
     if( is_array($remove_arr) ) {
       reset($remove_arr);
@@ -381,7 +306,8 @@ class item {
 
   # we can't call unalias() function recurently because of referenced variable
   # maxlevel (can't have implicit value), that's why we introduce unalias_recurent()
-  function unalias_recurent( &$text, $remove, $level, &$maxlevel ) {
+  # Note that this function does not handle Site syntax, 
+  function old_unalias_recurent( &$text, $remove, $level, &$maxlevel ) {
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
 
@@ -396,7 +322,7 @@ class item {
       $text = substr( $text,$pos+1 );           # remove processed text
                                                 # from $text is removed {...} on return
         # $remove is not needed in deeper levels - we use remove strings just on base level (0)
-      $substitution = $this->unalias_recurent( $text, "", $level+1, $maxlevel );
+      $substitution = $this->old_unalias_recurent( $text, "", $level+1, $maxlevel );
         # QuoteColons substitutes all colons with special AA string.
         # Used to mark colons, which is not parameter separators.
 
@@ -429,15 +355,15 @@ class item {
     }
     elseif( substr($out, 0, 7) == "switch(" ) {
       # replace switches
-      return QuoteColons($level, $maxlevel, $this->parseSwitch( substr($out,7) ));
+      return QuoteColons($level, $maxlevel, parseSwitch( substr($out,7) ));
       # QuoteColons used to mark colons, which is not parameter separators.
 	  }
     elseif( substr($out, 0, 5) == "math(" ) {
       # replace math
-      return QuoteColons($level, $maxlevel, $this->parseMath( substr($out,5) ));
+      return QuoteColons($level, $maxlevel, parseMath( substr($out,5) ));
       # QuoteColons used to mark colons, which is not parameter separators.  
 	  }
-	elseif( substr($out, 0, 8) == "include(" ) {
+    elseif( substr($out, 0, 8) == "include(" ) {
       # include file
       if( !($pos = strpos($out,')')) )
         return "";
@@ -453,6 +379,10 @@ class item {
     elseif( substr($out, 0, 1) == "#" )
       # remove comments
       return "";
+    elseif( substr($out, 0,5) == "debug" ) {
+      print("<pre>item this="); print_r($this); print_r($GLOBALS["apc_state"]); print("</pre><br>"); 
+#      print("<pre>item this="); print_r($this);  print("</pre><br>"); 
+    }
     elseif( IsField($out) )
       return QuoteColons($level, $maxlevel, $this->getval($out));
       # QuoteColons used to mark colons, which is not parameter separators.
@@ -475,7 +405,8 @@ class item {
     // just create variables and set initial values
     $maxlevel = 0;   
     $level = 0;
-    return $this->unalias_recurent( $text, $remove, $level, $maxlevel );
+#   return $this->old_unalias_recurent( $text, $remove, $level, $maxlevel );
+    return new_unalias_recurent($text, $remove, $level, $maxlevel, $this ); # Note no itemview param
   }
 
   function subst_alias( $text ) {

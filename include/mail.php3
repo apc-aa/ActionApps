@@ -23,7 +23,8 @@ if (!defined ("aa_mail_included"))
      define ("aa_mail_included", 1);
 else return;
 
-require $GLOBALS["AA_INC_PATH"]."item.php3";
+#require $GLOBALS["AA_INC_PATH"]."item.php3";
+require $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 #                    M A I L   handling utility functions 
@@ -152,6 +153,7 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
     reset ($record);
     
     if (is_array ($aliases)) {
+/*
         // I don't know how to work with unaliasing. Thus I try to pretend
         // having an item. 
         reset ($aliases);
@@ -164,8 +166,11 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
             $als [$alias] = array ("fce"=>"f_h", "param"=>$alias);
         }
         $item = new Item ("", $cols, $als, "", "" ,"");
+*/
         while (list ($key, $value) = each ($record)) 
-            $record[$key] = $item->unalias ($value);
+#            $record[$key] = $item->unalias ($value);
+	    $level = 0; $maxlevel = 0;
+	    $record[$key] = new_unalias_recurent($value, "", $level, $maxlevel, null, null, $aliases);
     }
 
     if ($record["html"])

@@ -465,6 +465,7 @@ if(is_object($st)) {
   $sess->register($st_name); 
 }
 
+// It looks like this duplicates the line above? (Mitra)
 if( $listlen )
   $st->metapage = $listlen;
 

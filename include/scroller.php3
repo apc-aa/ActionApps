@@ -210,6 +210,7 @@ class scroller {
 			if($v) echo "<a href=\"$url$v\" class=\"scroller\">$k</a>\n";
 			else   echo "<span class=\"scroller_actual\">$k</span>\n";
 		}
+	     echo "<a href=\"" . $url . "&listlen=99999\" class=\"scroller\">| " . L_ITEMS_ALL . "</a>";
  	}
 
 	# add filter

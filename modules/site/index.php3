@@ -27,6 +27,7 @@ $directory_depth = '../';
 require "../../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH] . "varset.php3";
 require $GLOBALS[AA_INC_PATH] . "formutil.php3";
+require $GLOBALS[AA_INC_PATH]."pagecache.php3"; 
 require "./util.php3";   # module specific utils
 require "./sitetree.php3";   # module specific utils
 
@@ -108,6 +109,10 @@ elseif( $content OR $name ) {
                              "INSERT INTO site_spot (site_id, spot_id, content) 
                               VALUES ('$p_module_id', '$r_spot_id', '$content')");
   $db->query($SQL);
+
+  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+  $cache->invalidate("slice_id=".site_id);  # invalidate old cached values
+
   if( $name )  # do not change to empty
     $tree->set( 'name', $r_spot_id, $name );
 }  

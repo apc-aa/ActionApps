@@ -354,4 +354,5 @@ define("L_RSSFEEDS_RSSFEED_EMPTY","RSS Feed name must be filled");
 
 define ("L_EMAILS","Emails");
 define ("L_ERR_FILENAME","only 0-9 A-Z a-z . _ and - are allowed");
+define("L_ITEMS_ALL", "All");
 ?>

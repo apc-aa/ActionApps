@@ -27,6 +27,8 @@ if (!defined ("ITEMVIEW_INCLUDED"))
      define ("ITEMVIEW_INCLUDED",1);
 else return;
 
+require $GLOBALS[AA_INC_PATH]."stringexpand.php3";
+
 class itemview{
   var $db;
   var $ids;                      # ids to show
@@ -298,17 +300,8 @@ class itemview{
 
   function unaliasWithScroller($txt, $item) {
     # get HTML code, unalias it and add scroller, if needed
-    $txt = $item->unalias( $txt, "");
-    if( ereg("^(.*)[{]scroller:?([^}]*)[}](.*)$", $txt, $parts) AND !($this->num_records<0)) { #negative is for n-th grou display
-      $viewScr = new view_scroller($this->slice_info['vid'],
-                                   $this->clean_url,
-                                   $this->num_records,
-                                   count($this->ids),
-                                   $this->from_record);
-      list( $begin, $end, $add, $nopage ) = ParamExplode($parts[2]);                         
-      return $parts[1].$viewScr->get( $begin, $end, $add, $nopage ).$parts[3];
-    }
-    return $txt;
+    $level = 0; $maxlevel = 0;
+    return new_unalias_recurent($txt,"",$level,$maxlevel,$item,$this,null);
   }  
 
   // set the aliases from the slice of the item ... used to view items from
@@ -733,6 +726,6 @@ class itemview{
      else 
       echo $this->get_output("discussion");
   }
-};
+};   //class itemview
 
 ?>
