@@ -23,6 +23,7 @@ http://www.apc.org/
    Global parameters:
        $id - ID to look for in database (required)
        $lang - set language 
+       $ss - set style sheet URL
 */
 
 require "./lang.php3";
@@ -38,7 +39,7 @@ if ($id) {
     }   
 }
    
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+AlertsPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Subscribe to E-mail Alerts") ."</TITLE>
 </HEAD>
 <BODY>
@@ -49,7 +50,7 @@ echo "<TITLE>". _m("Subscribe to E-mail Alerts") ."</TITLE>
 if ($id) 
     echo _m("The code given is not OK. Please try it again. Don't use any spaces.");
 echo "
-<FORM NAME=confirm ACTION='confirm.php3' METHOD=post>
+<FORM NAME=confirm ACTION='confirm.php3?ss=$ss' METHOD=post>
      <B>Code:</B> <INPUT TYPE=text NAME=confirm>
      <INPUT TYPE=SUBMIT VALUE="._m("Submit").">
 </FORM>";

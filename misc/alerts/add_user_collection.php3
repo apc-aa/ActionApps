@@ -27,6 +27,7 @@ http://www.apc.org/
        $collectionid (one number or array)
        $lang - set language
    Optional parameters:
+       $ss - URL of style sheet
        $ok_url
        $err_url 
 */
@@ -92,7 +93,7 @@ if ($ok_url) {
     exit;
 }
              
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+AlertsPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "
 </HEAD>
 <BODY>

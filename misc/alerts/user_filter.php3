@@ -24,6 +24,7 @@ http://www.apc.org/
        $email
        $password (may be empty when the user wishes)
        $lang - set language
+       $ss - URL for stylesheet, default: standard AA control panel stylesheet
 */
 
 require "./lang.php3";
@@ -34,7 +35,7 @@ $show_filters = false;
 $db = new DB_AA;
 
 $user = AlertsUser ($alerts_session);
-if ($signout) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&lang=$lang");
+if ($signout) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&lang=$lang&ss=$ss");
 if (!$user) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&Msg="._m("Your session has expired. Please login again."));
 else bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$user["lang"]."_alerts_lang.inc");
 
@@ -44,7 +45,8 @@ else bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$user["lang"]."_alerts_
 
 function process_data ()
 {
-    global $change_user, $chuser, $change_password, $Err, $howoften, $filter, $db, $user, $addpredefcol, $add;
+    global $change_user, $chuser, $change_password, $Err, $howoften, $filter, $db, $user, $addpredefcol, $add,
+        $alerts_session;
     $howoften_options = get_howoften_options();
     
     if ($change_user) {
@@ -97,18 +99,15 @@ process_data();
                                       SHOW PAGE
    ---------------------------------------------------------------------------------------- */      
 
-echo '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
-  <HTML>
-  <HEAD>
-  <LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
-  <meta http-equiv="Content-Type" content="text/html; charset='.$LANGUAGE_CHARSETS[get_mgettext_lang()].'">';
-
+AlertsPageBegin();   
+   
 echo "<TITLE>". _m("AA Alerts") ."</TITLE>
 </HEAD>
 <BODY>
     <FORM NAME=login ACTION='user_filter.php3' METHOD=post>
     <input type=hidden name='lang' value='$lang'>
     <input type=hidden name='alerts_session' value='$alerts_session'>
+    <input type=hidden name='ss' value='$ss'>
     <table width='540' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>$ac_trstart<TD class=tabtxt>";
     
 echo $Msg;

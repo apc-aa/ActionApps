@@ -24,6 +24,7 @@ http://www.apc.org/
        $email
        $password (may be empty when the user wishes)
        $lang - set language
+       $ss - set style sheet URL
        
        $show_email - email to be shown but not processed (used by confirm.php3)
 */
@@ -52,14 +53,14 @@ else if ($email) {
             $db->query ("UPDATE alerts_user 
                 SET session='$alerts_session', sessiontime=".time()." 
                 WHERE id = ".$db->f("id"));
-            go_url (AA_INSTAL_URL."misc/alerts/user_filter.php3?alerts_session=$alerts_session&lang=$lang");
+            go_url (AA_INSTAL_URL."misc/alerts/user_filter.php3?alerts_session=$alerts_session&lang=$lang&ss=$ss");
             exit;
         }
         else $Err[] = _m("Wrong password.");
     }
 }
       
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+AlertsPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
 </HEAD>
 <BODY>
@@ -76,7 +77,8 @@ echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
     echo "
     <FORM NAME=login ACTION='index.php3' METHOD=post>
        <input type=hidden name=lang value=\"$lang\">
-       <p align=right><a href='subscribe.php3?lang=$lang'><font size=+1><b>"._m("New user? Subscribe!")."</b></font></a></p>
+       <input type=hidden name=ss value=\"$ss\">
+       <p align=right><a href='subscribe.php3?lang=$lang&ss=$ss'><font size=+1><b>"._m("New user? Subscribe!")."</b></font></a></p>
        <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
          <TR><TD class=tabtxt><B>"._m("E-mail").":</B></TD>
             <TD class=tabtxt><INPUT TYPE=text NAME=email VALUE='$email' SIZE=50></TD></TR>

@@ -91,7 +91,7 @@ function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname
     }        
 
     $subject = _m("Welcome to APC e-mail alerts");   
-    $url = AA_INSTAL_URL."misc/alerts/confirm.php3?id=$confirm";
+    $url = AA_INSTAL_URL."misc/alerts/confirm.php3?id=$confirm&lang=$lang";
     $message = _m("<p>Hello,</p>"
         ."<p>please confirm your subscription by clicking on URL:</p>"
         ."%1"
@@ -397,4 +397,20 @@ function alerts_email_headers ($record, $default)
     }
     return $retval;
 }
+
+// -----------------------------------------------------------------------------------
+
+function AlertsPageBegin() {
+    // style sheet
+    global $ss;
+    $stylesheet = $ss ? $ss : $AA_INSTAL_PATH.ADMIN_CSS;
+
+    echo 
+    '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+       <HTML>
+         <HEAD>
+           <LINK rel=StyleSheet href="'.$stylesheet.'" type="text/css"  title="CPAdminCSS">
+           <meta http-equiv="Content-Type" content="text/html; charset='.$LANGUAGE_CHARSETS[get_mgettext_lang()].'">';
+}           
+
 ?>
