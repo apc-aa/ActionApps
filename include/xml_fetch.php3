@@ -32,7 +32,7 @@ $default_rss_map = array (
 	// Can change the names without affecting anything
 		"author.........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/creator","from_field_name"=>"DC:creator"),
 		"abstract........" => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"),
-		"publish_date...." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DATE(DC/date)|NOW","from_field_name"=>"DC:date"),
+		"publish_date...." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW","from_field_name"=>"DC:date"),
 		"source.........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/source|CHANNEL/title","from_field_name"=>"DC:source"),
 		"lang_code......." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/language","from_field_name"=>"DC:language"),
 		"source_href....." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/relation|CHANNEL/link","from_field_name"=>"DC:relation"),
@@ -41,7 +41,7 @@ $default_rss_map = array (
 		"full_text......." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"CONTENT","from_field_name"=>"Content"),
 //		"status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>1,"from_field_name"=>"Approved"),
 		"status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,"from_field_name"=>"Approved"),
-		"hl_href........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"ITEM/link","from_field_name"=>"ITEM:link"),
+		"hl_href........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"ITEM/link|ITEM/guid","from_field_name"=>"ITEM:link"),
 		"expiry_date....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),"from_field_name"=>"Expiry Date")
 	);
 
@@ -304,6 +304,24 @@ function itemIsDuplicate($item_id,$slice_id) {
 	return false;
 }
 
+// Consider value, and return array depending on whether it is HTML or not
+// Assumes that RSS1.0 will be explicit, RSS 0.9 will be text, and RSS2.0
+// should check
+function field2arr($field) {
+    global $rss_version;
+    if (ereg("^0\.9",$rss_version)) {
+        $flag = "";
+    } elseif (ereg("2\.",$rss_version)) {
+        $flag = (ereg("<",$field) ? FLAG_HTML : "");
+    } else { // Must be 1.0 which doesn't have an RSS version
+        $flag = FLAG_HTML;
+    }
+    return array(value => $field, flag => $flag);
+}
+
+// Return array suitable for insertion into content4id[aaa....]
+// Recognized special cases of values to tell it how to find, the field, or
+// how to interpret it.
 function map1field($value,$item,$channel) {
 	global $debugfeed;
 		  if ($debugfeed >= 8) print("\n<br>xmlclient:map1field:$value");
@@ -319,14 +337,11 @@ function map1field($value,$item,$channel) {
 		  } elseif ($value == "NOW") {
 		  	return array (0 => array ( value => time(), flag => 0, format => 1 )); 
 		  } elseif (ereg("CHANNEL/(.*)",$value,$vals)) {
-		  	return array ( 0 => array ( value => $channel[$vals[1]], flag => 0, format => 1 ));		  
+		  	return array ( 0 => field2arr($channel[$vals[1]]));
 		  } elseif (ereg("ITEM/(.*)",$value,$vals)) {
-		    //TODO - could extend this to understand format of imported field, will be needed for 
-			// example if dc:description can be html
-		  	return array ( 0 => array ( value => $item[$vals[1]], flag => 0, format => 1 ));
+		  	return array ( 0 => field2arr($item[$vals[1]]));
 		  } elseif (ereg("DC/(.*)",$value,$vals)) {
-		    //TODO - could extend this to understand format of imported field, will be needed for 
-			// example if dc:description can be html
+            // Dont believe DC fields can be HTML
 		  	return array ( 0 => array ( value => $item[dc][$vals[1]], flag => 0, format => 1 ));
 		  } elseif ($value == "CONTENT") {
 	   // Note this code is repeated above in map1field
@@ -339,11 +354,11 @@ function map1field($value,$item,$channel) {
 // Extract the content from where the parser put it, and return as a value array. 
 function contentvalue ($item) {
 		        $flag="";
-		        if (isset($item[content][HTML])) {             // choose HTML content first
+		        if (isset($item[content][HTML])) { // choose HTML content first
         			$flag = FLAG_HTML;
 			        $cont_flag = HTML;
-		        } else {                                       // otherwise PLAIN. Other formats are not supported,
-			        $cont_flag= PLAIN;                           // but they can be added in future
+		        } else {   // otherwise PLAIN. Other formats are not supported,
+			        $cont_flag= PLAIN;      // but they can be added in future
 		        }
 				return array("value"=>$item[content][$cont_flag], "flag"=>$flag);
 }

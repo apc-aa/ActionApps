@@ -88,7 +88,7 @@ function startElement($parser, $name, $attrs) {
          $channel,
          $item, $item_uri,
          $field_uri, $field_uri_slice, $category_uri,
-         $content_format,
+         $content_format, $rss_version,
          $fielddata_uri, $fielddata_content_format, $fielddata, $CONTENT_FORMATS;
 
   $cur_tag .= "^".nsName2abbrevname($name);
@@ -96,6 +96,9 @@ function startElement($parser, $name, $attrs) {
   
   //print("\nCUR_TAG=$cur_tag");
   switch ($cur_tag) {
+    case "^RSS" :       // rss header, read version
+        $rss_version = $attrs["VERSION"]; break;
+
     case "^RDF:RDF" :                                                   // rdf modules
       $rdf_modules = $attrs; break;
 
@@ -235,16 +238,12 @@ function charD($parser, $data) {
 	case "^RSS^CHANNEL^ITEM^TITLE":
     case "^RDF:RDF^RSS:ITEM^RSS:TITLE" : $item[title] .= decode($data); break;
 	case "^RSS^CHANNEL^ITEM^DESCRIPTION":
-      # Have to check if its HTML by looking for &lt
-# This doesnt work - Mitra working on it - shouldnt be checked into CVS
-#      $content_format = (strstr(decode($data),'&') ? 0 : 1 );
-        $content_format = 0;
-#huhl("Set content_format to $content_format",$data);
-      # Drop through to RSS 1.0
     case "^RDF:RDF^RSS:ITEM^RSS:DESCRIPTION" : $item[description] .= decode($data); break;
 	case "^RSS^CHANNEL^ITEM^LINK":
     case "^RDF:RDF^RSS:ITEM^RSS:LINK" : $item['link'] .= decode($data); break;
     case "^RDF:RDF^RSS:ITEM^DC:IDENTIFIER" : $item[id] = $data; break;
+    case "^RSS^CHANNEL^ITEM^GUID": $item['guid'] .= decode($data); break;
+    case "^RSS^CHANNEL^ITEM^PUBDATE": $item['pubdate'] .= decode($data); break;
 
     // Dublin Core elements
 	// Mitra changed these back to DC names, and then interprets them in the client
@@ -286,4 +285,19 @@ function aa_rss_parse($xml_data) {
   return $aa_rss;
 }
 
+/*
+attr is $attrs["$RDF:RESOURCE"]
+content_format <- set to URL of format - e.g. http://www.isi.edu... 
+by startElement: RDF/ITEM/CONTENT/ITEMS/BAG/LI/ITEM/FORMAT to attr.
+to URL of HTML by RDF/ITEM/ENCODED
+
+fielddata_content_format set to attr 
+in RDF/ITEM/AA:FIELDDATACONT/BAF/LI/FIELDDATA/FORMAT
+
+$item[fields_content][$fielddata_uri][] = ( format => 0 (html) or 1 (plain)) 
+by endElement RDF/ITEM/AA:FIELDDATACONT/BAG/LI/FIELDDATA 
+from fielddata_content_format
+$item[content][0 | 1] = $fulltext_content  where 0|1 
+from $content_format in RDF/ITEM/ITEMS/BAG/LI/ITEM | RDF/ITEM/ENCODED
+*/
 ?>
