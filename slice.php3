@@ -70,6 +70,7 @@ http://www.apc.org/
 #optionaly ids[]      // array of discussion comments to show in fulltext mode (ids['x'.$id])
 #optionaly all_ids    // if set, show all discussion comments
 #optionally hideFulltext // if set, don't show fulltext part
+#optionally neverAllItems // if set, don't show anything when everything would be shown (if no conds[] are set)
 
 # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
@@ -117,6 +118,7 @@ $sess->register(slices);
 $sess->register(mapslices);
 
 $r_state_vars = unserialize($r_packed_state_vars);
+
 
 # there was problems with storing too much ids in session veriable, 
 # so I commented it out. It is not necessary to have it in session. The only
@@ -267,14 +269,6 @@ $slice_starttime = ((float)$usec + (float)$sec);
 if ($encap) add_vars("");        # adds values from QUERY_STRING_UNESCAPED 
                                  #       and REDIRECT_STRING_UNESCAPED
 
-if( $debug ) {
-  echo "<br><br>Conds by:<br>";
-  print_r($conds);
-  
-  echo "<br><br>Group by:<br>";
-  print_r($group_by);
-}
-
 // p_arr_m( $r_state_vars );
 
 if( ($key != $lock) OR $scrl ) # command is for other slice on page
@@ -302,7 +296,15 @@ if( $inc ) {                   # this section must be after add_vars()
   }  
 }  
 
+if (!$slice_id && is_array($slices)) { 
+    reset ($slices);
+    $slice_id = current($slices); 
+} 
+
 $p_slice_id= q_pack_id($slice_id);
+
+require $GLOBALS[AA_INC_PATH]."javascript.php3";
+
 $db = new DB_AA; 		 // open BD	
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
 $db3 = new DB_AA; 	 // open BD	(for another subqueries)
@@ -315,7 +317,7 @@ $slice_info = GetSliceInfo($slice_id);
 if ($slice_info AND ($slice_info[deleted]<1)) {
   include $GLOBALS[AA_INC_PATH] . $slice_info[lang_file];  // language constants (used in searchform...)
 }
-else if ($slice_id || !$slices) {
+else {
   echo L_SLICE_INACCESSIBLE . " (ID: $slice_id)";
   ExitPage();
 }  
@@ -391,9 +393,10 @@ if( $sh_itm OR $x ) {
    else
     $sh_itm = LogItem($x,"short_id");
     
-  $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
-  if (!isset ($hideFulltext))
-    $itemview->print_item();
+  if (!isset ($hideFulltext)) {
+      $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
+      $itemview->print_item();
+  }
 
   // show discussion if assigned
   if( $slice_info[vid] > 0 ) {
@@ -425,7 +428,7 @@ if( $sh_itm OR $x ) {
 # multiple items fulltext view ------------------------------------------------
 if( $items AND is_array($items) ) {   # shows all $items[] as fulltext one after one
 //  $r_state_vars = StoreVariables(array("items")); # store in session
-  while(list($k,) = each( $items ))
+  while(list($k) = each( $items ))
     $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, $ids, 0,count($ids), $sess->MyUrl($slice_id, $encap));
   $itemview->print_itemlist();
@@ -460,8 +463,10 @@ if( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) { 
         $conds[$k] = false;
         continue;             # bad condition - ignore
       }
-      if( !isset($cond['value']) && count ($cond) == 1 )
+      if( !isset($cond['value']) && count ($cond) == 1 ) {
+        reset ($cond);
         $conds[$k]['value'] = current($cond);
+      }
       if( !isset($cond['operator']) )
         $conds[$k]['operator'] = 'LIKE';
       SubstituteAliases( $als, $conds[$k]['value'] );
@@ -494,7 +499,7 @@ if( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) { 
    else 
     $sort[] = array ( 'publish_date....' => 'd' );
 
-  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, "", "ACTIVE", $slices, $mapslices );
+  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, "", "ACTIVE", $slices, $neverAllItems );
 
   if( isset($item_ids) AND !is_array($item_ids))
     echo "<div>$item_ids</div>";
@@ -591,7 +596,7 @@ $debugtimes[]=microtime();*/
   # time order the fields in compact view
   $srt[] = array ( 'publish_date....' => (($timeorder == "rev") ? 'a' : 'd') );
    
-  $item_ids=QueryIDs($fields, $slice_id, $cnds, $srt, $group_by, "ACTIVE", $slices, $mapslices );
+  $item_ids=QueryIDs($fields, $slice_id, $cnds, $srt, $group_by, "ACTIVE", $slices, $neverAllItems);
 
 // p_arr_m($debugtimes);
 // echo "<br>old: ". (double)((double)($debugtimes[1]) - (double)($debugtimes[0]));
@@ -622,3 +627,4 @@ if ($searchlog) PutSearchLog ();
 ExitPage();
 
 ?>
+
