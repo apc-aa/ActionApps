@@ -99,7 +99,6 @@ class slice {
             case 'search':
                 $fields = &$this->fields[0];    // in order we can use it in foreach
                 foreach ( $fields as $fld ) { // in priority order
-                    $i++;
                     $showfunc = ParseFnc($fld['input_show_func']);
                     $field_type = 'numeric';
                     if ($fld['text_stored']) { $field_type = 'text'; }
@@ -110,8 +109,10 @@ class slice {
                     /* $field_type = ( $fld['text_stored'] ?
                       'text' : (( substr($fld['input_validate'],0,4)=='date' ) ?
                       'date' : 'numeric')); */
+                    // we can hide the field, if we put in fields.search_pri=0
+                    $search_pri = ($fld['search_pri'] ? ++$i : 0 );
                                        //             $name,        $field,   $operators, $table, $search_pri, $order_pri
-                    $ret[$fld['id']] = GetFieldDef( $fld['name'], $fld['id'], $field_type, false, $i, $i);
+                    $ret[$fld['id']] = GetFieldDef( $fld['name'], $fld['id'], $field_type, false, $search_pri, $search_pri);
                 }
                 return $ret;
         }

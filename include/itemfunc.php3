@@ -671,6 +671,10 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                           $itemvarset->get('status_code') > 1 ? 0 : time ());
     }
 
+    /** update item table */
+    // we can't redefine id or short_id for the field, so if it is set, unset it
+    $itemvarset->remove("short_id");
+    $itemvarset->remove("id");
     // update item table
     if( !$insert ) {
         $itemvarset->add("slice_id", "unpacked", $slice_id);
