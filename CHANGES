@@ -1,3 +1,6 @@
+05/29/03 - fixed eb_functions in expand, and added substr (mitra)
+05/28/03 - added {include:file:site} for getting files from specified directory
+(mitra)  - fixed bug in sliceobj
 05/31/03 - added special view.php3 alias _#SELECTED, which is "1" for selected 
 (honzam)   item (given by special set[] view.php3 paramater 
            (like: set[34]=selected-43535) - usable for displaing menu generated

@@ -139,7 +139,7 @@ class slices {
         if ($iarr) {
             reset($iarr);
             foreach($iarr as $unpackedsliceid) {
-                addslice($unpackedsliceid);
+                $this->addslice($unpackedsliceid);
             }
         }
     }

@@ -202,7 +202,6 @@ class itemview {
 
   // show discussion comments in the thread mode
   function get_disc_thread(&$CurItem) {
-
     if (!$this->slice_info['d_showimages']) {
        $order =  $this->slice_info['d_order'];
     }
@@ -335,24 +334,18 @@ class itemview {
     // if parent_id is set => show discussion comment
     $out.= '<a name="disc"></a>';
     if ($this->disc['parent_id']) {
-    trace("=","XYZZY","iv334");
       $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],$this->disc['vid'],true,'timeorder',$this->disc['html_format'],$this->clean_url);
-    trace("=","XYZZY","iv335");
       $CurItem->setformat( $this->slice_info['d_fulltext']);
       $this->set_columns ($CurItem, $d_content, $this->disc['parent_id']);
       $out .= $CurItem->get_item();
-    trace("=","XYZZY","iv339");
     } else {
-    trace("=","XYZZY","iv342");
       $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
       $col["d_disc_url......"][0]['value'] = $this->clean_url . "&sh_itm=".$this->disc['item_id'];
       $col["d_disc_url......"][0]['flag'] = FLAG_HTML;   // do not change &->&amp;
       $CurItem->columns = $col;
-    trace("=","XYZZY","iv347");
     }
     // show a form for posting a comment
     $CurItem->setformat( $this->slice_info['d_form']);
-    trace("=","XYZZY","iv351");
     $out .= $CurItem->get_item();
     trace("-");
     return $out;

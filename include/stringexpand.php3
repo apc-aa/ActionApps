@@ -176,7 +176,8 @@ function DeQuoteColons($text) {
 
 // In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax
 $GLOBALS[eb_functions] = array (
-    fmod => fmod    # php > 4.2.0
+    fmod => fmod,    # php > 4.2.0
+    substr => substr
 );
 
 # Expand a single, syntax element.
@@ -331,9 +332,14 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) && $GLOBALS[eb_functions][$parts[1]]) {
         $fnctn = $GLOBALS[eb_functions][$parts[1]];
         $parts = ParamExplode($parts[2]);
-        return QuoteColons($level,$maxlevel,
-            $fnctn($parts[0],$parts[1],$parts[2],$parts[3],$parts[4],
-                $parts[5],$parts[6],$parts[7],$parts[8],$parts[9]));
+        switch(count($parts)) {
+          case 0: $ebres=$fnctn(); break;
+          case 1: $ebres=$fnctn($parts[0]); break;
+          case 2: $ebres=$fnctn($parts[0],$parts[1]); break;
+          case 3: $ebres=$fnctn($parts[0],$parts[1],$parts[2]); break;
+          case 4: $ebres=$fnctn($parts[0],$parts[1],$parts[2],$parts[3]); break;
+        }
+        return QuoteColons($level,$maxlevel,$ebres);
     }
     if (isset($item) && ($out == "unpacked_id.....")) {
         return QuoteColons($level, $maxlevel, $item->f_n('id..............'));
