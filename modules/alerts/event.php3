@@ -85,7 +85,7 @@ function AlertsSendInstantAlert( $item_id, $slice_id ) {
             initialize_last();
             send_emails ("instant", $collection_ids, "", true, $item_id);
             // We must reset moved2active so that the item is not re-sent on update.
-            $db->query ("UPDATE item SET moved2active = 0 WHERE item_id='"
+            $db->query ("UPDATE item SET moved2active = 0 WHERE id='"
                 .q_pack_id($item_id)."'");
         }
     }
