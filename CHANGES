@@ -1,3 +1,4 @@
+10/02/01 - new sliceexport/import feature
 10/01/01 - better Halt_On_Error support in extsess and extsessi
 09/27/01 - added Cross Server Networking (RSS item exchange between AA)
          - added support for related items
