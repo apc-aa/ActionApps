@@ -42,7 +42,7 @@ function HtmlPageEnd() {
     without reprinting all the options */
 
 function PrintModuleSelection() {
-  global $slice_id, $g_modules, $sess, $PHP_SELF;
+  global $slice_id, $g_modules, $sess, $PHP_SELF, $db, $MODULES;
 
   if( is_array($g_modules) AND (count($g_modules) > 1) ) {
 
@@ -50,17 +50,41 @@ function PrintModuleSelection() {
     echo "
     <SCRIPT language=JAVASCRIPT><!-- 
         var modulesOptions = ''\n";
-    reset($g_modules);
-    while(list($k, $v) = each($g_modules)) { 
-      echo "\t+'<option value=\"". htmlspecialchars($k)."\"";
-      if ( ($slice_id AND (string)$slice_id == (string)$k)) 
-        echo " selected";
-      echo ">". str_replace("'","`",safe($v['name'])) . "'\n";
+    $db->query ("SELECT module.id, module.type, slice.type AS slice_type, module.name 
+        FROM module LEFT JOIN slice ON module.id=slice.id
+        ORDER BY module.type, slice.type, name");
+    $option_begin = "\t+'<option value=\"";
+    while ($db->next_record()) {
+        switch ($db->f("type")) {
+        case 'Alerts': $caption = _m("Alerts"); break;
+        case 'W': $caption = _m("Site"); break;
+        case 'A': $caption = _m("MySQL Auth (old version)"); break;
+        case 'J': $caption = _m("Jump inside control panel"); break;
+        case 'P': $caption = _m("Polls"); break;
+        case 'L': $caption = _m("Links"); break;
+        case 'S':
+            switch ($db->f("slice_type")) {
+            case 'ReaderManagement': $caption = _m("Reader Management Slice"); break;
+            default: $caption = _m("Slice"); break;
+            }
+        }
+        if ($caption != $old_caption) {
+            if ($old_caption) echo $option_begin."\">'\n";
+            echo $option_begin . "\">*** ".$caption." ***'\n";
+            $old_caption = $caption;
+        }
+
+        echo $option_begin . htmlspecialchars(unpack_id ($db->f("id")))."\"";
+        
+        if ($slice_id == unpack_id ($db->f("id"))) 
+            echo " selected";
+        echo ">". str_replace("'","`",safe($db->f("name"))) . "'\n";
     }
+        
     if( !$slice_id )   // new slice
       echo "\t+'<option value=\"new\" selected>". _m("New slice") + "'";
     echo ";
-        document.write('<select name=slice_id onChange=\'document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\'>');
+        document.write('<select name=slice_id onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
         document.write(modulesOptions);
         document.write('</select>');
     //-->
@@ -80,7 +104,7 @@ function PrintModuleSelection() {
 */             
 function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
 {
-    global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad, $sess;
+    global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad, $sess, $db;
     global $debug;
     
     #huhsess("Session Variables");
@@ -107,6 +131,16 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     echo "<TABLE border=0 cellspacing=0 cellpadding=0 width='100%'><TR>";
 
     if ($showMain) {
+        if ($GLOBALS["g_modules"][$slice_id]["type"] == "Alerts")
+            $title_img = "<img border=0 src=\"".$AA_INSTAL_PATH."images/alerts.gif\" 
+                alt=\""._m("Alerts")."\">";
+        else if ($GLOBALS["g_modules"][$slice_id]["type"] == "S") {
+            $slice_info = GetSliceInfo ($slice_id);
+            if ($slice_info ["type"] == "ReaderManagement")
+                $title_img = "<img border=0 src=\"".$AA_INSTAL_PATH."images/readers.gif\"
+                 alt=\""._m("Reader management")."\">";
+        }
+            
         echo "
         <TD colspan=2>
         <TABLE border=0 cellpadding=0 cellspacing=0 width='100%'>
@@ -116,8 +150,16 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
                 <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width='99%' height=1></TD>
             </TR>
             <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
-                <TD height=43 colspan=3 align=center valign=middle class=slicehead>
-                    ".$smmenus[$activeMain]["title"]."  -  $r_slice_headline</TD>
+                <TD height=43 colspan=3 align=center valign=middle class=slicehead>\n";
+
+        if ($title_img) 
+            echo "<table><tr><td>$title_img&nbsp;</td>
+                <td width=\"0%\" class=slicehead>";
+        echo $smmenus[$activeMain]["title"]."  -  $r_slice_headline";
+        if ($title_img)
+            echo "</td><td>&nbsp;$title_img</td></tr></table>";
+        echo "
+        </TD>
             </TR>
             <form name=nbform enctype=\"multipart/form-data\" method=post
                 action=\"". $sess->url($PHP_SELF) ."\">            

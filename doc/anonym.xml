@@ -19,6 +19,14 @@
 
     <revhistory>
       <revision>
+        <revnumber>1.1</revnumber>
+
+        <date>6.3.2003</date>
+
+        <revremark>Added links to doc/script/show_result.php3</revremark>
+      </revision>
+
+      <revision>
         <revnumber>1.0</revnumber>
 
         <date>15.2.2003</date>
@@ -33,6 +41,9 @@
     The name <quote>anonymous</quote> is in some cases not accurate, as the
     form is used for reader personal info and the readers must be authorized
     to edit their own info.</para>
+
+    <para>See also: <ulink role="html" url="reader.html">doc/reader.html</ulink>,
+    doc/script/show_result.php3</para>
   </abstract>
 
   <sect1>
@@ -56,10 +67,11 @@
     creating Anonymous forms was very simple: Copy the code of the
     <quote>Add item</quote> page with only a few necessary changes. But as the
     form now allows to edit items and to use several options for it, a new
-    wizard was created. This wizard creates a complete form with the SSI
-    include of <constant>fillform.php3</constant> necessary to edit items. The
-    resulting form differs depending on whether Anonymous editing is allowed
-    or not.</para>
+    wizard was created. This wizard creates the code for a complete form with
+    the SSI include of <constant>fillform.php3</constant> necessary to edit
+    items. Use some feature like <quote>Show source code</quote> in your
+    browser to get the code. The resulting form differs depending on whether
+    Anonymous editing is allowed or not.</para>
 
     <para>You may change these settings sent in anonymous fields:</para>
 
@@ -219,10 +231,11 @@
     which does not allow to send an errornous form. But some of them, like a
     username being already used, can not.</para>
 
-    <para>You may create your own PHP script and send its URL as a value of a
-    <constant>show_result</constant> variable. Add it as a parameter to the
-    <constant>fillform.php3</constant> SSI include created by the Wizard, e.g.
-    <screen>&#60;!--#include virtual=&#34;/aaa/fillform.php3?show_result=http://ecn.cz/show_result.php3&#38;form=...&#34;--&#62;</screen>An
+    <para>You may create your own PHP script (see an example in
+    <constant>doc/script/show_result.php3</constant>) and send its URL as a
+    value of a <constant>show_result</constant> variable. Add it as a
+    parameter to the <constant>fillform.php3</constant> SSI include created by
+    the Wizard, e.g. <screen>&#60;!--#include virtual=&#34;/aaa/fillform.php3?show_result=http://ecn.cz/show_result.php3&#38;form=...&#34;--&#62;</screen>An
     array <constant>$result</constant> with the results will be sent to the
     PHP script and you may show appropriate messages. If you do not send
     <constant>show_result</constant>, the <constant>fillform.php3</constant>

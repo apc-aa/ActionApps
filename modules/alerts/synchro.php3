@@ -43,7 +43,7 @@ HTMLPageBegin();
 echo "<title>"._m("Slice Synchro")."</title>";
 echo "</head>";
 echo "<body>";
-showMenu ($aamenus, "synchro", "synchro");
+showMenu ($aamenus, "admin", "synchro");
 
 echo '<h1>'._m("Synchronization with Reader Management Slice").'</h1>';
 

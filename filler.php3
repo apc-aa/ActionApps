@@ -96,6 +96,17 @@ require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
     
+function UseShowResult($txt) {
+    // allows to call a script showing the error results from fillform
+    $GLOBALS["HTTP_POST_VARS"]["result"] = $txt;
+    // allows fillform to use this data 
+    $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = 
+        StripslashesArray ($GLOBALS["content4id"]);            
+    $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
+    require_once "post2shtml.php3";
+    exit;
+}
+
 /**
  * Outputs a notification page when an error occurs.
  * If the err_url parameter is passed, redirects to the specified URL,
@@ -117,37 +128,21 @@ function SendErrorPage($txt) {
     else if (! $GLOBALS["use_post2shtml"]) 
        go_url( con_url($GLOBALS["err_url"], "err=".substr(serialize($txt),0,200)));
     
-    else {
-        // allows to call a script showing the error results from fillform
-        $GLOBALS["HTTP_POST_VARS"]["result"] = $txt;
-        // allows fillform to use this data 
-        $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = 
-            StripslashesArray ($GLOBALS["content4id"]);            
-        $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
-        require_once "post2shtml.php3";
-        exit;
-    }
+    else UseShowResult ($txt);
 }  
 
 /**
  * Loads a page if posting is successful. If the ok_url parameter is passed,  
  * redirects to the specified URL, else returns to the calling page.
  */
-function SendOkPage() {
+function SendOkPage($txt) {
     if( ! $GLOBALS["ok_url"] )
         go_url($GLOBALS[HTTP_REFERER]);    
         
     else if (! $GLOBALS["use_post2shtml"]) 
         go_url($GLOBALS["ok_url"]);
     
-    else {
-        // allows fillform to use this data 
-        $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = 
-            StripslashesArray ($GLOBALS["content4id"]);            
-        $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
-        require_once "post2shtml.php3";
-        exit;
-    }
+    else UseShowResult ($txt);
 }  
 
 # init used objects
@@ -247,15 +242,11 @@ else if (!is_array ($err)) {
         $err["permissions"] = _m("You are not allowed to update this item.");
 }
 
- # update database
-if (!is_array ($err)) {
-	if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, 
-          true, true, $oldcontent4id )) {     # insert, invalidatecache, feed
-        $err["store"] = _m("Some error in store item.");
-    }
-    else $err["success"] = $insert ? "insert" : "update";    
-}        
-                          
 if( is_array ($err)) SendErrorPage( $err ); 
-else SendOkPage();
+
+ # update database
+else if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, 
+          true, true, $oldcontent4id ))      # insert, invalidatecache, feed
+    SendErrorPage ( array ("store" => _m("Some error in store item.")));
+else SendOkPage ( array ("success" => $insert ? "insert" : "update" ));    
 ?>

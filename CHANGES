@@ -1,3 +1,9 @@
+03/06/03 - fixed (?) design of index.php3 with <tr><td> around item manager view (jakub)
+03/06/03 - changed some labels in Alerts (jakub)
+03/06/03 - fixed filler.php3 so that it does not call ErrPage when everything OK (jakub)
+03/06/03 - reorganized the module select box to groups by module / slice type (jakub)
+03/06/03 - added an image to the title of Reader Management slices and to the
+           title of Alerts (jakub)
 03/05/03 - imagefunc.php3: Added debugging, $debugupload=1, note exit on err
          -    use a table of image type properties instead of hard coding
          -    ResampleImage copies if no resampling required

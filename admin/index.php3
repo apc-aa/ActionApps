@@ -557,7 +557,7 @@ echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF).make_r
 
                          
 if( $zids->count() == 0 ) {
-    echo "<tr><td><div class=tabtxt>". _m("No item found") ."</div></td></table>";
+    echo "<tr><td><div class=tabtxt>". _m("No item found") ."</div></td></tr></table>";
     HtmlPageEnd(); 
     page_close();
     exit;
@@ -565,17 +565,22 @@ if( $zids->count() == 0 ) {
 
 $aliases = GetAliasesFromFields($fields);
 
+// Added by Jakub on 6.3.2003, not sure if OK:
+echo "<tr><td class=tabtxt>";
 $itemview = new itemview( $db, $format_strings, $fields, $aliases, $zids,
           $st->metapage * ($st->current-1), $st->metapage, $r_slice_view_url );
 $itemview->print_view("NOCACHE");   # big security hole is open if we cache it
                                   # (links to itemedit.php3 would stay with 
                                   # session ids in cache - you bacame 
                                   # another user !!!
+// Added by Jakub on 6.3.2003, not sure if OK:
+echo "</td></tr>";                                  
 
 $st->countPages( $zids->count() );
 
 if($st->pageCount() > 1 || $action_selected != "0") {
-    echo "<tr><td colspan=100 class=tabtxt><table border=0 cellpadding=3><tr><td class=tabtxt>";
+    echo "<tr><td colspan=100 class=tabtxt>
+        <table border=0 cellpadding=3><tr><td class=tabtxt>";
 }
         
 if ($action_selected != "0")

@@ -1,13 +1,18 @@
 <?php
 /**
  * Allows to POST data to a PHP script SSI-included in a .shtml page. You can't
- * use the POST method directly for .shtml pages. Therefore this script stores the variables
+ * use the POST method directly for .shtml pages, you must always use GET with them,
+ * which has several disadvantages: the length of all parameters is limited by
+ * a small size and the parameters appear in the URL. 
+ *
+ * Therefore this script stores the variables
  * in the database (table post2shtml) and sends a post2shtml_id as a part of the URL to
  * the .shtml page. 
  * The function add_post2shtml_vars() in include/util.php3 than reloads the POSTed variables.
  * Not only the POST but also the GET, COOKIES and FILES are passed through.
  *
- * You can even send passwords, which are stored encrypted by MD5: all members of 
+ * One additional feature: 
+ * You can send passwords, which are stored encrypted by MD5: all members of 
  * a md5[] array will be encrypted and stored outside the array. For example if you 
  * add &lt;INPUT TYPE=password NAME="md5[password]"&gt; then after calling
  * add_post2shtml_vars() a global variable $password will contain the encrypted password.

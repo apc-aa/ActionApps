@@ -159,7 +159,6 @@ if ($show_result) {
 }
 
 // ----------------------------------------------------------------------------
-
 /* * * * * * * * * * * FILL CONDS * * * * * * * * * */
 /** gives JavaScript filling the AA date 3 selectboxes
 	params: $mydate .. UNIX timestamp
@@ -213,6 +212,7 @@ function fillConds () {
     echo $GLOBALS["jsfinish"];
 }
 
+// ----------------------------------------------------------------------------
 /* * * * * * * * * * * FILL FORM * * * * * * * * * */
 
 function safeChars ($str) {

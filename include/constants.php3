@@ -527,7 +527,7 @@ function getViewTypes ()
     // TODO                              "scroller" => _m("Display page scroller") ,
     #                              "aditional" => _m("Additional") );
     
-    $VIEW_TYPES['digest']  = array( "name" => _m("Alerts Digest"),
+    $VIEW_TYPES['digest']  = array( "name" => _m("Alerts Selection Set"),
                                   "function:digest_filters" => "",
                                   "before" => _m("Top HTML") ,
                                   "odd" => _m("Odd Rows") ,

@@ -159,7 +159,7 @@ if( !$encap ) {
     <style> 
         #body_white_color { color: #000000; } 
     </style>';
-  ShowFormJavascript ($show_func_used, $js_proove_fields);
+  echo GetFormJavascript ($show_func_used, $js_proove_fields);
   echo '
     <title>'.( $edit=="" ? _m("Add Item") : _m("Edit Item")). '</title>
   </head>

@@ -95,20 +95,21 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "buttons_down" => array ("update_all" => 1, "delete_all" => 1),
         "addrecord" => is_array ($new_filters),
         "gotoview" => "au_edit",
-        "mainmenu" => "filters",
+        "mainmenu" => "admin",
         "submenu" => "filters",
         "search" => false,
-        "caption" => _m("Filters"),
-        "title" => _m("Filters"),
+        "caption" => _m("Alerts Selections"),
+        "title" => _m("Selections"),
         "cond" => IfSlPerm(PS_FULLTEXT),
         "orderby" => "myindex",
+        "help" => _m("Choose selections which form the Alert email."),
         "where" => "collectionid = '$collectionid'",
         "fields" => array (
             "collectionid" => array (
                 "view" => array ("type" => "hide"),
                 "default" => $collectionid),
             "filterid" => array (
-				"caption" => _m("filter"),
+				"caption" => _m("selection"),
                 "view" => array (
                     "readonly" => true,
                     "type" => "select",
@@ -148,10 +149,11 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "type" => "edit",
         "readonly" => false,
         "cond" => 1,
-        "title" => _m("Alerts Collection"), 
-        "caption" => _m("Alerts Collection"),
+        "title" => _m("Alerts Settings"), 
+        "caption" => _m("Alerts Settings"),
         "mainmenu" => "admin",
         "submenu" => "settings",
+        "help" => _m("Core settings for the Alerts."),
         "triggers" => array ( 
             "AfterInsert" => "AlertsModeditAfterInsert"),
         "fields" => array (
@@ -160,7 +162,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                 "field" => "id",
                 "default" => new_collection_id(),
                 "view" => array ("readonly" => true),
-                "caption" => _m("collection ID")),
+                "caption" => _m("alerts ID")),
 /*            "slice_id" => array (
                 "table" => "alerts_collection",
                 "view" => array ("type"=>"select", "source"=>getReaderManagementSlices()),
@@ -226,7 +228,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "cond" => 1,
         "title" => _m("Send Emails"), 
         "caption" => _m("Send Emails"),
-        "mainmenu" => "send_emails",
+        "mainmenu" => "admin",
         "submenu" => "send_emails",
         "attrs" => $attrs_edit,
 		"messages" => array (

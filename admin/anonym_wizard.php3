@@ -102,7 +102,7 @@ function ShowAnonymousForm () {
                 .'<!--'.$field["name"].'-->';
 
     echo "\n";
-    ShowFormJavascript ($show_func_used, $js_proove_fields);
+    echo GetFormJavascript ($show_func_used, $js_proove_fields);
 
     // Destroy the ? help links at each field
     reset ($fields);

@@ -46,6 +46,9 @@ define("SC_HOLDING_BIN", 2);
 function MailmanCreateSynchroFiles ($slice_id) {
     global $db, $MAILMAN_SYNCHRO_DIR;
            
+    if (! is_dir ($MAILMAN_SYNCHRO_DIR))
+        return;
+
     $slice_info = GetSliceInfo ($slice_id);
     $field = $slice_info["mailman_field_lists"];
     if ($slice_info["type"] != "ReaderManagement" || ! $field)
@@ -68,13 +71,6 @@ function MailmanCreateSynchroFiles ($slice_id) {
         if ($db->f("mailconf") && $db->f("mailconf") != "off")
             $maillist[$db->f("maillist")][] = $db->f("email");
         
-    if (! $MAILMAN_SYNCHRO_DIR)
-        return;
-    endslash ($MAILMAN_SYNCHRO_DIR);        
-    
-    if (! is_array ($maillist))
-        return;
-    
     // Add empty mailing lists
     $db->query ("SELECT input_show_func FROM field 
         WHERE slice_id='".q_pack_id($slice_id)."' AND id='$field'");
@@ -86,10 +82,17 @@ function MailmanCreateSynchroFiles ($slice_id) {
         if (! $maillist[$db->f("value")])
             $maillist[$db->f("value")] = array ();                
         
+    endslash ($MAILMAN_SYNCHRO_DIR);            
+
+    if (!is_array ($maillist))
+        return;
+            
     // Write files    
     reset ($maillist);
     while (list ($listname, $emails) = each ($maillist)) {
-        if ($fd = fopen ($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
+        // I don't want to use @fopen because I believe it is better to know
+        // that an error occured
+        if ($listname && $fd = fopen ($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
             foreach ($emails as $email)
                 fwrite ($fd, $email."\n");
             fclose ($fd);

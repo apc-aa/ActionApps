@@ -303,8 +303,9 @@ class tabledit {
                 if (!$this->show_new)
                     $this->showBrowseFooter ($formname, $all_keys, $record_count, $scroll); 
                 echo "</FORM>";
+                echo "</TABLE>";
             }
-            echo "</TABLE>";
+            //echo "</TABLE>";
         }
         else if ($this->type == "browse") {
             $this->ShowButtons (false, "", "", "", 0, "down", array (), $record_count);        

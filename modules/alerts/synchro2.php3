@@ -64,15 +64,15 @@ $alerts_specific_fields = array (
 		"alias1_help" => _m("Status for {ALERNAME}"),
 	),*/
 	"alerts2" => array (
-		"name" => _m("Filters"),
-		"input_help" => _m("Filters for {ALERNAME}"),
+		"name" => _m("Selections"),
+		"input_help" => _m("Selections for {ALERNAME}"),
 		"input_show_func" => "mch:{CONSTGROUP}:3:1", 
 		"constants" => array (
-			"group" => "Filters",
+			"group" => "Selections",
 			"items" => "{FILTERS}"),
 		"alias1" => "_#FILTERS_",
 		"alias1_func" => "f_h:,",
-		"alias1_help" => _m("Filter IDs for {ALERNAME}"),
+		"alias1_help" => _m("Selecetion IDs for {ALERNAME}"),
 	));
 
 // Add this to each field definition alerts1-4

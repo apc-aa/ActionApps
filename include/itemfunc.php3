@@ -1052,11 +1052,10 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     if( $feed )
         FeedItem($id, $fields);
 
-/* Commented out - crashes (mitra)
     if ($insert) Event_ItemAfterInsert ($id, $slice_id, new ItemContent ($content4id));
     else Event_ItemAfterUpdate ($id, $slice_id, new ItemContent ($content4id), 
         $oldItemContent);
-*/
+
     return true;
 } // end of StoreItem
 
@@ -1160,12 +1159,12 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="")
 }
 
 // ----------------------------------------------------------------------------
-/** Shows Javascript for Add / Edit item 
+/** Returns Javascript for Add / Edit item 
 */
-function ShowFormJavascript ($show_func_used, $js_proove_fields) {
+function GetFormJavascript ($show_func_used, $js_proove_fields) {
     global $sess;    
     
-    echo '
+    $retval = '
     <script language="JavaScript"><!--
       // array of listboxes where all selection should be selected
       var listboxes=Array(); 
@@ -1181,16 +1180,16 @@ function ShowFormJavascript ($show_func_used, $js_proove_fields) {
       // before submit the form we need to select all selections in some
       // listboxes (2window, relation) in order the rows are sent for processing
       function BeforeSubmit() {';
-        if ( richEditShowable() && $show_func_used['edt']) echo '
+        if ( richEditShowable() && $show_func_used['edt']) $retval .= '
           SaveRichEdits();';
-        echo '
+        $retval .= '
           for(var i = 0; i < listboxes.length; i++)
               SelectAllInBox( listboxes[i] );
           return proove_fields ();
       }
       ';
       
-      if ($show_func_used['edt']) echo '
+      if ($show_func_used['edt']) $retval .= '
       var richedits = Array();
       
       function SaveRichEdits () {
@@ -1199,7 +1198,7 @@ function ShowFormJavascript ($show_func_used, $js_proove_fields) {
       }
       ';
 
-      if ($show_func_used['iso']) echo '
+      if ($show_func_used['iso']) $retval .= '
 
       var relatedwindow;  // window for related stories
       
@@ -1210,7 +1209,7 @@ function ShowFormJavascript ($show_func_used, $js_proove_fields) {
         relatedwindow = open( "'. $sess->url("related_sel.php3") . '&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design, "relatedwindow", "scrollbars=1, resizable=1, width=500");
       }';
 
-      if ($show_func_used['wi2']) echo '
+      if ($show_func_used['wi2']) $retval .= '
 
       function MoveSelected(left, right) {
         var i=eval(left).selectedIndex;
@@ -1233,7 +1232,7 @@ function ShowFormJavascript ($show_func_used, $js_proove_fields) {
         }
       }';
       
-      if ($show_func_used['pre'] || $show_func_used['tpr']) echo '
+      if ($show_func_used['pre'] || $show_func_used['tpr']) $retval .= '
 
       function add_to_line(inputbox, value) {
         if (inputbox.value.length != 0) {
@@ -1243,22 +1242,24 @@ function ShowFormJavascript ($show_func_used, $js_proove_fields) {
         }
       }';
       
-    echo $js_proove_fields;
+    $retval .= $js_proove_fields;
 
     // field javascript feature (see /include/javascript.php3)
     $javascript = getJavascript($GLOBALS["slice_id"]);
     if ($javascript) 
-        echo $javascript;
+        $retval .= $javascript;
 
-    echo '
+    $retval .= '
     
     // -->
     </script>'."\n\n";
 
-    if ($javascript) echo '    
+    if ($javascript) $retval .= '    
     
     <script language="javascript" src="'.$AA_INSTAL_PATH.'javascript/fillform.js">
     </script>'."\n\n";    
+    
+    return $retval;
 }
 
 // ----------------------------------------------------------------------------

@@ -1386,7 +1386,8 @@ function setdefault (&$var, $default) {
     if (!isset ($var)) $var = $default;
 }
 
-/** Cooperates with the script post2shtml.php3, which allows to easily post variables
+/** Cooperates with the script post2shtml.php3 (see more doc there), 
+ * which allows to easily post variables
  * to PHP scripts SSI-included in a .shtml page. 
  *
  * @param bool $delete Should delete the vars from database after recalling them?
