@@ -108,12 +108,15 @@ function Defaults()
 }
 
 function InitPage() {
-  EnablerClick('even_odd_differ','even_row_format')
-  EnablerClick('category_sort','category_format')
+  EnableClick('document.f.even_odd_differ','document.f.even_row_format')
+  EnableClick('document.f.category_sort','document.f.category_format')
 }
-function EnablerClick(enablername,enablewhat) {
-  document.all[enablewhat].disabled=!(document.all[enablername].checked);
+
+function EnableClick(cond,what) {
+  eval(what).disabled=!(eval(cond).checked);
+  // property .disabled supported only in MSIE 4.0+
 }   
+
 
 // -->
 </SCRIPT>
@@ -140,10 +143,10 @@ function EnablerClick(enablername,enablewhat) {
 <?php
   FrmInputText("compact_top", L_COMPACT_TOP, $compact_top, 254, 50, false);
   FrmTextarea("odd_row_format", L_ODD_ROW_FORMAT, $odd_row_format, 6, 50, false);
-  FrmInputChBox("even_odd_differ", L_EVEN_ODD_DIFFER, $even_odd_differ, true, "OnClick=\"EnablerClick('even_odd_differ','even_row_format')\"");
+  FrmInputChBox("even_odd_differ", L_EVEN_ODD_DIFFER, $even_odd_differ, true, "OnClick=\"EnableClick('document.f.even_odd_differ','document.f.even_row_format')\"");
   FrmTextarea("even_row_format", L_EVEN_ROW_FORMAT, $even_row_format, 6, 50, false);
   FrmInputText("compact_bottom", L_COMPACT_BOTTOM, $compact_bottom, 254, 50, false);
-  FrmInputChBox("category_sort", L_CATEGORY_SORT, $category_sort, true, "OnClick=\"EnablerClick('category_sort','category_format')\"");
+  FrmInputChBox("category_sort", L_CATEGORY_SORT, $category_sort, true, "OnClick=\"EnableClick('document.f.category_sort','document.f.category_format')\"");
   FrmTextarea("category_format", L_CATEGORY_FORMAT, $category_format, 6, 50, false);
   FrmInputText("compact_remove", L_COMPACT_REMOVE, $compact_remove, 254, 50, false);
 ?>
@@ -160,8 +163,11 @@ function EnablerClick(enablername,enablewhat) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:58  madebeer
-Initial revision
+Revision 1.2  2000/07/25 11:25:26  kzajicek
+Fixed Javascript error in Netscape.
+
+Revision 1.1.1.1  2000/06/21 18:39:58  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:48  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
