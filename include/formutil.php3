@@ -226,7 +226,7 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
     echo "<!-- Browser $BName -->";
     if ($type == "iframe") 
         $richedit = "richedit_iframe";
-    else if ($BName == "MSIE ") 
+    else if ($BName == "MSIE") 
         $richedit = "richedt_ie";
     else $richedit = "richedit_ns";
         
@@ -271,7 +271,7 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class
                      $hlp="", $morehlp="", $single="", $html=false) {
   global $BName; 
   if (! richEditShowable()) {
-	 FrmTextarea($name, $txt, $val, $rows, $cols, $needed, $hlp, $morehlp, $single, $html, $BName != "MSIE ");
+	 FrmTextarea($name, $txt, $val, $rows, $cols, $needed, $hlp, $morehlp, $single, $html, $BName != "MSIE");
      return;
   }
 
