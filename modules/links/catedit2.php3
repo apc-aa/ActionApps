@@ -6,7 +6,7 @@ $directory_depth = '../';
 require_once "../../include/init_page.php3";
 require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
 require_once $GLOBALS[AA_INC_PATH]."varset.php3";
-require_once "./constants.php3"; 
+require_once "./constants.php3";
 require_once "./util.php3";           // module specific utils
 
 $r_state['linkedit']['old'] = $HTTP_POST_VARS;  // in case of bad input
@@ -17,6 +17,12 @@ unset($r_err);
 # Checks if category has subcategories or links
 function IsCatEmpty($category_id) {
   global $db;
+//  $path = GetCategoryPath($category_id);
+//  $app_zids  = Links_QueryZIDs($path, '', '', true, 'app');
+//  $hold_zids = Links_QueryZIDs($path, '', '', true, 'folder2');
+//  $cat_zids  = Links_QueryCatZIDs($path, '', '', true, 'app');
+
+
   $SQL = "SELECT what_id FROM links_link_cat
                          WHERE (category_id = $category_id)";
   $db->query($SQL);

@@ -197,10 +197,10 @@ $LINKS_SEARCH_FIELDS = array('name','original_name','description','type', 'id','
                          /*  'org_city','org_street','org_post_code','org_phone','org_fax','org_email', */
                          /*  'flag','reg_id',*/'reg_name',/*'reg_level','lang_id',*/
                              'lang_name','lang_short_name',/*'cat_id',*/'cat_name',
-                         /*    'cat_deleted','cat_path',*/'cat_link_count',
-                             'cat_description','cat_base',/*'cat_state',*/
-                             'cat_proposal',/*'cat_proposal_delete',
-                             'cat_priority',*/'change');
+                         /*    'cat_deleted','cat_path','cat_link_count',*/
+                             'cat_description'/*,'cat_base','cat_state',
+                             'cat_proposal','cat_proposal_delete',
+                             'cat_priority','change'*/);
 
 /**
  * List of fields, which will be listed in searchbar in Links Manager (order)

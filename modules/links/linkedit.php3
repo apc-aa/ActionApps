@@ -44,6 +44,8 @@ function MarkChanged($txt) {
 $module_id = $slice_id;
 $p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
 $links_info = GetModuleInfo($module_id,'Links');
+// count tree start category depth 
+$links_info['tree_depth'] = substr_count (GetBaseCategoryPath( $lid ), ',') + 1;
 
 // load right langfile, if it is not loaded
 bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$r_lang_file);
@@ -434,7 +436,7 @@ echo '
                      echo '<a href="javascript:MoveSelectedTo(\'document.f.tree\', \'document.f.selcat'.$i.'\', \'document.f.selcatSelect'.$i.'\')"><img
                            src="'.$AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a>&nbsp;<input
                            type="text" name="selcat'.$i.'" value="'.$selcatValue[$i].'"
-                           size="60">&nbsp;<a href="javascript:DeleteField(\''.$i.'\')"><img
+                           size="60" readonly>&nbsp;<a href="javascript:DeleteField(\''.$i.'\')"><img
                            src="'.$AA_INSTAL_PATH.'images/bx.gif" border="0" alt="delete"></a>'.$selcatPropAdd[$i].$selcatPropDel[$i].'
                            <input type="hidden" name="selcatSelect'.$i.'" value="'.$selcatSelectValue[$i].'">
                            <input type="hidden" name="selcatState'.$i.'" value="'.$selcatState[$i].'"><br>';

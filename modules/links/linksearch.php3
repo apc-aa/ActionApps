@@ -71,7 +71,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
 
   # type sets status, pub_date and expiry_date according to specified type:
 
-  # app | changed | new | unasigned | trash | all
+  # app | changed | new | unasigned | folderX | all
 
   # if you want specify it yourselves in conds, set type to ALL
 

@@ -82,12 +82,18 @@ class cattree {
       }
   }
   
+  /** Not filled yet? ==> Fill it from database  */
+  function updateIfNeeded() {
+      if ( !isset($this->catnames) OR !is_array($this->catnames) )
+          $this->update();
+  }     
+
+
   /** Search category $parenid, if there exist subcategory of name $name 
    *  @returns id of found category or false
    */
   function subcatExist($parentid, $name) {
-      if ( !isset($this->catnames) OR !is_array($this->catnames) )
-          $this->update();
+      $this->updateIfNeeded();
       if ( isset($this->fromList) AND is_array($this->fromList) ) {
           foreach( $this->fromList as $i => $cid ) {
               if ( ($parentid == $cid) AND ($this->catnames[$this->toList[$i]]==$name) )
@@ -95,7 +101,13 @@ class cattree {
           }
       }
       return false;
-  }    
+  }
+
+  /** Returs name of category given by its id  */
+  function getName($cid) {
+      $this->updateIfNeeded();
+      return $this->catnames[$cid];
+  }     
 
   /**
    * Prints javascript which defines necessary javascript variables for category
@@ -108,8 +120,7 @@ class cattree {
    * @param string special string identifying if category $base{n} is base categ.
    */
   function printTreeData($treeStart=-1) {
-      if ( !isset($this->catnames) OR !is_array($this->catnames) )
-          $this->update();
+      $this->updateIfNeeded();
       if( $treeStart == -1 )
         $treeStart = $this->treeStart;
 
@@ -193,9 +204,7 @@ class cattree {
    */
   function getFrmTree($withState, $onWhat, $cat2show=-1, $pathDiv="",
                       $cat_id_fld="", $form="", $width=250, $rows=8, $in_form="") {
-      if ( !isset($this->catnames) OR !is_array($this->catnames) ) {
-          $this->update();
-      }
+      $this->updateIfNeeded();
       if( $cat2show == -1 ) {
         $cat2show = $this->treeStart;
       }

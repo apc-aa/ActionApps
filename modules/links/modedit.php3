@@ -76,9 +76,8 @@ if( $insert || $update ) {
 
     # now validate all module specific fields
     ValidateInput("start_id", _m("Start category id"), $start_id, $err, false, "number");
-    ValidateInput("start_depth", _m("Start depth"), $start_depth, $err, false, "number");
     ValidateInput("tree_start", _m("Tree start id"), $tree_start, $err, false, "number");
-    ValidateInput("tree_depth", _m("Tree depth"), $tree_depth, $err, false, "number");
+    ValidateInput("select_start", _m("Select start id"), $select_start, $err, false, "number");
     ValidateInput("default_cat_tmpl", _m("Default category template"), $default_cat_tmpl, $err, false, "text");
     ValidateInput("link_tmpl", _m("Link template"), $link_tmpl, $err, false, "text");
 
@@ -101,9 +100,8 @@ if( $insert || $update ) {
       $varset->clear();
 
       $varset->add("start_id", "number", $start_id);
-      $varset->add("start_depth", "number", $start_depth);
       $varset->add("tree_start", "number", $tree_start);
-      $varset->add("tree_depth", "number", $tree_depth);
+      $varset->add("select_start", "number", $select_start);
       $varset->add("default_cat_tmpl", "quoted", $default_cat_tmpl);
       $varset->add("link_tmpl", "quoted", $link_tmpl);
 
@@ -129,9 +127,8 @@ if( $insert || $update ) {
       $varset->setFromArray($db->Record);
       $varset->set("id", $module_id, "unpacked");
       $varset->set("start_id", $start_id, "number");
-      $varset->set("start_depth", $start_depth, "number");
       $varset->set("tree_start", $tree_start, "number");
-      $varset->set("tree_depth", $tree_depth, "number");
+      $varset->set("select_start", $select_start, "number");
       $varset->set("default_cat_tmpl", $default_cat_tmpl, "quoted");
       $varset->set("link_tmpl", $link_tmpl, "quoted");
 
@@ -237,9 +234,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 # module specific...
   FrmInputText("start_id", _m("Start category id"), $start_id);
-  FrmInputText("start_depth", _m("Start depth"), $start_depth);
   FrmInputText("tree_start", _m("Tree start id"), $tree_start);
-  FrmInputText("tree_depth", _m("Tree depth"), $tree_depth);
+  FrmInputText("select_start", _m("Select start id"), $select_start);
   FrmInputText("default_cat_tmpl", _m("Default category template"), $default_cat_tmpl);
   FrmInputText("link_tmpl", _m("Link template"), $link_tmpl);
 ?>
