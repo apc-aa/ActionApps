@@ -155,10 +155,4 @@ function Submit() {
 </HTML>
 <?php
 page_close()
-/*
-$Log$
-Revision 1.1  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-*/
 ?>

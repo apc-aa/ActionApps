@@ -884,8 +884,7 @@ define('L_V_NO_ITEM','HTML code for "No item found" message');
 
 // constants used in param wizard only:
 require  $GLOBALS[AA_INC_PATH]."de_param_wizard_lang.php3";
-// constants used in param wizard only:
-require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
+
 // new constants to be translated are here. Leave this "require" always at the 
 // end of this file
 // If You want to translate the new texts (which is in new_news_lang.php3 file),

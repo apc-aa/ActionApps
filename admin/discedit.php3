@@ -178,11 +178,4 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
 page_close()
 
-/*
-$Log$
-Revision 1.1  2001/09/27 13:15:47  honzam
-New discussion support
-
-*/
-
 ?>

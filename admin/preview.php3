@@ -21,21 +21,6 @@ http://www.apc.org/
 
 require "../include/init_page.php3";
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-/*
-$Log$
-Revision 1.2  2000/07/07 21:34:14  honzam
-Bug in preview - lost of item id - fixed
-
-Revision 1.1.1.1  2000/06/21 18:39:57  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:47  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.2  2000/06/12 21:40:57  madebeer
-added $Id $Log and $Copyright to some stray files
-
-*/
 ?>
 </head>
 <!-- frames -->

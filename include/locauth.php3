@@ -56,28 +56,4 @@ if($nobody) {  // used in itemedit.php3 for anonymoous news posting
 if (! PHPLIB_ALREADY_LOADED) {
    require($_PHPLIB["libdir"] . "page.inc");
 }
-/*
-$Log$
-Revision 1.1  2000/06/21 18:40:41  madebeer
-Initial revision
-
-Revision 1.1.1.1  2000/06/12 21:50:24  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.8  2000/06/12 19:58:36  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.7  2000/04/24 16:48:29  honzama
-New anonymous posting of items.
-
-Revision 1.6  2000/03/29 15:54:47  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.5  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>

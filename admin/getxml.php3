@@ -412,17 +412,5 @@ if ($slice_id && $ids)        // feeding mode
 
 echo "</rdf:RDF>"
 
-/*
-$Log$
-Revision 1.3  2001/12/18 11:37:39  honzam
-scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.2  2001/10/02 11:36:41  honzam
-bugfixes
-
-Revision 1.1  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-*/
 ?>
 

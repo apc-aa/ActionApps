@@ -254,38 +254,5 @@ class scroller {
 		return join(" AND ", $cond);
 	}
 }
-			
-/*
-$Log$
-Revision 1.5  2001/12/18 12:27:37  honzam
-fixed bug of not displayed items in admin interface
 
-Revision 1.4  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.3  2000/10/10 10:02:33  honzam
-new function for explicit sorting order setting
-
-Revision 1.2  2000/08/03 12:28:20  honzam
-SCROLLER_LENGTH constant bug fixed - the length is accepted now
-
-Revision 1.1.1.1  2000/06/21 18:40:47  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:26  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.6  2000/06/12 19:58:37  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.5  2000/05/30 09:11:39  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.4  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>

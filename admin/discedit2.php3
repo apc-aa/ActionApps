@@ -127,13 +127,4 @@ function InitPage() {}
 </BODY>
 </HTML>
 <?php page_close()
-/*
-$Log$
-Revision 1.2  2001/12/12 18:44:26  honzam
-Better permission setting for discussions administration
-
-Revision 1.1  2001/09/27 13:15:47  honzam
-New discussion support
-
-*/
 ?>

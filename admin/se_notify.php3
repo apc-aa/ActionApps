@@ -267,13 +267,6 @@ FrmTextArea("notify_active_item_edit_e", L_NOTIFY_EMAILS, $notify_active_item_ed
 </td></tr></table></FORM></BODY></HTML>
 
 <?php
-/*
-$Log$
-Revision 1.1  2001/12/18 12:11:22  honzam
-new notification e-mail possibility (notify new item in slice, bins, ...)
-
-*/
-
 page_close();
 ?>
 

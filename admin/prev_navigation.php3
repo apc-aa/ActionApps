@@ -29,18 +29,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo '<a href="'. con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=$sh_itm") .'" target="_parent" class="ipreview">'. L_EDIT .'</a>';
 echo '<IMG src="../images/spacer.gif" width=50 height=1>';
 echo '<a href="'. $sess->url("index.php3") .'" target="_parent" class="ipreview">'. L_OK .'</a>';
-/*
-$Log$
-Revision 1.1  2000/06/21 18:39:57  madebeer
-Initial revision
-
-Revision 1.1.1.1  2000/06/12 21:49:46  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.2  2000/06/12 21:40:57  madebeer
-added $Id $Log and $Copyright to some stray files
-
-*/
 ?>
 </center>
 </body>

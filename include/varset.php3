@@ -193,32 +193,4 @@ class Cvarset {
       $variable->huh();
   }
 }
-/*
-$Log$
-Revision 1.6  2002/03/06 12:39:36  honzam
-include this file just once
-
-Revision 1.5  2001/12/21 11:40:06  honzam
-fixed bug of bad return value in getValue()
-
-Revision 1.4  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.3  2001/01/26 15:06:50  honzam
-Off-line filling - first version with WDDX (then we switch to APC RSS+)
-
-Revision 1.2  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.1.1.1  2000/06/21 18:40:50  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:27  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.5  2000/06/12 21:41:24  madebeer
-removed whitespace from config-ecn.inc
-added $Id $Log and $Copyright to some stray files
-
-*/
 ?>

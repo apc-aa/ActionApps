@@ -312,19 +312,4 @@ echo "</form>
 </body>
 </html>";
 
-/*
-$Log$
-Revision 1.4  2002/01/10 13:56:58  honzam
-fixed bug in user profiles
-
-Revision 1.3  2002/01/04 13:16:43  honzam
-new hide fulltext parameter for slice (good for discussion)
-
-Revision 1.2  2001/12/26 22:11:38  honzam
-Customizable 'No item found' message. Added missing language constants.
-
-Revision 1.1  2001/12/18 12:12:27  honzam
-new user profile feature
-*/
-
 page_close()?>

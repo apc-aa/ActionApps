@@ -257,55 +257,5 @@ class AA_SL_Session extends Session {
     }
   }    
 }
-/*
-$Log$
-Revision 1.12  2002/01/10 13:55:28  honzam
-debug messages displays duration for queries
 
-Revision 1.11  2001/11/26 11:09:07  honzam
-new debug function dquery
-
-Revision 1.10  2001/10/01 16:21:38  honzam
-bugs with non existant tables in sql_update fixed
-
-Revision 1.9  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.8  2001/01/26 15:06:50  honzam
-Off-line filling - first version with WDDX (then we switch to APC RSS+)
-
-Revision 1.7  2000/11/08 12:23:55  honzam
-Fixed problem with bad AA_SL_Sess id - bad copy QUERY_STRING to HTTP_GET_VARS
-
-Revision 1.6  2000/10/10 10:04:24  honzam
-better backslashes handling for Query string parsing
-
-Revision 1.5  2000/08/23 12:29:58  honzam
-fixed security problem with inc parameter to slice.php3
-
-Revision 1.4  2000/08/22 12:30:06  honzam
-fixed problem with lost session id AA_SL_Session in cgi (PHP4) instalation.
-
-Revision 1.3  2000/08/07 15:27:45  kzajicek
-Added missing semicolon in global statement
-
-Revision 1.2  2000/07/21 15:28:46  kzajicek
-When PHP (CGI version) is configured with --enable-force-cgi-redirect,
-most of standard environmental variables are moved to REDIRECT_variable_name.
-
-Revision 1.1.1.1  2000/06/21 18:40:37  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:23  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.9  2000/06/12 19:58:35  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.8  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-*/
 ?>

@@ -19,45 +19,6 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-/*
-$Log$
-Revision 1.9  2002/02/05 21:40:33  honzam
-items are counted in all bins - including pending bin and expired bin
-
-Revision 1.8  2001/06/24 16:46:22  honzam
-new sort and search possibility in admin interface
-
-Revision 1.7  2001/05/29 19:14:58  honzam
-copyright + AA logo changed
-
-Revision 1.6  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.5  2001/02/26 17:22:30  honzam
-color profiles, itemmanager interface changes
-
-Revision 1.4  2001/02/23 11:18:04  madebeer
-interface improvements merged from wn branch
-
-Revision 1.3  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.1.1.1  2000/06/21 18:40:41  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:24  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.5  2000/06/12 21:41:24  madebeer
-removed whitespace from config-ecn.inc
-added $Id $Log and $Copyright to some stray files
-
-*/
 ?>
 <table width="122" border="0" cellspacing="0" bgcolor="<?php echo COLOR_TABBG ?>" cellpadding="1" align="LEFT" class="leftmenu">
   <tr><td>&nbsp;</td></tr>

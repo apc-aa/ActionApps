@@ -94,26 +94,4 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
   return WDDX_OK;
 }  
 
-/*
-$Log$
-Revision 1.7  2001/12/18 09:45:45  honzam
-added possibility to fill multiple values to one field
-
-Revision 1.6  2001/12/12 18:38:02  honzam
-Better item table flags setting
-
-Revision 1.5  2001/03/30 11:54:35  honzam
-offline filling bug and others small bugs fixed
-
-Revision 1.4  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.3  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.2  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-*/
 ?>

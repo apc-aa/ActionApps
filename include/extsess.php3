@@ -215,44 +215,4 @@ class AA_SL_Session extends Session {
 #	var $dbm_file  = "must_exist.dbm";
 #}
 
-/*
-$Log$
-Revision 1.8  2002/01/10 13:55:28  honzam
-debug messages displays duration for queries
-
-Revision 1.7  2001/11/05 13:31:07  honzam
-new debug function dquery (instead of query) for EXPLAIN SELECT table
-
-Revision 1.6  2001/10/01 16:21:38  honzam
-bugs with non existant tables in sql_update fixed
-
-Revision 1.5  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.4  2000/08/07 15:27:45  kzajicek
-Added missing semicolon in global statement
-
-Revision 1.3  2000/07/21 15:28:46  kzajicek
-When PHP (CGI version) is configured with --enable-force-cgi-redirect,
-most of standard environmental variables are moved to REDIRECT_variable_name.
-
-Revision 1.1.1.1  2000/06/21 18:40:36  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:22  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.10  2000/06/12 19:58:35  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.9  2000/04/24 16:48:29  honzama
-New anonymous posting of items.
-
-Revision 1.8  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>

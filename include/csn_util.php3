@@ -140,16 +140,4 @@ function iso8601_to_unixstamp($t) {
  return gmmktime($r[4],$r[5],$r[6],$r[2],$r[3],$r[1])+$tz;
 }
 
-/*
-$Log$
-Revision 1.3  2001/12/18 12:02:19  honzam
-new possibility to join fields when fields are fed to another slice
-
-Revision 1.2  2001/10/02 11:36:41  honzam
-bugfixes
-
-Revision 1.1  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-*/
 ?>

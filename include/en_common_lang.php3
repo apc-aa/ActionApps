@@ -103,8 +103,6 @@ define("L_APP_TYPE", "Slice type");
 define("L_SELECT_APP", "Select slice type");
 define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
-define( "L_ICON_LEGEND", '');
-
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
@@ -156,96 +154,4 @@ function userdate2sec ($dttm, $time="") {
 function dateExample() {
 	return "mm/dd/yyyy";
 }
-
-                   
-/*
-$Log$
-Revision 1.24  2002/01/04 13:07:40  honzam
-Added language constants for profiles, notifications.
-
-Revision 1.23  2001/12/18 12:09:51  honzam
-new notification e-mail possibility (notify new item in slice, bins, ...)
-
-Revision 1.22  2001/10/08 17:03:35  honzam
-Language constants fixes
-
-Revision 1.21  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-Revision 1.20  2001/09/14 19:02:45  madebeer
-view static - now allows aliases from URL
-checkin of sql statements to use RSS
-
-Revision 1.19  2001/06/05 08:58:02  honzam
-default codepage for slice not hard-coded now - moved to *_common_lang
-
-Revision 1.18  2001/05/29 21:05:07  honzam
-copyright + new logo
-
-Revision 1.17  2001/05/29 19:14:58  honzam
-copyright + AA logo changed
-
-Revision 1.16  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.15  2001/01/26 15:06:50  honzam
-Off-line filling - first version with WDDX (then we switch to APC RSS+)
-
-Revision 1.12  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.11  2000/12/05 14:01:19  honzam
-Better help for upload image alias
-
-Revision 1.10  2000/11/16 11:48:39  madebeer
-11/16/00 a- changed admin leftbar menu order and labels
-         b- changed default article editor field order & fields
-         c- improved some of the english labels
-
-Revision 1.9  2000/08/23 12:29:57  honzam
-fixed security problem with inc parameter to slice.php3
-
-Revision 1.8  2000/08/17 15:17:55  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.7  2000/08/15 16:20:40  kzajicek
-en_common_lang.php3
-
-Revision 1.6  2000/08/14 12:41:50  kzajicek
-*** empty log message ***
-
-Revision 1.5  2000/08/14 12:39:13  kzajicek
-Language definitions required by setup.php3
-
-Revision 1.4  2000/07/26 16:01:48  kzajicek
-More descriptive message for "login failed"
-
-Revision 1.3  2000/07/12 14:26:40  kzajicek
-Poor printing of the SSI statement fixed
-
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.1.1.1  2000/06/21 18:40:31  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:15  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.8  2000/06/12 19:58:35  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.7  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.6  2000/03/29 15:54:47  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.5  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>

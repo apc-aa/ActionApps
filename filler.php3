@@ -40,7 +40,7 @@ function Myaddslashes($val, $n=1) {
     $ret[$k] = Myaddslashes($v, $n+1);
   return $ret;
 }    
-
+ 
 if (!get_magic_quotes_gpc()) { 
   // Overrides GPC variables 
   for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
@@ -61,8 +61,6 @@ require $GLOBALS[AA_INC_PATH]."notify.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
-
-//echo $slice_id;
 
 function SendErrorPage($txt) {
   if( $GLOBALS["err_url"] )
@@ -203,30 +201,9 @@ if (count($err) == 1)
 	$added_to_db = StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert_item, 
                           true, true );     # insert, invalidatecache, feed
 
-if( count($err) > 1) 
+if( count($err) > 1)
   SendErrorPage( $err );
-else
+ else
   SendOkPage( L_ANONYMOUS_FILL_OK );
 
-/*
-$Log$
-Revision 1.7  2002/03/06 13:50:56  honzam
-new variable 'force status code' to move the item to another bin
-
-Revision 1.6  2002/01/10 13:50:05  honzam
-new possibilty to anonymously edit items on public sites
-
-Revision 1.5  2001/12/21 11:44:55  honzam
-fixed bug of includes in e-mail notify
-
-Revision 1.4  2001/12/18 11:37:38  honzam
-scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.3  2001/04/09 20:42:29  honzam
-fixed bug in selecting bin, where to put item in filler.php3
-
-Revision 1.1  2001/03/20 15:23:09  honzam
-standardized content management for items - filler, itemedit, offline, feeding
-
-*/
 ?>

@@ -85,21 +85,4 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
   }
 
 }
-
-/*
-$Log$
-Revision 1.4  2002/01/18 02:28:06  mitraearth
-Removed the DONE line from notify.php3 since it mucks up the page when
-an item update is done since notify.php3 is run before headers are sent
-
-Revision 1.3  2001/12/21 11:44:56  honzam
-fixed bug of includes in e-mail notify
-
-Revision 1.2  2001/12/20 00:27:18  honzam
-Fixed bugs in notify - now works with PHP3
-
-Revision 1.1  2001/12/18 12:36:03  honzam
-new notification e-mail possibility (notify new item in slice, bins, ...)
-
-*/
 ?>

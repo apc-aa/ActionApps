@@ -539,11 +539,4 @@ class Syntax {
 function B($text) {
 	return "<B>".$text."</B>";
 }
-
-/*
-$Log$
-Revision 1.1  2001/10/24 16:41:35  honzam
-search expressions with AND, OR, NOT, (, ) allowed in conditions
-
-*/
 ?>

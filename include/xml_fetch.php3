@@ -61,11 +61,5 @@ function  xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timest
 
  return $data;
 }
-/*
-$Log$
-Revision 1.1  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-*/
 
 ?>

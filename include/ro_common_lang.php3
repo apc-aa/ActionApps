@@ -105,8 +105,6 @@ define("L_APP_TYPE", "Tip secþiune");
 define("L_SELECT_APP", "Alegeþi tipul secþiunii");
 define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
-define( "L_ICON_LEGEND", '');
-
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Nedefinit" );
 
@@ -161,6 +159,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.2  2002/04/25 11:16:50  honzam
+removed logs from files
+
 Revision 1.1  2002/03/12 16:28:38  honzam
 new romanian language supprt (Thanks to Mihály Bakó, StrawberryNet Foundation), new_news_lang.php3 file introduced for better support of many language versions
 

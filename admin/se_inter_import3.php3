@@ -108,10 +108,4 @@ while (list(,$f_slice) = each($f_slices)) {
 
 go_url( $sess->url(self_base() . "se_inter_import.php3"). "&Msg=" . $msg );
 page_close()
-/*
-$Log$
-Revision 1.1  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-*/
 ?>

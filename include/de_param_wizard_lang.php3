@@ -235,13 +235,4 @@ define("L_PARAM_WIZARD_FUNC_F_V_PAR0_NAME","complex parameter");
 define("L_PARAM_WIZARD_FUNC_F_V_PAR0_DESC","this parameter is the same as we use in view.php3 url parameter - see the FAQ");
 define("L_PARAM_WIZARD_FUNC_F_V_PAR0_EXAMPLE","vid=4&amp;cmd[23]=v-25");
 
-/*
-$Log$
-Revision 1.1  2001/11/07 16:04:55  udosw
-German translation (partly) by UdoSW
-
-Revision 1.1  2001/10/24 18:44:10  honzam
-new parameter wizard for function aliases and input type parameters
-
-*/
 ?>

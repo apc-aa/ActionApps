@@ -62,29 +62,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
   include $GLOBALS[AA_INC_PATH]."um_usrch.php3";
   include $GLOBALS[AA_INC_PATH]."um_usrch.php3";
-  
-/*
-$Log$
-Revision 1.3  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.2  2000/08/03 12:49:22  kzajicek
-English editing
-
-Revision 1.1.1.1  2000/06/21 18:40:08  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:58  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.4  2000/06/12 19:58:25  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.3  2000/03/22 09:36:44  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
 </BODY>
 </HTML>

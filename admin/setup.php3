@@ -272,37 +272,4 @@ switch ($phase) {
 HtmlEnd();
 
 page_close();
-
-///////////////////////////////////////////////////////////////////////////
-
-/*
-$Log$
-Revision 1.9  2001/12/20 00:26:01  honzam
-Cosmetic changes in page layout
-
-Revision 1.8  2001/12/18 11:37:39  honzam
-scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.7  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.6  2001/01/26 14:52:55  honzam
-Fixed setup.php3 problem with non existing database for cache
-
-Revision 1.5  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.4  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
-
-Revision 1.3  2000/08/14 12:37:11  kzajicek
-Added checking for empty groups with superadmin access
-
-Revision 1.2  2000/08/11 17:20:44  kzajicek
-Removed debug section
-
-Revision 1.1  2000/08/11 17:14:07  kzajicek
-First version of the setup script added
-
-*/
 ?>

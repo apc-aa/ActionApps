@@ -104,8 +104,6 @@ define("L_APP_TYPE", "Typ modulu");
 define("L_SELECT_APP", "Vyber typ modulu");
 define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
-define( "L_ICON_LEGEND", '');
-                           
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
@@ -150,62 +148,4 @@ function dateExample() {
 	return "mm/dd/yyyy";
 }
 
-/*
-$Log$
-Revision 1.2  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-Revision 1.1  2001/06/12 16:07:22  honzam
-new feeding modes -  "Feed & update" and "Feed & update & lock"
-
-Revision 1.14  2001/01/26 15:06:50  honzam
-Off-line filling - first version with WDDX (then we switch to APC RSS+)
-
-Revision 1.11  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.8  2000/08/23 12:29:57  honzam
-fixed security problem with inc parameter to slice.php3
-
-Revision 1.7  2000/08/17 15:17:55  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.6  2000/08/14 12:39:13  kzajicek
-Language definitions required by setup.php3
-
-Revision 1.5  2000/07/26 16:01:48  kzajicek
-More descriptive message for "login failed"
-
-Revision 1.4  2000/07/12 14:26:40  kzajicek
-Poor printing of the SSI statement fixed
-
-Revision 1.3  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.1.1.1  2000/06/21 18:40:23  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:12  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.6  2000/06/12 19:58:34  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.5  2000/05/30 09:11:39  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.4  2000/04/24 16:50:33  honzama
-New usermanagement interface.
-
-Revision 1.3  2000/03/29 15:54:46  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.2  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>
-

@@ -335,7 +335,6 @@ define("L_ALL_USERS", "Vöetci uûivatelia");
 define("L_GROUPS_USERS", "Uûivatelia v skupine");
 define("L_POST", "Poslaù");
 define("L_INSERT_PREV", "Vloit a pozriet");
-define("L_INPUT_SHOW_EDT","Rich Edit Text Area");
 define("L_POST_PREV", "Poslaù a pozrieù");
 define("L_OK", "OK");
 define("L_ACTIVE_BIN_EXPIRED", "Aktu·lne - ExpirovanÈ");
@@ -378,6 +377,7 @@ define("L_INPUT_DEFAULT_UID", "ID uûÌvateæa");
 define("L_INPUT_DEFAULT_NOW", "Aktu·lny d·tum a Ëas*");
 
 define("L_INPUT_SHOW_TXT","Text Area");
+define("L_INPUT_SHOW_EDT","Rich Edit Text Area");
 define("L_INPUT_SHOW_FLD","Text Field");
 define("L_INPUT_SHOW_SEL","Select Box");
 define("L_INPUT_SHOW_RIO","Radio Button");

@@ -20,65 +20,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/*
-$Log$
-Revision 1.15  2001/12/18 12:09:51  honzam
-new notification e-mail possibility (notify new item in slice, bins, ...)
-
-Revision 1.14  2001/10/05 07:50:46  madebeer
-made leftbar compatible with php3.  fixed missing comments in aadb.sql
-
-Revision 1.13  2001/09/27 16:03:44  honzam
-Cross Server Networking (RSS item exchange)
-
-Revision 1.12  2001/05/21 13:52:32  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.11  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.10  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.9  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.8  2001/02/26 17:22:30  honzam
-color profiles, itemmanager interface changes
-
-Revision 1.7  2001/02/23 11:18:04  madebeer
-interface improvements merged from wn branch
-
-Revision 1.6  2001/01/31 02:46:03  madebeer
-moved Fields leftbar section back up to Slice main settings section.
-updated some english language titles
-
-Revision 1.5  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.4  2000/12/23 19:56:50  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
-
-Revision 1.3  2000/11/16 11:48:39  madebeer
-11/16/00 a- changed admin leftbar menu order and labels
-         b- changed default article editor field order & fields
-         c- improved some of the english labels
-
-Revision 1.2  2000/07/17 13:28:55  kzajicek
-Language changes
-
-Revision 1.1.1.1  2000/06/21 18:40:41  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:24  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.4  2000/06/12 21:41:24  madebeer
-removed whitespace from config-ecn.inc
-added $Id $Log and $Copyright to some stray files
-
-*/
 $new_slice = ($slice_id == ""); //when we have a new slice, most menu items are disabled
 
 function SetShow ($baritem)

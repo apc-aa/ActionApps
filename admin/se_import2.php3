@@ -133,34 +133,4 @@ if( count($err) <= 1 ) {
 
 page_close();
 
-/*
-$Log$
-Revision 1.7  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.6  2001/03/20 15:28:53  honzam
-Fixed "terminate feeding after canceling permissions" bug + changes due to "slice delete" feature
-
-Revision 1.5  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.4  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.3  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.2  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
-
-Revision 1.1.1.1  2000/06/21 18:40:02  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.10  2000/06/12 21:40:57  madebeer
-added $Id $Log and $Copyright to some stray files
-
-*/
 ?> 

@@ -153,55 +153,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo "<input type=hidden name=\"slice_id\" value=$slice_id>";
   echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
-/*
-$Log$
-Revision 1.10  2001/09/27 15:44:35  honzam
-Easiest left navigation bar editation
-
-Revision 1.9  2001/05/21 13:52:32  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.8  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.7  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.6  2001/03/20 15:27:03  honzam
-Changes due to "slice delete" feature
-
-Revision 1.5  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.4  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.3  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.2  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
-
-Revision 1.1.1.1  2000/06/21 18:40:03  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:51  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.11  2000/06/12 19:58:25  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.10  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.9  2000/04/24 16:45:02  honzama
-New usermanagement interface.
-
-Revision 1.8  2000/03/22 09:36:44  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>   
 </td></tr></table>
 </FORM>

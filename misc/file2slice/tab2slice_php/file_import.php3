@@ -207,23 +207,4 @@ while (list ($line_num, $line) = each ($import)) {
 }
 // end of a single import item
 
-	
-/*
-$Log$
-Revision 1.3  2001/12/21 11:44:56  honzam
-fixed bug of includes in e-mail notify
-
-Revision 1.2  2001/12/18 12:26:10  honzam
-scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.1  2001/10/26 08:30:19  honzam
-new tab2slice_php scripts for data import (thanks to Udo)
-
-Revision 1.3  2001/04/09 20:42:29  honzam
-fixed bug in selecting bin, where to put item in filler.php3
-
-Revision 1.1  2001/03/20 15:23:09  honzam
-standardized content management for items - filler, itemedit, offline, feeding
-
-*/
 ?>

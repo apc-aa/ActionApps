@@ -95,15 +95,4 @@ $cache->invalidateFor("slice_id=".unpack_id($slice_id));  # invalidate old cache
 
 updateDiscussionCount($d_item_id);        // update a count of the comments belong to the item
 go_url( $url);
-
-/*
-$Log$
-Revision 1.2  2001/12/18 11:37:38  honzam
-scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.1  2001/09/27 13:15:47  honzam
-New discussion support
-
-*/
-
 ?>

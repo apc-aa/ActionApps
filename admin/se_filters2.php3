@@ -145,31 +145,4 @@ else
   MsgPage($sess->url(self_base()."se_import.php3"), $err, "admin");
 
 page_close();
-/*
-$Log$
-Revision 1.6  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-Revision 1.5  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.4  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
-
-Revision 1.3  2000/07/17 15:20:11  kzajicek
-Replaced superfluous do..while(false) construct
-
-Revision 1.2  2000/07/14 14:09:04  kzajicek
-Fixed faulty behaviour caused by nonexistent in or out categories.
-
-Revision 1.1.1.1  2000/06/21 18:40:01  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.10  2000/06/12 21:40:57  madebeer
-added $Id $Log and $Copyright to some stray files
-
-*/
 ?> 

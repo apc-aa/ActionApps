@@ -122,23 +122,5 @@ if( $error )
  else
   SendOkPage( "$ok<br>". L_CAN_DELETE_WDDX_FILE . 
                   " <a href='$del_url'>".L_DELETE_WDDX."</a>", $del_url );
-   
-/*
-$Log$
-Revision 1.6  2001/12/21 11:44:55  honzam
-fixed bug of includes in e-mail notify
 
-Revision 1.5  2001/12/18 11:37:38  honzam
-scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.4  2001/03/30 11:50:22  honzam
-offline filling bug and other smalll bugs fixed
-
-Revision 1.3  2001/03/20 15:23:09  honzam
-standardized content management for items - filler, itemedit, offline, feeding
-
-Revision 1.2  2001/02/20 13:25:15  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-*/
 ?>

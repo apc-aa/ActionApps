@@ -27,39 +27,6 @@ http://www.apc.org/
 $usermng_page = true;
 require $GLOBALS[AA_INC_PATH] . "navbar.php3";
 
-/*
-$Log$
-Revision 1.4  2001/12/20 00:26:00  honzam
-Cosmetic changes in page layout
-
-Revision 1.3  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.2  2001/02/26 17:22:30  honzam
-color profiles, itemmanager interface changes
-
-Revision 1.1.1.1  2000/06/21 18:40:49  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:27  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.5  2000/06/12 19:58:37  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.4  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.3  2000/03/29 15:54:47  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.2  2000/03/22 09:38:40  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>
 <!-- left navigate column    -->
 <table width="122" bgcolor="<?php echo COLOR_TABBG ?>" border="0" cellspacing="0" cellpadding="1" align="LEFT">

@@ -110,26 +110,4 @@ function GetObjectPerms ($objectID, $objectType, $flags = 0) {
 function GetIDPerms ($id, $objectType, $flags = 0) {
   return array("");
 }
-
-/*
-$Log$
-Revision 1.1  2000/06/21 18:40:43  madebeer
-Initial revision
-
-Revision 1.1.1.1  2000/06/12 21:50:25  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.5  2000/06/12 19:58:37  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.4  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.3  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>

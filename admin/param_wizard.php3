@@ -223,15 +223,3 @@ if (is_array ($desc[examples])) {
 </form>
 </body>
 </html>
-<?php
-  
-/*
-$Log$
-Revision 1.2  2001/10/24 19:39:55  honzam
-corrested wizard html code
-
-Revision 1.1  2001/10/24 18:44:11  honzam
-new parameter wizard for function aliases and input type parameters
-
-*/
-?>

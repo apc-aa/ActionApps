@@ -199,62 +199,6 @@ HtmlPageBegin();   // Prints HTML start page tags
     echo "</table>
     </form></td></tr></table>";
   }  
-/*
-$Log$
-Revision 1.11  2001/12/18 11:42:21  honzam
-new user profile feature
-
-Revision 1.10  2001/09/27 15:44:35  honzam
-Easiest left navigation bar editation
-
-Revision 1.9  2001/05/21 13:52:32  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.8  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.7  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.6  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.5  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.4  2000/07/27 14:26:55  kzajicek
-Higher privileges are now necessary to change permissions
-of other users (sooner was equality adequate).
-
-Revision 1.3  2000/07/27 13:23:58  kzajicek
-Language correction
-
-Revision 1.2  2000/07/17 12:27:51  kzajicek
-Language changes
-
-Revision 1.1.1.1  2000/06/21 18:40:03  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:51  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.16  2000/06/12 19:58:25  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.15  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.14  2000/05/30 09:11:49  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.13  2000/04/24 16:45:03  honzama
-New usermanagement interface.
-
-Revision 1.12  2000/03/22 09:36:44  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
 </BODY>
 </HTML>
