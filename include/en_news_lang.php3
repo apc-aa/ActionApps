@@ -367,9 +367,9 @@ define("L_FIELD_DELETE_OK", "Field delete OK");
 define("L_WARNING_NOT_CHANGE","<p>WARNING: Do not change this setting if you are not sure what you do!</p>");
 define("L_INPUT_SHOW_FUNC_F_HLP","Function used for displaying in inputform. For some types you can use parameters, which follows.");
 define("L_INPUT_SHOW_FUNC_C_HLP","Constants used with Select or Radio input function.");
-define("L_INPUT_SHOW_FUNC_HLP","Parameter for use with Text (<number of rows>) or Date (<minus years>'<plus years>'<from now? >) input function.");
+define("L_INPUT_SHOW_FUNC_HLP","If input-type is Text Area, this is number of rows.");
 define("L_INPUT_DEFAULT_F_HLP","Which function should be used as default:<BR>Now - default is current date<BR>User ID - current user ID<BR>Text - default is text in Parameter field<br>Date - as default is used current date plus <Parameter> number of days");
-define("L_INPUT_DEFAULT_HLP","Parameter for default Text and Date (see above)");
+define("L_INPUT_DEFAULT_HLP","If default-type is Text, this sets the default text.<BR>If the default-type is Date, this sets the default date to the current date plus the number of days you set here.");
 
 define("L_INPUT_DEFAULT_TXT", "Text");
 define("L_INPUT_DEFAULT_DTE", "Date");
@@ -411,7 +411,7 @@ define("L_INPUT_HELP","Help for this field");
 define("L_INPUT_HELP_HLP","Shown help for this field");
 define("L_INPUT_MOREHLP","More help");
 define("L_INPUT_MOREHLP_HLP","Text shown after user click on '?' in input form");
-define("L_INPUT_INSERT_HLP","Database insert function");
+define("L_INPUT_INSERT_HLP","This defines how the value is stored in the database.  Generally, use 'Text'.<BR>File will store an uploaded file.<BR>Now will insert the current time, no matter what the user sets.  Uid will insert the identity of the Current user, no matter what the user sets.  Boolean will store either 1 or 0.  ");
 define("L_INPUT_VALIDATE_HLP","Validate function");
 
 define("L_CONSTANT_NAME", "Name");
@@ -453,11 +453,11 @@ define("L_ALIAS_FUNC_T", "fulltext");
 define("L_ALIAS_FUNC_W", "image width");
 define("L_ALIAS_FUNC_0", "none");
 
-define("L_ALIASES", "Aliases for database fields");
+define("L_ALIASES", "When you go to Admin-Design, you use an Alias to show this field");
 define("L_ALIAS1", "Alias 1"); 
 define("L_ALIAS_HLP", "Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters."); 
 define("L_ALIAS_FUNC", "Function"); 
-define("L_ALIAS_FUNC_F_HLP", "Function which handles the database field and displays it on page"); 
+define("L_ALIAS_FUNC_F_HLP", "Function which handles the database field and displays it on page<BR>usually, use 'print'.<BR>"); 
 define("L_ALIAS_FUNC_HLP", "Parameter passed to alias handling function. For detail see include/item.php3 file"); 
 define("L_ALIAS_HELP", "Help text"); 
 define("L_ALIAS_HELP_HLP", "Help text for the alias"); 
@@ -487,6 +487,9 @@ define("L_A_FULLTEXT_HELP", "Use these boxes ( with the tags listed below ) to c
 
 /*
 $Log$
+Revision 1.31  2001/02/25 08:49:54  madebeer
+added help for admin-Fields-Edit
+
 Revision 1.30  2001/02/25 08:33:40  madebeer
 fixed some table formats, cleaned up admin headlines
 
