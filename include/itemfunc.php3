@@ -1074,6 +1074,8 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
             $itemvarset->set('status_code', 1);
         $itemvarset->add("id", "unpacked", $id);
         $itemvarset->add("slice_id", "unpacked", $slice_id);
+        $itemvarset->add("post_date", "quoted", default_fnc_now(""));
+        $itemvarset->add("posted_by", "quoted", default_fnc_uid(""));
         $itemvarset->add("display_count", "quoted", "0");
 
         $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
