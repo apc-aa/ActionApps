@@ -118,7 +118,7 @@ function Submit(mode) {
 
 function checkData() {
   if (document.f.node_name.value=="") {
-     alert('<?php echo L_IMPORT_NODE_EMPTY; ?>')
+     alert('<?php echo L_NODE_NODE_EMPTY; ?>')
      return false
   }
 }
