@@ -23,8 +23,18 @@ function IsCatEmpty($category_id) {
 //  $cat_zids  = Links_QueryCatZIDs($path, '', '', true, 'app');
 
 
-  $SQL = "SELECT what_id FROM links_link_cat
-                         WHERE (category_id = $category_id)";
+
+
+  $SQL = " SELECT links_links.id
+           FROM links_link_cat, links_links
+          WHERE links_link_cat.what_id = links_links.id
+            AND links_link_cat.category_id = $category_id
+            AND links_links.folder < 2
+            AND links_link_cat.category_id <> 'hidden'
+            AND NOT (links_link_cat.state = 'hidden')
+            AND links_link_cat.proposal = 'n'";
+
+
   $db->query($SQL);
   if( $db->next_record() )
     return false;
@@ -48,10 +58,18 @@ function DeleteCatAssignment($parent, $child) {
 # Delete one category
 function DeleteCategory($catId) {
   global $db;
+  
+  $SQL = "DELETE FROM links_link_cat
+       	   WHERE category_id = $catId";
+  $db->tquery( $SQL );
+
+  $SQL = "DELETE FROM links_cat_cat
+       	   WHERE category_id = $catId";
+  $db->tquery( $SQL );
+
   $SQL = "DELETE FROM links_categories
            WHERE id = $catId";
-
-  $db->query( $SQL );
+  $db->tquery( $SQL );
 }
 
 function ChangeCatPriority($category_id, $insertedId, $pri, $state) {

@@ -44,8 +44,8 @@ function MarkChanged($txt) {
 $module_id = $slice_id;
 $p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
 $links_info = GetModuleInfo($module_id,'Links');
-// count tree start category depth 
-$links_info['tree_depth'] = substr_count (GetBaseCategoryPath( $lid ), ',') + 1;
+// count tree start category depth
+$links_info['tree_depth'] = substr_count (Links_GetCategoryColumn( $links_info['tree_start'], 'path' ), ',') + 1;
 
 // load right langfile, if it is not loaded
 bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$r_lang_file);

@@ -111,6 +111,14 @@ function Links_GetBaseCategoryColumn( $lid, $col ) {
   return ( $db->next_record() ? $db->f('retcol') : "");
 }
 
+
+function Links_GetCategoryColumn( $cid, $col ) {
+  global $db;
+  $db->query("SELECT $col as retcol FROM links_categories
+               WHERE id='$cid'");
+  return ( $db->next_record() ? $db->f('retcol') : "");
+}
+
 # Get base path from link id
 function GetBaseCategoryPath( $lid ) {
     return Links_GetBaseCategoryColumn( $lid, 'path' );
@@ -254,7 +262,7 @@ function Links_GetLinkContent($zids) {
     if (!is_object($db))
         $db = new DB_AA;
 
-    if( !$zids )
+    if (!$zids OR $zids->count()<1)
         return false;
 
     // construct WHERE clausule

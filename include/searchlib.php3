@@ -210,7 +210,7 @@ function MakeSQLConditions($fields_arr, $conds, &$join_tables, $additional_field
             }
         }
     }
-    return ( isset($ret) AND is_array($ret) ) ? 
+    return ( isset($ret) AND is_array($ret) ) ?
                        ' AND ( '. join(' AND ', $ret ) .') ' : ' AND (1=1) ';
 }
 
@@ -238,52 +238,52 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
             }
         }
     }
-    return ( isset($ret) AND is_array($ret) ) ? 
+    return ( isset($ret) AND is_array($ret) ) ?
                            ' ORDER BY '. join(' , ', $ret ) : '';
 }
 
-/** Get searchresult from cache, if cahed 
- * @param bool   $cache_condition - have we look into cache? 
- * @param string $keystr          - id_string which identifies cache content 
- * @return resulting zids from cache or false; 
+/** Get searchresult from cache, if cahed
+ * @param bool   $cache_condition - have we look into cache?
+ * @param string $keystr          - id_string which identifies cache content
+ * @return resulting zids from cache or false;
  */
 function CachedSearch($cache_condition, $keystr) {
     global $pagecache, $QueryIDsCount, $debug;
-    
+
     if ( $cache_condition ) {
         if ( $res = $pagecache->get($keystr)) {
             $zids = unserialize($res);
             $QueryIDsCount = $zids->count();  // global variable
-            if( $debug ) { 
+            if( $debug ) {
                 echo "<br>Cache HIT - return $QueryIDsCount IDs<br>";
-            }    
+            }
             return $zids;
         }
     }
     return false;
 }
 
-/** Get zids from database and possibly store it into cache 
- * @param string $SQL              - SQL query 
- * @param string $col              - column in database containing id 
- * @param bool   $cache_condition  - have we store result into cache? 
+/** Get zids from database and possibly store it into cache
+ * @param string $SQL              - SQL query
+ * @param string $col              - column in database containing id
+ * @param bool   $cache_condition  - have we store result into cache?
  * @param string $keystr           - id_string which identifies cache content
  * @param string $cache_del_str    - string used to delete cache
  * @param bool   $empty_result_condition - have we return empty set?
- * @return zids from SQL query; 
+ * @return zids from SQL query;
  */
-function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_del_str, 
+function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_del_str,
                          $zid_type='s', $empty_result_condition=false ) {
     global $pagecache, $QueryIDsCount, $debug;
     $db = getDB();
-    
+
     if ( $empty_result_condition ) {
-        $arr = array (); 
+        $arr = array ();
     } else {
         $db->tquery($SQL);
         while( $db->next_record() )
             $arr[] = $db->f($col);
-    }        
+    }
     $zids = new zids($arr, $zid_type);
     $QueryIDsCount = count($arr);
 
@@ -292,9 +292,9 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_del_str,
 
     freeDB($db);
     return $zids;
-}    
+}
 
-            
+
 // -------------------------------------------------------------------------------------------
 
 /** Finds item IDs for items to be shown in a slice / view
@@ -371,7 +371,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   if ( $res = CachedSearch( $cache_condition, $keystr )) {
       return $res;
   }
-  
+
   if ($GLOBALS[debugfields] || $debug) {
       if ($slices) ProoveFieldNames ($slices, $conds);
       else ProoveFieldNames (array ($slice_id), $conds);
@@ -381,7 +381,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   ParseEasyConds ($conds, $defaultCondsOperator);
 
   if( $debug ) huhl("Conds=",$conds,"Sort=",$sort, "Group by=",$group_by,"Slices=",$slices);
-  
+
 
   # parse conditions ----------------------------------
   if( is_array($conds)) {
@@ -492,13 +492,14 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
     }
   }
 
+
+
   # parse group by parameter ----------------------------
   if( isset($group_by) AND is_array($group_by)) {
     reset ($group_by);
     $delim='';
 
   if( $debug ) echo "<br>Group<br>";
-
       while( list( $fid, ) = each( $group_by )) {
   if( $debug ) echo "<br>-$fid-<br>";
         if( !$fields[$fid] )  # bad field_id - skip
@@ -554,15 +555,15 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
       $SQL .= " item.slice_id IN ( $slicesText ) AND ";
   }
   if (is_object($restrict_zids)) {
-    if ($restrict_zids->count() == 0)
+    if ($restrict_zids->count() == 0) {
         return new zids(); # restrict_zids defined but empty - no result
-
-    $SQL .= " ".$restrict_zids->sqlin() ." AND ";
+    } else {
+       $SQL .= " ".$restrict_zids->sqlin() ." AND ";
+    }
   } else {
     # slice(s) or item_ids MUST be specified (in order we can get answer in limited time)
     if (!$slicesText) return new zids();
   }
-
 
   $now = now();                                              # select bin -----
   switch( $type ) {
@@ -597,8 +598,8 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
     $SQL .= " GROUP BY $select_group";
 
   // if neverAllItems is set, return empty set if no conds[] are used
-  return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr, 
-                  "slice_id=$slice_id,slice_id=".  join(',slice_id=', $slices), 
+  return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr,
+                  "slice_id=$slice_id,slice_id=".  @join(',slice_id=', $slices),
                   'p', !is_array($select_conds) && $neverAllItems );
 }
 
@@ -633,12 +634,12 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
     if ( !isset($sort) OR !is_array($sort) ) {
         $sort[] = array( 'const_priority' => 'a');
         $sort[] = array( 'const_name' => 'a');
-    }    
+    }
     // for backward compatibily rename value to const_value ... (used in old views)
-    if ( key($sort[0]) == 'value' ) $sort[0] = array('const_value'    => $sort[0]['value']);   
-    if ( key($sort[0]) == 'name' )  $sort[0] = array('const_name'     => $sort[0]['name']);   
-    if ( key($sort[0]) == 'pri' )   $sort[0] = array('const_priority' => $sort[0]['pri']);   
-    
+    if ( key($sort[0]) == 'value' ) $sort[0] = array('const_value'    => $sort[0]['value']);
+    if ( key($sort[0]) == 'name' )  $sort[0] = array('const_name'     => $sort[0]['name']);
+    if ( key($sort[0]) == 'pri' )   $sort[0] = array('const_priority' => $sort[0]['pri']);
+
 
     if( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
@@ -646,7 +647,7 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
     $keystr = $group_id. serialize($conds). serialize($sort). $type.
                   ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
                   $defaultCondsOperator;
-                  
+
     $cache_condition = $use_cache AND !$nocache;
     if ( $res = CachedSearch( $cache_condition, $keystr )) {
         return $res;

@@ -210,6 +210,8 @@ function ModW_arr2str($varnames, $arr) {
 	return $strout;
 }
 
+// do not remove this exit - we do not want to allow users
+// to include this script (honzam)
 exit;
 
 ?>

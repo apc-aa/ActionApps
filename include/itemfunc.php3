@@ -1270,7 +1270,8 @@ function GetFormJavascript ($show_func_used, $js_proove_fields) {
             else
               eval(left).selectedIndex=i-1;
         }
-      }';
+      }
+      ';
 
       if ($show_func_used['pre'] || $show_func_used['tpr']) $retval .= '
 
@@ -1281,6 +1282,9 @@ function GetFormJavascript ($show_func_used, $js_proove_fields) {
           inputbox.value=value;
         }
       }
+      ';
+
+      if ($show_func_used['txt']) $retval .= '
 
       // This script invokes Word/Excel convertor (used in textareas on inputform)
       // You must have the convertor it installed

@@ -1,3 +1,16 @@
+05/31/03 - added special view.php3 alias _#SELECTED, which is "1" for selected 
+(honzam)   item (given by special set[] view.php3 paramater 
+           (like: set[34]=selected-43535) - usable for displaing menu generated
+           from slice items (see leftmenu (topics) on obcan.ecn.cz))
+         - aliases of unused fields are grayed in help alias listing
+         - first selected menu in Slice Admin is Fields, now 
+         - fixed problem with wrong displayed items when from=1 and to=1 
+         - special "dview" slice parameter, which defines used view for 
+           discussions (just like ivew and fview parameters)' slice.php3
+         - propagate changes in costantedit is default for new constants group
+         - fulltext links now work also if slice.php3 is called from PHP script
+         - if you add hidden field into discussion form with all_ids=1, then t
+           he discussion after submit is shown in its full form
 05/30/03 - constant view switched to standard view, so conditions conds[],
 (honzam)   sort[] ... are possible
          - fixes for running AA on Zeus webserver
