@@ -76,7 +76,7 @@ define("L_DELETE_TRASH", "Empty trash");
 define("L_VIEW_FULLTEXT", "Preview");
 define("L_FULLTEXT", "Public View: Fulltext");
 define("L_HIGHLIGHTED", "Highlighted");
-define("L_A_FIELDS_EDT", "Slice Administration - News Fields Settings");
+define("L_A_FIELDS_EDT", "Slice Administration - Fields Settings");
 define("L_FIELDS_HDR", "News fields");
 define("L_NO_PS_EDIT_ITEMS", "You have not permissions to edit news in this slice");
 define("L_NO_DELETE_ITEMS", "You have not permissions to remove news");
@@ -130,7 +130,7 @@ define("L_ERR_LOG", "you should use a-z, A-Z and 0-9 characters");
 define("L_ERR_LOGLEN", "it must by 5 - 32 characters long");
 define("L_ERR_NO_SRCHFLDS", "No searchfield specified!");
 
-define("L_FIELDS", "Author: Add Article");
+define("L_FIELDS", "Fields");
 define("L_EDIT", "Edit");
 define("L_DELETE", "Delete");
 define("L_REVOKE", "Revoke");
@@ -290,7 +290,7 @@ define("L_FEEDTO_TITLE", "Export Item to Selected Slice");
 define("L_FEED_TO", "Export selected items to selected slice");
 define("L_NO_PERMISSION_TO_FEED", "No permission");
 define("L_NO_PS_CONFIG", "You have no permission to set configuration parameters of this slice");
-define("L_SLICE_CONFIG", "Administration");
+define("L_SLICE_CONFIG", "Item Manager View");
 define("L_CHBOX_HEAD", "&nbsp;");   // title of checkbox in admin interface
 define("L_CHBOX", "Checkbox"); 
 define("L_CATNAME", "Category Name");
@@ -478,12 +478,19 @@ define("L_A_SLICE_ADD_HELP", "To create the new Slice, please choose a template.
         if it has the fields you want."); 
 
 // not appended to other lang files
+define("L_COMPACT_HELP", "Use these boxes ( and the tags listed below ) to control what appears on summary page");
+define("L_A_FULLTEXT_HELP", "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item");
+
 //define("", "");
 
 // ------------------------- New ----------------------------
 
 /*
 $Log$
+Revision 1.27  2001/01/31 02:46:03  madebeer
+moved Fields leftbar section back up to Slice main settings section.
+updated some english language titles
+
 Revision 1.26  2001/01/25 10:09:09  honzam
 Gived back acidentaly deleted Michael's definitions
 

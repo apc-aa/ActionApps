@@ -22,6 +22,10 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.6  2001/01/31 02:46:03  madebeer
+moved Fields leftbar section back up to Slice main settings section.
+updated some english language titles
+
 Revision 1.5  2001/01/08 13:31:58  honzam
 Small bugfixes
 
@@ -89,6 +93,14 @@ added $Id $Log and $Copyright to some stray files
    else 
     echo "&nbsp;&nbsp;<span class=leftmenun>". L_CATEGORY ."</span></td>"; ?>
   </tr>
+  <tr><td valign="TOP">
+  <?php
+  if( $show["fields"]  AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_fields.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_FIELDS."</a></td>"; 
+   else 
+    echo "&nbsp;&nbsp;<span class=leftmenun>". L_FIELDS ."</span></td>"; ?>
+  </tr>
+
   <tr><td>&nbsp;</td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <tr><td class=leftmenu><?php echo L_PERMISSIONS ?></td></tr>
@@ -131,13 +143,6 @@ added $Id $Log and $Copyright to some stray files
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_search.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_SEARCH_SET."</a></td>"; 
    else 
     echo "&nbsp;&nbsp;<span class=leftmenun>". L_SEARCH_SET ."</span></td>"; ?>
-  </tr>
-  <tr><td valign="TOP">
-  <?php
-  if( $show["fields"]  AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) 
-    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_fields.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_FIELDS."</a></td>"; 
-   else 
-    echo "&nbsp;&nbsp;<span class=leftmenun>". L_FIELDS ."</span></td>"; ?>
   </tr>
   <tr><td valign="TOP">
   <?php
