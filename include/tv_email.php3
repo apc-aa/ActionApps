@@ -26,7 +26,7 @@ require $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 function ShowEmailAliases () {    
     $ali[] = array (
-        "group" => _m("Aliases for Alerts Digest"), 
+        "group" => _m("Aliases for Alerts Alert"), 
         "aliases" => array (
             "_#FILTERS_" => _m("complete filter text"),
             "_#HOWOFTEN" => _m("howoften")." (".join(", ",get_howoften_options()).")",
@@ -88,6 +88,10 @@ function GetEmailTableView ($viewID, $processForm = false)
             "description" => array (
                 "required" => true,
                 "caption" => _m("description")),
+            "type" => array (
+                "required" => true,
+                "caption" => _m("email type"),
+                "view" => array ("type"=>"select","source"=>get_email_types())),
             "subject" => array (
                 "required" => true,
                 "caption" => _m("subject")),

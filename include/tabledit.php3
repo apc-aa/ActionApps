@@ -343,7 +343,7 @@ class tabledit {
                     $caption .= " *";
                 if ($record_count > 0) {
                      echo "$td<a href='".$this->getAction($this->gotoview2())."&cmd[".$this->viewID."]"
-                         ."[orderby][$colname]=1'><span class=te_b_col_head>$caption</span>\n";
+                         ."[orderby][$colname]=1'><span class=te_b_col_head>$caption</span>";
                      if ($this->orderby == $colname) {
                          echo "&nbsp;<img src='".$this->imagepath;
                          if ($this->orderdir == 'd')
@@ -604,7 +604,7 @@ class tabledit {
             $name = str_replace ("\"", "\\\"", "val[$key][$alias]");
             
             // in tabledit_column.php3
-            ColumnFunctions ($cview, $val, "show", $name, $new_record);
+            ColumnFunctions ($cview, $val, "show", $name, $new_record, $record);
         
             if ($visible) {
                 if ($href) {

@@ -53,12 +53,17 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
                 if (current ($par)) {
                     RunColumnFunctions ($val[key($par)], $myview["fields"], $myview["table"], $myview["join"]);
                     $ok = true;
-                    if (key($par) == $GLOBALS[new_key])                        
+                    if (key($par) == $GLOBALS[new_key]) {                       
                         $ok = ProcessInsert ($myviewid, $myview, $primary_aliases, $val, $cmd);
-                    else $ok = TableUpdate (
-                        $myview["table"], $val[key($par)], 
-                        $myview["fields"], $primary_aliases, $myview["primary"],
-                        $myview["messages"]["error_update"], $myview["triggers"]);
+                        if ($ok) $GLOBALS["Msg"] = _m("Insert was successfull.");
+                    }
+                    else {
+                        $ok = TableUpdate (
+                            $myview["table"], $val[key($par)], 
+                            $myview["fields"], $primary_aliases, $myview["primary"],
+                            $myview["messages"]["error_update"], $myview["triggers"]);
+                        if ($ok) $GLOBALS["Msg"] = _m("Update was successfull.");
+                    }
                     if (!$ok) { PrintArray ($err); $err = ""; }
                 }
                 break;
@@ -75,21 +80,24 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
                                 $myview["messages"]["error_update"], $myview["triggers"]);
                     }
                     if (!$ok) { PrintArray ($err); $err = ""; }
+                    else $GLOBALS["Msg"] = _m("Update was successfull.");
                 }
                 break;
             case "delete_all":
                 if ($com["run_delete_all"]) {
                     reset ($par);
-                    while (list ($key, $checked) = each ($par)) {
-                        TableDelete ($myview["table"], $key,
+                    while ($ok && list ($key, $checked) = each ($par)) {
+                        $ok = TableDelete ($myview["table"], $key,
                                      $myview["fields"], $primary_aliases,
                                      $myview["messages"]["error_delete"], $myview["triggers"]);
                     }
                 }
+                if ($ok) $GLOBALS["Msg"] = _m("Delete was successfull.");
                 break;
             case "delete":
-                TableDelete ($myview["table"], key($par), $myview["fields"], $primary_aliases, 
-                    $myview["messages"]["error_delete"], $myview["triggers"]);
+                if (TableDelete ($myview["table"], key($par), $myview["fields"], $primary_aliases, 
+                    $myview["messages"]["error_delete"], $myview["triggers"]))
+                    $GLOBALS["Msg"] = _m("Delete was successfull.");
                 break;
             default:
                 break;
@@ -124,7 +132,9 @@ function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
         setDefault ($column["field"], $colname);
         setDefault ($column["caption"], $colname);
         setDefault ($column["view"]["readonly"], 
-            $default_readonly || $column["view"]["type"] == "userdef");
+            $default_readonly 
+            || $column["view"]["type"] == "userdef" 
+            || $column["view"]["type"] == "calculated");
         if ($column["view"]["type"] == "date") 
             $cols = strlen (date ($column["view"]["format"], "31.12.1970"));
         setDefault ($column["view"]["size"]["rows"], 4);
@@ -281,7 +291,8 @@ function TableUpdate ($default_table, $val, $columns, $primary_aliases, $primary
         $db->query ($varset->makeUPDATE ($table));
         callTrigger ($triggers, "AfterUpdate", $varset);
     }
-    
+
+    $GLOBALS["Msg"] = _m("Update was successfull.");    
     return true;
 }
 
@@ -347,6 +358,7 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
         }
     }
     
+    $GLOBALS["Msg"] = _m("Insert was successfull.");    
     return $newkey;
 }
 

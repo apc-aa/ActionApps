@@ -32,9 +32,10 @@ http://www.apc.org/
 *                       "form" transforms the returned value if needed and returns it
 * @param $val           value to be shown ("show") or to be changed ("form")
 * @return nothing
+* @param $record        the whole record for the current row, to be used by "calculated" fields
 */                    
 
-function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false) 
+function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false, $record="") 
 {
     global $err;
     // value to be shown if the requested value is not a part of the select box array
@@ -158,6 +159,21 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false)
             break;
         default:
             $err[] = "Only readonly fields may be viewed by userdef function.";
+            break;
+        }     
+        return;       
+
+    // ********************** CALCULATED ***************************
+    case "calculated" : 
+    
+        switch ($function) {
+        case 'show_ro':
+            $fnc = $cview["function"];
+            ShowColumnValueReadOnly ($cview, 
+                $fnc ($record), $val);
+            break;
+        default:
+            $err[] = "Only readonly fields may be viewed by calculated function.";
             break;
         }     
         return;       
