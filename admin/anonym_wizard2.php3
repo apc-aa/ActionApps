@@ -84,8 +84,8 @@ function ShowAnonymousForm () {
     .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()"))
     .'>
     
-    <input type="hidden" name="err_url" value="'.$ok_url.'">
-    <input type="hidden" name="ok_url" value="'.$err_url.'">';
+    <input type="hidden" name="err_url" value="'.$err_url.'">
+    <input type="hidden" name="ok_url" value="'.$ok_url.'">';
     
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) echo '
     <input type="hidden" name="my_item_id" value="">';
