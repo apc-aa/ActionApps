@@ -319,6 +319,10 @@ function stringexpand_substr($string,$start,$length=999999999) {
     return substr($string,$start,$length);
 }
 
+function stringexpand_str_replace($search, $replace, $subject) {
+    return str_replace($search, $replace, $subject);
+}
+
 function stringexpand_item($item_id,$field) {
     $zid  = new zids($item_id);
     $item = GetItemFromId($zid);
@@ -374,6 +378,12 @@ function getDictReplacePairs($dictionary, $format, &$delimiters, $conds='') {
              */
             $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
             $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
+            if ( ($first_upper=strtoupper($kw{0})) != $kw{0} ) {
+                // do the same for the word with first letter in uppercase
+                $kw{0} = $first_upper;
+                $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
+                $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
+            }
         }
     }
     return $replace_pairs;
@@ -665,7 +675,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             if (!$parts[2]) {
                 $ebres = $fnctn();
             } else {
-                $param = ParamExplode($parts[2]);
+                $param = array_map('DeQuoteColons',ParamExplode($parts[2]));
                 $ebres = call_user_func_array($fnctn, (array)$param);
             }
             return QuoteColons($level, $maxlevel, $ebres);
