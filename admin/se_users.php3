@@ -1,4 +1,4 @@
-<?php  #se_users.php3 - user management page
+<?php
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -20,7 +20,8 @@ http://www.apc.org/
 */
 
 # expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update succesfull)
+# optionaly $Msg to show under <h1>Headline</h1>
+# (typicaly: Category update successful)
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -30,14 +31,16 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS)) {
   exit;
 }  
 
-// function decides if 
-function CanChangeRole( $user_perm, $editor_perm, $role_perm) {
-  if (ComparePerms($user_perm, $editor_perm)=="G")
-    return false;
-  if(ComparePerms($role_perm, $editor_perm)=="G")
-    return false;
-   else 
+// Function decides whether current user can change role
+// of specified user. Only allowed when $editor_perm (current user) is greater 
+// than $perm (user's role) and $perm_role (new user's role)
+function CanChangeRole ($user_perm, $editor_perm, $role_perm) {
+  if ((ComparePerms($editor_perm, $user_perm)=="G") &&
+      (ComparePerms($editor_perm, $role_perm)=="G")) {
     return true;
+  } else {
+    return false;
+  }
 }    
 
 // function shows link only if condition is true
@@ -45,21 +48,20 @@ function IfLink( $cond, $url, $txt ) {
   echo "<td class=tabtxt>";
   if( $cond )
     echo "<a href=\"$url\">$txt</a>";
-   else
+  else
     echo $txt;
   echo  "</td>\n";
 }    
 
 function PrintUser($usr, $usr_id, $editor_perm) {
   global $perms_roles_perms, $perms_roles_id, $sess, $auth;
-  // select role icon
   $usr_id = rawurlencode($usr_id);
-  $role_images = array(0=>"rolex.gif",1=>"role1.gif",2=>"role2.gif",3=>"role3.gif",4=>"role4.gif"); 
-  $role_del_rights = array(0=>PS_USERS_DELETE_SPECIAL,
-                           1=>PS_USERS_DELETE_AUTHOR,
-                           2=>PS_USERS_DELETE_EDITOR,
-                           3=>PS_USERS_DELETE_ADMINISTRATOR,
-                           4=>PS_USERS_DELETE_SUPER); 
+  // select role icon
+  $role_images = array(0=>"rolex.gif",
+                       1=>"role1.gif",
+                       2=>"role2.gif",
+                       3=>"role3.gif",
+                       4=>"role4.gif"); 
   $perm = $usr["perm"];
   $role = 0;
   
@@ -72,7 +74,8 @@ function PrintUser($usr, $usr_id, $editor_perm) {
   elseif( strstr($perm,$perms_roles_id["AUTHOR"] ) )
     $role = 1;
     
-  echo "<tr><td><img src=\"../images/". $role_images[$role] ."\" width=50 height=25 border=0></td>\n";
+  echo "<tr><td><img src=\"../images/". $role_images[$role] .
+       "\" width=50 height=25 border=0></td>\n";
   echo "<td class=tabtxt>". $usr[name] ."</td>\n";
   echo "<td class=tabtxt>". (($usr[mail]) ? $usr[mail] : "&nbsp;") ."</td>\n";
   echo "<td class=tabtxt>". $usr[type] ."</td>\n";
@@ -88,18 +91,6 @@ function PrintUser($usr, $usr_id, $editor_perm) {
           $sess->url(self_base() . "se_users.php3") .
                 "&UsrAdd=$usr_id&role=ADMINISTRATOR",
           L_ROLE_ADMINISTRATOR);
-  IfLink( CanChangeRole($perm, $editor_perm, $perms_roles_perms["SUPER"]),
-          $sess->url(self_base() . "se_users.php3") .
-                "&UsrAdd=$usr_id&role=SUPER", L_ROLE_SUPER);
-
-/*  echo "<td class=tabtxt>";
-  if( CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS_CHANGE_SPECIAL ) )
-    echo "<a href=\"". $sess->url($PHP_SELF) ."&UsrSpec=$usr_id\">". L_ROLE_SPECIAL ."</a><br>";
-   else 
-    echo L_ROLE_SPECIAL ."<br>";
-  echo "</td>\n";
-*/
-
   IfLink( CanChangeRole($perm, $editor_perm, $perms_roles_perms["AUTHOR"]),
           $sess->url(self_base() . "se_users.php3") .
                      "&UsrDel=$usr_id", L_REVOKE);
@@ -109,15 +100,19 @@ function PrintUser($usr, $usr_id, $editor_perm) {
 
 $show_adduser = $adduser || $GrpSrch || $UsrSrch;    // show add user form?
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+HtmlPageBegin();   // Prints HTML start page tags 
+                   // (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo L_A_PERMISSIONS;?></TITLE>
 </HEAD>
 <?php
   $xx = ($slice_id!="");
-  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "compact"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$show_adduser, "fulltext"=>$xx, 
-                "addusers"=>!$show_adduser, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  $show = Array("main"=>true,"config"=>$xx, "category"=>$xx, "compact"=>$xx,
+                "fields"=>$xx, "search"=>$xx, "users"=>$show_adduser, 
+                "fulltext"=>$xx, "addusers"=>!$show_adduser, "newusers"=>$xx, 
+                "import"=>$xx, "filters"=>$xx);
+  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   // show navigation column in dependance
+                                                 // on $show variable
 
   echo "<H1><B>".L_A_PERMISSIONS."</B></H1>";
 //  PrintArray($err);
@@ -128,35 +123,26 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   
   if( $show_adduser ) {
     include "./se_users_add.php3";
-  }   
-  elseif( $UsrAdd ) {
+  } elseif( $UsrAdd ) {
     if( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false),
+                       $editor_perms,
+                       $perms_roles_perms[$role]) ) {
+      AddPerm($UsrAdd, $slice_id, "slice", $perms_roles_id[$role]);
+    }
+  } elseif( $UsrDel ) {
+    if( CanChangeRole(GetSlicePerms($UsrDel, $slice_id, false),
                       $editor_perms,
-                      $perms_roles_perms[$role]) ) {
-      if( $role == "SUPER" ) {
-        AddPerm($UsrAdd, AA_ID, "aa", $perms_roles_id[$role]);
-        DelPerm($UsrAdd, $slice_id, "slice" );
-      }  
-       else {
-        DelPerm($UsrAdd, AA_ID, "aa" );   // if we delete superuser, we must delete him from aa
-        AddPerm($UsrAdd, $slice_id, "slice", $perms_roles_id[$role]);
-      }  
-    }    
-  }
-  elseif( $UsrDel ) {
-    if( CanChangeRole( GetSlicePerms($UsrDel, $slice_id, false),
-                      $editor_perms,
-                      $perms_roles_perms["AUTHOR"]) )  // smalles permission
-      DelPerm($UsrDel, $slice_id, "slice");      // can't delete super (from aa object)
+                      $perms_roles_perms["AUTHOR"]) )  // smallest permission
+      DelPerm($UsrDel, $slice_id, "slice");
   }
   if( $continue ) {
     # create or update scroller
     if(is_object($st_usr))
       $st_usr->updateScr($sess->url($PHP_SELF) . "&");
     else {
-      $st_usr = new scroller("st_usr", $sess->url($PHP_SELF) . "&");	
-    	$st_usr->addFilter("headline", "char");
-    	$sess->register(st_usr); 
+      $st_usr = new scroller("st_usr", $sess->url($PHP_SELF) . "&");    
+        $st_usr->addFilter("headline", "char");
+        $sess->register(st_usr); 
     }
     $db->query("select count(*) as cnt from slices where ". $st_usr->sqlCondFilter());
     $db->next_record();
@@ -201,6 +187,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   }  
 /*
 $Log$
+Revision 1.4  2000/07/27 14:26:55  kzajicek
+Higher privileges are now necessary to change permissions
+of other users (sooner was equality adequate).
+
 Revision 1.3  2000/07/27 13:23:58  kzajicek
 Language correction
 

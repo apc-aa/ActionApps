@@ -22,21 +22,24 @@ http://www.apc.org/
 // variable $editor_perms should be set
 // variable $slice_id should be set
 
-function PrintAddableUser($usr,$usr_id, $editor_role, $new_usr=true) {  // in LDAP is usr_id dn record
-  global $sess;
+function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {  
+// $usr_id is DN in LDAP
+  global $sess, $perms_roles_id;
   $usr_id = rawurlencode($usr_id);
 
   echo "<tr><td class=tabtxt width=\"25%\">". $usr[name] ."</td>\n";
-  echo "<td class=tabtxt width=\"25%\">". (($usr[mail]) ? $usr[mail] : "&nbsp;") ."</td>\n";
+  echo "<td class=tabtxt width=\"25%\">". 
+       (($usr[mail]) ? $usr[mail] : "&nbsp;") ."</td>\n";
 
-  IfLink(($editor_role >= 1) && $new_usr, $sess->url(self_base() . "se_users.php3") . 
+  IfLink(($editor_role > $perms_roles_id["AUTHOR"]) && $new_usr, 
+         $sess->url(self_base() . "se_users.php3") . 
                "&UsrAdd=$usr_id&role=AUTHOR", L_ROLE_AUTHOR);
-  IfLink(($editor_role >= 2) && $new_usr, $sess->url(self_base() . "se_users.php3") .
+  IfLink(($editor_role > $perms_roles_id["EDITOR"]) && $new_usr,
+         $sess->url(self_base() . "se_users.php3") .
                "&UsrAdd=$usr_id&role=EDITOR", L_ROLE_EDITOR);
-  IfLink(($editor_role >= 3) && $new_usr, $sess->url(self_base() . "se_users.php3") .
+  IfLink(($editor_role > $perms_roles_id["ADMINISTRATOR"]) && $new_usr,
+         $sess->url(self_base() . "se_users.php3") .
                "&UsrAdd=$usr_id&role=ADMINISTRATOR", L_ROLE_ADMINISTRATOR);
-  IfLink(($editor_role >= 4) && $new_usr, $sess->url(self_base() . "se_users.php3") .
-               "&UsrAdd=$usr_id&role=SUPER", L_ROLE_SUPER);
   echo "</tr>\n";
 }
 
@@ -47,14 +50,14 @@ function PrintAddableUser($usr,$usr_id, $editor_role, $new_usr=true) {  // in LD
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <tr>
-	<td width="30%" class=tabtxt><b><?php echo L_USERS ?></b></td>
-	<td width="40%"><input type=Text name=usr value=<?php echo $usr?>></td>
-	<td width="30%"><input type=submit name="UsrSrch" value=<?php echo L_SEARCH?>></td>
+        <td width="30%" class=tabtxt><b><?php echo L_USERS ?></b></td>
+        <td width="40%"><input type=Text name=usr value=<?php echo $usr?>></td>
+        <td width="30%"><input type=submit name="UsrSrch" value=<?php echo L_SEARCH?>></td>
 </tr>
 <tr>
-	<td class=tabtxt><b><?php echo L_GROUPS ?></b></td>
-	<td><input type=Text name=grp value=<?php echo $grp?>></td>
-	<td><input type=submit name="GrpSrch" value=<?php echo L_SEARCH?>></td>
+        <td class=tabtxt><b><?php echo L_GROUPS ?></b></td>
+        <td><input type=Text name=grp value=<?php echo $grp?>></td>
+        <td><input type=submit name="GrpSrch" value=<?php echo L_SEARCH?>></td>
 </tr>
 </table></tr></td> <?php 
 $continue=false;       
@@ -67,15 +70,15 @@ if ($GrpSrch || $UsrSrch) {
   <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE"><?php 
 
-  // into which role can this user assing new users
+  // determine role of this user
   if (ComparePerms($editor_perms, $perms_roles_perms["SUPER"])!="L")
-    $curr_role=4;
+    $curr_role = $perms_roles_id["SUPER"];
   elseif (ComparePerms($editor_perms, $perms_roles_perms["ADMINISTRATOR"])!="L")
-    $curr_role=3;
+    $curr_role = $perms_roles_id["ADMINISTRATOR"];
   elseif (ComparePerms($editor_perms, $perms_roles_perms["EDITOR"])!="L")
-    $curr_role=2;
+    $curr_role = $perms_roles_id["EDITOR"];
   elseif (ComparePerms($editor_perms, $perms_roles_perms["AUTHOR"])!="L")
-    $curr_role=1;
+    $curr_role = $perms_roles_id["AUTHOR"];
   else
     $curr_role=0;
 
@@ -116,6 +119,10 @@ if ($GrpSrch || $UsrSrch) {
 }
 /*
 $Log$
+Revision 1.4  2000/07/27 14:26:55  kzajicek
+Higher privileges are now necessary to change permissions
+of other users (sooner was equality adequate).
+
 Revision 1.3  2000/07/27 13:57:09  kzajicek
 Fixed typo in variable name
 
