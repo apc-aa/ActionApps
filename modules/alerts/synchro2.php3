@@ -31,6 +31,7 @@ require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
+require_once "./util.php3";
 
 // -------------------------------------------------------------- 
 
