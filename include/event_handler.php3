@@ -7,10 +7,10 @@
  * @package UserInput
  * @version $Id$
  * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications 
+ * @copyright (c) 2002-3 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2003 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2003 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -32,57 +32,57 @@ require_once $GLOBALS["AA_INC_PATH"]."auth.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mailman.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/event.php3";
 
-/** Called on updating an existing item. 
-*   @param object $itemContent (class ItemContent) is sent by reference, 
+/** Called on updating an existing item.
+*   @param object $itemContent (class ItemContent) is sent by reference,
 *       you can change the data
 *   @param object $oldItemContent is also sent by reference, but for
-*       better performance only 
+*       better performance only
 *   @return bool true if update should proceed, false to interrupt */
-function Event_ItemBeforeUpdate( $item_id, $slice_id, &$itemContent, 
+function Event_ItemBeforeUpdate( $item_id, $slice_id, &$itemContent,
                                  &$oldItemContent ) {
     // Delete reader from Auth tables because if the username changes,
-    // AuthUpdateReaders can not recognize it.                             
-    AuthDeleteReaders( array( pack_id( $item_id)), $slice_id );                             
+    // AuthUpdateReaders can not recognize it.
+    AuthDeleteReaders( array( pack_id( $item_id)), $slice_id );
     return true;
 }
 /** Called on inserting a new item.
-*   @param object $itemContent (class ItemContent) is sent by reference, 
+*   @param object $itemContent (class ItemContent) is sent by reference,
 *       you can change the data
 *   @param object $oldItemContent is also sent by reference, but for
-*       better performance only 
+*       better performance only
 *   @return bool true if insert should proceed, false to interrupt */
 function Event_ItemBeforeInsert( $item_id, $slice_id, &$itemContent ) {
     return true;
 }
-/** Called after updating an existing item. 
+/** Called after updating an existing item.
 *
 *   Params are sent by reference but for better performance only.
 */
-function Event_ItemAfterUpdate( $item_id, $slice_id, &$itemContent, 
-                                &$oldItemContent ) 
+function Event_ItemAfterUpdate( $item_id, $slice_id, &$itemContent,
+                                &$oldItemContent )
 {
     AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
-    AlertsSendInstantAlert( $item_id, $slice_id );
+//    AlertsSendInstantAlert( $item_id, $slice_id );
     MailmanCreateSynchroFiles ($slice_id);
-    
-    // notifications 
+
+    // notifications
     switch ($itemContent->getStatusCode()) {
         case SC_ACTIVE:      email_notify($slice_id, 4, $item_id); break;
         case SC_HOLDING_BIN: email_notify($slice_id, 2, $item_id); break;
     }
 }
-/** Called after inserting a new item. 
+/** Called after inserting a new item.
 *
 *   Params are sent by reference but for better performance only.
 */
-function Event_ItemAfterInsert( $item_id, $slice_id, &$itemContent ) 
+function Event_ItemAfterInsert( $item_id, $slice_id, &$itemContent )
 {
-    AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );    
+    AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
     AlertsSendWelcome( $item_id, $slice_id, $itemContent );
-    AlertsSendInstantAlert( $item_id, $slice_id );
+//    AlertsSendInstantAlert( $item_id, $slice_id );
     MailmanCreateSynchroFiles ($slice_id);
-    
-    // notifications 
+
+    // notifications
     switch ($itemContent->getStatusCode()) {
         case SC_ACTIVE:      email_notify($slice_id, 3, $item_id); break;
         case SC_HOLDING_BIN: email_notify($slice_id, 1, $item_id); break;
@@ -92,7 +92,7 @@ function Event_ItemAfterInsert( $item_id, $slice_id, &$itemContent )
 *   @return bool true if delete should proceed, false to interrupt */
 function Event_ItemsBeforeDelete( $item_ids, $slice_id ) {
     /* It is not really necessary to delete the readers from Auth tables,
-       because they should be deleted on moving to Trash bin. But it is 
+       because they should be deleted on moving to Trash bin. But it is
        perhaps better to make sure. */
     AuthDeleteReaders( $item_ids, $slice_id );
     MailmanCreateSynchroFiles ($slice_id);
@@ -110,7 +110,7 @@ function Event_ItemsBeforeMove( $item_ids, $slice_id, $new_status ) {
 function Event_ItemsAfterMove( $item_ids, $slice_id, $new_status ) {
     AuthUpdateReaders( $item_ids, $slice_id );
     MailmanCreateSynchroFiles( $slice_id );
-} 
+}
 
 /** Called on propagating a change in a constant value.
 *   @param string $constant_id Unpacked ID from the constant table.
@@ -120,12 +120,12 @@ function Event_ItemsBeforePropagateConstantChanges (
     $constant_id, $oldvalue, $newvalue) {
     return true;
 };
-  
+
 /** Called after propagating a change in a constant value. Params like by ..Before.. */
 function Event_ItemsAfterPropagateConstantChanges (
-    $constant_id, $oldvalue, $newvalue) {    
+    $constant_id, $oldvalue, $newvalue) {
     AuthChangeGroups ($constant_id, $oldvalue, $newvalue);
     MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue );
-}    
+}
 
 ?>
