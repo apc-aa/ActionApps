@@ -81,15 +81,19 @@ function add_vars($debug="") {
   } else {  
     $varstring = $QUERY_STRING_UNESCAPED;
   }  
-
   $a = explode("&",$varstring);
   $i = 0;
 
   while ($i < count ($a)) {
-    $b = explode ('=', $a [$i]);
-    if (ERegI("^(.+)\[(.*)\]", $b[0], $c)) {  // for array variable[]
+    $pos = strpos($a[$i], "=");
+    if($pos) {
+      $lvalue = substr($a[$i],0,$pos);
+      $value  = urldecode (DeBackslash(substr($a[$i],$pos+1)));
+    }  
+    if (!ERegI("^(.+)\[(.*)\]", $lvalue, $c))   // is it array variable[]
+      $GLOBALS[urldecode (DeBackslash($lvalue))]= $value;   # normal variable
+    else {
       $index1 = urldecode (DeBackslash($c[2]));
-      $value  = urldecode (DeBackslash($b[1]));
       if (ERegI("^(.+)\[(.*)\]", $c[1], $d)) { // for double array variable[][]
         $index2  = urldecode (DeBackslash($d[2]));
         $varname = urldecode (DeBackslash($d[1]));  
@@ -99,14 +103,6 @@ function add_vars($debug="") {
         $GLOBALS[$varname][$index2][$index1] = $value;
        else 
         $GLOBALS[$varname][$index1] = $value;
-    } else {
-      $b[0] = DeBackslash($b[0]);
-      $b[1] = DeBackslash($b[1]);
-      if($b[2])
-        $b[2] = "=". DeBackslash($b[2]);       // for cases variable contains "="
-      if($b[3])
-        $b[3] = "=". DeBackslash($b[3]);       // for cases variable contains "="
-      $GLOBALS[urldecode ($b [0])]= urldecode ($b [1].$b[2].$b[3]);
     }
     $i++;
   }
@@ -500,6 +496,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.22  2001/05/26 14:49:50  honzam
+Fixed problem with '=' character passed by url
+
 Revision 1.21  2001/05/23 23:08:24  honzam
 Arrays passed to SSIed script by URL can be two-dimensional, now
 
