@@ -449,22 +449,32 @@ function huhe ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
         huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="");
     }
 }
+# Set a starting timestamp, if checking times, huhl can report 
 # Debug function to print debug messages recursively - handles arrays
 function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
-	if (isset($a)) {
-		print("<listing>");
-		print_r($a);
-		if (isset($b)) print_r($b);
-		if (isset($c)) print_r($c);
-		if (isset($d)) print_r($d);
-		if (isset($e)) print_r($e);
-		if (isset($f)) print_r($f);
-		if (isset($g)) print_r($g);
-		if (isset($h)) print_r($h);
-		if (isset($i)) print_r($i);
-		if (isset($j)) print_r($j);
-		print("</listing>\n");
-	}
+    global $debugtimes,$debugtimestart;
+    if (isset($a)) {
+        print("<listing>");
+        if ($debugtimes) {
+           if (! $debugtimestart) {
+                list($usec, $sec) = explode(" ",microtime()); 
+                $debugtimestart = ((float)$usec + (float)$sec); 
+            }
+            list($usec, $sec) = explode(" ",microtime()); 
+            print("Time: ".(((float)$usec + (float)$sec) - $debugtimestart)."\n"); 
+        }
+        print_r($a);
+        if (isset($b)) print_r($b);
+        if (isset($c)) print_r($c);
+        if (isset($d)) print_r($d);
+        if (isset($e)) print_r($e);
+        if (isset($f)) print_r($f);
+        if (isset($g)) print_r($g);
+        if (isset($h)) print_r($h);
+        if (isset($i)) print_r($i);
+        if (isset($j)) print_r($j);
+        print("</listing>\n");
+    }
 }
 
 function huhsess($msg="") {

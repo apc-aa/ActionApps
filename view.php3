@@ -84,7 +84,13 @@ $db = new DB_AA; 	   	 // open BD
 $db2 = new DB_AA; 		 // open BD	
 $db3 = new DB_AA; 		 // open BD	
 
+if ($time_limit) set_time_limit($time_limit);
+if ($debug) huhl("Starting view");
+
 echo GetView(ParseViewParameters());
+
+if ($debug) huhl("Completed view");
+
 exit;
 
 ?>

@@ -186,14 +186,12 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       return "";
     elseif( substr($out, 0,5) == "debug" ) {
 	# Note don't rely on the behavior of {debug} its changed by programmers for testing!
-	print("<listing>");
         if (isset($item)) huhl("item=",$item);
 	if (isset($GLOBALS["apc_state"])) huhl("apc_state=",$GLOBALS["apc_state"]);
 	if (isset($itemview)) huhl("itemview=",$itemview);
 	if (isset($aliases)) huhl("aliases=",$aliases);
 	if (isset($als)) huhl("als=",$als);
 	#huhl("globals=",$GLOBALS);
-	print("</listing><br>"); 
     }
     elseif ( substr($out, 0,10) == "view.php3?" )
 	return QuoteColons($level, $maxlevel, 
@@ -243,12 +241,14 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
     if ($debug) huhl("<br>Unaliasing:$level:'",$text,"'\n");
-    while (ereg("(.*)[{]([^{}]+)[}](.*)",$text,$vars)) {
-	if ($debug) print("<listing>Expanding:".isset($item).":$level:'$vars[2]'</listing>");
+# Note ereg was 15 seconds on one multi-line example cf .002 secs
+#    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
+    while (preg_match("/^(.*)[{]([^{}]+)[}](.*)$/s",$text,$vars)) {
+	if ($debug) huhl("Expanding:".isset($item).":$level:'$vars[2]'");
 	$t1 = expand_bracketed($vars[2],$level+1,$maxlevel,$item,$itemview,$aliases);
-	if ($debug) print("<listing>Expanded:$level:'$t1'</listing>");
+	if ($debug) huhl("Expanded:$level:'$t1'");
 	$text = $vars[1] . $t1 . $vars[3];
-        if ($debug) print("<listing>Continue with:$level:'$text'</listing>");
+        if ($debug) huhl("Continue with:$level:'$text'");
     }
     if (isset($item)) {
 	    return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));

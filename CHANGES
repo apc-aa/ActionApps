@@ -1,3 +1,6 @@
+01/30/03 - allow time_limit parameter to extend PHP timeout on view.php3 (mitra)
+         - switched ereg for preg in stringexpand 10000* speedup! (mitra)
+         - added debug_times parameter to print timestamps (mitra)
 01/28/03 - added paramater wizzard for i_s (mitra)
          - added some more warnings: in i_s, and stringexpand/alias
          - fixed title on site admin window
