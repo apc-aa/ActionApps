@@ -6,6 +6,13 @@
     the chosen month and year. It uses JavaScript to prepare view parameters
     for a calendar view which should be SSI included on this page. 
     
+    An example of the appropriate .shtml page:
+    
+    <html><body>
+    <!--#include virtual="/apc-aa/doc/script/calendar.php3"-->
+    <!--#include virtual="/apc-aa/view.php3?vid=317"-->
+    </body></html>
+    
     (c) Jakub Adámek, May 2002
 */
 
