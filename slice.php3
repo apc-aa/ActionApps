@@ -58,6 +58,8 @@ http://www.apc.org/
                      // is the same as lock. key is send automaticaly with all 
                      // links generated in slice (at this time just prepared)
 #key                 // see lock (at this time just prepared)
+#slicetext           // displays just the text instead of any output
+                     // can be used for hiding the output of slice.hp3
 
                       //Discussion parameters
 #optionaly add_disc   // if set, discussion comment will be added
@@ -253,6 +255,12 @@ if( $debug ) {
 
 if( ($key != $lock) OR $scrl ) # command is for other slice on page
   RestoreVariables();          # or scroller
+
+# url posted command to display specified text instead of slice content -------
+if($slicetext) {
+  echo $slicetext;
+  ExitPage();
+}  
 
 # url posted command to display another file ----------------------------------
 if( $inc ) {                   # this section must be after add_vars()
@@ -577,6 +585,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.35  2002/03/06 13:49:04  honzam
+new parameter slicetext to slice.php3 to display just the text
+
 Revision 1.34  2002/02/05 21:38:34  honzam
 url alias substitution in slice.php3, bug in BLURB fixed
 
