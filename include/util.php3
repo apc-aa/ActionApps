@@ -568,26 +568,27 @@ function GetItemContent($ids, $use_short_ids=false) {
   return $content;
 }  
 
-function GetHeadlineFieldID($sid, $db) {
+function GetHeadlineFieldID($sid, $db, $slice_field="headline........") {
   # get id of headline field  
   $SQL = "SELECT id FROM field 
            WHERE slice_id = '". q_pack_id( $sid ) ."'
-             AND id LIKE 'headline%'
+             AND id LIKE '$slice_field%'
         ORDER BY id";
   $db->query( $SQL );
   return ( $db->next_record() ? $db->f(id) : false );
 }
 
 # fills array by headlines of items in specified slice (unpacked_id => headline)
-function GetItemHeadlines( $db, $sid="", $ids="", $type="all" ) {
+function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $ids="", $type="all") {
   $psid = q_pack_id( $sid );
   $time_now = time();
+  if ($slice_field=="") $slice_field="headline........";
 
   if ( $sid ) {
-    if ( !($headline_fld = GetHeadlineFieldID($sid, $db)) )
+    if ( !($headline_fld = GetHeadlineFieldID($sid, $db,$slice_field)) )
       return false;
   } else {
-    $headline_fld = "headline........";
+    $headline_fld = $slice_field;
   }  
 
   if( $type == "all" )                          # select all items from slice
@@ -613,7 +614,7 @@ function GetItemHeadlines( $db, $sid="", $ids="", $type="all" ) {
              AND status_code='1'
              AND expiry_date > '$time_now'
              AND publish_date <= '$time_now'
-        ORDER BY text";
+        group by text ORDER BY text";
 
   if( $GLOBALS['debug'] )
     $db->dquery($SQL);
