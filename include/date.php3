@@ -19,6 +19,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// this allows to require this script any number of times - it will be read only once
+if (!defined ("DATE_INCLUDED"))
+	define ("DATE_INCLUDED",1);
+else return;
+
 #
 #	Date form element
 #
@@ -181,6 +186,9 @@ class datectrl {
 }
 /*
 $Log$
+Revision 1.11  2002/03/06 12:39:36  honzam
+include this file just once
+
 Revision 1.10  2002/01/10 13:53:26  honzam
 minutes in time fields are displayed two character numbers
 

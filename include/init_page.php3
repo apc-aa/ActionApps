@@ -19,6 +19,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// this allows to require this script any number of times - it will be read only once
+if (!defined ("INIT_PAGE_INCLUDED"))
+	define ("INIT_PAGE_INCLUDED",1);
+else return;
+
 # parameter Add_slice - lost slice_id (so no slice context)
 # parameter New_slice - used in sliceadd.php3 page
 #                     - do not unset slice_id but slice_id could not be defined
@@ -222,6 +227,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.20  2002/03/06 12:39:36  honzam
+include this file just once
+
 Revision 1.19  2002/01/15 13:04:34  honzam
 fixed bug of not displayed inputform for systems with 'magic quotes' off
 

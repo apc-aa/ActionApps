@@ -19,6 +19,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// this allows to require this script any number of times - it will be read only once
+if (!defined ("VARSET_INCLUDED"))
+	define ("VARSET_INCLUDED",1);
+else return;
+
 #
 #	Cvarset - class for storing variables
 #         - simplifies database manipulation 
@@ -190,6 +195,9 @@ class Cvarset {
 }
 /*
 $Log$
+Revision 1.6  2002/03/06 12:39:36  honzam
+include this file just once
+
 Revision 1.5  2001/12/21 11:40:06  honzam
 fixed bug of bad return value in getValue()
 
