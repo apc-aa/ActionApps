@@ -1,211 +1,292 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 
-<html>
+<HTML>
 <head>
 	<title>APC Toolkit Action Aplications - Developers FAQ</title>
   <link rel=stylesheet type="text/css" href="devnotes.css">
 </head>
 <body>
 <a href="index.html">Other documentation</a><br>
-<a name="newaa"></a><hr><br>
-<a href="#newaa">How to create new Action Apication</a><br><br>
-<a href="#fieldmapping">How the field mappings works for new AA?</a><br><br>
+<hr><br>
+<a href="#newaa">How to create new Action Aplication</a><br><br>
+<a href="#anonymous">How to create form for anonymous posting from public website?</a><br><br>
 <a href="#aalanguage">How to create aa in alternate language?</a><br><br>
-<a href="#itemsmod">What procedure should be used to make modifications to the items table?</a><br><br>
-<a href="#newalias">How to create new field alias (like _#SOURCE##) for compact/fulltext view?</a><br><br>
-<h3>How to create new Action Apication</h3>
-<p>   The easiest (and prefered) way, how to create new aplication front-end
-is just to make new language file (see en_news_lang.php3 file).<br> There are two types of language file.<ul>
-	<li>*_common_lang.php3 file - used only one for whole instalation. Constants in this file are used for each AA. There are constants for "Login form" etc. It is imposible to have more than one language mutation of this file in one instalation of AA - fogin form (for example) is used the same for all AA, so the program couldn't know which slice or aa you want to use - it must be used the standard file.</li>
-	<li>*_*_lang.php3 - files, that defines other action aplication. Whole new aa can be set in by this file (as is english version of news in en_news_lang.php3).</li>
+<a href="#aaslices">What are the 'Action Aplication Core' and 'News (EN) Template' slices?</a><br><br>
+<a href="#feeding">How works the internal feeding?</a><br><br>
+
+<a name="newaa"></a>
+<h3>How to create new Action Aplication</h3>
+<p>   The applications in v1.5+ should be created quite easy.<br>
+<ol>
+  <li>Chose one slice and create the set of fields you want to have in new application.<br>
+    <br>
+  </li>
+  <li>Change for this fields the default values, help texts, names, priorities, 
+    aliases, etc. in admin interface (<font color="#663333">"Admin" -> "Main settings 
+    - Fields"</font>).<br>
+    <br>
+  </li>
+  <li>Change the design of fulltext view, list item view and possibly the admin 
+    view (<font color="#663333">"Admin" -> "Design - Fulltext"</font>, <font color="#663333">"Admin" 
+    -> "Design - Index"</font>, <font color="#663333">"Admin" -> "Design - Item 
+    Manager"</font>)<br>
+    <br>
+  </li>
+  <li>Test this new slice, if it is working well<br>
+    <br>
+  </li>
+  <li>Add new slice based on this one (not template, but slice)<br>
+    <br>
+  </li>
+  <li>Mark the new slice as Template (<font color="#663333">"Admin" -> "Main settings 
+    - Slice"</font>) - for that you must be superadministrator (four stars).<br>
+  </li>
+  <br>
+</ol>
+
+
+<a name="anonymous"></a>
+<h3>How to create form for anonymous posting from public website?</h3>
+<ol>
+  <li><b>Enable anonymous posting</b><br>
+    <br>
+    First thing you have to do is to permit anonymous posting from web. This can 
+    be done on <font color="#663333">"Admin" -> "Main settings - Slice"</font> 
+    page where is the option <font color="#663333">"Allow anonymous posting of 
+    items"</font>. There you should select to what bin the anonymous posted items 
+    should go ("<i>Active</i>" and "<i>Holding bin</i>" are the possibilities).<br>
+    <br>
+  </li>
+  <li><b>Create form</b><br>
+    <br>
+    The easiest way how to create input form is to display standard input form 
+    from admin interface (<font color="#663333">"Add item"</font>). Then you should 
+    view source code for displayed page and copy the code, which is between &lt;form 
+    ...&gt; and &lt;/form&gt; tags inside HTML code for new public page (newitem.html 
+    for example). <br>
+    <br>
+    In the form you can make as many chages you want, but one change is realy 
+    needed. There should be changed the url of script, where the form is posted 
+    to <b>filler.php3</b>:<br>
+    <br>
+    Change it from<br>
+    <br>
+    <code>&lt;form enctype='multipart/form-data' method=post action='/apc-aa/admin/itemedit.php3?AA_CP_Session=2bbb85e9205239910a222b4c59cee2fa'></code><br>
+    <br>
+    to<br>
+    <br>
+    <code>&lt;form enctype="multipart/form-data" method=post action='/apc-aa/filler.php3'></code><br>
+    <br>
+    That is all what you need. In next paragraph are just tips and tricks for 
+    better customization.<br>
+    <br>
+    <b>Tips &amp; Tricks</b><br>
+    <ul>
+      <li>You can delete all the fields from form, but <b>slice_id</b>. The slice_id 
+        should allways remain.<br>
+        <br>
+      </li>
+      <li>The inputs are <b>validated</b> as if it was typed in standard itemedit.php3 
+        form. If there are some invalid data, whole item is admitted. It is very 
+        good idea to add your own javascript validatoin of form before it is send 
+        to filler.php3 script.<br>
+        <br>
+      </li>
+      <li>You can disable the standard AA validation by adding hidden field <b>notvalidate</b> 
+        in the form:<br>
+        <code>&lt;input type=hidden name='notvalidate' value='1'&gt;</code> <br>
+        <br>
+      </li>
+      <li>The page, which appears if the item is correctly stored to database 
+        can be specified in <b>ok_url</b> variable:<br>
+        <br>
+        <code>&lt;input type=hidden name='ok_url' value='http://www.apc.org/thanks.html'&gt;</code> 
+        <br>
+        <br>
+      </li>
+      <li>The page, which appears if the item is not correctly stored to database 
+        (due to validation problems, ...), can be specified in <b>err_url</b> 
+        variable:<br>
+        <br>
+        <code>&lt;input type=hidden name='err_url' value='http://www.apc.org/invalid.html'&gt;<br>
+        <br>
+        </code></li>
+      <li>It is possible to set values for not displayed fields just by adding 
+        hidden field for such field:<br>
+        <br>
+        <code>&lt;input type=hidden name='v696d675f6865696768742e2e2e2e2e2e' value='Anonymous 
+        author'&gt;</code><br>
+        <br>
+        Note:<br>
+        This solution is easy and good for many cases, but it is by no means secure. 
+        Any experienced user can change values of hidden fields so don't relly 
+        on such data. Better solution is to completely omit such fields from input 
+        form and set the default values for the fields in <font color="#663333">"Admin" 
+        -> "Main setting - Fields" -> "Edit" -> "Default"</font>. The values then 
+        are set dirrectly from database. This solution is a little bit more secure. 
+        <br>
+        <br>
+      </li>
+      <li>It is possible to send <b>images</b> and other <b>files</b> by the form 
+        (unlike the anonymous posting in version prior 1.5)</li>
+    </ul>
+  </li>
+</ol>
+
+<a name="aalanguage"></a>
+<h3>How to create aa in alternate language?</h3>
+<p> If you want to translate ActionApps to other national language, you can look 
+  at:</p>
+<ul>
+  <li> <b>include/en_common_lang.php3</b><br>
+    <br>
+    - this is the file with language constants definions which is common to all 
+    slices in the AA instalation (you can look at cz_common_lang.php3, which is 
+    the same file for czech language) <br>
+    <br>
+  </li>
+  <li> <b>include/en_news_lang.php3</b><br>
+    <br>
+    - this is the file with language constants definions for specific slice. It 
+    is possible to have slices in different languages. You can choose the used 
+    language on "Admin" -> "Main settings - Slice" page. So if you want to have 
+    slice in french, you have to copy en_news_lang.php3 to new file (fr_news_lang.php3 
+    for example) and translate the texts to french to fit your needs.<br>
+    <br>
+  </li>
+  <li> texts in template slice <b>News (EN) template</b> (see <a href="#aaslices">Templates</a> 
+    section)<br>
+    <br>
+  </li>
+  <li> texts in fields templateslice <b>Action Aplication Core</b> (see <a href="#aaslices">Templates</a> 
+    section)</li>
 </ul>
+<a name="aaslices"></a>
+<h3>What are the 'Action Aplication Core' and 'News (EN) Template' slices?</h3>
+<i>There are two (and should be more in the future) odd slices in slice listbox. Why?</i>
+<p>Both, the '<i>Action Aplication Core</i>' and '<i>News (EN) Template</i>' are 
+  visible only to superadmins and both should not have any items.</p>
 
- There are
-two steps you should do: 
-</p>
-1) create new application language file (such as en_press_lang.php3) <br><br>
+<p><b>News (EN) Template</b><br>
+  <br>
+  '<i>News (EN) Template</i>' slice is just template for creating new slices. 
+  This template is shown is option in <font color="#663333">"Admin" -> "Add Slice"</font> 
+  dialog in templates listbox. If you feel, that the setting for new created slices 
+  is not optimal you have two possibilities:<br>
 
-2) edit config.php3 and add new app type like:<br><br>
+<ul>
+  <li>Modify the setting for '<i>News (EN) Template'</i> slice on <font color="#663333">"Admin"</font> 
+    pages. The new slices based on modified template will be set-up just like 
+    current setting in template slice.<br>
+    <br>
+  </li>
+  <li>Create new application (= template) as described in <a href="#newaa">New 
+    Aplication section</a></li>
+</ul>
+<p></p>
+<p><b>Action Aplication Core</b><br>
+  <br>
+  '<i>Action Aplication Core</i>' slice is another case. In this slice are defined 
+  default values for each <b>field type</b>. This values will be used if you will 
+  add new field to slice on <font color="#663333">"Admin" -> "Main settins - Field"</font> 
+  page. There you should fill field name, priority and field type. After you click 
+  update, new field is added o database for the slice and the values (like validate 
+  function, alias, help text, ...) is copied from the same field in '<i>Action 
+  Aplication Core</i>' slice. It is good idea to translate the help texts in the 
+  '<i>Action Aplication Core</i>' slice too, if you are translating whole ActionApps 
+  to some other national language. </p>
 
-       $ActionAppConfig[en_press][name] = "Press releases";<br><br>
+<a name="feeding"></a>
+<h3>How works the internal feeding?</h3>
+<p>If you write an item which goes into <i>Active bin</i> or if you approve an 
+  item, then the feeding function is invoked. This function finds all slices, 
+  where the item should be fed (depending on current feeding permissions (<font color="#663333">"Admin" 
+  -> "Content sharing - Import &amp; Export"</font>) and feeding setings (<font color="#663333">"Admin" 
+  -> "Content sharing - Filters"</font>)). The feeding goes deep and deep until 
+  cycle is detected or feeding into <i>Holding bin</i> is set. </p>
+<p>Feeding one item from one slice to another means:<br>
+<ul>
+  <li>Content of each filed is copied to to new slice (there are one excepion 
+    - see <i>STATE_UNFEEDABLE</i> flag in following text)<br>
+    <br>
+  </li>
+  <li>The content is copied including the <i>HTML codded / plain text</i> flag<br>
+    <br>
+  </li>
+  <li>Field is fed to field with the same field_id as default (<i>headline........</i> 
+    will go to <i>headline........</i> field). This can be changed in <i>feedmap</i> 
+    table, where you can map one field to another (this feature is currently implemented, 
+    but there are still not the admin inteface for seting the mapping - the feedmap 
+    table is currently empty and you can't change it from admin interface)<br>
+    <br>
+  </li>
+  <li>flag <i>FLAG_FEED</i> are set for each stored value (see <i>FLAG_*</i> definitons 
+    in following text)</li>
+</ul>
+<p></p>
 
-       $ActionAppConfig[en_press][file] = "en_press_lang.php3"; <br><br>
-
-<p>There are some instructions just inside the file. By this file you can set
-not only titles of fields and displayed text, but default setting of html
-code for compact view, default setting for html code of fulltext view,
-which fields are displayed to author if (s)he wants to write new item and
-so on. 
-</p>
-<p>After changes in config.php3 you can try add new slice. You will see
-pulldown menu where new type of aplication is displayed (Press releases
-for example).  After you create such slice - it uses your defaults and
-your titles for fields which you set in your language file. 
-</p>
-<p>I recomended you to experiment with compact view and fulltext view design
-on Slice settings page. You will see what you can do with this tool and
-what not. I think it is quite powerfull tool and most of other front-end
-can be set this way (see Slice 1, Press.cz, example, GN slices). 
-</p>
-<p>Of course, there are some front-ends which are not able to display by
-slice.php3 script (the one we use for web dislay of all items) - I think
-calendar .... There i prefer standalone script - modified version of
-slice.php3 or - in best case - split the slice.php3 script. Split to
-front-end independed part and front- end dependat part. Then you should
-include appropriate part according to "type" field in "slices" database
-table. 
-</p>
-
-
-<a name="fieldmapping">
-<h3>How the field mappings works for new AA?</h3><i>Which table(s) do you use to do the field mappings (ie. the ways that
-a particular application or language uses the fields in the item table)?
-How does this work?</i>
-<p>All field mapping is specified in language files (so there is no table in database for that). Lets look in en_news_lang.php3 file, where english version of News AA is defined. There is "Input form field names" section:</p>
-<code>
-# Input form field names<br>
-define("L_HEADLINE", "Headline");<br>
-define("L_ABSTRACT", "Summary");<br>
-define("L_FULL_TEXT", "News");<br>
-define("L_FT_FORMATTING", "Formatting");<br>
-define("L_FT_FORMATTING_HTML", "HTML code");<br>
-define("L_FT_FORMATTING_PLAIN", "Plain text"); <br>
-define("L_POSTDATE", "Post date");<br>
-define("L_POSTED_BY", "Author");<br>
-define("L_E_POSTED_BY","Author's e-mail"); <br>
-define("L_PUBLISH_DATE", "Publish date");<br>
-define("L_EXPIRY_DATE", "Expiry date");<br>
-define("L_CATEGORY", "Category");<br>
-define("L_STATUS_CODE", "News status");<br>
-define("L_LANGUAGE_CODE", "Language");<br>
-define("L_CP_CODE", "Encoding");<br>
-define("L_LINK_ONLY", "External news");<br>
-define("L_HL_HREF", "External news URL");<br>
-define("L_HTML_FORMATTED", "HTML formatted");<br>
-define("L_HIGHLIGHT", "Highlight");<br>
-define("L_IMG_SRC","Image URL"); <br>
-define("L_IMG_WIDTH","Image width"); <br>
-define("L_IMG_HEIGHT","Image height");<br>
-define("L_PLACE","Locality");<br>
-define("L_SOURCE","Source ");<br>
-define("L_SOURCE_HREF","Source URL");<br>
-define("L_REDIRECT","Show on URL");<br>
-define("L_CREATED_BY","Written by");<br>
-define("L_LASTEDIT","Last edited by");<br>
-define("L_AT","at");   <br>
-define("L_EDIT_NOTE","Editor's note"); <br>
-define("L_IMG_UPLOAD","Image upload"); <br>
-</code>
-<p>In this section you can set how the names of fields in item table are displayed to the user (in this aa). In fact - you can't set the names in table, you can only set how it looks like to the user, but I think, it's enough.</p>
-<p>For more information you can make diff of en_news_lang.php3 and en_press_lang.php3 for example.</p>
-
-<a name="aalanguage">
-<h3>How to create aa in alternate language?</h3><i>Is there any diagram or documentation that shows how to add a simple app / create an alternate language? If not, can you send us a fast step
-by step listing of the PHP files and DB tables that we need to modify to
-create a new app?</i>
-
-<p>The answer is again the language file (see <a href="#newaa"></a>). You have just to rewrite (translate) the phrases in *_*_lang.php3 file - follow the instruction as if you create new aa (see <a href="#newaa"></a> and the instruction just inside the language file). If you need to use another charset for this AA, redefine the HTML_PAGE_BEGIN constant.</p>
-
-<code>
-define("HTML_PAGE_BEGIN",
- '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
-  <HTML>
-  <HEAD>
-  <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">');
-</code>  
-
-<p> The best example of another language mutation of AA is english and czech version of News (see and diff en_news_lang.php3 cz_news_lang.php3). There is no need to change any field in database.</p>
-
-<p>How it works? If user switches from one slice to another one, program checks slices.type field. According to the type then loads the appropriate language file for the slice.</p>
-<p> If you want to have all AA instalation in other than english language mutation, you have to translate *_common_lang.php3. Again, you can set charset in here (used on admin pages). The second thing you have to do is to set <code>require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English</code> to match your new file - in config.php3 file.</p>
-
-<p>For example of modified file you can see en_common_lang.php3 and cz_common_lang.php3 files. We have czech version of aa already installed and I have to say, it works.</p>
-
-
-<a name="itemsmod">
-<h3>What procedure should be used to make modifications to the items table?</h3>
-<i>(there are a couple of major things missing for many apps, the most
-important being 'contact information')?</i>
-
-<div><font color=red>This answer is not true for new data structure!!! 
-I will update it later.</font></div>
-
-<p>May be, there are some fields, we havee to add to the items table. I think,
-we can call it like foo ... - the fields can be then used specificaly to
-each AA. When we talking about contact information, there are three
-fields contact1, contact2 and contact3 in items table - they are not used 
-yet, but I think, we should remove it (or rename to foo1, foo2 ... - see above).
-The idea of holding it here is not good, because of limit three contacts 
-(see <a href="AAdb_ER.html">AAdb E-R diagram</a>). I prefer to create new table
-contact and connect it to items table via items.id (foreign key).</p>
-
-<p>Here some comments I posted before via e-mail:</p>
-
-<p>From my point of view I preffer using existing fields in item table, if it
-is possible. I know, there is no field for long binary data, so I agree
-with creating of new such field in item table. It will be usefull to add
-Long_binary_type column, which keep the type of data are there stored. On
-the other hand, if there are more than these columns, which you want to
-add to item table, I prefer to create the new table with additional
-informations for your action aplication and link it in optional 1:1
-relation to item table. I don't want to expand item table to infinity as
-far as the number of new aplications will increase.
-</p>
-<p>The possible solution can be to create new constant (in language 
-file - see below) which then will be added to SQL commands used 
-in toolkit script. Example: 
-define(AA_SPECIFIC_ITEM_TABLE_JOIN, ",radio LEFT JOIN ON 
-items.id = radio.item_id")
-and then use:
-   $SQL= "SELECT FROM items ". 
-AA_SPECIFIC_ITEM_TABLE_JOIN ." WHERE ....";
-</p>
-<p>If you find better solution, you are welcome, of course.
-</p>
-
-<p>I know, it's look funny to have one table for all aplication, but there
-are two reasons for that: 1) You can exchange (feed) items from one
-aplication to another one (the new aplication can be done very easy - by
-modifiing language file - so I think, there could be quite a lot of very
-similar aplications - the data exchange between them make sense). 2) You
-can very easy search in database for some keyword and you find it in all
-aplications.
-</p>
-<p>I think, the current set of fields is sufficient for most aplications -
-joblisting, grant database, news, action alerts, press release ... All
-these aplications use title, summary, fultext, some kind of source ...
-Maybe it is not enough for Amarc, but if you will not use images in Amarc,
-you can use image fields for that (source, width, height). (It looks like
-mixing apples with plums, but all this fields belongs to multimedia data
-so it is not so bad.)
-</p>
-<p>The reason why we use no boolean fields is database 
-independance. Jirka made an database research and his proposal 
-is to use numeric field instead of boolean.
-</p>
-<a name="newalias">
-<h3>How to create new field alias (like _#SOURCE##) for compact/fulltext view?</h3>
-<div><font color=red>This answer is not true for new data structure (v1.5)!!!
-I will update it later.</font></div>
-
-<p>If you create new database field, you have to add new alias for that field, 
-which slice administrators will use for displaying content of the new field.</p>
-
-<p>All field aliases are defined in include/item.php3 file. For each alias is 
-there line like this:<br>
-<i>$aliases["_#SOURCE##"] = array("fce"=>"f_h", "param"=>"source", "hlp" => L_HLP_SOURCE);</i><br>
-<p>This line means that if AA parser (the routine which displays output) find the 
-_#SOURCE## alias, the <i>f_h</i>() function is called and the database field <i>source</i> is 
-its parameter (so <i>f_h</i>($db->f(<i>source</i>)) is called). The output of this function 
-susbtitute the _#SOURCE## alias.</p>
-
-<p><i>hlp</i> string is used for displaying help message to slice administrator 
-on <i>Design Compact</i> and <i>Design Fulltext</i> pages in <i>Admin</i></p>
-
-<p>So, there is only one task you have to do for creating new alias. Add new line 
-in items.php3 file and write new f_... function, if needed. That's all.</p>
-                               
+<p>Let's look in constants.php3 file:<br>
+  <br>
+  <code> # content table flags<br>
+  define( "FLAG_HTML", 1 );<br>
+  define( "FLAG_FEED", 2 );<br>
+  define( "FLAG_FREEZE", 4 );<br>
+  define( "FLAG_OFFLINE", 8 );<br>
+  <br>
+  # states of feed field of field table<br>
+  define( "STATE_FEEDABLE", 0 );<br>
+  define( "STATE_UNFEEDABLE", 1 );<br>
+  define( "STATE_FEEDNOCHANGE", 2 );<br>
+  <br>
+  # relation table flags<br>
+  define( "REL_FLAG_FEED", 2 ); # 2 - just to be compatible with content table<br>
+  </code><br>
+  <br>
+  There we see, the various flags can be set. The most important are the flags 
+  for <i>field</i> table. For each field you can set if this field is<br>
+<ul>
+  <li>feedable (<i>STATE_FEEDABLE</i>) - the content for this field is copied 
+    to new slice and user in new slice can freely edit it<br>
+    <br>
+  </li>
+  <li>unfeedable (<i>STATE_UNFEEDABLE</i>) - the content for this field is never 
+    copied to the new slice<br>
+    <br>
+  </li>
+  <li>feedable, but locked (<i>STATE_FEEDNOCHANGE</i>) - field is copied to new 
+    slice, but the flag <i>FLAG_FREEZE</i> is set for the field, so user in new 
+    slice can display the content of this field, but she can't change the value</li>
+</ul>
+These setting can be done on <font color="#663333">"Admin" -> "Main settings - 
+Fields" -> "Edit" -> "Feeding"</font> page.<br>
+<br>
+Depending on <i>field</i> table flags, the flags for <i>content</i> table are set:<br>
+<ul>
+  <li><i>FLAG_HTML</i> is allways copied from source field</li>
+  <br>
+  <br>
+  <li><i>FLAG_FEED</i> is ollways set for fed fields (currently it have no specific 
+    use - we just marking the fed content<br>
+    <br>
+  </li>
+  <li><i>FLAG_FREEZE</i> is set if source field has <i>STATE_FEEDNOCHANGE</i> 
+    flag set. In other cases is this flag unset. All fields with <i>FLAG_FREEZE</i> 
+    are never displayed in input form so it can't be changed by user in destination 
+    slice.</li>
+</ul>
+<p></p>
+<p>After copying the contents, the relation table is updated. This table holds 
+  information about feeding tree (from which item is content fed to another). 
+  The ralation table will be used for another purposes in future too (for holding 
+  discussion threads, ...), so each record for feeding if flaged as <i>REL_FLAG_FEED</i>.<br>
+  <br>
+  <b>Note</b>: The information from relation table could be used for <i>content 
+  sharing</i> in the future. The <i>content sharing</i> means, that if the content 
+  is changed in source slice, it is changed in destination slice too. For that 
+  purpose could be new <i>STATE_FEED&amp;UPDATE</i> flag itroduced. After updating 
+  the content of such field, the <i>relation</i> table is checked for depending 
+  items (= fed items from this item) and the appropriate fields are updated too. 
+  (or is there other solution?)</p>
 <br><br>
 <a href="index.html">Other documentation</a><br>
 
