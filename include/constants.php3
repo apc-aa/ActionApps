@@ -107,7 +107,9 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "ro_news_lang.php3" => "ro_news_lang.php3",
                          "ru_news_lang.php3" => "ru_news_lang.php3",
                          "vn_news_lang.php3" => "vn_news_lang.php3",
-                         "ja_news_lang.php3" => "ja_news_lang.php3");
+                         "ja_news_lang.php3" => "ja_news_lang.php3",
+                         "hr_news_lang.php3" => "hr_news_lang.php3"
+                        );
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * @global array $LANGUAGE_CHARSETS charsets to be used in HTML HEAD and otherwere
@@ -120,7 +122,9 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "ru" => "windows-1251",
                             "vn" => "utf-8",
                             "sk" => "windows-1250",
-                            "ja" => "EUC-JP");
+                            "ja" => "EUC-JP",
+                            "hr" => "windows-1250",
+                            );
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * @global array $LANGUAGE_NAMES
@@ -133,7 +137,9 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "ru" => "Russian",
                          "vn" => "Vietnamese",
                          "sk" => "Slovenština",
-                         "ja" => "Japanian");
+                         "ja" => "Japanian",
+                         "hr" => "Hrvatski"
+                         );
 
 /** Standard Reader Management field IDs defined in Reader Minimal Template */
 define ("FIELDID_USERNAME",      "headline........");
