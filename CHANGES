@@ -1,5 +1,13 @@
-12/01/02 - fixed path in sql_update.php3 and changed docs in install-4.html
-09/01/02 - new possibilty to anonymously edit items on public sites"
+02/05/02 - the message 'no item found' can be redefined
+         - added new parametrs to view - from, to, page and slice_id.
+         - new transformation alias function f_x
+         - items are counted in all bins - including pending bin and expired bin
+         - url alias substitution in slice.php3
+         - fixed bug in searching in boolean fields
+         - fixed bug of not working param_wizard on some domains
+         - fixed bug in blurb f_q alias function
+01/12/02 - fixed path in sql_update.php3 and changed docs in install-4.html
+01/09/02 - new possibilty to anonymously edit items on public sites
          - new possibility to redefine the design of output by fview and iview 
            url parameter
          - sorting and querying blank fields now fixed (bug 492331)
@@ -10,7 +18,7 @@
          - minutes in time fields are displayed two character numbers
          - debug messages displays duration for queries
          - fixed bug in parameter to f_v alias function
-04/01/02 - added language constants for profiles, notifications.
+01/04/02 - added language constants for profiles, notifications.
          - updated some aliases functions
          - new hidefulltext parameter for slice (good for discussion)
 --------------------
