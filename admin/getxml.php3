@@ -409,6 +409,9 @@ if (!$slice_id) {
     echo $XML_BEGIN;
     list( $slice_fields,) = GetSliceFields( $slice_id );
 
+    // fix date (sometimes start_timestamp contains space (wrongly) instead of
+    // plus '+' sign (besause wrong url where + is translated to space)
+    $start_timestamp      = str_replace(' ', '+', trim($start_timestamp));
     $start_timestamp      = iso8601_to_unixstamp($start_timestamp);
     $cat_field            = GetCategoryFieldId($slice_fields);
 
