@@ -658,11 +658,13 @@ function GetItemContent($zids, $use_short_ids=false) {
       FROM item INNER JOIN slice ON item.slice_id = slice.id
       WHERE item.$id_column $sel_in";
   $db->tquery($SQL);
+
   $n_items = 0;
   while( $db->next_record() ) {
     // proove permissions for password-read-protected slices
-    if ($db->f("reading_password") && $db->f("reading_password") != $GLOBALS["slice_pwd"])
-        continue;
+    $reading_permitted = ($db->f("reading_password") == "")
+       || ($db->f("reading_password") == $GLOBALS["slice_pwd"]);
+       
     $n_items = $n_items+1;
     reset( $db->Record );
     if( $use_short_ids ) {
@@ -678,8 +680,13 @@ function GetItemContent($zids, $use_short_ids=false) {
     while( list( $key, $val ) = each( $db->Record )) {
       if( EReg("^[0-9]*$", $key))
         continue;
-      $content[$foo_id][substr($key."................",0,16)][] = 
+      if ($reading_permitted) {
+         $content[$foo_id][substr($key."................",0,16)][] = 
                                                         array("value" => $val);
+      } else {
+          $content[$foo_id][substr($key."................",0,16)] =
+            array (0 => array ("value" => _m("Error: Missing Reading Password")));
+      }
     }
   }
 
@@ -714,9 +721,15 @@ function GetItemContent($zids, $use_short_ids=false) {
     while( $db->next_record() ) {
         $fooid = ( $use_short_ids ? $translate[unpack_id128($db->f(item_id))] : 
                                unpack_id128($db->f(item_id)));
-        $content[$fooid][$db->f(field_id)][] = 
-            array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
+        if ($reading_permitted) {
+          $content[$fooid][$db->f(field_id)][] = 
+             array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
              "flag"=> $db->f(flag) );
+        }
+        else {
+          $content[$fooid][$db->f(field_id)] =
+            array (0 => array ("value" => _m("Error: Missing Reading Password")));
+        }
     }
 
   return $content;   // Note null returned above if no items found
@@ -1435,8 +1448,8 @@ function add_post2shtml_vars ($delete = true) {
     You should never list email types directly, always call this function. */
 function get_email_types () {
     return array (
-        "alerts welcome" => _m("alerts welcome"),
         "alerts alert" => _m("alerts alert"),
+        "alerts welcome" => _m("alerts welcome"),
         "slice wizard welcome" => _m("slice wizard welcome"),
     );
 }

@@ -24,7 +24,6 @@ http://www.apc.org/
 # optionaly encap="false" if this form is not encapsulated into *.shtml file
 # optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
-
 $encap = ( ($encap=="false") ? false : true );
 
 if( $edit OR $add )         # parameter for init_page - we edited new item so 
@@ -43,6 +42,8 @@ require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
 if( file_exists( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" ) ) {
   include( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" );
 }
+
+FetchSliceReadingPassword();
 
 if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED - from url
