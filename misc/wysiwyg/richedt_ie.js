@@ -435,9 +435,9 @@
  } 
  function clearfonts(nom_editor) {
      var text = get_text (nom_editor);
-     alert (text);
-     text = text.replace (/<[Ff][Oo][Nn][Tt][^>]*>/g,"");
-	 text = text.replace (/<\/[Ff][Oo][Nn][Tt]>/g,"");
-     alert (text);
-     posa_contingut_html (nom_editor,text);
+     if (confirm ("Are you sure you want to remove all <FONT ..> and </FONT> tags?")) {
+         text = text.replace (/<[Ff][Oo][Nn][Tt][^>]*>/g,"");
+	     text = text.replace (/<\/[Ff][Oo][Nn][Tt]>/g,"");
+         posa_contingut_html (nom_editor,text);
+     }
  }
