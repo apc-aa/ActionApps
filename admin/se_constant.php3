@@ -30,6 +30,7 @@ require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."event_handler.php3";
 
 $where_used = true;
 
@@ -107,15 +108,24 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
   echo "</tr>\n";
 }
 
-/** Propagates changes to a constant value to the items which contain this value. */
+/** Propagates changes to a constant value to the items which contain this value. 
+*
+*   @param string $newvalue The new value with added slashes (e.g. from a form)
+*/
 function propagateChanges ($cid, $newvalue, $short=true)
 {
 	global $db, $group_id, $Msg, $debug;
-	  MyQuery ($db, "SELECT value FROM constant WHERE ".
+	  MyQuery ($db, "SELECT id, value FROM constant WHERE ".
 		($short ? "short_id=$cid" : "id='$cid'"));
 	if (!$db->next_record()) return;
 	$oldvalue = addslashes($db->f("value"));
 	if ($oldvalue == $newvalue) return;
+    
+    $constant_id = unpack_id ($db->f("id"));
+    if (! Event_ItemsBeforePropagateConstantChanges (
+        $constant_id, $oldvalue, $newvalue)) 
+        return;
+        
     if ($oldvalue)
     	myQuery ($db, "
 		SELECT item_id,field_id
@@ -134,6 +144,8 @@ function propagateChanges ($cid, $newvalue, $short=true)
 			AND text='$oldvalue'");
 	}
 	if ($cnt) $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
+    Event_ItemsAfterPropagateConstantChanges (
+        $constant_id, $oldvalue, $newvalue);     
 }
 
 hcUpdate();
