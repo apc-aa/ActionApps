@@ -103,7 +103,7 @@ function GetAliases4Type( $type, $additional="" ) {
             #  Standard aliases
             $aliases["_#NAME###_"] = GetAliasDef( "f_h", "const_name",        _m("Constant name"));
             $aliases["_#VALUE##_"] = GetAliasDef( "f_h", "const_value",       _m("Constant value"));
-            $aliases["_#PRIORITY"] = GetAliasDef( "f_h", "const_priority",    _m("Constant priority"));
+            $aliases["_#PRIORITY"] = GetAliasDef( "f_h", "const_pri",         _m("Constant priority"));
             $aliases["_#GROUP##_"] = GetAliasDef( "f_n", "const_group",       _m("Constant group id"));
             $aliases["_#CLASS##_"] = GetAliasDef( "f_h", "const_class",       _m("Category class (for categories only)"));
             $aliases["_#COUNTER_"] = GetAliasDef( "f_h", "const_counter",     _m("Constant number"));
@@ -113,10 +113,10 @@ function GetAliases4Type( $type, $additional="" ) {
             $aliases["_#LEVEL##_"] = GetAliasDef( "f_t", "const_level",       _m("Constant level (used for hierachical constants)"));
             break;
         case 'links':
-            $aliases = $GLOBALS['LINK_ALIASES'];       // defined in modules/links/constant.php3
+            $aliases = GetLinkAliases();       // defined in modules/links/constant.php3
             break;
-        case 'links':
-            $aliases = $GLOBALS['CONSTANT_ALIASES'];   // defined in modules/links/constant.php3
+        case 'categories':
+            $aliases = GetCategoryAliases();   // defined in modules/links/constant.php3
             break;
     }
     
@@ -711,6 +711,9 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
           $delim = ', ';
         }
         return $ret;
+      case 'link_valid':  //converts valid_rank (0-1000) to color (from green to red)
+        $red = $this->getval('valid_rank')*0.255;
+        return sprintf("%02X%02X%02X",$red,255-$red,0);
       case 'selected':  // returns true, if current item is the selected one
                         // (given by set[]=selected-454343 view.php3 parameter)
         return (( (integer)$p[1] == (integer)($this->getval('short_id........')) ) ? '1' : '0');

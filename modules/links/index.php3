@@ -234,7 +234,7 @@ $links_info = GetModuleInfo($module_id,'Links');
 
 $manager_settings = array(
      'searchbar' => array(
-         'fields'               => $LINKS_FIELDS,
+         'fields'               => GetLinkFields(),
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
          'add_empty_search_row' => true,
@@ -254,12 +254,12 @@ $manager_settings = array(
              'category_bottom'  => "",
              'even_odd_differ'  => false,
              'even_row_format'  => "",
-             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td class=tabtxt><a href="_#EDITLINK">_#L_NAME__</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br>_#L_LINK__</div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_u:usr_print_uid}<br>{alias:edited_by:f_u:usr_print_uid}</td></tr>',
+             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td class=tabtxt><a href="_#EDITLINK">_#L_NAME__</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br>_#L_LINK__</div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_u:usr_print_uid}<br>{alias:edited_by:f_u:usr_print_uid}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>',
              'compact_remove'   => "()",
              'compact_bottom'   => "</table>",
              'id'               => $link_info['id'] ),
          'fields'               => '',
-         'aliases'              => $LINK_ALIASES,
+         'aliases'              => GetLinkAliases(),
          'get_content_funct'    => 'Links_GetLinkContent'
                          ),
      'actions_perm_function' => 'Links_IsActionPerm',
