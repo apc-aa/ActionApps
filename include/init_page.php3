@@ -218,8 +218,9 @@ if( !$no_slice_id ) {
             if( !GetProfileProperty($v['property'],$v['selector']) )
                 $r_profile[$v['property']][$v['selector']] = $v['value'];
     }
+    $module_type = $g_modules[$slice_id]['type'];
     $module_type_changed = $after_login
-        || $g_modules[$last_slice_id]['type'] != $g_modules[$slice_id]['type'];
+        || $g_modules[$last_slice_id]['type'] != $module_type;
 
 /* If we switch to another module type, we try whether the requested file
    exists in the module direcory and if not, we go to module's index.php3 page.
@@ -230,9 +231,9 @@ if( !$no_slice_id ) {
 */
     if( $module_type_changed && !$jumping ) {
         $page = filename ($PHP_SELF);
-        $hdd_dir = $AA_INC_PATH."../".$MODULES[$g_modules[$slice_id]['type']]['directory'];
-        $web_dir = $AA_INSTAL_PATH.$MODULES[$g_modules[$slice_id]['type']]['directory'];
-        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') )
+        $hdd_dir = $AA_INC_PATH."../".$MODULES[$module_type]['directory'];
+        $web_dir = $AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
+        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') OR ($module_type=='J') )
             $page = "index.php3";
         if ($web_dir.$page != $PHP_SELF) {
             $page = $sess->url($web_dir.$page."?slice_id=$slice_id");

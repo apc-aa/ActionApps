@@ -1,5 +1,6 @@
 08/10/03 - {slice_id........} and {id..............} inline aliases displays
 (honzam)   unpacked ids, now
+         - fixed bug in Jump module - error when jumping from Edit Jump page
 08/09/03 - fixed bug in f_r for _#RSS_IT_L (missing link in RSS output) (mitra)
 07/25/03 - added test that function called by f_u is callable (mitra)
 07/19/03 - new "u_slice_id......" and "unpacked_id....." item fields (with
