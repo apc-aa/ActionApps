@@ -387,6 +387,8 @@ function detect_browser() {
     { $BName = "Links"; $BVersion=$match[2]; }
   elseif(eregi("(netscape6)/(6.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
     { $BName = "Netscape"; $BVersion=$match[2]; }
+  elseif(eregi("Gecko/",$HTTP_USER_AGENT))
+    { $BName = "Mozilla"; $BVersion="6";}
   elseif(eregi("mozilla/5",$HTTP_USER_AGENT))
     { $BName = "Netscape"; $BVersion="Unknown"; }
   elseif(eregi("(mozilla)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
@@ -756,7 +758,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
     $SQL = "SELECT content.* FROM content INNER JOIN item
             ON item.id = content.item_id
-            WHERE item_id $sel_in";  # usable just for constants
+            WHERE item_id $sel_in ORDER BY content.number"; # usable just for constants
 
     $db->tquery($SQL);
 
@@ -920,10 +922,9 @@ function GetItemHeadlines( $sid="", $slice_field="headline........",
              AND field_id = '$headline_fld'
              AND status_code='1'
              $restrict
-        GROUP BY text
-        ORDER BY text";
+        GROUP BY text"; //        ORDER BY text";
 
-  $db->tquery($SQL);
+  $headlines = GetTable2Array($SQL, "id", true);
 
   # See if need to Put the tags back on the ids
   if (isset($zids) && is_object($zids) && ($zids->onetype() == 't') && isset($tagprefix)) {
@@ -933,12 +934,15 @@ function GetItemHeadlines( $sid="", $slice_field="headline........",
     }
   }
 
-  while($db->next_record()) {
-    $i = unpack_id128($db->f(id));
-    $arr[(isset($tags) ? ($tags[$i] . $i) : $i)]
-        = ((isset($tags) ? ($t2p[$tags[$i]]) : "")
-            . substr($db->f(text), 0, 50));  #truncate long headlines
+  // we want headlines in the same order than in zids
+  for( $i=0; $i<$zids->count(); $i++ ) {
+    $u_id = $zids->longids($i);
+    $p_id = $zids->packedids($i);
+    $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
+        = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
+            . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
   }
+
   if ($debug)  huhl("GetItemHeadlines found ",$arr);
   return $arr;
 }

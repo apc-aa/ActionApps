@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -18,15 +18,15 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
- 
-# expected at least $slice_id 
+
+# expected at least $slice_id
 # user calling is with $edit for edit item
 # optionaly encap="false" if this form is not encapsulated into *.shtml file
 # optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
 $encap = ( ($encap=="false") ? false : true );
 
-if( $edit OR $add )         # parameter for init_page - we edited new item so 
+if( $edit OR $add )         # parameter for init_page - we edited new item so
   $unset_r_hidden = true;   # clear stored content
 
 require_once "../include/init_page.php3";     # This pays attention to $change_id
@@ -37,7 +37,7 @@ require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
 
-// needed for field JavaScript to work 
+// needed for field JavaScript to work
 
 if( file_exists( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" ) ) {
   include( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" );
@@ -45,7 +45,7 @@ if( file_exists( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" ) ) {
 
 FetchSliceReadingPassword();
 
-if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED 
+if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED
                                #       and REDIRECT_STRING_UNESCAPED - from url
 
 QuoteVars("post", array('encap'=>1) );  # if magicquotes are not set, quote variables
@@ -61,7 +61,7 @@ if( $ins_preview )
   $insert = true;
 if( $upd_preview )
   $update = true;
-  
+
 $add = !( $update OR $cancel OR $insert OR $edit );
 
 if($cancel) {
@@ -74,7 +74,7 @@ if($cancel) {
     } else
       go_url( $r_slice_view_url );
   }
-  else 
+  else
     go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
 }
 #$db = new DB_AA;
@@ -158,8 +158,8 @@ if($edit) {
 if( !$encap ) {
   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
   echo '
-    <style> 
-        #body_white_color { color: #000000; } 
+    <style>
+        #body_white_color { color: #000000; }
     </style>';
   echo GetFormJavascript ($show_func_used, $js_proove_fields);
   echo '
@@ -168,7 +168,7 @@ if( !$encap ) {
   <body id="body_white_color">
     <H1><B>' . ( $edit=="" ? _m("Add Item") : _m("Edit Item")) . '</B></H1>';
 }
- 
+
 PrintArray($err);
 echo $Msg;
 
@@ -198,7 +198,7 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
   $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
   $sess->hidden_session();
   echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
-  echo '<input type="hidden" name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
+  echo '<input type="hidden" name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">';
   echo '<input type="hidden" name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
   </td>
 </tr>
@@ -217,17 +217,17 @@ else {
         || ($BName == "Netscape" && $BVersion > "5"))
        $accesskey = "(alt+S)";
 };
- 
-if($edit || $update || ($insert && $added_to_db)) { 
+
+if($edit || $update || ($insert && $added_to_db)) {
     echo '<input type=submit name=update accesskey=S value="'._m("Update")." ".$accesskey.'"> ';
-    if ((!($post_preview==0)) or (!(isset($post_preview)))) 
+    if ((!($post_preview==0)) or (!(isset($post_preview))))
         echo "<input type=submit name=upd_preview value='"._m("Update & View")."'> ";
 	echo '
     <input type=submit name=insert value="'._m("Insert as new").'">
     <input type=reset value="'._m("Reset form").'">';
     $r_hidden["id"] = $id;
 } else {
-	echo ' 
+	echo '
     <input type=submit name=insert accesskey=S value="'._m("Insert")." ".$accesskey.'">
     <input type=submit name=ins_preview value="'._m("Insert & View").'">';
 }
@@ -235,7 +235,7 @@ $cancel_url = ($anonymous  ? $r_slice_view_url :
               ($return_url ? expand_return_url(1) :
                              con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id")));
 echo '
-    <input type=button name=cancel value="'._m("Cancel").'" 
+    <input type=button name=cancel value="'._m("Cancel").'"
 	onclick="document.location=\''.$cancel_url.'\'">
 </td>
 </tr>

@@ -823,12 +823,14 @@ function printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp,
 * for use within <form> and <table> tag
 */
 function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
-          $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
+          $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false, $movebuttons=true) {
   $name=safe($name); $size=safe($size); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
-  echo "</td>\n <td><select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";
+  echo '</td><td><table border="0" cellspacing="0"><tr>';
+  echo $movebuttons ? '<td rowspan="2">' : "<td>";
+  echo "<select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";
   $option_no = 0;
   if( isset($arr) && is_array($arr) ) {
     reset($arr);
@@ -843,26 +845,34 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
   // add blank rows if asked for
   while( $option_no++ < $minrows )  // if no options, we must set width of <select> box
     echo '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
-
-  echo "</select>";
-  PrintMoreHelp($morehlp);
-  PrintHelp($hlp);
-  if( $relation )       // all selection in this box should be selected on submit
-    echo "<br><center>
-          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$relation\", \"$mode\", \"$design\" )'>
-          <input type='button' value='". _m("Delete") ."'
-            onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
-                     document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'>
+  echo "</select></td>\n";
+  if ($movebuttons) {
+      echo "<td valign=\"top\">
+              <input type=\"button\" name=\"".$name."_up\" value=\" /\ \" onclick = \"moveItem(document.inputform['".$name."'],'up');\">
+            </td></tr>
+            <tr><td valign=\"bottom\">
+              <input type=\"button\" name=\"".$name."_down\" value=\" \/ \" onclick = \"moveItem(document.inputform['".$name."'], 'down');\">
+            </td>";
+  }
+  echo "</tr>\n ";
+  if( $relation ) {      // all selection in this box should be selected on submit
+    echo "<tr><td valign=\"bottom\"><center>";
+    echo "<input type='button' value='". _m("Add") ."'    onclick='OpenRelated(\"$name\", \"$relation\", \"$mode\", \"$design\" )'>&nbsp;&nbsp;
+          <input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>
           <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
              listboxes[listboxes.length] = '$name'
             // -->
-           </SCRIPT>
-          </center>";
+          </SCRIPT>
+          </td></tr>";
+  }
+  echo "</table>\n";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
   echo "</td></tr>\n";
 }
 
-function FrmRelated($name, $txt, $arr, $size, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="") {
-  FrmInputMultiSelect($name, $txt, $arr, "", $size=5, $sid, $needed, $hlp, $morehlp, MAX_RELATED_COUNT, $mode, $design);
+function FrmRelated($name, $txt, $arr, $size, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="", $movebuttons=false) {
+  FrmInputMultiSelect($name, $txt, $arr, "", $size=5, $sid, $needed, $hlp, $morehlp, MAX_RELATED_COUNT, $mode, $design, $movebuttons);
 }
 
 /**
@@ -1183,7 +1193,7 @@ function get_javascript_field_validation () {
     */
     return "
         function validate (myform, txtfield, type, required, add) {
-			var ble;
+            var ble;
             var invalid_email = /(@.*@)|([.][.])|(@[.])|([.]@)|(^[.])/;
             var valid_email = /^.+@[a-zA-Z0-9-.]+[.]([a-zA-Z]{2,3}|[0-9]{1,3})$/;
 

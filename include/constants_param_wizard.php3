@@ -409,7 +409,15 @@ array("name"=>_m("Related Item Window"),
         array("name"=>_m("Admin design"),
         "desc"=>_m("If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)."),
         "type"=>"BOOL",
-        "example"=>"0")));
+        "example"=>"0"),
+        array("name"=>_m("Tag Prefix"),
+        "desc"=>_m("Selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."),
+        "type"=>"STR",
+        "example"=>_m("AMB")),
+        array("name"=>_m("Show move buttons"),
+        "desc"=>_m("Show buttons for moving items up and down"),
+        "type"=>"BOOL",
+        "example"=>"1")));
 $INPUT_TYPES["items"]["wi2"]=
 array("name"=>_m("Two Windows"),
   "desc"=>_m("Two Windows. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"),
