@@ -39,6 +39,7 @@ function AlertsSendWelcome( $item_id, $slice_id, &$itemContent ) {
             "aw=".$itemContent->getValue(FIELDID_ACCESS_CODE));
         $alias["_#HOWOFTEN"] = $itemContent->getValue(
             getAlertsField (FIELDID_HOWOFTEN, $mydb->f("id")));
+        $alias["_#CONFIRM_"] = $itemContent->getValue(FIELDID_MAIL_CONFIRMED);
             
         if ($mydb->f("emailid_welcome")) {            
             send_mail_from_table ($mydb->f("emailid_welcome"), 

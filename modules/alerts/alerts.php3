@@ -34,7 +34,7 @@ require_once $GLOBALS["AA_INC_PATH"]."item.php3";
 require_once $GLOBALS["AA_INC_PATH"]."view.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
-require_once $GLOBALS["AA_INC_PATH"]."alerts_sending.php3";
+require_once "alerts_sending.php3";
 
 //$debug = 1;
 

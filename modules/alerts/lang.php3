@@ -31,8 +31,6 @@ require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 
 if (!$lang) $lang = "en";
 bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$lang."_alerts_lang.php3");
-// common language constants
-require_once $GLOBALS["AA_INC_PATH"].$lang."_news_lang.php3";
 
 require_once "util.php3";
 ?>

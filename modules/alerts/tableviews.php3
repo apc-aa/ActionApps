@@ -193,7 +193,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                     "source"=>GetUserEmails("alerts alert")))),
             "type" => array ("default" => "Alerts", "view" => array ("type"=>"hide")),
             "id" => array (
-                "default" => "ahoj\"ahoj\"ahojik",
+                "default" => pack_id(new_id()),
                 "view" => array("type"=>"text", "unpacked" => true, "readonly" => true)),
             "created_at" => array (
                 "caption" => _m("created at"),
@@ -371,5 +371,6 @@ function te_au_confirm ($val) {
 function AlertsModeditAfterInsert ($varset) {
     global $change_id;
     $change_id = unpack_id128($varset->get ("id"));
+    AddPermObject($change_id, "slice");
 }
 ?>
