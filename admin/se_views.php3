@@ -57,9 +57,10 @@ function PrintViewRow($id, $name, $type) {
   $VIEW_TYPES = getViewTypes();
 
   $name=safe($name); $id=safe($id);
+  $view_url = AA_INSTAL_URL. "view.php3?vid=$id&rXn=1";
 
   echo "<tr class=tabtxt>
-          <td class=tabtxt>$id</td>
+          <td class=tabtxt><a href=\"javascript:OpenWindowTop('$view_url')\" title=\"". _m('show this view') ."\">$id</a></td>
           <td class=tabtxt>". $VIEW_TYPES[$type]["name"] ."</td>
           <td class=tabtxt>$name</td>
           <td class=tabtxt><a href=\"". con_url($sess->url("./se_view.php3"),
@@ -75,7 +76,9 @@ function GetViewJSArray( $sid, $id, $name, $type, $i ) {
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<TITLE>". _m("Admin - design View") ."</TITLE>"; ?>
+echo "<TITLE>". _m("Admin - design View") ."</TITLE>";
+echo '<script language="JavaScript" type="text/javascript" src="'.$AA_INSTAL_PATH.'javascript/manager.js"></script>';
+?>
   <SCRIPT Language="JavaScript"><!--
      function DeleteView(id) {
        if( !confirm("<?php echo _m("Are you sure you want to delete selected view?"); ?>"))
