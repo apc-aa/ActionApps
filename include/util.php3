@@ -420,12 +420,13 @@ function UnpackFieldsToArray($packed, $fields) {
 }  
 
 # function fills the array from constants table
-function GetConstants($group, $db, $order='pri') {
+function GetConstants($group, $db, $order='pri', $column='name') {
+  if( $order )
+    $order_by = "ORDER BY $order";
   $db->query("SELECT name, value FROM constant 
-               WHERE group_id='$group'
-               ORDER BY $order");
+               WHERE group_id='$group' $order_by");
   while($db->next_record())
-    $arr[$db->f(value)] = $db->f(name);
+    $arr[$db->f(value)] = $db->f($column);
   return $arr;
 }     
 
@@ -726,15 +727,6 @@ function GetSid4Id($iid) {
     return $db->f("short_id");
   return false;  
 }
-
-function GetModule($mod_id) {
-  # module_id is in format <type>:<id> 
-  # (like "petition:53663a5e9fb524723626bca342e463c4")
-  if( !($foo = strpos( $mod_id, ":" )) )
-    return array("slice", $mod_id );       # slice is default - no type identifier is needed
-  else
-    return explode( $mod_id, ":");
-}    
 
 # in_array and compact is available since PHP4
 if (substr(PHP_VERSION, 0, 1) < "4") {

@@ -44,7 +44,7 @@ function IfLink( $cond, $url, $txt ) {
 }    
 
 function PrintUser($usr, $usr_id, $editor_perm) {
-  global $perms_roles_perms, $perms_roles_id, $sess, $auth;
+  global $perms_roles, $sess, $auth;
   $usr_id = rawurlencode($usr_id);
   // select role icon
   $role_images = array(0=>"rolex.gif",
@@ -55,13 +55,13 @@ function PrintUser($usr, $usr_id, $editor_perm) {
   $perm = $usr["perm"];
   $role = 0;
   
-  if( strstr($perm,$perms_roles_id["SUPER"]) )
+  if( IsPerm($perm,$perms_roles["SUPER"]['id']) )
     $role = 4;
-  elseif( strstr($perm,$perms_roles_id["ADMINISTRATOR"] ) )
+  elseif( IsPerm($perm,$perms_roles["ADMINISTRATOR"]['id'] ) )
     $role = 3;
-  elseif( strstr($perm,$perms_roles_id["EDITOR"] ) )
+  elseif( IsPerm($perm,$perms_roles["EDITOR"]['id'] ) )
     $role = 2;
-  elseif( strstr($perm,$perms_roles_id["AUTHOR"] ) )
+  elseif( IsPerm($perm,$perms_roles["AUTHOR"]['id'] ) )
     $role = 1;
     
   echo "<tr><td><img src=\"../images/". $role_images[$role] .
@@ -70,18 +70,18 @@ function PrintUser($usr, $usr_id, $editor_perm) {
   echo "<td class=tabtxt>". (($usr[mail]) ? $usr[mail] : "&nbsp;") ."</td>\n";
   echo "<td class=tabtxt>". $usr[type] ."</td>\n";
 
-  IfLink( CanChangeRole($perm, $editor_perm, $perms_roles_perms["AUTHOR"]),
+  IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),
           $sess->url(self_base() . "se_users.php3") .
                "&UsrAdd=$usr_id&role=AUTHOR", L_ROLE_AUTHOR);
-  IfLink( CanChangeRole($perm, $editor_perm, $perms_roles_perms["EDITOR"]), 
+  IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["EDITOR"]['perm']), 
           $sess->url(self_base() . "se_users.php3") .
                 "&UsrAdd=$usr_id&role=EDITOR", L_ROLE_EDITOR);
   IfLink( CanChangeRole($perm, $editor_perm,
-                        $perms_roles_perms["ADMINISTRATOR"]), 
+                        $perms_roles["ADMINISTRATOR"]['perm']), 
           $sess->url(self_base() . "se_users.php3") .
                 "&UsrAdd=$usr_id&role=ADMINISTRATOR",
           L_ROLE_ADMINISTRATOR);
-  IfLink( CanChangeRole($perm, $editor_perm, $perms_roles_perms["AUTHOR"]),
+  IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),
           $sess->url(self_base() . "se_users.php3") .
                      "&UsrDel=$usr_id", L_REVOKE);
   echo "<td class=tabtxt>". (($usr[type]!=L_USER)? "&nbsp;" :
@@ -114,23 +114,7 @@ HtmlPageBegin();   // Prints HTML start page tags
     include "./se_users_add.php3";
   } elseif( $UsrAdd || $UsrDel) 
     ChangeRole (); // in include/se_users.php3
-  if( $continue ) {
-/* # unused code (I hope)
-
-   # create or update scroller
-    if(is_object($st_usr))
-      $st_usr->updateScr($sess->url($PHP_SELF) . "&");
-    else {
-      $st_usr = new scroller("st_usr", $sess->url($PHP_SELF) . "&");    
-        $st_usr->addFilter("headline", "char");
-        $sess->register(st_usr); 
-    }
-    $db->query("select count(*) as cnt from slices where ". $st_usr->sqlCondFilter());
-    $db->next_record();
-    $st_usr->countPages($db->f(cnt));
-    $pgsize = $st_usr->metapage; # scroller page size 
-*/    
-    ?>
+  if( $continue ) {?>
     
     <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
     <tr>

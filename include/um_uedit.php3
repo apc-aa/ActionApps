@@ -19,10 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# Process submited form ----------------------------------------
-
-do  {
-    # Procces user data ---------------------
+  do  {
+    # Procces user data -------------------------------------------------------
     if(($submit_action == "update_submit") AND ($user_password1 == "nOnEwpAsswD") AND ($user_password2 == "nOnEwpAsswD"))
       $passwd_stay=true;
     ValidateInput("user_login", L_USER_LOGIN, $user_login, $err, ($add_submit ? true : false), "login");
@@ -49,37 +47,33 @@ do  {
     if($user_mail2) $userrecord["mail"][] = $user_mail2;
     if($user_mail3) $userrecord["mail"][] = $user_mail3;
 
-    if( $add_submit ) {
+    if( $add_submit ) {      # -------------------- new user ------------------
       $userrecord["uid"] = $user_login;
       if(!($newuserid = AddUser($userrecord)))
         $err["LDAP"] = MsgErr( L_ERR_USER_ADD );
       if( count($err) <= 1 ) {
-    	if ($user_super) {	// set super admin privilege
-    	  AddPerm($newuserid, AA_ID, "aa", $perms_roles_id["SUPER"]);
-    	}
+      	if ($user_super) {	// set super admin privilege
+      	  AddPerm($newuserid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
+      	}
         $Msg = MsgOK(L_NEWUSER_OK);
         if (!$um_uedit_no_go_url)
-            go_url( con_url($sess->url($PHP_SELF), 'UsrSrch=1&usr='. urlencode($user_login)), $Msg);
+          go_url( con_url($sess->url($PHP_SELF), 'UsrSrch=1&usr='. urlencode($user_login)), $Msg);
       }
-    }  
-    // Update
-    else {
+    } else {                 # ----------------- update user ------------------
       $userrecord["uid"] = $selected_user;
       if(!ChangeUser($userrecord)) {
         $err["LDAP"] = MsgErr( L_ERR_USER_CHANGE );
       } else {
-    	if ($user_super) {		// set or revoke super admin privilege
-    	  AddPerm($userrecord["uid"], AA_ID, "aa", $perms_roles_id["SUPER"]);
-    	} else {
-    	  DelPerm($userrecord["uid"], AA_ID, "aa");
-    	}
+      	if ($user_super) {		// set or revoke super admin privilege
+      	  AddPerm($userrecord["uid"], AA_ID, "aa", $perms_roles["SUPER"]['id']);
+      	} else {
+      	  DelPerm($userrecord["uid"], AA_ID, "aa");
+      	}
       }
     }
 
-    # Procces group data ---------------------
-//huh("Posted_groups:".$posted_groups);
+    # Procces group data ------------------------------------------------------
     $assigned_groups = explode(",",$posted_groups); //posted_groups contains comma delimeted list of selected groups for user
-//p_arr_m($sel_groups);
     if( isset($sel_groups) AND is_array($sel_groups) AND ($sel_groups["n"]=="")) {
       reset($sel_groups);
       while( list($foo_gid,) = each($sel_groups))  // first we remove user from all groups
@@ -92,5 +86,29 @@ do  {
         AddGroupMember ($foo_gid, $selected_user);
       }
     }
-} while(false);
 
+    # Procces module permissions ----------------------------------------------
+   
+    # Change module permissions if user wants
+    if( isset($perm_mod) AND is_array($perm_mod) ) {
+      $perm_slices = GetIDPerms($selected_user, "slice", 1);  # there are not only Slices, but other Modules too
+      reset($perm_mod);
+      while( list($xmid,$role) = each($perm_mod) ) {
+        $mid=substr($xmid,1);   # removes first 'x' character (makes index string)
+        if( $role == 'REVOKE' )
+          DelPerm($selected_user, $mid, 'slice');
+        elseif( ComparePerms($perm_slices[$mid], $perms_roles[$role]['id']) != 'E' )
+          ChangePerm($selected_user, $mid, 'slice', $perms_roles[$role]['id']);
+      }
+    }  
+    
+    # Add new modules for this user
+    if( isset($new_module) AND is_array($new_module) ) {
+      reset($new_module);
+      while( list($no,$mid) = each($new_module) ) {
+        if( (trim($mid) != "") AND isset($perms_roles[$new_module_role[$no]]) )
+          AddPerm($selected_user, $mid, 'slice', $perms_roles[$new_module_role[$no]]['id']); 
+      }
+    }
+  } while(false);
+?>  

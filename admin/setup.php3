@@ -126,7 +126,7 @@ if ($perms = GetObjectsPerms(AA_ID, "aa")) {
    while (list($key, $value) = each ($perms)) {
       if (!$value["type"]) {
          $notusers[$key] = $value;      // non-existent user/group
-      } else if ($value["perm"] != $perms_roles_id["SUPER"]) {
+      } else if ($value["perm"] != $perms_roles["SUPER"]['id']) {
          $others[$key] = $value;        // other than super privilege
       } else if (stristr($value["type"], L_USER)) {
          $superusers[$key] = $value;    // users with super privileges
@@ -240,7 +240,7 @@ switch ($phase) {
       
       // Assign super admin privilege
       
-      AddPerm($superid, AA_ID, "aa", $perms_roles_id["SUPER"]);
+      AddPerm($superid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
       
       // Check whether succefful
       

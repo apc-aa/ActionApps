@@ -28,102 +28,123 @@ http://www.apc.org/
 define("MAX_GROUPS_DEEP", 16);   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
 define("MAX_ENTRIES_SHOWN",5);   // Maximum number of shown users in search for users/groups
 
-# permission types for aa object
-define("PS_ADD", "A");             // permission to add slice
-define("PS_MANAGE_ALL_SLICES", "M"); // permission to edit all slices 
-                           // (this permissin is useable, when you want credit some rights
-                           // to given user for all slices (put him into root - aa object), 
-                           // but you don't want him to see all slices.
+# permission letter definition
 
-# permission types for slice object
-//define("PS_ADD", "A");           // aa permission (see top)
-define("PS_DELETE_ITEMS", "B");    // permission to delete items
-define("PS_CATEGORY", "C");        // permission to change slice categories
-define("PS_FEEDING", "D");         // permission to change properties
-define("PS_EDIT", "E");            // permission to set slice properties
-define("PS_FIELDS", "F");          // permission to edit fields defauts
-define("PS_CONFIG", "H");          // permission to configure slice (show/hide columns in admin interface ...)
-define("PS_ADD_USER", "I");       // permission to add existing user to slice
-define("PS_EDIT_SELF_ITEMS", "L"); // permission to change self-written items
-//define("PS_MANAGE_ALL_SLICES", "M"); // aa permission (see top)
-define("PS_NEW_USER", "N");       // permission to create new user
-define("PS_COMPACT", "O");         // permission to change slice compact view
-define("PS_ITEMS2ACT", "P");       // permission to move item to approved bin
-define("PS_ITEMS2HOLD", "Q");      // permission to move item to holding bin
-define("PS_ITEMS2TRASH", "R");     // permission to move item to trash bin
-define("PS_SEARCH", "S");          // permission to change search form settings
-define("PS_EDIT_ALL_ITEMS", "T");  // permission to change all items
-define("PS_USERS", "U");           // permission to manage users
-define("PS_FULLTEXT", "X");        // permission to change item fulltext view
+##########################################################################################################
+# LETTER DEFINITION                 # USED FOR OBJECT # ROLE          #  USED IN # PERMISSION TO
+#                                   #                 #               #  MODULE  #              
+##########################################################################################################
+define("PS_ADD", "A");              # aa              # super         #  S       # add slice
+define("PS_DELETE_ITEMS", "B");     # slice (module)  # administrator #  S       # delete items
+define("PS_CATEGORY", "C");         # slice (module)  # administrator #  S       # change slice categories
+define("PS_FEEDING", "D");          # slice (module)  # administrator #  S       # change properties
+define("PS_EDIT", "E");             # slice (module)  # administrator #  S       # set slice properties
+define("PS_MODW_SETTINGS", "E");    #                                     W      #
+define("PS_FIELDS", "F");           # slice (module)  # administrator #  S       # edit fields defauts
+define("PS_CONFIG", "H");           # slice (module)  # administrator #  S       # configure slice (show/hide columns in admin interface ...)
+define("PS_ADD_USER", "I");         # slice (module)  # administrator #  S       # add existing user to slice
+define("PS_EDIT_SELF_ITEMS", "L");  # slice (module)  # author        #  S       # change self-written items
+define("PS_MANAGE_ALL_SLICES", "M");# aa              # super         #  S       # edit all slices  // (this permissin is useable, when you want credit some rights
+                                    #                 #               #          #                  // to given user for all slices (put him into root - aa object), 
+                                    #                 #               #          #                  // but you don't want him to see all slices.
+define("PS_NEW_USER", "N");         # aa              # super         #  S       # create new user
+define("PS_COMPACT", "O");          # slice (module)  # administrator #  S       # change slice compact view
+define("PS_ITEMS2ACT", "P");        # slice (module)  # editor        #  S       # move item to approved bin
+define("PS_ITEMS2HOLD", "Q");       # slice (module)  # editor        #  S       # move item to holding bin
+define("PS_ITEMS2TRASH", "R");      # slice (module)  # editor        #  S       # move item to trash bin
+define("PS_SEARCH", "S");           # slice (module)  # administrator #  S       # change search form settings
+define("PS_EDIT_ALL_ITEMS", "T");   # slice (module)  # editor        #  S       # change all items
+define("PS_MODW_EDIT_CODE", "T");   #                                     W      #
+define("PS_USERS", "U");            # slice (module)  # administrator #  S       # manage users
+define("PS_FULLTEXT", "X");         # slice (module)  # administrator #  S       # change item fulltext view
+##########################################################################################################
 
-# permissions for "site" module. The letters are the same as for slice module.
-define("PS_MODW_EDIT_CODE", PS_EDIT_ALL_ITEMS);
-define("PS_MODW_SETTINGS", PS_EDIT);
 
-// numbers 1,2,... in perms record (objectclass apcacl atribute apcaci in LDAP)
-// on resolving permissions are this numbers replaced by real permissions defined in $perms_roles_perms
-$perms_roles_id = array("AUTHOR"=>"1",            // can write items and edit his items
-                        "EDITOR"=>"2",            // AUTHOR + can edit and manage all items
-                        "ADMINISTRATOR"=>"3",     // EDITOR + can change slice properties
-                        "SUPER"=>"4");            // ADMINISTRATOR + can set any properties for any slice
+# $perms_roles[role]['id'] is number stored to permission system for specified 
+# role. On usege time the number is replaced by set of letters defined in
+# $perms_roles[role]['perm']. However, it is possible to store the permission 
+# letters into perm system directly (in case you want user with specific rights)
 
-$perms_roles_perms = array("AUTHOR"=>PS_EDIT_SELF_ITEMS,
-                           "EDITOR"=>PS_EDIT_SELF_ITEMS.
-                                     PS_ITEMS2ACT.
-                                     PS_ITEMS2HOLD.
-                                     PS_ITEMS2TRASH.
-                                     PS_EDIT_ALL_ITEMS,           
-                           "ADMINISTRATOR"=>PS_EDIT.
-                                            PS_CATEGORY.
-                                            PS_FIELDS.
-                                            PS_SEARCH.
-                                            PS_USERS.
-                                            PS_COMPACT.
-                                            PS_FULLTEXT.
-                                            PS_FEEDING.           
-                                            PS_ADD_USER.
-                                            PS_DELETE_ITEMS.
-                                            PS_ITEMS2ACT.
-                                            PS_ITEMS2HOLD.
-                                            PS_ITEMS2TRASH.
-                                            PS_EDIT_SELF_ITEMS.
-                                            PS_CONFIG.
-                                            PS_EDIT_ALL_ITEMS,
-                           "SUPER"=>PS_EDIT.
-                                    PS_ADD.
-                                    PS_CATEGORY.
-                                    PS_FIELDS.
-                                    PS_SEARCH.
-                                    PS_USERS.
-                                    PS_COMPACT.
-                                    PS_FULLTEXT.
-                                    PS_FEEDING.           
-                                    PS_ADD_USER.
-                                    PS_DELETE_ITEMS.
-                                    PS_ITEMS2ACT.
-                                    PS_ITEMS2HOLD.
-                                    PS_ITEMS2TRASH.
-                                    PS_EDIT_SELF_ITEMS.
-                                    PS_EDIT_ALL_ITEMS.
-                                    PS_NEW_USER.
-                                    PS_CONFIG.
-                                    PS_MANAGE_ALL_SLICES);
+$perms_roles = array(
+  "AUTHOR" => array(              # AUTHOR can write items and edit his items (is true for 'slice' module)
+     'id' => '1',
+     'perm' => PS_EDIT_SELF_ITEMS),        # author
+  "EDITOR" => array(             # EDITOR = AUTHOR + can edit and manage all items (is true for 'slice' module)
+     'id' => '2',
+     'perm' => PS_EDIT_SELF_ITEMS.         # author
+               PS_ITEMS2ACT.               # editor
+               PS_ITEMS2HOLD.              # editor
+               PS_ITEMS2TRASH.             # editor
+               PS_EDIT_ALL_ITEMS),         # editor           
+  "ADMINISTRATOR" => array(      # ADMINISTRATOR = EDITOR + can change slice properties (is true for 'slice' module)
+     'id' => '3',
+     'perm' => PS_EDIT_SELF_ITEMS.         # author
+               PS_ITEMS2ACT.               # editor
+               PS_ITEMS2HOLD.              # editor
+               PS_ITEMS2TRASH.             # editor
+               PS_EDIT_ALL_ITEMS.          # editor
+               PS_EDIT.                    # administrator
+               PS_CATEGORY.                # administrator
+               PS_FIELDS.                  # administrator
+               PS_SEARCH.                  # administrator
+               PS_USERS.                   # administrator
+               PS_COMPACT.                 # administrator
+               PS_FULLTEXT.                # administrator
+               PS_FEEDING.                 # administrator
+               PS_ADD_USER.                # administrator
+               PS_DELETE_ITEMS.            # administrator
+               PS_CONFIG),                 # administrator
+  "SUPER" => array(              # SUPER = ADMINISTRATOR + can set any properties for any slice (is true for 'slice' module)
+     'id' => '4',
+     'perm' =>PS_EDIT_SELF_ITEMS.          # author
+              PS_ITEMS2ACT.                # editor
+              PS_ITEMS2HOLD.               # editor
+              PS_ITEMS2TRASH.              # editor
+              PS_EDIT_ALL_ITEMS.           # editor
+              PS_EDIT.                     # administrator
+              PS_CATEGORY.                 # administrator
+              PS_FIELDS.                   # administrator
+              PS_SEARCH.                   # administrator
+              PS_USERS.                    # administrator
+              PS_COMPACT.                  # administrator
+              PS_FULLTEXT.                 # administrator
+              PS_FEEDING.                  # administrator
+              PS_ADD_USER.                 # administrator
+              PS_DELETE_ITEMS.             # administrator
+              PS_CONFIG.                   # administrator
+              PS_ADD.                      # super
+              PS_NEW_USER.                 # super
+              PS_MANAGE_ALL_SLICES));      # super
+
+# defines, which roles youcan use with each module
+$perms_roles_modules = array( 
+  'S' => array("AUTHOR","EDITOR","ADMINISTRATOR"),  # S - slice
+      # There is not listed SUPER, because SUPER is permission for 'aa' object
+      # and not 'slice' object. 'aa' object is parent of all modules - setting 
+      # perm to 'aa' object is the same as setting it for all the modules
+      # (specific setting of 'slice' module for the user is stronger than 
+      # the 'aa' seting)
+  'W' => array("ADMINISTRATOR"),                    # site module
+  'A' => array("ADMINISTRATOR"),                    # MySQL Auth module
+  'J' => array("ADMINISTRATOR"));                   # jump module
+      # There is no specific roles in 'W', 'A', 'J' modules. 
+      # See include/constants.php3 for module definitions
 
 // replaces roles with apropriate perms
 // substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
 function ResolvePerms($perms) {
-  global $perms_roles_id, $perms_roles_perms;
+  global $perms_roles;
 
-  reset($perms_roles_id);
-  while( list($role, $letter) = each($perms_roles_id)) 
-    $perms = str_replace($letter, $perms_roles_perms[$role], $perms);
+  reset($perms_roles);
+  while( list(, $arr) = each($perms_roles)) 
+    $perms = str_replace($arr['id'], $arr['perm'], $perms);
   return $perms;
 }  
 
 // save all permissions for specified user to session variable
 function CachePermissions($user_id) {
   global $permission_uid, $permission_to, $sess, 
-         $perms_roles_id, $r_superuser;
+         $perms_roles, $r_superuser;
 
   $sess->register(permission_uid);
   $sess->register(permission_to);
@@ -144,7 +165,7 @@ function CachePermissions($user_id) {
 
   reset($permission_to["aa"]); 
   while( list($key,$val) = each($permission_to["aa"]) ) {
-    if( IsPerm($val, $perms_roles_id[SUPER]) )
+    if( IsPerm($val, $perms_roles['SUPER']['id']) )
       $r_superuser[$key] = true;
     $permission_to["aa"][$key] = ResolvePerms($val);       
   }  
@@ -200,8 +221,8 @@ function ComparePerms($perms1, $perms2) {
 // and global access rigths (rights to object aa).
 // Slice-specific perms take precedence except the SUPER access level
 function JoinAA_SlicePerm($slice_perm, $aa_perm) {
-  global $perms_roles_perms;
-  if (ComparePerms($aa_perm, $perms_roles_perms["SUPER"])=="E") {
+  global $perms_roles;
+  if (ComparePerms($aa_perm, $perms_roles["SUPER"]['perm'])=="E") {
     return $aa_perm;
   } else {
     return ($slice_perm ? $slice_perm : $aa_perm);

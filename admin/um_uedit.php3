@@ -77,6 +77,40 @@ function GetFiltered($type, $filter, $to_much, $none) {
   return $list;
 }
 
+function PrintModulePermRow($mid, $type, $name, $perm) {
+  global $MODULES, $perms_roles_modules, $perms_roles;
+  echo "<tr>
+         <td align='top'>".$MODULES[$type]['name'] .":&nbsp;$name<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
+         <td nowrap align='top'>";
+  if( isset($perms_roles_modules[$type]) AND is_array($perms_roles_modules[$type]) ) {
+    reset($perms_roles_modules[$type]);
+    while( list( ,$role) = each( $perms_roles_modules[$type] ) ) {
+      echo "<input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
+      echo ( ComparePerms($perm,$perms_roles[$role]['id'])=='E' ) ?
+                                                             ' checked>' : '>';
+      echo "$role ";
+    }  
+  } else {
+    echo "<input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"ADMINISTRATOR\" 
+          checked>ADMINISTRATOR";
+  }        
+  echo "  </td>
+          <td nowrap align='top'>
+            <input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"REVOKE\">". L_REVOKE ."</td>
+        </tr>";
+}
+
+
+function PrintModuleAddRow($mod_options, $no) {
+  echo "<tr>
+         <td><select name=\"new_module[$no]\" onchange=\"SetRole($no)\">
+               <option> </option>
+               $mod_options</select></td>
+         <td><select name=\"new_module_role[$no]\">
+               <option> </option></select></td>
+        </tr>";
+}
+
 # End functions definitions ----------------------------------------
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
@@ -138,16 +172,19 @@ if( $selected_group ) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-# Process submited form ----------------------------------------
+# Process submited form -------------------------------------------------------
 
 if( $add_submit OR ($submit_action == "update_submit")) {
-    require $GLOBALS[AA_INC_PATH]."um_uedit.php3";
-    if( count($err) <= 1 ) {
-        $Msg = MsgOK(L_NEWUSER_OK);
-        go_url( con_url($sess->url($PHP_SELF), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
-    }
+  
+  # all the actions are in following require (we reuse this part of code for 
+  # slice wizard ...
+  require $GLOBALS[AA_INC_PATH]."um_uedit.php3";
+  
+  if( count($err) <= 1 ) {
+    $Msg = MsgOK(L_NEWUSER_OK);
+    go_url( con_url($sess->url($PHP_SELF), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
+  }
 }
-
 
 # HTML form -----------------------------------------
 
@@ -156,19 +193,34 @@ include $GLOBALS[AA_INC_PATH]."js_lib.js";
 ?>
  <TITLE><?php echo L_A_UM_USERS_TIT;?></TITLE>
 <SCRIPT Language="JavaScript"><!--
-function UpdateUser(action) {
-  var foo= CommaDelimeted( 'document.f.sel_groups_sel' )
-  document.f.posted_groups.value = foo
-  document.f.submit_action.value = action
-  document.f.submit()
-}
+  function UpdateUser(action) {
+    var foo= CommaDelimeted( 'document.f.sel_groups_sel' )
+    document.f.posted_groups.value = foo
+    document.f.submit_action.value = action
+    document.f.submit()
+  }
+  
+  function RealyDelete() {
+    if( window.confirm('<?php echo L_REALY_DELETE_USER ?>')) {
+      document.f2.submit_action.value = 'usr_del'
+      document.f2.submit()
+    }  
+  }
 
-function RealyDelete() {
-  if( window.confirm('<?php echo L_REALY_DELETE_USER ?>')) {
-    document.f2.submit_action.value = 'usr_del'
-    document.f2.submit()
+  function SetRole(no) {
+    var idx=document.f.elements['new_module['+no+']'].selectedIndex;
+    var roles;
+    // which roles is defined for the module
+    roles = ( idx > 0 ) ? mod[mod_types.charCodeAt(idx-1)] : new Array('                     ');
+    // clear selectbox
+    for( i=(document.f.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
+      document.f.elements['new_module_role['+no+']'].options[i] = null
+    }  
+    // fill selectbox from the right slice  
+    for( i=0; i<roles.length ; i++) {
+      document.f.elements['new_module_role['+no+']'].options[i] = new Option(roles[i], roles[i])
+    }
   }  
-}
 // -->
 </SCRIPT>
 </HEAD>
@@ -216,31 +268,32 @@ function RealyDelete() {
 </table>
 
 <?php
+if( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
+  echo '</BODY></HTML>';
+  page_close();
+  exit;
+}
+  
 do {
-  if( $usr_new OR ($usr_edit AND ($selected_user!="n")) ) {
-    if($usr_edit AND !($submit_action == "update_submit")) {
-      if( !is_array($user_data = GetUser($selected_user)))
-        break;
-      $user_login = $user_data[login];
-      $user_firstname = $user_data[givenname];
-      $user_surname = $user_data[sn];
-      $user_password1 = "nOnEwpAsswD";    // unchanged password
-      $user_password2 = "nOnEwpAsswD";    // unchanged password
-      if( is_array($user_data[mail]))
-        $user_mail1 = $user_data[mail][0];
-        $user_mail2 = $user_data[mail][1];
-        $user_mail3 = $user_data[mail][2];
-      $aa_users = GetObjectsPerms(AA_ID, "aa");
-      if (strstr($aa_users[$selected_user]["perm"], $perms_roles_id["SUPER"])) {
-	$user_super = true;
-      }
+  if($usr_edit AND !($submit_action == "update_submit")) {
+    if( !is_array($user_data = GetUser($selected_user)))
+      break;
+    $user_login = $user_data[login];
+    $user_firstname = $user_data[givenname];
+    $user_surname = $user_data[sn];
+    $user_password1 = "nOnEwpAsswD";    // unchanged password
+    $user_password2 = "nOnEwpAsswD";    // unchanged password
+    if( is_array($user_data[mail]))
+      $user_mail1 = $user_data[mail][0];
+      $user_mail2 = $user_data[mail][1];
+      $user_mail3 = $user_data[mail][2];
+    $aa_users = GetObjectsPerms(AA_ID, "aa");
+    if (IsPerm($aa_users[$selected_user]["perm"], $perms_roles["SUPER"]['id'])) {
+      $user_super = true;
     }
-  } else {
-    echo '</BODY></HTML>';
-    page_close();
-    exit;
   }
 } while(false);
+
 
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
@@ -255,7 +308,7 @@ if( $usr_edit OR ($submit_action == "update_submit") )
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
 <?php
 
 # User data ---------------------------------------------------
@@ -274,15 +327,14 @@ if( $usr_edit OR ($submit_action == "update_submit") )
   FrmInputChBox("user_super", L_USER_SUPER, $user_super, false, "", 1, false);
 echo '</table></td></tr>';
 
-if( !$add_submit AND !$usr_new) {?>
+if( !$add_submit AND !$usr_new) {
+
+  # User - group membership -----------------------------------------?>
 
   <tr><td class=tabtit><b>&nbsp;<?php echo L_GROUPS?></b></td></tr>
   <tr><td>
-  <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
   <?php
-  
-  # User - group membership -----------------------------------------
-  
   echo '<tr><td width=190 align=center>'. L_ALL_GROUPS .'</td>
                   <td width=60>&nbsp;</td>
                   <td width=190 align=center>'. L_USERS_GROUPS .'</td></tr>
@@ -300,6 +352,42 @@ if( !$add_submit AND !$usr_new) {?>
   echo '    </td>
         </tr>
       </table></td></tr>';
+
+  # User - permissions -----------------------------------------?>
+
+  <tr><td class=tabtit><b>&nbsp;<?php echo L_PERMISSIONS?></b></td></tr>
+  <tr><td>
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+  <?php
+  echo '<tr>
+          <td>'. L_OBJECT .'</td>
+          <td>'. L_PERMISSIONS .'</td>
+          <td>'. L_REVOKE .'</td></tr>';
+      
+  $perm_slices = GetIDPerms($selected_user, "slice", 1);  # there are not only Slices, but other Modules too
+  $SQL = "SELECT name, type, id FROM module ORDER BY type,name";
+  $db->query($SQL);
+  while( $db->next_record() ) {
+    $mid = unpack_id($db->f('id'));
+    if( $perm_slices[$mid] ) 
+      PrintModulePermRow($mid, $db->f('type'), $db->f('name'), $perm_slices[$mid]);
+     else {               # no permission to this module
+                          # this module should be listed in 'Add perm' listbox
+      $mod_2B_add .= "<option value=\"$mid\">". safe($db->f('name')) .'</option>';
+      $mod_types .= $db->f('type');    # string for javascript to know, what 
+    }                                  # type of module the $mod_2B_add is
+  }?>
+    </table></td></tr>
+   <tr><td class=tabtit><b>&nbsp;<?php echo L_PERM_SEARCH?></b></td></tr>
+   <tr><td>
+    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+      <?php
+  if( isset($mod_2B_add) ) {          # there is some module to add
+    PrintModuleAddRow($mod_2B_add, 1);
+    PrintModuleAddRow($mod_2B_add, 2);
+    PrintModuleAddRow($mod_2B_add, 3);
+  } ?>
+    </table></td></tr><?php
 }  
       
 echo '<tr><td align="center">';
@@ -318,8 +406,19 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 ?>
   </td></tr></table>
 </FORM>
+<script language="JavaScript"><!--
+  var mod = new Array();
+  <?php 
+    echo "\n var mod_types='$mod_types';\n";
+    reset($MODULES);
+    while( list($k,$v) = each($MODULES) )
+      echo " mod[".ord($k)."] = new Array('". join("','", $perms_roles_modules[$k]) ."');\n";
+  ?>
+  SetRole(1);
+  SetRole(2);
+  SetRole(3);
+  // -->
+</script>
 </BODY>
 </HTML>
-<?php page_close()
-?>
-
+<?php page_close() ?>

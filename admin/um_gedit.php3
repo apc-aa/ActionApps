@@ -135,7 +135,7 @@ if( $add_submit OR ($submit_action == "update_submit"))
         $err["LDAP"] = MsgErr( L_ERR_GROUP_ADD );
       if( count($err) <= 1 ) {
 	if ($group_super) {	// set super admin privilege
-	  AddPerm($newgroupid, AA_ID, "aa", $perms_roles_id["SUPER"]);
+	  AddPerm($newgroupid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
 	}
         $Msg = MsgOK(L_NEWGROUP_OK);
         go_url( con_url($sess->url($PHP_SELF), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);
@@ -145,7 +145,7 @@ if( $add_submit OR ($submit_action == "update_submit"))
       if(!ChangeGroup($grouprecord))
         $err["LDAP"] = MsgErr( L_ERR_GROUP_CHANGE );
       if ($group_super) {		// set or revoke super admin privilege
-	AddPerm($grouprecord["uid"], AA_ID, "aa", $perms_roles_id["SUPER"]);
+	AddPerm($grouprecord["uid"], AA_ID, "aa", $perms_roles["SUPER"]['id']);
       } else {
 	DelPerm($grouprecord["uid"], AA_ID, "aa");
       }
@@ -251,7 +251,7 @@ do {
       $group_name = $group_data[name];
       $group_description = $group_data[description];
       $aa_users = GetObjectsPerms(AA_ID, "aa");
-      if (strstr($aa_users[$selected_group]["perm"], $perms_roles_id["SUPER"])) {
+      if (strstr($aa_users[$selected_group]["perm"], $perms_roles["SUPER"]['id'])) {
 	$group_super = true;
       }
     }  
