@@ -169,7 +169,7 @@ define("L_PARAM_WIZARD_INPUT_hco_PAR4_NAME","First selectable");
 define("L_PARAM_WIZARD_INPUT_hco_PAR4_DESC","First level which will have a Select button");
 define("L_PARAM_WIZARD_INPUT_hco_PAR4_EXAMPLE","0");
 define("L_PARAM_WIZARD_INPUT_hco_PAR5_NAME","Level names");
-define("L_PARAM_WIZARD_INPUT_hco_PAR5_DESC","Names of the level boxes, separated by tilde (~).");
+define("L_PARAM_WIZARD_INPUT_hco_PAR5_DESC","Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ...");
 define("L_PARAM_WIZARD_INPUT_hco_PAR5_EXAMPLE","Top level~Second level~Keyword");
 
 define("L_PARAM_WIZARD_FUNC_NAME","Function");
