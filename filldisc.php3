@@ -66,11 +66,15 @@ require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."discussion.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require $GLOBALS[AA_INC_PATH]."itemview.php3";
+require $GLOBALS[AA_INC_PATH]."item.php3";
 
 $err["Init"] = "";       // error array (Init - just for initializing variable)
 
+$new_id = new_id();
+
 $catVS = new Cvarset();
-$catVS->add("id", "unpacked", new_id());
+$catVS->add("id", "unpacked", $new_id);
 $catVS->add("parent", "unpacked", $d_parent);
 $catVS->add("item_id", "unpacked", $d_item_id);
 $catVS->add("subject", "quoted", $d_subject);
@@ -91,6 +95,7 @@ $db = new DB_AA;
 if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
   $err["DB"] .= MsgErr("Can't add discussion comment");
 }
+send2mailList();
 
 $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'");
 $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed -
@@ -98,4 +103,55 @@ $cache->invalidateFor("slice_id=".unpack_id($slice_id));  # invalidate old cache
 
 updateDiscussionCount($d_item_id);        // update a count of the comments belong to the item
 go_url( $url);
+
+/* This function sends new discussion items to one mail adderess 
+   if a field with name DiscussionMailList
+   exists and is filled with these parameters separated by ":" (use "#:" instead of verbatim ":")
+   
+   view_id:mail_address:mail_subject:from:reply-to:errors-to
+*/
+
+function send2mailList () {
+    global $d_item_id, $new_id, $db;
+    $db->query ("SELECT content.text FROM 
+                 content INNER JOIN item ON item.id = content.item_id INNER JOIN
+                 field ON content.field_id = field.id
+                 WHERE item.id='".q_pack_id($d_item_id)."'
+                 AND field.name = 'DiscussionMailList'"); 
+    if ($db->next_record()) {
+        list ($vid, $maillist, $subject, $from, $reply_to, $errors_to) = split_escaped (":", $db->f("text"), "#:");
+        
+        $db->query("SELECT * FROM view WHERE id=$vid");
+        if ($db->next_record()) {
+            $view_info = $db->Record;
+            $html = $view_info[flag] & DISCUS_HTML_FORMAT;
+            // create array of parameters
+            $disc = array('ids'=>array ('x'.$new_id => 1),
+                          'type'=>"fulltext",
+                          'item_id'=> $d_item_id,
+                          'vid'=> $vid,
+                          'html_format' => $html
+                           );
+            $aliases = GetDiscussionAliases();
+      
+            $format = GetDiscussionFormat($view_info);
+            $format['id'] = $view_info['slice_id']; // set slice_id because of caching
+      
+            $itemview = new itemview( $db, $format, "", $aliases, "","", "", "", $disc);
+            $mailbody = $itemview->get_output("discussion"); //.serialize($format);
+
+            $mailheaders = $from ? "From: $from\r\n" : "";
+            $mailheaders .= $reply_to ? "Reply-To: $reply_to\r\n" : "";
+            $mailheaders .= $errors_to ? "Errors-To: $errors_to\r\n" : "";
+                        
+            $db->query ("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
+                         WHERE item.id='".q_pack_id($d_item_id)."'");
+            $db->next_record();                         
+            global $LANGUAGE_CHARSETS;                         
+            $charset = $LANGUAGE_CHARSETS [substr ($db->f("lang_file"),0,2)];
+            mail_html_text ($maillist, $subject, $mailbody, $mailheaders, $charset, 0);
+        }
+    }
+}
+
 ?>
