@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@ http://www.apc.org/
 */
 
 // used by the itemedit.php3 page, which calls getTrig ()
- 
-require_once $GLOBALS["AA_INC_PATH"]."util.php3"; 
- 
+
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+
 $GLOBALS["js_triggers"] = array (
     "input" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
     "select" => array ("onBlur", "onFocus", "onChange"),
@@ -43,29 +43,29 @@ function getJavascript ($slice_id)
     return $javascript;
 }
 
-/* $js_trig is an array with triggers used, e.g. 
-    $js_trig["onBlur"] = 1 
+/* $js_trig is an array with triggers used, e.g.
+    $js_trig["onBlur"] = 1
     $js_trig["onClick"] = 1
     means: aa_onBlur, aa_onClick are defined */
 
 function getTrig ()
 {
     global $js_triggers;
-    
+
     unset ($js_trig);
-    
+
     reset ($js_triggers);
     while (list ($control, $ctrigs) = each ($js_triggers)) {
         reset ($ctrigs);
         while (list (,$ctrig) = each ($ctrigs))
             $js_trig[$ctrig] = 1;
     }
-    
+
     $javascript = getJavascript($GLOBALS["slice_id"]);
-    
+
     $ws = "[ \t\n\r]*";
     reset ($js_trig);
-    while (list ($trg) = each ($js_trig)) 
+    while (list ($trg) = each ($js_trig))
         // match e.g. aa_onSubmit ( fieldid ) {
         $js_trig[$trg] = preg_match ("/aa_$trg$ws\($ws"."fieldid$ws\)$ws\{/", $javascript) ? 1 : 0;
     return $js_trig;
@@ -82,20 +82,23 @@ function getTriggers ($control, $unpacked_fieldid, $add="") {
         $unpacked_fieldid = substr ($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 2);
     if (substr ($unpacked_fieldid, -1) == "x")
     	$unpacked_fieldid = substr ($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 1);
-    if (preg_match("/^[0-9a-f]+$/", $unpacked_fieldid))
-        $fieldid = pack_id (substr ($unpacked_fieldid,1));
+
+    if (preg_match("/^v[0-9a-f]+$/", $unpacked_fieldid))
+        $fieldid = pack_id(substr ($unpacked_fieldid,1));
+    elseif(preg_match("/^[0-9a-f]+$/", $unpacked_fieldid))
+        $fieldid = pack_id ($unpacked_fieldid);
     else $fieldid = $unpacked_fieldid;
-    
+
     reset ($js_triggers[$control]);
     while (list (,$ctrig) = each ($js_triggers[$control])) {
         $funcs = "";
         if ($add[$ctrig])
             $funcs = $add[$ctrig].";";
-        if ($js_trig[$ctrig]) 
+        if ($js_trig[$ctrig])
             $funcs .= "aa_$ctrig('$fieldid');";
         if ($funcs)
             $retval .= " $ctrig=\"$funcs\"";
-    }        
+    }
     return $retval;
 }
 ?>
