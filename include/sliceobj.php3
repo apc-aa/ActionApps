@@ -96,6 +96,8 @@ class slice {
     }
 
     // fetch the fields
+    // returns an array with two elements [0] is array in form
+    // wanted by Storeitem etc, [1] is array of fields in priority order
     function fields() {
         if (!isset($this->fields)) {
             $this->fields = GetSliceFields($this->unpacked_id());

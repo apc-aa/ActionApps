@@ -940,7 +940,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     global $db, $varset, $itemvarset;
     $debugsi=$GLOBALS[debugsi]; 
 
-    if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id"); 
+    if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id, fields=",$fields); 
     if (!is_object ($db)) $db = new DB_AA;
     if (!is_object ($varset)) $varset = new CVarset();
     if (!is_object ($itemvarset)) $itemvarset = new CVarset();
@@ -978,13 +978,14 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
 
     reset($content4id);
     while(list($fid,$cont) = each($content4id)) {
+        if ($debugsi >= 5) huhl("StoreItem:fid=",$fid);
         $f = $fields[$fid];
         //print_r($f);
         // input insert function
         $fnc = ParseFnc($f["input_insert_func"]);   
         // input insert function parameters of field
         $fncpar = ParseFnc($f["input_insert_func"]);   
-        if( $fnc ) {                  
+        if( $fnc ) {               
             $fncname = 'insert_fnc_' . $fnc["fnc"];
             // update content table or fill $itemvarset
             if( !is_array($cont))
@@ -1008,10 +1009,8 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                         $thumbnails = $fncname($id, $f, $v, $fncpar["param"], $fields);
                 }
                 else  
-                    /*{ echo "<b>$fid</b>";print_r ($f);
-                    echo  "=>".$fncname."<br><br>"; }*/
+                    if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fncpar["param"],")");
                     $fncname($id, $f, $v, $fncpar["param"]);
-                //    print_r($fnc);
                 // do not store multiple values if field is not marked as multiple
                 // ERRORNOUS
                 //if( !$f["multiple"]!=1 ) 

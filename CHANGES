@@ -1,3 +1,6 @@
+03/28/03 - fixed bug with sliceobj that broke RSS
+(mitra)  - changed debugging in itemfunc & 
+         - fixed bug searchlib not showing items with no exp or publish date
 03/24/03 - fixed "Bad Table view ID: modedit" bug when switching from one module 
 (honzam)   type to another
          - fixed: design setting is not lost when you scroll to another page 

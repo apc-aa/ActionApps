@@ -467,12 +467,12 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   $now = now();                                              # select bin -----
   switch( $type ) {
     case 'ACTIVE':  $SQL .= " item.status_code=1 AND
-                              item.publish_date <= '$now' ";
+        ( item.publish_date <= '$now' OR item.publish_date IS NULL ) ";
                     # condition can specify expiry date (good for archives)
                     if( !( $ignore_expiry_date &&
                            defined("ALLOW_DISPLAY_EXPIRED_ITEMS") &&
                            ALLOW_DISPLAY_EXPIRED_ITEMS) )
-                      $SQL .= " AND item.expiry_date > '$now' ";
+                      $SQL .= " AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
                     break;
     case 'EXPIRED': $SQL .= " item.status_code=1 AND
                               item.expiry_date <= '$now' ";

@@ -111,7 +111,7 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
   	}
     $feed["DebugName"] = "APC Feed #$feed_id: $feed[name] : $feed[remote_slice_name] -> "
                 .$l_slice->name();
-	if ($debugfeed >= 1) print($feed["DebugName"]);
+	if ($debugfeed >= 1) print("\n<br>".$feed["DebugName"]);
 	$xml_data = xml_fetch( $feed[server_url], ORG_NAME, $feed[password],
             $feed[user_id], unpack_id128($feed[remote_slice_id]),
             $feed[newest_item], implode(" ",$cat_ids));
@@ -163,7 +163,7 @@ function onefeedStore($feed_id,$feed,$debugfeed,$fill) {
     // update items
     if (isset($aa_rss[items])) {
       if ($debugfeed >= 8) print("\n<br>onefeed: there are some items to update");
-        xmlUpdateItems($feed_id, $feed, $aa_rss, $l_slice_id, $r_slice_id, $l_slice->fields(), 
+        xmlUpdateItems($feed_id, $feed, $aa_rss, $l_slice_id, $r_slice_id, $l_slice, 
       $ext_categs, $l_categs,$debugfeed,$fill);
 	  if ($feed[feed_type] == FEEDTYPE_APC) {
 	    //update the newest item
@@ -177,9 +177,10 @@ function onefeedStore($feed_id,$feed,$debugfeed,$fill) {
 // stores items to the table item
 // $fill will control whether it stores for FEEDTYPE_RSS, but is currently not
 // implemented for FEEDTYPE_APC
-function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_slice_fields, &$ext_categs, &$l_categs, $debugfeed,$fill) {
+function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_sliceobj, &$ext_categs, &$l_categs, $debugfeed,$fill) {
   global $db, $varset, $itemvarset, $default_rss_map;
   if ($debugfeed >= 8) print("\n<br>xmlUpdateItems");
+  $lf = $l_sliceobj->fields(); $l_slice_fields = $lf[0];
 
 	if (!($channel = $aa_rss[channels][$r_slice_id])) {
       while (list (,$channel) = each($aa_rss[channels])) {
@@ -241,6 +242,7 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
     while (list($to_field_id,$v) = each($map)) {
       switch ($v[feedmap_flag]) {
         case FEEDMAP_FLAG_VALUE:
+          if ($debugfeed >= 9) print("\n<br>Setting default $to_field_id to ".$v[value]);
           $content4id[$to_field_id][0][value] = quote($v[value]);
           break;
 
@@ -258,16 +260,20 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
 	if ($debugfeed >= 3) print("\n<br>      " . $content4id['headline........'][0][value]);
 	if ($debugfeed >= 8) { print("\n<br>xmlUpdateItems:content4id="); print_r($content4id); }
    if ($fill) {
-       StoreItem( $new_item_id, $l_slice_id, $content4id, 
-            $l_slice_fields, true, true, false );
+        if (! StoreItem( $new_item_id, $l_slice_id, $content4id, 
+            $l_slice_fields, true, true, false )) {
+            print("\n<br>xmlUpdateItems:StoreItem failed");
+        }
+        else {
                         # insert, invalidatecache, not feed
     // set the item to be recevied from remote node (todo - set via content4id)
-	    $SQL = "UPDATE item SET externally_fed='".quote($feed[name])
+  	    $SQL = "UPDATE item SET externally_fed='".quote($feed[name])
                 ."' WHERE id='".q_pack_id($new_item_id)."'";
 	// Update relation table to show where came from
     	AddRelationFeed($new_item_id,$item_id);
-    	if ($debugfeed >= 8) print("\n<br>$SQL");
+    	if ($debugfeed >= 8) print("\n<br>xmlUpdateItems:$SQL");
         $db->query($SQL);
+        }
 	}
   } // while $aa_rss[items]
 
