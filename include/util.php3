@@ -1111,25 +1111,28 @@ function mail_html_text ($to, $subject, $message, $additional_headers = "", $cha
         $textmessage = base64_encode ($message);
     }
        
+    // All MIME headers should be terminated by CR+LF (\r\n)
+    // but the headers in the individual parts should only be delimited by LF (\n)
+       
     $additional_headers .= 
         "MIME-Version: 1.0\r\n"
         ."Content-Type: multipart/alternative;\r\n"
         ." boundary=\"$boundary\"\r\n"
         ."Content-Transfer-Encoding: $encoding\r\n"
         ."\r\n"
-        ."--$boundary\r\n"
+        ."--$boundary\n"
 
-        ."Content-Type: text/html; charset=\"$charset\"\r\n"
-        ."Content-Transfer-Encoding: $encoding\r\n"
-        ."\r\n"
-        .$message."\r\n"
-        ."--$boundary\r\n"
+        ."Content-Type: text/html; charset=\"$charset\"\n"
+        ."Content-Transfer-Encoding: $encoding\n"
+        ."\n"
+        .$message."\n"
+        ."--$boundary\n"
 
-        ."Content-Type: text/plain; charset=\"$charset\"\r\n"
-        ."Content-Transfer-Encoding: $encoding\r\n"
+        ."Content-Type: text/plain; charset=\"$charset\"\n"
+        ."Content-Transfer-Encoding: $encoding\n"
         ."\r\n"
-        .$textmessage."\r\n"
-        ."--$boundary--\r\n";
+        .$textmessage."\n"
+        ."--$boundary--\n";
         
      mail ($to, $subject, "", $additional_headers);
 }
