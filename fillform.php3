@@ -4,10 +4,17 @@
  *  forms and searchforms.	
  *	
  *	Params:
- *		my_item_id .. long ID of the item
+ *		my_item_id .. unpacked long ID of the item
  *		fillConds=1 .. generates the fillConds code (otherwise, generate fillForm code)
  *		notrun=1 .. doesn't run the JavaScript function
  *		form=formname .. look for the controls in the form formname. If not set, will use 'f'.
+ *      called_from_filler=1 .. do not even show JavaScript, because filler sends
+ *                              the item content to be re-displayed
+ *      lookup_conds[] .. if you want to find item not by $my_item_id
+ *             but by specified conditions. You must ensure the condition gives
+ *             exactly 1 result.
+ *      oldcontent4id
+ *      show_result
  *	
  *	This script contains two similar functions:
  *	
@@ -41,7 +48,7 @@
  *   
  * @package UserInput
  * @version $Id$
- * @author Jakub Adamek <jakubadamek@seznam.cz>
+ * @author Jakub Adamek <jakubadamek@ecn.cz> 
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
 */ 
 /* 
@@ -68,7 +75,7 @@ if (!isset ($form)) $form = "f";
 $encap = ( ($encap=="false") ? false : true );
 
 /** APC-AA configuration file */
-require "./include/config.php3";
+require "include/config.php3";
 /** Defines simplified class for page scroller */
 require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 /** Set of useful functions used on most pages */
@@ -100,7 +107,6 @@ function RestoreVariables() {
       $GLOBALS[$k] = $v;
   }
 }  
-
 RestoreVariables();
 
 // core JavaScript functions
@@ -112,8 +118,17 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
 
-add_vars();
+if ($use_http_auth)
+{ echo "REMOTE USER: ".$_SERVER["REMOTE_USER"]; exit; }
 
+add_vars();
+add_post2shtml_vars();
+
+$jsstart = "<SCRIPT language=JavaScript>
+<!--\n";
+$jsfinish = "
+// -->
+</SCRIPT>\n";
 
 /* * * * * * * * * * * FILL CONDS * * * * * * * * * */
 /** gives JavaScript filling the AA date 3 selectboxes
@@ -124,7 +139,8 @@ function fillConds () {
 	global $form, $conds, $dateConds;
     global $conds_not_field_names;  
 	
-	echo "function fillConds () {";
+	echo $GLOBALS["jsstart"]
+        ."function fillConds () {";
 	   
 	if (is_array ($conds)) {
 		reset ($conds);
@@ -163,7 +179,8 @@ function fillConds () {
 	}
 	echo "\n}\n";
 	
-	if (!isset ($notrun)) echo "\n fillConds ();\n";
+	if (!isset ($GLOBALS["notrun"])) echo "\n fillConds ();\n";
+    echo $GLOBALS["jsfinish"];
 }
 
 /* * * * * * * * * * * FILL FORM * * * * * * * * * */
@@ -178,36 +195,58 @@ function safeChars ($str) {
   return $retVal;
 }
 
-/* I had troubles with the packed IDs because some chars from them appear as
+/* Jakub: I had troubles with the packed IDs because some chars (codes > 128) 
+    from them appear as
 	single quote - of course it depends on used char-encoding and therefore
 	is hard to solve. I have forbidden id and slice_id to appear and hope this
 	is enough. */
 
 function fillForm () {
-	global $form, $conds, $dateConds, $my_item_id, $db;
+    global $my_item_id, $lookup_conds, $slice_id, $oldcontent4id;
+    
+    if (is_array ($lookup_conds)) {
+        list ($fields) = GetSliceFields ($slice_id);
+        $zids = QueryZIDs($fields, $slice_id, $lookup_conds, "", "", "ALL");
+        if ($zids->count() == 1) 
+            $my_item_id = $zids->longids(0);
+        else return;
+    }            
+        
+    if (!is_array ($oldcontent4id)) {        
+        $oldcontent = GetItemContent($my_item_id);
+        $oldcontent4id = $oldcontent[$my_item_id];   
+    }
+    
+    fillFormWithContent ($oldcontent4id);
+}
 
-	$item_pid = addslashes(pack_id128($my_item_id));
-	$SQL = "SELECT * FROM item WHERE id='$item_pid'";
-	$db->query($SQL);
-	if (!$db->next_record()) {
+function fillFormWithContent ($oldcontent4id) {
+	global $form, $conds, $dateConds, $my_item_id;
+
+	if (!is_array ($oldcontent4id)) {
+        echo $GLOBALS["jsstart"];
         echo "
         var fillform_fields = new Array ();
         function fillForm() {} \n"; 
+        echo $GLOBALS["jsfinish"];
         return;
     }
+    
 	# are we allowed to update this item?
-	if (!($db->f("flags") & ITEM_FLAG_ANONYMOUS_EDITABLE)) {
+	if ($oldcontent4id["flags..........."][0]['value'] 
+       & ITEM_FLAG_ANONYMOUS_EDITABLE == 0) {
+        echo $GLOBALS["jsstart"];    
 		echo "
         <!-- This item isn't allowed to be changed anonymously. -->
         var fillform_fields = new Array ();
         function fillForm() {} \n"; 
+        echo $GLOBALS["jsfinish"];        
 		return;
 	}
 	
-    $oldcontent = GetItemContent($my_item_id);
-    $oldcontent4id = $oldcontent[$my_item_id];   
     $timezone = getTimeZone();
 
+    echo $GLOBALS["jsstart"];
 	echo "
     var fillform_fields = new Array (\n";
 	
@@ -221,7 +260,7 @@ function fillForm () {
 				//$control_id = $field_id;
 				$control_id = 'v'.unpack_id128($field_id);
 				// field password.......x is used to authenticate item edit
-				if (substr ($field_id, 0, 15) != "password......." 
+				if (substr ($field_id, 0, 14) != "password......" 
 					&& $field_id != "id.............."
 					&& $field_id != "slice_id........"
 					&& $myvalue != "") {
@@ -233,28 +272,24 @@ function fillForm () {
 		}
 	}
 	
-    echo "); \n
-	function fillForm () \n
-	{ \n
-        for (i=0; i < fillform_fields.length; ++i) { \n
-            var item = fillform_fields[i]; \n
-            setControlOrAADate (item[0],item[1],item[2],item[3],item[4],item[5]); \n
-        } \n
+    echo "); 
+    
+    function fillForm () { 
+        setControl ('$form','my_item_id','$my_item_id');
+        for (i=0; i < fillform_fields.length; ++i) { 
+            var item = fillform_fields[i]; 
+            setControlOrAADate (item[0],item[1],item[2],item[3],item[4],item[5]); 
+        } 
     }\n";
-	if (!isset ($notrun)) echo "\n fillForm ();";
+	if (!isset ($GLOBALS["notrun"])) echo "
+    fillForm ();";
+    echo $GLOBALS["jsfinish"];    
 }
-?>
 
-<SCRIPT language=JavaScript>
-<!--
+if ($show_result)
+    readfile (con_url ($show_result, "result=".urlencode(serialize($result))));
 
-<?php
 if (isset($fillConds)) 
 	fillConds();
-else
-	fillForm ();
+else fillForm ();
 ?>
-
-// -->
-</SCRIPT>
-

@@ -4,14 +4,20 @@
  *
  * Parameters (usually from a HTML form):
  * <pre>
+ *   my_item_id   - item id, used when editing (not adding a new) item in the
+ *                  anonymous form
  *   slice_id     - id of slice into which the item is added
  *   notvalidate  - if true, data input validation is skipped
- *   ok_url       - url where to go, if item is successfully sored in database
- *   err_url      - url where to go, if item is not sored in database (due to
+ *   ok_url       - url where to go, if item is successfully stored in database
+ *   err_url      - url where to go, if item is not stored in database (due to
  *                  validation of data, ...)
  *   force_status_code - you may add this to force to change the status code
  *                       but the new status code must always be higher than bin2fill
  *                       setting (you can't add to the Active bin, for example)
+ *   notshown[] - array (form field ID => 1) of unpacked IDs, e.g. v7075626c6973685f646174652e2e2e2e
+ *                  for which you want to set the default value
+ *   use_post2shtml
+ *   text_password
  * </pre>
  * @package UserInput
  * @version $Id$
@@ -65,7 +71,7 @@ if (!get_magic_quotes_gpc()) {
 }
 
 /** APC-AA configuration file */
-require "./include/config.php3";
+require "include/config.php3";
 /** Main include file for using session management function on a page */
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
 /** Set of useful functions used on most pages */
@@ -81,7 +87,7 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 /** date helper functions */
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
-
+    
 /**
  * Outputs a notification page when an error occurs.
  * If the err_url parameter is passed, redirects to the specified URL,
@@ -90,154 +96,140 @@ require $GLOBALS[AA_INC_PATH]."feeding.php3";
  * @param string $txt error message to print
  */
 function SendErrorPage($txt) {
-  if( $GLOBALS["err_url"] ) {
-    go_url( con_url($GLOBALS["err_url"], "err=".substr(serialize($txt),0,200)));
-  }
-  echo HtmlPageBegin("");
-  echo "</head><body>";
-  if( isset( $txt ) AND is_array( $txt ) )
-    PrintArray($txt);    
-  else 
-    echo $txt;
-  echo "</body></html>";
-  exit;
+    if( !$GLOBALS["err_url"] ) {
+        echo HtmlPageBegin("");
+        echo "</head><body>";
+        if( isset( $txt ) AND is_array( $txt ) )
+            PrintArray($txt);    
+        else echo $txt;
+        echo "</body></html>";
+        exit;
+    }
+    
+    else if (! $GLOBALS["use_post2shtml"]) 
+       go_url( con_url($GLOBALS["err_url"], "err=".substr(serialize($txt),0,200)));
+    
+    else {
+        // allows to call a script showing the error results from fillform
+        $GLOBALS["HTTP_POST_VARS"]["result"] = $txt;
+        // allows fillform to use this data 
+        $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = $GLOBALS["content4id"];            
+        $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
+        require "post2shtml.php3";
+        exit;
+    }
 }  
 
 /**
  * Loads a page if posting is successful. If the ok_url parameter is passed,  
  * redirects to the specified URL, else returns to the calling page.
- * @param string $txt looks like it isn't used?!
  */
-function SendOkPage($txt) {
-  if( $GLOBALS["ok_url"] )
-    go_url($GLOBALS["ok_url"]);
-  go_url($GLOBALS[HTTP_REFERER]);
-  exit;
+function SendOkPage() {
+    if( ! $GLOBALS["ok_url"] )
+        go_url($GLOBALS[HTTP_REFERER]);    
+        
+    else if (! $GLOBALS["use_post2shtml"]) 
+        go_url($GLOBALS["ok_url"]);
+    
+    else {
+        // allows fillform to use this data 
+        $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = $GLOBALS["content4id"];            
+        $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
+        require "post2shtml.php3";
+        exit;
+    }
 }  
 
-  # init used objects
-$db = new DB_AA;
-$err["Init"] = "";          // error array (Init - just for initializing variable
-$varset = new Cvarset();
-$itemvarset = new Cvarset();
+# init used objects
 
-if( !$slice_id )
-  SendErrorPage(_m("Slice ID not defined"));
-
-$error = "";
-$ok = "";
+if( !$slice_id ) SendErrorPage(array ("fatal"=>_m("Slice ID not defined"))); 
 
 $p_slice_id = q_pack_id($slice_id);
 $slice_info = GetSliceInfo($slice_id);
 
-if( !$slice_info )
-  SendErrorPage(_m("Bad slice ID"));
+if( !$slice_info ) SendErrorPage(array ("fatal"=>_m("Bad slice ID")));
 
-if( $slice_info["permit_anonymous_post"] < 1 )
-  SendErrorPage(_m("Anonymous posting not admitted."));
- else
-  $bin2fill = $slice_info["permit_anonymous_post"]; 
-
-  # get slice fields and its priorities in inputform
-list($fields,$prifields) = GetSliceFields($slice_id);   
-
-if( !(isset($prifields) AND is_array($prifields)) )
-  SendErrorPage(_m("No fields defined for this slice"));
-  
-// get defaults 
-reset($prifields);
-while(list(,$pri_field_id) = each($prifields)) {
-  $f = $fields[$pri_field_id];
-  $varname = 'v'. unpack_id128($pri_field_id);  // "v" prefix - database field var
-  $htmlvarname = $varname."html";
-  if( !$$varname ) {
-    $$varname = GetDefault($f);
-    $$htmlvarname = GetDefaultHTML($f);
-  }    
-  if( $f[input_validate]=='date') {            // get date from special variables
-    $datectrl_name = new datectrl($varname);
-    if( !$datectrl_name->update() AND !$f['required'])      // updates datectrl
-
-      // if not set - load from defaults
-      $datectrl_name->setdate_int($$varname);
-    $$varname = $datectrl_name->get_date();    // write to var
-  }  
-
-    // validate input data
-  if ( !$notvalidate ) {
-    if( $f[input_show] AND !$f[feed] ) {
-      switch( $f[input_validate] ) {
-        case 'text': 
-        case 'url':  
-        case 'email':  
-        case 'number':  
-        case 'id':  
-          ValidateInput($varname, $f[name], $$varname, $err,
-                        $f[required] ? 1 : 0, $f[input_validate]);
-          break;
-        case 'date':  
-          $datectrl_name->ValidateDate($f[name], $err);
-          break;
-        case 'bool':  
-          $$varname = ($$varname ? 1 : 0);
-          break;
-      }
-    }
-  }   
+// if you want to edit an item from an anonymous form, prepare its ID into 
+// the my_item_id hidden field
+if (!isset ($my_item_id)) {
+    $my_item_id = new_id();
+    $insert = true;
+}
+else {
+    $db->query ("SELECT id FROM item WHERE id='".q_pack_id($my_item_id)."'");
+    $insert = ! $db->next_record();
 }
 
-if( count($err)>1 )
-  SendErrorPage( $err );
+ValidateContent4Id ($err_valid, $slice_id, $insert ? "insert" : "update", $my_item_id, 
+    ! $notvalidate, $notshown);
+    
+if( !(isset($prifields) AND is_array($prifields)) )
+SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
 
-  # prepare content4id array before call StoreItem function
-$content4id = GetContentFromForm( $fields, $prifields );
+if (count ($err_valid) > 1) {
+    unset ($err_valid["Init"]);
+    $err["validate"] = $err_valid;
+}
 
-  # put an item to the right bin
-$content4id["status_code....."][0][value] = ($bin2fill==1 ? 1 : 2);
-if ($force_status_code && $force_status_code >= $bin2fill)
-	$content4id["status_code....."][0][value] = $force_status_code;
+// prepare content4id array before calling StoreItem 
+$content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
 
-// p_arr_m( $content4id );
+// copy old values for fields not shown in the form
+if (! $insert && is_array ($notshown)) {
+    reset ($notshown);
+    while (list ($vfield_id) = each ($notshown)) 
+        $field_ids[] = $vfield_id;
+    $zids = new zids($field_ids);
+    for ($i = 0; $i < $zids->count(); $i ++) {
+        $field_id = $zids->packedids ($i);
+        $content4id [$field_id] = $oldcontent4id [$field_id];
+    }
+}        
 
-# insert_item should be true for INSERT, false for UPDATE
-$insert_item = true;
+// put the item into the right bin
+$bin2fill = $slice_info["permit_anonymous_post"]; 
+if( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
 
-# if the form wants to post the item several times, it should prepare the ID into 
-# the my_item_id hidden field
-if (!isset ($my_item_id)) $my_item_id = new_id();
-else {
-	$item_pid = addslashes(pack_id128($my_item_id));
-	$SQL = "SELECT * FROM item WHERE id='$item_pid'";
-	$db->query($SQL);
-	if ($db->next_record())	{
-	 	# are we allowed to update this item?
-		if (!($db->f("flags") & ITEM_FLAG_ANONYMOUS_EDITABLE)) 
-			$err[] = "This item no. $item_pid isn't allowed to be changed anonymously.";
-		# find the password.......x field to authenticate item update
-		reset ($fields);
-		while (list ($field) = each($fields))
-			if (substr ($field,0,15) == "password.......") {
-				$db->query("SELECT * FROM content WHERE item_id='$item_pid' AND field_id='$field'");
-				if (!$db->next_record() || $db->f("text") != $content4id[$field])
-					$err[] = "You must set correct password to edit this field.";
-				break;
-			}
-		$content4id["flags..........."][0]['value'] = $db->f("flags");
-		# set to UPDATE
-		$insert_item = false;
-	}
-	else
-		$content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
+// you may force to put the item into a higher bin (active < hold < trash)
+$bin2fill = max ($bin2fill, $force_status_code);  
+$content4id["status_code....."][0][value] = $bin2fill;
+
+if ($insert) 
+    $content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
+// proove we are allowed to update this item
+else if (!is_array ($err)) {
+    $oldflags = $oldcontent4id["flags..........."][0]['value'];
+	// are we allowed to update this item?
+	if ($oldflags & ITEM_FLAG_ANONYMOUS_EDITABLE == 0) 
+		$err["flag"] = _m("This item no. %1 isn't allowed to be changed anonymously.", array ($my_item_id));
+
+	// look for a password.......x field to authenticate item update
+	reset ($fields);
+	while (list ($fid) = each($fields))
+		if (substr ($fid,0,14) == "password......") {
+            $password = $content4id[$fid][0]['value'];
+            if (!$text_password && $password) 
+                $password = md5 ($password);
+			if ($oldcontent4id[$fid][0]['value'] != $password)
+				$err["password"] = _m("Wrong password. This is a password-protected item.");
+			break;
+		}
+    $content4id["flags..........."][0]['value'] = $oldflags;
+}
+
+if ($embedded) {
+    $called_from_filler = 1;
+    require "fillform.php3";
+    fillFormWithContent ($content4id);
 }
 
   # update database
-if (count($err) == 1)
-	$added_to_db = StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert_item, 
-                          true, true );     # insert, invalidatecache, feed
-
-if( count($err) > 1)
-  SendErrorPage( $err );
- else
-  SendOkPage( _m("Anonymous posting filled OK."));
-
+if (!is_array ($err)) {
+	if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, 
+                          true, true ))     # insert, invalidatecache, feed
+        $err["store"] = _m("Some error in store item.");
+}        
+                          
+if( is_array ($err)) SendErrorPage( $err ); 
+else SendOkPage();
 ?>
