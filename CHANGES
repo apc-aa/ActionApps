@@ -1,8 +1,15 @@
+10/05/04 - Totally reworked MLX, now using packed ids for storing MLX info (mimo)
 10/04/04 - Added Multilingual Extension - dont use yet (mimo) 
              - mlx in URL to slice.php3
 	     - Slice Settings MLX field
 	     - Additions for MLX look&feel in tem manager
 	     ... more here http://mimo.gn.apc.org/mlx/
+10/01/04 - new {str_replace:<search>,<replace>,<string>} alias function' 	 
+ (honzam) - improved f_a (abstract grabbing) alias
+          - documentation: changed cvs login information to match current 	 
+            sourceforge state 	 
+          - fixed bug of not parsed spots in new (copied) site module 	 
+          - e-mail is now mandatory for AA user
 09/20/04 - Fixed buggy hierarchical constant editor (honzam)
 09/07/04 - The value of Display counter could be set be CSV importer of itemform
 (honzam) - bugfix - html flag for CSV import now works
