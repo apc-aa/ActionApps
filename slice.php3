@@ -34,30 +34,30 @@ http://www.apc.org/
 #optionaly listlen   // change number of listed items in compact view
                      // (aplicable in compact viewe only) 
 #optionaly items[x]  // array of items to show one after one as fulltext 
-                     // the array format is 
+                     // the array format is
 #easy_query          // for easiest form of query
 #order               // order field id - if other than publish date
                      // add minus sign for descending order (like "headline.......1-"); 
 #timeorder           // rev - reverse publish date order 
                      // (less priority than "order")
-#no_scr              // if true, no scroller is displayed                     
+#no_scr              // if true, no scroller is displayed
 #scr_go              // sets scroller to specified page
 #scr_url             // redefines teh page where the scroller should go (it is 
                      // usefull if you include slice.php3 from another php script)
 #restrict            // field id used with "res_val" and "exact" for restricted
-                     // output (display only items with 
+                     // output (display only items with
                      //       "restrict" field = "res_val"
 #res_val             // see restrict
 #exact               // = 1: "restrict" field must match res_val exactly (=)
                      // undefined: substring is sufficient (LIKE '%res_val%')
-                     // = 2: the same as 1, but the res_val is taken as 
+                     // = 2: the same as 1, but the res_val is taken as
                      // expression (like: "environment or (toxic and not fuel)")
 #als[]               // user alias definition. Parameter 'als[MY_ALIAS]=Summary'
                      // defines alias _#MY_ALIAS. If used, it prints 'Summary'.
 #lock                // used in join with "key" for multiple slices on one page
-                     // display. each slice have to have its lock, so commands 
+                     // display. each slice have to have its lock, so commands
                      // (like sh_itm, scr_go, ...) will be executed only if key
-                     // is the same as lock. key is send automaticaly with all 
+                     // is the same as lock. key is send automaticaly with all
                      // links generated in slice (at this time just prepared)
 #key                 // see lock (at this time just prepared)
 #slicetext           // displays just the text instead of any output
@@ -72,32 +72,40 @@ http://www.apc.org/
 #optionally hideFulltext // if set, don't show fulltext part
 #optionally neverAllItems // if set, don't show anything when everything would be shown (if no conds[] are set)
 #optionally defaultCondsOperator // replaces LIKE for conds with not specified operator
-#optionally group_n   // displayes only the n-th group (in listings where items 
-                      // are grouped by some field (category, for example)) 
-                      // good for display all the items of last magazine issue 
+#optionally group_n   // displayes only the n-th group (in listings where items
+                      // are grouped by some field (category, for example))
+                      // good for display all the items of last magazine issue
                       // ( group_n=1 )
+
+function getmicrotime(){
+  list($usec, $sec) = explode(" ",microtime());
+  return ((float)$usec + (float)$sec);
+}
+
+$timestart = getmicrotime();
+
 
 # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
-  }  
+  }
   for (reset($val); list($k, $v) = each($val); )
     $ret[$k] = Myaddslashes($v, $n+1);
   return $ret;
-}    
+}
 
-if (!get_magic_quotes_gpc()) { 
-  // Overrides GPC variables 
+if (!get_magic_quotes_gpc()) {
+  // Overrides GPC variables
   if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
+      $$k = Myaddslashes($v);
 }
 
 $encap = ( ($encap=="false") ? false : true );
@@ -113,26 +121,23 @@ require $GLOBALS[AA_INC_PATH]."discussion.php3";
 // function definitions:
 require $GLOBALS[AA_INC_PATH]."slice.php3";
 
-# $debugtimes[]=microtime();
-
 if ($encap){require $GLOBALS[AA_INC_PATH]."locsessi.php3";}
-else {require $GLOBALS[AA_INC_PATH]."locsess.php3";} 
+else {require $GLOBALS[AA_INC_PATH]."locsess.php3";}
 
 page_open(array("sess" => "AA_SL_Session"));
 
-$sess->register(r_packed_state_vars); 
+$sess->register(r_packed_state_vars);
 $sess->register(slices);
 
 $r_state_vars = unserialize($r_packed_state_vars);
 
-# there was problems with storing too much ids in session veriable, 
+# there was problems with storing too much ids in session veriable,
 # so I commented it out. It is not necessary to have it in session. The only
 # reason to have it there is the display speed, but because of impementing
 # pagecache.php3, it is not so big problem now
 
-//$sess->register(item_ids);    
+//$sess->register(item_ids);
 
-# $debugtimes[]=microtime();
 
 list($usec, $sec) = explode(" ",microtime()); 
 $slice_starttime = ((float)$usec + (float)$sec); 
@@ -319,7 +324,7 @@ if(!is_object($scr)) {
 if( $listlen ) 
   $scr->metapage = $listlen;
 // optional script parameter
-if( $scr_go )  
+if( $scr_go )
   $scr->current = $scr_go;
 // comes from easy_scroller -----------
 if( $scrl && is_object ($scr)) 
@@ -410,7 +415,7 @@ else {
     list ($order, $orderdirection) = each ($order);
   }  
     
-  if ($debug) 
+  if ($debug)
     echo "Group by: $group_by. Slice_info[category_sort] $slice_info[category_sort] slice_info[group_by] $slice_info[group_by]";
     
   if( $group_by ) {
@@ -460,7 +465,8 @@ else {
   else 
     $sort[] = array ( 'publish_date....' => 'd' );
 
-  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by], "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator );
+  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by],
+                     "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator, true );
 
   if( isset($item_ids) AND !is_array($item_ids))
     echo "<div>$item_ids</div>";
@@ -492,7 +498,12 @@ else
 
 if ($searchlog) PutSearchLog ();
 
+if( $debug ) {
+  $timeend = getmicrotime();
+  $time = $timeend - $timestart;
+  echo "<br><br>Page generation time: $time";
+}
+
 ExitPage();
 
 ?>
-

@@ -170,7 +170,7 @@ function ParseMultiSelectConds (&$conds)
         }
     }
 }            
-    
+
 # function finds group_id in field.input_show_func parameter
 function GetConstantGroup( $input_show_func ) {
   global $INPUT_SHOW_FUNC_TYPES;
@@ -191,84 +191,115 @@ function GetConstantGroup( $input_show_func ) {
    Params:   $conds -- search conditions (see FAQ)
              $sort -- sort fields (see FAQ)
              $slices -- array of slices in which to look for items
-             $slice_id -- older parameter, used only when $slices is not set, 
-                          translated to $slices = array($slice_id) 
+             $slice_id -- older parameter, used only when $slices is not set,
+                          translated to $slices = array($slice_id)
              $neverAllItems -- if no conds[] apply (all are wrong formatted or empty),
                                generates an empty set
-             $restrict_ids -- if you want to choose only from a set of items 
-                              (used by E-mail Alerts and related item view (for 
+             $restrict_ids -- if you want to choose only from a set of items
+                              (used by E-mail Alerts and related item view (for
                                sorting and eliminating of expired items))
                               ids are packed but not quoted in $restrict_ids
-                               
+             $defaultCondsOperator
+             $use_cache -- if set, the cache is searched , if the result isn't 
+                           already known. If not, the result is found and stored into 
+                           cache.
+
    Globals:  $debug=1 -- many debug messages
-             $debugfields=1 -- useful mainly for multiple slices mode -- views info about field_ids 
+             $debugfields=1 -- useful mainly for multiple slices mode -- views info about field_ids
                 used in conds[] but not existing in some of the slices
-             $QueryIDsCount -- set to the count of IDs returned 
+             $QueryIDsCount -- set to the count of IDs returned
+             $nocache -- do not use cache, even if use_cache is set
 */
 
-function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", 
-    $slices="", $neverAllItems=0, $restrict_ids=array(), $defaultCondsOperator = "LIKE" ) {
-  # parameter format example:  
+function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE",
+    $slices="", $neverAllItems=0, $restrict_ids=array(), $defaultCondsOperator = "LIKE",
+    $use_cache=false ) {
+  # parameter format example:
   # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
   # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
-  # conds[0][keywords........] = 1;          
+  # conds[0][keywords........] = 1;
   # conds[0][operator] = "=";
   # conds[0][value] = "Prague";
-  # conds[1][source..........] = 1;   // and source field of that item is 
-  # conds[1][operator] = "=";         // 'Econnect' 
+  # conds[1][source..........] = 1;   // and source field of that item is
+  # conds[1][operator] = "=";         // 'Econnect'
   # conds[1][value] = "Econnect";
   # sort[0][category........]='a';    // order items by category ascending
   # sort[1][publish_date....]='d';    // and publish_date descending (secondary)
   # sort[0][category........]='1';    // order items by category priority - ascending
   # sort[0][category........]='9';    // order items by category priority - descending
-  
+
   # type sets status, pub_date and expiry_date according to specified type:
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
   # if you want specify it yourselves in conds, set type to ALL
 
   # select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
-  global $debug, $QueryIDsCount;          # displays debug messages
+  global $debug;                 # displays debug messages
+  global $nocache;               # do not use cache, if set
   global $conds_not_field_names; # list of special conds[] indexes (defined in constants.php3)
-  
+  global $QueryIDsCount;
+
   $db = new DB_AA;
 
-    if ($GLOBALS[debugfields] || $debug) {
-        if ($slices) ProoveFieldNames ($slices, $conds);        
-        else ProoveFieldNames (array ($slice_id), $conds);
+  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
+
+
+  if( $use_cache AND !$nocache ) {
+    #create keystring from values, which exactly identifies resulting content
+    $keystr = $slice_id .
+              serialize($conds).
+              serialize($sort).
+              $group_by. $type.
+              serialize($slices).
+              $neverAllItems.
+              serialize($restrict_ids).
+              $defaultCondsOperator;
+
+    if( $res = $cache->get($keystr)) {
+      $arr = unserialize($res);
+      $QueryIDsCount = count($arr);
+      if( $debug )
+        echo "<br>Cache HIT - return $QueryIDsCount IDs<br>";
+      return $arr;
     }
+  }
+
+  if ($GLOBALS[debugfields] || $debug) {
+      if ($slices) ProoveFieldNames ($slices, $conds);
+      else ProoveFieldNames (array ($slice_id), $conds);
+  }
 
   ParseMultiSelectConds ($conds);
   ParseEasyConds ($conds, $defaultCondsOperator);
-    
-if( $debug ) {
-  echo "<br>Conds:<br>";
-  p_arr_m($conds);
-  echo "<br><br>Sort:<br>";
-  p_arr_m($sort);
-  echo "<br><br>Group by:<br>";
-  p_arr_m($group_by);
-  echo "<br><br>Slices:<br>";
-  p_arr_m($slices);
-}
- 
+
+  if( $debug ) {
+    echo "<br>Conds:<br>";
+    p_arr_m($conds);
+    echo "<br><br>Sort:<br>";
+    p_arr_m($sort);
+    echo "<br><br>Group by:<br>";
+    p_arr_m($group_by);
+    echo "<br><br>Slices:<br>";
+    p_arr_m($slices);
+  }
+
   # parse conditions ----------------------------------
   if( is_array($conds)) {
-    reset($conds); 
+    reset($conds);
     $tbl_count=0;
     while( list( , $cond) = each( $conds )) {
 
       # fill arrays according to this condition
-      reset($cond); 
+      reset($cond);
       $field_count = 0;
       $cond_flds   = '';
       while( list( $fid, $v) = each( $cond )) {
         if( $conds_not_field_names[$fid] )
           continue;           # it is not field_id parameters - skip it for now
-          
-        if( !$fields[$fid] OR $v=="") 
+
+        if( !$fields[$fid] OR $v=="")
           continue;            # bad field_id or not defined condition - skip
-          
+
         if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
           $select_conds[] = GetWhereExp( 'item.'.$fields[$fid]['in_item_tbl'],
                                           $cond['operator'], $cond['value'] );
@@ -278,15 +309,15 @@ if( $debug ) {
           $cond_flds .= ( ($field_count++>0) ? ',' : "" ). "'$fid'";
           // will not work with one condition for text and number fields
           $store = ($fields[$fid]['text_stored'] ? "text" : "number");
-        }  
-      }    
+        }
+      }
       if( $cond_flds != '' ) {
         $tbl = 'c'.$tbl_count++;
         # fill arrays to be able construct select command
         $select_conds[] = GetWhereExp( "$tbl.$store",
                                           $cond['operator'], $cond['value'] );
         if ($field_count>1) {
-          $select_tabs[] = "LEFT JOIN content as $tbl 
+          $select_tabs[] = "LEFT JOIN content as $tbl
                                    ON ($tbl.item_id=item.id 
                                    AND ($tbl.field_id IN ($cond_flds) OR $tbl.field_id is NULL))";
         } else {
@@ -335,7 +366,7 @@ if( $debug ) {
 
           $tbl = 'o'.$tbl_count++;
           # fill arrays to be able construct select command
-          $select_tabs[] = "LEFT JOIN constant as $tbl 
+          $select_tabs[] = "LEFT JOIN constant as $tbl
                                    ON ($tbl.value=". $sortable[$fid] .".text 
                                    AND ($tbl.group_id='$constgroup' 
                                         OR $tbl.group_id is NULL))";
@@ -362,13 +393,13 @@ if( $debug ) {
     reset ($group_by);
     $delim='';
 
-if( $debug ) echo "<br>Group<br>";
+  if( $debug ) echo "<br>Group<br>";
 
-    while( list( $fid, ) = each( $group_by )) {
-if( $debug ) echo "<br>-$fid-<br>";
-      if( !$fields[$fid] )  # bad field_id - skip
-        continue;
-if( $debug ) echo "<br>OK<br>";
+      while( list( $fid, ) = each( $group_by )) {
+  if( $debug ) echo "<br>-$fid-<br>";
+        if( !$fields[$fid] )  # bad field_id - skip
+          continue;
+  if( $debug ) echo "<br>OK<br>";
 
       if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
         $select_group .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
@@ -377,45 +408,45 @@ if( $debug ) echo "<br>OK<br>";
         if( !$sortable[ $fid ] ) {           # this field is not joined, yet
           $tbl = 'c'.$tbl_count++;
           # fill arrays to be able construce select command
-          $select_tabs[] = "LEFT JOIN content as $tbl 
-                                   ON ($tbl.item_id=item.id 
+          $select_tabs[] = "LEFT JOIN content as $tbl
+                                   ON ($tbl.item_id=item.id
                                    AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
                         # mark this field as sortable (store without apostrofs)
           $sortable[$fid] = $tbl;
-        }  
+        }
 
         $store = ($fields[$fid]['text_stored'] ? "text" : "number");
         # fill arrays according to this sort specification
         $select_group .= $delim .$sortable[$fid]. ".$store";
         $delim=',';
-      }  
+      }
     }
-  }      
+  }
 
-if( $debug ) {
-  echo "<br><br>select_tabs:";
-  print_r($select_tabs);
-  echo "<br><br>select_conds:";
-  print_r($select_conds);
-  echo "<br><br>select_order:";
-  print_r($select_order);
-  echo "<br><br>select_group:";
-  print_r($select_group);
-}  
-  
+  if( $debug ) {
+    echo "<br><br>select_tabs:";
+    print_r($select_tabs);
+    echo "<br><br>select_conds:";
+    print_r($select_conds);
+    echo "<br><br>select_order:";
+    print_r($select_order);
+    echo "<br><br>select_group:";
+    print_r($select_group);
+  }
+
   # construct query --------------------------
   $SQL = "SELECT DISTINCT item.id FROM item ";
   if( isset($select_tabs) AND is_array($select_tabs))
     $SQL .= " ". implode (" ", $select_tabs);
 
   $SQL .= " WHERE ";                                         # slice ----------
-  
+
   if (!$slices) {
       if (!$slice_id)
           return array ();
       else $slices = array ($slice_id);
   }
-      
+
       reset ($slices);
   if( count($slices) > 1 ) {
       $slicesText = "";
@@ -426,7 +457,7 @@ if( $debug ) {
       $SQL .= " item.slice_id IN ( $slicesText ) AND ";
   }
   else $SQL .= " item.slice_id='". q_pack_id(current($slices)) ."' AND ";
-  
+
   if (is_array ($restrict_ids)) {
     $rids = "";
     reset ($restrict_ids);
@@ -439,18 +470,18 @@ if( $debug ) {
 
   $now = now();                                              # select bin -----
   switch( $type ) {
-    case 'ACTIVE':  $SQL .= " item.status_code=1 AND 
+    case 'ACTIVE':  $SQL .= " item.status_code=1 AND
                               item.publish_date <= '$now' ";
                     # condition can specify expiry date (good for archives)
-                    if( !( $ignore_expiry_date && 
+                    if( !( $ignore_expiry_date &&
                            defined("ALLOW_DISPLAY_EXPIRED_ITEMS") &&
                            ALLOW_DISPLAY_EXPIRED_ITEMS) )
                       $SQL .= " AND item.expiry_date > '$now' ";
                     break;
-    case 'EXPIRED': $SQL .= " item.status_code=1 AND 
+    case 'EXPIRED': $SQL .= " item.status_code=1 AND
                               item.expiry_date <= '$now' ";
                               break;
-    case 'PENDING': $SQL .= " item.status_code=1 AND 
+    case 'PENDING': $SQL .= " item.status_code=1 AND
                               item.publish_date > '$now' ";
                               break;
     case 'HOLDING': $SQL .= " item.status_code=2 ";
@@ -458,8 +489,8 @@ if( $debug ) {
     case 'TRASH':   $SQL .= " item.status_code=3 ";
                               break;
     default:        $SQL .= ' 1=1 ';    # default = ALL - no specific condition
-  }  
-  
+  }
+
   if( isset($select_conds) AND is_array($select_conds))      # conditions -----
     $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
 
@@ -470,23 +501,28 @@ if( $debug ) {
     $SQL .= " GROUP BY $select_group";
 
   // if neverAllItems is set, return empty set if no conds[] are used
-  if (!is_array ($select_conds) && $neverAllItems) 
+  if (!is_array ($select_conds) && $neverAllItems)
     $arr = array ();
-    
+
   else {
   # get result --------------------------
-    if( $debug ) 
+    if( $debug )
       $db->dquery($SQL);
-    else 
+    else
       $db->query($SQL);
 
-  while( $db->next_record() ) 
-    $arr[] = unpack_id($db->f(id));
+    while( $db->next_record() )
+      $arr[] = unpack_id($db->f(id));
   }
 
   $QueryIDsCount = count($arr);
-  return $arr;           
-}  
+
+  if( $use_cache AND !$nocache )
+    $cache->store($keystr, serialize($arr), "slice_id=$slice_id,slice_id=".
+                                         join(',slice_id=', $slices));
+
+  return $arr;
+}
 
 // -------------------------------------------------------------------------------------------
 
@@ -495,17 +531,17 @@ if( $debug ) {
 */
 
 function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
-  # parameter format example:  
+  # parameter format example:
   # conds[0][discussion][subject] = 1;   // discussion fields are preceded by [discussion]
   # sort[0][category........]='a';    // order items by category ascending
-  
+
     if (!$slice_id && !$slices) return;
-  
+
     $fields = array ("date","subject","author","e_mail","body","state","flag","url_address",
         "url_description", "remote_addr", "free1", "free2");
-  
+
     global $debug;          # displays debug messages
-   
+
     $db = new DB_AA;
     if( $debug ) {
       echo "<br>Conds:<br>";
