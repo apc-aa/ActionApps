@@ -34,6 +34,7 @@ BM_RENAME       bookmark id in profile table    new_name:old_name
 BM_DELETE       bookmark id in profile table    name
 EMAIL_SENT      bookmark id/LIST/TEST           users:valid_emails:emails_sent
 TOEXECUTE       object's class                  return code
+ALERTS          howoften                        Start/email sent
 */
 
 /** Write log entry */

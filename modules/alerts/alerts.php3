@@ -68,7 +68,9 @@ $howoften_options = get_howoften_options();
 if ($howoften_options[$howoften]) {
     initialize_last();
     //echo "<h1>$ho</h1>";
+    writeLog("ALERTS", $howoften, 'Start' );
     $mail_count = send_emails($howoften, "all", "all", true, "");
+    writeLog("ALERTS", $howoften, 'Sent: '. ($mail_count+0)  );
     //echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
 }
 
