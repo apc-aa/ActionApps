@@ -7,6 +7,13 @@
  *
  **/
 
+// $convert_tables_path could be specified also before including this script
+// it is usen in /misc/charset/convert.php3 script, where config.php3
+// is not used (so we can't use $GLOBALS["AA_INC_PATH"]
+if ( !$convert_tables_path ) {
+    $convert_tables_path = $GLOBALS["AA_INC_PATH"]."ConvertTables/";
+}
+
 define (CONVERT_TABLES_DIR, $GLOBALS["AA_INC_PATH"]."ConvertTables/");
 define (DEBUG_MODE, -1);
 
