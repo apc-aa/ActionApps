@@ -55,6 +55,7 @@ require $GLOBALS[AA_INC_PATH]."config.php3";
 
 require $GLOBALS[AA_INC_PATH]."locsess.php3";   # DB_AA definition
 require $GLOBALS[AA_INC_PATH]."util.php3";
+require $GLOBALS[AA_INC_PATH]."constants.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 
 # init used objects
@@ -91,6 +92,10 @@ $tablelist = array( 'active_sessions' => "(
                          id int(11) NOT NULL auto_increment,
                          description text NOT NULL,
                          showme tinyint(1) NOT NULL default '1',
+                         mail_from varchar(255) NOT NULL default '',
+                         mail_sender varchar(255) NOT NULL default '',
+                         mail_errors_to varchar(255) NOT NULL default '',
+                         mail_reply_to varchar(255) NOT NULL default '',
                          PRIMARY KEY  (id)
                       )",
                       'alerts_collection_filter' => "(
@@ -122,6 +127,7 @@ $tablelist = array( 'active_sessions' => "(
                          session varchar(32) NOT NULL default '',
                          sessiontime int(10) NOT NULL default '0',
                          confirm varchar(20) NOT NULL default '',
+                         lang char(2) NOT NULL default 'en',
                          PRIMARY KEY  (id)
                       )",
                       'alerts_user_filter' => "(
@@ -866,6 +872,10 @@ $SQL_view_templates[] = "REPLACE INTO wizard_welcome (id, description, email, su
 
 $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner FROM slice";
 
+$SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '*', '*', '*', 'misc/alerts/alerts.php3', 'lang=en&howoften=daily');";
+$SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '*', '*', '1', 'misc/alerts/alerts.php3', 'lang=en&howoften=weekly');";
+$SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '1', '*', '*', 'misc/alerts/alerts.php3', 'lang=en&howoften=monthly');";
+
 # -------------------------------- Executive part -----------------------------
 
 if( !$update AND !$restore AND !$restore_now) {
@@ -914,6 +924,8 @@ if( !$update AND !$restore AND !$restore_now) {
                 "New fields (display_count, disc_count, disc_app) in v1.8 should be added to all slice definitions","");
   FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false, 
                 "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice).","");
+  FrmInputChBox("alerts", "Add Alerts defaults", true, false, "", 1, false,
+                "Alerts are run by cron.php3, 3 entries to table cron are added. Also two defaults to table alerts_collection are added.");
   echo '
   </table></td></tr>
   <tr><td align="center">
@@ -1162,6 +1174,28 @@ if( $update_modules ) {
   while( list( ,$SQL) = each( $SQL_update_modules ) ) {
     safe_echo ($SQL);
     $db->query( $SQL );
+  }  
+}
+
+if( $alerts ) {
+  echo '<h2>Adding to Alerts Collection table and Cron table</h2>';
+  $db->query ("SELECT * FROM cron WHERE script='misc/alerts/alerts.php3'");
+  if ($db->num_rows())
+    echo "Some rows with script = misc/alerts/alerts.php3 exist already in table cron, not added.<br>";
+  else {
+      reset( $SQL_alerts );
+      while( list( ,$SQL) = each( $SQL_alerts ) ) {
+        safe_echo ($SQL);
+        $db->query( $SQL );
+      }  
+  }
+  
+  for ($i=0; $i < 2; $i ++) {
+    $desc = $i ? $ALERTS_DEFAULT_COLLECTION : $ALERTS_SUBSCRIPTION_COLLECTION;
+    $db->query ("SELECT * FROM alerts_collection WHERE description = '$desc'");
+    if ($db->num_rows())
+        echo "Collection $desc already defined, not added.<br>";
+    else $db->query ("INSERT INTO alerts_collection (description, showme) VALUES ('$desc',0);");
   }  
 }
 
