@@ -57,7 +57,8 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
 
   #  Standard aliases
   $aliases["_#ID_COUNT"] = GetAliasDef( "f_e:itemcount",        "id..............", _m("number of found items"));
-  $aliases["_#ITEMINDX"] = GetAliasDef( "f_e:itemindex",        "id..............", _m("index of item within view"));
+  $aliases["_#ITEMINDX"] = GetAliasDef( "f_e:itemindex",        "id..............", _m("index of item within whole listing (begins with 0)"));
+  $aliases["_#PAGEINDX"] = GetAliasDef( "f_e:pageindex",        "id..............", _m("index of item within a page (it begins from 0 on each page listed by pagescroller)"));
   $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............", _m("alias for Item ID"));
   $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........", _m("alias for Short Item ID"));
 
@@ -515,25 +516,47 @@ class item {
     return htmlspecialchars($this->getval($col));
   }
 
-  function mystripos ($haystack, $needle) {
-    $sub = stristr ($haystack, $needle);
-    if ($sub)
-      return strlen ($haystack) - strlen ($sub);
-    else return strlen ($haystack);
+  function mystripos($haystack, $needle) {
+      $sub = stristr($haystack, $needle);
+      return ($sub ? strlen($haystack)-strlen($sub) : strlen($haystack));
   }
 
-  # prints abstract or grabed fulltext text field
-  # param: length:field_id
-  #    length - number of characters taken from field_id (like "80:full_text.......")
+  /** Prints abstract ($col) or grabed fulltext text from field_id
+   *  param: length:field_id:paragraph
+   *         length    - max number of characters taken from field_id
+   *                     (like "80:full_text.......")
+   *         field_id  - field from which we grab the paragraph, if $col is
+   *                     empty. If we do not specify field_id or we specify
+   *                     the same field as current $col, then the content is
+   *                     grabbed from current $col
+   *         paragraph - boolean - if true, it tries to identify return only
+   *                     first paragraph or at least stop at the end of sentence
+   */
   function f_a($col, $param="") {
-    list( $plength, $pfield, $pparagraph ) = $this->subst_aliases( ParamExplode($param) );
-    if ($this->getval($col))
-      return DeHtml( $this->getval($col), $this->getval($col,'flag') );
-    if ($pparagraph) {
-      $paraend = min ($this->mystripos ($pfield,"<p>"),$this->mystripos($pfield,"</p>"),$this->mystripos($pfield,"<br>"), $plength);
-    }
-    else $paraend = $plength;
-    return strip_tags( substr($pfield, 0, $paraend) );
+      list( $plength, $pfield, $pparagraph ) = $this->subst_aliases( ParamExplode($param) );
+      if ( !$pfield ) {
+          $pfield = $col;                // content is grabbed from current $col
+      }
+      $value = $this->getval($col);
+      if ($value AND ($col != $pfield)) {
+          return DeHtml( $value, $this->getval($col,'flag') );
+      }
+      if ($pparagraph) {
+          $paraend      = min(my_stripos($value,"<p>"),my_stripos($value,"</p>"),my_stripos($value,"<br>"),my_stripos($value,"\n"),my_stripos($value,"\r"), $plength);
+          $shorted_text = substr($value, 0, $paraend);
+          if ($paraend==$plength) {      // no <BR>, <P>, ... found
+              // try to find dot (first from the end)
+              $dot = strrpos( $shorted_text,".");
+              if ( $dot > $paraend/3 ) { // take at least one third of text
+                  $shorted_text = substr($shorted_text, 0, $dot+1);
+              } elseif ( $space = strrpos($shorted_text," ") ) {   // assignment!
+                  $shorted_text = substr($shorted_text, 0, $space);
+              } // no dot, no space - leave the text plength long
+          }
+      } else {
+          $shorted_text = substr($value, 0, $plength);
+      }
+      return strip_tags( $shorted_text );
   }
 
   # prints link to fulltext (hedline url)
@@ -784,6 +807,8 @@ function RSS_restrict($txt, $len) {
         return $GLOBALS['QueryIDsCount'];
       case "itemindex";
         return "".$GLOBALS['QueryIDsIndex'];   # Need to append to "" so doesn't return "false" on 0th item
+      case "pageindex";
+        return "".$GLOBALS['QueryIDsPageIndex'];   # Need to append to "" so doesn't return "false" on 0th item
       case "safe":         // safe, javascript, urlencode, csv - for backward
       case "javascript":   // compatibility
       case "urlencode":
@@ -1035,12 +1060,13 @@ function RSS_restrict($txt, $len) {
 
   /** Link module - print current path (or list of paths to categories specified
    *       in $col (when <categs delimeter> is present)
-   *  @param <start_level>:<format>:<delimeter>
+   *  @param <start_level>:<format>:<delimeter>:<categs delimeter>:<add url param>:<url_base>
    *         <start_level> - display path from level ... (0 is root)
    *         <format>      - category link modification (not used, yet)
    *         <delimeter>   - delimeter character (default is ' &gt; ')
    *         <categs delimeter>   - delimeter character (default is ' &gt; ')
    *         <add url param>      - url parameter added to cat=xxx (id=links)
+   *         <url_base>    - file to go (like: kormidlo.shtml)
    */
   function l_p($col, $param="") {
     global $contentcache;
@@ -1048,11 +1074,11 @@ function RSS_restrict($txt, $len) {
     $translate = $contentcache->get_result( 'GetTable2Array', array(
        "SELECT id, name FROM links_categories WHERE deleted='n'", 'id', true));
 
-    list ($start, $format, $separator, $catseparator, $urlprm) = $this->subst_aliases(ParamExplode($param));
+    list ($start, $format, $separator, $catseparator, $urlprm, $url_base) = $this->subst_aliases(ParamExplode($param));
     if ( !$separator ) {
         $separator = ' &gt; ';
     }
-    $url_base = ''; //$this->getbaseurl();
+    // $url_base = ''; //$this->getbaseurl();
     $urlprm = ($urlprm ? '&'.$urlprm : '');
 
     $categs2print = $catseparator ? $this->getvalues($col) :
