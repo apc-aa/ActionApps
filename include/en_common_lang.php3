@@ -106,22 +106,8 @@ define("L_APP_TYPE_HELP", "<small><br><br><br><br> You can easy create new slice
                             &nbsp; \$ActionAppConfig[en_news][file] = \"en_news_lang.php3\";
                            </ul></small>");
 
-define( "L_ICON_LEGEND", '
-                  <br>
-                  <i>Icon Legend</i>
-                  <TABLE BORDER=1>
-                  <TR bgcolor="#FFCC66">
-                  <TD><img src="../images/hlight.gif" border=0 alt=""> Highlighted item</TD>
-                  <TD COLSPAN=2><img src="../images/feed.gif" border=0 alt=""> Item from feed</TD></TR>
-                  <TR>
-                  <TD><img src="../images/app.gif" border=0 alt=""> Approved bin</TD><TD>
-                  <img src="../images/hold.gif" border=0 alt=""> Holding bin</TD><TD>
-                  <img src="../images/trsh.gif" border=0 alt=""> Trash bin</TD></TR>
-                  <TR bgcolor="#FFCC66">
-                  <TD><img src="../images/less.gif" border=0 alt=""> Less detail view</TD>
-                  <TD COLSPAN=2><img src="../images/more.gif" border=0 alt=""> More detail view</TD></TR>
-                  </TABLE>');
-                           
+define( "L_ICON_LEGEND", '');
+
 define( "L_SLICE_HINT", '
                   <br>
                   To include slice in your webpage type next line to your shtml code:
@@ -151,6 +137,11 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.10  2000/11/16 11:48:39  madebeer
+11/16/00 a- changed admin leftbar menu order and labels
+         b- changed default article editor field order & fields
+         c- improved some of the english labels
+
 Revision 1.9  2000/08/23 12:29:57  honzam
 fixed security problem with inc parameter to slice.php3
 

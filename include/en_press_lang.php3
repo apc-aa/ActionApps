@@ -293,7 +293,7 @@ define("L_ADD_NEW_ITEM", "New Press release");
 define("L_EDIT_ITEMS", "Edit Press Release");
 define("L_DELETE_TRASH", "Empty trash");
 define("L_VIEW_FULLTEXT", "Preview");
-define("L_FULLTEXT", "Fulltext");
+define("L_FULLTEXT", "Public View: Fulltext");
 define("L_HIGHLIGHTED", "Highlighted");
 define("L_NO_HIGHLIGHTED", "No highlighted");
 define("L_A_FIELDS_EDT", "Slice Administration - Press Release Fields Settings");
@@ -348,7 +348,7 @@ define("L_ERR_FEEDED_ITEMS", "There is an item in trash bin, which is fed. It is
 define("L_ERR_NO_SRCHFLDS", "No searchfield specified!");
 define("L_NO_PRMS_SLICE", "You have no permissions for changing slice");
 
-define("L_FIELDS", "Fields");
+define("L_FIELDS", "Author: Add Article");
 define("L_EDIT", "Edit");
 define("L_EDIT_SLICE", "Edit Slice");
 define("L_DELETE", "Delete");
@@ -399,7 +399,7 @@ define("L_PERM_SEARCH", "Assign new permissions");
 define("L_PERM_CURRENT", "Change current permissions");
 define("L_USER_NEW", "New User");
 define("L_DESIGN", "Design");
-define("L_COMPACT", "Compact");
+define("L_COMPACT", "Public View: Index");
 define("L_COMPACT_REMOVE", "Remove strings");
 define("L_FEEDING", "Feeding");
 define("L_IMPORT", "Import & Export");
@@ -417,7 +417,7 @@ define("L_SEARCH_HDR", "Search form criteria");
 define("L_SEARCH_HDR2", "Search in fields");
 define("L_SEARCH_SHOW", "Show");
 define("L_SEARCH_DEFAULT", "Default settings");
-define("L_SEARCH_SET", "Search form");
+define("L_SEARCH_SET", "Public View: Search");
 define("L_AND", "AND");
 define("L_OR", "OR");
 define("L_SRCH_KW", "Search for");
@@ -457,7 +457,7 @@ define("L_NO_CATEGORY", "No category defined");
 define("L_NO_IMPORTED_SLICE", "There are no imported slices");
 define("L_NO_USERS", "No user (group) found");
 
-define("L_TOO_MUCH_USERS", "Too much users or group found.");
+define("L_TOO_MUCH_USERS", "Too many users or group found.");
 define("L_MORE_SPECIFIC", "Try to be more specific.");
 define("L_REMOVE", "Remove");
 define("L_ID", "Id");
@@ -539,18 +539,18 @@ define("L_FULLTEXT_REMOVE", L_COMPACT_REMOVE);
 
 //new_constants
 define("L_FEEDED_FROM", "Fed from");
-define("DEFAULT_SLICE_CONFIG", "<wddxPacket version='0.9'><header/><data><struct><var name='admin_fields'><struct><var name='chbox'><struct><var name='width'><number>24</number></var></struct></var><var name='post_date'><struct><var name='width'><number>70</number></var></struct></var><var name='headline'><struct><var name='width'><number>224</number></var></struct></var><var name='catname'><struct><var name='width'><number>70</number></var></struct></var><var name='published'><struct><var name='width'><number>24</number></var></struct></var><var name='highlight'><struct><var name='width'><number>24</number></var></struct></var><var name='feed'><struct><var name='width'><number>24</number></var></struct></var></struct></var></struct></data></wddxPacket>");
+define("DEFAULT_SLICE_CONFIG", "<wddxPacket version='0.9'><header/><data><struct><var name='admin_fields'><struct><var name='chbox'><struct><var name='width'><string>24</string></var></struct></var><var name='edit'><struct><var name='width'><string>30</string></var></struct></var><var name='headlinepreview'><struct><var name='width'><string>224</string></var></struct></var><var name='catname'><struct><var name='width'><string>70</string></var></struct></var><var name='post_date'><struct><var name='width'><string>70</string></var></struct></var><var name='e_posted_by'><struct><var name='width'><string>70</string></var></struct></var></struct></var></struct></data></wddxPacket>");
 define("L_FEED", "Export");
 define("L_FEEDTO_TITLE", "Export Item to Selected Slice");
 define("L_FEED_TO", "Export selected items to selected slice");
 define("L_NO_PERMISSION_TO_FEED", "No permission");
-define("L_NO_PS_CONFIG", "You have no permission to set configuration parameters of this slice");
+define("L_NO_PS_CONFIG", "You do not have permission to set the configuration parameters of this slice");
 define("L_A_SLICE_CFG", "Slice Administration - Configuration parameters");
 define("L_VISIBLE_ADMIN_FIELDS", "Visible columns in admin interface");
 define("L_FIELD_WIDTH", "Column width");
 define("L_VISIBLE", "Shown");
 define("L_HIDDEN", "Hidden");
-define("L_SLICE_CONFIG", "Parameters");
+define("L_SLICE_CONFIG", "Editor: Article Manager");
 define("L_CHBOX_HEAD", "&nbsp;");   // title of checkbox in admin interface
 define("L_CHBOX", "Checkbox"); 
 define("L_CATNAME", "Category Name");
@@ -580,7 +580,7 @@ define("L_REALY_DELETE_USER", "Are you sure to delete selected user from whole p
 define("L_REALY_DELETE_GROUP", "Are you sure to delete selected group from whole permission system?");
 define("L_ITEM_NOT_CHANGED", "Item not changed");
 define("L_CANT_ADD_ITEM", "Can't add item");
-define("L_TOO_MUCH_GROUPS", "Too much groups found.");
+define("L_TOO_MUCH_GROUPS", "Too many groups found.");
 define("L_NO_GROUPS", "No groups found");
 define("L_GROUP_NAME", "Name");
 define("L_GROUP_DESCRIPTION", "Description");
@@ -618,6 +618,11 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.19  2000/11/16 11:48:39  madebeer
+11/16/00 a- changed admin leftbar menu order and labels
+         b- changed default article editor field order & fields
+         c- improved some of the english labels
+
 Revision 1.18  2000/11/13 10:41:14  honzam
 Fixed bad order for default setting of show fields and needed fields
 

@@ -12,7 +12,7 @@
 # in the form
 #    $name = "value";
 # or in the form
-#    define("name", "value");
+#    define("name", "value);
 
 # AA_INC_PATH defines the AA include directory. It must be an absolute
 # path. Normally this is the path to the directory where this file
@@ -21,10 +21,10 @@
 # this path with a slash!
 # Example:
 # $AA_INC_PATH = "/home/httpd/html/aa/include/";
-$AA_INC_PATH = ""; 
+$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa2/include/"; 
 
 # Fill in your internet domain name here.
-define("DEFAULT_ORG_ID", "ecn.cz");
+define("DEFAULT_ORG_ID", "debeer.org");
 
 # This is for accessing the database. You need to define the name of the host
 # where the database server runs, the database name, a user name for logging
@@ -32,11 +32,12 @@ define("DEFAULT_ORG_ID", "ecn.cz");
 define("DB_HOST", "localhost");
 define("DB_NAME", "aadb");
 define("DB_USER", "aadbuser");
-define("DB_PASSWORD", "");
+define("DB_PASSWORD", "googler3");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
-define("AA_ID", "420224311780abcd420224311780abcd");
+#define("AA_ID", "420224311780abcd420224311780abcd");
+define("AA_ID", "000111222333444555666777888999A9");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
 define("PERM_LIB", "sql");
@@ -77,7 +78,8 @@ define("DEBUG_FLAG", true);
 
 # If you use Web.net's extended items table, uncomment this definition
 
-# define("EXTENDED_ITEM_TABLE", "1");
+define("EXTENDED_ITEM_TABLE", "1");
+define("SINGLE_COLUMN_FORM", "0");
 
 if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
   echo "you must set AA_INC_PATH and other variables in config.php3 !";
