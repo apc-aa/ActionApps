@@ -740,7 +740,7 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
   elseif (isset($apc_state['tps'][$tp]))
     $tagprefix = $apc_state['tps'][$tp];
   else
-    print("Unable to find tagprefix table $tp");
+    print("<!--Unable to find tagprefix table $tp-->");
 
   if( !$mode )     # AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
     $mode = 'AMB';
@@ -896,6 +896,7 @@ function IsEditable($fieldcontent, $field) {
        AND !GetProfileProperty('fill',$field['id']));
 }
 
+/** Returns content4id - values in content4id are quoted (addslashes) */
 function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=true ) {
   if( !isset($prifields) OR !is_array($prifields) )
     return false;
@@ -934,6 +935,7 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
     foreach( $var as $v ) {
         $flag = $f["html_show"] ? ($GLOBALS[$htmlvarname]=="h" ? FLAG_HTML : 0)
                                 : ($f["html_default"] > 0      ? FLAG_HTML : 0);
+        // data in $content4id are already DB escaped (addslashes)
         $content4id[$pri_field_id][]   = array('value'=>$v, 'flag'=>$flag);
     }
   }
@@ -1115,7 +1117,9 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     if( $feed )
         FeedItem($id, $fields);
 
-    $itemContent = new ItemContent($id);
+    $itemContent = new ItemContent();
+    $itemContent->setByItemID($id,true); // ignore reading password
+
     if ($insert) {
         Event_ItemAfterInsert ($id, $slice_id, $itemContent);  // older form of events - should be rewriten to $event class events
         $event->comes('ITEM_NEW', $slice_id, 'S', $foo, $itemContent);  // new form event
