@@ -43,11 +43,9 @@ if (!is_object ($db)) $db = new DB_AA;
 $howoften_options = get_howoften_options();
 
 if ($howoften_options[$howoften]) {
-    initialize_filters();
+    initialize_last();
     //echo "<h1>$ho</h1>";
-    create_filter_text ($howoften);
-    create_collection_contents();
-    $mail_count = send_emails($howoften);
+    $mail_count = send_emails($howoften, "all", "all", true, "");
     //echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
 }
 

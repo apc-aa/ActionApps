@@ -43,7 +43,7 @@ if ($cmd["modedit"]["update"])
 
 $directory_depth = "../";
 require_once "$directory_depth../include/init_page.php3";
-if (!$new_module)
+if (!$no_slice_id)
     require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   
 
 // ----------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ echo "<TITLE>".$tableview["title"]."</TITLE></HEAD>";
 
 // called before menu because of Item Manager
 ProcessFormData ("GetAlertsTableView", $val, $cmd);
-if (!$new_module)
+if (!$no_slice_id)
     showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
 echo "<TABLE width='100%'><TR valign=center><TD>";
 echo "<H1>" . $tableview["caption"] . "</H1>";
@@ -85,15 +85,15 @@ $tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."im
 $err = $tabledit->view ();
 if ($err) echo "<b>$err</b>";
 
-if (!$err && $tview == "acf") {
-    require_once "design.php3";
+if (!$err && $tview == "send_emails") {
+    require_once "send_emails.php3";
     ShowCollectionAddOns();
 }
 
 if (!$err && $tview == "email_edit") 
     ShowEmailAliases();
 
-if ($new_module)
+if ($no_slice_id)
     echo "</BODY></HTML>";
 else HTMLPageEnd();
 page_close ();

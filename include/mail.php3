@@ -88,7 +88,21 @@ function html2text ($html) {
 function mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1) 
 {
     $body = mail_html_text_body ($message, $charset, $use_base64);
-    return mail ($to, $subject, "", $additional_headers.$body);
+    if ($GLOBALS["debug_email"]) {
+        $body2 = mail_html_text_body ($message, $charset, 0);
+        echo "To: $to<br>
+            Subject: $subject<br>".
+            nl2br(HTMLEntities($additional_headers.$body2));
+    }
+    if ($GLOBALS["EMAILS_INTO_TABLE"]) {
+        global $db;
+        $db->query ("
+            INSERT INTO email_sent (send_to, subject, headers, body, created_at)
+            VALUES ('".addslashes($to)."', '".addslashes($subject)."',
+               '".$additional_headers."','".$body."', ".time().")");
+        return true;               
+    }               
+    else return mail ($to, $subject, "", $additional_headers.$body);
 }
 
 function imap_mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1, 
@@ -146,7 +160,6 @@ function mail_html_text_body ($message, $charset, $use_base64) {
 
 function send_mail_from_table ($mail_id, $to, $aliases="") 
 {
-
     global $db, $LANGUAGE_CHARSETS;
     $db->query("SELECT * FROM email WHERE id = $mail_id");
     if (!$db->next_record()) 
@@ -155,7 +168,6 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
     reset ($record);
     
     if (is_array ($aliases)) {
-/*
         // I don't know how to work with unaliasing. Thus I try to pretend
         // having an item. 
         reset ($aliases);
@@ -168,17 +180,34 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
             $als [$alias] = array ("fce"=>"f_h", "param"=>$alias);
         }
         $item = new Item ("", $cols, $als, "", "" ,"");
-*/
-        while (list ($key, $value) = each ($record)) 
-#            $record[$key] = $item->unalias ($value);
-	    $level = 0; $maxlevel = 0;
-	    $record[$key] = new_unalias_recurent($value, "", $level, $maxlevel, null, null, $aliases);
-    }
 
-    if ($record["html"])
-        return mail_html_text ($to, $record["subject"], $record["body"],
-             get_email_headers($record, ""), $LANGUAGE_CHARSETS [$record["lang"]]);
-    else return mail ($to, $record["subject"], $record["body"], get_email_headers($record));
+        while (list ($key, $value) = each ($record)) 
+            $record[$key] = $item->unalias ($value);
+            
+        /* // Mitra's version, not working:
+        while (list ($key, $value) = each ($record)) {
+            $level = 0; $maxlevel = 0;
+    	    $record[$key] = new_unalias_recurent($value, "", $level, 
+                $maxlevel, null, null, $aliases);
+        }
+        */    
+    }
+    
+    if ($GLOBALS["EMAILS_INTO_TABLE"]) {
+        $db->query ("
+            INSERT INTO email_sent (email_id, send_to, subject, headers, body, created_at)
+            VALUES ($mail_id, '".addslashes($to)."', '".addslashes($record["subject"])."',
+               '".addslashes(get_email_headers($record, ""))."',
+               '".addslashes($record["body"])."', ".time().")");
+        return true;
+    }
+    
+    else {
+        if ($record["html"])
+            return mail_html_text ($to, $record["subject"], $record["body"],
+                 get_email_headers($record, ""), $LANGUAGE_CHARSETS [$record["lang"]]);
+        else return mail ($to, $record["subject"], $record["body"], get_email_headers($record));
+    }
 }
     
 function get_email_headers ($record, $default)

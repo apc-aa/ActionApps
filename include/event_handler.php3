@@ -27,6 +27,7 @@ http://www.apc.org/
 */
 
 require_once $GLOBALS["AA_INC_PATH"]."auth.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/event.php3";
 
 /** Called on updating an existing item. 
 *   @param object $itemContent (class ItemContent) is sent by reference, 
@@ -58,6 +59,8 @@ function Event_ItemAfterUpdate( $item_id, $slice_id, &$itemContent,
                                 &$oldItemContent ) 
 {
     AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
+    AlertsSendInstantAlert( $item_id, $slice_id );
+    
     // notifications 
     switch ($itemContent->getStatusCode()) {
         case SC_ACTIVE:      email_notify($slice_id, 4, $item_id); break;
@@ -70,7 +73,10 @@ function Event_ItemAfterUpdate( $item_id, $slice_id, &$itemContent,
 */
 function Event_ItemAfterInsert( $item_id, $slice_id, &$itemContent ) 
 {
-    AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
+    AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );    
+    AlertsSendWelcome( $item_id, $slice_id, $itemContent );
+    AlertsSendInstantAlert( $item_id, $slice_id );
+    
     // notifications 
     switch ($itemContent->getStatusCode()) {
         case SC_ACTIVE:      email_notify($slice_id, 3, $item_id); break;
@@ -97,5 +103,21 @@ function Event_ItemsBeforeMove( $item_ids, $slice_id, $new_status ) {
 */
 function Event_ItemsAfterMove( $item_ids, $slice_id, $new_status ) {
     AuthUpdateReaders( $item_ids, $slice_id );
-}   
+} 
+
+/** Called on propagating a change in a constant value.
+*   @param string $constant_id Unpacked ID from the constant table.
+*   @param string $oldvalue, $newvalue Both have added slashes (e.g. from a form).
+*   @return bool true if the operation should proceed, false to interrupt */
+function Event_ItemsBeforePropagateConstantChanges (
+    $constant_id, $oldvalue, $newvalue) {
+    return true;
+};
+  
+/** Called after propagating a change in a constant value. Params like by ..Before.. */
+function Event_ItemsAfterPropagateConstantChanges (
+    $constant_id, $oldvalue, $newvalue) {    
+    AuthChangeGroups ($constant_id, $oldvalue, $newvalue);
+}    
+
 ?>

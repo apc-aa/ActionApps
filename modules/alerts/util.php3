@@ -19,12 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined ("AA_ALERTS_UTIL_INCLUDED"))
-     define  ("AA_ALERTS_UTIL_INCLUDED", 1);
-else return;
-
 require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once "reader_field_ids.php3";
 
 if (!is_object ($db))   
     $db=new DB_AA;
@@ -37,8 +34,8 @@ function set_collectionid () {
         if (!$slice_id) { echo "Error: no slice ID"; exit; }
         $db->query ("SELECT AC.*, module.name, module.lang_file, module.slice_url
 			FROM alerts_collection AC INNER JOIN module
-			ON AC.moduleid = module.id
-			WHERE moduleid='".q_pack_id($slice_id)."'");
+			ON AC.module_id = module.id
+			WHERE module_id='".q_pack_id($slice_id)."'");
         if ($db->next_record()) {
             $collectionid = $db->f("id");    
             $collectionprop = $db->Record;
@@ -47,12 +44,19 @@ function set_collectionid () {
     }
 }
 
-function get_howoften_options () {
-    return array (
-    "instant" => _m("instant"),
-    "daily"=>_m("daily"),
-    "weekly"=>_m("weekly"),
-    "monthly"=>_m("monthly"));
+/// Returns true if $howoften is a regular howoften option.
+function is_howoften_option($howoften) {
+    $ho = get_howoften_options();
+    return $ho[$howoften];
+}
+
+function get_howoften_options ($include_instant = true) {
+    if ($include_instant)
+        $retval["instant"] = _m("instant");
+    $retval ["daily"] = _m("daily");
+    $retval ["weekly"]= _m("weekly");
+    $retval["monthly"]= _m("monthly");
+    return $retval;
 }
 
 function get_bin_names () {
@@ -231,54 +235,15 @@ function AlertsPageBegin() {
 
 // -----------------------------------------------------------------------------------
 
-/** Sends a single usage code allowing to access User Center without logging in. 
-*   Useful for users who forgot their passwords. 
-*/
-function send_single_usage_code () {
-    global $db, $auth, $Err, 
-        // email address from the login page
-        $email;
-        
-    if (!$email) {
-        $Err[] = _m("Fill in your email.");
-        return;
-    }    
-    
-    $db->query("SELECT email.id FROM
-        email INNER JOIN alerts_collection AC ON email.id = AC.emailid_access
-        INNER JOIN alerts_user AU ON AU.owner_module_id = AC.moduleid
-        WHERE AU.email = '$email'");
-    if (!$db->next_record()) {
-        $db->query("SELECT id FROM email WHERE type='alerts access'");
-        if (!$db->next_record()) {
-            $Err[] = _m("Error: No appropriate email defined. Please contact the web administrator.");
-            exit;
-        }
-    }
-    $mailid = $db->f("id");
-    $db->query("SELECT * FROM alerts_user WHERE email='$email'");
-    if (!$db->next_record()) {
-        $Err[] = _m("This email is not subscibed to any Alerts Collection.");
-        return;
-    }
-    $uid = $db->f("id");
-    if ($db->f("password") == "")
-        $Err[] = _m("You don't use any password, you don't need any single usage access key.");
-    else {
-        $key = $db->f("single_usage_access_key");
-        if (!$key) {
-            do { 
-                $key = gensalt (4);
-                $db->query("SELECT id FROM alerts_user 
-                    WHERE single_usage_access_key='".addslashes($key)."'");         
-            } while ($db->next_record());
-            $db->query("UPDATE alerts_user SET single_usage_access_key='".addslashes($key)."'
-                WHERE id=$uid");
-        }
-        $aliases["_#ACCESURL"] = AA_INSTAL_URL."akey.php3?id=".$key;
-        send_mail_from_table ($mailid, $email, $aliases);
-        $GLOBALS["Msg"] = _m("The single usage access code was sent.");
-    } 
-}
+function getAlertsField ($field_id, $collection_id) {
+    return substr ($field_id.".............", 0, 16 - strlen ($collection_id)) 
+        . $collection_id; 
+} 
 
+// -----------------------------------------------------------------------------------
+
+function alerts_con_url($Url,$Params){
+  return ( strstr($Url, '?') ? $Url."&".$Params : $Url."?".$Params );
+} 
+               
 ?>

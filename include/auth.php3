@@ -29,15 +29,13 @@ http://www.apc.org/
 require_once "config.php3";
 require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
 if (!is_object( $db )) $db = new DB_AA;
 
 // status codes:
 define("SC_ACTIVE", 1);
 define("SC_HOLDING_BIN", 2);
-
-define ("AUTH_FIELD_USERNAME", "headline........");
-define ("AUTH_FIELD_PASSWORD", "password........");
 
 // --------------------------------------------------------------------------
 /** Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
@@ -53,7 +51,7 @@ function AuthDeleteReaders( $item_ids, $slice_id ) {
     $db->query ("
         SELECT text FROM content 
         INNER JOIN item ON content.item_id = item.id
-        WHERE field_id = '".AUTH_FIELD_USERNAME."'
+        WHERE field_id = '".FIELDID_USERNAME."'
         AND item.id IN ('".join_and_quote( "','", $item_ids)."')");
     while ($db->next_record())
         $usernames[] = $db->f("text");
@@ -177,19 +175,21 @@ function AuthMaintenance() {
         $db->query ("DELETE FROM auth_group WHERE username IN 
             ('".join_and_quote("','", $usernames)."')");
     }    
-    
-    // Log the results
-    if (!is_array ($result))
-        $log = "Nothing changed.";
-    else {
-        reset ($result);
-        while (list ($msg, $count) = each ($result)) {
-            if ($log) $log .= "\n";
-            $log .= $msg.": ".$count;
+
+    if ($GLOBALS["log_auth_results"]) {    
+        // Log the results
+        if (!is_array ($result))
+            $log = "Nothing changed.";
+        else {
+            reset ($result);
+            while (list ($msg, $count) = each ($result)) {
+                if ($log) $log .= "\n";
+                $log .= $msg.": ".$count;
+            }
         }
+        $db->query ("INSERT INTO auth_log (result, created)
+            VALUES ('".addslashes($log)."', ".time().")");
     }
-    $db->query ("INSERT INTO auth_log (result, created)
-        VALUES ('".addslashes($log)."', ".time().")");
 }      
 
 // --------------------------------------------------------------------------
@@ -239,11 +239,41 @@ function AuthSelect ($auth_field_group) {
     WHERE groups.item_id = item.id
       AND groups.field_id = '".$auth_field_group."'
       AND username.item_id = item.id 
-      AND username.field_id = '".AUTH_FIELD_USERNAME."'
+      AND username.field_id = '".FIELDID_USERNAME."'
       AND password.item_id = item.id
-      AND password.field_id = '".AUTH_FIELD_PASSWORD."'";
+      AND password.field_id = '".FIELDID_PASSWORD."'";
 }      
 
 // --------------------------------------------------------------------------
-   
+
+/** Called from Event_ItemsAfterPropagateConstantChanges(). */
+function AuthChangeGroups ($constant_id, $oldvalue, $newvalue) {
+    global $db_usernames;
+    if (!is_object ($db_usernames)) 
+        $db_usernames = new DB_AA;
+
+    if (empty ($newvalue) || $oldvalue == $newvalue)
+        return;
+    $db_usernames->query ("SELECT * FROM constant WHERE id='".q_pack_id ($constant_id)."'");
+    if (!$db_usernames->next_record())
+        return;
+    $group_id = $db_usernames->f("group_id");        
+    $db_usernames->query ("    
+		SELECT username.text
+		FROM slice INNER JOIN field ON slice.id=field.slice_id
+        INNER JOIN item ON slice.id = item.slice_id
+        INNER JOIN content ON item.id=content.item_id AND field.id = content.field_id
+        INNER JOIN content AS username ON username.item_id=item.id
+        WHERE slice.type = 'ReaderManagement'
+        AND slice.auth_field_group = field.id
+		AND (field.input_show_func LIKE '___:$group_id:%'
+        OR  field.input_show_func LIKE '___:$group_id')
+		AND content.text = '$newvalue'
+        AND username.field_id='".FIELDID_USERNAME."'");
+
+    $newvalue = stripslashes ($newvalue);    
+        
+	while ($db_usernames->next_record()) 
+        AuthUpdateGroups ($db_usernames->f("text"), $newvalue);    
+}       
 ?>

@@ -32,58 +32,73 @@ require_once $GLOBALS["AA_INC_PATH"]."view.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item_content.php3";
+require_once "util.php3";
 
 //$debug = 1;
 
-$db = new DB_AA;
+if(! is_object( $db )) $db = new DB_AA;
 
 // -------------------------------------------------------------------------------------
-/**  Finds and formats items, writes the result into alerts_filter_howoften.
-*    WARNING:  the function does not check when were the items sent last time, call it only once a day / week / month
+/**  Creates Filter output. Called from send_emails().
+*    Finds and formats items.
+*    WARNING:  the function does not check when were the items sent last time, 
+*              call it only once a day / week / month. In fact, this function
+*              works completely the same for any how often (only that it writes
+*              the values to the appropriate field). 
 *
-*    @param $ho = how often 
+* The only exception are the "instant" messages: If the paramter $item_id
+* contains an unpacked item ID, nothing or a message containing just that item is sent.
+*
+* @param bool $update    decides whether alerts_filter_howoften.last would be updated, 
+*                        i.e. whether this is only a debug trial or the real life
+* @param $ho = how often 
+* @return array ($filterid => new items)
 */
-function create_filter_text ($ho)
+
+function create_filter_text ($ho, $collectionid, $update, $item_id)
 {
-    $db->query("
-    SELECT DF.conds, view.slice_id, DF.id AS filterid, DF.vid, slice.name AS slicename, 
-        slice.lang_file, FH.last
-        FROM alerts_filter DF INNER JOIN
-             alerts_filter_howoften FH ON DF.id = FH.filterid INNER JOIN
-             view ON view.id = DF.vid INNER JOIN
+    global $db;
+
+    $SQL = "
+    SELECT F.conds, view.slice_id, F.id AS filterid, F.vid, slice.name AS slicename, 
+        slice.lang_file, CH.last
+        FROM alerts_filter F INNER JOIN
+             alerts_collection_filter CF ON CF.filterid = F.id INNER JOIN
+             alerts_collection_howoften CH ON CF.collectionid = CH.collectionid INNER JOIN
+             view ON view.id = F.vid INNER JOIN
              slice ON slice.id = view.slice_id
-        ORDER BY view.slice_id, DF.vid
-        WHERE FH.howoften='$ho'");
+        WHERE CH.howoften='$ho'
+        AND CH.collectionid='$collectionid'";
+        
+    if ($item_id) {
+        $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
+        if (!$db->next_record())
+            return "";
+        $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
+    }
     
+    $db->query($SQL);
     while ($db->next_record()) {
         $slices[$db->f("slice_id")]["name"] = $db->f("slicename");
         $slices[$db->f("slice_id")]["lang"] = substr ($db->f("lang_file"),0,2);
         $slices[$db->f("slice_id")]["views"][$db->f("vid")]["filters"][$db->f("filterid")] = 
             array ("conds"=>$db->f("conds"), "last"=>$db->f("last"));
     }
-    create_filter_text_from_list ($ho, $slices);
-}    
+    if (! is_array ($slices))
+        return;
 
-// -------------------------------------------------------------------------------------
-/**  Creates Filter output. Finds and formats items, writes the result into alerts_filter_howoften.
-*    WARNING:  the function does not check when were the items sent last time, call it only once a day / week / month
-*
-*    @param $ho         = how often 
-*    @param $update     decides whether alerts_filter_howoften.last would be updated, 
-*                       i.e. whether this is only a debug trial or the real life
-*/
-function create_filter_text_from_list ($ho, $slices, $update=true)
-{
-    global $debug, $db, $conds, $sort;
+    // The function needs global $conds and $sort, because it does some
+    // wizardry with add_vars().
+    global $debug_alerts, $conds, $sort;
     $howoften_options = get_howoften_options();
     
-    initialize_filters ();
+    initialize_last ();
     
     // first I create a hierarchical array $slices and than use it instead of the recordset
             
-    $varset = new CVarset();
-    $varset->addkey ("howoften", "text", $ho);
-            
+    $now = time();
+    
     reset ($slices);
     while (list ($p_slice_id, $slice) = each ($slices)) {
         $slice_id = unpack_id128($p_slice_id);
@@ -99,7 +114,7 @@ function create_filter_text_from_list ($ho, $slices, $update=true)
             
             reset ($view["filters"]);
             while (list ($fid, $filter) = each ($view["filters"])) {
-                $now = time() - 1;
+                $now = time();
                 $last = $filter["last"];
                 
 /* this query is carefully made to include only items, which:                
@@ -116,37 +131,35 @@ function create_filter_text_from_list ($ho, $slices, $update=true)
    The field is cleared whenever the item is moved from Active bin to another one.
 */
                 
-                $db->query(
-                    "SELECT id FROM item "
-                   ."WHERE publish_date <= $now AND expiry_date >= $last "  # a) 2. and b) 2.
+                $SQL = "SELECT id FROM item ";
+                
+                if ($item_id)
+                    $SQL .= "WHERE id = '".q_pack_id($item_id)."'";
+                    
+                else
+                    "WHERE publish_date <= $now AND expiry_date >= $last "  # a) 2. and b) 2.
                        ."AND ((moved2active BETWEEN $last AND $now) "       # a) 1.
                              ."OR (moved2active < $last "                   # b) 1.
                                  ."AND publish_date > $last) "              # b) 3.
-                           .")");
+                           .")";
+
+                $db->query ($SQL);                                   
                            
                 $all_ids = "";
                 while ($db->next_record())
                     $all_ids[] = $db->f("id");
 
-                $varset->addkey ("filterid", "number", $fid);
-                if (!$debug && $update) {
-                    $varset->add ("last", "number", $now);
-                    $db->query($varset->makeINSERTorUPDATE("alerts_filter_howoften"));
-                    $varset->remove ("last");
-                }
-                    
                 $dbconds = $filter["conds"];
-                if ($debug) echo "<br>Slice ".$slice["name"].", conds ".$dbconds."<br>";       
+                if ($debug_alerts) echo "<br>Slice ".$slice["name"].", conds ".$dbconds."<br>";       
                 $conds = ""; $sort = "";
                 add_vars ($dbconds);
-                if ($debug) { print_r ($conds); echo "<br>"; }
+                if ($debug_alerts) { print_r ($conds); echo "<br>"; }
         
                 $items_text = "";
                 if (is_array ($all_ids)) {
                     // find items for the given filter
-		    $all_zids = new zids($all_ids,'p');			
-                    $zids = QueryZIDs ($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, $all_zids);
-                    if ($debug) echo "<br>Item IDs count: ".$zids->count()."<br>";
+                    $zids = QueryZIDs ($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, new zids( $all_ids,'p' ));
+                    if ($debug_alerts) echo "<br>Item IDs count: ".$zids->count()."<br>";
                     if( $zids->count() > 0 ) { 
                         $itemview = new itemview( $db, $format, $fields, $aliases, $zids, 
                               0, $view_info["listlen"], shtml_url());                          
@@ -154,114 +167,129 @@ function create_filter_text_from_list ($ho, $slices, $update=true)
                     }
                 }
                 
-                if ($debug && $items_text) echo "<hr>Items text:<br><br>$items_text<br><br><hr>";
-                
-                $varset->add ("text", "text", $items_text);
-                $db->query($varset->makeINSERTorUPDATE ("alerts_filter_howoften"));
+                if ($debug_alerts && $items_text) echo "<hr>Items text:<br><br>$items_text<br><br><hr>";
+
+                $retval[$fid] = $items_text;                
             }
         }
     }
+
+    if (!$debug_alerts && $update) {
+        $varset = new CVarset();
+        $varset->addkey ("howoften", "text", $ho);
+        $varset->addkey ("collectionid", "text", $collectionid);
+        $varset->add ("last", "number", $now);    
+        $db->query($varset->makeINSERTorUPDATE("alerts_collection_howoften"));               
+    }        
+    
+    return $retval;
 }
 
 // -------------------------------------------------------------------------------------
-/**  Sends emails to all or chosen users, from all or chosen collections.
+/** Sends emails to all or chosen users, from all or chosen collections.
 *
-*   @param $ho         = how often 
-*   @param $collection_ids = array (collection_id, collection_id, ...).
-*                          If not filled, all collections are processed.
-*   @param $email      = array (email, email, ...)
-*                      If not filled, all Alerts users are processed.
+*   @param string $ho      = how often 
+*   @param array $collection_ids (collection_id, collection_id, ...).
+*            If set to "all", all collections are processed.
+*   @param array $email (email, email, ...)
+*            If set to "all", all Alerts users are processed.
+*   @return count of emails sent
 */    
-function send_emails ($ho, $collection_ids = "all", $emails = "all")
+function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
 {
-    global $debug, $db, $conds, $ALERTS_DEFAULT_COLLECTION, $LANGUAGE_CHARSETS;
+    global $db, $db2, $LANGUAGE_CHARSETS;
             
     if (is_array ($collection_ids))
-        $where = " WHERE AC.id IN (".join (",", $collection_ids).")";    
-    $db->query("SELECT module.slice_url, AC.id AS collectionid, AC.*, email.* FROM alerts_collection AC
+        $where = " WHERE AC.id IN ('".join ("','", $collection_ids)."')";    
+    $db->query("
+            SELECT module.slice_url, AC.id AS collectionid, AC.*, email.* 
+            FROM alerts_collection AC
             INNER JOIN email ON AC.emailid_alert = email.id
-            INNER JOIN module ON AC.moduleid = module.id
+            INNER JOIN module ON AC.module_id = module.id
             $where");
     while ($db->next_record()) 
         $colls[$db->f("collectionid")] = $db->Record;
     if (!is_array ($colls)) return;
     
+    $readerContent = new ItemContent ();
+    if (!is_object ($db2))            
+        $db2 = new DB_AA;
+
     reset ($colls);
-    while (list ($cid, $collection) = each ($colls)) {
-        unset ($users);
-        if (is_array ($emails)) {
-            reset ($emails);
-            while (list (,$email) = each ($emails)) 
-                $users[] = array ("email" => $email, "allfilters" => 1);
-        }
-        else {
-            // find users with all filters
-            $db->query("
-                SELECT U.*, UC.allfilters FROM 
-                alerts_user U INNER JOIN 
-                alerts_user_collection UC ON U.id = UC.userid 
-                WHERE U.confirm=''
-                AND UC.howoften = '$ho'
-                AND UC.collectionid = $cid");
-          
-            while ($db->next_record()) {
-                $users[$db->f("id")]["email"] = email_address ($db->f("firstname")." ".$db->f("lastname"), $db->f("email"));
-                $users[$db->f("id")]["allfilters"] = $db->f("allfilters");
-            }    
-
-            // find users with some filters
-            $db->query("
-                SELECT UCF.* FROM 
-                alerts_user U INNER JOIN 
-                alerts_user_collection UC ON U.id = UC.userid INNER JOIN
-                alerts_user_collection_filter UCF ON U.id = UCF.id AND UC.collectionid = UCF.collectionid
-                WHERE U.confirm=''
-                AND UC.howoften = '$ho'                
-                AND UC.collectionid = $cid");
-
-            while ($db->next_record())
-                $users[$db->f("userid")]["filters"][$db->f("myindex")] = $db->f("filterid");
-        }
+    while (list ($cid, $collection) = each ($colls)) {        
+        $unordered_filters = create_filter_text ($ho, $cid, $update, $item_id);
 
         // find filters for this collection
-        $db->query("SELECT HF.* FROM alerts_collection_filter CF
-            INNER JOIN alerts_filter_howoften HF ON CF.filterid = HF.filterid
-            WHERE HF.howoften = '$ho' AND CF.collectionid = $cid
+        $db->query("SELECT CF.filterid 
+            FROM alerts_collection_filter CF
+            WHERE CF.collectionid = '$cid'
             ORDER BY CF.myindex");
+        
+        $filters = "";    
+        while ($db->next_record()) 
+            $filters[$db->f("filterid")] = &$unordered_filters[$db->f("filterid")];            
 
-        unset ($allfilters);
-        while ($db->next_record()) {
-            $filters[$db->f("filterid")] = $db->f("text");
-            $allfilters .= $db->f("text");
-        }    
-
-        // create MIME headers
-        $headers = alerts_email_headers ($collection, $default_collection);
-
-        reset ($users);
-        while (list ($uid, $user) = each ($users)) {
-            if ($user["allfilters"])
-                $filtertext = $allfilters;
-            else {
-                $user_filters = $user["filters"];
-                ksort ($user_filters);
-                reset ($user_filters);
-                $filtertext = "";
-                while (list (,$fid) = each ($user_filters))
-                    $filtertext .= $filters[$fid];
+        // Find all users who should receive anything
+        if (! is_array ($emails)) {
+    
+            $db2->query("
+                SELECT id FROM item 
+                WHERE slice_id = '".addslashes($collection["slice_id"])."' 
+                  AND status_code = 1
+                  AND publish_date <= ".time()."
+                  AND expiry_date >= ".time());
+                  
+            $field_howoften = getAlertsField (FIELDID_HOWOFTEN, $cid);
+            
+            while ($db2->next_record()) {
+                $readerContent->setByItemID( unpack_id( $db2->f("id")));
+                if( $readerContent->getValue( $field_howoften ) != $ho
+                    || ! $readerContent->getValue( FIELDID_MAIL_CONFIRMED ))
+                    continue;
+                    
+                $user_filters = "";
+                $user_text = "";    
+                $user_filters_value = $readerContent->getValues( 
+                    getAlertsField (FIELDID_FILTERS, $cid));
+                    
+                if (is_array ($user_filters_value)) {
+                    foreach ($user_filters_value as $user_filter)
+                        // filter numbers are stored with "f" added to the beginning
+                        $user_filters [substr ($user_filter ["value"], 1)] = 1;
+                
+                    reset ($filters);
+                    while (list ($filterid, $text) = each ($filters))
+                        if ($user_filters [$filterid])
+                            $user_text .= $text;
+                }
+                
+                // Don't send if nothing new emerged         
+                if ($user_text) {        
+                    $alias["_#FILTERS_"] = $user_text;
+                    $alias["_#HOWOFTEN"] = $ho;
+                    $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"],
+                        "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE));
+        
+                    if (send_mail_from_table ($collection["emailid_alert"], 
+                        $readerContent->getValue(FIELDID_EMAIL), $alias))
+                        $email_count ++;            
+                }
             }
-//            $url = AA_INSTAL_URL."au.php3?u=$uid&l=".get_mgettext_lang();
-//            $footer = "-----------------------------------------------------------------------<br>"
-//                . _m("You can change your subscriptions on")."<br>\n<a href='$url'>$url</a>";
 
-            $alias["_#FILTERS_"] = $filtertext;
-            $alias["_#HOWOFTEN"] = $ho;
-            $alias["_#COLLFORM"] = $collection["slice_url"]."?uid=$uid";
-            $alias["_#USER_SET"] = AA_INSTAL_URL."au.php3?u=$uid";
-
-            send_mail_from_table ($collection["emailid_alert"], $user["email"], $alias); 
-        }
-        $email_count += count ($users);
+        // Use the emails sent as param
+        } else {
+            reset ($emails);
+            while (list (,$email) = each ($emails)) {
+                $alias["_#FILTERS_"] = join ("", $filters);
+                $alias["_#HOWOFTEN"] = $ho;
+                $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"], "ac=ABCDE");
+    
+                $GLOBALS["debug_email"] = 1;
+                if (send_mail_from_table ($collection["emailid_alert"], 
+                    $email, $alias)) 
+                    $email_count ++;
+            }             
+        }        
     }
     
     return $email_count;
@@ -272,38 +300,38 @@ function send_emails ($ho, $collection_ids = "all", $emails = "all")
 *   for all unfilled filter / howoften combinations 
 *   to a value depending on howoften, i.e. to one week ago for weekly etc.
 */    
-function initialize_filters ()
+function initialize_last ()
 {
     global $db;
     $now = getdate ();
+    
     $init["instant"] = time();
     // one day ago
-    $init["daily"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon], $now[mday]-1, $now[year]);
+    $init["daily"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon], $now[mday]-1);
     // one week (7 days) ago
-    $init["weekly"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon], $now[mday]-7, $now[year]);
+    $init["weekly"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon], $now[mday]-7);
     // one month ago
-    $init["monthly"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon]-1, $now[mday], $now[year]);
+    $init["monthly"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon]-1);
     
     $db2 = new DB_AA;
  
     $hos = get_howoften_options();   
     reset ($hos);
     while (list ($ho) = each ($hos)) {
-        $db->query("SELECT F.id FROM alerts_filter F LEFT JOIN
-            alerts_filter_howoften FH ON FH.filterid = F.id AND howoften='$ho'
+        $db->query("SELECT C.id FROM alerts_collection C LEFT JOIN
+            alerts_collection_howoften CH ON CH.collectionid = C.id AND howoften='$ho'
             WHERE last IS NULL");
         while ($db->next_record()) 
-            $db2->query("INSERT INTO alerts_filter_howoften (filterid, howoften, last)
-                VALUES (".$db->f("id").", '$ho', ".$init[$ho].")");
+            $db2->query("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
+                VALUES ('".$db->f("id")."', '$ho', ".$init[$ho].")");
 
-        $db->query("SELECT F.id FROM alerts_filter F INNER JOIN
-            alerts_filter_howoften FH ON FH.filterid = F.id
+        $db->query("SELECT C.id FROM alerts_collection C INNER JOIN
+            alerts_collection_howoften CH ON CH.collectionid = C.id
             WHERE last=0 AND howoften='$ho'");
         while ($db->next_record()) 
-            $db2->query("UPDATE alerts_filter_howoften SET last=".$init[$ho]
-                ." WHERE filterid=".$db->f("id")." AND howoften='$ho'");
+            $db2->query("UPDATE alerts_collection_howoften SET last=".$init[$ho]
+                ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
     }
 }           
 
 ?>
-

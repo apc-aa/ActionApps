@@ -92,6 +92,7 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
             case "delete_all":
                 if ($com["run_delete_all"]) {
                     reset ($par);
+                    $ok = true;
                     while ($ok && list ($key, $checked) = each ($par)) {
                         $ok = TableDelete ($myview["table"], $key,
                                      $myview["fields"], $primary_aliases,

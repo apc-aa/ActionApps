@@ -1,0 +1,105 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Anonymous forms</title><meta name="generator" content="DocBook XSL Stylesheets V1.49"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article"><div class="titlepage"><div><h2 class="title"><a name="d0e1"></a>Anonymous forms</h2></div><div><div class="author"><h3 class="author">Jakub Ad&aacute;mek</h3><div class="affiliation"><span class="orgname">Econnect<br></span></div></div></div><div><div class="revhistory"><table border="1" width="100%" summary="Revision history"><tr><th align="left" valign="top" colspan="2"><b>Revision History</b></th></tr><tr><td align="left">Revision 1.0</td><td align="left">15.2.2003</td></tr><tr><td align="left" colspan="2">Separated from the Reader management document</td></tr></table></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#d0e33">General usage of Anonymous Forms</a></dt><dt><a href="#d0e43">Creating Anonymous Forms with the Wizard</a></dt><dt><a href="#d0e100">Editing with anonymous forms</a></dt><dt><a href="#d0e163">Reader management specifics</a></dt><dt><a href="#d0e181">Show results</a></dt></dl></div><div class="abstract"><p><b>Abstract</b></p><p>Explains the basic idea, creation and settings of Anonymous forms.
+    The name &#8220;anonymous&#8221; is in some cases not accurate, as the
+    form is used for reader personal info and the readers must be authorized
+    to edit their own info.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e33"></a>General usage of Anonymous Forms</h2></div></div><p>Anonymous forms are similar in function and design to the Add / Edit
+    item page. The main difference is they are placed outside of the AA
+    Control Panel and thus do not provide the AA authorization and have a
+    design of their own.</p><p>The most common usage is to allow web readers to suggest new
+    content. After filling the Anonymous form it is sent to the Holding Bin
+    and a <span class="emphasis"><em>Thank you</em></span> page appears. But you can also allow
+    readers to edit items with the Anonymous form.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e43"></a>Creating Anonymous Forms with the Wizard</h2></div></div><p>In the previous AA versions until version 2.4, the process of
+    creating Anonymous forms was very simple: Copy the code of the
+    &#8220;Add item&#8221; page with only a few necessary changes. But as the
+    form now allows to edit items and to use several options for it, a new
+    wizard was created. This wizard creates a complete form with the SSI
+    include of <tt>fillform.php3</tt> necessary to edit items. The
+    resulting form differs depending on whether Anonymous editing is allowed
+    or not.</p><p>You may change these settings sent in anonymous fields:</p><div class="table"><p><b>Table 1. Some hidden fields in the anonymous form</b></p><table summary="Some hidden fields in the anonymous form" border="1"><colgroup><col><col></colgroup><tbody><tr><td>err_url</td><td>The URL to which the script <tt>filler.php3</tt>
+            jumps when some error occurs. It may be the same page on which the
+            form is shown.</td></tr><tr><td>ok_url</td><td>Like err_url, for successful changes.</td></tr><tr><td>show_result</td><td>The URL of a PHP script which receives the results from
+            <tt>filler.php3</tt>. This allows for a completely
+            free design of how the errors are presented to the user. See <a href="#show_results">below</a>.</td></tr></tbody></table></div><p>If you are interested to know more about what the form contains,
+    here are some remarks:</p><div class="itemizedlist"><ul type="disc"><li>The fields shown in AA but not shown in the anonymous form
+        are mentioned in the <tt>notshown[v7377697463682e2e2e2e2e2e2e2e2e2e]</tt>
+        hidden variables. This is to allow to set these fields to default
+        values on posting and to store old values on updating.</li><li>The setting <tt>use_post2shtml</tt> allows to use
+        the POST method for the form even though it is on a shtml page. The
+        values are stored in the database and restored by the scripts. This is
+        very useful as the GET method allows only for a restricted capacity
+        and shows the values in the URL.</li></ul></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e100"></a><a name="edit_options"></a>Editing with anonymous forms</h2></div></div><p>If you want to edit items with anonymous forms, first you must allow
+    to choose which item to edit. You can create a view and add a link to the
+    headlines, which links to the anonymous form and contains the parameter
+    <tt>my_item_id=_#ITEM_ID_</tt>. Another approach is used in
+    Reader management slices, see below.</p><p>You must choose the correct setting in Slice Admin - Settings -
+    Allow anonymous editing of items, which is used by the
+    <tt>filler.php3</tt> script on an item update request. The
+    options are:</p><div class="table"><p><b>Table 2. Anonymous editing options</b></p><table summary="Anonymous editing options" border="1"><colgroup><col><col></colgroup><tbody><tr><td>Not allowed</td><td>Never allow to update items</td></tr><tr><td>All items</td><td>Always allow</td></tr><tr><td>Only items posted anonymously</td><td>For items posted anonymously, <tt>filler</tt>
+            always sets the <tt>ITEM_FLAG_ANONYMOUS_EDITABLE</tt>
+            flag. By choosing this option you allow only items with this flag
+            set to be edited.</td></tr><tr><td>Only items posted anonymously and not edited in AA</td><td>Similar to the previous one, but when you edit the item in
+            the control panel, the flag is cleared and thus the item is no
+            more allowed to be edited anonymously.</td></tr><tr><td>Authorized by a password field</td><td><tt>filler</tt> looks for a field of type
+            Password (with Id beginning with <tt>password....</tt>)
+            and requests the password sent by the user to match. The password
+            may be set on item creation. If the field is not flagged required,
+            an empty password may be used. The new Field Input Type, Field
+            Insert Function and Field Validate Functions &#8220;Password and
+            Change Password&#8221; provide the usual edit boxes for changing,
+            deleting and entering password, which is stored encrypted. The
+            disadvantage is the password must be sent on every update.</td></tr><tr><td>Readers, authorized by HTTP auth</td><td>This is a special option, useful only for Reader management
+            slices. The username given to the browser on HTTP authentification
+            is looked for in the database. Each reader may edit only his or
+            her personal info.</td></tr></tbody></table></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e163"></a>Reader management specifics</h2></div></div><p>Each reader has her or his own item in the Reader management slice.
+    Thus the HTTP authentication described above may be used directly to
+    determine which item (reader personal details) to show in the form.</p><p>In this case two forms are needed, one being the publicly accessible
+    subscribe form and the second being the HTTP protected &#8220;Change
+    personal details&#8221; form. Because the fields on both the forms may be
+    the same, you can use one form and include it into two different .shtml
+    pages.</p><p>For webs not using Auth we need a way to ensure nobody not only
+    edits but even views the data. This is achieved by assigning a special
+    &#8220;Access Code&#8221; (<a href="reader.html" target="_top">see the
+    Reader management documentation</a>) to each reader, which must be
+    added to the URL in order that the data are prefilled. The password
+    authorization described above is than used on item update.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e181"></a><a name="show_results"></a>Show results</h2></div></div><p>Sending the data to AA results in adding the data into database or
+    in an error. Some of the errors may be excluded in advance by Javascript,
+    which does not allow to send an errornous form. But some of them, like a
+    username being already used, can not.</p><p>You may create your own PHP script and send its URL as a value of a
+    <tt>show_result</tt> variable. Add it as a parameter to the
+    <tt>fillform.php3</tt> SSI include created by the Wizard, e.g.
+    <pre class="screen">&lt;!--#include virtual="/aaa/fillform.php3?show_result=http://ecn.cz/show_result.php3&amp;form=..."--&gt;</pre>An
+    array <tt>$result</tt> with the results will be sent to the
+    PHP script and you may show appropriate messages. If you do not send
+    <tt>show_result</tt>, the <tt>fillform.php3</tt>
+    script shows the standard messages. Mind the messages will appear on the
+    place where <tt>fillform.php3</tt> is SSI-included in your
+    shtml page.</p><p>The <tt>$result</tt> array content is created at various
+    places in <tt>filler.php3</tt> as the <tt>$err[]</tt>
+    array. Look there for accurate info. At this moment the messages are:</p><div class="table"><p><b>Table 3. Results from filler.php3</b></p><table summary="Results from filler.php3" border="1"><colgroup><col><col></colgroup><tbody><tr><td>fatal</td><td>Fatal error. Several messages related to the slice, not to
+            the particular item. These errors help on creating the web page.</td></tr><tr><td>validate</td><td>Array with not validated fields, <tt>field_id =&gt;
+            message</tt>, e.g. <tt>headline........ =&gt; This
+            username is already used</tt> created on field validation.
+            You may create your own messages depending on the
+            <tt>field_id</tt>.</td></tr><tr><td>permissions</td><td>Missing permissions. Depending on the setting for Anonymous
+            editing (<a href="#edit_options">see above</a>), this item
+            did not fullfill the requirements.</td></tr><tr><td>store</td><td>Some error in StoreItem. Usually this points to an inner AA
+            error.</td></tr><tr><td>success</td><td>No error. The operation was successfully done. The value is
+            &#8220;insert&#8221; or &#8220;update&#8221; (i.e.
+            <tt>$result["success"] == "insert"</tt>
+            or <tt>$result["success"] == "update"</tt>
+            in the show results script).</td></tr><tr><td>email_confirmed</td><td>Added by <tt>fillform.php3</tt> on Reader
+            management slices: When the reader successfully confirms his or
+            her email by using the URL sent in an email, <tt>fillform</tt>
+            adds a message &#8220;email_confirmed =&gt; OK&#8221;. This
+            message is added only when the email has not yet been confirmed.</td></tr></tbody></table></div><p><span class="bold"><b>Discussion</b></span>: A similar result may be
+    achieved by adding several fields to the form, e.g. fields
+    <pre class="screen">err_page[validate][username......]="err_username.shtml"
+err_page[validate][*]="err_validate.shtml"
+err_page[*]="err_unrecognized.shtml"</pre>and by creating the
+    .shtml pages with a static message concerning the particular error. The
+    main advantage of this approach is the web administrator may not know PHP.
+    The disadvantage is the necessity of creating many pages but using SSI
+    includes the pages could look only like:<pre class="screen">&lt;!--#include file="err_top.shtml"--&gt;
+The username you entered has already been used. Please try another username.
+&lt;!--#include file="err_bottom.shtml"--&gt;</pre></p></div></div></body></html>

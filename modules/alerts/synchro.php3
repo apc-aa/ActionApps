@@ -1,5 +1,6 @@
 <?php
 /**
+ * Alerts menu: Slice Synchro.
  * Adds Alerts-specific fields to the Reader Management Slice.
  * @package Alerts
  * @version $Id$
@@ -24,6 +25,7 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
 $directory_depth = "../";
 require_once "$directory_depth../include/init_page.php3";
 require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   
@@ -41,28 +43,28 @@ HTMLPageBegin();
 echo "<title>"._m("Slice Synchro")."</title>";
 echo "</head>";
 echo "<body>";
-showMenu ($aamenus, "synchro");
+showMenu ($aamenus, "synchro", "synchro");
 
 echo '<h1>'._m("Synchronization with Reader Management Slice").'</h1>';
 
 // Execute requested actions from FORM
 
 if ($add_fields)
-	echo "<b>".add_fields_2_slice ($collectionid, $collectionprop["sliceid"])."</b><br><br>";
+	echo "<b>".add_fields_2_slice ($collectionid, $collectionprop["slice_id"])."</b><br><br>";
 	
-if ($change_to_cmd && pack_id ($change_to) != $collectionprop["sliceid"])	{
+if ($change_to_cmd && pack_id ($change_to) != $collectionprop["slice_id"])	{
 	if ($change_to_delete) 
-		echo "<b>".delete_fields_from_slice ($collectionid, $collectionprop["sliceid"])."</b><br><br>";
+		echo "<b>".delete_fields_from_slice ($collectionid, $collectionprop["slice_id"])."</b><br><br>";
     if ($change_to)
-    	$db->query ("UPDATE alerts_collection SET sliceid='".q_pack_id($change_to)."' 
+    	$db->query ("UPDATE alerts_collection SET slice_id='".q_pack_id($change_to)."' 
 	    	WHERE id='$collectionid'");
-    else $db->query ("UPDATE alerts_collection SET sliceid = NULL 
+    else $db->query ("UPDATE alerts_collection SET slice_id = NULL 
 	    	WHERE id='$collectionid'");
 
-	$collectionprop["sliceid"] = pack_id ($change_to);
+	$collectionprop["slice_id"] = pack_id ($change_to);
 }
 
-$db->query ("SELECT name FROM slice WHERE id = '".addslashes ($collectionprop["sliceid"])."'");
+$db->query ("SELECT name FROM slice WHERE id = '".addslashes ($collectionprop["slice_id"])."'");
 if ($db->next_record()) {
 	$slice_name = $db->f("name");
 	$slice_set = true;
@@ -75,13 +77,13 @@ if ($db->next_record()) {
 	
 echo '
 <form method="post" name="form_choose" action="'.$sess->url("synchro.php3").'">
-<table border="1" cellspacing="0" cellpadding="10" align="center" width="100%">
+<table border="1" cellspacing="0" cellpadding="10" align="center" width="440">
 	<tr><td class=tabtxt>
 	<h2>'._m("Choose Reader Management Slice").'</h2>
 	'._m("This Alerts Collection takes user data from the slice").": <b>".$slice_name.'</b><br><br>
 	'._m("Change to: ");
 
-FrmSelectEasy ("change_to", getReaderManagementSlices(), unpack_id ($collectionprop["sliceid"]));
+FrmSelectEasy ("change_to", getReaderManagementSlices(), unpack_id ($collectionprop["slice_id"]));
 
 if ($slice_set) {
 	echo '<br><input type="checkbox" name="change_to_delete" checked> '
@@ -97,11 +99,12 @@ echo '
 
 echo '
 <form method="post" name="form_add" action="'.$sess->url("synchro.php3").'">	
-<table border="1" cellspacing="0" cellpadding="10" align="center" width="100%">
+<table border="1" cellspacing="0" cellpadding="10" align="center" width="440">
 	<tr><td class=tabtxt>	
 	<h2>'._m("Add %1-specific fields to %2", 
 	  	     array ($collectionprop["name"], $slice_name)).'</h2>';
-echo _m("Adds only fields the IDs of which don't yet exist in the slice.");
+echo _m("Adds only fields the IDs of which don't yet exist in the slice.
+    Refreshes the filters constant group if it already exists.");
 
 // Field table
 
@@ -117,7 +120,7 @@ while (list ($field_id, $fprop) = each ($fields))
 echo '</table><br>';
 	
 if ($slice_set)
-	echo '<input type="submit" name="add_fields" value="'._m("Add fields").'">';
+	echo '<input type="submit" name="add_fields" value="'._m("Add or refresh fields").'">';
 else echo _m("This command can not be used until you choose the Reader Management Slice.");
 echo '
 </td></tr></table></form>';

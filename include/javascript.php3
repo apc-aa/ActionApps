@@ -20,18 +20,16 @@ http://www.apc.org/
 */
 
 // used by the itemedit.php3 page, which calls getTrig ()
-
-if (!defined ("aa_javascript_included")) 
-    define ("aa_javascript_included","1");
-else return;
  
-$js_triggers = array (
+require_once $GLOBALS["AA_INC_PATH"]."util.php3"; 
+ 
+$GLOBALS["js_triggers"] = array (
     "input" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
     "select" => array ("onBlur", "onFocus", "onChange"),
     "textarea" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
     "form"=> array ("onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit"));
 
-$js_trig = getTrig();
+$GLOBALS["js_trig"] = getTrig();
 
 function getJavascript ($slice_id)
 {

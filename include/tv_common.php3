@@ -85,7 +85,8 @@ function SelectModule ($all = false) {
     }
     
     $db->query("SELECT id, name FROM module
-        WHERE $where AND type IN ('Alerts','Auth')");
+        WHERE $where AND type = 'Alerts'
+        ORDER BY name");
     while ($db->next_record()) 
         $retval[unpack_id128($db->f("id"))] = $db->f("name");
     return $retval;

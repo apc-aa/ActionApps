@@ -150,6 +150,20 @@ $VALIDATE_TYPES["items"]["unique"] = array (
               "type"=>"BOOL",
               "example"=>1)
      ));
+$VALIDATE_TYPES["items"]["e-unique"] = array (
+    "name"=>_m("Unique e-mail"),
+    "desc"=>_m("Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used."),
+    "params"=>array (
+        array("name"=>_m("Field ID"),
+              "desc"=>_m("Field in which to look for matching values."),
+              "type"=>"STRID",
+              "example"=>"undefined......."),
+        array("name"=>_m("Slice only"),
+              "desc"=>_m("Do you want to check for uniqueness this slice only 
+                  or all slices?"),
+              "type"=>"BOOL",
+              "example"=>1)
+     ));
 $VALIDATE_TYPES["items"]["pwd"] = array (
     "name"=>_m("Password and Change Password"),
     "desc"=>_m("Validates the passwords do not differ when changing password.
@@ -158,7 +172,10 @@ $VALIDATE_TYPES["items"]["pwd"] = array (
         function does the validation again before inserting the new password.</i>"));
        
 // --------------------------------------------------------------------------------       
-       
+
+/** It is important the input types are 3 letter acronyms, because
+*   this is used e.g. in admin/se_constant.php3, function propagateChanges(). */        
+
 $INPUT_TYPES["name"] = _m("Input Type");
 $INPUT_TYPES["items"]["hco"] =
 array("name"=>_m("Hierarchical constants"),
@@ -226,7 +243,7 @@ array("name"=>_m("Text Field"),
 		"example"=>"30")));
 $INPUT_TYPES["items"]["sel"]=
 array("name"=>_m("Select Box"),
-	"desc"=>_m("A selectbox field with a values list.<br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"),
+	"desc"=>_m("A selectbox field with a values list.<br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice, usually with the f_v alias function)"),
 	"params"=>array(
 		array("name"=>_m("slice field"),
 		"desc"=>_m("field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)"),
@@ -308,7 +325,16 @@ array("name"=>_m("Checkbox"),
 	"desc"=>_m("The field value will be represented by a checkbox."));
 $INPUT_TYPES["items"]["mch"]=
 array("name"=>_m("Multiple Checkboxes"),
-	"desc"=>_m("Multiple choice checkbox group. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"));
+	"desc"=>_m("Multiple choice checkbox group. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"),
+    "params"=>array (
+        array("name"=>_m("Columns"),
+        "desc"=>_m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."),
+        "type"=>"INT",
+        "example"=>"3"),
+        array("name"=>_m("Move right"),
+        "desc"=>_m("Should the function move right or down to the next value?"),
+        "type"=>"BOOL",
+        "example"=>"1")));
 $INPUT_TYPES["items"]["mse"]=
 array("name"=>_m("Multiple Selectbox"),
 	"desc"=>_m("Multiple choice select box. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"),

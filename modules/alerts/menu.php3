@@ -55,31 +55,41 @@ function get_aamenus ()
         "href" => "modules/alerts/addusers.php3",
         "cond" => IfSlPerm (PS_USERS),
         "level" => "main");    
-        
-    $aamenus["usermanager"] = array (
-        "label" => _m("User Manager"),
-        "title" => _m("Alerts User Manager"),
-        "href" => "modules/alerts/tabledit.php3?set_tview=au&setTab=app",
-        "cond" => IfSlPerm (PS_USERS),
-        "level" => "main",
-        "submenu" => "usermanager_submenu");
 */        
     $aamenus["admin"] = array (    
-        "label" => _m("Alerts Admin"),
-        "title" => _m("Alerts Admin"),
+        "label" => _m("Settings"),
+        "title" => _m("Settings"),
         "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
             .urlencode ($GLOBALS["slice_id"])."]=1", 
         "cond" => IfSlPerm (PS_USERS),
         "level" => "main",
         "submenu" => "admin_submenu");        
 		
-	$aamenus["synchro"] = array (
-		"label" => _m("Slice Synchro"),
-		"title" => _m("Slice Synchro"),
-		"href" => "modules/alerts/synchro.php3",
+	$aamenus["filters"] = array (
+		"label" => _m("Filters"),
+		"title" => _m("Filters"),
+		"href"=>"modules/alerts/tabledit.php3?set_tview=acf", 
 		"cond" => IfSlPerm (PS_USERS),
-		"level" => "main");
+		"level" => "main",
+        "submenu"=>"admin_submenu");
         
+	$aamenus["send_emails"] = array (
+		"label" => _m("Send emails"),
+		"title" => _m("Send emails"),
+        "href"=>"modules/alerts/tabledit.php3?set_tview=send_emails&cmd[send_emails][edit]["
+                .$GLOBALS["collectionid"]."]=1", 
+		"cond" => IfSlPerm (PS_USERS),
+		"level" => "main",
+        "submenu"=>"admin_submenu");
+
+	$aamenus["synchro"] = array (
+		"label" => _m("Synchro"),
+		"title" => _m("Slice synchro"),
+        "href"=>"modules/alerts/synchro.php3", 
+		"cond" => IfSlPerm (PS_USERS),
+		"level" => "main",
+        "submenu"=>"admin_submenu");
+
     $aamenus["aaadmin"] = array (
         "label" => _m("AA"),
         "title" => _m("AA Administration"),
@@ -97,14 +107,20 @@ function get_aamenus ()
         "items"=> array(
         "header1"=>_m("Alerts Admin"),
   //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
-        "design"=>array ("cond"=>IfSlPerm(PS_USERS), 
-            "href"=>"modules/alerts/tabledit.php3?set_tview=acf", 
-            "label"=>_m("Design")),
         "settings"=>array ("cond"=>IfSlPerm(PS_USERS), 
             "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
                 .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")),
-//        "usercenter" => array ("cond"=>1, "label" => _m("User Center"),
-//            "href" => "modules/alerts/uc_tabledit.php3"),
+        "filters"=>array ("cond"=>IfSlPerm(PS_USERS), 
+            "href"=>"modules/alerts/tabledit.php3?set_tview=acf", 
+            "label"=>_m("Filters")),
+        "send_emails"=>array ("cond"=>IfSlPerm(PS_USERS), 
+            "href"=>"modules/alerts/tabledit.php3?set_tview=send_emails&cmd[send_emails][edit]["
+                .$GLOBALS["collectionid"]."]=1", 
+            "label"=>_m("Send emails")),
+        "synchro"=>array("cond"=>IfSlPerm(PS_USERS),
+       		"href" => "modules/alerts/synchro.php3",
+    		"label" => _m("Slice Synchro")),
+
         "header2" => _m("Common"),
 		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
 			"href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Emails"))

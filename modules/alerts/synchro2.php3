@@ -42,7 +42,7 @@ $alerts_specific_fields = array (
 		"name" => _m("How often"),
 		// {ALERNAME} will be replaced by the current Alerts Name
 		"input_help" => _m("How often for {ALERNAME}"),
-		"input_show_func" => "sel:", 
+		"input_show_func" => "sel:{CONSTGROUP}", 
 		// Add a constant group and add its name to "input_show_func"
 		"constants" => array (
 			"group" => "How often",
@@ -65,10 +65,13 @@ $alerts_specific_fields = array (
 	"alerts2" => array (
 		"name" => _m("Filters"),
 		"input_help" => _m("Filters for {ALERNAME}"),
-		"input_show_func" => "mch:", 
+		"input_show_func" => "mch:{CONSTGROUP}:3:1", 
 		"constants" => array (
 			"group" => "Filters",
 			"items" => "{FILTERS}"),
+		"alias1" => "_#FILTERS_",
+		"alias1_func" => "f_h:,",
+		"alias1_help" => _m("Filter IDs for {ALERNAME}"),
 	));
 
 // Add this to each field definition alerts1-4
@@ -91,8 +94,7 @@ function get_alerts_specific_fields($collectionid) {
 	global $alerts_specific_fields;
 	reset ($alerts_specific_fields);
 	while (list ($field_id, $fprop) = each ($alerts_specific_fields)) {
-		$field_id .= substr ("................", strlen ($field_id) + strlen ($collectionid)) 
-			  	   . $collectionid; 
+		$field_id = getAlertsField ($field_id, $collectionid);
 		$retval[$field_id] = $fprop;
 	}
 	return $retval;
@@ -111,7 +113,7 @@ function add_fields_2_slice ($collectionid, $slice_id) {
 	// find current Alerts Name
 	$db->query ("
 		SELECT module.name FROM alerts_collection AC 
-		INNER JOIN module ON AC.moduleid = module.id
+		INNER JOIN module ON AC.module_id = module.id
 		WHERE AC.id = '$collectionid'");
 	$db->next_record();
 	$alerts_name = $db->f ("name");
@@ -120,7 +122,8 @@ function add_fields_2_slice ($collectionid, $slice_id) {
 	$db->query ("
 		SELECT AF.description, AF.id FROM alerts_filter AF 
 		INNER JOIN alerts_collection_filter ACF ON AF.id = ACF.filterid
-		WHERE ACF.collectionid = '$collectionid'");
+		WHERE ACF.collectionid = '$collectionid'
+        ORDER BY ACF.myindex");
 	while ($db->next_record()) 
 		$filters["f".$db->f("id")] = $db->f("description");		
 	
@@ -145,32 +148,41 @@ function add_fields_2_slice ($collectionid, $slice_id) {
 		
 		// don't add fields twice
 		$db->query ($varset->makeSELECT ("field"));
-		if ($db->next_record())
-			continue;
+        $exists = $db->next_record();
+        $field_info = $db->Record;
+		if (! $exists ) {
+    		$nadded ++;
 			
-		$nadded ++;
-			
-		$varset->add ("input_pri", "number", $input_pri);
-		$input_pri += 10;
+    		$varset->add ("input_pri", "number", $input_pri);
+    		$input_pri += 10;
+        }
 		
 		if ($fprop ["constants"]["items"] == "{FILTERS}")
 			$fprop ["constants"]["items"] = $filters;
 		if ($fprop ["constants"]) {
-			$groupname = add_constant_group 
-				($fprop["constants"]["group"], $fprop["constants"]["items"]);
-			$fprop["input_show_func"] .= $groupname . ":";
+            if ($exists) {
+                list (,$groupname) = split(":", $field_info["input_show_func"]);
+                refresh_constant_group ($groupname, $fprop["constants"]["items"]);
+    			$fprop["input_show_func"] = $field_info["input_show_func"];
+            }
+            else {
+    			$groupname = add_constant_group 
+    				($fprop["constants"]["group"], $fprop["constants"]["items"]);
+    			$fprop["input_show_func"] = 
+                    str_replace ("{CONSTGROUP}", $groupname, $fprop["input_show_func"]);
+            }
 		}
 		reset ($fprop);
 		while (list ($name, $value) = each ($fprop)) 
-		if (!is_array ($value)) {
-			$value = str_replace ("{ALERNAME}", $alerts_name, $value);
-			$varset->add ($name, "text", $value);
-		}
+    		if (!is_array ($value)) {
+    			$value = str_replace ("{ALERNAME}", $alerts_name, $value);
+    			$varset->add ($name, "text", $value);
+    		}
 		
 		reset ($field_defaults);
 		while (list ($name, $value) = each ($field_defaults))
 			$varset->add ($name, "text", $value);
-		$db->query ($varset->makeINSERT ("field"));			
+		$db->query ($varset->makeINSERTorUPDATE ("field"));			
 	}
 	return _m("%1 field(s) added", array ($nadded));
 }
@@ -211,7 +223,7 @@ function getReaderManagementSlices ()
            $collectionprop;
 	
 	$slices = GetUsersSlices();
-	$SQL = "SELECT id, name FROM slice WHERE type='Alerts..........' 
+	$SQL = "SELECT id, name FROM slice WHERE type='ReaderManagement' 
         AND id <> '".addslashes($collectionprop["sliceid"])."'";
 	if (is_array ($slices)) {
 		reset ($slices);
@@ -225,7 +237,7 @@ function getReaderManagementSlices ()
 	$db->query ($SQL);
 	while ($db->next_record()) 
         $retval [unpack_id128 ($db->f("id"))] = $db->f("name");
-    if ($collectionprop["sliceid"])
+    if ($collectionprop["slice_id"])
         $retval[""] = _m("not set");        
 	return $retval;
 }

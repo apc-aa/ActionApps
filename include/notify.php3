@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 #
-# utility for notifying people of evets by email
+# utility for notifying people of events by email
 #
 
 require_once $GLOBALS["AA_INC_PATH"]."item.php3";

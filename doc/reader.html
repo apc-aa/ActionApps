@@ -1,11 +1,14 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>Reader Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.49"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article"><div class="titlepage"><div><h2 class="title"><a name="d0e1"></a>Reader Management</h2></div><div><div class="author"><h3 class="author">Jakub Ad&aacute;mek</h3><div class="affiliation"><span class="orgname">Econnect<br></span></div></div></div><div><div class="revhistory"><table border="1" width="100%" summary="Revision history"><tr><th align="left" valign="top" colspan="2"><b>Revision History</b></th></tr><tr><td align="left">Revision 1.1</td><td align="left">11.2.2003</td></tr><tr><td align="left" colspan="2">Added a remark about using several slices (second paragraph
+   <title>Reader Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.49"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article"><div class="titlepage"><div><h2 class="title"><a name="d0e1"></a>Reader Management</h2></div><div><div class="author"><h3 class="author">Jakub Ad&aacute;mek</h3><div class="affiliation"><span class="orgname">Econnect<br></span></div></div></div><div><div class="revhistory"><table border="1" width="100%" summary="Revision history"><tr><th align="left" valign="top" colspan="2"><b>Revision History</b></th></tr><tr><td align="left">Revision 1.2</td><td align="left">16.2.2003</td></tr><tr><td align="left" colspan="2">The part about Anonymous forms moved to a <a href="anonym.html" target="_top">separate document</a>. Enhanced and
+        corrected the Alerts specific section to reflect the recent
+        implementation.</td></tr><tr><td align="left">Revision 1.1</td><td align="left">11.2.2003</td></tr><tr><td align="left" colspan="2">Added a remark about using several slices (second paragraph
         in "Central point: Slice"). Enhanced and corrected the Auth
-        specific section to reflect the recent implementation.</td></tr><tr><td align="left">Revision 1.0</td><td align="left">5.2.2003</td></tr></table></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#d0e32">Basic idea</a></dt><dt><a href="#d0e54">Central point: Slice</a></dt><dt><a href="#d0e131">Editing Reader Info: Anonymous posting form</a></dt><dd><dl><dt><a href="#d0e136">General usage of Anonymous Forms</a></dt><dt><a href="#d0e155">Reader management specifics</a></dt><dt><a href="#d0e179">Show results</a></dt></dl></dd><dt><a href="#d0e206">Module common behaviour</a></dt><dt><a href="#d0e213">Module specific behaviour</a></dt><dd><dl><dt><a href="#d0e216">Alerts specific behaviour</a></dt><dt><a href="#d0e271">Auth specific behaviour</a></dt><dd><dl><dt><a href="#d0e275">Apache module mod_auth_mysql</a></dt><dt><a href="#d0e313">Auth feature</a></dt></dl></dd><dt><a href="#d0e372">Mailman specific behaviour</a></dt></dl></dd><dt><a href="#d0e382">Discussion - Why to use slice?</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e32"></a>Basic idea</h2></div></div><p>Readers are users with no AA admin access. I don't want to use
+        specific section to reflect the recent implementation.</td></tr><tr><td align="left">Revision 1.0</td><td align="left">5.2.2003</td></tr></table></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#d0e42">Basic idea</a></dt><dt><a href="#d0e67">Central point: Slice</a></dt><dt><a href="#d0e144">Editing Reader Info: Anonymous posting form</a></dt><dt><a href="#d0e152">Module common behaviour</a></dt><dt><a href="#d0e159">Module specific behaviour</a></dt><dd><dl><dt><a href="#d0e162">Alerts specific behaviour</a></dt><dd><dl><dt><a href="#d0e277">Example of welcome email</a></dt><dt><a href="#d0e294">Example of alert email</a></dt><dt><a href="#d0e312">Tips</a></dt><dt><a href="#d0e344">Step by step tutorial</a></dt></dl></dd><dt><a href="#d0e545">Auth specific behaviour</a></dt><dd><dl><dt><a href="#d0e548">Apache module mod_auth_mysql</a></dt><dt><a href="#d0e586">Auth feature</a></dt></dl></dd><dt><a href="#d0e651">Mailman specific behaviour</a></dt></dl></dd><dt><a href="#d0e661">Discussion - Why to use slice?</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e42"></a>Basic idea</h2></div></div><p>Readers are users with no AA admin access. I don't want to use
     the term &#8220;users&#8221; because of possible confusion with the AA
-    users like Authors and more.</p><p>Several modules may be connected with readers:</p><div class="itemizedlist"><ul type="disc"><li>Alerts, for sending new items by email</li><li>Authorization (Auth), for HTTP authorization via MySQL_Auth</li><li>Mailman, for e-mail discussions</li></ul></div><p>Readers are identified by email in Alerts and Mailman and by
-    username in Auth.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e54"></a>Central point: Slice</h2></div></div><p>After a lot of discussing and unhappily also a lot of work to be
+    users like Authors and more.</p><p>Several modules may be connected with readers:</p><div class="itemizedlist"><ul type="disc"><li>Alerts, for sending new items by email</li><li>Authorization (Auth), for HTTP authorization via MySQL_Auth</li><li>Mailman, for e-mail discussions</li><li><p>AA permissions synchronization, which propagates username and
+        password changes to the AA permission system</p></li></ul></div><p>Readers are identified by email in Alerts and Mailman and by
+    username in Auth.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e67"></a>Central point: Slice</h2></div></div><p>After a lot of discussing and unhappily also a lot of work to be
     thrown off, we have in Econnect decided the best approach to handle Reader
     management will be a slice. It is so simple: each item belongs to one
     person. The individual settings for Alerts, Auth etc. are added as fields
@@ -35,74 +38,121 @@
     different Alerts Collections. They all link to the same reader group and
     thus use the same Reader management slice.</p><p>In the simplest cases, there will be one Reader management slice +
     one Alerts or Auth module. The Alerts or Auth module will always use
-    (almost) directly the slice data.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e131"></a>Editing Reader Info: Anonymous posting form</h2></div></div><p>As readers do not have access to the AA control panel, they must
-    edit their personal details on the Anonymous posting form.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e136"></a>General usage of Anonymous Forms</h3></div></div><p>Anonymous posting forms are similar in function and design to the
-      Add / Edit item page. The main difference is they are placed outside of
-      AA Control Panel and thus do not provide the AA authorization and have a
-      design of their own.</p><p>The most common usage is to allow web readers to suggest new
-      content. After filling the Anonymous Form it is sent to the Holding Bin
-      and a <span class="emphasis"><em>Thank you</em></span> page appears.</p><p>But you can also allow readers to edit items with the Anonymous
-      Form. Two types of authorization are provided: Basically only items
-      posted from an Anonymous Form and not updated in the Control Panel are
-      allowed to be edited. <span class="emphasis"><em>This is ensured by a special flag
-      ITEM_FLAG_ANONYMOUS_EDITABLE which is cleared on every update in the
-      Control Panel.</em></span></p><p>The second possibility is to add a Password field to the item. The
-      new Field Input Type, Field Insert Function and Field Validate Functions
-      &#8220;Password and Change Password&#8221; provide the usual edit boxes
-      for changing, deleting and entering password, which is stored encrypted.
-      If a password-protected item is edited and a password is set for this
-      item, it must be sent on every update.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e155"></a>Reader management specifics</h3></div></div><p>Each reader has her or his own item in the Reader management
-      slice. Thus the HTTP authentication may be used directly to determine
-      which item (reader personal details) to show in the form. This is
-      achieved by sending the <tt>use_http_auth=1</tt> setting to
-      <tt>fillform.php3</tt>.</p><p>In this case two forms are needed, one being the publicly
-      accessible subscribe form and the second being the HTTP protected
-      &#8220;Change personal details&#8221; form. Because the fields on both
-      the forms may be the same, you can use one form and include it into two
-      different .shtml pages.</p><p>For webs not using Auth we need a way to ensure nobody not only
-      edits but even views the data. This is achieved by assigning a special
-      &#8220;Access Code&#8221; (<a href="#access_code">see above</a>)
-      to each reader, which must be added to the URL in order that the data
-      are prefilled.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e179"></a>Show results</h3></div></div><p>Sending the data to AA results in adding the data into database or
-      in an error. Some of the errors may be excluded by Javascript, which
-      does not allow to send an errornous form. But some of them, like a
-      username being already used, can't.</p><p>You may create your own PHP script and send its URL as a value of
-      a <tt>show_result</tt> variable. An array with the errors
-      will be sent to the script and you may view them in your own design. If
-      you do not send <tt>show_result</tt>, the
-      <tt>fillform.php3</tt> script shows them.</p><p>TODO: details on the array content.</p><p><span class="bold"><b>Discussion</b></span>: A similar result may
-      be achieved by adding several fields to the form, e.g. fields
-      <pre class="screen">err_page[validate][username......]="err_username.shtml"
-err_page[validate][*]="err_validate.shtml"
-err_page[*]="err_unrecognized.shtml"</pre>and by creating the
-      .shtml pages with a static message concerning the particular error. The
-      main advantage of this approach is the web administrator may not know
-      PHP. The disadvantage is the necessity of creating many pages but using
-      SSI includes the pages could look only like:<pre class="screen">&lt;!--#include file="err_top.shtml"--&gt;
-The username you entered has already been used. Please try another username.
-&lt;!--#include file="err_bottom.shtml"--&gt;</pre></p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e206"></a>Module common behaviour</h2></div></div><p>Only readers in Active bin will receive Alerts, be allowed to pages
+    (almost) directly the slice data.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e144"></a>Editing Reader Info: Anonymous posting form</h2></div></div><p>As readers do not have access to the AA control panel, they must
+    edit their personal details on the <a href="anonym.html" target="_top">Anonymous
+    posting form, described in another document</a>.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e152"></a>Module common behaviour</h2></div></div><p>Only readers in Active bin will receive Alerts, be allowed to pages
     guarded by Authorization etc.</p><p>In special cases, when you want to stop web access for some reader
     (authorization) but don't want to stop him or her receiving Alerts,
     you must create a dummy authorization group and assign this group to him
-    or her.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e213"></a>Module specific behaviour</h2></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e216"></a>Alerts specific behaviour</h3></div></div><p>The Alerts module appears like other regular modules in the slice
+    or her.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e159"></a>Module specific behaviour</h2></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e162"></a>Alerts specific behaviour</h3></div></div><p>The Alerts module appears like other regular modules in the slice
       select box. It offers these pages:</p><div class="table"><p><b>Table 2. Alerts menu</b></p><table summary="Alerts menu" border="1"><colgroup><col><col></colgroup><tbody><tr><td>Alerts Admin - Design</td><td>Email design, choose which filters you want to show and
-              their order. You can send an example email to see exactly what
-              readers receive.</td></tr><tr><td>Alerts Admin - Settings</td><td>Core settings for the Collection</td></tr><tr><td>Alerts Admin - Emails</td><td>Allows to edit all emails.</td></tr><tr><td>Slice Synchro</td><td>Sets the Reader Management Slice which feeds this Alerts
-              Collection. Allows to add or delete the Alerts-specific fields
-              to the slice.</td></tr></tbody></table></div><p>The fields added by Slice Synchro are:</p><div class="table"><p><b>Table 3. Alerts specific fields</b></p><table summary="Alerts specific fields" border="1"><colgroup><col><col></colgroup><tbody><tr><td>how often</td><td>How often the reader receives a digest: instant (each new
+              their order. Filters are defined in views of type Alerts Digest
+              in the slices from which you want to send new items. Each filter
+              has a description and a set of the powerful
+              <tt>conds[]</tt> and <tt>sort[]</tt>
+              parameters, the same as are used with <tt>slice.php3</tt>
+              in search forms. Mind that if some item appears in several
+              filters, it will be repeated in the mail. Try to make filters
+              mutually exclusive. You can send an example email from the
+              Design page to yourself to see exactly what readers receive. And
+              you can manually send the daily, weekly or monthly digest to all
+              readers.</td></tr><tr><td>Alerts Admin - Settings</td><td>Core settings for the Collection, see below.</td></tr><tr><td>Alerts Admin - Emails</td><td>Allows to edit all emails.</td></tr><tr><td>Slice Synchro</td><td>Sets the Reader Management Slice which feeds this Alerts
+              Collection. Allows to add, delete and refresh the
+              Alerts-specific fields to the slice. When you change the list of
+              filters on the Design page, use Synchro to refresh the
+              appropriate constant group.</td></tr></tbody></table></div><p>The fields added by Slice Synchro are:</p><div class="table"><p><b>Table 3. Alerts specific fields</b></p><table summary="Alerts specific fields" border="1"><colgroup><col><col></colgroup><tbody><tr><td>how often</td><td>How often the reader receives a digest: instant (each new
               item in one e-mail), daily, weekly, monthly.</td></tr><tr><td>choose filters</td><td>Multiple checkboxes allowing to choose which filters from
-              the collection the reader wants to read.</td></tr></tbody></table></div><p>You may show <span class="emphasis"><em>how often</em></span> or
+              the collection the reader wants to read. New parameters of the
+              Multiple Checkboxes field Input type allow to view them in a
+              table, see the Parameter Wizard.</td></tr></tbody></table></div><p>You may show <span class="emphasis"><em>how often</em></span> or
       <span class="emphasis"><em>choose filters </em></span>in the anonymous forms or you may
-      set defaults by hidden fields.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e271"></a><a name="auth"></a>Auth specific behaviour</h3></div></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e275"></a>Apache module mod_auth_mysql</h4></div></div><p>The Auth feature (it is not a real module) is meant to be used
+      set defaults by hidden fields.</p><p>The core settings in Alerts Admin - Settings include these special
+      fields:</p><div class="table"><p><b>Table 4. Alerts Admin - Settings</b></p><table summary="Alerts Admin - Settings" border="1"><colgroup><col><col></colgroup><tbody><tr><td>form URL</td><td>The URL to your pages with the &#8220;Change personal
+              details&#8221; form. This URL is used to create the
+              <tt>_#COLLFORM</tt> alias.</td></tr><tr><td>welcome email</td><td>A link to the email definition for a message sent to new
+              users on subscription. The edit icon on the right allows you to
+              jump to the email edit form.</td></tr><tr><td>alert email</td><td>A link to the email definition of the alert sent instant
+              / daily / ... and containing new items.</td></tr></tbody></table></div><p>The emails (welcome and alert) are stored in the common table
+      <tt>email</tt> and are defined using aliases and alias
+      functions. This allows a completely free design. The formatted new items
+      are added by the <tt>_#FILTERS_</tt> alias. If you want to
+      send different texts to readers with different &#8220;how often&#8221;,
+      use the <tt>switch</tt> function on the alias
+      <tt>_#HOWOFTEN</tt>. To allow readers to confirm their email
+      and change their personal settings, use the alias <tt>_#COLLFORM</tt>,
+      which is the URL you filled in Alerts Admin - Settings, with an
+      additional 9 letters parameter containing the <a href="#access_code">access code</a>.</p><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e277"></a>Example of welcome email</h4></div></div><p><span class="emphasis"><em>Subject: </em></span>Welcome to Econnect Alerts</p><p><span class="emphasis"><em>Email type:</em></span> alerts welcome</p><p><span class="emphasis"><em>Body:</em></span></p><p><pre class="screen">Somebody requested to receive regularly new items from our web site 
+&lt;a href="http://www.ecn.cz"&gt;www.ecn.cz&lt;/a&gt;
+{switch({_#HOWOFTEN})instant:at the moment they are added
+:daily:once a day
+:weekly:once a week
+:monthly:once a month}.&lt;br&gt;
+&lt;br&gt;
+You will not receive any emails until you confirm your subscription.
+To confirm it or to change your personal info, please go to&lt;br&gt;
+&lt;a href="_#COLLFORM"&gt;_#COLLFORM&lt;/a&gt;.&lt;br&gt;&lt;br&gt;
+Thank you for reading our alerts,&lt;br&gt;
+The Econnect team
+</pre></p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e294"></a>Example of alert email</h4></div></div><p><span class="emphasis"><em>Subject: </em></span><pre class="screen">{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}</pre></p><p><span class="emphasis"><em>Email type:</em></span> alerts alert</p><p><span class="emphasis"><em>Body:</em></span></p><p><pre class="screen">_#FILTERS_
+&lt;br&gt;&lt;hr&gt;
+To change your personal info, please go to&lt;br&gt;
+&lt;a href="_#COLLFORM"&gt;_#COLLFORM&lt;/a&gt;.&lt;br&gt;&lt;br&gt;
+Thank you for reading our alerts,&lt;br&gt;
+The Econnect team
+</pre></p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e312"></a>Tips</h4></div></div><p><span class="emphasis"><em>Alerts-only reader management: </em></span>You do not
+        need the username, but the email is required. Change these Fields
+        settings. Perhaps you even do not need to password-protect the reader
+        personal info. Change also the &#8220;Allow anonymous posting /
+        editing&#8221; slice settings.</p><p><span class="emphasis"><em>Filtering readers who are not yet confirmed:
+        </em></span>Change the design of the Item Manager in Slice Admin to
+        show the alias <tt>_#MAILCONF</tt>. This alias shows
+        &#8220;yes&#8221; or &#8220;no&#8221;. But it is created by the
+        <tt>f_c</tt> function and the values in the database are 0
+        or 1. Thus give &#8220;0&#8221; and not &#8220;no&#8221; into the
+        Search box.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e344"></a>Step by step tutorial</h4></div></div><p>Here is a tutorial, describing in steps how you can try the
+        Alerts module.</p><div class="orderedlist"><ol type="1"><li><p>Update to the new AA version from CVS and run
+            <tt>sql_update.php3</tt></p></li><li><p>Create &#8220;My Readers&#8221;:</p><div class="orderedlist"><ol type="a"><li><p>Create a new slice from the &#8220;Reader Management
+                Minimal&#8221; template with the name &#8220;My Readers&#8221;</p></li><li><p>Set &#8220;Allow anonymous posting&#8221; to
+                &#8220;Active&#8221;</p></li><li><p>Set &#8220;Allow anonymous editing&#8221; to
+                &#8220;All items&#8221;</p></li></ol></div></li><li><p>Create filters:</p><div class="orderedlist"><ol type="a"><li><p>In your favorite test slice, create a view with type
+                &#8220;Alerts Digest&#8221;. Fill something intelligent into
+                the design, particularly the &#8220;Odd Rows&#8221; field</p></li><li><p>Fill the Filter 1 and 2 Description with &#8220;My
+                Filter 1&#8221; and 2. Do not fill <tt>conds[]</tt>,
+                you can play with them when you are an Alerts-master</p></li></ol></div></li><li><p>Create a collection:</p><div class="orderedlist"><ol type="a"><li><p>Create a new Alerts module with the name &#8220;My
+                Collection&#8221;</p></li><li><p>Fill the name &#8220;My Alerts&#8221; and the form URL
+                with some web folder to which you have access, e.g.
+                <tt>http://have_access_to/myalerts.shtml</tt>
+                </p></li></ol></div></li><li><p>Design emails:</p><div class="orderedlist"><ol type="a"><li><p>In the Alerts menu, click on Emails and on the Add icon</p></li><li><p>Create a new email with name &#8220;My Welcome&#8221;
+                and fill the fields similar to the example above</p></li><li><p>Click again on Emails, Add and create a new email with
+                name &#8220;My Alert&#8221; and type &#8220;alerts alert&#8221;
+                and fill the fields similar to the example above</p></li><li><p>Click again on Emails, there should be the two emails
+                listed</p></li></ol></div></li><li><p>Set the collection:</p><div class="orderedlist"><ol type="a"><li><p>Click on Settings and set the emails for your collection</p></li><li><p>Click on Design and insert My Filter 1 and 2 into the
+                collection</p></li><li><p>Click on Slice Synchro, change to My Readers</p></li><li><p>Click on Add or refresh fields. A message
+                &#8220;2 field(s) added&#8221; appears.</p></li></ol></div></li><li><p>Create the anonymous form:</p><div class="orderedlist"><ol type="a"><li><p>Move to My Readers</p></li><li><p>In Slice Admin - Fields uncheck Show for Username and
+                check Required for Email </p></li><li><p>Choose Slice Admin - Anonymous Form Wizard</p></li><li><p>Fill the URL similar to <tt>http://have_access_to/myalerts.shtml</tt></p></li><li><p>Uncheck all fields except of Email, Password, How often
+                and Filters</p></li><li><p>Click on Show form and copy the form HTML to the file
+                <tt>http://have_access_to/myalerts.shtml</tt></p></li><li><p>Go to the address <tt>http://have_access_to/myalerts.shtml</tt>
+                and fill in your email address, the password &#8220;abcde&#8221;,
+                how often &#8220;daily&#8221; and choose one of the filters</p></li><li><p>Click on Send, a message &#8220;success: insert&#8221;
+                appears. You may change your settings and use Send again.</p></li></ol></div></li><li><p>Confirm your subscription: Click on the link received in the
+            Welcome email</p></li><li><p>Send alerts:</p><div class="orderedlist"><ol type="a"><li><p>Go to My Alerts, Design. Choose &#8220;daily&#8221; and
+                click on &#8220;Go!&#8221; at &#8220;Send example&#8221;.
+                You should receive a digest of all items added in the last 24
+                hours to your favorite test slice. If there are no such items,
+                add some: click on My Filter 1, this moves you to your
+                favorite test slice. </p></li><li><p>Try the same with &#8220;Send now alerts to all users&#8221;.
+                Note this will store the time into the database and if you
+                click again on this button, no mail will be sent because no
+                message was added between the two runs. </p></li></ol></div></li><li><p></p></li><li><p></p></li><li><p></p></li></ol></div></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e545"></a>Auth specific behaviour</h3></div></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e548"></a>Apache module mod_auth_mysql</h4></div></div><p>The Auth feature (it is not a real module) is meant to be used
         by the <tt>mod_auth_mysql</tt> Apache module. You must
         install this module on your web server to appreciate the Auth feature.
         There are several versions of the module with different option names.
-        Find the correct ones in your version. This is the info you will need:</p><div class="table"><p><b>Table 4. Tables maintained by the Auth feature</b></p><table summary="Tables maintained by the Auth feature" border="1"><colgroup><col><col></colgroup><tbody><tr><td>auth_user</td><td>with the fields &#8220;username&#8221; and
+        Find the correct ones in your version. This is the info you will need:</p><div class="table"><p><b>Table 5. Tables maintained by the Auth feature</b></p><table summary="Tables maintained by the Auth feature" border="1"><colgroup><col><col></colgroup><tbody><tr><td>auth_user</td><td>with the fields &#8220;username&#8221; and
                 &#8220;passwd&#8221;</td></tr><tr><td>auth_group</td><td>with the fields &#8220;username&#8221; and
                 &#8220;groups&#8221;</td></tr></tbody></table></div><p>Set up Apache and fill correct group info into the
         <tt>.htaccess</tt> files in folders which you want to
         protect. Note the groups you are using here are the groups separated
-        by semicolon in the AA constants, see below.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e313"></a>Auth feature</h4></div></div><p>The Auth administration includes creating membership types
+        by semicolon in the AA constants, see below.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e586"></a>Auth feature</h4></div></div><p>The Auth administration includes creating membership types
         (meta-groups) and assigning (sub)groups to them. This may be achieved
         with the usage of AA constants, where the constant name is the
         membership type and the constant value are the subgroups assigned to
@@ -110,10 +160,13 @@ The username you entered has already been used. Please try another username.
         Privileged Membership, where the first is permitted to folders
         "main" and "search" and the second to "main",
         "search" and "privileged", you create these two
-        constants:</p><div class="table"><p><b>Table 5. Membership Constants Example</b></p><table summary="Membership Constants Example" border="1"><colgroup><col><col></colgroup><tbody><tr><td><span class="emphasis"><em>Name</em></span></td><td><span class="emphasis"><em>Value</em></span></td></tr><tr><td>Standard Membership</td><td>myreaders_main;myreaders_search</td></tr><tr><td>Privileged Membership</td><td>myreaders_main;myreaders_search;myreaders_privileged</td></tr></tbody></table></div><p>The user / membership type assignments are synchronized with
+        constants:</p><div class="table"><p><b>Table 6. Membership Constants Example</b></p><table summary="Membership Constants Example" border="1"><colgroup><col><col></colgroup><tbody><tr><td><span class="emphasis"><em>Name</em></span></td><td><span class="emphasis"><em>Value</em></span></td></tr><tr><td>Standard Membership</td><td>myreaders_main;myreaders_search</td></tr><tr><td>Privileged Membership</td><td>myreaders_main;myreaders_search;myreaders_privileged</td></tr></tbody></table></div><p>The user / membership type assignments are synchronized with
         tables <tt>auth_user</tt> and <tt>auth_group</tt>
         using event handlers for events like updating an item or moving the
-        item into another bin.</p><p>To avoid the conflict of another Reader Management slice using
+        item into another bin. Also you should check &#8220;Propagate changes
+        into current items&#8221; in the constant group because then if you
+        change the subgroups, all user-group assignments for that metagroup
+        are updated even in the <tt>auth_group</tt> table.</p><p>To avoid the conflict of another Reader Management slice using
         the same subgroup names, I recommend to use some pre- or postfix (like
         &#8220;myreaders_&#8221; in my example).</p><p>The Auth feature is set on and off using a new item in Slice
         Settings, named &#8220;Auth Group Field&#8221;, with the name of the
@@ -124,13 +177,13 @@ The username you entered has already been used. Please try another username.
         Pending or Expired bin depending on Start date and Expiry date
         settings. You should run the script <tt>auth_maintain.php3?maintain_auth=1</tt>
         once a day by cron to automatically add or delete users moved to or
-        from the Active bin.</p></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e372"></a>Mailman specific behaviour</h3></div></div><p>The Mailman functionality includes some script run regularly by
+        from the Active bin.</p></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e651"></a>Mailman specific behaviour</h3></div></div><p>The Mailman functionality includes some script run regularly by
       cron, which copies info from the AA databse to some text file which in
       turn is read by mailman and used to synchronize its database.</p><p>A multi-checkbox for selecting to which mail lists a user is
       subscribed may be created by standard constants. The name and values of
       the constants are the names of the mail lists. A new Slice Setting is
       shown in Reader Management slices, named &#8220;Mailman Lists&#8221;,
-      with the name of the field containing the list names.</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e382"></a>Discussion - Why to use slice?</h2></div></div><p>The main reason to use slice was that we need some reader management
+      with the name of the field containing the list names.</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e661"></a>Discussion - Why to use slice?</h2></div></div><p>The main reason to use slice was that we need some reader management
     with the possibility to add any new fields. This is exactly what slice
     does. Also, we can use many other nice features already developed for
     slice. And last but not least if we need to improve the current slice

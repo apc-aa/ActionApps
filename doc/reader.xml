@@ -19,6 +19,17 @@
 
     <revhistory>
       <revision>
+        <revnumber>1.2</revnumber>
+
+        <date>16.2.2003</date>
+
+        <revremark>The part about Anonymous forms moved to a <ulink
+        role="html" url="anonym.html">separate document</ulink>. Enhanced and
+        corrected the Alerts specific section to reflect the recent
+        implementation.</revremark>
+      </revision>
+
+      <revision>
         <revnumber>1.1</revnumber>
 
         <date>11.2.2003</date>
@@ -56,6 +67,11 @@
 
       <listitem>
         <simpara>Mailman, for e-mail discussions</simpara>
+      </listitem>
+
+      <listitem>
+        <para>AA permissions synchronization, which propagates username and
+        password changes to the AA permission system</para>
       </listitem>
     </itemizedlist>
 
@@ -177,85 +193,8 @@
     <title>Editing Reader Info: Anonymous posting form</title>
 
     <para>As readers do not have access to the AA control panel, they must
-    edit their personal details on the Anonymous posting form.</para>
-
-    <sect2>
-      <title>General usage of Anonymous Forms</title>
-
-      <para>Anonymous posting forms are similar in function and design to the
-      Add / Edit item page. The main difference is they are placed outside of
-      AA Control Panel and thus do not provide the AA authorization and have a
-      design of their own.</para>
-
-      <para>The most common usage is to allow web readers to suggest new
-      content. After filling the Anonymous Form it is sent to the Holding Bin
-      and a <emphasis>Thank you</emphasis> page appears.</para>
-
-      <para>But you can also allow readers to edit items with the Anonymous
-      Form. Two types of authorization are provided: Basically only items
-      posted from an Anonymous Form and not updated in the Control Panel are
-      allowed to be edited. <emphasis>This is ensured by a special flag
-      ITEM_FLAG_ANONYMOUS_EDITABLE which is cleared on every update in the
-      Control Panel.</emphasis></para>
-
-      <para>The second possibility is to add a Password field to the item. The
-      new Field Input Type, Field Insert Function and Field Validate Functions
-      <quote>Password and Change Password</quote> provide the usual edit boxes
-      for changing, deleting and entering password, which is stored encrypted.
-      If a password-protected item is edited and a password is set for this
-      item, it must be sent on every update.</para>
-    </sect2>
-
-    <sect2>
-      <title>Reader management specifics</title>
-
-      <para>Each reader has her or his own item in the Reader management
-      slice. Thus the HTTP authentication may be used directly to determine
-      which item (reader personal details) to show in the form. This is
-      achieved by sending the <constant>use_http_auth=1</constant> setting to
-      <constant>fillform.php3</constant>.</para>
-
-      <para>In this case two forms are needed, one being the publicly
-      accessible subscribe form and the second being the HTTP protected
-      <quote>Change personal details</quote> form. Because the fields on both
-      the forms may be the same, you can use one form and include it into two
-      different .shtml pages.</para>
-
-      <para>For webs not using Auth we need a way to ensure nobody not only
-      edits but even views the data. This is achieved by assigning a special
-      <quote>Access Code</quote> (<link linkend="access_code">see above</link>)
-      to each reader, which must be added to the URL in order that the data
-      are prefilled.</para>
-    </sect2>
-
-    <sect2>
-      <title>Show results</title>
-
-      <para>Sending the data to AA results in adding the data into database or
-      in an error. Some of the errors may be excluded by Javascript, which
-      does not allow to send an errornous form. But some of them, like a
-      username being already used, can&#39;t.</para>
-
-      <para>You may create your own PHP script and send its URL as a value of
-      a <constant>show_result</constant> variable. An array with the errors
-      will be sent to the script and you may view them in your own design. If
-      you do not send <constant>show_result</constant>, the
-      <constant>fillform.php3</constant> script shows them.</para>
-
-      <para>TODO: details on the array content.</para>
-
-      <para><emphasis role="bold">Discussion</emphasis>: A similar result may
-      be achieved by adding several fields to the form, e.g. fields
-      <screen>err_page[validate][username......]=&#34;err_username.shtml&#34;
-err_page[validate][*]=&#34;err_validate.shtml&#34;
-err_page[*]=&#34;err_unrecognized.shtml&#34;</screen>and by creating the
-      .shtml pages with a static message concerning the particular error. The
-      main advantage of this approach is the web administrator may not know
-      PHP. The disadvantage is the necessity of creating many pages but using
-      SSI includes the pages could look only like:<screen>&#60;!--#include file=&#34;err_top.shtml&#34;--&#62;
-The username you entered has already been used. Please try another username.
-&#60;!--#include file=&#34;err_bottom.shtml&#34;--&#62;</screen></para>
-    </sect2>
+    edit their personal details on the <ulink role="html" url="anonym.html">Anonymous
+    posting form, described in another document</ulink>.</para>
   </sect1>
 
   <sect1>
@@ -288,14 +227,23 @@ The username you entered has already been used. Please try another username.
               <entry>Alerts Admin - Design</entry>
 
               <entry>Email design, choose which filters you want to show and
-              their order. You can send an example email to see exactly what
-              readers receive.</entry>
+              their order. Filters are defined in views of type Alerts Digest
+              in the slices from which you want to send new items. Each filter
+              has a description and a set of the powerful
+              <constant>conds[]</constant> and <constant>sort[]</constant>
+              parameters, the same as are used with <constant>slice.php3</constant>
+              in search forms. Mind that if some item appears in several
+              filters, it will be repeated in the mail. Try to make filters
+              mutually exclusive. You can send an example email from the
+              Design page to yourself to see exactly what readers receive. And
+              you can manually send the daily, weekly or monthly digest to all
+              readers.</entry>
             </row>
 
             <row>
               <entry>Alerts Admin - Settings</entry>
 
-              <entry>Core settings for the Collection</entry>
+              <entry>Core settings for the Collection, see below.</entry>
             </row>
 
             <row>
@@ -308,8 +256,10 @@ The username you entered has already been used. Please try another username.
               <entry>Slice Synchro</entry>
 
               <entry>Sets the Reader Management Slice which feeds this Alerts
-              Collection. Allows to add or delete the Alerts-specific fields
-              to the slice.</entry>
+              Collection. Allows to add, delete and refresh the
+              Alerts-specific fields to the slice. When you change the list of
+              filters on the Design page, use Synchro to refresh the
+              appropriate constant group.</entry>
             </row>
           </tbody>
         </tgroup>
@@ -333,7 +283,9 @@ The username you entered has already been used. Please try another username.
               <entry>choose filters</entry>
 
               <entry>Multiple checkboxes allowing to choose which filters from
-              the collection the reader wants to read.</entry>
+              the collection the reader wants to read. New parameters of the
+              Multiple Checkboxes field Input type allow to view them in a
+              table, see the Parameter Wizard.</entry>
             </row>
           </tbody>
         </tgroup>
@@ -342,10 +294,320 @@ The username you entered has already been used. Please try another username.
       <para>You may show <emphasis>how often</emphasis> or
       <emphasis>choose filters </emphasis>in the anonymous forms or you may
       set defaults by hidden fields.</para>
+
+      <para>The core settings in Alerts Admin - Settings include these special
+      fields:</para>
+
+      <table>
+        <title>Alerts Admin - Settings</title>
+
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry>form URL</entry>
+
+              <entry>The URL to your pages with the <quote>Change personal
+              details</quote> form. This URL is used to create the
+              <constant>_#COLLFORM</constant> alias.</entry>
+            </row>
+
+            <row>
+              <entry>welcome email</entry>
+
+              <entry>A link to the email definition for a message sent to new
+              users on subscription. The edit icon on the right allows you to
+              jump to the email edit form.</entry>
+            </row>
+
+            <row>
+              <entry>alert email</entry>
+
+              <entry>A link to the email definition of the alert sent instant
+              / daily / ... and containing new items.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>The emails (welcome and alert) are stored in the common table
+      <constant>email</constant> and are defined using aliases and alias
+      functions. This allows a completely free design. The formatted new items
+      are added by the <constant>_#FILTERS_</constant> alias. If you want to
+      send different texts to readers with different <quote>how often</quote>,
+      use the <constant>switch</constant> function on the alias
+      <constant>_#HOWOFTEN</constant>. To allow readers to confirm their email
+      and change their personal settings, use the alias <constant>_#COLLFORM</constant>,
+      which is the URL you filled in Alerts Admin - Settings, with an
+      additional 9 letters parameter containing the <link
+      linkend="access_code">access code</link>.</para>
+
+      <sect3>
+        <title>Example of welcome email</title>
+
+        <para><emphasis>Subject: </emphasis>Welcome to Econnect Alerts</para>
+
+        <para><emphasis>Email type:</emphasis> alerts welcome</para>
+
+        <para><emphasis>Body:</emphasis></para>
+
+        <para><screen>Somebody requested to receive regularly new items from our web site 
+&#60;a href=&#34;http://www.ecn.cz&#34;&#62;www.ecn.cz&#60;/a&#62;
+{switch({_#HOWOFTEN})instant:at the moment they are added
+:daily:once a day
+:weekly:once a week
+:monthly:once a month}.&#60;br&#62;
+&#60;br&#62;
+You will not receive any emails until you confirm your subscription.
+To confirm it or to change your personal info, please go to&#60;br&#62;
+&#60;a href=&#34;_#COLLFORM&#34;&#62;_#COLLFORM&#60;/a&#62;.&#60;br&#62;&#60;br&#62;
+Thank you for reading our alerts,&#60;br&#62;
+The Econnect team
+</screen></para>
+      </sect3>
+
+      <sect3>
+        <title>Example of alert email</title>
+
+        <para><emphasis>Subject: </emphasis><screen>{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}</screen></para>
+
+        <para><emphasis>Email type:</emphasis> alerts alert</para>
+
+        <para><emphasis>Body:</emphasis></para>
+
+        <para><screen>_#FILTERS_
+&#60;br&#62;&#60;hr&#62;
+To change your personal info, please go to&#60;br&#62;
+&#60;a href=&#34;_#COLLFORM&#34;&#62;_#COLLFORM&#60;/a&#62;.&#60;br&#62;&#60;br&#62;
+Thank you for reading our alerts,&#60;br&#62;
+The Econnect team
+</screen></para>
+      </sect3>
+
+      <sect3>
+        <title>Tips</title>
+
+        <para><emphasis>Alerts-only reader management: </emphasis>You do not
+        need the username, but the email is required. Change these Fields
+        settings. Perhaps you even do not need to password-protect the reader
+        personal info. Change also the <quote>Allow anonymous posting /
+        editing</quote> slice settings.</para>
+
+        <para><emphasis>Filtering readers who are not yet confirmed:
+        </emphasis>Change the design of the Item Manager in Slice Admin to
+        show the alias <constant>_#MAILCONF</constant>. This alias shows
+        <quote>yes</quote> or <quote>no</quote>. But it is created by the
+        <constant>f_c</constant> function and the values in the database are 0
+        or 1. Thus give <quote>0</quote> and not <quote>no</quote> into the
+        Search box.</para>
+      </sect3>
+
+      <sect3>
+        <title>Step by step tutorial</title>
+
+        <para>Here is a tutorial, describing in steps how you can try the
+        Alerts module.</para>
+
+        <orderedlist>
+          <listitem>
+            <para>Update to the new AA version from CVS and run
+            <constant>sql_update.php3</constant></para>
+          </listitem>
+
+          <listitem>
+            <para>Create <quote>My Readers</quote>:</para>
+
+            <orderedlist>
+              <listitem>
+                <para>Create a new slice from the <quote>Reader Management
+                Minimal</quote> template with the name <quote>My Readers</quote></para>
+              </listitem>
+
+              <listitem>
+                <para>Set <quote>Allow anonymous posting</quote> to
+                <quote>Active</quote></para>
+              </listitem>
+
+              <listitem>
+                <para>Set <quote>Allow anonymous editing</quote> to
+                <quote>All items</quote></para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+
+          <listitem>
+            <para>Create filters:</para>
+
+            <orderedlist>
+              <listitem>
+                <para>In your favorite test slice, create a view with type
+                <quote>Alerts Digest</quote>. Fill something intelligent into
+                the design, particularly the <quote>Odd Rows</quote> field</para>
+              </listitem>
+
+              <listitem>
+                <para>Fill the Filter 1 and 2 Description with <quote>My
+                Filter 1</quote> and 2. Do not fill <constant>conds[]</constant>,
+                you can play with them when you are an Alerts-master</para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+
+          <listitem>
+            <para>Create a collection:</para>
+
+            <orderedlist>
+              <listitem>
+                <para>Create a new Alerts module with the name <quote>My
+                Collection</quote></para>
+              </listitem>
+
+              <listitem>
+                <para>Fill the name <quote>My Alerts</quote> and the form URL
+                with some web folder to which you have access, e.g.
+                <constant>http://have_access_to/myalerts.shtml</constant>
+                </para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+
+          <listitem>
+            <para>Design emails:</para>
+
+            <orderedlist>
+              <listitem>
+                <para>In the Alerts menu, click on Emails and on the Add icon</para>
+              </listitem>
+
+              <listitem>
+                <para>Create a new email with name <quote>My Welcome</quote>
+                and fill the fields similar to the example above</para>
+              </listitem>
+
+              <listitem>
+                <para>Click again on Emails, Add and create a new email with
+                name <quote>My Alert</quote> and type <quote>alerts alert</quote>
+                and fill the fields similar to the example above</para>
+              </listitem>
+
+              <listitem>
+                <para>Click again on Emails, there should be the two emails
+                listed</para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+
+          <listitem>
+            <para>Set the collection:</para>
+
+            <orderedlist>
+              <listitem>
+                <para>Click on Settings and set the emails for your collection</para>
+              </listitem>
+
+              <listitem>
+                <para>Click on Design and insert My Filter 1 and 2 into the
+                collection</para>
+              </listitem>
+
+              <listitem>
+                <para>Click on Slice Synchro, change to My Readers</para>
+              </listitem>
+
+              <listitem>
+                <para>Click on Add or refresh fields. A message
+                <quote>2 field(s) added</quote> appears.</para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+
+          <listitem>
+            <para>Create the anonymous form:</para>
+
+            <orderedlist>
+              <listitem>
+                <para>Move to My Readers</para>
+              </listitem>
+
+              <listitem>
+                <para>In Slice Admin - Fields uncheck Show for Username and
+                check Required for Email </para>
+              </listitem>
+
+              <listitem>
+                <para>Choose Slice Admin - Anonymous Form Wizard</para>
+              </listitem>
+
+              <listitem>
+                <para>Fill the URL similar to <constant>http://have_access_to/myalerts.shtml</constant></para>
+              </listitem>
+
+              <listitem>
+                <para>Uncheck all fields except of Email, Password, How often
+                and Filters</para>
+              </listitem>
+
+              <listitem>
+                <para>Click on Show form and copy the form HTML to the file
+                <constant>http://have_access_to/myalerts.shtml</constant></para>
+              </listitem>
+
+              <listitem>
+                <para>Go to the address <constant>http://have_access_to/myalerts.shtml</constant>
+                and fill in your email address, the password <quote>abcde</quote>,
+                how often <quote>daily</quote> and choose one of the filters</para>
+              </listitem>
+
+              <listitem>
+                <para>Click on Send, a message <quote>success: insert</quote>
+                appears. You may change your settings and use Send again.</para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+
+          <listitem>
+            <para>Confirm your subscription: Click on the link received in the
+            Welcome email</para>
+          </listitem>
+
+          <listitem>
+            <para>Send alerts:</para>
+
+            <orderedlist>
+              <listitem>
+                <para>Go to My Alerts, Design. Choose <quote>daily</quote> and
+                click on <quote>Go!</quote> at <quote>Send example</quote>.
+                You should receive a digest of all items added in the last 24
+                hours to your favorite test slice. If there are no such items,
+                add some: click on My Filter 1, this moves you to your
+                favorite test slice. </para>
+              </listitem>
+
+              <listitem>
+                <para>Try the same with <quote>Send now alerts to all users</quote>.
+                Note this will store the time into the database and if you
+                click again on this button, no mail will be sent because no
+                message was added between the two runs. </para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+
+          <listitem>
+            <para></para>
+          </listitem>
+
+          <listitem>
+            <para></para>
+          </listitem>
+
+          <listitem>
+            <para></para>
+          </listitem>
+        </orderedlist>
+      </sect3>
     </sect2>
 
     <sect2>
-      <title><anchor id="auth" />Auth specific behaviour</title>
+      <title>Auth specific behaviour</title>
 
       <sect3>
         <title>Apache module mod_auth_mysql</title>
@@ -428,7 +690,10 @@ The username you entered has already been used. Please try another username.
         <para>The user / membership type assignments are synchronized with
         tables <constant>auth_user</constant> and <constant>auth_group</constant>
         using event handlers for events like updating an item or moving the
-        item into another bin.</para>
+        item into another bin. Also you should check <quote>Propagate changes
+        into current items</quote> in the constant group because then if you
+        change the subgroups, all user-group assignments for that metagroup
+        are updated even in the <constant>auth_group</constant> table.</para>
 
         <para>To avoid the conflict of another Reader Management slice using
         the same subgroup names, I recommend to use some pre- or postfix (like

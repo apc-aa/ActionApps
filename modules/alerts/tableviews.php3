@@ -47,51 +47,6 @@ function GetAlertsTableView ($viewID, $processForm = false) {
     global $auth, $slice_id, $db, $collectionid;
     global $attrs_edit, $attrs_browse, $format, $langs;
     
-    /* ------------------------------------------------------------------------------------
-       au -- browse Alerts users
-    */       
-
-    global $sess;         
-    if ($viewID == "aucf") {
-        global $collectionid;
-        $db->query("SELECT AF.description, AF.id FROM alerts_collection_filter ACF
-            INNER JOIN alerts_filter AF ON AF.id = ACF.filterid
-            WHERE collectionid='$collectionid'");
-        if ($db->num_rows()) {
-            while ($db->next_record()) 
-                $collection_filters [$db->f("id")] = $db->f("description");
-            $no_filters = false;
-        }
-        else {
-            $collection_filters[-1] = _m("No filters found for this collection.");
-            $no_filters = true;
-        }
-        return  array (
-        "table" => "alerts_user_collection_filter",
-        "type" => "browse",
-        "readonly" => false, //$no_filters,
-        //"buttons_down" => array (), //"update_all" => 1, "delete_all" => 1),
-        "addrecord" => true,
-        "gotoview" => "au_edit",
-        "cond" => 0,
-        "orderby" => "myindex",
-        "search" => false,
-        "messages" => array (
-            "error_insert" => _m("This filter has already been added.")),
-        "fields" => array (
-            "collectionid" => array (
-                "view" => array ("type"=>"hide"),
-                "default" => $collectionid),
-            "filterid" => array (
-                "caption" => _m("filter"),
-                "view" => array ("type"=>"select","source"=>$collection_filters)),
-            "myindex" => array (
-                "default" => 1,
-                "caption" => _m("order"))),
-        "attrs" => $attrs_browse,
-		"help" => _m("If 'all filters' is set to 'yes', no filters should be assigned to this user."));
-    }
-         
     // ------------------------------------------------------------------------------------
 
     if ($viewID == "acf") {
@@ -140,8 +95,8 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "buttons_down" => array ("update_all" => 1, "delete_all" => 1),
         "addrecord" => is_array ($new_filters),
         "gotoview" => "au_edit",
-        "mainmenu" => "admin",
-        "submenu" => "design",
+        "mainmenu" => "filters",
+        "submenu" => "filters",
         "search" => false,
         "caption" => _m("Filters"),
         "title" => _m("Filters"),
@@ -188,7 +143,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "join" => array (
             "alerts_collection" => array (
                 "joinfields" => array (
-                    "id" => "moduleid"),
+                    "id" => "module_id"),
                 "jointype" => "1 to 1")),                    
         "type" => "edit",
         "readonly" => false,
@@ -206,7 +161,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                 "default" => new_collection_id(),
                 "view" => array ("readonly" => true),
                 "caption" => _m("collection ID")),
-/*            "sliceid" => array (
+/*            "slice_id" => array (
                 "table" => "alerts_collection",
                 "view" => array ("type"=>"select", "source"=>getReaderManagementSlices()),
                 "caption" => _m("reader management slice")),*/
@@ -214,7 +169,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                 "view" => array ("type" => "text", "size" => array("cols"=>60)),
 				"caption" => _m("name"),
                 "required" => true),
-            "slice_url" => array ("caption" => _m("form URL"), "required"=>false),
+            "slice_url" => array ("caption" => _m("form URL"), "required"=>true),
             "lang_file" => array (
                 "caption" => _m("language"),
                 "view" => array ("type"=>"select","source"=>$alertslangs)),
@@ -236,13 +191,6 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                     "type"=>"select",
                     "href_view" => "email_edit",
                     "source"=>GetUserEmails("alerts alert")))),
-            "emailid_access" => array (
-                "table" => "alerts_collection",
-                "caption" => _m("single usage access email"),
-                "view" => ($processForm ? "" : array (
-                    "type"=>"select",
-                    "href_view" => "email_edit",
-                    "source"=>GetUserEmails("alerts access")))),
             "type" => array ("default" => "Alerts", "view" => array ("type"=>"hide")),
             "id" => array (
                 "default" => pack_id128(new_id()),                 
@@ -267,6 +215,33 @@ function GetAlertsTableView ($viewID, $processForm = false) {
 		));        
     }       
     
+    /* ------------------------------------------------------------------------------------
+       send_emails
+    */
+    if ($viewID == "send_emails") {
+        return array (
+        "table" => "alerts_collection",
+        "type" => "edit",
+        "readonly" => false,
+        "cond" => 1,
+        "title" => _m("Send Emails"), 
+        "caption" => _m("Send Emails"),
+        "mainmenu" => "send_emails",
+        "submenu" => "send_emails",
+        "attrs" => $attrs_edit,
+		"messages" => array (
+	        "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")),
+        "fields" => array (
+            "emailid_alert" => array (
+                "table" => "alerts_collection",
+                "caption" => _m("alert email"),
+                "view" => ($processForm ? "" : array (
+                    "type"=>"select",
+                    "href_view" => "email_edit",
+                    "source"=>GetUserEmails("alerts alert")))),
+        ));
+    }
+
     /* ------------------------------------------------------------------------------------
        alerts_admin
     */

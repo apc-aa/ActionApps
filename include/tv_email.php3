@@ -30,23 +30,16 @@ function ShowEmailAliases () {
         "aliases" => array (
             "_#FILTERS_" => _m("complete filter text"),
             "_#HOWOFTEN" => _m("howoften")." (".join(", ",get_howoften_options()).")",
-            "_#COLLFORM" => _m("Collection Form URL"),
-            "_#USER_SET" => _m("User Settings URL")
+            "_#COLLFORM" => _m("Collection Form URL (set in Alerts Admin - Settings)"),
         ));
         
     $ali[] = array (
         "group" => _m("Aliases for Alerts Welcome"), 
         "aliases" => array (
-            "_#CONFIRM_" => _m("confirmation URL"),
             "_#HOWOFTEN" => _m("howoften")." (".join(", ",get_howoften_options()).")",
+            "_#COLLFORM" => _m("Collection Form URL (set in Alerts Admin - Settings)"),
         ));
 
-    $ali[] = array (
-        "group" => _m("Aliases for Alerts Single Usage Access"), 
-        "aliases" => array (
-            "_#ACCESURL" => _m("single usage access URL"),
-        ));
-        
     echo "<TABLE border=0 cellspacing=0 cellpadding=0>";
     reset ($ali);
     while (list (, $aligroup) = each ($ali)) {
