@@ -288,8 +288,9 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_del_str,
         $arr = array ();
     } else {
         $db->tquery($SQL);
-        while( $db->next_record() )
+        while( $db->next_record() ) {
             $arr[] = $db->f($col);
+        }
     }
     $zids = new zids($arr, $zid_type);
     $QueryIDsCount = count($arr);
@@ -389,8 +390,8 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
       else ProoveFieldNames (array ($slice_id), $conds);
   }
 
-  ParseMultiSelectConds ($conds);
-  ParseEasyConds ($conds, $defaultCondsOperator);
+  ParseMultiSelectConds($conds);
+  ParseEasyConds($conds, $defaultCondsOperator);
 
   if( $debug ) huhl("Conds=",$conds,"Sort=",$sort, "Group by=",$group_by,"Slices=",$slices);
 
@@ -458,7 +459,11 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
       }
 
       if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
-        $select_order .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
+        $fieldId          = 'item.' . $fields[$fid]['in_item_tbl'];
+        $select_order    .= $delim  . $fieldId;
+        // select_distinct added in order we can group by multiple value fields
+        // (items are shown more times)
+        $select_distinct .= ',' . $fieldId;
         if( stristr(current( $srt ), 'd'))
           $select_order .= " DESC";
         $delim=',';
@@ -488,15 +493,19 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
                         # mark this field as sortable (store without apostrofs)
 
           # fill arrays according to this sort specification
-          $select_order .= $delim .$tbl. ".pri";
+          $fieldId          = $tbl. ".pri";
+          $select_order    .= $delim . $fieldId;
+          $select_distinct .= ','    . $fieldId;
           if( stristr($direction,'9') )
-            $select_order .= " DESC";
+            $select_order  .= " DESC";
         } else {                                                   # sort by value
           $store = ($fields[$fid]['text_stored'] ? "text" : "number");
           # fill arrays according to this sort specification
-          $select_order .= $delim .$sortable[$fid]. ".$store";
+          $fieldId          = $sortable[$fid]. ".$store";
+          $select_order    .= $delim . $fieldId;
+          $select_distinct .= ','    . $fieldId;
           if( stristr(current( $srt ), 'd'))
-            $select_order .= " DESC";
+            $select_order  .= " DESC";
         }
         $delim=',';
       }
@@ -539,11 +548,11 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
 
   if( $debug )
     huhl("QueryZIDs:slice_id=",$slice_id,"  select_tabs=",$select_tabs,
-        "  select_conds=",$select_conds,"  select_order",$select_order,
+        "  select_conds=",$select_conds,"  select_order=",$select_order,
         "  select_group=",$select_group);
 
   # construct query --------------------------
-  $SQL = "SELECT DISTINCT item.id FROM item ";
+  $SQL = "SELECT DISTINCT item.id as itemid $select_distinct FROM item ";
   if( isset($select_tabs) AND is_array($select_tabs))
     $SQL .= " ". implode (" ", $select_tabs);
 
@@ -574,9 +583,65 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
     if (!$slicesText) return new zids();
   }
 
-  $now = ((int)(now()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP;     // round up
+  // now is rounded in order the time is in steps - it is better for search
+  // caching - SQL is THE SAME during one time step
+    $now = ((int)(now()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP;     // round up
   if( $debug ) echo "<br>--$now - ". now();
 
+  /* new version of bin selecting, now we use type of bin from constants.php3 */
+  if (is_numeric($type)) { /* $type is numeric constant */
+      $numeric_type = $type;
+  } elseif (is_string($type)) { /* for backward compatibility */
+      switch ($type) { /* assign to string type it's numeric constant */
+          case 'ACTIVE' :  $numeric_type = AA_BIN_ACTIVE; break;
+          case 'EXPIRED' : $numeric_type = AA_BIN_EXPIRED; break;
+          case 'PENDING' : $numeric_type = AA_BIN_PENDING; break;
+          case 'HOLDING' : $numeric_type = AA_BIN_HOLDING; break;
+          case 'TRASH' :   $numeric_type = AA_BIN_TRASH; break;
+          default:         $numeric_type = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH);
+      }
+  } else { /* strange case, I think never possible :) */
+      $numeric_type = AA_BIN_ACTIVE;
+  }
+/* create SQL query for different types of numeric constants */
+    if ($numeric_type == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH)) {
+      $SQL .= " 1=1 ";
+    } elseif ($numeric_type == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
+      $SQL .= " item.status_code=1 ";
+    } elseif ($numeric_type == (AA_BIN_ACTIVE | AA_BIN_PENDING)) {
+      $SQL .= " item.status_code=1 AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
+    } else {
+        $SQL2 = "";
+        if ($numeric_type & AA_BIN_ACTIVE) {
+          $SQL2 .= " ( item.status_code=1 AND (  item.publish_date <= '$now' OR item.publish_date IS NULL ) ";
+            /* condition can specify expiry date (good for archives) */
+            if( !( $ignore_expiry_date &&
+                   defined("ALLOW_DISPLAY_EXPIRED_ITEMS") &&
+                   ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
+              $SQL2 .= " AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
+            }
+          $SQL2 .= ' )';
+        }
+        if ($numeric_type & AA_BIN_EXPIRED) {
+            if ($SQL2 != "") { $SQL2 .= ' OR '; }
+            $SQL2 .= " (item.status_code=1 AND item.expiry_date <= '$now') ";
+        }
+        if ($numeric_type & AA_BIN_PENDING) {
+            if ($SQL2 != "") { $SQL2 .= ' OR '; }
+            $SQL2 .= " (item.status_code=1 AND item.publish_date > '$now') ";
+        }
+        if ($numeric_type & AA_BIN_HOLDING) {
+            if ($SQL2 != "") { $SQL2 .= ' OR '; }
+            $SQL2 .= " (item.status_code=2) ";
+        }
+        if ($numeric_type & AA_BIN_TRASH) {
+            if ($SQL2 != "") { $SQL2 .= ' OR '; }
+            $SQL2 .= " (item.status_code=3) ";
+        }
+        $SQL .= " ( ".$SQL2 ." ) ";
+    }
+
+/*
   switch( $type ) {
     case 'ACTIVE':  $SQL .= " item.status_code=1 AND
         ( item.publish_date <= '$now' ) ";
@@ -595,10 +660,10 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
     case 'HOLDING': $SQL .= " item.status_code=2 ";
                               break;
     case 'TRASH':   $SQL .= " item.status_code=3 ";
-                              break;
+                              break;&
     default:        $SQL .= ' 1=1 ';    # default = ALL - no specific condition
   }
-
+*/
   if( isset($select_conds) AND is_array($select_conds))      # conditions -----
     $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
 
@@ -614,7 +679,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   if ($GLOBALS['view_info'])  $SQL .= ", view_name: ".  $GLOBALS['view_info']['name'];
 
   // if neverAllItems is set, return empty set if no conds[] are used
-  return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr,
+  return GetZidsFromSQL( $SQL, 'itemid', $cache_condition, $keystr,
                   "slice_id=$slice_id,slice_id=".  @join(',slice_id=', $slices),
                   'p', !is_array($select_conds) && $neverAllItems,
                   // last parameter is used for sorting zids to right order
