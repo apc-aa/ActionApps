@@ -65,12 +65,15 @@ function cron ($time = 0) {
 	$db_update = new DB_AA;
 	
 	$parts = array ("mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60);
-	echo "<B>".date("m.d.y H:i",$time)."</B></BR>";
+	echo "<B>".date("d.m.y H:i",$time)."</B></BR>";
 	
 	$db->query ("SELECT * FROM cron");
 	while ($db->next_record()) {
-		/* $nearest is the nearest of times on which item should run to now (nearest <= now)
-		   $nearest_part is value of current part of nearest */
+		/*  $nearest is the nearest of times on which an item should have run to now (nearest <= now)
+            I don't consider last_run when looking for $nearest, but afterwards I run the script only
+            if $nearest > $last_run.
+        
+ 		    $nearest_part is value of current part of nearest */
 		$nearest_part = 0;
 		
 		// when last_run is NULL, run item always
@@ -79,7 +82,7 @@ function cron ($time = 0) {
 			
 			// If an hour passed, I want to have minutes as 60+minutes etc.
 			$now = getdate ($time);
-			$now["mon"] += -12 * ($last_run["year"]-$now["year"]);
+			$now["mon"] += 12 * ($now["year"]-$last_run["year"]);
 
             // If the month(s) changed, find how many days it had            
             $now_tst = mktime ($last_run["hours"],$last_run["minutes"],$last_run["seconds"],
@@ -88,8 +91,8 @@ function cron ($time = 0) {
 
 			$now["wday"] += $days_in_months;
 			$now["mday"] += $days_in_months;
-			$now["hours"] += -24 * ($last_run["mday"]-$now["mday"]);
-			$now["minutes"] += -60 * ($last_run["hours"]-$now["hours"]);            
+			$now["hours"] += 24 * ($now["mday"]-$last_run["mday"]);
+			$now["minutes"] += 60 * ($now["hours"]-$last_run["hours"]);            
             
             $realnow = getdate ($time);
             
@@ -125,7 +128,7 @@ function cron ($time = 0) {
 				else {
     				$ranges = split (',',$value);
     				reset ($ranges);
-    				while ((list(,$range) = each ($ranges)) && !$matches) {
+    				while (list(,$range) = each ($ranges)) {
     					if (strstr ($range,"-")) {
     						list($from,$to) = split('-',$value);
     							for ($i = $from; $i <= $to; $i++)
@@ -133,20 +136,30 @@ function cron ($time = 0) {
     								$nearest_part = $i;
     					}
     					else if ($range <= $now_part && $range > $nearest_part) 
-    						$nearest_part = $range;
+    					 	$nearest_part = $range;
     				}
 				}
 				$nearest[$part] = $nearest_part;
-			}
-		}
+			} // end of while            
+            $nearest_time = mktime ($nearest["hours"], $nearest["minutes"],0, $nearest["mon"], $nearest["mday"], $now["year"]);       
+            // mktime does not consider week day. We must shift it manually to the desired week day.
+            // This will not work correct when combining week day with month or month day settings.
+            if ($db->f("wday") != "*") {
+                $wday = getdate ($nearest_time);
+                $diff = (7 - $nearest["wday"] + $wday["wday"]) % 7;
+                $nearest_time -= $diff * 24 * 60 * 60;
+            }                 
+		} // end of if ($db->f("last_run"))
+        else $nearest_time = time();
 
     	$url = AA_INSTAL_URL.$db->f("script")."?".$db->f("params");
-		
-		$nearest_time = mktime ($nearest["hours"], $nearest["minutes"],0, $nearest["mon"], $nearest["mday"], $now["year"]);
+		       
 		if ($debug) {
-            echo "<b>$url</b> will be run on ".date( "d.m.y H:i",$nearest_time)."</BR>";
-            echo "Nearest time: "; print_r ($nearest);
-            echo "<hr>";
+		    if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) 
+                 echo "<b>$url</b> will be run<BR>";
+            else echo "<font size=small>$url will be run on ".date( "d.m.y H:i",$nearest_time)." ($nearest_time)</font><BR>";
+            //echo "Nearest time: "; print_r ($nearest);
+			$db_update->query ("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
         }
 		else if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
 			$db_update->query ("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
@@ -157,17 +170,17 @@ function cron ($time = 0) {
 }
 
 // Use this to try function of script
-/*
+
 $db = new DB_AA;
 $db->query ("UPDATE cron SET last_run = NULL");
-
+$debug = 1;
 
 $time = time(); 
-for ($i = 0; $i < 30; $i++) {
+for ($i = 0; $i < 50; $i++) {
 	cron ($time);
-	$time += 60*37;
+	$time += 60*60*24;
 }
-*/
+
 
 cron();
 
