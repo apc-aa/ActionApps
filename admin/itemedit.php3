@@ -136,8 +136,6 @@ if( ($insert || $update) AND (count($err)<=1)
   # prepare content4id array before call StoreItem function
   $content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
 
-// p_arr_m ( $content4id );
-
   if( $insert )
     $id = new_id();
 
@@ -194,17 +192,48 @@ if($edit) {
 
 if( !$encap ) {
   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-  echo '<title>'.( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT). '</title>
+  echo '
+    <title>'.( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT). '</title>
+    <script Language="JavaScript"><!--    
+      function SelectAllInBox( listbox ) {
+        var len = eval(listbox).options.length
+        for (var i = 0; i < eval(listbox).options.length; i++) {
+          // select all rows without the wIdThTor one, which is only for <select> size setting
+          eval(listbox).options[i].selected = ( eval(listbox).options[i].value != "wIdThTor" );  
+        }
+      }  
+        
+      var box_index=0;   // index variable for box input fields
+      var listboxes=Array(); // array of listboxes where all selection should be selected
+      var relatedwindow;  // window for related stories
+      
+      // before submit the form we need to select all selections in some 
+      // listboxes (2window, relation) in order the rows are sent for processing
+      function BeforeSumbit() {
+        for(var i = 0; i < listboxes.length; i++) 
+          SelectAllInBox( listboxes[i] );
+        return true;  
+      }    
+    
+      function OpenRelated(varname, sid) {
+        if ((relatedwindow != null) && (!relatedwindow.closed)) {
+          relatedwindow.close()    // in order to preview go on top after open
+        }
+        relatedwindow = open( "'. $sess->url("related_sel.php3") . '&sid=" + sid + "&var_id=" + varname, "relatedwindow", "scrollbars=1, resizable=1, width=500");
+      }  
+      
+    // -->
+    </script>
     </head>
-    <body>
-     <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
+  <body>
+   <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
 }       
 PrintArray($err);
 echo $Msg;  
 
 ?>
 <center>
-<form enctype="multipart/form-data" method=post action="<?php echo $sess->url( ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF) ?>">
+<form name=inputform onsubmit="BeforeSumbit()" enctype="multipart/form-data" method=post action="<?php echo  ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF ?>">
 
 <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_ITEM_HDR?></b>
@@ -236,6 +265,7 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
   $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
   # the slice_id is not needed here, but it helps, if someone will try to create
   # anonymous posted form (posted to filler.php3) - there must be slice_id
+  $sess->hidden_session();
   echo '<input type=hidden name="slice_id" value="'. $slice_id .'">'; 
   echo '<input type=hidden name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
   echo '<input type=hidden name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
@@ -266,6 +296,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.25  2001/09/27 16:00:39  honzam
+New related stories support
+
 Revision 1.24  2001/07/09 09:29:54  honzam
 New sort and search possibility in admin interface
 

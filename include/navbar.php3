@@ -23,7 +23,7 @@ http://www.apc.org/
 # $slice_id - should be defined
 # $r_slice_view_url - should be defined
 # $editor_page or $usermng_page or $settings_page - should be defined
-# $slices - should be defined
+# $g_slices - should be defined
 
 if( !$slice_id )
   $r_slice_headline = L_NEW_SLICE_HEAD;
@@ -61,6 +61,9 @@ $nb_usermng = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
 
 /*
 $Log$
+Revision 1.8  2001/09/27 16:00:39  honzam
+New related stories support
+
 Revision 1.7  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support
@@ -120,13 +123,13 @@ config.inc
   <TR>
     <td align=center class=navbar><?php echo " $nb_view | $nb_additem | $nb_manager | $nb_settings | $nb_usermng "; ?></td>
     <TD align=center class=navbar><?php
-      if( is_array($slices) AND (count($slices) > 1) ) {
+      if( is_array($g_slices) AND (count($g_slices) > 1) ) {
         echo "<form name=nbform enctype=\"multipart/form-data\" method=post 
                     action=\"". $sess->url($PHP_SELF) ."\">
               <span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>
-              <select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"slice_id=").'"+this.options[this.selectedIndex].value\'>';	
-        reset($slices);
-        while(list($k, $v) = each($slices)) { 
+              <select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=").'"+this.options[this.selectedIndex].value\'>';	
+        reset($g_slices);
+        while(list($k, $v) = each($g_slices)) { 
           echo "<option value=\"". htmlspecialchars($k)."\"";
           if ( ($slice_id AND (string)$slice_id == (string)$k)) 
             echo " selected";
