@@ -1,6 +1,20 @@
+09/01/02 - new possibilty to anonymously edit items on public sites"
+         - new possibility to redefine the design of output by fview and iview 
+           url parameter
+         - sorting and querying blank fields now fixed (bug 492331)
+         - better database indexes
+         - new alias for number of returned items
+         - fixed bug in user profiles - not working "hide field"
+         - fixed bug in aabd.sql - bad RSS view definition (thanks to Ram)
+         - minutes in time fields are displayed two character numbers
+         - debug messages displays duration for queries
+         - fixed bug in parameter to f_v alias function
 04/01/02 - added language constants for profiles, notifications.
          - updated some aliases functions
          - new hidefulltext parameter for slice (good for discussion)
+--------------------
+12/05/01 - v2.1.0 - developer release
+--------------------
 12/18/01 - scripts are now "magic_quotes" independent - no matter how it is set
          - new user profile feature
          - new possibility to join fields when fields are fed to another slice
