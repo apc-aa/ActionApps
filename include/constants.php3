@@ -144,6 +144,8 @@ define("ANONYMOUS_EDIT_HTTP_AUTH", 5);
 # specifies how many items from the begining we have to search
 define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
 
+define('NO_PICTURE_URL', AA_INSTAL_URL.'images/blank.gif');
+
 $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom",
    "odd_row_format", "even_row_format", "compact_top", "compact_bottom",
@@ -543,32 +545,31 @@ function getViewTypes ()
     #                              "aditional" => _m("Additional") );
 
     $VIEW_TYPES['digest']  = array( "name" => _m("Alerts Selection Set"),
-                                  "aditional" => array (
-                                      "label" => _m("Group by selections (some items
-                                         may be shown several times)"),
-                                      "input" => "chbox"),
-                                  "function:digest_filters" => "",
-                                  "aditional2" => array (
-                                      "label" => _m("Fulltext URL"),
-                                      "input" => "field",
-                                      "help" => _m("Link to the .shtml page used
-                                        to create headline links.")),
-                                  "before" => _m("Top HTML") ,
-                                  "odd" => _m("Odd Rows") ,
-                                  "even_odd_differ" => _m("Use different HTML code for even rows") ,
-                                  "even" => _m("Even Rows") ,
-                                  "after" => _m("Bottom HTML") ,
-                                  "remove_string" => _m("Remove strings") ,
-                                  "order1" => _m("Sort primary") ,
-                                  "o1_direction" => " " ,
-                                  "order2" => _m("Sort secondary") ,
-                                  "o2_direction" => " " ,
-                                  "group_by1" => _m("Group by") ,
-                                  "g1_direction" => " " ,
-                                  "group_title" => _m("Group title format") ,
-                                  "group_bottom" => _m("Group bottom format") ,
-                                  "listlen" => _m("Max number of items"),
-                                  "noitem_msg" => _m("HTML code for \"No item found\" message"));
+                                    "aditional" => array (
+                                    "label" => _m("Group by selections (some items may be shown several times)"),
+                                    "input" => "chbox"),
+                                    "function:digest_filters" => "",
+                                    "aditional2" => array (
+                                    "label" => _m("Fulltext URL"),
+                                    "input" => "field",
+                                    "help" => _m("Link to the .shtml page used to create headline links.")),
+                                    "before" => _m("Top HTML") ,
+                                    "odd" => _m("Odd Rows") ,
+                                    "even_odd_differ" => _m("Use different HTML code for even rows") ,
+                                    "even" => _m("Even Rows") ,
+                                    "after" => _m("Bottom HTML") ,
+                                    "remove_string" => _m("Remove strings") ,
+                                    "order1" => _m("Sort primary") ,
+                                    "o1_direction" => " " ,
+                                    "order2" => _m("Sort secondary") ,
+                                    "o2_direction" => " " ,
+                                    "group_by1" => _m("Group by") ,
+                                    "g1_direction" => " " ,
+                                    "group_title" => _m("Group title format") ,
+                                    "group_bottom" => _m("Group bottom format") ,
+                                    //"listlen" => _m("Max number of items"),
+                                    //"noitem_msg" => _m("HTML code for \"No item found\" message"),
+                                  );
 
     // View used for listing of ursl - mainly for listing items for index
     // servers (HtDig, MnogoSearch, ...)
