@@ -59,6 +59,23 @@ function processSlashes ($s)
 	return $s;
 }
 
+function processValue ($s)
+{
+    $s = str_replace ("\r", "", $s);
+    $s = str_replace ("\n", "", $s);
+    $s = str_replace ('"', '&quot;', $s);
+    return $s;
+}
+
+function processJavaScript ($s)
+{
+    $s = str_replace ("\r", "", $s);
+    $s = str_replace ("\n", "", $s);
+    $s = str_replace ('"', '&quot;', $s);
+    $s = str_replace ("'", "\\'", $s);
+    return $s;
+}
+
 $desc = $$list;
 $desc = $desc[items][$item];
 $title = firstbig($desc[name])." "._m("Wizard");
@@ -139,8 +156,8 @@ if (is_array($desc[params])) {
 // -->
 </SCRIPT>
 
-<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit>
+<table align=left width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+<tr><td class=tabtit align=left>
 <?php 
 	if ($desc[name])
 		echo $desc[name].": ".processSlashes($desc[desc]); 
@@ -162,24 +179,25 @@ echo '
 
 	if (is_array($desc[params])):
 		echo _m("Available parameters: ")."<br><br>";
-		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2>";
+		echo "<table align=left width=\"100%\" border=0 cellspacing=0 cellpadding = 2>";
 		reset($desc[params]);
 		$iparam = 0;
 		$example = "";
 		while (list(,$param)=each($desc[params])) {
-			echo "<tr><td size=\"50%\" class=tabtxt valign=top>"
-			."<b>".strtolower("$param[name]:")."</b>"
-			."</td><td class = tabtxt>"
-			."<INPUT TYPE=TEXT NAME=param$iparam VALUE=\"$param[example]\">"
-			."<span class=tabhlp>";
+			echo "<tr><td align=left size=\"50%\" class=tabtxt valign=top>"
+			."<b>".strtolower("$param[name]:")."</b></td>
+			<td align=left class = tabtxt>
+			<INPUT TYPE=TEXT NAME=param$iparam VALUE=\""
+                .processValue($param[example])."\">
+        	<span class=tabhlp>";
 			switch($param[type]) {
-			case "INT":  echo " ("._m("integer number").")"; break;
-			case "STR":  echo " ("._m("any text").")"; break;
-			case "STRID":echo " ("._m("field id").")"; break;
-			case "BOOL": echo " ("._m("boolean: 0=false,1=true").")"; break;
+			case "INT":  echo " ("._m("integer&nbsp;number").")"; break;
+			case "STR":  echo " ("._m("any&nbsp;text").")"; break;
+			case "STRID":echo " ("._m("field&nbsp;id").")"; break;
+			case "BOOL": echo " ("._m("boolean:&nbsp;0=false,1=true").")"; break;
 			}
-			echo "<br>".processSlashes($param[desc])."</span>"
-			."</td></tr>";
+			echo "<br>".processSlashes($param[desc])."</span>
+			</td></tr>";
 			if ($iparam > 0) $example .= ":";
 			$example .= $param[example];
 			++$iparam;
@@ -196,7 +214,7 @@ echo '
 echo "
 </td></tr></table>
 </td></tr>
-<tr><td class = tabtit height=30>";
+<tr><td class=tabtit height=30>";
 
 if (is_array ($desc[examples])) {
 	echo _m("Have a look at these examples of parameters sets:");
@@ -214,10 +232,14 @@ if (is_array ($desc[examples])) {
 $what = $$list; 
 echo $what[hint];
 echo '
-<p align=center>
-<input type=button value="'._m("OK - Save").'" onclick="writeParams(); self.close()">&nbsp;&nbsp;
-<input type=button value="'._m("Cancel").'" onclick="self.close()">&nbsp;&nbsp;
-<input type=button value="'._m("Show example params").'" onclick="fillParams(\''.$example.'\')">
+<p align=center>';
+if (is_array($desc[params])) echo '
+    <input type=button value="'._m("OK - Save").'" onclick="writeParams(); self.close()">&nbsp;&nbsp;
+    <input type=button value="'._m("Cancel").'" onclick="self.close()">&nbsp;&nbsp;
+    <input type=button value="'._m("Show example params").'" onclick="fillParams(\''.processJavaScript($example).'\')">';
+else echo '
+    <input type=button value="'._m("OK").'" onclick="self.close()">';
+echo '    
 </p>
 </td></tr></table>
 </form>
