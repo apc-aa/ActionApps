@@ -1,3 +1,4 @@
+10/26/01 - new tab2slice_php scripts for data import (thanks to Udo)
 10/24/01 - new parameter wizard for function aliases and input type parameters
          - fixed bug of two listed slices in slice export 
          - search expressions with AND, OR, NOT, (, ) allowed in conditions
