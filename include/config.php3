@@ -18,8 +18,7 @@
 # this path with a slash!
 # Example:
 # $AA_INC_PATH = "/home/httpd/html/aa/include/";
-$AA_INC_PATH = "/home/groups/apc-aa/htdocs/apc-aa/include/"; 
-$_PHPLIB["libdir"] = "/home/groups/apc-aa/phplib/";
+$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa/include/"; 
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
@@ -32,10 +31,10 @@ define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
 define("DEFAULT_ORG_ID", "apc-aa.sourceforge.org");
 
 # DB Access Configuration
-define("DB_HOST", "moby");
-define("DB_NAME", "apcaa");
-define("DB_USER", "apcaa");
-define("DB_PASSWORD", "haXseMfl");
+define("DB_HOST", "localhost");
+define("DB_NAME", "aadb");
+define("DB_USER", "aadbuser");
+define("DB_PASSWORD", "");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
