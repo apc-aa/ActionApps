@@ -148,7 +148,7 @@ function createConstsArray ($group_id, $admin, &$consts)
 	$data = array ();
 	$dbc->query ("SELECT * FROM constant WHERE group_id = '$group_id'");
 	while ($dbc->next_record()) {
-		$value = ff($dbc->f("value"));
+		$value = str_replace ("&","%26",ff($dbc->f("value")));
 		if (ff($dbc->f("name")) == $value)
 			$value = '#';
 		$data[$dbc->f("ancestors").$dbc->f("id")] = "'"
