@@ -121,8 +121,7 @@ function Cancel() {
   </td></tr>
   </table>
 </FORM>
-</BODY>
-</HTML>
 <?php
+HtmlPageEnd();
 page_close()
 ?>

@@ -325,6 +325,6 @@ if( $view_id ) {
   echo L_SLICE_HINT ."<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
        "?vid=$view_id&quot;--&gt;</pre>";
 }    
-echo "</BODY></HTML>";
+HtmlPageEnd();
 page_close();
 ?>

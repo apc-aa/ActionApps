@@ -88,9 +88,8 @@ echo '
  <tr><td align="center">
   <input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;
  </td></tr></table>
-</FORM>
-</BODY>
-</HTML>';
+</FORM>';
 
+HtmlPageEnd();
 page_close();
 ?>

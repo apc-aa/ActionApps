@@ -194,8 +194,8 @@ echo "   </select>&nbsp;<select name='view_view'>
 
 $viewuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF); #include help
 echo L_SLICE_HINT ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri . 
-         '?vid=<i>ID</i>&quot;--&gt;</pre>
- </BODY></HTML>';
+         '?vid=<i>ID</i>&quot;--&gt;</pre>';
+HtmlPageEnd();
 page_close();
 
 ?>

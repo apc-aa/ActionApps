@@ -376,10 +376,8 @@ endif; //if ($cancel || $coflicts_list)?>
 </tr></td>
 </table>
 
-</BODY>
-</HTML>
-
 <?PHP
+HtmlPageEnd();
 page_close();
 ?>
 

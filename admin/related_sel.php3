@@ -228,9 +228,8 @@ echo "<input type='Text' name='admin_search' size=20
       <input type=hidden name=var_id value='$var_id'><br><br>
       <input type=hidden name=action value='filter'><br><br>
       <input type=button value='". L_BACK ."' onclick='window.close()'>
-      </form></center>
-   </body>
-</html>";
+      </form></center>";
+HtmlPageEnd();
 
   $$st_name = $st;   // to save the right scroller 
   page_close();

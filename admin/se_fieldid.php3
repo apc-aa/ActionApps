@@ -283,8 +283,6 @@ echo "</select><br><br>
     }
 echo "
 </table>
-</FORM>
-</BODY>
-</HTML>";
-
+</FORM>";
+HtmlPageEnd();
 page_close()?>

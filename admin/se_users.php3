@@ -158,7 +158,5 @@ HtmlPageBegin();   // Prints HTML start page tags
     echo "</table>
     </form></td></tr></table>";
   }  
-?>
-</BODY>
-</HTML>
-<?php page_close();?>
+HtmlPageEnd();
+page_close();?>

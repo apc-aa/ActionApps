@@ -105,8 +105,6 @@ while (list ($control,$trigs) = each ($js_triggers))
 echo '
 </table></td></tr>
 </table></td>
-</tr></table>
-</BODY>
-</HTML>';
-
+</tr></table>';
+HtmlPageEnd();
 page_close()?>

@@ -231,8 +231,5 @@ function Submit() {
   </table>
 </FORM>
  <?php //p_arr_m($field_map);
- ?>
-</BODY>
-</HTML>
-<?php
+HtmlPageEnd();
 page_close()?>

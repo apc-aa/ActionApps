@@ -420,9 +420,7 @@ endfor;
     <input type=submit name=update value=\"". L_UPDATE ."\">&nbsp;&nbsp;
     <input type=submit name=cancel value=\"". L_CANCEL ."\">&nbsp;&nbsp;
    </td></tr></table>
- </FORM>
-</BODY>
-</HTML>";
-
+ </FORM>";
+HtmlPageEnd();
 page_close();
 ?>

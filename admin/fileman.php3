@@ -175,8 +175,8 @@ echo "<tr><td class=tabtxt>".fileAction ("createdir",L_CREATE_NEW_DIR) ."</td>
 <td class=tabtxt><input type=text name='arg[createdir]'></td></tr>
 </table></td></tr>";
 
-echo "</table></form><p></p></body></html>";
-
+echo "</table></form><p></p>";
+HtmlPageEnd();
 page_close();
 exit;
 ?>

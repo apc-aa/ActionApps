@@ -263,9 +263,10 @@ FrmTextArea("notify_active_item_edit_e", L_NOTIFY_EMAILS, $notify_active_item_ed
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
 ?>
 
-</td></tr></table></FORM></BODY></HTML>
+</td></tr></table></FORM>
 
 <?php
+HtmlPageEnd();
 page_close();
 ?>
 

@@ -63,9 +63,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
   include $GLOBALS[AA_INC_PATH]."um_usrch.php3";
   include $GLOBALS[AA_INC_PATH]."um_usrch.php3";
-?>
-</BODY>
-</HTML>
-<?php page_close()?>
+
+HtmlPageEnd(); 
+page_close()?>
 
 

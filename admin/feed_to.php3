@@ -86,6 +86,6 @@ if( $i==1 )    // can't feed to any slice
       <input type=button name=sendfeeded value="<?php echo L_FEED ?>" onclick="SendFeed()">
       </center>
     </form>
-  </body>
-</html>
-<?php page_close();?>
+<?php 
+HtmlPageEnd();
+page_close();?>

@@ -395,11 +395,6 @@ function OpenFeedForm(){
 </SCRIPT>
 </head> <?php
 
-if( $open_preview )
-  echo "<body OnLoad=\"OpenPreview('$open_preview')\">";
- else 
-  echo '<body>';
-
 require $GLOBALS[AA_INC_PATH]."menu.php3";
 showMenu ($aamenus, "itemmanager", "", $navbar != "0", $leftbar != "0");
 
@@ -512,7 +507,7 @@ if( count( $item_ids ) > 0 ) {
     $st->pnavbar();
 }  
 else 
-  echo "<tr><td><div class=tabtxt>". L_NO_ITEM_FOUND ."</div></td></td></table>";
+  echo "<tr><td><div class=tabtxt>". L_NO_ITEM_FOUND ."</div></td></table>";
   
 ######## add by setu 2002-0206 #######
 ### Action for Marked item ###
@@ -600,9 +595,8 @@ echo "<input type='Text' name='admin_search' size=20
       <input type=hidden name=action value='filter'></form></center>";
 echo "<p></p>"; // workaround for align=left bug
 }
- 
-echo "  </body>
-</html>";
+
+HtmlPageEnd(); 
 
   $$st_name = $st;   // to save the right scroller 
   page_close();

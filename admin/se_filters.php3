@@ -321,6 +321,6 @@ else {
 <input type=submit name=cancel value="<?php echo L_CANCEL ?>">
 </td></tr></table>
 </FORM>
-</BODY>
-</HTML>
-<?php page_close()?>
+<?php
+HtmlPageEnd();
+page_close()?>

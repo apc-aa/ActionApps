@@ -233,8 +233,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;
 </td></tr></table>
-</FORM>
-</BODY>
-</HTML>';
-
+</FORM>';
+HtmlPageEnd();
 page_close()?>

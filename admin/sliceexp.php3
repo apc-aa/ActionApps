@@ -215,6 +215,5 @@ endif;
 ?>
 
 </TABLE>
-</BODY>
-</HTML>
-<?php page_close(); } ?>
+<?php HtmlPageEnd();
+page_close(); } ?>

@@ -237,7 +237,6 @@ function EnableClick(cond,what) {
 ?>
 </td></tr></table>
 </FORM>
-</BODY>
-</HTML>
-<?php page_close()?>
+<?php HtmlPageEnd();
+page_close()?>
 

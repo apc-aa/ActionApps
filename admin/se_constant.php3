@@ -457,8 +457,6 @@ echo '</table>
   }
 
 //-->
-</SCRIPT>
-</BODY>
-</HTML>';
-
+</SCRIPT>';
+HtmlPageEnd();
 page_close()?>

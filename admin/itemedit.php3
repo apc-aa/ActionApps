@@ -402,6 +402,6 @@ if($edit || $update || ($insert && $added_to_db)) { ?>
 </form>
 <?php
 if( !$encap ) 
-  echo '</body></html>';
+    HtmlPageEnd();
 page_close(); 
 ?>
