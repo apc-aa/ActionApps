@@ -367,9 +367,9 @@ $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 // js needed for category selection
 
 $tree = new cattree( $db, $links_info['start_id'], true, '<br> - ');
-echo '<script language="JavaScript" type="text/javascript"
-      src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/js_lib_links.js"></script>';
-$tree->printTreeData($links_info['start_id'],1,true);        // special javascript for category selection
+FrmJavascriptFile('javascript/js_lib.js');
+FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
+$tree->printTreeData($links_info['start_id'],1,true);
 $cat_tree = $tree->getFrmTree(false, 'change', $links_info['start_id'],
                    'patharea', 'document.filterform.cat_id', false, 250, 8, 'filterform');
 

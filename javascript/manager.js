@@ -15,7 +15,7 @@ function MarkedActionGo() {
             var iftarget = document.itemsform.target;
             var ifaction = document.itemsform.action;
             add_items = (markedactionurladd[ms.selectedIndex] == null) ? false :  markedactionurladd[ms.selectedIndex]
-            OpenWindowTop(markedactionurl[ms.selectedIndex], add_items);
+            OpenItemWindow(markedactionurl[ms.selectedIndex], add_items);
             document.itemsform.action = ifaction;
             document.itemsform.target = iftarget;
         } else {
@@ -27,7 +27,7 @@ function MarkedActionGo() {
 function WriteEmailGo() {
   var iftarget = document.itemsform.target;
   var ifaction = document.itemsform.action;
-  OpenWindowTop(markedactionurl[5], "");
+  OpenItemWindow(markedactionurl[5], "");
   document.itemsform.action = ifaction;
   document.itemsform.target = iftarget;
 }
@@ -77,11 +77,11 @@ function OpenUsershowPopup(url) {
     document.itform.submit();
 }
 
-var popupwindow;
+var itemwindow;
 
 // if add_items == '&' or '?', items[x5443388....] array with selected items
 // is added to the url (used for preview, for example). Use false for no add.
-function OpenWindowTop(url, add_items) {
+function OpenItemWindow(url, add_items) {
     if (url.indexOf("rXn=1") != -1) {
         var items;
         if( add_items ) {    // defines items string separator ('&' or '?') in url
@@ -91,11 +91,11 @@ function OpenWindowTop(url, add_items) {
             }
         }
 
-        if( popupwindow != null )
-            popupwindow.close();    // in order to popupwindow go on top after open
-        popupwindow = open(url,'popup','scrollbars')
+        if( itemwindow != null )
+            itemwindow.close();    // in order to itemwindow go on top after open
+        itemwindow = open(url,'popup','scrollbars')
     } else {
-        popupwindow = open('','popup','scrollbars');
+        itemwindow = open('','popup','scrollbars');
         document.itemsform.target='popup';
         document.itemsform.action = url;
         document.itemsform.submit();
@@ -143,7 +143,7 @@ function SearchBarActionConfirm( formname, srchbr_akce, confirmtxt ) {
 // called by the f_k alias function (see item.php3)
 // - folloving global javascript variables should be set before calling
 //   aa_instal_path, aa_live_checkbox_file, aa_live_change_file
-function CallLiveCheckbox (controlName) {
+function CallLiveCheckbox(controlName) {
     myimg = document.itemsform[controlName];
     myimg.src = aa_instal_path + "images/cb_2off.gif";
 
@@ -173,7 +173,7 @@ function CallLiveChange(controlName, status) {
     }
 }
 
-function ChangeImgSrc (imageName, newsrc) {
+function ChangeImgSrc(imageName, newsrc) {
     document.itemsform[imageName].src = newsrc;
 }
 
@@ -236,9 +236,13 @@ function AddSelectOption( starget, stext, svalue) {
     }
 }
 
-function SelectRelations(tag, prefix, taggedid, headline) {
-    AddSelectOption( 'window.opener.document.inputform.elements["'+var_id+'"]',
-                prefix + headline, taggedid);
+function SelectRelations(var_id, tag, prefix, taggedid, headline) {
+/* new version ...
+    var var_container = 'relation'+var_id;
+    var content       = GetContent('dynamic'+var_id, window.opener.document);
+    SetContent(var_container,content+'<tr><td><img src="up.gif" width="16" height="16"><img src="down.gif" width="16" height="16"></td><td>'+prefix + headline+'<input type="hidden" name="'+var_id+'[]" value="'+taggedid+'"></td><td>2</td></tr>',window.opener.document);
+    */
+    AddSelectOption( 'window.opener.document.inputform.elements["'+var_id+'"]', prefix + headline, taggedid);
 }
 
 function SetCookie(name, value) {

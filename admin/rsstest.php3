@@ -110,9 +110,7 @@ function GetRSS_tv($viewID, $processForm = false) {
 $rss_tv = GetRSS_tv('rss_tv');
 
 TV_PageBegin($rss_tv);
-
-echo '<script language="JavaScript" type="text/javascript" src="'. $GLOBALS['AA_INSTAL_PATH'] .'javascript/manager.js"></script>';
-
+FrmJavascriptFile('javascript/js_lib.js');
 ProcessFormData('GetRSS_tv', $val, $cmd);
 
 PrintArray($Err);

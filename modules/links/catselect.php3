@@ -1,8 +1,8 @@
-<?php  
+<?php
 //$Id$
 # Allows to select category
 
-// $cid - current category which should be shown 
+// $cid - current category which should be shown
 // $tree_start - root categoruy for the tree
 
 # Edit Link Page
@@ -19,15 +19,14 @@ if( !$cid )
 $cpath = GetCategoryPath( $cid );
 
 // AND now display the form --------------------------------------------------
-    
+
 // Print HTML start page (html begin, encoding, style sheet, no title)
-HtmlPageBegin();   
+HtmlPageBegin();
 echo '<title>'. _m('APC ActionApps - Select Category'). '</title>';
 
 $tree = new cattree( $db, $tree_start, true, ' > ');
-// special javascript for category selection
-echo '<script language="JavaScript" type="text/javascript"
-      src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/js_lib_links.js"></script>';
+FrmJavascriptFile('javascript/js_lib.js');
+FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);
 
 if( !$cid ) {  // default category defined
@@ -52,12 +51,12 @@ echo '
        '</td>
       </tr>
       ';
-   
+
     FrmTabEnd( array('sbmt_button'  => array('type' =>"button",
                                              'value'=> ' '. _m('OK') .' ',
                                              'add'  => 'onClick="UpdateCategory(\'update_submit\')"'),
                      'cancel'       => array('add'  => 'onClick="window.close()"')));
-echo '  
+echo '
     </form>
   </body>
 </html>';

@@ -66,9 +66,8 @@ HtmlPageBegin();
 echo '<title>'. _m('APC ActionApps - Category Edit'). '</title>';
 
 $tree = new cattree( $db, $links_info['tree_start'], true, ' > ');
-// special javascript for category selection
-echo '<script language="JavaScript" type="text/javascript"
-      src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/js_lib_links.js"></script>';
+FrmJavascriptFile('javascript/js_lib.js');
+FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);
 
 echo '

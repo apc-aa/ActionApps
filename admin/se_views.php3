@@ -78,13 +78,12 @@ function GetViewJSArray( $sid, $id, $name, $type, $i ) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Admin - design View") ."</TITLE>";
-echo '<script language="JavaScript" type="text/javascript" src="'.$AA_INSTAL_PATH.'javascript/manager.js"></script>';
-?>
-  <SCRIPT Language="JavaScript"><!--
+FrmJavascriptFile('javascript/js_lib.js');
+FrmJavascript('
      function DeleteView(id) {
-       if( !confirm("<?php echo _m("Are you sure you want to delete selected view?"); ?>"))
+       if( !confirm("'. _m("Are you sure you want to delete selected view?") .'"))
          return
-       var url="<?php echo $sess->url(con_url("./se_views.php3", "del=1")); ?>"
+       var url="'. $sess->url(con_url("./se_views.php3", "del=1")) .'"
        document.location=url + "&vid=" + escape(id);
      }
 
@@ -99,19 +98,16 @@ echo '<script language="JavaScript" type="text/javascript" src="'.$AA_INSTAL_PAT
        j=0;
        for( i=0; i<vs.length ; i++) {
          if( vs[i] == xsid ) {
-//           if(confirm(vs[i]+" - "+xsid))
-//             return;
            document.fvtype.view_view.options[j++] = new Option(vv[i]+' - '+vn[i], vv[i])
          }
        }
      }
-  // -->
-  </SCRIPT>
-</HEAD><?php
+     ');
+echo "</HEAD>\n";
 
 $useOnLoad = ($new_compact ? true : false);
 require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
-showMenu ($aamenus, "sliceadmin","views");
+showMenu($aamenus, "sliceadmin","views");
 
 echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";
 PrintArray($err);
@@ -183,17 +179,15 @@ echo "   </select>&nbsp;<select name='view_view'>
    </form>
  </tr>
 </table><br>
+";
 
-<SCRIPT type='text/javascript'> <!--
+FrmJavascript("
   var vs, vv, vn;
   vs=new Array();
   vn=new Array();
   vv=new Array();
   $view_array
-  SelectViewSlice();
-//-->
-</SCRIPT>
-";
+  SelectViewSlice();");
 
 
 $viewuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF); #include help

@@ -48,79 +48,6 @@ function MoveCategoryTo(catid, totxt, toval)
   eval(toval).value = catid;
 }
 
-// moves selected row of listbox up
-function MoveSelectedUp(listbox)
-{
-  var i=eval(listbox).selectedIndex
-  if( !eval(listbox).disabled && ( i > 0 ) )
-  {
-    var temptxt = eval(listbox).options[i].text
-    var tempval = eval(listbox).options[i].value
-    eval(listbox).options[i].text = eval(listbox).options[i-1].text;
-    eval(listbox).options[i].value = eval(listbox).options[i-1].value;
-    eval(listbox).options[i-1].text = temptxt;
-    eval(listbox).options[i-1].value = tempval;
-    eval(listbox).selectedIndex=i-1
-  }
-}
-
-// moves selected row of listbox down
-function MoveSelectedDown(listbox)
-{
-  var i=eval(listbox).selectedIndex
-  if( !eval(listbox).disabled && ( i < eval(listbox).length-1 ) )
-  {
-    var temptxt = eval(listbox).options[i].text
-    var tempval = eval(listbox).options[i].value
-    eval(listbox).options[i].text = eval(listbox).options[i+1].text;
-    eval(listbox).options[i].value = eval(listbox).options[i+1].value;
-    eval(listbox).options[i+1].text = temptxt;
-    eval(listbox).options[i+1].value = tempval;
-    eval(listbox).selectedIndex=i+1
-  }
-}
-
-// Encodes all values from listbox to comma delimeted string
-// prepared for sending as url parameter
-function CrossDelimeted(listbox,valueVar,textVar,stateVar) {
-    var delimeter=''
-    var delimeter2=''
-
-    eval(valueVar).value = "";
-    eval(textVar).value = "";
-
-    for (var i = 0; i < eval(listbox).options.length; i++) {
-        // blank rows are just for <select> size setting
-        if (eval(listbox).options[i].value != 'wIdThTor' ) {
-            if (eval(listbox).options[i].text.length >=4) {
-                switch (eval(listbox).options[i].text.substring(0,4)) {
-                    case "(!) ":
-                        eval(stateVar).value += delimeter + "highlight"
-                        break
-                    case "(-) ":
-                        eval(stateVar).value += delimeter + "visible"
-                        break
-                }
-                eval(textVar).value += delimeter + eval(listbox).options[i].text.substring(4)
-            }
-            else {
-                eval(stateVar).value += delimeter + "visible"
-                eval(textVar).value += delimeter + eval(listbox).options[i].text
-            }
-
-            eval(valueVar).value += delimeter2 + eval(listbox).options[i].value
-
-            delimeter='#'
-          delimeter2=','
-
-        }
-    }
-
-/*	prompt("textVar = '" + eval(textVar).value + "'\n" +
-           "statetextVar = " + eval(stateVar).value + "\n" +
-           "valueVar = '" + eval(valueVar).value +"'")*/
-}
-
 function DelCateg(msg) {
   var i=document.f.selcat.selectedIndex
   if( !confirm(msg) )
@@ -324,30 +251,6 @@ function ChangeStateCateg(listbox) {
     }
 }
 
-// function replaces html code of a an HTML element (identified by id)
-// by another code
-function SetContent(id,txt) {
-  if (document.all) {                    // IE 4+
-    el = document.all[id];
-	if ( el != null ) {
-      el.innerHTML=txt;
-	}
-  } else if (document.layers) {            // NS 4
-    eval('document.ids.'+id).document.write(txt);
-    eval('document.ids.'+id).document.close();
-  }else if (document.getElementById){   // NS 6 (new DOM)
-    rng = document.createRange();
-    el = document.getElementById(id);
-    if ( el != null ) {  // in case the element do not exist => do nothing
-      rng.setStartBefore(el);
-      htmlFrag = rng.createContextualFragment(txt);
-      while (el.hasChildNodes())
-        el.removeChild(el.lastChild);
-      el.appendChild(htmlFrag);
-    }
-  }
-}
-
 // js for linkedit.php3
 function DeleteField(index) {
   SetContent('selcat'+index,'')
@@ -359,14 +262,6 @@ function CheckURL() {
     document.f_hidden.url.value=document.f.url.value
     window.open("","message","resizable=yes, scrollbars=yes")
     document.f_hidden.submit()
-}
-
-function getElementByName(n, d) {
-  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
-    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
-  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
-  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=getElementByName(n,d.layers[i].document);
-  if(!x && document.getElementById) x=document.getElementById(n); return x;
 }
 
 function LinkVote(link1, link2, changetag) {

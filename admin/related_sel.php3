@@ -69,7 +69,7 @@ if( !$mode ) { $mode='AMB'; }
 
 for( $i=0; $i<strlen($mode); $i++) {
     $m1 = substr($mode,$i,1);
-    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#JS_HEAD_')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
+    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#JS_HEAD_')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
 }
 
 $aliases = $slice->aliases();
@@ -154,14 +154,11 @@ if( $r_state['related']['manager'] ) {        // do not set state for the first 
 $manager->performActions();
 
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
-
-echo "<script type=\"text/javascript\" language=\"javascript\"> <!--
+FrmJavascriptFile('javascript/js_lib.js');
+FrmJavascript("
   var maxcount = ". MAX_RELATED_COUNT .";
   var relmessage = \""._m("There are too many related items. The number of related items is limited.") ."\";
-  var var_id = \"".$var_id."\";
-  //-->
-</script>
-";
+  ");
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
