@@ -256,6 +256,9 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
     $val = $map[$key][val];
     if (($fval[0][flag] & FLAG_UPDATE) || $fields[$val][feed]==STATE_FEEDABLE_UPDATE )
        $oldcontent4id[$key][0][value] = quote($content4id[$val][0][value]);
+     else  
+       $oldcontent4id[$key][0][value] = quote($oldcontent4id[$key][0][value]);   
+       # we have to quote - data is from database
   }
   StoreItem( $dest_id, $destination, $oldcontent4id, $fields_to, false, true, false );
                                         # update, invalidatecache, not feed
@@ -265,9 +268,9 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
 // it's expected, that items don't change their category, so $cat_id is unneccessary.
 
 function UpdateItems($tree, $item_id, $slice_id, $cat_id) {
-  global $db;
 
   $items[$item_id] = $slice_id;
+  $db2 = new DB_AA; 	# do not use db, because of conflict in Update - StoreItem
 
   while (list($item_id,$slice_id) = each($items)) {
     $p_item_id = q_pack_id($item_id);
@@ -277,11 +280,11 @@ function UpdateItems($tree, $item_id, $slice_id, $cat_id) {
             WHERE destination_id = id
              AND  source_id='$p_item_id'
              AND flag & ". REL_FLAG_FEED;
-    $db->query($SQL);
-    while( $db->next_record() ) {
+    $db2->query($SQL);
+    while( $db2->next_record() ) {
       $update = true;
-      $d_id = unpack_id($db->f(destination_id));
-      $dest_sl_id = unpack_id($db->f(slice_id));
+      $d_id = unpack_id($db2->f(destination_id));
+      $dest_sl_id = unpack_id($db2->f(slice_id));
 //    if (!isset($tree[$slice_id][$dest_sl_id]))        // option : take a $tree into account or not
 //      continue;
 
@@ -366,6 +369,9 @@ function DeleteItem($db, $id) {
 
 /*
 $Log$
+Revision 1.14  2001/08/23 09:58:49  honzam
+fixed two bugs with feeding: Error with next_record() and problems with  quoting already fed items.
+
 Revision 1.13  2001/06/21 14:15:44  honzam
 feeding improved - field value redefine possibility in se_mapping.php3
 
