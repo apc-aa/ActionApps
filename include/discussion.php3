@@ -67,11 +67,11 @@ function GetDiscussionContentSQL ($SQL, $item_id, $ids, $vid, $state, $html_flag
   global $db;
   $db->query($SQL);
   while($db->next_record()) {
-    $d_id = unpack_id($db->f(id));
+    $d_id = unpack_id128($db->f(id));
     if (!$ids || $ids["x".$d_id]) {
       $col["d_id............"][0][value] = $d_id;
       $col["d_parent........"][0][value] = $db->f(parent) ? unpack_id($db->f(parent)) : "0";
-      $col["d_item_id......."][0][value] = unpack_id($db->f(item_id));
+      $col["d_item_id......."][0][value] = unpack_id128($db->f(item_id));
       $col["d_subject......."][0][value] = $db->f(subject);
       $col["d_body.........."][0][value] = $db->f(body);
       $col["d_author........"][0][value] = $db->f(author);
@@ -313,7 +313,7 @@ function GetDiscussion2MailAliases() {
 
 function send2mailList ($d_item_id, $new_id) {
     global $db;
-    $db->query ("SELECT content.text FROM 
+    $db->query("SELECT content.text FROM 
                  content INNER JOIN item ON item.id = content.item_id INNER JOIN
                  field ON content.field_id = field.id
                  AND field.slice_id = item.slice_id
@@ -359,7 +359,7 @@ function send2mailList ($d_item_id, $new_id) {
             $mailheaders .= $mail["errors_to"] ? "Errors-To: $mail[errors_to]\r\n" : "";
             $mailheaders .= $mail["sender"] ? "Sender: $mail[sender]\r\n" : "";
                         
-            $db->query ("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
+            $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
                          WHERE item.id='".q_pack_id($d_item_id)."'");
             $db->next_record();                         
             global $LANGUAGE_CHARSETS;                         

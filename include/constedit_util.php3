@@ -150,7 +150,7 @@ function createConstsArray ($group_id, $admin, &$consts)
 	$dbc = new DB_AA;
 	
 	$data = array ();
-	$dbc->query ("SELECT * FROM constant WHERE group_id = '$group_id'");
+	$dbc->query("SELECT * FROM constant WHERE group_id = '$group_id'");
 	while ($dbc->next_record()) {
 		$value = str_replace ("&","%26",ff($dbc->f("value")));
 		if (ff($dbc->f("name")) == $value)
@@ -280,15 +280,15 @@ function hcUpdate ()
 {	
 	global $db, $levelCount, $hide_value, $levelsHorizontal, $group_id, $p_slice_id;
 
-	$db->query ("SELECT * FROM constant_slice WHERE group_id = '$group_id'");
+	$db->query("SELECT * FROM constant_slice WHERE group_id = '$group_id'");
 	if ($levelCount) {
 		if ($db->next_record())
-			$db->query (
+			$db->query(
 				"UPDATE constant_slice SET levelcount=$levelCount,
 				horizontal=".($levelsHorizontal ? 1 : 0).", 
 				hidevalue=".($hide_value ? 1 : 0)." 
 				WHERE group_id='$group_id'");
-		else $db->query (
+		else $db->query(
 				"INSERT INTO constant_slice (group_id,slice_id,horizontal,hidevalue,levelcount)
 				VALUES ('$group_id','$p_slice_id',".($levelsHorizontal ? 1 : 0)
 				.",".($hide_value ? 1 : 0).",".$levelCount.")");
@@ -330,16 +330,16 @@ function hcUpdate ()
 	
 	// delete items
 	if ($hcalldata > "0")
-        $db->query ("DELETE FROM constant WHERE short_id IN ($hcalldata)");
+        $db->query("DELETE FROM constant WHERE short_id IN ($hcalldata)");
 
 	// update items
 
 	if (is_array ($changes)) {
-		$db->query ("SELECT id, short_id FROM constant;");
+		$db->query("SELECT id, short_id FROM constant;");
 		while ($db->next_record())
 			$shortIDmap [$db->f("short_id")] = addslashes($db->f("id"));
 
-        $db->query ("SELECT propagate FROM constant_slice WHERE group_id='$group_id'");
+        $db->query("SELECT propagate FROM constant_slice WHERE group_id='$group_id'");
         if ($db->next_record())
             $propagate_changes = $db->f("propagate");
         else $propagate_changes = false;
@@ -371,12 +371,12 @@ function hcUpdate ()
 				$varset->set("id",$id,"quoted");
 				$varset->set("group_id",$group_id,"quoted");
 				$varset->set("ancestors",$ancestors,"quoted");
-				$db->query ("INSERT INTO constant ".$varset->makeINSERT());
+				$db->query("INSERT INTO constant ".$varset->makeINSERT());
 			}
 			else {
                 if ($propagate_changes) 
     				propagateChanges ($new_id, $newvalue);
-				$db->query ("UPDATE constant SET ".$varset->makeUPDATE()
+				$db->query("UPDATE constant SET ".$varset->makeUPDATE()
 					." WHERE short_id = ".$new_id);
 			}
 		}
@@ -395,10 +395,10 @@ function CopyConstants ($slice_id)
     $max_group_id_len = 16;
     $q_slice_id = q_pack_id ($slice_id);
     
-    $db->query ("SELECT name FROM constant WHERE group_id='lt_groupNames'");
+    $db->query("SELECT name FROM constant WHERE group_id='lt_groupNames'");
     while ($db->next_record())
         $group_list[] = $db->f("name");
-    $db->query ("SELECT id, input_show_func FROM field WHERE slice_id ='$q_slice_id'");    while ($db->next_record()) {
+    $db->query("SELECT id, input_show_func FROM field WHERE slice_id ='$q_slice_id'");    while ($db->next_record()) {
         $shf = $db->f("input_show_func");
         if (strlen ($shf) > 4) {
             list (,$group_id) = split (":",$shf);
@@ -452,7 +452,7 @@ function CopyConstants ($slice_id)
         // update fields
         reset ($fields);
         while (list ($field_id, $shf) = each ($fields)) {
-            if (!$db->query ("UPDATE field SET input_show_func = '"
+            if (!$db->query("UPDATE field SET input_show_func = '"
                 .addslashes(str_replace ($old_id, $new_id, $shf))."'
                 WHERE id='$field_id' AND slice_id='$q_slice_id'")) {
                 $err[] = "Could not update fields.";

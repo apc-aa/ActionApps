@@ -40,7 +40,7 @@ function GetExternalCategories($feed_id) {
     $ext_categs[unpack_id($db->f(category_id))] = array("value" => $db->f(category),
                                              "name" => $db->f(category_name),
                                              "approved" => $db->f(approved),
-                                             "target_category_id" => unpack_id($db->f(target_category_id)));
+                                             "target_category_id" => unpack_id128($db->f(target_category_id)));
   }
   return $ext_categs;
 }
@@ -97,7 +97,7 @@ function GetGroupConstants($slice_id) {
   $SQL = "SELECT id, name, value, class FROM constant WHERE group_id = '$cat_group' ORDER BY pri";
   $db->query($SQL);         // get all categories
   while ($db->next_record()) {
-    $cat_ids[unpack_id($db->f(id))] = array("name"=>$db->f(name),
+    $cat_ids[unpack_id128($db->f(id))] = array("name"=>$db->f(name),
                                             "value"=>$db->f(value),
                                             "parent_id"=>$db->f('class')
                                             );

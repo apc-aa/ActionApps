@@ -93,7 +93,7 @@ function IsItemFed($item_id, $destination) {
   // if item comes from $destination slice (i.e. $destination slice contains base record)
   $db->query("SELECT slice_id FROM item WHERE id='$p_base_id'");
   if ($db->next_record())
-    if (unpack_id($db->f(slice_id)) == $destination)
+    if (unpack_id128($db->f(slice_id)) == $destination)
       return true;
 
   // get all items, which were fed to $destination slice
@@ -103,7 +103,7 @@ function IsItemFed($item_id, $destination) {
              AND flag & ". REL_FLAG_FEED;
   $db->query($SQL);
   while ($db->next_record() ) // Build an array of source id's
-    $sources[] = unpack_id($db->f(source_id));
+    $sources[] = unpack_id128($db->f(source_id));
 
   if (!isset($sources) || !is_array($sources))
     return false; // this was set to "return", mitra changed to return false
@@ -287,7 +287,7 @@ function CreateFeedTree($sl_id, $from_category_id) {
       $db->query($SQL);
 
       while($db->next_record()) {
-        $to_id = unpack_id($db->f(to_id));
+        $to_id = unpack_id128($db->f(to_id));
         if(isset($slice_queue[$to_id]))   // condition is necessary for multi feeding to this slice
           continue;
         $approved = $db->f(to_approved) ? "y" : "n";
@@ -349,7 +349,7 @@ function UpdateItems($tree, $item_id, $slice_id, $cat_id) {
     while( $db2->next_record() ) {
       $update = true;
       $d_id = unpack_id($db2->f(destination_id));
-      $dest_sl_id = unpack_id($db2->f(slice_id));
+      $dest_sl_id = unpack_id128($db2->f(slice_id));
 //    if (!isset($tree[$slice_id][$dest_sl_id]))        // option : take a $tree into account or not
 //      continue;
 
@@ -384,7 +384,7 @@ function FeedItem($item_id, $fields) {
                AND value = '". addslashes ($content4id[$cat_field][0][value]) ."'";
     $db->query($SQL);
     if( $db->next_record() )
-      $cat_id = unpack_id($db->f(id));
+      $cat_id = unpack_id128($db->f(id));
   }
 
   $tree = CreateFeedTree($slice_id, $cat_id);

@@ -33,7 +33,7 @@ class DB_AA extends DB_Sql {
   function tquery($SQL) {
       if ($GLOBALS[debug])
           return $this->dquery ($SQL);
-      else return $this->query ($SQL);
+      else return $this->query($SQL);
   }
   
   function dquery($SQL) {
