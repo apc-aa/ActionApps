@@ -850,22 +850,15 @@ class item {
     # substitute aliases by real item content
     $part = $param;
 
-    /*
-    Code Added by Ram Prasad on 25-Feb-2002
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Function:
-    ~~~~~~~~~
-    This creates an alias for Slice ID ( like _#this), called _#slice and can be used in f_v 
-    */      
-    // Begin Ram's Code
-    $param = str_replace("_#slice", $this->getval('slice_id........'), $param);
-    // End Ram's Code
-
+// If you change this to support more items, please change FAQ item #1488
     while( $part = strstr( $part, "_#" )) {  # aliases for field content
       $fid = substr( $part, 2, 16 );         # looks like _#headline........
       
       if( substr( $fid, 0, 4 ) == "this" )   # special alias _#this
         $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
+	  elseif( substr( $fid, 0, 5) == "slice" )   # Another special alias _#slice 
+	  	//Mitra says: looks like this mucks up _#slice_id........   
+		$param = str_replace("_#slice", $this->getval('slice_id........'), $param);  
       elseif( $fid == 'unpacked_id.....' )
         $param = str_replace( "_#$fid", $this->f_n('id..............'), $param );
       elseif( IsField($fid) )

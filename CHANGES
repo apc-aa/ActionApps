@@ -1,3 +1,5 @@
+12/30/02 - spelling correction in L_TOO_MUCH_RELATED all *news_lang.php3 still in english (mitra)
+12/30/02 - warning comment on slice special case in item.php3 (mitra)
 12/20/02 - fixed problem with LiveCheckbox (image path/mozilla refresh) (honzam)
          - fixed bug of ignored conditions, when conds[x][value] was 0 (honzam)
 12/17/02 - input type "selectbox with presets" with the "adding" parameter ads 

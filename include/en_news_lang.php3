@@ -661,7 +661,7 @@ define("L_D_SHOW_SELECTED","Show selected");
 define("L_D_SHOW_ALL","Show all");
 define("L_D_ADD_NEW","Add new");
 
-define("L_TOO_MUCH_RELATED","There are too much related items. The number of related items is limitted.");
+define("L_TOO_MUCH_RELATED","There are too many related items. The number of related items is limited.");
 define("L_SELECT_RELATED","Select related items");
 define("L_SELECT_RELATED_1WAY","Add");
 define("L_SELECT_RELATED_2WAY","Add&nbsp;mutual");
