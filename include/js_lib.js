@@ -32,7 +32,7 @@ function MoveSelectedUp(listbox)
     var temptxt = eval(listbox).options[i].text
     var tempval = eval(listbox).options[i].value
     eval(listbox).options[i].text = eval(listbox).options[i-1].text;
-    eval(listbox).options[i].value = eval(listbox).options[i-1].text;
+    eval(listbox).options[i].value = eval(listbox).options[i-1].value;
     eval(listbox).options[i-1].text = temptxt;
     eval(listbox).options[i-1].value = tempval;
     eval(listbox).selectedIndex=i-1
@@ -48,7 +48,7 @@ function MoveSelectedDown(listbox)
     var temptxt = eval(listbox).options[i].text
     var tempval = eval(listbox).options[i].value
     eval(listbox).options[i].text = eval(listbox).options[i+1].text;
-    eval(listbox).options[i].value = eval(listbox).options[i+1].text;
+    eval(listbox).options[i].value = eval(listbox).options[i+1].value;
     eval(listbox).options[i+1].text = temptxt;
     eval(listbox).options[i+1].value = tempval;
     eval(listbox).selectedIndex=i+1
