@@ -94,19 +94,27 @@ if( $add || $update ) {
     
     if( $update )
     {
+      $varset->clear();
       $varset->add("name", "quoted", $name);
       $varset->add("owner", "unpacked", $owner);
       $varset->add("slice_url", "quoted", $slice_url);
-      $varset->add("d_listlen", "number", $d_listlen);
-      if( $superadmin ) {
+      if( $superadmin ) 
         $varset->add("deleted", "number", $deleted);
-        $varset->add("template", "number", $template);
-      }  
-      $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
-      $varset->add("permit_offline_fill", "number", $permit_offline_fill);
       $varset->add("lang_file", "quoted", $lang_file);
 
-      $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . "WHERE id='$p_slice_id'";
+      $SQL = "UPDATE module SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
+      if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+        $err["DB"] = MsgErr("Can't change slice");
+        break;
+      }
+
+      $varset->add("d_listlen", "number", $d_listlen);
+      if( $superadmin ) 
+        $varset->add("template", "number", $template);
+      $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
+      $varset->add("permit_offline_fill", "number", $permit_offline_fill);
+
+      $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
       if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
         $err["DB"] = MsgErr("Can't change slice");
         break;
@@ -118,6 +126,24 @@ if( $add || $update ) {
     }
     else  // insert (add)
     {
+      $slice_id = new_id();
+      $varset->set("id", $slice_id, "unpacked");
+      $varset->set("created_by", $auth->auth["uid"], "text");
+      $varset->set("created_at", now(), "text");
+      $varset->set("name", $name, "quoted");
+      $varset->set("owner", $owner, "unpacked");
+      $varset->set("slice_url", $slice_url, "quoted");
+      $varset->set("deleted", $deleted, "number");
+      $varset->set("lang_file", $lang_file, "quoted");
+      $varset->set("type","S","quoted");
+	  
+      if( !$db->query("INSERT INTO module" . $varset->makeINSERT() )) {
+        $err["DB"] .= MsgErr("Can't add slice");
+        break;
+      }
+	  
+      $varset->clear();
+
         # get template data
       $varset->addArray( $SLICE_FIELDS_TEXT, $SLICE_FIELDS_NUM );
       $SQL = "SELECT * FROM slice WHERE id='". q_pack_id($set_template_id) ."'";
@@ -127,19 +153,18 @@ if( $add || $update ) {
         break;
       }
       $varset->setFromArray($db->Record);
-      $slice_id = new_id();
       $varset->set("id", $slice_id, "unpacked");
       $varset->set("created_by", $auth->auth["uid"], "text");
       $varset->set("created_at", now(), "text");
       $varset->set("name", $name, "quoted");
       $varset->set("owner", $owner, "unpacked");
       $varset->set("slice_url", $slice_url, "quoted");
-      $varset->set("d_listlen", $d_listlen, "number");
       $varset->set("deleted", $deleted, "number");
+      $varset->set("lang_file", $lang_file, "quoted");
+      $varset->set("d_listlen", $d_listlen, "number");
       $varset->set("template", $template, "number");
       $varset->set("permit_anonymous_post", $permit_anonymous_post, "number");
       $varset->set("permit_offline_fill", $permit_offline_fill, "number");
-      $varset->set("lang_file", $lang_file, "quoted");
 
          # create new slice
       if( !$db->query("INSERT INTO slice" . $varset->makeINSERT() )) {
@@ -188,38 +213,29 @@ if( $add || $update ) {
                  AND id LIKE 'category%'";
       $db->query($SQL);
 
-        # insert three default categories
-      $db->query("INSERT INTO constant SET 
-                   id = '" . q_pack_id(new_id()) ."',
-                   group_id = '$new_group_name',
-                   name = '". L_SOME_CATEGORY ."',
-                   value = '". L_SOME_CATEGORY ."',
-                   class = 'AA-predefined054',
-                   pri = '1000'" );
-      $db->query("INSERT INTO constant SET 
-                   id = '" . q_pack_id(new_id()) ."',
-                   group_id = '$new_group_name',
-                   name = '". L_SOME_CATEGORY ."',
-                   value = '". L_SOME_CATEGORY ."',
-                   class = 'AA-predefined054',
-                   pri = '1000'" );
-      $db->query("INSERT INTO constant SET 
-                   id = '" . q_pack_id(new_id()) ."',
-                   group_id = '$new_group_name',
-                   name = '". L_SOME_CATEGORY ."',
-                   value = '". L_SOME_CATEGORY ."',
-                   class = 'AA-predefined054',
-                   pri = '1000'" );
+      # insert three default categories
+      $varset->clear();
+      $varset->set("id", new_id(), "unpacked");
+      $varset->set("group_id", $new_group_name, "quoted");
+      $varset->set("value",L_SOME_CATEGORY,"quoted");
+      $varset->set("name",L_SOME_CATEGORY,"quoted");
+      $varset->set("class",'AA-predefined054',"quoted");
+      $varset->set("pri","1000","number");
+      $db->query("INSERT INTO constant ".$varset->makeINSERT());
+      $varset->set("id", new_id(), "unpacked");
+      $db->query("INSERT INTO constant ".$varset->makeINSERT());
+      $varset->set("id", new_id(), "unpacked");
+      $db->query("INSERT INTO constant ".$varset->makeINSERT());
 
-         # insert constant group name
-      $db->query("INSERT INTO constant SET 
-                   id = '" . q_pack_id(new_id()) ."',
-                   group_id = 'lt_groupNames',
-                   name = '". L_SOME_CATEGORY ."',
-                   value = '$new_group_name',
-                   class = '". quote(substr($name,0,50)) ."',
-                   pri = '1000'" );
-
+      # insert constant group name
+      $varset->set("id", new_id(), "unpacked");
+      $varset->set("group_id","lt_groupName","quoted");
+      $varset->set("value",$new_group_name,"quoted");
+      $varset->set("name",L_SOME_CATEGORY,"quoted");
+      $varset->set("class",quote(substr($name,0,50)),"quoted");
+      $varset->set("pri","1000","number");
+      $db->query("INSERT INTO constant ".$varset->makeINSERT());
+        
       $r_config_file[$slice_id] = $lang_file;
       $sess->register(slice_id);
 
@@ -270,7 +286,6 @@ while ($db->next_record()) {
 $PERMS_STATE = array( "0" => L_PROHIBITED,
                       "1" => L_ACTIVE_BIN,
                       "2" => L_HOLDING_BIN );
-
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -328,160 +343,9 @@ if($slice_id=="") {
   echo '<input type=reset value="'. L_RESET .'">&nbsp;&nbsp;';
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
 }
-
-/*
-$Log$
-Revision 1.25  2002/03/14 11:20:45  mitraearth
-[[ User Validation for add item / edit item (itemedit.php3). ]]
-
-(by Setu)
- - new selection "User" at admin->field->edit(any field)->validation.
- - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
- - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
- - It can validate the value and return new value for the field.
-
- - Related files:
-   - admin/itemedit.php3
-   - include/constants.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_VALIDATE_USER" for User Validation.
-
-* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
-
-[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
-(by Ram)
- - if the field is blank, it can load default value from URL query strings.
- - new selection "Variable" in admin->field->edit(any field)->Default:
- - "parameter" is the name of variable in URL query strings
-   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
-
- - Related files:
-   - include/constant.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_DEFAULT_VAR" for Default by variable.
-   - include/itemfunc.php3
-     - new function "default_fnc_variable()" for "Default by variable"
-
-
-[[ admin/index.php3 ]]
-(by Setu)
- - more switches to allow admin/index.php3 to be called from another program (with return_url).
-   - sort_filter=1
-   - action_selected=1
-     - "feed selected" is not supported.
-     - "view selected" is not supported.
- - scroller now works with return_url.
-   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
-     - scr_st3_Mv
-     - scr_st3_Go
- - more changes to work with &return_url.
-
- - related files:
-   - admin/index.php3
-   - include/item.php3
-     - new function make_return_url()
-     - new function sess_return_url()
-
-* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
-
-[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
-(by Setu)
- - it supports "&return_url=...." to jump to another web page after  submission.
- - related files:
-   - admin/slicedit.php3
-
-Revision 1.24  2002/03/06 12:32:08  honzam
-preparation for hierarchical constant editor
-
-Revision 1.23  2001/12/18 11:37:39  honzam
-scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.22  2001/09/27 15:44:35  honzam
-Easiest left navigation bar editation
-
-Revision 1.21  2001/05/21 13:52:32  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.20  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.19  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.18  2001/03/20 16:01:13  honzam
-HTML / Plain text selection implemented
-Standardized content management for items - filler, itemedit, offline, feeding
-
-Revision 1.17  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.16  2001/02/26 12:22:30  madebeer
-moved hint on .shtml to slicedit
-changed default item manager design
-
-Revision 1.15  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
-
-Revision 1.13  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.12  2000/12/23 19:56:02  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
-
-Revision 1.11  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.10  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
-
-Revision 1.9  2000/08/17 15:14:32  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.8  2000/08/03 12:49:22  kzajicek
-English editing
-
-Revision 1.7  2000/08/03 12:34:27  honzam
-Default values for new slice defined.
-
-Revision 1.6  2000/07/26 14:36:59  honzam
-default WDDX value is set to config field for new slices
-
-Revision 1.5  2000/07/14 16:11:29  kzajicek
-Just better comment
-
-Revision 1.4  2000/07/13 09:19:01  kzajicek
-Variables $created_by and $created_at are initialized later, so
-the actual effect was that Updates zeroized the database values! In fact
-the database fields created_by and created_at should remain constant.
-Do we need changed_by and changed_at?
-
-Revision 1.3  2000/07/07 21:37:45  honzam
-Slice ID is displayed
-
-Revision 1.1.1.1  2000/06/21 18:40:05  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:56  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.17  2000/06/12 19:58:25  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.16  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.15  2000/04/24 16:45:03  honzama
-New usermanagement interface.
-
-Revision 1.14  2000/03/22 09:36:44  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
 </td></tr></table>
 </FORM>
 </BODY>
 </HTML>
 <?php page_close()?>
-
