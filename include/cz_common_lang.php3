@@ -92,6 +92,7 @@ define("L_EDIT_GROUP", "Editace Skupiny");
 
 // application not specific strings
 define("L_ALLCTGS", "Všechny kategorie");
+define("L_NO_SUCH_FILE", "Soubor nenalezen");
 define("L_SELECT_CATEGORY", "Zvol Kategorii ");
 define("L_NO_ITEM", "Nenalezena žádná zpráva");
 define("L_VIEW_SLICE", "Zobraz webík");
@@ -148,6 +149,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.7  2000/08/17 15:17:55  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
 Revision 1.6  2000/08/14 12:39:13  kzajicek
 Language definitions required by setup.php3
 

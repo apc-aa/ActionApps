@@ -112,7 +112,10 @@ class item {
   function f_f($col) { 
     if( $this->columns["link_only"] )
       return ($this->columns["hl_href"] ? $this->columns["hl_href"] : NO_OUTER_LINK_URL);
-    return con_url($this->clean_url,"sh_itm=".unpack_id($this->columns["id"]));
+    if( $this->columns["redirect"] )  // redirecting to another page (should contain SSI include ../slice.php3 too)
+      return con_url($this->columns["redirect"],"sh_itm=".unpack_id($this->columns["id"]));
+     else 
+      return con_url($this->clean_url,"sh_itm=".unpack_id($this->columns["id"]));
   }    
   function f_t($col) { 
     return ( ($this->columns["html_formatted"]==0) ? 
@@ -235,6 +238,9 @@ function PrintAliasHelp() {
 
 /*
 $Log$
+Revision 1.3  2000/08/17 15:17:55  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
 Revision 1.2  2000/07/03 15:00:14  honzam
 Five table admin interface. 'New slice expiry date bug' fixed.
 

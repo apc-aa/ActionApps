@@ -91,6 +91,7 @@ define("L_EDIT_GROUP", "Edit Group");
 
 // application not specific strings
 define("L_ALLCTGS", "All categories");
+define("L_NO_SUCH_FILE", "No such file");
 define("L_SELECT_CATEGORY", "Select Category ");
 define("L_NO_ITEM", "No item found");
 define("L_VIEW_SLICE", "View site");
@@ -149,6 +150,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.8  2000/08/17 15:17:55  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
 Revision 1.7  2000/08/15 16:20:40  kzajicek
 en_common_lang.php3
 

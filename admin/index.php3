@@ -469,6 +469,7 @@ while($db->next_record()){
       case "place":
       case "source":
       case "source_href":
+      case "redirect":
       case "posted_by":
       case "e_posted_by":
       case "created_by":
@@ -576,6 +577,9 @@ echo '
 
 /*
 $Log$
+Revision 1.8  2000/08/17 15:14:32  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
 Revision 1.7  2000/08/07 15:27:45  kzajicek
 Added missing semicolon in global statement
 

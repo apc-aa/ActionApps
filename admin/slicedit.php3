@@ -70,6 +70,7 @@ if( $add || $update ) {
     ValidateInput("d_img_height", L_D_IMG_HEIGHT, $d_img_height, &$err, false, "number");
     ValidateInput("d_posted_by", L_D_POSTED_BY, $d_posted_by, &$err, false, "text");
     ValidateInput("d_e_posted_by", L_D_E_POSTED_BY, $d_e_posted_by, &$err, false, "email");
+    ValidateInput("d_redirect", L_D_REDIRECT, $d_redirect, &$err, false, "url");
 #    $dexpirydate->ValidateDate (L_D_EXPIRY_DATE, &$err);
 
     if( count($err) > 1)
@@ -100,6 +101,7 @@ if( $add || $update ) {
     $varset->add("d_img_height", "quoted", $d_img_height);
     $varset->add("d_posted_by", "quoted", $d_posted_by);
     $varset->add("d_e_posted_by", "quoted", $d_e_posted_by);
+    $varset->add("d_redirect", "quoted", $d_redirect);
 
     if(!$d_expiry_limit)   // default value for limit
       $d_expiry_limit = 2000;
@@ -266,6 +268,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 #  echo "</td></tr>\n";
   FrmInputText("d_hl_href", L_D_HL_HREF, $d_hl_href, 254, 25, false);
   FrmInputChBox("d_link_only", L_D_LINK_ONLY, $d_link_only);
+  FrmInputText("d_redirect", L_D_REDIRECT, $d_redirect, 254, 25, false);
   FrmInputText("d_source", L_D_SOURCE, $d_source, 254, 25, false);
   FrmInputText("d_source_href", L_D_SOURCE_HREF, $d_source_href, 254, 25, false);
   FrmInputText("d_place", L_D_PLACE, $d_place, 254, 25, false);
@@ -294,6 +297,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.9  2000/08/17 15:14:32  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
 Revision 1.8  2000/08/03 12:49:22  kzajicek
 English editing
 

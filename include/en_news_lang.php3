@@ -53,7 +53,7 @@ define("DEFAULT_EDIT_FIELDS",    // shown fields (headline if allways shown)
  "n".  // publish_date
  "y".  // expiry_date
  "n".  // edit_note
- "n".  // reserved
+ "n".  // redirect
  "n".  // reserved
  "n".  // reserved
  "n".  // reserved
@@ -84,7 +84,7 @@ define("DEFAULT_NEEDED_FIELDS",
  "n".  // publish_date
  "n".  // expiry_date
  "n".  // edit_note
- "n".  // reserved
+ "n".  // redirect
  "n".  // reserved
  "n".  // reserved
  "n".  // reserved
@@ -171,6 +171,7 @@ define("L_IMG_HEIGHT","Image height");
 define("L_PLACE","Location");
 define("L_SOURCE","Source ");
 define("L_SOURCE_HREF","Source URL");
+define("L_REDIRECT","Show on URL");
 define("L_CREATED_BY","Written by");
 define("L_LASTEDIT","Last edited by");
 define("L_AT","at");   
@@ -435,6 +436,7 @@ define("L_D_EXPIRY_DATE", L_EXPIRY_DATE);
 define("L_D_HL_HREF", L_HL_HREF);
 define("L_D_SOURCE", L_SOURCE);
 define("L_D_SOURCE_HREF", L_SOURCE_HREF);
+define("L_D_REDIRECT", L_REDIRECT);
 define("L_D_PLACE", L_PLACE);
 define("L_D_HTML_FORMATTED", L_HTML_FORMATTED);
 define("L_D_IMG_SRC", L_IMG_SRC);
@@ -540,6 +542,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.12  2000/08/17 15:17:55  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
 Revision 1.11  2000/08/15 08:58:31  kzajicek
 Added missing L_HLP_CATEGORY_ID
 

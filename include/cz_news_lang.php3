@@ -61,7 +61,7 @@ define("DEFAULT_EDIT_FIELDS",    // shown fields (headline if allways shown)
  "y".  // publish_date
  "y".  // expiry_date
  "y".  // edit_note
- "y".  // reserved
+ "y".  // redirect
  "y".  // reserved
  "y".  // reserved
  "y".  // reserved
@@ -92,7 +92,7 @@ define("DEFAULT_NEEDED_FIELDS",
  "n".  // publish_date
  "n".  // expiry_date
  "n".  // edit_note
- "n".  // reserved
+ "n".  // reditect
  "n".  // reserved
  "n".  // reserved
  "n".  // reserved
@@ -172,6 +172,7 @@ define("L_E_POSTED_BY","E-mail");
 define("L_PLACE","Místo");
 define("L_SOURCE","Zdroj");
 define("L_SOURCE_HREF","URL zdroje");
+define("L_REDIRECT","Zobrazit na URL");
 define("L_CREATED_BY","Autor");
 define("L_LASTEDIT","Naposled editoval");
 define("L_AT","dne");   
@@ -453,6 +454,7 @@ define("L_D_EXPIRY_DATE", L_EXPIRY_DATE);
 define("L_D_HL_HREF", L_HL_HREF);
 define("L_D_SOURCE", L_SOURCE);
 define("L_D_SOURCE_HREF", L_SOURCE_HREF);
+define("L_D_REDIRECT", L_REDIRECT);
 define("L_D_PLACE", L_PLACE);
 define("L_D_HTML_FORMATTED", L_HTML_FORMATTED);
 define("L_D_IMG_SRC", L_IMG_SRC);
@@ -559,6 +561,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.14  2000/08/17 15:17:55  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
 Revision 1.13  2000/08/15 08:58:31  kzajicek
 Added missing L_HLP_CATEGORY_ID
 

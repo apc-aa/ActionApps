@@ -86,6 +86,7 @@ if ($db->next_record()){
   LoadDefault($add,$insert,$update,$show[img_height],&$img_height, quote($db->f(d_img_height)));
   LoadDefault($add,$insert,$update,$show[source],&$source, quote($db->f(d_source)));
   LoadDefault($add,$insert,$update,$show[source_href],&$source_href, quote($db->f(d_source_href)));
+  LoadDefault($add,$insert,$update,$show[redirect],&$redirect, quote($db->f(d_redirect)));
   LoadDefault($add,$insert,$update,$show[place],&$place, quote($db->f(d_place)));
   LoadDefault($add,$insert,$update,$show[html_formatted],&$html_formatted, quote($db->f(d_html_formatted)));
   LoadDefault($add,$insert,$update,$show[posted_by],&$posted_by, quote($db->f(d_posted_by)));
@@ -134,6 +135,7 @@ if( $insert || $update )
     ValidateInput("place", L_PLACE, &$place, &$err, $needed[place], "text");
     ValidateInput("source", L_SOURCE, &$source, &$err, $needed[source], "text");
     ValidateInput("source_href", L_SOURCE_HREF, &$source_href, &$err, $needed[source_href], "url");
+    ValidateInput("redirect", L_REDIRECT, &$redirect, &$err, $needed[redirect], "url");
     ValidateInput("img_src", L_IMG_SRC, &$img_src, &$err, $needed[img_src], "text");
     ValidateInput("img_width", L_IMG_WIDTH, &$img_width, &$err, $needed[img_width], "text");
     ValidateInput("img_height", L_IMG_HEIGHT, &$img_height, &$err, $needed[img_height], "text");
@@ -181,6 +183,7 @@ if( $insert || $update )
     $varset->add("html_formatted", "number", $html_formatted);
     $varset->add("source", "quoted", $source);
     $varset->add("source_href", "quoted", $source_href);
+    $varset->add("redirect", "quoted", $redirect);
     $varset->add("place", "quoted", $place);
     $varset->add("highlight", "number", $highlight);
     $varset->add("posted_by", "quoted", $posted_by);
@@ -362,7 +365,8 @@ echo $Msg;
     FrmInputSelect("cp_code", L_CP_CODE, $codepages, $cp_code, $needed[cp_code]); 
   if( isset($categories) AND is_array($categories) AND $show[category_id])
     FrmInputSelect("category_id", L_CATEGORY, $categories, $category_id, $needed[category_id]);
-
+  if($show[redirect])
+    FrmInputText("redirect", L_REDIRECT, safe($redirect), 254, 60, $needed[redirect]);
   if($show[img_src])
     FrmInputText("img_src", L_IMG_SRC, safe($img_src), 254, 60, $needed[img_src]);
   if($show[img_width])
@@ -446,6 +450,9 @@ if( !$encap )
 page_close(); 
 /*
 $Log$
+Revision 1.8  2000/08/17 15:14:32  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
 Revision 1.7  2000/08/03 12:31:19  honzam
 Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
 

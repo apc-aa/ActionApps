@@ -1,3 +1,13 @@
+08/17/00 - New possibility of redirected view of item. Alias _#HDLN_URL now
+           points to External link (if link_only=true) or on redirect url 
+           (if specified) or on the same page. The redirected url should
+           contain <!-- #include ...slice.php3 --> again, but with other look.
+           database modifications necessary: 
+              ALTER TABLE items ADD redirect VARCHAR (255);
+              ALTER TABLE slices ADD d_redirect VARCHAR (255) ;
+         - new parameter inc for slice.php3 script (used for displaying static
+           page insear of slice data
+           Usage: http://web.ecn.cz/slice.shtml?inc=http://www.ecn.cz/info.txt
 08/11/00 - added setup script setup.php3 
 08/07/00 - fixed a few compatibility problems with PHP4
 08/02/00 - fixed problem with zero scroller length error message

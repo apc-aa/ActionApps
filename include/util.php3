@@ -24,11 +24,11 @@ http://www.apc.org/
 #
 
   // list of text fields in items table (used in feeding.php3 for inserting into database)
-$item_fields_text = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height");
+$item_fields_text = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height", "redirect");
 $item_fields_num  = array("status_code", "link_only", "html_formatted", "highlight" );
 
   // list of fields in packed array of shown fields in itemedit.php3
-$itemedit_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_upload=>L_IMG_UPLOAD );
+$itemedit_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_upload=>L_IMG_UPLOAD, redirect=>L_REDIRECT );
 
   // list of fields in packed array of shown fields in big_srch.php3
 $shown_search_fields = array( slice=>L_SRCH_SLICE, category=>L_SRCH_CATEGORY, author=>L_SRCH_AUTHOR, language=>L_SRCH_LANGUAGE, from=>L_SRCH_FROM, to=>L_SRCH_TO, headline=>L_SRCH_HEADLINE, abstract=>L_SRCH_ABSTRACT, full_text=>L_SRCH_FULL_TEXT, edit_note=>L_SRCH_EDIT_NOTE);
@@ -61,6 +61,7 @@ $af_columns = array ( "id" => array( "field"=>"id", "type"=>"md5", "title"=>L_ID
                       "html_formatted" => array( "field"=>"html_formatted", "type"=>"int", "title"=>L_HTML_FORMATTED, "width"=>24),
                       "source" => array( "field"=>"source", "type"=>"char", "title"=>L_SOURCE, "width"=>70),
                       "source_href" => array( "field"=>"source_href", "type"=>"char", "title"=>L_SOURCE_HREF, "width"=>100),
+                      "redirect" => array( "field"=>"redirect", "type"=>"char", "title"=>L_REDIRECT, "width"=>100),
                       "place" => array( "field"=>"place", "type"=>"char", "title"=>L_PLACE, "width"=>70),
                       "highlight" => array( "field"=>"highlight", "type"=>"int", "title"=>L_HIGHLIGHTED_HEAD, "width"=>24, "name"=>L_HIGHLIGHT),
                       "posted_by" => array( "field"=>"posted_by", "type"=>"char", "title"=>L_POSTED_BY, "width"=>70),
@@ -309,6 +310,9 @@ if (substr(PHP_VERSION, 0, 1) < "4") {
 
 /*
 $Log$
+Revision 1.6  2000/08/17 15:17:55  honzam
+new possibility to redirect item displaying (for database changes see CHANGES)
+
 Revision 1.5  2000/08/07 15:52:13  kzajicek
 in_array moved to util.php3 and defined optionally
 
