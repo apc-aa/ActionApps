@@ -136,6 +136,27 @@ function create_filter_text ($ho)
     }
 }
 
+// returns array of "contents" for each collection, 
+// contents is a list of filters, to replace alias _#CONTENTS
+
+function create_collection_contents ()
+{
+    global $db;
+    $db->query ("
+        SELECT AC.id, ADF.description, slice.name FROM alerts_collection AC
+        INNER JOIN alerts_collection_filter ACF ON AC.id = ACF.collectionid
+        INNER JOIN alerts_digest_filter ADF ON ADF.id = ACF.filterid
+        INNER JOIN view ON view.id = ADF.vid
+        INNER JOIN slice ON slice.id = view.slice_id
+        ORDER BY AC.id, ACF.myindex");
+    while ($db->next_record()) 
+        $cols[$db->f("id")][] = $db->f("name")." - ".$db->f("description");
+    reset ($cols);
+    while (list ($colid, $contents) = each ($cols)) 
+        $cont[$colid] = join("<br>\n",$contents);
+    return $cont;
+}
+        
 // -------------------------------------------------------------------------------------
     
 function send_emails ($ho)
@@ -143,6 +164,7 @@ function send_emails ($ho)
     global $debug, $db, $conds, $ALERTS_DEFAULT_COLLECTION, $LANGUAGE_CHARSETS;
             
     $dbtexts = new DB_AA;
+    $collection_contents = create_collection_contents();
 
     $db->query ("SELECT * FROM alerts_collection WHERE description = '$ALERTS_DEFAULT_COLLECTION'");
     $db->next_record();
@@ -169,6 +191,8 @@ function send_emails ($ho)
         while ($dbtexts->next_record()) {
             $colls[$dbtexts->f("collectionid")] = array (
                 "desc" => $dbtexts->f("description"),
+                "editorial" => $dbtexts->f("editorial"),
+                "contents" => $dbtexts->f("contents"),
                 "headers" => alerts_email_headers ($dbtexts->Record, $default_collection));
             $colls[$dbtexts->f("collectionid")]["filters"][$dbtexts->f("myindex")] = $dbtexts->f("text_$ho");
         }
@@ -181,8 +205,8 @@ function send_emails ($ho)
         if (is_array ($colls)) {
             reset ($colls);
             while (list ($cid, $collection) = each ($colls)) {
-                $mailbody = "";
-                reset ($collection["filters"]);
+                $mailbody = str_replace ("_#CONTENTS", $collection_contents[$cid], 
+                    $collection["editorial"]);
                 while (list (,$text) = each ($collection["filters"]))
                     $mailbody .= $text;           
                 $mailbody .= $footer;
@@ -225,6 +249,7 @@ $howoften_options = get_howoften_options();
 if ($howoften_options[$howoften]) {
     initialize_filters();
     create_filter_text ($howoften);
+    create_collection_contents();
     send_emails ($howoften);
 }
 

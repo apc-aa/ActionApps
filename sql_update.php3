@@ -91,6 +91,7 @@ $tablelist = array( 'active_sessions' => "(
                       'alerts_collection' => "(
                          id int(11) NOT NULL auto_increment,
                          description text NOT NULL,
+                         editorial text NOT NULL,
                          showme tinyint(1) NOT NULL default '1',
                          mail_from varchar(255) NOT NULL default '',
                          mail_sender varchar(255) NOT NULL default '',
