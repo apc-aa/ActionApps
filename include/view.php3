@@ -228,7 +228,7 @@ function GetViewGroup($view_info) {
   return false;                        # this is managed by GetViewSort()
 }
 
-function GetViewFormat($view_info) {
+function GetViewFormat($view_info, $selected_item='') {
   $format['group_by'] = $view_info['group_by1'];
   $format['category_format'] = $view_info['group_title'];
   $format['category_bottom'] = $view_info['group_bottom'];
@@ -240,6 +240,7 @@ function GetViewFormat($view_info) {
   $format['even_odd_differ'] = $view_info['even_odd_differ'];
   $format['banner_position'] = $view_info['banner_position'];
   $format['banner_parameters'] = $view_info['banner_parameters'];
+  $format['selected_item'] = (integer)$selected_item;
   $format['id'] = $view_info['slice_id'];
   $format['vid'] = $view_info['id'];
 
@@ -269,8 +270,11 @@ function ParseBannerParam(&$view_info, $banner_param) {
 }
 
 function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
+    $list_from = max(0, $from-1);    # user counts items from 1, we from 0
+    $list_to = max(0, $to-1);        # user counts items from 1, we from 0
+
     if( $to > 0 )
-        $listlen = max(0, $to - $from + 1);
+        $listlen = max(0, $list_to - $list_from + 1);
 
     if( $page ) {   // split listing to pages
         // Format:  <page>-<number of pages>
@@ -279,14 +283,14 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
             $no_of_pages = substr($page,$pos+1);
             $page_n = substr($page,0,$pos)-1;    // count from zero
             // to be last page shorter than others if there is bad number of items
-            $from = $page_n * floor($idscount/$no_of_pages);
+            $list_from = $page_n * floor($idscount/$no_of_pages);
             $listlen = floor(($idscount*($page_n+1))/$no_of_pages) - floor(($idscount*$page_n)/$no_of_pages);
         } else {
             // second parameter is not specified - take listlen parameter
-            $from = $listlen * ($page-1);
+            $list_from = $listlen * ($page-1);
         }
     }
-    return array( $listlen, $random ? $random : ($from ? $from : 0) );
+    return array( $listlen, $random ? $random : ($list_from ? $list_from : 0) );
 }
 
 
@@ -329,12 +333,13 @@ function GetViewFromDB($view_param, &$cache_sid) {
 //  $item_ids = $view_param["item_ids"];
   $zids = $view_param["zids"];
 //  $use_short_ids = $view_param["use_short_ids"];
-  $list_from = max(0, $view_param["from"]-1);    # user counts items from 1, we from 0
-  $list_to = max(0, $view_param["to"]-1);        # user counts items from 1, we from 0
   $list_page = $view_param["page"];
   if( $view_param["random"] )
     $random = ( ($view_param["random"]==1) ? 'random' :
                                              'random:'.$view_param["random"]);
+
+  $selected_item = $view_param["selected"];      # used for boolean (1|0) _#SELECTED
+                                                 # alias - =1 for selected item
   # gets view data
   $view_info = GetViewInfo($vid);
   if (!$view_info OR ($view_info['deleted']>0)) {
@@ -361,7 +366,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
   trace("=","GetViewFromDB",$view_info['type']);
   switch( $view_info['type'] ) {
     case 'full':  # parameters: zids, als
-      $format = GetViewFormat($view_info);
+      $format = GetViewFormat($view_info, $selected_item);
       if( isset($zids) && ($zids->count() > 0) ) {
         # get alias list from database and possibly from url
         list($fields,) = GetSliceFields($slice_id);
@@ -435,8 +440,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
       if ( !isset($zids) || $zids->count() <= 0)
           return $noitem_msg;
 
-      list( $listlen, $list_from ) = GetListLength($listlen, $list_to,
-                      $list_from, $list_page, $zids->count(), $random);
+      list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
+                      $view_param["from"], $list_page, $zids->count(), $random);
 
       $itemview = new itemview( $db, $format, $CATEGORY_FILEDS, $aliases,
                                 $zids, $list_from, $listlen, shtml_url(),
@@ -483,13 +488,13 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
 	if ($debug) huhl("GetViewFromDB: Filtered ids=",$zids2);
 
-      $format = GetViewFormat($view_info);
+      $format = GetViewFormat($view_info, $selected_item);
       $format['calendar_month'] = $month;
       $format['calendar_year'] = $year;
 
       if (isset($zids2) && ($zids2->count() > 0)) {
-        list( $listlen, $list_from ) = GetListLength($listlen, $list_to, $list_from,
-                                       $list_page, $zids2->count(), $random);
+        list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
+                  $view_param["from"], $list_page, $zids2->count(), $random);
 
         $itemview = new itemview( $db, $format, $fields, $aliases, $zids2,
                                   $list_from, $listlen, shtml_url(), "",
