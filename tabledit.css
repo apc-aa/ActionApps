@@ -1,8 +1,19 @@
+.scroller {
+    font-weight: bold;
+}
+
+.scroller_actual {
+    font-weight: bold;
+    font-size: larger;
+    color: black;
+}   
+
 /* TABLE EDIT STYLES */
 
 .te_button_text {
     font-size: xx-small;
     font-weight : bold;
+    color: black;
     border : thin;
 }
 
