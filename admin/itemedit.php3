@@ -286,6 +286,9 @@ echo $Msg;
 
 /*
 $Log$
+Revision 1.4  2000/07/13 10:12:18  kzajicek
+iIf possible, print real name instead of uid (number with sql, dn with ldap).
+
 Revision 1.3  2000/07/13 10:02:22  kzajicek
 created_by should not be changed, it is a constant value.
 
@@ -428,9 +431,11 @@ also added Id and Log keywords to all .php3 and .inc files
   if(DEBUG_FLAG) {
     echo '<I>';
     echo L_POSTDATE.": ".(datetime2date(dequote($post_date)));
-    echo  " ".L_CREATED_BY.": $created_by";
+    $userinfo = GetUser($created_by);
+    echo  " ".L_CREATED_BY.": ", $userinfo["cn"] ? $userinfo["cn"] : $created_by;
     echo "<br>";
-    echo  L_LASTEDIT." $edited_by";
+    $userinfo = GetUser($edited_by);
+    echo  L_LASTEDIT . " ", $userinfo["cn"] ? $userinfo["cn"] : $edited_by;
     echo " ".L_AT." ". dequote($last_edit); 
     echo '</I>';
   }  
