@@ -1085,8 +1085,9 @@ function clean_email($line) {
 * Prints HTML start page tags (html begin, encoding, style sheet, but no title).
 * Chooses the right encoding by get_mgettext_lang().
 * @param string $stylesheet  if empty, no StyleSheet tag is printed
+* @param bool   $js_lib      if true, includes js_lib.js javascript
 */
-function HtmlPageBegin ($stylesheet = "default") {
+function HtmlPageBegin($stylesheet='default', $js_lib=false) {
     if ($stylesheet == "default")
         $stylesheet = $GLOBALS["AA_INSTAL_PATH"].ADMIN_CSS;
     echo
@@ -1099,6 +1100,9 @@ function HtmlPageBegin ($stylesheet = "default") {
     echo '
       <META http-equiv="Content-Type" content="text/html; charset='
         .$GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()].'">
+';
+    if ($js_lib) echo '
+      <script language="JavaScript" type="text/javascript" src="'. get_aa_url("javascript/js_lib.js",false) .'"></script>
 ';
 }
 

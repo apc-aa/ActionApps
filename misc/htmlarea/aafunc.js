@@ -13,14 +13,16 @@
             elem.style.display = "none";
         }
     }
-    
+
     function showHTMLAreaLink(name) {
         if (HTMLArea.checkSupportedBrowser()) {
             elem = document.getElementById("arealinkspan"+name);
-            elem.style.display = "inline";
+            if( elem && (elem != null) ) {
+                elem.style.display = "inline";
+            }
         }
     }
-    
+
     function generateArea(name, tableop, spell, rows, cols, session) { // generate HTMLArea from textarea
         area = new HTMLArea(name);
         area.session = session;
@@ -33,12 +35,12 @@
         switchHTML(name);
         return false;
     }
-    
+
     function openHTMLAreaFullscreen(name, session) { // open HTMLArea in popupwindow
         htmlArea = new HTMLArea(name); // create dummy HTMLArea object
         htmlArea.session = session;
         htmlArea._textArea = document.getElementById(name); // set textarea name
-        HTMLArea._object = htmlArea; // HTMLArea object is used in popupwindow 
+        HTMLArea._object = htmlArea; // HTMLArea object is used in popupwindow
         HTMLArea._object.isnormal = "1"; // parent area is normal textarea
         if (htmlArea.is_ie) { // different window opening for IE and other browsers
             window.open(long_editor_url+"popups/fullscreen.html", "ha_fullscreen",

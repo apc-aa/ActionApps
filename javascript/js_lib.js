@@ -1,6 +1,4 @@
-<SCRIPT Language="JavaScript" type="text/javascript">
-
-//moves selected row of left listbox to the right one 
+//moves selected row of left listbox to the right one
 function MoveSelected(left, right)
 {
   var i=eval(left).selectedIndex
@@ -79,7 +77,3 @@ function EncodeList2UrlArray(name, listbox) {
   }
   return arr
 }
-
-
-</SCRIPT>
-
