@@ -19,8 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# um_uedit.php3 - adds new user to permission system (now LDAP directory)
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update succesfull)
+# um_uedit.php3 - adds new user to permission system
+# optionaly $Msg to show under <h1>Headline</h1> (typicaly: update succesfull)
 # selected_user
 # state variables:
 #    $usr_edit       - comes from um_usrch - button Edit $selected_user
@@ -172,17 +172,28 @@ if( $add_submit OR ($submit_action == "update_submit"))
 
     if( $add_submit ) {
       $userrecord["uid"] = $user_login;
-      if(!AddUser($userrecord))
+      if(!($newuserid = AddUser($userrecord)))
         $err["LDAP"] = MsgErr( L_ERR_USER_ADD );
       if( count($err) <= 1 ) {
+	if ($user_super) {	// set super admin privilege
+	  AddPerm($newuserid, AA_ID, "aa", $perms_roles_id["SUPER"]);
+	}
         $Msg = MsgOK(L_NEWUSER_OK);
         go_url( con_url($sess->url($PHP_SELF), 'UsrSrch=1&usr='. urlencode($user_login)), $Msg);
       }
     } else {
       $userrecord["uid"] = $selected_user;
-      if(!ChangeUser($userrecord))
+      if(!ChangeUser($userrecord)) {
         $err["LDAP"] = MsgErr( L_ERR_USER_CHANGE );
+      } else {
+	if ($user_super) {		// set or revoke super admin privilege
+	  AddPerm($userrecord["uid"], AA_ID, "aa", $perms_roles_id["SUPER"]);
+	} else {
+	  DelPerm($userrecord["uid"], AA_ID, "aa");
+	}
+      }
     }
+
     # Procces group data ---------------------
 //huh("Posted_groups:".$posted_groups);
     $assigned_groups = explode(",",$posted_groups); //posted_groups contains comma delimeted list of selected groups for user
@@ -288,6 +299,10 @@ do {
         $user_mail1 = $user_data[mail][0];
         $user_mail2 = $user_data[mail][1];
         $user_mail3 = $user_data[mail][2];
+      $aa_users = GetObjectsPerms(AA_ID, "aa");
+      if (strstr($aa_users[$selected_user]["perm"], $perms_roles_id["SUPER"])) {
+	$user_super = true;
+      }
     }
   } else {
     echo '</BODY></HTML>';
@@ -325,6 +340,7 @@ if( $usr_edit OR ($submit_action == "update_submit") )
   FrmInputText("user_mail1", L_USER_MAIL." 1", $user_mail1, 50, 50, false);
 //  FrmInputText("user_mail2", L_USER_MAIL." 2", $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php3
 //  FrmInputText("user_mail3", L_USER_MAIL." 3", $user_mail3, 50, 50, false);
+  FrmInputChBox("user_super", L_USER_SUPER, $user_super, false, "", 1, false);
 echo '</table></td></tr>';
 
 if( !$add_submit AND !$usr_new) {?>
@@ -376,6 +392,9 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.3  2000/07/27 18:17:21  kzajicek
+Added superadmin settings in User/Group management
+
 Revision 1.2  2000/07/21 14:47:43  kzajicek
 Admin needs to see login names, not IDs (DB specific)
 

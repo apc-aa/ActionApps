@@ -312,6 +312,7 @@ define("L_USER_PASSWORD2", "Potvrdit helso");
 define("L_USER_FIRSTNAME", "Jméno");
 define("L_USER_SURNAME", "Pøíjmení");
 define("L_USER_MAIL", "E-mail");
+define("L_USER_SUPER", "Administrativní úèet");
 define("L_A_USERS_TIT", "Správa webíku - Správa uživatelù");
 
 define("L_ROLE_AUTHOR", "Autor");
@@ -511,6 +512,7 @@ define("L_TOO_MUCH_GROUPS", "Nalezeno pøíliš mnoho skupin.");
 define("L_NO_GROUPS", "Skupina nenalezena");
 define("L_GROUP_NAME", "Jméno");
 define("L_GROUP_DESCRIPTION", "Popis");
+define("L_GROUP_SUPER", "Administrativní skupina");
 define("L_ERR_GROUP_ADD", "Nelze pøidat skupinu do systému");
 define("L_NEWGROUP_OK", "Skupina byla úspìšnì pøidána");
 define("L_ERR_GROUP_CHANGE", "Nelze zmìnit skupinu");
@@ -543,6 +545,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.7  2000/07/27 18:17:21  kzajicek
+Added superadmin settings in User/Group management
+
 Revision 1.6  2000/07/27 13:23:58  kzajicek
 Language correction
 

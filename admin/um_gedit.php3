@@ -27,7 +27,7 @@ http://www.apc.org/
 #    $grp_new        - comes from um_inc   - New user link
 #    $submit_action  - = update_submit if pressed update
 #                      = grp_del if delete group is confirmed
-#    $add_submit     - if new group Add buutton pressed
+#    $add_submit     - if new group Add button pressed
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -131,9 +131,12 @@ if( $add_submit OR ($submit_action == "update_submit"))
 //  $grouprecord["owner"] = ...;           // not used, for now
 
     if( $add_submit ) {
-      if(!AddGroup($grouprecord))
+      if(!($newgroupid = AddGroup($grouprecord)))
         $err["LDAP"] = MsgErr( L_ERR_GROUP_ADD );
       if( count($err) <= 1 ) {
+	if ($group_super) {	// set super admin privilege
+	  AddPerm($newgroupid, AA_ID, "aa", $perms_roles_id["SUPER"]);
+	}
         $Msg = MsgOK(L_NEWGROUP_OK);
         go_url( con_url($sess->url($PHP_SELF), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);
       }
@@ -141,7 +144,13 @@ if( $add_submit OR ($submit_action == "update_submit"))
       $grouprecord["uid"] = $selected_group;
       if(!ChangeGroup($grouprecord))
         $err["LDAP"] = MsgErr( L_ERR_GROUP_CHANGE );
+      if ($group_super) {		// set or revoke super admin privilege
+	AddPerm($grouprecord["uid"], AA_ID, "aa", $perms_roles_id["SUPER"]);
+      } else {
+	DelPerm($grouprecord["uid"], AA_ID, "aa");
+      }
     }
+
     # Procces users data ---------------------
 //huh("Posted_users:".$posted_users);
     $assigned_users = explode(",",$posted_users); //posted_users contains comma delimeted list of selected users of group
@@ -240,6 +249,10 @@ do {
         break;
       $group_name = $group_data[name];
       $group_description = $group_data[description];
+      $aa_users = GetObjectsPerms(AA_ID, "aa");
+      if (strstr($aa_users[$selected_group]["perm"], $perms_roles_id["SUPER"])) {
+	$group_super = true;
+      }
     }  
   } else {
     echo '</BODY></HTML>';
@@ -270,6 +283,7 @@ if( $grp_edit OR ($submit_action == "update_submit") )
     FrmStaticText( L_GROUP_ID, $group_data[uid]);
   FrmInputText("group_name", L_GROUP_NAME, $group_name, 50, 50, true);
   FrmInputText("group_description", L_GROUP_DESCRIPTION, $group_description, 50, 50, false);
+  FrmInputChBox("group_super", L_GROUP_SUPER, $group_super, false, "", 1, false);
 echo '</table></td></tr>';
 
 if( !$add_submit AND !$grp_new) {?>
@@ -321,8 +335,11 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:06  madebeer
-Initial revision
+Revision 1.2  2000/07/27 18:17:21  kzajicek
+Added superadmin settings in User/Group management
+
+Revision 1.1.1.1  2000/06/21 18:40:06  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:57  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

@@ -297,6 +297,7 @@ define("L_USER_PASSWORD2", "Retype password");
 define("L_USER_FIRSTNAME", "First name");
 define("L_USER_SURNAME", "Surname");
 define("L_USER_MAIL", "E-mail");
+define("L_USER_SUPER", "Superadmin account");
 define("L_A_USERS_TIT", "Slice Administration - User Management");
 define("L_A_PERMISSIONS", "Slice Administration - Permissions");
 
@@ -499,6 +500,7 @@ define("L_TOO_MUCH_GROUPS", "Too much groups found.");
 define("L_NO_GROUPS", "No groups found");
 define("L_GROUP_NAME", "Name");
 define("L_GROUP_DESCRIPTION", "Description");
+define("L_GROUP_SUPER", "Superadmin group");
 define("L_ERR_GROUP_ADD", "It is impossible to add group to permission system");
 define("L_NEWGROUP_OK", "Group successfully added to permission system");
 define("L_ERR_GROUP_CHANGE", "Can't change group");
@@ -527,6 +529,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.7  2000/07/27 18:17:21  kzajicek
+Added superadmin settings in User/Group management
+
 Revision 1.6  2000/07/27 13:23:58  kzajicek
 Language correction
 
