@@ -87,14 +87,6 @@ echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" ce
 if (isset ($menu)) $menu = $menus[$menu];
 else $menu = $menus["sliceadmin"];
 
-function get_admin_url ($href) {
-    global $AA_INSTAL_PATH;
-    $res = $AA_INSTAL_PATH."admin/".$href;
-    if (strstr ($href,"?")) $res .= "&"; else $res .= "?";
-    $res .= "AA_CP_Session=".$GLOBALS[AA_CP_Session];
-    return $res;
-}
-
 $menuitems = $menu["items"];
 reset ($menuitems);
 while (list ($itemshow, $item) = each ($menuitems)) {
