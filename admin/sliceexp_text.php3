@@ -33,6 +33,7 @@ http://www.apc.org/
 */
 
 require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
+require $GLOBALS[AA_INC_PATH] . "sliceobj.php3";
 
 function getRecord (&$array, &$record) 
 {
@@ -41,9 +42,11 @@ function getRecord (&$array, &$record)
 		if (!is_integer($key)) $array[$key] = $val;
 }	
 
+// Export information about the slice
 function exportOneSliceStruct ($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file,$b_export_hex) {
 global $db, $sess;
 	
+    // Mitra thinks this should be unpack_id128(stripslashes($slice_id))
 	$slice_id_bck = stripslashes(unpack_id128($slice_id));
 	
 	$SQL = "SELECT * FROM slice WHERE id='$slice_id'";
@@ -85,26 +88,27 @@ global $db, $sess;
 	
 		$slice["fields"][] = $new;
 	}
-        if ($b_export_hex) {
-            $slice_data = serialize($slice);
-        	$slice_data = $b_export_gzip ? gzcompress($slice_data) : $slice_data;
-	        $slice_data = HTMLEntities(base64_encode($slice_data));
-        } else {
-            $slice_data = xml_serialize("slice",$slice,"\n","    ");
-        }
+    if ($b_export_hex) {
+        $slice_data = serialize($slice);
+       	$slice_data = $b_export_gzip ? gzcompress($slice_data) : $slice_data;
+    	$slice_data = HTMLEntities(base64_encode($slice_data));
+    } else {
+        $slice_data = xml_serialize("slice",$slice,"\n","    ");
+    }
 
-	fwrite($temp_file, "<slicedata gzip=\"".$b_export_gzip."\">\n$slice_data\n</slicedata>\n");	
+	fwrite($temp_file, "<slicedata gzip=\"".$b_export_gzip."\">\n$slice_data\n</slicedata>\n");
 }
 
-// Convert a PHP array to an XML structure
-// A logical extension of this would be to make it nest
-function xml_serialize($k,$v,$i,$ii) {
-    if (is_string($v)) return "$i<$k>".HTMLEntities($v)."$i</$k>";
+// Convert a neted PHP structure to an XML structure
+// Note it doesn't handle objects, just strings and arrays
+function xml_serialize($k,&$v,$i,$ii) {
+    $kk = preg_replace('/^([0-9])/',"NuMbEr\$1",$k); // Can't start with digit
+    if (is_string($v)) return "$i<$kk>".HTMLEntities($v)."$i</$kk>";
     elseif (is_array($v)) {
         while(list($k1,$v1) = each($v)) {
             $o .= xml_serialize($k1,$v1,$i.$ii,$ii);
         }
-        return "$i<$k>$o$i</$k>";
+        return "$i<$kk>$o$i</$kk>";
     }
 }
 
@@ -174,12 +178,8 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 
 	reset($export_slices);
 	while (list(,$slice_id_bck) = each($export_slices)) {
-		$slice_id = addslashes(pack_id128($slice_id_bck));
 
-		$SQL= "SELECT name FROM slice WHERE id like '".$slice_id."' ORDER BY name";
-		$db->query($SQL);
-		while($db->next_record())
-			$slice_name = $db->f(name);
+        $slice_name = sliceid2name($slice_id_bck);
 
 		if ($b_export_type != _m("Export to Backup")) {
 			if (strlen ($SliceID) != 16) {
@@ -219,6 +219,7 @@ function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices,
 	rewind($temp_file);
 		
 	header("Content-type: application/octec-stream");
+#	header("Content-type: text/xml");
 	header("Content-Disposition: attachment; filename=aaa.aaxml");
 
 	 while(!feof($temp_file)) {

@@ -53,6 +53,7 @@ class slice {
     // Load $this from the DB for any of $fields not already loaded
     function getfields($fields,$force=false) {
         global $db3;
+        if (is_string($fields)) $fields = array ( $fields);
         if (!isset($db3)) $db3 = new DB_AA;
         reset($fields);
         if ($force)   // Ignore existing fields (not normally used)
@@ -61,26 +62,45 @@ class slice {
             foreach ($fields as $f) 
                 if (!isset($this->$f))
                     $fieldsreq[] = $f;
-	if (isset($fieldsreq)) {
-        $SQL = "SELECT ".implode(",",$fieldsreq).
-            " FROM slice WHERE id = '".q_pack_id($this->id) . "'";
-        $db3->tquery($SQL);
-        if (! $db3->next_record()) {
-            $this->name = "NOT A VALID SLICE"; 
-            if ($GLOBALS[errcheck]) 
-                huhl("Slice ".$this->id." is not a valid slice");
-        }
-        else {
-            foreach ($fieldsreq as $f)
-                $this->$f = $db3->f($f);
-        }
-	}
+        if (isset($fieldsreq)) {
+            $SQL = "SELECT ".implode(",",$fieldsreq).
+                " FROM slice WHERE id = '".q_pack_id($this->id) . "'";
+            $db3->tquery($SQL);
+            if (! $db3->next_record()) {
+                if ($GLOBALS[errcheck]) 
+                    huhl("Slice ".$this->id." is not a valid slice");
+            }
+            else {
+                foreach ($fieldsreq as $f)
+                    $this->$f = $db3->f($f);
+            }  
+	    }
     }
 
     function name() {
-        $this->getfields(array("name"));
+        $this->getfields("name");
         return $this->name;
     }
+}
+
+class slices {
+    var $a;     # Array unpackedsliceid -> slice obj
+
+    // Create slices array from unpacked slice ids
+    function slices($iarr) {
+        $this->a = array();
+        reset $iarr;
+        foreach($iarr as $unpackedsliceid) {
+            $this->a[$unpackedsliceid] = new slice($unpackedsliceid);
+        }
+    }
+}
+
+
+// Utility functions to avoid mucking with classes where only used once
+function sliceid2name($unpackedsliceid) {
+    $s = new slice($unpackedsliceid);
+    return $s->name();
 }
 
 // Function just here for debugging 
