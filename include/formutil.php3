@@ -23,6 +23,8 @@ http://www.apc.org/
 # Form utility functions
 #
 
+require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
+
 # if $condition, shows star
 function Needed( $condition=true ) {
   if( $condition )
@@ -40,6 +42,43 @@ function PrintMoreHelp( $txt ) {
   if( $txt )
     echo "&nbsp;<a href='$txt' target='_blank'>?</a>";
 }    
+
+# shows boxes allowing to choose constant in a hiearchical way
+function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $boxWidth, 
+	$size, $horizontal=0, $needed=false, $hlp="", $morehlp="") 
+{
+	if (!$levelCount) $levelCount = 3;
+	if (!$size) $size = 5;
+	$name = safe($name);
+
+	echo "<tr align=left><td class=tabtxt $colspan><b>$txt</b>";
+	Needed($needed);
+	echo "</td>\n";
+	if (SINGLE_COLUMN_FORM)
+	  echo "</tr><tr align=left>";
+	echo "<td>";
+	showHierConstInitJavaScript ($group_id, $levelCount, "inputform", false);
+	showHierConstBoxes ($levelCount, $horizontal, $name, false, 1, $boxWidth);
+	for ($i=0; $i<$boxWidth; ++$i) $widthTxt .= "m";
+	echo "
+	<TABLE border=1 cellpadding=2 width='100%'><TR>
+	<TD align=center><B>Selected:</B><BR><BR><INPUT TYPE=BUTTON VALUE='Delete' onclick='hcDelete(\"$name\")'></TD>
+	<TD><SELECT name=$name MULTIPLE size=$size>";
+	for ($i=0; $i < count($value); ++$i)
+		if ($value[$i]['value'])
+		    echo "<option>".htmlspecialchars($value[$i]['value'])."\n";
+	echo "<OPTION value='wIdThTor'>$widthTxt";
+	echo "</SELECT></TD></TR></TABLE>";
+	echo "<script language=javascript><!--\n
+		hcInit();
+		hcDeleteLast ('$name');
+        listboxes[listboxes.length] = 'document.inputform[\"$name\"]';
+		// -->\n
+		</script>\n";
+	PrintMoreHelp($morehlp);
+	PrintHelp($hlp);
+	echo "</td></tr>\n";
+}
 
 # Prints html tag <input type=text .. to 2-column table
 # for use within <form> and <table> tag
@@ -181,7 +220,8 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false
     echo "</tr><tr>";
 
   if( $html==2 ) // text only
-  	$val = nl2br (htmlspecialchars ($val));
+  	$val = str_replace ("\r","",str_replace ("\n","",
+		nl2br (htmlspecialchars ($val,ENT_QUOTES))));
   else {
 		$repl = array ("'"=>'"',"\n"=>" ","\r"=>"");
 		reset ($repl);
@@ -189,46 +229,46 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false
 			$val = str_replace ($find, $rep, $val);
   }
   echo "<td $colspan>";
-/*
-$nom_editor = "edt$name";
-$idi_edit = 'eng';
-$editor_height = 150;
-$editor_width= 700;
-$document_complet = 0;
-$content_inicial = "$val";
-include "../misc/wysiwyg/wysiwyg_web_edit.php3";
-*/
-//	$scriptStart = "<script language=javascript src=\"". AA_INSTAL_URL. "misc/wysiwyg/richedt_";
-$scriptStart = "<script language=javascript src=\"../misc/wysiwyg/richedt_";
-echo $scriptStart . ($BName == "MSIE " ? "ie.js\">" : "ns.js\">").
-"</script>
-<script>
-	var edt$name"."_doc_complet = 0;
-		var edt = \"edt$name\";
-</script>";
-echo $scriptStart . ($BName == "MSIE " ? "ie.html\">" : "ns.html\">");
-   echo "</script>";
-
-echo "<script language =javascript >
- edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100);
- function edt$name"."_inicial(){ ".
- ($BName == "MSIE "
-	? "if( document[\"edt$name\"]){ 
-  	   obj_editor = document.edt$name;
-		   document.edt$name.DocumentHTML = '$val';"
-  : "if( window[\"PropertyAccessor\"] && window[\"edt$name\"]){ 
- 		   obj_editor = edt$name;
- 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",'$val');").
- 	"    clearInterval(edt$name"."_timerID);
-    } 
-    return true;
- } 
- </script>	";
-	echo "<input type=hidden name=\"$name\" value='$val'>\n";
-	//echo "<textarea name=\"$name\">$val</textarea>\n";
-  $htmlvar = $name."html";
-	echo "<input type=hidden name=\"$htmlvar\" value=\"h\">\n";
-//	echo "<input type=text name=\"$htmlvar\" value=\"h\">\n";
+	/*
+	$nom_editor = "edt$name";
+	$idi_edit = 'eng';
+	$editor_height = 150;
+	$editor_width= 700;
+	$document_complet = 0;
+	$content_inicial = "$val";
+	include "../misc/wysiwyg/wysiwyg_web_edit.php3";
+	*/
+	//	$scriptStart = "<script language=javascript src=\"". AA_INSTAL_URL. "misc/wysiwyg/richedt_";
+	$scriptStart = "<script language=javascript src=\"../misc/wysiwyg/richedt_";
+	echo $scriptStart . ($BName == "MSIE " ? "ie.js\">" : "ns.js\">").
+	"</script>
+	<script>
+		var edt$name"."_doc_complet = 0;
+			var edt = \"edt$name\";
+	</script>";
+	echo $scriptStart . ($BName == "MSIE " ? "ie.html\">" : "ns.html\">");
+	   echo "</script>";
+	
+	echo "<script language =javascript >
+	 edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100);
+	 function edt$name"."_inicial(){ ".
+	 ($BName == "MSIE "
+		? "if( document[\"edt$name\"]){ 
+	  	   obj_editor = document.edt$name;
+			   document.edt$name.DocumentHTML = '$val';"
+	  : "if( window[\"PropertyAccessor\"] && window[\"edt$name\"]){ 
+	 		   obj_editor = edt$name;
+	 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",'$val');").
+	 	"    clearInterval(edt$name"."_timerID);
+	    } 
+	    return true;
+	 } 
+	 </script>	";
+		echo "<input type=hidden name=\"$name\" value='$val'>\n";
+		//echo "<textarea name=\"$name\">$val</textarea>\n";
+	  $htmlvar = $name."html";
+		echo "<input type=hidden name=\"$htmlvar\" value=\"h\">\n";
+	//	echo "<input type=text name=\"$htmlvar\" value=\"h\">\n";
 		
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
@@ -459,7 +499,7 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
             onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
                      document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'> 
           <SCRIPT Language='JavaScript'><!--
-             listboxes[box_index++] = 'document.inputform.elements[\"$name\"]'
+             listboxes[listboxes.length] = 'document.inputform.elements[\"$name\"]'
             // -->
            </SCRIPT>          
           </center>";
@@ -550,6 +590,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.21  2002/03/06 12:35:22  honzam
+fixed bug in Richedit
+
 Revision 1.20  2002/02/12 15:45:36  jakubadamek
 Repaired Rich Edit Text Area.
 
