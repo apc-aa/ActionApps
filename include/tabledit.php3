@@ -23,8 +23,14 @@ http://www.apc.org/
     See doc/tabledit.html for more info.
 */	
 
+require "tabledit_column.php3";
+require "tabledit_util.php3";
+require $GLOBALS[AA_INC_PATH]."formutil.php3";
+
 // identifies new record 
 $new_key = "__new__";
+// identifies info about checkbox
+$checkbox_dummy = "_c_b_";
 
 class tabledit {
     // serialization purposes??
@@ -146,7 +152,7 @@ class tabledit {
         $this->SetViewDefaults();    
         $where = $this->GetWhere ($where);
         
-        $db->query ("SELECT COUNT(*) AS mycount FROM ".$this->view["table"]." WHERE ".$where);
+        $db->query ("SELECT COUNT(*) AS mycount FROM ".$this->getSelectFrom()." WHERE ".$where);
         $db->next_record();        
         $rowcount = $db->f("mycount");
 
@@ -176,11 +182,14 @@ class tabledit {
             $orderby = " ORDER BY ".$this->orderby.($this->orderdir == 'd' ? " DESC" : "");
         
         reset ($this->cols);
-        while (list ($col) = each ($this->cols)) 
-            $collist[] = $col;    
+        while (list ($cname,$cprop) = each ($this->cols)) 
+            if ($this->view["join"])
+                $collist[] = $cprop["table"].".".$cname;
+            else $collist[] = $cname;
+            
         $db->query (
              " SELECT ".join(",",$collist)
-            ." FROM ".$this->view[table]
+            ." FROM ".$this->getSelectFrom()
             ." WHERE ".$where
             . $orderby
             ." LIMIT ".($scroll->current-1)*$scroll->metapage.",".$scroll->metapage);
@@ -204,6 +213,10 @@ class tabledit {
         }
             
         if ($record_count || $this->show_new) {      
+
+            if ($this->view["search"] && !$no_item)
+                $this->ShowSearchRow ();       
+        
             echo "<TABLE ".$this->view["attrs"]["table"].">";
             $td = "<TD class=te_".substr($this->type,0,1)."_td>";
 
@@ -277,9 +290,6 @@ class tabledit {
             echo "</P>";        
         }
         
-        if ($this->view["search"] && !$no_item)
-            $this->ShowSearchRow ();       
-        
         if (is_array ($this->view["children"]) && $record_count == 1) 
              $err = $this->ShowChildren();
 
@@ -287,7 +297,7 @@ class tabledit {
     }        
 
     // -----------------------------------------------------------------------------------
-
+    
     function showBrowseHeader ($record_count) {
         echo "<TR>";
         $header = "<TD colspan=".count ($this->view["buttons_left"]).">&nbsp;</TD>";
@@ -304,8 +314,8 @@ class tabledit {
         $td = "<TD class=te_".substr($this->type,1,1)."_td>";
         reset ($this->cols);
         while (list ($colname,$column) = each ($this->cols)) {
-            if ($column["view"]["type"] != "hide") {
-                if ($record_count > 1) {
+            if ($column["view"]["type"] != "hide" && $column["view"]["type"] != "ignore") {
+                if ($record_count > 0) {
                      echo "$td<a href='".$this->getAction($this->gotoview2())."&cmd[".$this->viewID."]"
                          ."[orderby][$colname]=1'><span class=te_b_col_head>$column[caption]</span>\n";
                      if ($this->orderby == $colname) {
@@ -381,6 +391,7 @@ class tabledit {
         reset ($this->cols);
         while (list ($colname) = each ($this->cols)) {
             $column = &$this->cols[$colname];
+            $this->setDefault ($column["table"], $this->view["table"]);
             $this->setDefault ($column["caption"], $colname);
             $this->setDefault ($column["view"]["readonly"], 
                 $this->view["readonly"] || $column["view"]["type"] == "userdef");
@@ -392,6 +403,7 @@ class tabledit {
             $this->setDefault ($column["view"]["size"]["cols"], $cols);
             $this->setDefault ($column["view"]["size"]["rows"], 4);
             $this->setDefault ($column["view"]["html"], false);
+            $this->setDefault ($column["view"]["type"], $column["type"]);
         }
         
         $this->setDefaultButtons();
@@ -399,6 +411,26 @@ class tabledit {
     
     // -----------------------------------------------------------------------------------
 
+    function getSelectFrom () {
+        $from = $this->view[table];    
+        if (is_array ($this->view["join"])) {
+            reset ($this->view["join"]);
+            while (list ($tname, $tprop) = each ($this->view["join"])) {
+                unset ($froms);
+                reset ($tprop["joinfields"]);
+                while (list ($thisfield, $joinfield) = each ($tprop["joinfields"])) 
+                    $froms[] = $this->view["table"].".$thisfield=".$tname.".$joinfield";
+                switch ($tprop["jointype"]) {
+                case "exact 1 to 1": $from .= " INNER JOIN "; break;
+                default: $from .= " error .. bad jointype .. "; break;
+                }
+                $from .= $tname." ON ".join(" AND ", $froms);
+            }
+        }                 
+        return $from;
+    }   
+                
+    // -----------------------------------------------------------------------------------    
     // sets $where and $this->show_new
     function GetWhere ($where)
     {
@@ -407,7 +439,7 @@ class tabledit {
         // create SQL SELECT        
         // apply edit command only in Edit view
         if ($this->cmd["edit"] && $this->type == "edit") {
-            $where = CreateWhereCondition (key ($this->cmd["edit"]), $this->cols);
+            $where = CreateWhereCondition (key ($this->cmd["edit"]), $this->cols, $this->view["table"]);
         }
         else if ($this->cmd["show_new"]) {
             $where = "0";
@@ -455,7 +487,7 @@ class tabledit {
             ."$td";
         reset ($this->cols);
         while (list ($colname,$column) = each ($this->cols)) 
-            if ($column["view"]["type"] != "hide") 
+            if ($column["view"]["type"] != "hide" && $column["view"]["type"] != "ignore") 
                 $options[$colname] = $column["caption"];
         $srch = $this->cmd["search"];
         FrmSelectEasy ("cmd[".$this->viewID."][search][field]", $options, $srch["field"]);
@@ -503,7 +535,7 @@ class tabledit {
     }
     
     // -----------------------------------------------------------------------------------
-
+    
     function ShowColumnValues ($record, $new_record, $key, $irow)
     {
         if ($this->type == "browse") 
@@ -514,70 +546,37 @@ class tabledit {
             $cview = $column["view"];
             if ($new_record && $column["view_new_record"])
                 $cview = $column["view_new_record"];
-
-            if ($cview["type"] == "hide") 
-                continue;
-                                   
-            if ($this->type == "edit") {
+                
+            $val = $new_record ? $column["default"] : $record[$colname];
+            
+            $visible = $cview["type"] != "ignore" && $cview["type"] != "hide";
+            if ($visible && $this->type == "edit") {
                 echo "<TR>$td<span class=te_e_col_head>".$column["caption"]."</span><br>\n";
                 if ($column["hint"])
                     echo "<span class=\"te_e_col_hint\">".$column["hint"]."</span>";
                 echo "</TD>\n";
-			}
-        
-            $type = $cview["type"];
-            if (!$type) $type = $column["type"];                
-        
-            $val = $new_record ? $column["default"] : $record[$colname];
-            if ($type == "date" && $val)
-                $val = date($cview["format"], $val); 
-            
-            echo $td;
-            if (!$cview["readonly"]) {
+			}        
 
-                switch ($type) {
-                case 'area':
-                case 'blob': 
-                    $val = str_replace ('<','&lt;',$val);
-                    $val = str_replace ('>','&gt;',$val);
-                    echo "<textarea name=\"val[$key][$colname]\""
-                        ." rows=\"".$cview["size"]["rows"]."\" cols=\"".$cview["size"]["cols"]."\">\n"
-                        .$val."</textarea>"; 
-                    break;
-                case 'select': FrmSelectEasy("val[$key][$colname]", $cview["source"], $val); break;
-                case 'text':
-                default:
-                   $val = str_replace ('"','&quot;',$val);
-				    $maxlen = $column["len"] ? "maxlength=$column[len]" : "";
-                    echo "<INPUT type=\"text\" $maxlen size=\"".$cview["size"]["cols"]."\" name=\"val[$key][$colname]\"
-                        value=\"".$val."\">"; 
-				    break;
-                }
-            }
-            else { // READ ONLY
-                switch ($type) {
-                    case "select": $val = $cview["source"][$record[$colname]]; break;
-                    case "userdef" : 
-                        $fnc = $cview["function"];
-                        $val = $fnc ($val);
-                        break;
-                }
-                if ($val) {
-                    if (!$cview["html"]) $val = htmlentities ($val);
-                }
-                else if ($val != "" && is_field_type_numerical ($column["type"]) 
-                    && $type != "date" && !$new_record)
-                    $val = "0";
-                else $val = "&nbsp;";
-                if ($cview["href_view"]) 
-                    echo "<a href='".$this->getAction($cview["href_view"])
-                        ."&cmd[".$cview["href_view"]."][edit]"
-                        ."[".str_replace("\"","\\\"",$record[$colname])."]=1'>".$val."</a>\n";
-                else echo $val;
-            }        
-            echo "</TD>\n";
+            if ($visible && $cview["href_view"] && $cview["readonly"]) 
+                echo "<a href='".$this->getAction($cview["href_view"])
+                    ."&cmd[".$cview["href_view"]."][edit]"
+                    ."[".str_replace("\"","\\\"",$val)."]=1'>";
+                    
+            if ($visible)
+                echo $td;        
             
-            if ($this->type == "edit") echo "</TR>";
+            $name = str_replace ("\"", "\\\"", "val[$key][$colname]");
+            // in tabledit_column.php3
+            ColumnFunctions ($cview, $val, "show", $name);
+        
+            if ($visible && $cview["href_view"] && $cview["readonly"]) 
+                echo "</a>\n";
+
+            if ($visible) {
+                echo "</TD>\n";                
+                if ($this->type == "edit") 
+                    echo "</TR>";
+            }
         }
     }
 
@@ -614,6 +613,8 @@ class tabledit {
                 }
                 $bd["cancel"] = 1;
             }
+            else if (!$this->view["readonly"])
+                $bd["update"] = 1;
         }
                 
         // browse view        
@@ -855,7 +856,17 @@ class tabledit {
         $getTableViewsFn = $this->getTableViewsFn;
         if ($debug) 
         { echo "cmd: ";print_r ($this->all_cmd); echo "<br>val: ";print_r($this->form_vals); echo"<br>"; }
-        ProcessFormattedDates ($this->form_vals, $this->cols);
+
+        if (is_array ($this->form_vals)) {
+            reset ($this->form_vals);
+    		while (list ($key, $key_vals) = each ($this->form_vals)) 
+    	        while (list ($col, $val) = each ($key_vals))
+                    // defined in tabledit_column.php3 
+            	    ColumnFunctions ($this->cols[$col]["view"],
+                        &$this->form_vals[$key][$col],
+                        "form");
+        }
+
         reset ($this->all_cmd);
         while (list ($myviewid, $com) = each ($this->all_cmd)) {
             $myview = $getTableViewsFn ($myviewid);
@@ -867,7 +878,7 @@ class tabledit {
                         $ok = true;
                         if (key($par) == $GLOBALS[new_key])                        
                             $ok = $this->ProcessInsert ($myviewid);
-                        else $ok = TableUpdate ($myview["table"], key($par), $this->form_vals[key($par)], $myview["fields"], $myview["messages"]["error_update"]);
+                        else $ok = TableUpdate ($myview["table"], $myview["join"], key($par), $this->form_vals[key($par)], $myview["fields"], $myview["messages"]["error_update"]);
                         if (!$ok) { PrintArray ($err); $err = ""; }
                     }
                     break;
@@ -876,7 +887,7 @@ class tabledit {
                     $ok = true;
                     while (list ($key, $vals) = each ($this->form_vals)) {
                         if ($key != $GLOBALS[new_key])
-                            $ok = $ok && TableUpdate ($myview["table"], $key, $vals, $myview["fields"], $myview["messages"]["error_update"]);
+                            $ok = $ok && TableUpdate ($myview["table"], $myview["join"], $key, $vals, $myview["fields"], $myview["messages"]["error_update"]);
                     }
                     if (!$ok) { PrintArray ($err); $err = ""; }
                     break;
@@ -903,256 +914,4 @@ class tabledit {
 }
 // END of class tabledit
 
-/*   $columns is array of columns, see "fields" in tableviews.php3
-    appends ["type"] to each column, with column type
-    appends ["primary"] to primary columns, if not exist, adds them with ["view"]["type"]=hide 
-    
-    if table has more than 1 primary key, send the chosen one in $primary
-*/
-
-function GetColumnTypes ($table, $columns, $primary="") {
-    global $db;
-    //echo "TABLE $table";
-    if (!$table) {
-        echo "Error in GetColumnTypes";
-        return $columns;
-    }
-    $cols = $db->metadata ($table);
-    reset ($cols);
-    while (list (,$col) = each ($cols)) {
-        $cname = $col["name"];
-        if (!isset ($columns[$cname])) 
-            $columns[$cname]["view"]["type"] = "hide";
-        $columns[$cname]["type"] = $col["type"];
-        if (is_array ($primary))
-             $is_primary = my_in_array ($cname, $primary);
-        else $is_primary = strstr ($col["flags"], "primary_key");
-        if ($is_primary) {
-            if (!isset ($columns[$cname]))
-                $columns[$cname]["view"]["type"] = "hide";              
-            $type = is_field_type_numerical ($col["type"]) ? "number" : "text";
-            $columns[$cname]["primary"] = $type;
-        }
-        if (strstr ($col["flags"], "auto_increment"))
-            $columns[$cname]["auto_increment"] = 1;
-        if (strstr ($col["flags"], "not_null"))
-            $columns[$cname]["not_null"] = 1;
-		if ($col["len"])
-			$columns[$cname]["len"] = $col["len"];
-    }
-    return $columns;
-}
-
-// -----------------------------------------------------------------------------------
-
-// deletes one record identified by key values from given table
-function TableDelete ($table, $key_value, $columns, $error_msg="", $be_cautious=1) {
-    global $db, $err;
-    $columns = GetColumnTypes ($table, $columns);
-    $where = CreateWhereCondition ($key_value, $columns);
-    if ($be_cautious) {
-        $db->query ("SELECT * FROM $table WHERE $where");
-        if ($db->num_rows() != 1) {
-			$err[] = $error_msg ? $error_msg : "Error deleting from $table. ".$db->num_rows()." rows instead of 1.";
-			return false;
-		}
-    }
-    return $db->query ("DELETE FROM $table WHERE $where");
-}
-
-// -----------------------------------------------------------------------------------
-   
-// updates one record identified by key values in given table    
-function TableUpdate ($table, $key_value, $val, $columns, $error_msg="",  $be_cautious=1) {
-    global $db;
-    $columns = GetColumnTypes ($table, $columns);
-    if (!ProoveVals ($table, $val, $columns))
-        return $error_msg ? $error_msg : join ("\n", $GLOBALS["err"]);
-    $varset = new CVarset();
-    reset ($columns);
-    while (list ($colname, $col) = each ($columns)) {
-        if (isset ($val[$colname])) {
-            $value = $val[$colname];
-            if (get_magic_quotes_gpc()) 
-                $value = stripslashes ($value);
-            if (is_field_type_numerical ($col["type"])) {
-				if ($value == "" && !$col["not_null"])
-					$value = "NULL";
-                 $varset->set($colname,$value,"number");
-			}
-            else $varset->set($colname,$value,"text");         
-        }
-    }
-
-    $where = CreateWhereCondition ($key_value, $columns);
-    if ($be_cautious) {
-        $db->query ("SELECT * FROM $table WHERE $where");
-        if ($db->num_rows() != 1) return false;
-    }
-    return $db->query ("UPDATE $table SET ".$varset->makeUPDATE()." WHERE $where");
-}
-
-// -----------------------------------------------------------------------------------
-
-/* inserts a record and returns the key or "" if not successfull
-    params:
-        $primary = array (field1,field2,...) - if the table has more than 1 primary key, you   
-                 must send the correct one
-*/
-function TableInsert ($table, $val, $columns, $primary="", $error_msg="", $be_cautious=1) {
-    global $db, $err;
-    $columns = GetColumnTypes ($table, $columns, $primary);
-    if (!ProoveVals ($table, $val, $columns)) { return ""; }
-    $varset = new CVarset();
-    reset ($columns);
-    while (list ($colname, $col) = each ($columns)) {
-        $is_key = false;
-        if ($col["primary"]) {
-            if ($col["auto_increment"])
-                $auto_inc = true;
-            else if (!$val[$colname]) 
-                { $err[] = $error_msg ? $error_msg : "Error: Primary column $colname not set."; return ""; }
-            else $key[] = $val[$colname];
-        }
-        if (isset ($val[$colname])) {
-            $value = $val[$colname];
-            if (get_magic_quotes_gpc()) 
-                $value = stripslashes ($value);
-            if (is_field_type_numerical ($col["type"]))
-                 $varset->set($colname,$value,"number");
-            else $varset->set($colname,$value,"text");         
-        }
-    }
-   
-    if ($be_cautious && !$auto_inc) {
-        $key = join_escaped (":", $key, "#:");
-        $where = CreateWhereCondition ($key, $columns);
-        $db->query ("SELECT COUNT(*) AS key_already_used FROM $table WHERE $where");
-        $db->next_record();
-        if ($db->f("key_already_used") > 0)
-            { $err[] = $error_msg ? $error_msg : "Error inserting to $table: A row with the same primary key ($key) already exists."; return ""; }
-    }
-    
-    $ok = $db->query ("INSERT INTO $table ".$varset->makeINSERT());
-    if (!$ok) { $err[] = $error_msg ? $error_msg : "DB error on inserting record to $table"; return ""; }
-    if ($auto_inc) return get_last_insert_id ($db, $table);
-    else return join_escaped (":", $key, "#:");
-}
-
-// -----------------------------------------------------------------------------------
-
-function ProcessFormattedDates (&$vals, $columns) {
-    if (is_array ($vals)) {
-        reset ($vals);
-		while (list ($key, $key_vals) = each ($vals)) {
-	        while (list ($col, $val) = each ($key_vals)) {
-            if ($columns[$col]["view"]["type"] == "date")  
-        	        $vals[$key][$col] = get_formatted_date ($val, $columns[$col]["view"]["format"]);
-        	}
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------
-
-function ProoveVals ($table, $val, $columns) {
-    global $err;
-    while (list ($colname, $column) = each ($columns)) {
-        if ($column["validate"] || $column["required"]) {
-            if (!ValidateInput ($colname, $colname, $val[$colname], $err, $column["required"], $column["validate"]))
-                return false;
-            if ($column["validate_min"] && $column["validate"] == "number") {
-                if ($val[$colname] < $column["validate_min"] || $val[$colname] > $column["validate_max"]) {
-                    $err[$colname] = "Value of $colname should be between $column[validate_min] and $column[validate_max].";
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
-// -----------------------------------------------------------------------------------
-
-// creates key string with values from key fields separated by :
-function GetKey ($columns, $record)
-{
-    reset ($columns);
-    unset ($key);
-    while (list ($colname,$column) = each ($columns)) 
-        switch ($column["primary"]) {
-        //case "packed": $key[] = unpack_id ($record [$colname]); break;
-        case "number": $key[] = $record[$colname]; break;
-        case "text": $key[] = htmlentities ($record[$colname]); break;
-        }
-    return join_escaped (":",$key,"#:");
-}
-            
-// -----------------------------------------------------------------------------------    
-
-// creates where condition from key fields values separated by :
-// Warning: send $columns processed with GetColumnTypes
-function CreateWhereCondition ($key_value, $columns) {
-    $key_values = split_escaped (":", $key_value, "#:");
-    if (!is_array ($key_values))
-        return " 0 ";
-    reset ($key_values);
-    reset ($columns);
-    $where = array();
-    while (list ($colname,$column) = each ($columns)) {
-        if (!$column["primary"])        
-            continue;
-        list (,$val) = each ($key_values);
-        switch ($column["primary"]) {
-            //case 'packed': $where[] = "$colname='".q_pack_id ($val)."'"; break;
-            case 'number': $where[] = "$colname=$val"; break;
-            case 'text': $where[] = "$colname='".str_replace("'","\\'",$val)."'";
-        }
-    }
-    return join (" AND ",$where);
-}
-
-// -----------------------------------------------------------------------------------    
-
-function PrintJavaScript_Validate () {
-    global $_javascript_validate_printed;
-    if ($_javascript_validate_printed) return;
-    else $_javascript_validate_printed = 1;
-    
-    echo "
-    <script language=javascript>
-    <!--"
-        . get_javascript_field_validation ()."
-        
-        function validate_number (txtfield, minval, maxval, required) {
-            if (!validate (txtfield, 'number', required))
-                return false;
-            var val = txtfield.value;
-            var err = '';
-            if (val > maxval || val < minval) 
-                err = '"._m("Wrong value: a number between %1 and %2 is expected.",array("'+minval+'","'+maxval+'"))."';
-            if (err != '') {
-                alert (err);
-                txtfield.focus();
-                return false;
-            }
-            else return true;
-        }
-        
-        function confirmDelete (url) {
-            if (confirm ('"._m("Are you sure you want to permanently DELETE this record?")."'))
-                goto_url (url);
-        }
-        
-        function goto_url (url)
-        { window.location = url; }
-        
-        function exec_commit (formname, ctrlName) {
-            var f=document.forms[formname]; 
-            f[ctrlName].value=1; 
-            f.submit();
-        }
-    // -->
-    </script>";   
-}
 ?>
