@@ -1366,4 +1366,12 @@ function monthNames ()
 		_m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
 }
 
+/** Creates values for a select box showing some param wizard section. */
+function getSelectBoxFromParamWizard ($var)
+{
+    reset ($var["items"]);
+    while (list ($value, $prop) = each ($var["items"]))
+        $retval[$value] = $prop["name"];
+    return $retval;
+}
 ?>
