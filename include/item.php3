@@ -470,11 +470,10 @@ function RSS_restrict($txt, $len) {
     }  
     
     $p = ParamExplode($param);
-    if( $p[4] )
-      $col = $p[4];
-    if( $this->columns[$col][0][value] == $p[0] )
-      return ($negate ? $p[3] : $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2]);
-    return  (!$negate ? $p[3] : $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2]); 
+    $cond = ( $p[4] ? $p[4] : $col );
+    if( $this->columns[$cond][0][value] != $p[0] )
+      $negate = !$negate;
+    return  ($negate ? $p[3] : $p[1]. DeHtml($this->columns[$col][0][value], $this->columns[$col][0][flag]) .$p[2]); 
   }
   
   # calls user defined function in file /include/usr_aliasfnc.php3
@@ -624,6 +623,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.27  2001/10/24 16:46:24  honzam
+fixed bug with fourth parameter to f_c
+
 Revision 1.26  2001/10/17 21:53:46  honzam
 fixed bug in url passed aliases
 
