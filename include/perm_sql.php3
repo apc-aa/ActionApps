@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once "perm_core.php3";
+require_once $GLOBALS["AA_INC_PATH"]."perm_core.php3";
 
 //php_sql - functions for working with permissions with SQL
 

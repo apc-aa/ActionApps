@@ -55,8 +55,9 @@ class HtmlMail extends HtmlMimeMail {
     }
 };
 
-/*  Function: html2text
-    Purpose:  strips the HTML tags and lot more to get a plain text version
+/** Strips the HTML tags and lot more to get a plain text mail version.
+*   Replaces URL links by the link in compound brackets behind the linked text.
+*   Removes diacritics.
 */
 function html2text ($html) {
     
@@ -65,9 +66,38 @@ function html2text ($html) {
         $trans_tbl = get_html_translation_table (HTML_ENTITIES);
 	    $trans_tbl = array_flip ($trans_tbl);
         $html = strtr ($html, $trans_tbl);
-    }
+    }    
 
-    // strip HTML tags
+    // Strip diacritics
+    $strip_diacritics = array (
+    "áäèïéìåòóöøšúùüıÁÄÈÏÉÌÅÒÓÖØŠÚÙÜİ",
+    "aacdeelnoorstuuuyzAACDEELNOORSTUUUYZ");
+    
+    for ($i = 0; $i < strlen($strip_diacritics[0]); $i ++) {
+        $search[] = $strip_diacritics[0][$i];
+        $replace[] = $strip_diacritics[1][$i];
+    }
+    
+    $html = str_replace ($search, $replace, $html);
+                
+    // Replace URL references <a href="http://xy">Link</a> => Link {http://xy}
+    /* We can't directly use preg_replace, because it would find the first <a href
+       and the last </a>. */ 
+    $ahref = "<[ \t]*a[ \t][^>]*href[ \t]*=[ \t]*[\"\\']([^\"\\']*)[\"\\'][^>]*>";
+    preg_match_all ("'$ahref'si", $html, $html_ahrefs);
+    $html_parts = preg_split ("'$ahref'si", $html);
+
+    reset ($html_parts);
+    reset ($html_ahrefs[0]);
+    // Take the first part before any <a href>
+    list (, $html) = each ($html_parts);
+    while (list (, $html_part) = each ($html_parts)) {
+        list (, $html_ahref) = each ($html_ahrefs[0]);
+        $html .= preg_replace ("'$ahref(.*)</[ \t]*a[ \t]*>'si", 
+            "\\2 {\\1}", $html_ahref . $html_part);
+    }
+            
+    // strip HTML tags - borrowed from PHP manual user comments
     $search = array (
                  "'<br>'si",
                  "'</p>'si",
@@ -173,9 +203,10 @@ function send_mail_from_table_inner ($mail_id, $to, &$item) {
         }
         else {
             if ($db->query ("
-                INSERT INTO email_sent (email_id, send_to, subject, headers, body, created_at)
+                INSERT INTO email_sent (email_id, send_to, subject, headers, body, text_body, created_at)
                 VALUES ($mail_id, '".addslashes($to)."', '".addslashes($record["subject"])."',
-                   '','".addslashes($record["body"])."', ".time().")"))
+                   '','".addslashes($record["body"])."','".
+                   addslashes(html2text($record["body"]))."', ".time().")"))
                 $sent ++;
         }
     }

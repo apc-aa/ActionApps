@@ -164,11 +164,15 @@ function shtml_query_string() {
 # skips terminating backslashes
 function DeBackslash($txt) {
 	return str_replace('\\', "", $txt);        // better for two places
-}
-
-# adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
-# to GLOBALS
-function add_vars($query_string="", $debug="") {
+}   
+ 
+/** Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string) 
+*   to GLOBALS.
+*   @param array $restrict_vars  Array ("var name"=>1, ...) allows to 
+*       restrict the variables added, used  
+*       e.g. in alerts_sending to restrict to sort[] and conds[].
+*/
+function add_vars($query_string="", $debug="", $restrict_vars="") {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
     $vars = explode('&', $varstring);
 
@@ -183,8 +187,10 @@ function add_vars($query_string="", $debug="") {
             $lvalue = substr($var,0,$pos);
             $value  = substr($var,$pos+1);
             $arrindex = strstr ($lvalue,'[');
-            if (!$arrindex) {
-                $GLOBALS[$lvalue]= $value;   # normal variable
+            if (! $arrindex) { 
+                if (! is_array ($restrict_vars) || $restrict_vars[$lvalue]) {
+                    $GLOBALS[$lvalue]= $value;   # normal variable
+                }
                 continue;
             }
 
@@ -210,10 +216,12 @@ function add_vars($query_string="", $debug="") {
                  else
                     $lindex .= "[$v]";
             }
-            $evalcode = '$'.$lvalue.$lindex."=\$value;";
-            if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
-                global $$lvalue;
-                eval ($evalcode);
+            if (! is_array ($restrict_vars) || $restrict_vars [$lvalue]) {
+                $evalcode = '$'.$lvalue.$lindex."=\$value;";
+                if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
+                    global $$lvalue;
+                    eval ($evalcode);
+                }
             }
         }
     }

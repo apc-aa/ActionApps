@@ -1,3 +1,5 @@
+04/10/03 - fixed Alerts bug which ignored Selection conds[]
+(jakub)  - finished the new option for sending all items from one view at once
 04/10/03 - new CountHit function, so displaying fulltext is quicker
 (honzam) - improved slice selectbox - better titles for different slice types
          - fixed "live checkbox" - works again
@@ -13,7 +15,7 @@
 04/05/03 - enhanced the view types definitions in constant.php3 so that
 (jakub)    help text may be added and field type overrided
          - enhanced zids->add() to work with arrays and zids objects
-         - added zids->union()
+         - added zids->union() and made some minor fixes in zids
          - added a new setting to Alerts Selection Set view, to choose
            whether the corresponding filters should be grouped by selections
            (see doc/reader.html for a description)

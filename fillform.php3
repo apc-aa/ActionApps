@@ -21,6 +21,10 @@
  *        result created by filler. The script than usually shows some info
  *        about the errors occured to the user.
  *  @param array result Array with error messages passed from filler.php3.
+ *
+ *  WARNING: There are some troubles with check boxes. You should never use
+ *      checkboxes checked by default (<INPUT TYPE="CHECKBOX" CHECKED>) 
+ *      in combination with fillform.
  *	
  *	 This script contains two similar functions:
  *	
@@ -310,7 +314,7 @@ function fillForm () {
 	is enough. */
 
 function fillFormWithContent ($oldcontent4id) {
-	global $form, $suffix, $conds, $dateConds, $my_item_id;
+	global $form, $suffix, $conds, $dateConds, $my_item_id, $checkbox;
 	
     $timezone = getTimeZone();
 
@@ -322,23 +326,21 @@ function fillFormWithContent ($oldcontent4id) {
 	if (is_array ($oldcontent4id)) {
 		reset ($oldcontent4id);
 		while (list ($field_id,$field_array) = each ($oldcontent4id)) {
-            if (is_array ($field_array)) {
-    			reset ($field_array);
-    			while (list (,$field) = each ($field_array)) {
-    				$myvalue = safeChars ($field[value]);
-    				//$control_id = $field_id;
-    				$control_id = 'v'.unpack_id128($field_id);
-    				// field password.......x is used to authenticate item edit
-    				if (substr ($field_id, 0, 14) != "password......" 
-    					&& $field_id != "id.............."
-    					&& $field_id != "slice_id........"
-    					&& $myvalue != "") {
-                        if (!$first) echo ",\n"; else $first = false;
-    					echo "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','".
-    					($field[flag] & FLAG_HTML ? "h" : "t")."',$timezone)";
-                    }
-    			}
-            }
+            if (is_array ($field_array)) 
+			foreach ($field_array as $field) {
+				$myvalue = safeChars ($field["value"]);
+				//$control_id = $field_id;
+				$control_id = 'v'.unpack_id128($field_id);
+				// field password.......x is used to authenticate item edit
+				if (substr ($field_id, 0, 14) != "password......" 
+					&& $field_id != "id.............."
+					&& $field_id != "slice_id........"
+					&& $myvalue != "") {
+                    if (!$first) echo ",\n"; else $first = false;
+					echo "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','".
+					($field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone)";
+                }
+			}
 		}
 	}
 	

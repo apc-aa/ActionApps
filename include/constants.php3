@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once "mgettext.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 
 #
 # Used constants. Do not edit if you are not developer.
@@ -543,33 +543,33 @@ function getViewTypes ()
     #                              "flag" => _m("Flag") ,
     // TODO                              "scroller" => _m("Display page scroller") ,
     #                              "aditional" => _m("Additional") );
-
+    
+    // this view uses also "aditonal" and "aditional3" for the "Group by" radio
+    // buttons and for the sort[] box, see se_view.php3
+    
     $VIEW_TYPES['digest']  = array( "name" => _m("Alerts Selection Set"),
-                                    "aditional" => array (
-                                    "label" => _m("Group by selections (some items may be shown several times)"),
-                                    "input" => "chbox"),
-                                    "function:digest_filters" => "",
-                                    "aditional2" => array (
-                                    "label" => _m("Fulltext URL"),
-                                    "input" => "field",
-                                    "help" => _m("Link to the .shtml page used to create headline links.")),
-                                    "before" => _m("Top HTML") ,
-                                    "odd" => _m("Odd Rows") ,
-                                    "even_odd_differ" => _m("Use different HTML code for even rows") ,
-                                    "even" => _m("Even Rows") ,
-                                    "after" => _m("Bottom HTML") ,
-                                    "remove_string" => _m("Remove strings") ,
-                                    "order1" => _m("Sort primary") ,
-                                    "o1_direction" => " " ,
-                                    "order2" => _m("Sort secondary") ,
-                                    "o2_direction" => " " ,
-                                    "group_by1" => _m("Group by") ,
-                                    "g1_direction" => " " ,
-                                    "group_title" => _m("Group title format") ,
-                                    "group_bottom" => _m("Group bottom format") ,
-                                    //"listlen" => _m("Max number of items"),
-                                    //"noitem_msg" => _m("HTML code for \"No item found\" message"),
-                                  );
+                                  "function:digest_filters" => "",
+                                  "aditional2" => array (
+                                      "label" => _m("Fulltext URL"),
+                                      "input" => "field",
+                                      "help" => _m("Link to the .shtml page used
+                                        to create headline links.")),
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("Odd Rows") ,
+                                  "even_odd_differ" => _m("Use different HTML code for even rows") ,
+                                  "even" => _m("Even Rows") ,
+                                  "after" => _m("Bottom HTML") ,
+                                  "remove_string" => _m("Remove strings") ,
+                                  "order1" => _m("Sort primary") ,
+                                  "o1_direction" => " " ,
+                                  "order2" => _m("Sort secondary") ,
+                                  "o2_direction" => " " ,
+                                  "group_by1" => _m("Group by") ,
+                                  "g1_direction" => " " ,
+                                  "group_title" => _m("Group title format") ,
+                                  "group_bottom" => _m("Group bottom format") ,
+                                  "listlen" => _m("Max number of items"),
+                                  "noitem_msg" => _m("HTML code for \"No item found\" message"));
 
     // View used for listing of ursl - mainly for listing items for index
     // servers (HtDig, MnogoSearch, ...)

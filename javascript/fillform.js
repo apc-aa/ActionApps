@@ -249,7 +249,7 @@ function setControl (formName, controlName, newValue) {
 	var myControl = getControlByName (formName, controlName);
 	if (myControl != null) {
 		if (typeof (myControl.type) == "undefined") {
-			// multiple checkboxes
+			// multiple checkboxes or radio buttons
 		  	for (var iCtrl = 0; iCtrl < myControl.length; ++iCtrl) {
 				if (myControl[iCtrl].value == newValue) {
 					if (myControl[iCtrl].type == "checkbox" || myControl[iCtrl].type == "radio") 

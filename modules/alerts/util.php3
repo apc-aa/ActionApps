@@ -21,7 +21,7 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
-require_once "reader_field_ids.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
 if (!is_object ($db))   
     $db=new DB_AA;

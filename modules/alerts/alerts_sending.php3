@@ -33,7 +33,7 @@ require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
 require_once $GLOBALS["AA_INC_PATH"]."item_content.php3";
-require_once "util.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 //$debug = 1;
 
@@ -62,7 +62,7 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
 
     // the view.aditional field stores info about grouping by selections
     $SQL = "
-    SELECT F.conds, view.slice_id, view.aditional,
+    SELECT F.conds, view.slice_id, view.aditional, view.aditional3,
         F.id AS filterid, F.vid, slice.name AS slicename, 
         slice.lang_file, CH.last
         FROM alerts_filter F INNER JOIN
@@ -87,14 +87,17 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
         $last = $db->f("last");
         $slices[$db->f("slice_id")]["name"] = $db->f("slicename");
         $slices[$db->f("slice_id")]["lang"] = substr ($db->f("lang_file"),0,2);
-        $slices[$db->f("slice_id")]["views"][$db->f("vid")]["filters"]
-            [$db->f("filterid")] = array ("conds"=>$db->f("conds"));
-        $slices[$db->f("slice_id")]["views"][$db->f("vid")]["group"]
-            = $db->f("aditional");
+        $myview = &$slices[$db->f("slice_id")]["views"][$db->f("vid")];
+        $myview["filters"][$db->f("filterid")] = array ("conds"=>$db->f("conds"));
+        // Group by selections?
+        $myview["group"] = $db->f("aditional");
+        if (! $myview["group"])
+            // Sort variable for the whole view
+            $myview["sort"] = $db->f("aditional3");
     }
     if (! is_array ($slices))
         return;
-
+        
     // The function needs global $conds and $sort, because it does some
     // wizardry with add_vars().
     global $debug_alerts, $conds, $sort;
@@ -148,7 +151,7 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
                 $dbconds = $filter["conds"];
                 if ($debug_alerts) echo "<br>Slice ".$slice["name"].", conds ".$dbconds."<br>";
                 $conds = ""; $sort = "";
-                add_vars ($dbconds);
+                add_vars ($dbconds, "", array ("conds"=>1,"sort"=>1));
                 if ($debug_alerts) { print_r ($conds); echo "<br>"; }
 
                 $zids = new zids (null, "p");
@@ -160,6 +163,7 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
 
                 $retval[$fid] = array (
                     "group" => $view["group"],
+                    "sort" => $view["sort"],
                     "vid" => $vid,
                     "zids" => $zids,
                 );
@@ -316,6 +320,27 @@ function initialize_last ()
 }           
 
 // -------------------------------------------------------------------------------------
+
+function get_view_settings_cached ($vid) {
+    global $cached_view_settings;
+    if (! $vid) 
+        return "";
+    if (! $cached_view_settings [$vid]) {
+        $view_info = GetViewInfo($vid);
+        list($fields) = GetSliceFields (unpack_id ($view_info ["slice_id"]));        
+        $slice_info = GetSliceInfo (unpack_id ($view_info ["slice_id"]));
+        $cached_view_settings[$vid] = array (
+            "lang" => substr ($slice_info["lang_file"],0,2),
+            "info" => $view_info,
+            "fields" => $fields,
+            "aliases" => GetAliasesFromFields ($fields),
+            "format" => GetViewFormat ($view_info),
+        );
+    }
+    return $cached_view_settings [$vid];
+}
+
+// -------------------------------------------------------------------------------------
 /** Warning: This function caches all combinations of selections. If there
 *   are too many different combinations, memory may be exhausted. 
 *
@@ -331,6 +356,9 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
     //echo "zids"; print_r ($zids);
     if ($zids->count() == 0)
         return "";
+<<<<<<< alerts_sending.php3
+        
+=======
 
     if (! $cached_view_settings [$vid]) {
         $view_info = GetViewInfo($vid);
@@ -345,17 +373,24 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
         );
     }
 
+>>>>>>> 1.11
     if (! isset ($cached_filter_settings [$filter_settings])) {
-        $set = &$cached_view_settings[$vid];
+        $set = &get_view_settings_cached ($vid);
         // set language
         bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".
             $set["lang"]."_alerts_lang.php3", true);
         // $set["info"]["aditional2"] stores item URL
+<<<<<<< alerts_sending.php3
+        $itemview = new itemview( $db, $set["format"], $set["fields"], 
+            $set["aliases"], $zids, 0, 9999, $set["info"]["aditional2"]);                          
+        $items_text = $itemview->get_output ("view");        
+=======
         //global $debug;        $debug = 1;
         //echo "<i>";print_r ($zids->a);echo"</i>";
         $itemview = new itemview( $db, $set["format"], $set["fields"],
             $set["aliases"], $zids, 0, 9999, $set["info"]["aditional2"]);
         $items_text = $itemview->get_output ("view");
+>>>>>>> 1.11
     //echo "<h1>items $items_text</h1>"; print_r ($set["format"]); exit;
         //if (! strstr ($filter_settings, ","))
         $cached_filter_settings [$filter_settings] = $items_text;
@@ -369,6 +404,8 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
 
 // -------------------------------------------------------------------------------------
 /** Used in send_emails(). Finds filter text for the given reader.
+*   There are two modes: group by Selection and don't group. The
+*   second one is more difficult.
 *   @param object $readerContent  if null, use all filters
 */
 function get_filter_text_4_reader ($readerContent, $filters, $cid)
@@ -391,12 +428,28 @@ function get_filter_text_4_reader ($readerContent, $filters, $cid)
 
     // add dummy filter
     $filters[99999] = "dummy";
+<<<<<<< alerts_sending.php3
+  
+=======
 
+>>>>>>> 1.11
     for (reset ($filters); list ($filterid, $fprop) = each ($filters); ) {
         // Send items from filters with "group" not set when the view changes.
         if ($last_fprop["vid"] != $fprop["vid"]
           && is_array ($filter_ids)
           && $user_zids->count()) {
+            // WARNING - HACK: we need to sort the zids according to the common 
+            // sort[]: we use the same global trick as in create_filter_text
+            if ($last_fprop["sort"]) {
+                global $sort;
+                $sort = "";
+                add_vars ($last_fprop["sort"], "", array ("sort"=>1));
+                $set = &get_view_settings_cached ($last_fprop["vid"]);
+                $user_zids = QueryZIDs ($set["fields"], 
+                    unpack_id ($set["info"]["slice_id"]),
+                    "", $sort, "", "ACTIVE", "", 0, $user_zids);
+            }                
+          
             $user_text .= get_filter_output_cached (
                 $last_fprop["vid"], join (",",$filter_ids), $user_zids);
             $filter_ids = "";

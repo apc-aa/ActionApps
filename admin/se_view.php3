@@ -30,10 +30,44 @@ require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";  // GetDiscussionAliases funct def
 require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
+// ----------------------------------------------------------------------------
+
+function get_row_count ($s, $cols, $maxrows) {
+    $retval = 1 + strlen ($s) / $cols;
+    if ($retval > $maxrows)
+        return $maxrows;
+    else return $retval;
+}
+
+/// Shows the top part of the Alerts Selection Set view
 function show_digest_filters ()
 {
     global $view_id;
-    $db = new DB_AA;
+    $db = getDB();
+
+    // Show the radio buttons "Group by selection"
+    $db->query ("SELECT aditional, aditional3 FROM view WHERE id=".
+        ($view_id ? $view_id : 0));
+    if ($db->next_record()) {
+        $group = $db->f("aditional");
+        $sort = $db->f("aditional3");
+    }
+    else $group = 0;
+        
+    $sortrows = 1 + strlen ($sort) / 50;
+    echo "<tr><td class=tabtxt><b>"._m("Group by selections")."</b></td>
+        <td class=tabtxt><b><input type=radio name=aditional value=1 "
+        .($group ? "checked" : "")."> ".
+        _m("Yes. Write sort[] to the conds[] field for each Selection.")."<br>
+        <input type=radio name=aditional value=0 "
+        .($group ? "" : "checked")."> ".
+        _m("No. Use this sort[]:")."</b>
+        <textarea name=aditional3 cols=50 rows=".get_row_count($sort, 50, 4).">"
+        .$sort."</textarea>
+        </td>
+    </tr>";
+               
+    // Show the Selections              
     $db->query("SELECT * FROM alerts_filter WHERE vid=".($view_id ? $view_id : 0));
     $rows = $db->num_rows();
     for ($irow = 0; $irow < $rows+2; $irow ++) {
@@ -41,24 +75,34 @@ function show_digest_filters ()
         $rowid = $db->f("id");
         if (!$rowid) $rowid = "new$irow";
         FrmInputText("filters[$rowid][description]", _m("Alerts Selection")." ".($irow+1)." "._m("Description"), $db->f("description"), 100, 50, false);
-        $condrows = 1 + strlen ($db->f("conds")) / 50;
-        if ($condrows > 4) $condrows = 4;
-        FrmTextarea("filters[$rowid][conds]", "conds[]", $db->f("conds"), $condrows, 50, false,
+        FrmTextarea("filters[$rowid][conds]", "conds[]", $db->f("conds"), 
+            get_row_count ($db->f("conds"), 50, 4), 50, false,
             "", "http://apc-aa.sourceforge.net/faq/#215"); 
     }
     FrmStaticText ("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
+    freeDB ($db);
 }
 
+// ----------------------------------------------------------------------------
+/// Stores info from the top part of the Alerts Selection Set view
 function store_digest_filters ()
 {
     global $view_id, $filters, $err;
-    $db = new DB_AA;
+    $db = getDB ();
     if (!$view_id) {
    		$db->query("SELECT LAST_INSERT_ID() AS last_vid FROM view");
         $db->next_record();
         $view_id = $db->f("last_vid");
     }
     $varset = new CVarset();
+
+    global $aditional, $aditional3;
+    $varset->clear();
+    $varset->addkey ("id", "number", $view_id);
+    $varset->add("aditional", "number", $aditional);
+    $varset->add("aditional3", "quoted", $aditional3);    
+    $db->query ($varset->makeUPDATE ("view"));
+
     reset ($filters);
     while (list ($rowid, $filter) = each ($filters)) {
         if (!$filter["description"]) {
@@ -79,7 +123,10 @@ function store_digest_filters ()
             break;   # not necessary - we have set the halt_on_error
         }
     }
+    freeDB ($db);
 }       
+
+// ----------------------------------------------------------------------------
 
 function OrderFrm($name, $txt, $val, $order_fields) {
   global $vw_data;

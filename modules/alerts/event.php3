@@ -27,8 +27,8 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
-require_once "util.php3";
-require_once "alerts_sending.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/alerts_sending.php3";
 
 /** Sends welcome e-mail to newly subscribed readers, which means new
 *   "items" appearing in a Reader Management Slice.

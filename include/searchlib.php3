@@ -338,15 +338,17 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   }
 
   # parse sort order ----------------------------
-  if( !(isset($sort) AND is_array($sort)))
+  if( ! is_array($sort))
     $select_order = 'item.publish_date DESC';   # default item order
   else {
     reset($sort);
     $delim='';
     while( list( , $srt) = each( $sort )) {
       $fid = key($srt);
-      if( !$fields[$fid] )  # bad field_id - skip
-          continue;
+      if( !$fields[$fid] ) { # bad field_id - skip
+        if ($debug) echo "Skipping sort[x][$fid], don't know $fid.<br>";
+        continue;
+      }
 
       if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
         $select_order .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
