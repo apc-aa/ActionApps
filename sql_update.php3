@@ -412,6 +412,14 @@ $tablelist = array( 'active_sessions' => "(
                         todo varchar(250) default NULL,
                         PRIMARY KEY (uid)
                       )",
+                      'mysql_auth_userlog' => "(
+                        uid int(10) NOT NULL default '0',
+                        time int(10) NOT NULL default '0',
+                        from_bin smallint(6) NOT NULL default '0',
+                        to_bin smallint(6) NOT NULL default '0',
+                        organisation varchar(50) default NULL,
+                        membership_type varchar(50) default NULL
+                      )",
                       'nodes' => "(
                          name varchar(150) NOT NULL,
                          server_url varchar(200) NOT NULL,
