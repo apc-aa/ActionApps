@@ -446,7 +446,7 @@ echo "<table border=0 cellspacing=0 class=login width=460>" .
  "</table>";
 
 echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
-'<table width="460" border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
+'<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
 
                          
 if( count( $item_ids ) > 0 ) {
@@ -558,6 +558,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.32  2002/01/03 15:48:07  honzam
+No item table width limit
+
 Revision 1.31  2001/12/21 11:44:55  honzam
 fixed bug of includes in e-mail notify
 
