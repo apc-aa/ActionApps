@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS pagecache      ;
 DROP TABLE IF EXISTS view           ;
 
 # 06/01/01 - added display_count, short_id and flags to item table
+#          - longer value in constant table (150 -> 255)
 # 05/30/01 - new sql_update.php3 script updating current database instalation
 # 05/13/01 - added view table
 # 0x/0x/01 - add feedmap table
@@ -79,7 +80,7 @@ CREATE TABLE constant (
    id char(16) NOT NULL,
    group_id char(16) NOT NULL,
    name char(150) NOT NULL,
-   value char(150) NOT NULL,
+   value char(255) NOT NULL,
    class char(16),
    pri smallint(5) DEFAULT '100' NOT NULL,
    PRIMARY KEY (id),
