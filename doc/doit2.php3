@@ -1,6 +1,6 @@
 <?php
 
-require("../include/config.inc");
+require("../include/config.php3");
 echo $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 //$Id$
 /*

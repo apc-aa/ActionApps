@@ -1,4 +1,3 @@
-td {font-size: 12;} 
 td.scroller {background: #a0a0a0;} 
 
 .scrhead {
@@ -9,6 +8,8 @@ td.scroller {background: #a0a0a0;}
 
 body { margin-left: 4px;
        background: #F5F0E7;
+       font-family: Verdana, Arial, Helvetica, sans-serif;
+       font-size: 8pt;
 }
 
 SELECT {  
@@ -16,7 +17,7 @@ SELECT {
   font-size: 10pt;
  }
 
-INPUT, TEXTAREA {  
+TD, INPUT, TEXTAREA {  
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
  }

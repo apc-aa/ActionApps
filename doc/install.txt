@@ -18,7 +18,7 @@
      2.3 PHP3
      2.4 PHPLIB
      2.5 MySQL
-     2.6 OpenLDAP
+     2.6 OpenLDAP (optional)
 
   3. Installation steps
 
@@ -103,7 +103,7 @@
   latest versions is recommended.)
 
 
-  22..66..  OOppeennLLDDAAPP
+  22..66..  OOppeennLLDDAAPP ((ooppttiioonnaall))
 
   OpenLDAP (e.g. openldap-1.2.9.tgz) is available at
   <http://www.openldap.org/software/download/>
@@ -122,11 +122,15 @@
   want other options, use either source RPM or original source
   distribution.
 
+  Since RedHat 6.2 is OpenLDAP part of the distribution:
+
+
+  +o  openldap-1.2.9-6.rpm
+
+  +o  openldap-devel-1.2.9-6.rpm (to build PHP with LDAP support)
 
 
   33..  IInnssttaallllaattiioonn sstteeppss
-
-
 
 
 
@@ -192,10 +196,6 @@
 
   Edit llddaapp..ccoonnff - BASE and HOST. This file is used by local LDAP
   clients (ldapmodify etc.).
-
-
-
-
   33..22..33..  CCrreeaattee tthhee ddiirreeccttoorryy ffoorr tthhee ffiirrsstt LLDDAAPP ddaattaabbaassee..
 
 

@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 # expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update succesfull)
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update successful)
 
 require "../include/init_page.php3";
 
@@ -140,8 +140,11 @@ function UpdateCateg(slice_id)
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:58  madebeer
-Initial revision
+Revision 1.2  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.1.1.1  2000/06/21 18:39:58  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:47  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

@@ -30,8 +30,9 @@ define("L_SEARCH_TIP", "List is limitted to 5 users.<br>If some user is not in l
 define("L_USERNAME", "Username:");
 define("L_PASSWORD", "Password:");
 define("L_LOGINNOW", "Login now");
-define("L_BAD_LOGIN", "Either your username or your password are invalid.");
+define("L_BAD_LOGIN", "Either your username or your password is not valid.");
 define("L_TRY_AGAIN", "Please try again!");
+define("L_BAD_HINT", "If you are sure you type correct password, please e-mail <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.");
 define("LOGIN_PAGE_BEGIN",
  '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML>
@@ -73,11 +74,6 @@ define( "L_ICON_LEGEND", '
                   <br>
                   <i>Icon Legend</i>
                   <TABLE BORDER=1>
-                  <TR>
-                  <TD><img src="../images/notpubl.gif" width=24 height=24 border=0 alt=""> Pending item</TD>
-                  <TD><img src="../images/publish.gif" width=24 height=24 border=0 alt=""> Published item</TD>
-                  <TD><img src="../images/expired.gif" width=24 height=24 border=0 alt=""> Expired item</TD>
-                  </TR>
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/hlight.gif" border=0 alt=""> Highlighted item</TD>
                   <TD COLSPAN=2><img src="../images/feed.gif" border=0 alt=""> Item from feed</TD></TR>
@@ -88,11 +84,13 @@ define( "L_ICON_LEGEND", '
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/less.gif" border=0 alt=""> Less detail view</TD>
                   <TD COLSPAN=2><img src="../images/more.gif" border=0 alt=""> More detail view</TD></TR>
-                  </TABLE>
-                  Categories in red do not belongs to this slice (they were fed ...)<br><br>
-                  To include slice in your webpage type next line to your html code:<br><code>&lt;!--#include virtual=&quot;/aa/slice.php3?slice_id='. $slice_id .'&quot;--&gt;
-                  </code>');
+                  </TABLE>');
                            
+define( "L_SLICE_HINT", '
+                  <br>
+                  To include slice in your webpage type next line to your shtml code:
+                  ');
+
 //transforms my_sql date to human date format
 function datetime2date ($dttm) {
 	return ereg_replace("^([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2}).*", 
@@ -117,8 +115,17 @@ function dateExample() {
                    
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:31  madebeer
-Initial revision
+Revision 1.4  2000/07/26 16:01:48  kzajicek
+More descriptive message for "login failed"
+
+Revision 1.3  2000/07/12 14:26:40  kzajicek
+Poor printing of the SSI statement fixed
+
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:31  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:15  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

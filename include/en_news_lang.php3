@@ -24,9 +24,9 @@ http://www.apc.org/
 # must correspond with fileneme in $ActionAppConfig[xxx][file]!!
 define("CONFIG_FILE", "en_news_lang.php3");
 
-define("IMAGE_DOWNLOAD_MAX_SIZE", "400000");    // max size of file in picture downloading
-define("IMG_DOWNLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
-define("IMG_DOWNLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
+define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
+define("IMG_UPLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
+define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
 define("EDITOR_GRAB_LEN", 200);                 // not used, i think
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -128,6 +128,14 @@ define("DEFAULT_CATEGORY_SORT", true);
 define("DEFAULT_COMPACT_REMOVE", "()");
 define("DEFAULT_FULLTEXT_REMOVE", "()");
 
+define("DEFAULT_LIST_LENGTH", "20");
+define("DEFAULT_GRAB_LEN", "200");
+define("DEFAULT_LANGUAGE_CODE", "EN");
+define("DEFAULT_CP_CODE", "iso8859-1");
+define("DEFAULT_STATUS_CODE", "1");
+define("DEFAULT_HIGHLIGHT", "0");
+define("DEFAULT_EXPIRY_LIMIT", "5000");
+
 # HTML begin of admin page
 # You should set language of admin pages and possibly any meta tags
 define("HTML_PAGE_BEGIN",
@@ -160,14 +168,14 @@ define("L_HIGHLIGHT", "Highlight");
 define("L_IMG_SRC","Image URL"); 
 define("L_IMG_WIDTH","Image width"); 
 define("L_IMG_HEIGHT","Image height");
-define("L_PLACE","Locality");
+define("L_PLACE","Location");
 define("L_SOURCE","Source ");
 define("L_SOURCE_HREF","Source URL");
 define("L_CREATED_BY","Written by");
 define("L_LASTEDIT","Last edited by");
 define("L_AT","at");   
 define("L_EDIT_NOTE","Editor's note"); 
-define("L_IMG_DOWNLOAD","Image upload"); 
+define("L_IMG_UPLOAD","Image upload"); 
 
 # aa toolkit specific labels
 define("L_HLP_HEADLINE",'alias for Item Headline');
@@ -219,7 +227,7 @@ define("L_FIELDS_HDR", "News fields");
 define("L_NO_PS_EDIT_ITEMS", "You have not permissions to edit news in this slice");
 define("L_NO_DELETE_ITEMS", "You have not permissions to remove news");
 define("L_NO_PS_MOVE_ITEMS", "You have not permissions to move news");
-define("L_FULLTEXT_OK", "Fulltext format update succesfull");
+define("L_FULLTEXT_OK", "Fulltext format update successful");
 define("L_NO_ITEM", "No news matching your query.");
 
 # aa toolkit common labels
@@ -227,6 +235,7 @@ define("L_NO_ITEM", "No news matching your query.");
 define("L_ACTIVE_BIN", "Approved");
 define("L_HOLDING_BIN", "Holding bin");
 define("L_TRASH_BIN", "Trash");
+define("L_SLICE_NAME", "Title");          // slice
 define("L_SHORT_NAME", "Short name");     // slice
 define("L_DELETED", "Deleted");           // slice
 define("L_D_LISTLEN", "Listing length");  // slice
@@ -247,6 +256,7 @@ define("L_FLT_TO", "To");
 define("L_FLT_APPROVED", "Approved");
 define("L_FLT_CATEGORIES", "Categories");
 define("L_ALL_CATEGORIES", "All Categories");
+define("L_FLT_NONE", "No From category selected!");
 define("L_THE_SAME", "-- The same --");
 define("L_IMP_EXPORT_Y", "Export enable");
 define("L_IMP_EXPORT_N", "Export disable");
@@ -257,6 +267,7 @@ define("L_IMP_IMPORT_N", "Do not import");
 define("L_KONSTANTS_HLP", "Use these aliases for database fields");
 define("L_RELOGIN", "Logout and login as another user");
 define("L_ERR_IN", "Error in");
+define("L_ERR_BE_POSITIVE", "Number should be positive");
 define("L_ERR_NEED", "it must be filled");
 define("L_ERR_LOG", "you should use a-z, A-Z and 0-9 characters");
 define("L_ERR_LOGLEN", "it must by 5 - 32 characters long");
@@ -268,6 +279,7 @@ define("L_FIELDS", "Fields");
 define("L_EDIT", "Edit");
 define("L_EDIT_SLICE", "Edit Slice");
 define("L_DELETE", "Delete");
+define("L_REVOKE", "Revoke");
 define("L_UPDATE", "Update");
 define("L_RESET", "Reset form");
 define("L_CANCEL", "Cancel");
@@ -295,7 +307,9 @@ define("L_USER_PASSWORD2", "Retype password");
 define("L_USER_FIRSTNAME", "First name");
 define("L_USER_SURNAME", "Surname");
 define("L_USER_MAIL", "E-mail");
+define("L_USER_SUPER", "Superadmin account");
 define("L_A_USERS_TIT", "Slice Administration - User Management");
+define("L_A_PERMISSIONS", "Slice Administration - Permissions");
 
 define("L_ROLE_AUTHOR", "Author");
 define("L_ROLE_EDITOR", "Editor");
@@ -304,9 +318,12 @@ define("L_ROLE_SUPER", "Super");
 
 define("L_SLICE_ADM", "Slice Administration");
 define("L_MAIN_SET", "Main settings");
-define("L_USER_MNG", "User management");
-define("L_USER_PERMS", "Pemissions");
-define("L_USER_ADD", "Add User");
+define("L_PERMISSIONS", "Permissions");
+define("L_PERM_CHANGE", "Change");
+define("L_PERM_ASSIGN", "Assign");
+define("L_PERM_NEW", "Search user or group");
+define("L_PERM_SEARCH", "Assign new permissions");
+define("L_PERM_CURRENT", "Change current permissions");
 define("L_USER_NEW", "New User");
 define("L_DESIGN", "Design");
 define("L_COMPACT", "Compact");
@@ -358,16 +375,16 @@ define("L_NEW_SLICE", "Add Slice");
 define("L_SLICE_NEW", "New Slice");
 define("L_RENAME_CATEG", "Enter the new name for this category");
 define("L_ASSIGN", "Assign");
-define("L_CATBINDS_OK", "Category update succesfull");
-define("L_IMPORT_OK", "Feeding update succesfull");
-define("L_FIELDS_OK", "Fields update succesfull");
-define("L_SEARCH_OK", "Search fields update succesfull");
+define("L_CATBINDS_OK", "Category update successful");
+define("L_IMPORT_OK", "Feeding update successful");
+define("L_FIELDS_OK", "Fields update successful");
+define("L_SEARCH_OK", "Search fields update successful");
 define("L_ADMINPAGE", "Back to Main Administration Page");
 define("L_NO_CATEGORY", "No category defined");
 define("L_NO_IMPORTED_SLICE", "There are no imported slices");
-define("L_NO_USERS", "No users found");
+define("L_NO_USERS", "No user (group) found");
 
-define("L_TOO_MUCH_USERS", "Too much users found.");
+define("L_TOO_MUCH_USERS", "Too much users or groups found.");
 define("L_MORE_SPECIFIC", "Try to be more specific.");
 define("L_REMOVE", "Remove");
 define("L_ID", "Id");
@@ -480,7 +497,6 @@ define("L_PREVIEW_LINK", "&nbsp;");
 define("L_ARTICLE_MANAGER", "Article Manager");
 define("L_SWITCH_TO", "Switch to slice");
 define("L_ADMIN", "Admin");
-define("L_", "");
 
 //new_constants
 define("L_NO_PS_NEW_USER", "No permission to create new user");
@@ -494,6 +510,7 @@ define("L_TOO_MUCH_GROUPS", "Too much groups found.");
 define("L_NO_GROUPS", "No groups found");
 define("L_GROUP_NAME", "Name");
 define("L_GROUP_DESCRIPTION", "Description");
+define("L_GROUP_SUPER", "Superadmin group");
 define("L_ERR_GROUP_ADD", "It is impossible to add group to permission system");
 define("L_NEWGROUP_OK", "Group successfully added to permission system");
 define("L_ERR_GROUP_CHANGE", "Can't change group");
@@ -507,31 +524,47 @@ define("L_GROUPS_USERS", "Group's Users");
 define("L_POST", "Post");
 define("L_POST_PREV", "Post & Preview");
 define("L_OK", "OK");
+define("L_FEEDED_FROM", "Fed from");
+define("L_ACTIVE_BIN_EXPIRED", "Approved - Expired");
+define("L_ACTIVE_BIN_PENDING", "Approved - Pending");
+define("L_ACTIVE_BIN_EXPIRED_MENU", "... expired");
+define("L_ACTIVE_BIN_PENDING_MENU", "... pending");
+
+// not appended to other lang files
 //define("", "");
 
 
 $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June', 
 		'July', 'August', 'September', 'October', 'November', 'December');
 
-# aliases used in fulltext and compact format in place of database fields
-# change only text after _# !!!
-# length of alias must! be!! 10 characters !!!
-# if you change it, change compact and fulltext format strings in database, too !
-# do not use _# inside alias !
-$alias = array("headline"=>"_#HEADLINE", "category"=>"_#CATEGORY", "hl_href"=>"_#HDLN_URL",
-               "post_date"=>"_#POSTDATE", "publish_date"=>"_#PUB_DATE",
-               "expiry_date"=>"_#EXP_DATE", "abstract"=>"_#ABSTRACT", "full_text"=>"_#FULLTEXT",
-               "img_src"=>"_#IMAGESRC", "source"=>"_#SOURCE##", "source_href"=>"_#SRC_URL#",
-               "place"=>"_#PLACE###", "posted_by"=>"_#POSTEDBY", "e_posted_by"=>"_#E_POSTED",
-               "created_by"=>"_#CREATED#", "edited_by"=>"_#EDITEDBY", "last_edit"=>"_#LASTEDIT",
-               "contact1"=>"_#CONTACT1", "contact2"=>"_#CONTACT2", "contact3"=>"_#CONTACT3",
-               "edit_note"=>"_#EDITNOTE", "img_width"=>"_#IMGWIDTH", "img_height"=>"_#IMG_HGHT");  
-               
-
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:33  madebeer
-Initial revision
+Revision 1.9  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.8  2000/08/03 12:34:27  honzam
+Default values for new slice defined.
+
+Revision 1.7  2000/07/27 18:17:21  kzajicek
+Added superadmin settings in User/Group management
+
+Revision 1.6  2000/07/27 13:23:58  kzajicek
+Language correction
+
+Revision 1.5  2000/07/17 13:40:11  kzajicek
+Alert box when no input category selected
+
+Revision 1.4  2000/07/17 12:29:56  kzajicek
+Language changes
+
+Revision 1.3  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:33  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:19  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

@@ -32,9 +32,9 @@ define("HTML_PAGE_BEGIN",
         type="text/css" title="CPAdminCSS">
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
                
-define("IMAGE_DOWNLOAD_MAX_SIZE", "400000");    // max size of file in picture downloading
-define("IMG_DOWNLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
-define("IMG_DOWNLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
+define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
+define("IMG_UPLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
+define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
 define("EDITOR_GRAB_LEN", 200);                 // not used, i think
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -136,6 +136,14 @@ define("DEFAULT_CATEGORY_SORT", true);
 define("DEFAULT_COMPACT_REMOVE", "()");
 define("DEFAULT_FULLTEXT_REMOVE", "()");
 
+define("DEFAULT_LIST_LENGTH", "20");
+define("DEFAULT_GRAB_LEN", "200");
+define("DEFAULT_LANGUAGE_CODE", "CS");
+define("DEFAULT_CP_CODE", "iso8859-2");
+define("DEFAULT_STATUS_CODE", "1");
+define("DEFAULT_HIGHLIGHT", "0");
+define("DEFAULT_EXPIRY_LIMIT", "5000");
+
      
 # database fields labels
 define("L_HEADLINE", "Titulek");
@@ -168,7 +176,7 @@ define("L_CREATED_BY","Autor");
 define("L_LASTEDIT","Naposled editoval");
 define("L_AT","dne");   
 define("L_EDIT_NOTE","Poznámka editora"); 
-define("L_IMG_DOWNLOAD","Uložení obrázku"); 
+define("L_IMG_UPLOAD","Uložení obrázku"); 
 define("L_CANT_UPLOAD","Obrázek nelze uložit"); 
 
 # toolkit aplication dependent labels
@@ -215,7 +223,7 @@ define("L_A_ITEM_EDT", "Upravit zprávu");
 define("L_IMP_EXPORT", "Povolit zasílání zpráv do webíku:");
 define("L_EXPORT_TO_ALL", "Povol zasílání zpráv do jakéhokoliv webíku");
 define("L_IMP_IMPORT", "Přijímat zprávu z webíku:");
-define("L_ADD_NEW_ITEM", "Přidat novou zprávu");
+define("L_ADD_NEW_ITEM", "Nová zpráva");
 define("L_ERR_FEEDED_ITEMS", "V koši je zpráva, která byla zaslána jinému webíku - nemůže být odstraněna.");
 define("L_EDIT_ITEMS", "Editace zprávy");
 define("L_VIEW_FULLTEXT", "Zobraz zprávu");
@@ -243,6 +251,7 @@ define("L_ACTIVE_BIN", "Aktuální");
 define("L_HOLDING_BIN", "Zásobník");
 define("L_TRASH_BIN", "Koš");
 
+define("L_SLICE_NAME", "Jméno");
 define("L_SHORT_NAME", "Zkrácené jméno");
 define("L_DELETED", "Vymazán");
 define("L_SLICE_DEFAULTS", "Přednastavené hodnoty položek");
@@ -263,6 +272,7 @@ define("L_FLT_FROM", "Z");
 define("L_FLT_TO", "Do");
 define("L_FLT_CATEGORIES", "Kategorie");
 define("L_ALL_CATEGORIES", "Všechny kategorie");
+define("L_FLT_NONE", "Není vybrána žádná vstupní kategorie!");
 define("L_THE_SAME", "-- stejná --");
 
 define("L_IMP_EXPORT_Y", "Zasílání povoleno");
@@ -275,6 +285,7 @@ define("L_IMP_IMPORT_N", "Nepřijímat");
 define("L_RELOGIN", "Přihlásit se jako jiný uživatel");
 
 define("L_ERR_IN", "Chyba v");
+define("L_ERR_BE_POSITIVE", "Number should be positive");
 define("L_ERR_NEED", "musí být vyplněno");
 define("L_ERR_LOG", "použijte znaky a-z, A-Z a 0-9");
 define("L_ERR_LOGLEN", "musí být dlouhé 5 - 32 znaků");
@@ -284,6 +295,7 @@ define("L_NO_PRMS_SLICE", "Nemáte právo na změnu nastavení webíku");
 define("L_EDIT", "Editace");
 define("L_EDIT_SLICE", "Editace webíku");
 define("L_DELETE", "Vymazat");
+define("L_REVOKE", "Odstranit");
 define("L_UPDATE", "Změnit");
 define("L_RESET", "Vymazat formulář");
 define("L_CANCEL", "Zrušit");
@@ -312,7 +324,9 @@ define("L_USER_PASSWORD2", "Potvrdit helso");
 define("L_USER_FIRSTNAME", "Jméno");
 define("L_USER_SURNAME", "Příjmení");
 define("L_USER_MAIL", "E-mail");
-define("L_A_USERS_TIT", "Správa webíku - Správa uživatelů");
+define("L_USER_SUPER", "Administrativní účet");
+define("L_A_USERS_TIT", "Správa webíku - uživatelé");
+define("L_A_PERMISSIONS", "Správa webíku - přístupová práva");
 
 define("L_ROLE_AUTHOR", "Autor");
 define("L_ROLE_EDITOR", "Editor");
@@ -322,9 +336,12 @@ define("L_ROLE_SUPER", "Super");
 define("L_SLICE_ADM", "Správa webíku");
 define("L_MAIN_SET", "Hlavní nastavení");
 define("L_SLICE_SET", L_SLICE);
-define("L_USER_MNG", "Správa uživatelů");
-define("L_USER_PERMS", "Nastavení práv");
-define("L_USER_ADD", "Přidat uživatele");
+define("L_PERMISSIONS", "Nastavení práv");
+define("L_PERM_CHANGE", "Změna současných práv");
+define("L_PERM_ASSIGN", "Přidělení nových práv");
+define("L_PERM_NEW", "Hledej uživatele nebo skupinu");
+define("L_PERM_SEARCH", "Přiřazení nových práv");
+define("L_PERM_CURRENT", "Změna současných práv");
 define("L_USER_NEW", "Nový uživatel");
 define("L_DESIGN", "Vzhled");
 define("L_COMPACT", "Přehled zpráv");
@@ -378,7 +395,7 @@ define("L_ASSIGN", "Přiřadit");
 define("L_ADMINPAGE", "Zpět na hlavní nastavení");
 define("L_NO_CATEGORY", "Nebyla definována kategorie");
 define("L_NO_IMPORTED_SLICE", "Nebyl nastaven žádný webík pro příjem zpráv");
-define("L_NO_USERS", "Nebyl nalezen žádný uživatel");
+define("L_NO_USERS", "Nebyl nalezen žádný uživatel (skupina)");
 define("L_AND", "A");
 define("L_OR", "Nebo");
 define("L_SRCH_KW", "Vyhledat");
@@ -391,9 +408,9 @@ define("L_MORE_SPECIFIC", "Zkuste zadat přesnější údaje.");
 define("L_REMOVE", "Odstranit");
 define("L_ID", "Id");
 define("L_TYPE", "Typ");
-define("L_SETTINGS", "Nastavení webíku");
-define("L_LOGO", "Econnect logo");
-define("L_USER_MANAGEMENT", "Správa uživatelů");
+define("L_SETTINGS", "Nastavení");
+define("L_LOGO", "Econnect");
+define("L_USER_MANAGEMENT", "Uživatelé");
 define("L_ITEMS", "Správa příspěvků");
 define("L_NEW_SLICE_HEAD", "Nový webík");
 define("L_ERR_USER_CHANGE", "Nelze změnit data uživatele - LDAP Error");
@@ -494,7 +511,7 @@ define("L_HEADLINE_PREVIEW", "Nadpis (preview po kliknutí)");
 define("L_EDIT_LINK", "&nbsp;");
 define("L_PREVIEW_LINK", "&nbsp;");
 define("L_ARTICLE_MANAGER", "Správa zpráv");
-define("L_SWITCH_TO", "Změnit webík");
+define("L_SWITCH_TO", "Webík:");
 define("L_ADMIN", "Administrace");
 
 define("L_NO_PS_NEW_USER", "Nemáte právo vytvořit uživatele");
@@ -508,6 +525,7 @@ define("L_TOO_MUCH_GROUPS", "Nalezeno příliš mnoho skupin.");
 define("L_NO_GROUPS", "Skupina nenalezena");
 define("L_GROUP_NAME", "Jméno");
 define("L_GROUP_DESCRIPTION", "Popis");
+define("L_GROUP_SUPER", "Administrativní skupina");
 define("L_ERR_GROUP_ADD", "Nelze přidat skupinu do systému");
 define("L_NEWGROUP_OK", "Skupina byla úspěšně přidána");
 define("L_ERR_GROUP_CHANGE", "Nelze změnit skupinu");
@@ -527,30 +545,48 @@ define("L_FEEDTO_TITLE", "Předávání zpráv");
 define("L_FEED_TO", "Zaslat vybrané zprávy vybraným webíkům");
 define("L_NO_PERMISSION_TO_FEED", "Nemáte právo zasílat zprávy");
 
+define("L_ACTIVE_BIN_EXPIRED", "Aktuální - Expirované");
+define("L_ACTIVE_BIN_PENDING", "Aktuální - Připravené");
+define("L_ACTIVE_BIN_EXPIRED_MENU", "... expirované");
+define("L_ACTIVE_BIN_PENDING_MENU", "... připravené");
+
 //----------------------------
 //define("", "");   //prepared for new constants
  
 $l_month = array( 1 => 'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 
 		'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec');
 
-# aliases used in fulltext and compact format in place of database fields
-# change only text after _# !!!
-# length of alias must! be!! 10 characters !!!
-# if you change it, change compact and fulltext format strings in database, too !
-# do not use _# inside alias !
-$alias = array("headline"=>"_#HEADLINE", "category"=>"_#CATEGORY", "hl_href"=>"_#HDLN_URL",
-               "post_date"=>"_#POSTDATE", "publish_date"=>"_#PUB_DATE",
-               "expiry_date"=>"_#EXP_DATE", "abstract"=>"_#ABSTRACT", "full_text"=>"_#FULLTEXT",
-               "img_src"=>"_#IMAGESRC", "source"=>"_#SOURCE##", "source_href"=>"_#SRC_URL#",
-               "place"=>"_#PLACE###", "posted_by"=>"_#POSTEDBY", "e_posted_by"=>"_#E_POSTED",
-               "created_by"=>"_#CREATED#", "edited_by"=>"_#EDITEDBY", "last_edit"=>"_#LASTEDIT",
-               "contact1"=>"_#CONTACT1", "contact2"=>"_#CONTACT2", "contact3"=>"_#CONTACT3",
-               "edit_note"=>"_#EDITNOTE", "img_width"=>"_#IMGWIDTH", "img_height"=>"_#IMG_HGHT");  
-  
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:27  madebeer
-Initial revision
+Revision 1.10  2000/08/03 15:19:57  kzajicek
+Language changes
+
+Revision 1.9  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.8  2000/08/03 12:34:27  honzam
+Default values for new slice defined.
+
+Revision 1.7  2000/07/27 18:17:21  kzajicek
+Added superadmin settings in User/Group management
+
+Revision 1.6  2000/07/27 13:23:58  kzajicek
+Language correction
+
+Revision 1.5  2000/07/17 13:40:11  kzajicek
+Alert box when no input category selected
+
+Revision 1.4  2000/07/17 12:29:56  kzajicek
+Language changes
+
+Revision 1.3  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:27  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:14  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

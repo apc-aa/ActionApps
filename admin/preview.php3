@@ -23,8 +23,11 @@ require "../include/init_page.php3";
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:57  madebeer
-Initial revision
+Revision 1.2  2000/07/07 21:34:14  honzam
+Bug in preview - lost of item id - fixed
+
+Revision 1.1.1.1  2000/06/21 18:39:57  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:47  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -38,6 +41,6 @@ added $Id $Log and $Copyright to some stray files
 <!-- frames -->
 <frameset  rows="30,*">
    <frame name="Navigation" src="<?php echo con_url($sess->url("prev_navigation.php3"),"sh_itm=".$sh_itm); ?>" marginwidth="10" marginheight="10" scrolling="no" frameborder="0" >
-   <frame name="Item" src="<?php echo con_url($slice_view_url, "sh_itm=".$sh_itm); ?>" marginwidth="10" marginheight="10" scrolling="auto" frameborder="0">
+   <frame name="Item" src="<?php echo con_url($r_slice_view_url, "sh_itm=".$sh_itm); ?>" marginwidth="10" marginheight="10" scrolling="auto" frameborder="0">
 </frameset>
 </html>

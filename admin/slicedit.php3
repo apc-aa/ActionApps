@@ -18,7 +18,6 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
 # expected $slice_id for edit slice, Add_slice=1 for adding slice
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -51,12 +50,12 @@ if($slice_id) {  // edit slice
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$dexpirydate = new datectrl("d_expiry_date", 0, 15, true);
+#$dexpirydate = new datectrl("d_expiry_date", 0, 15, true);
 $varset = new Cvarset();
 
 if( $add || $update ) {
   do {
-    ValidateInput("headline", L_HEADLINE, &$headline, &$err, true, "text");
+    ValidateInput("headline", L_SLICE_NAME, &$headline, &$err, true, "text");
     ValidateInput("short_name", L_SHORT_NAME, &$short_name, &$err, true, "text");
     ValidateInput("slice_url", L_SLICE_URL, &$slice_url, &$err, false, "url");
     ValidateInput("d_expiry_limit", L_D_EXPIRY_LIMIT, $d_expiry_limit, &$err, false, "number");
@@ -64,14 +63,14 @@ if( $add || $update ) {
     ValidateInput("d_source", L_D_SOURCE, $d_source, &$err, false, "text");
     ValidateInput("d_source_href", L_D_SOURCE_HREF, $d_source_href, &$err, false, "url");
     ValidateInput("d_place", L_D_PLACE, $d_place &$err, false, "text");
-    ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, &$err, true, "number");
+    ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, &$err, true, "positivenumber");
     ValidateInput("grab_len", L_GRAB_LEN, $grab_len, &$err, true, "number");
     ValidateInput("d_img_src", L_D_IMG_SRC, $d_img_src, &$err, false, "url");
     ValidateInput("d_img_width", L_D_IMG_WIDTH, $d_img_width, &$err, false, "number");
     ValidateInput("d_img_height", L_D_IMG_HEIGHT, $d_img_height, &$err, false, "number");
     ValidateInput("d_posted_by", L_D_POSTED_BY, $d_posted_by, &$err, false, "text");
     ValidateInput("d_e_posted_by", L_D_E_POSTED_BY, $d_e_posted_by, &$err, false, "email");
-    $dexpirydate->ValidateDate (L_D_EXPIRY_DATE, &$err);
+#    $dexpirydate->ValidateDate (L_D_EXPIRY_DATE, &$err);
 
     if( count($err) > 1)
       break;
@@ -87,7 +86,7 @@ if( $add || $update ) {
     $varset->add("d_category_id", "unpacked", $d_category_id);
     $varset->add("d_status_code", "number", $d_status_code);
     $varset->add("d_expiry_limit", "number", $d_expiry_limit);
-    $varset->add("d_expiry_date", "date", $dexpirydate->getdate());
+#    $varset->add("d_expiry_date", "date", $dexpirydate->getdate());
     $varset->add("d_hl_href", "quoted", $d_hl_href);
     $varset->add("d_source", "quoted", $d_source);
     $varset->add("d_source_href", "quoted", $d_source_href);
@@ -102,11 +101,11 @@ if( $add || $update ) {
     $varset->add("d_posted_by", "quoted", $d_posted_by);
     $varset->add("d_e_posted_by", "quoted", $d_e_posted_by);
 
+    if(!$d_expiry_limit)   // default value for limit
+      $d_expiry_limit = 2000;
+    
     if( $update )
     {
-//      $varset->add("id", "unpacked", $slice_id);  //  not need
-      $varset->add("created_by", "quoted", $created_by);
-      $varset->add("created_at", "quoted", $created_at);
       $varset->add("res_persID", "unpacked", $res_persID);
 
       $SQL = "UPDATE slices SET ". $varset->makeUPDATE() . "WHERE id='$p_slice_id'";
@@ -138,6 +137,7 @@ if( $add || $update ) {
       $varset->add("even_odd_differ", "number", DEFAULT_EVEN_ODD_DIFFER);
       $varset->add("search_show", "text", DEFAULT_SEARCH_SHOW);
       $varset->add("search_default", "text", DEFAULT_SEARCH_DEFAULT);
+      $varset->add("config", "text", DEFAULT_SLICE_CONFIG);
 
       $db->query("INSERT INTO slices" . $varset->makeINSERT() );
       if ($db->affected_rows() == 0)
@@ -171,12 +171,19 @@ if( $slice_id!="" ) {  // set variables from database - allways
     {
       if( EReg("^[0-9]*$", $key))
         continue;
-      $$key = $val; // there are the same name for variables and database atributs => fill variables
+      $$key = $val; // variables and database fields have identical names
     }
   $id = unpack_id($db->f("id"));  // correct ids
   $d_category_id = unpack_id($db->f("d_category_id"));
   $res_pers_id = unpack_id($db->f("res_pers_id"));
-  $dexpirydate->setdate($d_expiry_date);
+} else {    // load default values for new slice
+  $d_listlen = DEFAULT_LIST_LENGTH;
+  $grab_len  = DEFAULT_GRAB_LEN;
+  $d_language_code = DEFAULT_LANGUAGE_CODE;
+  $d_cp_code = DEFAULT_CP_CODE;
+  $d_status_code = DEFAULT_STATUS_CODE;
+  $d_highlight = DEFAULT_HIGHLIGHT;
+  $d_expiry_limit = DEFAULT_EXPIRY_LIMIT;
 }
 
 // lookup (languages)
@@ -232,7 +239,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
-  FrmInputText("headline", L_HEADLINE, $headline, 254, 25, true);
+  FrmStaticText(L_ID, $slice_id);
+  FrmInputText("headline", L_SLICE_NAME, $headline, 254, 25, true);
   FrmInputText("short_name", L_SHORT_NAME, $short_name, 254, 25, true);
   FrmInputText("slice_url", L_SLICE_URL, $slice_url, 254, 25, false);
   FrmInputText("d_listlen", L_D_LISTLEN, $d_listlen, 5, 5, true);
@@ -283,10 +291,32 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     echo '<input type=reset value="'. L_RESET .'">&nbsp;&nbsp;';
     echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
    }
+
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:05  madebeer
-Initial revision
+Revision 1.8  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.7  2000/08/03 12:34:27  honzam
+Default values for new slice defined.
+
+Revision 1.6  2000/07/26 14:36:59  honzam
+default WDDX value is set to config field for new slices
+
+Revision 1.5  2000/07/14 16:11:29  kzajicek
+Just better comment
+
+Revision 1.4  2000/07/13 09:19:01  kzajicek
+Variables $created_by and $created_at are initialized later, so
+the actual effect was that Updates zeroized the database values! In fact
+the database fields created_by and created_at should remain constant.
+Do we need changed_by and changed_at?
+
+Revision 1.3  2000/07/07 21:37:45  honzam
+Slice ID is displayed
+
+Revision 1.1.1.1  2000/06/21 18:40:05  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:56  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

@@ -61,12 +61,12 @@ PHP (3.0.14). I tested onle the static version.
 <P>(Versions prior 3.22.32 contain possible security holes, upgrade to
 latest versions is recommended.)
 <P>
-<H2><A NAME="ss2.6">2.6 OpenLDAP</A>
+<H2><A NAME="ss2.6">2.6 OpenLDAP (optional)</A>
 </H2>
 
 <P>OpenLDAP (e.g. openldap-1.2.9.tgz) is available at 
 <A HREF="http://www.openldap.org/software/download/">http://www.openldap.org/software/download/</A><P>RPM version is available in RedHat's contrib archive at 
-<A HREF="ftp://contrib.redhat.com/contrib/libc6/i386/">ftp://contrib.redhat.com/contrib/libc6/i386/</A>.
+<A HREF="ftp://contrib.redhat.com/contrib/libc6/i386/">ftp://contrib.redhat.com/contrib/libc6/i386/</A>. 
 <P>
 <UL>
 <LI>openldap-1.2.9-1.rpm </LI>
@@ -76,7 +76,12 @@ latest versions is recommended.)
 <P>The RPMs are built without threads and with kerberos support, if you
 want other options, use either source RPM or original source
 distribution.
+<P>Since RedHat 6.2 is OpenLDAP part of the distribution:
 <P>
+<UL>
+<LI>openldap-1.2.9-6.rpm </LI>
+<LI>openldap-devel-1.2.9-6.rpm (to build PHP with LDAP support)</LI>
+</UL>
 <P>
 <HR>
 <A HREF="install-3.html">Next</A>

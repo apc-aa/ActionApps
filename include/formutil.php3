@@ -34,7 +34,7 @@ function Needed( $condition=true ) {
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
-  echo "</td>\n  <td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value='$val'></td></tr>\n";
+  echo "</td>\n  <td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"></td></tr>\n";
 }
 
 # Prints two static text to 2-column table
@@ -179,14 +179,18 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 }    
 
 # returns html safe code
+# use for preparing variable to print in form
 function safe( $var ) {
-  return htmlspecialchars( $var );
+  return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
 }  
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:38  madebeer
-Initial revision
+Revision 1.2  2000/08/03 12:31:19  honzam
+Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
+
+Revision 1.1.1.1  2000/06/21 18:40:38  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:23  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
