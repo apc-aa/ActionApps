@@ -72,17 +72,18 @@ class zids {
         # Note it refers to the type of ELEMENTS if its an array
         $this->type = $inittype;
         if ($initial and is_array($initial)) { # Array
+            $this->a = array();  # Make sure at least empty array
             if (is_array($initial[0])) { # Array of fields
-                $this->a = array();  # Make sure at least empty array
-                reset($initial);
-                while (list(,$v) = each($initial)) {
-                    if (isset($initial[0][value])) # Test needed, because often empty value
-                        $this->a[] = $v[value];
+                foreach ( $initial as $field ) {
+                    if ( $field['value'] ) {                   # copy just not empty ids
+                        $this->a[] = $field['value'];
+                    }
                 }
             } else {
-                if ($initial[0] != "") {
-                    reset($initial);
-                    $this->a = $initial;
+                foreach ( $initial as $id ) {
+                    if ( $id ) {                   # copy just not empty ids
+                        $this->a[] = $id;
+                    }
                 }
             }
         } elseif ($initial) {  # Single id
