@@ -78,8 +78,8 @@ if( $insert || $update ) {
     ValidateInput("start_id", _m("Start category id"), $start_id, $err, false, "number");
     ValidateInput("tree_start", _m("Tree start id"), $tree_start, $err, false, "number");
     ValidateInput("select_start", _m("Select start id"), $select_start, $err, false, "number");
-    ValidateInput("default_cat_tmpl", _m("Default category template"), $default_cat_tmpl, $err, false, "text");
-    ValidateInput("link_tmpl", _m("Link template"), $link_tmpl, $err, false, "text");
+//    ValidateInput("default_cat_tmpl", _m("Default category template"), $default_cat_tmpl, $err, false, "text");
+//    ValidateInput("link_tmpl", _m("Link template"), $link_tmpl, $err, false, "text");
 
     if( count($err) > 1)
       break;
@@ -99,11 +99,14 @@ if( $insert || $update ) {
 
       $varset->clear();
 
-      $varset->add("start_id", "number", $start_id);
+        // we can't change start_id (module_id is derived from it)
+//      $varset->add("start_id", "number", $start_id);
       $varset->add("tree_start", "number", $tree_start);
       $varset->add("select_start", "number", $select_start);
-      $varset->add("default_cat_tmpl", "quoted", $default_cat_tmpl);
-      $varset->add("link_tmpl", "quoted", $link_tmpl);
+
+// old field - probably will not be used in furure
+//      $varset->add("default_cat_tmpl", "quoted", $default_cat_tmpl);
+//      $varset->add("link_tmpl", "quoted", $link_tmpl);
 
       // defaults - we use the same table for all links. The setting of defaults to 1
       // flags this as default for this poll module
@@ -129,33 +132,14 @@ if( $insert || $update ) {
       $varset->set("start_id", $start_id, "number");
       $varset->set("tree_start", $tree_start, "number");
       $varset->set("select_start", $select_start, "number");
-      $varset->set("default_cat_tmpl", $default_cat_tmpl, "quoted");
-      $varset->set("link_tmpl", $link_tmpl, "quoted");
+//      $varset->set("default_cat_tmpl", $default_cat_tmpl, "quoted");
+//      $varset->set("link_tmpl", $link_tmpl, "quoted");
 
          # create new links
       if( !$db->query("INSERT INTO links" . $varset->makeINSERT() )) {
         $err["DB"] .= MsgErr("Can't add links");
         break;
       }
-
-/*       # copy design themes...
-      $db2  = new DB_AA;
-      $SQL = "SELECT * FROM links_designs WHERE linksModuleID='$p_template_id'";
-      $db->query($SQL);
-      while( $db->next_record() ) {
-        $varset->clear();
-        $varset->addArray( array('name', 'comment', 'resultBarFile', 'top', 'answer', 'bottom', 'params'),
-                           array('resultBarWidth', 'resultBarHeight'),
-                           $db->Record );   // copy table row to varset
-        $varset->set("linksModuleID", $module_id, "unpacked" );
-
-        $SQL = "INSERT INTO links_designs " . $varset->makeINSERT();
-        if( !$db2->query($SQL)) {
-          $err["DB"] .= MsgErr("Can't copy links_designs");
-          break;
-        }
-      }
-*/
     }
     $GLOBALS[pagecache]->invalidate();  # invalidate old cached values - all
   }while(false);
@@ -208,16 +192,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo "<H1><B>" . ( $template['Links'] ? _m("Add Links module") : _m("Edit Links module")) . "</B></H1>";
   PrintArray($err);
   echo $Msg;
-?>
-<form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m('Module Links data')?></b>
-</td>
-</tr>
-<tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?php
 
+  echo '<form method=post action="'. $sess->url($PHP_SELF) .'">';
+
+  FrmTabCaption( _m('Module Links data') );
   $include_cmd = "<!--#include virtual=\"${AA_INSTAL_PATH}modules/links/links.php3?link_id=$module_id\"-->";
   FrmStaticText(_m('ID'), $module_id);
   FrmInputText("name", _m('Title'), $name, 99, 25, true);
@@ -233,24 +211,27 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   FrmInputSelect("lang_file", _m('Used Language File'), $LINKS_LANGUAGE_FILES, $lang_file, false);
 
 # module specific...
-  FrmInputText("start_id", _m("Start category id"), $start_id);
+  if ($template['Links']) {
+      FrmInputText("start_id", _m("Start category id"), $start_id);
+  } else {
+      // we can't change start_id (module_id is derived from it)
+      FrmStaticText(_m('Start category id'), $start_id);
+  }
   FrmInputText("tree_start", _m("Tree start id"), $tree_start);
   FrmInputText("select_start", _m("Select start id"), $select_start);
-  FrmInputText("default_cat_tmpl", _m("Default category template"), $default_cat_tmpl);
-  FrmInputText("link_tmpl", _m("Link template"), $link_tmpl);
-?>
-    </table>
-<?php
+//  FrmInputText("default_cat_tmpl", _m("Default category template"), $default_cat_tmpl);
+//  FrmInputText("link_tmpl", _m("Link template"), $link_tmpl);
   if( $template['Links'] ) {
-    FrmInputButtons( array( 'insert',
-                            'template[Links]' => array( 'type'=>"hidden",
-                                                    'value'=> $template['Links'])),
-                     $sess, $slice_id);
-  } else
-    FrmInputButtons( array( 'update', 'reset', 'cancel' ), $sess, $slice_id );
+    FrmTabEnd( array( 'insert',
+                      'template[Links]' => array( 'type'=>"hidden",
+                                                  'value'=> $template['Links'])),
+               $sess, $slice_id);
+  } else {
+    FrmTabEnd( array( 'update', 'reset', 'cancel' ), $sess, $slice_id );
+  }
+
+  echo '</FORM>
+      </BODY>
+    </HTML>';
+  page_close()
 ?>
-  </table>
-</FORM>
-</BODY>
-</HTML>
-<?php page_close()?>

@@ -1,3 +1,10 @@
+06/13/03 - category and link design editable through admin interface
+(honzam) - fixed searching in links module
+         - added link validity rank to link manager
+         - added possibility to create left menu dynamicaly by function call
+         - fixed bug in module deletion
+         - removed unused options
+06/12/03 - updated language files by misc/mgettext/  (honzam)
 06/10/03 - added link and categories view type
 (honzam) - new and better event handler for new item
          - improved link manager
