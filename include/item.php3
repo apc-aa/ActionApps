@@ -143,6 +143,27 @@ function ParamExplode($param) {
 # added by setu@gwtech.org 2002-0211
 //
 // make_return_url
+# global function to get return_url
+# this funciton may replaced by extension of $sess as a method $sess->return_url().
+function sess_return_url($url)
+{
+	global $sess;
+	global $return_url;
+
+	if (!$return_url)
+		// return for standard APC-AA behavier
+		return $sess->url($url);
+	else
+		// decode and return $return_url
+		return urldecode($return_url);
+}
+
+ 
+# helper function for f_e
+# this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
+# added by setu@gwtech.org 2002-0211
+//
+// make_return_url
 //function make_return_url($prifix="&return_url=")
 function make_return_url($prifix)
 {
@@ -616,9 +637,21 @@ class item {
     
     # substitute aliases by real item content
     $part = $param;
+
+/*
+Code Added by Ram Prasad on 25-Feb-2002
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Function:
+~~~~~~~~~
+This creates an alias for Slice ID ( like _#this), called _#slice and can be used in f_v 
+*/      
+// Begin Ram's Code
+    global $slice_id;
+    $param = str_replace("_#slice",$slice_id,$param);
+// End Ram's Code
+
     while( $part = strstr( $part, "_#" )) {  # aliases for field content
-      $fid = substr( $part, 2, 16 );         # looks like _#headline........
-      
+      $fid = substr( $part, 2, 16 );         # looks like _#headline.......
       if( substr( $fid, 0, 4 ) == "this" )   # special alias _#this
         $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
       elseif( $fid == 'unpacked_id.....' )
@@ -760,6 +793,65 @@ class item {
 
 /*
 $Log$
+Revision 1.37  2002/03/14 11:20:45  mitraearth
+[[ User Validation for add item / edit item (itemedit.php3). ]]
+
+(by Setu)
+ - new selection "User" at admin->field->edit(any field)->validation.
+ - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
+ - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
+ - It can validate the value and return new value for the field.
+
+ - Related files:
+   - admin/itemedit.php3
+   - include/constants.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_VALIDATE_USER" for User Validation.
+
+* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
+
+[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
+(by Ram)
+ - if the field is blank, it can load default value from URL query strings.
+ - new selection "Variable" in admin->field->edit(any field)->Default:
+ - "parameter" is the name of variable in URL query strings
+   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
+
+ - Related files:
+   - include/constant.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_DEFAULT_VAR" for Default by variable.
+   - include/itemfunc.php3
+     - new function "default_fnc_variable()" for "Default by variable"
+
+
+[[ admin/index.php3 ]]
+(by Setu)
+ - more switches to allow admin/index.php3 to be called from another program (with return_url).
+   - sort_filter=1
+   - action_selected=1
+     - "feed selected" is not supported.
+     - "view selected" is not supported.
+ - scroller now works with return_url.
+   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
+     - scr_st3_Mv
+     - scr_st3_Go
+ - more changes to work with &return_url.
+
+ - related files:
+   - admin/index.php3
+   - include/item.php3
+     - new function make_return_url()
+     - new function sess_return_url()
+
+* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
+
+[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
+(by Setu)
+ - it supports "&return_url=...." to jump to another web page after  submission.
+ - related files:
+   - admin/slicedit.php3
+
 Revision 1.36  2002/03/06 12:45:48  honzam
 Aliases can be used inside of alias functions
 

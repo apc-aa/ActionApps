@@ -372,6 +372,7 @@ define("L_INPUT_DEFAULT_TXT", "Text");
 define("L_INPUT_DEFAULT_DTE", "Date");
 define("L_INPUT_DEFAULT_UID", "User ID");
 define("L_INPUT_DEFAULT_NOW", "Now");
+define("L_INPUT_DEFAULT_VAR", "Variable"); # Added by Ram on 5th March 2002 (Only for English)
 
 define("L_INPUT_SHOW_TXT","Text Area");
 define("L_INPUT_SHOW_EDT","Rich Edit Text Area");
@@ -396,6 +397,7 @@ define("L_INPUT_VALIDATE_NUMBER","Number");
 define("L_INPUT_VALIDATE_ID","Id");
 define("L_INPUT_VALIDATE_DATE","Date");
 define("L_INPUT_VALIDATE_BOOL","Boolean");
+define("L_INPUT_VALIDATE_USER","User");			# added 03/01/02, setu@gwtech.org
 
 define("L_INPUT_INSERT_QTE","Text");
 define("L_INPUT_INSERT_DTE","Date");

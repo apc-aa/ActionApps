@@ -232,6 +232,9 @@ if( $add || $update ) {
   {
     page_close();                                // to save session variables
     $netscape = (($r=="") ? "r=1" : "r=".++$r);   // special parameter for Natscape to reload page
+    // added by Setu, 2002-0227
+    if ($return_url)   // after work for action, if return_url is there, we go to the page.
+        go_url(urldecode($return_url));
     go_url($sess->url(self_base() . "slicedit.php3?$netscape"));
   }
 }
@@ -267,6 +270,7 @@ while ($db->next_record()) {
 $PERMS_STATE = array( "0" => L_PROHIBITED,
                       "1" => L_ACTIVE_BIN,
                       "2" => L_HOLDING_BIN );
+
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -327,6 +331,65 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.25  2002/03/14 11:20:45  mitraearth
+[[ User Validation for add item / edit item (itemedit.php3). ]]
+
+(by Setu)
+ - new selection "User" at admin->field->edit(any field)->validation.
+ - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
+ - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
+ - It can validate the value and return new value for the field.
+
+ - Related files:
+   - admin/itemedit.php3
+   - include/constants.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_VALIDATE_USER" for User Validation.
+
+* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
+
+[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
+(by Ram)
+ - if the field is blank, it can load default value from URL query strings.
+ - new selection "Variable" in admin->field->edit(any field)->Default:
+ - "parameter" is the name of variable in URL query strings
+   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
+
+ - Related files:
+   - include/constant.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_DEFAULT_VAR" for Default by variable.
+   - include/itemfunc.php3
+     - new function "default_fnc_variable()" for "Default by variable"
+
+
+[[ admin/index.php3 ]]
+(by Setu)
+ - more switches to allow admin/index.php3 to be called from another program (with return_url).
+   - sort_filter=1
+   - action_selected=1
+     - "feed selected" is not supported.
+     - "view selected" is not supported.
+ - scroller now works with return_url.
+   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
+     - scr_st3_Mv
+     - scr_st3_Go
+ - more changes to work with &return_url.
+
+ - related files:
+   - admin/index.php3
+   - include/item.php3
+     - new function make_return_url()
+     - new function sess_return_url()
+
+* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
+
+[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
+(by Setu)
+ - it supports "&return_url=...." to jump to another web page after  submission.
+ - related files:
+   - admin/slicedit.php3
+
 Revision 1.24  2002/03/06 12:32:08  honzam
 preparation for hierarchical constant editor
 
@@ -421,3 +484,4 @@ also added Id and Log keywords to all .php3 and .inc files
 </BODY>
 </HTML>
 <?php page_close()?>
+

@@ -47,6 +47,20 @@ function default_fnc_($param) {
   return "";
 }
 
+
+/*
+Code Added by Ram Prasad on 05-March-2002
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Function:
+~~~~~~~~~
+return the query string variable( as specified in the field settings) as default value
+*/      
+// Begin Ram's Code
+function default_fnc_variable($param) 
+{
+	return ($GLOBALS[$param]);
+}
+// End of Ram's Code
 # ----------------------- insert functions ------------------------------------
 
 function insert_fnc_qte($item_id, $field, $value, $param) {
@@ -728,6 +742,65 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.25  2002/03/14 11:20:45  mitraearth
+[[ User Validation for add item / edit item (itemedit.php3). ]]
+
+(by Setu)
+ - new selection "User" at admin->field->edit(any field)->validation.
+ - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
+ - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
+ - It can validate the value and return new value for the field.
+
+ - Related files:
+   - admin/itemedit.php3
+   - include/constants.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_VALIDATE_USER" for User Validation.
+
+* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
+
+[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
+(by Ram)
+ - if the field is blank, it can load default value from URL query strings.
+ - new selection "Variable" in admin->field->edit(any field)->Default:
+ - "parameter" is the name of variable in URL query strings
+   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
+
+ - Related files:
+   - include/constant.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_DEFAULT_VAR" for Default by variable.
+   - include/itemfunc.php3
+     - new function "default_fnc_variable()" for "Default by variable"
+
+
+[[ admin/index.php3 ]]
+(by Setu)
+ - more switches to allow admin/index.php3 to be called from another program (with return_url).
+   - sort_filter=1
+   - action_selected=1
+     - "feed selected" is not supported.
+     - "view selected" is not supported.
+ - scroller now works with return_url.
+   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
+     - scr_st3_Mv
+     - scr_st3_Go
+ - more changes to work with &return_url.
+
+ - related files:
+   - admin/index.php3
+   - include/item.php3
+     - new function make_return_url()
+     - new function sess_return_url()
+
+* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
+
+[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
+(by Setu)
+ - it supports "&return_url=...." to jump to another web page after  submission.
+ - related files:
+   - admin/slicedit.php3
+
 Revision 1.24  2002/03/12 16:23:28  honzam
 fixed bug with fileupload in php 4.1.2
 

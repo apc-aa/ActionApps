@@ -86,7 +86,8 @@ $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
 $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
                               "dte" => L_INPUT_DEFAULT_DTE, 
                               "uid" => L_INPUT_DEFAULT_UID,
-                              "now" => L_INPUT_DEFAULT_NOW);
+                              "now" => L_INPUT_DEFAULT_NOW,
+			      "variable" =>L_INPUT_DEFAULT_VAR);
   
 $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
 								"edt" => L_INPUT_SHOW_EDT,
@@ -111,7 +112,8 @@ $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
                                "number" => L_INPUT_VALIDATE_NUMBER, 
                                "id" => L_INPUT_VALIDATE_ID, 
                                "date" => L_INPUT_VALIDATE_DATE, 
-                               "bool" => L_INPUT_VALIDATE_BOOL);
+                               "bool" => L_INPUT_VALIDATE_BOOL,
+			       "user" => L_INPUT_VALIDATE_USER);	//added 03/01/02,setu
 
 $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "boo" => L_INPUT_INSERT_BOO,
@@ -401,6 +403,65 @@ require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 
 /*
 $Log$
+Revision 1.27  2002/03/14 11:20:45  mitraearth
+[[ User Validation for add item / edit item (itemedit.php3). ]]
+
+(by Setu)
+ - new selection "User" at admin->field->edit(any field)->validation.
+ - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
+ - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
+ - It can validate the value and return new value for the field.
+
+ - Related files:
+   - admin/itemedit.php3
+   - include/constants.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_VALIDATE_USER" for User Validation.
+
+* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
+
+[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
+(by Ram)
+ - if the field is blank, it can load default value from URL query strings.
+ - new selection "Variable" in admin->field->edit(any field)->Default:
+ - "parameter" is the name of variable in URL query strings
+   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
+
+ - Related files:
+   - include/constant.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_DEFAULT_VAR" for Default by variable.
+   - include/itemfunc.php3
+     - new function "default_fnc_variable()" for "Default by variable"
+
+
+[[ admin/index.php3 ]]
+(by Setu)
+ - more switches to allow admin/index.php3 to be called from another program (with return_url).
+   - sort_filter=1
+   - action_selected=1
+     - "feed selected" is not supported.
+     - "view selected" is not supported.
+ - scroller now works with return_url.
+   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
+     - scr_st3_Mv
+     - scr_st3_Go
+ - more changes to work with &return_url.
+
+ - related files:
+   - admin/index.php3
+   - include/item.php3
+     - new function make_return_url()
+     - new function sess_return_url()
+
+* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
+
+[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
+(by Setu)
+ - it supports "&return_url=...." to jump to another web page after  submission.
+ - related files:
+   - admin/slicedit.php3
+
 Revision 1.26  2002/03/12 16:29:16  honzam
 new romanian language supprt (Thanks to Mihály Bakó, StrawberryNet Foundation), new_news_lang.php3 file introduced for better support of many language versions
 

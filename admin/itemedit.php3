@@ -38,6 +38,9 @@ require $GLOBALS[AA_INC_PATH]."feeding.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 require $GLOBALS[AA_INC_PATH]."notify.php3";
+if( file_exists( $GLOBALS[AA_INC_PATH]."usr_validate.php3" ) ) {
+  include( $GLOBALS[AA_INC_PATH]."usr_validate.php3" );
+}
 
 if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED - from url
@@ -151,6 +154,13 @@ if( isset($prifields) AND is_array($prifields) ) {
           case 'bool':  
             $$varname = ($$varname ? 1 : 0);
             break;
+	  case 'user':
+	    // this is under development.... setu, 2002-0301
+	    // value can be modified by $$varname = "new value";
+	    $$varname = usr_validate($varname, $f[name], $$varname, &$err, $f, $fields);
+##	echo "ItemEdit- user value=".$$varname."<br>";
+	    break;
+
         }
       }
     }   
@@ -319,7 +329,6 @@ else
 }
 // End of Ram's Code
 ?>
-
 <form name=inputform onsubmit="BeforeSubmit()" enctype="multipart/form-data" method=post action="<?php echo  ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PASS_PARAM ?>">
 <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
 <tr><td class=tabtit align="center"><b>&nbsp;<?php //echo L_ITEM_HDR?></b>
@@ -400,6 +409,65 @@ page_close();
 
 /*
 $Log$
+Revision 1.31  2002/03/14 11:20:45  mitraearth
+[[ User Validation for add item / edit item (itemedit.php3). ]]
+
+(by Setu)
+ - new selection "User" at admin->field->edit(any field)->validation.
+ - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
+ - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
+ - It can validate the value and return new value for the field.
+
+ - Related files:
+   - admin/itemedit.php3
+   - include/constants.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_VALIDATE_USER" for User Validation.
+
+* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
+
+[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
+(by Ram)
+ - if the field is blank, it can load default value from URL query strings.
+ - new selection "Variable" in admin->field->edit(any field)->Default:
+ - "parameter" is the name of variable in URL query strings
+   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
+
+ - Related files:
+   - include/constant.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_DEFAULT_VAR" for Default by variable.
+   - include/itemfunc.php3
+     - new function "default_fnc_variable()" for "Default by variable"
+
+
+[[ admin/index.php3 ]]
+(by Setu)
+ - more switches to allow admin/index.php3 to be called from another program (with return_url).
+   - sort_filter=1
+   - action_selected=1
+     - "feed selected" is not supported.
+     - "view selected" is not supported.
+ - scroller now works with return_url.
+   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
+     - scr_st3_Mv
+     - scr_st3_Go
+ - more changes to work with &return_url.
+
+ - related files:
+   - admin/index.php3
+   - include/item.php3
+     - new function make_return_url()
+     - new function sess_return_url()
+
+* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
+
+[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
+(by Setu)
+ - it supports "&return_url=...." to jump to another web page after  submission.
+ - related files:
+   - admin/slicedit.php3
+
 Revision 1.30  2002/03/06 13:45:53  honzam
 just small design change
 

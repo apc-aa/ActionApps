@@ -161,7 +161,7 @@ else
   list($fields,) = GetSliceFields($slice_id);
 
 ######## add by setu@gwtech.org 2002-0206 #######
-# New options in Query Strings
+# Options in Query Strings to call admin/index.php3 from outsite.
 # by default it shows everything as original version.
 # It works differently if the query string has....
 #	navbar=0			// no top navigator
@@ -169,20 +169,26 @@ else
 #	footer=0			// no footer message
 #	sort_filter=0			// no sort / no filter
 #	action_selected=0		// no action for selected (marked) item
+#	feed_selected=0			// no feed action for selected item
+#	view_selected=0			// no view action for selected item
 # Big switch to hide many things
 #	bodyonly=1
 #
 if ($bodyonly == "1")
 {
-	$navbar = "0";			// no top navigator
-	$leftbar = "0";			// no left navigator
-	$footer = "0";			// no footer message
-	$sort_filter = "0";		// no sort / no filter
-	$action_selected = "0";		// no action for selected (marked) item
+	// if ....="1" is set, we keep the value.
+	// example: "&bodyonly=1&action_selected=1" will show action_selected....
+	if (!$navbar) 	$navbar = "0";			// no top navigator
+	if (!$leftbar ) $leftbar = "0";			// no left navigator
+	if (!$footer ) 	$footer = "0";			// no footer message
+	if (!$sort_filter ) 	$sort_filter = "0";	// no sort / no filter
+	if (!$action_selected )	$action_selected = "0";	// no action for selected (marked) item
+	if (!$feed_selected)	$feed_selected  = "0";
+	if (!$view_selected)	$view_selected  = "0";
 }
 ######################################
 
-
+if ($action) {
 switch( $action ) {  // script post parameter 
   case "app":
     if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
@@ -250,6 +256,13 @@ switch( $action ) {  // script post parameter
     $r_admin_search_field = $admin_search_field;
     break;
 }
+if ($return_url) { // after work for action, if return_url is there, we go to the page.
+	go_url(urldecode($return_url));
+	// Never come bask....
+	exit();
+}
+
+} // end if ($action)
 
 // script paramerer - table switching
 switch( $Tab ) {
@@ -348,8 +361,8 @@ function OpenPreview() {
         if ((previewwindow != null) && (!previewwindow.closed)) {
           previewwindow.close()    // in order to preview go on top after open
         }  // extract id from chb[x14451...]  - x is just foo character
-        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(5,name.indexOf(']')),'fullwindow');
-        return;
+	previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(5,name.indexOf(']')),'fullwindow');
+return;
       }  
     }
   }    
@@ -376,8 +389,6 @@ if( $open_preview )
   echo "<body OnLoad=\"OpenPreview('$open_preview')\">";
  else 
   echo '<body>';
-##if ($return_url) {echo "return_url=".$return_url."<br>\n"; ###### tracer by Setu
-##echo "make_return_url()=".make_return_url("&return_url=")."<br>\n";} #### this, too
 
 $editor_page = true;
 ######## add by setu 2002-0206 #######
@@ -421,9 +432,11 @@ $st = $$st_name;   // use right scroller
 
 # create or update scroller for actual bin
 if(is_object($st)) {
-  $st->updateScr($sess->url($PHP_SELF) . "&");
+#  $st->updateScr($sess->url($PHP_SELF) . "&");
+  $st->updateScr(sess_return_url($PHP_SELF) . "&"); // use $return_url if set.
 }else {
-  $st = new scroller($st_name, $sess->url($PHP_SELF) . "&");	
+# $st = new scroller($st_name, $sess->url($PHP_SELF) . "&");	
+  $st = new scroller($st_name, sess_return_url($PHP_SELF) . "&"); // use $return_url if set.
   $st->metapage=($listlen ? $listlen : EDIT_ITEM_COUNT);
 
 /*
@@ -490,7 +503,9 @@ echo "<table border=0 cellspacing=0 class=login width=460>" .
      "<TD align=center class=tablename width=436> $table_name </TD></TR>".
  "</table>";
 
-echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
+# echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
+// action URL with return_url if $return_url is set.
+echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url=") .'">'.
 '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
 
                          
@@ -541,13 +556,16 @@ if ($action_selected != "0")
   if( ($r_bin_state != "trash") AND 
      CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH))
     $markedaction["3-trash"] = L_MOVE_TO_TRASH_BIN;
-
+if ($feed_selected != "0")
   $markedaction["4-feed"] = L_FEED;
+if ($view_selected != "0")
   $markedaction["5-view"] = L_VIEW_FULLTEXT;
-  
+
+  // click "go" does not use markedform, it uses itemsfrom above...
+  // maybe this action is not used.
   echo "<center>
       <form name=markedform method=post action=\"". $sess->url($PHP_SELF).
-#make_return_url("&return_url=").
+	make_return_url("&return_url=").			// added by setu, 
 	"\">
       <table border=0 cellspacing=0 class=login width=460>
       <TR><TD align=center class=tablename>".
@@ -569,7 +587,10 @@ if ($action_selected != "0")
 global $sort_filter;
 if ($sort_filter != "0")
 {
-  echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
+# echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
+#if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";
+// action URL with return_url if $return_url is set.
+echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url="). '">
       <table width="460" border="0" cellspacing="0" cellpadding="0" 
       class=leftmenu bgcolor="'. COLOR_TABBG .'">';
 
@@ -600,15 +621,6 @@ if ($sort_filter != "0")
 }
  
 ######## add by setu 2002-0206 #######
-#echo L_ICON_LEGEND;
-#echo L_SLICE_HINT;
-#
-#$ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
-#
-#echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
-#     "?slice_id=" . $slice_id . "&quot;--&gt;</pre>
-#  </body>
-#</html>";
 global $footer;
 if ($footer != "0")
 {
@@ -622,13 +634,71 @@ if ($footer != "0")
 }
 echo "  </body>
 </html>";
-##
   $$st_name = $st;   // to save the right scroller 
   page_close();
 
 /*
 
 $Log$
+Revision 1.36  2002/03/14 11:20:45  mitraearth
+[[ User Validation for add item / edit item (itemedit.php3). ]]
+
+(by Setu)
+ - new selection "User" at admin->field->edit(any field)->validation.
+ - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
+ - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
+ - It can validate the value and return new value for the field.
+
+ - Related files:
+   - admin/itemedit.php3
+   - include/constants.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_VALIDATE_USER" for User Validation.
+
+* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
+
+[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
+(by Ram)
+ - if the field is blank, it can load default value from URL query strings.
+ - new selection "Variable" in admin->field->edit(any field)->Default:
+ - "parameter" is the name of variable in URL query strings
+   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
+
+ - Related files:
+   - include/constant.php3
+   - include/en_news_lang.php3
+     - "L_INPUT_DEFAULT_VAR" for Default by variable.
+   - include/itemfunc.php3
+     - new function "default_fnc_variable()" for "Default by variable"
+
+
+[[ admin/index.php3 ]]
+(by Setu)
+ - more switches to allow admin/index.php3 to be called from another program (with return_url).
+   - sort_filter=1
+   - action_selected=1
+     - "feed selected" is not supported.
+     - "view selected" is not supported.
+ - scroller now works with return_url.
+   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
+     - scr_st3_Mv
+     - scr_st3_Go
+ - more changes to work with &return_url.
+
+ - related files:
+   - admin/index.php3
+   - include/item.php3
+     - new function make_return_url()
+     - new function sess_return_url()
+
+* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
+
+[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
+(by Setu)
+ - it supports "&return_url=...." to jump to another web page after  submission.
+ - related files:
+   - admin/slicedit.php3
+
 Revision 1.35  2002/03/06 12:42:58  honzam
 bugfix
 
