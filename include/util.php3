@@ -344,7 +344,7 @@ function p_arr($a,$name="given array") {
 }
 
 # returns new unpacked md5 unique id, except these which can  force unexpected end of string
-function new_id ($seed="hugo"){
+function new_id($seed="hugo"){
     do {
        $foo=md5(uniqid($seed));
     } while (ereg("(00|27)",$foo) || (substr($foo,30,2)=='20'));
@@ -358,7 +358,7 @@ function new_id ($seed="hugo"){
  *  can be used to compare the hashes as well as create new item id (combining
  *  item id of fed item and slice_id, for example - @see xml_fetch.php3)
  */
-function string2id ($str) {
+function string2id($str) {
     $trialstr = $str;
     do {
         $foo=md5($trialstr);
@@ -1149,6 +1149,11 @@ function richEditShowable () {
   # Mac Omniweb/4.1.1 detects as Netscape 4.5 and doesn't support either
   return (($BName == "MSIE" && $BVersion >= "5.0" && $BPlatform != "Macintosh") || $showrich > "");
   # Note that RawRichEditTextarea could force iframe for certain BPlatform
+}
+
+/** Is it valid e-mail */
+function valid_email( $str ) {
+    return EReg("^.+@.+\..+", $str);  // should be improved
 }
 
 function clean_email($line) {

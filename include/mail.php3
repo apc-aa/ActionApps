@@ -179,6 +179,8 @@ function send_mail_from_table_inner($mail_id, $to, $item, $aliases = null) {
     global $db, $LANGUAGE_CHARSETS, $err;
     // email has the templates in it
     $record = GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
+
+    if ($GLOBALS['debug_email']) { huhl("\n-------\n",$mail_id, $to, $item, $aliases, $record); }
     if (!$record) return false;
 
     /* Old version - Jakub's
@@ -211,7 +213,7 @@ function send_mail_from_table_inner($mail_id, $to, $item, $aliases = null) {
     $mail->setHtmlCharset ($LANGUAGE_CHARSETS [$record["lang"]]);
 
     foreach ($tos as $to) {
-        if (!$to OR !ValidateInput("mail", _m('User mail') , $to, $err, true, 'email')) {
+        if (!$to OR !valid_email($to)) {
             continue;
         }
 

@@ -193,7 +193,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
 */
 function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
 {
-    global $LANGUAGEn_CHARSETS, $debug_alerts;
+    global $debug_alerts;
 
     $db = getDB();
     if (is_array ($collection_ids))
@@ -224,6 +224,9 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
         while ($db->next_record()) {
             $filters[$db->f("filterid")] = &$unordered_filters[$db->f("filterid")];
         }
+
+
+        if ($GLOBALS['debug_email']) { huhl("\n-------\n send_emails\n",$collection); }
 
         // Find all users who should receive anything
         if (! is_array ($emails)) {
@@ -256,8 +259,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                         "au=".$readerContent->getValue(FIELDID_ACCESS_CODE).
                         "&c=".$cid);
 
-                    if (send_mail_from_table($collection["emailid_alert"],
-                        $readerContent->getValue(FIELDID_EMAIL), $alias))
+                    if (send_mail_from_table($collection["emailid_alert"], $readerContent->getValue(FIELDID_EMAIL), $alias))
                         $email_count ++;
                 }
             }
@@ -272,9 +274,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                 $alias["_#UNSBFORM"] = alerts_con_url ($collection["slice_url"],
                     "au=ABCDE&c=".$cid);
 
-                $GLOBALS["debug_email"] = 0;
-                if (send_mail_from_table($collection["emailid_alert"],
-                    $email, $alias))
+                if (send_mail_from_table($collection["emailid_alert"], $email, $alias))
                     $email_count++;
             }
         }
