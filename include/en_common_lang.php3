@@ -73,11 +73,6 @@ define( "L_ICON_LEGEND", '
                   <br>
                   <i>Icon Legend</i>
                   <TABLE BORDER=1>
-                  <TR>
-                  <TD><img src="../images/notpubl.gif" width=24 height=24 border=0 alt=""> Pending item</TD>
-                  <TD><img src="../images/publish.gif" width=24 height=24 border=0 alt=""> Published item</TD>
-                  <TD><img src="../images/expired.gif" width=24 height=24 border=0 alt=""> Expired item</TD>
-                  </TR>
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/hlight.gif" border=0 alt=""> Highlighted item</TD>
                   <TD COLSPAN=2><img src="../images/feed.gif" border=0 alt=""> Item from feed</TD></TR>
@@ -88,8 +83,7 @@ define( "L_ICON_LEGEND", '
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/less.gif" border=0 alt=""> Less detail view</TD>
                   <TD COLSPAN=2><img src="../images/more.gif" border=0 alt=""> More detail view</TD></TR>
-                  </TABLE>
-                  Categories in red do not belongs to this slice (they were fed ...)<br><br>
+                  </TABLE><br>
                   To include slice in your webpage type next line to your html code:<br><code>&lt;!--#include virtual=&quot;/aa/slice.php3?slice_id='. $slice_id .'&quot;--&gt;
                   </code>');
                            
@@ -117,8 +111,11 @@ function dateExample() {
                    
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:31  madebeer
-Initial revision
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:31  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:15  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
