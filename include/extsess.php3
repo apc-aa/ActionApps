@@ -29,13 +29,22 @@ class DB_AA extends DB_Sql {
 
   function dquery($SQL) {
     echo "<br>$SQL";
+
     $this->query("explain ".$SQL);
+
     echo "<table><tr><td><b>table</b></td> <td><b>type</b></td><td><b>possible_keys</b></td><td><b>key</b></td><td><b>key_len</b></td><td><b>ref</b></td><td><b>rows</b></td><td><b>Extra</b></td></tr>";
     while( $this->next_record() ) 
       printf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", 
               $this->f('table'), $this->f('type'), $this->f('possible_keys'), $this->f('key'), $this->f('key_len'), $this->f('ref'), $this->f('rows'), $this->f('Extra'));
     echo "</table>";
+    list($usec, $sec) = explode(" ",microtime()); 
+    $starttime = ((float)$usec + (float)$sec); 
+
     $this->query($SQL);
+
+    list($usec, $sec) = explode(" ",microtime()); 
+    $endtime = ((float)$usec + (float)$sec); 
+    echo "<br>Query duration: ". ($endtime - $starttime);
   }  
 
   function halt($msg) {
@@ -208,6 +217,9 @@ class AA_SL_Session extends Session {
 
 /*
 $Log$
+Revision 1.8  2002/01/10 13:55:28  honzam
+debug messages displays duration for queries
+
 Revision 1.7  2001/11/05 13:31:07  honzam
 new debug function dquery (instead of query) for EXPLAIN SELECT table
 
