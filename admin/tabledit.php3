@@ -2,7 +2,7 @@
 
 /* Shows a Table View, allowing to edit, delete, update fields of a table
    Params:
-       $set[table] -- required, name of the table view
+       $set_tview -- required, name of the table view
 */
 
 require "../include/init_page.php3";
@@ -37,9 +37,7 @@ if (! $tableview["cond"] ) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 echo "<TITLE>".$tableview["title"]."</TITLE></HEAD>";
-
 showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
-
 echo "<H1><B>" . $tableview["caption"] . "</B></H1>";
 PrintArray($err);
 echo $Msg;
@@ -49,47 +47,9 @@ if ($tableview["help"])
         .$tableview["help"]
         .'</td></tr></table><br>';
 
-if (is_array ($cmd)) {        
-    reset ($cmd);
-    while (list ($myviewid, $com) = each ($cmd)) {
-        if ($com["update"]) {
-            $key = key ($com["update"]);      
-            $myview = GetTableView ($myviewid);
-            $error = TableUpdate ($myview["table"], $key, $val, $myview["fields"], $myview["messages"]["error_update"]);
-            if ($error) PrintArray ($err);
-        }
-        // WARNING: a bit hackish: after inserting an item, the command is changed to edit it
-        if ($com["insert"]) {
-            $myview = GetTableView ($myviewid);
-            $newkey = TableInsert ($myview["table"], $val, $myview["fields"], $myview["primary"],
-                $myview["messages"]["error_insert"]);
-            unset ($cmd[$myviewid]["insert"]);
-            if ($newkey != "") {
-                // show inserted record again
-                //if ($myview["type"] == "edit")
-                $cmd[$myviewid]["edit"][$newkey] = 1;
-                $after_insert [$myviewid] = $newkey;
-            }
-        }
-        if ($com["delete"]) {
-            $key = key ($com["delete"]);      
-            $myview = GetTableView ($myviewid);
-            TableDelete ($myview["table"], $key, $myview["fields"], $myview["messages"]["error_delete"]);
-        }
-    }
-}
-
-PrintArray($err);
-  
 $script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
 
-// add currently inserted item to editable items
-if ($after_insert[$tview] && $tableview["where"]) {
-	$mywhere = CreateWhereCondition ($after_insert[$tview], GetColumnTypes ($tableview["table"], $tableview["fields"]));
-	$tableview["where"] = "(".$tableview["where"].") OR $mywhere";		 
-}
-	
-$tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."images/", $sess, "", "", "GetTableView");
+$tabledit = new tabledit ($tview, $script, $cmd, $val, $tableview, $AA_INSTAL_PATH."images/", $sess, "", "", "GetTableView");
 $err = $tabledit->view ($where);
 
 if ($err) echo "<b>$err</b>";

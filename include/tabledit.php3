@@ -102,6 +102,8 @@ class tabledit {
     var $action;
     // global cmd[] parameter, created by this class, sent by a form
     var $all_cmd;
+    // value array returned as form data (edit / update table row)
+    var $form_vals;
     // command to be executed (exactly $all_cmd[$viewID])
     var $cmd;
     /* used for CHILD tables only, contains joining field values
@@ -113,7 +115,7 @@ class tabledit {
     var $cols;
     // URL path for images (up.gif and down.gif)
     var $imagepath;    
-    // function to get other Table View definitions by ID. Used in ShowChildren()
+    // function to get other Table View definitions by ID. Used in ShowChildren() and ProcessFormData()
     var $getTableViewsFn;
     
     // INTERN VARIABLES
@@ -125,7 +127,7 @@ class tabledit {
     var $show_new;
 
 	/* constructor, see above for parameter description */
-    function tabledit($viewID, $action, $cmd, $view, $imagepath, &$sess, $joincols="", $parentViewID="", $getTableViewsFn="") {
+    function tabledit($viewID, $action, $cmd, $form_vals, $view, $imagepath, &$sess, $joincols="", $parentViewID="", $getTableViewsFn="") {
         $this->viewID = $viewID;
         $this->all_cmd = $cmd;
         $this->cmd = $cmd[$viewID];
@@ -136,7 +138,9 @@ class tabledit {
         $this->sess = &$sess;
         $this->imagepath = $imagepath;
         $this->getTableViewsFn = $getTableViewsFn;
+        $this->form_vals = $form_vals;
         
+        $this->ProcessFormData();
         $this->UpdateCmd ();
     }
 
@@ -652,44 +656,43 @@ class tabledit {
     }
 
     function ProcessFormData () {    
-            if (is_array ($cmd)) {        
-            reset ($cmd);
-            while (list ($myviewid, $com) = each ($cmd)) {
+        $getTableViewsFn = $this->getTableViewsFn;
+        if (is_array ($this->all_cmd)) {        
+            reset ($this->all_cmd);
+            while (list ($myviewid, $com) = each ($this->all_cmd)) {
                 if ($com["update"]) {
                     $key = key ($com["update"]);      
-                    $myview = GetTableView ($myviewid);
-                    $error = TableUpdate ($myview["table"], $key, $val, $myview["fields"], $myview["messages"]["error_update"]);
+                    $myview = $getTableViewsFn ($myviewid);
+                    $error = TableUpdate ($myview["table"], $key, $this->form_vals, $myview["fields"], $myview["messages"]["error_update"]);
                     if ($error) PrintArray ($err);
                 }
                 // WARNING: a bit hackish: after inserting an item, the command is changed to edit it
                 if ($com["insert"]) {
-                    $myview = GetTableView ($myviewid);
-                    $newkey = TableInsert ($myview["table"], $val, $myview["fields"], $myview["primary"],
+                    $myview = $getTableViewsFn ($myviewid);
+                    $newkey = TableInsert ($myview["table"], $this->form_vals, $myview["fields"], $myview["primary"],
                         $myview["messages"]["error_insert"]);
                     unset ($cmd[$myviewid]["insert"]);
                     if ($newkey != "") {
                         // show inserted record again
                         //if ($myview["type"] == "edit")
-                        $cmd[$myviewid]["edit"][$newkey] = 1;
+                        $this->all_cmd[$myviewid]["edit"][$newkey] = 1;
                         $after_insert [$myviewid] = $newkey;
                     }
                 }
                 if ($com["delete"]) {
                     $key = key ($com["delete"]);      
-                    $myview = GetTableView ($myviewid);
+                    $myview = $getTableViewsFn ($myviewid);
                     TableDelete ($myview["table"], $key, $myview["fields"], $myview["messages"]["error_delete"]);
                 }
             }
-        }
         
-        PrintArray($err);
+            PrintArray($err);
           
-        $script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
-        
-        // add currently inserted item to editable items
-        if ($after_insert[$tview] && $tableview["where"]) {
-        	$mywhere = CreateWhereCondition ($after_insert[$tview], GetColumnTypes ($tableview["table"], $tableview["fields"]));
-        	$tableview["where"] = "(".$tableview["where"].") OR $mywhere";		 
+            // add currently inserted item to editable items
+            if ($after_insert[$this->viewID] && $this->view["where"]) {
+            	$mywhere = CreateWhereCondition ($after_insert[$this->viewID], $this->col);
+            	$this->view["where"] = "(".$this->view["where"].") OR $mywhere";		 
+            }
         }
     }
 }
