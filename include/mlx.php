@@ -46,6 +46,9 @@ if(!defined('MLX_TRACE'))
 if(!defined('MLX_NOVIEWCACHE'))
 	define ('MLX_NOVIEWCACHE',1);
 
+if(!defined('MLX_OPTIMIZE'))
+	define ('MLX_OPTIMIZE',0);
+
 /** HTML defines **/
 define ('MLX_HTML_TABHD',"\n"
 ."<tr>\n"
@@ -438,7 +441,23 @@ class MLXView
 				continue;
 			if(MLX_TRACE)
 				__mlx_dbg(unpack_id128($upContId),"ContentID");
-			//strangely enough this works!
+			//speedup
+			if(MLX_OPTIMIZE > 5) {
+				reset($translations);
+				$sql = "SELECT * from `content`"
+					." WHERE `text`='".quote($upContId)."'"
+					." AND field_id='".current($translations)."' LIMIT 1";
+				$db->tquery($sql);
+				if($db->num_rows() > 0) {
+					if($GLOBALS['mlxdbg']) {
+						huhl($sql);
+						__mlx_dbg($db->Record,"MLXQUICK");
+					}
+					$arr[(string)$upContId]++;
+					continue;
+				}
+			}
+			//conservative				
 			$sql = "SELECT  c2.field_id,c2.text FROM `content` AS c1" //`field_id`,`text`
 				." LEFT JOIN `content` AS c2 ON ("
 				." c2.item_id=c1.text )"
@@ -637,6 +656,7 @@ class MLXGetText
 	var $domains = array();
 	var $currentDomain;
 	var $currentDomainRef;
+	var $currentLang = 0;
 	//var $currentSlice = 0;
 	function MLXGetText() { 
 		$ca = array('global');
@@ -752,9 +772,15 @@ class MLXGetText
 //		__mlx_dbg($this->domains);
 	}
 	function setdomain(&$args,$slice_id=0) {
-		if( $args[0] ) // make sure we stay in a domain
-			$this->currentDomain = $args[0];
+		if( $args[1] ) // make sure we stay in a domain
+			$this->currentDomain = $args[1];
 		$this->currentDomainRef = &$this->domains[$this->currentDomain];
+	}
+	// set the current language in case we are not in a view
+	function setlang(&$args,$slice_id=0) {
+		$this->currentLang = strtoupper($args[1]);
+		if($GLOBALS[mlxdbg])
+			huhl("MLX setting language to <b>".$this->currentLang."</b>");
 	}
 	function debug(&$args,$slice_id=0) {
 		__mlx_dbg($this->domains);
@@ -771,12 +797,15 @@ class MLXGetText
 		$sliceid = end(array_keys($this->currentDomainRef['slices']));
 		if(!$sliceid)
 			return;
-		__mlx_dbg($sliceid);
-		if($GLOBALS[mlxdbg])
+		//__mlx_dbg($sliceid);
+		if($GLOBALS[mlxdbg]) {
 			huhl("MLX adding translateable item for <b>".$args[0]."</b> to $sliceid");
-		$GLOBALS[debugsi] = 1;
+			$GLOBALS[debugsi] = 1;
+		}
 		$content4id['headline........'][0]['value'] = $args[0];
+		$content4id['post_date.......'][0]['value'] = time();
 		$content4id['publish_date....'][0]['value'] = time();
+		$content4id['expiry_date.....'][0]['value'] = time()+3600*24*365*10;
 		StoreItem( new_id(), $sliceid, $content4id, 
 			$this->currentDomainRef['slices'][$sliceid]['fields'], 
 			true,true,false);

@@ -1,3 +1,5 @@
+01/20/05 - fixed a problem in MLXGetText and added {mlx:setlang:(LANG_CODE)} macro
+(mimo)   - added MLX_OPTIMIZE, if >5 it should speed up MLX results
 01/13/05 - words for {dictionary} feature are not replaced, if it is just
 (honzam)   substrings of another (bigger) words (thanks to Hana Havelkova)
          - added favicon for AA (thanks to Sarka Vasku)
