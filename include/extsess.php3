@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined ("AA_EXTSESS_INCLUDED"))
+    define ("AA_EXTSESS_INCLUDED", 1);
+else return;
 
 class DB_AA extends DB_Sql {
   var $Host     = DB_HOST;

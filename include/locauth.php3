@@ -27,7 +27,7 @@ if (!is_array($_PHPLIB)) {
   $_PHPLIB["libdir"] = "";
 }
 
-if (! PHPLIB_ALREADY_LOADED) {
+if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
   /* Change this to match your database. */
   require($_PHPLIB["libdir"] . "db_mysql.inc");  
 
@@ -56,7 +56,9 @@ if($nobody) {  // used in itemedit.php3 for anonymoous news posting
 }  
 
 /* Required, contains the page management functions. */
-if (! PHPLIB_ALREADY_LOADED) {
+if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
    require($_PHPLIB["libdir"] . "page.inc");
 }
+
+define ("PHPLIB_AA_LOADED", 1);
 ?>

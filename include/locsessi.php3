@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined("AA_LOCSESSI_INCLUDED") && !defined("AA_LOCAUTH_INCLUDED"))
+if (!defined("AA_LOCSESSI_INCLUDED"))
      define ("AA_LOCSESSI_INCLUDED", 1);
 else return;
 
@@ -27,7 +27,7 @@ if (!is_array($_PHPLIB)) {
   $_PHPLIB["libdir"] = "";
 }
 
-if (! PHPLIB_ALREADY_LOADED) {
+if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
   /* Change this to match your database. */
   require($_PHPLIB["libdir"] . "db_mysql.inc");  
 
@@ -45,7 +45,9 @@ if (! PHPLIB_ALREADY_LOADED) {
 require($GLOBALS[AA_INC_PATH] . "extsessi.php3");     
 
 /* Required, contains the page management functions. */
-if (! PHPLIB_ALREADY_LOADED) {
+if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
    require($_PHPLIB["libdir"] . "page.inc");
 };
+
+define ("PHPLIB_AA_LOADED", 1);
 ?>
