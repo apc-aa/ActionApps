@@ -459,5 +459,8 @@ define ("FEEDMAP_FLAG_JOIN", 4);
                       
 define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in slice table
 
+// don't check whether these fields exist (in the conds[] array used by searchform):
+$conds_not_field_names = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuejoin"=>1);
+
 require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 ?>

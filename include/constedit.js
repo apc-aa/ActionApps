@@ -313,10 +313,12 @@ function hcAddItemTo (i,targetBox) {
 	var f = document[hcForm];
 	var selectBox = document[hcForm]['hclevel'+i];
 	if (selectBox.selectedIndex == -1) return;
-	name = selectBox.options[selectBox.selectedIndex].text;
-	value = selectBox.options[selectBox.selectedIndex].value;
-	opt = new Option(name,value,false,false);
+	myname = selectBox.options[selectBox.selectedIndex].text;
+	myvalue = selectBox.options[selectBox.selectedIndex].value;
+    //alert ('name '+name+' value '+value);
+	opt = new Option(myname,myvalue,false,false);
 	var target = document[hcForm][targetBox];
+    opt.selected = true;
 	target.options [target.length] = opt;
 }
 
