@@ -563,6 +563,10 @@ $itemview->print_view("NOCACHE");   # big security hole is open if we cache it
 
 $st->countPages( count( $item_ids ) );
 
+if($st->pageCount() > 1 || $action_selected != "0") {
+    echo "<tr><td class=tabtxt>";
+}
+        
 if ($action_selected != "0")
 {  
     echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
@@ -588,8 +592,8 @@ if ($action_selected != "0")
         $markedaction["5-view"] = L_VIEW_FULLTEXT;
       
     if (is_array ($markedaction) && count ($markedaction)) {  
-        echo "<tr><td colspan=100 class=tabtxt><img src='../images/blank.gif' width=1>
-            <img src='../images/arrow_ltr.gif'>
+        echo "<img src='".$AA_INSTAL_PATH."images/blank.gif' width=1>
+            <img src='".$AA_INSTAL_PATH."images/arrow_ltr.gif'>
             <a href='javascript:SelectVis()'>".L_SELECT_VISIBLE."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
             
           // click "go" does not use markedform, it uses itemsfrom above...
@@ -603,14 +607,19 @@ if ($action_selected != "0")
                    htmlspecialchars($v);
         echo "</select>&nbsp;&nbsp;<a href=\"javascript:MarkedActionGo()\" class=leftmenuy>".L_GO."</a>";
     }
-    echo "</span></td></tr>";
 }
 
+if($st->pageCount() > 1 || $action_selected != "0") {
+    if ($st->pageCount() > 1) {
+        echo "<p align='center'>";
+        $st->pnavbar();
+        echo "</p>";
+    }
+    echo "</td></tr>";
+}
+    
 echo '</table></form><br>';
 
-if($st->pageCount() > 1) 
-    $st->pnavbar();
-    
 HtmlPageEnd(); 
 
   $$st_name = $st;   // to save the right scroller 
