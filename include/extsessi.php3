@@ -72,6 +72,11 @@ class AA_CT_Sql extends CT_Sql {	## Container Type for Session is SQL DB
 #  var $gc_probability = 5;  
 #}
 
+# skips terminating backslashes
+function DeBackslash($txt) {
+  return EReg_Replace("[\]*$", "", $txt);
+}   
+
 class AA_SL_Session extends Session {
   var $classname = "AA_SL_Session";
 
@@ -109,26 +114,35 @@ class AA_SL_Session extends Session {
   
  
  // adds variables passesd by QUERY_STRING_UNESCAPED to GLOBALS 
-  function add_vars() {
-     global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
-        if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
-           $a = explode("\\\&",$REDIRECT_QUERY_STRING_UNESCAPED);
-        } else {
-           $a = explode ("\&",$QUERY_STRING_UNESCAPED);
-        }
-        $i = 0;
-        while ($i < count ($a)) {
-           $b = explode ('=', $a [$i]);
-           if (ERegI("^(.+)\\\\\\[(.*)\\\\\\]", $b[0], $c)) {  // for array variable
-              // I do not know exactly, why there is
-              // so much '\' but '\\\\\\[' means '\['
-              $GLOBALS[urldecode ($c[1])][urldecode ($c[2])] = urldecode ($b[1]);
-           } else {
-              $GLOBALS[urldecode ($b [0])]= urldecode ($b [1]);
-           }
-           $i++;
-        }
-     return $i;
+
+  function add_vars($debug="") {
+    global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
+    if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
+      $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
+    } else {  
+      $varstring = $QUERY_STRING_UNESCAPED;
+    }  
+
+    $a = explode("&",$varstring);
+    $i = 0;
+
+    while ($i < count ($a)) {
+      $b = explode ('=', $a [$i]);
+      if (ERegI("^(.+)\[(.*)\]", $b[0], $c)) {  // for array variable
+             // I do not know exactly, why there is
+                   // so much '\' but '\\\\\\[' means '\['
+        $c[1] = DeBackslash($c[1]);
+        $c[2] = DeBackslash($c[2]);
+        $b[1] = DeBackslash($b[1]);
+        $GLOBALS[urldecode ($c[1])][urldecode ($c[2])] = urldecode ($b[1]);
+      } else {
+        $b[0] = DeBackslash($b[0]);
+        $b[1] = DeBackslash($b[1]);
+        $GLOBALS[urldecode ($b [0])]= urldecode ($b [1]);
+      }
+      $i++;
+    }
+    return $i;
   }
   
   function expand_getvars() {
@@ -246,6 +260,9 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
+Revision 1.6  2000/10/10 10:04:24  honzam
+better backslashes handling for Query string parsing
+
 Revision 1.5  2000/08/23 12:29:58  honzam
 fixed security problem with inc parameter to slice.php3
 
