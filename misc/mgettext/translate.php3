@@ -1,7 +1,15 @@
 <?php 
-//$Id$
+/**
+ * Changes PHP scripts containing old approach language constants
+ * to calls of the _m() mini-gettext function.
+ * 
+ * @package MiniGetText
+ * @version $Id$
+ * @author Jakub Adamek, Econnect, January 2003
+ * @copyright Copyright (C) 1999-2003 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2003 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,23 +27,20 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/*  Function: translate_files
-    Purpose:  translates files using L_ language constants to _m() function calls
-              and writes a log file with constants to help to prepare language files for mgettext
-    Params:     $old_lang_file -- full file name of the file with L_ language constants
-                                  a file with the same filename will be created in $src_dir,
-                                    this is the log file mentioned above
-                $src_dir -- all files from this directory will be processed
-                $dst_dir -- here will be the translated files saved
-    Remarks:  if set_time_limit doesn't work on your server, use the function several times:
-              it will go over the files processed before
-              if you don't like this behavior, delete the destination files
-*/
-
 if (!isset($LANGUAGE_CHARSETS))
     require "../../include/constants.php3";
 require "../../include/mgettext.php3";
 
+/**  Translates files using L_ language constants to _m() function calls.
+*	
+*    If set_time_limit doesn't work on your server, use the function several times:
+*    it will skip the files processed before.
+*    If you don't like this behavior, delete the destination files
+*	
+*    @param     $old_lang_file -- full file name of the file with L_ language constants
+*    @param     $src_dir -- all files from this directory will be processed
+*    @param     $dst_dir -- here will be the translated files saved
+**/
 function translate_files ($old_lang_file, $src_dir, $dst_dir)
 {
     set_time_limit(10000);
@@ -93,6 +98,5 @@ function translate_files ($old_lang_file, $src_dir, $dst_dir)
     }
     closedir ($dir);    
 }
-
 
 ?>

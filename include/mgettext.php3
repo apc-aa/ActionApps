@@ -1,7 +1,16 @@
 <?php
-//$Id$
+/**
+ * Usage of the mini-gettext system.
+ * See include/lang/readme.html for more info, and misc/mgettext for scripts 
+ * used to maintain the language files.
+ * 
+ * @package MiniGetText
+ * @version $Id$
+ * @author Jakub Adamek, Econnect, January 2003
+ * @copyright Copyright (C) 1999-2003 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2003 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -13,12 +22,17 @@ http://www.apc.org/
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 if (!defined("MGETTEXT_INCLUDED")) 
       define("MGETTEXT_INCLUDED",1);
 else return;
 
+/** Returns current language (two-letter acronym, e.g. "es", "cz"). */
 function get_mgettext_lang () {
     global $mgettext_lang;
     if (!isset ($mgettext_lang))
@@ -26,15 +40,18 @@ function get_mgettext_lang () {
     else return $mgettext_lang;
 }
 
-/* Function: bind_mgettext_domain
-   Purpose:  reads language constants from given file
-   Remarks:  use full file name 
+/** Reads language constants from given file/
+*   @param $filename  full path
+*   @param $cache     Should the old language constants remain in memory? 
+*                     You will need this behaviour only when using a script which 
+*                     several times changes the language,
+*                     e.g. sends a lot of emails in different languages. 
 */
-function bind_mgettext_domain ($filename) {
+function bind_mgettext_domain ($filename, $cache = false) {
     global $_m, $mgettext_lang, $mgettext_domain;
-    
+
     // store strings into backup and look for new strings in backup
-    if (!$_m_backup[$mgettext_domain])
+    if (!$_m_backup[$mgettext_domain] && $cache)
         $_m_backup[$mgettext_domain] = $_m;
     $mgettext_domain = $filename;
     $_m = $_m_backup[$mgettext_domain];
@@ -50,16 +67,14 @@ function bind_mgettext_domain ($filename) {
     }
 }
 
-/*  Function: _m
-    Purpose:  basic function to get translations
-              writes new language strings at the end of the language file 
-    Params:   $id -- text to be translated
-              $params -- you may use %1,%2,... in $id and supply an array of params,
-                         which are substituted for %i. 
-                         If you want to print %i verbatim, use \%i.                         
-              Example: _m("Hello %1, how are you?",array($username))
-    Return value: if translation in the active language ($mgettext_lang) does not yet exist,
-                  returns $id    
+/** Translates given message.
+*
+*   @param string $id       Text to be translated. Escape % by backslash (\%).
+*   @param array $params    You may use %1,%2,... in $id and supply an array of params,
+*                           which are substituted for %i, e.g. 
+*                           _m("Hello %1, how are you?",array($username))
+*   @return  if translation in the active language (get_mgettext_lang()) does not yet exist,
+*                 returns $id, i.e. the English version    
 */
 function _m ($id, $params = 0) {
     global $_m;
