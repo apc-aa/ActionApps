@@ -102,7 +102,7 @@ function PrintUser($usr, $usr_id, $editor_perm) {
 
   IfLink( CanChangeRole($perm, $editor_perm, $perms_roles_perms["AUTHOR"]),
           $sess->url(self_base() . "se_users.php3") .
-                     "&UsrDel=$usr_id", L_DELETE);
+                     "&UsrDel=$usr_id", L_REVOKE);
 
   echo "</tr>\n";
 }
@@ -201,6 +201,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   }  
 /*
 $Log$
+Revision 1.3  2000/07/27 13:23:58  kzajicek
+Language correction
+
 Revision 1.2  2000/07/17 12:27:51  kzajicek
 Language changes
 

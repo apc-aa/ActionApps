@@ -268,6 +268,7 @@ define("L_FIELDS", "Fields");
 define("L_EDIT", "Edit");
 define("L_EDIT_SLICE", "Edit Slice");
 define("L_DELETE", "Delete");
+define("L_REVOKE", "Revoke");
 define("L_UPDATE", "Update");
 define("L_RESET", "Reset form");
 define("L_CANCEL", "Cancel");
@@ -528,6 +529,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.7  2000/07/27 13:23:58  kzajicek
+Language correction
+
 Revision 1.6  2000/07/17 13:40:11  kzajicek
 Alert box when no input category selected
 

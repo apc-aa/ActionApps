@@ -285,6 +285,7 @@ define("L_NO_PRMS_SLICE", "Nemáte právo na zmìnu nastavení webíku");
 define("L_EDIT", "Editace");
 define("L_EDIT_SLICE", "Editace webíku");
 define("L_DELETE", "Vymazat");
+define("L_REVOKE", "Odstranit");
 define("L_UPDATE", "Zmìnit");
 define("L_RESET", "Vymazat formuláø");
 define("L_CANCEL", "Zrušit");
@@ -544,6 +545,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.6  2000/07/27 13:23:58  kzajicek
+Language correction
+
 Revision 1.5  2000/07/17 13:40:11  kzajicek
 Alert box when no input category selected
 
