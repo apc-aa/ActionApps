@@ -279,12 +279,12 @@ class item {
       # hide email from spam robots
       if ($hide=='1') {
         $linkpart=explode('@',str_replace("'", "\'", $url.'@'.DeHtml($txt, $html)),4);
-		$ret = "\n<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\ndocument.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $linkpart[2];
+        $ret = "\n<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\ndocument.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $linkpart[2];
         if ($linkpart[3])
-		  $ret .= "'+'@'+'".$linkpart[3];
-		$ret .= "</a>')\n// -->\n</script>\n";
+          $ret .= "'+'@'+'".$linkpart[3];
+        $ret .= "</a>')\n// -->\n</script>\n";
         return $ret;
-	  } else {
+      } else {
         return '<a href="'. $url ."\" $add>". DeHtml($txt, $html).'</a>';
       }
     }
@@ -799,7 +799,7 @@ class item {
     $fnc = $p[0];
     if (!is_callable($fnc)) {
         huhl("Field $col is defined with f_u and function '$fnc', but '$fnc' is not defined in apc-aa/include/usr_aliasfnc.php3");
-        return ""; 
+        return "";
     }
     return $fnc($this->columns, $col, $param);
   }
@@ -962,6 +962,11 @@ class item {
            '' : ($p[0] ? $p[0] : '@' );
   }
 
+  /** Link module (category) function - prints 1 when category is general one */
+  function l_g($col, $param="") {
+    return Links_IsGlobalCategory($this->getval($col)) ? '1' : '0';
+  }
+
   /** Link module - print path
    *  @param <start_level>:<format>:<delimeter>
    *         <start_level> - display path from level ... (0 is root)
@@ -971,14 +976,8 @@ class item {
   function l_p($col, $param="") {
     global $contentcache;
 
-    $translate = $contentcache->get('
-        $db = getDB();
-        $db->tquery("SELECT id, name FROM links_categories WHERE deleted=\'n\'");
-        while( $db->next_record() ) {
-            $eval_ret[$db->f(\'id\')] = $db->f(\'name\');
-        }
-        freeDB($db);
-        return $eval_ret;');
+    $translate = $contentcache->get_result( 'GetTable2Array', array(
+       "SELECT id, name FROM links_categories WHERE deleted='n'", 'id', true));
 
     list ($start, $format, $separator) = $this->subst_aliases(ParamExplode($param));
     if ( !$separator ) {
@@ -994,8 +993,8 @@ class item {
         if($start-- > 0)  continue;
         $cat_url = con_url( $url_base, 'cat='.$catid );
         $ret .= ( ( $catid == $last ) ?  // do not make link for last category
-          $delimeter.$translate[$catid] :
-          $delimeter."<a href=\"$cat_url\">".$translate[$catid]."</a>" );
+          $delimeter.$translate[$catid]['name'] :
+          $delimeter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
         $delimeter = $separator;
       }
     }
