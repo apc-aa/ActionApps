@@ -119,7 +119,7 @@ if( $add_submit OR ($submit_action == "update_submit")) {
 # HtmlPageBegin----------------------------------------
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-include $GLOBALS[AA_INC_PATH]."js_lib.js";
+include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
 ?>
  <TITLE><?php echo L_A_UM_USERS_TIT;?></TITLE>
 <SCRIPT Language="JavaScript"><!--

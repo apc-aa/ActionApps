@@ -28,7 +28,7 @@ http://www.apc.org/
 		* for backup reasons - allows to export more defs at once
 	Now you can export slice data too (all data or some only, if date
 	is specified.
-			
+
 	To show the exported text the page sliceexp_text.php3 is called.
 */
 
@@ -122,7 +122,7 @@ function b_export_date_onchange(vstup)
 	//-->
 </SCRIPT>
 
-<?php include $GLOBALS[AA_INC_PATH]."js_lib.js"; ?>
+<?php include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js"; ?>
 
 </HEAD>
 

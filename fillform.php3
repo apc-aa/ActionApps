@@ -92,7 +92,7 @@ function RestoreVariables() {
 RestoreVariables();
 
 // core JavaScript functions
-echo "<SCRIPT language=javascript src='".$AA_INSTAL_PATH."include/fillform.js'></SCRIPT>";
+echo "<SCRIPT language=javascript src='".$AA_INSTAL_PATH."javascript/fillform.js'></SCRIPT>";
 
 # init used objects
 $db = new DB_AA;

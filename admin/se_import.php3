@@ -74,7 +74,7 @@ if($db->next_record())
   $export_to_all = $db->f(export_to_all);
   
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-include $GLOBALS[AA_INC_PATH]."js_lib.js";
+include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
 ?>
  <TITLE><?php echo L_A_SLICE_TIT;?></TITLE>
 

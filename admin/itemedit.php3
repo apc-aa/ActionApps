@@ -99,7 +99,7 @@ if( isset($prifields) AND is_array($prifields) ) {
     // javascript for input validation 
     $js_proove_fields = "
          <SCRIPT language=javascript>
-            <!--" 
+            <!--"
             . get_javascript_field_validation (). "
                 function proove_fields () {
                     myform = document.inputform;\n";
@@ -340,7 +340,7 @@ if ($javascript) {
             '.$javascript.'
         //-->
     </script>
-    <script language="javascript" src="'.$AA_INSTAL_PATH.'include/fillform.js">
+    <script language="javascript" src="'.$AA_INSTAL_PATH.'javascript/fillform.js">
     </script>';
 }
 
