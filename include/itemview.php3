@@ -454,7 +454,7 @@ class itemview{
           }  
           
             # print category name if needed
-          if($this->group_fld AND ($catname != $oldcat)) {
+          if($this->group_fld AND strcasecmp ($catname,$oldcat)) {
             if( $this->num_records >= 0 ) {
               if ($oldcat != "_No CaTeg") {
                   $CurItem->setformat( $this->slice_info[category_bottom] );
