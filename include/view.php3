@@ -294,7 +294,6 @@ function GetView($view_param) {
   return $res;
 }
 
-
 // Return view result based on parameters, set cache_sid
 function GetViewFromDB($view_param, &$cache_sid) {
   global $db,$debug;
@@ -330,6 +329,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
   $listlen    = ($view_param["listlen"] ? $view_param["listlen"] : $view_info['listlen'] );
   $p_slice_id = ($view_param["slice_id"] ? q_pack_id($view_param["slice_id"]) : $view_info['slice_id'] );
+  // This is to fix a bug where get_output_cached, caches under wrong slice (mitra)
+    $view_info['slice_id'] = $p_slice_id;
   $slice_id = unpack_id128($p_slice_id);
 
   $cache_sid = $slice_id;     # store the slice id for use in cache (GetView())
@@ -492,7 +493,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
         $itemview_type = (($view_info['type'] == 'calendar') 
                             ? 'calendar' : 'view');
-        if ($debug) huhl("GetViewFromDB going to get_output_cached");
         $ret = $itemview->get_output_cached($itemview_type);
       }   #zids2->count >0
       else { $ret = $noitem_msg; }
@@ -571,7 +571,7 @@ class constantview{
 
 
   function get_output_cached() {
-
+    trace("+","get_output_cached");
     #create keystring from values, which exactly identifies resulting content
     $keystr = serialize($this->slice_info).
               $this->group.
@@ -579,13 +579,16 @@ class constantview{
               $this->order_dir.
               $this->num_records;
 
-    if( $res = $GLOBALS[pagecache]->get($keystr) )
-      return $res;
+    if( $res = $GLOBALS[pagecache]->get($keystr) ) {
+        trace("-");
+        return $res;
+    }
 
     #cache new value
     $res = $this->get_output();
 
     $GLOBALS[pagecache]->store($keystr, $res, "slice_id=".unpack_id128($this->slice_info["id"]));
+    trace("-");
     return $res;
   }
 

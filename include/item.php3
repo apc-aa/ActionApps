@@ -334,11 +334,14 @@ class item {
   }
 
   function unalias( &$text, $remove="" ) {
+    trace("+","unalias",htmlentities($text));
     // just create variables and set initial values
     $maxlevel = 0;   
     $level = 0;
 #   return $this->old_unalias_recurent( $text, $remove, $level, $maxlevel );
-    return new_unalias_recurent($text, $remove, $level, $maxlevel, $this ); # Note no itemview param
+    $ret = new_unalias_recurent($text, $remove, $level, $maxlevel, $this ); # Note no itemview param
+    trace("-");
+    return $ret;
   }
 
   function subst_alias( $text ) {
@@ -398,6 +401,8 @@ class item {
 
   # expands and prints a string, if parameters are blank then expands field
   function f_y($col, $param="") {
+    global $debug;
+#    $debug = 1;
     if ($param) {
         return($this->unalias($param));
     } else {

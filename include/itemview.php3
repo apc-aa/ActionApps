@@ -112,13 +112,15 @@ class itemview {
   }
 
   function get_output_cached($view_type="") {
-    if ($GLOBALS['debug']) huhl("get_output_cached:".$view_type);
+    trace("+","get_output_cached",$this);
 
     #create keystring from values, which exactly identifies resulting content
 
-    if( substr($this->from_record, 0, 6) == 'random' ) # don't cache random item
-      return $this->get_output($view_type);
-
+    if( substr($this->from_record, 0, 6) == 'random' ) { # don't cache random item
+        $res = $this->get_output($view_type);
+        trace("-");
+        return $res;
+    }
     if (isset($this->zids))
       $keystr = serialize($this->slice_info).
               $view_type.
@@ -134,6 +136,7 @@ class itemview {
         $keystr .=serialize($this->disc);
         $keystr .=serialize($this->aliases);
         if( !$GLOBALS['nocache'] && ($res = $GLOBALS['pagecache']->get($keystr)) ) {
+            trace("-");
             return $res;
         }
 
@@ -147,6 +150,7 @@ class itemview {
             $GLOBALS['str2find_passon'] .= $str2find_this; // append our str2find
         $GLOBALS['pagecache']->store($keystr, $res, $GLOBALS['str2find_passon']);
         $GLOBALS['str2find_passon'] .= $str2find_save;
+        trace("-");
         return $res;
   }
 
