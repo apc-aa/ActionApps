@@ -148,14 +148,20 @@ class datectrl {
 	# print select box for time
 	function gettimeselect() {
     switch( $this->display_time ) {
-      case 2: return "<input type=text name=\"tdctr_". $this->name ."_time\" 
+      case 2:   #display time as is - hour:minutes:seconds
+              return "<input type=text name=\"tdctr_". $this->name ."_time\" 
                      value=\"". $this->time ."\" size=8 maxlength=8>";
-      case 1: $t = explode( ":", $this->time );
+      case 1:   #display time as hour:minutes - if time is 00:00, it shows nothing
+      case 3:   #display time as hour:minutes
+              $t = explode( ":", $this->time );
               if( !is_array($t) ) $t = array( '00','00');
               if( !$t[0] ) $t[0] = "00";
               if( !$t[1] ) $t[1] = "00";
+              $timestr = $t[0] .":". $t[1];
+              if( ($this->display_time == 1) AND ($timestr == "00:00") )
+                $timestr = "";
               return "<input type=text name=\"tdctr_". $this->name ."_time\" 
-                     value=\"". $t[0] .":". $t[1] ."\" size=8 maxlength=8>";
+                     value=\"$timestr\" size=8 maxlength=8>";
     }                 
     return "";  
 	}	
@@ -173,6 +179,9 @@ class datectrl {
 }
 /*
 $Log$
+Revision 1.9  2001/06/14 13:03:12  honzam
+better time handling in inputform and view
+
 Revision 1.8  2001/06/12 16:00:55  honzam
 date inputs support time, now
 new multivalue input possibility - <select multiple>

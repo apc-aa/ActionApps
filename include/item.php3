@@ -146,7 +146,8 @@ class item {
   function f_d($col, $param="") {
     if( $param=="" )
       $param = "m/d/Y";
-  	return date($param, $this->columns[$col][0][value]);
+    $dstr = date($param, $this->columns[$col][0][value]);
+  	return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
   }
 
   # prints image scr (<img src=...) - NO_PICTURE for none
@@ -359,6 +360,9 @@ class item {
 
 /*
 $Log$
+Revision 1.16  2001/06/14 13:03:12  honzam
+better time handling in inputform and view
+
 Revision 1.15  2001/06/13 11:31:28  honzam
 added negation in condition alias function f_c (and fixed bug of reverse meaning of condition)
 

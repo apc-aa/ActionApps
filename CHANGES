@@ -1,3 +1,6 @@
+06/13/01 - added negation in condition alias function f_c 
+         - fixed bug of reverse meaning of condition
+         - FAQ updated - slice.php3 parameters covered
 06/12/01 - date inputs support time, now
          - new multivalue input possibility - <select multiple>
          - fixed bug in LDAP install documentation
