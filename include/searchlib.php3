@@ -24,6 +24,9 @@ http://www.apc.org/
 
 function GetWhereExp( $field, $operator, $querystring ) {
 
+  if( $GLOBALS['debug'] )
+    echo "<br>GetWhereExp( $field, $operator, $querystring )";
+
   # search operator for functions (some operators can be in function:operator
   # fomat - the function is called to $querystring (good for date transform ...)
   if ( $pos = strpos($operator,":") ) {  # not ==
@@ -59,6 +62,8 @@ function GetWhereExp( $field, $operator, $querystring ) {
     case 'LLIKE':  
     case 'XLIKE':
     case '=':
+      $querystring = str_replace('*', '%', trim($querystring)); 
+      $querystring = str_replace('?', '_', $querystring); 
     	$syntax = new Syntax($field, $operator, lex( trim($querystring) ) );
       $ret = $syntax->S();
       if( $ret == "_SYNTAX_ERROR" ) {
@@ -114,7 +119,7 @@ if( $debug ) {
     $tbl_count=0;
     while( list( , $cond) = each( $conds )) {
       if( !isset($cond) OR !is_array($cond) 
-                        OR !$cond['operator'] OR !$cond['value'])
+                        OR !$cond['operator'] OR ($cond['value']==""))
         continue;             # bad condition - ignore
 
       # fill arrays according to this condition
@@ -125,8 +130,8 @@ if( $debug ) {
         if( ($fid=='operator') OR ($fid=='value') )
           continue;           # it is not field_id parameters - skip it for now
           
-        if( !$fields[$fid] )  # bad field_id - skip
-          continue;
+        if( !$fields[$fid] OR ($cond[$fid]=="")) 
+          continue;            # bad field_id or not defined condition - skip
           
         if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
           $select_conds[] = GetWhereExp( 'item.'.$fields[$fid]['in_item_tbl'],
@@ -288,6 +293,9 @@ if( $debug ) {
 
 
   # get result --------------------------
+if( $debug ) 
+  $db->dquery($SQL);
+ else 
   $db->query($SQL);
 
   while( $db->next_record() ) 
@@ -823,6 +831,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.22  2001/11/05 13:32:16  honzam
+searching improved - possible to use wildcards * and ? in searchstring
+
 Revision 1.21  2001/10/24 16:43:37  honzam
 search expressions with AND, OR, NOT, (, ) allowed in conditions; fixed bug in search (INNER JOIN replaced by LEFT JOIN to content table
 
