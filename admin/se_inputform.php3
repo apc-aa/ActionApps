@@ -108,7 +108,7 @@ if( $update ) {
                   break;
       case "mch":
       case "rio":
-      case "sel": $isf = "$input_show_func_f:$input_show_func_c";
+      case "sel": $isf = "$input_show_func_f:$input_show_func_c:$input_show_func";
                   break;
 	  case "hco":
       case "pre": 
@@ -127,7 +127,7 @@ if( $update ) {
     $varset->add("text_stored", "number", ((($input_validate=="number") 
                                          OR ($input_validate=="bool")  
                                          OR ($input_validate=="date")) ? 0:1));
-    $SQL = "UPDATE field SET ". $varset->makeUPDATE() . 
+   $SQL = "UPDATE field SET ". $varset->makeUPDATE() . 
            " WHERE id='$fid' AND slice_id='$p_slice_id'";
 
     if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
@@ -197,6 +197,7 @@ if( !$update ) {      # load defaults
     case "fil": $input_show_func = substr($fld[input_show_func],4);
                 break;
     case "pre":
+	case "sel": list($input_show_func_f,$input_show_func_c,$input_show_func) =explode(':', $fld[input_show_func]);
     case "wi2":
     case "iso":
     case "hco":
