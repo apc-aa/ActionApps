@@ -273,7 +273,7 @@ define("L_PARAM_WIZARD_FUNC_F_C_EXAMPLE1_PARAMS","!:Email#");
 define("L_PARAM_WIZARD_FUNC_F_C_EXAMPLE2_DESC","Print image height attribute, if <i>the field</i> is filled, nothing otherwise.");
 define("L_PARAM_WIZARD_FUNC_F_C_EXAMPLE2_PARAMS","!:height=");
 define("L_PARAM_WIZARD_FUNC_F_U_NAME","user function");
-define("L_PARAM_WIZARD_FUNC_F_U_DESC","calls a user defined function (see How to create new aliases in /doc/faq.html)");
+define("L_PARAM_WIZARD_FUNC_F_U_DESC","calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)");
 define("L_PARAM_WIZARD_FUNC_F_U_PAR0_NAME","function");
 define("L_PARAM_WIZARD_FUNC_F_U_PAR0_DESC","name of the function in the include/usr_aliasfnc.php3 file");
 define("L_PARAM_WIZARD_FUNC_F_U_PAR0_EXAMPLE","usr_start_end_date_cz");
