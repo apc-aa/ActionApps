@@ -141,8 +141,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     if( isset($item) && ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
-      if (! isField($parts[1])) 
-        huhe("Warning: i_s: $parts[1] is not a field, don't wrap it in { } ");
+      if ($parts[1] && ! isField($parts[1])) 
+        huhe("Warning: $out: $parts[1] is not a field, don't wrap it in { } ");
       $fce = $parts[2];
       return QuoteColons($level, $maxlevel, $item->$fce($parts[1], $parts[3]));
       # QuoteColons used to mark colons, which is not parameter separators.

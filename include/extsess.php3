@@ -81,7 +81,7 @@ class DB_AA extends DB_Sql {
   }  
 }
 
-class AA_CT_Sql extends CT_Sql {
+class AA_CT_Sql extends CT_Sql {	## Container Type for Session is SQL DB
   var $database_class = "DB_AA";          ## Which database to connect...
   var $database_table = "active_sessions"; ## and find our session data in this table.
 }

@@ -57,7 +57,20 @@ $INSERT_TYPES["items"]["boo"] =
 array ("name" => _m("Boolean = store 0 or 1"));
 $INSERT_TYPES["items"]["fil"] =
 array ("name" => _m("File = uploaded file"),
-       "desc" => _m("Stores the uploaded file and a link to it."));
+       "desc" => _m("Stores the uploaded file and a link to it, parameters only apply if type is image/something."),
+       "params"=>array(
+        array("name"=>_m("Maximum image width"),
+              "type"=>"INT",
+              "example"=>400),
+        array("name"=>_m("Maximum image height"),
+              "desc"=>_m("The image will be resampled to be within these limits, while retaining aspect ratio."),
+              "type"=>"INT",
+              "example"=>"650),
+        array("name"=>_m("Other fields"),
+              "desc"=>_m("List of other fields to receive this image, separated by ##"),
+              "type"=>"STRID",
+              "example"=>"image..........2")
+       ));
 $INSERT_TYPES["items"]["uid"] =
 array ("name" => _m("User ID = always store current user ID"),
        "desc" => "Inserts the identity of the current user, no matter what the user sets.");

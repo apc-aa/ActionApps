@@ -309,7 +309,7 @@ if( $items AND is_array($items) ) {   # shows all $items[] as fulltext one after
 //  $r_state_vars = StoreVariables(array("items")); # store in session
   while(list($k) = each( $items ))
     $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
-    $zids = new zids($ids,"l");
+  $zids = new zids($ids,"l");
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, $zids, 0,$zids->count(), $sess->MyUrl($slice_id, $encap));
   $itemview->print_itemlist();
   ExitPage();

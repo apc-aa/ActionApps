@@ -33,15 +33,21 @@ http://www.apc.org/
 # go to the database when something is needed.
 
 require_once "../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+//require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3"; // Pack and unpack ids
+require_once $GLOBALS["AA_INC_PATH"]."viewobj.php3"; //GetViewsWhere
 
 class slice {
     var $name;  # The name of the slice
-    var $id;    # The Id of the slice
+    var $unpackedid;    # The unpacked id of the slice i.e. 32 chars
+    var $fields;
 
     function slice($init_id="",$init_name=null) {
-        $this->id = $init_id; // unpacked id
+        global $errcheck; 
+        if ($errcheck && ! ereg("[0-9a-f]{32}",$init_id)) 
+            huhe(_m("WARNING: slice: %s doesn't look like an unpacked id",
+                array($init_id)));
+        $this->unpackedid = $init_id; // unpacked id
         if (isset($init_name)) $this->name = $init_name;
     }
 
@@ -54,18 +60,20 @@ class slice {
         if ($force)   // Ignore existing fields (not normally used)
             $fieldsreq = $fields;
         else
+            reset($fields);
             foreach ($fields as $f) 
                 if (!isset($this->$f))
                     $fieldsreq[] = $f;
         if (isset($fieldsreq)) {
             $SQL = "SELECT ".implode(",",$fieldsreq).
-                " FROM slice WHERE id = '".q_pack_id($this->id) . "'";
+                " FROM slice WHERE id = '".$this->sql_id(). "'";
             $db3->tquery($SQL);
             if (! $db3->next_record()) {
                 if ($GLOBALS[errcheck]) 
-                    huhl("Slice ".$this->id." is not a valid slice");
+                    huhl("Slice ".$this->unpacked_id()." is not a valid slice");
             }
             else {
+                reset($fieldsreq);
                 foreach ($fieldsreq as $f)
                     $this->$f = $db3->f($f);
             }  
@@ -76,10 +84,34 @@ class slice {
         $this->getfields("name");
         return $this->name;
     }
+
+    // Return a 32 character id
+    function unpacked_id() {
+        return $this->unpackedid;
+    }
+
+    // Return an id in a form that can be passed to sql, (needs outer quotes)
+    function sql_id() {
+        return addslashes(pack_id128($this->unpackedid));
+    }
+
+    // fetch the fields
+    function fields() {
+        if (!isset($this->fields)) {
+            $this->fields = GetSliceFields($this->unpacked_id());
+        }
+        return $this->fields;
+    }
+
+    // Get all the views for this slice
+    function views() {
+        $SQL = "slice_id = '".$this->sql_id()."'";
+        return GetViewsWhere($SQL);
+    }
 }
 
 class slices {
-    var $a;     # Array unpackedsliceid -> slice obj
+    var $a;     # Array unpackedsliceid -> slice obj 
 
     // Create slices array from unpacked slice ids
     function slices($iarr) {
@@ -88,6 +120,11 @@ class slices {
         foreach($iarr as $unpackedsliceid) {
             $this->a[$unpackedsliceid] = new slice($unpackedsliceid);
         }
+    }
+
+    // Return array of slice_obj
+    function objarr() {
+        return $this->a;
     }
 }
 

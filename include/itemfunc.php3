@@ -1171,6 +1171,7 @@ echo '
       var relatedwindow;  // window for related stories
       
       function OpenRelated(varname, sid, mode, design) {
+        global($sess);
         if ((relatedwindow != null) && (!relatedwindow.closed)) {
           relatedwindow.close()    // in order to preview go on top after open
         }

@@ -1,6 +1,10 @@
+02/20/03 - added parameter wizzard for uploaded file (mitra)
+        - fixed warning about missing field in fpr example {alias::f_e:add} 
+        - more functionality in sliceobj
+        - another check in stringexpand
+        - fixed permissions to allow adding AUTHOR EDITOR ADMINISTRATOR (may not be ok)
 02/18/03 - added slice_id=$slice_id automatically to the menu_util and removed
            from the items in menu.php3 (jakub)
-
 02/17/03 - updated sql_update to match the current changes
 02/17/03 - fixed the bug in TableEdit with not deleting items
 02/17/03 - fixed the bug in Item Manager with ignoring 0 in the Search box (jakub)
@@ -21,7 +25,6 @@
            allow to view them in a table (jakub)
 02/17/03 - finished the Alert module which cooperates with the Reader management
            slice, added events to event_handler (jakub)
-           
 02/16/03 - removed include of nonexistant en_site_lang.php3 from modedit (mitra)
         - added roles to um_util.php3.PrintModuleAddRow - possibly wrong
         - fixed bug in init_page stopping non-superusers logging in

@@ -128,7 +128,11 @@ function PrintModuleAddRow($mod_options, $no) {
                <option> </option>
                $mod_options</select></td>
          <td><select name=\"new_module_role[$no]\">
-               <option> </option></select></td>
+               <option> </option>
+<option>AUTHOR</option>
+<option>EDITOR</option>
+<option>ADMINISTRATOR</option>
+</select></td>
         </tr>";
 }
 

@@ -34,7 +34,7 @@ http://www.apc.org/
 # go to the database when something is needed.
 
 #require_once "../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; #DB_AA etc
+//require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; #DB_AA etc
 
 class view {
     var $id;
