@@ -658,7 +658,7 @@ function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
   $option_no=0;
   while(list($k, $v) = each($selected)) {
     echo "<option value=\"". htmlspecialchars($k)."\"> ".htmlspecialchars($arr[$k])." </option>\n";
-    $onption_no++;
+    $option_no++;
   }
   if ($option_no == 0) {
     echo '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
