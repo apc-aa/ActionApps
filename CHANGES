@@ -1,3 +1,4 @@
+04/15/03 - fixed bug in include/item.php3 (addslashes needed in a query) -pep
 04/15/03 - fixed require bug in util.php3 (uses writelog)
 04/14/03 - added unsubscribe option to Alerts (_#UNSBFORM)
 (jakub)  - added "Show Not So Nice" to Anonym Wizard to be used when "Show" does not work

@@ -568,7 +568,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
                 WHERE slice_id  = '$p_blurbSliceId' AND
                      c1.field_id    = '$fieldToMatch' AND
                      c2.field_id    = '$fieldToReturn' AND
-                     c1.text        = '$stringToMatch'";
+                     c1.text        = '".addslashes($stringToMatch)."'";
       }
       $db = getDB();
       $db->tquery($SQL);
