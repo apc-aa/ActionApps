@@ -530,11 +530,11 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
     // Look for {_#.........} and expand now, rather than wait till top
     elseif (isset($item) && (substr($out,0,2) == "_#")) {
-        return $item->substitute_alias_and_remove($out);
+        return QuoteColons($level, $maxlevel,$item->substitute_alias_and_remove($out));
     }
     // first char of alias is @ - make loop to view all values from field
     elseif ( (substr($out,0,1) == "@") OR (substr($out,0,5) == "list:")) {
-        return parseLoop($out, $item);
+        return QuoteColons($level, $maxlevel, parseLoop($out, $item));
     }
     // look for {const_*:} for changing viewing type of constants
     elseif (substr($out, 0, 6) == "const_") {
@@ -548,7 +548,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
            group $group_id */
         $value = getConstantValue($group_id, $what, $item->getval($parts[0]));
 
-        return $value;
+        return QuoteColons($level, $maxlevel, $value);
     }
      // Put the braces back around the text and quote them if we can't match
     else {
