@@ -250,17 +250,23 @@ function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
 function GetIDPerms ($id, $objectType, $flags = 0) {
     
   $db  = new DB_AA;
-
-  $sql=sprintf("SELECT  objectid as id, perm from perms 
-                 WHERE object_type = '%s' AND userid = '%s'",
-                 $objectType, $id);
-
+  
+  if (!($flags & 1)) {
+    $groups = GetMembership($id);
+  }
+  
+  for ($i = 0; $i < count($groups); $i++) {
+    $gsql .= sprintf("OR userid = '%s' ", $groups[$i]);
+  }
+  
+  $sql=sprintf("SELECT objectid as id, perm from perms 
+                WHERE object_type = '%s' AND (userid = '%s' %s)",
+                $objectType, $id, $gsql);
+                 
   $sth = $db->query( $sql );
   if (!$sth) return false;
 
   while($row = mysql_fetch_array($sth)) {
-    #  $apcaci = ParseApcAci( $row["perm"] );
-    // madbeer - honza, is this correct? Or do I need to modify [perm] more?
     $by_id[ $row[id] ] = $row[perm];
   }  
   return $by_id;
@@ -609,6 +615,9 @@ function in_array($needle,$haystack)
 
 /*
 $Log$
+Revision 1.7  2000/08/01 15:15:36  kzajicek
+Added support for membership in groups in GetIDPerms()
+
 Revision 1.6  2000/07/28 14:37:33  kzajicek
 Unified behaviour of DelUser, DelGroup in LDAP and SQL. Default is now
 delete any links to removed subject in permission system (to keep integrity).
