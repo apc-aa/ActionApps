@@ -445,7 +445,21 @@ function GetViewFromDB($view_param, &$cache_sid) {
         # get alias list from database and possibly from url
         list($fields,) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);
-
+       //mlx stuff    
+       if(!$slice_info)
+          $slice_info = GetSliceInfo($slice_id);
+       if(isMLXSlice($slice_info)) {  //mlx stuff, display the item's translation
+          $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
+          //make sure the lang info doesnt get reused with different view
+          $GLOBALS['mlxView'] = new MLXView($mlx,$slice_info[MLX_SLICEDB_COLUMN]);
+          $GLOBALS['mlxView']->preQueryZIDs($slice_info[MLX_SLICEDB_COLUMN],$conds,$slices); 
+          $zids3 = new zids($zids->longids());
+          $GLOBALS['mlxView']->postQueryZIDs($zids3,$slice_info[MLX_SLICEDB_COLUMN],$slice_id, $conds, $sort,
+                                             $slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
+                                             $defaultCondsOperator,$GLOBALS['nocache']);
+          $zids->a = $zids3->a;
+          $zids->type = $zids3->type;
+        }
         $itemview = new itemview($format, $fields, $aliases, $zids,
                                   0, 1, shtml_url(), "");
         $ret=$itemview->get_output_cached("view");
@@ -584,7 +598,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $sort  = GetViewSort($view_info, $param_sort);
     
     //mlx stuff    
-    $slice_info = GetSliceInfo($slice_id);
+    if(!$slice_info)
+      $slice_info = GetSliceInfo($slice_id);
     if(isMLXSlice($slice_info)) {
       $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
       //make sure the lang info doesnt get reused with different view

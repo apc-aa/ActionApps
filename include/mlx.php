@@ -28,6 +28,7 @@ define ('MLX_CTRLIDFIELD','mlxctrl.........');
    ('text' means anything beginning with 'mlxctrl' **/
 define ('MLX_LANG2ID_TYPE','mlxctrl');
 
+/** set to 1 to display trace info **/
 define ('MLX_TRACE',0);
 
 /** HTML defines **/
@@ -348,7 +349,6 @@ class MLXView
 	///@param slice_id is a fallback in case mlx is missing
 	function MLXView($mlx,$slice_id=0) { 
 		if($mlx) {
-			huhl("mls set");
 			$arr = explode("-",$mlx);
 			foreach($arr as $av) {
 				$av = strtoupper($av);
@@ -417,7 +417,8 @@ class MLXView
 		while(list($upContId,$count) = each($arr)) {
 			if($count > 1) // already primary
 				continue;
-//			__mlx_dbg(unpack_id128($upContId),"ContentID");
+			if(MLX_TRACE)
+				__mlx_dbg(unpack_id128($upContId),"ContentID");
 			//strangely enough this works!
 			$sql = "SELECT  c2.field_id,c2.text FROM `content` AS c1" //`field_id`,`text`
 				." LEFT JOIN `content` AS c2 ON ("
@@ -428,7 +429,8 @@ class MLXView
 			$db->tquery($sql);
 			unset($aMlxCtrl);
 			while( $db->next_record() ) { //get all translations
-//				__mlx_dbg(array($db->f('field_id'),unpack_id128($db->f('text'))),"JOIN");
+				if(MLX_TRACE)
+					__mlx_dbg(array($db->f('field_id'),unpack_id128($db->f('text'))),"JOIN");
 				$aMlxCtrl[(string)$db->Record[0]] = $db->Record[1];
 			}
 			//__mlx_dbg($aMlxCtrl,"aMlxCtrl");
@@ -438,7 +440,8 @@ class MLXView
 				if(!$fieldSearch)
 					continue;
 				if($bFound) {
-					//__mlx_dbg(unpack_id128($fieldSearch),"unset");
+					if(MLX_TRACE)
+						__mlx_dbg(unpack_id128($fieldSearch),"unset");
 					unset($arr[(string)$fieldSearch]);
 					//__mlx_dbg($arr,"arr");
 				} else {
