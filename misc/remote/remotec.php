@@ -4,7 +4,7 @@
 # NOTE: you need to change these variables
 #$host  = 'http://127.0.0.1';
 $host  = 'http://www.apc.org';
-$cachedir= '/tmp/cache/';
+$cachedir= '/tmp/cache';
 $cache4secs = 1000;
 
 if (! $host ){
@@ -141,6 +141,9 @@ if ( ( file_exists($target) ) and ( $age < $cache4seconds ) ) {
 }
 /*
 $Log$
+Revision 1.4  2001/10/19 08:00:31  madebeer
+fixed typo in cachedir
+
 Revision 1.3  2001/10/19 07:37:46  madebeer
 new remotec.php does not rely on any libraries
 
