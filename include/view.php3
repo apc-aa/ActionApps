@@ -428,7 +428,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                     'html_format' => ($view_info[flag] & DISCUS_HTML_FORMAT),
                     'parent_id' => $view_param["parent_id"],
                     'disc_ids' => $view_param["disc_ids"]);
-      if ($view_param["disc_type"] == "list" || is_array ($view_param["disc_ids"]))
+      if (($view_param["disc_type"] == "list") || is_array ($view_param["disc_ids"]))
           $disc['type'] = "list";
       else if ($view_param["add_disc"])
           $disc['type'] = "adddisc";

@@ -538,14 +538,15 @@ function UnpackFieldsToArray($packed, $fields) {
 }
 
 # function fills the array from constants table
-function GetConstants($group, $order='pri', $column='name') {
+
+function GetConstants($group, $order='pri', $column='name', $keycolumn='value') {
   $db = getDB();
   if( $order )
     $order_by = "ORDER BY $order";
-  $db->tquery("SELECT name, value FROM constant
+  $db->tquery("SELECT $keycolumn, $column FROM constant
                WHERE group_id='$group' $order_by");
   while($db->next_record()) {
-    $key = $db->f('value');
+    $key = $db->f($keycolumn);
       // generate unique keys by adding space
     while( $already_key[$key] ) {
       $key .= ' ';                   // add space in order we get unique keys
@@ -1793,5 +1794,12 @@ function IncludeManagerJavascript() {
         //-->
     </script>
     <script language="JavaScript" type="text/javascript" src="'.$AA_INSTAL_PATH.'javascript/manager.js"></script>';
+}
+
+/** If $value is set, returns $value - else $else */
+function get_if($value, $else, $else2='aa_NoNe') {
+    return $value ? $value :
+           ($else ? $else :
+           (($else2=='aa_NoNe') ? $else : $else2));
 }
 ?>

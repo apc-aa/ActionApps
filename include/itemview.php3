@@ -213,9 +213,9 @@ class itemview {
 
   // show discussion comments in the thread mode
   function get_disc_thread(&$CurItem) {
-    if (!$this->slice_info['d_showimages']) {
+//    if (!$this->slice_info['d_showimages']) {
        $order =  $this->slice_info['d_order'];
-    }
+//    }
 
     $d_content = GetDiscussionContent($this->disc['item_id'], "",$this->disc['vid'],true,$order,$this->disc['html_format'],$this->clean_url);
     $d_tree = GetDiscussionTree($d_content);
