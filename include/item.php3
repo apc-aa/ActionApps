@@ -584,7 +584,6 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
 
   # standard aliases to generate RSS .91 compliant meta-information
   function f_r($col, $param="") { 
-    global $db2;
     static $title, $link, $description; 
 
     $p_slice_id = $this->getval('slice_id........');
@@ -595,21 +594,22 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
 
       // RSS chanel (= slice) info
       $SQL= "SELECT * FROM slice WHERE id='$p_slice_id'";
-      $db2->query($SQL);
-      if (!$db2->next_record()){ echo "Can't get slice info"; exit;  }
+      $db = getDB(); $db->query($SQL);
+      if (!$db->next_record()){ echo "Can't get slice info"; exit;  }
 
-      $title           = $this->RSS_restrict( $db2->f(name), 100);
-      $link            = $this->RSS_restrict( $db2->f(slice_url), 500);
-      $name            = $db2->f(name);
-      $owner           = $db2->f(owner);
-      //$language        = RSS_restrict( strtolower($db2->f(lang_file)), 2);
+      $title           = $this->RSS_restrict( $db->f(name), 100);
+      $link            = $this->RSS_restrict( $db->f(slice_url), 500);
+      $name            = $db->f(name);
+      $owner           = $db->f(owner);
+      //$language        = RSS_restrict( strtolower($db->f(lang_file)), 2);
 
-      $SQL= "SELECT name, email FROM slice_owner WHERE id='$owner'";
-      $db2->query($SQL);
-      if (!$db2->next_record()) {
+      $SQL = "SELECT name, email FROM slice_owner WHERE id='$owner'";
+      $db->query($SQL);
+      if (!$db->next_record()) {
         echo "Can't get slice info"; exit;
       }
-      $description     = $this->RSS_restrict( $db2->f(name).": $name", 500);
+      $description     = $this->RSS_restrict( $db->f(name).": $name", 500);
+      freeDB($db);
 
     }
     //   return "tt: $col : $param<BR>";
@@ -621,14 +621,16 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
 
     $p = ParamExplode($param);
 
-    if ($col == 'hl_href.........') {
-      if (! $p[1] )
-        $redirect = strtr(AA_INSTAL_URL, ':', '#:') .
+    if ($col == 'hl_href.........' && strlen($p[0] == 16)) {
+      $redirect  = $p[1] ? $p[1] : 
+            strtr(AA_INSTAL_URL, ':', '#:') .
                                   "slice.php3?slice_id=$slice_id&encap=false";
 //      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
       return $this->RSS_restrict(strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/'),500) ;
     }
 
+    if (strpos($p[0],"{")) // It can't be a field, must be expandable
+      return $this->RSS_restrict(strtr( $this->unalias($p[0]), '#/', ':/'),500) ;
     if ( $foo = $this->getval($col))
       return $this->RSS_restrict( $foo, $p[0]);
   }

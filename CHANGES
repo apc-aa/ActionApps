@@ -1,6 +1,7 @@
 04/28/03 - introduced AA_BASE_DIR into config.php3 
-(mitra)  - se_inputform.php3 can be called with onlyupdate and parameters to update a single field
-            as called from summarize.php3
+(mitra)  - se_inputform.php3 can be called with onlyupdate and parameters 
+            to update a single field as called from summarize.php3
+         - changed f_r to handle p[1]
          - Updates to summarize.php3 (mitra)
 04/27/03 - picture is not resized if no width and height is given
 (honzam) - global category support for Links module
