@@ -161,7 +161,7 @@ class zids {
 
     // Debugging function to print zids, don't rely on the output format, its only for debuging
     function printobj() {
-        print("zids object: type=".$this->type." (".implode(",",$this->a).")");
+        print("zids object: type=".$this->type." (". ($this->count()<=0 ? 'Empty' : implode(",",$this->a) ).")");
     }
 
     # Return one-character type for standard types
