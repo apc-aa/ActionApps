@@ -1,0 +1,365 @@
+<HTML>
+<HEAD>
+<TITLE>ActionApps off-line filing</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1250">
+<style> <!--
+ TABLE {  	background-color : #FDD72D; 	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; 	font-size : x-small; 	color : Black;  }
+ INPUT,SELECT {	background-color : #FFF6EE;	color : Black; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;	font-size : xx-small; }
+ .tmavy { 	background-color : #00416B; 	color : White; 	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; 	font-size : x-small; 	font-weight : bold; }
+ .jmeno {	background-color : #FDD72D; 	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; 	font-weight : bold; 	font-size : x-small; 	color : Black; }
+ .txt {  	background-color : #FDD72D;  	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; 	font-size : x-small; 	color : Black;  }
+ .nadpis {	background-color : #00416B;  	color : White; 	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; 	font-size : x-small; 	font-weight : bold; }
+ .inpwide {	background-color : #FFF6EE;	color : Black;	width : 100%;	font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; font-size : xx-small; }
+-->
+</style>
+<SCRIPT LANGUAGE="JavaScript">
+
+<!--
+/*
+ * Javascript for OffLine2Slice filling - begin *******************************
+ */
+	var i_cb = 0;
+	var second_part = false;
+	var oneFile = new String("");
+	var wddx = new String("");
+//	var hm = 0;	   // how many (forms in file)
+
+// replace bad characters in string
+	function uprav( retezec ) {
+		instr = new String(retezec);
+		outstr = new String("");
+		
+		for (var i=0; i<instr.length; i++) {
+			if (instr.charAt(i) == "<") outstr = outstr.concat( "&lt;" )
+			else if (instr.charAt(i) == ">") outstr = outstr.concat( "&gt;" );
+			else if (instr.charAt(i) == "&") outstr = outstr.concat( "&amp;" )
+			else outstr = outstr.concat( instr.charAt(i) );
+		}
+		
+		return outstr;
+	}
+	
+// trims begin and end characters (mainly whitespaces)
+	function Trim(myString, trimCharacter)
+	{
+    	if (trimCharacter.length > 1)
+    	{
+        	alert("Error: Trimed character is too long (must be just one character)");
+        	return myString;
+    	}
+	    
+		newString = myString;
+		while (newString.charAt(0) == trimCharacter)
+    	{
+    	    newString = newString.substring(1,newString.length);
+    	}
+	    
+		while (newString.charAt(newString.length - 1) == trimCharacter)
+	    {
+    	    newString = newString.substring(0,newString.length - 1);
+    	}
+
+    	return newString;
+	}
+	
+	function formOnClick() {	// init
+    document.forms["base"].elements["publish_date...."].value = Date.UTC(document.forms["base"].foo_rok.value, (document.forms["base"].foo_mesic.value)-1, document.forms["base"].foo_den.value)/1000;
+		wddx = "<wddxPacket><header/><data><struct>";
+		i_cb = 0;
+		coreOnClick();			// power code
+	}
+
+	function coreOnClick() {
+		var ret = new String("");
+		var regExp = new RegExp("^foo", "i");
+		
+		for (var i=i_cb; i < document.forms["base"].elements.length; i++) {
+			var elem = document.forms["base"].elements[i];
+			if ( regExp.test( elem.name ) ) continue;
+			if (elem.type == "radio") {
+				if (elem.checked) {
+					ret = "<string>";
+					ret = ret.concat( uprav( elem.value ), "</string>");
+				}
+				else continue;
+			}
+			else if (elem.type == "select-one") {
+				ret = "<string>";
+				ret = ret.concat( uprav( elem.options[ elem.selectedIndex ].text ), "</string>" );
+			}
+			else if (elem.type == "select-multiple") {
+				ret = "";
+				var selCount = 0;
+				for (var j=0; j < elem.length; j++)
+					if ( elem.options[j].selected ) selCount++;
+				ret = ret.concat("<array length='", selCount, "'>");
+				for (j=0; j < elem.length; j++)
+					if ( elem.options[j].selected )
+						ret = ret.concat("<string>", uprav( elem.options[j].text ), "</string>");
+				ret = ret.concat("</array>");
+			}
+			else if ((elem.type == "button") ||
+					 (elem.type == "reset")  ||
+					 (elem.type == "submit")) {
+				continue;
+			}
+			else if (elem.type == "file") {
+				if ( Trim(elem.value," ") == "") continue;
+				if ( !second_part ) { // (i_cb == 0) {	// first part - file processing
+					oneFile = "<array length='3'>";
+					oneFile = oneFile.concat("<string>base64</string>");	// hardcoded yet
+					oneFile = oneFile.concat("<string>" + elem.value + "</string>");
+					document.OffLine2Slice.retrieve( elem.value );
+					i_cb = i;		// to return on the same element
+					second_part = true;  // to finish up the processing, then
+					setTimeout('wait(true)',1000);
+					return;
+				}
+				else {		// callback - finish up the file processing
+					oneFile = oneFile.concat("<string>" + document.forms["hidden_form"].elements["offline_data"].value + "</string>");
+					oneFile = oneFile.concat("</array>");
+					//i_cb = 0;		// normal mode
+					second_part = false;
+				}
+				ret = oneFile;
+			}
+			else {
+				ret = "<string>";
+				ret = ret.concat( uprav( elem.value ), "</string>" );
+			}
+			
+			wddx = wddx.concat("<var name='", elem.name, "'>", ret, "</var>");
+		}
+		
+		wddx = wddx.concat("</struct></data></wddxPacket>");
+
+	//  save to file (name of file is applet parameter)
+		document.OffLine2Slice.store(wddx);
+		var re = document.OffLine2Slice.retrieveError();
+	    if ( re != "" ) alert( re );
+		else alert( "Obsah formulare ulozen." );
+	}
+
+//	boo==true -> do not send file content (in second form), but adds it to wddxPacket
+	function wait(boo) {
+	   var re = new String("");
+
+	   if  ( document.OffLine2Slice.retrieved() ) {
+	      re = document.OffLine2Slice.retrieveError();
+	      if ( re == "" ) {   // no error
+	         document.forms["hidden_form"].elements["offline_data"].value = document.OffLine2Slice.readValue(boo);
+			 if (boo) setTimeout('coreOnClick()',0);	// continue with form processing
+		     else document.forms["hidden_form"].submit();	 // send to server
+		  }
+		  else {
+		  	alert("Error: " + re);
+			
+			//document.forms["base"].reset();
+		  }
+	   }
+	   else setTimeout('wait('+boo+')',1000);
+	}
+	
+	function formRetrieve() {
+	   document.OffLine2Slice.retrieve();
+	   setTimeout('wait(false)',1000);
+	}
+	
+	function formDelete() {
+	   document.OffLine2Slice.howMany();
+	   setTimeout('waitHM()',500);
+	}
+	
+	function waitHM() {
+	   if ( document.OffLine2Slice.retrievedHM() ) {
+	      var hm = document.OffLine2Slice.retrieveHM();
+	      if ( hm == 0 ) alert( "No data stored." );
+	      else {
+	   	      if ( confirm('File contains records, which were not send to server (' + hm + '). Do you really want to delete the file?') )
+		   	     document.OffLine2Slice.deleteFile();
+		      else alert('File is saved.');
+		  } 
+	   }
+	   else setTimeout('waitHM()',500);
+	}
+
+/*
+ * Javascript for OffLine2Slice filling - end ********************************
+ */
+
+/*
+ * Form specific Javascript - begin - you can edit it as you want ************
+ */
+
+function update(o) {
+  var target, source, i, ins;
+
+  for( i = 0; i < document.forms["base"].elements.length; i++) {
+     if(document.forms["base"].elements[i].name == o.name) { break; }
+  }
+
+  target = document.forms["base"].elements[i-1];
+  source = document.forms["base"].elements[i];
+
+  if( o.selectedIndex == 0) { return 1; }
+
+  ins = "[" + source.options[o.selectedIndex].text + "]";
+
+  if(target.value) { ins = ", " + ins; }
+  target.value += ins;
+  
+  return 1;
+}
+
+function preservedReset() {
+  var zdroj, rok, mesic, den, rocnik, cislo, stranka;
+  zdroj   = document.forms["base"].elements["source.........."].value;
+  rok     = document.forms["base"].foo_rok.value;
+  mesic   = document.forms["base"].foo_mesic.value;
+  den     = document.forms["base"].foo_den.value;
+  rocnik  = document.forms["base"].elements["year...........1"].value;
+  cislo   = document.forms["base"].elements["number.........1"].value;
+  stranka = document.forms["base"].elements["page...........1"].value;
+  document.forms["base"].reset();
+  document.forms["base"].elements["source.........."].value   = zdroj;
+  document.forms["base"].foo_rok.value     = rok;
+  document.forms["base"].foo_mesic.value   = mesic;
+  document.forms["base"].foo_den.value     = den;
+  document.forms["base"].elements["year...........1"].value  = rocnik;
+  document.forms["base"].elements["number.........1"].value   = cislo;
+  document.forms["base"].elements["page...........1"].value = stranka;
+}
+//-->
+</SCRIPT>
+</HEAD>
+
+<BODY>
+<CENTER>
+<APPLET NAME="OffLine2Slice" CODE="OffLine2Slice.class" WIDTH="95%" HEIGHT="45">
+		<PARAM NAME="msg" VALUE="APC ActionApps - slice off-line filling">
+		<PARAM NAME="filename" VALUE="C:\\offlinedata.txt">
+</APPLET>
+</CENTER>
+<FORM NAME="base">
+<TABLE WIDTH="95%" ALIGN="center" BORDER="0" CELLSPACING="2" CELLPADDING="0">
+<TR>
+  <TD COLSPAN="7" class=txt><div class=jmeno>Text:</div>
+  <TEXTAREA NAME="full_text......." rows=10  class=inpwide></textarea></TD>
+</TR>
+<TR>
+  <TD class=jmeno>Title:</TD>
+  <TD COLSPAN="6" class=txt><INPUT NAME="headline........" TYPE="Text" class=inpwide></TD>
+</TR>
+<TR>
+  <TD class=jmeno>Author:</TD>
+  <TD COLSPAN="6" class=txt><INPUT NAME="created_by......" TYPE="Text" class=inpwide></TD>
+</TR>
+<TR>
+  <TD class=jmeno>Source:</TD>
+  <TD COLSPAN="3" class=txt><INPUT NAME="source.........." TYPE="Text" class=inpwide></TD>
+  <TD COLSPAN="3" class=txt><SELECT NAME="foo_zdroj" ONCHANGE="update(this)" class=inpwide>
+<option selected>--- Select option ---</option>
+<option>Alternativa</option>
+<option>Biom</option>
+<option>Ecn.press</option>
+<option>EkoList</option>
+<option>Lidové noviny</option>
+<option>Metro</option>
+<option>Respekt</option>
+      </SELECT></TD>
+</TR>
+<TR>
+  <TD class=jmeno>Date:</TD>
+  <TD class=jmeno>Year:</TD>
+  <TD class=txt><select name="foo_rok">
+   <option value="1998">1998</option>
+   <option value="1999">1999</option>
+   <option value="2000">2000</option>
+   <option value="2001" selected>2001</option>
+   <option value="2002">2002</option>
+   <option value="2003">2003</option>
+   <option value="2004">2004</option>
+  </select></TD>
+  <TD class=jmeno>Month:</TD>
+  <TD class=txt><select name="foo_mesic">
+   <option value="1" selected>Leden</option>
+   <option value="2">Únor</option>
+   <option value="3">Březen</option>
+   <option value="4">Duben</option>
+   <option value="5">Květen</option>
+   <option value="6">Červen</option>
+   <option value="7">Červenec</option>
+   <option value="8">Srpen</option>
+   <option value="9">Září</option>
+   <option value="10">Říjen</option>
+   <option value="11">Listopad</option>
+   <option value="12">Prosinec</option>
+  </select>  </TD>
+  <TD class=jmeno>Day:</TD>
+  <TD class=txt><select name="foo_den">
+   <option value="1" selected>1</option>
+   <option value="2">2</option>
+   <option value="3">3</option>
+   <option value="4">4</option>
+   <option value="5">5</option>
+   <option value="6">6</option>
+   <option value="7">7</option>
+   <option value="8">8</option>
+   <option value="9">9</option>
+   <option value="10">10</option>
+   <option value="11">11</option>
+   <option value="12">12</option>
+   <option value="13">13</option>
+   <option value="14">14</option>
+   <option value="15">15</option>
+   <option value="16">16</option>
+   <option value="17">17</option>
+   <option value="18">18</option>
+   <option value="19">19</option>
+   <option value="20">20</option>
+   <option value="21">21</option>
+   <option value="22">22</option>
+   <option value="23">23</option>
+   <option value="24">24</option>
+   <option value="25">25</option>
+   <option value="26">26</option>
+   <option value="27">27</option>
+   <option value="28">28</option>
+   <option value="29">29</option>
+   <option value="30">30</option>
+   <option value="31">31</option>
+  </select><INPUT TYPE="hidden" NAME="publish_date...."></TD>
+</TR>
+<TR>
+  <TD class=txt>&nbsp;</TD>
+  <TD class=jmeno>Year:</TD>
+  <TD class=txt><INPUT NAME="year...........1" TYPE="Text" size=8></TD>
+  <TD class=jmeno>Number:</TD>
+  <TD class=txt><INPUT NAME="number.........1" TYPE="Text" size=8></TD>
+  <TD class=jmeno>Page:</TD>
+  <TD class=txt><INPUT NAME="page...........1" TYPE="Text" size=8></TD>
+</TR>
+<TR class=tmavy height=30>
+  <TD COLSPAN="7" class=nadpis align=center><INPUT TYPE="Button" VALUE="New" onClick="preservedReset();">
+  	  			  <INPUT TYPE="Button" VALUE="Store" onClick="formOnClick();">
+  	  			  <INPUT TYPE="Button" VALUE="Send" onClick="formRetrieve();">
+    				  <INPUT TYPE="Button" VALUE="Delete file" onClick="formDelete();">
+          </TD>
+</TR>
+</TABLE>
+</FORM>
+
+<!--
+   The data are stored to offline_data field and the form is automaticaly send
+   to server (automaticaly called submit())
+//-->	 
+<FORM NAME="hidden_form" ACTION="http://aa.ecn.cz/aaa/offline.php3" METHOD="post">
+<INPUT NAME="offline_data" TYPE="hidden">
+<INPUT NAME="slice_id" TYPE="hidden" value="45636f6d6f6e69746f72427942455a4c">
+
+<!-- The url of local page, which allows to delete the datafile. //-->
+<INPUT NAME="del_url" TYPE="hidden" VALUE="C:/java/delete_file.html">
+</FORM>
+
+</BODY>
+</HTML>

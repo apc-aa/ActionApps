@@ -1,0 +1,22 @@
+<HTML>
+<HEAD>
+<TITLE>Off-line file delete page</TITLE>
+<script> <!--
+function delconfirm() {
+if ( confirm('You are going to delete file with stored data from off-line data filling.\nIf you open the file delete_file.html by an accident, click on Cancel!') )
+   	     document.OffLine2Slice.deleteFile();
+  window.setTimeout("goForm();", 1500);
+}
+function goForm() {
+  document.location='c:\\java\\fillform.html';
+}  
+//  -->
+</script>
+</HEAD>
+<BODY onLoad="javascript:delconfirm();">
+<APPLET NAME="OffLine2Slice" CODE="OffLine2Slice.class" WIDTH="350" HEIGHT="50">
+		<PARAM NAME="msg" VALUE="Applet for Off-line slice filling">
+		<PARAM NAME="filename" VALUE="C:\\offlinedata.txt">
+</APPLET>
+</BODY>
+</HTML>
