@@ -191,7 +191,7 @@ $_m["Item: "]
 # include/modutils.php3, row 50
 # include/slicedit.php3, row 68
 $_m["Title"]
-  = "Título";
+  = "Nombre";
 
 # admin/discedit.php3, row 120
 # admin/discedit2.php3, row 49, 108
@@ -1738,7 +1738,10 @@ $_m["Database is not configured correctly or the database is empty.<br>\n"
    ."             Check please the database credentials in <b>include/config.php3</b>\n"
    ."             file <br>or run <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
    ."             which creates AA tables for you."]
-  = "";
+  = "La base de datos no está creada o está vacía.<br>\n"
+   ."             Por favor, verifique la configuración de la base de datos en el archivo <b>include/config.php3</b>\n"
+   ."             <br>y ejecute el script<a href=\"../sql_update.php3\">sql_update.php3</a>,\n"
+   ."             que creará las tablas necesarias para ud..";
 
 # admin/setup.php3, row 173
 $_m[" Init "]
@@ -1758,7 +1761,7 @@ $_m["Can't delete invalid permission."]
 
 # admin/setup.php3, row 199
 $_m["Invalid permission deleted (no such user/group): "]
-  = "";
+  = "Borrado permiso inválido (usuario/grupo inexistente): ";
 
 # admin/setup.php3, row 212
 # admin/mailman_create_list.php3, row 140
@@ -1767,11 +1770,11 @@ $_m["Create"]
 
 # admin/setup.php3, row 268
 $_m["Congratulations! The account was created."]
-  = "";
+  = "¡Enhorabuena! La cuenta ha sido creada.";
 
 # admin/setup.php3, row 270
 $_m["Use this account to login and add your first slice:"]
-  = "";
+  = "A continuación, puede usar esta cuenta para crear su primer canal:";
 
 # admin/setup.php3, row 271
 # admin/slicedit.php3, row 111
@@ -1780,7 +1783,7 @@ $_m["Add Slice"]
 
 # admin/setup.php3, row 274
 $_m["Can't assign super access permission."]
-  = "";
+  = "No se pudo asignar permisos de super administrador.";
 
 # admin/sliceadd.php3, row 52
 $_m["Create New Slice / Module"]
@@ -1793,7 +1796,7 @@ $_m["Module"]
 # admin/slicedel.php3, row 34
 # admin/slicedel2.php3, row 34, 38
 $_m["You don't have permissions to delete slice."]
-  = "";
+  = "Ud. no tiene permisos para borrar el canal.";
 
 # admin/slicedel.php3, row 50, 68
 $_m["Admin - Delete Slice"]
@@ -1829,15 +1832,15 @@ $_m["Only items posted anonymously"]
 
 # admin/slicedit.php3, row 41
 $_m["-\"- and not edited in AA"]
-  = "";
+  = "\"\" y no editado en las AA";
 
 # admin/slicedit.php3, row 42
 $_m["Authorized by a password field"]
-  = "";
+  = "Autorizado por campo clave (password)";
 
 # admin/slicedit.php3, row 43
 $_m["Readers, authorized by HTTP auth"]
-  = "";
+  = "Suscriptores, autorizados por HTTPauth";
 
 # admin/slicedit.php3, row 88
 # include/modutils.php3, row 107
@@ -1909,77 +1912,77 @@ $_m["Language"]
 # admin/slicedit.php3, row 151
 # include/slicedit.php3, row 76
 $_m["File Manager Access"]
-  = "";
+  = "Acceso al administrador de archivos";
 
 # admin/slicedit.php3, row 152
 # include/slicedit.php3, row 77
 $_m["File Manager Directory"]
-  = "";
+  = "Carpeta del administrador de archivos";
 
 # admin/slicedit.php3, row 166
 $_m["Auth Group Field"]
-  = "";
+  = "Campo para autorización grupo";
 
 # admin/slicedit.php3, row 168
 $_m["Mailman Lists Field"]
-  = "";
+  = "Campo para listas Mailman";
 
 # admin/slicedit.php3, row 172
 $_m["Password for Reading"]
-  = "";
+  = "Clave (password) para lectura";
 
 # admin/sliceexp.php3, row 43
 # admin/sliceimp.php3, row 40
 $_m["You are not allowed to export / import slices"]
-  = "";
+  = "Ud. no está autorizado a exportar / importar canales";
 
 # admin/sliceexp.php3, row 62, 144
 $_m["Export slice structure"]
-  = "";
+  = "Exportar estructura del canal";
 
 # admin/sliceexp.php3, row 93, 98
 $_m["Date export error"]
-  = "";
+  = "Error en exportación (fecha)";
 
 # admin/sliceexp.php3, row 107
 $_m["The identificator should be 16 characters long, not "]
-  = "";
+  = "El identificador debe tener exactamente 16 caracteres, no ";
 
 # admin/sliceexp.php3, row 123
 $_m["You must select one or more slices to backup"]
-  = "";
+  = "Debe seleccionar uno o más canales a exportar";
 
 # admin/sliceexp.php3, row 162
 $_m["Choose, if you want export slices structure, data or both."]
-  = "";
+  = "Selecciones si desea exportar la estructura del canal, sus ítems, o ambas cosas.";
 
 # admin/sliceexp.php3, row 163
 $_m["Export structure"]
-  = "";
+  = "Exportar estructura";
 
 # admin/sliceexp.php3, row 164
 $_m["Export data"]
-  = "";
+  = "Exportar datos";
 
 # admin/sliceexp.php3, row 165
 $_m["Export views"]
-  = "";
+  = "Exportar vistas";
 
 # admin/sliceexp.php3, row 168
 $_m["Use compression"]
-  = "";
+  = "Comprimir";
 
 # admin/sliceexp.php3, row 170
 $_m["HEX output"]
-  = "";
+  = "Salida Hexadecimal";
 
 # admin/sliceexp.php3, row 171
 $_m["Store exported data in file"]
-  = "";
+  = "Guardar la información exportada en un archivo";
 
 # admin/sliceexp.php3, row 174
 $_m["Export data from specified dates: "]
-  = "";
+  = "Exportar información de los canales: ";
 
 # admin/sliceexp.php3, row 175
 $_m["From "]
@@ -1987,146 +1990,152 @@ $_m["From "]
 
 # admin/sliceexp.php3, row 185
 $_m["Choose one of two export kinds:"]
-  = "";
+  = "Escoja el tipo de exportación: ";
 
 # admin/sliceexp.php3, row 192
 $_m["When exporting \"to Backup\" you may choose more slices at once."]
-  = "";
+  = "Cuando exporte a \"cópia de seguridad\", ud puede seleccionar varios canales a la vez.";
 
 # admin/sliceexp.php3, row 193
 $_m["Select slices which you WANT to export:"]
-  = "";
+  = "Seleccione los canales que quiera exportar:";
+
+# admin/sliceexp.php3, row 209
+# admin/sliceexp.php3, row 217
+$_m["Export to another ActionApps"]
+  = "Exportar a otras ActionApps";
 
 # admin/sliceexp.php3, row 209
 $_m["When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator."]
-  = "When exporting \"to another ActionApps\" only the current slice will be exported and you choose her new identificator.";
+  = "Cuando exporte a \"otras ActionApps\" sólo puede exportar el canal seleccionado actualmente, y debe escribir un nuevo identificador..";
 
 # admin/sliceexp.php3, row 210
 $_m["Choose a new slice identificator exactly 16 characters long: "]
-  = "";
+  = "Escriba el nuevo identificador para el canal (16 caracteres exactamente): ";
 
 # admin/sliceexp_text.php3, row 65, 174, 183, 198, 207
 $_m["Export to Backup"]
-  = "";
+  = "Hacer Copia de Seguridad";
 
 # admin/sliceexp_text.php3, row 67
 $_m["Wrong slice ID length: "]
-  = "";
+  = "Error en la longitud del ID: ";
 
 # admin/sliceexp_text.php3, row 200
 $_m["Wrong slice ID length:"]
-  = "";
+  = "Error en la longitud del ID: ";
 
 # admin/sliceexp_text.php3, row 263
 $_m["Save this text. You may use it to import the slices into any ActionApps:"]
-  = "";
+  = "Guarde el siguiente texto. Lo puede usar para importar los canales a otras ActionApps:";
 
 # admin/sliceimp.php3, row 62
 $_m["Slice_ID (%1) has wrong length (%2, should be 32)"]
-  = "";
+  = "ID_Canal (%1) tiene una longitud equivocada (%2, debe ser 32)";
 
 # admin/sliceimp.php3, row 86, 126
 # admin/sliceimp_xml.php3, row 237
 $_m["Overwrite"]
-  = "";
+  = "Sobreescribir";
 
 # admin/sliceimp.php3, row 155, 160, 220, 226
 # admin/sliceimp_xml.php3, row 200, 233, 247
 $_m["Insert with new ids"]
-  = "";
+  = "Insertar con nuevos identificadores";
 
 # admin/sliceimp.php3, row 274, 280
 $_m["Can't upload Import file"]
-  = "";
+  = "No se pudo obtener el archivo de importación";
 
 # admin/sliceimp.php3, row 328, 340
 $_m["Import exported data (slice structure and content)"]
-  = "";
+  = "Importar la información (estructura y contenidos del canal)";
 
 # admin/sliceimp.php3, row 346
 $_m["Count of imported slices: %d."]
-  = "";
+  = "Número de canales importados: %d.";
 
 # admin/sliceimp.php3, row 348, 363
 $_m["Added were:"]
-  = "";
+  = "Los nuevos fueron:";
 
 # admin/sliceimp.php3, row 354, 369
 $_m["Overwritten were:"]
-  = "";
+  = "Los sobreescritos fueron:";
 
 # admin/sliceimp.php3, row 360
 $_m["Count of imported stories: %d."]
-  = "";
+  = "Número de items importados: %d.";
 
 # admin/sliceimp.php3, row 375
 $_m["Failed were:"]
-  = "";
+  = "Fallaron:";
 
 # admin/sliceimp.php3, row 388
 $_m["Here you can import exported data to toolkit. You can use two types of import:"]
-  = "";
+  = "Aquí puede importar información previamente exportada. Hay dos formas de importar información:";
 
 # admin/sliceimp.php3, row 393
 $_m["Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"]
-  = "";
+  = "Ya existen canales con alguno de los IDs. Modifique los IDs al lado derecho de la flecha.<br>Utilice únicamente caracteres exadecimales (números del 0 al 9 y letras de la 'a' a la 'f'). Si comete algún error (caracteres incorrectos, número incorrecto de caracteres, o si modifica el ID a la izquierda de la flecha) ese ID se considerará no modificado.</p>";
 
 # admin/sliceimp.php3, row 407
 $_m["<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>"]
-  = "";
+  = "<p>Ya existen vistas con algunos de los IDs a importar. Por favor, modifique los identificadores al lado derecho de la flecha</p>";
 
 # admin/sliceimp.php3, row 421
 $_m["<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>"]
-  = "";
+  = "<p>Ya existen algunos items con los IDs que se pretende importar. Por favor, modifique los IDs del lado derecho de la flecha. Use tan sólo caracteres hexadecimales (números del 0 al 9 y letras de la 'a' a la 'f').</p>";
 
 # admin/sliceimp.php3, row 434
 $_m["<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>"]
-  = "";
+  = "<p>Si selecciona SOBREESCRIBIR, los canales e ítems con ID no modificados serán reemplazados con los que se importen.<br>Si selecciona INSERTAR, los canales y datos con IDs en conflicto serán ignorados.<br>Finalmente, si selecciona \"Insertar con nuevos IDs\", los canales e ítems en conflicto se añadirán con IDs nuevos.</p>";
 
 # admin/sliceimp.php3, row 453
 $_m["1) If you have exported data in file, insert it's name here (eg. D:\\data\\apc_aa_slice.aaxml):"]
-  = "";
+  = "1) Si ud ha guardado la información exportada en un archivo, seleccione aquí su nombre:";
 
 # admin/sliceimp.php3, row 461
 $_m["2) If you have exported data in browser's window, insert the exported text into the textarea below:"]
-  = "";
+  = "2) Si tiene la información exportada en una ventana de navegador, copie y pegue el texto de la exportación en esta area:";
 
 # admin/sliceimp.php3, row 474
 $_m["Here specify, what do you want to import:"]
-  = "";
+  = "Especifique qué quiere importar:";
 
 # admin/sliceimp.php3, row 475
 $_m["Import slice definition"]
-  = "";
+  = "Importar la estructura del canal";
 
 # admin/sliceimp.php3, row 476
 $_m["Import slice items"]
-  = "";
+  = "Importar los ítems del canal";
 
 # admin/sliceimp.php3, row 477
 $_m["Import into this slice - whatever file says"]
-  = "";
+  = "Importar al canal seleccionado actualmente - ignorar lo que especifique el archivo";
 
 # admin/sliceimp_xml.php3, row 121
 $_m["\n"
    ."ERROR: File doesn't contain SLICEEXPORT"]
-  = "";
+  = "\n"
+   ."ERROR: El archivo no contiene información de canales exportados";
 
 # admin/sliceimp_xml.php3, row 131, 152, 175
 $_m["ERROR: Text is not OK. Check whether you copied it well from the Export."]
-  = "";
+  = "ERROR: El texto no está bien. Por favor, verifique que lo copió bien y entero desde la Exportación.";
 
 # admin/sliceimp_xml.php3, row 187
 $_m["ERROR: Unsupported version for import"]
-  = "";
+  = "ERROR: Versión de importación no soportada";
 
 # admin/sliceimp_xml.php3, row 255
 $_m["<br>Overwriting view %1"]
-  = "";
+  = "<br>Sobreescribiendo la vista %1";
 
 # admin/slicewiz.php3, row 45, 48
 $_m["Add Slice Wizard"]
-  = "";
+  = "Asistente de creación de canal";
 
 # admin/slicewiz.php3, row 58
 $_m["Copy Views"]
@@ -2134,40 +2143,40 @@ $_m["Copy Views"]
 
 # admin/slicewiz.php3, row 59
 $_m["Categories/Constants"]
-  = "";
+  = "Categorías/Constantes";
 
 # admin/slicewiz.php3, row 60
 $_m["Share with Template"]
-  = "";
+  = "Compartir con la plantilla";
 
 # admin/slicewiz.php3, row 60
 $_m["Copy from Template"]
-  = "";
+  = "Copiar de la plantilla";
 
 # admin/slicewiz.php3, row 69
 $_m["[Optional] Create New User"]
-  = "";
+  = "[Opcional] Crear un nuevo Usuario";
 
 # admin/slicewiz.php3, row 75
 $_m["Level of Access"]
-  = "";
+  = "Nivel de acceso";
 
 # admin/slicewiz.php3, row 76
 # include/constants.php3, row 764
 $_m["Slice Administrator"]
-  = "";
+  = "Administrador";
 
 # admin/slicewiz.php3, row 87
 $_m["Do Not Email Welcome"]
-  = "";
+  = "No enviar mensaje de bienvenida";
 
 # admin/slicewiz.php3, row 89
 $_m["Email Welcome"]
-  = "";
+  = "Mensaje de Bienvenida";
 
 # admin/slicewiz.php3, row 98
 $_m["Go: Add Slice"]
-  = "";
+  = "Crear canal";
 
 # admin/um_gedit.php3, row 60
 # admin/um_uedit.php3, row 68, 71, 85
@@ -2252,31 +2261,31 @@ $_m["Admin - User Management"]
 
 # admin/se_rssfeeds.php3, row 108, 160, 166
 $_m["Remote RSS Feed administration"]
-  = "";
+  = "Administración de Canales RSS";
 
 # admin/se_rssfeeds.php3, row 169
 $_m["Current remote rssfeeds"]
-  = "";
+  = "Canales RSS que alimentan actualmente:";
 
 # admin/se_rssfeeds.php3, row 187
 $_m["Add new rssfeed"]
-  = "";
+  = "Añadir nueva alimentación RSS";
 
 # admin/se_rssfeeds.php3, row 188
 $_m["Edit rssfeed data"]
-  = "";
+  = "Editar datos RSS";
 
 # admin/se_rssfeeds.php3, row 190
 $_m["RSS Feed name"]
-  = "";
+  = "Nombre del canal RSS";
 
 # admin/se_rssfeeds.php3, row 191
 $_m["New rssfeed name"]
-  = "";
+  = "Nombre del canal RSS";
 
 # admin/se_rssfeeds.php3, row 192
 $_m["URL of the feed"]
-  = "";
+  = "URL del canal RSS";
 
 # admin/se_rssfeeds.php3, row 193
 $_m["e.g. http://www.someplace.com/rss/index.xml"]
@@ -2400,151 +2409,151 @@ $_m["Admin - Anonymous Form Wizard"]
 
 # admin/anonym_wizard.php3, row 80
 $_m["Settings"]
-  = "";
+  = "Configuración";
 
 # admin/anonym_wizard.php3, row 85
 $_m["WARNING: You did not permit anonymous posting in slice settings."]
-  = "";
+  = "ATENCION: ud. no habilitó la publicación anónima en las propieadades del canal.";
 
 # admin/anonym_wizard.php3, row 88
 $_m["You did not permit anonymous editing in slice settings. A form\n"
    ."        allowing only anonymous posting will be shown."]
-  = "";
+  = "Ud. no habilitó la edición anónima de ítems en las propiedades del canal. Se mostrará un formulario que sólo permite publicación anónima.";
 
 # admin/anonym_wizard.php3, row 103
 $_m["Warning: You want to show password, but you did not set\n"
    ."                    'Authorized by a password field' in Settings - Anonymous editing."]
-  = "";
+  = "Atención: quiere mostrar una clave (password), pero no seleccionó 'Autorizado por password' en las propiedades del canal para edición anónima.";
 
 # admin/anonym_wizard.php3, row 111
 $_m["Help"]
-  = "";
+  = "Ayuda ";
 
 # admin/anonym_wizard.php3, row 112
 $_m["Help - Documentation"]
-  = "";
+  = "Documentación";
 
 # admin/anonym_wizard.php3, row 113
 $_m["URLs shown after the form was sent"]
-  = "";
+  = "URLs que se muestran una vez enviado el formulario";
 
 # admin/anonym_wizard.php3, row 115
 $_m["OK page"]
-  = "";
+  = "Página 'OK'";
 
 # admin/anonym_wizard.php3, row 117
 $_m["Error page"]
-  = "";
+  = "Página ERROR";
 
 # admin/anonym_wizard.php3, row 122
 $_m["Use a PHP script to show the result on the OK and Error pages:"]
-  = "";
+  = "Usar un script PHP para interpretar los resultados del formulario";
 
 # admin/anonym_wizard.php3, row 132
 $_m["Field Id in Form"]
-  = "";
+  = "Campo en el formulario";
 
 # admin/anonym_wizard.php3, row 156
 $_m["Only fields marked as \"Show\" on the \"Fields\" page\n"
    ."         are offered on this page."]
-  = "";
+  = "Sólo se listan aquí los campos que están marcados como 'Mostrar' en la configuración de campos del canal";
 
 # admin/anonym_wizard.php3, row 160
 $_m["Show Form"]
-  = "";
+  = "Mostrar formulario";
 
 # admin/anonym_wizard.php3, row 161
 $_m["Show Not So Nice"]
-  = "";
+  = "Mostrar (no tan bonito)";
 
 # admin/mailman_create_list.php3, row 57, 63
 $_m["Admin - Create Mailman List"]
-  = "";
+  = "Administración - Creación lista Mailman";
 
 # admin/mailman_create_list.php3, row 70
 $_m["First set Mailman Lists Field in Slice Settings."]
-  = "";
+  = "Configure primero el campo para listas mailman en las propiedades del canal.";
 
 # admin/mailman_create_list.php3, row 89
 $_m["Error: This list name is already used."]
-  = "";
+  = "Error: este nombre de lista ya está en uso.";
 
 # admin/mailman_create_list.php3, row 113
 $_m["The list was successfully created."]
-  = "";
+  = "La lista se creó con éxito.";
 
 # admin/mailman_create_list.php3, row 128
 $_m["List Settings"]
-  = "";
+  = "Propiedades de la Lista";
 
 # admin/mailman_create_list.php3, row 130
 $_m["The list will be added to mailman and also\n"
    ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."]
-  = "";
+  = "La lista se creará en mailman, y también en el grupo de constantes para el campo '%1' (seleccionado como campo para listas mailman en las propiedades del canal).";
 
 # admin/mailman_create_list.php3, row 131
 $_m["All the fields are required."]
-  = "";
+  = "Todos los campos son obligatorios.";
 
 # admin/mailman_create_list.php3, row 132
 $_m["List name"]
-  = "";
+  = "Nombre de la lista";
 
 # admin/mailman_create_list.php3, row 134
 $_m["Admin email"]
-  = "";
+  = "email administrador";
 
 # admin/mailman_create_list.php3, row 136
 $_m["Admin password"]
-  = "";
+  = "Clave administrador";
 
 # admin/wizard_email.php3, row 43
 $_m["Select readers<br><i>%1 reader(s) selected</i>"]
-  = "";
+  = "Seleccione suscriptores<br><i>%1 suscriptor(es) seleccionado(s)</i>";
 
 # admin/wizard_email.php3, row 44
 $_m["Select readers"]
-  = "";
+  = "Selección suscriptores";
 
 # admin/wizard_email.php3, row 46
 $_m["You can not proceed until you select at least one reader!"]
-  = "";
+  = "¡No puede continuar hasta que seleccione por lo menos un suscriptor!";
 
 # admin/wizard_email.php3, row 47
 $_m["Find readers using the Search conditions in Item Manager."]
-  = "";
+  = "Buscar suscriptores con las facilidades de búsqueda del Administrador de Items";
 
 # admin/wizard_email.php3, row 52
 $_m["Create or edit email template"]
-  = "";
+  = "Crear o editar plantilla de correo electrónico";
 
 # admin/wizard_email.php3, row 53
 $_m["Use Slice Admin / Email templates to create or edit an email template."]
-  = "";
+  = "Use Admin Canal / Plantillas email para crear o editar plantillas de correo electrónico";
 
 # admin/wizard_email.php3, row 57
 $_m["Choose email template"]
-  = "";
+  = "Seleccione plantilla correo electrónico";
 
 # admin/wizard_email.php3, row 60
 $_m["You can use all field aliases like in any view."]
-  = "";
+  = "Puede usar cualquier alias de campo.";
 
 # admin/wizard_email.php3, row 63
 $_m["Send example email to"]
-  = "";
+  = "Enviar mensaje de prueba a";
 
 # admin/wizard_email.php3, row 69
 $_m["Send emails"]
-  = "";
+  = "Enviar mensajes";
 
 # admin/wizard_email.php3, row 71
 $_m["This will send emails to all readers selected in Step 1."]
-  = "";
+  = "Esto enviará mensajes a todos los suscriptores seleccionados en el paso 1.";
 
 # admin/wizard_email.php3, row 74
 $_m["Delete the email template"]
-  = "";
+  = "Borrar plantilla de correo electrónico";
 
 # admin/wizard_email.php3, row 76
 $_m["If this was a one-off template, delete it."]
@@ -2552,7 +2561,7 @@ $_m["If this was a one-off template, delete it."]
 
 # admin/wizard_email.php3, row 97
 $_m["%1 email(s) were sent."]
-  = "";
+  = "Se enviaron %1 mensajes";
 
 # admin/wizard_email.php3, row 99
 $_m["Find some more info in %1the doc."]
@@ -2560,23 +2569,23 @@ $_m["Find some more info in %1the doc."]
 
 # admin/wizard_email.php3, row 114
 $_m["Step"]
-  = "";
+  = "Paso";
 
 # admin/wizard_email.php3, row 121
 $_m["Close the wizard"]
-  = "";
+  = "Cerrar el asistente";
 
 # admin/anonym_wizard2.php3, row 121
 $_m["Send"]
-  = "";
+  = "Enviar";
 
 # admin/summarize.php3, row 50
 $_m["Summarize slice differences"]
-  = "";
+  = "Resumir diferencias de canales";
 
 # admin/summarize.php3, row 57
 $_m["AA - Summarize"]
-  = "";
+  = "AA - Resumir";
 
 # include/constants.php3, row 69
 $_m["MySQL Auth"]
@@ -2594,7 +2603,7 @@ $_m["Polls for AA"]
 # include/menu.php3, row 189
 # include/menu_util.php3, row 65, 161
 $_m["Alerts"]
-  = "";
+  = "Alertas";
 
 # include/constants.php3, row 92
 # include/menu_util.php3, row 67
@@ -2917,19 +2926,19 @@ $_m["Max number of items"]
 
 # include/constants.php3, row 606
 $_m["URL listing"]
-  = "";
+  = "Listado URLs";
 
 # include/constants.php3, row 608
 $_m["Row HTML"]
-  = "";
+  = "Fila HTML";
 
 # include/constants.php3, row 629
 $_m["Link listing"]
-  = "";
+  = "Lista de enlaces";
 
 # include/constants.php3, row 658
 $_m["Category listing"]
-  = "";
+  = "Lista de categorías";
 
 # include/constants.php3, row 710
 # include/discussion.php3, row 127, 172
@@ -2949,23 +2958,23 @@ $_m["Add new"]
 
 # include/constants.php3, row 729
 $_m["Calendar: Time stamp at 0:00 of processed cell"]
-  = "";
+  = "Calendario: tiempo a las 0:00 de la celda en proceso";
 
 # include/constants.php3, row 730
 $_m["Calendar: Time stamp at 24:00 of processed cell"]
-  = "";
+  = "Calendario: tiempo a las 24:00 de la celda en proceso";
 
 # include/constants.php3, row 731
 $_m["Calendar: Day in month of processed cell"]
-  = "";
+  = "Calendario: día del mes de la celda en proceso";
 
 # include/constants.php3, row 732
 $_m["Calendar: Month number of processed cell"]
-  = "";
+  = "Calendario: número del mes de la celda en proceso";
 
 # include/constants.php3, row 733
 $_m["Calendar: Year number of processed cell"]
-  = "";
+  = "Calendario: año de la celda en proceso";
 
 # include/constants.php3, row 762
 $_m["Superadmin"]
@@ -2973,51 +2982,51 @@ $_m["Superadmin"]
 
 # include/constedit.php3, row 23
 $_m["Constants - Hiearchical editor"]
-  = "";
+  = "Constantes - Editor jerárquico";
 
 # include/constedit.php3, row 26
 $_m["Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name."]
-  = "";
+  = "Los cambios no se almacenan en la base de datos hasta que haga clic en el botón al final de esta página.<br>Las constantes se ordenan por Prioridad primero, luego por Nombre.";
 
 # include/constedit.php3, row 43
 $_m["Copy value from name"]
-  = "";
+  = "Copiar valor del nombre";
 
 # include/constedit.php3, row 56
 $_m["Check to confirm deleting"]
-  = "";
+  = "Seleccione para confirmar borrado";
 
 # include/constedit.php3, row 60
 $_m["View settings"]
-  = "";
+  = "Ver";
 
 # include/constedit.php3, row 60
 $_m["Hierarchical"]
-  = "";
+  = "Jerárquico";
 
 # include/constedit.php3, row 61
 $_m["Hide value"]
-  = "";
+  = "Ocultar valor";
 
 # include/constedit.php3, row 62
 $_m["Levels horizontal"]
-  = "";
+  = "Niveles en horizontal";
 
 # include/constedit.php3, row 63
 $_m["Level count"]
-  = "";
+  = "Niveles";
 
 # include/constedit_util.php3, row 92, 97
 $_m["Select"]
-  = "";
+  = "Seleccionar";
 
 # include/item.php3, row 54
 $_m["number of found items"]
-  = "";
+  = "número de ítems encontrados";
 
 # include/item.php3, row 55
 $_m["index of item within view"]
-  = "";
+  = "ínide del ítem en la vista";
 
 # include/item.php3, row 56
 $_m["alias for Item ID"]
@@ -3033,23 +3042,23 @@ $_m["alias used on admin page index.php3 for itemedit url"]
 
 # include/item.php3, row 66
 $_m["Alias used on admin page index.php3 for edit discussion url"]
-  = "";
+  = "Alias usado en la página de administración index.php3 para el URL de los comentarios";
 
 # include/item.php3, row 67
 $_m["Title of Slice for RSS"]
-  = "";
+  = "Nombre del Canal para RSS";
 
 # include/item.php3, row 68
 $_m["Link to the Slice for RSS"]
-  = "";
+  = "Enlace al canal para RSS";
 
 # include/item.php3, row 69
 $_m["Short description (owner and name) of slice for RSS"]
-  = "";
+  = "Descripción corta (propietario y nombre) del canal para RSS";
 
 # include/item.php3, row 70
 $_m["Date RSS information is generated, in RSS date format"]
-  = "";
+  = "La información de fecha para RSS se genera en formato RSS";
 
 # include/item.php3, row 71
 # include/tv_email.php3, row 49
@@ -3148,86 +3157,97 @@ $_m["If you are sure you have typed the correct password, please e-mail <a href=
 
 # include/discussion.php3, row 136
 $_m["Alias for subject of the discussion comment"]
-  = "";
+  = "Alias para el tema del comentario";
 
 # include/discussion.php3, row 137
 $_m["Alias for text of the discussion comment"]
-  = "";
+  = "Alias para el texto del comentario";
 
 # include/discussion.php3, row 138
 $_m["Alias for written by"]
-  = "";
+  = "Alias para el autor";
 
 # include/discussion.php3, row 139
 $_m["Alias for author's e-mail"]
-  = "";
+  = "Alias para el email del autor";
 
 # include/discussion.php3, row 140
 $_m["Alias for url address of author's www site"]
-  = "";
+  = "Alias para el URL del sitio del autor";
 
 # include/discussion.php3, row 141
 $_m["Alias for description of author's www site"]
-  = "";
+  = "Alias para la descripción del sitio del autor";
 
 # include/discussion.php3, row 142
 $_m["Alias for publish date"]
-  = "";
+  = "Alias para la fecha de publicación";
 
 # include/discussion.php3, row 143
 $_m["Alias pro IP address of author's computer"]
-  = "";
+  = "Alias para la dirección IP de envío del comentario";
 
 # include/discussion.php3, row 144
 $_m["Alias for checkbox used for choosing discussion comment"]
-  = "";
+  = "Alias para la cajita para seleccionar el comentario";
 
 # include/discussion.php3, row 145
 $_m["Alias for images"]
-  = "";
+  = "Alias para las imágenes";
 
 # include/discussion.php3, row 146, 147
 $_m["Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"]
-  = "";
+  = "Alias para el ID del comentario<br>\n"
+   ."<i>Uso: </i>en el código del formulario<br>\n"
+   ."<i>Ejemplo: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">";
 
 # include/discussion.php3, row 148
 $_m["Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"]
-  = "";
+  = "Alias para el ID del ítem<br>\n"
+   ."<i>Uso: </i>en el código del formulario<br>\n"
+   ."<i>Ejemplo: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">";
 
 # include/discussion.php3, row 149
 $_m["Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"]
-  = "";
+  = "Alias para el enlace al texto del comentario<br>\n"
+   ."<i>Uso: </i>en el código HTML de la lista de comentarios<br>\n"
+   ."<i>Ejemplo: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>";
 
 # include/discussion.php3, row 150
 $_m["Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"]
-  = "";
+  = "Alias para el enlace al formulario<br>\n"
+   ."<i>Uso: </i>en el código HTML del texto completo o vista del comentario<br>\n"
+   ."<i>Ejemplo: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;";
 
 # include/discussion.php3, row 151
 $_m["Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"]
-  = "";
+  = "Alias para el enlace a los comentarios<br>\n"
+   ."<i>Uso: </i> en el código del formulario"
+   ."<i>Ejemplo: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">";
 
 # include/discussion.php3, row 152
 $_m["Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"]
-  = "";
+  = "Alias para los botones Mostrar todos, Mostrar seleccionados, Añadir<br>\n"
+   ."                             <i>Uso: </i> en el código HTML para el pie";
 
 # include/discussion.php3, row 293
 $_m["3rd parameter filled in DiscussionMailList field"]
-  = "";
+  = "3r parámetro rellenado en el campo DiscussionMailList";
 
 # include/discussion.php3, row 295
 $_m["%1th parameter filled in DiscussionMailList field"]
-  = "";
+  = "%1o parámetro rellenado en el campo DiscussionMailList";
 
 # include/easy_scroller.php3, row 103, 187
 $_m["Previous"]
@@ -3243,103 +3263,103 @@ $_m["File"]
 
 # include/filedit.php3, row 83
 $_m["Back to file list"]
-  = "";
+  = "Ir a la lista de archivos";
 
 # include/filedit.php3, row 84
 $_m["Download (right-click)"]
-  = "";
+  = "Descargar (clic derecho)";
 
 # include/filedit.php3, row 85
 $_m["Rename to"]
-  = "";
+  = "Renombrar";
 
 # include/filedit.php3, row 90
 # include/fileman.php3, row 79, 361
 $_m["Text file"]
-  = "";
+  = "Archivo de texto";
 
 # include/filedit.php3, row 90
 # include/fileman.php3, row 77
 $_m["Web file"]
-  = "";
+  = "Archivo web";
 
 # include/filedit.php3, row 90
 # include/fileman.php3, row 76, 361
 $_m["HTML file"]
-  = "";
+  = "Archivo HTML";
 
 # include/filedit.php3, row 128
 $_m["Save changes"]
-  = "";
+  = "Guardar cambios";
 
 # include/filedit.php3, row 129
 $_m["Reset content"]
-  = "";
+  = "Deshacer cambios";
 
 # include/filedit.php3, row 135
 $_m["File content"]
-  = "";
+  = "Contenido del archivo";
 
 # include/filedit.php3, row 144
 # include/fileman.php3, row 78
 $_m["Image file"]
-  = "";
+  = "Archivo de imágen";
 
 # include/filedit.php3, row 147
 $_m["This is a file of type"]
-  = "";
+  = "Tipo de archivo: ";
 
 # include/filedit.php3, row 147
 $_m["I can't view it. If you want to view or edit it, change it's extension."]
-  = "";
+  = "No lo puedo ver. Si quiere verlo o editaro, modifique la extensión.";
 
 # include/fileman.php3, row 25
 $_m["Size"]
-  = "";
+  = "Tamaño";
 
 # include/fileman.php3, row 26
 $_m["Type"]
-  = "";
+  = "Tipo";
 
 # include/fileman.php3, row 27
 $_m["Last modified"]
-  = "";
+  = "Ultima modificación";
 
 # include/fileman.php3, row 82, 99
 $_m["Other"]
-  = "";
+  = "Otro";
 
 # include/fileman.php3, row 241
 $_m["Wrong file name."]
-  = "";
+  = "Nombre de archivo erroneo";
 
 # include/fileman.php3, row 244
 $_m["File already exists"]
-  = "";
+  = "El archivo ya existe";
 
 # include/fileman.php3, row 245, 363
 $_m["Unable to create file"]
-  = "";
+  = "No se pudo crear el archivo";
 
 # include/fileman.php3, row 253
 $_m["Wrong directory name."]
-  = "";
+  = "Nombre de carpeta erroneo";
 
 # include/fileman.php3, row 257
 $_m["Unable to create directory"]
-  = "";
+  = "No se pudo crear la carpeta";
 
 # include/fileman.php3, row 266
 $_m["First delete all files from directory"]
-  = "";
+  = "Primero tiene que borrar todos los archivos en la carpeta";
 
 # include/fileman.php3, row 267
 $_m["Unable to delete directory"]
-  = "";
+  = "No se pudo borrar la carpeta";
 
 # include/fileman.php3, row 270
 $_m["Unable to delete file"]
-  = "";
+  = "No se pudo borrar el archivo";
 
 # include/fileman.php3, row 278, 283
 $_m["Error: "]
@@ -3347,23 +3367,23 @@ $_m["Error: "]
 
 # include/fileman.php3, row 293
 $_m["Unable to open file for writing"]
-  = "";
+  = "No se pudo acceder al archivo para escribir";
 
 # include/fileman.php3, row 298
 $_m["Error writing to file"]
-  = "";
+  = "Error al escribir en el archivo";
 
 # include/fileman.php3, row 307
 $_m["File with this name already exists"]
-  = "";
+  = "Ya existe un archivo con este nombre";
 
 # include/fileman.php3, row 308
 $_m["Unable to rename"]
-  = "";
+  = "No se pudo renombrar";
 
 # include/fileman.php3, row 350
 $_m["Wrong directory name"]
-  = "";
+  = "Nombre de carpeta erroneo";
 
 # include/fileman.php3, row 357
 $_m["Files with the same names as some in the template already exist. Please change the file names first."]
@@ -3371,7 +3391,7 @@ $_m["Files with the same names as some in the template already exist. Please cha
 
 # include/fileman.php3, row 406
 $_m["Are you sure you want to delete the selected files and folders?"]
-  = "";
+  = "¿Está seguro/a que quiere borrar los archivos y carpetas seleccionados?";
 
 # include/itemfunc.php3, row 335
 $_m["Can't create directory for image uploads"]
@@ -3379,15 +3399,15 @@ $_m["Can't create directory for image uploads"]
 
 # include/itemfunc.php3, row 453
 $_m["set"]
-  = "";
+  = "activo";
 
 # include/itemfunc.php3, row 453
 $_m["unset"]
-  = "";
+  = "inactivo";
 
 # include/itemfunc.php3, row 717
 $_m["Add&nbsp;Mutual"]
-  = "";
+  = "Añadir&nbsp;Mutuo";
 
 # include/itemfunc.php3, row 718
 $_m["Backward"]
@@ -3415,7 +3435,7 @@ $_m["Delete Password"]
 
 # include/itemfunc.php3, row 833
 $_m["not set"]
-  = "";
+  = "no marcado";
 
 # include/init_page.php3, row 153
 $_m["You do not have permission to edit items in the slice"]
@@ -3463,7 +3483,7 @@ $_m["it must by 5 - 32 characters long"]
 
 # include/formutil.php3, row 1129
 $_m["only 0-9 A-Z a-z . _ and - are allowed"]
-  = "";
+  = "solo se permite: 0-9 A-Z a-z . _ -";
 
 # include/formutil.php3, row 1155
 $_m["Error in parameters for UNIQUE validation: field ID is not 16 but %1 chars long: "]
@@ -3475,27 +3495,27 @@ $_m["this value is already used, choose another one"]
 
 # include/formutil.php3, row 1218
 $_m["This field is required."]
-  = "";
+  = "Este campo es obligatorio.";
 
 # include/formutil.php3, row 1219
 $_m["This field is required (marked by *)."]
-  = "";
+  = "Este campo es obligatorio (marcado con *).";
 
 # include/formutil.php3, row 1228
 $_m["Not a valid integer number."]
-  = "";
+  = "No es un número válido";
 
 # include/formutil.php3, row 1232
 $_m["Not a valid file name."]
-  = "";
+  = "No es un archivo válido";
 
 # include/formutil.php3, row 1236
 $_m["Not a valid email address."]
-  = "";
+  = "No es una dirección válida";
 
 # include/formutil.php3, row 1240
 $_m["The two password copies differ."]
-  = "";
+  = "Las dos claves son distintas.";
 
 # include/menu.php3, row 58
 $_m["View site"]
@@ -3610,7 +3630,7 @@ $_m["Email templates"]
 
 # include/menu.php3, row 156
 $_m["Mailman: create list"]
-  = "";
+  = "Mailman: crear lista";
 
 # include/menu.php3, row 162
 $_m["Folders"]
@@ -3634,11 +3654,11 @@ $_m["List of Alerts modules using this slice as Reader Management."]
 
 # include/menu.php3, row 199
 $_m["Alerts Sent"]
-  = "";
+  = "Alertas enviadas";
 
 # include/menu.php3, row 200
 $_m["List of Alerts modules sending items from this slice."]
-  = "";
+  = "Lista de módulos Alerta enviando ítems desde este canal.";
 
 # include/itemview.php3, row 272
 $_m["No comment was selected"]
@@ -3646,15 +3666,15 @@ $_m["No comment was selected"]
 
 # include/slice.php3, row 56
 $_m["Select Category "]
-  = "";
+  = "Seleccione Categoría ";
 
 # include/slice.php3, row 58
 $_m["All categories"]
-  = "";
+  = "Todas categorías";
 
 # include/util.php3, row 727, 768
 $_m["Error: Missing Reading Password"]
-  = "";
+  = "Error: Falta clave de lectura";
 
 # include/util.php3, row 1088
 # include/msgpage.php3, row 52
@@ -3667,19 +3687,19 @@ $_m["Use these aliases for database fields"]
 
 # include/util.php3, row 1365
 $_m["Internal error. File upload: Dir does not exist?!"]
-  = "";
+  = "Error interno. Subir archivo: ¿la carpeta no existe?";
 
 # include/util.php3, row 1368
 $_m["File with this name already exists."]
-  = "";
+  = "Ya existe un archivo con este nombre.";
 
 # include/util.php3, row 1377
 $_m["Can't move image  %s to %s"]
-  = "";
+  = "No se puede mover %s a %s";
 
 # include/util.php3, row 1384
 $_m["Can't copy image  %s to %s"]
-  = "";
+  = "No se puede copiar %s a %s";
 
 # include/util.php3, row 1592
 $_m["alerts alert"]
@@ -3687,15 +3707,15 @@ $_m["alerts alert"]
 
 # include/util.php3, row 1593
 $_m["alerts welcome"]
-  = "";
+  = "bienvenida alertas";
 
 # include/util.php3, row 1594
 $_m["slice wizard welcome"]
-  = "";
+  = "bienvenida asistente canal";
 
 # include/util.php3, row 1595
 $_m["other"]
-  = "";
+  = "otro";
 
 # include/util.php3, row 1602
 $_m["January"]
@@ -3771,7 +3791,7 @@ $_m["Wizard"]
 
 # include/menu_aa.php3, row 51
 $_m["Welcomes"]
-  = "";
+  = "Bienvenida";
 
 # include/menu_aa.php3, row 52
 $_m["Templates"]
@@ -3788,7 +3808,7 @@ $_m["RSS test"]
 
 # include/menu_aa.php3, row 59
 $_m["Summarize"]
-  = "";
+  = "Resumen";
 
 # include/menu_util.php3, row 66
 $_m["Jump inside control panel"]
@@ -3808,7 +3828,7 @@ $_m["Site"]
 
 # include/menu_util.php3, row 72
 $_m["Reader Management Slice"]
-  = "";
+  = "Canal de Suscriptores";
 
 # include/menu_util.php3, row 105, 148
 $_m["New slice"]
@@ -3820,7 +3840,7 @@ $_m["APC Action Applications"]
 
 # include/menu_util.php3, row 169
 $_m["Reader management"]
-  = "";
+  = "Administración Suscriptores";
 
 # include/menu_util.php3, row 216
 $_m["Switch to:"]
@@ -3837,11 +3857,11 @@ $_m["Used Language File"]
 
 # include/modutils.php3, row 134
 $_m["No such module."]
-  = "";
+  = "Módulo inexistente.";
 
 # include/modutils.php3, row 136
 $_m["No module flagged for deletion."]
-  = "";
+  = "No hay módulos marcados para borrar.";
 
 # include/scroller.php3, row 217
 $_m["All"]
@@ -3882,27 +3902,27 @@ $_m["No slices"]
 
 # include/slicedit.php3, row 81
 $_m["This File Manager Directory is already used by another slice."]
-  = "";
+  = "Esta carpeta del Administrador de Archivos ya está en uso por otro canal.";
 
 # include/slicedit.php3, row 207
 $_m["Error when copying constants."]
-  = "";
+  = "Error al copiar constantes.";
 
 # include/slicedit.php3, row 217
 $_m["Error when copying views."]
-  = "";
+  = "Error al copiar vistas.";
 
 # include/slicedit.php3, row 224
 $_m["Internal error when changing user role."]
-  = "";
+  = "Error interno al cambiar el rol del usuario.";
 
 # include/slicewiz.php3, row 13
 $_m["User not found"]
-  = "";
+  = "No se encontró el usuario";
 
 # include/slicewiz.php3, row 27
 $_m["Slice not found."]
-  = "";
+  = "No se encontró el canal";
 
 # include/slicewiz.php3, row 41
 $_m["Error mailing"]
@@ -3910,59 +3930,59 @@ $_m["Error mailing"]
 
 # include/tabledit.php3, row 236
 $_m["No record matches your search condition."]
-  = "";
+  = "No hay registros para estas condiciones.";
 
 # include/tabledit.php3, row 353
 $_m["order ascending"]
-  = "";
+  = "orden ascendente";
 
 # include/tabledit.php3, row 354
 $_m["order descending"]
-  = "";
+  = "orden descendente";
 
 # include/tabledit.php3, row 422
 $_m["Nothing to be shown."]
-  = "";
+  = "Nada a mostrar.";
 
 # include/tabledit.php3, row 516
 $_m["search"]
-  = "";
+  = "buscar";
 
 # include/tabledit.php3, row 619, 708
 $_m["edit"]
-  = "";
+  = "editar";
 
 # include/tabledit.php3, row 714
 $_m["add"]
-  = "";
+  = "añadir";
 
 # include/tabledit.php3, row 720, 728
 $_m["delete"]
-  = "";
+  = "borrar";
 
 # include/tabledit.php3, row 728, 741
 $_m["insert"]
-  = "";
+  = "insertar";
 
 # include/tabledit.php3, row 735
 $_m["delete checked"]
-  = "";
+  = "borrar seleccionados";
 
 # include/tabledit.php3, row 741
 $_m["update"]
-  = "";
+  = "actualizar";
 
 # include/tabledit.php3, row 747
 $_m["update all"]
-  = "";
+  = "actualizar todo";
 
 # include/tabledit.php3, row 753
 $_m["browse"]
-  = "";
+  = "navegar";
 
 # include/tabledit.php3, row 803
 $_m["Are you sure you want to permanently DELETE all the checked records?"]
-  = "";
+  = "¿Está seguro/a que quiere borrar PERMANENTEMENTE todos los registros seleccionados?";
 
 # include/um_gedit.php3, row 35
 $_m["It is impossible to add group to permission system"]
@@ -3978,51 +3998,51 @@ $_m["Can't change user"]
 
 # include/um_util.php3, row 69
 $_m["Object"]
-  = "";
+  = "Objeto";
 
 # include/tv_misc.php3, row 54, 55
 $_m["Wizard Welcomes"]
-  = "";
+  = "Asistente de Bienvenidas";
 
 # include/tv_misc.php3, row 61
 $_m["mail body"]
-  = "";
+  = "cuerpo del mensaje";
 
 # include/tv_misc.php3, row 63
 $_m["From: mail header"]
-  = "";
+  = "De: (cabecera mensaje)";
 
 # include/tv_misc.php3, row 85, 86
 $_m["Wizard Templates"]
-  = "";
+  = "Plantillas Asistentes";
 
 # include/tv_misc.php3, row 110
 $_m["For help see FAQ: "]
-  = "";
+  = "Consulte las PMF (FAQ) para ayuda: ";
 
 # include/tabledit_util.php3, row 64, 374
 $_m["Insert was successfull."]
-  = "";
+  = "Inserción exitosa.";
 
 # include/tabledit_util.php3, row 71, 89, 306
 $_m["Update was successfull."]
-  = "";
+  = "Actualización exitosa.";
 
 # include/tabledit_util.php3, row 102, 107
 $_m["Delete was successfull."]
-  = "";
+  = "Borrado con éxito.";
 
 # include/tabledit_util.php3, row 440
 $_m["Value of %1 should be between %2 and %3."]
-  = "";
+  = "El valor %1 debe estar entre %2 y %3.";
 
 # include/tabledit_util.php3, row 546
 $_m["Wrong value: a number between %1 and %2 is expected."]
-  = "";
+  = "Valor erroneo: se espera un número entre %1 y %2.";
 
 # include/tabledit_util.php3, row 556
 $_m["Are you sure you want to permanently DELETE this record?"]
-  = "";
+  = "¿Está seguro/a que quiere borrar PERMANENTEMENTE este registro?";
 
 # include/tv_email.php3, row 29
 $_m["Aliases for Alerts Alert"]
@@ -4034,131 +4054,131 @@ $_m["complete filter text"]
 
 # include/tv_email.php3, row 32, 40
 $_m["howoften"]
-  = "";
+  = "frecuencia";
 
 # include/tv_email.php3, row 33
 $_m["Anonym Form URL (set in Alerts Admin - Settings)"]
-  = "";
+  = "URL formulario anónimo (configurado en Admin - Propiedades)";
 
 # include/tv_email.php3, row 34
 $_m["Unsubscribe Form URL"]
-  = "";
+  = "URL desuscripción";
 
 # include/tv_email.php3, row 38
 $_m["Aliases for Alerts Welcome"]
-  = "";
+  = "Alias para Bienvenidas Alertas";
 
 # include/tv_email.php3, row 41
 $_m["Collection Form URL (set in Alerts Admin - Settings)"]
-  = "";
+  = "URL formulario colección (configurado en Admin - Propiedades)";
 
 # include/tv_email.php3, row 42
 $_m["email confirmed"]
-  = "";
+  = "email confirmado";
 
 # include/tv_email.php3, row 47
 $_m["Aliases for Slice Wizard Welcome"]
-  = "";
+  = "Alias para Bienvenida Asistente Canal";
 
 # include/tv_email.php3, row 50
 $_m["New user name"]
-  = "";
+  = "Nombre nuevo usuario";
 
 # include/tv_email.php3, row 51
 $_m["New user login name"]
-  = "";
+  = "Login nuevo usuario";
 
 # include/tv_email.php3, row 52
 $_m["New user role (editor / admin)"]
-  = "";
+  = "Rol nuevo usuario (editor / admin)";
 
 # include/tv_email.php3, row 53
 $_m["My name"]
-  = "";
+  = "Mi nombre";
 
 # include/tv_email.php3, row 54
 $_m["My email"]
-  = "";
+  = "Mi email";
 
 # include/tv_email.php3, row 88
 $_m["Email template"]
-  = "";
+  = "Plantilla email";
 
 # include/tv_email.php3, row 98, 160
 $_m["description"]
-  = "";
+  = "descripción";
 
 # include/tv_email.php3, row 101
 $_m["email type"]
-  = "";
+  = "tipo email";
 
 # include/tv_email.php3, row 105, 162
 $_m["subject"]
-  = "";
+  = "asunto";
 
 # include/tv_email.php3, row 109, 164
 $_m["body"]
-  = "";
+  = "cuerpo";
 
 # include/tv_email.php3, row 113
 $_m["from (email)"]
-  = "";
+  = "de (email)";
 
 # include/tv_email.php3, row 115
 $_m["reply to (email)"]
-  = "";
+  = "responder a (email)";
 
 # include/tv_email.php3, row 117
 $_m["errors to (email)"]
-  = "";
+  = "errores a (email)";
 
 # include/tv_email.php3, row 119
 $_m["sender (email)"]
-  = "";
+  = "emisor (email)";
 
 # include/tv_email.php3, row 121
 $_m["language (charset)"]
-  = "";
+  = "idioma";
 
 # include/tv_email.php3, row 125
 $_m["use HTML"]
-  = "";
+  = "usar HTML";
 
 # include/tv_email.php3, row 129
 $_m["owner"]
-  = "";
+  = "propietario";
 
 # include/tv_email.php3, row 170
 $_m["from"]
-  = "";
+  = "de";
 
 # include/tv_email.php3, row 172
 $_m["reply to"]
-  = "";
+  = "responder a";
 
 # include/tv_email.php3, row 174
 $_m["errors to"]
-  = "";
+  = "errores a";
 
 # include/tv_email.php3, row 176
 $_m["sender"]
-  = "";
+  = "emisor";
 
 # include/tableviews.php3, row 50, 51
 $_m["Alerts Admin"]
-  = "";
+  = "Admin Alertas";
 
 # include/tableviews.php3, row 63
 $_m["confirm mail"]
-  = "";
+  = "confirmar email";
 
 # include/tableviews.php3, row 64, 71
 $_m["number of days, 0 = off"]
-  = "";
+  = "número de días, 0 = desactivar";
 
 # include/tableviews.php3, row 70
 $_m["delete not confirmed"]
-  = "";
+  = "borrar no confirmados";
 
 # include/tableviews.php3, row 77
 $_m["last confirm mail"]

@@ -15,7 +15,7 @@ $mgettext_lang = "es";
 
 # ./slice.php3, row 164
 $_m["Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"]
-  = "";
+  = "Error en parámetro - el archivo a incluir debe estar en la misma carpeta que este .shtml y debe contener únicamente caracteres alfanuméricos";
 
 # ./slice.php3, row 169
 $_m["No such file"]
@@ -52,19 +52,19 @@ $_m["Add new"]
 
 # include/discussion.php3, row 136
 $_m["Alias for subject of the discussion comment"]
-  = "";
+  = "Alias para el asunto del comentario";
 
 # include/discussion.php3, row 137
 $_m["Alias for text of the discussion comment"]
-  = "";
+  = "Alias para el texto del comentario";
 
 # include/discussion.php3, row 138
 $_m["Alias for written by"]
-  = "";
+  = "Alias para el autor";
 
 # include/discussion.php3, row 139
 $_m["Alias for author's e-mail"]
-  = "";
+  = "Alias para el e-mail del autor";
 
 # include/discussion.php3, row 140
 $_m["Alias for url address of author's www site"]
@@ -195,7 +195,7 @@ $_m["Constant group id"]
 
 # include/item.php3, row 108
 $_m["Category class (for categories only)"]
-  = "";
+  = "Clase de constante (solo para categorías)";
 
 # include/item.php3, row 109
 $_m["Constant number"]
@@ -203,11 +203,11 @@ $_m["Constant number"]
 
 # include/item.php3, row 110
 $_m["Constant unique id (32-haxadecimal characters)"]
-  = "";
+  = "ID único de constante (32 caracteres hexadecimales)";
 
 # include/item.php3, row 111
 $_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
-  = "";
+  = "ID único de constante (autoincrementa desde 1 para cada constante en el sistema)";
 
 # include/item.php3, row 112
 $_m["Constant description"]
@@ -215,7 +215,7 @@ $_m["Constant description"]
 
 # include/item.php3, row 113
 $_m["Constant level (used for hierachical constants)"]
-  = "";
+  = "Nivel jerárquico (para constantes jerárquicas)";
 
 # include/item.php3, row 863
 $_m["on"]
@@ -235,7 +235,7 @@ $_m["Home"]
 
 # include/scroller.php3, row 217
 $_m["All"]
-  = "";
+  = "Todo";
 
 # include/easy_scroller.php3, row 103, 187
 $_m["Previous"]

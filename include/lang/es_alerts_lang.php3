@@ -17,42 +17,42 @@ $mgettext_lang = "es";
 # modules/alerts/addusers.php3, row 73
 # modules/alerts/cf_common.php3, row 69
 $_m["How often"]
-  = "";
+  = "Frecuencia";
 
 # modules/alerts/synchro2.php3, row 45, 53
 $_m["How often for {ALERNAME}"]
-  = "";
+  = "Frecuencia para {ALERNAME}";
 
 # modules/alerts/synchro2.php3, row 50
 $_m["not subscribed"]
-  = "";
+  = "no suscrito";
 
 # modules/alerts/synchro2.php3, row 67
 # modules/alerts/menu.php3, row 115
 # modules/alerts/tableviews.php3, row 101
 # modules/alerts/send_emails.php3, row 145
 $_m["Selections"]
-  = "";
+  = "Selecciones";
 
 # modules/alerts/synchro2.php3, row 68
 $_m["Selections for {ALERNAME}"]
-  = "";
+  = "Selecciones para {ALERNAME}";
 
 # modules/alerts/synchro2.php3, row 75
 $_m["Selecetion IDs for {ALERNAME}"]
-  = "";
+  = "IDs selecciones para {ALERNAME}";
 
 # modules/alerts/synchro2.php3, row 188
 $_m["%1 field(s) added"]
-  = "";
+  = "%1 campo(s) añadido(s)";
 
 # modules/alerts/synchro2.php3, row 214
 $_m["%1 field(s) and %2 constant group(s) deleted"]
-  = "";
+  = "%1 campo(s) y %2 grupo(s) de constantes borrado(s)";
 
 # modules/alerts/synchro2.php3, row 241
 $_m["not set"]
-  = "";
+  = "no activado";
 
 # modules/alerts/addusers.php3, row 43
 $_m["Collection Form Wizard"]
@@ -60,55 +60,55 @@ $_m["Collection Form Wizard"]
 
 # modules/alerts/addusers.php3, row 53
 $_m["Add Users"]
-  = "";
+  = "Añadir Usuarios";
 
 # modules/alerts/addusers.php3, row 57
 $_m["Some errors occured: "]
-  = "";
+  = "Se produjeron Errores:";
 
 # modules/alerts/addusers.php3, row 62
 $_m["Enter email addresses one on a row, you may add first and last name separated by whitespace (spaces, tabs), e.g."]
-  = "";
+  = "Escriba las direcciones email, una por fila. Puede añadir nombres y apellidos separados por espacios: ";
 
 # modules/alerts/addusers.php3, row 68
 $_m["Proove the email addresses format is correct."]
-  = "";
+  = "Comprobar que el formato de las direcciones es correcto";
 
 # modules/alerts/addusers.php3, row 75
 $_m["Confirmation"]
-  = "";
+  = "Confirmación";
 
 # modules/alerts/addusers.php3, row 76
 $_m["Send a confirmation email to users (recommended)."]
-  = "";
+  = "Enviar mensaje de confirmación a los usuarios (recomendado).";
 
 # modules/alerts/addusers.php3, row 77
 $_m["Subscribe users immediately (use carefully)."]
-  = "";
+  = "Suscribir immediatamente (use con cuidado).";
 
 # modules/alerts/addusers.php3, row 80
 $_m["Set the bin, into which the users will be added, on Alerts Admin."]
-  = "";
+  = "Asignar la carpeta donde se añaden los usuarios en Admin Alertas.";
 
 # modules/alerts/addusers.php3, row 84
 $_m["Go"]
-  = "";
+  = "Adelante";
 
 # modules/alerts/addusers.php3, row 122
 $_m["%1 new users were created and %2 users were subscribed (including the new ones)."]
-  = "";
+  = "%1 nuevos usuarios creados y %2 usuarios suscritos (incluyendo los nuevos).";
 
 # modules/alerts/addusers.php3, row 137
 $_m["is already in the database with another name: "]
-  = "";
+  = "ya está en la base de datos con otro nombre:";
 
 # modules/alerts/addusers.php3, row 160
 $_m["is already subscribed to this collection.<br>"]
-  = "";
+  = "ya está suscrito a esta colección.<br>";
 
 # modules/alerts/cf_common.php3, row 44
 $_m["Language"]
-  = "";
+  = "Idioma";
 
 # modules/alerts/cf_common.php3, row 49
 $_m["Email"]
@@ -120,24 +120,24 @@ $_m["Password"]
 
 # modules/alerts/cf_common.php3, row 58
 $_m["First name"]
-  = "";
+  = "Nombre";
 
 # modules/alerts/cf_common.php3, row 62
 $_m["Last name"]
-  = "";
+  = "Apellidos";
 
 # modules/alerts/cf_common.php3, row 75
 $_m["Change password"]
-  = "";
+  = "Cambiar clave";
 
 # modules/alerts/cf_common.php3, row 80
 $_m["Retype new password"]
-  = "";
+  = "Confirme nueva clave";
 
 # modules/alerts/menu.php3, row 60, 61
 # modules/alerts/tableviews.php3, row 149, 150
 $_m["Alerts Settings"]
-  = "";
+  = "Configuración Alertas";
 
 # modules/alerts/menu.php3, row 94
 $_m["AA"]
@@ -145,32 +145,32 @@ $_m["AA"]
 
 # modules/alerts/menu.php3, row 95
 $_m["AA Administration"]
-  = "";
+  = "Administración AA";
 
 # modules/alerts/menu.php3, row 108
 # modules/alerts/tableviews.php3, row 254, 255
 $_m["Alerts Admin"]
-  = "";
+  = "Admin Alertas";
 
 # modules/alerts/menu.php3, row 112
 $_m["Settings"]
-  = "";
+  = "Configuración";
 
 # modules/alerts/menu.php3, row 119
 $_m["Send emails"]
-  = "";
+  = "Enviar emails";
 
 # modules/alerts/menu.php3, row 122
 $_m["Reader management"]
-  = "";
+  = "Administración Suscriptores";
 
 # modules/alerts/menu.php3, row 123
 $_m["Documentation"]
-  = "";
+  = "Documentación";
 
 # modules/alerts/menu.php3, row 125
 $_m["Common"]
-  = "";
+  = "Común";
 
 # modules/alerts/menu.php3, row 127
 $_m["Email templates"]
@@ -194,11 +194,11 @@ $_m["Choose selections which form the Alert email."]
 
 # modules/alerts/tableviews.php3, row 111
 $_m["selection"]
-  = "";
+  = "selección";
 
 # modules/alerts/tableviews.php3, row 121
 $_m["order"]
-  = "";
+  = "orden";
 
 # modules/alerts/tableviews.php3, row 153
 $_m["Core settings for the Alerts."]
@@ -210,7 +210,7 @@ $_m["alerts ID"]
 
 # modules/alerts/tableviews.php3, row 169
 $_m["name"]
-  = "";
+  = "nombre";
 
 # modules/alerts/tableviews.php3, row 171
 $_m["form URL"]
@@ -218,11 +218,11 @@ $_m["form URL"]
 
 # modules/alerts/tableviews.php3, row 173
 $_m["language"]
-  = "";
+  = "idioma";
 
 # modules/alerts/tableviews.php3, row 176
 $_m["deleted"]
-  = "";
+  = "borrado";
 
 # modules/alerts/tableviews.php3, row 177
 $_m["Use AA Admin / Delete<br>to delete permanently"]
@@ -230,19 +230,19 @@ $_m["Use AA Admin / Delete<br>to delete permanently"]
 
 # modules/alerts/tableviews.php3, row 181
 $_m["welcome email"]
-  = "";
+  = "email bienvenida";
 
 # modules/alerts/tableviews.php3, row 188, 237
 $_m["alert email"]
-  = "";
+  = "email alerta";
 
 # modules/alerts/tableviews.php3, row 198
 $_m["created at"]
-  = "";
+  = "creado";
 
 # modules/alerts/tableviews.php3, row 205
 $_m["created by"]
-  = "";
+  = "creado por";
 
 # modules/alerts/tableviews.php3, row 213, 232
 $_m["You don't have permissions to edit any collection or no collection exists."]
@@ -295,51 +295,51 @@ $_m["no"]
 
 # modules/alerts/tableviews.php3, row 367
 $_m["yes"]
-  = "";
+  = "si";
 
 # modules/alerts/util.php3, row 59
 $_m["instant"]
-  = "";
+  = "instantaneo";
 
 # modules/alerts/util.php3, row 60
 $_m["daily"]
-  = "";
+  = "diario";
 
 # modules/alerts/util.php3, row 61
 $_m["weekly"]
-  = "";
+  = "semanal";
 
 # modules/alerts/util.php3, row 62
 $_m["monthly"]
-  = "";
+  = "mensual";
 
 # modules/alerts/util.php3, row 68
 $_m["Active"]
-  = "";
+  = "Aprobados";
 
 # modules/alerts/util.php3, row 69
 $_m["Holding bin"]
-  = "";
+  = "Por aprobar";
 
 # modules/alerts/util.php3, row 70
 $_m["Trash bin"]
-  = "";
+  = "Papelera";
 
 # modules/alerts/send_emails.php3, row 73
 $_m["Example"]
-  = "";
+  = "Ejemplo";
 
 # modules/alerts/send_emails.php3, row 79
 $_m["Send now an example alert email to"]
-  = "";
+  = "Enviar un mensaje de prueba ahora a";
 
 # modules/alerts/send_emails.php3, row 83
 $_m["as if"]
-  = "";
+  = "como si";
 
 # modules/alerts/send_emails.php3, row 85, 110
 $_m["Go!"]
-  = "";
+  = "Ir";
 
 # modules/alerts/send_emails.php3, row 91
 $_m["Send alerts"]
@@ -367,7 +367,7 @@ $_m["%1 email(s) sent"]
 
 # modules/alerts/send_emails.php3, row 143
 $_m["Slice"]
-  = "";
+  = "Canal";
 
 # modules/alerts/send_emails.php3, row 144
 $_m["View (Selection set)"]

@@ -123,7 +123,7 @@ $_m["Other fields"]
 
 # include/constants_param_wizard.php3, row 76
 $_m["List of other fields to receive this image, separated by ##"]
-  = "";
+  = "Lista de otros campos que reciben esta imágen, separados por ##";
 
 # include/constants_param_wizard.php3, row 81
 $_m["User ID = always store current user ID"]
@@ -216,20 +216,20 @@ $_m["If you need a unique code, you must send the field ID,\n"
 
 # include/constants_param_wizard.php3, row 131, 183
 $_m["Slice only"]
-  = "";
+  = "Sólo en el canal";
 
 # include/constants_param_wizard.php3, row 133, 185
 $_m["Do you want to check for uniqueness this slice only \n"
    ."                  or all slices?"]
-  = "";
+  = "¿Quiere verificar unicidad en este canal solamente o en todos los canales?";
 
 # include/constants_param_wizard.php3, row 140
 $_m["Input Validate Type"]
-  = "";
+  = "Tipo de validación de entrada";
 
 # include/constants_param_wizard.php3, row 142
 $_m["No validation"]
-  = "";
+  = "No validar";
 
 # include/constants_param_wizard.php3, row 144
 $_m["URL"]
@@ -241,11 +241,11 @@ $_m["E-mail"]
 
 # include/constants_param_wizard.php3, row 148
 $_m["Number = positive integer number"]
-  = "";
+  = "Número = entero positivo";
 
 # include/constants_param_wizard.php3, row 150
 $_m["Id = 1-32 hexadecimal digits [0-9a-f]"]
-  = "";
+  = "Id = 1-32 dígitos hexadecimales";
 
 # include/constants_param_wizard.php3, row 152
 $_m["Date = store as date"]
@@ -257,16 +257,16 @@ $_m["Bool = store as bool"]
 
 # include/constants_param_wizard.php3, row 156
 $_m["User = does nothing ???"]
-  = "";
+  = "Usuario";
 
 # include/constants_param_wizard.php3, row 158
 $_m["Unique = proove uniqueness"]
-  = "";
+  = "Unico = verificar unicidad";
 
 # include/constants_param_wizard.php3, row 160
 $_m["Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."]
-  = "";
+  = "Validar si el valor no está en uso todavía. Util para nombres de usuario o e-mails";
 
 # include/constants_param_wizard.php3, row 162, 179
 $_m["Field ID"]
@@ -274,22 +274,25 @@ $_m["Field ID"]
 
 # include/constants_param_wizard.php3, row 163, 180
 $_m["Field in which to look for matching values."]
-  = "";
+  = "Campo en el que buscar valores que coincidan.";
 
 # include/constants_param_wizard.php3, row 166
 $_m["Scope"]
-  = "";
+  = "Ambito";
 
 # include/constants_param_wizard.php3, row 170
 $_m["<b>1</b> = This slice only. \n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = Username, special: Checks uniqueness in reader management\n"
    ."                slices and in the permission system. Always uses field ID %1"]
-  = "";
+  = "<b>1</b> = Sólo este canal. \n"
+   ."<b>2</b> = Todos los canales.<br>\n"
+   ."<b>0</b> = Usuario. Comprueba unicidad en canales de Suscriptores y \n"
+   ."sistema de permisos. Siempre usa el ID %1";
 
 # include/constants_param_wizard.php3, row 176
 $_m["Unique e-mail"]
-  = "";
+  = "e-mail único";
 
 # include/constants_param_wizard.php3, row 177
 $_m["Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used."]
@@ -304,35 +307,35 @@ $_m["Validates the passwords do not differ when changing password.\n"
 
 # include/constants_param_wizard.php3, row 201
 $_m["Input Type"]
-  = "";
+  = "Tipo de entrada";
 
 # include/constants_param_wizard.php3, row 203
 $_m["Hierarchical constants"]
-  = "";
+  = "Constantes jerárquicas";
 
 # include/constants_param_wizard.php3, row 204
 $_m["A view with level boxes allows to choose constants."]
-  = "";
+  = "Una vista con cajas para seleccionar constantes.";
 
 # include/constants_param_wizard.php3, row 206
 $_m["Level count"]
-  = "";
+  = "Niveles";
 
 # include/constants_param_wizard.php3, row 207
 $_m["Count of level boxes"]
-  = "";
+  = "Cajas de nivel";
 
 # include/constants_param_wizard.php3, row 210
 $_m["Box width"]
-  = "";
+  = "Ancho de la caja";
 
 # include/constants_param_wizard.php3, row 211
 $_m["Width in characters"]
-  = "";
+  = "Ancho en caracteres";
 
 # include/constants_param_wizard.php3, row 214
 $_m["Size of target"]
-  = "";
+  = "Tamaño del destino";
 
 # include/constants_param_wizard.php3, row 215
 $_m["Lines in the target select box"]
@@ -344,7 +347,7 @@ $_m["Horizontal"]
 
 # include/constants_param_wizard.php3, row 219
 $_m["Show levels horizontally"]
-  = "";
+  = "Mostrar niveles en horizontal";
 
 # include/constants_param_wizard.php3, row 222
 $_m["First selectable"]
@@ -356,7 +359,7 @@ $_m["First level which will have a Select button"]
 
 # include/constants_param_wizard.php3, row 226
 $_m["Level names"]
-  = "";
+  = "Nombres de niveles";
 
 # include/constants_param_wizard.php3, row 227
 $_m["Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..."]
@@ -368,19 +371,19 @@ $_m["Top level~Second level~Keyword"]
 
 # include/constants_param_wizard.php3, row 231
 $_m["Text Area"]
-  = "";
+  = "Area de texto";
 
 # include/constants_param_wizard.php3, row 232
 $_m["Text area with 60 columns"]
-  = "";
+  = "Area de texto con 60 columnas";
 
 # include/constants_param_wizard.php3, row 234, 242
 $_m["row count"]
-  = "";
+  = "filas";
 
 # include/constants_param_wizard.php3, row 239
 $_m["Rich Edit Area"]
-  = "";
+  = "Area de Texto Enriquecido";
 
 # include/constants_param_wizard.php3, row 240
 $_m["Rich edit text area. This operates the same way as Text Area in browsers which don't support the Microsoft TriEdit library. In IE 5.0 and higher and in Netscape 4.76 and higher (after installing the necessary features) it uses the TriEdit to provide an incredibly powerful HTML editor.<br><br>\n"
@@ -391,16 +394,16 @@ $_m["Rich edit text area. This operates the same way as Text Area in browsers wh
 
 # include/constants_param_wizard.php3, row 246
 $_m["column count"]
-  = "";
+  = "columnas";
 
 # include/constants_param_wizard.php3, row 250, 570
 # doc/param_wizard_list.php3, row 94
 $_m["type"]
-  = "";
+  = "tipo";
 
 # include/constants_param_wizard.php3, row 251
 $_m["type: class (default) / iframe"]
-  = "";
+  = "tipo: class (por defecto) / iframe";
 
 # include/constants_param_wizard.php3, row 253
 $_m["class"]
@@ -424,7 +427,7 @@ $_m["max count of characters entered (maxlength parameter)"]
 
 # include/constants_param_wizard.php3, row 262, 290
 $_m["width"]
-  = "";
+  = "ancho";
 
 # include/constants_param_wizard.php3, row 263
 $_m["width of the field in characters (size parameter)"]
@@ -432,7 +435,7 @@ $_m["width of the field in characters (size parameter)"]
 
 # include/constants_param_wizard.php3, row 267
 $_m["Select Box"]
-  = "";
+  = "Caja selección";
 
 # include/constants_param_wizard.php3, row 268
 $_m["A selectbox field with a values list.<br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice, usually with the f_v alias function)"]
@@ -740,7 +743,7 @@ $_m["Password input boxes allowing to send password (for password-protected item
 
 # include/constants_param_wizard.php3, row 442
 $_m["Field size"]
-  = "";
+  = "Tamaño del campo";
 
 # include/constants_param_wizard.php3, row 443
 $_m["Size of the three fields"]
@@ -808,7 +811,7 @@ $_m["Retype the new password exactly the same as you entered into \"Change Passw
 
 # include/constants_param_wizard.php3, row 470
 $_m["Do not show"]
-  = "";
+  = "No mostrar";
 
 # include/constants_param_wizard.php3, row 471
 $_m["This option hides the input field"]
@@ -816,7 +819,7 @@ $_m["This option hides the input field"]
 
 # include/constants_param_wizard.php3, row 475
 $_m["Function"]
-  = "";
+  = "Función";
 
 # include/constants_param_wizard.php3, row 476
 $_m["How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen."]
@@ -952,15 +955,15 @@ $_m["condition"]
 
 # include/constants_param_wizard.php3, row 527
 $_m["This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it."]
-  = "";
+  = "Esta función es muy poderosa. Entre otras cosas, puede remplazar a otras funciones. Si <b>campo_condición</b> = <b>condición</b>, muestra <b>inicio</b> <i>el campo</i> <b>fin</b>, de lo contrario muestra <b>si_no</b>. Si no se especifica <b>campo_condición</b>, se usa <i>el campo</i>. La condición se puede invertir (negar) poniendo un signo de admiración (\"!\") al principio.";
 
 # include/constants_param_wizard.php3, row 530
 $_m["you may use \"!\" to reverse (negate) the condition"]
-  = "";
+  = "puede usar \"!\" para invertir (negar) la condición";
 
 # include/constants_param_wizard.php3, row 533, 639
 $_m["begin"]
-  = "";
+  = "inicio";
 
 # include/constants_param_wizard.php3, row 534
 $_m["text to print before <i>field</i>, if condition is true"]
@@ -968,11 +971,11 @@ $_m["text to print before <i>field</i>, if condition is true"]
 
 # include/constants_param_wizard.php3, row 536
 $_m["Yes"]
-  = "";
+  = "Si";
 
 # include/constants_param_wizard.php3, row 537
 $_m["end"]
-  = "";
+  = "fin";
 
 # include/constants_param_wizard.php3, row 538
 $_m["text to print after <i>field</i>, if condition is true"]
@@ -980,7 +983,7 @@ $_m["text to print after <i>field</i>, if condition is true"]
 
 # include/constants_param_wizard.php3, row 541
 $_m["else"]
-  = "";
+  = "si_no";
 
 # include/constants_param_wizard.php3, row 542
 $_m["text to print when condition is not satisfied"]
@@ -992,7 +995,7 @@ $_m["No"]
 
 # include/constants_param_wizard.php3, row 545
 $_m["cond_field"]
-  = "";
+  = "campo_condicion";
 
 # include/constants_param_wizard.php3, row 546
 $_m["field to compare with the <b>condition</b> - if not filled, <i>field</i> is used"]
@@ -1048,7 +1051,7 @@ $_m["PHP-like format - see <a href=\"http://www.php.cz/manual/en/function.date.p
 
 # include/constants_param_wizard.php3, row 566
 $_m["m-d-Y"]
-  = "";
+  = "d-m-Y";
 
 # include/constants_param_wizard.php3, row 567
 $_m["edit item"]
@@ -1384,7 +1387,7 @@ $_m["<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>"]
 
 # include/constants_param_wizard.php3, row 711
 $_m["transformation"]
-  = "";
+  = "transformación";
 
 # include/constants_param_wizard.php3, row 712
 $_m["Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_1</b>:<b>return_value_1</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>."]
@@ -1400,11 +1403,11 @@ $_m["string for comparison with <i>the field</i> for following return value"]
 
 # include/constants_param_wizard.php3, row 718, 726, 734, 742, 750, 758, 766, 774, 782, 790
 $_m["return value"]
-  = "";
+  = "valor retornado";
 
 # include/constants_param_wizard.php3, row 719, 727, 735, 743, 751, 759, 767, 775, 783, 791
 $_m["string to return if previous content matches - You can use field_id too"]
-  = "";
+  = "texto a retornar si el contenido anterior coincide - También puede usar id_campo";
 
 # include/constants_param_wizard.php3, row 721, 729, 737, 745, 753, 761, 769, 777, 785, 793
 $_m["Environment"]
@@ -1424,7 +1427,7 @@ $_m["calls a user defined function (see How to create new aliases in <a href='ht
 
 # include/constants_param_wizard.php3, row 801
 $_m["function"]
-  = "";
+  = "función";
 
 # include/constants_param_wizard.php3, row 802
 $_m["name of the function in the include/usr_aliasfnc.php3 file"]
@@ -1436,7 +1439,7 @@ $_m["usr_start_end_date_cz"]
 
 # include/constants_param_wizard.php3, row 805
 $_m["parameter"]
-  = "";
+  = "parámetro";
 
 # include/constants_param_wizard.php3, row 806
 $_m["a parameter passed to the function"]
@@ -1444,7 +1447,7 @@ $_m["a parameter passed to the function"]
 
 # include/constants_param_wizard.php3, row 809
 $_m["view"]
-  = "";
+  = "vista";
 
 # include/constants_param_wizard.php3, row 810
 $_m["allows to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows to display any view in place of the alias. It can be used for 'related stories' table or for dislaying content of related slice."]
@@ -1464,7 +1467,7 @@ $_m["vid=4&amp;cmd[23]=v-25"]
 
 # include/constants_param_wizard.php3, row 816
 $_m["image width"]
-  = "";
+  = "ancho imágen";
 
 # include/constants_param_wizard.php3, row 817
 $_m["An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". "]
@@ -1480,46 +1483,46 @@ $_m["Choose a Parameter Wizard"]
 
 # doc/param_wizard_list.php3, row 52, 69
 $_m["Go"]
-  = "";
+  = "Ir";
 
 # doc/param_wizard_list.php3, row 61
 $_m["Change to: "]
-  = "";
+  = "Cambiar a: ";
 
 # doc/param_wizard_list.php3, row 76
 $_m["TOP"]
-  = "";
+  = "ARRIBA";
 
 # doc/param_wizard_list.php3, row 90
 $_m["Parameters:"]
-  = "";
+  = "Parámetros:";
 
 # doc/param_wizard_list.php3, row 93
 $_m["name"]
-  = "";
+  = "nombre";
 
 # doc/param_wizard_list.php3, row 95
 $_m["description"]
-  = "";
+  = "descripción";
 
 # doc/param_wizard_list.php3, row 96
 $_m["example"]
-  = "";
+  = "ejemplo";
 
 # doc/param_wizard_list.php3, row 102
 $_m["integer number"]
-  = "";
+  = "número entero";
 
 # doc/param_wizard_list.php3, row 103
 $_m["any text"]
-  = "";
+  = "cualquier texto";
 
 # doc/param_wizard_list.php3, row 104
 $_m["field id"]
-  = "";
+  = "id campo";
 
 # doc/param_wizard_list.php3, row 105
 $_m["boolean: 0=false,1=true"]
-  = "";
+  = "booleano: 0=falso,1=verdadero";
 
 ?>
