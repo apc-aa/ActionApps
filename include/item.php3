@@ -70,6 +70,9 @@ function GetAliasesFromFields($fields, $additional="") {
   $aliases["_#RSS_DATE"] = array("fce" => "f_r",
                                  "param" => "SLICEdate",
                                  "hlp" => L_RSS_DATE);
+  $aliases["_#SLI_NAME"] = array("fce" => "f_e:slice_info",
+                                 "param" => "name",
+                                 "hlp" => L_SLI_NAME_ALIAS);
 
   # database stored aliases
   while( list($k,$val) = each($fields) ) {
@@ -763,7 +766,7 @@ class item {
   # _#ITEMEDIT used on admin page index.php3 for itemedit url
   # param: 0
   function f_e($col, $param="") { 
-    global $sess;
+    global $sess, $slice_info;
     global $AA_INSTAL_EDIT_PATH;
  
     // code to keep compatibility with older version
@@ -779,6 +782,10 @@ class item {
       	return $GLOBALS['QueryIDsCount'];
       case "safe":
         return safe( $this->getval($col) ); 
+      case "slice_info":
+        if( !is_array( $slice_info ) )
+          $slice_info = GetSliceInfo(unpack_id( $this->getval('slice_id........')));
+        return $slice_info[$col]; 
       default:  
         return con_url($sess->url($admin_path."itemedit.php3"),
                    "encap=false&edit=1&id=".
