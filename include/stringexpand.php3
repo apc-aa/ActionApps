@@ -153,8 +153,8 @@ function parseLoop($out, &$item) {
             $param = substr($field, strpos($field, "(")+1,strpos($field, ")")-strpos($field, "(")-1);
             $params = explode(",",$param);
             // field name
-            $field = substr($field, 0, strpos($field, "("));
-            $group_id = getConstantsGroupID($item->columns["slice_id........"][0]["value"], $field); //
+            $field    = substr($field, 0, strpos($field, "("));
+            $group_id = getConstantsGroupID($item->getval("slice_id........"), $field);
         }
     }
     $val = $item->getvalues($field);
@@ -543,10 +543,10 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         // parameters - first is field
         $parts = ParamExplode(substr($out,strpos($out,":")+1));
         // get group id
-        $group_id = getConstantsGroupID($item->columns["slice_id........"][0]["value"], $parts[0]);
+        $group_id = getConstantsGroupID($item->getval("slice_id........"), $parts[0]);
         /* get short_id/name/... of constant with specified value from constants category with
            group $group_id */
-        $value = getConstantValue($group_id, $what, $item->columns[$parts[0]][0]["value"]);
+        $value = getConstantValue($group_id, $what, $item->getval($parts[0]));
 
         return $value;
     }
