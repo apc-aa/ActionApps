@@ -28,6 +28,7 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";     // GetAliasesFromField funct def 
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."discussion.php3";  // GetDiscussionAliases funct def
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 function show_digest_filters ()
 {
@@ -41,7 +42,6 @@ function show_digest_filters ()
         if (!$rowid) $rowid = "new$irow";
         FrmTextarea("filters[$rowid][conds]", L_FILTER." ".($irow+1), $db->f("conds"), 3, 50, false); 
         FrmTextarea("filters[$rowid][description]", L_DESCRIPTION, $db->f("description"), 2, 50, false);
-        FrmInputText("filters[$rowid][sort]", L_SORT, $db->f("sort"), 254, 50, false); 
     }
 }
 
@@ -65,7 +65,6 @@ function store_digest_filters ()
         $varset->clear();
         $varset->add("description", "quoted", $filter["description"]);
         $varset->add("conds", "quoted", $filter["conds"]);
-        $varset->add("sort", "quoted", $filter["sort"]);
         $varset->add("vid", "number", $view_id);
         $varset->add("showme", "number", 1);
 
@@ -125,7 +124,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "se_views.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_VIEWS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_VIEWS, "admin");
   exit;
 }  
 
