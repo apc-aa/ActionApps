@@ -84,7 +84,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
   }  
 }  
 
-function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE" ) {
+function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", $slices="" ) {
   # parameter format example:  
   # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
   # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
@@ -115,6 +115,8 @@ if( $debug ) {
   p_arr_m($sort);
   echo "<br><br>Group by:<br>";
   p_arr_m($group_by);
+  echo "<br><br>Slices:<br>";
+  p_arr_m($slices);
 }
   
   # parse conditions ----------------------------------
@@ -176,7 +178,7 @@ if( $debug ) {
     while( list( , $srt) = each( $sort )) {
       $fid = key($srt);
       if( !$fields[$fid] )  # bad field_id - skip
-        continue;
+          continue;
         
       if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
         $select_order .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
@@ -256,7 +258,15 @@ if( $debug ) {
     $SQL .= " ". implode (" ", $select_tabs);
 
   $SQL .= " WHERE ";                                         # slice ----------
-  if( $slice_id )
+  if( $slices ) {
+      $slicesText = "";
+      for ($islice = 0; $islice < count($slices); ++$islice) {
+          if ($islice) $slicesText .= ",";
+          $slicesText .= "'".q_pack_id($slices[$islice])."'";
+      }
+      $SQL .= " item.slice_id IN ( $slicesText ) AND ";
+  }
+  else if( $slice_id )
     $SQL .= " item.slice_id = '". q_pack_id($slice_id) ."' AND ";
 
   $now = now();                                              # select bin -----
@@ -828,95 +838,4 @@ if ($debug) echo "$condition<br>";
  	}
 }; # search function end
 
-/*
-$Log$
-Revision 1.25  2002/02/05 21:49:19  honzam
-fixed bug in searching in boolean fields
-
-Revision 1.24  2002/01/10 14:08:09  honzam
-sorting and querying blank fields now fixed (bug 492331)
-
-Revision 1.23  2001/12/18 12:15:59  honzam
-new alias for displaying matched items count (_#ID_COUNT)
-
-Revision 1.22  2001/11/05 13:32:16  honzam
-searching improved - possible to use wildcards * and ? in searchstring
-
-Revision 1.21  2001/10/24 16:43:37  honzam
-search expressions with AND, OR, NOT, (, ) allowed in conditions; fixed bug in search (INNER JOIN replaced by LEFT JOIN to content table
-
-Revision 1.20  2001/10/05 10:56:48  honzam
-slice.php3 allows grouping items
-
-Revision 1.19  2001/10/04 13:56:47  honzam
-New BETWEEN operator, debug listings on demand
-
-Revision 1.18  2001/09/27 16:08:51  honzam
-Better support for dates in "<=", ">" comparison
-
-Revision 1.17  2001/08/02 20:05:30  honzam
-new possibility to display expired items (for archves, ...)
-
-Revision 1.16  2001/07/31 16:32:51  honzam
-Added '-' operator modifier for relative time conditions. The operator was implemented to view definition too (se_view.php3)
-
-Revision 1.15  2001/07/09 17:47:41  honzam
-Operator date modifiers fixed
-
-Revision 1.14  2001/06/15 20:05:16  honzam
-little search imrovements and bugfixes
-
-Revision 1.13  2001/05/27 20:59:30  honzam
-fixed problem with doubled item from search
-
-Revision 1.12  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.11  2001/05/10 09:44:35  honzam
-Extended search end date problem fixed (now it searches whole end date)
-
-Revision 1.10  2001/03/30 11:54:35  honzam
-offline filling bug and others small bugs fixed
-
-Revision 1.9  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.8  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.7  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-Revision 1.5  2001/01/22 17:32:49  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.4  2000/12/23 19:56:50  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
-
-Revision 1.3  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.2  2000/08/17 15:07:27  honzam
-Searching only in approved items
-
-Revision 1.1.1.1  2000/06/21 18:40:47  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:26  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.10  2000/06/12 19:58:37  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.9  2000/05/30 09:11:39  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.8  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>
