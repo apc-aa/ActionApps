@@ -8,7 +8,7 @@
 
   $array[uid] = $username;
   $array[mail] = $username."@".DEFAULT_ORG_ID;
-  $array["givenname"] = "NewsFlash";
+  $array["givenname"] = "AA";
   $array["sn"] = "Admin";
   $array["userpassword"] = $password;
 
@@ -20,8 +20,11 @@
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:27  madebeer
-Initial revision
+Revision 1.2  2000/08/12 15:34:18  kruemelmo
+AA is a better name than NewsFlash for the AA admin.
+
+Revision 1.1.1.1  2000/06/21 18:40:27  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:14  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

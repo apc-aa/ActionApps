@@ -34,13 +34,19 @@ function Needed( $condition=true ) {
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
-  echo "</td>\n  <td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value='$val'></td></tr>\n";
+  echo "</td>\n";
+  if ( SINGLE_COLUMN_FORM )
+    echo "</tr><tr>";
+  echo "<td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value='$val'></td></tr>\n";
 }
 
 # Prints two static text to 2-column table
 # for use within <table> tag
 function FrmStaticText($txt, $val){
-  echo "<tr><td class=tabtxt><b>$txt</b></td><td>$val</td></tr>\n";
+  echo "<tr><td class=tabtxt><b>$txt</b></td>";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "<td>$val</td></tr>\n";
 }
 
 # Prints html tag <input type=password .. to 2-column table
@@ -48,7 +54,10 @@ function FrmStaticText($txt, $val){
 function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false)
 { echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
-  echo "</td>\n  <td><input type=\"Password\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"></td></tr>\n";
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "<td><input type=\"Password\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"></td></tr>\n";
 }
 
 # Prints html tag <input type=file .. to 2-column table
@@ -56,7 +65,10 @@ function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false)
 function FrmInputFile($name, $txt, $size=25, $needed=false)
 { echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
-  echo "</td>\n  <td><input type=\"file\" name=\"$name\" size=$size accept=\"image/*\"></td></tr>\n";  // /**/
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "  <td><input type=\"file\" name=\"$name\" size=$size accept=\"image/*\"></td></tr>\n";  // /**/
 }
 
 # Prints html tag <textarea .. to 2-column table
@@ -65,7 +77,10 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false)
 {
  echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
-  echo "</td>\n  <td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea></td></tr>\n";
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "  <td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea></td></tr>\n";
 }
 
 # Prints html tag <input type=checkbox .. to 2-column table
@@ -76,12 +91,16 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
     echo "<td class=tabtxt colspan=$colspan><b>$txt</b>";
     Needed($needed);
     echo "</td>\n  ";
+    if (SINGLE_COLUMN_FORM)
+      echo "</tr><tr>";
   }  
   echo "<td><input type=\"checkbox\" name=\"$name\" $add ";
   if($checked)
     echo " checked";
   echo "></td>";
   if( $changeorder ) {
+    if (SINGLE_COLUMN_FORM)
+      echo "</tr><tr>";
     echo "<td class=tabtxt colspan=$colspan><b>$txt</b>";
     Needed($needed);
     echo "</td>\n  ";
@@ -102,7 +121,10 @@ function FrmChBoxEasy($name, $checked=true, $add="")
 function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false) {
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
-  echo "</td>\n <td><select name=\"$name\">";	
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "<td><select name=\"$name\">";	
   reset($arr);
   while(list($k, $v) = each($arr)) { 
     echo "<option value=\"". htmlspecialchars($k)."\"";
@@ -132,7 +154,7 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 {
   if($variable=="" OR Chop($variable)=="")
     if( $needed ) {                     // NOT NULL
-      $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_NEED.")</div>";
+      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_NEED.")");
       return false;
     }
     else  return true;     
@@ -140,37 +162,42 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
   {
     case "id":     if((string)$variable=="0" AND !$needed)
                      return true;     
-                   if( !EReg("^[0-9a-f]{32}$",Chop($variable)))
-                   { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName</div>";
+                   if( !EReg("^[0-9a-f]{1,32}$",Chop($variable)))
+                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
                    return true;
     case "number": if( !EReg("^[0-9]+$",Chop($variable)) || ($variable > 32767))
-                   { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName</div>";
+                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
                    return true;
     case "perms":  if( !(($Promenna=="editor") OR ($Promenna=="admin")))
-                   { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName</div>";
+                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
                    return true;
     case "email":  if( !EReg("^.+@.+\..+",Chop($variable)))
-                   { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName</div>";
+                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
                    return true;
     case "login":
-    case "password":
       $len = strlen($variable);
-      if( ($len>=5) AND ($len<=32) )
+      if( ($len>=3) AND ($len<=32) )
       { if( !EReg("^[a-zA-Z0-9]*$",Chop($variable)))
-        { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_LOG.")</div>";
+        { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOG.")");
           return false;
         }
         return true;
       }  
-      $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_LOGLEN.")</div>";                   
+      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");                   
+      return false; 
+    case "password":
+      $len = strlen($variable);
+      if( ($len>=5) AND ($len<=32) )
+        return true;
+      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");                   
       return false; 
     case "url":
     case "all":    
@@ -179,14 +206,27 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 }    
 
 # returns html safe code
+# use for preparing variable to print in form
 function safe( $var ) {
-  return htmlspecialchars( $var );
+  return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
 }  
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:38  madebeer
-Initial revision
+Revision 1.5  2000/11/17 19:05:20  madebeer
+added SINGLE_COLUMN_FORM
+
+Revision 1.4  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
+Revision 1.3  2000/08/29 11:29:58  honzam
+Better validation of id (1-32 chars) and password (any character).
+
+Revision 1.2  2000/08/03 12:31:19  honzam
+Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
+
+Revision 1.1.1.1  2000/06/21 18:40:38  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:23  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

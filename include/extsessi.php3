@@ -72,6 +72,11 @@ class AA_CT_Sql extends CT_Sql {	## Container Type for Session is SQL DB
 #  var $gc_probability = 5;  
 #}
 
+# skips terminating backslashes
+function DeBackslash($txt) {
+  return EReg_Replace("[\]*$", "", $txt);
+}   
+
 class AA_SL_Session extends Session {
   var $classname = "AA_SL_Session";
 
@@ -84,55 +89,83 @@ class AA_SL_Session extends Session {
   var $gc_probability = 5;  
   
   //rewriten to return URL of shtml page that includes this script instead to return self url of this script. If noquery parameter is true, session id is not added    
-  function MyUrl($SliceID=0, $Encap=true, $noquery=false){  //SliceID is here just for compatibility with MyUrl function in extsess.php3
-   global $HTTP_HOST, $HTTPS, $DOCUMENT_URI
-   if( isset($HTTPS) && $HTTPS == 'on' ){
-          ## You will need to fix suexec as well, if you use Apache and CGI PHP
-          $PROTOCOL='https';
-        } else {
-          $PROTOCOL='http';
-        }
-          $foo=$PROTOCOL. "://". $HTTP_HOST.$DOCUMENT_URI;  
-     switch ($this->mode) {
-      case "get":  
-        if (!$noquery){$foo .= "?".urlencode($this->name)."=".$this->id;}
-        break;
-      default:
-        ;
-      break;
-     }
-    return $foo;
-  }
+   function MyUrl($SliceID=0, $Encap=true, $noquery=false){  //SliceID is here just for compatibility with MyUrl function in extsess.php3
+      global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REDIRECT_DOCUMENT_URI;
+      if (isset($HTTPS) && $HTTPS == 'on') {
+         ## You will need to fix suexec as well, if you use Apache and CGI PHP
+         $PROTOCOL='https';
+      } else {
+         $PROTOCOL='http';
+      }
+      if (isset($REDIRECT_DOCUMENT_URI)) {  ## CGI --enable-force-cgi-redirect
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_DOCUMENT_URI;
+      } else {
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$DOCUMENT_URI;
+      }
+      switch ($this->mode) {
+         case "get":  
+            if (!$noquery){$foo .= "?".urlencode($this->name)."=".$this->id;}
+            break;
+         default:
+            break;
+      }
+      return $foo;
+   }
   
  
  // adds variables passesd by QUERY_STRING_UNESCAPED to GLOBALS 
-  function add_vars() {
-  global $QUERY_STRING_UNESCAPED 
-    $a = split ("\\\&",$QUERY_STRING_UNESCAPED);
+  function add_vars($debug="") {
+    global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
+    if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
+      $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
+    } else {  
+      $varstring = $QUERY_STRING_UNESCAPED;
+    }  
+
+    $a = explode("&",$varstring);
     $i = 0;
-     while ($i < count ($a)) 
-      {
-       $b = split ('=', $a [$i]);
-       if(ERegI("^(.+)\\\\\\[(.*)\\\\\\]", $b[0], $c))      // for array variable
-         // (I do not know exactly, why there are so much '\' but '\\\\\\[' it means '\[')
-         $GLOBALS[urldecode ($c[1])][urldecode ($c[2])] = urldecode ($b[1]);
-        else 
-         $GLOBALS[urldecode ($b [0])]= urldecode ($b [1]);
-       $i++;
+
+    while ($i < count ($a)) {
+      $b = explode ('=', $a [$i]);
+      if (ERegI("^(.+)\[(.*)\]", $b[0], $c)) {  // for array variable
+             // I do not know exactly, why there is
+                   // so much '\' but '\\\\\\[' means '\['
+        $c[1] = DeBackslash($c[1]);
+        $c[2] = DeBackslash($c[2]);
+        $b[1] = DeBackslash($b[1]);
+        $GLOBALS[urldecode ($c[1])][urldecode ($c[2])] = urldecode ($b[1]);
+      } else {
+        $b[0] = DeBackslash($b[0]);
+        $b[1] = DeBackslash($b[1]);
+        $GLOBALS[urldecode ($b [0])]= urldecode ($b [1]);
       }
+      $i++;
+    }
     return $i;
   }
   
+  # adds variables passesd by QUERY_STRING_UNESCAPED to HTTP_GET_VARS
+  # SSI patch - passes variables to SSIed script
   function expand_getvars() {
-  global $QUERY_STRING_UNESCAPED, $HTTP_GET_VARS;   
-    $a = split ("\\\&",$QUERY_STRING_UNESCAPED);
+  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $HTTP_GET_VARS;   
+    if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
+      $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
+      # $REDIRECT_QUERY_STRING_UNESCAPED
+      #  - necessary for cgi version compiled with --enable-force-cgi-redirect      
+    } else {  
+      $varstring = $QUERY_STRING_UNESCAPED;
+    }  
+
+    $a = explode("&",$varstring);
     $i = 0;
-     while ($i < count ($a)) 
-      {
-       $b = split ('=', $a [$i]);
-       $HTTP_GET_VARS[urldecode ($b [0])]= urldecode ($b [1]);
-       $i++;
-      }
+
+    while ($i < count ($a)) {
+      $b = explode ('=', $a [$i]);
+      $b[0] = DeBackslash($b[0]);
+      $b[1] = DeBackslash($b[1]);
+      $HTTP_GET_VARS[urldecode ($b [0])]= urldecode ($b [1]);
+      $i++;
+    }
     return $i;
   }
   
@@ -232,8 +265,27 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:37  madebeer
-Initial revision
+Revision 1.7  2000/11/08 12:23:55  honzam
+Fixed problem with bad AA_SL_Sess id - bad copy QUERY_STRING to HTTP_GET_VARS
+
+Revision 1.6  2000/10/10 10:04:24  honzam
+better backslashes handling for Query string parsing
+
+Revision 1.5  2000/08/23 12:29:58  honzam
+fixed security problem with inc parameter to slice.php3
+
+Revision 1.4  2000/08/22 12:30:06  honzam
+fixed problem with lost session id AA_SL_Session in cgi (PHP4) instalation.
+
+Revision 1.3  2000/08/07 15:27:45  kzajicek
+Added missing semicolon in global statement
+
+Revision 1.2  2000/07/21 15:28:46  kzajicek
+When PHP (CGI version) is configured with --enable-force-cgi-redirect,
+most of standard environmental variables are moved to REDIRECT_variable_name.
+
+Revision 1.1.1.1  2000/06/21 18:40:37  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:23  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -246,6 +298,5 @@ perm_mysql improvements
 Id and Log added to all .php3 and .inc files
 system for config-ecn.inc and config-igc.inc both called from
 config.inc
-
 */
 ?>

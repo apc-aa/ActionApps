@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Installation of APC Action Applications: Customization</TITLE>
+ <LINK HREF="install-6.html" REL=next>
+ <LINK HREF="install-4.html" REL=previous>
+ <LINK HREF="install.html#toc5" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="install-6.html">Next</A>
+<A HREF="install-4.html">Previous</A>
+<A HREF="install.html#toc5">Contents</A>
+<HR>
+<H2><A NAME="s5">5. Customization</A></H2>
+
+<H2><A NAME="ss5.1">5.1 Language Customization</A>
+</H2>
+
+<H3><A NAME="cust_lang_how"></A> How it works</H3>
+
+<P>Action Applications were designed with internationalization in mind. There
+are currently two languages shipping: English and Czech.
+<P>The language configuration is done with statements in the file
+<CODE>config.php3</CODE> which point to other files which contain language
+information. 
+<P>Each language has an abbreviation used in the Action Application 
+configuration. The abbreviation for English is <EM>em</EM>, Czech is
+<EM>cz</EM>.
+<P>The language information is split up in parts:
+<UL>
+<LI>Common language information in the file 
+<CODE>include/??_common_lang.php3</CODE>. This is used for non
+application specific language information, for example, for the login
+box.</LI>
+<LI>Application specific language information. Each Action Application
+has its own specific language information in the files
+<CODE>include/??_*_lang.php3</CODE> where * is replaced with an
+Application dependent abbreviation; for example, the <EM>News Listing</EM>
+Action Application's language information lives in the file
+<CODE>include/??_nefs_lang.php3</CODE>.</LI>
+</UL>
+
+Of course the file names do not contain question marks; instead, the
+<EM>??</EM> is replaced by the actual language abbreviation. For example, the
+Czech common language file is named <CODE>include/cz_common_lang.php3</CODE>.
+<P>In <CODE>include/config.php3</CODE>, the <EM>common</EM> language files are
+referenced by a <EM>require</EM> statement. The section containing it
+looks like this:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# Language: uncomment one language file
+require ($AA_INC_PATH . "en_common_lang.php3");  # English
+# require ($AA_INC_PATH . "cz_common_lang.php3");  # Czech
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+Exactly one common language file must be uncommented here. (Again,
+the <EM>#</EM> character at the beginning of the line makes it a comment.)
+This means that for the common part, one installation of the Action
+Applications (using one config.php3 file) can only use one language
+for the common parts.
+<P>The application specific language files are referenced by assignment
+statements. The relevant section looks like this:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# index names must be less than 20 characters (as is en_news)
+$ActionAppConfig[en_news][name] = "News";
+$ActionAppConfig[en_news][file] = "en_news_lang.php3";
+# $ActionAppConfig[news][file] = "cz_language.php3";    # Czech language news
+
+$ActionAppConfig[en_action_alerts][name] = "Action alerts";
+$ActionAppConfig[en_action_alerts][file] = "en_news_lang.php3";
+
+$ActionAppConfig[en_events][name] = "Events listings";
+$ActionAppConfig[en_events][file] = "en_news_lang.php3";
+
+$ActionAppConfig[en_press_rel][name] = "Press release publisher";
+$ActionAppConfig[en_press_rel][file] = "en_press_lang.php3";
+
+$ActionAppConfig[en_jobs][name] = "Job listing";
+$ActionAppConfig[en_jobs][file] = "en_news_lang.php3";
+
+$ActionAppConfig[en_addresses][name] = "Address list";
+$ActionAppConfig[en_addresses][file] = "en_news_lang.php3";
+
+$ActionAppConfig[en_media_mon][name] = "Media monitoring";
+$ActionAppConfig[en_media_mon][file] = "en_news_lang.php3";
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+As you can see, each Action Application has one line with a description
+of the application and one line with a file name containing the application
+specific language information. It is possible to keep the same 
+Action Application with more than one different languages.
+<P>
+<H3>Customizing an Action Application to a new language</H3>
+
+<P>These are the steps you will have to perform if you want to set up an
+Action Application in a different language than the default, English:
+<UL>
+<LI>Figure out the language abbreviation for your new language. Check if
+there are already files for this language in the <CODE>include/</CODE>
+directory. If not, make the abbreviation up. In the rest of these
+instructions, the example language abbreviation <EM>lg</EM> will be used.</LI>
+<LI>If you want the common non application specific parts of the
+Action Applications to be in that language, too, check if there is a file 
+<CODE>include/lg_common_lang.php3</CODE> for your language. If not, copy the
+English version <CODE>include/en_common_lang.php3</CODE> to 
+<CODE>include/lg_common_lang.php3</CODE>. Translate the English to your
+language. Then, edit <CODE>include/config.php3</CODE>, comment out the line
+for the English file and put in yours:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# Language: uncomment one language file
+# require ($AA_INC_PATH . "en_common_lang.php3");  # English
+# require ($AA_INC_PATH . "cz_common_lang.php3");  # Czech
+require ($AA_INC_PATH . "lg_common_lang.php3");
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+</LI>
+<LI>Find the application specific file for the Action Application you want
+to translate in the <CODE>include/</CODE> directory. Copy it the same way,
+replacing the <EM>en</EM> with your <EM>lg</EM> and edit it as above.</LI>
+<LI>Add another block to <CODE>config.php3</CODE> where the application
+specific language information lives. For example, for a new news listing
+application in your language <EM>lg</EM> add these lines:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+$ActionAppConfig[lg_news][name] = "Njuigkeiten";
+$ActionAppConfig[lg_news][file] = "lg_news_lang.php3";
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+Beware that the <EM>en</EM> is replaced with <EM>lg</EM> at <B>three</B> spots.
+This example assumes that <EM>News</EM> is translated <EM>Njuigkeiten</EM> in your
+new language.
+
+Note: You do not need to remove the English version of News Listing!
+
+Note: If you want the pages for this Action Application be displayed with
+a different character set than the default, change the HTML_PAGE_BEGIN
+setting.</LI>
+</UL>
+<P>After this procedure, the new lg language Action Application will show up
+in the pull down box on the <EM>add slice</EM> page.
+<P>
+<H2><A NAME="ss5.2">5.2 Creating new Action Applications</A>
+</H2>
+
+<H3>Overview</H3>
+
+<P>If you are not satisfied with the collection of Action Applications and want
+to set up your own flavor, you can create your own Action Application.
+<P>Creating a new Action Application is very similar to customizing for a new
+language. Fist read the section 
+<A HREF="#cust_lang_how">Customization, Language, How it works</A>.
+<P>In order to create a new Action Application, follow these steps:
+<UL>
+<LI>Figure out an abbreviation for your new application such as
+<EM>news</EM>, <EM>events</EM> etc. This should be less than 15 characters and
+only contain letters and underscores (_). For this example, we assume
+your new Action Application will have the abbreviation <EM>pizza</EM> because
+you are about to create a pizza place listing.</LI>
+<LI>Copy a template language file, for example,
+<CODE>include/en_news_lang.php3</CODE>, to a new name. The new name should
+contain your new abbreviation instead of the <CODE>news</CODE>. Thus, in our
+example, it is called <CODE>include/en_pizza_lang.php3</CODE>.</LI>
+<LI>Edit the new file to create the new Action Application, replacing
+the old information there with your new one. See next section for
+details.</LI>
+<LI>Add the new application to the <CODE>include/config.php3</CODE> file,
+just as if you would add a new language.</LI>
+</UL>
+<P>
+<H3>Editing the language file to create a new Action Application</H3>
+
+<P>There are comments within
+the file which will help you. However, some basic information
+will help you there.
+<P>
+<UL>
+<LI>You will find text displayed on the application's pages here
+as well as default settings for several aspects of the application,
+database fields and their use and existence within the application
+and so on.</LI>
+<LI>It will probably help if you look at more than one 
+application from the distribution; you will see that by editing
+the file the right way, you can create way different things.</LI>
+<LI>If you need fields for your new application for which there are no
+fields in the database table, just reuse a field which you do not need.
+All field mapping is specified in language files (so there is no table
+in database for that). Lets look in en_news_lang.php3 file, where
+English version of News AA is defined. There is "Input form field
+names" section:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+   # Input form field names
+   define("L_HEADLINE", "Headline");
+   define("L_ABSTRACT", "Summary");
+   define("L_FULL_TEXT", "News");
+   define("L_FT_FORMATTING", "Formatting");
+   define("L_FT_FORMATTING_HTML", "HTML code");
+   define("L_FT_FORMATTING_PLAIN", "Plain text");
+   define("L_POSTDATE", "Post date");
+   define("L_POSTED_BY", "Author");
+   define("L_E_POSTED_BY","Author's e-mail");
+   define("L_PUBLISH_DATE", "Publish date");
+   define("L_EXPIRY_DATE", "Expiry date");
+   define("L_CATEGORY", "Category");
+   define("L_STATUS_CODE", "News status");
+   define("L_LANGUAGE_CODE", "Language");
+   define("L_CP_CODE", "Encoding");
+   define("L_LINK_ONLY", "External news");
+   define("L_HL_HREF", "External news URL");
+   define("L_HTML_FORMATTED", "HTML formatted");
+   define("L_HIGHLIGHT", "Highlight");
+   define("L_IMG_SRC","Image URL");
+   define("L_IMG_WIDTH","Image width");
+   define("L_IMG_HEIGHT","Image height");
+   define("L_PLACE","Locality");
+   define("L_SOURCE","Source ");
+   define("L_SOURCE_HREF","Source URL");
+   define("L_CREATED_BY","Written by");
+   define("L_LASTEDIT","Last edited by");
+   define("L_AT","at");
+   define("L_EDIT_NOTE","Editor's note");
+   define("L_IMG_UPLOAD","Image upload");
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+In this section you can set how the names of fields in item table are
+displayed to the user in this Action Application. 
+
+In other words, database fields are not renamed; only the user sees
+a different name for the field. From the perspective of the Action
+Applications, the fields are not different.
+</LI>
+<LI>If you really need more fields than there are in the database for the
+items (the table <EM>items</EM> contains them), you will have to tweak the
+program a bit more. Read this developer note to get the picture.
+This process is not covered any further by this document at this point
+in time.
+<BLOCKQUOTE><CODE>
+<PRE>
+   May be, there are some fields, we have to add to the items table. I
+   think, we can call it like foo ... - the fields can be then used
+   specifically to each AA. When we talking about contact information,
+   there are three fields contact1, contact2 and contact3 in items table
+   - they are not used yet, but I think, we should remove it (or rename
+   to foo1, foo2 ... - see above). The idea of holding it here is not
+   good, because of limit three contacts (see AAdb E-R diagram). I prefer
+   to create new table contact and connect it to items table via items.id
+   (foreign key).
+
+   Here some comments I posted before via e-mail:
+
+   From my point of view I prefer using existing fields in item table,
+   if it is possible. I know, there is no field for long binary data, so
+   I agree with creating of new such field in item table. It will be
+   useful to add Long_binary_type column, which keep the type of data
+   are there stored. On the other hand, if there are more than these
+   columns, which you want to add to item table, I prefer to create the
+   new table with additional informations for your action application and
+   link it in optional 1:1 relation to item table. I don't want to expand
+   item table to infinity as far as the number of new applications will
+   increase.
+
+   The possible solution can be to create new constant (in language file
+   - see below) which then will be added to SQL commands used in toolkit
+   script. Example: define(AA_SPECIFIC_ITEM_TABLE_JOIN, ",radio LEFT JOIN
+   ON items.id = radio.item_id") and then use: $SQL= "SELECT FROM items
+   ". AA_SPECIFIC_ITEM_TABLE_JOIN ." WHERE ....";
+
+   If you find better solution, you are welcome, of course.
+
+   I know, it's look funny to have one table for all application, but
+   there are two reasons for that: 1) You can exchange (feed) items from
+   one application to another one (the new application can be done very
+   easy - by modifying language file - so I think, there could be quite a
+   lot of very similar applications - the data exchange between them make
+   sense). 2) You can very easy search in database for some keyword and
+   you find it in all applications.
+
+   I think, the current set of fields is sufficient for most applications
+   - job listing, grant database, news, action alerts, press release ...
+   All these applications use title, summary, Fulltext, some kind of source
+   ... Maybe it is not enough for Amarc, but if you will not use images
+   in Amarc, you can use image fields for that (source, width, height).
+   (It looks like mixing apples with plums, but all this fields belongs
+   to multimedia data so it is not so bad.)
+
+   The reason why we use no boolean fields is database independence.
+   Jirka made an database research and his proposal is to use numeric
+   field instead of boolean.
+</PRE>
+</CODE></BLOCKQUOTE>
+</LI>
+</UL>
+<P>
+<P>
+<HR>
+<A HREF="install-6.html">Next</A>
+<A HREF="install-4.html">Previous</A>
+<A HREF="install.html#toc5">Contents</A>
+</BODY>
+</HTML>
