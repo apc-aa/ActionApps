@@ -165,7 +165,8 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
     # copy the file from the temp directory to the upload directory, and test for success    
 
     # file uploads are handled differently in PHP >4.0.3
-    if( ereg( "[4-9]\.[0-9]\.[3-9].*", phpversion()) ) {
+    list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
+    if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
       if (is_uploaded_file($GLOBALS[$filevarname])) {
         if( !move_uploaded_file($GLOBALS[$filevarname], "$dirname/$dest_file")) {
           return L_CANT_UPLOAD;
@@ -727,6 +728,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.24  2002/03/12 16:23:28  honzam
+fixed bug with fileupload in php 4.1.2
+
 Revision 1.23  2002/03/06 12:44:08  honzam
 fix for daylight svaing change days
 
