@@ -48,16 +48,7 @@ function endslash (&$s) {
 }
 
 function my_in_array ($needle, $array) {
-    if (!is_array ($array)) return false;
-    if (function_exists ("in_array"))
-        return in_array ($needle, $array);
-    else {
-        reset ($array);
-        while (list (,$val) = each ($array))
-            if ($val == $needle) 
-                return true;
-        return false;
-    }
+    return in_array ($needle, $array);
 }
 
 /** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
@@ -225,21 +216,10 @@ function AddslashesArray($val) {
   return $ret;
 }    
 
-function stripslashes_magic ($str) {
-    if (get_magic_quotes_gpc()) 
-        return stripslashes($str);
-    else return $str;
-}
-
-function addslashes_magic ($str) {
-    if( get_magic_quotes_gpc() )
-        return $str;
-    else return addslashes($str);
-}
-
 # function for processing posted or get variables
 # adds quotes, if magic_quotes are switched off
-function QuoteVars($method="get") {
+# except of variables in $skip array (usefull for 'encap' for example)
+function QuoteVars($method="get", $skip='') {
   
   if( get_magic_quotes_gpc() )
     return;
@@ -249,7 +229,8 @@ function QuoteVars($method="get") {
     return;
   reset( $GLOBALS[$transfer] );
   while( list($varname,$value) = each( $GLOBALS[$transfer] ))
-    $GLOBALS[$varname] = AddslashesArray($value);
+    if( !is_array($skip) || !isset($skip[$varname]) )
+      $GLOBALS[$varname] = AddslashesArray($value);
 }  
 
 # function for extracting variables from $r_hidden session field
@@ -752,8 +733,12 @@ function GetSid4Id($iid) {
 # in_array and compact is available since PHP4
 if (substr(PHP_VERSION, 0, 1) < "4") {
   function in_array($needle,$haystack){
-    for($i=0;$i<count($haystack) && $haystack[$i] !=$needle;$i++);
-    return ($i!=count($haystack));
+    if (!is_array ($haystack)) return false;
+    reset ($haystack);
+    while (list (,$val) = each ($haystack))
+        if ($val == $needle) 
+            return true;
+    return false;
   }
 }
 
@@ -883,15 +868,16 @@ function PrintModuleSelection() {
     echo ";\n //-->\n </SCRIPT>";
 
     // print the select box
-    echo "<form name=nbform enctype=\"multipart/form-data\" method=post 
+    echo "<form name=nbform enctype=\"multipart/form-data\" method=post
                 action=\"". $sess->url($PHP_SELF) ."\">
           <span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>
-          <select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=").'"+this.options[this.selectedIndex].value\'>'."
           <SCRIPT language=javascript><!--\n
-                  document.writeln (modulesOptions);\n
-          //-->\n 
+                document.writeln('<select name=slice_id onChange=\'document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\'>');\n
+                document.writeln(modulesOptions);\n
+                document.writeln('</select>');\n
+          //-->\n
           </SCRIPT>
-          </select></form>\n";
+          </form>\n";
   } else
     echo "&nbsp;"; 
 }  
@@ -1065,7 +1051,7 @@ function gensalt($saltlen)
  return $salt;
 }
 
-/*  Function: html2test
+/*  Function: html2text
     Purpose:  strips the HTML tags and lot more to get a plain text version
 */
 function html2text ($html) {
@@ -1083,7 +1069,7 @@ function html2text ($html) {
                  "'</p>'si",
                  "'<script[^>]*?>.*?</script>'si",  // Strip out javascript
                  "'<[\/\!]*?[^<>]*?>'si",           // Strip out html tags
-                 "'([\r\n])[\s]+'",                 // Strip out white space
+                 "'([\r\n])[ \t]+'",                // Strip out leading white space
                  "'&(quot|#34);'i",                 // Replace html entities
                  "'&(amp|#38);'i",
                  "'&(lt|#60);'i",

@@ -45,6 +45,7 @@ function error ($err)
         echo "<h1>"._m("Error - user was not subscribed")."</h1>";
         echo "Reason: $err<br>";
         echo "</BODY></HMTL>";
+        exit;
     }
 }
         
