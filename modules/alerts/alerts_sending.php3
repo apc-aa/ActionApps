@@ -284,7 +284,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                 $alias["_#HOWOFTEN"] = $ho;
                 $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"], "ac=ABCDE");
     
-                $GLOBALS["debug_email"] = 1;
+                $GLOBALS["debug_email"] = 0;
                 if (send_mail_from_table ($collection["emailid_alert"], 
                     $email, $alias)) 
                     $email_count ++;
