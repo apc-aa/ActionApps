@@ -103,9 +103,9 @@ define("L_ERR_CANT_CHANGE", "Nepodaøilo se zmìnit nastavení webíku");
 define("L_ODD_ROW_FORMAT", "Liché øádky");
 define("L_EVEN_ROW_FORMAT", "Sudé øádky");
 define("L_EVEN_ODD_DIFFER", "Použij odlišný HTML kód pro sudé øadky");
-define("L_CATEGORY_TOP", "Horní HTML k=od pro kategorii");
+define("L_CATEGORY_TOP", "Horní HTML kód pro kategorii");
 define("L_CATEGORY_FORMAT", "Nadpis kategorie");
-define("L_CATEGORY_BOTTOM", "Spodné HTML kód pro kategorii");
+define("L_CATEGORY_BOTTOM", "Spodní HTML kód pro kategorii");
 define("L_CATEGORY_SORT", "Seøaï zprávy v pøehledu podle kategorie");
 define("L_COMPACT_TOP", "Horní HTML kód");
 define("L_COMPACT_BOTTOM", "Spodní HTML kód");
@@ -468,7 +468,7 @@ define("L_CONSTANT_PRIORITY", "Priorita");
 define("L_CONSTANT_PRI", "Priorita");
 define("L_CONSTANT_GROUP", "Skupina hodnot");
 define("L_CONSTANT_GROUP_EXIST", "Tato skupina hodnot již existuje");
-define("L_CONSTANTS_OK", "Zmìno hodnot úspìšnì provedena");
+define("L_CONSTANTS_OK", "Zmìna hodnot úspìšnì provedena");
 define("L_A_CONSTANTS_TIT", "Správa webíku - Nastavení hodnot");
 define("L_A_CONSTANTS_EDT", "Správa webíku - Nastavení hodnot");
 define("L_CONSTANTS_HDR", "Hodnoty");
@@ -482,9 +482,13 @@ define("L_CONSTANT_DEL_HLP", "Pro odstranìní kartegorie vymažte její jméno");
 $L_MONTH = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven', 
 		'Èervenec', 'Srpen', 'Záøí', 'Øíjen', 'Listopad', 'Prosinec');
 
+define("L_NO_CATEGORY_FIELD","Pole kategorie není v tomto webíku definováno.<br>  Pøidejte pole kategorie do webíku na stránce Políèka.");
     
 /*
 $Log$
+Revision 1.20  2000/12/23 19:56:50  honzam
+Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+
 Revision 1.19  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

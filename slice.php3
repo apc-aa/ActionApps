@@ -31,6 +31,8 @@ http://www.apc.org/
                      // (like static html file - inc=/contact.html)
 #optionaly listlen   // change number of listed items in compact view
                      // (aplicable in compact viewe only) 
+#optionaly items[x]  // array of items to show one after one as fulltext 
+                     // the array format is 
 
 $encap = ( ($encap=="false") ? false : true );
 
@@ -41,6 +43,8 @@ require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";
 require $GLOBALS[AA_INC_PATH]."view.php3";
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
+
+# $debugtimes[]=microtime();
 
 if ($encap){require $GLOBALS[AA_INC_PATH]."locsessi.php3";}
 else {require $GLOBALS[AA_INC_PATH]."locsess.php3";} 
@@ -110,6 +114,8 @@ function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps
 if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED
 
+# $debugtimes[]=microtime();
+
   # url posted command to display another file
 if( $inc ) {                   # this section must be after $sess->add_vars()
   if( !eregi("^([0-9a-z_])+(\.[0-9a-z]*)?$", $inc) ) {
@@ -131,8 +137,12 @@ $db = new DB_AA; 		 // open BD
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
 $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories 
 
+# $debugtimes[]=microtime();
+
   # get fields info
 $fields = GetTable2Array("SELECT * FROM field WHERE slice_id='$p_slice_id'", $db);
+
+# $debugtimes[]=microtime();
 
   # get slice info
 $SQL= " SELECT * FROM slice WHERE id='".$p_slice_id."' AND deleted<1";
@@ -150,7 +160,10 @@ else {
   page_close();
   exit;
 }  
-  
+
+
+# $debugtimes[]=microtime();
+
 if( !$slice_info[even_odd_differ] )
   $slice_info[even_row_format] = "";
 
@@ -164,8 +177,16 @@ if( $bigsrch ) {      // big search form --------------------------------------
 }
 elseif( $sh_itm ) {   // fulltext view ----------------------------------------
   $aliases = GetAliasesFromFields($fields);
-  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $sh_itm, "","", $sess->MyUrl($slice_id, $encap));
+  $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
   $itemview->print_item();
+}
+elseif( $items  AND is_array($items) ) {   // multiple items fulltext view --------------------------
+  # shows all $items[] as fulltext one after one
+  while(list($k,$v) = each( $items ))
+    $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
+  $aliases = GetAliasesFromFields($fields);
+  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $ids, 0,count($ids), $sess->MyUrl($slice_id, $encap));
+  $itemview->print_itemlist();
 }
 else {               //compact view -------------------------------------------
   if(!is_object($scr)) {
@@ -191,7 +212,7 @@ else {               //compact view -------------------------------------------
     }  
     elseif ( $cat_name ) {  // optional parameter cat_name -------
       $SQL = "SELECT value FROM constant
-               WHERE group = '$p_slice_id'
+               WHERE group_id = '$p_slice_id'
                  AND name LIKE '%$cat_name%'";
       $db->query($SQL);
       $r_category = ( $db->next_record() ? $db->f(value) : "" );
@@ -211,9 +232,18 @@ else {               //compact view -------------------------------------------
       $conditions['category........'] = $r_category;
     if( $r_highlight != "" )
       $conditions['highlight.......'] = 1;
+
+# $debugtimes[]=microtime();
+
     $r_item_ids = GetItemAppIds($fields, $db, $p_slice_id, $conditions, 
                    "DESC", $slice_info[category_sort] ? "category........" : "", "" );
+
+# $debugtimes[]=microtime();
+
+
   }    
+
+//p_arr_m( $r_item_ids );
 
   if(!$encap) 
     echo '<a href="'. $sess->MyUrl($slice_id, $encap). '&bigsrch=1">Search form</a><br>';
@@ -221,11 +251,22 @@ else {               //compact view -------------------------------------------
     pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
 
   if( count( $r_item_ids ) > 0 ) {
+
+# $debugtimes[]=microtime();
+
     $aliases = GetAliasesFromFields($fields);
+
+# $debugtimes[]=microtime();
+
     $itemview = new itemview( $db, $slice_info, $fields, $aliases, $r_item_ids,
                 $scr->metapage * ($scr->current - 1), $scr->metapage, $sess->MyUrl($slice_id, $encap) );
+
+# $debugtimes[]=microtime();
+
     $itemview->print_view();
       
+# $debugtimes[]=microtime();
+
     $scr->countPages( count( $r_item_ids ) );
   	if($scr->pageCount() > 1)
       $scr->pnavbar();
@@ -239,11 +280,16 @@ else {               //compact view -------------------------------------------
   //<a href= $sess->MyUrl($slice_id, $encap)> Reload this</a> 
 if (!$encap)
   Page_HTML_End();
-  //$debugtimes[]=microtime();
+
+# $debugtimes[]=microtime();
+
 page_close();
-//    p_arr_m($debugtimes);
+#    p_arr_m( $debugtimes);
 /*
 $Log$
+Revision 1.10  2000/12/23 19:56:02  honzam
+Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+
 Revision 1.9  2000/12/21 16:39:33  honzam
 New data structure and many changes due to version 1.5.x
 

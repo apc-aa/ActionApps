@@ -211,6 +211,7 @@ class item {
 
   function print_item() {
   // format string
+
     $out = $this->format;
     $remove = $this->remove;
     $out = $this->unalias($out, $remove);
@@ -233,9 +234,7 @@ class item {
       if( is_array($ali_arr)) {
         $function = ParseFnc($ali_arr[fce]);   // fce as parameter (pointer to function)
         $fce = $function[fnc];
-//huh($ali_arr[param]);
         $contents[$als_name] = $this->$fce($ali_arr[param]);
-//p_arr_m($contents);
         if( $contents[$als_name] != "")  // remove empty aliases
           $out .= "_#".current($piece);
         else 
@@ -280,6 +279,9 @@ class item {
 
 /*
 $Log$
+Revision 1.6  2000/12/23 19:56:50  honzam
+Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+
 Revision 1.5  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

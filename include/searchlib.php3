@@ -136,7 +136,7 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
     $set=0;
     $where = "";
     reset( $conditions );
-//p_arr_m($conditions);
+
     while( list( $fid, $val ) = each($conditions) ) {
       if( !$fields[$fid] )    // bad condition - field not exist
         continue;
@@ -180,13 +180,21 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
     $item_SQL .= " ORDER BY pri $order_dir, publish_date $pubdate_order";
    else 
     $item_SQL .= " ORDER BY " . ($order_fld ? "$order_fld $order_dir," : ""). " publish_date $pubdate_order";
+
+//  $item_SQL .= " LIMIT 0,100";
                 
-//huh($item_SQL);
   $db->query($item_SQL);     
-  while( $db->next_record() ) {
-    if( strlen($posible[$unid = unpack_id($db->f(id))]) == $set);   #all conditions passed
-      $arr[] = $unid;
+
+  if( $set ) {    # just for speed up the processing
+    while( $db->next_record() ) {
+      if( strlen($posible[$unid = unpack_id($db->f(id))]) == $set);   #all conditions passed
+        $arr[] = $unid;
+    }
+  } else  {
+    while( $db->next_record() ) 
+      $arr[] = unpack_id($db->f(id));
   }    
+  
   return $arr;           
 }
 
@@ -201,6 +209,9 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
 
 /*
 $Log$
+Revision 1.4  2000/12/23 19:56:50  honzam
+Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+
 Revision 1.3  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

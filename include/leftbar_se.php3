@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.4  2000/12/23 19:56:50  honzam
+Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+
 Revision 1.3  2000/11/16 11:48:39  madebeer
 11/16/00 a- changed admin leftbar menu order and labels
          b- changed default article editor field order & fields
@@ -79,7 +82,7 @@ added $Id $Log and $Copyright to some stray files
   <tr><td valign="TOP">
   <?php
   if( $show["category"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY) ) 
-    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_category.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_CATEGORY."</a></td>"; 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_constant.php3") ."&slice_id=$slice_id&category=1\" class=leftmenuy>".L_CATEGORY."</a></td>"; 
    else 
     echo "&nbsp;&nbsp;<span class=leftmenun>". L_CATEGORY ."</span></td>"; ?>
   </tr>

@@ -59,6 +59,7 @@ class itemview{
     if( !( isset($this->ids) AND is_array($this->ids) ))
       return;
 
+
     $sel_in = "(";
     $delim = "";
     for( $i=$this->from_record; $i<$this->from_record+$this->num_records; $i++){
@@ -68,6 +69,7 @@ class itemview{
       }  
     }  
     $sel_in .= ( ($delim=="") ? "'')" : ")"); 
+
     
        # get content from item table
     $SQL = "SELECT * FROM item WHERE id IN $sel_in";
@@ -109,56 +111,82 @@ class itemview{
 
 //p_arr_m($content);
 
-    if( $view_type == "" ) {                            # compact view
-      $oldcat = "_No CaTeg";
-      echo $this->slice_info[compact_top];
-      for( $i=0; $i<$this->num_records; $i++ ) {
-        $iid = $this->ids[$this->from_record+$i];
-        if( !$iid )
-          continue;                                     # iid = unpacked item id 
-        $catname = $content[$iid]["category........"][0][name];
-            
+    switch ( $view_type ) {
+      case "fulltext":  
+        $iid = $this->ids[0];      # unpacked item id
         $CurItem->columns = $content[$iid];   # set right content for aliases
-        
-          # print category name if needed
-        if($this->slice_info[category_sort] AND ($catname != $oldcat)) {
-          $oldcat = $catname;
-          $CurItem->setformat( $this->slice_info[category_format], "",
-                               $this->slice_info[category_top],
-                               $this->slice_info[category_bottom] );
-          $CurItem->print_item();
-        }  
   
-          # print item
-        $CurItem->setformat( 
-           (!($i%2) AND $this->slice_info[even_odd_differ]) ?
-           $this->slice_info[even_row_format] : $this->slice_info[odd_row_format],
-           $this->slice_info[compact_remove], "", "");
+        # print item
+        $CurItem->setformat( $this->slice_info[fulltext_format],
+                             $this->slice_info[fulltext_remove],
+                             $this->slice_info[fulltext_format_top],
+                             $this->slice_info[fulltext_format_bottom]);
         $CurItem->print_item();
-      }
-      echo $this->slice_info[compact_bottom];
-    }
-    else {  # fulltext
-      $iid = $this->$ids[0];      # unpacked item id
-      $CurItem->columns = $content[$iid];   # set right content for aliases
+        break;
+      case "itemlist":          # multiple items as fulltext one after one
+        for( $i=0; $i<$this->num_records; $i++ ) {
+          $iid = $this->ids[$this->from_record+$i];
+          if( !$iid )
+            continue;                                     # iid = unpacked item id 
 
-      # print item
-      $CurItem->setformat( $this->slice_info[fulltext_format],
-                           $this->slice_info[fulltext_remove],
-                           $this->slice_info[fulltext_format_top],
-                           $this->slice_info[fulltext_format_bottom]);
-      $CurItem->print_item();
+          $CurItem->columns = $content[$iid];   # set right content for aliases
+          
+            # print item
+          $CurItem->setformat( $this->slice_info[fulltext_format],
+                               $this->slice_info[fulltext_remove],
+                               $this->slice_info[fulltext_format_top],
+                               $this->slice_info[fulltext_format_bottom]);
+          $CurItem->print_item();
+        }
+        break;
+      default:                         # compact view
+        $oldcat = "_No CaTeg";
+        echo $this->slice_info[compact_top];
+        for( $i=0; $i<$this->num_records; $i++ ) {
+          $iid = $this->ids[$this->from_record+$i];
+          if( !$iid )
+            continue;                                     # iid = unpacked item id 
+          $catname = $content[$iid]["category........"][0][name];
+              
+          $CurItem->columns = $content[$iid];   # set right content for aliases
+          
+            # print category name if needed
+          if($this->slice_info[category_sort] AND ($catname != $oldcat)) {
+            $oldcat = $catname;
+            $CurItem->setformat( $this->slice_info[category_format], "",
+                                 $this->slice_info[category_top],
+                                 $this->slice_info[category_bottom] );
+            $CurItem->print_item();
+          }  
+          
+            # print item
+          $CurItem->setformat( 
+             (!($i%2) AND $this->slice_info[even_odd_differ]) ?
+             $this->slice_info[even_row_format] : $this->slice_info[odd_row_format],
+             $this->slice_info[compact_remove], "", "");
+
+          $CurItem->print_item();
+        }
+        echo $this->slice_info[compact_bottom];
     }  
   }
     
   function print_item() {
     $this->print_view("fulltext");
   }
+
+  function print_itemlist() {
+    $this->print_view("itemlist");
+  }
+  
 };
 
 
 /*
 $Log$
+Revision 1.4  2000/12/23 19:56:50  honzam
+Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+
 Revision 1.3  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

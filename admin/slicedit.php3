@@ -98,6 +98,8 @@ if( $add || $update ) {
       $d_expiry_limit = 2000;
     $template = ( $template ? 1 : 0 );
     $deleted  = ( $deleted  ? 1 : 0 );
+    $permit_anonymous_post  = ( $permit_anonymous_post ? 1 : 0 );
+    $permit_offline_fill   = ( $permit_offline_fill  ? 1 : 0 );
     
     if( $update )
     {
@@ -138,6 +140,8 @@ if( $add || $update ) {
       $varset->set("d_listlen", $d_listlen, "number");
       $varset->set("deleted", $deleted, "number");
       $varset->set("template", $template, "number");
+      $varset->set("permit_anonymous_post", $permit_anonymous_post, "number");
+      $varset->set("permit_offline_fill", $permit_offline_fill, "number");
       $varset->set("lang_file", $lang_file, "quoted");
 
          # create new slice
@@ -243,6 +247,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   FrmInputText("grab_len", L_GRAB_LEN, $grab_len, 5, 5, true);
   FrmInputChBox("template", L_TEMPLATE, $template);
   FrmInputChBox("deleted", L_DELETED, $deleted);
+  FrmInputChBox("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post);
+  FrmInputChBox("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill);
   FrmInputSelect("lang_file", L_LANG_FILE, $LANGUAGE_FILES, $lang_file, false);
 ?>
 </table>
@@ -262,6 +268,9 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.12  2000/12/23 19:56:02  honzam
+Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+
 Revision 1.11  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

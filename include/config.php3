@@ -1,6 +1,6 @@
 <?php
 # $Id$
-
+ 
 # Application wide configuration options
 
 # This is the Action Application main configuration file. In fact, this file
@@ -25,9 +25,9 @@ define("DEFAULT_ORG_ID", "ecn.cz");
 
 # DB Access Configuration
 define("DB_HOST", "localhost");
-define("DB_NAME", "aadbnew");
-define("DB_USER", "aauser");
-define("DB_PASSWORD", "sklenycka");
+define("DB_NAME", "aa-db");
+define("DB_USER", "aa-user");
+define("DB_PASSWORD", "somepasswd");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
@@ -40,7 +40,7 @@ define("PERM_LIB", "ldap");
 # LDAP Configuration
 define("LDAP_HOST", "localhost");
 define("LDAP_BINDDN", "cn=aauser,ou=AA");
-define("LDAP_BINDPW", "sklenycka");  // password
+define("LDAP_BINDPW", "somepasswd");  // password
 define("LDAP_BASEDN", "ou=AA");
 define("LDAP_PEOPLE", "ou=People,ou=AA");
 define("LDAP_GROUPS", "ou=AA");
@@ -78,7 +78,6 @@ require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
 
 # If you use Web.net's extended items table, uncomment this definition
 define("EXTENDED_ITEM_TABLE", "1");
-define("SINGLE_COLUMN_FORM", "0");
 
 if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
   echo "you must set AA_INC_PATH and other variables in config.php3 !";

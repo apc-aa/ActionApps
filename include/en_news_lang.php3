@@ -441,14 +441,20 @@ define("L_CONSTANT_DEL_HLP", "Remove constant name for its deletion");
 $L_MONTH = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June', 
 		'July', 'August', 'September', 'October', 'November', 'December');
 
+define("L_NO_CATEGORY_FIELD","No category field defined in this slice.<br>Add category field to this slice first (see Field page).");
+define("L_PERMIT_ANONYMOUS_POST","Allow anonymous posting of items");
+define("L_PERMIT_OFFLINE_FILL","Allow off-line item filling");
+
 // not appended to other lang files
 //define("", "");
 
 // ------------------------- New ----------------------------
-
     
 /*
 $Log$
+Revision 1.20  2000/12/23 19:56:50  honzam
+Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+
 Revision 1.19  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

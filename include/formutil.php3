@@ -99,15 +99,20 @@ function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
 
 # Prints html tag <textarea .. to 2-column table
 # for use within <form> and <table> tag
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false)
-{
- echo "<tr><td class=tabtxt><b>$txt</b>";
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
+                     $hlp="", $morehlp="") {
+  echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
     echo "</tr><tr>";
-  echo "  <td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea></td></tr>\n";
+  echo "<td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
 }
+
+
 
 # Prints html tag <input type=checkbox .. to 2-column table
 # for use within <form> and <table> tag
@@ -144,18 +149,6 @@ function FrmChBoxEasy($name, $checked=true, $add="")
   if($checked)
     echo " checked";
   echo ">";
-}
-
-# Prints html tag <textarea .. to 2-column table
-# for use within <form> and <table> tag
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
-                     $hlp="", $morehlp="") {
-  echo "<tr><td class=tabtxt><b>$txt</b>";
-  Needed($needed);
-  echo "</td>\n  <td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>";
-  PrintMoreHelp($morehlp);
-  PrintHelp($hlp);
-  echo "</td></tr>\n";
 }
 
 # Prints html tag <select .. to 2-column table
@@ -280,6 +273,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.7  2000/12/23 19:56:50  honzam
+Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+
 Revision 1.6  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 
