@@ -64,32 +64,28 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </table>
 
 <br><br>
-
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Module")?></b>
-<tr><td><table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?php  reset ($MODULES);
+<?php
+  FrmTabCaption(_m("Modules"));
+  reset ($MODULES);
     while (list ($type, $module) = each ($MODULES)) {
         if ($module["hide_create_module"]) continue;
         if ($module["show_templates"]) {
             $templ_sb = GetModuleTemplateSelecbox($type, $g_modules);
             if (!$templ_sb) continue;
         }
-        echo "<TR><TD class=tabtxt><B>"._mdelayed($module['name'])."</B></TD><TD>".
+        echo "<tr><td width=\"20%\" class=tabtxt><b>"._mdelayed($module['name'])."</b></td><td width=\"60%\">".
              ($module["show_templates"] ? $templ_sb : "&nbsp;").
-             "</TD><TD>
+             "</td><td width=\"60%\">
             <INPUT TYPE=SUBMIT NAME='create[$type]' value='"._m("Add")."'></TD></TR>";
     }
+    FrmTabEnd();
 ?>
-</table></td></tr>
-</table>
 
 <br><br>
 
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td align="center">
+<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <?php
-  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
+  FrmInputButtons(array("cancel"=>array("url"=>"um_uedit.php3")), $sess, $slice_id, 'middle', true, COLOR_TABTITBG);
 ?>
 </td></tr>
 </table>

@@ -170,7 +170,7 @@ if( $update ) {
       $err["DB"] = MsgErr("Can't change field");
       break;
     }
-    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
     if( count($err) <= 1 ) {
       $Msg = MsgOK(_m("Fields update successful"));
@@ -261,6 +261,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     }
     if( conid != "" ) {
       url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + escape(conid);
+      url += "&return_url=se_inputform.php3&fid=<?php echo $fid ?>";
       document.location=url;
     }
   }
@@ -289,22 +290,24 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo $Msg;
   echo _m("<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
 
+$form_buttons = array("update"=>array("type"=>"hidden","value"=>"1"),
+                      "fid"=>array("type"=>"hidden", "value"=>$fid),
+                      "update",
+                      "cancel"=>array("url"=>"se_fields.php3"));
+
 echo "
-<form enctype=\"multipart/form-data\" method=post action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">
+<form enctype=\"multipart/form-data\" method=post action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">";
+/*
  <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
   <tr>
    <td class=tabtit><b>&nbsp;"._m("Field properties")."</b></td>
   </tr>
+*/
+FrmTabCaption(_m("Field properties"). ': '. safe($fld['name']. ' ('.$fld['id']. ')'),
+              '','',$form_buttons, $sess, $slice_id);
+echo "
   <tr>
    <td>
-    <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
-     <tr>
-      <td class=tabtxt><b>". _m("Field") ."</b></td>
-      <td class=tabtxt>".  safe($fld[name]) ."</td>
-      <td class=tabtxt><b>". _m("Id") ."</b></td>
-      <td class=tabtxt>". safe($fld[id]) ."</td>
-     </tr>
-     <tr><td colspan=4><hr></td></tr>
      <tr>
       <td class=tabtxt><b>". _m("Input type") ."</b></td>
       <td class=tabtxt colspan=3>";
@@ -324,7 +327,7 @@ echo "
                 <span class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>"
                     . $constants_menu[1] ."</a></b></span><br>
                 <span class=tabtxt>
-                    <B><a href='". EditConstantURL(). "'>". $constants_menu[2] ."</a></B></span>
+                    <B><a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a></B></span>
               </td>
              </tr>
             </table>
@@ -411,30 +414,22 @@ echo "
         FrmSelectEasy("feed", inputFeedModes(), $feed);
       echo "<div class=tabhlp>". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
       </td>
-     </tr>
-    </table>
-   </td>
-  </tr>
-  <tr>
-   <td class=tabtit><b>&nbsp;". _m("ALIASES used in views to print field content") ."</b></td>
-  </tr>
-  <tr>
-   <td>
-    <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">";
+     </tr>";
+FrmTabSeparator(_m("ALIASES used in views to print field content"));
 
-  $myarray = $FIELD_FUNCTIONS[items];
-  reset($myarray);
-  while (list($key,$val) = each($myarray))
-     $func_types[$key] = $key." - ".$val[name];
+  $myarray = $FIELD_FUNCTIONS['items'];
+  foreach ( $myarray as $key => $val ) {
+     $func_types[$key] = $key." - ".$val['name'];
+  }
   asort($func_types);
 
-for ($iAlias=1; $iAlias <= 3; ++$iAlias):
+for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
         echo "
      <tr>
       <td class=tabtxt><a name='alias$iAlias'></a><b>";
       echo _m("Alias")." ".$iAlias;
       echo "</b></td>
-      <td class=tabtxt colspan=3>
+      <td class=tabtxt>
       <div class=tabhlp><input type=\"Text\" name=\"alias$iAlias\" size=20 maxlength=10 value=\"";
       $alias_name = "alias".$iAlias;
       if ($$alias_name) echo safe($$alias_name);
@@ -444,19 +439,18 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
      </tr>
      <tr>
        <td class=tabtxt><b>". _m("Function") ."</b></td>
-       <td class=tabtxt colspan=3>";
-
+       <td class=tabtxt>";
        $alias_func_f = "alias".$iAlias."_func_f";
        FrmSelectEasy("alias$iAlias"."_func_f", $func_types, $$alias_func_f);
        echo "
        </td></tr>
      <tr><td class=tabtxt>&nbsp;</td>
-       <td class=tabhlp colspan=3><strong>
+       <td class=tabhlp><strong>
             <a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\",
                 \"alias$iAlias"."_func\")'>"._m("Help: Parameter Wizard")."</a></strong>
         </td></tr>
      <tr><td class=tabtxt><b>". _m("Parameters") ."</b></td>
-       <td class=tabtxt colspan=3>
+       <td class=tabtxt>
               <input type=\"Text\" name=\"alias$iAlias"."_func\" size=60 maxlength=250 value=\"";
                 $alias_func = "alias".$iAlias."_func";
                 echo safe($$alias_func);
@@ -464,28 +458,20 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
        </td></tr>
      <tr>
       <td class=tabtxt><b>". _m("Description") ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias".$iAlias."_help\" size=50 maxlength=254 value=\"";
+      <td class=tabtxt><input type=\"Text\" name=\"alias".$iAlias."_help\" size=50 maxlength=254 value=\"";
         $alias_help = "alias".$iAlias."_help";
         echo safe($$alias_help);
         echo "\">"
       //<div class=tabhlp>". _m("Help text for the alias") ."</div>
       ."</td>
-     </tr>
-     <tr><td colspan=4><hr></td></tr>";
-endfor;
+     </tr>";
+     if ( $iAlias != 3 ) echo "
+     <tr><td colspan=2><hr></td></tr>";
+}
 
-    echo "
-    </table>
-   </td>
-  </tr>
+FrmTabEnd($form_buttons, $sess, $slice_id);
 
-  <tr>
-   <td align=\"center\">
-    <input type=hidden name=\"update\" value=1>
-    <input type=hidden name=\"fid\" value=\"$fid\">
-    <input type=submit name=update value=\"". _m("Update") ."\">&nbsp;&nbsp;
-    <input type=submit name=cancel value=\"". _m("Cancel") ."\">&nbsp;&nbsp;
-   </td></tr></table>
+echo "
  </FORM>";
 HtmlPageEnd();
 page_close();

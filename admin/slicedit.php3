@@ -112,15 +112,20 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;
   trace("=","","Form");
+    
+if ($slice_id == "") {
+    $form_buttons = array("insert", "cancel"=>array("url"=>"sliceadd.php3"));
+} else {
+  $form_buttons = array ("update" => array("type"=>"hidden", "value"=>"1"),
+                         "update", "reset", "cancel"=>array("url"=>"sliceadd.php3"));
+}
+
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Slice")?></b>
-</td>
-</tr>
-<tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
+
+  FrmTabCaption(_m("Slice"), '','', $form_buttons, $sess, $slice_id);
+
   FrmStaticText(_m("Id"), $slice_id);
   FrmInputText("name", _m("Title"), $name, 99, 25, true);
 //echo "****************************************";
@@ -171,10 +176,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     
     FrmInputText ("reading_password", _m("Password for Reading"), $reading_password, 
         100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
-?>
-</table>
-<tr><td align="center">
-<?php
+
 if($slice_id=="") {
   echo "<input type=hidden name=\"add\" value=1>";        // action
   echo "<input type=hidden name=\"no_slice_id\" value=1>";  // detects new slice
@@ -187,16 +189,12 @@ if($slice_id=="") {
   echo "<input type=hidden name=\"user_login\" value='$user_login'>";
   echo "<input type=hidden name=\"user_role\" value='$user_role'>";
   // end of fields storing values from wizard
-  
-  echo "<input type=submit name=insert value=\"". _m("Insert") .'">';
-}else{
-  echo "<input type=hidden name=\"update\" value=1>";
-  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
-  echo '<input type=reset value="'. _m("Reset form") .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
 }
+
+
+  FrmTabEnd($form_buttons, $sess, $slice_id);
+
 ?>
-</td></tr></table>
 </FORM>
 <?php 
 freeDB($db);

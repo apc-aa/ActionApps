@@ -19,6 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
+
 # Prints html tag <select ..
 function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
   if( $substract=="" )                 // $substract list of values not shovn in <select> even if in $arr
@@ -57,34 +59,40 @@ function GetFiltered($type, $filter, $to_much, $none) {
   return $list;
 }
 
-function PrintModulePermModificator($selected_user) {
+function PrintModulePermModificator($selected_user, $form_buttons='', $sess='', $slice_id='') {
   global $db;
-  ?>
-
-  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Permissions")?></b></td></tr>
+  
+  FrmTabSeparator( _m("Permissions"), $form_buttons, $sess, $slice_id);
+   
+?>  
   <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
   <?php
   echo '<tr>
-          <td>'. _m("Object") .'</td>
-          <td>'. _m("Permissions") .'</td>
-          <td>'. _m("Revoke") .'</td></tr>';
+          <td><b>'. _m("Object") .'</b></td>
+          <td><b>'. _m("Permissions") .'</b></td>
+          <td><b>'. _m("Revoke") .'</b></td></tr>';
 
   $perm_slices = GetIDPerms($selected_user, "slice", 1);  # there are not only Slices, but other Modules too
   $SQL = "SELECT name, type, id FROM module ORDER BY type,name";
   $db->query($SQL);
+  $i=0;
   while( $db->next_record() ) {
     $mid = unpack_id128($db->f('id'));
-    if( $perm_slices[$mid] )
-      PrintModulePermRow($mid, $db->f('type'), $db->f('name'), $perm_slices[$mid]);
-     else {               # no permission to this module
+    if( $perm_slices[$mid] ) {
+       if (gettype($i/2) == "integer") {
+             $odd = true;
+       } else {$odd=false;}
+       PrintModulePermRow($mid, $db->f('type'), $db->f('name'), $perm_slices[$mid], $odd);
+       $i++;
+    } else {               # no permission to this module
                           # this module should be listed in 'Add perm' listbox
       $mod_2B_add .= "<option value=\"$mid\">". safe($db->f('name')) .'</option>';
       $mod_types .= GetModuleLetter($db->f('type'));  # string for javascript 
     }                       # to know, what type of module the $mod_2B_add is
-  }?>
-    </table></td></tr>
-   <tr><td class=tabtit><b>&nbsp;<?php echo _m("Assign new permissions")?></b></td></tr>
+  }
+   FrmTabSeparator(_m("Assign new permissions"));
+?>   
    <tr><td>
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
       <?php
@@ -98,11 +106,11 @@ function PrintModulePermModificator($selected_user) {
 }
 
 
-function PrintModulePermRow($mid, $type, $name, $perm) {
+function PrintModulePermRow($mid, $type, $name, $perm, $odd=false) {
   global $MODULES, $perms_roles_modules, $perms_roles;
   echo "<tr>
-         <td align='top'>".$MODULES[$type]['name'] .":&nbsp;$name<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
-         <td nowrap align='top'>";
+         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>".$MODULES[$type]['name'] .":&nbsp;$name<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
+         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>";
   if( isset($perms_roles_modules[$type]) AND is_array($perms_roles_modules[$type]) ) {
     reset($perms_roles_modules[$type]);
     while( list( ,$role) = each( $perms_roles_modules[$type] ) ) {
@@ -116,7 +124,7 @@ function PrintModulePermRow($mid, $type, $name, $perm) {
           checked>ADMINISTRATOR";
   }
   echo "  </td>
-          <td nowrap align='top'>
+          <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>
             <input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"REVOKE\">". _m("Revoke") ."</td>
         </tr>";
 }

@@ -35,6 +35,7 @@ require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 	MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
@@ -340,10 +341,11 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 enctype="multipart/form-data">
 
 <h1><b><?php echo _m("Import exported data (slice structure and content)").$pom?></b></h1>
-
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit>
 <?php
+  FrmTabCaption( _m("Import exported data"));
+
+echo "<tr><td class=tabtxt>";
+
 if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list || $data_import_failure):
 	echo "<B>".sprintf(_m("Count of imported slices: %d."),count($imported_list)+count($overwritten_list))."</p>";
 	if (is_array($imported_list)) {
@@ -450,14 +452,14 @@ if($IDconflict || $data_IDconflict): ?>
 <?php
 endif;?>
 	<?php if (!$IDconflict || !$data_IDconflict): ?>
-<tr><td class=tabtit align=center>
+<tr><td class=tabtxt align=center>
 <br>
 		<?php echo _m("1) If you have exported data in file, insert it's name here (eg. D:\data\apc_aa_slice.aaxml):") ?><p>
 		<input type="file" name="slice_def_file" size="60">
 <!--		<p><input type="submit" name="file_submit" value="<?php echo _m("Send file with slice structure and data"); ?>">  -->
 	</td></tr>	
 	<?php endif; ?>
-<tr><td class=tabtit align=center>
+<tr><td class=tabtxt align=center>
 <br>
 	<?php if (!$IDconflict || !$data_IDconflict): ?>	
 		<?php echo _m("2) If you have exported data in browser's window, insert the exported text into the textarea below:") ?><p>
@@ -476,10 +478,11 @@ echo HTMLEntities($slice_def_bck) ?></TEXTAREA>
 	<?php echo _m("Here specify, what do you want to import:"); ?><p>
 	<input type=checkbox name=only_slice checked><?php echo _m("Import slice definition") ?><br>
 	<input type=checkbox name=only_data checked><?php echo _m("Import slice items") ?><br><br>	
-	<input type=checkbox name=force_this_slice><?php echo _m("Import into this slice - whatever file says") ?><br><br>	
-	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Send the slice structure and data") ?>">
-	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo _m("Cancel") ?>">
-<?php } ?>	
+	<input type=checkbox name=force_this_slice><?php echo _m("Import into this slice - whatever file says") ?><br><br>
+<?php
+    FrmTabEnd(array("Submit"=>array("value"=>_m("Send the slice structure and data"), "accesskey"=>"S", "type"=>"submit"),
+              "Cancel"=>array("value"=>_m("Cancel"), "type"=>"submit")), $sess, $slice_id);
+ } ?>	
 <?php
 endif;
 endif; //if ($cancel || $coflicts_list)?>

@@ -190,21 +190,26 @@ function Submit() {
   PrintArray($err);
   echo stripslashes($Msg);
 
+  $form_buttons = array("ext_slice"=>array("type"=>"hidden",
+                                           "value"=>$remote_slices[$from_slice_id]),
+                        "btn_upd"=>array("type"=>"button",
+                                         "value"=>_m("Update"),
+                                         "accesskey"=>"S",
+                                         "add"=>'onclick="Submit()"'),
+                        "cancel"=>array("url"=>"se_fields.php3"));
 ?>
 <form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_mapping2.php3")?>">
-  <table width="600" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Content Pooling - Fields' mapping") ?></b></td></tr>
-
-    <tr><td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<?php
+      
+  FrmTabCaption(_m("Content Pooling - Fields' mapping"),'','',$form_buttons, $sess, $slice_id);
+?>      
         <tr>
           <td align=left class=tabtxt align=center><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
           <?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, "OnChange=\"ChangeFromSlice()\""); ?></td>
          </tr>
-      </table>
-    </td></tr>
-
-    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Fields' mapping") ?></b></td></tr>
+<?php
+    FrmTabSeparator(_m("Fields' mapping"));
+?>    
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
         <tr>
@@ -241,16 +246,9 @@ function Submit() {
              echo "</td><td class=tabtxt> <input type=text name=\"fval[$f_id]\" value=\"$val\"></input></td>";
              echo "</tr>\n";
            }
-        ?>
-      </table>
-    </td></tr>
-    <tr><td align="center">
-      <input type=hidden name="ext_slice" value="<?php echo $remote_slices[$from_slice_id]; ?>" >
-      <input type=button value="<?php echo _m("Update") ?>" onClick = "Submit()" align=center>&nbsp;&nbsp;
-      <input type=button VALUE="<?php echo _m("Cancel") ?>" onClick = "Cancel()">
-     </td></tr>
 
-  </table>
+ FrmTabEnd($form_buttons, $sess, $slice_id);
+?>  
 </FORM>
  <?php //p_arr_m($field_map);
 HtmlPageEnd();

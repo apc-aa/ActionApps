@@ -200,14 +200,16 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
+  
+  
+  
 ?>
+
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Fields")?></b>
-</td>
-</tr>
-<tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<?php
+$form_buttons = array("update", "cancel"=>array("url"=>"se_fields.php3"));
+  FrmTabCaption(_m("Fields"), '','', $form_buttons, $sess, $slice_id);
+?>
 <tr>
  <td class=tabtxt align=center><b><?php echo _m("Field") ?></b></td>
  <td class=tabtxt align=center><b><?php echo _m("Id") ?></b></td>
@@ -234,14 +236,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     # one row for possible new field
   ShowField("New_Field", "", "1000", false, true, "new");
 
-?>
-</table>
-<tr><td align="center">
-<?php
-  echo "<input type=hidden name=\"update\" value=1>";
-  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;
-</td></tr></table>
-</FORM>';
+  FrmTabEnd( $form_buttons, $sess, $slice_id);
+  
+  echo '</form>';
+
 HtmlPageEnd();
 page_close()?>

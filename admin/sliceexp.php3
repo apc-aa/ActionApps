@@ -37,6 +37,7 @@ $require_default_lang = true;      // do not use module specific language file
 require_once "../include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once "./sliceexp_text.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 
 // Make sure you have permissions to do this
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
@@ -143,10 +144,13 @@ if (isset($b_export_to_file))
 
 <h1><b><?php echo _m("Export slice structure") ?></b></h1>
 
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
-
 <?php
-if ($SHOWTEXT == ""): ?>
+
+FrmTabCaption(_m("Export slice structure"));
+
+if ($SHOWTEXT == ""): 
+
+?>
     <form name="f" method=post action="<?php echo $sess->url("sliceexp.php3") ?>" onsubmit="return validate2();">
     
     <?php
@@ -178,13 +182,9 @@ if ($SHOWTEXT == ""): ?>
         </table>        
         </td>
     </tr>
-    </table>
-    </td></tr>
-
-    <tr><td class=tabtit colspan=2>
-    <br><p><b><?php echo _m("Choose one of two export kinds:") ?> </b></P>
-    </td></tr>
-
+<?php
+    FrmTabSeparator(_m("Choose one of two export kinds:"));
+?>
     <tr>
         <td class=tabtxt width=50%>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">

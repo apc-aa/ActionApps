@@ -73,11 +73,21 @@ echo "<H1>"._m("Admin - Anonymous Form Wizard")."</B></H1>";
 PrintArray($err);
 echo $Msg;  
 
+$form_buttons=array("show_form" => array("value"=>_m("Show Form"),
+                                     "type"=>"submit"),
+                "show_not_so_nice"=>array("value"=>_m("Show Not So Nice"),
+                                          "type"=>"submit"),
+                "cancel"=>array("url"=>"se_fields.php3"));
+
 echo '
-<form method="post" action="'.$sess->url($PHP_SELF).'#form_content">
+<form method="post" action="'.$sess->url($PHP_SELF).'#form_content">';
+/*
 <input type="hidden" name="slice_id" value="'.$slice_id.'">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
 <tr><td class=tabtit><b>&nbsp;'._m("Settings").'</b></td></tr>';
+*/
+
+FrmTabCaption(_m("Settings"),'','',$form_buttons, $sess, $slice_id);
 
 $warning = "";
 $slice_info = GetSliceInfo ($slice_id);
@@ -121,10 +131,14 @@ echo '
         .($use_show_result ? " checked" : "").'>
     <B>'._m("Use a PHP script to show the result on the OK and Error pages:").'</B><br>
     &nbsp;<input type=text name=show_result size=60 value="'.$show_result.'">
-    </td></tr>
+    </td></tr>';
+
+FrmTabSeparator(_m("Fields"));
+/*
 <tr><td class=tabtit>&nbsp;<b>'._m("Fields").'</b></td></tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">*/
+echo '
 <tr>
  <td class=tabtxt align=center><b>'._m("Field").'</b></td>
  <td class=tabtxt align=center><b>'._m("Id").'</b></td>
@@ -154,14 +168,17 @@ echo '
 <tr><td colspan=4 class=tabtxt><hr><b>'
     ._m("Only fields marked as \"Show\" on the \"Fields\" page
          are offered on this page.")
-.'</b></td></tr>
+.'</b></td></tr>';
+/*
 </table>
 <tr><td align="center">
     <input type=submit name=show_form value="'._m("Show Form").'">&nbsp;&nbsp;
     <input type=submit name=show_not_so_nice value="'._m("Show Not So Nice").'">&nbsp;&nbsp;
     <input type=submit name=cancel value="'._m("Cancel").'">
 </td></tr>
-';
+';*/
+
+FrmTabEnd($form_buttons, $sess, $slice_id);
 
 if ($warning) echo '
 <tr><td class=tabtxt><b>&nbsp;'.$warning.'</b><hr></td></tr>';        

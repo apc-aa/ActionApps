@@ -130,15 +130,19 @@ function Defaults() {
   echo "<H1><B>" . _m("Admin - design Fulltext view") . "</B></H1>&nbsp;&nbsp;" . _m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item");
   PrintArray($err);
   echo $Msg;
+  
+  $form_buttons = array ("update",
+                         "update" => array ('type' => 'hidden', 'value'=>'1'),
+                         "cancel" =>array("url"=>"se_fields.php3"),
+                         "default" => array('type' => 'button',
+                                            'value' => _m("Default"),
+                                            'add' => 'onclick="Defaults()"'));
+  
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("HTML code for fulltext view")?></b>
-</td>
-</tr>
-<tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
+  FrmTabCaption(_m("HTML code for fulltext view"), '','', $form_buttons, $sess, $slice_id);
+
   FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,
                _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1); 
   FrmTextarea("fulltext_format", _m("Fulltext HTML code"), $fulltext_format, 8, 60, true,
@@ -150,20 +154,10 @@ function Defaults() {
   FrmInputSelect("discus_sel", _m("Show discussion"), $discus_vids, $discus_vid, false);
   FrmInputChBox("discus_htmlf", _m("Use HTML tags"), $discus_htmlf);
 
+  PrintAliasHelp(GetAliasesFromFields($fields),$fields, false, $form_buttons, $sess, $slice_id);
+
+  FrmTabEnd("", $sess, $slice_id);
 ?>
-</table></td></tr>
-<?php
-  PrintAliasHelp(GetAliasesFromFields($fields),$fields);
-?>
-<tr><td align="center">
-<?php 
-  echo "<input type=hidden name=\"update\" value=1>";
-  echo "<input type=hidden name=\"slice_id\" value=$slice_id>";
-  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
-  echo '<input type=button onClick = "Defaults()" align=center value="'. _m("Default") .'">&nbsp;&nbsp;';
-?>
-</td></tr></table>
 </FORM>
 <?php HtmlPageEnd();
 page_close()?>

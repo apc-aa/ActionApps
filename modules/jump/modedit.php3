@@ -98,10 +98,11 @@ echo '<H1><B>'.( !$jump_id ? _m("Create new Jump module") : _m("Edit Jump module
 // Show the select box to choose a module to edit
 if ($jump_id) {
     echo '
-    <form name=choose action="'.$sess->url("modedit.php3").'" method="post">
-    <table border="0" cellspacing="0" cellpadding="3" align="center">
-         <tr><td class=tabtit><b>'._m("Choose module to be edited").':</b></td>
-            <td class=tabtit>
+    <form name=choose action="'.$sess->url("modedit.php3").'" method="post">';
+    FrmTabCaption(_m("Choose module to be edited"));
+    
+    echo '<tr>
+            <td>
                 <select name="jump_id" onchange="document.forms.choose.submit();">';
                 reset ($jumps);
                 while (list ($id,$name) = each ($jumps)) 
@@ -109,19 +110,20 @@ if ($jump_id) {
                     .($id == $jump_id ? " selected" : "")
                     .">".htmlspecialchars($name);
     
-                echo '</select>&nbsp;
+                echo '</select>&nbsp;</td><td>
                 <input type=submit name="edit" value="'._m("Edit").'">
             </td>
-        </tr>
-    </table></form>';
+        </tr>';
+    FrmTabEnd();
+    echo '</form>';
 }
 
-echo '
+echo '<br>
 <form name=f action="'.$sess->url("modedit.php3").'" method="post">
 <input type=hidden name="jump_id" value="'.$jump_id.'">';
 if ($edit) echo "<input type=hidden name='edit' value='1'>";
+FrmTabCaption(_m("Edit module"));
 echo '
-<table border="0" cellspacing="0" cellpadding="3" align="center">
      <tr><td class=tabtxt><b>'._m("Module name").':</b></td>
         <td class=tabtxt><input type=text name="jump_name" size=20 value="'.$jump_name.'"></td></tr>
      <tr><td class=tabtxt><b>'._m("Jump to").' (URL):</b></td>
@@ -141,11 +143,10 @@ echo '
      else echo "<option>No module exists";
      echo "</select></td>
      </tr>
-     <tr><td class=tabtxt colspan=2>"._m("Module ID").": $jump_id</td></tr>
-     <tr><td class=tabtxt colspan=2 align=center>
-        <input type=submit name='update' value='".($jump_id ? _m("Update") : _m("Create"))."'>
-     </td></tr>
-</table></form>";
+     <tr><td class=tabtxt><b>"._m("Module ID").":</b></td><td>$jump_id</td></tr>";
+FrmTabEnd(array("update"=>array("value"=>($jump_id ? _m("Update") : _m("Create"))),
+                "cancel"=>array("url"=>$AA_INSTAL_PATH."admin/um_uedit.php3")), $sess, $slice_id);
+echo "</form>";
 HTMLPageEnd();
 page_close();
 ?>

@@ -238,10 +238,11 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   if ($update) echo "$nchanges "._m("field IDs were changed").".<br>";
 
 echo "
-<form method=post action='".$sess->url($PHP_SELF)."'>
-<table width=500 border=0 cellspacing=0 cellpadding=1 bgcolor='".COLOR_TABTXTBG."' align=center>
-<tr><td class=tabtit>"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
-<tr><td class=tabtit align=center><br>"._m("Change from").": <select name='old_id'>";
+<form method=post action='".$sess->url($PHP_SELF)."'>";
+FrmTabCaption(_m("Admin - change Field IDs"));
+
+echo"<tr><td class=tabtxt>"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
+<tr><td class=tabtxt align=center><br>"._m("Change from").": <select name='old_id'>";
 reset ($s_fields);
 while (list (,$field) = each ($s_fields)) 
     if (!my_in_array ($field["id"], $reserved_ids))
@@ -259,15 +260,20 @@ echo "</select> <select name='new_id_number'>
 <option value='.'>.";
 for ($i = 1; $i < 100; ++$i)
     echo "<option value='$i'>$i";
-echo "</select><br><br>
+echo "</select><br><br>";
+FrmTabSeparator(_m("Fields"), 
+                array("update"=>array("type"=>"hidden","value"=>"1"),
+                      "update","cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
+/*                      
     <input type=hidden name=\"update\" value=1>
     <input type=submit name=update value='". _m("Update") ."'>&nbsp;&nbsp;
     <input type=submit name=cancel value='". _m("Cancel") ."'>
     </td></tr></table>";
-?>
 <br>
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr height=10><td class=tabtxt colspan=2></td></tr>
+*/
+?>
 <tr>
  <td class=tabtxt align=left><b>&nbsp;&nbsp;<?php echo _m("Id") ?></b></td>
  <td class=tabtxt align=left><b>&nbsp;&nbsp;<?php echo _m("Field") ?></b></td>
@@ -281,8 +287,8 @@ echo "</select><br><br>
         <td class=tabtxt align=left>&nbsp;&nbsp;$field[id]&nbsp;&nbsp;</td>
         <td class=tabtxt>&nbsp;&nbsp;<b>$field[name]&nbsp;&nbsp;</b></td></tr>";
     }
+FrmTabEnd();    
 echo "
-</table>
 </FORM>";
 HtmlPageEnd();
 page_close()?>

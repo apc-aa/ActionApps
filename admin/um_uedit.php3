@@ -167,39 +167,45 @@ include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
 
 ?>
 <!-- Select user form -->
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align=center>
- <tr><td class=tabtit><b>&nbsp;<?php echo _m("Users")?></b></td></tr>
+<?php
+FrmTabCaption(_m("Users"));
+?> 
  <tr><td>
    <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
-            <td>&nbsp;</td>
-            <td><input type=Text name=usr value="<?php echo safe($rusr)?>"></td>
-            <td><input type=submit value="<?php echo _m("Search")?>">
+            <td width="20%">&nbsp;</td>
+            <td width="46%"><input type=Text name=usr value="<?php echo safe($rusr)?>"></td>
+            <td width="33%"><input type=submit value="<?php echo _m("Search")?>">
           <input type=hidden name="UsrSrch" value=1></td>
      </tr>
     </table>
    </form>
   </td>
  </tr>
+<?php
+FrmTabSeparator("");
+?> 
  <tr>
   <td><form name=f2 method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
-            <td class=tabtxt><b><?php echo _m("User") ?></b></td>
-            <td><?php SelectGU_ID("selected_user", $users, $selected_user);
+            <td width="20%" class=tabtxt><b><?php echo _m("User") ?></b></td>
+            <td width="46%"><?php SelectGU_ID("selected_user", $users, $selected_user);
           ?></td>
-            <td><input type=submit name="usr_edit" value="<?php echo _m("Edit")?>">&nbsp;
+            <td width="33%"><input type=submit name="usr_edit" value="<?php echo _m("Edit")?>">&nbsp;
                 <input type=hidden name=submit_action value=0>  <!-- to this variable store "usr_del" (by javascript) -->
                 <input type=button name="usr_del" value="<?php echo _m("Delete")?>" onclick="RealyDelete()"></td>
      </tr>
     </table>
    </FORM>
-  </td>
+<?php   
+  /*</td>
  </tr>
 </table>
+*/
+FrmTabEnd();
 
-<?php
 if( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
   HtmlPageEnd();
   page_close();
@@ -228,20 +234,23 @@ do {
 
 
 ?>
+<br />
 <form name=fx method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<?php
+/*
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;
-<?php
+*/
 if( $usr_edit OR ($submit_action == "update_submit") )
-  echo _m("Edit User");
+  FrmTabCaption(_m("Edit User"));
  else
-  echo _m("New user");
-?></b>
+  FrmTabCaption(_m("New user"));
+/*</b>
 </td>
 </tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
-<?php
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>*/
+
 
 # User data ---------------------------------------------------
 
@@ -259,17 +268,18 @@ if( $usr_edit OR ($submit_action == "update_submit") )
 //  FrmInputText("user_mail2", _m("E-mail")." 2", $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php3
 //  FrmInputText("user_mail3", _m("E-mail")." 3", $user_mail3, 50, 50, false);
   FrmInputChBox("user_super", _m("Superadmin account"), $user_super, false, "", 1, false);
-echo '</table></td></tr>';
+//echo '</table></td></tr>';
 
 if( !$add_submit AND !$usr_new) {
 
   # User - group membership -----------------------------------------
-  ?>
 
-  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
+  FrmTabSeparator(_m("Groups"));
+  /*<tr><td class=tabtit><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
+
   <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-  <?php
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">*/
+
   echo '<tr><td width=190 align=center>'. _m("All Groups") .'</td>
                   <td width=60>&nbsp;</td>
                   <td width=190 align=center>'. _m("User's Groups") .'</td></tr>
@@ -285,15 +295,15 @@ if( !$add_submit AND !$usr_new) {
                   <td align="CENTER" valign="TOP">';
               SelectGU_ID("sel_groups_sel", $sel_groups, $sel_groups_sel, "long");
   echo '    </td>
-        </tr>
-      </table></td></tr>';
+        </tr>';
+//      </table></td></tr>';
 
   # User - permissions -----------------------------------------
 
   $mod_types = PrintModulePermModificator($selected_user);   # shared with um_gedit.php3
 
 }
-
+/*
 echo '<tr><td align="center">';
 
 if( $usr_new OR $add_submit ){
@@ -303,11 +313,35 @@ if( $usr_new OR $add_submit ){
   echo '<input type=button name=submit_button value="'. _m("Update") .'" onClick="UpdateUser(\'update_submit\')">&nbsp;&nbsp;';
   echo '<input type=hidden name=usr_edit value=1>&nbsp;&nbsp;';
 }
+
 echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
 echo '<input type=hidden name=selected_user value="'.$selected_user.'">&nbsp;&nbsp;';
 echo '<input type=hidden name=posted_groups value=0>';  // to this variable store assigned groups (by javascript)
 echo '<input type=hidden name=submit_action value=0>';  // to this variable store "add_submit" or "update_submit" (by javascript)
 echo '</td></tr></table></FORM>';
+*/
+if ($usr_new or $add_submit) {
+    $form_buttons = array("add_submit"=>array("value"=>_m("Add"),
+                                              "type"=>"submit",
+                                              "accesskey"=>"S"),
+                           "usr_new"=>array("value"=>"1"),
+                           "selected_user"=>array("value"=>$selected_user),
+                           "posted_groups"=>array("value"=>"0"),
+                           "submit_action"=> array("value"=>"0"),
+                           "cancel"=>array("url"=>"um_uedit.php3"));
+} else {
+    $form_buttons = array("submit_button"=>array("value"=>_m("Update"),
+                                                 "type"=>"button",
+                                                 "add"=>'onclick="UpdateUser(\'update_submit\')"',
+                                                 "accesskey"=>"S"),
+                          "usr_edit"=>array("value"=>"1"),
+                          "selected_user"=>array("value"=>$selected_user),
+                          "posted_groups"=>array("value"=>"0"),
+                          "submit_action"=> array("value"=>"0"),
+                          "cancel"=>array("url"=>"um_uedit.php3"));
+}
+
+FrmTabEnd($form_buttons, $sess, $slice_id);
 
 if( !$add_submit AND !$usr_new) {
   PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);

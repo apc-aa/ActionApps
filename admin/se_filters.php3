@@ -246,18 +246,24 @@ function UpdateFilters(slice_id, import_id) {
   PrintArray($err);
   echo $Msg;
 
+  $form_buttons=array("btn_upd"=>array("type"=>"button",
+                                 "value"=>_m("Update"),
+                                 "accesskey"=>"S",
+                                 "add"=>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""),
+                "cancel"=>array("url"=>"se_fields.php3"))
+
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Content Pooling - Configure Filters") ?></b></td></tr>
-<tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<?php
+  FrmTabCaption(_m("Content Pooling - Configure Filters"),'','',$form_buttons, $sess, $slice_id);
+?>
 <tr>
   <td colspan class=tabtxt align=center><b><?php echo _m("Filter for imported slice") . "&nbsp; "?></b></td>
   <td><?php FrmSelectEasy("import_id", $impslices, $import_id, "OnChange=\"ChangeImport()\""); ?></td>
 </tr>
-</table></td></tr>
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Categories") ?></b></td></tr>
+<?php
+FrmTabSeparator(_m("Categories"));
+?>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
@@ -329,12 +335,10 @@ else {
 }
 ?>
 <tr><td colspan=3><a href="javascript:SelectChboxes('chbox_')"><?php echo _m('Select all');?></td><td><a href="javascript:SelectChboxes('approved_')"><?php echo _m('Select all');?></td></tr>
-</table></tr></td>
-<tr><td align="center">
-<input type=hidden name="slice_id" value="<?php echo $slice_id ?>">
-<input type="button" VALUE="<?php echo _m("Update") ?>" onClick = "UpdateFilters('<?php echo $slice_id ?>','<?php echo $import_id ?>')" align=center>&nbsp;&nbsp;
-<input type=submit name=cancel value="<?php echo _m("Cancel") ?>">
-</td></tr></table>
+<?php
+}
+FrmTabEnd($form_buttons,$sess, $slice_id);
+?>
 </FORM>
 <?php
 HtmlPageEnd();

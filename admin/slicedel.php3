@@ -69,13 +69,7 @@ echo "<H1><B>" . _m("Admin - Delete Slice") . "</B></H1>";
 echo $Msg;
 echo _m("<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>");
 
-?>
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
- <tr><td class=tabtit><b>&nbsp;<?php echo _m("Select slice to delete")?></b><BR>
-  </td></tr>
- <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?php
+FrmTabCaption(_m("Select slice to delete"));
 
 # -- get views for current slice --
 $SQL = "SELECT * FROM module WHERE deleted>0";
@@ -87,12 +81,9 @@ while( $db->next_record() ) {
 if( !$slice_to_delete )
   echo "<tr class=tabtxt><td>". _m("No slice marked for deletion") ."</td></tr>";
 
-echo '
-  </table>
- <tr><td align="center">
-  <input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;
- </td></tr></table>
-</FORM>';
+FrmTabEnd(array("cancel"=>array("url"=>"um_uedit.php3")), $sess, $slice_id);
+
+echo '</form>';
 
 HtmlPageEnd();
 page_close();

@@ -39,19 +39,19 @@ if(!IfSlPerm(PS_FIELDS)) {
 }  
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$s_fields = GetTable2Array($SQL);
+//$s_fields = GetTable2Array($SQL);
 
 // update database or get the value
 
 if (get_magic_quotes_gpc() && $javascript) 
     $javascript = stripslashes ($javascript);
-
+    
 if ($p_slice_id && $update) 
     tryQuery("UPDATE slice SET javascript=\"".myaddslashes($javascript)."\" 
         WHERE id='$p_slice_id'");
 else {
     $db = getDB();
-    $db->query("SELECT javascript FROM slice WHERE id='$p_slice_id'");
+    $db->tquery("SELECT javascript FROM slice WHERE id='$p_slice_id'");
     if ($db->next_record())
         $javascript = $db->f("javascript");
     freeDB($db);
@@ -71,16 +71,25 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo $Msg;  
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<?php
+  FrmTabCaption(_m("JavaScript for fields"));
+/*
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtxt><?php echo _m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3).") ?></td></tr>
+<tr><td class=tabtxt><?php echo _m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3).") ?></td></tr>*/
+?>
+<tr><td><?php FrmStaticText(_m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."),""); ?></td></tr>
 <tr><td class=tabtxt><hr></td></tr>
 <tr><td class=tabtxt><textarea name="javascript" cols=100 rows=20>
-<?php echo $javascript.'</textarea></td></tr>
+<?php echo $javascript.'</textarea></td></tr>';
+/*
     <tr><td class=tabtit colspan=2 align="center">
     <input type=hidden name=\"update\" value=1>
     <input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;
     <input type=submit name=cancel value="'. _m("Cancel") .'">
-    </td></tr></table>
+    </td></tr></table>*/
+FrmTabSeparator(_m("Available fields and triggers"),array("update", "update"=>array("type"=>"hidden", "value"=>"1"), 
+                      "cancel"=>array("url"=>"se_fields.php3")),$sess, $slice_id);
+echo '
 </FORM>';
 
 $SQL = "SELECT id FROM field
@@ -88,8 +97,9 @@ $SQL = "SELECT id FROM field
         ORDER BY id";
 $db = getDB();
 $db->query($SQL);
-echo '<table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
-<tr><td valign=top><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'">
+//echo '<table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">';
+echo '
+<tr><td valign=top><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">
 <tr><td class=tabtit>'._m("Field IDs").':</td></tr>';
 while ($db->next_record()) 
     echo "<tr><td class=tabtxt>".$db->f("id")."</td></tr>";
@@ -97,13 +107,13 @@ freeDB($db);
 echo '</table>
 </td>
 <td valign=top><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">
-<tr><td class=tabtxt>'._m("Triggers").':</td></tr>
-<tr><td class=tabtit>'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="http://apc-aa.sourceforge.net/faq/#triggers" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
+<tr><td class=tabtit>'._m("Triggers").':</td></tr>
+<tr><td class=tabtxt>'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="http://apc-aa.sourceforge.net/faq/#triggers" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
 <tr><td class=tabtxt><table border="1" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">';
-echo '<tr><td class=tabtit><b>'._m("Field Type").'</b></td><td class=tabtxt><b>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</b></td></tr>';
+echo '<tr><td class=tabtit><b>'._m("Field Type").'</b></td><td class=tabtit><b>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</b></td></tr>';
 reset ($js_triggers);
 while (list ($control,$trigs) = each ($js_triggers)) 
-    echo '<tr><td class=tabtit>'.$control.'</td><td class=tabtxt>'.join($trigs,", ").'</td></tr>';
+    echo '<tr><td class=tabtxt>'.$control.'</td><td class=tabtxt>'.join($trigs,", ").'</td></tr>';
 echo '
 </table></td></tr>
 </table></td>

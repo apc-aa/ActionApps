@@ -41,12 +41,17 @@ while( $db->next_record() ) {
     }
 }
 
-echo '
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+
+/*echo '
     <table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
     <tr><td class=tabtit><b>&nbsp;'._m("Slice").'</b>
     </td></tr>
     <tr><td>
     <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="'.COLOR_TABBG.'">';
+*/
+
+FrmTabCaption(_m("Slice"));
 
 if( isset( $templates ) AND is_array( $templates ) AND
     isset( $temp_slices ) AND is_array( $temp_slices )
@@ -56,14 +61,14 @@ if( isset( $templates ) AND is_array( $templates ) AND
 
   if( isset( $templates ) AND is_array( $templates )) {
     usort($templates, "cmp");
-    echo "<tr><td class=tabtxt><b>". _m("Template") ."</b>";
-    echo "</td><td><select name=\"template_id\">";
+    echo "<tr><td width=\"20%\" class=tabtxt><b>". _m("Template") ."</b>";
+    echo "</td><td width=\"60%\"><select name=\"template_id\">";
     reset($templates);
     while(list(,$v) = each($templates)) {
       echo "<option value=\"". htmlspecialchars($v[value])."\"";
       echo "> ". htmlspecialchars($v[name]) ." </option>";
     }
-    echo '</select></td><td>';
+    echo '</select></td><td width=\"20%\">';
     if ($wizard)
          echo '<input type="radio" name="template_slice_radio" value="template" checked>';
     else echo '<input type="SUBMIT" name="template_slice_sel[template]" value="'._m("Add").'" checked>';

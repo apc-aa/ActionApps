@@ -148,10 +148,6 @@ function checkData() {
   }
 }
 
-function Cancel() {
-  document.location = "<?php echo $sess->url(self_base() . "index.php3")?>"
-}
-
 // -->
 </SCRIPT>
 
@@ -167,10 +163,10 @@ function Cancel() {
   echo $Msg;
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>" onSubmit="return checkData()">
-  <table width="400" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Remote RSS Feed administration") ?></b></td></tr>
-     <tr><td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABBG ?>">
+<?php
+
+  FrmTabCaption(_m("Remote RSS Feed administration"));
+?>      
       <tr><td colspan=2><?php echo _m("Current remote rssfeeds") ?></td></tr>
       <tr><td align=center colspan=2>
       <SELECT name="rssfeeds" class=tabtxt size=5>
@@ -189,10 +185,9 @@ function Cancel() {
       <input type=button VALUE="<?php echo _m("Test") ?>" onClick = "Submit('test')">
       <input type=button VALUE="<?php echo _m("Map") ?>" onClick = "Submit('map')">
      </td></tr>
-    <tr><td colspan=2>&nbsp;</td></tr>
-    <tr><td colspan=2><?php echo ($new_mode=="insert" ? _m("Add new rssfeed") :
-                                                   _m("Edit rssfeed data")) ?>
-    </td></tr>
+<?php
+  FrmTabSeparator($new_mode=="insert" ? _m("Add new rssfeed") : _m("Edit rssfeed data"));
+?>    
     <tr><td><?php echo _m("RSS Feed name") ?></td>
         <td><input type="text" name="rssfeed_name" size=40 value="<?php echo safe($rssfeed_name)?>" ><br><?php echo _m("New rssfeed name")?></tr>
     <tr><td><?php echo _m("URL of the feed") ?></td>
@@ -201,12 +196,11 @@ function Cancel() {
     <input type="hidden" name="old_rssfeed_name" value="<?php echo safe($old_rssfeed_name) ?>">
     <input type="hidden" name="sel_rssfeed_name">
 </tr>
-    <tr><td colspan=2 align="center"><input type="submit" value="<?php echo _m("Submit") ?>" >
-        <input type=button value="<?php echo _m("Cancel") ?>" onClick="Cancel()" ></td>
-    </tr>
-  </table>
-  </td></tr>
-  </table>
+<?php
+
+  FrmTabEnd(array("submit", "cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
+
+?>  
 </FORM>
 <?php
     if ($mode == "test") {

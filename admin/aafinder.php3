@@ -112,18 +112,21 @@ if ($go_findslice && $findslice) {
     
 // ------------------------------------------------------------------------------------------
 // SHOW THE PAGE
-    
+
+FrmTabCaption(_m("AA finder"));
+echo '<tr><td>';
 echo '<FORM name="f_findview" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Find all VIEWS containing in any field the string:").'</b><br> 
     <input type="text" name="findview" value="'.$findview.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findview" value="'._m("Go!").'">';
-echo '</FORM><BR>';
-
+echo '</FORM>';
+echo '</td></tr><tr><td>';
 echo '<FORM name="f_findslice" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Find all SLICES containing in any field the string:").'</b><br> 
     <input type="text" name="findslice" value="'.$findslice.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findslice" value="'._m("Go!").'">';
-echo '</FORM><BR>';
+echo '</FORM></td></tr>';
+FrmTabEnd();
 
 HTMLPageEnd();
 page_close ();

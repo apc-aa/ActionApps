@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ http://www.apc.org/
 require_once $directory_depth."../include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
 require_once menu_include();   //show navigation column depending on $show
-    
+
 // ----------------------------------------------------------------------------------------
 
 $sess->register("tview");
@@ -39,21 +39,21 @@ if ($set_tview) $tview = $set_tview;
 require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tv_misc.php3";
 
-if ($tview{0} == "a") {
+// is tableview defined in special file (tableviews.php3)?
+if ( ($tview{0} == "a") OR ( substr($tview,0,5) =='polls') ) {
     $func = "GetTableView";
     require_once $GLOBALS["AA_INC_PATH"]."tableviews.php3";
 }
-
-else    
+else
     $func = "GetMiscTableView";
 
 $tableview = $func($tview);
 
-if (!is_array ($tableview)) { 
-    go_url ($sess->url(self_base()."index.php3?slice_id=$slice_id&Msg=Bad table view ID: $tview")); 
-    exit; 
+if (!is_array ($tableview)) {
+    go_url ($sess->url(self_base()."index.php3?slice_id=$slice_id&Msg=Bad table view ID: $tview"));
+    exit;
 }
-if (! $tableview["cond"] )  { MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone"); exit; }
+if (! $tableview["cond"] )  { MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"), "standalone"); exit; }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
@@ -75,7 +75,7 @@ if ($err) echo "<b>$err</b>";
 
 if (!$err && $tview == "email_edit")
     ShowEmailAliases();
-    
+
 HTMLPageEnd();
 page_close ();
 ?>

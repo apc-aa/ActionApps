@@ -84,9 +84,6 @@ function Delete() {
   document.f.submit();
 }
 
-function Cancel() {
-  document.location = "<?php echo $sess->url(self_base() . "index.php3")?>"
-}
 // -->
 </SCRIPT>
 </HEAD>
@@ -102,10 +99,10 @@ function Cancel() {
 ?>
 
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>" >
-  <table width="400" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Inter node export settings")   ?></b></td></tr>
-     <tr><td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABBG ?>">
+<?php
+
+FrmTabCaption(_m("Inter node export settings"));
+?>      
       <tr><td colspan=2 ><?php echo _m("Existing exports of the slice "). "<B>".$r_slice_headline."</B>"; ?></td></tr>
       <tr><td colspan=2 align=center>
         <SELECT name="perms" size=5>
@@ -126,9 +123,9 @@ function Cancel() {
       <tr><td colspan=2 align="center">
         <input type=button VALUE="<?php echo _m("Delete") ?>" onClick = "Delete()">
        </td></tr>
-
-      <tr><td colspan=2 >&nbsp;</td></tr>
-      <tr><td colspan=2><?php echo _m("Insert new item"); ?></td></tr>
+<?php
+      FrmTabSeparator(_m("Insert new item"));
+?>      
       <tr><td width="40%"><?php echo _m("Remote Nodes"); ?></td><td align="left">
         <SELECT name="r_nodes" class=tabtxt size=5>
         <?php
@@ -140,17 +137,15 @@ function Cancel() {
         ?>
         </SELECT>
       </td></tr>
-      <tr><td colspan=2><?php echo _m("User name"); ?>
-          <input type="text" name="user_name" size=40 value="<?php echo safe($user_name)?>" >
+      <tr><td width="40%"><?php echo _m("User name"); ?></td>
+          <td align="left"><input type="text" name="user_name" size=40 value="<?php echo safe($user_name)?>" >
       </td></tr>
-      <input type="hidden" name="mode" value="insert">
-      <tr><td colspan="2" align=center >
-           <input type="submit" value="<?php echo _m("Submit") ?>" >
-           <input type=button value="<?php echo _m("Cancel") ?>" onClick="Cancel()" >
-      </td></tr>
-  </table>
-  </td></tr>
-  </table>
+<?php
+    FrmTabEnd(array("mode"=>array("type"=>"hidden", "value"=>"insert"),
+                    "submit",
+                    "cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
+  
+?>  
 </FORM>
 <?php
 HtmlPageEnd();

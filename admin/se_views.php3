@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ http://www.apc.org/
 require_once "../include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def 
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
@@ -34,7 +34,7 @@ if($cancel)
 if(!IfSlPerm(PS_FULLTEXT)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
   exit;
-}  
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
@@ -56,8 +56,8 @@ function PrintViewRow($id, $name, $type) {
   global $sess;
   $VIEW_TYPES = getViewTypes();
 
-  $name=safe($name); $id=safe($id);     
-  
+  $name=safe($name); $id=safe($id);
+
   echo "<tr class=tabtxt>
           <td class=tabtxt>$id</td>
           <td class=tabtxt>". $VIEW_TYPES[$type]["name"] ."</td>
@@ -70,9 +70,9 @@ function PrintViewRow($id, $name, $type) {
 
 # returns javascript row for view selection
 function GetViewJSArray( $sid, $id, $name, $type, $i ) {
-  $id=safe($id);     
+  $id=safe($id);
   return "\n vs[$i]=\"x$sid\"; vv[$i]=\"$id\"; vn[$i]=\"".safe(substr($name,0,20))."\";";
-}         
+}
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Admin - design View") ."</TITLE>"; ?>
@@ -86,20 +86,20 @@ echo "<TITLE>". _m("Admin - design View") ."</TITLE>"; ?>
 
      function SelectViewSlice() {
        var i,j;
-       var xsid=document.fvtype.view_slice.options[document.fvtype.view_slice.selectedIndex].value;        
+       var xsid=document.fvtype.view_slice.options[document.fvtype.view_slice.selectedIndex].value;
          // clear selectbox
        for( i=(document.fvtype.view_view.options.length-1); i>=0; i--){
          document.fvtype.view_view.options[i] = null
-       }  
-         // fill selectbox from the right slice  
+       }
+         // fill selectbox from the right slice
        j=0;
        for( i=0; i<vs.length ; i++) {
          if( vs[i] == xsid ) {
 //           if(confirm(vs[i]+" - "+xsid))
 //             return;
            document.fvtype.view_view.options[j++] = new Option(vv[i]+' - '+vn[i], vv[i])
-         }  
-       }    
+         }
+       }
      }
   // -->
   </SCRIPT>
@@ -112,15 +112,18 @@ showMenu ($aamenus, "sliceadmin","views");
 echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";
 PrintArray($err);
 echo $Msg;
-?>
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+
+/*<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo _m("Defined Views")?></b><BR></td></tr>
 <tr>
 <form name="fvtype" method=post action="<?php echo $sess->url("./se_view.php3") ?>">
 <td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?php
-  
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">*/
+
+echo '<form name="fvtype" method=post action="'. $sess->url("./se_view.php3"). '">';
+
+FrmTabCaption(_m("Defined Views"));
+
 # -- get all views --
 $SQL = "SELECT * FROM view ORDER BY id";
 $db->query($SQL);
@@ -131,26 +134,21 @@ while( $db->next_record() ) {
     PrintViewRow($db->f(id), $db->f(name), $db->f(type));
   if($g_modules[$view_sid]) {  # if user has any permission for the view's slice
     $view_array .= GetViewJSArray( $view_sid, $db->f(id), $db->f(name), $db->f(type), $i++ );
-    $sliceWview[$view_sid]=1;  # mark the slices, where is an view  
-  }  
-}  
+    $sliceWview[$view_sid]=1;  # mark the slices, where is an view
+  }
+}
 
   # row for new view creaded from view type selection
 echo "</td>
-     </tr>
-    </table>
-   </td>
-  </tr>
-  <tr><td class=tabtit><b>&nbsp;"._m("Create new view") ."</b><BR></td></tr>
-  <tr>
-   <td>
-    <table width='100%' border=0 cellspacing=0 cellpadding=4 bgcolor='". COLOR_TABBG ."'>
+     </tr>";
+    FrmTabseparator(_m("Create new view"));
+echo "
       <tr class=tabtxt>
         <td>"._m("by&nbsp;type:")."</td>
-        <td align=right><select name='view_type'>";	
-$VIEW_TYPES = getViewTypes();        
+        <td align=right><select name='view_type'>";
+$VIEW_TYPES = getViewTypes();
 reset($VIEW_TYPES);
-while(list($k, $v) = each($VIEW_TYPES)) { 
+while(list($k, $v) = each($VIEW_TYPES)) {
   echo "<option value='$k'> ". htmlspecialchars($v["name"]) ." </option>";
 }
 echo "</select></td>
@@ -162,14 +160,14 @@ echo "<tr class=tabtxt>
         <td>"._m("by&nbsp;template:")."</td>
         <td align=right>
          <select name='view_slice' OnChange='SelectViewSlice()'>";
-  # slice selection         
+  # slice selection
 reset($g_modules);
-while(list($k, $v) = each($g_modules)) { 
+while(list($k, $v) = each($g_modules)) {
   if( ($v['type'] != 'S') OR !$sliceWview[$k] )
     continue;                            # we can feed just between slices ('S')
   $selected = ( (string)$slice_id == (string)$k ) ? "selected" : "";
   echo "<option value='x$k' $selected>". safe($v['name']) ."</option>\n";
-}  
+}
 echo "   </select>&nbsp;<select name='view_view'>
           <option> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>
          </select>
@@ -177,10 +175,11 @@ echo "   </select>&nbsp;<select name='view_view'>
         <td><input type=submit name='new_templ' value='". _m("New") ."'></td>
      </tr>
     </table>
-  </td>
+</td>
    </form>
  </tr>
 </table><br>
+
 <SCRIPT type='text/javascript'> <!--
   var vs, vv, vn;
   vs=new Array();
@@ -194,7 +193,7 @@ echo "   </select>&nbsp;<select name='view_view'>
 
 
 $viewuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF); #include help
-echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri . 
+echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri .
          '?vid=<i>ID</i>&quot;--&gt;</pre>';
 HtmlPageEnd();
 page_close();

@@ -64,12 +64,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </table>
 
 <br><br>
-
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
-<tr><td class=tabtit colspan=2><b>&nbsp;<?php echo _m("[Optional] Create New User"); ?></b>
-</td></tr>
-
 <?php
+
+FrmTabCaption(_m("[Optional] Create New User"));
 
 # User data ---------------------------------------------------
     FrmInputRadio("user_role", _m("Level of Access"), 
@@ -87,19 +84,20 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     $email_welcomes [NOT_EMAIL_WELCOME] = _m("Do Not Email Welcome");
   
     FrmInputSelect("wiz[welcome]", _m("Email Welcome"), $email_welcomes, NOT_EMAIL_WELCOME);
+    
+    FrmTabEnd();
 ?>
-</table>
+
 
 <br><br>
+<?php
 
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td align="center">
-<?php 
-  echo '<input type=submit name=no_slice_id value="'._m("Go: Add Slice").'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
-?>   
-</td></tr>
-</table>
+  FrmTabCaption("");
+  FrmTabEnd(array("no_slice"=>array("value"=>_m("Go: Add Slice"),
+                                    "type"=>"submit",
+                                    "accesskey"=>"S"),
+                  "cancel"=>array("url"=>"um_uedit.php3")), $sess, $slice_id);
+?>
 </FORM>
 </center>
 <?php echo "<br><br><br><br>"; ?>

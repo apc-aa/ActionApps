@@ -175,15 +175,19 @@ function EnableClick(cond,what) {
   echo "<H1><B>" . _m("Admin - design Index view") . "</B></H1>&nbsp;" . _m("Use these boxes ( and the tags listed below ) to control what appears on summary page");
   PrintArray($err);
   echo $Msg;
+  
+  $form_buttons = array ("update",
+                         "update" => array ('type' => 'hidden', 'value'=>'1'),
+                         "cancel"=>array("url"=>"se_fields.php3"),
+                         "default" => array('type' => 'button',
+                                            'value' => _m("Default"),
+                                            'add' => 'onclick="Defaults()"'));
+    
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("HTML code for index view")?></b><BR>
-</td>
-</tr>
-<tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
+  FrmTabCaption(_m("HTML code for index view"), '','', $form_buttons, $sess, $slice_id);
+
   # lookup slice fields
   $db->query("SELECT id, name FROM field
                WHERE slice_id='$p_slice_id' ORDER BY name");
@@ -221,20 +225,11 @@ function EnableClick(cond,what) {
                _m("Removes empty brackets etc. Use ## as delimeter."), DOCUMENTATION_URL);
   FrmInputText("noitem_msg", _m("'No item found' message"), $noitem_msg, 254, 50, false,
                _m("message to show in place of slice.php3, if no item matches the query"), DOCUMENTATION_URL);
+
+  PrintAliasHelp(GetAliasesFromFields($fields), $fields, false, $form_buttons, $sess, $slice_id);
+
+  FrmTabEnd("", false, true);
 ?>
-</table></td></tr>
-<?php
-  PrintAliasHelp(GetAliasesFromFields($fields), $fields);
-?>
-<tr><td align="center">
-<?php 
-  echo "<input type=hidden name=\"update\" value=1>";
-  echo "<input type=hidden name=\"slice_id\" value=$slice_id>";
-  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
-  echo '<input type=button onClick = "Defaults()" align=center value="'. _m("Default") .'">&nbsp;&nbsp;';
-?>
-</td></tr></table>
 </FORM>
 <?php HtmlPageEnd();
 page_close()?>

@@ -9,7 +9,7 @@ http://www.apc.org/
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
+    This programp is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
@@ -28,11 +28,10 @@ require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
 require_once $GLOBALS["AA_INC_PATH"]."logs.php3";
 require_once $GLOBALS["AA_INC_PATH"]."go_url.php3";
-require_once $GLOBALS["AA_INC_PATH"]."logs.php3";
 
-function get_aa_url($href) {
+function get_aa_url($href, $session=true) {
     global $AA_INSTAL_PATH, $sess;
-    return is_object($sess) ? $sess->url($AA_INSTAL_PATH.$href) :
+    return ($session AND is_object($sess)) ? $sess->url($AA_INSTAL_PATH.$href) :
                                $AA_INSTAL_PATH.$href;
 }
 
@@ -42,13 +41,18 @@ function get_admin_url($href) {
                                $AA_INSTAL_PATH."admin/".$href;
 }
 
-/// Adds slash at the end of a directory name if it is not yet there.
+/** returns url for $morehlp parameter in Frm* functions */
+function get_help_url($href, $anchor) {
+    return $href."#".$anchor;
+}
+
+/** Adds slash at the end of a directory name if it is not yet there. */
 function endslash (&$s) {
     if (strlen ($s) && substr ($s,-1) != "/")
         $s .= "/";
 }
 
-/// Wraps the in_array function, which was introduced only in PHP 4.
+/** Wraps the in_array function, which was introduced only in PHP 4. */
 function my_in_array($needle, $array) {
     return in_array($needle, $array);
 }
@@ -185,6 +189,16 @@ function ParamExplode($param) {
   return explode( "##Sx", $e );
 }
 
+function ParamImplode_replaceneeded($string) {
+   $a = str_replace(":", "#:", $string);
+   return $a;
+}
+
+function ParamImplode($param) {
+   $param = array_map("ParamImplode_replaceneeded", $param);
+   return implode(":", $param);
+}
+
 /** Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
 *   to GLOBALS.
 *   @param array $restrict_vars  Array ("var name"=>1, ...) allows to
@@ -193,60 +207,17 @@ function ParamExplode($param) {
 */
 function add_vars($query_string="", $debug="", $restrict_vars="") {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
-    $vars = explode('&', $varstring);
 
-    if( isset($vars) AND is_array($vars) ) {
-        reset($vars);
-        while (list($temp,$var) = each ($vars)) {
-            $var = urldecode (DeBackslash($var));
-            $pos = strpos($var, "=");
-            if(!$pos)
-                continue;
-
-            $lvalue = substr($var,0,$pos);
-            $value  = substr($var,$pos+1);
-            $arrindex = strstr ($lvalue,'[');
-            if (! $arrindex) {
-                if (! is_array ($restrict_vars) || $restrict_vars[$lvalue]) {
-                    $GLOBALS[$lvalue]= $value;   # normal variable
-                }
-                continue;
-            }
-
-            # array variable
-            unset($indexes);
-            $lindex = "";
-            $lvalue = substr ($lvalue, 0, strpos ($lvalue,'['));
-            // are we inside some [] brackets?
-
-            while( strpos('x'.$arrindex, '[')==1 AND          # correct array index
-                   ($end = strpos($arrindex, ']'))) {         #  = no == !!
-                $indexes[] = substr( $arrindex, 1, $end-1 );  # extract just index
-                $arrindex = substr( $arrindex, $end+1 );      # next index
-            }
-            if( isset($indexes) AND is_array($indexes) ) {
-                reset($indexes);
-                while( list(,$v) = each($indexes) ) {
-                    # add apostrophs for textual indexed
-                    $first = substr($v,0,1);                      # first letter
-                    if( $first!='"' AND
-                        $first!="'" AND
-                        strlen($v) != strspn($v,'0123456789') )   # [] and [12] allowed
-                        $lindex .= "['$v']";
-                     else
-                        $lindex .= "[$v]";
-                }
-            }
-            if (! is_array ($restrict_vars) || $restrict_vars [$lvalue]) {
-                $evalcode = '$'.$lvalue.$lindex."=\$value;";
-                if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
-                    global $$lvalue;
-                    eval ($evalcode);
-                }
-            }
+    if ( !$varstring ) return;
+    if ( ($pos = strpos('#', $varstring)) === true ) {  // remove 'fragment' part
+        $varstring = substr($str,0,$pos);
+    }
+    parse_str( $varstring, $aa_query_arr);
+    foreach ( $aa_query_arr as $var => $val) {
+        if ( !$restrict_vars[$var] ) {
+            $GLOBALS[$var] = $val;
         }
     }
-    return count ($vars);
 }
 
 # function to double backslashes and apostrofs
@@ -308,8 +279,6 @@ function dequote($str) {
 
 # prints content of a (multidimensional) array
 function p_arr_m ($arr, $level = 0) {
-  if(! DEBUG_FLAG )
-    return;
    if ( !isset($arr) OR !is_array($arr)) {
      for ($i = 0; $i < $level; $i++) { echo "&nbsp;&nbsp;&nbsp;"; };
          echo ( isset($arr) ? " Not array: $arr <br>" : " (Empty Array) <br>");
@@ -556,8 +525,27 @@ function UnpackFieldsToArray($packed, $fields) {
   return $arr;
 }
 
-# function fills the array from constants table
+# returns true, if specified input show func (name in $which) have constants
+function HaveConstants($which) {
+    $inputtypes = inputShowFuncTypes();
+    foreach( $inputtypes as $key => $values) {
+        if (substr($values['paramformat'], 4, 5) == "const") {
+            if ($which == $key) { return true;}
+        }
+        $i++;
+    }
+    return false;
+}
 
+# returns true if constants are from slice
+function AreSliceConstants($name) {
+    if( substr($name,0,7) == "#sLiCe-" )  # prefix indicates select from items
+        return true;
+   else
+        return false;
+}
+
+# function fills the array from constants table
 function GetConstants($group, $order='pri', $column='name', $keycolumn='value') {
   $db = getDB();
   if( $order )
@@ -792,7 +780,8 @@ function GetItemContent_Short($ids) {
 
 /** The same as GetItemContent function, but it returns just id and short_id
  *  (or other fields form item table - specified in $fields2get) for the item
- *  (used in URL listing view @see view_type['urls'])
+ *  (used in URL listing view @see view_type['urls']).
+ *  If $fields2get is specified, it MUST contain at least 'id'.
  */
 function GetItemContentMinimal($zids, $fields2get=false) {
   if ( !$fields2get ) {
@@ -941,16 +930,20 @@ function GetItemHeadlines( $sid="", $slice_field="headline........",
       for( $i=0; $i<$zids->count(); $i++ ) {
         $u_id = $zids->longids($i);
         $p_id = $zids->packedids($i);
-        $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
-            = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
-                . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
+        if (isset($headlines[$p_id]['text'])) {
+            $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
+                = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
+                    . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
+        }
       }
   } elseif( is_array($headlines) ) { // $type == 'all'
       foreach( $headlines as $p_id => $val ) {
         $u_id = unpack_id($p_id);
-        $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
-            = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
-                . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
+        if (isset($headlines[$p_id]['text'])) {
+            $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
+                = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
+                  . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
+        }
       }
   }
 
@@ -1088,14 +1081,6 @@ function clean_email($line) {
   */
 }
 
-function GetProfileProperty($property, $id=0) {
-  global $r_profile;
-
-  if( isset($r_profile) AND isset($r_profile[$property]) )
-    return $r_profile[$property][$id];
-  return false;
-}
-
 /**
 * Prints HTML start page tags (html begin, encoding, style sheet, but no title).
 * Chooses the right encoding by get_mgettext_lang().
@@ -1116,6 +1101,15 @@ function HtmlPageBegin ($stylesheet = "default") {
         .$GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()].'">
 ';
 }
+
+// use instead of </body></html> on pages which show menu
+function HtmlPageEnd() {
+  echo "
+    </TD></TR></TABLE>
+    </TD></TR></TABLE>
+    </BODY></HTML>";
+}
+
 
 # Displays page with message and link to $url
 #   url - where to go if user clicks on Back link on this message page
@@ -1138,28 +1132,6 @@ function MsgPage($url, $msg, $dummy="standalone") {
   exit;
 }
 
-# Prints alias names as help for fulltext and compact format page
-function PrintAliasHelp($aliases, $fields=false) {
-  global $sess;
-  echo '
-  <tr><td class=tabtit><b>&nbsp;'._m("Use these aliases for database fields").'</b></td></tr>
-  <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'.COLOR_TABBG.'">';
-
-  $count = 0;
-  while ( list( $ali,$v ) = each( $aliases ) ) {
-    # if it is possible point to alias editing page
-    $aliasedit = ( !$v["fld"] ? "&nbsp;" :
-      "<a href=\"". $sess->url(con_url("./se_inputform.php3",
-                    "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
-    if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show'])
-        $ali = "<span class=\"disabled\">$ali</span>";
-    echo "<tr><td nowrap>$ali</td><td>". $v[hlp] ."</td><td>$aliasedit</td></tr>";
-  }
-
-  echo '
-  </table></td></tr>';
-}
 
 # function returns true if $fld fits the field scheme (used in unaliasing)
 function IsField($fld) {
@@ -1725,10 +1697,14 @@ function ShowRefreshWizardJavaScript() {
     ';
 }
 
-function GetAAImage ($filename, $alt) {
-    $filename = $GLOBALS["AA_BASE_PATH"]."images/$filename";
-    $size = @GetImageSize ($filename);
-    return "<img border=0 src=\"$filename\" alt=\"$alt\" ".$size[3].">";
+function GetAAImage ($filename, $alt='', $width=0, $height=0) {
+    if ( $width ) {
+        $size = "width=\"$width\" height=\"$height\"";
+    } else {
+        $im_size = @GetImageSize($GLOBALS["AA_BASE_PATH"]."images/$filename");
+        $size = $im_size[3];
+    }
+    return '<img border=0 src="'. $GLOBALS['AA_INSTAL_PATH'] ."images/$filename\" alt=\"$alt\" $size>";
 }
 
 /// On many places in Admin panel, it is secure to read sensitive data => use this function
@@ -1768,6 +1744,7 @@ function GetSortArray( $sort ) {
     }
     return array ( $sort => 'a' );
 }
+
 
 // contentcache class
 

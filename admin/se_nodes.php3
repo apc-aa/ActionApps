@@ -87,8 +87,8 @@ while ($db->next_record()) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Remote node administration");?></TITLE>
-<SCRIPT Language="JavaScript"><!--
+ <title><?php echo _m("Remote node administration");?></title>
+<script language="javascript"><!--
 
 function InitPage() {}
 
@@ -98,28 +98,28 @@ function SelectValue(sel) {
   return null;
 }
 
-function Submit(mode) {
+function ActionGo(mode) {
   if (mode== 'add') {
-    document.f.mode.value = mode;
-    document.f.submit();
+    document.frm.mode.value = mode;
+    document.frm.submit();
   } else {
 
-  sel = SelectValue('document.f.nodes')
+  sel = SelectValue('document.frm.nodes')
   if (sel == null)
     alert('<?php echo _m("No selected node"); ?>')
   else {
     if (mode == 'delete')
       if (!confirm('<?php echo _m("Are you sure you want to delete the node?"); ?>'))
         return
-    document.f.sel_node_name.value = sel
-    document.f.mode.value = mode;
-    document.f.submit();
+    document.frm.sel_node_name.value = sel
+    document.frm.mode.value = mode;
+    document.frm.submit();
   }
  }
 }
 
 function checkData() {
-  if (document.f.node_name.value=="") {
+  if (document.frm.node_name.value=="") {
      alert('<?php echo _m("Node empty"); ?>')
      return false
   }
@@ -130,10 +130,10 @@ function Cancel() {
 }
 
 // -->
-</SCRIPT>
+</script>
 
-</HEAD>
-<BODY>
+</head>
+
 <?php
   $useOnLoad = true;
   require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
@@ -142,15 +142,19 @@ function Cancel() {
   echo "<H1><B>" . _m("Remote node administration") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
+  
+  $form_buttons = array("submit","cancel"=>array("url"=>"se_fields.php3"));
+  
 ?>
-<form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>" onSubmit="return checkData()">
-  <table width="400" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Remote node administration") ?></b></td></tr>
-     <tr><td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABBG ?>">
+
+<form method="post" name="frm" action="<?php echo $sess->url($PHP_SELF) ?>" onsubmit="return checkData()">
+<?php
+
+    FrmTabCaption(_m("Remote node administration"));
+?>
       <tr><td colspan=2><?php echo _m("Known remote nodes") ?></td></tr>
       <tr><td align=center colspan=2>
-      <SELECT name="nodes" class=tabtxt size=5>
+      <select name="nodes" class=tabtxt size=5>
       <?php
         if (isset($nodes) && is_array($nodes)) {
           reset($nodes);
@@ -158,16 +162,18 @@ function Cancel() {
             echo "<option value=\"$name\">$name</option>";
         }
       ?>
-      </SELECT>
+      </select>
     <tr><td colspan=2 align="center">
-      <input type=button value="<?php echo _m("Edit") ?>" onClick = "Submit('edit')" >
-      <input type=button VALUE="<?php echo _m("Delete") ?>" onClick = "Submit('delete')">
-      <input type=button VALUE="<?php echo _m("Add") ?>" onClick = "Submit('add')">
+      <input type=button value="<?php echo _m("Edit") ?>" onclick="ActionGo('edit');">
+      <input type=button value="<?php echo _m("Delete") ?>" onclick="ActionGo('delete');">
+      <input type=button value="<?php echo _m("Add") ?>" onclick="ActionGo('add');">
      </td></tr>
     <tr><td colspan=2>&nbsp;</td></tr>
-    <tr><td colspan=2><?php echo ($new_mode=="insert" ? _m("Add new node") :
-                                                   _m("Edit node data")) ?>
-    </td></tr>
+<?php
+
+    FrmTabSeparator(($new_mode=="insert" ? _m("Add new node") : _m("Edit node data")));
+
+?>    
     <tr><td><?php echo _m("Node name") ?></td>
         <td><input type="text" name="node_name" size=40 value="<?php echo safe($node_name)?>" ><br><?php echo _m("Your node name")?>: "<?php echo ORG_NAME ?>"
     <tr><td><?php echo _m("URL of the getxml.php3") ?></td>
@@ -177,15 +183,12 @@ function Cancel() {
     <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">
     <input type="hidden" name="old_node_name" value="<?php echo safe($old_node_name) ?>">
     <input type="hidden" name="sel_node_name">
-
-    <tr><td colspan=2 align="center"><input type="submit" value="<?php echo _m("Submit") ?>" >
-        <input type=button value="<?php echo _m("Cancel") ?>" onClick="Cancel()" ></td>
-    </tr>
-  </table>
-  </td></tr>
-  </table>
-</FORM>
 <?php
+    FrmTabEnd($form_buttons, $sess, $slice_id); 
+
+    echo "  
+    </form>";
+
 HtmlPageEnd();
 page_close()
 ?>

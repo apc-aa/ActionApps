@@ -141,41 +141,45 @@ function RealyDelete() {
   PrintArray($err);
   echo $Msg;
 
-?>
-<!-- Select user form -->
+  FrmTabCaption(_m("Groups"));
+
+  /*
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align=center>
  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
+ */
+?> 
  <tr><td>
    <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
-            <td>&nbsp;</td>
-            <td><input type=Text name=grp value="<?php echo safe($rgrp)?>"></td>
-            <td><input type=submit value="<?php echo _m("Search")?>">
+            <td width="20%">&nbsp;</td>
+            <td width="46%"><input type=Text name=grp value="<?php echo safe($rgrp)?>"></td>
+            <td width="33%"><input type=submit value="<?php echo _m("Search")?>">
           <input type=hidden name="GrpSrch" value=1></td>
      </tr>
     </table>
    </form>
   </td>
- </tr>
+<?php
+FrmTabSeparator("");
+?>  
  <tr>
   <td><form name=f2 method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
-            <td class=tabtxt><b><?php echo _m("Group") ?></b></td>
-            <td><?php SelectGU_ID("selected_group", $groups, $selected_group);
+            <td width="20%"class=tabtxt><b><?php echo _m("Group") ?></b></td>
+            <td width="46%"><?php SelectGU_ID("selected_group", $groups, $selected_group);
           ?></td>
-            <td><input type=submit name="grp_edit" value="<?php echo _m("Edit")?>">&nbsp;
+            <td width="33%"><input type=submit name="grp_edit" value="<?php echo _m("Edit")?>">&nbsp;
                 <input type=hidden name=submit_action value=0>  <!-- to this variable store "usr_del" (by javascript) -->
                 <input type=button name="grp_del" value="<?php echo _m("Delete")?>" onclick="RealyDelete()"></td>
      </tr>
     </table>
    </FORM>
-  </td>
- </tr>
-</table>
-
 <?php
+
+FrmTabEnd();
+
 do {
   if( $grp_new OR ($grp_edit AND ($selected_group!="n")) ) {
     if($grp_edit AND !($submit_action == "update_submit")) {
@@ -195,23 +199,42 @@ do {
   }
 } while(false);
 
-?>
-<form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;
-<?php
-if( $grp_edit OR ($submit_action == "update_submit") )
-  echo _m("Edit group");
- else
-  echo _m("New group");
+echo "
+<form name=f method=post action=\"".$sess->url($PHP_SELF) ."\">";
+
+echo "<br />";
+if( $grp_edit OR ($submit_action == "update_submit") ) {
+  FrmTabCaption(_m("Edit group"));
+} else {
+  FrmTabCaption(_m("New group"));
+}
 ?></b>
 </td>
 </tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
+
 <?php
 
-# User data ---------------------------------------------------
+// User data ---------------------------------------------------
+
+if( $grp_new OR $add_submit ){
+    $form_buttons = array("add_submit" => array("type"=>"submit","value"=>_m("Add"),"accesskey"=>"S"),
+                          "grp_new" => array("value"=>"1"),
+                          "cancel" => array("url"=>"um_gedit.php3"),
+                          "selected_group"=>array("value"=>$selected_group),
+                          "posted_users"=>array("value"=>"0"),
+                          "submit_action"=>array("value"=>"0"));
+} else {
+    $form_buttons = array("submit_button" => array("type"=>"button","value"=>_m("Update"),"accesskey"=>"S",
+                                                   "add"=>'onclick="UpdateGroup\'update_submit\')"'),
+                          "grp_edit" => array("value"=>"1"),
+                          "cancel" => array("url"=>"um_gedit.php3"),
+                          "selected_group"=>array("value"=>$selected_group),
+                          "posted_users"=>array("value"=>"0"),
+                          "submit_action"=>array("value"=>"0"));
+}
+
 
   if( $grp_edit OR ($submit_action == "update_submit") )
     FrmStaticText( _m("Group Id"), $group_data[uid]);
@@ -220,13 +243,13 @@ if( $grp_edit OR ($submit_action == "update_submit") )
   FrmInputChBox("group_super", _m("Superadmin group"), $group_super, false, "", 1, false);
 echo '</table></td></tr>';
 
-if( !$add_submit AND !$grp_new) {?>
+if( !$add_submit AND !$grp_new) {
+   FrmTabSeparator(_m("Users"));
 
-  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Users")?></b></td></tr>
-  <tr><td>
-  <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-  <?php
-
+  echo "
+  <tr><td>  
+  <table width=\"440\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"".COLOR_TABBG."\">";
+  
   # User - group membership -----------------------------------------
 
   echo '<tr><td width=190 align=center>'. _m("All Users") .'</td>
@@ -244,33 +267,25 @@ if( !$add_submit AND !$grp_new) {?>
                   <td align="CENTER" valign="TOP">';
               SelectGU_ID("sel_users_sel", $sel_users, $sel_users_sel, "long");
   echo '    </td>
-        </tr>
-      </table></td></tr>';
+        </tr></table></td></tr>
+        ';
+//      </table></td></tr>';
 
   # User - permissions -----------------------------------------
 
-  $mod_types = PrintModulePermModificator($selected_group);   # shared with um_gedit.php3
+  $mod_types = PrintModulePermModificator($selected_group, $form_buttons, $sess, $slice_id);   # shared with um_gedit.php3
 
 }
 
-echo '<tr><td align="center">';
+FrmTabEnd($form_buttons, $sess, $slice_id);
 
-if( $grp_new OR $add_submit ){
-  echo '<input type=submit name=add_submit value="'. _m("Add") .'" >&nbsp;&nbsp;';
-  echo '<input type=hidden name=grp_new value=1>&nbsp;&nbsp;';
-} else {
-  echo '<input type=button name=submit_button value="'. _m("Update") .'" onClick="UpdateGroup(\'update_submit\')">&nbsp;&nbsp;';
-  echo '<input type=hidden name=grp_edit value=1>&nbsp;&nbsp;';
-}
-echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
-echo '<input type=hidden name=selected_group value="'.$selected_group.'">&nbsp;&nbsp;';
-echo '<input type=hidden name=posted_users value=0>';  // to this variable store assigned users (by javascript)
-echo '<input type=hidden name=submit_action value=0>';  // to this variable store "add_submit" or "update_submit" (by javascript)
-echo '</td></tr></table></FORM>';
+echo '</FORM>';
 
 if( !$add_submit AND !$grp_new) {
   PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
 }
 
 HtmlPageEnd();
-page_close(); ?>
+page_close();
+
+?>

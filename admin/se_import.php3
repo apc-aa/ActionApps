@@ -116,12 +116,21 @@ function UpdateImportExport(slice_id)
   echo "<H1><B>" . _m("Admin - configure Content Pooling") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
+  
+$form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "accesskey"=>"S",
+                                      "add"=>"onClick = \"UpdateImportExport(\'".$slice_id."\')\""),
+                       "cancel"=>array("url"=>"se_fields.php3"));
+  
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+<?php
+/*
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo _m("Enable export to slice:") ?></b></td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">*/
+  FrmTabCaption(_m("Enable export to slice:"));
+?>
 <tr>
 	<td width="45%" class=tabtxt align=center><b><?php echo _m("Export disable") ?></b></td>
 	<td width="10%">&nbsp;</td>
@@ -159,11 +168,15 @@ function UpdateImportExport(slice_id)
   FrmInputChBox("export_to_all", _m("Enable export to any slice"), $export_to_all, true, "OnClick=\"ExportAllClick()\"");
 ?>  
 </table></td></tr>
+<?php
+  FrmTabSeparator(_m("Import from slice:"));
+  /*
 <tr><td colspan=3>&nbsp;</td></tr>
 </table></tr></td>
 <tr><td class=tabtit><b>&nbsp;<?php echo _m("Import from slice:") ?></b></td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">*/
+?>
 <tr>
 	<td width="45%" class=tabtxt align=center><b><?php echo _m("Do not import") ?></b></td>
 	<td width="10%">&nbsp;</td>
@@ -195,13 +208,19 @@ function UpdateImportExport(slice_id)
 </SELECT>
 </td>
 </tr>
+<?php
+
+  FrmTabEnd($form_buttons, $sess, $slice_id);
+  /*
 <tr><td colspan=3>&nbsp;</td></tr>
 </table></tr></td>
 <tr><td align="center">
 <input type=hidden name="slice_id" value="<?php echo $slice_id ?>">
 <input type="button" VALUE="<?php echo _m("Update") ?>" onClick = "UpdateImportExport('<?php echo $slice_id ?>')" align=center>&nbsp;&nbsp;
 <input type=submit name=cancel value="<?php echo _m("Cancel") ?>">
-</td></tr></table>
-</FORM>
-<?php HtmlPageEnd();
+</td></tr></table>*/
+echo "
+</FORM>";
+
+ HtmlPageEnd();
 page_close()?>

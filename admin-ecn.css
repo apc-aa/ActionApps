@@ -12,10 +12,20 @@ body { margin-left: 4px;
        font-size: 10px;
 }
 
-.tabtxt, TD {
+.tabtxt, TD, .tabtxteven, .tabtitlight {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 10pt;
  }
+
+ .tabtxteven {
+     background-color: #ede4d7; /* #f6e5c9 */
+ }
+
+.tabtitlight {
+    text-align: center;
+    font-weight: bold;
+    background-color:#EBDABE;
+}
 
 .tabtxt_field_alerts {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
@@ -194,7 +204,16 @@ TD.leftmenu {
   color: #FFFFFF;
 }
 
-.tabhlp, .tabsmall {
+.tabtit a {
+    color: white;
+}
+
+.tabtit a:visited {
+    color: #f0f0f0;
+}
+
+
+.tabhlp, .tabsmall, .smalltext {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 8pt;
 }
@@ -239,7 +258,7 @@ TD.leftmenu {
 }
 
 .sel_title {
-  background: #EBDABE;
+       background: #EBDABE;
 }
 
 TD.sel_title {

@@ -219,10 +219,19 @@ echo '<TITLE> '. _m("Email Notifications of Events"). '</TITLE></HEAD>';
   
   echo "<H1><B>" . _m("Email Notifications of Events") . "</B></H1>";
   PrintArray($err);
-  echo $Msg;  
+  echo $Msg;
+
+  
+  $form_buttons = array("update" => array ("type"=>"hidden", "value"=>"1"),
+                        "update","reset","cancel"=>array("url"=>"se_fields.php3"));
+  
 ?>
 
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<?php
+
+    FrmTabCaption(_m("Email Notifications of Events"),'','',$form_buttons, $sess, $slice_id);
+/*    
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 
 <tr><td class=tabtit><b>&nbsp;<?php echo _m("Email Notifications of Events")?></b>
@@ -232,7 +241,8 @@ echo '<TITLE> '. _m("Email Notifications of Events"). '</TITLE></HEAD>';
 <tr><td>
 
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?php
+*/
+
 echo "<TR><TD COLSPAN =2>". _m("<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>"; 
   FrmTextArea("notify_holding_item_e", _m("Email addresses, one per line"), $notify_holding_item_e, 3, 40, false);
   FrmInputText("notify_holding_item_s", _m("Subject of the Email message"), $notify_holding_item_s, 99, 40, true);
@@ -253,19 +263,21 @@ FrmTextArea("notify_active_item_edit_e", _m("Email addresses, one per line"), $n
   FrmInputText("notify_active_item_edit_s", _m("Subject of the Email message"), $notify_active_item_edit_s, 99, 40, true);
   FrmTextArea("notify_active_item_edit_b", _m("Body of the Email message"), $notify_active_item_edit_b, 3, 40, true);
 
-?>
+  FrmTabEnd($form_buttons, $sess, $slice_id);
+  
+/*
 </table>
 </td></tr><tr><td align="center">
-<?php
   echo "<input type=hidden name=\"update\" value=1>";
   echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
   echo '<input type=reset value="'. _m("Reset form") .'">&nbsp;&nbsp;';
   echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
-?>
 
-</td></tr></table></FORM>
 
-<?php
+</td></tr></table>
+*/
+echo "</FORM>";
+
 HtmlPageEnd();
 page_close();
 ?>
