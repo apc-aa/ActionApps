@@ -48,6 +48,8 @@ http://www.apc.org/
 #res_val             // see restrict
 #exact               // if set, "restrict" field must match res_val exactly (=)
                      // otherwise substring is sufficient (LIKE '%res_val%')
+#als[]               // user alias definition. Parameter 'als[MY_ALIAS]=Summary'
+                     // defines alias _#MY_ALIAS. If used, it prints 'Summary'.
 #lock                // used in join with "key" for multiple slices on one page
                      // display. each slice have to have its lock, so commands 
                      // (like sh_itm, scr_go, ...) will be executed only if key
@@ -243,8 +245,15 @@ if( $bigsrch ) {
   ExitPage();
 }
 
-# fulltext view ---------------------------------------------------------------
+# get alias list from database and possibly from url
+$aliases = GetAliasesFromFields($fields);
+if( isset( $als ) AND is_array( $als ) ) {
+  reset( $als );
+  while( list($k,$v) = each( $als ) )
+    $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+}
 
+# fulltext view ---------------------------------------------------------------
 if( $sh_itm OR $x ) {
 //  $r_state_vars = StoreVariables(array("sh_itm")); # store in session
   if($sh_itm)
@@ -252,7 +261,6 @@ if( $sh_itm OR $x ) {
    else
     $sh_itm = LogItem($x,"short_id");
     
-  $aliases = GetAliasesFromFields($fields);
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
   $itemview->print_item();
   ExitPage();
@@ -263,7 +271,6 @@ if( $items AND is_array($items) ) {   # shows all $items[] as fulltext one after
 //  $r_state_vars = StoreVariables(array("items")); # store in session
   while(list($k,) = each( $items ))
     $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
-  $aliases = GetAliasesFromFields($fields);
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, $ids, 0,count($ids), $sess->MyUrl($slice_id, $encap));
   $itemview->print_itemlist();
   ExitPage();
@@ -384,15 +391,12 @@ else {
   # order the fields in compact view - how?
   if( $order ) {
     if( substr($order,-1) == '-' ) {
-      $orderdirection = "DESC";
+      $orderdirection = "d";
       $order = substr($order,0,-1);
     }
     if( substr($order,-1) == '+' )   # just skip
       $order = substr($order,0,-1);
   }    
-  
-  # time order the fields in compact view
-  $pubdate_order = ($timeorder == "rev" ? "" : "DESC");
   
   if( $res_field != "" )
     $conditions[$res_field] = $res_value;
@@ -412,13 +416,17 @@ $debugtimes[]=microtime();*/
                       $k => 1 );
   }                    
 
-  if( $slice_info[category_sort] )
-    $srt[] = array ( GetCategoryFieldId( $fields ) => 'a' );
+  if( $slice_info[category_sort] ) {
+    $group_field = GetCategoryFieldId( $fields );
+    $grp_odir = (($order==$group_field) AND ($orderdirection!='d')) ? 'a':'d';
+    $srt[] = array ( GetCategoryFieldId( $fields ) => $grp_odir );
+  }  
 
   if( $order )
-    $srt[] = array ( $order => (( $orderdirection == "DESC" ) ? 'd' : 'a'));
-  $srt[] = array ( 'publish_date....' => 'd' );
+    $srt[] = array ( $order => (( $orderdirection == 'd' ) ? 'd' : 'a'));
 
+  # time order the fields in compact view
+  $srt[] = array ( 'publish_date....' => (($timeorder == "rev") ? 'a' : 'd') );
     
   $item_ids=QueryIDs($fields, $slice_id, $cnds, $srt, $group_by );
 
@@ -438,7 +446,6 @@ $ids_cnt = count( $item_ids );
 if( $ids_cnt > 0 ) {
   $scr->countPages( count( $item_ids ) );
 
-  $aliases = GetAliasesFromFields($fields);
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, $item_ids,
               $scr->metapage * ($scr->current - 1), $scr->metapage, $sess->MyUrl($slice_id, $encap) );
   $itemview->print_view();
@@ -453,6 +460,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.24  2001/07/09 18:01:43  honzam
+user defined aliases passed by url
+
 Revision 1.23  2001/06/15 20:05:16  honzam
 little search imrovements and bugfixes
 
