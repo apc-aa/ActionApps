@@ -133,10 +133,22 @@ function DelUser ($user_id, $flags = 1) {
   
   if ($flags & 1) {            // cancel membership in groups
      $filter = "(&(objectclass=groupOfNames)(member=$user_id))";
-     $r = ldap_search($ds, $LDAPserver[groups], $filter, array(""));
+     $r = ldap_search($ds, $aa_default_ldap[groups], $filter, array(""));
      $arr = ldap_get_entries($ds,$r);
      for($i=0; $i < $arr["count"]; $i++) {
         DelGroupMember($arr[$i]["dn"], $user_id);
+     }
+     ldap_free_result($r);
+  }
+  
+  if ($flags & 2) {            // cancel asssigned permissions
+     $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
+     $r = ldap_search($ds, $aa_default_ldap[acls], $filter,
+                      array("apcObjectType","apcaci","apcObjectID"));
+     $arr = ldap_get_entries($ds,$r);
+     for($i=0; $i < $arr["count"]; $i++) {
+        DelPerm($user_id, $arr[$i]["apcobjectid"][0], 
+                $arr[$i]["apcobjecttype"][0]);   // indexes in lowercase !!!
      }
      ldap_free_result($r);
   }    
@@ -238,21 +250,22 @@ function DelGroup ($group_id, $flags = 0) {
   
   if ($flags & 1) {            // cancel membership in other groups
      $filter = "(&(objectclass=groupOfNames)(member=$group_id))";
-     $r = ldap_search($ds, $LDAPserver[groups], $filter, array(""));
+     $r = ldap_search($ds, $aa_default_ldap[groups], $filter, array(""));
      $arr = ldap_get_entries($ds,$r);
      for($i=0; $i < $arr["count"]; $i++) {
         DelGroupMember($arr[$i]["dn"], $group_id);
      }
      ldap_free_result($r);
   }    
-  
+
   if ($flags & 2) {            // cancel asssigned permissions
      $filter = "(&(objectclass=apcacl)(apcaci=$group_id:*))";
-     $r = ldap_search($ds, $LDAPserver[acls], $filter, array("apcObjectType","apcaci"));
+     $r = ldap_search($ds, $aa_default_ldap[acls], $filter,
+                      array("apcObjectType","apcaci","apcObjectID"));
      $arr = ldap_get_entries($ds,$r);
      for($i=0; $i < $arr["count"]; $i++) {
-#       1) ParseApcAci     
-#       2) DelPerm   ($group_id, $arr[$i]["dn"], $arr[$i]["apcObjectType"], );
+        DelPerm($group_id, $arr[$i]["apcobjectid"][0], 
+                $arr[$i]["apcobjecttype"][0]);   // indexes in lowercase !!!
      }
      ldap_free_result($r);
   }    
@@ -538,7 +551,7 @@ function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
   for($i=0; $i < $arr["apcaci"]["count"]; $i++) {
     $apcaci = ParseApcAci( $arr["apcaci"][$i] );
     if( $apcaci ) {
-      $info[$apcaci["dn"]]       = GetIDsInfo($apcaci["dn"]);
+      $info[$apcaci["dn"]]   = GetIDsInfo($apcaci["dn"]);
       $info[$apcaci["dn"]]["perm"] = $apcaci["perm"];
     }  
   }
@@ -664,6 +677,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.4  2000/07/28 14:25:02  kzajicek
+DelUser and DelGroup now able to cancel assigned permissions.
+
 Revision 1.3  2000/07/21 14:45:41  kzajicek
 Admin needs to see login names, not IDs (DB specific)
 
