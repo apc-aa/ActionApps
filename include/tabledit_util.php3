@@ -81,16 +81,14 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
                 if ($com["run_delete_all"]) {
                     reset ($par);
                     while (list ($key, $checked) = each ($par)) {
-                        RunColumnFunctions ($val[$key], $myview["fields"], $myview["table"], $myview["join"]);                        
-                        TableDelete ($myview["table"], $val[$key],
+                        TableDelete ($myview["table"], $key,
                                      $myview["fields"], $primary_aliases,
                                      $myview["messages"]["error_delete"], $myview["triggers"]);
                     }
                 }
                 break;
             case "delete":
-                RunColumnFunctions ($val[key($par)], $myview["fields"], $myview["table"], $myview["join"]);
-                TableDelete ($myview["table"], $val[key($par)], $myview["fields"], $primary_aliases, 
+                TableDelete ($myview["table"], key($par), $myview["fields"], $primary_aliases, 
                     $myview["messages"]["error_delete"], $myview["triggers"]);
                 break;
             default:
@@ -209,10 +207,13 @@ function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
 
 /** deletes one record identified by key values from given table
 */
-function TableDelete ($table, $val, $columns, $primary_aliases, $error_msg="", $triggers="", $be_cautious=1) {
+function TableDelete ($table, $key, $columns, $primary_aliases, $error_msg="", $triggers="", $be_cautious=1) {
     global $db, $err;
-    $varset = new CVarset;
-    AddKeyValues ($varset, $val, $primary_aliases[$table], $columns);
+    $varset = new CVarset;    
+    $vals = GetKeyValues ($key, $primary_aliases[$table], $columns);
+    reset ($vals);
+    while (list ($column, $val) = each ($vals)) 
+        $varset->addkey ($column, "text", $val);
     if ($be_cautious) {
         $db->query ($varset->makeSELECT ($table));
         if ($db->num_rows() != 1) {
@@ -291,7 +292,7 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
     $primary="", $error_msg="", $triggers="", $be_cautious=1) {
     global $db, $err;
 
-    if (!ProoveVals ($val, $columns))
+    if (!ProoveVals ($val, $columns)) 
         return "";
 
     // prepare varsets with primary key values
@@ -324,10 +325,11 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
     while (list ($table) = each ($varsets)) {        
         $varset = &$varsets[$table];
         $auto_inc = false;
-        reset ($primary_aliases);
-        while (list ($alias) = each ($primary_aliases)) 
+        reset ($primary_aliases[$table]);
+        while (list ($alias) = each ($primary_aliases[$table]))
             if ($columns[$alias]["auto_increment"])
                 $auto_inc = true;
+
         if (!$auto_inc && $be_cautious) {
             $db->query ($varset->makeSELECT ($table));
             if ($db->num_rows() > 0) { 
@@ -341,10 +343,12 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
         
         if ($table == $key_table) {    
             if ($auto_inc) $newkey = get_last_insert_id ($db, $table);
-            else $newkey = GetKey ($table, $columns, $val);
+            else $newkey = GetKey ($primary_aliases[$table], $columns, $varset);
             $where = $varset->makeWHERE ($table);
         }
     }
+    
+    return $newkey;
 }
 
 // -----------------------------------------------------------------------------------
@@ -401,6 +405,7 @@ function RunColumnFunctions (&$val, $columns, $table, $join) {
 
 function ProoveVals ($val, $columns) {
     global $err;
+    reset ($columns);
     while (list ($colname, $column) = each ($columns)) {
         if ($column["validate"] || $column["required"]) {
             if (!ValidateInput ($colname, $colname, $val[$colname], $err, $column["required"], $column["validate"]))
@@ -420,19 +425,31 @@ function ProoveVals ($val, $columns) {
 
 /** creates key string with values from key fields separated by :
 */
-function GetKey ($table, $columns, $record)
+function GetKey ($primary, $columns, $varset)
 {
-    reset ($columns);
-    unset ($key);
-    while (list ($colname,$column) = each ($columns)) 
-        if ($column["table"] == $table && $column["primary"]) {
-            if ($column["view"]["unpacked"])
-                $key[] = unpack_id ($record[$colname]);
-            else $key[] = htmlentities ($record[$colname]); 
-        }
+    reset ($primary);
+    while (list ($alias) = each ($primary)) {
+        echo $alias; 
+        $val = $varset->get ($columns[$alias]["field"]);
+        if ($columns[$alias]["view"]["unpacked"])
+            $key[] = unpack_id ($val);
+        else $key[] = htmlentities ($val); 
+    }
     return join_escaped (":",$key,"#:");
 }
             
+function GetKeyFromRecord ($primary, $columns, $record)
+{
+    reset ($primary);
+    while (list ($alias) = each ($primary)) {
+        $val = $record[$alias];
+        if ($columns[$alias]["view"]["unpacked"])
+            $key[] = unpack_id ($val);
+        else $key[] = htmlentities ($val); 
+    }
+    return join_escaped (":",$key,"#:");
+}
+
 // -----------------------------------------------------------------------------------    
 
 /** creates where condition from key fields values separated by :

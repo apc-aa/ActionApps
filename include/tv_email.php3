@@ -24,127 +24,122 @@ http://www.apc.org/
 
 // Settings for emails table views 
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
-function GetTableView ($viewID, $processForm = false) {        
+function GetEmailTableView ($viewID, $processForm = false)
+{
     global $auth, $slice_id, $db;
     global $attrs_edit, $attrs_browse, $format, $langs;
 
-    /* ------------------------------------------------------------------------------------
-       email 
-    */
-    
-    if ($viewID == "emails") {
-        if (IsSuperadmin())
-            $restrict_slices = 1;
-        else {
-            $restrict_slices = array ();
-            $myslices = GetUsersSlices( $auth->auth["uid"] );
-            reset ($myslices);
-            while (list ($my_slice_id, $perms) = each ($myslices)) 
-                if (strchr ($perms, PS_FULLTEXT))
-                    $restrict_slices[] = pack_id($my_slice_id);
-        }
-        $db->query ("SELECT id, name FROM slice WHERE "
-            .CreateWhereFromList ("id", $restrict_slices, "text"));
-        while ($db->next_record()) 
-            $slice_names[$db->f("id")] = $db->f("name");
-        
-        return  array (
-        "table" => "email",
-        "type" => "browse",
-        "mainmenu" => "sliceadmin",
-        "submenu" => "te_emails",
-        "help" => _m("You may use aliases related to the usage of the emails."),
-        "readonly" => false,
-        "addrecord" => true,
-        "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
-        "title" => _m("Emails"),
-        "caption" => _m("Emails"),
-        "attrs" => $attrs_browse,
-        "where" => CreateWhereFromList ("slice_id", $restrict_slices, "text"),
-        "gotoview" => "email",
-        "fields" => array (
-            "slice_id" => array (
-                "view" => array ("type" => "select", "source" => $slice_names),
-                "default" => pack_id ($slice_id),
-                "caption" => _m ("owner (slice)")),
-            "description" => array (
-				"caption" => _m("description"),
-                "view" => array ("type"=>"text","size"=>array("cols"=>30)),
-                "required" => true),
-            "lang" => array (
-                "view" => array ("type" => "select", "source" => $langs),
-                "caption" => _m("language"),
-                "default" => get_mgettext_lang()),
-            "subject" => array ("caption"=>_m("subject"),"view"=>array("type"=>"text","size"=>array("cols"=>15))),
-            "body" => array ("caption"=>_m("body"),"view"=>array("type"=>"text","size"=>array("cols"=>15))),
-            "header_from" => array (
-				"caption"=>"From:",
-				"view" => array ("type"=>"text","size"=>array("cols"=>15))),
-            "reply_to" => array ("caption"=>"Reply-To:","view" => array ("type"=>"text","size"=>array("cols"=>15))),
-            "errors_to" => array ("caption"=>"Errors-To:","view" => array ("type"=>"text","size"=>array("cols"=>15))),
-            "sender" => array ("caption"=>"Sender:","view" => array ("type"=>"text","size"=>array("cols"=>15))))
-        );
-    }
-            
-    if ($viewID == "email") {
-        if (IsSuperadmin())
-            $restrict_slices = 1;
-        else {
-            $restrict_slices = array ();
-            $myslices = GetUsersSlices( $auth->auth["uid"] );
-            reset ($myslices);
-            while (list ($my_slice_id, $perms) = each ($myslices)) 
-                if (strchr ($perms, PS_FULLTEXT))
-                    $restrict_slices[] = pack_id($my_slice_id);
-        }
-        $db->query ("SELECT id, name FROM slice WHERE "
-            .CreateWhereFromList ("id", $restrict_slices, "text"));
-        while ($db->next_record()) 
-            $slice_names[$db->f("id")] = $db->f("name");
-        
+
+
+    if ($viewID == "email_edit") {
+        global $LANGUAGE_CHARSETS, $LANGUAGE_NAMES;
+        reset ($LANGUAGE_CHARSETS);
+        while (list ($l,$charset) = each ($LANGUAGE_CHARSETS))
+            $mylangs[$l] = $LANGUAGE_NAMES[$l]." (".$charset.")";
         return  array (
         "table" => "email",
         "type" => "edit",
-        "mainmenu" => "sliceadmin",
-        "submenu" => "te_emails",
-        "help" => _m("You may use aliases related to the usage of the email."),
+        //"help" => _m("For help see FAQ: ")."<a target=\"_blank\" href=\"$url\">$url</a>",
+        //"buttons_down" => array ("add"=>1, "update"=>1),
         "readonly" => false,
-        "addrecord" => true,
-        "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
-        "title" => _m("Email"),
-        "caption" => _m("Email"),
         "attrs" => $attrs_edit,
-        "where" => CreateWhereFromList ("slice_id", $restrict_slices, "text"),
-        "gotoview" => "emails",
+        "caption" => _m("Email"),
+        "addrecord" => false,
+        "gotoview" => "email",
+        "where" => GetEmailWhere(),        
+        "cond" => 1,
         "fields" => array (
-            "slice_id" => array (
-                "view" => array ("type" => "select", "source" => $slice_names),
-                "default" => pack_id ($slice_id),
-                "caption" => _m ("owner (slice)")),
             "description" => array (
-				"caption" => _m("description"),
-                "view" => array ("type"=>"text","size"=>array("cols"=>30)),
-                "required" => true),
+                "required" => true,
+                "caption" => _m("description")),
+            "subject" => array (
+                "required" => true,
+                "caption" => _m("subject")),
+            "body" => array (
+                "required" => true,
+                "caption" => _m("body"),
+                "view" => array ("type" => "area", "size" => array ("rows"=>8))),
+            "header_from" => array (
+                "required" => true,
+                "caption" => _m("from")),
+            "reply_to" => array (
+                "caption" => _m("reply to")),
+            "errors_to" => array (
+                "caption" => _m("errors to")),
+            "sender" => array (
+                "caption" => _m("sender")),
             "lang" => array (
-                "view" => array ("type" => "select", "source" => $langs),
-                "caption" => _m("language"),
-                "default" => get_mgettext_lang()),
-            "subject" => array("caption"=>_m("subject"),
-                "view"=>array("type"=>"area","size"=>array("rows"=>2))),
-            "body" => array("caption"=>_m("body"),
-                "view"=>array("type"=>"area","size"=>array("rows"=>7))),
-            "header_from" => array ("caption" => "From:",
-                "view"=>array("type"=>"area","size"=>array("rows"=>2))),
-            "reply_to" => array ("caption" => "Reply-To:",
-                "view"=>array("type"=>"area","size"=>array("rows"=>2))),
-            "errors_to" => array ("caption" => "Errors-To:",
-                "view"=>array("type"=>"area","size"=>array("rows"=>2))),
-            "sender" => array ("caption" => "Sender:",
-                "view"=>array("type"=>"area","size"=>array("rows"=>2))))
-        );
+                "caption" => _m("language (charset)"),
+                "default" => get_mgettext_lang(),
+                "view" => array ("type" => "select", "source" => $mylangs)),
+            "html" => array (
+                "caption" => _m("use HTML"),
+                "default" => 1,
+                "view" => array ("type" => "checkbox"))
+        ));
     }
-} // end of GetTableView
-            
+
+    if ($viewID == "email") {
+        global $LANGUAGE_CHARSETS, $LANGUAGE_NAMES;
+        reset ($LANGUAGE_CHARSETS);
+        while (list ($l,$charset) = each ($LANGUAGE_CHARSETS))
+            $mylangs[$l] = $LANGUAGE_NAMES[$l]." (".$charset.")";
+        return  array (
+        "table" => "email",
+        "type" => "browse",
+        //"help" => _m("For help see FAQ: ")."<a target=\"_blank\" href=\"$url\">$url</a>",
+        //"buttons_down" => array ("add"=>1, "update"=>1),
+        "readonly" => true,
+        "attrs" => $attrs_browse,
+        "caption" => _m("Email"),
+        "buttons_down" => array ("add"=>1,"delete_all"=>1),
+        "buttons_left" => array ("delete_checkbox"=>1,"edit"=>1),
+        "gotoview" => "email_edit",
+        "cond" => 1,
+        "submenu" => "email",
+        "where" => GetEmailWhere(),        
+        "fields" => array (
+            "description" => array (
+                "caption" => _m("description")),
+            "subject" => array (
+                "caption" => _m("subject")),
+            "body" => array (
+                "caption" => _m("body"),
+                "view" => array ("type" => "text", "size" => array ("rows"=>8))),
+            "header_from" => array (
+                "caption" => _m("from")),
+            "reply_to" => array (
+                "caption" => _m("reply to")),
+            "errors_to" => array (
+                "caption" => _m("errors to")),
+            "sender" => array (
+                "caption" => _m("sender")),
+            "lang" => array (
+                "caption" => _m("language (charset)"),
+                "view" => array ("type" => "select", "source" => $mylangs)),
+            "html" => array (
+                "caption" => _m("use HTML"),
+                "view" => array ("type" => "checkbox"))
+        ));
+    }
+}            
+
+function GetEmailWhere () {
+	global $auth, $db;
+    if (IsSuperadmin ()) 
+        return 1;
+    else {
+        $myslices = GetUsersSlices( $auth->auth["uid"] );    
+        if (is_array ($myslices)) {
+            reset ($myslices);
+            while (list ($my_slice_id, $perms) = each ($myslices)) 
+                if (strchr ($perms, PS_FULLTEXT))
+                    $restrict_slices[] = q_pack_id($my_slice_id);
+            return "owner_module_id IN ('".join("','",$restrict_slices)."')";
+        }
+        else return 0;
+    }
+    return $retval;
+}
 
 ?>
-

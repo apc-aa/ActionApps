@@ -154,7 +154,7 @@ class tabledit {
     // -----------------------------------------------------------------------------------
     
     // shows one table form    
-    function view ($where) {
+    function view ($where = "1") {
         global $db;
     
         $this->SetViewDefaults();    
@@ -242,7 +242,8 @@ class tabledit {
 
             while ($db->next_record()) {
                 $records[] = $db->Record;
-                $all_keys[] = GetKey ($this->view["table"], $this->cols, $db->Record);
+                $all_keys[] = GetKeyFromRecord (
+                    $this->primary_aliases[$this->view["table"]], $this->cols, $db->Record);
             }
             // if $show_new is enabled, show empty record as last one
             if ($this->show_new) {
@@ -361,26 +362,24 @@ class tabledit {
                 $bt = $this->ButtonsText (false);
                 $bt = $bt[$button];
                 $alt = $bt["alt"] ? $bt["alt"] : "&nbsp;";
-                $img = '<image border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
+                $img = '<img border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
                 echo "<span class=te_button_text>$img = $alt</span><br>";
             }
         }
         else echo "&nbsp;";
         $space = $scroll->pageCount() > 1 ? 20 : 50;
-        echo '</TD><TD width="'.$space.'">&nbsp;</TD><TD colspan=100>';
+        echo '</TD><TD width="'.$space.'">&nbsp;</TD>';
     
-        echo "<TABLE><TR>";
+        // scroller 
         if ($scroll->pageCount() > 1) {
             echo "<TD>";
-           //echo "<P align=\"center\">";
         	$scroll->pnavbar();
-            echo "</TD><TD width=20></TD>";
-            //echo "</P>";        
+            echo "</TD><TD width=20>&nbsp;</TD>";
         }
         echo "<TD>";
         $this->ShowButtons (false, "", "", $formname, 0, "down", $all_keys, $record_count);
         // scroller
-        echo "\n</TD></TR></TABLE></TD></TR></TABLE></TD></TR></FORM>";
+        echo "\n</TD></TR></TABLE></TD></TR></FORM>";
     }
     
     // -----------------------------------------------------------------------------------
@@ -575,10 +574,13 @@ class tabledit {
                 echo "</TD>\n";
 			}        
 
-            if ($visible && $cview["href_view"] && $cview["readonly"]) 
-                echo "<a href='".$this->getAction($cview["href_view"])
+            if ($cview["href_view"])
+                $href_view = "<a href='".$this->getAction($cview["href_view"])
                     ."&cmd[".$cview["href_view"]."][edit]"
                     ."[".str_replace("\"","\\\"",$val)."]=1'>";
+
+            if ($visible && $cview["href_view"] && $cview["readonly"]) 
+                echo $href_view;
                     
             if ($visible)
                 echo $td;        
@@ -587,10 +589,15 @@ class tabledit {
             // in tabledit_column.php3
             ColumnFunctions ($cview, $val, "show", $name);
         
-            if ($visible && $cview["href_view"] && $cview["readonly"]) 
-                echo "</a>\n";
-
             if ($visible) {
+                if ($cview["href_view"]) {
+                    if ($cview["readonly"]) 
+                        echo "</a>\n";
+                    else echo $href_view.
+                        '<img border="0" src="'.$this->imagepath.'edit_big.gif" alt="'._m("edit").'">
+                        </a>'."\n";
+                }
+
                 echo "</TD>\n";                
                 if ($this->type == "edit") 
                     echo "</TR>";
@@ -717,16 +724,13 @@ class tabledit {
         $buttons_text["cancel"] = array (
             "name" => "cancel",
             "img" => "exit",
-            "alt" => _m("cancel"),
+            "alt" => _m("browse"),
             "view" => $this->viewID,
             "gotoview" => $this->gotoview());
         return $buttons_text;
     }    
     
     function ShowButtons ($new_record, $key, $fnname, $formname, $irow, $place="left", $all_keys="", $record_count=0) {                
-        if ($place != "left")
-            $big = "_big";
-                
         if (!is_array ($this->view["buttons_$place"])) 
             return;
 
@@ -743,66 +747,73 @@ class tabledit {
                 case "left": echo "<TD class=te_b_row".($irow % 2 ? "1" : "2").">"; break;
                 case "down" :echo "<TD align=center width=50>"; break;
             }
-            switch ($bt["name"]) {
-                case "add":
-                    $url = $this->getAction($bt[gotoview])."&cmd[$bt[gotoview]][show_new]=1";
-                    break;
-                case "delete":
-                    $url = $this->getAction($bt[gotoview])."&cmd[$bt[view]][$bt[name]][$key]=1";
-                    $url = "javascript:confirmDelete (\"".$url."\");";
-                    break;
-                case "cancel":
-                    $url = $this->getAction($bt[gotoview]);
-                    break;
-                case "edit":
-                    $url = $this->getAction($bt[gotoview])."&cmd[$bt[view]][$bt[name]][$key]=1";
-                    break;
-                case "run_delete_all":
-                    $hidden = "cmd[".$this->viewID."][run_delete_all]";
-                    $url = "javascript: if (confirm (\""._m("Are you sure you want to permanently DELETE all the checked records?")."\"))\n exec_commit (\"$formname\",\"$hidden\");";
-                    echo "<INPUT type=hidden name='$hidden' value=0>\n";
-                    break;
-                case "insert":
-                case "update":
-                    $hidden = "cmd[".$this->viewID."][update][$key]";
-                    $url = "javascript:if ($fnname (\"$formname\",new Array(\"$key\")))\n exec_commit (\"$formname\",\"$hidden\");";
-                    echo "<INPUT type=hidden name='$hidden' value=0>\n";
-                    break;
-                case "update_all":
-                     // javascript array of all keys for form validation
-                    $js_all_keys = 'new Array ("'.join ('","', $all_keys).'")';          
-                    $hidden = "cmd[".$this->viewID."][update_all]";
-                    $url = "javascript:if ($fnname (\"$formname\",$js_all_keys))\n exec_commit (\"$formname\",\"$hidden\");";
-                    echo "<INPUT type=hidden name='$hidden' value=0>\n";
-                    break;
-                default:
-                    $url = "";
-                    break;
-            }
-
-            if ($bt["img"])
-                 $img = '<image border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
-            else $img = "";
-        
-            if ($this->type == "browse" && $place == "down" && $record_count == 0 && $bt["name"] != "add")
-                $text = "";
-            //if ($bl["delete_checkbox"] && $bl["update"] && $new_record) 
-                //echo "";
-            else if ($bt["checkbox"]) 
-                $text = "$img<INPUT TYPE=checkbox NAME=cmd[$bt[view]][$bt[name]][$key]>\n";
-            else if ($img) $text = "<a href='$url'>$img</a>";                
-            else $text = "";   
-            
-            echo $text ? $text : "&nbsp;";
-            // show the text label for bottom buttons and for insert                     
-            if ($text && ($place == "down" || $new_record)) 
-                echo "<br><a href='$url'><span class=te_button_text>".$bt["alt"]."</span></a>"; 
+            $this->ShowButton ($bt, $new_record, $key, $fnname, $formname, $place, $all_keys, $record_count);
             echo "</td>\n";
         }
         if ($place == "down")
             echo "</TR></TABLE>\n";
-    }    
+    }
 
+    function ShowButton ($bt, $new_record, $key, $fnname, $formname, $place, $all_keys, $record_count) {               
+        if ($place != "left")
+            $big = "_big";
+                
+        switch ($bt["name"]) {
+            case "add":
+                $url = $this->getAction($bt[gotoview])."&cmd[$bt[gotoview]][show_new]=1";
+                break;
+            case "delete":
+                $url = $this->getAction($bt[gotoview])."&cmd[$bt[view]][$bt[name]][$key]=1";
+                $url = "javascript:confirmDelete (\"".$url."\");";
+                break;
+            case "cancel":
+                $url = $this->getAction($bt[gotoview]);
+                break;
+            case "edit":
+                $url = $this->getAction($bt[gotoview])."&cmd[$bt[view]][$bt[name]][$key]=1";
+                break;
+            case "run_delete_all":
+                $hidden = "cmd[".$this->viewID."][run_delete_all]";
+                $url = "javascript: if (confirm (\""._m("Are you sure you want to permanently DELETE all the checked records?")."\"))\n exec_commit (\"$formname\",\"$hidden\");";
+                echo "<INPUT type=hidden name='$hidden' value=0>\n";
+                break;
+            case "insert":
+            case "update":
+                $hidden = "cmd[".$this->viewID."][update][$key]";
+                $url = "javascript:if ($fnname (\"$formname\",new Array(\"$key\")))\n exec_commit (\"$formname\",\"$hidden\");";
+                echo "<INPUT type=hidden name='$hidden' value=0>\n";
+                break;
+            case "update_all":
+                 // javascript array of all keys for form validation
+                $js_all_keys = 'new Array ("'.join ('","', $all_keys).'")';          
+                $hidden = "cmd[".$this->viewID."][update_all]";
+                $url = "javascript:if ($fnname (\"$formname\",$js_all_keys))\n exec_commit (\"$formname\",\"$hidden\");";
+                echo "<INPUT type=hidden name='$hidden' value=0>\n";
+                break;
+            default:
+                $url = "";
+                break;
+        }
+
+        if ($bt["img"])
+             $img = '<img border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
+        else $img = "";
+    
+        if ($this->type == "browse" && $place == "down" && $record_count == 0 && $bt["name"] != "add")
+            $text = "";
+        //if ($bl["delete_checkbox"] && $bl["update"] && $new_record) 
+            //echo "";
+        else if ($bt["checkbox"]) 
+            $text = "$img<INPUT TYPE=checkbox NAME=cmd[$bt[view]][$bt[name]][$key]>\n";
+        else if ($img) $text = "<a href='$url'>$img</a>";                
+        else $text = "";   
+        
+        echo $text ? $text : "&nbsp;";
+        // show the text label for bottom buttons and for insert                     
+        if ($text && ($place == "down" || $new_record)) 
+            echo "<br><a href='$url'><span class=te_button_text>".$bt["alt"]."</span></a>"; 
+    }
+    
     // -----------------------------------------------------------------------------------
     
     /** shows children forms

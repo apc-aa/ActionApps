@@ -111,7 +111,6 @@ function GetTableView ($viewID, $processForm = false) {
             "last_run" => array ("view" => array ("readonly" => true, "type" => "date", "format" => "j.n.Y G:i"))
         ));
     }
-    
 } // end of GetTableView
 ?>
 
