@@ -39,8 +39,16 @@ if ($set_tview) $tview = $set_tview;
 require $GLOBALS[AA_INC_PATH]."tv_common.php3";
 require $GLOBALS[AA_INC_PATH]."tv_misc.php3";
 
-$func = "GetMiscTableView";
-$tableview = $func($tview);
+if (substr ($tview,0,1) == "a") {
+    $func = "GetTableView";
+    require $GLOBALS["AA_INC_PATH"]."tableviews.php3";
+    $tableview = $func($tview);
+}
+
+else {
+    $func = "GetMiscTableView";
+    $tableview = $func($tview);
+}
 
 if (!is_array ($tableview)) { MsgPage ($sess->url(self_base()."index.php3"), "Bad Table view ID: ".$tview); exit; }
 if (! $tableview["cond"] )  { MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone"); exit; }

@@ -861,7 +861,7 @@ class tabledit {
                     if ($mcprop["field"] == $masterf)
                         break;
                 $cprop = &$chtv["fields"][$alias];
-                if (!$cprop) { echo "Error in ShowChildren."; exit; }
+                if (!$cprop) { echo "Error in ShowChildren: Not found [fields][$alias] in $chview."; exit; }
                 $cprop["default"] = $record[$malias];
                 $varset->addkey ($cprop["field"], "text", $record[$malias]);
             }

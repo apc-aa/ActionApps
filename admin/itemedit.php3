@@ -390,31 +390,29 @@ else {
        $accesskey = "(alt+S)";
 };
  
-if($edit || $update || ($insert && $added_to_db)) { ?>
-   <input type=submit name=update accesskey=S value="<?php echo _m("Update")." $accesskey" ?>">
-  <?php
-  if ((!($post_preview==0)) or (!(isset($post_preview)))) {
-    echo "<input type=submit name=upd_preview value='"._m("Update & View")."'>";
-  }
-  ?>
-
-   <input type=submit name=insert value="<?php echo _m("Insert as new") ?>">
-   <input type=reset value="<?php echo _m("Reset form") ?>"><?php
-   $r_hidden["id"] = $id;
-} else { ?>
-   <input type=submit name=insert accesskey=S value="<?php echo _m("Insert")." $accesskey"?>">
-   <input type=submit name=ins_preview value="<?php echo _m("Insert & View") ?>"><?php
+if($edit || $update || ($insert && $added_to_db)) { 
+    echo '<input type=submit name=update accesskey=S value="'._m("Update")." ".$accesskey.'">';
+    if ((!($post_preview==0)) or (!(isset($post_preview)))) 
+        echo "<input type=submit name=upd_preview value='"._m("Update & View")."'>";
+	echo '
+    <input type=submit name=insert value="'._m("Insert as new").'">
+    <input type=reset value="'._m("Reset form").'">';
+    $r_hidden["id"] = $id;
+} else {
+	echo ' 
+    <input type=submit name=insert accesskey=S value="'._m("Insert")." ".$accesskey.'">
+    <input type=submit name=ins_preview value="'._m("Insert & View").'">';
 }
 $cancel_url = ($anonymous  ? $r_slice_view_url :
               ($return_url ? expand_return_url(1) :
                              con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id")));
-?>
-&nbsp;<input type=button name=cancel value="<?php echo _m("Cancel") ?>" onclick="document.location='<?php echo $cancel_url ?>'">
+echo '
+&nbsp;<input type=button name=cancel value="'._m("Cancel").'" 
+	onclick="document.location=\''.$cancel_url.'\'">
 </td>
 </tr>
 </table>
-</form>
-<?php
+</form>';
 if( !$encap )
     echo "</body></html>";
 page_close();

@@ -582,7 +582,8 @@ function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_
   } else {
     echo "<option value=\"wIdThTor\"> ";
         for ($i=0; $i<$select_size*3; $i++) {
-          echo "&nbsp; ";}
+          echo "&nbsp; ";
+        }
         echo "</option>";
   }
 
