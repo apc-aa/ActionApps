@@ -85,7 +85,7 @@ class AA_SL_Session extends Session {
   
   //rewriten to return URL of shtml page that includes this script instead to return self url of this script. If noquery parameter is true, session id is not added    
    function MyUrl($SliceID=0, $Encap=true, $noquery=false){  //SliceID is here just for compatibility with MyUrl function in extsess.php3
-      global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REDIRECT_DOCUMENT_URI
+      global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REDIRECT_DOCUMENT_URI;
       if (isset($HTTPS) && $HTTPS == 'on') {
          ## You will need to fix suexec as well, if you use Apache and CGI PHP
          $PROTOCOL='https';
@@ -240,6 +240,9 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
+Revision 1.3  2000/08/07 15:27:45  kzajicek
+Added missing semicolon in global statement
+
 Revision 1.2  2000/07/21 15:28:46  kzajicek
 When PHP (CGI version) is configured with --enable-force-cgi-redirect,
 most of standard environmental variables are moved to REDIRECT_variable_name.

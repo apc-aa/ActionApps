@@ -93,7 +93,7 @@ if( !$perm_edit_all && !$perm_edit_self) {
 }  
 
 function get_cat_names() {
-  global $db,$p_slice_id
+  global $db, $p_slice_id;
   $SQL= " SELECT name, id FROM categories, catbinds WHERE categories.id = catbinds.category_id AND catbinds.slice_id='".$p_slice_id."'";
   $db->query($SQL);
   while ($db->next_record()){
@@ -576,6 +576,9 @@ echo '
 
 /*
 $Log$
+Revision 1.7  2000/08/07 15:27:45  kzajicek
+Added missing semicolon in global statement
+
 Revision 1.6  2000/08/03 12:38:01  honzam
 HTML formated pictures for admin interface added
 

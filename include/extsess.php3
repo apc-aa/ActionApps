@@ -142,7 +142,7 @@ class AA_SL_Session extends Session {
   var $gc_probability = 5;  
 
    function MyUrl($SliceID, $Encap=false, $noquery=false) {
-      global $HTTP_HOST, $HTTPS, $SCRIPT_NAME, $REDIRECT_SCRIPT_NAME
+      global $HTTP_HOST, $HTTPS, $SCRIPT_NAME, $REDIRECT_SCRIPT_NAME;
       if (isset($HTTPS) && $HTTPS == 'on') {
          ## You will need to fix suexec as well, if you use Apache and CGI PHP
          $PROTOCOL='https';
@@ -191,6 +191,9 @@ class AA_SL_Session extends Session {
 
 /*
 $Log$
+Revision 1.4  2000/08/07 15:27:45  kzajicek
+Added missing semicolon in global statement
+
 Revision 1.3  2000/07/21 15:28:46  kzajicek
 When PHP (CGI version) is configured with --enable-force-cgi-redirect,
 most of standard environmental variables are moved to REDIRECT_variable_name.
