@@ -23,6 +23,8 @@ if (!defined ("aa_mail_included"))
      define ("aa_mail_included", 1);
 else return;
 
+require $GLOBALS["AA_INC_PATH"]."item.php3";
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 #                    M A I L   handling utility functions 
 #
@@ -129,6 +131,7 @@ function mail_html_text_body ($message, $charset, $use_base64) {
 }
 
 /** 
+* (c) Jakub Adamek, Econnect, December 2002
 * Sends email from the table "email" to the address given.
 * First resolves the aliases, working even with the {} inline commands.
 *
@@ -140,6 +143,7 @@ function mail_html_text_body ($message, $charset, $use_base64) {
 
 function send_mail_from_table ($mail_id, $to, $aliases="") 
 {
+
     global $db, $LANGUAGE_CHARSETS;
     $db->query ("SELECT * FROM email WHERE id = $mail_id");
     if (!$db->next_record()) 
@@ -148,17 +152,25 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
     reset ($record);
     
     if (is_array ($aliases)) {
+        // I don't know how to work with unaliasing. Thus I try to pretend
+        // having an item. 
         reset ($aliases);
-        while (list ($alias) = each ($aliases)) 
+        while (list ($alias, $translate) = each ($aliases)) {
+            // I create the "columns"
+            $cols[$alias][0] = array (
+                "value" => $translate,
+                "flag" => FLAG_HTML);
+            // and "aliases" 
             $als [$alias] = array ("fce"=>"f_h", "param"=>$alias);
-        $item = new Item ("", $aliases, $als, "", "" ,"");
+        }
+        $item = new Item ("", $cols, $als, "", "" ,"");
         while (list ($key, $value) = each ($record)) 
             $record[$key] = $item->unalias ($value);
     }
-    
+
     if ($record["html"])
         return mail_html_text ($to, $record["subject"], $record["body"],
-             get_email_headers($record), $LANGUAGE_CHARSETS [$record["lang"]]);
+             get_email_headers($record, ""), $LANGUAGE_CHARSETS [$record["lang"]]);
     else return mail ($to, $record["subject"], $record["body"], get_email_headers($record));
 }
     
