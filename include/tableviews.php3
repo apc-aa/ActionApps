@@ -19,91 +19,17 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Settings for each table view (see include/tabledit.php3 for more info)
-
-/* Universal Table Views Grammar: * = required, | = alternatives
-    
-   "table"* => table name
-   "type"* => "edit" | "browse"  browse view = table, edit view = fields one on a row each 
-   "cond"* => permissions needed to access this site
-
-   "attrs" => attributes for TABLE and TD
-   "addrecord" => true | false  show an empty record, applicable only with readonly = false
-                  default true
-   "buttons"  => buttons to be shown on each record row in browse view
-                 array (button_name => 1, ...), where button_name is 
-                 "delete" | "update" | "edit" 
-   "button_add" => true | false  show Insert button in browse view
-   "gotoview" => which view to show after clicking on Edit or Insert (Browse view)
-   				 or after clicking on Cancel (Edit view)
-				 default: stay in the same view
-   "listlen" => number of records to be shown at once, default: 15
-   "orderby" => field to sort by (default: don't sort)
-   "orderdir" => order direction, "a" = ascending or "d" = descending (default: "a")
-   "messages" => array (
-	   "no_item" => message to be shown when no items pass the WHERE SQL clause
-	   "error_insert" => when insert fails
-	   "error_update" => when update fails
-	   "error_delete" => when delete fails
-   "readonly" => true | false  default for all fields, default: true
-   "where" => SQL WHERE condition
-   "search" => view the search form?, default: true for browse view, false for edit view
-               the form is shown only if scroller is shown (i.e. there are more records than 
-               what fits to one page) 
-   "primary" => array (field1,field2,..) If a table has more than 1 primary key,
-                you must set it here. If there is just 1 primary key,
-                it will be found automatically. If there is no primary key ...
-                the table can't be edited by TableEdit
-
-   "fields"* => (array of many)
-        "field_name"* => (array of)
-			"caption" => linked to sort items by this column, default: field name
-            "hint" => hint to be shown in Edit view
-            "validate" => "number" | "email" | "filename"
-            "validate_min" => useful only with validate=number
-            "validate_max" => -"-
-            "default" => default value (for new records)
-            "required" => is the field required? default: false
-            "view" => (array of) special view (if other than default)
-                "type" => view type = "select" | "hide" | "text" | "area" | "date" | "userdef"
-                            (select box | hidden | text edit box | text area | date special | user)
-                "function" => required for "userdef" type, name of function which
-                              takes field value as the only parameter
-                "source" => required for "select", array of ("value"=>"option")
-                "size" => applies for "text","area", default: array ("cols"=>40,"rows"=>4)
-                "format" => required for "date", usable only on readonly field, PHP date() format
-                "readonly" => true | false  if not set, the default readonly is used; for "userdef" always true   
-                "href_view" => applicable only with readonly=true, links the text to another table view
-                "html" => is it html and not plain text? applicable only with readonly fields, default: false
-            "view_new_record" => the same as "view", applied only on empty new record
-                                   if not filled, "view" is used instead
-   "children" => (array of many) tables with relationship n:1 
-        "table_name"* => (array of)
-            "join"* => (array of many) master fields must be the ones with "primary" set
-                "master field" => "child field" (child field is in table table_name)
-            "fields"* => the same as above
-
-----------------------------------------------------------------------------------------------------
-            
-   AA SPECIAL table view grammar:
-   
-   "mainmenu"* => menu
-   "submenu"* => menu
-   "title"* => HTML page title
-   "caption"* => caption shown above the table
-   "help" => text to be shown above the table
-*/        
+// Settings for each table view (see doc/tabledit.html for more info)       
 
 function GetTableView ($viewID) {        
     global $auth, $slice_id;
     $db = new DB_AA;
 
     $attrs_edit = array (
-        "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
-        "td"=>"class=tabtxt");
+        "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'");
     $attrs_browse = array (
         "table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
-        "td"=>"class=tabtxt");
+        "table_search" => "border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'");
     $format = array (
         "hint" => array (
             "before" => "<i>",
@@ -131,8 +57,6 @@ function GetTableView ($viewID) {
             "subject" => array ("required" => true),
             "mail_from" => array ("hint" => _m("From: mail header"), "required" => true)),
         "attrs" => $attrs_browse,
-        "buttons" => array ("edit" => 1,"delete" => 1),
-        "button_add" => 1,
         "gotoview" => "ww_edit");
         
     if ($viewID == "ww_edit") {
@@ -165,9 +89,8 @@ function GetTableView ($viewID) {
             "description"=> array (
                 "view" => array ("type" => "text", "size" => array ("cols" => 40)),
                 "required" => true)
-        ),
-        "attrs" => $attrs_browse,
-        "buttons" => array ("update" => 1, "delete" => 1));
+            ),
+        "attrs" => $attrs_browse);
     
     /* ------------------------------------------------------------------------------------
        ac_edit and its children acf and acu
@@ -242,7 +165,7 @@ function GetTableView ($viewID) {
         "table" => "alerts_collection_filter",
         "type" => "browse",
         "readonly" => false,
-        "buttons" => array ("update" => 1, "delete" => 1),
+        "addrecord" => true,
         "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
         "title" => L_ALERTS_COLLECTION_TITLE, 
         "caption" => L_ALERTS_COLLECTION_TITLE,
@@ -285,7 +208,6 @@ function GetTableView ($viewID) {
         "type" => "browse",
         "readonly" => false,
         "addrecord" => false,
-        "buttons" => array ("update" => 1, "delete" => 1),
         "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
         "title" => L_ALERTS_COLLECTION_TITLE, 
         "caption" => L_ALERTS_COLLECTION_TITLE,
@@ -318,8 +240,6 @@ function GetTableView ($viewID) {
         "type" => "browse",
         "readonly" => false,
         "addrecord" => false,
-        "buttons" => array ("update"=>1,"delete"=>1,"edit"=>1),
-        "button_add"=>1,
         "gotoview" => "ac_edit",
         "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
         "title" => L_ALERTS_COLLECTION_TITLE, 
@@ -343,7 +263,8 @@ function GetTableView ($viewID) {
                                     "readonly" => true)),
             "editorial" => array ("view"=>array("type"=>"text","size"=>array("cols"=>35))),
             "mail_from" => array (
-				"caption"=>"From:","hint"=>"mail header",
+				"caption"=>"From:",
+                "hint"=>_m("mail header"),
 				"view" => array ("type"=>"text","size"=>array("cols"=>15))),
             "mail_reply_to" => array ("caption"=>"Reply-To:","view" => array ("type"=>"text","size"=>array("cols"=>15))),
             "mail_errors_to" => array ("caption"=>"Errors-To:","view" => array ("type"=>"text","size"=>array("cols"=>15))),
@@ -365,15 +286,16 @@ function GetTableView ($viewID) {
         "mainmenu" => "sliceadmin",
         "submenu" => "te_alerts_users",
         "readonly" => !IsSuperadmin(),
+        "buttons_down" => array ("update_all" => 1, "delete_all" => 1),
         "addrecord" => false,
         "help" => _m("To add users use the standard Alerts User Interface."),
-        "buttons" => array ("update"=>1,"delete"=>1,"edit"=>1),
         "gotoview" => "au_edit",
         "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
         "title" => _m("Alerts Users"), 
         "caption" => _m("Alerts Users"),
         "mainmenu" => "sliceadmin",
         "submenu" => "te_alerts_users",
+        "orderby" => "email",
         "fields" => array (
             "email" => array (
 				"caption" => _m("email"),
@@ -436,12 +358,12 @@ function GetTableView ($viewID) {
         "type" => "browse",
         "readonly" => false,
         "addrecord" => true,
-        "buttons" => array ("update" => 1, "delete" => 1),
         "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
         "title" => L_ALERTS_COLLECTION_TITLE, 
         "caption" => L_ALERTS_COLLECTION_TITLE,
         "attrs" => $attrs_browse,
         "where" => CreateWhereFromList ("collectionid", FindCollectionPermissions()),
+        "orderby" => "howoften",
         "fields" => array (
             "collectionid" => array (
 				"caption"=>"collection",
@@ -463,6 +385,68 @@ function GetTableView ($viewID) {
     }
     
     /* ------------------------------------------------------------------------------------
+       alerts_admin
+    */
+    if ($viewID == "alerts_admin") {
+        $db->query ("SELECT * FROM alerts_admin");
+        if ($db->num_rows() == 0)
+            $db->query ("INSERT INTO alerts_admin (mail_confirm, delete_not_confirmed) VALUES (0,0)");
+        return array (
+        "table" => "alerts_admin",
+        "caption" => _m("Alerts Admin"),
+        "title" => _m("Alerts Admin"),
+        "mainmenu" => "sliceadmin",
+        "submenu" => "te_alerts_admin",
+        "buttons_down" => array ("update"=>1),
+        "attrs" => array ("table" => "border=1"),
+        "type" => "edit",
+        "readonly" => false,
+        "addrecord" => false,
+        "cond" => IsSuperadmin(),
+        "newrecord" => false,
+        "fields" => array (
+            "mail_confirm" => array (
+                "caption" => _m("confirm mail"),
+                "hint" => _m("number of days, 0 = off"),
+                "view" => array (
+                    "type" => "text",
+                    "size" => array ("cols" => 3)),
+                "validate" => "number"),
+            "delete_not_confirmed" => array (
+                "caption" => _m("delete not confirmed"),
+                "hint" => _m("number of days, 0 = off"),
+                "view" => array (
+                    "type" => "text",
+                    "size" => array ("cols" => 3)),
+                "validate" => "number"),
+            "last_mail_confirm" => array (
+                "caption" => _m ("last confirm mail"),
+                "view" => array (
+                    "readonly" => true,
+                    "type" => "date",
+                    "size" => array ("cols" => 6), 
+                    "format" => "j.m.y G:i")),
+            "last_delete" => array (
+                "caption" => _m ("last delete not confirmed"),
+                "view" => array (
+                    "readonly" => true,
+                    "type" => "date",
+                    "size" => array ("cols" => 6), 
+                    "format" => "j.m.y G:i"))),
+        "help" => _m (
+            "This table sets handling of not confirmed users. It's accessible only
+            to superadmins.
+            You can delete not confirmed users after a number of days and / or send them an email 
+            demanding them to do confirmation
+            after a smaller number of days. To switch either of the actions off,
+            set number of days to 0. The two last fields are for your information only.<br>
+            <br>
+            To run the script, you must have cron set up with a row running
+            misc/alerts/admin_mails.php3.<br>
+            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."));
+    }        
+
+    /* ------------------------------------------------------------------------------------
        cron 
     */
     if ($viewID == "cron") {
@@ -475,7 +459,6 @@ function GetTableView ($viewID) {
         "help" => _m("For help see FAQ: ")."<a target=\"_blank\" href=\"$url\">$url</a>",
         "readonly" => false,
         "addrecord" => true,
-        "buttons" => array ("update" => 1, "delete" => 1),
         "cond" => IsSuperadmin(),
         "title" => _m ("Cron"),
         "caption" => _m("Cron"),
@@ -486,23 +469,14 @@ function GetTableView ($viewID) {
             "mday" => array ("view" => array ("type" => "text", "size" => array ("cols"=>2))),
             "mon" => array ("view" => array ("type" => "text", "size" => array ("cols"=>2))),
             "wday" => array ("view" => array ("type" => "text", "size" => array ("cols"=>2))),
-            "script" => array ("view" => array ("type" => "text", "size" => array ("cols"=>20)),
+            "script" => array ("view" => array ("type" => "text", "size" => array ("cols"=>25)),
                 "required" => true),
             "params" => array ("view" => array ("type" => "text", "size" => array ("cols"=>20))),
             "last_run" => array ("view" => array ("readonly" => true, "type" => "date", "format" => "j.n.Y G:i"))
         ));
     }
     
-    /* ------------------------------------------------------------------------------------
-       slice -- for debug purposes only 
-    */    
-    if ($viewID == "slice") return array (
-        "table" => "slice",
-        "type" => "browse",
-        "readonly" => true,
-        "attrs" => $attrs_browse,
-        "fields" => array (
-            "name"));    
+    
 } // end of GetTableView
             
 // ----------------------------------------------------------------------------------        
