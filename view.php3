@@ -107,6 +107,15 @@ function ParseCommand($cmd) {
   return explode("-",$cmd);
 }  
 
+function GetAliasesFromUrl() {
+  global $aliases, $als;
+  if( isset( $als ) AND is_array( $als ) ) {
+    reset( $als );
+    while( list($k,$v) = each( $als ) )
+      $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+  }
+}  
+
 //-----------------------------End of functions definition---------------------
 
 add_vars();       # adds values from url (it's not automatical in SSIed script)
@@ -144,7 +153,10 @@ switch( $view_info['type'] ) {
 
     $ids_cnt = count( $item_ids );
     if( $ids_cnt > 0 ) {
+      # get alias list from database and possibly from url
       $aliases = GetAliasesFromFields($fields);
+      GetAliasesFromUrl();
+      
       $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 
                                 0, 1, shtml_url() );
       $itemview->print_view();
@@ -171,6 +183,8 @@ switch( $view_info['type'] ) {
     $ids_cnt = count( $item_ids );
     if( $ids_cnt > 0 ) {
       $aliases = GetAliasesFromFields($fields);
+      GetAliasesFromUrl();
+#print_r($aliases);      
       $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 
                                 0, $view_info['listlen'], shtml_url() );
       $itemview->print_view();
@@ -185,6 +199,9 @@ switch( $view_info['type'] ) {
 
 /*
 $Log$
+Revision 1.4  2001/07/09 17:43:53  honzam
+url passed user aliases
+
 Revision 1.3  2001/06/24 16:46:22  honzam
 new sort and search possibility in admin interface
 
