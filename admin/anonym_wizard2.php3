@@ -115,9 +115,9 @@ function ShowAnonymousForm() {
     echo GetFormJavascript($show_func_used, $slice->get_js_validation('edit', 0, $notshown));
 
     // Destroy the ? help links at each field
-    reset ($fields);
-    while (list ($field) = each ($fields))
+    foreach ( $fields as $field) {
         $fields[$field]["input_morehlp"] = "";
+    }
 
     // Show all fields
     echo
@@ -127,7 +127,8 @@ function ShowAnonymousForm() {
     // Replaces old ShowForm("", $fields, $prifields, 0, $show);
     $inputform_settings = array();
     $form = new inputform($inputform_settings);
-    echo $form->getForm(false, $fields, $prifields, false, $show);
+    $content4id = null;  // in getForm we have to pass it by reference
+    echo $form->getForm($content4id, $slice, false, $show);
 
     echo '
     <tr><td colspan="10" align="center" class="tabtit">
