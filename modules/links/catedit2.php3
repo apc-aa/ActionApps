@@ -83,6 +83,17 @@ function ChangeCatPriority($category_id, $insertedId, $pri, $state, $name) {
     $db->query( $SQL );
 }
 
+function ChangeCatState($category_id, $insertedId, $state) {
+    global $db;
+
+    // General categories have its own priorities
+    $SQL = "UPDATE links_cat_cat SET state='$state'
+              WHERE category_id = $category_id
+                    AND what_id = $insertedId";
+
+    $db->query( $SQL );
+}
+
 # Moves this category to another subtree or delete (if clear and no link to it)
 function UnassignBaseCategory($parent, $child) {
     global $db, $r_msg, $r_err;
@@ -282,6 +293,7 @@ if (isset($ids) && is_array($ids) && $subcatIds!="") {
 // alphabeticaly. On the other hand, to add priorities just uncoment following
 // line and add order changing arrows to catedit admin interface
 //          ChangeCatPriority($cid, $insertedId, $pri, $states[$key], $names[$key]);
+            ChangeCatState($cid, $insertedId, $states[$key]);
             $oldBaseSubcat[$insertedId] = "";      // reassigned
         }
     }
