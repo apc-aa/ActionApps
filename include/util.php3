@@ -1056,22 +1056,27 @@ function IsField($fld) {
   return( (strlen($fld)==16) && (ereg("^[a-z_]+\.+[0-9]*$",$fld)) );
 }
 
-/*
-fulltext is viewed - count hit
-TODO: Modify to use zid and then change in ParseViewCommand - mitra
-
-UPDATE - hits logged to table log. With COUNTHIT_PROBABILITY
-(eg. onetimes from 100 - probability 0.01) we write logged hits into table item
-*/
-function CountHit($id, $column='id') {
+/**
+ * Fulltext is viewed - count hit
+ *
+ * UPDATE - hits logged to table log. With COUNTHIT_PROBABILITY
+ * (eg. onetimes from 100 - probability 0.01) we write logged hits into table
+ * item. Why this way? MySQL lock the item table for updte when someone do
+ * a search in that table. If we want to view any fulltext, we can't, because we
+ * have to wait for item.display_count update (which is locked). That's why we
+ * log the hit into log table and from time to time (with probability 1:100) we
+ * update item table based on logs.
+ * @param string $id    id - short, long or tagged - it does not matter
+ *                      (zids decides)
+ */
+function CountHit($id) {
     global $db;
 
     writeLog("COUNT_HIT",$id);
 
     $zid = new zids();
-    $num = rand(0,COUNTHIT_PROBABILITY);
 
-    if ($num == 1) {
+    if ( rand(0,COUNTHIT_PROBABILITY) == 1) {
         $logarray = getLogEvents("COUNT_HIT", $from="", $to="", true, true);
         reset($logarray);
         while(list(,$log) = each($logarray)) {
@@ -1091,9 +1096,9 @@ function CountHit($id, $column='id') {
             }
             $zid->clear();
             $SQL = "UPDATE item
-               SET display_count=(display_count+".$log["count"].")
-               WHERE $where";
-             $db->query($SQL);
+                       SET display_count=(display_count+".$log["count"].")
+                     WHERE $where";
+            $db->tquery($SQL);
         }
     }
 }
