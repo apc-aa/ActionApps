@@ -1,6 +1,8 @@
+01/23/03 - fixed zids.guesstype to allow for buggy shorter ids (14 or 15 char)
+         - fixed new_id to only return 16 char ids in future
 01/22/03 - fixed buggy shortids() function in zids.php3 (honzam)
-01/22/03 - fixed typo sliceedit -> slicedit 
-01/21/03 - code rule changes
+01/22/03 - fixed typo sliceedit -> slicedit (mitra)
+01/21/03 - code rule changes (mitra)
          - added global flag $errcheck like $debug but generates warnings on strangeness
          - added zids.php3 to encapsulate id management including:
            * adds support for tagged ids in many places (not all yet)

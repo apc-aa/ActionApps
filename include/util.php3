@@ -319,7 +319,7 @@ function p_arr($a,$name="given array") {
 function new_id ($seed="hugo"){
   do {
    $foo=md5(uniqid($seed));
-  } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
+  } while (ereg("(00|27)",$foo) or (strlen($foo) != 16));  // 00 is end of string, 27 is '
   return $foo;
 } 
 
@@ -687,6 +687,7 @@ function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
 }
 
 # fills array by headlines of items in specified slice (unpacked_id => headline)
+# $tagprefix is array as defined in itemfunc.php3
 function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $zids="", 
     $type="all", $tagprefix=null) {
   $psid = q_pack_id( $sid );
@@ -729,13 +730,17 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $zids=
   $db->tquery($SQL);
 
   # See if need to Put the tags back on the ids
-  if (isset($zids) && is_object($zids) && ($zids->onetype() == 't'))
-       $tags = $zids->gettags();
+  if (isset($zids) && is_object($zids) && ($zids->onetype() == 't') && isset($tagprefix)) {
+       $tags = $zids->gettags() ;
+    while (list(,$v) = each($tagprefix)) {
+        $t2p[$v["tag"]] = $v["prefix"];
+    }
+  } 
   
   while($db->next_record()) {
     $i = unpack_id128($db->f(id));
     $arr[(isset($tags) ? ($tags[$i] . $i) : $i)]
-        = ((isset($tags) ? ($tagprefix[$tags[$i]]) : "")
+        = ((isset($tags) ? ($t2p[$tags[$i]]) : "")
             . substr($db->f(text), 0, 50));  #truncate long headlines
   }
   if ($debug)  huhl("GetItemHeadlines found ",$arr);

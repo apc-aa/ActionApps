@@ -233,7 +233,7 @@ class zids {
         if ($this->type != "t") return false;
         $tags = array();
         while ( list(,$v) = each($this->a)) {
-            if (ereg("(.*)([0-9a-f]{32})",$v,$parts))
+            if (ereg("(.*)([0-9a-f]{24..32})",$v,$parts))
                 $tags[$parts[2]] = $parts[1]; # Note can be empty
             else
                 print("Cant parse tagged id '$v' - tell Mitra");
@@ -280,10 +280,13 @@ class zids {
 
 } #class ids
 
+# This guesses the type from the length of the id, 
+# short should be == 16 and long == 32 but there is or was somewhere a bug
+# leading to shorter (as short as 14) character ids.
 function guesstype($str) {
         $s = strlen($str);
-        if ($s == 16) return 'p';
-        if ($s == 32) return 'l'; # Could also test 32 hex
+        if (($s >= 12) and ($s <= 16)) return 'p';
+        if (($s >= 24) and ($s <= 32)) return 'l'; # Could also test 32 hex
         if ($s > 32) return 't'; # Could also test last 32 hex
         if ($s < 16) return 's';
         print("Error, unable to guess type of id '$str' - ask mitra");
@@ -295,7 +298,7 @@ function guesstype($str) {
 # This version is ONLY for 128 bit ids.
 function pack_id128($unpacked_id){
     global $errcheck;
-    if ($errcheck && !preg_match("/^[0-9a-f]{32}$/", $unpacked_id)) # Note was + instead {32}
+    if ($errcheck && !preg_match("/^[0-9a-f]{24..32}$/", $unpacked_id)) # Note was + instead {32}
         huhe("Warning: trying to pack $unpacked_id.<br>\n");
   return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
 }
@@ -305,7 +308,7 @@ function unpack_id128($packed_id){
   if( (string)$packed_id == "0" )
     return "0";
   $foo=bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
-  if ($errcheck && !preg_match("/^[0-9a-f]{32}$/", $foo)) # Note was + instead {32}
+  if ($errcheck && !preg_match("/^[0-9a-f]{24..32}$/", $foo)) # Note was + instead {32}
     huhe("Warning: unpacked id to $foo..<br>\n");
   return (string)$foo;
 }
