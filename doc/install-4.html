@@ -49,13 +49,13 @@ href="install.html#toc4">Contents</A>
 <p>
 <p> 
 <p> 
-<P>Edit <CODE>/home/httpd/html/apc-aa/config.php3</CODE>.
+<P>Edit <CODE>/home/httpd/html/apc-aa/include/config.php3</CODE>.
 <P>This is the main Action Applications configuration file. It contains comments 
   which explain everything there. Note that this file may not contain anything 
   before the <CODE>&lt;?php</CODE> line at the top and after the <CODE>?&gt;</CODE> 
   line at the bottom.
 <P>TODO - check on how this works with site_config
-<P><B>The file <CODE>/home/httpd/html/aa/include/config.php3</CODE> now contains 
+<P><B>The file <CODE>/home/httpd/html/apc-aa/include/config.php3</CODE> now contains 
   passwords. It should therefore not be world readable. On the other hand, the 
   http server must be able to read it. Read the chapter on <A 
 href="install-6.html#security">security</A> for a possible solution for this problem.</B> 
@@ -103,7 +103,7 @@ mysql&gt; quit
 <P>
 <H2><A name=ss4.3>4.3 Creating a superadmin account</A> </H2>
 <P>Point your Web browser to <a 
-href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/setup.php3</a>. 
+href="http://localhost/apc-aa/admin/sliceadd.php3">http://localhost/apc-aa/admin/setup.php3</a>. 
   You should see a page with two buttons &quot;Init&quot; and &quot;Recover&quot;, 
   click &quot;Init&quot; and you should receive a form where you can enter the 
   information for the SuperAdmin account. 
@@ -131,7 +131,7 @@ href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/setup.p
 <ul>
   <li>rename the file apc-aa/admin/setup.php.txt to apc-aa/admin/setup.php
   <li>go to <a 
-href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/setup.php3</a> 
+href="http://localhost/apc-aa/admin/sliceadd.php3">http://localhost/apc-aa/admin/setup.php3</a> 
     and press &quot;Recover&quot; 
   <li>rename the file apc-aa/admin/setup.php back to apc-aa/admin/setup.php.txt 
     for safety.
@@ -139,9 +139,9 @@ href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/setup.p
 <H2><A name=ss4.3>4.3 Your first test slice</A> </H2>
 <p>After creating the superadmin you will be thanked and either directed to the 
   Slice addition page <a 
-href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/sliceadd.php3</a> 
+href="http://localhost/apc-aa/admin/sliceadd.php3">http://localhost/apc-aa/admin/sliceadd.php3</a> 
   or direct to the Administration front end <a 
-href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin</a>. 
+href="http://localhost/apc-aa/admin/sliceadd.php3">http://localhost/apc-aa/admin</a>. 
   You should be able to log in now with the superadmin account you created above. 
   Refer to the <a href="http://www.apc.org/actionapps/english/manual/wmguide.html">APC 
   Action Apps User Manual Webmaster's guide</a>.

@@ -20,7 +20,7 @@ apache http server configuration file, for example, like this (snipped from
 <CODE>/etc/httpd/conf/httpd.conf</CODE>: 
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE>&lt;Directory /home/httpd/html/aa/user-x/&gt;
+<PRE>&lt;Directory /home/httpd/html/apc-aa/user-x/&gt;
 Options +Includes
 &lt;/Directory&gt;
 </PRE>
@@ -59,8 +59,8 @@ and be group readable. The steps to do this would be:
   server. 
   <BLOCKQUOTE><CODE>
     <HR>
-      <PRE># chown root.www /home/httpd/html/aa/include/config.php3 
-# chmod 640  /home/httpd/html/aa/include/config.php3
+      <PRE># chown root.www /home/httpd/html/apc-aa/include/config.php3 
+# chmod 640  /home/httpd/html/apc-aa/include/config.php3
 # /etc/rc.d/init.d/httpd stop
 # /etc/rc.d/init.d/httpd start
 </PRE>

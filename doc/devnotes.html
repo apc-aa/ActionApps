@@ -24,7 +24,7 @@ releases  application, so I hide <EM>Image URL</EM>, <EM>Image width </EM>and
 <H2>Editor window</H2>
 <P>The editor window (<EM>index.php3</EM>) is the main 
 place, where authors and editors will control his items. The slice, which is 
-edited is specified by parameter <EM>slice_id </EM>                           within URL (link like<code> href="/aa/admin/index.php3?slice_id=763e546ba2f36efb00abc346ce8af03c"</code>). 
+edited is specified by parameter <EM>slice_id </EM>                           within URL (link like<code> href="/apc-aa/admin/index.php3?slice_id=763e546ba2f36efb00abc346ce8af03c"</code>). 
 If no <EM>slice_id </EM>    is specified, the first slice, in which given user has any permission, is displayed.<br>
 <br>There are three tables (the look of this page should be changed, but the idea of three tables remains):</P>
 <dl>
@@ -427,7 +427,7 @@ for slice compact view.</P>
   &lt;body&gt;
   &lt;h1&gt;Slice title&lt;/h1&gt;
   ...
-  <p class=hlight>&lt;!--#includevirtual="/aa/slice.php3?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</p>
+  <p class=hlight>&lt;!--#includevirtual="/apc-aa/slice.php3?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</p>
   ...
   &lt;/body&gt;
  &lt;/html&gt;</pre></td>
@@ -560,7 +560,7 @@ web site</H2>
 <H3>1. Pure slice</H3>
 <P>You can view slice as is with no additional texts and graphics. It's done on 
 URL like this:</P>
-<code>http://aa/slice.php3?slice_id=7a4812e153a0106931c888778daf446f</code>
+<code>http://yourhost/apc-aa/slice.php3?slice_id=7a4812e153a0106931c888778daf446f</code>
   <H3>2. Encapsulated slice</H3>
 <P>More popular version of slice view should be 
 the encapsulated one. The slice is included into shtml page by SSI commands. The 
@@ -636,7 +636,7 @@ Main column --&gt;<BR>&lt;TABLE width=440&gt;<BR>&nbsp;
 &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 &lt;H1&gt;Example NGO's Slice&lt;/H1&gt;&lt;/TD&gt;&lt;/TR&gt;<BR>&nbsp; 
 &lt;TR&gt;<BR>&nbsp;&nbsp;&nbsp; &lt;TD&gt;</P>
-<P><FONT color=#0000ff>&lt;!--#include&nbsp;virtual="/aa/slice.php3?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</FONT></P>
+<P><FONT color=#0000ff>&lt;!--#include&nbsp;virtual="/apc-aa/slice.php3?encap=true&amp;slice_id=e2f6b2bf9c1687de7acccdb0f570209e"--&gt;</FONT></P>
 <P>&nbsp;&nbsp;&nbsp; 
 &lt;/TD&gt;<BR>&nbsp;&nbsp;&lt;/TR&gt;<BR>&lt;/TABLE&gt;&lt;BR&gt;<BR>&lt;/BODY&gt;<BR>&lt;/HTML&gt;</P></CODE>In this short example you can see, 
 how encapsulate slice.php3 into shtml page. Important commands I highlighted in 
