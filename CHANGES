@@ -1,3 +1,4 @@
+09/05/03 - now expands no_item text, may not catch all aliases (mitra)
 08/27/03 - added stringexpand_ prefix for extending string expansion
 (mitra)  - replaced existing eb_functions for substr and fmod
          - added return_url to discedit.php3

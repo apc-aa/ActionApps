@@ -322,7 +322,7 @@ class item {
     return $text;
   }
 
-  # the function substitutes all _#... aliases and then aplies "remove strings"
+  # the function substitutes all _#... aliases and then applies "remove strings"
   # it searches for removal just in parts where all aliases are expanded
   # to empty string
   function substitute_alias_and_remove( $text, $remove_arr=null ) {

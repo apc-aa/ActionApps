@@ -343,7 +343,6 @@ function GetView($view_param) {
 // Return view result based on parameters, set cache_sid
 function GetViewFromDB($view_param, &$cache_sid) {
   global $debug;
-
   trace("+","GetViewFromDB",$view_param);
   $vid = $view_param["vid"];
   $als = $view_param["als"];
@@ -481,9 +480,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
           $content_function = 'Links_GetCategoryContent';
       }
 
-      if ( !isset($zids) || $zids->count() <= 0)
-          return $noitem_msg;
-
       list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
                       $view_param["from"], $list_page, $zids->count(), $random);
 
@@ -491,6 +487,13 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                 $zids, $list_from, $listlen, shtml_url(),
                                 "", $content_function);
       $itemview->parameter('category_id', $category_id);
+
+      if ( !isset($zids) || $zids->count() <= 0) {
+        # $ret = $noitem_msg; 
+        $ret = $itemview->unaliasWithScroller($noitem_msg);
+          return $ret;
+      }
+
       $ret = $itemview->get_output_cached($itemview_type);
       return $ret;
 
@@ -557,7 +560,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $format['calendar_month'] = $month;
       $format['calendar_year'] = $year;
 
-      if (isset($zids2) && ($zids2->count() > 0)) {
+      #if (isset($zids2) && ($zids2->count() > 0)) {
         list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
                   $view_param["from"], $list_page, $zids2->count(), $random);
 
@@ -566,11 +569,14 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                   ($view_info['type'] == 'urls') ?
                                                'GetItemContentMinimal' : '');
 
+      if (isset($zids2) && ($zids2->count() > 0)) {
         $itemview_type = (($view_info['type'] == 'calendar')
                             ? 'calendar' : 'view');
         $ret = $itemview->get_output_cached($itemview_type);
       }   #zids2->count >0
-      else { $ret = $noitem_msg; }
+      else { 
+        $ret = $itemview->unaliasWithScroller($noitem_msg);
+      }
       // 	if( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
       trace("-");
       return $ret;

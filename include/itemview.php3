@@ -362,9 +362,13 @@ class itemview {
     return $out;
   }
 
-  function unaliasWithScroller($txt, $item) {
+  function unaliasWithScroller($txt, $item=null) {
     # get HTML code, unalias it and add scroller, if needed
     $level = 0; $maxlevel = 0;
+    # If no item is specified, then still try and expand aliases using parameters
+    if (! $item) {
+        $item = new item(null,null,$this->aliases,null,null,null,null,null,null,$this->parameters);
+    }
     return new_unalias_recurent($txt,"",$level,$maxlevel,$item,$this,null);
   }
 
@@ -819,6 +823,7 @@ class itemview {
   function idcount() {
         return $this->zids->count();
   }
+
 };   //class itemview
 
 ?>
