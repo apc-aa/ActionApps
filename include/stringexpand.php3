@@ -153,7 +153,13 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), 
                                DeQuoteColons( substr($out, 8, $pos-8)));
            # filename do not use colons as separators => dequote before callig
-      $fp = fopen( self_server().'/'. $filename, 'r' );
+           
+      // if no http request - add server name
+      if( !(substr($filename, 0, 7) == 'http://') AND 
+          !(substr($filename, 0, 8) == 'https://')   )
+        $filename = self_server().'/'. $filename; 
+
+      $fp = @fopen( $filename, 'r' );
       $fileout = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
       fclose( $fp );
       return QuoteColons($level, $maxlevel, $fileout);
@@ -207,7 +213,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 # string substitution wherever its occurring. 
 # Differences .... 
 #   - remove is applied to the entire result, not the parts! 
-function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item, $itemview,$aliases ) {
+function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item, $itemview="", $aliases="" ) {
     global $debug;
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
