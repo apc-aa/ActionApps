@@ -1,3 +1,4 @@
+12/01/02 - fixed path in sql_update.php3 and changed docs in install-4.html
 09/01/02 - new possibilty to anonymously edit items on public sites"
          - new possibility to redefine the design of output by fview and iview 
            url parameter
