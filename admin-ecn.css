@@ -173,7 +173,7 @@ TD.leftmenu {
   font-size: 8pt;
 }
 
-.taberr {
+.taberr, .change, .expired {
   color: red;
 }
 
@@ -188,11 +188,6 @@ TD.leftmenu {
 .notpubl {
   color: blue;
 }
-
-.expired {
-  color: red;
-}
-
 
 .err {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;

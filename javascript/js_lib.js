@@ -1,4 +1,4 @@
-<SCRIPT Language="JavaScript"><!--
+<SCRIPT Language="JavaScript" type="text/javascript"><!--
 
 // moves selected row of left listbox to the right one
 function MoveSelected(left, right)

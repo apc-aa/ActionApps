@@ -407,7 +407,7 @@ $_m["Preview"]
 
 # admin/index.php3, row 609
 $_m["Select all"]
-  = "Vybrat zobrazené";
+  = "Vybrat vše";
 
 # admin/index.php3, row 614
 $_m["Selected items"]
@@ -3494,7 +3494,7 @@ $_m["Object"]
 
 # include/util.php3, row 903
 $_m["Use these aliases for database fields"]
-  = "Použij následujítí aliasy databázových polí";
+  = "Použij následující aliasy databázových polí";
 
 # include/util.php3, row 1104
 # other translations: Internal error. File upload: Dir does not exist?!

@@ -55,7 +55,7 @@ if (! $tableview["cond"] )  { MsgPage ($sess->url(self_base()."index.php3"), _m(
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
-echo '<LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.'/tabledit.css" type="text/css"  title="TableEditCSS">';
+echo '<LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
 echo "<TITLE>".$tableview["title"]."</TITLE></HEAD>";
 showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
 echo "<H1><B>" . $tableview["caption"] . "</B></H1>";

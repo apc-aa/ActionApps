@@ -104,16 +104,16 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
 
     $nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$AA_INSTAL_PATH.'images/action.gif" width="106" height="73" border="0" alt="'. _m("APC Action Applications") .'"></a>';
 
-    echo "<TABLE border=0 cellspacing=0 cellpadding=0><TR>";
+    echo "<TABLE border=0 cellspacing=0 cellpadding=0 width='100%'><TR>";
 
     if ($showMain) {
         echo "
         <TD colspan=2>
-        <TABLE border=0 cellpadding=0 cellspacing=0 width=800>
+        <TABLE border=0 cellpadding=0 cellspacing=0 width='100%'>
             <TR><TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=122 height=1></TD>
                 <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=300 height=1></TD>
                 <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=67 height=1></TD>
-                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=200 height=1></TD>
+                <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width='99%' height=1></TD>
             </TR>
             <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
                 <TD height=43 colspan=3 align=center valign=middle class=slicehead>
@@ -162,8 +162,8 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
         }
     }
     echo "
-        <TD align=left valign=top>
-        <TABLE border=0 cellspacing=0 cellpadding=10><TR><TD align=left>\n";
+        <TD align=left valign=top width='99%'>
+        <TABLE border=0 cellspacing=0 cellpadding=10 width='100%'><TR><TD align=left>\n";
 }   
 
 // ----------------------------------------------------------------------------------------
@@ -178,6 +178,8 @@ function showSubmenu (&$aamenu, $active)
     $aamenuitems = $aamenu["items"];
     reset ($aamenuitems);
     while (list ($itemshow, $item) = each ($aamenuitems)) {
+        if (substr($itemshow,0,4) == "text") 
+            echo "<tr><td>$item</td></tr>\n";
         if (substr($itemshow,0,6) == "header") 
             echo '<tr><td>&nbsp;</td></tr>
                   <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>
