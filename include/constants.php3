@@ -64,6 +64,7 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'menu' => "modules/site/menu.php3",
                                 'language_files' => array(
                                     'en_site_lang.php3' => 'en_site_lang.php3',
+                                    'es_site_lang.php3' => 'es_site_lang.php3',
                                     'cz_site_lang.php3' => 'cz_site_lang.php3')),
                   'A' => array( 'table' => 'module', # this module doesn't have any special info yet
                                 'name' => _m('MySQL Auth'),
@@ -126,7 +127,7 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
 */
 $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "en" => "English",
-                         "es" => "Espanol",
+                         "es" => "Español",
                          "de" => "Deutsch",
                          "ro" => "Romanian",
                          "ru" => "Russian",
