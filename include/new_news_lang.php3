@@ -205,14 +205,6 @@ define("L_JS_FIELD_TYPE", "Field Type");
 define("L_JS_POSSIBLE_TRIGGERS", "Triggers Available -- see some JavaScript help for when a trigger is run");
 define("L_DELETE_FILE","Delete permanently");
 define("L_FILL_GROUP_NAME","Fill group name before using hierarchical editor.");
-define("L_A_FTP_TIT","File Manager");
-define("L_DIRECTORY","Directory");
-define("L_FILE","File");
-define("L_RENAME","Rename");
-define("L_UPLOAD","Upload new file");
-define("L_FILEMAN","File Manager");
-define ("L_DIR_NOT_EXISTS", "Internal error. File upload: Dir does not exist?!");
-define("L_FILE_NAME_EXISTS","File with this name already exists.");
 define("L_A_SLICE_WIZ_TIT","Add Slice Wizard");
 define("L_ADD_SLICE_WIZ","Create new Wizard");
 define("L_WIZ_NEWUSER_HDR","[Optional] Create New User");
@@ -236,9 +228,74 @@ define("L_USER_NOT_FOUND","User not found");
 define("L_WRONG_NUMBER_OF_ROWS","Wrong number of rows.");
 define("L_EDIT_WIZARD_WELCOME","Wizard Welcomes");
 define("L_TABLE_EMPTY","Table is empty");
-
 define("L_OBJECT","Object");
 define("L_ASCENDING_PRI","Ascending by Priority");
 define("L_DESCENDING_PRI","Descending by Priority");
 define("L_SORT_DIRECTION_HLP","'by Priority' is usable just for fields using constants (like category)");
+define("L_FILEMAN_ACCESS","File Manager Access");
+define("L_FILEMAN_DIR","File Manager Directory");
+define("L_NOBODY","Nobody");
+define("L_EDITOR","Slice Editor");
+define("L_ADMINISTRATOR","Slice Administrator");
+define("L_SUPERADMIN","Superadmin");
+
+/* FILE MANAGER */
+
+define("L_A_FTP_TIT","File Manager");
+define("L_DIRECTORY","Directory");
+define("L_FILE","File");
+define("L_RENAME","Rename");
+define("L_UPLOAD","Upload new file");
+define("L_FILEMAN","File Manager");
+define("L_DIR_NOT_EXISTS", "Internal error. File upload: Dir does not exist?!");
+define("L_FILE_NAME_EXISTS","File with this name already exists.");
+define("L_FILETYPE_HTML","HTML file");
+define("L_FILETYPE_WEB","Web file");
+define("L_FILETYPE_IMAGE","Image file");
+define("L_FILETYPE_TEXT","Text file");
+define("L_FILETYPE_DIRECTORY","Directory");
+define("L_FILETYPE_PARENT","Parent");
+define("L_FILETYPE_OTHER","Other");
+define("L_FILE_CONTENT","File content");
+define("L_BACK_TO_FILE_LIST","Back to file list");
+define("L_DOWNLOAD_BY_RIGHTCLICK","Download (right-click)");
+define("L_RENAME_TO","Rename to");
+define("L_SAVE_CHANGES","Save changes");
+define("L_RESET_CONTENT","Reset content");
+define("L_THIS_IS_FILE","This is a file of type");
+define("L_I_CANT_VIEW","I can't view it. If you want to view or edit it, change it's extension.");
+define("L_CREATE_NEW_FILE","Create new file");
+define("L_UPLOAD_FILE","Upload file");
+define("L_COPY_TEMPLATE","Copy template dir");
+define("L_CREATE_NEW_DIR","Create new directory");
+define("L_SELECT_ALL","Select All");
+define("L_UNSELECT_ALL","Unselect All");
+define("L_DELETE","Delete");
+define("L_FILE_EXISTS","File already exists");        
+define("L_UNABLE_TO_CREATE_FILE","Unable to create file");
+define("L_WRONG_FILE_NAME","Wrong file name.");
+define("L_WRONG_DIR_NAME","Wrong directory name.");
+define("L_UNABLE_TO_CREATE_DIR","Unable to create directory");
+define("L_FIRST_DELETE_ALL_FILES","First delete all files from directory");
+define("L_UNABLE_TO_DELETE_FILE","Unable to delete file");
+define("L_UNABLE_TO_DELETE_DIR","Unable to delete directory");
+define("L_UNABLE_TO_WRITE","Unable to open file for writing");                
+define("L_ERROR_WRITING","Error writing to file");
+define("L_FILE_ALREADY_EXISTS","File with this name already exists");            
+define("L_UNABLE_RENAME","Unable to rename");
+define("L_SURE_TO_DELETE","Are you sure you want to delete the selected files and folders?");                
+define("L_SC_NAME","Name");
+define("L_SC_SIZE","Size");
+define("L_SC_TYPE","Type");
+define("L_SC_LAST_MODIFIED","Last modified");    
+define("L_ERR_WRONG_DIR","Wrong directory name");    
+define("L_SOME_FILES_EXIST","Files with the same names as some in the template already exist. Please change the file names first.");
+define("L_FILEMAN_DIR_USED","This File Manager Directory is already used by another slice.");
+
+/* END OF FILE MANAGER */
+
+define("L_RESERVED_ID","This ID is reserved");            
+define("L_ID_EXISTS","This ID is already used");
+define("L_EDIT_WIZARD_TEMPLATE","Wizard Templates");
+
 ?>
