@@ -170,7 +170,7 @@ function cron ($time = 0) {
 }
 
 // Use this to try function of script
-
+/*
 $db = new DB_AA;
 $db->query ("UPDATE cron SET last_run = NULL");
 $debug = 1;
@@ -180,7 +180,7 @@ for ($i = 0; $i < 50; $i++) {
 	cron ($time);
 	$time += 60*60*24;
 }
-
+*/
 
 cron();
 
