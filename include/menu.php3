@@ -196,7 +196,7 @@ function get_aamenus()
             AddAlertsModules ($items, $db, _m("Alerts"),
                     _m("List of Alerts modules using this slice as Reader Management."));
 
-            $items["header4"] = _m("Bulk Emails&nbsp;&nbsp;&nbsp;".GetAAImage ("help50.gif", _m("Send bulk email to selected users or to users in Stored searches")));
+            $items["header4"] = _m("Bulk Emails") ."&nbsp;&nbsp;&nbsp;".GetAAImage("help50.gif", _m("Send bulk email to selected users or to users in Stored searches"));
             $items["item1"] = array("cond" => 1,
                                     "exact_href" => "javascript:WriteEmailGo()",
                                     "label" => _m("Send emails"),

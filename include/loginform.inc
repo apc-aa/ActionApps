@@ -2,15 +2,11 @@
 bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".DEFAULT_LANG_INCLUDE);
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 
-// we are inside the function - so the variables defined in constants.php3 are
-// not global - we need $LANGUAGE_CHARSETS for HTMLPageBegin()
-$GLOBALS["LANGUAGE_CHARSETS"] = $LANGUAGE_CHARSETS;
 HTMLPageBegin();
 
- ?>
-  <title>Login form</title>
- </head>
-
+echo '<title>APC ActionApps - '.ORG_NAME.'</title>';
+?>
+</head>
 <body bgcolor="<?php echo COLOR_TABTITBG ?>" link="#D20000" vlink="#D20000">
 <center>
 <h1><?php echo _m("Welcome!") ?></h1>

@@ -434,7 +434,7 @@ class searchbar extends storable_class{
                " <a href='javascript:SearchBarAction(\"".$this->form_name ."\", \"bookmarkgo\",     false, false)'>". _m('View')   ."</a>
                </td>
                <td colspan=\"4\">
-                 <span class=\"smalltext\"><a href='javascript:SearchBarActionConfirm(\"".$this->form_name ."\", \"bookmarkupdate\", \"Are you sure to refine current search?\")'>". _m('Update') ."</a> /
+                 <span class=\"smalltext\"><a href='javascript:SearchBarActionConfirm(\"".$this->form_name ."\", \"bookmarkupdate\", \"". _m("Are you sure to refine current search?") ."\")'>". _m('Update') ."</a> /
                  <a href='javascript:SearchBarAction(\"".$this->form_name ."\", \"bookmarkrename\", \"". _m("Enter new name") ."\", false)'>". _m('Rename') ."</a> /
                  <a href='javascript:SearchBarActionConfirm(\"".$this->form_name ."\", \"bookmarkdelete\", \""._m("Are you sure to delete selected search?")."\")'>". _m('Delete') ."</a></span>
                </td>

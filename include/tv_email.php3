@@ -92,38 +92,38 @@ function GetEmailTableView ($viewID, $processForm = false)
             "id" => array ("view" => array ("readonly" => true)),
             "description" => array (
                 "required" => true,
-                "caption" => _m("description")),
+                "caption" => _m("Description")),
             "type" => array (
                 "required" => true,
-                "caption" => _m("email type"),
+                "caption" => _m("Email type"),
                 "view" => array ("type"=>"select","source"=>get_email_types())),
             "subject" => array (
                 "required" => true,
-                "caption" => _m("subject"),
+                "caption" => _m("Subject"),
                 "view" => array ("type" => "area", "size" => array ("rows"=>2))),
             "body" => array (
                 "required" => true,
-                "caption" => _m("body"),
+                "caption" => _m("Body"),
                 "view" => array ("type" => "area", "size" => array ("rows"=>8))),
             "header_from" => array (
                 "required" => true,
-                "caption" => _m("from (email)")),
+                "caption" => _m("From (email)")),
             "reply_to" => array (
-                "caption" => _m("reply to (email)")),
+                "caption" => _m("Reply to (email)")),
             "errors_to" => array (
-                "caption" => _m("errors to (email)")),
+                "caption" => _m("Errors to (email)")),
             "sender" => array (
-                "caption" => _m("sender (email)")),
+                "caption" => _m("Sender (email)")),
             "lang" => array (
-                "caption" => _m("language (charset)"),
+                "caption" => _m("Language (charset)"),
                 "default" => get_mgettext_lang(),
                 "view" => array ("type" => "select", "source" => $mylangs)),
             "html" => array (
-                "caption" => _m("use HTML"),
+                "caption" => _m("Use HTML"),
                 "default" => 1,
                 "view" => array ("type" => "checkbox")),
             "owner_module_id" => array (
-                "caption" => _m("owner"),
+                "caption" => _m("Owner"),
                 "default" => pack_id128($GLOBALS["slice_id"]),
                 "view" => array ("type"=>"select","source"=>SelectModule(),"unpacked"=>true),
             )
@@ -151,23 +151,23 @@ function GetEmailTableView ($viewID, $processForm = false)
         "where" => GetEmailWhere(),
         "fields" => array (
             "description" => array (
-                "caption" => _m("description")),
+                "caption" => _m("Description")),
             "subject" => array (
-                "caption" => _m("subject"), "view"=>array("maxlen"=>50)),
+                "caption" => _m("Subject"), "view"=>array("maxlen"=>50)),
             "body" => array (
-                "caption" => _m("body"),
+                "caption" => _m("Body"),
                 "view" => array (
                     "maxlen" => 100,
                     "type" => "text",
                     "size" => array ("rows"=>8))),
             "header_from" => array (
-                "caption" => _m("from")),
+                "caption" => _m("From")),
             "reply_to" => array (
-                "caption" => _m("reply to")),
+                "caption" => _m("Reply to")),
             "errors_to" => array (
-                "caption" => _m("errors to")),
+                "caption" => _m("Errors to")),
             "sender" => array (
-                "caption" => _m("sender"))
+                "caption" => _m("Sender"))
         ));
     }
 }

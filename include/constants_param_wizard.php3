@@ -421,13 +421,13 @@ array("name"=>_m("Related Item Window"),
         array("name"=>_m("Show headlines from selected bins"),
         "desc"=>_m("To show headlines in related window from selected bins.<br>".
                    "Use this values for bins:<br>".
-                   "active bin - '".AA_BIN_ACTIVE."'<br>".
-                   "expired bin - '".AA_BIN_EXPIRED."'<br>".
-                   "pending bin - '".AA_BIN_PENDING."'<br>".
-                   "holding bin - '".AA_BIN_HOLDING."'<br>".
-                   "trash bin - '".AA_BIN_TRASH."'<br>".
+                   "active bin - '%1'<br>".
+                   "expired bin - '%2'<br>".
+                   "pending bin - '%3'<br>".
+                   "holding bin - '%4'<br>".
+                   "trash bin - '%5'<br>".
                    "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
-                   "for this combination is counted like 1+2+4&nbsp;=&nbsp;7"),
+                   "for this combination is counted like 1+2+4&nbsp;=&nbsp;7", array( AA_BIN_ACTIVE, AA_BIN_EXPIRED, AA_BIN_PENDING, AA_BIN_HOLDING, AA_BIN_TRASH)),
         "type" => "INT",
         "example" => "7"),
         array("name"=>_m("Filtering conditions - unchangeable"),
@@ -438,8 +438,8 @@ array("name"=>_m("Related Item Window"),
         "desc"=>_m("Conditions for filtering items in related items window. This conds user can change."),
         "type"=>"STR",
         "example"=>"")
-
         ));
+
 $INPUT_TYPES["items"]["wi2"]=
 array("name"=>_m("Two Windows"),
   "desc"=>_m("Two Windows. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"),
