@@ -24,7 +24,7 @@ http://www.apc.org/
 	- this file should be included at the end of every language file. */
 
 /*	Please insert constants always AT THE END of the file */
-
+	
 define("L_CONSTANT_HIERARCH_EDITOR","Edit in Hierarchical editor (allows to create constant hierarchy)");
 define("L_CONSTANT_PROPAGATE","Propagate changes into current items");
 define("L_CONSTANT_OWNER","Constant group owner - slice");
@@ -55,4 +55,63 @@ define ("L_CONSTANT_LEVEL_COUNT","Level count");
 define ("L_CONSTANT_LEVEL", "Level");
 define ("L_SELECT","Select");
 define ("L_ADD_NEW","Add new");
-?>
+
+define('L_ID_COUNT_ALIAS','number of found items');
+define('L_V_NO_ITEM','HTML code for "No item found" message');
+define('L_INPUT_SHOW_HCO','Hierachical constants');
+
+define("L_GROUP_BY", "Group by");
+define("L_GROUP_BY_HLP", "");
+define("L_GROUP_HEADER", "Group header");
+define ("L_WHOLE_TEXT", "Whole text");
+define ("L_FIRST_LETTER", "1st letter");
+define ("L_LETTERS", "letters");
+define ("L_CASE_NONE", "Don't change");
+define ("L_CASE_UPPER","UPPERCASE");
+define ("L_CASE_LOWER","lowercase");
+define ("L_CASE_FIRST","First Upper");
+
+define("L_INPUT_VALIDATE_USER","User");			# added 03/01/02, setu@gwtech.org
+define("L_INPUT_DEFAULT_VAR", "Variable"); # Added by Ram on 5th March 2002 (Only for English)
+
+define("L_E_EXPORT_DESC_EXPORT","Choose, if you want export slices structure, data or both.");
+define("L_E_EXPORT_EXPORT_DATA","Export data");
+define("L_E_EXPORT_EXPORT_STRUCT","Export structure");
+define("L_E_EXPORT_EXPORT_GZIP","Use compression");
+define("L_E_EXPORT_EXPORT_TO_FILE","Store exported data in file");
+define("L_E_EXPORT_MUST_SELECT","You must select one or more slices to backup");
+define("L_E_EXPORT_SPEC_DATE","Export data from specified dates: ");
+define("L_E_EXPORT_FROM_DATE","From ");
+define("L_E_EXPORT_TO_DATE","to");
+define("L_E_EXPORT_DATE_ERROR","Sorry, this isn't valid date");
+define("L_E_EXPORT_DATE_TYPE_ERROR","Sorry, You must use this format: DD.MM.YYYY");
+
+define ("L_CALENDAR_VIEW", "Calendar");
+define ("L_V_FROM_DATE", "Start date field");
+define ("L_V_TO_DATE", "End date field");
+define ("L_V_DATEFLD","Date field");
+define ("L_V_GROUP_BOTTOM", "Group bottom format");
+define ("L_V_DAY", "Day cell top format");
+define ("L_V_DAY_BOTTOM", "Day cell bottom format");
+define ("L_V_EVENT", "Event format");
+define ("L_V_EMPTY_DIFFER", "Use other header for empty cells");
+define ("L_V_DAY_EMPTY", "Empty day cell top format");
+define ("L_V_DAY_EMPTY_BOTTOM", "Empty day cell bottom format");
+define ("L_MONTH", "Month List");
+define ("L_MONTH_TABLE", "Month Table");
+define ("L_V_CALENDAR_TYPE", "Calendar Type");
+define ("L_CONST_DELETE", "Delete whole group");
+define ("L_CONST_DELETE_PROMPT","Are you sure you want to PERMANENTLY DELETE this group? Type yes or no.");
+define ("L_NO", "no");
+define ("L_YES", "yes");
+define ("L_V_EVENT_TD", "Additional attribs to the TD event tag");
+define('L_C_TIMESTAMP1','Calendar: Time stamp at 0:00 of processed cell');
+define('L_C_TIMESTAMP2', 'Calendar: Time stamp at 24:00 of processed cell');
+define('L_C_NUMD','Calendar: Day in month of processed cell');
+define('L_C_NUMM','Calendar: Month number of processed cell');
+define('L_C_NUMY','Calendar: Year number of processed cell');
+
+define('L_V_D_SPACE','HTML code for space before comment');
+define('L_V_D_SEL_BUTTON','HTML code for "Show selected" button');
+define('L_V_D_ALL_BUTTON','HTML code for "Show all" button');
+define('L_V_D_NEW_BUTTON','HTML code for "Add" button');

@@ -803,29 +803,6 @@ define('L_FUNCTION',L_ALIAS_FUNC);
 define('L_RULE','Rule');
 
 define('L_ID_COUNT_ALIAS','number of found items');
-define('L_V_NO_ITEM','HTML code for "No item found" message');
-define('L_INPUT_SHOW_HCO','Hierachical constants');
-
-define("L_CONSTANT_HIERARCH_EDITOR","Edit in Hierarchical editor (allows to create constant hierarchy)");
-define("L_CONSTANT_PROPAGATE","Propagate changes into current items");
-define("L_CONSTANT_OWNER","Constant group owner - slice");
-define("L_A_CONSTANTS_HIER_EDT","Admin - Hierarchical Constants Setting");
-define("L_CONSTANT_HIER_SORT","Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name.");
-define("L_CONSTANT_DESC","Description");
-define("L_CONSTANT_HIER_SAVE","Save all changes to database");
-define("L_CONSTANT_CHOWN", "Change owner");
-
-define("L_ITEM_NOT_ANONYMOUS","This item isn't allowed to be changed anonymously.");
-define("L_MY_ITEM_ID_MISSING","You must supply a my_item_id to this script.");
-define("L_ITEM_NOT_EXISTS","Item with this ID does not exist.");
-
-define("L_NO_PS_FIELDS_GROUP", "You have not permissions to change fields settings for the slice owning this group");
-define("L_NO_PS_CATEGORY_GROUP", "You have not permissions to change category settings for the slice owning this group");
-define("L_CONSTANTS_HIER_EDT","Constants - Hiearchical editor");
-define("L_CONSTANT_OWNER_HELP", "Owner becomes whoever first updates values.");
-
-define("L_CONSTANT_HIERARCH_EDITOR","Edit in Hierarchy Editor (allows to store the values hierarchically)");
-define ("L_CONSTANT_ITEM_CHNG"," items changed to new value ");
 
 // constants used in param wizard only:
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";

@@ -823,8 +823,61 @@ define ("L_CONSTANT_LEVEL", "Úroveò");
 define ("L_SELECT","Zvolit");
 define ("L_ADD_NEW","Pøidat");
 
+define("L_GROUP_BY", "Seskupit dle");
+define("L_GROUP_BY_HLP", "");
+define("L_GROUP_HEADER", "Nadpis skupiny");
+define ("L_WHOLE_TEXT", "Celý text");
+define ("L_FIRST_LETTER", "1. písmeno");
+define ("L_LETTERS", "písmena");
+define ("L_CASE_NONE", "Nemìnit");
+define ("L_CASE_UPPER","VELKÝMI");
+define ("L_CASE_LOWER","malými");
+define ("L_CASE_FIRST","První Velké");
+
+define("L_INPUT_VALIDATE_USER","Uživatel");			# added 03/01/02, setu@gwtech.org
+define("L_INPUT_DEFAULT_VAR", "Promìnná"); # Added by Ram on 5th March 2002 (Only for English)
+
+define("L_E_EXPORT_DESC_EXPORT","Zvolte, chcete-li exportovat strukturu webíku, data nebo obojí.");
+define("L_E_EXPORT_EXPORT_DATA","Export dat");
+define("L_E_EXPORT_EXPORT_STRUCT","Export struktury");
+define("L_E_EXPORT_EXPORT_GZIP","Komprimovat");
+define("L_E_EXPORT_EXPORT_TO_FILE","Uložit exportovaná data do souboru");
+define("L_E_EXPORT_MUST_SELECT","Musíte vybrat nìjaké webíky pro zálohování");
+define("L_E_EXPORT_SPEC_DATE","Export dat z urèitých dnù: ");
+define("L_E_EXPORT_FROM_DATE","Od ");
+define("L_E_EXPORT_TO_DATE","do");
+define("L_E_EXPORT_DATE_ERROR","Toto není platné datum");
+define("L_E_EXPORT_DATE_TYPE_ERROR","Musíte použít formát: DD.MM.YYYY");
+
+define ("L_CALENDAR_VIEW", "Kalendáø");
+define ("L_V_FROM_DATE", "Políèko zaèátku události");
+define ("L_V_TO_DATE", "Políèko konce události");
+define ("L_V_GROUP_BOTTOM", "Spodní kód skupiny");
+define ("L_V_DAY", "Horní kód buòky s datem");
+define ("L_V_DAY_BOTTOM", "Dolní kód buòky s datem");
+define ("L_V_EVENT", "Kód události");
+define ("L_V_EMPTY_DIFFER", "Použít jiný nadpis pro prázdné buòky");
+define ("L_V_DAY_EMPTY", "Horní kód pro prázdné datum");
+define ("L_V_DAY_EMPTY_BOTTOM", "Spodní kód pro prázdné datum");
+define ("L_MONTH", "Mìsíc - seznam");
+define ("L_MONTH_TABLE", "Mìsíc - tabulka");
+define ("L_V_CALENDAR_TYPE", "Typ kalendáøe");
+define ("L_CONST_DELETE", "Smazat celou skupinu");
+define ("L_CONST_DELETE_PROMPT","Jste si jisti, že chcete PERMANENTNÌ SMAZAT tuto skupinu? Napište ano èi ne.");
+define ("L_NO", "ne");
+define ("L_YES", "ano");
+define ("L_V_EVENT_TD", "Další atributy do TD tagu pro událost");
+define('L_C_TIMESTAMP1','Kalendáø: Time stamp v 0:00 pøíslušného data');
+define('L_C_TIMESTAMP2', 'Kalendáø: Time stamp v 24:00 pøíslušného data');
+define('L_C_NUMD','Kalendáø: Den v mìsíci pøíslušného data');
+define('L_C_NUMM','Kalendáø: Èíslo mìsíce pøíslušného data');
+define('L_C_NUMY','Kalendáø: Rok pøíslušného data');
+
+
+
 // constants used in param wizard only:
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
+
 // new constants to be translated are here. Leave this "require" always at the 
 // end of this file
 // If You want to translate the new texts (which is in new_news_lang.php3 file),

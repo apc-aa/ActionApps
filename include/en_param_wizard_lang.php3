@@ -199,6 +199,9 @@ define("L_PARAM_WIZARD_FUNC_F_L_DESC","prints <i>the field</i> as a link if the 
 define("L_PARAM_WIZARD_FUNC_F_L_PAR0_NAME","link URL");
 define("L_PARAM_WIZARD_FUNC_F_L_PAR0_DESC","");
 define("L_PARAM_WIZARD_FUNC_F_L_PAR0_EXAMPLE","source_href.....");
+define("L_PARAM_WIZARD_FUNC_F_L_PAR1_NAME","tag addition");
+define("L_PARAM_WIZARD_FUNC_F_L_PAR1_DESC","additional text to the \"\\<a\\>\" tag");
+define("L_PARAM_WIZARD_FUNC_F_L_PAR1_EXAMPLE","target=_blank");
 define("L_PARAM_WIZARD_FUNC_F_E_NAME","edit item");
 define("L_PARAM_WIZARD_FUNC_F_E_DESC","_#ITEMEDIT used on admin page index.php3 for itemedit url");
 define("L_PARAM_WIZARD_FUNC_F_C_NAME","condition");
