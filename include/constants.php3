@@ -199,6 +199,12 @@ $VIEW_FIELDS["listlen"]         = array( "validate"=>"number", "insert"=>"quoted
 $VIEW_FIELDS["flag"]            = array( "validate"=>"number", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
 $VIEW_FIELDS["scroller"]        = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
 $VIEW_FIELDS["aditional"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["aditional2"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["aditional3"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["aditional4"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["aditional5"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["aditional6"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["noitem_msg"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
 
 # se_views.php3 - view types
 $VIEW_TYPES['list']  = array( "name" => L_COMPACT_VIEW,
@@ -233,7 +239,8 @@ $VIEW_TYPES['list']  = array( "name" => L_COMPACT_VIEW,
                               "cond3field" => L_V_COND3FLD ,
                               "cond3op" => L_V_COND3OP ,
                               "cond3cond" => L_V_COND3COND ,
-                              "listlen" => L_V_LISTLEN );
+                              "listlen" => L_V_LISTLEN ,
+                              "noitem_msg" => L_V_NO_ITEM );
 #                              "flag" => L_V_FLAG ,
 // TODO                              "scroller" => L_V_SCROLLER ,
 #                              "aditional" => L_V_ADITIONAL );
@@ -251,13 +258,14 @@ $VIEW_TYPES['full'] = array( 'name' => L_FULLTEXT_VIEW,
                               "cond2cond" => L_V_COND2COND ,
                               "cond3field" => L_V_COND3FLD ,
                               "cond3op" => L_V_COND3OP ,
-                              "cond3cond" => L_V_COND3COND);
+                              "cond3cond" => L_V_COND3COND ,
+                              "noitem_msg" => L_V_NO_ITEM );
 
 $VIEW_TYPES['digest'] = array( 'name' => L_DIGEST_VIEW,
                               "before" => L_V_BEFORE ,
                               "odd" => L_V_ODD ,
-                              "after" => L_V_AFTER);
-
+                              "after" => L_V_AFTER ,
+                              "noitem_msg" => L_V_NO_ITEM );
 
 $VIEW_TYPES['discus'] = array( 'name' => L_DISCUSSION_VIEW,
                               "before" => L_V_BEFORE ,
@@ -301,7 +309,6 @@ $VIEW_TYPES['const'] = array( 'name' => L_CONSTANT_VIEW,
                               "even_odd_differ" => L_V_EVENODDDIF ,
                               "o1_direction" => L_V_ORDER1DIR);
 
-
 $VIEW_TYPES['rss'] = array( 'name' => L_RSS_VIEW,
                               "before" => L_V_BEFORE ,
                               "odd" => L_V_ODD ,
@@ -319,7 +326,8 @@ $VIEW_TYPES['rss'] = array( 'name' => L_RSS_VIEW,
                               "cond3field" => L_V_COND3FLD ,
                               "cond3op" => L_V_COND3OP ,
                               "cond3cond" => L_V_COND3COND ,
-                              "listlen" => L_V_LISTLEN );
+                              "listlen" => L_V_LISTLEN ,
+                              "noitem_msg" => L_V_NO_ITEM );
 
 $VIEW_TYPES['static'] = array( 'name' => L_STATIC_VIEW, 
                               "odd" => L_V_ODD );
@@ -343,7 +351,8 @@ $VIEW_TYPES['script'] = array( 'name' => L_SCRIPT_VIEW,
                               "cond3field" => L_V_COND3FLD ,
                               "cond3op" => L_V_COND3OP ,
                               "cond3cond" => L_V_COND3COND ,
-                              "listlen" => L_V_LISTLEN );
+                              "listlen" => L_V_LISTLEN ,
+                              "noitem_msg" => L_V_NO_ITEM );
 
 # modification - options for modification field of views
 # alias - which aliases to show
@@ -390,6 +399,9 @@ require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 
 /*
 $Log$
+Revision 1.25  2002/02/05 21:46:03  honzam
+the message "no item found" can be redefined
+
 Revision 1.24  2002/01/10 13:50:05  honzam
 new possibilty to anonymously edit items on public sites
 

@@ -56,16 +56,17 @@ define("L_SETUP_NEXT", "Zalogujte se tímto úètem a vytvoøte první webík:");
 define("L_SETUP_SLICE", "Pøidat webík");
 
 // loginform language constants
-define("L_LOGIN", "Pøihlášení - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.0");
-define("L_LOGIN_TXT", "Vítejte! Pøihlašte se prosím Vaším jménem a heslem:");
-define("L_LOGINNAME_TIP", "Uživatelské jméno èi e-mail");
+define("L_LOGIN", "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.0");
+define("L_LOGIN_TXT", "Vítejte! Pøihlašte se prosím Vaším jménem a heslem (Welcome! Log in by your name and password): ");
+define("L_LOGINNAME_TIP", "Uživatelské jméno èi e-mail (User name or e-mail)");
 define("L_SEARCH_TIP", "Seznam je omezen na 5 uživatelù.<br>Pokud v seznamu není požadovaný uživatel, upøesnìte svùj dotaz");
-define("L_USERNAME", "Uživatelské jméno:");
-define("L_PASSWORD", "Heslo:");
-define("L_LOGINNOW", "Pøihlásit se");
-define("L_BAD_LOGIN", "Uživatelské jméno èi heslo je neplatné.");
-define("L_TRY_AGAIN", "Zkuste to znovu!");
-define("L_BAD_HINT", "Pokud urèitì zadáváte správné heslo, kontaktujte <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.");
+define("L_USERNAME", "Uživatelské jméno (User name):");
+define("L_PASSWORD", "Heslo (Password):");
+define("L_LOGINNOW", "Pøihlásit se - Log in");
+define("L_BAD_LOGIN", "Uživatelské jméno èi heslo je neplatné. (User name or password is not valid.)");
+define("L_TRY_AGAIN", "Zkuste to znovu! (Try it again!)");
+define("L_BAD_HINT", "Pokud urèitì zadáváte správné heslo, kontaktujte <a href=mailto:". ERROR_REPORTING_EMAIL . ">" . ERROR_REPORTING_EMAIL . "</a>.
+	(If you are sure you use the right password, contact ...)");
 define("LOGIN_PAGE_BEGIN",
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML>
@@ -75,8 +76,8 @@ define("LOGIN_PAGE_BEGIN",
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
 		
 // scroller language constants
-define("L_NEXT", "Další");
-define("L_PREV", "Pøedchozí");
+define("L_NEXT", ">>>");
+define("L_PREV", "<<<");
 define("L_BACK", "Zpìt");
 define("L_HOME", "Domù");
 
@@ -157,6 +158,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.20  2002/02/05 21:46:03  honzam
+the message "no item found" can be redefined
+
 Revision 1.19  2001/12/20 14:32:43  honzam
 *** empty log message ***
 

@@ -331,6 +331,7 @@ define("L_ALL_USERS", "Todos los usuarios");
 define("L_GROUPS_USERS", "Usuarios del grupo");
 define("L_POST", "Publicar");
 define("L_POST_PREV", "Publicar y vista preliminar");
+define("L_INSERT_PREV", "Publicar y vista preliminar");
 define("L_OK", "Aceptar");
 define("L_ACTIVE_BIN_EXPIRED", "Caducados");
 define("L_ACTIVE_BIN_PENDING", "Pendientes");
@@ -801,9 +802,13 @@ define('L_FUNCTION',L_ALIAS_FUNC);
 define('L_RULE','Rule');
 
 define('L_ID_COUNT_ALIAS','number of found items');
+define('L_V_NO_ITEM','HTML code for "No item found" message');
 
 /*
 $Log$
+Revision 1.19  2002/02/05 21:46:03  honzam
+the message "no item found" can be redefined
+
 Revision 1.18  2002/01/10 13:51:43  honzam
 new alias for number of returned items
 

@@ -332,6 +332,7 @@ define("L_ALL_USERS", "Vöetci uûivatelia");
 define("L_GROUPS_USERS", "Uûivatelia v skupine");
 define("L_POST", "Poslaù");
 define("L_POST_PREV", "Poslaù a pozrieù");
+define("L_INSERT_PREV", "Vloûit a pozrieù");
 define("L_OK", "OK");
 define("L_ACTIVE_BIN_EXPIRED", "Aktu·lne - ExpirovanÈ");
 define("L_ACTIVE_BIN_PENDING", "Aktu·lne - PripravenÈ");
@@ -797,9 +798,13 @@ define('L_FUNCTION',L_ALIAS_FUNC);
 define('L_RULE','Pravidlo');
 
 define('L_ID_COUNT_ALIAS','poËet nalezen˝ch Ël·nk˘');
+define('L_V_NO_ITEM','HTML code for "No item found" message');
 
 /*
 $Log$
+Revision 1.15  2002/02/05 21:46:04  honzam
+the message "no item found" can be redefined
+
 Revision 1.14  2002/01/10 13:51:43  honzam
 new alias for number of returned items
 

@@ -879,10 +879,14 @@ define('L_RULE','Rule');
 // ------------------------- New ----------------------------
 //define("", "");
 define('L_ID_COUNT_ALIAS','number of found items');
+define('L_V_NO_ITEM','HTML code for "No item found" message');
 
 
 /*
 $Log$
+Revision 1.8  2002/02/05 21:46:03  honzam
+the message "no item found" can be redefined
+
 Revision 1.7  2002/01/10 13:51:42  honzam
 new alias for number of returned items
 

@@ -175,8 +175,8 @@ define("L_ROLE_SUPER", "Super");
 
 define("L_MAIN_SET", "Hlavní nastavení");
 define("L_PERMISSIONS", "Nastavení práv");
-define("L_PERM_CHANGE", "Zmìna souèasných práv");
-define("L_PERM_ASSIGN", "Pøidìlení nových práv");
+define("L_PERM_CHANGE", "Zmìnit");
+define("L_PERM_ASSIGN", "Pøidat");
 define("L_PERM_NEW", "Hledej uživatele nebo skupinu");
 define("L_PERM_SEARCH", "Pøiøazení nových práv");
 define("L_PERM_CURRENT", "Zmìna souèasných práv");
@@ -332,6 +332,7 @@ define("L_ALL_USERS", "Všichni uživatelé");
 define("L_GROUPS_USERS", "Uživatelé ve skupinì");
 define("L_POST", "Poslat");
 define("L_POST_PREV", "Poslat a prohlédnout");
+define("L_INSERT_PREV", "Vložit & Prohlédnout");
 define("L_OK", "OK");
 define("L_ACTIVE_BIN_EXPIRED", "Aktuální - Expirované");
 define("L_ACTIVE_BIN_PENDING", "Aktuální - Pøipravené");
@@ -798,9 +799,13 @@ define('L_FUNCTION',L_ALIAS_FUNC);
 define('L_RULE','Pravidlo');
 
 define('L_ID_COUNT_ALIAS','poèet nalezených èlánkù');
+define('L_V_NO_ITEM','HTML kod namísto zprávy "Nenalezena žádná zpráva"');
 
 /*
 $Log$
+Revision 1.46  2002/02/05 21:46:03  honzam
+the message "no item found" can be redefined
+
 Revision 1.45  2002/01/10 13:51:42  honzam
 new alias for number of returned items
 

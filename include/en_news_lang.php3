@@ -329,8 +329,9 @@ define("L_NEWGROUP_HDR", "New group");
 define("L_GROUP_ID", "Group Id");
 define("L_ALL_USERS", "All Users");
 define("L_GROUPS_USERS", "Group's Users");
-define("L_POST", "Post");
-define("L_POST_PREV", "Post & Preview");
+define("L_POST", "Update");
+define("L_POST_PREV", "Update & Preview");
+define("L_INSERT_PREV", "Insert & Preview");
 define("L_OK", "OK");
 define("L_ACTIVE_BIN_EXPIRED", "Expired");
 define("L_ACTIVE_BIN_PENDING", "Pending");
@@ -801,6 +802,7 @@ define('L_FUNCTION',L_ALIAS_FUNC);
 define('L_RULE','Rule');
 
 define('L_ID_COUNT_ALIAS','number of found items');
+define('L_V_NO_ITEM','HTML code for "No item found" message');
 
 // ------------------------- New ----------------------------
 // not appended to other lang files
@@ -808,6 +810,9 @@ define('L_ID_COUNT_ALIAS','number of found items');
 
 /*
 $Log$
+Revision 1.58  2002/02/05 21:46:03  honzam
+the message "no item found" can be redefined
+
 Revision 1.57  2002/01/10 13:51:43  honzam
 new alias for number of returned items
 
