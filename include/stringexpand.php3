@@ -59,33 +59,6 @@ function parseSwitch($text) {
     return translateString( $variable, strtok("") );
 }
 
-/** Fills content array for current loged user */
-function GetAuthData() {
-    // create fields array - headline is enough - in headline........ we store
-    // user name
-    $fields['headline........'] = array( 'in_item_tbl' => false,
-                                         'text_stored' => true );
-    $conds[] = array( 'headline........' => $_SERVER['PHP_AUTH_USER'] );
-
-    // getReaderManagement slices
-    $db = getDB();
-    $db->tquery("SELECT id FROM slice WHERE type='ReaderManagement'");
-    while ($db->next_record()) {
-        $slices[] = unpack_id128($db->f('id'));
-    }
-    freeDB($db);
-
-    // get item id of current user
-    $zid = QueryZIDs($fields, '', $conds, '', '', 'ACTIVE', $slices, 0, false, '=' );
-    if( $zid->count()<1 )      return false;
-
-    $content = GetItemContent($zid);
-    if( !is_array($content) )  return false;
-
-    $ret[$_SERVER['PHP_AUTH_USER']] = reset($content);
-    return $ret;
-}
-
 /** Expands {user:xxxxxx} alias - auth user informations (of current user)
 *   @param $field - field to show ('headline........', 'alerts1....BWaFs' ...).
 *                   empty for username (of curent logged user)
@@ -118,11 +91,12 @@ function stringexpand_user($field='') {
                 }
             break;
         default:
-            if ( !isset($auth_user_info[$_SERVER['PHP_AUTH_USER']]) ) {
-                if( ( $auth_user_info = GetAuthData() ) == false )
-                    return "";
+            // $auth_user_info caches user's informations
+            if ( !isset($auth_user_info[$auth_user]) ) {
+                $auth_user_info[$auth_user] = GetAuthData();
             }
-            return $auth_user_info[$_SERVER['PHP_AUTH_USER']][$field][0]['value'];
+//            huhl($auth_user_info, $auth_user);
+            return get_if($auth_user_info[$auth_user]->getValue($field), "");
     }
 }
 # text = [ decimals [ # dec_point [ thousands_sep ]]] )
@@ -353,12 +327,12 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     #
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which are processed before expanding the function
-    if( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
+    if( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
       if ($parts[1] && ! isField($parts[1]))
         huhe("Warning: $out: $parts[1] is not a field, don't wrap it in { } ");
-      $fce = $parts[2];
+      $fce     = $parts[2];
       return QuoteColons($level, $maxlevel, $item->$fce($parts[1], $parts[3]));
       # QuoteColons used to mark colons, which is not parameter separators.
     }

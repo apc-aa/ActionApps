@@ -41,7 +41,7 @@ define("PS_DELETE_ITEMS",         "l");   # slice # delete items
 define("PS_EDIT",                 "A");   # slice # set slice properties
 define("PS_CATEGORY",             "B");   # slice # change slice categories
 define("PS_FIELDS",               "C");   # slice # edit fields defauts
-define("PS_SEARCH",               "D");   # slice # change search form settings
+define("PS_BOOKMARK",             "D");   # slice # change search form settings
 define("PS_USERS",                "E");   # slice # manage users
 define("PS_COMPACT",              "F");   # slice # change slice compact view
 define("PS_FULLTEXT",             "G");   # slice # change item fulltext view
@@ -82,12 +82,12 @@ define("PS_LINKS_EDIT_LINKS",     "l");   # slice # edit links
 define("PS_LINKS_ADD_SUBCATEGORY","m");   # slice # add subcategory to category
 define("PS_LINKS_DEL_SUBCATEGORY","n");   # slice # delete subcategory from category
 define("PS_LINKS_ADD_LINK",       "o");   # slice # add new link
-define("PS_LINKS_LINK2FOLDER",    "p");   
-define("PS_LINKS_LINK2ACT",       "q");   
+define("PS_LINKS_LINK2FOLDER",    "p");
+define("PS_LINKS_LINK2ACT",       "q");
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
 // super         - possibly letters 'QRSTUVW'
-define("PS_LINKS_SETTINGS",       "T");   
-define("PS_LINKS_EDIT_DESIGN",    "U");   
+define("PS_LINKS_SETTINGS",       "T");
+define("PS_LINKS_EDIT_DESIGN",    "U");
 
 //---------- Site -----------------
 // author        - possibly letters 'abcdefg'
@@ -368,14 +368,14 @@ function FilemanPerms ($auth, $slice_id) {
         $perms_ok = false;
     } else {
       $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
-  
+
       if ($db->num_rows() != 1) { $perms_ok = false; }
       else {
         $db->next_record();
         $fileman_dir = $db->f("fileman_dir");
         if (IsSuperadmin()) { $perms_ok = true; }
         else {
-          if (!$fileman_dir) { 
+          if (!$fileman_dir) {
               $perms_ok = false;
           } else {
             $perms_ok = false;
@@ -387,9 +387,9 @@ function FilemanPerms ($auth, $slice_id) {
               $perms_ok = true;
           }
         }
-      } 
+      }
     }
-    freeDB($db); 
+    freeDB($db);
     trace("-");
     return $perms_ok;
 }
@@ -438,12 +438,14 @@ function perm_username( $username ) {
         return $username;
     $begin = strpos($username, '=');
     $end   = strpos($username, ',');
-    if ( !$begin OR !$end )
-        return "anonym";
+    if ( $username == '9999999999' ) return "anonym";
+    if ( !$begin OR !$end )          return $username;  // possibly some Reader
     return substr($username, $begin+1, $end-$begin-1);
 }
 
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
+require_once $GLOBALS["AA_INC_PATH"] ."util.php3";          // for getDB()
+require_once $GLOBALS["AA_INC_PATH"] ."searchlib.php3";     // for queryzids()
+require_once $GLOBALS["AA_INC_PATH"] ."item_content.php3";  // for ItemContent class
 
 /** Looks into reader management slices whether the reader name is not yet used.
 *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
@@ -461,5 +463,93 @@ function IsReadernameFree ($username) {
     freeDB ($db);
     return $retval;
 }
+
+function AuthenticateReaderUsername($username, $password) {
+    if ( !$username ) return false;
+    $user_info = GetAuthData( $username );
+    if (  !$user_info->is_empty() AND
+          ($user_info->getValue(FIELDID_PASSWORD) == crypt($password, 'xx'))) {
+         return $username;   // user_id is the same as username for Readers
+    }
+    return false;
+}
+
+/** Returns array of all - not deleted - Reader slices */
+function getReaderSlices() {
+    $db = getDB();
+    $db->tquery("SELECT module.id FROM slice,module
+                  WHERE slice.type = 'ReaderManagement'
+                    AND slice.id   = module.id
+                    AND module.deleted < '1'");
+    while ($db->next_record()) {
+        $slices[] = unpack_id128($db->f('id'));
+    }
+    freeDB ($db);
+    return $slices;
+}
+
+/** return list of RM slices which matches the pattern */
+function FindReaderGroups($pattern) {
+    global $db;
+    $db->tquery("SELECT module.id,module.name FROM slice,module
+                  WHERE slice.type = 'ReaderManagement'
+                    AND slice.id   = module.id
+                    AND module.deleted < '1'
+                    AND module.name LIKE '$pattern%'");
+    while ($db->next_record()) {
+        $slices[unpack_id128($db->f('id'))] = array('name' => $db->f('name'));
+    }
+    return $slices;
+}
+
+/** Fills content array for current loged user or specified user */
+function GetAuthData( $username = false ) {
+    global $auth;
+    if ( !$username ) {
+        $username = get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uid"]);
+    }
+    // create fields array - USERNAME field is enough
+    $fields[FIELDID_USERNAME] = array( 'in_item_tbl' => false,
+                                       'text_stored' => true );
+    $conds[] = array( FIELDID_USERNAME => $username );
+    $slices = getReaderSlices();
+
+    // get item id of current user
+    $zid = QueryZIDs($fields, '', $conds, '', '', 'ACTIVE', $slices, 0, false, '=' );
+    return new ItemContent($zid);
+}
+
+/** returns basic information on user grabed from any Reader Management slice */
+function GetReaderIDsInfo($user_id) {
+    if ( !$user_id ) return false;
+    $user_info = GetAuthData( $user_id );
+    if ( $user_info->is_empty() ) return false;
+    $res['type'] = 'Reader';
+    $res['name'] = $user_info->getValue(FIELDID_FIRST_NAME)." ".$user_info->getValue(FIELDID_LAST_NAME);
+    $res['mail'] = $user_info->getValue(FIELDID_EMAIL);
+    return $res;
+}
+
+/** returns basic information on user grabed from any Reader Management slice */
+function GetReaderGroupIDsInfo($rm_id) {
+    if ( !$rm_id ) return false;
+    $slice = new slice($rm_id);
+    $res['type'] = 'ReaderGroup';
+    $res['name'] = $slice->getfield('name');
+    return $res;
+}
+
+/** return id of group (=Reader Management slice) in which is the user member */
+function GetReaderMembership($user_id) {
+    if ( !$user_id ) return false;
+    $user_info = GetAuthData( $user_id );
+    if ( $user_info->is_empty() ) return false;
+    // we use unpacked slice id as id of group for RM slices
+    return array($user_info->getSliceID());
+}
+
+
+
+
 
 ?>
