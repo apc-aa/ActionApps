@@ -114,27 +114,27 @@ list($fields,$prifields) = GetSliceFields($slice_id);
 if( !(isset($prifields) AND is_array($prifields)) )
   SendErrorPage(L_NO_FIELDS);
   
-# get defaults 
+// get defaults 
 reset($prifields);
 while(list(,$pri_field_id) = each($prifields)) {
   $f = $fields[$pri_field_id];
-  $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
+  $varname = 'v'. unpack_id($pri_field_id);  // "v" prefix - database field var
   $htmlvarname = $varname."html";
   if( !$$varname ) {
     $$varname = GetDefault($f);
     $$htmlvarname = GetDefaultHTML($f);
   }    
-  if( $f[input_validate]=='date') {            # get date from special variables
+  if( $f[input_validate]=='date') {            // get date from special variables
     $datectrl_name = new datectrl($varname);
-    if( !$datectrl_name->update())             # updates datectrl
-      # if not set - load from defaults
+    if( !$datectrl_name->update() AND !$f['required'])      // updates datectrl
+
+      // if not set - load from defaults
       $datectrl_name->setdate_int($$varname);
-    $$varname = $datectrl_name->get_date();    # write to var
+    $$varname = $datectrl_name->get_date();    // write to var
   }  
-  
-    # validate input data
-  if( !$notvalidate )
-  {
+
+    // validate input data
+  if ( !$notvalidate ) {
     if( $f[input_show] AND !$f[feed] ) {
       switch( $f[input_validate] ) {
         case 'text': 

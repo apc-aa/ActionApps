@@ -58,22 +58,19 @@ class datectrl {
 
 	# process form data
 	function update() {
-    $timevar  = "tdctr_" . $this->name . "_time";
-    $dayvar   = "tdctr_" . $this->name . "_day";
-    $monthvar = "tdctr_" . $this->name . "_month";
-    $yearvar  = "tdctr_" . $this->name . "_year";
-		if(isset($GLOBALS[$timevar])) 
-			$this->time = $GLOBALS[$timevar];
-		if(isset($GLOBALS[$dayvar])) 
-			$this->day = $GLOBALS[$dayvar];
-		if(isset($GLOBALS[$monthvar])) 
-			$this->month = $GLOBALS[$monthvar];
-		if(isset($GLOBALS[$yearvar])) 
-			$this->year = $GLOBALS[$yearvar];
-    return ( isset($GLOBALS[$timevar])
-             OR isset($GLOBALS[$dayvar])
-             OR isset($GLOBALS[$monthvar]) 
-             OR isset($GLOBALS[$yearvar]) );
+        $timevar  = chop($GLOBALS["tdctr_" . $this->name . "_time"]);
+        $dayvar   = chop($GLOBALS["tdctr_" . $this->name . "_day"]);
+        $monthvar = chop($GLOBALS["tdctr_" . $this->name . "_month"]);
+        $yearvar  = chop($GLOBALS["tdctr_" . $this->name . "_year"]);
+		if( $timevar ) 
+			$this->time = $timevar;
+		if( $dayvar) 
+			$this->day = $dayvar;
+		if( $monthvar ) 
+			$this->month = $monthvar;
+		if( $yearvar ) 
+			$this->year = $yearvar;
+        return ( $timevar OR $dayvar OR $monthvar OR $yearvar );
 	}	
 	
 	# set date, format form db
