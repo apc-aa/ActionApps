@@ -68,6 +68,12 @@ array ("name" => _m("Item IDs"));
 $INSERT_TYPES["items"]["now"] =
 array ("name" => _m("Now = always store current time"),
        "desc" => _m("Inserts the current time, no matter what the user sets."));
+$INSERT_TYPES["items"]["pwd"] = 
+array ("name" => _m("Password and Change Password"),
+       "desc" => _m("Stores value from a 'Password and Change Password' field type.
+           First prooves the new password matches the retyped new password,
+           and if so, MD5-encrypts the new password and stores it."));
+          
 /*"dte" => _m("Date"), 
  "cns" => _m("Constant"), 
  "num" => _m("Number"), 
@@ -91,7 +97,66 @@ array ("name" => _m("Now = current date"));
 $DEFAULT_VALUE_TYPES["items"]["variable"] =
 array ("name" => _m("Variable"),
        "desc" => _m("A dangerous function. Do not use."));
+$DEFAULT_VALUE_TYPES["items"]["rnd"] =
+array ("name" => _m("Random string"),
+       "desc" => _m("Random alphanumeric [A-Z0-9] string."),
+       "params"=>array(
+        array("name"=>_m("String length"),
+              "type"=>"INT",
+              "example"=>4),
+        array("name"=>_m("Field to check"),
+              "desc"=>_m("If you need a unique code, you must send the field ID,
+                  the function will then look into this field to ensure uniqueness."),
+              "type"=>"STRID",
+              "example"=>"undefined......."),
+        array("name"=>_m("Slice only"),
+              "desc"=>_m("Do you want to check for uniqueness this slice only 
+                  or all slices?"),
+              "type"=>"BOOL",
+              "example"=>1)
+       ));
+             
+// --------------------------------------------------------------------------------       
 
+$VALIDATE_TYPES["name"] = _m("Input Validate Type");
+$VALIDATE_TYPES["items"]["text"] = array (
+    "name"=>_m("No validation"));
+$VALIDATE_TYPES["items"]["url"] = array (
+    "name"=>_m("URL"));
+$VALIDATE_TYPES["items"]["e-mail"] = array (
+    "name"=>_m("E-mail"));
+$VALIDATE_TYPES["items"]["number"] = array (
+    "name"=>_m("Number = positive integer number"));
+$VALIDATE_TYPES["items"]["id"] = array (
+    "name"=>_m("Id = 1-32 hexadecimal digits [0-9a-f]"));
+$VALIDATE_TYPES["items"]["date"] = array (
+    "name"=>_m("Date = store as date"));
+$VALIDATE_TYPES["items"]["bool"] = array (
+    "name"=>_m("Bool = store as bool"));
+$VALIDATE_TYPES["items"]["user"] = array (
+    "name"=>_m("User = does nothing ???"));
+$VALIDATE_TYPES["items"]["unique"] = array (
+    "name"=>_m("Unique = proove uniqueness"),
+    "desc"=>_m("Validates only if the value is not yet used. Useful e.g.
+        for emails or user names."),
+    "params"=>array (
+        array("name"=>_m("Field ID"),
+              "desc"=>_m("Field in which to look for matching values."),
+              "type"=>"STRID",
+              "example"=>"undefined......."),
+        array("name"=>_m("Slice only"),
+              "desc"=>_m("Do you want to check for uniqueness this slice only 
+                  or all slices?"),
+              "type"=>"BOOL",
+              "example"=>1)
+     ));
+$VALIDATE_TYPES["items"]["pwd"] = array (
+    "name"=>_m("Password and Change Password"),
+    "desc"=>_m("Validates the passwords do not differ when changing password.
+        <i>The validation is provided only by JavaScript and not by ValidateInput()
+        because the insert
+        function does the validation again before inserting the new password.</i>"));
+       
 // --------------------------------------------------------------------------------       
        
 $INPUT_TYPES["name"] = _m("Input Type");
@@ -300,6 +365,40 @@ array("name"=>_m("Two Windows"),
     "desc"=>"",
     "type"=>"STR",
     "example"=>_m("Selected"))));
+$INPUT_TYPES["items"]["pwd"]=
+array("name"=>_m("Password and Change Password"),
+  "desc"=>_m("Password input boxes allowing to send password (for password-protected items)
+        and to change password (including the \"Retype password\" box).<br><br>
+        When a user fills new password, it is checked against the retyped password,
+        MD5-encrypted so that nobody may learn it and stored in the database.<br><br>
+        If the field is not Required, shows a 'Delete Password' checkbox."),
+  "params"=>array(
+    array("name"=>_m("Field size"),
+          "desc"=>_m("Size of the three fields"),
+          "type"=>"INT",
+          "example"=>"60"),
+    array("name"=>_m("Label for Change Password"),
+          "desc"=>_m("Replaces the default 'Change Password'"),
+          "type"=>"STR",
+          "example"=>_m("Change your password")),
+    array("name"=>_m("Label for Retype New Password"),
+          "desc"=>_m("Replaces the default \"Retype New Password\""),
+          "type"=>"STR",
+          "example"=>_m("Retype the new password")),
+    array("name"=>_m("Label for Delete Password"),
+          "desc"=>_m("Replaces the default \"Delete Password\""),
+          "type"=>"STR",
+          "example"=>_m("Delete password (set to empty)")),
+    array("name"=>_m("Help for Change Password"),
+          "desc"=>_m("Help text under the Change Password box (default: no text)"),
+          "type"=>"STR",
+          "example"=>_m("To change password, enter the new password here and below")),
+    array("name"=>_m("Help for Retype New Password"),
+          "desc"=>_m("Help text under the Retype New Password box (default: no text)"),
+          "type"=>"STR",
+          "example"=>_m("Retype the new password exactly the same as you entered into "
+            ."\"Change Password\".")),
+   ));  
 $INPUT_TYPES["items"]["nul"]=
 array("name"=>_m("Do not show"),
 	"desc"=>_m("This option hides the input field"));
