@@ -83,6 +83,7 @@ while($db->next_record())
 // find out list of "from fields"
 $from_fields[L_MAP_NOTMAP] = L_MAP_NOTMAP;
 $from_fields[L_MAP_VALUE] = L_MAP_VALUE;
+$from_fields[L_MAP_JOIN] = L_MAP_JOIN;
 
 if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
 $SQL= "SELECT id, name FROM field WHERE slice_id='$p_from_slice_id' ORDER BY name";
@@ -188,6 +189,9 @@ function Submit() {
              switch ($field_map[$f_id][feedmap_flag]) {
                case FEEDMAP_FLAG_VALUE :
                  $sel = L_MAP_VALUE;
+                 $val = htmlspecialchars($field_map[$f_id][value]); break;
+               case FEEDMAP_FLAG_JOIN :
+                 $sel = L_MAP_JOIN;
                  $val = htmlspecialchars($field_map[$f_id][value]); break;
                case FEEDMAP_FLAG_EMPTY: $sel =  L_MAP_NOTMAP; break;
                case FEEDMAP_FLAG_MAP :

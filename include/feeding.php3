@@ -42,9 +42,15 @@ function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to=
               AND to_slice_id = '$p_to_slice_id'";
   $db->query($SQL);
   while( $db->next_record() ) {
-    $val = ($db->f(flag) == FEEDMAP_FLAG_MAP) ?
-              $db->f(from_field_id) :
-              ( ($db->f(flag) == FEEDMAP_FLAG_VALUE) ? $db->f(value) : "" );
+  	switch ($db->f(flag)) {
+	case FEEDMAP_FLAG_MAP:
+		$val = $db->f(from_field_id); break;
+	case FEEDMAP_FLAG_VALUE:
+	case FEEDMAP_FLAG_JOIN:
+		$val = $db->f(value); break;
+	default:
+		$val = ""; break;
+	}
     $m[$db->f(to_field_id)] = array("feedmap_flag"=>$db->f(flag),"val"=>$val);
   }
 
@@ -109,6 +115,56 @@ function IsItemFed($item_id, $destination) {
   return false;
 }
 
+/* returns the joined fields 
+	Params: 
+		columns = values of the processed item (db record)
+		fields  = source fields description
+		params  = parameters of the "join" mapping function - separated by ':', contains
+			field names separated by HTML separator description (the result will be the
+			fields' content separated by the separators)
+		result  = the value to be changed (see FeedItemTo)
+	Return value:
+		result
+   written by Jakub Adámek
+*/
+
+function FeedJoin ($columns, $fields, $params, &$result)
+{
+	$params = str_replace ("#:","#~",$params);
+	$params = split (":",$params);
+	reset($params);
+	$parts;
+	$i = 0;
+	// should all the joined fields be updated? 0 = don't know, -1 = no, 1 = yes
+	$update = 0;
+	while (list (,$val) = each ($params)) {
+		if ($i++ % 2 == 0) {
+			switch ($fields[$val][feed]) {
+			case STATE_UNFEEDABLE:	 return;
+			case STATE_FEEDNOCHANGE:
+				$result[flag] |= FLAG_FREEZE;
+				$update = -1;
+  			 	break;
+			case STATE_FEEDABLE_UPDATE_LOCKED: 
+				$result[flag] |= FLAG_FREEZE; // break shouldn't be here!
+			case STATE_FEEDABLE_UPDATE:
+				if ($update > -1) $update = 1;
+				break;
+			}
+			if (is_array($columns[$val]))
+				$result_val .= $columns[$val][0][value];
+			else $result_val .= $val;
+		}
+		else $result_val .= $val;
+	}
+	$result[flag] |= FLAG_UPDATE;
+	//if ($update != 1) // the function "update" doesn't support joined fields
+	$result[flag] -= FLAG_UPDATE;
+	$result[value] = str_replace ("#~",":",$result_val);
+}
+
+
+
 // copy one item
 function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, $tocategory=0,
                     $content="") {
@@ -123,12 +179,14 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
   $p_destination = q_pack_id($destination);
 
   list($fields_to,) = GetSliceFields($destination);
-  $map = GetFieldMapping($from_slice_id, $destination, $fields,$fields_to);
+  $map = GetFieldMapping($from_slice_id, $destination, $fields, $fields_to);
 
   if( !$content )
     $content = GetItemContent($item_id);
   $content4id = $content[$item_id];   # shortcut
 
+// print_r($content4id);
+  
   $catfieldid = GetCategoryFieldId( $fields );
 
   if( $catfieldid AND ( (string)$tocategory != "0" ) ) {
@@ -161,7 +219,9 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
             $new4id[$newfld][0][flag] |= FLAG_FREEZE | FLAG_UPDATE;   #update and don't allow to change
         }
         break;
-      case FEEDMAP_FLAG_VALUE : $new4id[$newfld][0][value] = $val;
+      case FEEDMAP_FLAG_VALUE : $new4id[$newfld][0][value] = $val; break;
+	  case FEEDMAP_FLAG_JOIN: 	
+	  	FeedJoin ($content4id, $fields, $val, $new4id[$newfld][0]); break;
     }
 
     $new4id[$newfld][0][flag] |= FLAG_FEED;      # mark as fed
@@ -210,7 +270,7 @@ function CreateFeedTree($sl_id, $from_category_id) {
 
       $from_category_id = $val[category];
       if( $from_category_id )
-          $p_from_cat_id = q_pack_id($from_category_id);
+          $p_from_cat_id = pack_id($from_category_id);
 
       $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
                    feeds.to_approved, feeds.to_category_id
@@ -369,6 +429,9 @@ function DeleteItem($db, $id) {
 
 /*
 $Log$
+Revision 1.15  2001/12/18 12:02:19  honzam
+new possibility to join fields when fields are fed to another slice
+
 Revision 1.14  2001/08/23 09:58:49  honzam
 fixed two bugs with feeding: Error with next_record() and problems with  quoting already fed items.
 

@@ -63,6 +63,9 @@ while (list($to_field_id,$val) = each($fmap)) {
     case L_MAP_VALUE:
       $flag = FEEDMAP_FLAG_VALUE ;
       $catVS->add("value", "quoted", $fval[$to_field_id]); break;
+	case L_MAP_JOIN:
+	  $flag = FEEDMAP_FLAG_JOIN;
+      $catVS->add("value", "quoted", $fval[$to_field_id]); break;  
     case  FEEDMAP_FLAG_EXTMAP :
     case  FEEDMAP_FLAG_MAP :
       $flag = ($ext_slice) ? FEEDMAP_FLAG_EXTMAP : FEEDMAP_FLAG_MAP ;

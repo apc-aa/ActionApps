@@ -59,6 +59,7 @@ function GetExternalMapping($l_slice_id, $r_slice_id) {
         $v = $db->f(from_field_id);
         $map_to[$v] = $db->f(from_field_name) ;
         break;
+	  case FEEDMAP_FLAG_JOIN:
       case FEEDMAP_FLAG_VALUE :  $v = $db->f(value); break;
       case FEEDMAP_FLAG_EMPTY :  $v = ""; break;
     }
@@ -141,6 +142,9 @@ function iso8601_to_unixstamp($t) {
 
 /*
 $Log$
+Revision 1.3  2001/12/18 12:02:19  honzam
+new possibility to join fields when fields are fed to another slice
+
 Revision 1.2  2001/10/02 11:36:41  honzam
 bugfixes
 
