@@ -47,7 +47,11 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
                       $hlp="", $morehlp="", $html=false) {
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
   $morehlp=safe($morehlp);
-
+  if( !$maxsize )
+    $maxsize = 254;
+  if( !$size )
+    $size = 25;
+  
   if( $html ){
     $htmlvar = $name."html";
     $htmlrow = "<input type='radio' name='$htmlvar' value='h'".
@@ -217,6 +221,11 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
 function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, 
                            $needed=false, $hlp="", $morehlp="") {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
+  if( !$maxsize )
+    $maxsize = 254;
+  if( !$size )
+    $size = 25;
 
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
@@ -454,6 +463,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.17  2001/10/24 16:48:10  honzam
+fixed bug with unspecified maxlength parameter
+
 Revision 1.16  2001/09/27 15:53:39  honzam
 New related stories support, New "Preselect" input option
 
