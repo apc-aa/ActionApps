@@ -63,9 +63,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "<TITLE>".L_A_FTP_TIT."</TITLE>";
 echo "</HEAD>";
 
-global $show;
-$show["fileman"] = false;
-require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+require $GLOBALS[AA_INC_PATH]."menu.php3"; 
+showMenu ($aamenus, "sliceadmin","fileman");
 
 echo "<H1><B>" . L_A_FTP_TIT . " - ".L_FILE." ".$fe_filename . "</B></H1>";
 
