@@ -45,7 +45,7 @@ if ($list["hint"]) echo $list["hint"]."<br>";
 ksort ($list["items"]);
 reset ($list["items"]);
 echo "<table border=0>";
-$bottom_row = "<a href='top'>"._m("TOP")."</a>";
+$bottom_row = "<a href='#top'>"._m("TOP")."</a>";
 while (list ($name, $item) = each ($list["items"])) {
     echo "<tr><td><b>$name</b></td><td><a href='#$name'>$item[name]</a></td></tr>";
     $bottom_row .= " - <a href='#$name'>$name</a>";
