@@ -1,6 +1,118 @@
 <?php
-//$Id$
+# $Id$
+
 # Application wide configuration options
+
+# THIS FILE SHOULD NOT BE WORLD READABLE, BUT IT NEEDS TO BE READABLE BY
+# YOUR WWW SERVER
+
+# This is the Action Application main configuration file. In fact, this file
+# is a php script which is included into every php program, thus, php
+# syntax is used. This basically means that this file defines constants
+# in the form
+#    $name = "value";
+# or in the form
+#    define("name", "value);
+
+# AA_INC_PATH defines the AA include directory. It must be an absolute
+# path. Normally this is the path to the directory where this file
+# (config.php3) is in. Remove the leading # sign in front of the line
+# and fill in the correct value between the quotes. Make sure to terminate
+# this path with a slash!
+# Example:
+# $AA_INC_PATH = "/home/httpd/html/aa/include/";
+$AA_INC_PATH = ""; 
+
+# Fill in your internet domain name here.
+define("DEFAULT_ORG_ID", "ecn.cz");
+
+# This is for accessing the database. You need to define the name of the host
+# where the database server runs, the database name, a user name for logging
+# in and a passowrd in clear text for the login.
+define("DB_HOST", "localhost");
+define("DB_NAME", "aadb");
+define("DB_USER", "aadbuser");
+define("DB_PASSWORD", "");
+
+# ID of AA (any unique 32chars long hexadecimal number)
+# Please change this value to be unique
+define("AA_ID", "420224311780abcd420224311780abcd");
+
+# Select permissions system (exactly one of "dummy", "ldap", "sql")
+define("PERM_LIB", "sql");
+
+# The following settings are needed for LDAP based permission system only.
+define("LDAP_HOST", "ecn4.ecn.cz");
+define("LDAP_BINDDN", "cn=aa,dc=ecn,dc=apc,dc=org");
+define("LDAP_BINDPW", "");                           // password
+define("LDAP_BASEDN", "dc=ecn,dc=apc,dc=org");
+define("LDAP_PEOPLE", "dc=ecn,dc=apc,dc=org");
+define("LDAP_GROUPS", "dc=ecn,dc=apc,dc=org");
+define("LDAP_ACLS", "dc=ecn,dc=apc,dc=org");
+
+# e-mail for bug reporting contact
+define("ERROR_REPORTING_EMAIL", "root");
+
+# set this directive to true, if you use MySQL 
+# (uses LIMIT clause in SELECTs)
+define("OPTIMIZE_FOR_MYSQL", false);
+
+# set this directive to true, if your php already auto-includes phplib
+# if it is 'false' and it should be true you'll get an error like:
+# Fatal error: DB_Sql is already a function or class in
+#/var/php/phplib/php/db_mysql.inc on line 12
+define("PHPLIB_ALREADY_LOADED", false);
+
+# The style sheet for administrative pages. Leave it as it is for now,
+# you can later customize it if you want.
+define("ADMIN_CSS","admin.css");
+# The style sheet for slice preview.
+define("ADM_SLICE_CSS","adm_slice.css");
+
+# number of shown pages links in scroller's navigation bar
+define("SCROLLER_LENGTH", 7);
+
+# Would you like to display debug messagess?
+define("DEBUG_FLAG", true);
+
+if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
+  echo "you must set AA_INC_PATH and other variables in config.php3 !";
+};
+
+# Language: uncomment one language file
+require ($AA_INC_PATH . "en_common_lang.php3");  # English
+# require ($AA_INC_PATH . "cz_common_lang.php3");  # Czech
+
+define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
+
+# The folloging items have to be changed or added if you create new
+# action applications. For a first time installation, you don't need
+# to care about them.
+
+# index names must be less than 20 characters (as is en_news)
+$ActionAppConfig[en_news][name] = "News";
+$ActionAppConfig[en_news][file] = "en_news_lang.php3";
+# $ActionAppConfig[news][file] = "cz_language.php3";    # Czech language news
+
+$ActionAppConfig[en_action_alerts][name] = "Action alerts";
+$ActionAppConfig[en_action_alerts][file] = "en_news_lang.php3";
+
+$ActionAppConfig[en_events][name] = "Events listings";
+$ActionAppConfig[en_events][file] = "en_news_lang.php3";
+
+$ActionAppConfig[en_press_rel][name] = "Press release publisher";
+$ActionAppConfig[en_press_rel][file] = "en_press_lang.php3";
+
+$ActionAppConfig[en_jobs][name] = "Job listing";
+$ActionAppConfig[en_jobs][file] = "en_news_lang.php3";
+
+$ActionAppConfig[en_addresses][name] = "Address list";
+$ActionAppConfig[en_addresses][file] = "en_news_lang.php3";
+
+$ActionAppConfig[en_media_mon][name] = "Media monitoring";
+$ActionAppConfig[en_media_mon][file] = "en_news_lang.php3";
+
+
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG
@@ -51,122 +163,4 @@ if (defined ("SITE_CONFIG")) {
 // end SITE_CONFIG
 // ------------------------------------------------------------------
 
-# //add new CONSTANTS HERE
-
-// new INSTALL, set this variable
-#  $AA_INC_PATH = ""; 
-if (!isset($AA_INC_PATH)){
-  echo "you must set AA_INC_PATH and other variables in config.php3 !";
-};
-
-# Your Internet Domain
-define("DEFAULT_ORG_ID", "ecn.cz");
-
-# DB Access Configuration
-define("DB_HOST", "localhost");
-define("DB_NAME", "aadb");
-define("DB_USER", "toolkit");
-define("DB_PASSWORD", "");
-
-# ID of AA (any unique 32chars long hexadecimal number)
-# Please change this value to be unique
-define("AA_ID", "420224311780abcd420224311780abcd");
-
-# Select permissions system (exactly one of "dummy", "ldap", "sql")
-define("PERM_LIB", "ldap");
-
-define("LDAP_HOST", "ecn4.ecn.cz");
-define("LDAP_BINDDN", "cn=aa,dc=ecn,dc=apc,dc=org");
-define("LDAP_BINDPW", "");                           // password
-define("LDAP_BASEDN", "dc=ecn,dc=apc,dc=org");
-define("LDAP_PEOPLE", "dc=ecn,dc=apc,dc=org");
-define("LDAP_GROUPS", "dc=ecn,dc=apc,dc=org");
-define("LDAP_ACLS", "dc=ecn,dc=apc,dc=org");
-
-# e-mail for bug reporting contact
-define("ERROR_REPORTING_EMAIL", "technical@ecn.cz");
-
-# set this directive to true, if you use MySQL 
-# (uses LIMIT clause in SELECTs)
-define("OPTIMIZE_FOR_MYSQL", false);
-
-# set this directive to true, if your php already auto-includes phplib
-
-# if it is 'false' and it should be true you'll get an error like:
-# Fatal error: DB_Sql is already a function or class in
-#/var/php/phplib/php/db_mysql.inc on line 12
-
-# IGC does some weird things.  These are different at IGC.
-define("PHPLIB_ALREADY_LOADED", false);
-define("ADM_SLICE_CSS","adm_slice.css");
-define("ADMIN_CSS","admin.css");
-
-# number of shown pages links in scroller's navigation bar
-define("SCROLLER_LENGTH", 7);
-
-# Would you like to display debug messagess?
-define("DEBUG_FLAG", true);
-
-# Language: uncomment one language file
-#echo "AA is $AA_INC_PATH \n";
-require ($AA_INC_PATH . "en_common_lang.php3");  # English
-# require ($AA_INC_PATH . "cz_common_lang.php3");  # Czech
-
-define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
-
-# index names must be less than 20 characters (as is en_news)
-$ActionAppConfig[en_news][name] = "News";
-$ActionAppConfig[en_news][file] = "en_news_lang.php3";
-# $ActionAppConfig[news][file] = "cz_language.php3";    # Czech language news
-
-$ActionAppConfig[en_action_alerts][name] = "Action alerts";
-$ActionAppConfig[en_action_alerts][file] = "en_news_lang.php3";
-
-$ActionAppConfig[en_events][name] = "Events listings";
-$ActionAppConfig[en_events][file] = "en_news_lang.php3";
-
-$ActionAppConfig[en_press_rel][name] = "Press release publisher";
-$ActionAppConfig[en_press_rel][file] = "en_pr_lang.php3";
-
-$ActionAppConfig[en_jobs][name] = "Job listing";
-$ActionAppConfig[en_jobs][file] = "en_news_lang.php3";
-
-$ActionAppConfig[en_addresses][name] = "Address list";
-$ActionAppConfig[en_addresses][file] = "en_news_lang.php3";
-
-$ActionAppConfig[en_media_mon][name] = "Media monitoring";
-$ActionAppConfig[en_media_mon][file] = "en_news_lang.php3";
-
-/*
-$Log$
-Revision 1.2  2000/07/12 10:47:28  kzajicek
- fixed print of old config name
-
-Revision 1.1  2000/07/11 09:31:54  kzajicek
-Renamed config.inc to config.php3
-
-Revision 1.3  2000/07/07 21:41:42  honzam
-SCROLLER_LENGTH missing bug fixed
-
-Revision 1.2  2000/07/05 14:41:30  kzajicek
-Replaced "require" by "include" (include does not work inside if - then) and
-changed the test to use "defined".
-
-Revision 1.1.1.1  2000/06/21 18:40:23  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:12  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.9  2000/06/12 21:41:24  madebeer
-removed whitespace from config-ecn.inc
-added $Id $Log and $Copyright to some stray files
-
-Revision 1.8  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>
