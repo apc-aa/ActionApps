@@ -28,14 +28,14 @@ http://www.apc.org/
                etc.
 */
 
-if (!$alerts["run_filler"]) return;
-
 require "../../include/config.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
 require "cf_common.php3";
+
+if (!$alerts["run_filler"]) return;
 
 $db = new DB_AA;
 
@@ -45,7 +45,7 @@ $collid = $alerts["collectionid"];
 if ($userid) {
     // is the user ID valid?
     $db->query ("SELECT * FROM alerts_user WHERE id=$userid");
-    if (!$db->next_record()) { $err[] = _m("Wrong user ID"); return; }
+    if (!$db->next_record()) { my_die(_m("Wrong user ID")); return; }
 }
 
 else {
@@ -55,18 +55,19 @@ else {
         $userid = $db->f("id");
     // no email nor user ID given => nothing will be changed in database
     else if (!$alerts["email"]) return;
-    else if (!ValidateInput ("email", "email", $alerts["email"], $err, true, "email")) return;
+    else if (!ValidateInput ("email", "email", $alerts["email"], $err, true, "email")) 
+        { my_die($err); return; }
 }
 
 if ($userid)
-    if ($db->f("password") && $db->f("password") != md5 ($alerts["password"])) 
-        { $err[] = _m("Wrong password."); return; }
+    if ($db->f("password") && $db->f("password") != $alerts["password"]) 
+        { my_die (_m("Wrong password.")); return; }
 
 // change password        
 $user_varset = new CVarset();
 if ($alerts["chpwd"]) {
-    if ($alerts["chpwd"] != $alerts["chpwd2"]) $err[] = "Passwords differ.";
-    else $user_varset->add ("password", "text", md5 (stripslashes ($alerts["chpwd"])));
+    if ($alerts["chpwd"] != $alerts["chpwd2"]) my_die ("Passwords differ.");
+    else $user_varset->add ("password", "text", $alerts["chpwd"]);
 }
     
 reset ($cf_fields);
@@ -123,4 +124,9 @@ if ($alerts["collectionid"]) {
                     VALUES ($userid, $collid, $filterid, $myindex)");
     }        
 }        
+
+function my_die ($err) {
+   echo "<p class=\"cf_warning\">$err</p>";
+}
+
 ?>

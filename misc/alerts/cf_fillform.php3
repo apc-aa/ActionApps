@@ -26,15 +26,15 @@ http://www.apc.org/
         $cid or $alerts[collectionid] .. collection ID (if you want to refill collection info)
 */
 
-if (!isset ($uid)) $uid = $alerts["userid"];
-if (!isset ($cid)) $cid = $alerts["collectionid"];
-if (!$uid) return;
-
 require "../../include/config.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
 require "cf_common.php3";
+
+if (!isset ($uid)) $uid = $alerts["userid"];
+if (!isset ($cid)) $cid = $alerts["collectionid"];
+if (!$uid) return;
 
 $db = new DB_AA;
 $alerts = "";
@@ -49,7 +49,7 @@ while (list ($fname, $fprop) = each ($cf_fields))
 $alerts["lang"] = $db->f("lang");
 
 echo "
-<SCRIPT language=\"javascript\" src=\"".AA_INSTAL_URL."javascript/fillform.js\">
+<SCRIPT language=\"javascript\" src=\"".$AA_INSTAL_PATH."javascript/fillform.js\">
 </SCRIPT>
 <SCRIPT language=\"javascript\"><!--\n";
 
@@ -81,10 +81,10 @@ echo "setControl ('cf".$cid."', 'alerts[userid]', $uid);
 
     function validate() {
         var myform = document.cf".$cid.";
-        if (myform['alerts[chpwd]'] != null 
-            && myform['alerts[chpwd]'].value != myform['alerts[chpwd2]'].value) {
+        if (myform['md5[alerts][chpwd]'] != null 
+            && myform['md5[alerts][chpwd]'].value != myform['md5[alerts][chpwd2]'].value) {
             alert ('"._m("The two given passwords differ.")."');
-            myform['alerts[chpwd]'].focus();
+            myform['md5[alerts][chpwd]'].focus();
             return false;
         }
         return true;
@@ -92,10 +92,4 @@ echo "setControl ('cf".$cid."', 'alerts[userid]', $uid);
 // -->
 </SCRIPT>
 ";
-
-if (is_array ($err)) {
-    reset ($err);
-    while (list (, $message) = each ($err))
-        echo "<p class=\"cf_warning\">$message</p>";
-}
 ?>

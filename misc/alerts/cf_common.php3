@@ -22,7 +22,7 @@ http://www.apc.org/
 require "util.php3";
 require "../../include/util.php3";
 
-add_vars ();
+add_post2shtml_vars ();
 
 $cf_fields = array (
     "email" => array (
