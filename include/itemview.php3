@@ -126,12 +126,17 @@ class itemview {
       $this->zids = $zids;
   }
 
+  /** returns true, if view have to show random item (weighted or not) */
+  function is_random() {
+      return (substr($this->from_record, 0, 6) == 'random');
+  }
+
   function get_output_cached($view_type="") {
     trace("+","get_output_cached",null); #$this);
 
     #create keystring from values, which exactly identifies resulting content
 
-    if( substr($this->from_record, 0, 6) == 'random' ) { # don't cache random item
+    if( $this->is_random() ) {                         # don't cache random item
         $res = $this->get_output($view_type);
         trace("-");
         return $res;
@@ -417,8 +422,10 @@ class itemview {
       return;
     }
 
+    $is_random = $this->is_random();
+
     # fill the foo_ids - ids to itemids to get from database
-    if( substr($this->from_record, 0, 6) != 'random') {
+    if( !$is_random ) {
       $foo_zids = $this->zids->slice((integer)$this->from_record,
          ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
@@ -472,6 +479,13 @@ class itemview {
         }
       }
       $this->from_record = 0;
+    }
+
+    // count hit for random item - it is used for banners, so it is important
+    // to count display number
+    if ( $is_random AND ($this->zids->count()==1) ) {
+        $l_ids = $this->zids->longids();
+        CountHit($l_ids[0]);
     }
 
     switch ( $view_type ) {
