@@ -125,7 +125,7 @@ function ParseViewParameters($query_string="") {
                if ( $command[2] == 'url' ) {
                    $command[2] = $x;
                }
-  	           $zids = new zids(array_slice($command,2));
+               $zids = new zids(array_slice($command,2));
 //               for( $i=2; $i<count($command); $i++)
 //                 $item_ids[] = $command[$i];
 // This is bizarre code, just incrementing the first item, left as it is
@@ -389,7 +389,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $slice_id = unpack_id128($view_info["slice_id"]);
     }
 
-    // At this point, view_info["slice_id"] = $slice_id 
+    // At this point, view_info["slice_id"] = $slice_id
     // and view_param[slice_id] is empty or same
 
   $cache_sid = $slice_id;     # pass back to GetView (passed by reference)
@@ -433,6 +433,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $format = GetDiscussionFormat($view_info);
     // This is probably a bug, I think it should be
     //  $format['slice_id'] = pack_id128($slice_id); // packed, not quoted
+    //  Re: No, it is not bug - format normaly holds data from slice table,
+    //      where id of slice is stored in 'id' column (honzam)
+
       $format['id'] = pack_id128($slice_id);                  // set slice_id because of caching
 
       // special url parameter disc_url - tell us, where we have to show
@@ -446,7 +449,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $ret=$itemview->get_output_cached("discussion");
       trace("-");
       return($ret);
-
 
     case 'links':              // links       (module Links)
     case 'categories':         // categories  (module Likns)
@@ -481,6 +483,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $itemview = new itemview( $format, GetConstantFields(), $aliases,
                                 $zids, $list_from, $listlen, shtml_url(),
                                 "", $content_function);
+      $itemview->parameter('category_id', $category_id);
       return $itemview->get_output_cached($itemview_type);
 
     case 'seetoo':
@@ -529,8 +532,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
       $sort  = GetViewSort($view_info);
 
-	$zids2 =
-	    QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
+    $zids2 =
+        QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
                          $group_by, "ACTIVE", $slices, 0, $zids);
 
     # Note this zids2 is always packed ids, so lost tag information
@@ -540,7 +543,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
         if ($debug) huhl("Retagged zids=",$zids2);
     }
 
-	if ($debug) huhl("GetViewFromDB: Filtered ids=",$zids2);
+    if ($debug) huhl("GetViewFromDB: Filtered ids=",$zids2);
 
       $format = GetViewFormat($view_info, $selected_item);
       $format['calendar_month'] = $month;

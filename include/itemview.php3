@@ -63,6 +63,9 @@ class itemview {
   var $get_content_funct;  // function to call, if we want to get content
                            // (using "Abstract Data Structure" described also
                            // in {@link http://apc-aa.sourceforge.net/faq/#1337})
+  var $parameters;         // optional asociative array of additional parameters
+                           // - used for category_id (in Links module) ...
+                           // - filed by parameter() method
 
   function itemview( $slice_info, $fields, $aliases, $zids, $from, $number,
                      $clean_url, $disc="", $get_content_funct='GetItemContent'){
@@ -82,20 +85,22 @@ class itemview {
                                       #   fulltext_format_bottom,
                                       #   banner_position, banner_parameters
 
-    $this->group_fld = ($slice_info['category_sort'] ?
-                        GetCategoryFieldId($fields) : $slice_info['group_by']);
+    $this->group_fld   = ($slice_info['category_sort'] ?
+                         GetCategoryFieldId($fields) : $slice_info['group_by']);
 
-    $this->aliases = $aliases;
+    $this->aliases     = $aliases;
     // add special alias, which is = 1 for selected item (given by
     // set[34]=selected-43535 view.php3 parameter
     if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] )
         $this->aliases['_#SELECTED'] = array('fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>"");
-    $this->fields = $fields;
-    $this->zids = $zids;
+    $this->fields      = $fields;
+    $this->zids        = $zids;
     $this->from_record = $from;      # number or text "random[:<weight_field>]"
     $this->num_records = $number;    # negative number used for displaying n-th group of items only
-    $this->clean_url = $clean_url;
-    $this->disc = $disc;
+    $this->clean_url   = $clean_url;
+    $this->disc        = $disc;
+    $this->parameters  = array();
+
 
     switch( (string)$get_content_funct ) {
         case '1':         // - for backward compatibility when $use_short_ids
@@ -109,6 +114,12 @@ class itemview {
         default:
             $this->get_content_funct = $get_content_funct;
     }
+  }
+
+  /** Optional asociative array of additional parameters
+   *  Used for category_id (in Links module) ... */
+  function parameter($property, $value ) {
+      $this->parameters[$property] = $value;
   }
 
   function assign_items($zids) {
@@ -384,6 +395,7 @@ class itemview {
     if ($view_type == "discussion") {
       trace("=","","discussion type ".$this->disc['type']);
       $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
+      $CurItem->set_parameters($this->parameters);
       switch ($this->disc['type']) {
         case 'thread' : $out = $this->get_disc_thread($CurItem); break;
         case 'fulltext' : $out = $this->get_disc_fulltext($CurItem); break;
@@ -431,6 +443,7 @@ class itemview {
     if ($debug) huhl("itemview:get_content: found",$content);
 
     $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
+    $CurItem->set_parameters($this->parameters);
 
     # process the random selection (based on weight)
     if( $rweight && is_array($this->fields[$rweight]) ) {
@@ -587,6 +600,7 @@ class itemview {
     function get_output_calendar (&$content) {
         trace("+","get_output_calendar");
         $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
+        $CurItem->set_parameters($this->parameters);
 
         $month = $this->slice_info['calendar_month'];
         $year = $this->slice_info['calendar_year'];
