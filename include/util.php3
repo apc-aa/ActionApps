@@ -793,13 +793,6 @@ function HtmlPageBegin() {
   echo HTML_PAGE_BEGIN;
 }  
 
-function HtmlPageEnd() {
-  echo "
-    </TD></TR></TABLE>
-    </TD></TR></TABLE>
-    </BODY></HTML>";
-}
-
 # Displays page with message and link to $url
 #   url - where to go if user clicks on Back link on this message page
 #   msg - displayed message

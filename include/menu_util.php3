@@ -29,6 +29,14 @@ if (!defined ("AA_MENU_INCLUDED"))
     define("AA_MENU_INCLUDED","1");
 else return;
 
+// use instead of </body></html> on pages which show menu
+function HtmlPageEnd() {
+  echo "
+    </TD></TR></TABLE>
+    </TD></TR></TABLE>
+    </BODY></HTML>";
+}
+
 // ----------------------------------------------------------------------------------------
 //                                SHOW MENU
 
