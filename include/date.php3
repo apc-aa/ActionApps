@@ -157,6 +157,8 @@ class datectrl {
               if( !is_array($t) ) $t = array( '00','00');
               if( !$t[0] ) $t[0] = "00";
               if( !$t[1] ) $t[1] = "00";
+              if( strlen( $t[1] ) == '1' )   # minutes should be two nubers
+                $t[1] = "0" . $t[1];
               $timestr = $t[0] .":". $t[1];
               if( ($this->display_time == 1) AND ($timestr == "00:00") )
                 $timestr = "";
@@ -179,6 +181,9 @@ class datectrl {
 }
 /*
 $Log$
+Revision 1.10  2002/01/10 13:53:26  honzam
+minutes in time fields are displayed two character numbers
+
 Revision 1.9  2001/06/14 13:03:12  honzam
 better time handling in inputform and view
 
