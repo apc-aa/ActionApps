@@ -69,7 +69,6 @@ if( $lid ) {
     $r_state['link_id'] = "";
     $initiator = $r_state['linkedit']['last_autors_email'];
     $rate = $r_state['linkedit']['rate'];
-    unset($r_state['linkedit']);
     $pagename = _m('Add Link');
 }
 
@@ -118,22 +117,22 @@ if( $getOldV ){  // error message - fill old values
     $org_email     = $r_state['linkedit']['old']['org_email'];
     $note          = $r_state['linkedit']['old']['note'];
 
-	# recoverring previously set values of categories
-	for ($selcatCount=$r_state['linkedit']['old']['selcatCount'], $sci=0;
-			$sci < $selcatCount; $sci++) {
-		$selcatValue[$sci] = $r_state['linkedit']['old']["selcat$sci"];
-		$selcatSelectValue[$sci] = $r_state['linkedit']['old']["selcatSelect$sci"];
-		$selcatState[$sci] = $r_state['linkedit']['old']["selcatState$sci"];
-	}
+    # recoverring previously set values of categories
+    for ($selcatCount=$r_state['linkedit']['old']['selcatCount'], $sci=0;
+            $sci < $selcatCount; $sci++) {
+        $selcatValue[$sci] = $r_state['linkedit']['old']["selcat$sci"];
+        $selcatSelectValue[$sci] = $r_state['linkedit']['old']["selcatSelect$sci"];
+        $selcatState[$sci] = $r_state['linkedit']['old']["selcatState$sci"];
+    }
 
-	# recoverring previously set values of regions and languages
-	$reg  = $r_state['linkedit']['old']['reg'];
-	$lang = $r_state['linkedit']['old']['lang'];
+    # recoverring previously set values of regions and languages
+    $reg  = $r_state['linkedit']['old']['reg'];
+    $lang = $r_state['linkedit']['old']['lang'];
 
-	for ($i=0; $i<Count($reg); $i++)
-		$reg_checked[$reg[$i]]=true;
-	for ($i=0; $i<Count($lang); $i++)
-		$lang_checked[$lang[$i]]=true;
+    for ($i=0; $i<Count($reg); $i++)
+        $reg_checked[$reg[$i]]=true;
+    for ($i=0; $i<Count($lang); $i++)
+        $lang_checked[$lang[$i]]=true;
 }
 
 // get edited link data
@@ -338,7 +337,7 @@ for( $i=0 ; $i < CATEGORIES_COUNT_TO_MANAGE; $i++ ) {
 $selcatCount = max( $idx, CATEGORIES_COUNT_TO_MANAGE );
 
 if (isset($checked_url))
-	$url = $checked_url;
+    $url = $checked_url;
 
 // AND now display the form --------------------------------------------------
 
@@ -385,8 +384,8 @@ echo '
         <input type="button" value="'. _m('Check url') .'" onclick="CheckURL()">&nbsp;
         <input type="button" value="'. _m('View') .'" onclick="window.open(document.f.url.value, \'blank\')">
         <div class="tabhlp">'. _m('You can check, if the page is not in database already') .'</div>
-		  </td>
-	  </tr>';
+          </td>
+      </tr>';
     printChange($url_change, $url);
     FrmInputText( 'linkname', _m('Page name'),           $linkname,  250, 50, true,
                    _m('English name of the page'));
@@ -397,9 +396,13 @@ echo '
     FrmTextarea(  'description',  _m('Description'),    $description, 5, 60, false,
                   _m('Do not use HTML tags and do not write words like "best page", ... The maximum length of the description should be about 250 characters.'));
     printChange($description_change, $description);
-    FrmInputSelect( 'type', _m('Link type'), $link_types, $type, false,
-                   _m('Select the type, if the link belongs to some special category'));
-    printChange($type_change, $type);
+
+    // do not show general categories to public (anonymous) users
+    if( !Links_IsPublic() ) {
+        FrmInputSelect( 'type', _m('Link type'), $link_types, $type, false,
+                       _m('Select the type, if the link belongs to some special category'));
+        printChange($type_change, $type);
+    }
 //    FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
     FrmInputText( 'initiator', _m('Author\'s e-mail'),           $initiator,  250, 50, false);
     printChange($initiator_change, $initiator);
@@ -490,13 +493,13 @@ echo '</td></tr>
      <input type=hidden name=slice_id value="'.$slice_id.'">
    </td></tr></table>
  </form>
- 	<form name="f_hidden" method="get" action="check_url.php3" target="message">
-		<input type="hidden" name="url" value="">
-		<input type="hidden" name="tree_start" value="'.$links_info['tree_start'].'">
-		<input type="hidden" name="checked_id" value="'.$r_state['link_id'].'">';
+    <form name="f_hidden" method="get" action="check_url.php3" target="message">
+        <input type="hidden" name="url" value="">
+        <input type="hidden" name="tree_start" value="'.$links_info['tree_start'].'">
+        <input type="hidden" name="checked_id" value="'.$r_state['link_id'].'">';
         $sess->hidden_session();
 echo '
-	</form>
+    </form>
  </body>
 </html>';
 
