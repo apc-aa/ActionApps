@@ -25,8 +25,11 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:54  madebeer
-Initial revision
+Revision 1.2  2001/10/08 16:41:21  honzam
+bugfix: no slices were displayed
+
+Revision 1.1.1.1  2000/06/21 18:39:54  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:45  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -50,9 +53,9 @@ echo '<body>
 
 $i=1;     // slice checkbox counter
 $app=1;   // approved checkbox conter
-if( is_array($slices) AND (count($slices) > 1) ) {
-  reset($slices);
-  while(list($k, $v) = each($slices)) { // you can feed only if you have autor or editor perms in destination slices
+if( is_array($g_slices) AND (count($g_slices) > 1) ) {
+  reset($g_slices);
+  while(list($k, $v) = each($g_slices)) { // you can feed only if you have autor or editor perms in destination slices
     if ( ((string)$slice_id != (string)$k) AND    
           CheckPerms( $auth->auth["uid"], "slice", $k, PS_EDIT_SELF_ITEMS) ) {
       echo '<tr><td>'. safe($v). '</td>
