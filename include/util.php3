@@ -25,6 +25,14 @@ http://www.apc.org/
 
 require $GLOBALS[AA_INC_PATH]."constants.php3";
 
+/** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
+function debuglog ($text) 
+{
+	$f = fopen ($GLOBALS[AA_INC_PATH]."debuglog.txt","a");
+	fwrite ($f, $text);
+	fclose ($f);
+}
+
 // Shift to another page (must be before any output from script)
 function go_url($url, $add_param="") {
   global $sess;
@@ -93,7 +101,7 @@ function add_vars($query_string="", $debug="") {
     $varstring = $QUERY_STRING_UNESCAPED;
 
 if( $GLOBALS['debug'] )
-  echo "<br>varstring: $varstring";
+  echo "<br>varstring: ".$varstring;
   
   $a = explode("&",$varstring);
   $i = 0;
@@ -312,14 +320,14 @@ function detect_browser() {
  
 # debug function for printing debug messages
 function huh($msg) {
-  if(! DEBUG_FLAG )
+  if(! $GLOBALS['debug'] )
     return;
   echo "<br>\n$msg";
 }  
 
 # debug function for printing debug messages escaping HTML
 function huhw($msg) {
-  if(! DEBUG_FLAG )
+  if(! $GLOBALS['debug'] )
     return;
   echo "<br>\n". HTMLspecialChars($msg);
 }  
@@ -327,8 +335,8 @@ function huhw($msg) {
 #Prints all values from array
 function PrintArray($a){
  if (is_array ($a))
- while ( list( $key, $val ) = each( $a ) )
-   echo $val;
+   while ( list( $key, $val ) = each( $a ) )
+     echo $val;
 }
 
 #Prepare OK Message
@@ -406,12 +414,19 @@ function GetConstants($group, $db, $order='pri') {
   return $arr;
 }     
 
+# gets fields from main table of the module
+function GetModuleInfo($module_id, $type) {
+  global $db, $MODULES;
+  $p_module_id = q_pack_id($module_id);
+  
+  $db->query("SELECT * FROM " . $MODULES[$type]['table'] ."
+               WHERE id = '$p_module_id'");
+  return  ($db->next_record() ? $db->Record : false);
+}  
+
 # gets slice fields
 function GetSliceInfo($slice_id) {
-  global $db;
-  $p_slice_id = q_pack_id($slice_id);
-  $db->query("SELECT * FROM slice WHERE id='$p_slice_id'");
-  return  ($db->next_record() ? $db->Record : false);
+  return  GetModuleInfo($slice_id,'S');
 }  
 
 # gets view fields
@@ -598,7 +613,7 @@ function GetItemHeadlines( $db, $sid="", $ids="", $type="all" ) {
              AND status_code='1'
              AND expiry_date > '$time_now'
              AND publish_date <= '$time_now'
-        ORDER BY publish_date DESC";
+        ORDER BY text";
 
   if( $GLOBALS['debug'] )
     $db->dquery($SQL);
@@ -775,131 +790,36 @@ function clean_email($line) {
 function GetProfileProperty($property, $id=0) {
   global $r_profile;
 
-/*  if( ($GLOBALS['slice_id'] == '7dade492ba449615c5672ebcb2a45875') OR
-      ($GLOBALS['slice_id'] == '3a7e18c1249b899407e75e7f626db792')) {
-    print_r($r_profile);
-    echo "<br>$property, $id";
-  }
-*/
-
   if( isset($r_profile) AND isset($r_profile[$property]) )
     return $r_profile[$property][$id];
   return false;
 }       
 
-/*
-$Log$
-Revision 1.31  2002/03/06 12:42:58  honzam
-bugfix
+function PrintModuleSelection() {
+  global $slice_id, $g_modules, $sess, $PHP_SELF;
 
-Revision 1.30  2002/02/05 21:52:33  honzam
-fixed bug of not working param_wizard on some domains
+  if( is_array($g_modules) AND (count($g_modules) > 1) ) {
+    echo "<form name=nbform enctype=\"multipart/form-data\" method=post 
+                action=\"". $sess->url($PHP_SELF) ."\">
+          <span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>
+          <select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=").'"+this.options[this.selectedIndex].value\'>';	
+    reset($g_modules);
+    while(list($k, $v) = each($g_modules)) { 
+      echo "<option value=\"". htmlspecialchars($k)."\"";
+      if ( ($slice_id AND (string)$slice_id == (string)$k)) 
+        echo " selected";
+      echo "> ". htmlspecialchars($v['name']) ." </option>";
+    }
+    if( !$slice_id )   // new slice
+      echo '<option value="new" selected> '. L_NEW_SLICE_HEAD .'</option>';
+    echo "</select></form>\n";
+  } else
+    echo "&nbsp;"; 
+}  
 
-Revision 1.29  2002/01/10 13:56:58  honzam
-fixed bug in user profiles
+# function returns true if $fld fits the field scheme (used in unaliasing)
+function IsField($fld) {
+  return( (strlen($fld)==16) && (ereg("^[a-z_]+\.+[0-9]*$",$fld)) );
+}
 
-Revision 1.28  2001/12/18 16:27:28  honzam
-new WYSIWYG richtext editor for inputform (IE5+), new possibility to join fields when fields are fed to another slice, new notification e-mail possibility (notify new item in slice, bins, ...)
-
-Revision 1.27  2001/11/26 11:03:43  honzam
-sort slice/constant in listbox by name
-
-Revision 1.26  2001/11/05 13:33:06  honzam
-fixed bug of unsuccessfull switching slice on some pages
-
-Revision 1.25  2001/10/05 10:55:38  honzam
-bugfix: field variables posted in url are parsed correctly in add_vars() now.
-
-Revision 1.24  2001/09/27 16:10:48  honzam
-Field ids will begin with zero ( headline........), New related stories support
-
-Revision 1.23  2001/06/21 14:15:44  honzam
-feeding improved - field value redefine possibility in se_mapping.php3
-
-Revision 1.22  2001/05/26 14:49:50  honzam
-Fixed problem with '=' character passed by url
-
-Revision 1.21  2001/05/23 23:08:24  honzam
-Arrays passed to SSIed script by URL can be two-dimensional, now
-
-Revision 1.20  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.19  2001/03/30 11:54:35  honzam
-offline filling bug and others small bugs fixed
-
-Revision 1.18  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.17  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.16  2001/02/26 17:22:30  honzam
-color profiles, itemmanager interface changes
-
-Revision 1.15  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
-
-Revision 1.14  2001/01/22 17:32:49  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
-
-Revision 1.13  2001/01/10 15:49:16  honzam
-Fixed problem with unpack_id (No content Error on index.php3)
-
-Revision 1.12  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.11  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.10  2000/11/13 10:36:07  honzam
-Fixed problem with bad minutes in date() function
-
-Revision 1.9  2000/10/10 18:28:00  honzam
-Support for Web.net's extended item table
-
-Revision 1.7  2000/08/23 12:29:58  honzam
-fixed security problem with inc parameter to slice.php3
-
-Revision 1.6  2000/08/17 15:17:55  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.5  2000/08/07 15:52:13  kzajicek
-in_array moved to util.php3 and defined optionally
-
-Revision 1.4  2000/08/03 12:31:19  honzam
-Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
-
-Revision 1.3  2000/07/12 11:06:26  kzajicek
-names of image upload variables were a bit confusing
-
-Revision 1.2  2000/07/07 21:36:04  honzam
-Redirection to the same page now support Netscape (in go_url)
-
-Revision 1.1.1.1  2000/06/21 18:40:50  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:27  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.11  2000/06/12 19:58:37  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.10  2000/06/09 15:14:12  honzama
-New configurable admin interface
-
-Revision 1.9  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.8  2000/03/29 15:54:47  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.7  2000/03/22 09:38:40  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>
