@@ -83,6 +83,9 @@ define("LDAP_PEOPLE", "dc=ecn,dc=apc,dc=org");
 define("LDAP_GROUPS", "dc=ecn,dc=apc,dc=org");
 define("LDAP_ACLS", "dc=ecn,dc=apc,dc=org");
 
+# e-mail for bug reporting contact
+define("ERROR_REPORTING_EMAIL", "technical@ecn.cz");
+
 # set this directive to true, if you use MySQL 
 # (uses LIMIT clause in SELECTs)
 define("OPTIMIZE_FOR_MYSQL", false);
@@ -97,6 +100,12 @@ define("OPTIMIZE_FOR_MYSQL", false);
 define("PHPLIB_ALREADY_LOADED", false);
 define("ADM_SLICE_CSS","adm_slice.css");
 define("ADMIN_CSS","admin.css");
+
+# number of shown pages links in scroller's navigation bar
+define("SCROLLER_LENGTH", 7);
+
+# Would you like to display debug messagess?
+define("DEBUG_FLAG", true);
 
 # Language: uncomment one language file
 #echo "AA is $AA_INC_PATH \n";
@@ -130,6 +139,9 @@ $ActionAppConfig[en_media_mon][file] = "en_news_lang.php3";
 
 /*
 $Log$
+Revision 1.3  2000/07/07 21:41:42  honzam
+SCROLLER_LENGTH missing bug fixed
+
 Revision 1.2  2000/07/05 14:41:30  kzajicek
 Replaced "require" by "include" (include does not work inside if - then) and
 changed the test to use "defined".
