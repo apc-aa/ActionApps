@@ -1,22 +1,44 @@
-1/10/02 - fixed javascript bugs preventing for example deletion of RSS feeds on Mac IE, two bugs (mitra)
-	-- if the index of a selection is -1 (not selected) you can't retrieve a value
-	-- you can't test against undefined, have to test against null.
-1/07/02 - move r_spot_id out of session variable and into URLs
-1/06/02 - added "All" option to the scroller in item manager (sets listlen to 99999) (mitra)
-1/06/02 - changed cases of "action" to "akce" as form component name because its a  
-	property of "form". Bug shows up in Omniweb but not in IE (fee_to.php3,index.php3 related_sel.php3) (mitra)
-1/05/02 - added utils.php3:huhl function for wrapping print_r (mitra)
-	- changed richEditShowable to return false for macintosh (Mac IE 5.2 does not support either class or iframe versions of RichTextEdit)
-1/3/02	 - merged string expansion into include/stringexpand.php3 including (mitra)
-	 -- REMOVE strings from views are now applied to the RESULT, not the first parse, this might be significant/bad idea
-	 -- Behavior for extra { and } in the strings MIGHT be different before, the previous behavior looked inconsistent
-	 -- removed fake item kludge from include/mail.php3
-	 -- item.php3 (i.e. expansion in views) now supports "view.php3" syntax and expansion of apc_state
-	-- QuoteColons now handles { and } as well, this might not always be a good idea
-	 -- modules/site/site.php3 uses new unalias which means
-	 ---  it requires switch({m}) instead of switch(m)
-	 ---  it supports the {math ...} and {include...} syntax
-1/2/02   - fixed bug in site/index.php3 where cache not invalidated when site updated
+01/10/02 - fixed bad display of selected related items, when "Two Boxes" input 
+           type is used (honzam)
+         - {influde()} inline construct accepts "http://" includes, now (honzam)
+         - fixed bug of bad number of parameters to new_unalias_recurent()
+           (honzam)
+         - fixed problem with modification of bad spot when clicked "Back" 
+           in browser for 'site module' (r_spot_id changed to spot_id) (honzam)
+         - forbiden "action" field name renamed to "akce" in 'site module' admin
+           (honzam)
+         - added missing "util.php3" include in "Module Settings" page 
+           for 'site module' (modedit.php3) (honzam)
+         - fixed bug of not displaying UserManagement pages in NN4.7 (honzam)
+01/10/02 - fixed javascript bugs preventing for example deletion of RSS feeds 
+           on Mac IE, two bugs (mitra)
+           -- if the index of a selection is -1 (not selected) you can't 
+              retrieve a value
+           -- you can't test against undefined, have to test against null.
+01/07/02 - move r_spot_id out of session variable and into URLs
+01/06/02 - added "All" option to the scroller in item manager 
+           (sets listlen to 99999) (mitra)
+01/06/02 - changed cases of "action" to "akce" as form component name because 
+           its a  property of "form". Bug shows up in Omniweb but not in IE 
+           (fee_to.php3,index.php3 related_sel.php3) (mitra)
+01/05/02 - added utils.php3:huhl function for wrapping print_r (mitra)
+         - changed richEditShowable to return false for macintosh (Mac IE 5.2 
+           does not support either class or iframe versions of RichTextEdit)
+01/3/02	 - merged string expansion into include/stringexpand.php3 including 
+           (mitra)
+           -- REMOVE strings from views are now applied to the RESULT, not 
+              the first parse, this might be significant/bad idea
+           -- Behavior for extra { and } in the strings MIGHT be different 
+              before, the previous behavior looked inconsistent
+           -- removed fake item kludge from include/mail.php3
+           -- item.php3 (i.e. expansion in views) now supports "view.php3" 
+              syntax and expansion of apc_state
+           -- QuoteColons now handles { and } as well, this might not always 
+              be a good idea
+           -- modules/site/site.php3 uses new unalias which means
+              ---  it requires switch({m}) instead of switch(m)
+              ---  it supports the {math ...} and {include...} syntax
+01/2/02  - fixed bug in site/index.php3 where cache not invalidated when site updated
 12/30/02 - spelling correction in L_TOO_MUCH_RELATED all *news_lang.php3 still in english (mitra)
 12/30/02 - warning comment on slice special case in item.php3 (mitra)
 12/29/02 - Added some comments in site/site and added simple example from sf.net (mitra)
