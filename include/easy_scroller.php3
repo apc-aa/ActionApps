@@ -122,10 +122,8 @@ class easy_scroller {
 		$arr = $this->navarray();
 		while(list($k, $v) = each($arr)) {
       if($i++) echo " | ";	
-			if($v) 
-				echo "<a href=\"". $url. "scrl=1&". $v. "\" class=\"scroller\">$k</a>";
-			else 
-				echo "<span class=\"scroller\">$k</span>";
+			if($v) echo "<a href=\"". $url. "scrl=1&". $v. "\" class=\"scroller\">$k</a>";
+			else   echo "<span class=\"scroller_actual\">$k</span>";
 		}
  	}
 }  
