@@ -34,13 +34,19 @@ function Needed( $condition=true ) {
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
-  echo "</td>\n  <td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value='$val'></td></tr>\n";
+  echo "</td>\n";
+  if ( SINGLE_COLUMN_FORM )
+    echo "</tr><tr>";
+  echo "<td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value='$val'></td></tr>\n";
 }
 
 # Prints two static text to 2-column table
 # for use within <table> tag
 function FrmStaticText($txt, $val){
-  echo "<tr><td class=tabtxt><b>$txt</b></td><td>$val</td></tr>\n";
+  echo "<tr><td class=tabtxt><b>$txt</b></td>";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "<td>$val</td></tr>\n";
 }
 
 # Prints html tag <input type=password .. to 2-column table
@@ -48,7 +54,10 @@ function FrmStaticText($txt, $val){
 function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false)
 { echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
-  echo "</td>\n  <td><input type=\"Password\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"></td></tr>\n";
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "<td><input type=\"Password\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"></td></tr>\n";
 }
 
 # Prints html tag <input type=file .. to 2-column table
@@ -56,7 +65,10 @@ function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false)
 function FrmInputFile($name, $txt, $size=25, $needed=false)
 { echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
-  echo "</td>\n  <td><input type=\"file\" name=\"$name\" size=$size accept=\"image/*\"></td></tr>\n";  // /**/
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "  <td><input type=\"file\" name=\"$name\" size=$size accept=\"image/*\"></td></tr>\n";  // /**/
 }
 
 # Prints html tag <textarea .. to 2-column table
@@ -65,7 +77,10 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false)
 {
  echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
-  echo "</td>\n  <td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea></td></tr>\n";
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "  <td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea></td></tr>\n";
 }
 
 # Prints html tag <input type=checkbox .. to 2-column table
@@ -76,12 +91,16 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
     echo "<td class=tabtxt colspan=$colspan><b>$txt</b>";
     Needed($needed);
     echo "</td>\n  ";
+    if (SINGLE_COLUMN_FORM)
+      echo "</tr><tr>";
   }  
   echo "<td><input type=\"checkbox\" name=\"$name\" $add ";
   if($checked)
     echo " checked";
   echo "></td>";
   if( $changeorder ) {
+    if (SINGLE_COLUMN_FORM)
+      echo "</tr><tr>";
     echo "<td class=tabtxt colspan=$colspan><b>$txt</b>";
     Needed($needed);
     echo "</td>\n  ";
@@ -102,7 +121,10 @@ function FrmChBoxEasy($name, $checked=true, $add="")
 function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false) {
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
-  echo "</td>\n <td><select name=\"$name\">";	
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "<td><select name=\"$name\">";	
   reset($arr);
   while(list($k, $v) = each($arr)) { 
     echo "<option value=\"". htmlspecialchars($k)."\"";
@@ -191,6 +213,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.5  2000/11/17 19:05:20  madebeer
+added SINGLE_COLUMN_FORM
+
 Revision 1.4  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

@@ -24,7 +24,7 @@
 $AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa2/include/"; 
 
 # Fill in your internet domain name here.
-define("DEFAULT_ORG_ID", "debeer.org");
+define("DEFAULT_ORG_ID", "ecn.cz");
 
 # This is for accessing the database. You need to define the name of the host
 # where the database server runs, the database name, a user name for logging
@@ -32,12 +32,12 @@ define("DEFAULT_ORG_ID", "debeer.org");
 define("DB_HOST", "localhost");
 define("DB_NAME", "aadb");
 define("DB_USER", "aadbuser");
-define("DB_PASSWORD", "googler3");
+define("DB_PASSWORD", "");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
-#define("AA_ID", "420224311780abcd420224311780abcd");
-define("AA_ID", "000111222333444555666777888999A9");
+define("AA_ID", "420224311780abcd420224311780abcd");
+#define("AA_ID", "000111222333444555666777888999A9");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
 define("PERM_LIB", "sql");
@@ -57,6 +57,10 @@ define("ERROR_REPORTING_EMAIL", "root");
 # set this directive to true, if you use MySQL 
 # (uses LIMIT clause in SELECTs)
 define("OPTIMIZE_FOR_MYSQL", false);
+
+# set this directive to 1 if you want to data-entry forms to have only
+# one column
+define("SINGLE_COLUMN_FORM", "0");
 
 # set this directive to true, if your php already auto-includes phplib
 # if it is 'false' and it should be true you'll get an error like:
