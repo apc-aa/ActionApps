@@ -27,7 +27,6 @@ $menus = array (
     "main" => array ("label"=>L_SLICE_SET, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"slicedit.php3?slice_id=$slice_id", "show_always"=>1), 
     "category" => array("label"=>L_CATEGORY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY), "href"=> "se_constant.php3"),
     "fields" => array ("label"=>L_FIELDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fields.php3?slice_id=$slice_id"), 
-//    "javascript" => array ("label"=>L_F_JAVASCRIPT, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_javascript.php3"),
     "notify" => array ("label"=>L_NOTIFY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"se_notify.php3?slice_id=$slice_id"), 
     "header2" => L_PERMISSIONS,
     "addusers"=> array ("label"=>L_PERM_ASSIGN, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ADD_USER), "href"=> "se_users.php3?adduser=1&slice_id=$slice_id"),
@@ -45,7 +44,9 @@ $menus = array (
     "filters"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_filters.php3?slice_id=$slice_id", "label"=>L_FILTERS),   
     "mapping"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_mapping.php3?slice_id=$slice_id", "label"=>L_MAP),
     "header5" => L_MISC,
-    "field_ids" => array ("label"=>L_FIELD_IDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fieldid.php3?slice_id=$slice_id")    
+    "field_ids" => array ("label"=>L_FIELD_IDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fieldid.php3?slice_id=$slice_id"),    
+    "javascript" => array ("label"=>L_F_JAVASCRIPT, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_javascript.php3")
+    //,"fileman" => array ("label"=>"file manager", "cond"=>1, "href"=>"fileman.php3")
 )),
 
 
