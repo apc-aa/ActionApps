@@ -80,12 +80,10 @@ function ParseViewParameters($query_string="") {
     $query_string = str_replace( 'set[]', "set[".$parts[1]."]", $query_string );
   }
 
-if( $debug ) {
-  echo "<br>View - query_string:$query_string<br>";
-}
+  if( $debug ) {
+    echo "<br>View $vid - query_string:$query_string<br>";
+  }
 
-  
-  
   add_vars($query_string);       # adds values from url (it's not automatical in SSIed script)
 
   $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
@@ -251,7 +249,8 @@ function GetView($view_param) {
 
 # return view result based on parameters
 function GetViewFromDB($view_param, &$cache_sid) {
-   global $db;
+  global $db;
+  global $slice_id, $p_slice_id;  # f_r needs to know slice_id - that's why it is global
 
   $vid = $view_param["vid"];
   $als = $view_param["als"];
