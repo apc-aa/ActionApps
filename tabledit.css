@@ -5,13 +5,11 @@
 }
 
 .te_search_td {
-	background: #A8C8B0;
 	color: #4A4A4A;
     font-weight : bolder;
 }
 
 .te_search_table {
-	background: #A8C8B0;
 	color: #4A4A4A;
     border: thin solid White;
 }
@@ -23,13 +21,11 @@
 /* Browse view */
 
 .te_browse_table  {
-	background: #A8C8B0;
 	color: #4A4A4A;
 	border : thin solid White;
 }
 
 .te_browse_td  {
-	background: #A8C8B0;
 	color: #4A4A4A;
 }
 
@@ -44,13 +40,11 @@
 /* Edit view */
 
 .te_edit_table  {
-	background: #A8C8B0;
 	color: #4A4A4A;
 	border : thin solid White;
 }
 
 .te_edit_td {
-	background: #A8C8B0;
 	color: #4A4A4A;
 }
 
