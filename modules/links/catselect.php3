@@ -1,0 +1,66 @@
+<?php  
+//$Id$
+# Allows to select category
+
+// $cid - current category which should be shown 
+// $tree_start - root categoruy for the tree
+
+# Edit Link Page
+$directory_depth = '../';
+
+require_once "../../include/init_page.php3";
+require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
+require_once "./cattree.php3";
+require_once "./util.php3";
+
+if( !$cid )
+    $cid = $r_state['cat_id'];
+
+$cpath = GetCategoryPath( $cid );
+
+// AND now display the form --------------------------------------------------
+    
+// Print HTML start page (html begin, encoding, style sheet, no title)
+HtmlPageBegin();   
+echo '<title>'. _m('APC ActionApps - Select Category'). '</title>';
+
+$tree = new cattree( $db, $tree_start, true, ' > ');
+// special javascript for category selection
+echo '<script language="JavaScript" type="text/javascript"
+      src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/js_lib_links.js"></script>';
+$tree->printTreeData($links_info['tree_start']);
+
+if( !$cid ) {  // default category defined
+    $on_load = 'onLoad="GoToCategoryID('.$cid.', eval(document.f.tree), \'patharea\', \'\')"';
+}
+
+echo '
+ <style>
+  #body_white_color { color: #000000; }
+ </style>
+</head>
+<body id="body_white_color" "'.$on_load.'">
+  <form name="f" method=post>';
+
+    FrmTabCaption( _m('Select Category') );
+echo '
+      <tr>
+       <td colspan="2"><div id="patharea">&nbsp;</div></td>
+      <tr>
+       <td colspan="2" align="CENTER" valign="TOP">'.
+         $tree->getFrmTree(false, 'change', $tree_start, 'patharea', '', false) .
+       '</td>
+      </tr>
+      ';
+   
+    FrmTabEnd( array('sbmt_button'  => array('type' =>"button",
+                                             'value'=> ' '. _m('OK') .' ',
+                                             'add'  => 'onClick="UpdateCategory(\'update_submit\')"'),
+                     'cancel'       => array('add'  => 'onClick="window.close()"')));
+echo '  
+    </form>
+  </body>
+</html>';
+
+page_close();
+?>
