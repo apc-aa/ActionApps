@@ -259,11 +259,11 @@ function IsSuperadmin() {
 // Permissions for the on-line file manager
     
 function FilemanPerms ($auth, $slice_id) {
-    global $db, $sess;
+    global $sess;
     // Sets the fileman_dir var:
     global $fileman_dir; 
     
-    
+    $db = new DB_AA;
     $db->query ("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
    
     if ($db->num_rows() != 1) return false;
