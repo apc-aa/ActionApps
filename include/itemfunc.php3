@@ -1143,7 +1143,9 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="")
 /** Shows Javascript for Add / Edit item 
 */
 function ShowFormJavascript ($show_func_used, $js_proove_fields) {
-echo '
+    global $sess;    
+    
+    echo '
     <script language="JavaScript"><!--
       // array of listboxes where all selection should be selected
       var listboxes=Array(); 
