@@ -23,12 +23,15 @@ http://www.apc.org/
 #             categ - if true, constants are taken as category, so 
 #                     APC parent categories are displayed for selecting parent
 #             category - edit categories for this slice (no group_id nor categ required)
+#             as_new - if we want to create new category group based on an existing (id of "template" group)
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 //require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
+
+$where_used = true;
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -60,8 +63,10 @@ $varset = new Cvarset();
 function myQuery (&$db, $SQL)
 {
     global $debug;
-    if ($debug) $db->dquery ($SQL);
-    else $db->query ($SQL);
+    if ($debug) 
+      return $db->dquery ($SQL);
+    else 
+      return $db->query ($SQL);
 }
 
 // Check permissions
@@ -91,13 +96,13 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
   if( $categ ){   # it is categories - show APC wide categories for parent category select
     echo "<td class=tabtxt>";
     echo "<select name=\"class[$id]\" $add>";	
-    reset($classes);
+      reset($classes);
     while(list($k, $v) = each($classes)) { 
       echo "<option value=\"". htmlspecialchars($k)."\"";
       if ((string)$class == (string)$k) 
         echo " selected";
       echo "> ". htmlspecialchars($v[name]) ." </option>";
-    }
+    }  
     echo "</select>\n";
     echo"</td>";
   } else {
@@ -109,7 +114,7 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
 function propagateChanges ($cid, $newvalue, $short=true)
 {
 	global $db, $group_id, $Msg, $debug;
-	$db->query ("SELECT value FROM constant WHERE ".
+	  MyQuery ($db, "SELECT value FROM constant WHERE ".
 		($short ? "short_id=$cid" : "id='$cid'"));
 	if (!$db->next_record()) return;
 	$oldvalue = addslashes($db->f("value"));
@@ -135,8 +140,7 @@ function propagateChanges ($cid, $newvalue, $short=true)
 
 hcUpdate();
 
-if( $update )
-{
+if( $update ) {
   do {
     if( !(isset($name) AND is_array($name) ))
       break;
@@ -167,24 +171,25 @@ if( $update )
     if( count($err) > 1)
       break;
 
-	if ($group_id) {
-		 // if there is no group owner, promote this slice to owner
-		 $db->query ("SELECT * FROM constant_slice WHERE group_id='$group_id'");
-		 if (!$db->next_record()) myQuery ($db, "
-			INSERT INTO constant_slice (slice_id,group_id,propagate)
-			VALUES ('$p_slice_id','$group_id',".($propagate_changes ? 1 : 0).");");
-		 else {
-		 	myQuery ($db, "
-		 		UPDATE constant_slice SET propagate=".($propagate_changes ? 1 : 0)."
-			WHERE group_id = '$group_id'");
-			if ($new_owner_id) {
-				myQuery ($db, "
-			  		UPDATE constant_slice SET slice_id='".addslashes(pack_id($new_owner_id))."'
-					WHERE group_id = '$group_id'");
-				$chown = 0;
-			}
-   		}
-	}	  
+    if ($group_id) {
+		  // if there is no group owner, promote this slice to owner
+      MyQuery ($db, "SELECT * FROM constant_slice WHERE group_id='$group_id'");
+      if (!$db->next_record()) 
+        myQuery ($db, "
+          INSERT INTO constant_slice (slice_id,group_id,propagate)
+          VALUES ('$p_slice_id','$group_id',".($propagate_changes ? 1 : 0).");");
+      else {
+        myQuery ($db, "
+          UPDATE constant_slice SET propagate=".($propagate_changes ? 1 : 0)."
+           WHERE group_id = '$group_id'");
+        if ($new_owner_id) {
+          myQuery ($db, "
+            UPDATE constant_slice SET slice_id='".addslashes(pack_id($new_owner_id))."'
+             WHERE group_id = '$group_id'");
+				  $chown = 0;
+        }
+      }
+    }	  
 
     # add new group to constant group list
     if ($add_new_group) {
@@ -199,40 +204,39 @@ if( $update )
   
     reset($name);
     while( list($key) = each($name) ) {
-		$p_cid = q_pack_id(substr($cid[$key],1));
+		  $p_cid = q_pack_id(substr($cid[$key],1));
         // if name is empty, delete the constant
-        if ($name[$key] == "") {
-            if( !$db->query("
-                DELETE FROM constant WHERE id='$p_cid'")) {
-                $err["DB"] .= MsgErr("Can't delete constant");
-                break;
-            }
-            continue;
+      if ($name[$key] == "") {
+        if( !MyQuery ($db, "
+            DELETE FROM constant WHERE id='$p_cid'")) {
+          $err["DB"] .= MsgErr("Can't delete constant");
+          break;
         }
-		$varset->clear();
-		$varset->set("name",  $name[$key], "quoted");
-		$varset->set("value", $value[$key], "quoted");
-		$varset->set("pri", ( $pri[$key] ? $pri[$key] : 1000), "number");
-		$varset->set("class", $class[$key], "quoted");
-		$db->query ("SELECT * FROM constant WHERE id='$p_cid'");
-        if ($db->next_record()) {
-		    if ($propagate_changes) 
-                propagateChanges ($p_cid, $value[$key], false);
-		    if( !$db->query("
-				UPDATE constant SET " . $varset->makeUPDATE() ."
-				WHERE id='$p_cid'")) {
-	        	$err["DB"] .= MsgErr("Can't update constant");
-		        break;
-			}
-    	}
-		else {
-			$varset->set("id", substr($cid[$key],1), "unpacked" );  # remove beginning 'x'
-			$varset->set("group_id", $group_id, "quoted" );
-			if( !$db->query("INSERT INTO constant " . $varset->makeINSERT() )) {
-		        $err["DB"] .= MsgErr("Can't copy constant");
-        		break;
-      		}
-		}
+        continue;
+      }
+  		$varset->clear();
+  		$varset->set("name",  $name[$key], "quoted");
+  		$varset->set("value", $value[$key], "quoted");
+  		$varset->set("pri", ( $pri[$key] ? $pri[$key] : 1000), "number");
+  		$varset->set("class", $class[$key], "quoted");
+  		MyQuery ($db, "SELECT * FROM constant WHERE id='$p_cid'");
+      if ($db->next_record()) {
+        if ($propagate_changes) 
+          propagateChanges ($p_cid, $value[$key], false);
+        if( !MyQuery ($db, "
+          UPDATE constant SET " . $varset->makeUPDATE() ."
+           WHERE id='$p_cid'")) {
+          $err["DB"] .= MsgErr("Can't update constant");
+          break;
+        }
+      }	else {
+        $varset->set("id", substr($cid[$key],1), "unpacked" );  # remove beginning 'x'
+        $varset->set("group_id", $group_id, "quoted" );
+        if( !MyQuery ($db, "INSERT INTO constant " . $varset->makeINSERT() )) {
+          $err["DB"] .= MsgErr("Can't copy constant");
+          break;
+        }
+      }
     }
     
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
@@ -255,9 +259,10 @@ if( $category ) {
 }  
 
   # lookup constants
-if( $group_id ) {
+if( $group_id OR $as_new ) {
+  $gid = ( $as_new ? $as_new : $group_id );
   $SQL = "SELECT id, name, value, class, pri FROM constant
-           WHERE group_id='$group_id' ORDER BY pri, name";
+           WHERE group_id='$gid' ORDER BY pri, name";
   $s_constants = GetTable2Array($SQL, $db, "NoCoLuMn");
 }  
 
@@ -352,9 +357,11 @@ else {
 	<input type=submit name='chown' value='".L_CONSTANT_CHOWN."'>";
 }
 	
-echo"</td></tr>
-<tr><td colspan=4><input type=checkbox name='propagate_changes'".($db->f("propagate") ? " checked" : "").">".L_CONSTANT_PROPAGATE."
-    &nbsp;&nbsp;<input type=submit name='where_used' value='".L_CONSTANT_WHERE_USED."'</td></tr>
+echo "</td></tr>
+<tr><td colspan=4><input type=checkbox name='propagate_changes'".($db->f("propagate") ? " checked" : "").">".L_CONSTANT_PROPAGATE;
+if( !$where_used ) 
+  echo "&nbsp;&nbsp;<input type=submit name='where_used' value='".L_CONSTANT_WHERE_USED;
+echo "'</td></tr>
 <tr><td colspan=4><input type=submit name='hierarch' value='".L_CONSTANT_HIERARCH_EDITOR."'></td></tr>
 <tr>
  <td class=tabtxt align=center><b>". L_CONSTANT_NAME ."</b><br>". L_CONSTANT_NAME_HLP ."</td>
@@ -372,7 +379,7 @@ if( $s_constants ) {
     if( $update ) # get values from form
       ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $categ, $classes);
     else          # get values from database
-      ShowConstant($i, $v["name"], $v["value"], 'x'.unpack_id($v["id"]), $v["pri"], $v["class"], $categ, $classes);
+      ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id($v["id"]), $v["pri"], $v["class"], $categ, $classes);
     $i++;  
   }
 }  

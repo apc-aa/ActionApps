@@ -222,11 +222,17 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 ?>
  <TITLE><?php echo L_A_FIELDS_TIT;?></TITLE>
 <script language="JavaScript"><!--
-  function CallConstantEdit() {
+  function CallConstantEdit(as_new) {
     var url = "<?php echo EditConstantURL(); ?>"
     var conid = document.f.input_show_func_c.options[document.f.input_show_func_c.selectedIndex].value
-    if( conid != "" )
-      document.location=(url + "&group_id=" + escape(conid))
+    if( conid.substring(0,7) == '#sLiCe-' ) {
+      alert('<?php echo L_SLICE_NOT_CONST ?>');
+      return;
+    }
+    if( conid != "" ) {
+      url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + escape(conid);
+      document.location=url;
+    }
   }
   /* Calls the parameters wizard. Parameters are as follows:
   	list = name of the array containing all the needed data for the wizard
@@ -277,12 +283,18 @@ echo "
 		<?php echo L_PARAM_WIZARD_LINK."</a>";
 
       echo "<div class=tabhlp>". L_INPUT_SHOW_FUNC_F_HLP ."</div>
-            <div class=tabtxt><b>". L_CONSTANTS ."</b> ";
-        FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
-      echo "<a href='javascript:CallConstantEdit()'>". L_EDIT ."</a>
-            <a href='". EditConstantURL(). "'>". L_NEW ."</a>
-      </div> 
-            <div class=tabhlp>". L_INPUT_SHOW_FUNC_C_HLP ."</div>
+            <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
+             <tr>
+              <td class=tabtxt><b>". L_CONSTANTS ."</b> ";
+               FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
+      echo "   <div class=tabhlp>". L_INPUT_SHOW_FUNC_C_HLP ."</div>
+              </td>
+              <td class=tabtxt>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>". L_EDIT ."</a>
+                           <br>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>". L_USE_AS_NEW ."</a>
+                           <br>          <a href='". EditConstantURL(). "'>". L_NEW ."</a>
+              </td>
+             </tr>
+            </table>
             <div class=tabtxt><b>". L_PARAMETERS ."</b>
               <input type=\"Text\" name=\"input_show_func\" size=25 maxlength=240 value=\"". safe($input_show_func) ."\">
             </div> 

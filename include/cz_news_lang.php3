@@ -857,6 +857,9 @@ define('L_CONSTANT_USED','Hodnoty použity v');
 define('L_VIEW_CREATE_NEW', 'Vytvoøit nový pohled');    
 define('L_VIEW_CREATE_TYPE', 'dle&nbsp;typu:');    
 define('L_VIEW_CREATE_TEMPL', 'dle&nbsp;šablony:');
+define('L_USE_AS_NEW', 'Nové&nbsp;dle&nbsp;vybraných');
+define('L_SLICE_NOT_CONST', 'V poli -Hodnoty- máte zvolen webík. Webík nelze takto mìnit. Vyberte nìjakou skupinu hodnot (výše v seznamu).');
+
 
 
 // constants used in param wizard only:

@@ -194,4 +194,7 @@ define('L_FIELD_ID_HELP',
 define('L_VIEW_CREATE_NEW', 'Create new view');    
 define('L_VIEW_CREATE_TYPE', 'by&nbsp;type:');    
 define('L_VIEW_CREATE_TEMPL', 'by&nbsp;template:');
+define('L_USE_AS_NEW', 'Use&nbsp;as&nbsp;new');
+define('L_SLICE_NOT_CONST', 'You selected slice and not constant group. It is unpossible to change slice. Go up in the list.');
+
 ?>
