@@ -137,6 +137,7 @@ if( $add || $update ) {
       $varset->add("even_odd_differ", "number", DEFAULT_EVEN_ODD_DIFFER);
       $varset->add("search_show", "text", DEFAULT_SEARCH_SHOW);
       $varset->add("search_default", "text", DEFAULT_SEARCH_DEFAULT);
+      $varset->add("config", "text", DEFAULT_SLICE_CONFIG);
 
       $db->query("INSERT INTO slices" . $varset->makeINSERT() );
       if ($db->affected_rows() == 0)
@@ -286,6 +287,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.6  2000/07/26 14:36:59  honzam
+default WDDX value is set to config field for new slices
+
 Revision 1.5  2000/07/14 16:11:29  kzajicek
 Just better comment
 
