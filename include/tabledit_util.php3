@@ -157,6 +157,10 @@ function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="",
 
     reset ($tables);
     while (list ($table) = each ($tables)) {
+        // Special table name - not real name - used for not database columns
+        if ( $table == 'aa_notable' ) {
+            continue;    // This is not database column
+        }
         $cols = $db->metadata ($table);
         reset ($cols);
         while (list (,$col) = each ($cols)) {
@@ -379,36 +383,37 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
 
 /** Processes insert
 * @return true on success, false on fail */
-function ProcessInsert ($myviewid, $myview, $primary_aliases, $val, &$cmd) {
+function ProcessInsert($myviewid, $myview, $primary_aliases, $val, &$cmd) {
     // WARNING: a bit hackish: after inserting an item, the command is changed
-    TableInsert ($newkey, $where, $myview["table"], $val[$GLOBALS[new_key]],
+    TableInsert($newkey, $where, $myview["table"], $val[$GLOBALS[new_key]],
                 $myview["fields"], $primary_aliases, $myview["primary"], $myview["messages"]["error_insert"],
                 $myview["triggers"]);
     if ($newkey != "") {
         global $tabledit_settings;
         $cmd[$myviewid]["edit"][$newkey] = 1;
         $cmd[$myviewid]["insert"] = $where;
+    } else {
+        unset ($cmd[$myviewid]["insert"]);
     }
-    else unset ($cmd[$myviewid]["insert"]);
     return $newkey != "";
 }
 
 // -----------------------------------------------------------------------------------
 
-function RunColumnFunctions (&$val, $columns, $table, $join) {
-    if (!is_array ($val))
+function RunColumnFunctions(&$val, $columns, $table, $join) {
+    if (!is_array ($val)) {
         return;
+    }
 
     // change the values for appropriate column types
-    reset ($val);
-    while (list ($col, $value) = each ($val))
+    foreach ( $val as $col => $value) {
         // defined in tabledit_column.php3
-        ColumnFunctions ($columns[$col]["view"], $val[$col], "form");
+        ColumnFunctions($columns[$col]["view"], $val[$col], "form");
+    }
 
     // copy values between joining fields
     if (is_array ($join)) {
-        reset ($join);
-        while (list ($childtable, $joinprop) = each ($join)) {
+        foreach ( $join as $childtable => $joinprop) {
             reset ($joinprop["joinfields"]);
             while (list ($masterf, $childf) = each ($joinprop["joinfields"])) {
                 // find master and child field alias
@@ -428,12 +433,11 @@ function RunColumnFunctions (&$val, $columns, $table, $join) {
 
 // -----------------------------------------------------------------------------------
 
-function ProoveVals ($val, $columns) {
+function ProoveVals($val, $columns) {
     global $err;
-    reset ($columns);
-    while (list ($colname, $column) = each ($columns)) {
+    foreach ( $columns as $colname => $column) {
         if ($column["validate"] || $column["required"]) {
-            if (!ValidateInput ($colname, $colname, $val[$colname], $err, $column["required"], $column["validate"]))
+            if (!ValidateInput($colname, $colname, $val[$colname], $err, $column["required"], $column["validate"]))
                 return false;
             if ($column["validate_min"] && $column["validate"] == "number") {
                 if ($val[$colname] < $column["validate_min"] || $val[$colname] > $column["validate_max"]) {
@@ -483,7 +487,7 @@ function GetKeyFromRecord($primary, $columns, $record)
 *
 * @param $auto_increment ... include auto increment fields
 */
-function AddKeyValues (&$varset, $val, $primary, $columns, $auto_increment = true)
+function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true)
 {
     if (!is_array ($primary)) { echo "error in AddKeyValues"; exit; }
 
@@ -492,13 +496,13 @@ function AddKeyValues (&$varset, $val, $primary, $columns, $auto_increment = tru
         $colname = $columns[$alias]["field"];
         $value = $val[$alias];
         if ($auto_increment || !$columns[$alias]["auto_increment"])
-            $varset->addkey ($colname, "text", $value);
+            $varset->addkey($colname, "text", $value);
     }
 }
 
 // -----------------------------------------------------------------------------------
 
-function GetKeyValues ($key_val, $primary, $columns)
+function GetKeyValues($key_val, $primary, $columns)
 {
     $keys = split_escaped (":", $key_val, "#:");
     reset ($keys);
@@ -508,7 +512,7 @@ function GetKeyValues ($key_val, $primary, $columns)
         list (,$value) = each ($keys);
         $colname = $columns[$alias]["field"];
         if ($columns[$alias]["view"]["unpacked"])
-            $value = pack_id ($value);
+            $value = pack_id($value);
         $retval[$colname] = $value;
     }
     return $retval;
@@ -516,14 +520,14 @@ function GetKeyValues ($key_val, $primary, $columns)
 
 // -----------------------------------------------------------------------------------
 
-function CreateWhereCondition ($key_val, $primary, $columns, $table)
+function CreateWhereCondition($key_val, $primary, $columns, $table)
 {
     $varset = new CVarset;
 
-    $keys = GetKeyValues ($key_val, $primary, $columns);
-    reset ($keys);
-    while (list ($colname, $value) = each ($keys))
-        $varset->addkey ($colname, "text", $value);
+    $keys = GetKeyValues($key_val, $primary, $columns);
+    foreach ( $keys as $colname => $value) {
+        $varset->addkey($colname, "text", $value);
+    }
     return $varset->makeWHERE($table);
 }
 
@@ -571,24 +575,24 @@ function PrintJavaScript_Validate () {
     </script>";
 }
 
-function GetEditedKey ($tview) {
+function GetEditedKey($tview) {
     global $cmd;
     $edit = $cmd[$tview]["edit"];
     if (!is_array ($edit)) {
         global $tabledit_cmd;
         $edit = $tabledit_cmd[$tview]["edit"];
-        if (!is_array ($edit)) { echo "Error calling GetEditedKey ($tview)"; exit; }
+        if (!is_array($edit)) { echo "Error calling GetEditedKey ($tview)"; exit; }
     }
     reset ($edit);
     return key($edit);
 }
 
-function CallTrigger ($triggers, $event, $varset) {
+function CallTrigger($triggers, $event, $varset) {
     if (is_array ($triggers) && $triggers[$event]) {
         $fn = $triggers[$event];
-        return $fn ($varset);
+        return $fn($varset);
     }
-    else return true;
+    return true;
 }
 
 
