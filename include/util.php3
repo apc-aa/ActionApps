@@ -1123,8 +1123,12 @@ function PrintAliasHelp($aliases, $fields=false) {
 }
 
 # function returns true if $fld fits the field scheme (used in unaliasing)
+# function returns true if $fld fits the field scheme (used in unaliasing)
 function IsField($fld) {
-  return( (strlen($fld)==16) && (ereg("^[a-z_]+\.+[0-9]*$",$fld)) );
+  return( ((strlen($fld)==16) && ereg("^[a-z_]+\.+[0-9]*$",$fld))
+           OR $GLOBALS['LINKS_FIELDS'][$fld]
+           OR $GLOBALS['CATEGORY_FIELDS'][$fld]
+           OR $GLOBALS['CONSTANT_FIELDS'][$fld] );
 }
 
 /**
