@@ -121,6 +121,10 @@ class scroller {
     return floor(($this->itmcnt - 1) / max(1,$this->metapage)) + 1;
   }  
 
+  function setSort($column, $desc="") {
+  	$this->sortcol = $column;
+  	$this->sortdir = ( $desc ? 2 : 1 );
+  }  
 		
   # process query string and execute commands for this scroller
 	# query string is taken from global variables
@@ -250,6 +254,9 @@ class scroller {
 			
 /*
 $Log$
+Revision 1.3  2000/10/10 10:02:33  honzam
+new function for explicit sorting order setting
+
 Revision 1.2  2000/08/03 12:28:20  honzam
 SCROLLER_LENGTH constant bug fixed - the length is accepted now
 
