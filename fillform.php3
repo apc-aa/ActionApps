@@ -63,16 +63,33 @@ http://www.apc.org/
 ?>
 
 <?
+$encap = ( ($encap=="false") ? false : true );
+
 require "./include/config.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
+require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
-require $GLOBALS[AA_INC_PATH]."notify.php3";
+require $GLOBALS[AA_INC_PATH]."item.php3";
+require $GLOBALS[AA_INC_PATH]."view.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require $GLOBALS[AA_INC_PATH]."searchlib.php3";
+require $GLOBALS[AA_INC_PATH]."discussion.php3";
+require $GLOBALS[AA_INC_PATH]."varset.php3";
+
+if ($encap) require $GLOBALS[AA_INC_PATH]."locsessi.php3";
+else require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
+
+page_open(array("sess" => "AA_SL_Session"));
+
+function RestoreVariables() {
+  $r_state_vars = unserialize($GLOBALS[r_packed_state_vars]);
+  if( isset($r_state_vars) AND is_array($r_state_vars) ) {
+    reset($r_state_vars);
+    while( list($k,$v) = each( $r_state_vars ) )
+      $GLOBALS[$k] = $v;
+  }
+}  
+
+RestoreVariables();
 
 // core JavaScript functions
 echo "<SCRIPT language=javascript src='".AA_INSTAL_URL."include/fillform.js'></SCRIPT>";
