@@ -49,31 +49,31 @@ function PrintErr($err) {
 }
 
 function SuperForm() {
-   global $myurl;
-   global $login, $password1, $password2, $fname, $lname, $email;
-   ?>
-   <form method=post action="<?php echo $myurl; ?>">
-       <table border="0" cellspacing="0" cellpadding="1" width="440"
-              bgcolor="#584011" align="center">
-          <tr><td class=tabtit><b><?php echo L_SETUP_USER; ?></b></td></tr>
-          <tr><td>
-             <table border="0" cellspacing="0" cellpadding="4" width="100%"
-                    bgcolor="#EBDABE" align=center>
-                <?php 
-                   FrmInputText("login", L_SETUP_LOGIN, $login, 12, 30, true);
-                   FrmInputPwd("password1", L_SETUP_PWD1, $password1, 12, 30, true);
-                   FrmInputPwd("password2", L_SETUP_PWD2, $password2, 12, 30, true);
-                   FrmInputText("fname", L_SETUP_FNAME, $fname, 50, 30, true);
-                   FrmInputText("lname", L_SETUP_LNAME, $lname, 50, 30, true);
-                   FrmInputText("email", L_SETUP_EMAIL, $email, 50, 30, false);
-                ?>
-             </table>
-          <tr><td align="center">
-             <input type=submit name=phase value="<?php echo L_SETUP_CREATE ?>">
-          </td></tr>
-       </table>
-   </form>
-   <?php 
+  global $myurl;
+  global $login, $password1, $password2, $fname, $lname, $email;
+  ?>
+  <form method=post action="<?php echo $myurl; ?>">
+    <table border="0" cellspacing="0" cellpadding="1" width="440"
+           bgcolor="#584011" align="center">
+      <tr><td class=tabtit><b><?php echo L_SETUP_USER; ?></b></td></tr>
+      <tr><td>
+         <table border="0" cellspacing="0" cellpadding="4" width="100%"
+                bgcolor="#EBDABE" align=center>
+            <?php 
+              FrmInputText("login", L_SETUP_LOGIN, $login, 12, 30, true);
+              FrmInputPwd("password1", L_SETUP_PWD1, $password1, 12, 30, true);
+              FrmInputPwd("password2", L_SETUP_PWD2, $password2, 12, 30, true);
+              FrmInputText("fname", L_SETUP_FNAME, $fname, 50, 30, true);
+              FrmInputText("lname", L_SETUP_LNAME, $lname, 50, 30, true);
+              FrmInputText("email", L_SETUP_EMAIL, $email, 50, 30, false);
+            ?>
+         </table>
+      <tr><td align="center">
+         <input type=submit name=phase value="<?php echo L_SETUP_CREATE ?>">
+    </td></tr>
+    </table>
+  </form>
+  <?php 
 }
 
 function InitForm() {
@@ -112,20 +112,6 @@ if ($perms = GetObjectsPerms(AA_ID, "aa")) {
          $supergroups[$key] = $value;   // groups with super privileges
       }
    }
-}
-
-if ($debug) {
-   echo "<h3>PERMS</h3>";
-   p_arr_m($perms);
-   echo "<h3>NOTUSERS</h3>";
-   if ($notothers) { p_arr_m($notusers); }
-   echo "<h3>OTHERS</h3>";
-   if ($others) { p_arr_m($others); }
-   echo "<h3>SUPER USERS</h3>";
-   if ($superusers) { p_arr_m($superusers); }
-   echo "<h3>SUPER GROUPS</h3>";
-   if ($supergroups) { p_arr_m($supergroups); }
-   echo "<p>";
 }
 
 HtmlStart();
@@ -261,6 +247,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.2  2000/08/11 17:20:44  kzajicek
+Removed debug section
+
 Revision 1.1  2000/08/11 17:14:07  kzajicek
 First version of the setup script added
 
