@@ -186,8 +186,8 @@ function tillTheFirstSpecial($input, $i, $length) {
     while ($i < $length
         && (!isSpecial($input[$i]) 
             // changed by Jakub, November 2002
-            // don't break on space, apostrophe, minus sign in the middle of words
-            || (strchr (" '-", $input[$i]) 
+            // don't break on apostrophe and minus sign in the middle of words
+            || (strchr ("'-", $input[$i]) 
                 && $i != 0 
                 && isLetter ($input[$i-1])
                 && $i != $length - 1
