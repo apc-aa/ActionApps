@@ -54,11 +54,13 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
 
   #huh( "insert_fnc_qte($item_id, $field, $value, $param)"); 
   #p_arr_m($field);
-
+  
   if( $field[in_item_tbl] ) {
     if( ($field[in_item_tbl] == 'expiry_date') && 
         (date("Hi",$value['value']) == "0000") )
-      $value['value'] += 86399;  # if time is not specified, take end of day 23:59  
+      $value['value'] = mktime(23,59,59,date("m",$value['value']),date("d",$value['value']),date("Y",$value['value']));
+
+    #  $value['value'] += 86399;  # if time is not specified, take end of day 23:59:59 !!it is not working for daylight saving change days !!!
     # field in item table
     $itemvarset->add( $field[in_item_tbl], "quoted", $value['value']);
     return;
@@ -433,6 +435,15 @@ function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
   FrmStaticText($field['name'], implode ("<br>", $items));
 }
 
+function show_fnc_hco($varname, $field, $value, $param, $html) {
+  global $db;
+  if (!empty($param)) 
+    list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels) = explode(':', $param);
+
+  FrmHierarchicalConstant ($varname."[]", $field['name'], $value, $constgroup, $levelCount, $boxWidth, 
+  	$size, $horizontalLevels, $field[required],$field[input_help], $field[input_morehlp]);
+}
+
 function show_fnc_nul($varname, $field, $value, $param, $html) {
 }
 
@@ -716,6 +727,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.23  2002/03/06 12:44:08  honzam
+fix for daylight svaing change days
+
 Revision 1.22  2002/02/05 21:42:14  honzam
 prepare for anonymous item edit feature
 
