@@ -301,8 +301,10 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
         if( $conds_not_field_names[$fid] )
           continue;           # it is not field_id parameters - skip it for now
 
-        if( !$fields[$fid] OR $v=="")
+        if( !$fields[$fid] OR $v=="") {
+		  if ($debug) echo "Skipping $fid in conds[]: not known.<br>";
           continue;            # bad field_id or not defined condition - skip
+	    }
 
         if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
           $select_conds[] = GetWhereExp( 'item.'.$fields[$fid]['in_item_tbl'],

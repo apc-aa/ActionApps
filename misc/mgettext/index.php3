@@ -278,7 +278,7 @@ if ($show_create_related) {
     </td></tr>
     <tr><td valign="top">    
         <p>Warning: Because the file conversion is a long action, perhaps the server will time out
-           during the operation. Just Refresh (Ctrl+R) this page until the server finishes.</p>
+           during the operation. Just keep refreshing (Ctrl+R) this page until the server finishes.</p>
         <INPUT type="submit" name="cmd" value="convert scripts">
     </td>
     <td valign="top">

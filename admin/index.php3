@@ -414,7 +414,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     }
     
     function ChangeImgSrc (imageName, newsrc) {
-        document.itemsform [imageName].src = newsrc;
+        document.itemsform[imageName].src = newsrc;
     }
 
 // -->

@@ -63,7 +63,7 @@ echo "<TITLE>"._m("Admin - Anonymous Form Wizard")."</TITLE>
 require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
 showMenu ($aamenus, "sliceadmin", "anonym_wizard");  
 
-echo "<H1>"._m("Admin - Anonymous Form Wizard")."</B></H1>";
+echo "<H1>"._m("Admin - Anonymous Form Wizard")."</H1>";
 
 PrintArray($err);
 echo $Msg;  
@@ -165,7 +165,7 @@ if ($show_form) {
     require $GLOBALS["AA_BASE_PATH"]."post2shtml.php3";
     $form_content = file (AA_INSTAL_URL
         ."admin/anonym_wizard2.php3?post2shtml_id=$post2shtml_id&slice_id=$slice_id");
-    echo HTMLEntities (join ("", $form_content));
+    echo HTMLSpecialChars (join ("", $form_content));
     echo "\n</textarea></td></tr>\n";
 }
 

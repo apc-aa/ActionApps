@@ -1,5 +1,9 @@
 04/10/03 - new CountHit function, so displaying fulltext is quicker
-         - improved slice selectbox - better titles for different slice types
+(honzam) - improved slice selectbox - better titles for different slice types
+         - fixed "live checkbox" - works again
+         - fixed date validation/filling with default value (fix mainly for 
+           anonymous posting)
+         - fixed bug with not shown scroller in site module
          - fixed triggers problem - it did not work properly
          - redesigned permission definition in perm_core to be more clear
            for modules other than slice (mainly optical change)
@@ -74,25 +78,21 @@
 03/10/03 - insert_fnc_fil now preserves previously uploaded file or URL (mitra)
 03/08/03 - removed duplicate new_id() from post2shtml and required util.php3
            (mitra)
-03/08/03 - added links to Alerts modules to Item Manager submenu (jakub)
-03/08/03 - added some ? help icons to slice settings (jakub)
-03/08/03 - added the Reading Password slice setting, see FAQ (jakub)
-03/08/03 - added Alerts section to Item Manager submenu (jakub)
-03/08/03 - created the file-lock synchronization mechanism,
-           see include/file_lock.php3 (jakub)
-03/08/03 - added a new feature "Mailman: create list", see doc/reader.html
-           (jakub)
+03/08/03 - added links to Alerts modules to Item Manager submenu
+(jakub)  - added some ? help icons to slice settings
+         - added the Reading Password slice setting, see FAQ
+         - added Alerts section to Item Manager submenu
+         - created the file-lock synchronization mechanism,
+           see include/file_lock.php3
+         - added a new feature "Mailman: create list", see doc/reader.html
 03/07/03 - joined the Slice Wizard Welcome emails with other emails, added
            "email templates" to menu (jakub)
 03/06/03 - fixed (?) design of index.php3 with <tr><td> around item manager view
-           (jakub)
-03/06/03 - changed some labels in Alerts (jakub)
-03/06/03 - fixed filler.php3 so that it does not call ErrPage when everything OK
-           (jakub)
-03/06/03 - reorganized the module select box to groups by module / slice type
-           (jakub)
-03/06/03 - added an image to the title of Reader Management slices and to the
-           title of Alerts (jakub)
+(jakub)  - changed some labels in Alerts
+         - fixed filler.php3 so that it does not call ErrPage when everything OK
+         - reorganized the module select box to groups by module / slice type
+         - added an image to the title of Reader Management slices and to the
+           title of Alerts
 03/05/03 - imagefunc.php3: Added debugging, $debugupload=1, note exit on err
          -    use a table of image type properties instead of hard coding
          -    ResampleImage copies if no resampling required
@@ -246,19 +246,17 @@
          - switched ereg for preg in stringexpand 10000* speedup! (mitra)
          - added debug_times parameter to print timestamps (mitra)
 01/28/03 - added new Password and Change Password field type and insert function
-           (jakub)
-01/28/03 - added new Random function into Field Default (jakub)
-01/28/03 - added parameters for Field Validation, Param Wizard for Field
-           Validation and new Unique validation (jakub)
+(jakub)  - added new Random function into Field Default
+         - added parameters for Field Validation, Param Wizard for Field
+           Validation and new Unique validation
 01/28/03 - added paramater wizzard for i_s (mitra)
          - added some more warnings: in i_s, and stringexpand/alias
          - fixed title on site admin window
          - added test for GD into admin/test.php3
 01/27/03 - fixed language constants in so many files, hopefully completely
-           (jakub)
-01/27/03 - changed design of se_inputform.php3: added 2 new param wizards (jakub)
-01/27/03 - improved param wizard design with buttons (jakub)
-01/27/03 - fixed bug: slice was not deleted from module table (jakub)
+(jakub)  - changed design of se_inputform.php3: added 2 new param wizards
+         - improved param wizard design with buttons
+         - fixed bug: slice was not deleted from module table
 01/26/03 - added i_s as in {alias:{img_src.........}:i_s:} to generate height
            and width (mitra)
 01/26/03 - fixed bad url from slicedel2 to slicedel
