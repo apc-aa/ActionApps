@@ -1,16 +1,24 @@
-#!/usr/bin/perl -w
+<?php
 
-#$Id$
-
+//$Id$
 # NOTE: you need to change these variables
-$host  = ''; # like 'http://127.0.0.1';
+#$host  = 'http://127.0.0.1';
+$host  = 'http://www.apc.org';
 $cachedir= '/tmp/cache/';
-$cache4secs = 1000; #
+$cache4secs = 1000;
 
-if (! $host ) die "Error -- you need to set \$host";
+if (! $host ){
+   echo "Error -- you need to set \$host";
+   exit;
+}
 
-# this program relies on Cache.php, in the standard PEAR library, 
-# and the Snoopy.class.inc file (included in this distribution)
+# if you want URLs rewritten, set this to true and 
+# put the Snoopy.class.inc file in your include path (require php > 3.0.9)
+$useSnoopy = 0; // set to either 0 or 'true'. it is on sourceforge
+
+# TODO: better decision making about caching.
+# for example, if there is an expired cache, but connections to the remote URL fail, 
+# there should be a configurable option to use the local copy, like how caching DNS systems work
 
 # Index: 
 # 1. usage
@@ -26,13 +34,14 @@ if (! $host ) die "Error -- you need to set \$host";
 # if not called correctly, echo a usage statement
 if ( ! $PATH_INFO ) {
 
-echo '
+echo '<PRE>' . htmlspecialchars ('
+
 =================================================
-scriptname: remotec
+scriptname: remotec.php
   Include the output of a script on a remote server into a local webpage.
   Cache the output, and use it again until it expires  
 
-author    : madebeer\@igc.org
+author    : madebeer@igc.org
 license   : released GPL - see http://www.gnu.org/license.html
 
 =================================================
@@ -51,7 +60,7 @@ Strategic usage:
       these items into news.html, on their local webhost.
 
   Note: For high performance, frequently updated sites, set 
-   \$cache4days = ".01"; # about 15 minutes
+   $cache4days = ".01"; # about 15 minutes
   and then have a cronjob visit the page every 10 minutes
   to keep the cache relevant.
   0,10,20,30,40,50 * * * lynx -dump http://www./page.html > /dev/null
@@ -66,19 +75,19 @@ Technical usage:
 Look at the top of this script, and set the variables there.
 Make sure cachedir is writable by the webserver
 
-"remotec" is used as an SSI inside an html page. 
+"remotec.php" is used as an SSI inside an html page. 
 For example, if you wanted to include the page
    http://www.gn.apc.org/slice.php3
 And your page was not on www.gn.apc.org, you would put this 
-HTML code in your page (setting the \$host variable first):
-   <!--#include virtual=/cgi/remotec/slice.php3 -->
+HTML code in your page (setting the $host variable first):
+   <!--#include virtual=/remotec.php/slice.php3 -->
 
 remote only works with GET (not POST) commands. 
 You can use URL parameters, like:
 <!--#include 
-       virtual="/cgi-bin/remotec/apc-aa/view.php3?vid=11&als[MY_ALIAS]=3"-->
+       virtual="/remotec.php/apc-aa/view.php3?vid=11&als[MY_ALIAS]=3"-->
 
-';
+'). '</PRE>';
     exit;
 }
 
@@ -91,37 +100,50 @@ You can use URL parameters, like:
 
 # build the URL of the page we are going to request
 $url = $host . $PATH_INFO . "?". $QUERY_STRING;
-
+//echo $url; //debug
 # -------------------------------------------------
 # 3. figure out if a recent cache exists for this URL
 #    if there is, print it.
 
-require_once("Cache.php");
-$cache = new Cache("file", array("cache_dir" => $cachedir) );
-$id = $cache->generateID($url);
+// I would use the PEAR Cache.php file, but it only works with php4,
+// so I am handling caching in the code below.
 
-if ( $data = $cache->get($id)) {
-  echo $data;
-} else { 
+$id = md5($url);
+$target = "$cachedir/$id";
+$age = time() - filemtime( $target ) ; 
+
+if ( ( file_exists($target) ) and ( $age < $cache4seconds ) ) {
+   readfile ($target); 
+} else {
 
 # -------------------------------------------------
 # 4. if the cachefile does not exist or is not new enough, 
 # run the query, cache the result, and print the result
 
-  include "Snoopy.class.inc";
-  $snoopy = new Snoopy;
-  $snoopy->fetchtext($url);
-  $data = $snoopy->results;
-  $cache->save($id,$data,$cache4seconds);
-  print $data;
+  if ($useSnoopy) {
+    include "Snoopy.class.inc";  // will rewrite URLs
+    $snoopy = new Snoopy;
+    $snoopy->fetch($url);
+    $data = $snoopy->results;
+  } else {
+    $data = join ('', file ($url));
+  }
+
+  if (! $data ) exit;
+
+  $fp = fopen ($target, "w");
+  // use flock so that simultaneous requests to an expired $id will not mangle the cachefile
+  if (flock($fp,2)){ 
+     fwrite($fp, $data);
+     if (! fclose($fp)) echo "error closing $target";
+  };
+  echo $data;
 }
 /*
 $Log$
-Revision 1.2  2001/10/19 06:44:39  madebeer
-nulled out $host variable, for security reasons
-
-Revision 1.1  2001/10/19 06:16:44  madebeer
-added helper scripts - different versions of remote.
-remote allows remote servers to use apc-aa content in SSIs
+Revision 1.3  2001/10/19 07:37:46  madebeer
+new remotec.php does not rely on any libraries
 
 */
+?>
+
