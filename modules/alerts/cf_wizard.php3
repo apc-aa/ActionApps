@@ -1,12 +1,7 @@
 <?php
 /**
-*   Alerts user settings - shows login page
-*   Global parameters:
-*       $uid or $email
-*       $password (may be empty when the user wishes)
-*       $lang - set language
-*       $ss - set style sheet URL
-*       $show_email - email to be shown but not processed (used by confirm.php3)
+ * Alerts - Collection Forms
+*  This is the "Form Wizard" page from Alerts Admin menu
 *
 * @package Alerts
 * @version $Id$

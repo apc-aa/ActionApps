@@ -1,5 +1,6 @@
 <?php 
 /**
+ * Alerts - Collection Forms
  * Defines the $cf_fields array used in Collection Form handling scripts.
  * 
  * @package Alerts

@@ -1,5 +1,13 @@
 <?php
-//$Id$
+/**
+ * Functions for showing info and allowing to send an example email to the user
+ * on the "Design" page in the "Alerts Admin" menu.
+ * 
+ * @package Alerts
+ * @version $Id$
+ * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+*/
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/

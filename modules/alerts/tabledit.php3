@@ -1,5 +1,16 @@
 <?php
-//$Id$
+/**
+ * This script provides the "Design", "Emails" and "Settings" pages in "Alerts Admin" menu
+ * and the "User Manager" pages in Alerts. It mainly shows various TableViews
+ * (see DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html).
+ *
+ * Params: $set_tview -- required, ID of the table view to be shown
+ *
+ * @package Alerts
+ * @version $Id$
+ * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+*/
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
@@ -17,14 +28,6 @@ http://www.apc.org/
     You should have received a copy of the GNU General Public License
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-// (c) Econnect, Jakub Adamek, December 2002
-// DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
-
-/* Shows a Table View, allowing to edit, delete, update fields of a table
-   Params:
-       $set_tview -- required, name of the table view
 */
 
 require "../../include/config.php3";

@@ -1,6 +1,9 @@
 <?php 
 /**
-*  Prepares and activates Javascript filling a Collection Form.
+ * Alerts - Collection Forms
+ * Prepares and activates Javascript filling a Collection Form. Also contains Javascript
+ * for validating the Form.
+ *
 *  Parameters: 
 *        $uid or $alerts[userid] .. REQUIRED user ID
 *        $cid or $alerts[collectionid] .. collection ID (if you want to refill collection info)

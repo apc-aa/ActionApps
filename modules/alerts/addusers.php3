@@ -1,6 +1,6 @@
 <?php
 /**
- * "Add users" page from Alerts menu
+ * This is the "Add users" page from Alerts menu
  * 
  * @package Alerts
  * @version $Id$
