@@ -1,6 +1,9 @@
 <?php
 
-$tablename = "wizard_welcome";
+/* Shows a Table View, allowing to edit, delete, update fields of a table
+   Params:
+       $set[table] -- required, name of the table view
+*/
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -8,42 +11,53 @@ require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."tabledit.php3";
+require $GLOBALS[AA_INC_PATH]."menu.php3";
+require $GLOBALS[AA_INC_PATH]."mgettext.php3";
+require $GLOBALS[AA_INC_PATH]."../misc/alerts/util.php3";
 
-if(!IsSuperadmin()) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_ADD, "standalone");
+require $GLOBALS[AA_INC_PATH]."tableviews.php3";
+
+// ----------------------------------------------------------------------------------------    
+
+$tableview = $tableviews[$set["tview"]];
+        
+if (!is_array ($tableview)) {
+    MsgPage ($sess->url(self_base())."index.php3", "Bad Table view ID: ".$set["tview"]);
+    exit;
+}
+    
+if (! $tableview["cond"] ) {
+    MsgPage ($sess->url(self_base())."index.php3", L_NO_PS_ADD, "standalone");
     exit;
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-    <TITLE><?php echo L_EDIT_WIZARD_WELCOME;?></TITLE>
-    </HEAD>
-<?php
-    require $GLOBALS[AA_INC_PATH]."menu.php3"; 
-    showMenu ($aamenus, "aaadmin","tabledit");
+
+echo "<TITLE>".$tableview["title"]."</TITLE></HEAD>";
+
+showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
+
+echo "<H1><B>" . $tableview["caption"] . "</B></H1>";
+PrintArray($err);
+echo $Msg;
+   
+if ($cmd["update"]) {
+    $tview = key ($cmd["update"]);
+    $key = key ($cmd["update"][$tview]);      
+    TableUpdate ($tableviews[$tview]["table"], $key, $val, $tableviews[$tview]["fields"]);
+}
     
-    echo "<H1><B>" . L_EDIT_WIZARD_WELCOME . "</B></H1>";
-    PrintArray($err);
-    echo $Msg;
-    
-    $tblname = "wizard_welcome";
-    $fields = array ("description","email","subject","mail_from");
-    $primary_key = array ("id"=>"number");
-    $hint = array ("email"=>"mail body", "mail_from"=>"\"from:\" field");
-    $attrs_edit = array (
-            "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'",
-            "td"=>"class=tabtxt");
-    $attrs_browse = array (
-            "url"=>"AA_CP_Session=$AA_CP_Session",
-            "table"=>"border=1 cellpadding=3 width='100%' cellspacing=0 bgcolor='".COLOR_TABBG."'",
-            "td"=>"class=tabtxt");
-    
-    if ($cmd["update"] && ($par["where"] || $cmd["insertsent"]))
-        TableUpdate ($tblname, $par["where"], $val, $fields);
-    
-    else if ($cmd["delete"])
-        TableDelete ($tblname, $cmd["delete"], $primary_key);
-      
-    if ($cmd["edit"] || $cmd["insert"]) TableEditView ($tblname, $cmd["edit"], "tabledit.php3?AA_CP_Session=$AA_CP_Session", $attrs_edit, $fields, $primary_key,$hint);
-    else TableBrowseView ($tblname, $attrs_browse, $fields, $primary_key);
+else if ($cmd["delete"]) {
+    $tview = key ($cmd["delete"]);
+    $key = key ($cmd["delete"][$tview]);      
+    TableDelete ($tableviews[$tview]["table"], $key, $tableviews[$tview]["fields"]);
+}
+  
+$script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
+
+$tabledit = new tabledit ($set["tview"], $script, $cmd, $tableview);
+$err = $tabledit->view ($where);
+$err .= $tabledit->ShowChildren($tableviews);
+
+if ($err) echo "<b>$err</b>";
 ?>

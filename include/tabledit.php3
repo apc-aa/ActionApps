@@ -1,184 +1,314 @@
 <?php
 
-/*   $columns is array of column names or "*"
+// identifies new record 
+$new_key = "__new__";
+
+class tabledit {
+
+    // EXTERN VARIABLES
+    // active tableview
+    var $view;
+    // view ID
+    var $viewID;
+    // main script URL
+    var $action;
+    // command to be executed 
+    var $cmd;
+    /* used for CHILD tables only, contains joining field values
+                        e.g. array ("collectionid" => 7)    */
+    var $joincols;
+    
+    // INTERN VARIABLES
+
+    function tabledit($viewID, $action, $cmd, $view, $joincols="") {
+        $this->viewID = $viewID;
+        $this->cmd = $cmd;
+        $this->view = $view;
+        $this->joincols = $joincols;
+        $this->action = $action;       
+    }
+    
+    // shows one table form    
+    function view ($where) {
+        global $db;
+        // is this a child view?
+        $child = $this->joincols != "";
+        $columns = GetColumnTypes ($this->view["table"], $this->view["fields"]);
+    
+        // defaults
+        if (!isset ($this->view["addrecord"])) $this->view["addrecord"] = true;
+        
+        // create SQL SELECT        
+        if ($this->cmd["edit"][$this->viewID]) {
+            $where = CreateWhereCondition (key ($this->cmd["edit"][$this->viewID]), $columns);
+        }
+        else if ($this->cmd["insert"][$this->viewID]) {
+            $where = "1=2";
+            $show_new = true;
+        }
+        else if (!$this->view["readonly"] && $this->view["addrecord"])
+            $show_new = true;
+        
+        // find tview and gotoview
+        // $gotoview = edit in browse view; update in edit view
+        $gotoview = $this->view["gotoview"];
+        // $gotoview2 = delete,update in browse view
+        $gotoview2 = $child ? $gotoview : $this->viewID;
+        if (!$gotoview) $gotoview = $this->viewID;
+        
+        while (list ($col) = each ($columns)) 
+            $collist[] = $col;    
+        $db->tquery ("SELECT ".join(",",$collist)
+                   ." FROM ".$this->view[table]
+                   .($where ? " WHERE ".$where : ""));
+        
+        if ($db->num_rows() == 0 && !$show_new) 
+            echo "<B>".L_TABLE_EMPTY."</B>";
+            
+        else {      
+            echo "<TABLE ".$this->view["attrs"]["table"].">";
+            $td = "<TD ".$this->view["attrs"]["td"].">";
+          
+            // "new" is label for $new_record, "view" is view on which $this->cmd operates, "gotoview" is view which will be shown
+            $buttons_text = array (
+                "edit" => array ("label" => L_EDIT, "new" => "", "view" => $gotoview, "gotoview" => $gotoview),
+                "delete" => array ("label" => L_DELETE, "new" => "", "view" => $this->viewID, "gotoview" => $gotoview2),
+                "update" => array ("label" => L_UPDATE, "new" => L_ADD, "view" => $this->viewID, "gotoview" => $gotoview2, "button"=>true));
+                
+            // show column headers in Browse view
+            if ($this->view["type"] == "browse") {
+                $colspan = 0;
+                reset ($buttons_text);
+                while (list ($button) = each ($buttons_text))
+                    if ($this->view["buttons"][$button]) $colspan ++;
+    
+                echo "<TR><TD ".$this->view["attrs"]["td"]." colspan=".$colspan.">&nbsp;</TD>\n";   
+                reset ($columns);
+                while (list ($colname,$column) = each ($columns)) 
+                    if ($column["view"]["type"] != "hide") 
+                        echo "$td<b>$colname</b><br><font size=-1>".$column["hint"]."</font></TD>\n";
+                echo "</TR>";        
+            }
+            
+            // if $show_new is enabled, show empty record as last one
+            $new_record = false;
+            while (!$new_record) {
+                if (!$db->next_record()) 
+                    if ($show_new)
+                        $new_record = true;
+                    else break;
+    
+                $key = $new_record ? $new_key : GetKey ($columns, $db->Record);
+    
+                if ($this->view["type"] == "browse") {
+                    echo "<FORM name='tv_".$this->viewID."_$key' method=post action='".$this->getAction($gotoview2)."'>\n";
+                    echo "<TR>";
+                    $this->ShowButtons ($buttons_text, $new_record, $key);
+                }
+                else echo "<FORM name='tv_".$this->viewID."_$key' method=post action='".$this->getAction($gotoview)."'>\n";
+                            
+                // add join fields
+                if ($new_record && is_array ($this->joincols)) {
+                    reset ($this->joincols);
+                    while (list ($col,$val) = each ($this->joincols)) 
+                        echo "<INPUT TYPE=hidden NAME=val[$col] VALUE='".str_replace("'","\\'",$val)."'>";
+                }
+                
+                $this->ShowColumnValues ($db->Record, $new_record);
+                
+                if ($this->view["type"] == "edit")    
+                    echo "<TR><TD colspan=2 ".$this->view["attrs"]["td"]." align=center>
+                        <INPUT type=submit name='cmd[update][".$this->viewID."][$key]' value='".($new_record ? L_INSERT : L_UPDATE)."'>
+                        <INPUT type=submit name='cmd[cancel][".$this->viewID."]' value='".L_CANCEL."'>
+                        </TD></TR>\n";
+                if ($this->view["type"] == "browse") echo "</TR>";
+                echo "</FORM>";
+            }
+            echo "</TABLE>";
+        }
+        
+        if ($this->view["readonly"] && $this->view["gotoview"]) {
+            echo "<br><br>
+                <FORM name='tv_".$this->viewID."_insert' method=post action='".$this->getAction($gotoview)."'>
+                <INPUT type=submit name='cmd[insert][".$gotoview."]' value='".L_INSERT."'>
+                </FORM>";
+        }
+        
+        return "";
+    }        
+
+    // -----------------------------------------------------------------------------------
+
+    function getAction ($viewID) {
+        return $this->action. (strstr($this->action,"?") ? "&" : "?") . "set[tview]=".$viewID;
+    } 
+        
+    // -----------------------------------------------------------------------------------
+
+    function ShowColumnValues ($record, $new_record)
+    {
+        $columns = GetColumnTypes ($this->view["table"], $this->view["fields"]);
+        $td = "<TD ".$this->view["attrs"]["td"].">";
+        while (list ($colname,$column) = each ($columns)) {
+            $cview = $column["view"];
+            if ($new_record && $column["view_new_record"])
+                $cview = $column["view_new_record"];
+
+            if ($cview["type"] == "hide") 
+                continue;
+            
+            if (isset ($cview["readonly"]))
+                 $readonly = $cview["readonly"];
+            else $readonly = $this->view["readonly"];
+                       
+            if ($this->view["type"] == "edit")
+                echo "<TR>$td<b>$colname</b><br><font size=-1>".$column["hint"]."</font></TD>\n";
+        
+            $type = $cview["type"];
+            if (!$type) $type = $column["type"];                
+        
+            $val = $new_record ? $column["view_new_record"]["default"] : htmlentities($record[$colname]);
+            
+            $rows = 5;
+            $cols = 80;
+            
+            echo $td;
+            if (!$readonly) switch ($type) {
+                case 'blob': echo "<textarea name='val[$colname]' rows=5 cols=80>$val</textarea>"; break;
+                case 'select': FrmSelectEasy("val[$colname]", $cview["source"], $val); break;
+                case 'text': $cols = $cview["size"]["cols"];
+                default: echo "<INPUT type=text size=$cols name='val[$colname]' 
+                    value='".str_replace("'","\"",$val)."'>"; 
+            }
+            else {
+                if ($type == "select") 
+                    $val = htmlentities($cview["source"][$record[$colname]]);
+                if (is_field_type_numerical ($column["type"]) && !$val)
+                    if (!$new_record)
+                         $val = "0";
+                    else $val = "&nbsp;";
+                else if (!$val) $val = "&nbsp;";
+                if ($cview["href_view"]) 
+                    echo "<a href='".$this->getAction($cview["href_view"])
+                        ."&cmd[edit][".$cview["href_view"]."]"
+                        ."[\"".str_replace("\"","\\\"",$record[$colname])."\"]=1'>".$val."</a>";
+                else echo $val;
+            }        
+            echo "</TD>";
+            
+            if ($this->view["type"] == "edit") echo "</TR>";
+        }
+    }
+    
+    // -----------------------------------------------------------------------------------
+
+    function ShowButtons ($buttons_text, $new_record, $key) {                
+        $td = "<TD ".$this->view["attrs"]["td"].">";
+        if (is_array ($this->view["buttons"])) {
+            reset ($this->view["buttons"]);
+            while (list ($button,$use) = each ($this->view["buttons"])) {
+                $bt = $buttons_text[$button];
+                if ($use && $bt) {
+                    $label = $bt["label"];
+                    if (isset ($bt["new"]) && $new_record)
+                        $label = $bt["new"];
+                    if ($bt["button"])
+                         echo $td."<INPUT type=submit name='cmd[$button][".$this->viewID."][$key]' value='$label'>\n";
+                    else {
+                        if ($label) echo $td."<a href='".$this->getAction($bt[gotoview])
+                            ."&cmd[$button][$bt[view]][$key]=1'>".$label."</a></td>\n";                
+                        else echo $td."&nbsp;</td>\n";
+                    }
+                }
+            }
+        }
+    }    
+
+    // -----------------------------------------------------------------------------------
+    
+    // shows children forms
+    function ShowChildren (&$tableviews) {
+        if (!is_array ($this->view["children"]) || !$this->cmd["edit"][$this->viewID]) 
+            return "";
+        reset ($this->view["children"]);
+        while (list ($chview, $child) = each ($this->view["children"])) {       
+            $key = key ($this->cmd["edit"][$this->viewID]);
+            $key_values = split_escaped (":", $key, "#:");
+            reset ($key_values);
+            reset ($child["join"]);
+            while (list ($masterf,$childf) = each ($child["join"])) {
+                $childcols[$childf] = $this->view["fields"][$masterf];
+                list (,$key_value) = each ($key_values);
+                $joincols[$childf] = $key_value;
+            }
+            $where = CreateWhereCondition ($key, $childcols);
+            echo "<h3>".$child["header"]."</h3>";
+            $chtv = $tableviews[$chview];
+            $chtv["gotoview"] = $this->viewID;
+            $action = $this->action . (strstr($this->action,"?") ? "&" : "?")
+                      ."cmd[edit][".$this->viewID."][$key]=1";
+            $childte = new tabledit ($chview, $action, $this->cmd, $chtv, $joincols);
+            $err = $childte->view($where);
+            if ($err) return $err;
+        }
+    }
+}
+// END OF class tabledit
+
+/*   $columns is array of columns, see "fields" in tableviews.php3
      returns array (field_name => field_type, ...)
 */
 
-function GetColumns ($table, $columns) {
-    $db = new DB_AA;    
+function GetColumnTypes ($table, $columns) {
+    global $db;
+    //echo "TABLE $table";
+    if (!$table) {
+        echo "Error in GetColumnTypes";
+        return $columns;
+    }
     $cols = $db->metadata ($table);
-    if ($columns == "*") {
-        $columns = array ();
-        reset ($cols);
-        while (list (,$col) = each ($cols))
-            $columns[$col["name"]] = $col["type"];
-    }
-    else if (is_array ($columns)) {
-        $c = $columns;
-        $columns = array ();
-        reset ($cols);
-        while (list (,$col) = each ($cols)) {
-            if (my_in_array ($col["name"], $c))
-                $columns[$col["name"]] = $col["type"];
-        }
-    }
+    reset ($cols);
+    while (list (,$col) = each ($cols)) 
+        if (isset ($columns[$col["name"]])) 
+            $columns[$col["name"]]["type"] = $col["type"];
     return $columns;
 }
 
-function CreateWhereCondition ($key_value, $primary_key) {
-    $dummy = "~#$";
-    if (strstr ($dummy, $key_value)) { echo "INTERNAL ERROR."; return "INTERNAL ERROR"; }
-    $key_value = str_replace ("#:",$dummy,$key_value);
-    $key_values = split (":", $key_value);
+// -----------------------------------------------------------------------------------
 
-    reset ($key_values);
-    reset ($primary_key);
-    $where = array();
-    while (list ($i,$kv) = each ($key_values)) {
-        list ($name, $type) = each ($primary_key);       
-        $val = str_replace ($dummy, ":", $kv);
-        switch ($type) {
-            case 'packed': $where[] = "$name='".q_pack_id ($val)."'"; break;
-            case 'number': $where[] = "$name=$val"; break;
-            default: $where[] = "$name='".str_replace("'","\\'",$val)."'";
-        }
-    }
-    return join (" AND ",$where);
-}
-
-/*  function: TableEditView
-    purpose: shows a form for inserting or editing a table row
-    params: if $key_value is empty, inserts a new row
-*/
-
-function TableEditView ($table, $key_value, $action, $attrs = array(), $columns="*", $primary_key=array("id"=>"binary"), $column_hints=array()) {
+// deletes one record identified by key values from given table
+function TableDelete ($table, $key_value, $columns, $be_cautious=1) {
     global $db;
-    
-    if (!is_array ($primary_key)) return "Primary key must be an array of field names.";
-    $columns = GetColumns ($table, $columns);
-    
-    $number_db_types = array ("float","double","decimal","int", "timestamp");
-
-    echo "<FORM name='f' method=post action='$action'>";
-
-    if ($key_value) {
-        $where = CreateWhereCondition ($key_value, $primary_key);
-        echo "<INPUT TYPE=hidden NAME='par[where]' VALUE='$where'>";
+    $where = CreateWhereCondition ($key_value, $columns);
+    if ($be_cautious) {
         $db->query ("SELECT * FROM $table WHERE $where");
-        if ($db->num_rows() != 1) 
-            return L_WRONG_NUMBER_OF_ROWS;
-        $db->next_record();
+        if ($db->num_rows() != 1) return false;
     }
-    else {
-        echo "<INPUT TYPE=hidden NAME='cmd[insertsent]' VALUE=1>";
-        $val = "";
-    }
-    
-    echo "<TABLE $attrs[table]>";
-    reset ($columns);
-    while (list ($col,$type) = each ($columns)) {
-        echo "<TR>
-        <TD $attrs[td]><b>$col</b><br><font size=-1>".$column_hints[$col]."</font></TD>";
-        if ($key_value) $val = htmlentities($db->f($col));
-        if (!$val) $val = "&nbsp;";
-        echo "<TD $attrs[td]>";
-        switch ($type) {
-            case 'blob': echo "<textarea name='val[$col]' rows=5 cols=80>$val</textarea>"; break;
-            default: echo "<INPUT type=text size=80 name='val[$col]' value='".str_replace("'","\"",$val)."'>"; 
-        }
-        echo "</TD></TR>";
-    }
-    echo "</TABLE>
-    <br><br>
-    <INPUT type=submit name='cmd[update]' value='".($key_value ? L_UPDATE : L_INSERT)."'>
-    <INPUT type=submit name='cmd[cancel]' value='".L_CANCEL."'>
-    </FORM>";
-    return "";
-}        
-
-/* $attrs = array (
-    "table"=><TABLE ...>
-    "td"=><TD ...>
-    "url"=>"?edit=1&...") */
-
-function TableBrowseView ($table, $script, $attrs = array(), $columns="*", $primary_key=array("id"=>"binary"), $where="") {
-    global $db;
-    if (!is_array ($primary_key)) return "Primary key must be an array of field names.";
-    $columns = GetColumns ($table, $columns);
-    
-    $collist = array();
-    while (list ($col) = each ($columns)) 
-        $collist[] = $col;
-    reset ($primary_key);
-    while (list($name) = each($primary_key)) {
-        if (!my_in_array ($name, $collist))
-            $collist[] = $name;
-    }
-    
-    $db->query ("SELECT ".join(",",$collist)." FROM $table ".($where ? "WHERE $where" : ""));
-    if ($db->num_rows() == 0) 
-        echo "<B>".L_TABLE_EMPTY."</B>";
-        
-    else {
-        
-        echo "<TABLE $attrs[table]><TR>
-        <TD $attrs[td] colspan=2>&nbsp;</TD>";   
-        reset ($columns);
-        while (list ($col) = each ($columns)) {
-            echo "<TD $attrs[td]><B>$col</B></TD>";
-            $collist[] = $col;
-        }
-        echo "</TR>";
-        
-        
-        reset ($columns);
-        while ($db->next_record()) {
-            reset ($primary_key);
-            $key = array();
-            while (list ($name,$type) = each ($primary_key)) {
-                switch ($type) {
-                    case "binary": $key[] = str_replace (":", "#:", htmlentities ($db->f($name))); break;
-                    case "packed": $key[] = unpack_id ($db->f($name)); break;
-                    default: $key[] = str_replace (":","#:",$db->f($name));
-                }
-            }
-            
-            echo "<TR><TD $attrs[td]><a href='$script?cmd[edit]=".join(":",$key)."&$attrs[url]'>".L_EDIT."</A></TD>
-            <TD $attrs[td]><a href='$script?cmd[delete]=".join(",",$key)."&$attrs[url]'>".L_DELETE."</a></TD>";
-            reset ($columns);
-            while (list ($col) = each ($columns)) {
-                $val = htmlentities($db->f($col));
-                if (!$val) $val = "&nbsp;";
-                echo "<TD $attrs[td]>$val</TD>";
-            }
-            echo "</TR>";
-        }
-        echo "</TABLE>";
-    }
-    
-    echo "<FORM name='f' method=post action='$action'>";
-    echo "<INPUT type=submit name='cmd[insert]' value='".L_INSERT."'>";
-    echo "</FORM>";
-    return "";
+    return $db->query ("DELETE FROM $table WHERE $where");
 }
 
-function TableUpdate ($table, $where, $val, $columns="*", $be_cautious=1) {
+// -----------------------------------------------------------------------------------
+   
+// inserts or updates one record identified by key values in given table    
+// records to insert are identified by $key_value == $new_key
+function TableUpdate ($table, $key_value, $val, $columns, $be_cautious=1) {
     global $db;
-    $columns = GetColumns ($table, $columns);
+    $columns = GetColumnTypes ($table, $columns);
     $varset = new CVarset();
     reset ($val);
     while (list($name,$value)=each($val)) {
         if (get_magic_quotes_gpc()) 
             $value = stripslashes ($value);
-        if (is_field_type_numerical ($columns[$name]))
+        if (is_field_type_numerical ($columns[$name]["type"]))
             $varset->set($name,$value,"number");
         else switch ($columns[$name]) {
             case 'packed': $varset->set($name,$value,"packed"); break;
             default: $varset->set($name,$value,"text"); 
         }
     }
- 
-    if ($where) {
+
+    if ($key_value != $new_key) { 
+        $where = CreateWhereCondition ($key_value, $columns);
         if ($be_cautious) {
             $db->query ("SELECT * FROM $table WHERE $where");
             if ($db->num_rows() != 1) return false;
@@ -188,15 +318,41 @@ function TableUpdate ($table, $where, $val, $columns="*", $be_cautious=1) {
     else return $db->query ("INSERT INTO $table ".$varset->makeINSERT());
 }
 
-function TableDelete ($table, $key_value, $primary_key, $be_cautious=1) {
-    global $db;
-    $where = CreateWhereCondition ($key_value, $primary_key);
-    if ($be_cautious) {
-        $db->query ("SELECT * FROM $table WHERE $where");
-        if ($db->num_rows() != 1) return false;
-    }
-    return $db->query ("DELETE FROM $table WHERE $where");
-}
-    
+// -----------------------------------------------------------------------------------
 
+// creates key string with values from key fields separated by :
+function GetKey ($columns, $record)
+{
+    reset ($columns);
+    unset ($key);
+    while (list ($colname,$column) = each ($columns)) 
+        switch ($column["primary"]) {
+        case "packed": $key[] = unpack_id ($record [$colname]); break;
+        case "number": $key[] = $record[$colname]; break;
+        case "text": $key[] = htmlentities ($record[$colname]); break;
+        }
+    return join_escaped (":",$key,"#:");
+}
+            
+// -----------------------------------------------------------------------------------    
+
+// creates where condition from key fields values separated by :
+function CreateWhereCondition ($key_value, $columns) {
+    $key_values = split_escaped (":", $key_value, "#:");
+    reset ($key_values);
+    reset ($columns);
+    $where = array();
+    while (list ($colname,$column) = each ($columns)) {
+        if (!$column["primary"])        
+            continue;
+        list (,$val) = each ($key_values);
+        switch ($column["primary"]) {
+            case 'packed': $where[] = "$colname='".q_pack_id ($val)."'"; break;
+            case 'number': $where[] = "$colname=$val"; break;
+            case 'text': $where[] = "$colname='".str_replace("'","\\'",$val)."'";
+        }
+    }
+    return join (" AND ",$where);
+}
+   
 ?>
