@@ -38,6 +38,7 @@ function ShowEmailAliases () {
         "aliases" => array (
             "_#HOWOFTEN" => _m("howoften")." (".join(", ",get_howoften_options()).")",
             "_#COLLFORM" => _m("Collection Form URL (set in Alerts Admin - Settings)"),
+            "_#CONFIRM_" => _m("email confirmed"),
         ));
 
     // these aliases are used in include/slicewiz.php3        
@@ -99,20 +100,21 @@ function GetEmailTableView ($viewID, $processForm = false)
                 "view" => array ("type"=>"select","source"=>get_email_types())),
             "subject" => array (
                 "required" => true,
-                "caption" => _m("subject")),
+                "caption" => _m("subject"),
+                "view" => array ("type" => "area", "size" => array ("rows"=>2))),
             "body" => array (
                 "required" => true,
                 "caption" => _m("body"),
                 "view" => array ("type" => "area", "size" => array ("rows"=>8))),
             "header_from" => array (
                 "required" => true,
-                "caption" => _m("from")),
+                "caption" => _m("from (email)")),
             "reply_to" => array (
-                "caption" => _m("reply to")),
+                "caption" => _m("reply to (email)")),
             "errors_to" => array (
-                "caption" => _m("errors to")),
+                "caption" => _m("errors to (email)")),
             "sender" => array (
-                "caption" => _m("sender")),
+                "caption" => _m("sender (email)")),
             "lang" => array (
                 "caption" => _m("language (charset)"),
                 "default" => get_mgettext_lang(),
