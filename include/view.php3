@@ -184,19 +184,20 @@ function GetViewConds($view_info, $param_conds) {
 }                     
 
 function GetViewSort($view_info) {
+
+  # translate sort codes (we use numbers in views from historical reason)
+  # '0'=>L_ASCENDING, '1' => L_DESCENDING, '2' => L_ASCENDING_PRI, '3' => L_DESCENDING_PRI 
+  $SORT_DIRECTIONS = array( 0 => 'a', 1 => 'd', 2 => '1', 3 => '9' );
+
   if( $view_info['group_by1'] )
-    $sort[] = array ( $view_info['group_by1'] => 
-        (( $view_info['g1_direction'] == 1 ) ? 'd' : 'a'));
+    $sort[] = array ( $view_info['group_by1'] => $SORT_DIRECTIONS[$view_info['g1_direction']]);
   if( $view_info['group_by2'] )
-    $sort[] = array ( $view_info['group_by2'] => 
-        (( $view_info['g2_direction'] == 1 ) ? 'd' : 'a'));
+    $sort[] = array ( $view_info['group_by2'] => $SORT_DIRECTIONS[$view_info['g2_direction']]);
 
   if( $view_info['order1'] )
-    $sort[] = array ( $view_info['order1'] => 
-        (( $view_info['o1_direction'] == 1 ) ? 'd' : 'a'));
+    $sort[] = array ( $view_info['order1'] => $SORT_DIRECTIONS[$view_info['o1_direction']]);
   if( $view_info['order2'] )
-    $sort[] = array ( $view_info['order2'] => 
-        (( $view_info['o2_direction'] == 1 ) ? 'd' : 'a'));
+    $sort[] = array ( $view_info['order2'] => $SORT_DIRECTIONS[$view_info['o2_direction']]);
         
   return $sort;
 }
@@ -309,7 +310,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $aliases = GetConstantAliases($als);
       $constantview = new constantview( $db, $format, $aliases, 
                             $view_info['parameter'], $view_info['order1'], 
-                            ( ($view_info['o1_direction'] == 1) ? 'DESC' : ''), 
+                            ((($view_info['o1_direction'] == 1) || 
+                              ($view_info['o1_direction'] == 3))? 'DESC' : ''), 
                             ($listlen ? $listlen : $view_info['listlen']) );
       return $constantview->get_output_cached();
   

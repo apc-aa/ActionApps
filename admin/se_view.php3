@@ -38,7 +38,7 @@ function OrderFrm($name, $txt, $val, $order_fields) {
   FrmSelectEasy($name, $order_fields, $val);
      # direction variable name - construct from $name
   $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
-  FrmSelectEasy($dirvarname, array( '0'=>L_ASCENDING, '1' => L_DESCENDING ), 
+  FrmSelectEasy($dirvarname, array( '0'=>L_ASCENDING, '1' => L_DESCENDING, '2' => L_ASCENDING_PRI, '3' => L_DESCENDING_PRI ), 
                 $vw_data[$dirvarname]);
 
   PrintMoreHelp(DOCUMENTATION_URL);
