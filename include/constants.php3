@@ -149,8 +149,20 @@ define( "REL_FLAG_FEED", 2 );    # 2 - just to be compatible with content table
 $INPUT_FEED_MODES = array ( STATE_FEEDABLE => L_STATE_FEEDABLE,
                             STATE_UNFEEDABLE => L_STATE_UNFEEDABLE,
                             STATE_FEEDNOCHANGE => L_STATE_FEEDNOCHANGE);
+
+# se_views.php3 - view types
+$VIEW_TYPES = array ( 'list'   => L_COMPACT_VIEW,
+                      'full'   => L_FULLTEXT_VIEW,
+                      'digest' => L_DIGEST_VIEW,
+                      'discus' => L_DISCUSSION_VIEW,
+                      'seetoo' => L_RELATED_VIEW,
+                      'static' => L_STATIC_PAGE);
+                      
 /*
 $Log$
+Revision 1.8  2001/03/30 11:54:35  honzam
+offline filling bug and others small bugs fixed
+
 Revision 1.7  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

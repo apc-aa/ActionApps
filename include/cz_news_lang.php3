@@ -26,7 +26,8 @@ define("CONFIG_FILE", "cz_news_lang.php3");
 
 define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
 define("IMG_UPLOAD_URL", "http://aa.ecn.cz/img_upload/");
-define("IMG_UPLOAD_PATH", "/raid/www/htdocs/aa.ecn.cz/img_upload/");
+define("IMG_UPLOAD_PATH", "/data/www/htdocs/aa.ecn.cz/img_upload/");
+define("IMG_UPLOAD_DIR_MODE", 0774);
 define("IMG_UPLOAD_TYPE", "image/*");
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -541,9 +542,13 @@ define( "L_STATE_FEEDABLE", "Kopírovat obsah" );
 define( "L_STATE_UNFEEDABLE", "Nekopirovat" );
 define( "L_STATE_FEEDNOCHANGE", "Kopírovat nemìnitelnì" );
 define( "L_INPUT_FEED_MODES_HLP", "Má se kopírovat obsah tohoto políèka do dalších webíkù pøi výmìnì zpráv mezi webíky?");
+define("L_CANT_CREATE_IMG_DIR","Nelze vytvoøit adresáø pro obrázky");
     
 /*
 $Log$
+Revision 1.26  2001/03/30 11:54:35  honzam
+offline filling bug and others small bugs fixed
+
 Revision 1.25  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

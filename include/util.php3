@@ -428,7 +428,7 @@ function PrintAliasHelp($aliases) {
   <?php
   $count = 0;
   while ( list( $ali,$v ) = each( $aliases ) ) 
-    echo "<tr><td nowrap>$ali</td><td>".$v[hlp]."</td></tr>";
+    echo "<tr><td nowrap>$ali</td><td>". $v[hlp] ."</td></tr>";
 //    echo "<tr><td nowrap>ali</td><td>"."v[hlp]"."</td></tr>";
   ?>  
   </table>
@@ -444,6 +444,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.19  2001/03/30 11:54:35  honzam
+offline filling bug and others small bugs fixed
+
 Revision 1.18  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

@@ -71,10 +71,14 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
 
     # fill required fields if not set
   $content4id["status_code....."][0][value] = ($bin2fill==1 ? 1 : 2);
-  if( !$content4id["post_date......."] ) $content4id["post_date......."] = time();
-  if( !$content4id["publish_date...."] ) $content4id["publish_date...."] = time();
-  if( !$content4id["expiry_date....."] ) $content4id["expiry_date....."] = time()+157680000;
-  if( !$content4id["last_edit......."] ) $content4id["last_edit......."] = time();
+  if( !$content4id["post_date......."] ) 
+    $content4id["post_date......."][0][value] = time();
+  if( !$content4id["publish_date...."] )
+    $content4id["publish_date...."][0][value] = time();
+  if( !$content4id["expiry_date....."] )
+    $content4id["expiry_date....."][0][value] = time()+157680000;
+  if( !$content4id["last_edit......."] ) 
+    $content4id["last_edit......."][0][value] = time();
 
   StoreItem( $id, $slice_id, $content4id, $fields, true, true, true );
                                         # insert, invalidatecache, feed
@@ -84,6 +88,9 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
 
 /*
 $Log$
+Revision 1.5  2001/03/30 11:54:35  honzam
+offline filling bug and others small bugs fixed
+
 Revision 1.4  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

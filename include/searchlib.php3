@@ -249,6 +249,7 @@ function build_sql_query($searchterms, $field) {
 
 function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
                           $query, $relevance=false) {
+
   $in = "";
   $delim = "";
   $field_no = 0;
@@ -271,11 +272,11 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
     $sqlstring = "1=1";
     
   if( !isset($srch_fld) OR !is_array($srch_fld) OR !$query )
-    return false;                          # no fields to search - no results
+    $field_id_cond = "1=1";               # no fields to search - all rows
 
   reset($srch_fld);
   while( list( $fid, $val ) = each($srch_fld) ) {
-    if( !$fields[$fid] )    # bad condition - field not exist in this slice
+    if( !$fields[$fid] )     # bad condition - field not exist in this slice
       continue;
     $in .= $delim. "'$fid'";
     $delim=',';
@@ -283,7 +284,9 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
   }
 
   if( $field_no == 0 )
-    return;
+    $field_id_cond = "1=1";  # bad condition - field not exist in this slice
+   else
+    $field_id_cond = "field_id IN ( $in )";
     
   # from date
   if( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $from, $part))
@@ -293,22 +296,20 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
 
   # to date     
   if( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $to, $part))
-    $cond = " AND (publish_date <= '". mktime(23,59,59,$part[1],$part[2],$part[3]). "') ";
+    $cond .= " AND (publish_date <= '". mktime(23,59,59,$part[1],$part[2],$part[3]). "') ";
   elseif( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $to, $part))
-    $cond = " AND (publish_date <= '". mktime(23,59,59,$part[1],$part[2],"20".$part[3]). "') ";
+    $cond .= " AND (publish_date <= '". mktime(23,59,59,$part[1],$part[2],"20".$part[3]). "') ";
        
   $distinct = ( $relevance ? "" : "DISTINCT" );
-    
+  
   $SQL = "SELECT $distinct id from item, content WHERE item.id=content.item_id
             AND slice_id='$p_slice_id'
-            AND (field_id IN ( $in )) 
+            AND ($field_id_cond)
             AND ($sqlstring)
             AND status_code='1'
             AND expiry_date > '". time() ."'
             $cond 
             ORDER BY publish_date DESC";
-
-//echo $SQL;
 
   $db->query($SQL);
 
@@ -495,10 +496,18 @@ function ExtSearch ($query,$p_slice_id,$debug=0) {
   
 	for ($i=0;$i<count($field);$i++) {
 		if ($slicefield[$field[$i]["name"]]["table"]=='item')
-			$sql="SELECT id FROM item WHERE slice_id='".$p_slice_id."' AND ".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."' order by publish_date desc";
+			$sql="SELECT id FROM item 
+             WHERE slice_id='".$p_slice_id."' 
+               AND status_code=1
+               AND ".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."' 
+               ORDER BY publish_date desc";
 		else 
 			$sql="SELECT b.id FROM ".$slicefield[$field[$i]["name"]]["table"]." a,item b
-				WHERE b.id=a.item_id AND b.slice_id='".$p_slice_id."' AND a.".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."' AND a.field_id='".$field[$i]["name"]."' order by b.publish_date desc";
+				     WHERE b.id=a.item_id 
+               AND b.slice_id='".$p_slice_id."' 
+               AND b.status_code=1
+               AND a.".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."' AND a.field_id='".$field[$i]["name"]."'
+               ORDER BY b.publish_date desc";
 
 		$db->query($sql);
 		while ($db->next_record()) {
@@ -535,6 +544,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.10  2001/03/30 11:54:35  honzam
+offline filling bug and others small bugs fixed
+
 Revision 1.9  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

@@ -1,4 +1,3 @@
-
 <?php # -*-mode: Fundamental; tab-width: 4; -*-
 //$Id$
 /* 
@@ -151,6 +150,9 @@ class datectrl {
 }
 /*
 $Log$
+Revision 1.6  2001/03/30 11:54:35  honzam
+offline filling bug and others small bugs fixed
+
 Revision 1.5  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

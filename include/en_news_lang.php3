@@ -27,6 +27,8 @@ define("CONFIG_FILE", "en_news_lang.php3");
 define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
 define("IMG_UPLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
 define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
+define("IMG_UPLOAD_DIR_MODE","0664");
+define("IMG_UPLOAD_TYPE", "image/*");
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
 define("DEFAULT_FULLTEXT_HTML", '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR>_#FULLTEXT');
@@ -65,13 +67,13 @@ define("L_FULLTEXT_FORMAT_TOP", "Top HTML code");
 define("L_FULLTEXT_FORMAT", "Fulltext HTML code");
 define("L_FULLTEXT_FORMAT_BOTTOM", "Bottom HTML code");
 define("L_A_FULLTEXT_TIT", "Admin - design Fulltext view");
-define("L_FULLTEXT_HDR", "HTML code for fulltext view of item");
-define("L_COMPACT_HDR", "HTML code for index view of item");
-define("L_ITEM_HDR", "Item");
-define("L_A_ITEM_ADD", "Add an Item");
+define("L_FULLTEXT_HDR", "HTML code for fulltext view");
+define("L_COMPACT_HDR", "HTML code for index view");
+define("L_ITEM_HDR", "News Article");
+define("L_A_ITEM_ADD", "Add Item");
 define("L_A_ITEM_EDT", "Edit Item");
 define("L_IMP_EXPORT", "Enable export to slice:");
-define("L_ADD_NEW_ITEM", "Add an Item");
+define("L_ADD_NEW_ITEM", "Add Item");
 define("L_DELETE_TRASH", "Empty trash");
 define("L_VIEW_FULLTEXT", "Preview");
 define("L_FULLTEXT", "Fulltext");
@@ -87,8 +89,8 @@ define("L_NO_ITEM", "No items match your query.");
 # aa toolkit common labels
 # can be the same for all toolkit aplications
 define("L_ACTIVE_BIN", "Active");
-define("L_HOLDING_BIN", "Holding bin");
-define("L_TRASH_BIN", "Trash");
+define("L_HOLDING_BIN", "Hold bin");
+define("L_TRASH_BIN", "Trash bin");
 
 define("L_CATEGORY","Category");
 define("L_SLICE_NAME", "Title");          // slice
@@ -97,16 +99,16 @@ define("L_D_LISTLEN", "Listing length");  // slice
 define("L_ERR_CANT_CHANGE", "Can't change slice settings");
 define("L_ODD_ROW_FORMAT", "Odd Rows");
 define("L_EVEN_ROW_FORMAT", "Even Rows");
-define("L_EVEN_ODD_DIFFER", "Use another HTML code for even rows");
+define("L_EVEN_ODD_DIFFER", "Use different HTML code for even rows");
 define("L_CATEGORY_TOP", "Category top HTML");
 define("L_CATEGORY_FORMAT", "Category Headline");
 define("L_CATEGORY_BOTTOM", "Category bottom HTML");
 define("L_CATEGORY_SORT", "Sort items by category");
 define("L_COMPACT_TOP", "Top HTML");
 define("L_COMPACT_BOTTOM", "Bottom HTML");
-define("L_A_COMPACT_TIT", "Admin - design Index View");
-define("L_A_FILTERS_TIT", "Admin - Content Sharing - Filters");
-define("L_FLT_SETTING", "Content Sharing - configure Filters");
+define("L_A_COMPACT_TIT", "Admin - Design Index View");
+define("L_A_FILTERS_TIT", "Admin - Content Pooling - Filters");
+define("L_FLT_SETTING", "Content Pooling - Configure Filters");
 define("L_FLT_FROM_SL", "Filter for imported slice");
 define("L_FLT_FROM", "From");
 define("L_FLT_TO", "To");
@@ -184,14 +186,14 @@ define("L_USER_NEW", "New User");
 define("L_DESIGN", "Design");
 define("L_COMPACT", "Index");
 define("L_COMPACT_REMOVE", "Remove strings");
-define("L_FEEDING", "Content Sharing");
-define("L_IMPORT", "Import & Export");
+define("L_FEEDING", "Content Pooling");
+define("L_IMPORT", "Partners");
 define("L_FILTERS", "Filters");
 
 define("L_A_SLICE_ADD", "Add Slice");
 define("L_A_SLICE_EDT", "Admin - Slice settings");
 define("L_A_SLICE_CAT", "Admin - configure Categories");
-define("L_A_SLICE_IMP", "Admin - configure Content Sharing");
+define("L_A_SLICE_IMP", "Admin - configure Content Pooling");
 define("L_FIELD", "Field");
 define("L_FIELD_IN_EDIT", "Show");
 define("L_NEEDED_FIELD", "Required");
@@ -228,7 +230,7 @@ define("L_CAT_SELECT", "This Slice Categories");
 define("L_NEW_SLICE", "Add Slice");
 define("L_ASSIGN", "Assign");
 define("L_CATBINDS_OK", "Category update successful");
-define("L_IMPORT_OK", "Content Sharing update successful");
+define("L_IMPORT_OK", "Content Pooling update successful");
 define("L_FIELDS_OK", "Fields update successful");
 define("L_SEARCH_OK", "Search fields update successful");
 define("L_NO_CATEGORY", "No category defined");
@@ -261,8 +263,8 @@ define("L_FEEDED_HEAD", "Fed");
 define("L_MORE_DETAILS", "More details");
 define("L_LESS_DETAILS", "Less details");
 define("L_UNSELECT_ALL", "Unselect all");
-define("L_SELECT_VISIBLE", "Select all items");
-define("L_UNSELECT_VISIBLE", "Unselect all items");
+define("L_SELECT_VISIBLE", "Select all");
+define("L_UNSELECT_VISIBLE", "Unselect all");
 
 define("L_SLICE_ADM", "Slice Administration");
 define("L_A_FILTERS_FLT", L_A_FILTERS_TIT);
@@ -309,7 +311,7 @@ define("L_HEADLINE_PREVIEW", "Headline (preview on click)");
 define("L_EDIT_LINK", "&nbsp;");
 define("L_PREVIEW_LINK", "&nbsp;");
 define("L_ARTICLE_MANAGER", "Item Manager");
-define("L_SWITCH_TO", "Switch to slice");
+define("L_SWITCH_TO", "Switch to:");
 define("L_ADMIN", "Admin");
 
 //new_constants
@@ -360,13 +362,11 @@ define("L_OWNER", "Owner");
 define("L_SLICES", "Slices");
 define("L_TEMPLATE", "Template");
 define("L_VALIDATE", "Validate");
-define("", "");
-define("", "");
 
 define("L_FIELD_DELETE_OK", "Field delete OK");
 
-define("L_WARNING_NOT_CHANGE","<p>WARNING: Do not change this setting if you are not sure what you do!</p>");
-define("L_INPUT_SHOW_FUNC_F_HLP","Function used for displaying in inputform. For some types you can use parameters, which follow.");
+define("L_WARNING_NOT_CHANGE","<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
+define("L_INPUT_SHOW_FUNC_F_HLP","Function used for displaying in inputform. For some types you can use parameters, which follows.");
 define("L_INPUT_SHOW_FUNC_C_HLP","Constants used with Select or Radio input function.");
 define("L_INPUT_SHOW_FUNC_HLP","If input-type is Text Area, this is number of rows.");
 define("L_INPUT_DEFAULT_F_HLP","Which function should be used as default:<BR>Now - default is current date<BR>User ID - current user ID<BR>Text - default is text in Parameter field<br>Date - as default is used current date plus <Parameter> number of days");
@@ -498,10 +498,11 @@ define("L_NO_DELETED_SLICE", "Slice is not marked for deletion");
 define("L_DELSLICE_OK", "Slice successfully deleted, tables are optimized");
 define("L_DEL_SLICE", "Delete Slice");
 define("L_FEED_STATE", "Feeding mode");
-define( "L_STATE_FEEDABLE", "Feed" );
-define( "L_STATE_UNFEEDABLE", "Do not feed" );
-define( "L_STATE_FEEDNOCHANGE", "Feed locked" );
-define( "L_INPUT_FEED_MODES_HLP", "Should the content of this field be copied to another slice if it is fed?");
+define("L_STATE_FEEDABLE", "Feed" );
+define("L_STATE_UNFEEDABLE", "Do not feed" );
+define("L_STATE_FEEDNOCHANGE", "Feed locked" );
+define("L_INPUT_FEED_MODES_HLP", "Should the content of this field be copied to another slice if it is fed?");
+define("L_CANT_CREATE_IMG_DIR","Can't create directory for image uploads");
 
 // not appended to other lang files
 //define("", "");
@@ -510,6 +511,9 @@ define( "L_INPUT_FEED_MODES_HLP", "Should the content of this field be copied to
 
 /*
 $Log$
+Revision 1.35  2001/03/30 11:54:35  honzam
+offline filling bug and others small bugs fixed
+
 Revision 1.34  2001/03/30 06:17:44  keb
 Spelling and minor grammar corrections to english text constant strings.
 

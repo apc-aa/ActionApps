@@ -123,16 +123,27 @@ function insert_fnc_fil($item_id, $field, $value, $param, $insert=true) {
   # look if the uploaded picture exists
   if(($GLOBALS[$filevarname] <> "none")&&($GLOBALS[$filevarname] <> "")) {
     $dest_file = $GLOBALS[$filevarname . "_name"];
-    if( file_exists(IMG_UPLOAD_PATH.$dest_file) )
+
+    # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
+    $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
+    $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
+
+    if( !is_dir( $dirname ))
+      if( !mkdir( $dirname, IMG_UPLOAD_DIR_MODE ) ){
+        return L_CANT_CREATE_IMG_DIR;
+      }    
+
+    if( file_exists("$dirname/$dest_file") )
       $dest_file = new_id().substr(strrchr($dest_file, "." ), 0 );
 
     # copy the file from the temp directory to the upload directory, and test for success    
-    if(!copy($value[value],IMG_UPLOAD_PATH.$dest_file))
+    if(!copy($GLOBALS[$filevarname],"$dirname/$dest_file")) {
       return L_CANT_UPLOAD;
-    $value["value"] = IMG_UPLOAD_URL.$dest_file;
+    }  
+    $value["value"] = "$dirurl/$dest_file";
   }
   # store link to uploaded file or specified file URL if nothing was uploaded
-  insert_fnc_qte($item_id, $field, $value["value"], "", $insert);
+  insert_fnc_qte($item_id, $field, $value, "", $insert);
 }    
 
 function insert_fnc_nul($item_id, $field, $value, $param, $insert=true) {
@@ -161,7 +172,9 @@ function show_fnc_txt($varname, $field, $value, $param, $html){
 
 function show_fnc_fld($varname, $field, $value, $param, $html) {
   echo $field[input_before];
+
   $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
+
   FrmInputText($varname, $field[name], $value[0][value], 255,60, 
                $field[required], $field[input_help], $field[input_morehlp], 
                $htmlstate );
@@ -200,7 +213,8 @@ function show_fnc_fil($varname, $field, $value, $param, $html) {
   if( !$param )
     return;                       # no upload field displayed
   $arr = explode(":",$param);  
-  FrmInputFile($varname."x", $arr[1], "", 255,60, $field[required], 
+
+  FrmInputFile($varname."x", $arr[1], 60, $field[required], 
                $arr[0], $arr[2], false );
 }
 
@@ -255,7 +269,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         AND isset($content4id) AND is_array($content4id)) )
     return false;
     
-  // p_arr_m($content4id);
 
   reset($content4id);
   while(list($fid,$cont) = each($content4id)) {
@@ -309,7 +322,7 @@ function GetDefault($f) {
 }    
 
 function GetDefaultHTML($f) {
-  return ($f[html_default]>0) ? FLAG_HTML : 0;
+  return (($f[html_default]>0) ? FLAG_HTML : 0);
 }  
 
 function ShowForm($content4id, $fields, $prifields, $edit) {
@@ -342,7 +355,7 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
             $arr[$i++][value] = $v;
         } else
           $arr[0][value] = $GLOBALS[$varname];
-  	    $fncname($varname, $f, $arr, $fnc[param], $GLOBALS[$htmlvarname]=='h');
+  	    $fncname($varname, $f, $arr, $fnc[param], $GLOBALS[$htmlvarname]==1);
       } else
    	    $fncname($varname, $f, $content4id[$pri_field_id], 
                  $fnc[param], $content4id[$pri_field_id][0][flag] & FLAG_HTML );
@@ -353,6 +366,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.7  2001/03/30 11:54:35  honzam
+offline filling bug and others small bugs fixed
+
 Revision 1.6  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

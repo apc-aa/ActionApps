@@ -690,6 +690,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.15  2001/03/30 11:54:35  honzam
+offline filling bug and others small bugs fixed
+
 Revision 1.14  2001/02/26 14:41:27  honzam
 added port specification for LDAP server
 
