@@ -25,7 +25,22 @@ http://www.apc.org/
 # optionaly encap="false" if this form is not encapsulated into *.shtml file
 # optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
+
 $encap = ( ($encap=="false") ? false : true );
+
+require "../include/init_page.php3";
+require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require $GLOBALS[AA_INC_PATH]."date.php3";
+require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."feeding.php3";
+
+//p_arr_m($r_hidden);
+QuoteVars("post");  // if magicquotes are not set, qute variables
+GetHidden();        // unpacks variables from $r_hidden session var.
+unset($r_hidden);
+$r_hidden["hidden_acceptor"] = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+                    // only this script accepts r_hidden variable
+                    // - if it don't match - unset($r_hidden) (see init_page.pgp3)
 
 if( $ins_preview )
   $insert = true;
@@ -33,13 +48,6 @@ if( $upd_preview )
   $update = true;
   
 $add = !( $update OR $cancel OR $insert OR $edit );
-
-require "../include/init_page.php3";
-
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
 function LoadDefault($add,$insert,$update,$show, $variable, $value) {
   if( $add OR (!$show AND $insert) OR (!$show AND $update) ) 
@@ -187,6 +195,7 @@ if( $insert || $update )
     if( $update )
     {
       $SQL = "UPDATE items SET ". $varset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
+//huh($SQL);
       $db->query($SQL);
       if ($db->affected_rows() == 0) {
         $err["DB"] = "<div class=err>". L_ITEM_NOT_CHANGED ."</div>";
@@ -217,6 +226,8 @@ if( $insert || $update )
     }
   } while(false);
   if( count($err) <= 1) {
+//huh("OK");    
+    page_close(); 
     if( $anonymous )  // anonymous login
       go_url( $r_slice_view_url );
      elseif( $ins_preview OR $upd_preview ) 
@@ -284,52 +295,6 @@ if( !$encap ) {
 PrintArray($err);
 echo $Msg;  
 
-/*
-$Log$
-Revision 1.6  2000/07/17 15:50:08  kzajicek
-Do not print empty info for new articles
-
-Revision 1.5  2000/07/13 14:12:58  kzajicek
-SQL keywords to uppercase
-
-Revision 1.4  2000/07/13 10:12:18  kzajicek
-iIf possible, print real name instead of uid (number with sql, dn with ldap).
-
-Revision 1.3  2000/07/13 10:02:22  kzajicek
-created_by should not be changed, it is a constant value.
-
-Revision 1.2  2000/07/12 11:06:26  kzajicek
-names of image upload variables were a bit confusing
-
-Revision 1.1.1.1  2000/06/21 18:39:57  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:46  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.19  2000/06/12 19:58:23  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.18  2000/06/09 15:14:09  honzama
-New configurable admin interface
-
-Revision 1.17  2000/06/06 23:12:59  pepturro
-Fixed img upload: properly set img_src field
-
-Revision 1.16  2000/04/28 09:48:13  honzama
-Small bug in user/group search fixed.
-
-Revision 1.15  2000/04/24 16:38:13  honzama
-Anonymous item posting.
-
-Revision 1.14  2000/03/29 14:33:04  honzama
-Fixed bug of adding slashes before ' " and \ characters in fulltext.
-
-Revision 1.13  2000/03/22 09:36:43  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
 <center>
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url( ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF) ?>">
@@ -446,36 +411,86 @@ also added Id and Log keywords to all .php3 and .inc files
     echo '</I>';
   }  
   if( ($db->f(id) != $db->f(master_id)) ) 
-    echo "<input type=hidden name=feeded value=1>";
-  ?>
-  <input type=hidden name=post_date value="<?php echo $post_date ?>">
-  <input type=hidden name=created_by value="<?php echo $created_by ?>">
-  <input type=hidden name=edited_by value="<?php echo $edited_by ?>">
-  <input type=hidden name=last_edit value="<?php echo $last_edit ?>">
-  <input type=hidden name=slice_id value="<?php echo $slice_id ?>">
-  <input type=hidden name=anonymous value="<?php echo (($free OR $anonymous) ? true : "") ?>">
-  <input type=hidden name="MAX_FILE_SIZE" value="<?php echo IMG_UPLOAD_MAX_SIZE ?>">
+    $r_hidden["feeded"] = 1;
+  $r_hidden["post_date"] = $post_date;
+  $r_hidden["created_by"] = $created_by;
+  $r_hidden["edited_by"] = $edited_by; 
+  $r_hidden["last_edit"] = $last_edit;
+  $r_hidden["slice_id"] = $slice_id;
+  $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
+
+  echo '<input type=hidden name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
+  echo '<input type=hidden name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
   </td>
 </tr>
 </table></td></tr>
-<tr><td align=center>
-<?php if($edit || $update || ($insert && $added_to_db)) { ?>
+<tr><td align=center><?php
+if($edit || $update || ($insert && $added_to_db)) { ?>
    <input type=submit name=update value="<?php echo L_POST ?>">
    <input type=submit name=upd_preview value="<?php echo L_POST_PREV ?>">
-   <input type=reset value="<?php echo L_RESET ?>">
-   <input type=hidden name=id value="<?php echo $id ?>">
-<?php } else { ?>
+   <input type=reset value="<?php echo L_RESET ?>"><?php
+   $r_hidden["id"] = $id;
+} else { ?>
    <input type=submit name=insert value="<?php echo L_INSERT ?>">
-   <input type=submit name=ins_preview value="<?php echo L_POST_PREV ?>">
-<?php } ?>
+   <input type=submit name=ins_preview value="<?php echo L_POST_PREV ?>"><?php
+} ?>
 <input type=submit name=cancel value="<?php echo L_CANCEL ?>">
 </td>
 </tr>
 </table>
-<input type=hidden name=encap value="<?php echo ($encap ? "true" : "false")?>">
 </form>
 </center>
 <?php
 if( !$encap ) 
   echo '</body></html>';
-page_close(); ?>
+page_close(); 
+/*
+$Log$
+Revision 1.7  2000/08/03 12:31:19  honzam
+Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
+
+Revision 1.6  2000/07/17 15:50:08  kzajicek
+Do not print empty info for new articles
+
+Revision 1.5  2000/07/13 14:12:58  kzajicek
+SQL keywords to uppercase
+
+Revision 1.4  2000/07/13 10:12:18  kzajicek
+iIf possible, print real name instead of uid (number with sql, dn with ldap).
+
+Revision 1.3  2000/07/13 10:02:22  kzajicek
+created_by should not be changed, it is a constant value.
+
+Revision 1.2  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
+Revision 1.1.1.1  2000/06/21 18:39:57  madebeer
+reimport tree , 2nd try - code works, tricky to install
+
+Revision 1.1.1.1  2000/06/12 21:49:46  madebeer
+Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
+
+Revision 1.19  2000/06/12 19:58:23  madebeer
+Added copyright (APC) notice to all .inc and .php3 files that have an $Id
+
+Revision 1.18  2000/06/09 15:14:09  honzama
+New configurable admin interface
+
+Revision 1.17  2000/06/06 23:12:59  pepturro
+Fixed img upload: properly set img_src field
+
+Revision 1.16  2000/04/28 09:48:13  honzama
+Small bug in user/group search fixed.
+
+Revision 1.15  2000/04/24 16:38:13  honzama
+Anonymous item posting.
+
+Revision 1.14  2000/03/29 14:33:04  honzama
+Fixed bug of adding slashes before ' " and \ characters in fulltext.
+
+Revision 1.13  2000/03/22 09:36:43  madebeer
+also added Id and Log keywords to all .php3 and .inc files
+*.php3 makes use of new variables in config.inc
+
+*/
+?>

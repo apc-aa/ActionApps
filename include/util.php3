@@ -105,6 +105,32 @@ function quote($str) {
   return addslashes($str);  
 } 
  
+# function for processing posted or getteg variables
+# adds quotes, if magic_quotes are switched off
+function QuoteVars($method="get") {
+  
+  if( get_magic_quotes_gpc() )
+    return;
+    
+  $transfer = ( ($method == "get") ? "HTTP_GET_VARS" 
+                                  : "HTTP_POST_VARS");
+  if( !isset($GLOBALS[$transfer]) OR !is_array($GLOBALS[$transfer]))
+    return;
+  reset( $GLOBALS[$transfer] );
+  while( list($varname,$value) = each( $GLOBALS[$transfer] ))
+    $GLOBALS[$varname] = addslashes($value);
+}  
+
+# function for extracting variables from $r_hidden session field
+function GetHidden() {
+  global $r_hidden;
+  if( !isset($r_hidden) OR !is_array($r_hidden))
+    return;
+  reset( $r_hidden );
+  while( list($varname,$value) = each( $r_hidden ))
+    $GLOBALS[$varname] = ($value);
+}  
+ 
 # function to reverse effect of "magic quotes"
 // not needed in MySQL and get_magic_quotes_gpc()==1
 function dequote($str) {
@@ -223,9 +249,13 @@ function HtmlPageBegin() {
 }  
 
 # Displays page with message and link to $url
-function MsgPage($url, $msg) {
+#   url - where to go if user clicks on Back link on this message page
+#   msg - displayed message
+#   mode - items/admin/standalone for surrounding of message
+function MsgPage($url, $msg, $mode="items") {
   global $sess, $auth;
-  if( !isset($sess) ) {
+
+  if( !isset($sess) AND ($mode!="standalone")) {
     require $GLOBALS[AA_INC_PATH] . "locauth.php3";
     page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
   }
@@ -238,9 +268,16 @@ function MsgPage($url, $msg) {
 
   <?php
 
-  $msg_page = true;
-  require $GLOBALS[AA_INC_PATH] . "navbar.php3";
-  require $GLOBALS[AA_INC_PATH] . "leftbar.php3";
+  switch( $mode ) {
+    case "items":    // Message page on main page (index.php3) or such page
+      include $GLOBALS[AA_INC_PATH] . "navbar.php3";
+      include $GLOBALS[AA_INC_PATH] . "leftbar.php3";
+      break;
+    case "admin":    // Message page on admin pages (se_*.php3) or such page
+      include $GLOBALS[AA_INC_PATH] . "navbar.php3";
+      include $GLOBALS[AA_INC_PATH] . "leftbar_se.php3";
+      break;
+  }    
 
   if( isset($msg) AND is_array($msg))
     PrintArray($msg);
@@ -263,6 +300,9 @@ function UnpackFieldsToArray($packed, $fields) {
 
 /*
 $Log$
+Revision 1.4  2000/08/03 12:31:19  honzam
+Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
+
 Revision 1.3  2000/07/12 11:06:26  kzajicek
 names of image upload variables were a bit confusing
 
