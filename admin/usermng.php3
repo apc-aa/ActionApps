@@ -31,7 +31,7 @@ elseif( $grp_edit AND $selected_group AND ($selected_group>0) )
   go_url(	$sess->url(self_base() . "um_gedit.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_USERS);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
   exit;
 }  
 
@@ -65,6 +65,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   
 /*
 $Log$
+Revision 1.3  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.2  2000/08/03 12:49:22  kzajicek
 English editing
 

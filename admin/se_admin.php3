@@ -32,7 +32,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CONFIG)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_CONFIG);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_CONFIG, "admin");
   exit;
 }  
 
@@ -144,6 +144,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.10  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.9  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

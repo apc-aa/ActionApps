@@ -28,7 +28,7 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_USERS);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
   exit;
 }  
 
@@ -195,6 +195,9 @@ HtmlPageBegin();   // Prints HTML start page tags
   }  
 /*
 $Log$
+Revision 1.8  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.7  2001/02/26 17:26:08  honzam
 color profiles
 

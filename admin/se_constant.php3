@@ -33,13 +33,13 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
   exit;
 }  
 
 if( $categ OR $category ) {
   if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY)) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_CATEGORY);
+    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_CATEGORY, "admin");
     exit;
   }  
 }
@@ -154,7 +154,7 @@ if( $category ) {
   if( $group_id )
     $categ=true;
   else {
-    MsgPage($sess->url(self_base())."slicedit.php3", L_NO_CATEGORY_FIELD);
+    MsgPage($sess->url(self_base())."slicedit.php3", L_NO_CATEGORY_FIELD, "admin");
     exit;
   }
 }  
@@ -244,6 +244,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.11  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.10  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

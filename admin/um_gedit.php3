@@ -78,7 +78,7 @@ function GetFiltered($type, $filter, $to_much, $none) {
 # End functions definitions ----------------------------------------
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_NEW_USER);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_NEW_USER, "admin");
   exit;
 }
 
@@ -337,6 +337,9 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.9  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.8  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

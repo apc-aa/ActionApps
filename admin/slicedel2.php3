@@ -28,11 +28,11 @@ if($cancel)
 
 if($delslice) {  
   if(!IsSuperadmin()) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_DEL);
+    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_DEL, "admin");
     exit;
   }
 } else {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_SLICE);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_SLICE, "admin");
   exit;
 }
 
@@ -102,6 +102,9 @@ go_url(con_url($sess->url(self_base() . "slicedel.php3"),
 
 /*
 $Log$
+Revision 1.4  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.3  2001/03/20 15:24:05  honzam
 working version of slice deletion
 

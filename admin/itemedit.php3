@@ -38,8 +38,8 @@ require $GLOBALS[AA_INC_PATH]."feeding.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 
-if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
-                               #       and REDIRECT_STRING_UNESCAPED
+if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED 
+                               #       and REDIRECT_STRING_UNESCAPED - from url
 
 QuoteVars("post");  // if magicquotes are not set, quote variables
 
@@ -258,6 +258,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.21  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.20  2001/03/30 11:52:53  honzam
 reverse displaying HTML/Plain text bug and others smalll bugs fixed
 

@@ -39,22 +39,12 @@ if($cancel)
 
 if($slice_id) {  // edit slice
   if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT)) {
-   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-
-    ?>
-     <TITLE><?php echo L_A_SLICE_TIT;?></TITLE>
-    </HEAD>
-    <?php
-    $xx = ($slice_id!="");
-    $show = Array("main"=>false, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
-                  "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
-    require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT);
+    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT, "standalone");
     exit;
   }
 } else {          // add slice
   if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_ADD);
+    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_ADD, "standalone");
     exit;
   }
 }
@@ -334,6 +324,9 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.20  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.19  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

@@ -33,7 +33,7 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "admin");
   exit;
 }  
 
@@ -94,11 +94,14 @@ if ($all) {                                         // all_categories
 if( count($err) <= 1 )
   go_url( $sess->url(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOK(L_IMPORT_OK)));
 else
-  MsgPage($sess->url(self_base()."se_import.php3"), $err);
+  MsgPage($sess->url(self_base()."se_import.php3"), $err, "admin");
 
 page_close();
 /*
 $Log$
+Revision 1.5  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.4  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

@@ -28,7 +28,7 @@ require $GLOBALS[AA_INC_PATH]."logs.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "admin");
   exit;
 }  
 
@@ -129,12 +129,15 @@ if( count($err) <= 1 ) {
    else
     go_url( $sess->url(self_base() . "se_import.php3") ."&Msg=" . rawurlencode(MsgOK(L_IMPORT_OK)));
 } else
-  MsgPage($sess->url(self_base()."se_import.php3"), $err);
+  MsgPage($sess->url(self_base()."se_import.php3"), $err, "admin");
 
 page_close();
 
 /*
 $Log$
+Revision 1.7  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.6  2001/03/20 15:28:53  honzam
 Fixed "terminate feeding after canceling permissions" bug + changes due to "slice delete" feature
 

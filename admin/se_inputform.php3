@@ -38,7 +38,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "./se_fields.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
   exit;
 }  
 
@@ -401,6 +401,9 @@ echo "
 
 /*
 $Log$
+Revision 1.9  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.8  2001/04/09 20:43:28  honzam
 fixed bug of not stored parameter for field input type in se_inputform.php3
 

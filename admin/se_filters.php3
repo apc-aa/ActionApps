@@ -31,7 +31,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "admin");
   exit;
 }  
 
@@ -50,7 +50,7 @@ while($db->next_record())
   $impslices[unpack_id($db->f(id))] = $db->f(name);
 
 if( !isset($impslices) OR !is_array($impslices)){
-  MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE);
+  MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE, "admin");
   exit;
 }  
   
@@ -260,6 +260,9 @@ if( $imp_group ) {
 } 
 /*
 $Log$
+Revision 1.11  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.10  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

@@ -29,7 +29,7 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
+if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING, "admin")) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
   exit;
 }  
@@ -132,7 +132,7 @@ function UpdateImportExport(slice_id)
 <tr>
 <td align="CENTER" valign="TOP">
 <SELECT name="export_n" size=8 class=tabtxt>
-  <?
+  <?php
   reset($all_slices);
   if( isset($export_to) AND is_array($export_to)) {
     while(list($s_id,$name) = each($all_slices))
@@ -147,7 +147,7 @@ function UpdateImportExport(slice_id)
     <br><br><input type="button" VALUE="  <<  " onClick = "MoveSelected('document.f.export_y','document.f.export_n')" align=center></td>
 <td align="CENTER" valign="TOP">
 <SELECT name="export_y" size=8 class=tabtxt>
-  <?
+  <?php
   if( isset($export_to) AND is_array($export_to)) {
     reset($export_to);
     while(list($s_id,$name) = each($export_to))
@@ -174,7 +174,7 @@ function UpdateImportExport(slice_id)
 <tr>
 <td align="CENTER" valign="TOP">
 <SELECT name="import_n" size=8 class=tabtxt>
-  <?
+  <?php
   if( isset($importable) AND is_array($importable)) {
     reset($importable);
     while(list($s_id,$name) = each($importable))
@@ -187,7 +187,7 @@ function UpdateImportExport(slice_id)
     <br><br><input type="button" VALUE="  <<  " onClick = "MoveSelected('document.f.import_y','document.f.import_n')" align=center></td>
 <td align="CENTER" valign="TOP">
 <SELECT name="import_y" size=8 class=tabtxt>
-  <?
+  <?php
   if( isset($imported) AND is_array($imported)) {
     reset($imported);
     while( list($id, $name) = each($imported)) {
@@ -210,6 +210,9 @@ function UpdateImportExport(slice_id)
 <?php
 /*
 $Log$
+Revision 1.8  2001/05/18 13:50:09  honzam
+better Message Page handling (not so much)
+
 Revision 1.7  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 
