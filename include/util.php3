@@ -21,7 +21,7 @@ http://www.apc.org/
 
 #
 # Miscellaneous utility functions
-#
+# 
 
 if( defined("EXTENDED_ITEM_TABLE") ) {
   $item_fields_text = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height", "redirect", "source_desc", "source_address", "source_city", "source_prov", "source_country", "start_date", "end_date", "time", "con_name", "con_email", "con_phone", "con_fax", "loc_name", "loc_address", "loc_city", "loc_prov", "loc_country");
@@ -225,7 +225,7 @@ function unpack_id ($packed_id){
 
 # returns current date/time in mysql format 
  function now(){ 
-  return date ("Y-m-d H:m:s");
+  return date ("Y-m-d H:i:s");
  }
 
 # returns number of second since 1970 from date in MySQL format
@@ -331,6 +331,9 @@ if (substr(PHP_VERSION, 0, 1) < "4") {
 
 /*
 $Log$
+Revision 1.10  2000/11/13 10:36:07  honzam
+Fixed problem with bad minutes in date() function
+
 Revision 1.9  2000/10/10 18:28:00  honzam
 Support for Web.net's extended item table
 
