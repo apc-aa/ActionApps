@@ -909,6 +909,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
     echo "<a href=\"$home_url\">". _m("Home") .'</a><br>';
   }  
 
+  // Get format string, unalias it and return (not clear why unaliased - Mitra)
   function get_item() {
   // format string
     $out = $this->format;

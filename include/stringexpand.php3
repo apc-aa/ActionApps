@@ -188,7 +188,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {switch(testvalue)test:result:test2:result2:default}
     # {math(<format>)expression}
     # {include(file)}
-    # {include:file} or {include:file:http} or {include:file:fileman}
+    # {include:file} or {include:file:http} 
+    # {include:file:fileman|site} 
     # {scroller.....}
     # {#comments}
     # {debug}
@@ -263,6 +264,14 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                 return "";
             }
             $fileman_dir = sliceid2field($mysliceid,"fileman_dir");
+          # Note dropthrough from case "fileman"
+          case "site":
+            if ($parts[1] == "site") {
+                if (!($fileman_dir = $GLOBALS['site_fileman_dir'])) {
+                    if ($errcheck) huhl("No site_fileman_dir defined in site file");
+                    return "";
+                }
+            }
             $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $parts[0];
             if ($filedes = @fopen ($filename, "r")) {
                 $fileout = "";
@@ -357,7 +366,11 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
      // Put the braces back around the text and quote them if we can't match
     else {
-        if ($errcheck)  huhl("Couldn't expand: \"{$out}\"");
+        // Don't warn if { followed by non alphabetic, e.g. in Javascript
+        if ($errcheck && ereg("^[a-zA-Z_0-9]",$out)) {
+            huhl("Couldn't expand: \"{$out}\""); 
+            #trace("p");
+        } 
         return QuoteColons($level, $maxlevel, "{" . $out . "}");
     }
 }

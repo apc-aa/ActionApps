@@ -327,24 +327,30 @@ class itemview {
 
   // show the form for adding discussion comments
   function get_disc_add(&$CurItem) {
-
+    trace("+","get_disc_add","Parent=".$this->disc['parent_id']);
     // if parent_id is set => show discussion comment
     $out.= '<a name="disc"></a>';
     if ($this->disc['parent_id']) {
+    trace("=","XYZZY","iv334");
       $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],$this->disc['vid'],true,'timeorder',$this->disc['html_format'],$this->clean_url);
+    trace("=","XYZZY","iv335");
       $CurItem->setformat( $this->slice_info['d_fulltext']);
       $this->set_columns ($CurItem, $d_content, $this->disc['parent_id']);
       $out .= $CurItem->get_item();
+    trace("=","XYZZY","iv339");
     } else {
+    trace("=","XYZZY","iv342");
       $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
       $col["d_disc_url......"][0]['value'] = $this->clean_url . "&sh_itm=".$this->disc['item_id'];
       $col["d_disc_url......"][0]['flag'] = FLAG_HTML;   // do not change &->&amp;
       $CurItem->columns = $col;
+    trace("=","XYZZY","iv347");
     }
     // show a form for posting a comment
     $CurItem->setformat( $this->slice_info['d_form']);
+    trace("=","XYZZY","iv351");
     $out .= $CurItem->get_item();
-
+    trace("-");
     return $out;
   }
 
@@ -372,15 +378,17 @@ class itemview {
   #view_type used internaly for different view types
   function get_output($view_type="") {
     global $debug;
-    trace("+","itemview:get_content",$view_type);
+    trace("+","itemview:get_output",$view_type);
     $db = $this->db;
 
     if ($view_type == "discussion") {
+      trace("=","","discussion type ".$this->disc['type']);
       $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
       switch ($this->disc['type']) {
         case 'thread' : $out = $this->get_disc_thread($CurItem); break;
         case 'fulltext' : $out = $this->get_disc_fulltext($CurItem); break;
         case 'list' : $out = $this->get_disc_list($CurItem); break;
+        case 'add_disc': 
         default: $out = $this->get_disc_add($CurItem); break;
       }
       trace("-");

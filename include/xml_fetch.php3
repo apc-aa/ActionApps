@@ -305,7 +305,7 @@ function itemIsDuplicate($item_id,$slice_id) {
 }
 
 // Consider value, and return array depending on whether it is HTML or not
-// Assumes that RSS1.0 will be explicit, RSS 0.9 will be text, and RSS2.0
+// Assumes that RSS1.0 will be explicit, RSS 0.9 and RSS2.0
 // should check
 function field2arr($field) {
     global $rss_version;
