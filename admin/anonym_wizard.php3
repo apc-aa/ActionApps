@@ -1,7 +1,7 @@
 <?php
 /**
  * Anonymous form wizard: Allows to select fields included on the Anonymous
- * form and shows the form
+ * form and shows the form.
  *
  *  @package UserInput
  *  @version $Id$
@@ -42,18 +42,28 @@ if(!IfSlPerm(PS_FIELDS)) {
   exit;
 }  
 
-# lookup fields
+// lookup fields
 $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl 
-        FROM field
-        WHERE slice_id='$p_slice_id' ORDER BY input_pri";
+        FROM field 
+        WHERE slice_id='$p_slice_id' 
+        ORDER BY input_pri";
 $s_fields = GetTable2Array($SQL, $db);
-         
+
+// Either ShowAnonymousForm or the rest of the file is used. Never both.         
 if ($show_form) ShowAnonymousForm();
 
-function ShowAnonymousForm () {
-    global $s_fields, $show,
-        $show_func_used, $js_proove_fields, $fields, $prifields, $slice_id;
+// -----------------------------------------------------------------------------
+// This is the form created
 
+function ShowAnonymousForm () {
+    global $s_fields, $show, $form_url,
+        $show_func_used, $js_proove_fields, $fields, $prifields, $slice_id, $db;
+    
+    $db->query ("SELECT permit_anonymous_edit, type FROM slice 
+        WHERE id='".q_pack_id($slice_id)."'");
+    $db->next_record();
+    $form_type = $db->f("permit_anonymous_edit");
+        
     foreach ($s_fields as $field)
         if ($field["input_show"] && !$show[$field["id"]])
             $notshown ["v".unpack_id($field["id"])] = 1;
@@ -63,25 +73,26 @@ function ShowAnonymousForm () {
     if ( $show_func_used ['fil'])  # uses fileupload?
         $html_form_type = ' enctype="multipart/form-data"';
 
-    echo '
-    <!--#include virtual="'.AA_INSTAL_URL
-        .'fillform.php3?form=inputform&notrun=1&slice_id='.$slice_id.'"-->
+    if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) 
+         echo
+    '<!--#include virtual="'.$GLOBALS["AA_INSTAL_PATH"]
+        .'fillform.php3?form=inputform&notrun=1&slice_id='.$slice_id.'"-->';
     
+    echo '    
     <FORM name="inputform"'.$html_form_type.' method="post" '
     .'action="'.AA_INSTAL_URL.'filler.php3"'
     .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()"))
     .'>
     
-    <input type="hidden" name="err_url" value="http://FILL_YOUR_PAGE_URL.shtml">
-    <input type="hidden" name="ok_url" value="http://FILL_YOUR_PAGE_URL.shtml">
-    <!--'._m("Uncomment the following line to use your script to show results and errors.").'-->
-    <!--<input type="hidden" name="show_result" value="http://FILL_YOUR_PAGE_URL.php3">-->
-    <!--'._m("Uncomment the following line to use HTTP authentification to choose the item in Reader Management.").'-->
-    <!--<input type="hidden" name="use_http_auth" value="1">-->
+    <input type="hidden" name="err_url" value="'.$form_url.'">
+    <input type="hidden" name="ok_url" value="'.$form_url.'">';
     
+    if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) echo '
+    <input type="hidden" name="my_item_id" value="">';
+       
+    echo '
     <input type="hidden" name="slice_id" value="'.$slice_id.'">
     <input type="hidden" name="use_post2shtml" value="1">
-    <input type="hidden" name="my_item_id" value="">
     ';
     
     foreach ($s_fields as $field)
@@ -89,25 +100,37 @@ function ShowAnonymousForm () {
             echo '
     <input type="hidden" name="notshown[v'.unpack_id ($field["id"]).']" value="1"> '
                 .'<!--'.$field["name"].'-->';
-    
+
     echo "\n";
     ShowFormJavascript ($show_func_used, $js_proove_fields);
+
+    // Destroy the ? help links at each field
+    reset ($fields);
+    while (list ($field) = each ($fields)) 
+        $fields[$field]["input_morehlp"] = "";
     
-    echo '    
-    <TABLE border="0" cellspacing="0" cellpadding="4" align="center" class="tabtxt">';
+    // Show all fields
+    echo 
+    '<TABLE border="0" cellspacing="0" cellpadding="4" align="center" class="tabtxt">
+    ';
     ShowForm("", $fields, $prifields, 0, $show);
     echo '
     <tr><td colspan="10" align="center" class="tabtit">
         <input type="submit" name="send" value="'._m("Send").'"></td></tr>
-    </TABLE></FORM>
+    </TABLE></FORM>';
     
+    if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) echo '    
     <SCRIPT language="JavaScript">
     <!-- 
-        fillForm();
+        if (typeof (fillform_fields) != "undefined")
+            fillForm();
     // -->
     </SCRIPT>';
     exit;
 }  
+
+// -----------------------------------------------------------------------------
+// This is the page in which you choose the form type and fields
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
@@ -125,8 +148,24 @@ echo $Msg;
 echo '
 <form method="post" action="'.$sess->url($PHP_SELF).'">
 <input type="hidden" name="slice_id" value="'.$slice_id.'">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
-<tr><td class=tabtit><b>&nbsp;'._m("Fields").'</b></td></tr>
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
+<tr><td class=tabtit><b>&nbsp;'._m("Settings").'</b></td></tr>';
+
+$warning = "";
+$slice_info = GetSliceInfo ($slice_id);
+if ($slice_info["permit_anonymous_post"] == 0) 
+    $warning = _m("WARNING: You did not permit anonymous posting in slice settings.");
+if ($slice_info["permit_anonymous_edit"] == ANONYMOUS_EDIT_NOT_ALLOWED)
+    $warning = _m("You did not permit anonymous editing in slice settings. A form
+        allowing only anonymous posting will be shown.");
+        
+if ($warning) echo '
+<tr><td class=tabtxt><b>&nbsp;'.$warning.'</b><hr></td></tr>';        
+echo '
+<tr><td class=tabtxt>&nbsp;<b>'._m("URL where the form will be shown").':<br>&nbsp;
+    <input type=text name=form_url size=60 value="http://FILL_YOUR_URL.shtml">
+    </b></td></tr>
+<tr><td class=tabtit>&nbsp;<b>'._m("Fields").'</b></td></tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
@@ -161,4 +200,5 @@ echo '
 </td></tr></table>
 </FORM>';
 HtmlPageEnd();
-page_close()?>
+page_close();
+?>
