@@ -103,7 +103,7 @@ function ProoveFieldNames ($slices, $conds) {
     if( ! (isset($slices) AND is_array($slices) AND isset($conds) AND is_array($conds)) )
       return;
 
-    global $conds_not_field_names;
+    global $CONDS_NOT_FIELD_NAMES;
     if (!is_array ($slices) || !is_array ($conds)) return;
     $db = new DB_AA;
     reset ($slices);
@@ -117,7 +117,7 @@ function ProoveFieldNames ($slices, $conds) {
               continue;
             reset ($cond);
             while (list ($key) = each ($cond))
-                if (!$conds_not_field_names [$key] && !isset ($slicefields[$key]))
+                if (!$CONDS_NOT_FIELD_NAMES [$key] && !isset ($slicefields[$key]))
                     echo "Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").<br>";
         }
     }
@@ -136,12 +136,10 @@ function ProoveFieldNames ($slices, $conds) {
     with conds[1][valuejoin] = 'OR' only changes conds[1][value] to '"apple" OR "cherry"'
     (c) Jakub, May 2002
 */
-
-function ParseMultiSelectConds (&$conds)
+function ParseMultiSelectConds(&$conds)
 {
     if (!is_array ($conds)) return;
-    reset ($conds);
-    while (list ($icond, $cond) = each ($conds)) {
+    foreach ($conds as $icond => $cond) {
         if (is_array ($cond['value'])) {
             if (!$cond['valuejoin']) {
                 echo "ERROR in conds: when using [value][], you must use [valuejoin]='OR'|'AND' also!";
@@ -149,25 +147,23 @@ function ParseMultiSelectConds (&$conds)
             }
             if ($cond['valuejoin'] == 'OR') {
                 $values = "";
-                reset ($cond['value']);
-                while (list (,$val) = each ($cond['value'])) {
+                foreach ($cond['value'] as $val) {
                     if ($values != "") $values .= " OR ";
-                    $values .= '"'.addslashes ($val).'"';
+                    $values .= '"'.addslashes($val).'"';
                 }
-                unset ($conds[$icond]['valuejoin']);
+                unset($conds[$icond]['valuejoin']);
                 $conds[$icond]['value'] = $values;
-            }
-            else if ($cond['valuejoin'] == 'AND') {
-                reset ($cond['value']);
-                while (list (,$val) = each ($cond['value'])) {
+
+            } elseif ($cond['valuejoin'] == 'AND') {
+                foreach ($cond['value'] as $val) {
                     $newcond = $cond;
                     $newcond['value'] = '"'.addslashes ($val).'"';
                     unset ($newcond['valuejoin']);
                     $conds[] = $newcond;
                 }
                 unset ($conds[$icond]);
-            }
-            else echo "ERROR in conds: [valuejoin] must be set to 'OR' or 'AND'.";
+
+            } else echo "ERROR in conds: [valuejoin] must be set to 'OR' or 'AND'.";
         }
     }
 }
@@ -190,7 +186,13 @@ function GetConstantGroup( $input_show_func ) {
  *  @param function $additional_field_cond - aditional condition function
  *  @param function $additional_field_cond - aditional condition function parameter
  */
-function MakeSQLConditions($fields_arr, $conds, &$join_tables, $additional_field_cond=false, $add_param=false) {
+function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_tables, $additional_field_cond=false, $add_param=false) {
+
+    ParseMultiSelectConds ($conds);
+    ParseEasyConds ($conds, $defaultCondsOperator);
+
+    if( $GLOBALS['debug'] ) huhl( "<br>Conds after ParseEasyConds():", $conds, "<br>--");
+
     if( isset($conds) AND is_array($conds)) {
         foreach ($conds as $cond) {
             if( isset($cond) AND is_array($cond) ) {
@@ -369,7 +371,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
 
   global $debug;                 # displays debug messages
   global $nocache;               # do not use cache, if set
-  global $conds_not_field_names; # list of special conds[] indexes (defined in constants.php3)
+  global $CONDS_NOT_FIELD_NAMES; # list of special conds[] indexes (defined in constants.php3)
   global $QueryIDsCount;
 
   $db = new DB_AA;
@@ -385,9 +387,13 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
       return $res;
   }
 
+  if (!$slices) {
+      if ($slice_id)
+           $slices = array($slice_id);
+  }
+
   if ($GLOBALS[debugfields] || $debug) {
       if ($slices) ProoveFieldNames ($slices, $conds);
-      else ProoveFieldNames (array ($slice_id), $conds);
   }
 
   ParseMultiSelectConds($conds);
@@ -397,49 +403,61 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
 
   # parse conditions ----------------------------------
   if( is_array($conds)) {
-    reset($conds);
     $tbl_count=0;
-    while( list( , $cond) = each( $conds )) {
+    foreach ($conds as $cond) {
 
-      # fill arrays according to this condition
-      reset($cond);
+      // fill arrays according to this condition
       $field_count = 0;
       $cond_flds   = '';
-      while( list( $fid, $v) = each( $cond )) {
-        if( $conds_not_field_names[$fid] )
-          continue;           # it is not field_id parameters - skip it for now
+      foreach ( $cond as $fid => $v ) {
+          // search in all content table fields (new in AA v2.8)
+          switch ( strtolower($fid) ) {
+              case 'all_fields':          $cond_flds = 'all_fields';
+                                          $store     = 'text';
+                                          continue;
+              case 'all_fields_numeric':  $cond_flds = 'all_fields';
+                                          $store     = 'number';
+                                          continue;
+          }
+          if( $CONDS_NOT_FIELD_NAMES[$fid] ) {
+              continue;      // it is not field_id parameters - skip it for now
+          }
+          if( !$fields[$fid] OR $v=="") {
+              if ($debug) echo "Skipping $fid in conds[]: not known.<br>"; {
+                  continue;            # bad field_id or not defined condition - skip
+              }
+          }
 
-        if( !$fields[$fid] OR $v=="") {
-          if ($debug) echo "Skipping $fid in conds[]: not known.<br>";
-          continue;            # bad field_id or not defined condition - skip
-        }
-
-        if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
-          $select_conds[] = GetWhereExp( 'item.'.$fields[$fid]['in_item_tbl'],
-                                          $cond['operator'], $cond['value'] );
-          if( $fid == 'expiry_date.....' )
-            $ignore_expiry_date = true;
-        } else {
-          $cond_flds .= ( ($field_count++>0) ? ',' : "" ). "'$fid'";
-          // will not work with one condition for text and number fields
-          $store = ($fields[$fid]['text_stored'] ? "text" : "number");
-        }
+          if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
+              $select_conds[] = GetWhereExp( 'item.'.$fields[$fid]['in_item_tbl'], $cond['operator'], $cond['value'] );
+              if( $fid == 'expiry_date.....' ) {
+                  $ignore_expiry_date = true;
+              }
+          } else {
+              $cond_flds .= ( ($field_count++>0) ? ',' : "" ). "'$fid'";
+              // will not work with one condition for text and number fields
+              $store      = ($fields[$fid]['text_stored'] ? "text" : "number");
+          }
       }
       if( $cond_flds != '' ) {
         $tbl = 'c'.$tbl_count++;
         # fill arrays to be able construct select command
         $select_conds[] = GetWhereExp( "$tbl.$store",
                                           $cond['operator'], $cond['value'] );
-        if ($field_count>1) {
-          $select_tabs[] = "LEFT JOIN content as $tbl
-                                   ON ($tbl.item_id=item.id
-                                   AND ($tbl.field_id IN ($cond_flds) OR $tbl.field_id is NULL))";
+
+        if ( strpos($cond_flds, 'all_fields')!== false ) {  // we are searching all fields in content table
+            $select_tabs[] = "LEFT JOIN content as $tbl
+                                     ON ($tbl.item_id=item.id)";
+        } elseif ($field_count>1) {
+            $select_tabs[] = "LEFT JOIN content as $tbl
+                                     ON ($tbl.item_id=item.id
+                                     AND ($tbl.field_id IN ($cond_flds) OR $tbl.field_id is NULL))";
         } else {
-          $select_tabs[] = "LEFT JOIN content as $tbl
-                                   ON ($tbl.item_id=item.id
-                                   AND ($tbl.field_id=$cond_flds OR $tbl.field_id is NULL))";
+            $select_tabs[] = "LEFT JOIN content as $tbl
+                                     ON ($tbl.item_id=item.id
+                                     AND ($tbl.field_id=$cond_flds OR $tbl.field_id is NULL))";
                       # mark this field as sortable (store without apostrofs)
-          $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;
+            $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;
         }
       }
     }
@@ -558,11 +576,6 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
 
   $SQL .= " WHERE ";                                         # slice ----------
 
-  if (!$slices) {
-      if ($slice_id)
-           $slices = array ($slice_id);
-  }
-
   if( is_array($slices) AND (count($slices) >= 1) ) {
       reset ($slices);
       $slicesText = "";
@@ -585,20 +598,20 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
 
   // now is rounded in order the time is in steps - it is better for search
   // caching - SQL is THE SAME during one time step
-    $now = ((int)(now()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP;     // round up
-  if( $debug ) echo "<br>--$now - ". now();
+  $now = now('step');            // round up
 
   /* new version of bin selecting, now we use type of bin from constants.php3 */
   if (is_numeric($type)) { /* $type is numeric constant */
-      $numeric_type = $type;
+      $numeric_type = max(1,$type);
   } elseif (is_string($type)) { /* for backward compatibility */
       switch ($type) { /* assign to string type it's numeric constant */
-          case 'ACTIVE' :  $numeric_type = AA_BIN_ACTIVE; break;
-          case 'EXPIRED' : $numeric_type = AA_BIN_EXPIRED; break;
-          case 'PENDING' : $numeric_type = AA_BIN_PENDING; break;
-          case 'HOLDING' : $numeric_type = AA_BIN_HOLDING; break;
-          case 'TRASH' :   $numeric_type = AA_BIN_TRASH; break;
-          default:         $numeric_type = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH);
+          case 'ACTIVE'  : $numeric_type = AA_BIN_ACTIVE;  break;  // 1
+          case 'PENDING' : $numeric_type = AA_BIN_PENDING; break;  // 2
+          case 'EXPIRED' : $numeric_type = AA_BIN_EXPIRED; break;  // 4
+          case 'HOLDING' : $numeric_type = AA_BIN_HOLDING; break;  // 8
+          case 'TRASH'   : $numeric_type = AA_BIN_TRASH;   break;  // 16
+          case 'ALL'     : $numeric_type = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH);
+          default        : $numeric_type = AA_BIN_ACTIVE;  break;  // 1
       }
   } else { /* strange case, I think never possible :) */
       $numeric_type = AA_BIN_ACTIVE;
@@ -712,7 +725,6 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
 
     global $debug;                 # displays debug messages
     global $nocache;               # do not use cache, if set
-    global $conds_not_field_names; # list of special conds[] indexes (defined in constants.php3)
 
     // set default sortorder for constants if sortorder is not set
     if ( !isset($sort) OR !is_array($sort) ) {
@@ -737,13 +749,8 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
         return $res;
     }
 
-    ParseMultiSelectConds ($conds);
-    ParseEasyConds ($conds, $defaultCondsOperator);
-
-    if( $debug ) huhl( "<br>Conds after ParseEasyConds():", $conds, "<br>--");
-
     // parse conditions and sort order ----------------------------------
-    $where_sql    = MakeSQLConditions( GetConstantFields(), $conds, $foo);
+    $where_sql    = MakeSQLConditions( GetConstantFields(), $conds, $defaultCondsOperator, $foo);
     $order_by_sql = MakeSQLOrderBy(    GetConstantFields(), $sort,  $foo);
 
     // construct query --------------------------
