@@ -37,26 +37,54 @@ echo "<TITLE>"._m("Param Wizard Summary")."</TITLE>";
 echo "</HEAD><BODY>";
 
 $list = $$mylist;
-if (!is_array ($list)) { echo "Wrong value of param mylist (use ?mylist=INPUT_TYPES or ?mylist=FIELD_FUNCTIONS)"; exit; }
+
+$lists = array ("INPUT_TYPES", "FIELD_FUNCTIONS");
+
+if (!is_array ($list)) {
+    echo '<FORM action="param_wizard_list.php3" method="get">';
+    echo '<SELECT name=mylist MULTIPLE size="'.count($list).'" style=".">';
+    reset ($lists);
+    while (list (, $mylist) = each ($lists)) {
+        $list = $$mylist;
+        echo "<OPTION value='$mylist'>".$list["name"]."s";
+    }
+    echo "</SELECT><BR>";
+    echo "<INPUT TYPE=submit value='"._m("Go")."'>&nbsp;";
+    echo "</FORM></BODY></HTML>";
+    exit;
+}
+        
 echo "<a id='top'>";
-echo "<h1>".$list["name"]."s</h1>";
+echo "<h1>".$list["name"]."s</h1>\n";
+
+echo '<FORM action="param_wizard_list.php3" method="get">'."\n";
+echo _m("Change to: ")."<SELECT name=mylist>\n";
+reset ($lists);
+while (list (, $xlist) = each ($lists)) {
+    if ($xlist == $mylist) continue;
+    $xxlist = $$xlist;
+    echo "<OPTION value='$xlist'>".$xxlist["name"]."s\n";
+}
+echo "</SELECT>&nbsp;\n";
+echo "<INPUT TYPE=submit value='"._m("Go")."'></FORM>\n";
+
 if ($list["hint"]) echo $list["hint"]."<br>";
 
 ksort ($list["items"]);
 reset ($list["items"]);
-echo "<table border=0>";
-$bottom_row = "<a href='#top'>"._m("TOP")."</a>";
+echo "<table border=0>\n";
+$bottom_row = "<a href='#top'>"._m("TOP")."</a>\n";
 while (list ($name, $item) = each ($list["items"])) {
-    echo "<tr><td><b>$name</b></td><td><a href='#$name'>$item[name]</a></td></tr>";
+    echo "<tr><td><b>$name</b></td><td><a href='#$name'>$item[name]</a></td></tr>\n";
     $bottom_row .= " - <a href='#$name'>$name</a>";
 }
-echo "</table>";    
+echo "</table>\n";    
     
 reset ($list["items"]);
 while (list ($name, $item) = each ($list["items"])) {
     echo "<hr>";
-    echo "<h2 id=$name>$name: $item[name]</h2>";
-    echo processSlashes ($item[desc]). "<br>";
+    echo "<h2 id=$name>$name: $item[name]</h2>\n";
+    echo processSlashes ($item[desc]). "<br>\n";
     $params = $item["params"];
     if (is_array ($params)) {
         echo "<br>"._m("Parameters:");
@@ -65,7 +93,7 @@ while (list ($name, $item) = each ($list["items"])) {
                 ."<TD><I>"._m("name")."</I></TD>"
                 ."<TD><I>"._m("type")."</I></TD>"
                 ."<TD><I>"._m("description")."</I></TD>"
-                ."<TD><I>"._m("example")."</I></TD></TR>";
+                ."<TD><I>"._m("example")."</I></TD></TR>\n";
         reset ($params);
         while (list (,$param) = each ($params)) {
             echo "<TR>";
@@ -79,11 +107,11 @@ while (list ($name, $item) = each ($list["items"])) {
 			}
             echo "</TD>
               <TD>".nl(processSlashes($param[desc]))."</TD>
-              <TD>".nl($param[example])."</TD></TR>";
+              <TD>".nl($param[example])."</TD></TR>\n";
         }
-        echo "</TABLE>";
+        echo "</TABLE>\n";
     }
-    echo "<font size=-1><br>$bottom_row</font>";
+    echo "<font size=-1><br>$bottom_row</font>\n";
 }   
 
 echo "</body></html>";
