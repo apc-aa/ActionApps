@@ -2,7 +2,7 @@
 /**
  * Script for hierarchical constants
  *
- * params: 
+ * params:
  *  $varname - name of the select box with selected constants, defaults to "hiercons"
  *  $param - like in Field Input Type "hierarchical constants" but preceded with "group_name:"
  *          minimum is just "group_name"
@@ -10,11 +10,11 @@
  *
  * @package UserOutput
  * @version $Id$
- * @author 
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @author
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -32,10 +32,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/** APC-AA constant definitions */
-require_once "./include/constants.php3";
 /** APC-AA configuration file */
 require_once "./include/config.php3";
+/** APC-AA constant definitions */
+require_once "./include/constants.php3";
 require_once "./include/mgettext.php3";
 $lang_file = substr ($lang_file, 0, 2);
 if (!$LANGUAGE_NAMES [$lang_file])
