@@ -32,6 +32,7 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"]."auth.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mailman.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/event.php3";
 
 /**
@@ -88,7 +89,7 @@ class aaevent {
             return false;
         foreach ( $this->handlers as $handler ) {
             $function = $handler->matches($type, $slice, $slice_type);
-            
+
             // matches and function begins with 'Event_' - security check
             if ( $function AND (substr($function, 0, 6) == 'Event_') ) {
                 $this->returns[] = $function($type, $slice, $slice_type, &$ret_params, $params);
@@ -103,6 +104,12 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_LinkNew',
                                           array('type'       => 'LINK_NEW',
                                                 'slice_type' => 'Links'));
+        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',
+                                          array('type'       => 'ITEM_UPDATED',
+                                                'slice'      => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',
+                                          array('type'       => 'ITEM_NEW',
+                                                'slice'      => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
     }
 }
 
@@ -120,12 +127,12 @@ function Event_LinkNew( $type, $slice, $slice_type, &$ret_params, $params) {
 
     // quite Econnectonous code
     $name = $params;              // name of general category is in params
-    
+
     if( !( trim($name)) )
         return false;
-    
+
     // get all informations about general categories
-    $SQL = "SELECT pri, description, name FROM constant 
+    $SQL = "SELECT pri, description, name FROM constant
              WHERE group_id='$LINK_TYPE_CONSTANTS'
                AND value='$name'";
     $db->tquery($SQL);
@@ -146,33 +153,41 @@ function Event_LinkNew( $type, $slice, $slice_type, &$ret_params, $params) {
             $trans[$from] = $to;
         }
     }
-    
+
     // get categories in which we have to create global category
     if ( isset($ret_params) AND is_array($ret_params) ) {
         foreach( $ret_params as $cid ) {
             $cpath = GetCategoryPath( $cid );
-            if ( substr($cpath, 0, 4) != '1,2,' ) {  
+            if ( substr($cpath, 0, 4) != '1,2,' ) {
                 continue;                 // category is not in 'Kormidlo'
             }
             $cat_on_path = explode(',', $cpath);
             $curr_path = '';
             $i=0;
+            unset($reverse_cat);
+            unset($reverse_path);
             foreach ( $cat_on_path as $subcat ) {
-                $curr_path .= ( $i ? ',' : ''). $subcat;   // Create path
-                if ( $i++ ) {                             // Skip first level    
-                    $subcategories[$subcat] = $curr_path; // There we have to 
+                $curr_path .= ( $i ? ',' : ''). $subcat;  // Create path
+                if ( $i++ ) {                             // Skip first level
+                    $reverse_cat[]  = $subcat;
+                    $reverse_path[] = $curr_path;           // There we have to
                 }                                         // add general categ.
+            }
+            // created categories are in wrong order - we need the deepest
+            // category as first
+            for ( $j = count($reverse_cat)-1; $j>=0 ; $j-- ) {
+                $subcategories[$reverse_cat[$j]] = $reverse_path[$j];
             }
         }
     }
-    
+
     // go through desired categories and translate it, if we have to
     if ( isset($subcategories) AND isset($trans) ) {
         foreach( $subcategories as $cid => $path ) {
             foreach( $trans as $from => $to ) {
                 if ( $path == $from ) {        // translate this category
                     $subcat_translated[GetCategoryFromPath($to)] = $to;
-                    continue 2;
+                    continue 2;  // next subcategory
                 }
             }
             $subcat_translated[$cid] = $path;  // no need to translate
@@ -180,24 +195,41 @@ function Event_LinkNew( $type, $slice, $slice_type, &$ret_params, $params) {
     } else {
         $subcat_translated = $subcategories;   // translation is no defined
     }
-    
-    // So, finaly create categories, if not created yet and buid the result 
-    // category list     
+
+    // So, finaly create categories, if not created yet and build the result
+    // category list
     $ret_params = array();  // clear return values (=categories)
     if (!$subcat_translated) {
         return false;       // no category to assign - seldom case
     }
 
     $tree = new cattree( $db );
+
     foreach ( $subcat_translated as $cid => $path ) {
-        $sub_cat_id = $tree->subcatExist($cid, $name); 
-        if ( !$sub_cat_id ) {
+        $sub_cat_id = $tree->subcatExist($cid, $name);
+        if ( !$sub_cat_id AND !Links_IsGlobalCategory($tree->getName($cid)) ) {
             $sub_cat_id = Links_AddCategory($name, $cid, $path);
             Links_AssignCategory($cid, $sub_cat_id, $general_cat['pri']);
         }
-        $ret_params[] = $sub_cat_id;  // result set of categories to assign link
+        // result set of categories to assign link
+        $ret_params[] = $sub_cat_id ? $sub_cat_id : $cid;
     }
     return true;
 }
+
+/** Send email with answer to Dropin staff with the answer (from item)
+ *  @param array  &$ret_params  - no return values
+ *  @param string  $params      -
+ */
+function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params) {
+    global $db;
+
+    $short_id = $params;              // item's short_id is in params
+
+    $item = GetItemFromId($short_id, true);
+    return send_mail_from_table_inner (8, 'malik@seznam.cz', $item) > 0 ;
+}
+
+
 
 ?>

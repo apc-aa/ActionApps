@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,25 +19,25 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-function getmicrotime(){ 
-  list($usec, $sec) = explode(" ",microtime()); 
-  return ((float)$usec + (float)$sec); 
-} 
+function getmicrotime(){
+  list($usec, $sec) = explode(" ",microtime());
+  return ((float)$usec + (float)$sec);
+}
 
 $timestart = getmicrotime();
 
 # APC AA site Module main administration page
 require_once "../../include/config.php3";
 require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3"; 
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3"; 
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 require_once $GLOBALS["AA_INC_PATH"]."item.php3"; # So site_ can create an item
 
 function IsInDomain( $domain ) {
   global $HTTP_HOST;
   return (($HTTP_HOST == $domain)  || ($HTTP_HOST == 'www.'.$domain));
-}  
+}
 
 # ----------------- function definition end -----------------------------------
 trace("+","site.php3");
@@ -59,16 +59,16 @@ if( substr($site_info['state_file'],0,4) == 'http' ) {
   echo "TODO";
 } else {
   # in the following file we should define apc_state variable
-  require_once "./sites/site_".$site_info['state_file'];   
+  require_once "./sites/site_".$site_info['state_file'];
 }
 
 trace("=","site.php3","precachecheck");
 # look into cache if the page is not cached
 
 # CACHE_TTL defines the time in seconds the page will be stored in cache
-# (Time To Live) - in fact it can be infinity because of automatic cache 
+# (Time To Live) - in fact it can be infinity because of automatic cache
 # flushing on page change
-# CACHE_PURGE_FREQ - frequency in which the cache is checked for old values 
+# CACHE_PURGE_FREQ - frequency in which the cache is checked for old values
 #                    (in seconds)
 
 # create keystring from values, which exactly identifies resulting content
@@ -79,40 +79,40 @@ if( is_array($slices4cache) && !$nocache && ($res = $GLOBALS[pagecache]->get($ke
     $timeend = getmicrotime();
     $time = $timeend - $timestart;
     echo "<br><br>Site cache hit!!! Page generation time: $time";
-  }  
+  }
   trace("-");
   exit;
-} 
+}
 trace("=","site.php3","precachecheck");
 
 require_once "./util.php3";                      # module specific utils
 require_once "./sitetree.php3";                  # module specific utils
-require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3"; 
+require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
 require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
 require_once $GLOBALS["AA_INC_PATH"]."view.php3";
 require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3"; 
-  
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+
 trace("=","site.php3","preGetSite");
 $res = ModW_GetSite( $apc_state, $site_id, $site_info );
 echo $res;
 
-# In $slices4cache array MUST be listed all (unpacked) slice ids (and other 
-# modules including site module itself), which is used in the site. If you 
+# In $slices4cache array MUST be listed all (unpacked) slice ids (and other
+# modules including site module itself), which is used in the site. If you
 # mention the slice in this array, cache is cleared on any change of the slice
 # (item addition) - the page is regenerated, then.
 
 if (is_array($slices4cache) && !$nocache) {
   $clear_cache_str = "slice_id=". join(',slice_id=', $slices4cache);
   $GLOBALS[pagecache]->store($key_str, $res, $clear_cache_str);
-}  
+}
 
 if( $debugtime ) {
   $timeend = getmicrotime();
   $time = $timeend - $timestart;
   echo "<br><br>Page generation time: $time";
   print_r($GLOBALS['d_times']);
-}  
+}
 
 # ----------------- process status end ----------------------------------------
 
@@ -123,11 +123,11 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
   # site_id should be defined as url parameter
   $module_id = $site_id;
   $p_module_id = q_pack_id($module_id);
-  
+
   $tree = new sitetree();
   $tree = unserialize($site_info['structure']);
-  
-  $show_ids = array(); 
+
+  $show_ids = array();
 
   # it fills $show_ids array
   $tree->walkTree($apc_state, 1, 'ModW_StoreIDs', 'cond');
@@ -140,7 +140,7 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
 
   $db = getDB();
   # get contents to show
-  $SQL = "SELECT spot_id, content, flag from site_spot 
+  $SQL = "SELECT spot_id, content, flag from site_spot
            WHERE site_id='$p_module_id' AND spot_id IN ($in_ids)";
   $db->query($SQL);
   while( $db->next_record() ) {
@@ -154,21 +154,21 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     $spot_content = $contents[$v];
     $out .= ( ($flags[$v] & MODW_FLAG_JUST_TEXT) ? $spot_content
                                               : ModW_unalias($spot_content, $apc_state) );
-  }                                            
+  }
   trace("-");
   return $out;
-}                                                
+}
 
 function ModW_StoreIDs($spot_id, $depth) {
     if ($GLOBALS['errcheck'] && ! $spot_id)  # There is a bug causes this
         huhl("Warning adding empty spot_id");
   $GLOBALS['show_ids'][] = $spot_id;
-}  
+}
 
 function ModW_unalias( &$text, &$state ) {
   // just create variables and set initial values
   trace("+","ModW_unalias",htmlentities($text));
-  $maxlevel = 0;   
+  $maxlevel = 0;
   $level = 0;
   $ret = new_unalias_recurent($text, "", $level, $maxlevel,$state[item]);
   trace("-");
@@ -178,23 +178,17 @@ function ModW_unalias( &$text, &$state ) {
 // id = an item id, unpacked or short
 // short_ids = boolean indicating type of $ids (default is false => unpacked)
 function ModW_id2item($id,$use_short_ids="false") {
-   if (isset($id) && ($id != "-")) {
-        $content = GetItemContent($id, $use_short_ids);
-        $slice_id = unpack_id128($content[$id]["slice_id........"][0][value]);
-        list($fields,) = GetSliceFields($slice_id);
-        $aliases = GetAliasesFromFields($fields);
-        return new item("",$content[$id],$aliases,"","","");
-    }
+   return GetItemFromId($id, $use_short_ids);
 }
 
-# Convert a state string into an array, based on the variable names and 
-# regular expression supplied, if str is not present or doesn't match 
+# Convert a state string into an array, based on the variable names and
+# regular expression supplied, if str is not present or doesn't match
 # the regular expression then use $strdef
 # e.g. ModW_str2arr("tpmi",$apc,"--h-",	"^([-p])([-]|[0-9]+)([hbsfcCt])([-]|[0-9]+)";
 function ModW_str2arr($varnames, $str, $strdef, $reg) {
 	if (!$str) $str = $strdef;
 	$varout = array();
-	if (!(ereg($reg, $str, $vars))) 
+	if (!(ereg($reg, $str, $vars)))
 		if (!(ereg($reg, $strdef, $vars))) {
 			print("Error initial string $strdef doesn't match regexp $reg\n<br>");
 		}
@@ -206,7 +200,7 @@ function ModW_str2arr($varnames, $str, $strdef, $reg) {
 }
 
 # Convert an array into a state string, in the order from $varnames
-# This is fairly simplistic, just concatennating state, a more 
+# This is fairly simplistic, just concatennating state, a more
 # sophisticated sprint version might be needed
 function ModW_arr2str($varnames, $arr) {
 	$strout = "";
