@@ -213,8 +213,6 @@ echo "</table>
 echo "</form>
     </td>
    </tr>
-  </table>
-</body>
-</html>";
-
+  </table>";
+HTMLPageEnd();
 page_close()?>

@@ -65,7 +65,7 @@ function MsgPageMenu ($url, $msg, $mode, $menu="") {
    else 
     echo "<P>$msg</p><br><br>";
   echo "<a href=\"$url\">".L_BACK."</a>";
-  echo "</body></html>";
+  HTMLPageEnd();
   page_close();
   exit;
 }

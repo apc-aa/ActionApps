@@ -93,5 +93,6 @@ $tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."im
 $err = $tabledit->view ($where);
 
 if ($err) echo "<b>$err</b>";
+HTMLPageEnd();
 page_close ();
 ?>

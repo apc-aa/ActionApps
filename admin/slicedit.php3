@@ -147,6 +147,6 @@ if($slice_id=="") {
 ?>
 </td></tr></table>
 </FORM>
-</BODY>
-</HTML>
-<?php page_close()?>
+<?php 
+HTMLPageEnd();
+page_close()?>

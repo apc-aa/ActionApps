@@ -323,7 +323,7 @@ if ($javascript) {
             '.$javascript.'
         //-->
     </script>
-    <script language="javascript" src="'.AA_INSTAL_URL.'/include/fillform.js">
+    <script language="javascript" src="'.$AA_INSTAL_PATH.'include/fillform.js">
     </script>';
 }
 

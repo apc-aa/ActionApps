@@ -169,7 +169,7 @@ function Cancel() {
     <tr><td><?php echo L_NODES_NODE_NAME ?></td>
         <td><input type="text" name="node_name" size=40 value="<?php echo safe($node_name)?>" ><br><?php echo L_NODES_YOUR_NODE?>: "<?php echo ORG_NAME ?>"
     <tr><td><?php echo L_NODES_SERVER_URL ?></td>
-         <td><input type="text" name="server_url" size=40 value="<?php echo safe($server_url)?>" ><br><?php echo L_NODES_YOUR_GETXML?>: "<?php echo AA_INSTAL_URL ?>admin/getxml.php3"
+         <td><input type="text" name="server_url" size=40 value="<?php echo safe($server_url)?>" ><br><?php echo L_NODES_YOUR_GETXML?>: "<?php echo $AA_INSTAL_PATH ?>admin/getxml.php3"
     <tr><td><?php echo L_NODES_PASWORD ?></td>
          <td><input type="text" name="password" size=40 value="<?php echo safe($password)?>" >
     <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">
