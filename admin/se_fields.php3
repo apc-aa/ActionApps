@@ -119,17 +119,23 @@ if( $update )
         $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
         $varset->setFromArray($field_types[$ftype]);   # from template for this field
 
+        // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
+        // identifiers (without dots!) by default. However if yser add new
+        // "template" field to the AA_Core_Fields.. slice, then the identifier
+        // is full (it contains dots). We need base identifier, for now.
+        $ftype_base = GetFieldType($ftype);
+
         # get new field id
         $SQL = "SELECT id FROM field
-                 WHERE slice_id='$p_slice_id' AND id like '". $ftype ."%'";
+                 WHERE slice_id='$p_slice_id' AND id like '". $ftype_base ."%'";
         $max=-1;  # Was 0
         $db->query($SQL);   # get all fields with the same type in this slice
         while( $db->next_record() ) {
-          $max = max( $max, substr (strrchr ($db->f(id), "."), 1 ),0);
+          $max = max( $max, GetFieldNo($db->f('id')), 0);
         }
         $max++;
            #create name like "time...........2"
-        $fieldid = CreateFieldId ($ftype, $max);
+        $fieldid = CreateFieldId ($ftype_base, $max);
 
         $varset->set("slice_id", $slice_id, "unpacked" );
         $varset->set("id", $fieldid, "quoted" );

@@ -649,9 +649,10 @@ function CreateFieldId ($ftype, $no="0") {
   return $ftype. substr("................$no", -(16-strlen($ftype)));
 }
 
-# get field type from id
+/** get field type from id (works also for AA_Core_Fields (without dots)) */
 function GetFieldType($id) {
-  return substr($id, 0, strpos($id, "."));
+    $dot_pos = strpos($id, ".");
+    return ( $dot_pos === false ) ? $id : substr($id, 0, $dot_pos);
 }
 
 # get field number from id ('.', '0', '1', '12', ...)
