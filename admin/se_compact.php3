@@ -149,13 +149,13 @@ function EnableClick(cond,what) {
                 "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
-  echo "<H1><B>" . L_A_COMPACT . "</B></H1>";
+  echo "<H1><B>" . L_A_COMPACT . "</B></H1>&nbsp;" . L_COMPACT_HELP;
   PrintArray($err);
   echo $Msg;
 ?>
 <form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_COMPACT_HDR?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo L_COMPACT_HDR?></b><BR>
 </td>
 </tr>
 <tr><td>
@@ -192,6 +192,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.8  2001/01/31 02:44:29  madebeer
+added help prompt at top of page
+
 Revision 1.7  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 

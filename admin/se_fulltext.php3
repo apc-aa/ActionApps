@@ -111,7 +111,7 @@ function Defaults() {
                 "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
-  echo "<H1><B>" . L_A_FULLTEXT . "</B></H1>";
+  echo "<H1><B>" . L_A_FULLTEXT . "</B></H1>&nbsp;&nbsp;" . L_A_FULLTEXT_HELP;
   PrintArray($err);
   echo $Msg;
 ?>
@@ -144,6 +144,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.7  2001/01/31 02:44:29  madebeer
+added help prompt at top of page
+
 Revision 1.6  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
