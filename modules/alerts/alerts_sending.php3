@@ -90,7 +90,7 @@ function create_filter_text_from_list ($ho, $slices, $update=true)
         list($fields) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);       
         // set language
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$slice["lang"]."_alerts_lang.inc");
+        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$slice["lang"]."_alerts_lang.php3", true);
         
         reset ($slice["views"]);
         while (list ($vid, $view) = each ($slice["views"])) {                      

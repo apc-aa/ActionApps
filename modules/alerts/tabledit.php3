@@ -56,7 +56,7 @@ if ($set_tview) $tview = $set_tview;
 $tableview = GetAlertsTableView($tview);
 
 if (!is_array ($tableview)) { MsgPage ($sess->url(self_base()."index.php3"), "Bad Table view ID: ".$tview); exit; }
-if (! $tableview["cond"] )  { MsgPage ($sess->url(self_base()."index.php3"), L_NO_PS_ADD, "standalone"); exit; }
+if (! $tableview["cond"] )  { MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone"); exit; }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 

@@ -41,7 +41,6 @@ require $GLOBALS[AA_INC_PATH]."menu_util.php3";
 require $GLOBALS[AA_INC_PATH]."perm_core.php3";
 require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 require "util.php3";
-bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".substr(LANG_FILE,0,2)."_alerts_lang.inc");
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
@@ -53,7 +52,7 @@ function get_aamenus ()
     global $r_slice_view_url,
            $auth,
            $AA_INSTAL_PATH;
-
+/*
     $aamenus["addusers"] = array (
         "label" => _m("Add Users"),
         "title" => _m("Alerts - Add Users"),
@@ -68,7 +67,7 @@ function get_aamenus ()
         "cond" => IfSlPerm (PS_USERS),
         "level" => "main",
         "submenu" => "usermanager_submenu");
-        
+*/        
     $aamenus["admin"] = array (    
         "label" => _m("Alerts Admin"),
         "title" => _m("Alerts Admin"),
@@ -77,15 +76,22 @@ function get_aamenus ()
         "cond" => IfSlPerm (PS_USERS),
         "level" => "main",
         "submenu" => "admin_submenu");        
+		
+	$aamenus["synchro"] = array (
+		"label" => _m("Slice Synchro"),
+		"title" => _m("Slice Synchro"),
+		"href" => "modules/alerts/synchro.php3",
+		"cond" => IfSlPerm (PS_USERS),
+		"level" => "main");
         
     $aamenus["aaadmin"] = array (
-        "label" => L_AA_ADMIN2,
-        "title" => L_AA_ADMIN,
+        "label" => _m("AA"),
+        "title" => _m("AA Administration"),
         "href"  => "admin/um_uedit.php3",
         "cond"  => IfSlPerm(PS_NEW_USER),
         "level" => "main",
         "submenu"=>"aaadmin_submenu");
-              
+		              
     // left menu for aaadmin is common to all modules, so it is shared
     require $GLOBALS[AA_INC_PATH]."menu_aa.php3";
         
@@ -94,20 +100,20 @@ function get_aamenus ()
         "level"=>"submenu",
         "items"=> array(
         "header1"=>_m("Alerts Admin"),
-        "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
+  //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
         "design"=>array ("cond"=>IfSlPerm(PS_USERS), 
             "href"=>"modules/alerts/tabledit.php3?set_tview=acf", 
             "label"=>_m("Design")),
         "settings"=>array ("cond"=>IfSlPerm(PS_USERS), 
             "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
                 .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")),
-        "usercenter" => array ("cond"=>1, "label" => _m("User Center"),
-            "href" => "modules/alerts/uc_tabledit.php3"),
+//        "usercenter" => array ("cond"=>1, "label" => _m("User Center"),
+//            "href" => "modules/alerts/uc_tabledit.php3"),
         "header2" => _m("Common"),
 		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
 			"href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Emails"))
     ));
-        
+/*        
     global $db, $collectionid;
     
     $db->query("SELECT status_code, COUNT(*) AS mycount 
@@ -146,12 +152,12 @@ function get_aamenus ()
             "label"=>"<img src='".$AA_INSTAL_PATH."images/edit.gif' border=0>".get_bin_name("hold")." (".($item_bin_cnt[2]+0).")"),
         "trash"=>array ("cond"=> 1, "href"=>"modules/alerts/tabledit.php3?set_tview=au&setTab=trash", 
             "label"=>"<img src='".$AA_INSTAL_PATH."images/delete.gif' border=0>".get_bin_name("trash")." (".($item_bin_cnt[3]+0).")"),
-        "header2" => L_MISC,
+        "header2" => _m("Misc"),
         "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"modules/alerts/index.php3?Delete=trash", 
-            "label"=>"<img src='".$AA_INSTAL_PATH."images/empty_trash.gif' border=0>".L_DELETE_TRASH),
+            "label"=>"<img src='".$AA_INSTAL_PATH."images/empty_trash.gif' border=0>"._m("Empty trash")),
         "line" => ""
     ));
-    
+*/    
     return $aamenus;
 }
 ?>

@@ -25,8 +25,11 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-    require "../../include/config.php3";
+$directory_depth = "../";
+require $directory_depth."../include/init_page.php3";
 
-    header("Status: 302 Moved Temporarily");
-    header("Location: ".$AA_INSTAL_PATH."modules/alerts/tabledit.php3?set_tview=au&setTab=app&AA_CP_Session=$AA_CP_Session");
+header("Status: 302 Moved Temporarily");
+header("Location: ".$AA_INSTAL_PATH
+	."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
+	.$slice_id."]=1&AA_CP_Session=$AA_CP_Session");
 ?>

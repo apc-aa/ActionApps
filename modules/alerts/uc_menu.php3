@@ -90,7 +90,7 @@ function showMenu ($item) {
         echo '</b></TD></TR>';
     }
     echo '<TR height="100%"><TD>&nbsp;</TD></TR>';
-    echo '<tr valign="bottom" height="10%"><td class="copymsg"><small>'. L_COPYRIGHT .'</small></td></tr>';
+    echo '<tr valign="bottom" height="10%"><td class="copymsg"><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>';
     echo "</TABLE></TD>";
     // end of left menu
     

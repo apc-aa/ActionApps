@@ -42,7 +42,7 @@ showMenu ($aamenus, "admin", "formwizard");
 
 if (!is_object ($db)) $db = new DB_AA;
 if ($formlang) 
-    bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_alerts_lang.inc");
+    bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_alerts_lang.php3");
 
 // after bind_mgettext_domain!
 require "cf_common.php3";

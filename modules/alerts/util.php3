@@ -35,7 +35,10 @@ function set_collectionid () {
     
     if (!$new_module) {
         if (!$slice_id) { echo "Error: no slice ID"; exit; }
-        $db->query("SELECT * FROM alerts_collection WHERE moduleid='".q_pack_id($slice_id)."'");
+        $db->query ("SELECT AC.*, module.name, module.lang_file, module.slice_url
+			FROM alerts_collection AC INNER JOIN module
+			ON AC.moduleid = module.id
+			WHERE moduleid='".q_pack_id($slice_id)."'");
         if ($db->next_record()) {
             $collectionid = $db->f("id");    
             $collectionprop = $db->Record;
@@ -54,22 +57,9 @@ function get_howoften_options () {
 
 function get_bin_names () {
     return array (
-        1=>get_bin_name(1), 
-        2=>get_bin_name(2), 
-        3=>get_bin_name(3));
-}
-
-function get_bin_name ($status_code) {
-    switch ($status_code) {
-    case 1:
-    case "app": return _m("Active bin"); 
-    case "appb": return _m("pending");
-    case "appc": return _m("expired");
-    case 2: 
-    case "hold": return _m("Holding bin");
-    case 3:
-    case "trash": return _m("Trash bin");
-    }
+	1 => _m("Active"),
+	2 => _m("Holding bin"),
+	3 => _m("Trash bin"));
 }
  
 function new_user_id () { 
