@@ -170,7 +170,7 @@ if( $slice_id!="" ) {  // set variables from database - allways
     {
       if( EReg("^[0-9]*$", $key))
         continue;
-      $$key = $val; // there are the same name for variables and database atributs => fill variables
+      $$key = $val; // variables and database fields have identical names
     }
   $id = unpack_id($db->f("id"));  // correct ids
   $d_category_id = unpack_id($db->f("d_category_id"));
@@ -286,6 +286,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.5  2000/07/14 16:11:29  kzajicek
+Just better comment
+
 Revision 1.4  2000/07/13 09:19:01  kzajicek
 Variables $created_by and $created_at are initialized later, so
 the actual effect was that Updates zeroized the database values! In fact
