@@ -60,8 +60,8 @@ $varset = new Cvarset();
 // Check permissions
 if (! $category && $group_id ) {
     $SQL = "SELECT * FROM constant_slice INNER JOIN slice
-    	ON constant_slice.slice_id = slice.id
-    	WHERE group_id='$group_id'";
+        ON constant_slice.slice_id = slice.id
+        WHERE group_id='$group_id'";
 
     $db->tquery($SQL);
 
@@ -104,13 +104,13 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
 *   @param string $newvalue The new value with added slashes (e.g. from a form)
 */
 function propagateChanges ($cid, $newvalue, $short=true) {
-	global $db, $group_id, $Msg, $debug;
+    global $db, $group_id, $Msg, $debug;
 
     $db->tquery( "SELECT id, value FROM constant WHERE ".
-		($short ? "short_id=$cid" : "id='$cid'"));
-	if (!$db->next_record()) return;
-	$oldvalue = addslashes($db->f("value"));
-	if ($oldvalue == $newvalue) return;
+        ($short ? "short_id=$cid" : "id='$cid'"));
+    if (!$db->next_record()) return;
+    $oldvalue = addslashes($db->f("value"));
+    if ($oldvalue == $newvalue) return;
 
     $constant_id = unpack_id ($db->f("id"));
     if (! Event_ItemsBeforePropagateConstantChanges (
@@ -119,22 +119,25 @@ function propagateChanges ($cid, $newvalue, $short=true) {
 
     if ($oldvalue)
         $db->tquery("
-		SELECT item_id,field_id
-		FROM content, field WHERE field.id=content.field_id
-		AND (field.input_show_func LIKE '___:$group_id:%'
-        OR  field.input_show_func LIKE '___:$group_id')
-		AND content.text = '$oldvalue'");
-	$db1 = new DB_AA;
-	$cnt = 0;
-	while ($db->next_record()) {
-		++$cnt;
+        SELECT item_id,field_id
+          FROM content, item, field
+         WHERE content.item_id=item.id
+           AND item.slice_id = field.slice_id
+           AND content.field_id = field.id
+           AND (field.input_show_func LIKE '___:$group_id:%'
+            OR  field.input_show_func LIKE '___:$group_id')
+           AND content.text = '$oldvalue'");
+    $db1 = new DB_AA;
+    $cnt = 0;
+    while ($db->next_record()) {
+        ++$cnt;
         $db1->tquery("
-			UPDATE content SET text='$newvalue'
-			WHERE item_id='".addslashes($db->f("item_id"))."'
-			AND field_id='".addslashes($db->f("field_id"))."'
-			AND text='$oldvalue'");
-	}
-	if ($cnt) $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
+            UPDATE content SET text='$newvalue'
+            WHERE item_id='".addslashes($db->f("item_id"))."'
+            AND field_id='".addslashes($db->f("field_id"))."'
+            AND text='$oldvalue'");
+    }
+    if ($cnt) $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
     Event_ItemsAfterPropagateConstantChanges (
         $constant_id, $oldvalue, $newvalue);
 }
@@ -176,7 +179,7 @@ if( $update ) {
         break;
 
     if ($group_id) {
-		// if there is no group owner, promote this slice to owner
+        // if there is no group owner, promote this slice to owner
         $db->tquery("SELECT * FROM constant_slice WHERE group_id='$group_id'");
         if (!$db->next_record())
             $db->tquery("
@@ -208,7 +211,7 @@ if( $update ) {
 
     reset($name);
     while( list($key) = each($name) ) {
-		  $p_cid = q_pack_id(substr($cid[$key],1));
+          $p_cid = q_pack_id(substr($cid[$key],1));
         // if name is empty, delete the constant
         if ($name[$key] == "") {
             if( !$db->tquery("
@@ -218,11 +221,11 @@ if( $update ) {
             }
             continue;
         }
-  		$varset->clear();
-  		$varset->set("name",  $name[$key], "quoted");
-  		$varset->set("value", $value[$key], "quoted");
-  		$varset->set("pri", ( $pri[$key] ? $pri[$key] : 1000), "number");
-  		$varset->set("class", $class[$key], "quoted");
+        $varset->clear();
+        $varset->set("name",  $name[$key], "quoted");
+        $varset->set("value", $value[$key], "quoted");
+        $varset->set("pri", ( $pri[$key] ? $pri[$key] : 1000), "number");
+        $varset->set("class", $class[$key], "quoted");
         $db->tquery("SELECT * FROM constant WHERE id='$p_cid'");
         if ($db->next_record()) {
             if ($propagate_changes)
@@ -293,7 +296,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
   // load the HIERARCHICAL EDITOR
   if ($hierarch) {
-	  require_once $GLOBALS["AA_INC_PATH"]."constedit.php3";
+      require_once $GLOBALS["AA_INC_PATH"]."constedit.php3";
   }
 ?>
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
@@ -308,14 +311,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
    echo ( $group_id ? safe($group_id) :
          "<input type=\"Text\" name=\"new_group_id\" size=16 maxlength=16 value=\"".safe($new_group_id)."\">");
    echo "
-	 </td>
+     </td>
 </tr>";
 
 # Find slices, where the constant group is used
 if( $group_id && $where_used ) {
     $delim = '';
     $db->tquery("
-    	SELECT slice.name FROM slice, field
+        SELECT slice.name FROM slice, field
          WHERE slice.id = field.slice_id
            AND field.input_show_func LIKE '%$group_id%'");
     while( $db->next_record() ) {
@@ -331,9 +334,9 @@ if( $group_id && $where_used ) {
 
 # Find the slice owner of this group
 $db->tquery("
-	SELECT * FROM constant_slice INNER JOIN slice
-	ON constant_slice.slice_id = slice.id
-	WHERE group_id='$group_id'");
+    SELECT * FROM constant_slice INNER JOIN slice
+    ON constant_slice.slice_id = slice.id
+    WHERE group_id='$group_id'");
 if ($db->next_record()) $owner_id = unpack_id128($db->f("slice_id"));
 
 echo "
@@ -341,7 +344,7 @@ echo "
 <td colspan=3>";
 
 if (!$owner_id || !$group_id)
-	echo _m("Whoever first updates values becomes owner.");
+    echo _m("Whoever first updates values becomes owner.");
 
 // display the select box to change group owner if requested ($chown)
 elseif($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
@@ -349,14 +352,14 @@ elseif($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
     reset($g_modules);
     while(list($k, $v) = each($g_modules)) {
       echo "<option value='". htmlspecialchars($k)."'".
-	  	 ($owner_id == $k ? " selected" : "").
-      	 "> ". htmlspecialchars($v["name"]);
+         ($owner_id == $k ? " selected" : "").
+         "> ". htmlspecialchars($v["name"]);
     }
     echo "</select>\n";
 }
 else {
-	echo $db->f("name")."&nbsp;&nbsp;&nbsp;&nbsp;
-	<input type=submit name='chown' value='"._m("Change owner")."'>";
+    echo $db->f("name")."&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type=submit name='chown' value='"._m("Change owner")."'>";
 }
 
 $propagate_ch = ( $group_id ? $db->f("propagate") : 1);   // default is checked for new constant group;
