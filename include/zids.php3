@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -39,10 +39,10 @@ http://www.apc.org/
 #       taggedid type=t
 # The type of an id, is the first letter of these, or any other string
 #
-# Hints on integrating this with other code 
-# 
+# Hints on integrating this with other code
+#
 # Hints on modifying this code - ask mitra if unsure
-#       The code uses the &$xxx syntax for efficiency wherever possible, 
+#       The code uses the &$xxx syntax for efficiency wherever possible,
 #               but does not unless clearly commented change the passed var
 #
 # Supported functions, and which types work with
@@ -64,15 +64,15 @@ class zids {
     function zids($initial = null, $inittype = "z"){  # constructor
         $this->refill($initial, $inittype);
     }
-    
+
     # Refills the array, may be called with an array, or a zid
     function refill($initial = null, $inittype = "z"){
         global $debug;
         #$inittype is for where type is known
         # Note it refers to the type of ELEMENTS if its an array
         $this->type = $inittype;
-        if ($initial and is_array($initial)) { # Array 
-            if (is_array($initial[0])) { # Array of fields 
+        if ($initial and is_array($initial)) { # Array
+            if (is_array($initial[0])) { # Array of fields
                 $this->a = array();  # Make sure at least empty array
                 reset($initial);
                 while (list(,$v) = each($initial)) {
@@ -92,7 +92,7 @@ class zids {
            return;                    # Empty $zids;
         }
 
-        if ($this->type == "z") 
+        if ($this->type == "z")
             $this->type = guesstype($this->a[0]);
         elseif ($this->type != guesstype($this->a[0]))
             huhe("Warning: zids created type=$this->type but id $this->a[0] looks like type="
@@ -108,12 +108,19 @@ class zids {
     /** Adds new id or array of ids or zids object.
     *   The type must be already set (from init). */
     function add($ids) {
-        if( is_object ($ids) )
-            $this->a = array_merge ($this->a, $ids->a);
-        else if( is_array ($ids) )
-            $this->a = array_merge ($this->a, $ids);
-        else if( $ids )
-            $this->a[]=$ids;
+        if ( isset($ids) AND is_object($ids) ) {           // zids
+            if ($ids->onetype() == $this->onetype()) {
+                $this->a = array_merge($this->a, $ids->a);
+            } else {
+                return false;
+            }
+        } elseif ( isset($ids) AND is_array($ids) ) {      // array of ids
+            $this->a = array_merge($this->a, $ids);
+        } elseif ( $ids ) {                                // id
+            $this->a[] = $ids;
+        } else
+            return false;
+        return true;
     }
 
     /** Adds new id or array of ids or zids object and deletes duplicate ids.
@@ -126,7 +133,7 @@ class zids {
         $last = "XXXXXXXX";
         $unique = "";
         for (reset ($this->a); list (,$v) = each($this->a);) {
-            if ($v && $v != $last) 
+            if ($v && $v != $last)
                 $unique[] = $v;
             $last = $v;
         }
@@ -169,7 +176,7 @@ class zids {
         if ($this->warnid($i,"longids")) return null;
         switch ($this->type) {
         case "l":  return (isset($i) ? $this->a[$i] : $this->a);
-        case "p":  return (isset($i) ? unpack_id128($this->a[$i]) 
+        case "p":  return (isset($i) ? unpack_id128($this->a[$i])
                         : array_map("unpack_id128", $this->a));
         case "t":  return (isset($i) ? id_t2l($this->a[$i]) : array_map("id_t2l", $this->a));
         default:
@@ -179,62 +186,62 @@ class zids {
         }
     }
 
-    function packedids($i=null) { 
+    function packedids($i=null) {
         if ($this->warnid($i,"packedids")) return null;
         switch ($this->type) {
             case "p": return (isset($i) ? $this->a[$i] : $this->a);
             case "l": return (isset($i) ? pack_id128($this->a[$i]) : array_map("pack_id128",$this->a));
-            case "t": return (isset($i) ? pack_id128(id_t2l($this->a[$i])) 
+            case "t": return (isset($i) ? pack_id128(id_t2l($this->a[$i]))
                                 : array_map("pack_id128", $this->longids()));
         default:
-            print("ERROR - zids:packedids(): can't handle type $this->type conversion to packedds - ask mitra");   
+            print("ERROR - zids:packedids(): can't handle type $this->type conversion to packedds - ask mitra");
             return false;
         }
     }
 
     # Return quoted ids, i.e. with slashes doubled and apostrophes slashed
     # appropriate for putting in SQL (inside "")
-    # note, contrary to its name, this does NOT put quotes or double quotes 
+    # note, contrary to its name, this does NOT put quotes or double quotes
     # around the ids
     function q_packedids($i=null) {
         if ($this->warnid($i,"q_packedids")) return null;
         switch ($this->type) {
             case "p": return (isset($i) ? quote($this->a[$i]) : array_map("quote",$this->a));
             case "l": return (isset($i) ? q_pack_id($this->a[$i]) : array_map("q_pack_id",$this->a));
-            case "t": return (isset($i) ? q_pack_id(id_t2l($this->a[$i])) 
+            case "t": return (isset($i) ? q_pack_id(id_t2l($this->a[$i]))
                                 : array_map("q_pack_id", $this->longids()));
         default:
             print("ERROR - zids:q_packedids(): can't handle type $this->type conversion to packedds - ask mitra");
             return false;
         }
     }
-        
+
     # As above, but inside single quotes
     function qq_packedids($i=null) {
         if ($this->warnid($i,"qq_packedids")) return null;
         switch ($this->type) {
             case "p": return (isset($i) ? qquote($this->a[$i]) : array_map("qquote",$this->a));
-            case "l": return (isset($i) ? qq_pack_id($this->a[$i]) 
+            case "l": return (isset($i) ? qq_pack_id($this->a[$i])
                 : array_map("qq_pack_id",$this->a));
             case "t": return (isset($i) ? qq_pack_id(id_t2l($this->a[$i]))
                 : array_map("qq_pack_id", $this->longids()));
         default:
-            print("ERROR - zids:qq_packedids(): can't handle type $this->type conversion to packedds - ask mitra");   
+            print("ERROR - zids:qq_packedids(): can't handle type $this->type conversion to packedds - ask mitra");
             return false;
         }
     }
-        
+
     # As above, but inside double quotes
     function qqq_packedids($i=null) {
         if ($this->warnid($i,"qqq_packedids")) return null;
         switch ($this->type) {
             case "p": return (isset($i) ? qqquote($this->a[$i]) : array_map("qqquote",$this->a));
-            case "l": return (isset($i) ? qqq_pack_id($this->a[$i]) 
+            case "l": return (isset($i) ? qqq_pack_id($this->a[$i])
                 : array_map("qqq_pack_id",$this->a));
             case "t": return (isset($i) ? qqq_pack_id(id_t2l($this->a[$i]))
                 : array_map("qqq_pack_id", $this->longids()));
         default:
-            print("ERROR - zids:qqq_packedids(): can't handle type $this->type conversion to packedds - ask mitra");   
+            print("ERROR - zids:qqq_packedids(): can't handle type $this->type conversion to packedds - ask mitra");
             return false;
         }
     }
@@ -253,23 +260,23 @@ class zids {
     # These are ids suitable for indexing return from GetItemContent
     function short_or_longids($i=null) {
         if ($this->warnid($i,"short_or_longids")) return null;
-        return ($this->use_short_ids() 
+        return ($this->use_short_ids()
             ? $this->shortids($i)
             : $this->longids($i));
     }
-        
+
     function use_short_ids() {
         if ($this->type == "s") return true;
         return false;
     }
 
-    # Return nth id, note there is no guarrantee what format this will be in, so its 
+    # Return nth id, note there is no guarrantee what format this will be in, so its
     # only really useful for serialization or if type is checked as well
     function id($idx) {
-        return $this->a[$idx]; 
+        return $this->a[$idx];
     }
 
-    # Create a new zids, from a subset of the data,  with the same type 
+    # Create a new zids, from a subset of the data,  with the same type
     # Parameters are same as for "array_slice"
     function slice($offset, $length) {
         if (is_array ($this->a))
@@ -301,7 +308,7 @@ class zids {
             switch ($this->type) {
             case 'p': $k = pack_id128(id_t2l($v)); break;
             default:
-                print("<br>Error: zids: can't retag array of type '$type', tell mitra"); 
+                print("<br>Error: zids: can't retag array of type '$type', tell mitra");
                 return;
             }
             $tags[$k]=$v;
@@ -314,11 +321,11 @@ class zids {
     }
 
   # Return appropriate SQL for including in WHERE clause
-  # Note that some code still does this by hand, 
+  # Note that some code still does this by hand,
   function sqlin( $add_column = true ) {
     if ($this->count() == 0) return "";
     if ( $add_column )
-        $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" ); 
+        $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
     if ($this->use_short_ids())
 	    return "$column IN ("
             . implode(",", array_map( "qquote", $this->shortids())) . ")";
@@ -329,7 +336,7 @@ class zids {
 
 } #class ids
 
-# This guesses the type from the length of the id, 
+# This guesses the type from the length of the id,
 # short should be == 16 and long == 32 but there is or was somewhere a bug
 # leading to shorter (as short as 14) character ids.
 function guesstype($str) {
@@ -367,7 +374,7 @@ function unpack_id128($packed_id){
 function q_pack_id ($unpacked_id){
   $foo = pack_id128($unpacked_id);
   return (quote($foo));
-} 
+}
 function qq_pack_id($str) {
         return ("'".q_pack_id($str)."'");
 }
