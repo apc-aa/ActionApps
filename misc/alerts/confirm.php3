@@ -35,7 +35,7 @@ if ($id) {
     $db->next_record();
     if ($db->num_rows()) { 
         if ($db->query ("UPDATE alerts_user SET confirm = '' WHERE confirm='$id'"))
-            go_url ("index.php3?Msg="._m("Congratulations. Your subscription is finished.")."&show_email=".$db->f("email"));
+            go_url ("index.php3?Msg="._m("Congratulations. Your subscription is finished.")."&lang=$lang&show_email=".$db->f("email"));
     }   
 }
    

@@ -235,7 +235,7 @@ $_m["Welcome to APC e-mail alerts"]
 
 # /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 101
 $_m["<p>Hello,</p><p>please confirm your subscription by clicking on URL:</p>%1<p>or copy the URL to your web browser so that we can see you did not subscribe by mistake and your e-mail is working.</p><p>Yours<br>&nbsp; &nbsp; &nbsp;APC Alerts moderators</p>"]
-  = "<p>Dobrý den,</p><p>prosím potvrïte svou klepnutím na URL: </p>%1<p> nebo zkopírujte URL do Vašeho webového prohlížeèe, abychom poznali, že nejste zapsán(a) omylem a že Váš e-mail funguje.</p><p>Vaši<br>&nbsp; &nbsp; &nbsp;moderátoøi Zasílání zpráv</p>";
+  = "<p>Dobrý den,</p><p>prosím potvrïte svou pøihlášku klepnutím na URL: </p>%1<p> nebo zkopírujte URL do Vašeho webového prohlížeèe, abychom poznali, že nejste zapsán(a) omylem a že Váš e-mail funguje.</p><p>Vaši<br>&nbsp; &nbsp; &nbsp;moderátoøi Zasílání zpráv</p>";
 
 # /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 143
 $_m["Create new collection"]
