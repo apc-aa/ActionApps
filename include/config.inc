@@ -44,9 +44,9 @@ switch ($HTTP_HOST) {
      define (SITE_CONFIG, "config-ecn.inc"); break;
   }
 
-$testing_gets_around_isset = SITE_CONFIG;
-if (isset($testing_gets_around_isset)) {
-   require ($AA_INC_PATH . SITE_CONFIG);
+if (defined ("SITE_CONFIG")) {
+  // require does not work as expected inside control structures!
+  include ($AA_INC_PATH . SITE_CONFIG);
 }
 // end SITE_CONFIG
 // ------------------------------------------------------------------
@@ -130,8 +130,12 @@ $ActionAppConfig[en_media_mon][file] = "en_news_lang.php3";
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:23  madebeer
-Initial revision
+Revision 1.2  2000/07/05 14:41:30  kzajicek
+Replaced "require" by "include" (include does not work inside if - then) and
+changed the test to use "defined".
+
+Revision 1.1.1.1  2000/06/21 18:40:23  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:12  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
