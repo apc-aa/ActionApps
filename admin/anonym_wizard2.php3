@@ -49,9 +49,9 @@ ShowAnonymousForm();
 // -----------------------------------------------------------------------------
 // This is the form created
 
-function ShowAnonymousForm () {
+function ShowAnonymousForm() {
     global $s_fields, $show, $ok_url, $err_url, $use_show_result, $show_result,
-        $show_func_used, $js_proove_fields, $fields, $prifields, $slice_id;
+           $fields, $prifields, $slice_id;
     $db = getDB();
     $db->query ("SELECT permit_anonymous_edit, type FROM slice
         WHERE id='".q_pack_id($slice_id)."'");
@@ -59,14 +59,21 @@ function ShowAnonymousForm () {
     $form_type = $db->f("permit_anonymous_edit");
     freeDB($db);
 
-    foreach ($s_fields as $field)
-        if ($field["input_show"] && !$show[$field["id"]])
-            $notshown ["v".unpack_id($field["id"])] = 1;
+    foreach ($s_fields as $field) {
+        if ($field["input_show"] && !$show[$field["id"]]) {
+            $notshown["v".unpack_id($field["id"])] = 1;
+        }
+    }
 
-    ValidateContent4Id($err, $slice_id, "edit", 0, false, $notshown);
+    $slice = new slice($slice_id);
+    ValidateContent4Id($err, $slice, "edit", 0, false, $notshown);
+    list($fields, $prifields) = $slice->fields();
 
-    if ( $show_func_used ['fil'])  # uses fileupload?
+    $show_func_used = $slice->get_show_func_used('edit', 0, $notshown);
+
+    if ( $show_func_used['fil']) { # uses fileupload?
         $html_form_type = ' enctype="multipart/form-data"';
+    }
 
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED)
          echo
@@ -83,7 +90,7 @@ function ShowAnonymousForm () {
 
     <FORM name="inputform"'.$html_form_type.' method="post" '
     .'action="'.AA_INSTAL_URL.'filler.php3"'
-    .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()"))
+    .getTriggers("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()"))
     .'>
 
     <input type="hidden" name="err_url" value="'.$err_url.'">
@@ -104,7 +111,8 @@ function ShowAnonymousForm () {
                 .'<!--'.$field["name"].'-->';
 
     echo "\n";
-    echo GetFormJavascript ($show_func_used, $js_proove_fields);
+
+    echo GetFormJavascript($show_func_used, $slice->get_js_validation('edit', 0, $notshown));
 
     // Destroy the ? help links at each field
     reset ($fields);
