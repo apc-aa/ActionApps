@@ -1,3 +1,5 @@
+04/27/03 - picture is not resized if no width and height is given
+(honzam) - global category support for Links module
 04/25/03 - GetTable2Array no longer needs $db parameter
 (mitra)  - Added admin/summarize to AA page, gives a quick summary of a page (enable on menu_aa.php3)
 04/23/03 - added support for convertors from DOC/XLS/PPT/.. to HTML
