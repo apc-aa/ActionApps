@@ -59,12 +59,6 @@ $db->query($SQL);
 # delete module from permission system
 DelPermObject($del, "slice");  # the word 'slice' is not mistake - do not change
 
-# optimize tables
-# from time to time it is good to optimize tables - right time to do it)
-$db->query("OPTIMIZE TABLE module");
-$db->query("OPTIMIZE TABLE site");
-$db->query("OPTIMIZE TABLE site_spot");
-
 page_close();                                // to save session variables
 go_url(con_url($sess->url($AA_INSTAL_PATH . "admin/slicedel.php3"),
                                           "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));

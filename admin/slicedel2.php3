@@ -116,18 +116,6 @@ function DeleteSlice ($del) {
     # delete email_notify
     $SQL = "DELETE LOW_PRIORITY FROM email_notify WHERE slice_id='$p_del'";
     $db->query($SQL);
-    
-    # optimize tables -------------------------------------------------------------
-    $db->query("OPTIMIZE TABLE module");
-    $db->query("OPTIMIZE TABLE slice");
-    $db->query("OPTIMIZE TABLE field");
-    $db->query("OPTIMIZE TABLE content");
-    $db->query("OPTIMIZE TABLE offline");
-    $db->query("OPTIMIZE TABLE item");
-    $db->query("OPTIMIZE TABLE feedmap");
-    $db->query("OPTIMIZE TABLE feedperms");
-    $db->query("OPTIMIZE TABLE email_notify");
-    $db->query("OPTIMIZE TABLE relation");
 }
 
 ?>

@@ -1008,6 +1008,7 @@ $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script,
 $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (3, '*',          '1', '1', '*', '*', 'misc/alerts/alerts.php3', 'howoften=monthly&lang=en', NULL)";
 $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (4, '*',          '1', '*', '*', '*', 'misc/alerts/admin_mails.php3', '', NULL)";        
 $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (5, '8,23,38,53', '*', '*', '*', '*', 'admin/xmlclient.php3', '', NULL)";
+$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (6, '38',         '2', '*', '*', '2', 'misc/optimize.php3', 'key=".substr( DB_PASSWORD, 0, 5 )."', NULL)";
 
 # -------------------------------- Executive part -----------------------------
 
