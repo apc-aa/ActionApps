@@ -2,7 +2,7 @@
 # $Id$
 # Language: RO
 # This file was created automatically by the Mini GetText environment
-# on 17.1.2003 10:16
+# on 20.1.2003 17:09
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -13,7 +13,7 @@ $mgettext_lang = "ro";
 # Unused messages
 # End of unused messages
 
-# ./CHANGES, row 66
+# ./.#CHANGES.1.88, row 68
 $_m["There are too many related items. The number of related items is limited."]
   = "Sunt prea multe elemente înrudite. Numãrul elementelor înrudite este limitatã.";
 
@@ -29,7 +29,7 @@ $_m["Bad slice ID"]
 
 # ./filler.php3, row 145
 # admin/se_inputform.php3, row 162
-# include/itemfunc.php3, row 930
+# include/itemfunc.php3, row 928
 $_m["No fields defined for this slice"]
   = "Nici un cîmp definit pentru aceastã secþiune";
 
@@ -102,7 +102,6 @@ $_m["Item: "]
 # admin/slicedit.php3, row 103
 # include/modutils.php3, row 50
 # include/slicedit.php3, row 68
-# other translations: Jméno, Title
 $_m["Title"]
   = "Titlu";
 
@@ -110,13 +109,11 @@ $_m["Title"]
 # admin/discedit2.php3, row 49, 109
 # admin/se_users.php3, row 77
 # admin/se_users_add.php3, row 36
-# other translations: Author
 $_m["Author"]
   = "Autor";
 
 # admin/discedit.php3, row 123
 # include/constants.php3, row 179, 211, 250
-# other translations: Date, Data
 $_m["Date"]
   = "Datã";
 
@@ -133,10 +130,9 @@ $_m["No discussion comments"]
 # admin/se_fields.php3, row 73, 75
 # admin/se_views.php3, row 68
 # admin/slicedel.php3, row 45
-# include/formutil.php3, row 746
+# include/formutil.php3, row 747
 # include/menu_aa.php3, row 33
 # include/profile.php3, row 70
-# other translations: Vymazat, Delete, ªterge
 $_m["Delete"]
   = "ªtergere";
 
@@ -147,7 +143,6 @@ $_m["Delete"]
 # admin/se_views.php3, row 67
 # include/filedit.php3, row 115
 # include/util.php3, row 910, 912
-# other translations: Editovat, Edit, Editeazã
 $_m["Edit"]
   = "Editare";
 
@@ -176,7 +171,6 @@ $_m["Subject"]
 # admin/um_uedit.php3, row 256
 # include/constants.php3, row 247
 # include/um_uedit.php3, row 37, 38, 39
-# other translations: Correo, E-mail, E-Mail
 $_m["E-mail"]
   = "";
 
@@ -215,15 +209,14 @@ $_m["Edit comment"]
 # admin/slicedit.php3, row 147
 # admin/um_gedit.php3, row 262
 # admin/um_uedit.php3, row 300
-# include/formutil.php3, row 833
-# other translations: Poslat, Publicar, OK, Trimite
+# include/formutil.php3, row 834
 $_m["Update"]
   = "Actualizare";
 
 # admin/discedit2.php3, row 122
 # admin/se_notify.php3, row 262
 # admin/slicedit.php3, row 148
-# include/formutil.php3, row 842
+# include/formutil.php3, row 843
 $_m["Reset form"]
   = "Resetare formular";
 
@@ -247,8 +240,7 @@ $_m["Reset form"]
 # admin/slicewiz.php3, row 102
 # admin/um_gedit.php3, row 265
 # admin/um_uedit.php3, row 303
-# include/formutil.php3, row 839
-# other translations: Zrušit
+# include/formutil.php3, row 840
 $_m["Cancel"]
   = "Anulare";
 
@@ -264,14 +256,12 @@ $_m["Export selected items to selected slice"]
 # admin/slicedit.php3, row 96
 # include/menu.php3, row 115
 # include/sliceadd.php3, row 46, 77
-# other translations: Slice
 $_m["Slice"]
   = "Sectiune";
 
 # admin/feed_to.php3, row 36
 # admin/index.php3, row 603
 # include/menu_aa.php3, row 47
-# other translations: Export
 $_m["Export"]
   = "Exportã";
 
@@ -280,12 +270,10 @@ $_m["Export"]
 # admin/se_filters.php3, row 253
 # admin/slicedit.php3, row 79
 # include/menu.php3, row 158
-# other translations: Jako aktuální zprávu, Aprobado
 $_m["Active"]
   = "Activ";
 
 # admin/feed_to.php3, row 53
-# other translations: Nelze
 $_m["No permission"]
   = "Nu este permis";
 
@@ -296,33 +284,27 @@ $_m["No permission to set feeding for any slice"]
 # admin/fileman.php3, row 80, 86
 # include/filedit.php3, row 63, 69
 # include/menu.php3, row 149
-# other translations: File Manager
 $_m["File Manager"]
   = "";
 
 # admin/fileman.php3, row 87
 # include/fileman.php3, row 80, 90
-# other translations: Directory
 $_m["Directory"]
   = "";
 
 # admin/fileman.php3, row 115
-# other translations: Desmarcar visibles
 $_m["Unselect all"]
   = "Deselecteazã tot";
 
 # admin/fileman.php3, row 157
-# other translations: Create new file
 $_m["Create new file"]
   = "";
 
 # admin/fileman.php3, row 160
-# other translations: Upload file
 $_m["Upload file"]
   = "";
 
 # admin/fileman.php3, row 167
-# other translations: Copy template dir
 $_m["Copy template dir"]
   = "";
 
@@ -348,7 +330,6 @@ $_m["Pending"]
   = "De rezolvat";
 
 # admin/index.php3, row 441
-# other translations: Aktuální - Expirované, Caducados
 $_m["Expired"]
   = "Expirat";
 
@@ -370,7 +351,6 @@ $_m["Trash bin"]
 # admin/um_gedit.php3, row 236
 # admin/um_uedit.php3, row 274
 # include/tabledit.php3, row 509
-# other translations: Hledání, Vyhledávací formuláø, Search, Suche, Cautã
 $_m["Search"]
   = "Cãutare";
 
@@ -389,7 +369,6 @@ $_m["Descending"]
 
 # admin/index.php3, row 562
 # admin/related_sel.php3, row 232
-# other translations: Nenalezena žádná zpráva
 $_m["No item found"]
   = "";
 
@@ -419,7 +398,6 @@ $_m["Selected items"]
 
 # admin/index.php3, row 620
 # admin/related_sel.php3, row 257
-# other translations: OK
 $_m["Go"]
   = "Dute";
 
@@ -433,7 +411,6 @@ $_m["Bad item ID"]
 
 # admin/itemedit.php3, row 249, 317
 # include/menu.php3, row 67
-# other translations: Nová zpráva, Neuer Artikel
 $_m["Add Item"]
   = "Adãugare element";
 
@@ -458,10 +435,9 @@ $_m["Select related items"]
 # admin/sliceadd.php3, row 73
 # admin/um_gedit.php3, row 259
 # admin/um_uedit.php3, row 297
-# include/formutil.php3, row 745
+# include/formutil.php3, row 746
 # include/profile.php3, row 128
 # include/sliceadd.php3, row 69, 87
-# other translations: Ano, Add
 $_m["Add"]
   = "Adaugã";
 
@@ -499,7 +475,6 @@ $_m["Superadmin account"]
 # admin/um_uedit.php3, row 249, 251
 # include/constants.php3, row 181, 261
 # include/um_uedit.php3, row 32
-# other translations: 
 $_m["Login name"]
   = "Nume utilizator";
 
@@ -509,7 +484,6 @@ $_m["Login name"]
 # admin/slicewiz.php3, row 77
 # admin/um_uedit.php3, row 252
 # include/um_uedit.php3, row 34
-# other translations: Password
 $_m["Password"]
   = "Parola";
 
@@ -595,7 +569,6 @@ $_m["Use this account to login and add your first slice:"]
 # admin/setup.php3, row 254
 # admin/slicedit.php3, row 90
 # admin/slicewiz.php3, row 101
-# other translations: Nový webík, Add Slice, Rubrik hinzufügen
 $_m["Add Slice"]
   = "Adãugare secþiune";
 
@@ -610,7 +583,6 @@ $_m["You have no permission to set configuration parameters of this slice"]
 # admin/se_admin.php3, row 54, 125
 # admin/se_compact.php3, row 55, 195
 # include/constants.php3, row 373, 412, 429, 473, 486, 511, 532, 566
-# other translations: Horní HTML
 $_m["Top HTML"]
   = "Cap HTML";
 
@@ -621,7 +593,6 @@ $_m["Item format"]
 # admin/se_admin.php3, row 56, 129
 # admin/se_compact.php3, row 56, 202
 # include/constants.php3, row 377, 414, 431, 476, 488, 513, 535, 570
-# other translations: Spodní HTML
 $_m["Bottom HTML"]
   = "Sfîrºit HTML";
 
@@ -629,7 +600,6 @@ $_m["Bottom HTML"]
 # admin/se_compact.php3, row 57, 221
 # admin/se_fulltext.php3, row 57, 149
 # include/constants.php3, row 378, 415, 536, 571
-# other translations: Remover cadena, Zeichenketten entfernen
 $_m["Remove strings"]
   = "ªterge ºiruri";
 
@@ -645,7 +615,6 @@ $_m["Admin fields update successful"]
   = "Actualizare cîmpuri Admin reuºit";
 
 # admin/se_admin.php3, row 97, 113
-# other translations: Administración - vista de gestión de diseño
 $_m["Admin - design Item Manager view"]
   = "Admin - design vedere manager elemente";
 
@@ -683,7 +652,6 @@ $_m["Removes empty brackets etc. Use ## as delimeter."]
 # admin/se_compact.php3, row 236
 # admin/se_fulltext.php3, row 165
 # admin/se_inputform.php3, row 70, 309
-# other translations: Predeterminadas, Vorbelegung
 $_m["Default"]
   = "Implicit";
 
@@ -747,7 +715,6 @@ $_m["You can define different code for odd and ever rows\n"
 
 # admin/se_compact.php3, row 204
 # include/constants.php3, row 389, 576
-# other translations: Group by
 $_m["Group by"]
   = "Grupat în funcþie de";
 
@@ -812,7 +779,6 @@ $_m[" items changed to new value "]
 # include/constedit.php3, row 37
 # include/fileman.php3, row 24
 # include/um_gedit.php3, row 24
-# other translations: Name
 $_m["Name"]
   = "Nume";
 
@@ -820,7 +786,6 @@ $_m["Name"]
 # admin/se_mapping.php3, row 199
 # admin/se_profile.php3, row 189
 # include/constedit.php3, row 40
-# other translations: Value, 
 $_m["Value"]
   = "Valoare";
 
@@ -832,7 +797,6 @@ $_m["Priority"]
 
 # admin/se_constant.php3, row 162, 307
 # include/constants.php3, row 478
-# other translations: Constant Group
 $_m["Constant Group"]
   = "Grup constante";
 
@@ -854,7 +818,6 @@ $_m["Admin - Constants Setting"]
 
 # admin/se_constant.php3, row 301
 # admin/se_inputform.php3, row 291
-# other translations: Constants
 $_m["Constants"]
   = "Constante";
 
@@ -903,7 +866,6 @@ $_m["constant&nbsp;order"]
 
 # admin/se_constant.php3, row 373
 # include/fileman.php3, row 81, 88
-# other translations: Parent
 $_m["Parent"]
   = "Pãrinte";
 
@@ -960,7 +922,6 @@ $_m["Change from"]
 
 # admin/se_fieldid.php3, row 251
 # admin/sliceexp.php3, row 169
-# other translations: na
 $_m["to"]
   = "";
 
@@ -970,7 +931,6 @@ $_m["to"]
 # admin/se_view.php3, row 276
 # admin/slicedit.php3, row 102
 # include/constants.php3, row 249
-# other translations: Typ, Tipo
 $_m["Id"]
   = "";
 
@@ -984,7 +944,6 @@ $_m["Field"]
 
 # admin/se_fields.php3, row 160
 # admin/se_inputform.php3, row 138
-# other translations: Nasavení položek úspìšnì zmìnìno
 $_m["Fields update successful"]
   = "Actualizare cîmpuri reuºit";
 
@@ -996,7 +955,6 @@ $_m["Admin - configure Fields"]
 # admin/se_fields.php3, row 197
 # admin/se_inputform.php3, row 268
 # include/menu.php3, row 117
-# other translations: Pole zpráv
 $_m["Fields"]
   = "Cîmpuri";
 
@@ -1006,7 +964,6 @@ $_m["Required"]
 
 # admin/se_fields.php3, row 207
 # admin/se_search.php3, row 122, 140
-# other translations: Show, Zeige
 $_m["Show"]
   = "Aratã";
 
@@ -1055,13 +1012,11 @@ $_m["Categories"]
 
 # admin/se_filters.php3, row 251
 # admin/se_mapping.php3, row 198
-# other translations: From, Desde, Din
 $_m["From"]
   = "De la";
 
 # admin/se_filters.php3, row 252
 # admin/se_mapping.php3, row 197
-# other translations: To, Hasta, An, La
 $_m["To"]
   = "Cãtre";
 
@@ -1126,7 +1081,6 @@ $_m["Use HTML tags"]
 # admin/sliceadd.php3, row 36
 # admin/slicedit.php3, row 84
 # include/menu.php3, row 80
-# other translations: Administrace webíku - Menu, Slice Administration
 $_m["Slice Administration"]
   = "Administrare secþiune";
 
@@ -1160,7 +1114,6 @@ $_m["Do not import"]
 
 # admin/se_import.php3, row 170
 # include/menu_aa.php3, row 48
-# other translations: Import
 $_m["Import"]
   = "Importã";
 
@@ -1190,7 +1143,6 @@ $_m["Must begin with _#.<br>Alias must be exactly ten characters long including 
 
 # admin/se_inputform.php3, row 75, 78, 81, 401
 # admin/se_profile.php3, row 188
-# other translations: Function, 
 $_m["Function"]
   = "Funcþie";
 
@@ -1257,8 +1209,7 @@ $_m["Validate function"]
 
 # admin/se_inputform.php3, row 329
 # admin/slicedit.php3, row 144
-# include/formutil.php3, row 836
-# other translations: Insert
+# include/formutil.php3, row 837
 $_m["Insert"]
   = "Inserare";
 
@@ -1709,7 +1660,6 @@ $_m["Default settings"]
 # admin/se_users.php3, row 80
 # admin/se_users_add.php3, row 39
 # admin/slicewiz.php3, row 75
-# other translations: Editor
 $_m["Editor"]
   = "";
 
@@ -1749,7 +1699,6 @@ $_m["Search user or group"]
 # admin/usermng.php3, row 61
 # include/menu_aa.php3, row 38
 # include/um_usrch.php3, row 71
-# other translations: Users
 $_m["Users"]
   = "Utilizatori";
 
@@ -1798,7 +1747,6 @@ $_m["Filter"]
 # admin/um_gedit.php3, row 219
 # include/constedit.php3, row 48
 # include/um_gedit.php3, row 25
-# other translations: Description
 $_m["Description"]
   = "Descriere";
 
@@ -1813,7 +1761,6 @@ $_m["View successfully changed"]
 
 # admin/se_view.php3, row 245, 263
 # admin/se_views.php3, row 79, 113
-# other translations: Verwaltung - Ansicht bearbeiten
 $_m["Admin - design View"]
   = "Admin - design Vedere";
 
@@ -2108,60 +2055,49 @@ $_m["ERROR: Text is not OK. Check whether you copied it well from the Export."]
   = "";
 
 # admin/slicewiz.php3, row 44, 47
-# other translations: Add Slice Wizard
 $_m["Add Slice Wizard"]
   = "";
 
 # admin/slicewiz.php3, row 57
-# other translations: Copy Views
 $_m["Copy Views"]
   = "";
 
 # admin/slicewiz.php3, row 58
-# other translations: Categories/Constants
 $_m["Categories/Constants"]
   = "";
 
 # admin/slicewiz.php3, row 59
-# other translations: Share with Template
 $_m["Share with Template"]
   = "";
 
 # admin/slicewiz.php3, row 59
-# other translations: Copy from Template
 $_m["Copy from Template"]
   = "";
 
 # admin/slicewiz.php3, row 68
-# other translations: [Optional] Create New User
 $_m["[Optional] Create New User"]
   = "";
 
 # admin/slicewiz.php3, row 74
-# other translations: Level of Access
 $_m["Level of Access"]
   = "";
 
 # admin/slicewiz.php3, row 75
 # include/constants.php3, row 651
-# other translations: Slice Administrator
 $_m["Slice Administrator"]
   = "";
 
 # admin/slicewiz.php3, row 85
-# other translations: Do Not Email Welcome
 $_m["Do Not Email Welcome"]
   = "";
 
 # admin/slicewiz.php3, row 92
-# other translations: Email Welcome
 $_m["Email Welcome"]
   = "";
 
 # admin/um_gedit.php3, row 60
 # admin/um_uedit.php3, row 68, 71, 85
 # include/um_usrch.php3, row 36, 39, 51
-# other translations: Too much groups found.
 $_m["Too much groups found."]
   = "Prea multe grupuri gãsite.";
 
@@ -2253,7 +2189,6 @@ $_m["Text"]
   = "";
 
 # include/constants.php3, row 180, 260
-# other translations: Id usuario
 $_m["User ID"]
   = "ID utilizator";
 
@@ -2266,7 +2201,6 @@ $_m["Variable"]
   = "";
 
 # include/constants.php3, row 190
-# other translations: Text Area
 $_m["Text Area"]
   = "Zonã text";
 
@@ -2279,12 +2213,10 @@ $_m["Rich Edit Text Area"]
   = "";
 
 # include/constants.php3, row 199
-# other translations: Text Field
 $_m["Text Field"]
   = "Cîmp text";
 
 # include/constants.php3, row 202
-# other translations: Select Box
 $_m["Select Box"]
   = "Selecþie";
 
@@ -2293,7 +2225,6 @@ $_m["Select Box with Presets"]
   = "Selecþie cu predefiniri";
 
 # include/constants.php3, row 208
-# other translations: Radio Button
 $_m["Radio Button"]
   = "Buton radio";
 
@@ -2302,12 +2233,10 @@ $_m["Check Box"]
   = "Cãsuþã";
 
 # include/constants.php3, row 217
-# other translations: Multiple Checkboxes
 $_m["Multiple Checkboxes"]
   = "Cãsuþe multiple";
 
 # include/constants.php3, row 220
-# other translations: Multiple Selectbox
 $_m["Multiple Selectbox"]
   = "Selecþie multiplã";
 
@@ -2320,12 +2249,10 @@ $_m["File Upload"]
   = "Încãrcare fiºier";
 
 # include/constants.php3, row 232
-# other translations: Related Item Window
 $_m["Related Item Window"]
   = "Fereastrã element înrudit";
 
 # include/constants.php3, row 235
-# other translations: Do not show
 $_m["Do not show"]
   = "Nu afiºa";
 
@@ -2347,7 +2274,6 @@ $_m["Boolean"]
 
 # include/constants.php3, row 259
 # include/filedit.php3, row 69
-# other translations: File
 $_m["File"]
   = "Fiºier";
 
@@ -2588,7 +2514,6 @@ $_m["Show all"]
 # include/constants.php3, row 607
 # include/constedit_util.php3, row 91
 # include/discussion.php3, row 128, 183
-# other translations: Pøidat, Add new
 $_m["Add new"]
   = "Adaugã nou";
 
@@ -2649,7 +2574,6 @@ $_m["Levels horizontal"]
   = "";
 
 # include/constedit.php3, row 63
-# other translations: Poèet úrovní
 $_m["Level count"]
   = "";
 
@@ -2662,7 +2586,7 @@ $_m["Level"]
   = "";
 
 # include/date.php3, row 114
-# include/formutil.php3, row 870, 879, 886, 891, 896, 901, 909, 914, 920, 923
+# include/formutil.php3, row 871, 880, 887, 892, 897, 902, 910, 915, 921, 924
 $_m["Error in"]
   = "Eroare introducere";
 
@@ -2825,7 +2749,6 @@ $_m["Size"]
   = "";
 
 # include/fileman.php3, row 26
-# other translations: Type
 $_m["Type"]
   = "Tip";
 
@@ -2905,47 +2828,47 @@ $_m["Plain text"]
 $_m["Show this field as a rich text editor (use only after having installed the necessary components!)"]
   = "";
 
-# include/formutil.php3, row 592
+# include/formutil.php3, row 593
 $_m["Remove"]
   = "ªterge";
 
-# include/formutil.php3, row 609
+# include/formutil.php3, row 610
 $_m["Offer"]
   = "";
 
-# include/formutil.php3, row 610
+# include/formutil.php3, row 611
 $_m["Selected"]
   = "";
 
-# include/formutil.php3, row 870
+# include/formutil.php3, row 871
 $_m["it must be filled"]
   = "trebuie completat";
 
-# include/formutil.php3, row 909
+# include/formutil.php3, row 910
 $_m["you should use a-z, A-Z and 0-9 characters"]
   = "folosiþi caracterele a-z, A-Z ºi 0-9";
 
-# include/formutil.php3, row 914, 920
+# include/formutil.php3, row 915, 921
 $_m["it must by 5 - 32 characters long"]
   = "trebuie sã fie de lungimea 5 - 32 caractere";
 
-# include/formutil.php3, row 923
+# include/formutil.php3, row 924
 $_m["only 0-9 A-Z a-z . _ and - are allowed"]
   = "";
 
-# include/formutil.php3, row 949
+# include/formutil.php3, row 950
 $_m["This field is required (marked by *)."]
   = "";
 
-# include/formutil.php3, row 957
+# include/formutil.php3, row 958
 $_m["Not a valid integer number."]
   = "";
 
-# include/formutil.php3, row 961
+# include/formutil.php3, row 962
 $_m["Not a valid file name."]
   = "";
 
-# include/formutil.php3, row 965
+# include/formutil.php3, row 966
 $_m["Not a valid email address."]
   = "";
 
@@ -3079,7 +3002,6 @@ $_m["View site"]
   = "Vizualizare sit";
 
 # include/menu.php3, row 72, 73, 129
-# other translations: Správa zpráv, Item Manager, Artikel
 $_m["Item Manager"]
   = "Administrator Elemente";
 
@@ -3113,7 +3035,6 @@ $_m["Permissions"]
   = "Drepturi";
 
 # include/menu.php3, row 122
-# other translations: Pøiøadit, Asignare
 $_m["Assign"]
   = "Asigneazã";
 
@@ -3171,7 +3092,6 @@ $_m["Mapping"]
 
 # include/menu.php3, row 146, 167
 # include/menu_aa.php3, row 54
-# other translations: Pøíkazy
 $_m["Misc"]
   = "";
 
@@ -3204,7 +3124,6 @@ $_m["Create new"]
   = "";
 
 # include/menu_aa.php3, row 32
-# other translations: Create new Wizard
 $_m["Create new Wizard"]
   = "";
 
@@ -3217,7 +3136,6 @@ $_m["Slice structure"]
   = "Structurã secþiune";
 
 # include/menu_aa.php3, row 50
-# other translations: Wizard
 $_m["Wizard"]
   = "";
 
@@ -3338,7 +3256,6 @@ $_m["search"]
   = "";
 
 # include/tabledit.php3, row 616, 701
-# other translations: edit
 $_m["edit"]
   = "";
 
@@ -3519,12 +3436,10 @@ $_m["Use these aliases for database fields"]
   = "Folosiþi aceste denumiri pentru cîmpuri de bazã de date";
 
 # include/util.php3, row 1104
-# other translations: Internal error. File upload: Dir does not exist?!
 $_m["Internal error. File upload: Dir does not exist?!"]
   = "";
 
 # include/util.php3, row 1107
-# other translations: File with this name already exists.
 $_m["File with this name already exists."]
   = "";
 
@@ -3570,7 +3485,7 @@ $_m["July"]
 
 # include/util.php3, row 1323
 $_m["August"]
-  = "August";
+  = "";
 
 # include/util.php3, row 1323
 $_m["September"]
