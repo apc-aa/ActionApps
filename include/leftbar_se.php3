@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.14  2001/10/05 07:50:46  madebeer
+made leftbar compatible with php3.  fixed missing comments in aadb.sql
+
 Revision 1.13  2001/09/27 16:03:44  honzam
 Cross Server Networking (RSS item exchange)
 
@@ -81,23 +84,24 @@ function SetShow ($baritem)
 	// but if we work with a new slice, set false to all those items
 	global $show;
 	global $new_slice;
-	if (gettype($show[$baritem])=="NULL") $show[$baritem] = ! $new_slice; 
+	//if (gettype($show[$baritem])=="NULL") $show[$baritem] = ! $new_slice;
+     if ( ! isset($show[$baritem]))
+          $show[$baritem] = ! $new_slice; 
 }
-
-if (gettype($show["main"])=="NULL") $show["main"] = true;
+   
+     if ( ! isset($show["main"])) $show["main"] = true;
+     //if (gettype($show["main"])=="NULL") 
 
 SetShow ("slicedel"); SetShow ("config"); SetShow ("category"); SetShow ("fields");
 SetShow ("search"); SetShow ("users"); SetShow ("compact"); SetShow ("fulltext"); SetShow ("views");
 SetShow ("addusers"); SetShow ("newusers"); SetShow ("import"); 
 SetShow ("filters"); SetShow ("n_import"); SetShow ("n_export"); SetShow ("nodes");
 SetShow ("mapping"); SetShow ("sliceexp"); SetShow ("sliceimp");
-
 /*
 reset ($show);
 while (list ($key, $val) = each ($show)) {
-    echo "$key => $val<br>";
-}
-*/
+    echo "DEBUG $key => $val<br>";
+    }*/
 ?>
 
 <table width="122" border="0" cellspacing="0" bgcolor="<?php echo COLOR_TABBG ?>" cellpadding="1" align="LEFT" class="leftmenu">
