@@ -85,7 +85,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
       return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
     case 'ISNULL': 
       return ( " (($field IS NULL) OR ($field='0')) ");
-    case 'NOTNULL': 
+    case 'NOTNULL':
       return ( " (($field IS NOT NULL) AND ($field<>'')) ");
     default:
       $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ? 
@@ -175,7 +175,7 @@ function ParseMultiSelectConds (&$conds)
 function GetConstantGroup( $input_show_func ) {
   global $INPUT_SHOW_FUNC_TYPES;
   list($fnc,$constgroup) = explode(':', $input_show_func);
-  
+
   # does this field use constants?
   if( strstr($INPUT_SHOW_FUNC_TYPES[$fnc]['paramformat'], 'const') AND
       (substr($constgroup,0,7) != "#sLiCe-") )  # prefix indicates select from items, not constants
@@ -212,7 +212,7 @@ function GetConstantGroup( $input_show_func ) {
 */
 
 function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE",
-    $slices="", $neverAllItems=0, $restrict_ids=array(), $defaultCondsOperator = "LIKE",
+    $slices="", $neverAllItems=0, $restrict_ids=false, $defaultCondsOperator = "LIKE",
     $use_cache=false ) {
   # parameter format example:
   # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
@@ -252,7 +252,7 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
               $group_by. $type.
               serialize($slices).
               $neverAllItems.
-              serialize($restrict_ids).
+              ((isset($restrict_ids) && is_array($restrict_ids)) ? serialize($restrict_ids) : "").
               $defaultCondsOperator;
 
     if( $res = $cache->get($keystr)) {
@@ -318,18 +318,18 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
                                           $cond['operator'], $cond['value'] );
         if ($field_count>1) {
           $select_tabs[] = "LEFT JOIN content as $tbl
-                                   ON ($tbl.item_id=item.id 
+                                   ON ($tbl.item_id=item.id
                                    AND ($tbl.field_id IN ($cond_flds) OR $tbl.field_id is NULL))";
         } else {
-          $select_tabs[] = "LEFT JOIN content as $tbl 
-                                   ON ($tbl.item_id=item.id 
+          $select_tabs[] = "LEFT JOIN content as $tbl
+                                   ON ($tbl.item_id=item.id
                                    AND ($tbl.field_id=$cond_flds OR $tbl.field_id is NULL))";
                       # mark this field as sortable (store without apostrofs)
-          $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  
-        }  
+          $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;
+        }
       }
     }
-  }  
+  }
 
   # parse sort order ----------------------------
   if( !(isset($sort) AND is_array($sort)))
@@ -341,7 +341,7 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
       $fid = key($srt);
       if( !$fields[$fid] )  # bad field_id - skip
           continue;
-        
+
       if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
         $select_order .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
         if( stristr(current( $srt ), 'd'))
@@ -351,12 +351,12 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
         if( !$sortable[ $fid ] ) {           # this field is not joined, yet
           $tbl = 'c'.$tbl_count++;
           # fill arrays to be able construct select command
-          $select_tabs[] = "LEFT JOIN content as $tbl 
-                                   ON ($tbl.item_id=item.id 
+          $select_tabs[] = "LEFT JOIN content as $tbl
+                                   ON ($tbl.item_id=item.id
                                    AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
                         # mark this field as sortable (store without apostrofs)
           $sortable[$fid] = $tbl;
-        }  
+        }
 
         # join constant table if we want to sort by priority
         $direction = current( $srt );
@@ -367,8 +367,8 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
           $tbl = 'o'.$tbl_count++;
           # fill arrays to be able construct select command
           $select_tabs[] = "LEFT JOIN constant as $tbl
-                                   ON ($tbl.value=". $sortable[$fid] .".text 
-                                   AND ($tbl.group_id='$constgroup' 
+                                   ON ($tbl.value=". $sortable[$fid] .".text
+                                   AND ($tbl.group_id='$constgroup'
                                         OR $tbl.group_id is NULL))";
                         # mark this field as sortable (store without apostrofs)
 
@@ -382,11 +382,11 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
           $select_order .= $delim .$sortable[$fid]. ".$store";
           if( stristr(current( $srt ), 'd'))
             $select_order .= " DESC";
-        }    
+        }
         $delim=',';
-      }  
+      }
     }
-  }      
+  }
 
   # parse group by parameter ----------------------------
   if( isset($group_by) AND is_array($group_by)) {
@@ -424,6 +424,7 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   }
 
   if( $debug ) {
+    echo "<br><br>slice_id: $slice_id";
     echo "<br><br>select_tabs:";
     print_r($select_tabs);
     echo "<br><br>select_conds:";
@@ -442,13 +443,12 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   $SQL .= " WHERE ";                                         # slice ----------
 
   if (!$slices) {
-      if (!$slice_id)
-          return array ();
-      else $slices = array ($slice_id);
+      if ($slice_id)
+           $slices = array ($slice_id);
   }
 
+  if( count($slices) >= 1 ) {
       reset ($slices);
-  if( count($slices) > 1 ) {
       $slicesText = "";
       while (list (,$slice) = each ($slices)) {
           if ($slicesText != "") $slicesText .= ",";
@@ -456,17 +456,26 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
       }
       $SQL .= " item.slice_id IN ( $slicesText ) AND ";
   }
-  else $SQL .= " item.slice_id='". q_pack_id(current($slices)) ."' AND ";
 
-  if (is_array ($restrict_ids)) {
+  if (is_array($restrict_ids)) {
     $rids = "";
     reset ($restrict_ids);
     while (list (,$id) = each ($restrict_ids)) {
+        if ( !$id )
+          continue;
         if ($rids) $rids .= ",";
         $rids .= '"'.addslashes($id).'"';
     }
-    if ($rids) $SQL .= ' item.id IN ('.$rids.') AND ';
+    if ($rids)
+        $SQL .= ' item.id IN ('.$rids.') AND ';
+     else
+        return array();   # restrict_id definned but empty - no result
   }
+
+
+  # slice(s) or item_ids MUST be specified (in order we can get answer in limited time)
+  if( !$rids && !$slicesText )
+    return( array() );
 
   $now = now();                                              # select bin -----
   switch( $type ) {

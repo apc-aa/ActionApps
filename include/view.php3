@@ -395,8 +395,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
         while( list( ,$v) = each( $item_ids ) )
           $p_item_ids[] = pack_id( $v );   # no q_pack_id - it mustn't be quoted
       }
-      $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, 
-                                            "ACTIVE", $slices, 0, $p_item_ids);
+      $item_ids=QueryIDs($fields, $item_ids ? false : $slice_id, $conds, $sort, 
+                         $group_by, "ACTIVE", $slices, 0, $p_item_ids);
 
       $format = GetViewFormat($view_info);
       $format['calendar_month'] = $month;
