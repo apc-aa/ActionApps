@@ -3,7 +3,7 @@
 #$Id$
 
 # NOTE: you need to change these variables
-$host  = 'http://127.0.0.1';
+$host  = ''; # like 'http://127.0.0.1';
 $cachedir= '/tmp/cache/';
 $cache4secs = 1000; #
 
@@ -117,6 +117,9 @@ if ( $data = $cache->get($id)) {
 }
 /*
 $Log$
+Revision 1.2  2001/10/19 06:44:39  madebeer
+nulled out $host variable, for security reasons
+
 Revision 1.1  2001/10/19 06:16:44  madebeer
 added helper scripts - different versions of remote.
 remote allows remote servers to use apc-aa content in SSIs
