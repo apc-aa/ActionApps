@@ -79,7 +79,7 @@ function GetViewJSArray( $sid, $id, $name, $type, $i ) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Admin - design View") ."</TITLE>";
 FrmJavascriptFile('javascript/js_lib.js');
-FrmJavascript('
+$js = '
      function DeleteView(id) {
        if( !confirm("'. _m("Are you sure you want to delete selected view?") .'"))
          return
@@ -98,11 +98,13 @@ FrmJavascript('
        j=0;
        for( i=0; i<vs.length ; i++) {
          if( vs[i] == xsid ) {
-           document.fvtype.view_view.options[j++] = new Option(vv[i]+' - '+vn[i], vv[i])
+           document.fvtype.view_view.options[j++] = new Option(vv[i]+\' - \'+vn[i], vv[i])
          }
        }
      }
-     ');
+     ';
+
+FrmJavascript($js);
 echo "</HEAD>\n";
 
 $useOnLoad = ($new_compact ? true : false);

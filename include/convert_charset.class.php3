@@ -398,7 +398,7 @@ class ConvertCharset {
          **/
         if ($FromCharset == $ToCharset) {
             print $this->DebugOutput(1, 0, $FromCharset);
-            return $StringToChange
+            return $StringToChange;
         }
         /*
         if (($FromCharset == $ToCharset) AND ($FromCharset == "utf-8")) {
