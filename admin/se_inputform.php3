@@ -204,8 +204,13 @@ if( !$update ) {      # load defaults
     case "hco":
     case "tpr":
     case "mse": $pos = strpos($fld[input_show_func], ":", 4);
-                $input_show_func_c = substr($fld[input_show_func],4,$pos-4);
-                $input_show_func = substr($fld[input_show_func],$pos+1);
+                if( !$pos ) {     #there is no third parameter (= Parameters)  
+                  $input_show_func_c = substr($fld[input_show_func],4);
+                  $input_show_func = '';
+                } else {
+                  $input_show_func_c = substr($fld[input_show_func],4,$pos-4);
+                  $input_show_func = substr($fld[input_show_func],$pos+1);
+                }  
                 break;
     default:    $input_show_func_c = substr($fld[input_show_func],4);
   }  
