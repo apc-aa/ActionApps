@@ -1,17 +1,17 @@
 <?php
 /**
- * File contains definition of manager class - used for 'item' manipulation 
- * 'managers' pages (like Item Manager, Link Manager, Discussion comments, 
+ * File contains definition of manager class - used for 'item' manipulation
+ * 'managers' pages (like Item Manager, Link Manager, Discussion comments,
  * Related Items, ...) It takes care about searchber, scroller, actions, ...
  *
  * Should be included to other scripts (as /admin/index.php3)
  *
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -35,8 +35,8 @@ else return;
 require $GLOBALS[AA_INC_PATH] . "searchbar.class.php3";
 require $GLOBALS[AA_INC_PATH] . "statestore.php3";
 
-/** 
- * manager class - used for 'item' manipulation 'managers' pages 
+/**
+ * manager class - used for 'item' manipulation 'managers' pages
  * (like Item Manager, Link Manager, Discussion comments, Related Items, ...)
  * It takes care about searchber, scroller, actions, ...
  */
@@ -54,28 +54,28 @@ class manager extends storable_class {
 
     // PHPLib variables - used to store class instances into sessions
     // (in fact, wew do not use PHPLib sessions for storing manager class
-    //  object - there are some issues, like you have to have defined the 
+    //  object - there are some issues, like you have to have defined the
     //  class before calling page_open(), but it is quite hard to do, because
     //  of language settings (for example), which is stored right in sessions.
-    //  We use our own storable_class for this purpose (in manager, searchbar, 
+    //  We use our own storable_class for this purpose (in manager, searchbar,
     //  scroller), but we are using the $persistent_slots array in the same way)
 
     // required - class name (just for PHPLib sessions)
-    var $classname = "manager";      
+    var $classname = "manager";
 
     // required - object's slots to save in session
-    //            (no itemview, actions, switches, messages, searchbar_funct 
+    //            (no itemview, actions, switches, messages, searchbar_funct
     //             - we want to have it fresh (from constructor and $settings))
-  	var $persistent_slots = array('searchbar', 'scroller', 'msg');  
-    
-    /** 
-     * constructor - initializes manager - creates scroller, searchbar, ... 
+  	var $persistent_slots = array('searchbar', 'scroller', 'msg');
+
+    /**
+     * constructor - initializes manager - creates scroller, searchbar, ...
      * based on $settings structure
-     * 
-     * @param array $settings - main manager settings 
+     *
+     * @param array $settings - main manager settings
      */
     function manager($db, $settings) {
-        
+
         if ( $settings['actions'] ) {      // define actions, if we have to
             $this->actions = $settings['actions'];
             $this->actions_perm_function = $settings['actions_perm_function'];
@@ -83,27 +83,27 @@ class manager extends storable_class {
 
         if ( $settings['switches'] )      // define switches, if we have to
             $this->switches = $settings['switches'];
-        
+
         // create searchbar, if we have to ------------------------------------
         if ( $settings['searchbar'] ) {
-            $this->searchbar = new searchbar( 
-                              $settings['searchbar']['search_fields'], 
-                              $settings['searchbar']['order_fields'], 
-                              $settings['searchbar']['fields'], 
+            $this->searchbar = new searchbar(
+                              $settings['searchbar']['search_fields'],
+                              $settings['searchbar']['order_fields'],
+                              $settings['searchbar']['fields'],
                               'filterform',   // form name is given in this case
-                              $settings['searchbar']['search_row_count_min'], 
-                              $settings['searchbar']['order_row_count_min'], 
+                              $settings['searchbar']['search_row_count_min'],
+                              $settings['searchbar']['order_row_count_min'],
                               $settings['searchbar']['add_empty_search_row'] );
             $this->searchbar_funct = $settings['searchbar']['function'];
         }
-        
+
         // create page scroller -----------------------------------------------
         $scroller = new scroller('st',sess_return_url($_SERVER['PHP_SELF'])."&");
         // could be redefined by view (see ['itemview']['manager_vid'])
         $scroller->metapage = $settings['scroller']['listlen'];
-        $scroller->addFilter("slice_id", "md5", $settings['scroller']['slice_id']); 
+        $scroller->addFilter("slice_id", "md5", $settings['scroller']['slice_id']);
         $this->scroller = $scroller;
-        
+
         $this->messages = $settings['messages'];
         if( !isset($this->messages['noitem_msg']) )
             // could be redefined by view (see ['itemview']['manager_vid'])
@@ -117,14 +117,14 @@ class manager extends storable_class {
                 $this->messages['noitem_msg'] = $view_info['noitem_msg'];
                 if( isset($this->scroller) )
                 $this->scroller->metapage = $view_info['listlen'];
-            }    
+            }
         }
-        
-        if ( !$format_strings ) 
+
+        if ( !$format_strings )
             $format_strings = $settings['itemview']['format'];
 
-        $this->itemview = new itemview($db, 
-                                       $format_strings, 
+        $this->itemview = new itemview($db,
+                                       $format_strings,
                                        $settings['itemview']['fields'],
                                        $settings['itemview']['aliases'],
                                        false,   // no item ids yet
@@ -133,64 +133,64 @@ class manager extends storable_class {
                                        '',      // not necessary I think: $settings['itemview']['url'],  // $r_slice_view_url
                                        '',      // no discussion settings
                                        $settings['itemview']['get_content_funct']);
-                                       
-    }         
 
-    /** 
+    }
+
+    /**
      * Get conditios (conds[] array) for *_QueryIDs from scroller
      */
     function getConds() {
         if( $this->searchbar )
             return $this->searchbar->getConds();
-        return false;    
+        return false;
     }
 
-    /** 
+    /**
      * Get sort[] array for *_QueryIDs from scroller
      */
     function getSort() {
         if( $this->searchbar )
             return $this->searchbar->getSort();
-        return false;    
+        return false;
     }
 
 
-    /** 
-     * Resets the searchbar and sets new values 
-     * @param  array $order[<bar>] = <field>   (bar is probably just '1')   
+    /**
+     * Resets the searchbar and sets new values
+     * @param  array $order[<bar>] = <field>   (bar is probably just '1')
      * @param  array $order_dir[<bar>] = <set>|<unset>
      *               (bar is probably just '1')
      *               if set (to any value), the order is DESCENDING
-     * for description @see searchbar.class.php3                            
+     * for description @see searchbar.class.php3
      */
     function setOrderBar($order, $order_dir) {
         if( $this->searchbar )
             $this->searchbar->setOrder($order, $order_dir);
-    }    
-    
-    /** 
-     * Resets the searchbar and sets new values 
-     * @param  array $search_field[<bar>] = <field>   (bar indicates row)   
+    }
+
+    /**
+     * Resets the searchbar and sets new values
+     * @param  array $search_field[<bar>] = <field>   (bar indicates row)
      * @param  array $search_value[<bar>] = <search_for_what>
      * @param  array $search_oper[<bar>] = <search_operator>
-     * for description @see searchbar.class.php3                            
+     * for description @see searchbar.class.php3
      */
     function setSearchBar($search_field, $search_value, $search_oper) {
         if( $this->searchbar )
             $this->searchbar->setSearch($search_field, $search_value, $search_oper);
-    }            
+    }
 
-    /** 
-     * 
+    /**
+     *
      */
     function performActions() {
 
-        $akce = $_POST['akce']; 
+        $akce = $_POST['akce'];
         $chb  = $_POST['chb'];
 
         // update scroller
         if ( isset($this->scroller) ) {
-            $this->scroller->updateScr(sess_return_url($_SERVER['PHP_SELF'])."&"); // use $return_url if set.        
+            $this->scroller->updateScr(sess_return_url($_SERVER['PHP_SELF'])."&"); // use $return_url if set.
             if ( $_GET['listlen'] )
                 $this->scroller->metapage = $_GET['listlen'];
         }
@@ -199,12 +199,12 @@ class manager extends storable_class {
         if ( isset($this->searchbar_funct) AND $_POST['srchbr_akce'] ) {
             $function2call = $this->searchbar_funct;
             $function2call();
-        }    
-        
+        }
+
         // update searchbar
         if ( isset($this->searchbar) )
             $this->searchbar->update();
-            
+
         $action2do = $this->actions[$akce];
         $actions_perm_function = $this->actions_perm_function;
 
@@ -227,7 +227,7 @@ class manager extends storable_class {
             }
         }
 
-        // now perform switches (url parameteres - not in 'akce' field 
+        // now perform switches (url parameteres - not in 'akce' field
         // (like listlen=100, Tab=app, ...)
         if ( isset($this->switches) AND is_array($this->switches) ) {
             reset($this->switches);
@@ -238,25 +238,25 @@ class manager extends storable_class {
                         $function = $val['function'];
                         $this->msg = $function($_GET[$sw], $val['func_param']);
                     }
-                }    
+                }
             }
         }
     }
-            
-    /** 
-     * Print HTML start page tags (html begin, encoding, style sheet, title 
+
+    /**
+     * Print HTML start page tags (html begin, encoding, style sheet, title
      * and includes necessary javascripts for manager
      */
     function printHtmlPageBegin() {
         // Print HTML start page (html begin, encoding, style sheet, no title)
-        HtmlPageBegin();   
+        HtmlPageBegin();
         // manager javascripts - must be included
         echo '<title>'. $this->messages['title'] .'</title>';
         echo '<script language="JavaScript" type="text/javascript"
                     src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/manager.js"></script>';
     }
-    
-    /** 
+
+    /**
      * Prints begin of search form with searchbar (you can then add more code
      * to searchbar after callin this function. Then you MUST close the form
      * with printSearchbarEnd() function
@@ -269,14 +269,14 @@ class manager extends storable_class {
             $this->searchbar->printBar();
     }
 
-    /** 
+    /**
      * Prints end of search form with searchbar (@see printSearchbarBegin())
      */
     function printSearchbarEnd() {
             echo "</form><p></p>"; // workaround for align=left bug
     }
-    
-    /** 
+
+    /**
      * Prints item/link/... table with scroller, actions, ...
      */
     function printItems($zids) {
@@ -296,9 +296,9 @@ class manager extends storable_class {
         $this->itemview->num_records = $this->scroller->metapage;
 
         // big security hole is open if we cache it
-        // (links to itemedit.php3 would stay with session ids in cache 
+        // (links to itemedit.php3 would stay with session ids in cache
         // - you bacame another user !!!)
-        $this->itemview->print_view("NOCACHE");   
+        $this->itemview->print_view("NOCACHE");
 
         $this->scroller->countPages( $ids_count );
 
@@ -309,35 +309,43 @@ class manager extends storable_class {
                       <tr>
                        <td class=tabtxt>";
         }
-        
-        if ($action_selected != "0") {  
+
+        if ($action_selected != "0") {
             echo '<input type=hidden name=akce value="">';          // filled by javascript - contains action to perform
             echo '<input type=hidden name="akce_param" value="">';  // if we need some parameteres to the action, store it here
 
             if ( isset( $this->actions ) AND is_array( $this->actions ) ) {
+                $i=1;  // we start on 1 because first option is "Select action:"
                 while ( list( $action, $param ) = each ($this->actions) ) {
                     $actions_perm_function = $this->actions_perm_function;
                     if ( $actions_perm_function( $action ) ) {
-                        $markedaction[$action] = $param['name'];
+                        $options .= '<option value="'. htmlspecialchars($action).'"> '.htmlspecialchars($param['name']);
+                        if( $param['open_url'] )  { // we have to open window
+                            $javascr .= "\n markedactionurl[$i] = '". $param['open_url'] ."';";
+                        }
+                        $i++;
                     }
                 }
             }
-                        
-            if ( is_array($markedaction) && count($markedaction)) {
+
+            if ( $options ) {
                 echo "<img src='".$GLOBALS['AA_INSTAL_PATH']."images/arrow_ltr.gif'>
                     <a href='javascript:SelectVis()'>". _m('Select all')."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
-    
+
                   // click "go" does not use markedform, it uses itemsfrom above...
                   // maybe this action is not used.
                 echo '<select name="markedaction_select">
-                      <option value="nothing">'. _m('Selected items') .':';
-                
-                reset($markedaction);
-                while (list($k, $v) = each($markedaction)) 
-                    echo '<option value="'. htmlspecialchars($k).'"> '.
-                           htmlspecialchars($v);
-                echo '</select>&nbsp;&nbsp;<a href="javascript:MarkedActionGo()"
+                      <option value="nothing">'. _m('Selected items') .':'.
+                      $options .'</select>&nbsp;&nbsp;<a href="javascript:MarkedActionGo()"
                       class=leftmenuy>'. _m('Go') . '</a>';
+
+                  // we store open_url parameter to js variable for
+                  // MarkedActionGo() function
+                echo '<script language="JavaScript" type="text/javascript"> <!--
+                         var markedactionurl=Array();
+                            '. $javascr .'
+                        // -->
+                      </script>';
             }
         }
 
@@ -354,6 +362,6 @@ class manager extends storable_class {
         echo '</table></form><br>';
         return $ids_count;
     }
-}    
+}
 
 ?>
