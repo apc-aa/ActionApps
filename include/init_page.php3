@@ -129,6 +129,9 @@ if( !$save_hidden ) {      # sometimes we need to not unset hidden - popup for r
   }
 }
 
+if (!$New_silce AND !$Add_slice AND !$slice_id)
+    $after_login = true;
+
 $perm_slices = GetUsersSlices( $auth->auth[uid] );
 
 if( !$New_slice AND !$Add_slice AND is_array($perm_slices) AND (reset($perm_slices)=="") ) {
@@ -157,7 +160,6 @@ while($db->next_record()) {
                             'type' => ( ($db->f('type') AND $MODULES[$db->f('type')] ) ? $db->f('type') : 'S'));
 }
 
-
 if( !$Add_slice AND !$New_slice ) {
   if( !is_array($g_modules)) {   // this slice was deleted
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
@@ -176,6 +178,7 @@ if( !$Add_slice AND !$New_slice ) {
       # 41415f436f72655f4669656c64732e2e is unpacked "AA_Core_Fields.."
       $slice_id = key($g_modules);
     $p_slice_id = q_pack_id($slice_id);
+    $after_login = true;
   }
 
   if( !isset($g_modules[$slice_id])) {   # this module was deleted
@@ -186,7 +189,8 @@ if( !$Add_slice AND !$New_slice ) {
   if( $slice_id != $r_stored_module ) {  # it is not cached - we must get it
 
     # go to main administration script for the module, if the module changed
-    $module_change = ($r_stored_module AND ($g_modules[$slice_id]['type'] != $g_modules[$r_stored_module]['type']));
+    $module_change = $after_login
+        || ($r_stored_module AND ($g_modules[$slice_id]['type'] != $g_modules[$r_stored_module]['type']));
 
     # Get module informations and store them to session variables
     $r_slice_headline = $g_modules[$slice_id]['name'];
@@ -260,7 +264,7 @@ if( !$Add_slice AND !$New_slice ) {
 
 # if we switch to another module type, we should go to module main page
 # but not if we are jumping with the Jump module
-if( $module_change && !$jumping) {
+if( $after_login || ($module_change && !$jumping)) {
   page_close();
   go_url( $sess->url($MODULES[$g_modules[$slice_id]['type']]['directory']."index.php3") );
   exit;
