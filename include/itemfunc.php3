@@ -827,8 +827,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         if ($fnc[fnc]=="fil") #if function is file upload need send $fields array, 
 	    {    
 	      #function return array of fields that store thumbnails and will not by filled 
-		echo $fid;print_r($arr_stop);
-		echo $stop=false;
+          print_r($arr_stop);
 	      
 	      if (is_array($arr_stop))
 	      {
@@ -839,8 +838,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
 		};
 	      };
 	      
-	    if (!$stop)
-		{  echo "tu";
+	    if (!$stop)	{  
 		   $arr_stop=$fncname($id, $f, $v, $fncpar[param],$fields);
 		}
 	    }

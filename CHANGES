@@ -1,3 +1,5 @@
+01/15/02 - fixed bugs in imagefunc.php3 (check for GD, removed debug messages)
+         - fixed problem in Item Manager (search field works again)
 01/14/02 - new language file selectbox for site module (Site Admin - modedit)
 01/13/02 - added "add" as option to f_e for adding an item; 
            created parameter wizard for f_e
