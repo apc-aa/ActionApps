@@ -102,7 +102,8 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
 
   # select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
-  global $db, $debug;
+  global $db, $debug,   
+  	$QueryIDsCount;  // size of the result
 
 if( $debug ) {
   echo "<br>Conds:<br>";
@@ -300,7 +301,8 @@ if( $debug )
 
   while( $db->next_record() ) 
     $arr[] = unpack_id($db->f(id));
-  
+
+  $QueryIDsCount = count($arr);
 //p_arr_m($arr);
   return $arr;           
 }  
@@ -831,6 +833,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.23  2001/12/18 12:15:59  honzam
+new alias for displaying matched items count (_#ID_COUNT)
+
 Revision 1.22  2001/11/05 13:32:16  honzam
 searching improved - possible to use wildcards * and ? in searchstring
 

@@ -41,6 +41,9 @@ function GetAliasesFromFields($fields, $additional="") {
     return false;
 
   #  Standard aliases
+  $aliases["_#ID_COUNT"] = array("fce" => "f_x",
+                                 "param" => "id..............",
+                                 "hlp" => L_ID_COUNT_ALIAS);
   $aliases["_#ITEM_ID#"] = array("fce" => "f_n:id..............",
                                  "param" => "id..............",
                                  "hlp" => L_ITEM_ID_ALIAS);
@@ -543,6 +546,12 @@ function RSS_restrict($txt, $len) {
     return $p[0].$this->getahref( $linktype.$this->columns[$col][0][value], $txt);
   }
 
+  // returns number of IDs (set in the QueryIDs function)
+  // params: none
+  function f_x ($col, $param="") {
+    global $QueryIDsCount;
+	return $QueryIDsCount;
+  } 
   
   # ----------------- alias function definition end --------------------------
 
@@ -629,6 +638,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.31  2001/12/18 12:15:59  honzam
+new alias for displaying matched items count (_#ID_COUNT)
+
 Revision 1.30  2001/12/12 18:40:48  honzam
 Better handling newlines in f_h, bugfix in f_b alias function
 
