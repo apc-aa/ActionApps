@@ -51,7 +51,7 @@ function lang_file_header ($fd, $lang)
 */             
 
 function xmgettext ($logfile, $lang_files, $files_base_dir, $files, $chmod = 0664, $stop_on_warning = true,
-    $old_logs = "") {
+    $old_logs = "", $add_source_links = true) {
     global $LANGUAGE_CHARSETS;
 
     set_time_limit(10000);
@@ -74,7 +74,7 @@ function xmgettext ($logfile, $lang_files, $files_base_dir, $files, $chmod = 066
             add_old_translations ($old_logs, $lang, &$_m);            
             
         // write the file 
-        $fd = fopen ($langfile, "w");
+        $fd = fopen ($langfile, "wb");
         lang_file_header ($fd, $lang);
 
         if (is_array ($_m)) {
@@ -92,10 +92,14 @@ function xmgettext ($logfile, $lang_files, $files_base_dir, $files, $chmod = 066
         reset ($messages);
         while (list ($message, $params) = each ($messages)) {            
             reset ($params["code"]);
-            while (list ($filename,$rows) = each ($params["code"]))
-                fputs ($fd, "# $filename, row ".join(", ",$rows)."\n");
+            if ($add_source_links)
+                while (list ($filename,$rows) = each ($params["code"]))
+                    fputs ($fd, "# $filename, row ".join(", ",$rows)."\n");
+            $mmsg = $_m[$message];
+            if ($message == $mmsg)
+                $mmsg = "";                
             fputs ($fd, "\$_m[".prepare_string($message)."]\n".
-                "  = ".prepare_string($_m[$message]).";\n");
+                "  = ".prepare_string($mmsg).";\n");
             fputs ($fd, "\n");
         }
         fputs ($fd, "?>\n");
@@ -108,12 +112,18 @@ function xmgettext ($logfile, $lang_files, $files_base_dir, $files, $chmod = 066
 
 // adds old translations (L_... language file) from logs created from the old language files
 function add_old_translations ($log_files, $lang, &$_m) {
-    include str_replace ("??","en",$log_files);
-    $en_log = $_log;
-    include str_replace ("??",$lang,$log_files);
-    reset ($_log);
-    while (list ($msg, $name) = each ($en_log)) 
-        $_m[$msg] = $_log[$name];    
+    $file = str_replace ("??","en",$log_files);
+    if (!file_exists ($file))
+        echo "ERROR: $file does not exist<br>";
+    else {
+        include $file;
+        $en_log = $_log;
+        $_log = "";
+        include str_replace ("??",$lang,$log_files);
+        reset ($en_log);
+        while (list ($msg, $name) = each ($en_log)) 
+            $_m[$msg] = $_log[$name];
+    }
 }
 
 // -------------------------------------------------------------------------------------
@@ -156,7 +166,7 @@ function collect_messages ($logfile, $files_base_dir, $files, &$messages, &$warn
                 collect_messages_from_file ($files_base_dir.$filename, $messages, $warnings);
                 $msgstr = str_replace ("'", "\\'", serialize ($messages));
                 $wrnstr = str_replace ("'", "\\'", serialize ($warnings));
-                $fd = fopen ($logfile, "a");
+                $fd = fopen ($logfile, "ab");
                 chmod ($logfile, 0664);
                 fwrite ($fd, "<?php \$processed_files[\n\n'$filename']=array ('messages'=>'$msgstr','warnings'=>'$wrnstr');?>");            
                 fclose ($fd);
@@ -172,19 +182,23 @@ function collect_messages ($logfile, $files_base_dir, $files, &$messages, &$warn
     reset ($processed_files);
     while (list (,$msgwrn) = each ($processed_files)) {
         $msg = unserialize ($msgwrn["messages"]);
-        reset ($msg);
-        while (list ($message,$code) = each ($msg)) {
-            reset ($code["code"]);
-            while (list ($filename,$rows) = each ($code["code"])) {
-                reset ($rows);
-                while (list (,$row) = each ($rows)) 
-                    $messages [$message]["code"][$filename][] = $row;
+        if (is_array ($msg)) {
+            reset ($msg);
+            while (list ($message,$code) = each ($msg)) {
+                reset ($code["code"]);
+                while (list ($filename,$rows) = each ($code["code"])) {
+                    reset ($rows);
+                    while (list (,$row) = each ($rows)) 
+                        $messages [$message]["code"][$filename][] = $row;
+                }
             }
         }
         $wrn = unserialize ($msgwrn["warnings"]);
-        reset ($wrn);
-        while (list (,$warning) = each ($wrn))
-            $warnings[] = $warning;
+        if (is_array ($wrn)) {
+            reset ($wrn);
+            while (list (,$warning) = each ($wrn))
+                $warnings[] = $warning;
+        }
     }
     
     unlink ($logfile);

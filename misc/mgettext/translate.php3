@@ -49,10 +49,14 @@ function translate_files ($old_lang_file, $src_dir, $dst_dir)
     while (list ($name, $value) = each($consts)) {
         if (substr ($name,0,2) != "L_") 
             unset ($consts[$name]);
-        else $consts [$name] = "_m(\"".str_replace(
+        else {
+            if (strlen($value) <= 1 || is_numeric ($value))
+                $consts[$name] = "\"$value\"";
+            else $consts [$name] = "_m(\"".str_replace(
                 array ('"',"\n","\r"),
                 array ('\\"',"\\n",""),
                 $value)."\")";
+        }
     }
    
     $dir = opendir ($src_dir);
@@ -71,14 +75,14 @@ function translate_files ($old_lang_file, $src_dir, $dst_dir)
                 if (strstr ($row, $name)) {
                     //echo HTMLentities($row)." => ";
                     // now replace only when it is not a part of a longer name
-                    $row = preg_replace ("'([^A-Z0-9_])".$name."([^A-Z0-9_])'si", "\\1".$consts[$name]."\\2", $row);
+                    $row = preg_replace ("'([^A-Z0-9_$])".$name."([^A-Z0-9_])'si", "\\1".$consts[$name]."\\2", $row);
                     //echo HTMLentities($row)."<br>";
                 }
             }
             $new_content[] = $row;                    
         }       
         
-        $fd = @fopen ($dst_dir.$file, "w");        
+        $fd = @fopen ($dst_dir.$file, "wb");        
         if (!$fd) echo " write permission denied<br>";
         if (!is_array($new_content) || !$fd)
             continue;

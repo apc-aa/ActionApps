@@ -1,7 +1,9 @@
 <?php
 
+require "../../include/mgettext.php3";
 require "./xmgettext.php3";
 require "./translate.php3";
+require "./createlogs.php3";
 require "../../include/config.php3";
 
 // call this script several times if it does not manage to go through all files 
@@ -10,10 +12,14 @@ require "../../include/config.php3";
 $aadir = substr ($AA_INC_PATH, 0, strlen($AA_INC_PATH)-strlen("include/"));
 $destdir = $aadir."php_rw/";
 
+// call this script several times to create language log files for all languages,
+// it creates one language log at a time
+//create_logs ($aadir."include/??_news_lang.php3", $destdir."lang/log_??_news_lang.inc");
+
 if (is_array ($update)) 
     create_language_files_updates ($aadir, $destdir."lang/", false);
         
-//translate_aa_files ("/raid/www/htdocs/work.ecn.cz/aa_jakub/", "/raid/www/htdocs/work.ecn.cz/aa_jakub/php_rw/tr1/");
+//translate_aa_files ($aadir, $aadir."php_rw/tr2/");
 
 function create_language_files_updates ($aadir, $destdir, $addlogs = false)
 {    
@@ -54,7 +60,7 @@ function create_language_files_updates ($aadir, $destdir, $addlogs = false)
 
 function translate_aa_files ($aadir, $dstdir)
 {
-    $dirlist = array (".", "admin","include","modules","modules/module_TEMPLATE",
+    $dirlist = array ("include",".", "admin","modules","modules/module_TEMPLATE",
         "modules/jump","modules/mysql_auth");
     
     @mkdir ($dstdir,0777);

@@ -5,9 +5,6 @@ if (!isset($LANGUAGE_CHARSETS))
     
 $dir = "/raid/www/htdocs/work.ecn.cz/aa_jakub/";
     
-// call this script several times to create language log files for all languages
-create_logs ($dir."include/??_news_lang.php3", $dir."php_rw/lang/log_??_news_lang.php3");
-
 function create_logs ($old_lang_files, $log_files)
 {    
     global $LANGUAGE_CHARSETS;
@@ -16,10 +13,11 @@ function create_logs ($old_lang_files, $log_files)
         $logfile = str_replace ("??", $lang, $log_files);
         if (file_exists ($logfile) && filesize ($logfile) > 0)
             continue;
-        $fd = fopen ($logfile, "w");
+        $fd = fopen ($logfile, "wb");
         if (!$fd) return;
         chmod ($logfile, 0777);
-        fwrite ($fd,"# this is a log file of the language translation on ".date("d.j.Y H:i")."\n\n");
+        fwrite ($fd,"<?php
+            # this is a log file of the language translation on ".date("d.j.Y H:i")."\n\n");
         include $old_lang_file;    
         $consts = get_defined_constants();
         reset ($consts);
@@ -30,10 +28,11 @@ function create_logs ($old_lang_files, $log_files)
                     array ('\\"',"\\n",""),
                     $value);
                 if ($lang == "en")
-                     fwrite ($fd, "_log[\"$value\"] = \"$name\";\n");
-                else fwrite ($fd, "_log[\"$name\"] = \"$value\";\n");
+                     fwrite ($fd, "\$_log[\"$value\"] = \"$name\";\n");
+                else fwrite ($fd, "\$_log[\"$name\"] = \"$value\";\n");
             }
         }
+        fwrite ($fd, "?>");
         fclose ($fd);
         break;
     }
