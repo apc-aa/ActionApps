@@ -1,4 +1,5 @@
-12/04/03 - fixed mime type of RSS view
+12/05/03 - allowed for contenttype parameter to set text/xml (mitra)
+12/04/03 - fixed mime type of RSS view (mitra)
 12/03/03 - fixed bug in filler.php3 - not shown fields with apostrph now works
 (honzam)   well
 11/10/03 - fixed problem with {user} alias - no warning displayed, now (honzam)

@@ -168,7 +168,6 @@ if( !$perm_edit_all && !$perm_edit_self) {
 
 $p_slice_id= q_pack_id($slice_id);
 $db2 = new DB_AA; 	 // open DB	(for subqueries)
-$db3 = new DB_AA;   // needed for some alias functions
 
 if( $r_fields )
   $fields = $r_fields;

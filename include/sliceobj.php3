@@ -177,11 +177,12 @@ function sliceid2field($unpackedsliceid,$field) {
 // Function just here for debugging 
 /*
 function report_sliceids() {
-    global $db3;
-    $db3->tquery("SELECT name,id FROM slice");
-    while($db3->next_record()) {
-        print("\nName=".$db3->f("name")." unpacked ID=".unpack_id128($db3->f("id")));
+    $db = getDB();
+    $db->tquery("SELECT name,id FROM slice");
+    while($db->next_record()) {
+        print("\nName=".$db->f("name")." unpacked ID=".unpack_id128($db->f("id")));
     }
+    freeDB($db);
 }
 report_sliceids();
 */

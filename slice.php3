@@ -185,7 +185,6 @@ require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
 
 $db = new DB_AA; 		 // open BD
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
-$db3 = new DB_AA; 	 // open BD	(for another subqueries)
 
   # get fields info
 list($fields) = GetSliceFields($slice_id);

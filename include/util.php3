@@ -1669,7 +1669,7 @@ function getSelectBoxFromParamWizard ($var)
     return $retval;
 }
 
-// This pair of functions remove the guessing about which of $db $db2 $db3
+// This pair of functions remove the guessing about which of $db $db2
 // to use
 // Usage: $db = getDB(); ..do stuff with sql ... freeDB($db)
 //

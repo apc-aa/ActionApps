@@ -88,7 +88,6 @@ require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";    # DB_AA object definiti
 $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 	   	 // open BD	
 $db2 = new DB_AA; 		 // open BD	
-$db3 = new DB_AA; 		 // open BD	
 
 $html_code = GetView(ParseViewParameters());          # get view content
 $html_code = str_replace( '"', '\"', $html_code );    # backslash quotes

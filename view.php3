@@ -82,11 +82,15 @@ add_vars();
 if (isset($slice_id)) $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 	   	 // open BD
 $db2 = new DB_AA; 		 // open BD
-$db3 = new DB_AA; 		 // open BD
 
 if ($time_limit) set_time_limit($time_limit);
 if ($debug) huhl("Starting view");
 
+// Need to be able to set content-type for RSS, cannot tdo it in the view
+// because the cache wont reflect this
+if ($contenttype) {
+	header("Content-type: $contenttype");
+}
 echo GetView(ParseViewParameters());
 
 if ($debug) huhl("Completed view");
