@@ -1,4 +1,23 @@
 <?php 
+//$Id$
+/* 
+Copyright (C) 1999, 2000 Association for Progressive Communications 
+http://www.apc.org/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 
 /* Global parameters:
     sort_key .. anything from $sortable_columns
@@ -12,13 +31,6 @@
         include/filedit.php3 -- single file part of the manager (another page)
 */
 
-// sort = default sort order
-$sortable_columns = array (
-    "name"=>array("label"=>"Name","sort"=>"a"), 
-    "size"=>array("label"=>"Size","sort"=>"a"),
-    "type"=>array("label"=>"Type","sort"=>"a"),
-    "lastm"=>array("label"=>"Last modified","sort"=>"d"));
-
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
@@ -27,84 +39,119 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."fileman.php3";
 require $GLOBALS[AA_INC_PATH]."filedit.php3";
 
-$basedir = "/raid/www/htdocs/work.ecn.cz/apc-aa/tmp/";
+$basedir = FILEMAN_BASE_DIR;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  *                  REQUESTED FILE ACTION                      */
 
-// Click on directory
-if ($chdir) $directory = $chdir;
-else $directory = dirname ($filename);
-if (substr ($directory,0,2) == "./") 
-    $directory = substr ($directory, 2);
-
-endslash ($directory);
-
-// Rename
-if ($rename && $filename && $renamename) {
-    if (!rename ($basedir.$filename, dirname ($basedir.$filename)."/".$renamename))
-        $err[] = "Unable to rename $filename.";
+echo $directory;
+ 
+function make_secure (&$filename) {
+    $filename = str_replace ("..","",$filename);
 }
  
-// Edit  
-if ($edit) {
-    if (filedit ($basedir, $edit, "fileman.php3?AA_CP_Session=$AA_CP_Session", "filedit_top", "filedit_bottom",AA_INSTAL_URL."tmp/")) {
-        page_close ();
-        exit;
-    }
+function set_directory ($dir) {
+    global $directory;
+    $directory = $dir;
+    endslash ($directory);
+    make_secure($directory);
+    if (substr ($directory,0,2) == "./") 
+        $directory = substr ($directory, 2);
 }
 
-// Create file
-if ($createfile && $newfilename) {
-    $newfile = $basedir.$directory.$newfilename;
-    if (!file_exists ($newfile)) {
-        if (!fopen ($newfile, "w"))
-            $err[] = "Unable to create file";
-        else if (filedit ($basedir, $directory.$newfilename, "fileman.php3?AA_CP_Session=$AA_CP_Session", "filedit_top", "filedit_bottom", AA_INSTAL_URL."tmp/")) {
+set_directory ($fmset['directory']);
+
+if ($cmd) {
+    $arg = $arg[$cmd];
+
+    // Click on directory
+    if ($cmd=='chdir') 
+        set_directory ($arg);
+
+    // Edit  
+    else if ($cmd=='edit') {
+        if (filedit ($basedir, $arg, "fileman.php3?AA_CP_Session=$AA_CP_Session", "filedit_top", "filedit_bottom",AA_INSTAL_URL."tmp/")) {
             page_close ();
             exit;
         }
     }
-    else $err[] = "File $newfilename already exists.";
-}
 
-// Create directory
-if ($createdir && $newdirname) {
-    $newdir = $basedir.$directory.$newdirname;
-    mkdir ($newdir, 0775);
-    if (!is_dir ($newdir)) 
-        $err[] = "Unable to create directory $newdirname";
-}
-
-// Delete
-if ($delete && is_array ($chb)) {
-    reset ($chb);
-    while (list ($filename) = each ($chb)) {
-        $f = $basedir.$filename;
-        if (is_dir ($f)) {
-            if (!is_dir_empty ($f))
-                $err[] = "First delete all files from directory $f.";
-            else if (!rmdir ($f))
-                $err[] = "Unable to delete directory $f.";
+    // Create file
+    else if ($cmd=='createfile') {
+        $newfile = $basedir.$directory.$arg;
+        if (!file_exists ($newfile)) {
+            if (!fopen ($newfile, "w"))
+                $err[] = "Unable to create file";
+            else {
+                chmod ($newfile, FILEMAN_MODE);
+                if (filedit ($basedir, $directory.$arg, "fileman.php3?AA_CP_Session=$AA_CP_Session", "filedit_top", "filedit_bottom", AA_INSTAL_URL."tmp/")) {
+                    page_close ();
+                   exit;
+                }
+            }
         }
-        else {
-            if (!unlink ($f)) 
-                $err[] = "Unable to delete file $filename.";
+        else $err[] = "File $newfilename already exists.";
+    }
+
+    // Create directory
+    else if ($cmd=='createdir') {
+        $newdir = $basedir.$directory.$arg;
+        mkdir ($newdir, FILEMAN_MODE);
+        if (!is_dir ($newdir)) 
+            $err[] = "Unable to create directory $newdirname";
+    }
+
+    // Delete
+    else if ($cmd=='delete' && is_array ($chb)) {
+        reset ($chb);
+        while (list ($arg) = each ($chb)) {
+            $f = $basedir.$arg;
+            if (is_dir ($f)) {
+                if (!is_dir_empty ($f))
+                    $err[] = "First delete all files from directory $arg.";
+                else if (!rmdir ($f))
+                    $err[] = "Unable to delete directory $arg.";
+            }
+            else {
+                if (!unlink ($f)) 
+                    $err[] = "Unable to delete file $arg.";
+            }
         }
     }
-}
 
-// Save changes
-if ($savefile && $filename && $filecontent) {
-    $f = $basedir.$filename;
-    $filedes = fopen ($f,"w");
-    if (!$filedes)
-        $err[] = "Unable to open file $filename for writing.";
-    else {
-        $bytes = fwrite ($filedes, $filecontent);
-        if ($bytes == -1)
-            $err[] = "Error writing to file $filename.";
-        fclose ($filedes);
+        // Upload file
+    else if ($cmd=='upload') {
+        set_time_limit(FILEMAN_UPLOAD_TIME_LIMIT);
+        $uploaderr = fileman_move_uploaded_file ("uploadarg", $basedir.$directory, FILEMAN_MODE);
+        if ($uploaderr) $err[] = "Error: ".$uploaderr;
+    }
+
+    // Single file actions:
+    else if ($filename = $fmset['filename']) {
+
+        // Save changes
+        if ($cmd=='savefile') {
+            $f = $basedir.$filename;
+            $filedes = fopen ($f,"w");
+            if (!$filedes)
+                $err[] = "Unable to open file $filename for writing.";
+            else {
+                $bytes = fwrite ($filedes, $arg);
+                if ($bytes == -1)
+                    $err[] = "Error writing to file $filename.";
+                fclose ($filedes);
+            }
+        }
+
+        // Rename
+        else if ($cmd=='rename' && $filename) {
+            make_secure ($renamearg);    
+            $newname = dirname ($basedir.$filename)."/".$arg;
+            if (file_exists ($newname)) 
+                $err[] = "Error: File with name $arg already exists.";
+            else if (!rename ($basedir.$filename, $newname))
+                $err[] = "Unable to rename $filename.";
+        }
     }
 }
     
@@ -132,8 +179,10 @@ echo $Msg;
 
 echo $fileman_js;
 
-echo "<form name='fileman' method='post' action='fileman.php3?AA_CP_Session=$AA_CP_Session'>";
-echo "<input type=hidden name=directory value='$directory'>";
+echo "<form name='fileman' enctype='multipart/form-data' method='post' action='fileman.php3?AA_CP_Session=$AA_CP_Session'>
+<input type=hidden name=cmd>";
+echo "<input type=hidden name='fmset[directory]' value='$directory'>";
+
 echo '<table border="0" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
 
 function formatAction ($value) {
@@ -141,8 +190,7 @@ function formatAction ($value) {
 }
 
 function fileAction ($name,$value) {
-    return "<input type=hidden name='$name'>"
-    .formatAction ("<a href='javascript:command(\"$name\")'>$value</a>")
+    return formatAction ("<a href='javascript:command(\"$name\")'>$value</a>")
     ."&nbsp;&nbsp;";
 }
 
@@ -150,8 +198,7 @@ echo $jsSender;
 echo "<tr><td class=tabtit align=left>";
 echo fileAction ("checkall","Select All") . 
      fileAction ("uncheckall","Unselect All") . 
-     fileAction ("delete","Delete") . 
-     fileAction ("move","Move");
+     fileAction ("delete","Delete");
 echo "</td></tr>
 <tr><td class=tabtxt align=center>";
 echo '<table border="1" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
@@ -165,34 +212,51 @@ while (list ($sortk,$col) = each ($sortable_columns)) {
     if ($sort_key == $sortk) {
         if ($sort_order) $so = $sort_order;
         else $so = $col["sort"];
+        $img = "&nbsp;<img src='../images/".($so == 'd' ? 'up' : 'down').".gif' border=0>";   
         $so = $so == 'a' ? 'd' : 'a';
         $so = "&sort_order=$so";
     }
-    else $so = "";
+    else {
+        $so = "";
+        $img = "";
+    }
         
     echo "<td><strong><a href='fileman.php3?AA_CP_Session=$AA_CP_Session&sort_key=$sortk$so'>
-            $col[label]</a></strong></td>";
+            $col[label]</a>$img</strong></td>";
 }
 if (!$sort_order)
     $sort_order = $sortable_columns[$sort_key]["sort"];
 echo file_table ($basedir, $directory);
-echo "</table></td></tr>";
+echo "</table>
+      <input type=hidden name=sort_key value='$sort_key'>
+      <input type=hidden name=sort_order value='$sort_order'>
+</td></tr>
+<tr><td>";
+echo '<table border="0" cellspacing="0" cellpadding="5" align="center">';
 
 $space = 0;
 
 echo "<tr height=$space><td class=tabtxt colspan=2></td></tr>";
-echo "<tr><td class=tabtxt colspan=2>".fileAction ("createfile","Create new file:") .
-"<input type=text name='newfilename'></td></tr>";
-echo "<tr><td class=tabtxt colspan=2>".fileAction ("upload","Upload new file:") .
-"<input type=file name='upload'></td></tr>";
+
+echo "<tr><td class=tabtxt>".fileAction ("createfile","Create new file") ."</td>
+<td class=tabtxt><input type=text name='arg[createfile]'></td></tr>";
+
+echo "<tr><td class=tabtxt>".fileAction ("upload","Upload new file (max. 10 Mb)") ."</td>
+<td class=tabtxt><input type='hidden' name='MAX_FILE_SIZE' value='10485760'>
+<input type='file' name='uploadarg'></td></tr>";
 echo "<tr height=$space><td class=tabtxt colspan=2></td></tr>";
-echo "<tr><td class=tabtxt colspan=2>" . fileAction("copytmp","Copy template dir"). "
-    <select name='template'>
+
+echo "<tr><td class=tabtxt>".fileAction("copytmp","Copy template dir"). "</td>
+<td class=tabtxt><select name='arg[copytmp]'>
     <option>simple (Simple)
     <option>ionline (With itrainonline header)
     </select></td></tr>";    
-echo "<tr><td class=tabtxt colspan=2>".fileAction ("createdir","Create new directory:") .
-"<input type=text name='newdirname'></td></tr>";
+
+echo "<tr><td class=tabtxt>".fileAction ("createdir","Create new directory") ."</td>
+<td class=tabtxt><input type=text name='arg[createdir]'></td></tr>
+</table></td></tr>";
+
+echo "</table></form>";
 
 page_close();
 exit;

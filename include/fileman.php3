@@ -1,6 +1,25 @@
 <?php 
+//$Id$
+/* 
+Copyright (C) 1999, 2000 Association for Progressive Communications 
+http://www.apc.org/
 
-// params: column header, default sort order
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+// array params: column header, default sort order
 $sortable_columns = array (
     "name"=>array("label"=>"Name","sort"=>"a"), 
     "size"=>array("label"=>"Size","sort"=>"a"),
@@ -37,7 +56,7 @@ function format_file_size ($size) {
 }
 
 /* 
-    independt on AA
+    independent of AA
     
     creates a $files array, containing info about all files and directories in $path.$dirname,
     sorted by global $sort_key (from $sortable_columns) and $sort_order ('a' or 'd')
@@ -66,8 +85,14 @@ function get_file_array ($path, $dirname)
     endslash ($path);
     endslash ($dirname);
 
+/*    $connid = ftp_connect ($path);
+    $filesa = ftp_nlist ($connid, $dirname);
+    print_r ($filesa);
+*/    
     // fill the $files array
-    if ($dir = @opendir($path.$dirname)) {      
+    if (!($dir = opendir($path.$dirname))) 
+        echo $path.$dirname;
+    else {      
         while ($filename = readdir ($dir)) {           
             // don't allow to jump higher from base dir
             if ($filename == "." || ($filename == ".." && !$dirname)) 
@@ -107,16 +132,16 @@ function get_file_array ($path, $dirname)
                 "lastm"=>date("d-M-Y",filemtime($path.$filepath))
             );
         }
+        closedir ($dir);
+        
+        // sort files
+        global $sortable_columns;
+        if (!$sortable_columns[$sort_key]) {
+            reset ($sortable_columns); 
+            $sort_key = key ($sortable_columns);
+        }
+        uasort ($files, "compare_files");
     }
-    closedir ($dir);
-    
-    // sort files
-    global $sortable_columns;
-    if (!$sortable_columns[$sort_key]) {
-        reset ($sortable_columns); 
-        $sort_key = key ($sortable_columns);
-    }
-    uasort ($files, "compare_files");
     return $files;
 }
 
@@ -125,19 +150,22 @@ function get_file_array ($path, $dirname)
 function file_table ($path, $dirname)
 {
     global $AA_CP_Session;
+    global $directory;
 
     $files = get_file_array ($path, $dirname);
-    // create the HTML code
-    reset ($files);
-    while (list (,$file) = each ($files)) {
-        $retval .= "<tr>
-        <td>".($file[name]!=".." ? "<input type='Checkbox' name='chb[$file[path]]'>" : "&nbsp;")."</td>
-        <td><img src='/apc-aa/images/$file[img].gif' border=0></td>
-        <td><a href='fileman.php3?AA_CP_Session=$AA_CP_Session&".($file["dir"] ? "chdir" : "edit")."=$file[path]'>$file[name]</a></td>
-        <td align=right>".($file["dir"] ? "&nbsp;" : format_file_size($file["size"]))."</td>
-        <td>$file[type]</td>
-        <td>$file[lastm]</td>
-        </tr>";
+    if (is_array ($files)) {
+        // create the HTML code
+        reset ($files);
+        while (list (,$file) = each ($files)) {
+            $retval .= "<tr>
+            <td>".($file[name]!=".." ? "<input type='Checkbox' name='chb[$file[path]]'>" : "&nbsp;")."</td>
+            <td><img src='/apc-aa/images/$file[img].gif' alt='$file[type]' border=0></td>
+            <td><a href='fileman.php3?AA_CP_Session=$AA_CP_Session&cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . "$file[path]&fmset[directory]=$directory'>$file[name]</a></td>
+            <td align=right>".($file["dir"] ? "&nbsp;" : format_file_size($file["size"]))."</td>
+            <td>$file[type]</td>
+            <td>$file[lastm]</td>
+            </tr>";
+        }
     }
     return $retval;
 }       
@@ -153,6 +181,44 @@ function is_dir_empty ($dirname) {
     return true;
 }
 
+# File upload
+# returns: error description or empty string
+function fileman_move_uploaded_file ($varname, $destdir, $perms) 
+{
+    global $err;
+
+    endslash ($destdir);    
+    if (!$GLOBALS[$varname]) return "No $varname?";
+    # get filename and replace bad characters
+    $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$varname."_name"]);
+
+    # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
+    $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
+    $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
+
+    if( !is_dir( $destdir )) 
+        return L_DIR_NOT_EXISTS;
+
+    if( file_exists("$destdir$dest_file") )
+        return L_FILE_NAME_EXISTS . $destdir . $dest_file;
+
+    # copy the file from the temp directory to the upload directory, and test for success    
+
+    # file uploads are handled differently in PHP >4.0.3
+    list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
+    if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
+        if (is_uploaded_file($GLOBALS[$varname])) 
+            if( !move_uploaded_file($GLOBALS[$varname], "$destdir$dest_file")) 
+                return L_CANT_UPLOAD;
+            else chmod ($destdir.$dest_file, $perms);
+    } 
+    else {   # for php 3.x and php <4.0.3
+        if (!copy($GLOBALS[$varname],"$destdir$dest_file")) 
+            return L_CANT_UPLOAD;
+        else chmod ($destdir.$dest_file, $perms);
+    }  
+}    
+
 // J A V A S C R I P T 
 
 $fileman_js = "
@@ -166,7 +232,7 @@ $fileman_js = "
         }
 
         function submitCommand (name) {
-            document.forms[formname][name].value = 1;
+            document.forms[formname]['cmd'].value = name;
             document.forms[formname].submit();
         }
         

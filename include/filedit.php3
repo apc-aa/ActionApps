@@ -1,4 +1,23 @@
 <?php 
+//$Id$
+/* 
+Copyright (C) 1999, 2000 Association for Progressive Communications 
+http://www.apc.org/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 
 /* Single file part of file manager
    edit, download, rename a file here
@@ -12,14 +31,14 @@ $filedit_js = "
 
     var formname = 'fileman';
     function submitCommand (name) {
-        document.forms[formname][name].value = 1;
+        document.forms[formname]['cmd'].value = name;
         document.forms[formname].submit();
     }
     
     function command (name) {
         switch (name) {
         case 'reset':
-            document.forms[formname].filecontent.value = filetext;
+            document.forms[formname]['arg[savefile]'].value = filetext;
             break;
         default:
             submitCommand (name); 
@@ -34,7 +53,7 @@ function filedit ($path, $filename, $script, $top, $bottom, $wwwpath) {
     // don't edit the file if you won't be able to save it
     $filedes = @fopen ($path.$filename, "a");
     if (!$filedes) {
-        $GLOBALS[err][] = "Cannot open file.";
+        $GLOBALS[err][] = "Cannot open file $filename.";
         return false;
     }
     fclose ($filedes);
@@ -43,13 +62,15 @@ function filedit ($path, $filename, $script, $top, $bottom, $wwwpath) {
     echo $GLOBALS[filedit_js];
     echo "
     <form name='fileman' method=post action='$script'>
-    <input type=hidden name='filename' value='$filename'>"
+    <input type=hidden name='cmd'>
+    <input type=hidden name='fmset[filename]' value='$filename'>
+    <input type=hidden name='fmset[directory]' value='".dirname($filename)."'>"
     .fileAction ("cancel", 'Back to file list')
     .formatAction("<a href='$wwwpath$filename'>Download</a>&nbsp;&nbsp;")
-    .fileAction ("rename","Rename to")."<input type=text name='renamename' value='".basename($filename)."'>";
+    .fileAction ("rename","Rename to")."<input type=text name='arg[rename]' value='".basename($filename)."'>";
 
     echo "<hr>".formatAction("Edit:")."<br>
-    <textarea name='filecontent' cols=80 rows=30>
+    <textarea name='arg[savefile]' cols=80 rows=30>
     </textarea><br>";
     echo fileAction ("savefile", 'Save changes')
         .fileAction ("reset", 'Reset content');
@@ -67,7 +88,7 @@ function filedit ($path, $filename, $script, $top, $bottom, $wwwpath) {
         }
         fclose ($filedes);           
     echo "'';
-        document.forms['fileman'].filecontent.value = filetext;
+        document.forms['fileman']['arg[savefile]'].value = filetext;
     //-->
     </script>";
     $bottom ();
