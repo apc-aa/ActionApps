@@ -24,6 +24,9 @@ http://www.apc.org/
 
 function GetWhereExp( $field, $operator, $querystring ) {
 
+  # query string could be slashed - sometimes :-(
+  $querystring = stripslashes( $querystring );
+
   if( $GLOBALS['debug'] )
     echo "<br>GetWhereExp( $field, $operator, $querystring )";
 
@@ -91,8 +94,11 @@ function GetWhereExp( $field, $operator, $querystring ) {
 // -------------------------------------------------------------------------------------------
 
 // show info about non-existing fields in all given slices
-function ProoveFieldNames ($slices, $conds)
-{
+function ProoveFieldNames ($slices, $conds) {
+
+    if( ! (isset($slices) AND is_array($slices) AND isset($conds) AND is_array($conds)) )
+      return;
+
     global $conds_not_field_names;
     $db = new DB_AA;
     reset ($slices);
@@ -102,6 +108,8 @@ function ProoveFieldNames ($slices, $conds)
             $slicefields[$db->f("id")] = 1;
         reset ($conds);
         while (list (,$cond) = each ($conds)) {
+            if( ! (isset($cond) AND is_array($cond)) )
+              continue;
             reset ($cond);
             while (list ($key) = each ($cond)) 
                 if (!$conds_not_field_names [$key] && !isset ($slicefields[$key]))
@@ -239,7 +247,7 @@ if( $debug ) {
     $tbl_count=0;
     while( list( , $cond) = each( $conds )) {
 
-      if( !isset($cond['value']) && count ($cond) == 1 ) {
+      if( !isset($cond['value']) && is_array($cond) && count($cond) == 1 ) {
         reset ($cond);
         $cond['value'] = current($cond);
       }

@@ -72,7 +72,7 @@ function ConditionFrm($name, $txt, $val) {
 }  
 
 if($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
+  go_url( $sess->url(self_base() . "se_views.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_VIEWS, "admin");
@@ -196,7 +196,7 @@ echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>
     </HEAD>";
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
-$show ["views"] = true;
+//$show ["views"] = true;
 require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
 echo "<H1><B>" . L_A_VIEWS . "</B></H1>";

@@ -155,6 +155,9 @@ if( $update ) {
     }
       
     if( !$group_id ) {  # new constant group  
+      $new_group_id = str_replace(':','-',$new_group_id);  # we don't need ':'
+                                                           # in id (parameter separator)
+      
       ValidateInput("new_group_id", L_CONSTANT_GROUP, $new_group_id, $err, true, "text");
       if( count($err) > 1)
         break;

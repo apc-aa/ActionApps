@@ -259,8 +259,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
   $param_conds = $view_param["param_conds"];
   $item_ids = $view_param["item_ids"];
   $use_short_ids = $view_param["use_short_ids"];
-  $list_from = $view_param["from"];
-  $list_to = $view_param["to"];
+  $list_from = max(0, $view_param["from"]-1);    # user counts items from 1, we from 0
+  $list_to = max(0, $view_param["to"]-1);        # user counts items from 1, we from 0
   $list_page = $view_param["page"];
   if( $view_param["random"] )
     $random = ( ($view_param["random"]==1) ? 'random' : 
@@ -394,7 +394,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $ids_cnt = count( $item_ids );
       if( ($ids_cnt > 0) AND !( ($ids_cnt==1) AND !$item_ids[0]) ) {
 
-        if( $list_to )
+        if( $list_to > 0 )
           $listlen = max(0, $list_to-$list_from + 1);
         
         if( $list_page ) {   # split listing to pages

@@ -107,7 +107,7 @@ function self_server() {
 	  if($SERVER_PORT != "80")
       $port = ":$SERVER_PORT";
   }
-  // better to use HTTP_HOST - is we use SERVER_NAME and we try to open window
+  // better to use HTTP_HOST - if we use SERVER_NAME and we try to open window
   // by javascript, it is possible that the new window will be opened in other
   // location than window.opener. That's  bad because accessing window.opener
   // then leads to access denied javascript error (in IE at least)
@@ -133,6 +133,13 @@ function shtml_url() {
   return (self_server(). $DOCUMENT_URI);
 }
 
+# returns url of current shtml file
+function shtml_query_string() {
+  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
+  return isset($REDIRECT_QUERY_STRING_UNESCAPED) ?
+               $REDIRECT_QUERY_STRING_UNESCAPED : $QUERY_STRING_UNESCAPED;
+}
+
 # skips terminating backslashes
 function DeBackslash($txt) {
 	return str_replace('\\', "", $txt);        // better for two places
@@ -141,13 +148,7 @@ function DeBackslash($txt) {
 # adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string) 
 # to GLOBALS 
 function add_vars($query_string="", $debug="") {
-  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
-  if ( $query_string ) 
-    $varstring = $query_string;
-  elseif (isset($REDIRECT_QUERY_STRING_UNESCAPED))
-    $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
-  else
-    $varstring = $QUERY_STRING_UNESCAPED;
+    $varstring = ( $query_string ? $query_string : shtml_query_string() );
 
     $vars = explode("&",$varstring);
   
