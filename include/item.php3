@@ -126,8 +126,7 @@ function GetAliases4Type( $type, $additional="" ) {
 
     // add additoinal aliases
     if( isset( $additional ) AND is_array( $additional ) ) {
-        foreach ( $additional as $k => $v)
-            $aliases["_#".$k] = GetAliasDef( "f_s:$v");
+        $aliases = array_merge($aliases, $additional);
     }
     return($aliases);
 }
