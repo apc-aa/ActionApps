@@ -95,4 +95,7 @@ class ItemContent {
     
     function setItemID($value)     { $this->setItemValue ("id", pack_id ($value)); }
     function setSliceID($value)    { $this->setItemValue ("slice_id", pack_id ($value)); }
+    function setStatusCode()        { return $this->setItemValue ("status_code"); }
+    function setPublishDate()       { return $this->setItemValue ("publish_date"); }
+    function setExpiryDate()         { return $this->setItemValue ("expiry_date"); }
 }

@@ -1082,7 +1082,11 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     if( $feed )
         FeedItem($id, $fields);
 
-    if ($insert) Event_ItemAfterInsert ($id, $slice_id, new ItemContent ($content4id));
+    if ($insert) {
+        $itemContent = new ItemContent ($content4id);
+        $itemContent->setStatusCode ($itemvarset->get('status_code'));
+        Event_ItemAfterInsert ($id, $slice_id, $itemContent);
+    }
     else Event_ItemAfterUpdate ($id, $slice_id, new ItemContent ($content4id),
         $oldItemContent);
 

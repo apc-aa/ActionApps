@@ -1,3 +1,4 @@
+04/22/03 - tried to fix the bug with email notification of new items
 04/18/03 - updated the alerts.xml and anonym.xml files (jakub)
 04/15/03 - corrected text on wizard for file uploading - (mitra)
 04/15/03 - fixed bug in include/item.php3 (addslashes needed in a query) -pep
