@@ -1,3 +1,8 @@
+10/24/03 - added alternative syntax for {@category.......1} -
+(honzam)   {list:category.......1} - behaves in the same way
+         - name 'Action Application' replaced by ActionApps
+         - new parameter to l_p - add string as url parameter
+         - updated initial view definitions in sql_update.php3
 10/22/03 - added CSV import interface
 (honzam) - new "add string" parameter to f_j - string is added, if the output
            is shorted (good for comething like "...")
