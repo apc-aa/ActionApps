@@ -254,7 +254,7 @@ CREATE TABLE pagecache (
    id varchar(32) NOT NULL,
    str2find text,
    content mediumtext,
-   stored bigint,
+   stored bigint NOT NULL,
    flag int,
    PRIMARY KEY (id),
    KEY (stored)
