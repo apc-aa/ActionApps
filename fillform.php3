@@ -75,7 +75,7 @@ require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
 // core JavaScript functions
-require $GLOBALS[AA_INC_PATH]."fillformutils.php3"; 
+echo "<SCRIPT language=javascript src='".AA_INSTAL_URL."include/fillform.js'></SCRIPT>";
 
 # init used objects
 $db = new DB_AA;
@@ -96,28 +96,43 @@ add_vars();
 
 function fillConds () {
 	global $form, $conds, $dateConds;
+    global $conds_not_field_names;  
 	
 	echo "function fillConds () {";
-	
+	   
 	if (is_array ($conds)) {
 		reset ($conds);
 		while (list ($i,$cond) = each ($conds)) {
-    	if (is_array($cond)) {
-    		reset ($cond);
-        while( list($k, $v) = each($cond) ) {
-          if( $v AND ($k != 'operator') )
-     				echo "setControl ('$form','conds[$i][$k]',\"$v\");\n";
-        }
-      }    
+        	if (is_array($cond)) {
+        		reset ($cond);
+                while( list($k, $v) = each($cond) ) {
+                    if( $v ) {
+                        if (!is_array ($v)) {
+                            $v = str_replace ("\"", '\\"', $v);
+                    		echo "setControl ('$form','conds[$i][$k]',\"$v\");\n";
+                        }
+                        else {
+                            $arr = "";
+                            reset ($v);
+                            while (list (,$vv) = each ($v)) {
+                                if ($arr != "") $arr .= ","; 
+                                $arr .= "'".str_replace ("'", "\\'", $vv) . "'";
+                            }
+                            echo "setControlArray ('$form','conds[$i][$k][]',new Array($arr));\n";
+                        }
+                    }
+                }
+            }    
 		}
 	}
 	
 	if (is_array ($dateConds)) {
+        $timezone = (mktime (0,0,0,1,1,98) - gmmktime (0,0,0,1,1,98)) / 3600;
 		reset ($dateConds);
 		while (list($i,$dateField) = each ($dateConds)) {
 			if (isset ($conds[$i][value]) && $conds[$i][value]) 
 				echo "setControlOrAADate ('$form','$dateField','".
-					strtotime($conds[$i][value])."','',0);\n";
+					strtotime($conds[$i][value])."','',0,$timezone);\n";
 		}
 	}
 	echo "\n}\n";
@@ -192,16 +207,15 @@ function fillForm () {
 		}
 	}
 	
-    echo "); 
-	function fillForm () 
-	{ 
-        for (i=0; i < fillform_fields.length; ++i) { 
-            var item = fillform_fields[i]; 
-            setControlOrAADate (item[0],item[1],item[2],item[3],item[4],item[5]); 
-        } 
-    }";
-    global $notrun;
-	if (!isset ($notrun)) echo "fillForm ();";
+    echo "); \n
+	function fillForm () \n
+	{ \n
+        for (i=0; i < fillform_fields.length; ++i) { \n
+            var item = fillform_fields[i]; \n
+            setControlOrAADate (item[0],item[1],item[2],item[3],item[4],item[5]); \n
+        } \n
+    }\n";
+	if (!isset ($notrun)) echo "\n fillForm ();";
 }
 ?>
 
