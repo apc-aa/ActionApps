@@ -38,7 +38,7 @@ define("MAX_ENTRIES_SHOWN",5);   // Maximum number of shown users in search for 
 #                                       #                 #               #  MODULE  #
 ##############################################################################################################
 define("PS_ADD", "A");                  # aa              # super         #  S       # add slice
-define("PS_DELETE_ITEMS", "B");         # slice (module)  # administrator #  S       # delete items
+define("PS_DELETE_ITEMS", "B");         # slice (module)  # editor        #  S       # delete items
 define("PS_MODP_DELETE_POLLS","B");     # slice (module)  #               #    P     # delete poll
 define("PS_CATEGORY", "C");             # slice (module)  # administrator #  S       # change slice categories
 define("PS_FEEDING", "D");              # slice (module)  # administrator #  S       # change properties
@@ -96,6 +96,7 @@ $perms_roles = array(
                PS_ITEMS2HOLD.              # editor
                PS_ITEMS2TRASH.             # editor
                PS_EDIT_ALL_ITEMS.          # editor
+               PS_DELETE_ITEMS.            # editor
                PS_LINKS_ADD_SUBCATEGORY.   # editor
                PS_LINKS_DEL_SUBCATEGORY),  # editor
   "ADMINISTRATOR" => array(      # ADMINISTRATOR = EDITOR + can change slice properties (is true for 'slice' module)
@@ -105,6 +106,7 @@ $perms_roles = array(
                PS_ITEMS2HOLD.              # editor
                PS_ITEMS2TRASH.             # editor
                PS_EDIT_ALL_ITEMS.          # editor
+               PS_DELETE_ITEMS.            # editor
                PS_LINKS_ADD_SUBCATEGORY.   # editor
                PS_LINKS_DEL_SUBCATEGORY.   # editor
                PS_EDIT.                    # administrator
@@ -116,7 +118,6 @@ $perms_roles = array(
                PS_FULLTEXT.                # administrator
                PS_FEEDING.                 # administrator
                PS_ADD_USER.                # administrator
-               PS_DELETE_ITEMS.            # administrator
                PS_CONFIG),                 # administrator
   "SUPER" => array(              # SUPER = ADMINISTRATOR + can set any properties for any slice (is true for 'slice' module)
      'id' => '4',
@@ -125,6 +126,7 @@ $perms_roles = array(
               PS_ITEMS2HOLD.               # editor
               PS_ITEMS2TRASH.              # editor
               PS_EDIT_ALL_ITEMS.           # editor
+              PS_DELETE_ITEMS.             # editor
               PS_LINKS_ADD_SUBCATEGORY.    # editor
               PS_LINKS_DEL_SUBCATEGORY.    # editor
               PS_EDIT.                     # administrator
@@ -136,7 +138,6 @@ $perms_roles = array(
               PS_FULLTEXT.                 # administrator
               PS_FEEDING.                  # administrator
               PS_ADD_USER.                 # administrator
-              PS_DELETE_ITEMS.             # administrator
               PS_CONFIG.                   # administrator
               PS_ADD.                      # super
               PS_NEW_USER.                 # super
