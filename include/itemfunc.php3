@@ -103,6 +103,7 @@ function default_fnc_variable($param) {
 */
 # ----------------------- insert functions ------------------------------------
 
+// What are the parameters to this function - $field must be an array with values [input_show_func] etc
 function insert_fnc_qte($item_id, $field, $value, $param) {
     global $varset, $itemvarset, $db, $slice_id ;
     
@@ -262,14 +263,18 @@ function GetDestinationFileName($dirname, $uploaded_name) {
 */
 function insert_fnc_fil($item_id, $field, $value, $param, $fields="") 
 {
-    global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR;
-
+    global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR, $debugupload;
+#$debugupload=1;
     $filevarname = "v".unpack_id($field["id"])."x";
-    
-    // look if the uploaded picture exists
-    if($GLOBALS[$filevarname."_name"] == "none" || $GLOBALS[$filevarname."_name"] == "") 
-        return; # was continue: but that doesn't make sense
+    if ($debugupload) huhl("filevarname=",$filevarname);
+    if ($debugupload) huhl("fields=",$fields);
 
+    // look if the uploaded picture exists
+    if($GLOBALS[$filevarname."_name"] == "none" || $GLOBALS[$filevarname."_name"] == "") {
+        // Don't warn unless debugging, its normal if file not changed onedit
+        if ($debugupload) { huhe("Warning: File not uploaded"); exit; }
+        return; # was continue: but that doesn't make sense
+    }
     $params=explode(":",$param);
   
     // look if type of file is allowed
@@ -277,10 +282,13 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
         $file_type=substr($params[0],0,strpos($params[0],'/'));
     else	
         $file_type=$params[0];
-    //echo "uploaded type:".$GLOBALS[$filevarname."_type"].", allowed type:".$file_type;exit;
-    if (@strstr($GLOBALS[$filevarname."_type"],$file_type)==false && $params[0]!="")
-        return "type of uploaded file not allowed";
- 
+    if ($debugupload) huhl("uploaded type:".$GLOBALS[$filevarname."_type"].", allowed type:".$file_type); 
+    if (@strstr($GLOBALS[$filevarname."_type"],$file_type)==false && $params[0]!="") {
+        $err = "type of uploaded file not allowed";
+        huhe($err);
+        if ($debugupload) exit;
+        return $err;
+    }
     // get filename and replace bad characters
     $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
 
@@ -301,77 +309,83 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
         }
     }
     // end of new behavior
-    
     if (!$dirname) {
         // images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
         $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
         $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
 
-        if( !is_dir( $dirname ))
+        if( !is_dir( $dirname )) {
+          if ($debugupload) huhl("Creating directory ".$dirname);
           if( !mkdir( $dirname, IMG_UPLOAD_DIR_MODE ) )
             return _m("Can't create directory for image uploads");
+          }
     }
 
     $dest_file = GetDestinationFileName($dirname, $dest_file);
+    if ($debugupload) huhl("Moving $filevarname to $dirname fileman=? $dest_file");
     
     // copy the file from the temp directory to the upload directory, and test for success    
     $err = aa_move_uploaded_file ($filevarname, $dirname, 
         $fileman_used ? $FILEMAN_MODE_FILE : 0, $dest_file);
-    if ($err) return $err;
-    
-    //echo "type:"; echo $filevarname; print_r($GLOBALS);
-    
-    // ------------------------------------------------------------------------------------
-    // Create thumbnails (image miniature) into fields identified in this field's parameters
-    // if file type is supported by GD library.
-    
-    $imageInfo=GetImageSize("$dirname/$dest_file");
-    $type_supported=GetSupportedTypes($imageInfo[2]);
-        
-    if ($type_supported && !is_array($type_supported)) {   
-        // resample image if max dimensions are set
-        if ($params[1] || $params[2]) 
-        	ResampleImage("$dirname/$dest_file","$dirname/$dest_file",$params[1],$params[2]);
-        // make thumbnails  if fields for are set
-        //echo $params[3]; exit;
-    
-        if ($params[3]!="")	{
-    	    // get ids of field store thumbnails
-    	    $thumb_arr=explode("##",$params[3]);
-    	    	    	    
-    	    reset($thumb_arr);
-    	    while(list(,$fid) = each($thumb_arr)) {	     
-        		$num ++;
-        		//copy thumbnail
-   				$thumbnail = $fields[$fid];
-    		    $fncpar = ParseFnc($f["input_insert_func"]);
-    		    $thumb_params=explode(":",$fncpar["param"]);
-    		    //echo $thumb_params[0].$thumb_params[1];
-    		    $dest_file_tmb=substr($dest_file,0,strrpos($dest_file,"."))
-                    ."_thumb$num".substr($dest_file,strrpos($dest_file,"."));
-    		
-    		    if (ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb",
-                        $thumb_params[0],$thumb_params[1]))
-    		        // store link to thumbnail 
-    		        $val["value"] = "$dirurl/$dest_file_tmb";
-    		    else
-    		        // if picture cannot be resampled or it is not necessary 
-                    // thumb fields will store path to original file
-        		    $val["value"] = "$dirurl/$dest_file";    		    
-        		//exit;
-    
-        		insert_fnc_qte( $item_id, $thumbnail, $val, "");    		
-       	    }    	    
-    	}
+    if ($debugupload) huhl("File moved to $dirname/$dest_file: ",($err ? "err=$err" : "Success"));
+    if ($err) { if ($debugupload) exit; return $err; }
+
+    // ---------------------------------------------------------------------
+    // Create thumbnails (image miniature) into fields identified in this 
+    // field's parameters if file type is supported by GD library.
+
+    // This has been considerable simplified, by making ResampleImage 
+    // return true for unsupported types IF they are already small enough
+    // and also making ResampleImage copy the files if small enough
+
+    if ($err =  ResampleImage("$dirname/$dest_file","$dirname/$dest_file",
+            $params[1],$params[2])) {
+    	if ($debugupload) huhl("Resample returned err='$err'"); 
+        if ($debugupload) exit;
+        return $err;
     }
+    if ($params[3]!="") {
+            // get ids of field store thumbnails
+            $thumb_arr=explode("##",$params[3]);
+
+            reset($thumb_arr);
+            while(list(,$thumb) = each($thumb_arr)) {      
+                if($debugupload) huhl("Working on thumb=$thumb");
+                $num ++; // Note sets it initially to 1
+                //copy thumbnail
+                $f = $fields[$thumb];       // Array from fields
+
+                $fncpar = ParseFnc($f["input_insert_func"]); 
+                $thumb_params=explode(":",$fncpar);  // (fnctn, type, width, height)
+
+                $dest_file_tmb=substr($dest_file,0,strrpos($dest_file,".")) 
+                    ."_thumb$num".substr($dest_file,strrpos($dest_file,".")); // xxx_thumb1.jpg
+
+                if ($err = ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb",
+                        $thumb_params[2],$thumb_params[3])) {
+                    if ($debugupload) { huhl("Resample error on $thumb err=$err"); exit; }
+                   return $err;
+                }
+
+            // delete content just for displayed fields
+            $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($item_id). "'
+                            AND field_id = '".$f[id]."'";
+            $db = getDB(); $db->query($SQL); freeDB($db);
+
+                // store link to thumbnail 
+                $val["value"] = "$dirurl/$dest_file_tmb";
+                if($debugupload) huhl("Setting field ", $f[id], " to ", $val[value]);
+                insert_fnc_qte( $item_id, $f, $val, "");            
+            }           
+    } // params[3]
 
     $value["value"] = "$dirurl/$dest_file";    
 
     // store link to uploaded file or specified file URL if nothing was uploaded
-    //print_r($value);exit;
+    if($debugupload) huhl("Setting field ", $field[id], " to ", $value[value]);
     insert_fnc_qte( $item_id, $field, $value, "");
    
-    // return array with fields that were filled with thumbnails 
+    // return array with fields that were filled with thumbnails  (why?)
     return $thumb_arr;
 } // end of insert_fnc_fil
 
@@ -921,7 +935,8 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true, $oldcontent4id="" ) 
 {
     global $db, $varset, $itemvarset;
-    
+    $debugsi=0; // $GLOBALS[debug];
+    if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id"); 
     if (!is_object ($db)) $db = new DB_AA;
     if (!is_object ($varset)) $varset = new CVarset();
     if (!is_object ($itemvarset)) $itemvarset = new CVarset();
@@ -951,6 +966,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
             $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($id). "'
                             AND field_id IN ($in)";
             $db->query($SQL);
+            // note extra images deleted in insert_fnc_fil if needed
         }
     }
     else if (!Event_ItemBeforeInsert ($id, $slice_id, new ItemContent ($content4id)))
@@ -976,6 +992,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                 // some other fields as thumbnails
                 if ($fnc["fnc"]=="fil") 
                 {    
+                    //Note $thumbnails is undefined the first time in this loop
                     //print_r($arr_stop);                    
                     if (is_array($thumbnails)){
                         reset($thumbnails);
@@ -1028,16 +1045,18 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     }  
     $db->query($SQL);
     if( $invalidatecache ) {
-        $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+        $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ,"StoreItem"); # database changed - 
         $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     }  
 
     if( $feed )
         FeedItem($id, $fields);
 
+/* Commented out - crashes (mitra)
     if ($insert) Event_ItemAfterInsert ($id, $slice_id, new ItemContent ($content4id));
     else Event_ItemAfterUpdate ($id, $slice_id, new ItemContent ($content4id), 
         $oldItemContent);
+*/
     return true;
 } // end of StoreItem
 

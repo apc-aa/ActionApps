@@ -46,17 +46,16 @@ function GDinstalled() {
 #resample function
 ##################
 
+// Return string on error, 
 function ResampleImage($simage,$dimage,$new_w,$new_h) {
-    global $debug;
-
+    global $debugupload, $imageTable;
+   
+    if ($debugupload) huhl("Resample $simage at $new_w,$new_h to $dimage");
     #determine type, width, height of image.
     $imginfo=GetImageSize($simage);
-    switch ($imginfo[2]) {
-            case 1: $imagetype="gif"; break;
-            case 2: $imagetype="jpeg"; break;
-            case 3: $imagetype="png"; break;
-    }
+    $imagetype = $imageTable[$imginfo[2]][e];
     
+    if ($debugupload) huhl("Type=$imagetype Size now=",$imginfo);
     # if dimensions of new picture are not set, then set default heigth
     if (!$new_w && !$new_h) $new_h=120;
     
@@ -69,7 +68,12 @@ function ResampleImage($simage,$dimage,$new_w,$new_h) {
     if ($y>$x) $new_w="";   #use max height and calculate width
     
     #if image is smaller then limits, do not resample
-    if ($x < 1 && $y < 1) return true;
+    if ($x < 1 && $y < 1) {
+        # Don't resample if already ok
+        if ($simage == $dimage) return false; // no need to copy
+        if (! copy($simage,$dimage)) return "Cannot copy $simage to $dimage";
+        return false;
+    } 
     
     #calculate second dimension of image with maintain aspect ratio 
     if ((!$new_w && $new_h) || (!$new_h && $new_w)) {
@@ -77,60 +81,81 @@ function ResampleImage($simage,$dimage,$new_w,$new_h) {
         if (!$new_h) $new_h=$imginfo[1]/$imginfo[0]*$new_w;
     }
     
-    #debug
-    //echo "height: $new_h, width: $new_w";
-    
-    #array of image types supported by system
-    $suptypes=GetSupportedTypes();
-    if ($suptypes[$imginfo[2]]) {
+    if ($debugupload) huhl("Will resample to $new_w:$new_h");
+    if (GetSupportedTypes($imginfo[2])) {
         if ($imginfo[2]<4 && $imginfo!=NULL) {
-            $dst_img=ImageCreate($new_w,$new_h); 
+            // in GD2 ImageCreate goes monochrome
+            if (is_callable("ImageCreateTrueColor") 
+                && $imageTable[$imginfo[2]][t])
+                $dst_img=ImageCreateTrueColor($new_w,$new_h); 
+            else
+                $dst_img=ImageCreate($new_w,$new_h); 
             $f="ImageCreateFrom".$imagetype;
             $src_img=$f($simage);
+            if (!$src_img) return ("ResampleImage unable to $f");
+            if ($debugupload) 
+             huhl("imagecopyresized(...$new_w,$new_h,$imginfo[0],$imginfo[1]");
             imageCopyResized($dst_img,$src_img,0,0,0,0,$new_w,$new_h,$imginfo[0],$imginfo[1]); 
+            // Alternative on GD2, looks same to me (mitra)
+//            imageCopyresampled($dst_img,$src_img,0,0,0,0,$new_w,$new_h,$imginfo[0],$imginfo[1]); 
             //Header("Content-type: image/png");
             $f="Image".$imagetype;
             //$f($src_img);//,$img
             $f($dst_img,$dimage);
+            if ($debugupload) huhl("Resampled it");
         };
-        return true;
-    } 
-    else
-        //image type is not supported
         return false;
+    } 
+    else {
+    	$err = _m("Type not supported for resize");
+        if ($debugupload) huhl($err);
+        return $err;
+    }
 }
 
-
+# An array cross referencing different ways to refer to images
+# Other "x" types could be added from 
+#http://www.php.cz/manual/en/function.exif-imagetype.php
+#but note none of these are supported by GD
+# m = mime type, e = extension for GD functions and files,  u = human readable
+# b = bitmask x = exif_imagetype or imageinfo[2] 
+# t = true if should use truecolor
+$imageTable = array( 
+	1 => array ("m" => "image/gif", "e" => "gif", "u" => "GIF", b => IMG_GIF, "x" => IMAGETYPE_GIF, "t" => false),
+        2 => array("m" => "image/jpeg", "e" => "jpeg", "u" => "JPEG", "b" => IMG_JPG, "x" => IMAGETYPE_JPEG, "t" => true),
+        3 => array("m" => "image/png", "e" => "png", "u" => "PNG", "b" => IMG_PNG, "x" => IMAGETYPE_PNG, "t" => false),
+	6 => array("m" => "image/wbmp", "e" => "bmp", "u" => "WBMP", "b" => IMG_WBMP, "x" => IMAGETYPE_BMP, "t" => false)
+);
 
 # function checks type of images supported by GD library
 # if type is defined return true ro false, 
 # if type is not defined return array of supported types
 ######################################################
 
-function GetSupportedTypes($type="") { //type 1-gif, 2-jpeg, 3-png;
-    if (!GDInstalled()) 
+function PrintSupportedTypes() {
+	global $imageTable;
+	reset($imageTable);
+	$it = ImageTypes();
+	while(list($k,$v) = each($imageTable)) {
+		print($v["u"].(($it & $v["b"]) ? " " : " Not ")."Supported \n");
+	}
+}
+
+function GetSupportedTypes($type) { //type 1-gif, 2-jpeg, 3-png;
+	global $imageTable, $debugupload;
+    if (!GDInstalled()) {
+    	if ($debugupload) huhl("GD not installed");
         return(false);
-    
-    if ($type=="") {
-        if (ImageTypes() & IMG_GIF)
-            $suptypes[1]=true;
-        if (ImageTypes() & IMG_JPG)
-            $suptypes[2]=true;
-        if (ImageTypes() & IMG_PNG)
-            $suptypes[3]=true;
-        return $suptypes;
-    } 
-    else {
-        switch($type) {
-            case 1: if (ImageTypes() & IMG_GIF) 
-                        return true;
-            case 2: if (ImageTypes() & IMG_JPG) 
-                        return true;
-            case 3: if (ImageTypes() & IMG_PNG) 
-                        return true;
-        }
-        huhe("Warning: GD cant manipulate images of type $type");
-        return false;
     }
+    	if ($debugupload) huhl("ImageTypes = ",ImageTypes());
+	if (ImageTypes() & $imageTable[$type]["b"]) return true;
+	// Note won't see this warning when run in itemedit cos redirects
+        huhe("Warning: GD cant manipulate ".imgU($type)." images");
+        return false;
+}
+function imgU($type) {
+	global $imageTable;
+	return ($imageTable[$type]["u"] ? $imageTable[$type]["u"] 
+		: ("Type ".$type));
 }
 ?>

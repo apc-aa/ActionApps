@@ -1,6 +1,11 @@
-03/04/03 -new parameters columns and move_right for Radio Button input type 
-(honzam)  (just like for Multiple Selectbox)
-         - fixed problem with language files in links module
+03/05/03 - imagefunc.php3: Added debugging, $debugupload=1, note exit on err
+         -    use a table of image type properties instead of hard coding
+         -    ResampleImage copies if no resampling required
+         -    ResampleImage returns string on error, false on ok
+         -    uses ImageTrueColor on GD2 for Jpeg old version goes mono on GD2
+         -    Added PrintSupportedTypes for test.php3
+         - itemfunc.php3 - added debugging $debugupload=1
+         -   commented out Event_ItemAfterInsert etc since crashes         
 03/04/03 - added display of GD types in test.php3
 (mitra)  - remove warning on no picture in i_s - common when expanding
          - Added some debugging to PageCache
