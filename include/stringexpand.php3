@@ -120,23 +120,28 @@ function DeQuoteColons($text) {
 	return strtr($text, $UnQuoteArray);
 }
 
+// In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax
+$GLOBALS[eb_functions] = array (
+    fmod => fmod    # php > 4.2.0
+);
 
 # Expand a single, syntax element.
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
-    global $als,$debug;
+    global $als,$debug,$errcheck;
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
     # bracket could look like:
     #   {alias:[<field id>]:<f_* function>[:parameters]} - return result of f_*
+    #   lots of other functions, not documented here!
     #   {<field_id>}                                     - return content of field
     #   {any text}                                       - return "any text"
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
-    # which is processed first (see above)
+    # which are processed before expanding the function
     if( isset($item) && ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
-    if (! isField($parts[1])) 
+      if (! isField($parts[1])) 
         huhe("Warning: i_s: $parts[1] is not a field, don't wrap it in { } ");
       $fce = $parts[2];
       return QuoteColons($level, $maxlevel, $item->$fce($parts[1], $parts[3]));
@@ -174,7 +179,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       return QuoteColons($level, $maxlevel, $fileout);
       # QuoteColons used to mark colons, which is not parameter separators.
     }
-    if( ereg("^scroller:?([^}]*)$", $out, $parts)) {
+    elseif( ereg("^scroller:?([^}]*)$", $out, $parts)) {
         if (!isset($itemview) OR ($itemview->num_records<0) ) {   #negative is for n-th grou display
                 return "Scroller not valid without a view, or for group display"; }
         $viewScr = new view_scroller($itemview->slice_info['vid'],
@@ -196,12 +201,26 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         if (isset($aliases)) huhl("aliases=",$aliases);
         if (isset($als)) huhl("als=",$als);
         #huhl("globals=",$GLOBALS);
+        return "";
     }
     elseif ( substr($out, 0,10) == "view.php3?" )
         return QuoteColons($level, $maxlevel, 
             GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
             # view do not use colons as separators => dequote before callig
-    elseif (isset($item) && ($out == "unpacked_id.....")) {
+    // This is a little hack to enable a field to contain expandable { ... } functions
+    // if you don't use this then the field will be quoted to protect syntactical characters
+    elseif( substr($out, 0, 8) == "dequote:" ) {
+        return DeQuoteColons(substr($out,8));
+    }
+    // OK - its not a known fixed string, look in various places for the whole string
+    if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) && $GLOBALS[eb_functions][$parts[1]]) {
+        $fnctn = $GLOBALS[eb_functions][$parts[1]];
+        $parts = ParamExplode($parts[2]);
+        return QuoteColons($level,$maxlevel, 
+            $fnctn($parts[0],$parts[1],$parts[2],$parts[3],$parts[4],
+                $parts[5],$parts[6],$parts[7],$parts[8],$parts[9]));
+    }
+    if (isset($item) && ($out == "unpacked_id.....")) {
         return QuoteColons($level, $maxlevel, $item->f_n('id..............'));
     } 
     elseif( isset($item) && IsField($out) ) {
@@ -236,7 +255,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
      // Put the braces back around the text and quote them if we can't match
     else {
-        if ($debug)  huhl("Couldn't expand: \"{$out}\"");
+        if ($errcheck)  huhl("Couldn't expand: \"{$out}\"");
         return QuoteColons($level, $maxlevel, "{" . $out . "}");
     }
 }

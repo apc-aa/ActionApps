@@ -47,6 +47,9 @@ function GetAliasesFromFields($fields, $additional="") {
   $aliases["_#ID_COUNT"] = array("fce" => "f_e:itemcount",
                                  "param" => "id..............",
                                  "hlp" => _m("number of found items"));
+  $aliases["_#ITEMINDX"] = array("fce" => "f_e:itemindex",
+                                 "param" => "id..............",
+                                 "hlp" => _m("index of item within view"));
   $aliases["_#ITEM_ID_"] = array("fce" => "f_n:id..............",
                                  "param" => "id..............",
                                  "hlp" => _m("alias for Item ID"));
@@ -54,6 +57,9 @@ function GetAliasesFromFields($fields, $additional="") {
                                  "param" => "short_id........",
                                  "hlp" => _m("alias for Short Item ID"));
   $aliases["_#EDITITEM"] = array("fce" => "f_e",
+                                 "param" => "id..............",
+                                 "hlp" => _m("alias used on admin page index.php3 for itemedit url"));
+  $aliases["_#ADD_ITEM"] = array("fce" => "f_e:add",
                                  "param" => "id..............",
                                  "hlp" => _m("alias used on admin page index.php3 for itemedit url"));
   $aliases["_#EDITDISC"] = array("fce" => "f_e:disc",
@@ -488,7 +494,6 @@ class item {
   # returns fulltext of the blurb
   function f_q($col, $param="") {
     global $db3;
-
       /* Usually this is called with no parameters.
 	 Optional parameters for f_q are:
 	 [0] stringToMatch is by default $col
@@ -517,7 +522,11 @@ class item {
     c) using the single item_id from b), find the content record that has the
        fulltext blurb
      */
-      if ($fieldToMatch == "id..............") {
+      if (($fieldToReturn == "id..............")
+        or ($fieldToReturn == "short_id........")) {
+        print("f_q cannot yet return $fieldToReturn fields");
+        return("");
+      } elseif ($fieldToMatch == "id..............") {
 	// Special case id... its not a real field
       	$fqsqlid = q_pack_id($stringToMatch);
       	$SQL = "SELECT c2.text AS text 
@@ -525,6 +534,14 @@ class item {
                 WHERE 
                      c2.field_id    = '$fieldToReturn' AND
                      c2.item_id     = '$fqsqlid'";
+
+      } elseif ($fieldToMatch == "short_id........") {
+      	$p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
+        $SQL = "SELECT c2.text AS text 
+                FROM item LEFT JOIN content c2 ON item.id = c2.item_id
+                WHERE slice_id  = '$p_blurbSliceId' AND
+                     item.short_id = '$stringToMatch' AND
+                     c2.field_id    = '$fieldToReturn'";
       } else {	
       	$p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
         $SQL = "SELECT c2.text AS text 
@@ -535,7 +552,7 @@ class item {
                      c2.field_id    = '$fieldToReturn' AND
                      c1.text        = '$stringToMatch'";
       }
-      $db3->query($SQL);
+      $db3->tquery($SQL);
       return ( $db3->next_record() ? $db3->f('text') : "" );
     }
 
@@ -636,8 +653,12 @@ class item {
         # _#DISCEDIT used on admin page index.php3 for edit discussion comments
         return con_url($sess->url("discedit.php3"),
           "item_id=".unpack_id128( $this->getval('id..............')));
+      # These next two return values from globals that would actually be better coming froom the item or itemview,
+      # otherwise won't work if there are nested views.
       case "itemcount":
       	return $GLOBALS['QueryIDsCount'];
+      case "itemindex";
+      	return "".$GLOBALS['QueryIDsIndex'];   # Need to append to "" so doesn't return "false" on 0th item
       case "safe":
         return safe( $this->getval($col) ); 
       case "slice_info":
@@ -645,7 +666,7 @@ class item {
           $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));
         return $slice_info[$col];
       case "add":
-	$add="add=1";
+    	$add="add=1";
 	// drop through to default
       default:  {
 	// If Session is set, then append session id, otherwise append slice_id and it will prompt userid

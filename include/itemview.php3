@@ -79,7 +79,7 @@ class itemview{
   }  
    
   function get_output_cached($view_type="") {  
-    #print("XYZZY:get_output_cached");
+    if ($GLOBALS[debug]) huhl("get_output_cached:".$view_type);
     $cache = new PageCache($this->db, CACHE_TTL, CACHE_PURGE_FREQ);
 
     #create keystring from values, which exactly identifies resulting content
@@ -326,7 +326,7 @@ class itemview{
   #view_type used internaly for different view types
   function get_output($view_type="") {  
     global $debug;
-    #huhl("XYZZY: get_output:$view_type:",$this->zids);
+    if ($debug) huhl("get_output($view_type)",$this->zids);
     $db = $this->db;
 
     if ($view_type == "discussion") {
@@ -346,20 +346,10 @@ class itemview{
 
     # fill the foo_ids - ids to itemids to get from database
     if( substr($this->from_record, 0, 6) != 'random') {
-
       $foo_zids = $this->zids->slice((integer)$this->from_record,
          ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
 
-/*
-      # negative num_record used for displaying n-th group of items only
-      $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  
-                                        $this->from_record+$this->num_records );
-      for( $i=(integer)$this->from_record; $i<$number_of_ids; $i++){
-        if( $this->zids->id($i) )
-          $foo_ids[] = $this->zids->id($i);
-      }
-*/      
-    } else {
+    } else { // Selecting random record
       list( $random, $rweight ) = explode( ":", $this->from_record);
       if( !$rweight || !is_array($this->fields[$rweight]) ) {  
         # not weighted, we can select random id(s)
@@ -373,15 +363,9 @@ class itemview{
       } else {   # weighted - we must get all items (banners) and then select
                  # the one based on weight field (now in $rweight variable
         $foo_zids = $this->zids;
-/*
-        $ito = count( $this->ids );   # get content of all items (banners) on random selection
-        for( $i=0; $i<$ito; $i++){
-          if( $this->ids[$i] )
-            $foo_ids[] = $this->ids[$i];
-        }
-*/
       }
     }
+
     # Create an array of content, indexed by either long or short id (not tagged id)
     $content = GetItemContent($foo_zids);
     if ($debug) huhl("itemview:get_content: found",$content);
@@ -452,6 +436,7 @@ class itemview{
         $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  
                                         $this->num_records );
         for( $i=0; $i<$number_of_ids; $i++ ) {
+          $GLOBALS['QueryIDsIndex'] = $i;   # So that _#ITEMINDX = f_e:itemindex can find it 
           # display banner, if you have to
           if( $this->slice_info['banner_parameters'] && 
               ($this->slice_info['banner_position']==$i) )
@@ -459,13 +444,14 @@ class itemview{
 
           $zidx = $this->from_record+$i;
           if ($zidx >= $this->zids->count()) continue;
-          $iid = $this->zids->short_or_longids($this->from_record+$i);
+          $iid = $this->zids->short_or_longids($zidx);
           if( !$iid ) { huhe("Warning: itemview: got a null id"); continue; }
+          # Note if iid is invalid, then expect empty answers
           $catname = $content[$iid][$this->group_fld][0][value];
           if ($this->slice_info[gb_header])
-            $catname = substr ($catname, 0, $this->slice_info[gb_header]);
-              
-          $this->set_columns ($CurItem, $content, $iid);   # set right content for aliases
+            $catname = substr($catname, 0, $this->slice_info[gb_header]);
+
+          $this->set_columns($CurItem, $content, $iid);   # set right content for aliases
 
           # get top HTML code, unalias it and add scroller, if needed
           if( !$top_html_already_printed ) {   

@@ -449,6 +449,16 @@ function huhe ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
         huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="");
     }
 }
+// Only called from within huhl
+function huhlo($a) {
+    if (isset($a)) {
+        if (is_object($a) && is_callable(array($a,"printobj"))) {
+            $a->printobj();
+        } else {
+            print_r($a);
+        }
+    }
+}
 # Set a starting timestamp, if checking times, huhl can report 
 # Debug function to print debug messages recursively - handles arrays
 function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
@@ -463,16 +473,16 @@ function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
             list($usec, $sec) = explode(" ",microtime()); 
             print("Time: ".(((float)$usec + (float)$sec) - $debugtimestart)."\n"); 
         }
-        print_r($a);
-        if (isset($b)) print_r($b);
-        if (isset($c)) print_r($c);
-        if (isset($d)) print_r($d);
-        if (isset($e)) print_r($e);
-        if (isset($f)) print_r($f);
-        if (isset($g)) print_r($g);
-        if (isset($h)) print_r($h);
-        if (isset($i)) print_r($i);
-        if (isset($j)) print_r($j);
+        huhlo($a);
+        huhlo($b);
+        huhlo($c);
+        huhlo($d);
+        huhlo($e);
+        huhlo($f);
+        huhlo($g);
+        huhlo($h);
+        huhlo($i);
+        huhlo($j);
         print("</listing>\n");
     }
 }
@@ -598,6 +608,7 @@ function GetItemContent($zids, $use_short_ids=false) {
   // Fills array $content with current content of $sel_in items (comma separated ids). 
   global $db;
 
+  if ($GLOBALS[debug]) huhl("GetItemContent short='",$use_short_ids,"' " ,$zids);
   if (!is_object ($db)) $db = new DB_AA;
 
   # construct WHERE clause
@@ -626,7 +637,9 @@ function GetItemContent($zids, $use_short_ids=false) {
   $id_column = ($use_short_ids ? "short_id" : "id");   
   $SQL = "SELECT * FROM item WHERE $id_column $sel_in";
   $db->tquery($SQL);
+  $n_items = 0;
   while( $db->next_record() ) {
+    $n_items = $n_items+1;
     reset( $db->Record );
     if( $use_short_ids ) {
       $foo_id = $db->f("short_id");
@@ -646,40 +659,43 @@ function GetItemContent($zids, $use_short_ids=false) {
     }
   }
 
+  // Skip the rest if no items found
+  if ($n_items == 0) return null;
 
-  # If its a tagged id, then set the "idtag..........." field
-  if ($settags) {
-    $tags = $zids->gettags();
-    while ( list($k,$v) = each($tags)) {
-        $content[$k]["idtag..........."][] = array("value" => $v);
+    # If its a tagged id, then set the "idtag..........." field
+    if ($settags) {
+        $tags = $zids->gettags();
+        while ( list($k,$v) = each($tags)) {
+            $content[$k]["idtag..........."][] = array("value" => $v);
+        }
     }
-  }
   
     # construct WHERE query to content table if used short_ids
-  if( $use_short_ids ) {
-    if( count($translate)>1 )
-      $sel_in = " IN ( $new_sel_in ) ";
-     else 
-      $sel_in = " = $new_sel_in ";
-  }
-  
-   # get content from content table
-   # feeding - don't worry about it - when fed item is updated, informations
-   # in content table is updated too
+    if( $use_short_ids) {
+        if( count($translate)>1 )
+            $sel_in = " IN ( $new_sel_in ) ";
+        else 
+            $sel_in = " = $new_sel_in ";
+    }
 
-  $SQL = "SELECT * FROM content 
+    # get content from content table
+    # feeding - don't worry about it - when fed item is updated, informations
+    # in content table is updated too
+
+    $SQL = "SELECT * FROM content 
            WHERE item_id $sel_in";  # usable just for constants
                
-  $db->tquery($SQL);
+    $db->tquery($SQL);
 
-  while( $db->next_record() ) {
-    $fooid = ( $use_short_ids ? $translate[unpack_id128($db->f(item_id))] : 
+    while( $db->next_record() ) {
+        $fooid = ( $use_short_ids ? $translate[unpack_id128($db->f(item_id))] : 
                                unpack_id128($db->f(item_id)));
-    $content[$fooid][$db->f(field_id)][] = 
-      array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
+        $content[$fooid][$db->f(field_id)][] = 
+            array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
              "flag"=> $db->f(flag) );
-  }
-  return $content;
+    }
+
+  return $content;   // Note null returned above if no items found
 }  
 
 // -------------------------------------------------------------------------------
@@ -966,7 +982,7 @@ function PrintAliasHelp($aliases) {
   $count = 0;
   while ( list( $ali,$v ) = each( $aliases ) ) {
     # if it is possible point to alias editing page
-    $aliasedit = ( !$v["fld"] ? _m("Edit") :
+    $aliasedit = ( !$v["fld"] ? "&nbsp;" :
       "<a href=\"". $sess->url(con_url("./se_inputform.php3", 
                     "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
     echo "<tr><td nowrap>$ali</td><td>". $v[hlp] ."</td><td>$aliasedit</td></tr>";

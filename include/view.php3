@@ -118,19 +118,19 @@ function ParseViewParameters($query_string="") {
 		// TODO figure out why CountHit not called here - mitra
                break;
     case 'x':  $vid = $command[1];
-		 $zids = new zids(array_slice($command,2));
+  		$zids = new zids(array_slice($command,2));
 		#huhl("XYZZY: ParseViewParameters: zids=",$zids);
 //               for( $i=2; $i<count($command); $i++)
 //                 $item_ids[] = $command[$i];
 // This is bizarre code, just incrementing the first item, left as it is
 // but questioned on apc-aa-coders - mitra
-		if ($zids->use_short_ids()) {
+          if ($zids->use_short_ids()) {
 			$si = $zids->shortids();
 			CountHit($si[0],'short_id');
-		} else {
+		  } else {
 			$li = $zids->longids();
 			CountHit($li[0],'id');
-		}
+		  }
 		#huhl("XYZZY: ParseViewParameters end X");
                break;
     case 'c':  if( $command[1] && ($command[2] != 'AAnoCONDITION')) 
@@ -319,11 +319,10 @@ function GetViewFromDB($view_param, &$cache_sid) {
   $cache_sid = $slice_id;     # store the slice id for use in cache (GetView())
   
   # ---- display content in according to view type ----
-  if ($debug) huhl("view_info=",$view_info);
+  if ($debug) huhl("GetViewFromDB:view_info=",$view_info);
   switch( $view_info['type'] ) {
     case 'full':  # parameters: zids, als
       $format = GetViewFormat($view_info);
-  
       if( isset($zids) && ($zids->count() > 0) ) {
         # get alias list from database and possibly from url
         list($fields,) = GetSliceFields($slice_id);
@@ -331,7 +330,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
        
         $itemview = new itemview( $db, $format, $fields, $aliases, $zids, 
                                   0, 1, shtml_url(), "");
-
         return $itemview->get_output_cached("view");
       }  
       return $noitem_msg;
@@ -416,22 +414,12 @@ function GetViewFromDB($view_param, &$cache_sid) {
       }
 
       $sort  = GetViewSort($view_info);
-/*
-      unset($p_item_ids);
-      if ( $item_ids && !$use_short_ids) {    # ids could be defined via cmd[]=x command
-        reset( $item_ids );
-        while( list( ,$v) = each( $item_ids ) )
-          $p_item_ids[] = pack_id128( $v );   # no q_pack_id - it mustn't be quoted
-      }
-*/
-//      $item_ids =
 	$zids2 = 
 	    QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
                          $group_by, "ACTIVE", $slices, 0, 
 			 $zids);
-//                         $use_short_ids ? $item_ids : $p_item_ids);
     # Note this zids2 is always packed ids, so lost tag information
-
+    if ($debug) huhl("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count : 0)." IDS");
     if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
         $zids2 = $zids2->retag($zids);
         if ($debug) huhl("Retagged zids=",$zids2);

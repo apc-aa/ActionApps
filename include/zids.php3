@@ -86,13 +86,18 @@ class zids {
                 $this->a[] = $initial;
         } else {
          return;  # Empty $zids;
-    }
+        }
 
         if ($this->type == "z") 
             $this->type = guesstype($this->a[0]);
         elseif ($this->type != guesstype($this->a[0]))
             huhe("Warning: zids created type=$this->type but id $this->a[0] looks like type="
                 . guesstype($this->a[o]));
+    }
+
+    // Debugging function to print zids, don't rely on the output format, its only for debuging
+    function printobj() {
+        print("zids object: type=".$this->type." (".implode(",",$this->a).")");
     }
 
     # Return one-character type for standard types

@@ -1,3 +1,9 @@
+02/01/03 - removed "Edit" from uneditable aliases in se_view (mitra)
+         - added _#ITEMINDX and f_e:itemindex  for item number within a view 
+         - added _#ADD_ITEM standard alias, for putting on views to jump to add item (uses f_e)
+         - added {dequote:....} to stringexpand to allow { } in fields where needed
+         - added a generic extensions syntax to stringexpand via an array of functions
+         - made huhl smarter, can print object via its printobj() method, implemented for zids.
 02/01/03 - fixed bug with empty cmd[20]=x-20-   so returns empty set
 01/30/03 - added support for match field "short_id" to f_q (could still use return field) (mitra)
 01/30/03 - fixed bug in itemfunc where file not uploaded (mitra)

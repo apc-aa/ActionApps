@@ -40,6 +40,7 @@ function bminus() { return "~"; }
 // +,-,*,/,^ and spaces
 function calculate ($exp)
 {
+    if ($GLOBALS[$debug]) huhl("calculate:$exp");
     $exp = str_replace (" ","",$exp);
     $exp = str_replace ("\t","",$exp);
 
@@ -59,7 +60,7 @@ function calculate ($exp)
 
 // return expression with resolved one of most inner brackets
 function calculate_brackets ($expr) {
-//echo $expr."<br>";
+    if ($GLOBALS[$debug]) huhl("calculate_brackets:$expr");
     $beg = strrpos ($expr, "(");
     $expr_beg = substr ($expr, 0, $beg);
     $expr_mid = substr ($expr, $beg+1);
@@ -73,12 +74,14 @@ function calculate_brackets ($expr) {
 
 // calculate expression consisting of numbers, operators +,~,*,/,^, but no brackets ()
 function calculate_without_brackets ($expr) {
+    if ($GLOBALS[$debug]) huhl("calculate_without_brackets:$expr");
     return calculate_operator ($expr, "+");
 }
 
 // recursively resolve operators in priority order
 function calculate_operator ($expr, $operator)
 {
+    if ($GLOBALS[$debug]) huhl("calculate_operator:$expr:$operator");
     $next_operator = array ("+" => bminus(), bminus() => "*", "*" => "/", "/" => "^");
 
     $parts = explode ($operator, $expr);
