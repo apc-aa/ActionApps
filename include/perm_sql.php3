@@ -619,16 +619,11 @@ function A2sql_update ($table, $keyField, $aData) {
 	    ";
 }
 
-//utility functions -- move to another AA component
-function in_array($needle,$haystack)
-{
-  for($i=0;$i<count($haystack) && $haystack[$i] !=$needle;$i++);
-  return ($i!=count($haystack));
-}
-
-
 /*
 $Log$
+Revision 1.9  2000/08/07 15:52:13  kzajicek
+in_array moved to util.php3 and defined optionally
+
 Revision 1.8  2000/08/02 12:30:07  kzajicek
 Added workaround for strange behaviour of crypt() on zulle.pair.com...
 

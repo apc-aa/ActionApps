@@ -298,8 +298,20 @@ function UnpackFieldsToArray($packed, $fields) {
   return $arr;
 }  
 
+// in_array is available since PHP4
+if (substr(PHP_VERSION, 0, 1) < "4") {
+  function in_array($needle,$haystack)
+  {
+    for($i=0;$i<count($haystack) && $haystack[$i] !=$needle;$i++);
+    return ($i!=count($haystack));
+  }
+}
+
 /*
 $Log$
+Revision 1.5  2000/08/07 15:52:13  kzajicek
+in_array moved to util.php3 and defined optionally
+
 Revision 1.4  2000/08/03 12:31:19  honzam
 Session variable r_hidden used instead of HIDDEN html tag. Magic quoting of posted variables if magic_quotes_gpc is off.
 
