@@ -1,10 +1,10 @@
-td.scroller {background: #a0a0a0;} 
+td.scroller {background: #a0a0a0;}
 
 .scrhead {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #4A4A4A;
-} 
+}
 
 body { margin-left: 4px;
        background: #F5F0E7;
@@ -12,7 +12,7 @@ body { margin-left: 4px;
        font-size: 10px;
 }
 
-.tabtxt, TD {  
+.tabtxt, TD {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 10pt;
  }
@@ -21,15 +21,15 @@ body { margin-left: 4px;
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 10pt;
   background-color : #ADD8E6;
- } 
- 
-TEXTAREA {  
+ }
+
+TEXTAREA {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 8pt;
   width: 100%;
  }
 
-INPUT, SELECT {  
+INPUT, SELECT {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 8pt;
  }
@@ -38,7 +38,7 @@ INPUT, SELECT {
 H1, .tablename {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: medium;
-  margin-left: 20px;  
+  margin-left: 20px;
 }
 
 .navbar {
@@ -202,7 +202,7 @@ TD.leftmenu {
 .tablename {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 12pt;
-  font-weight: bold; 
+  font-weight: bold;
 	color: #584011;
   background: #EBDABE;
 }
@@ -232,4 +232,8 @@ TD.leftmenu {
 
 .sel_on {
        background: #DDDDDD;
-}    
+}
+
+.sel_title {
+       background: #F5F0E7;
+}

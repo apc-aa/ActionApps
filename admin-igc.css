@@ -1,30 +1,30 @@
-td {font-size: 12;} 
-td.scroller {background: #a0a0a0;} 
-td.scrhead {font-weight: bold;} 
+td {font-size: 12;}
+td.scroller {background: #a0a0a0;}
+td.scrhead {font-weight: bold;}
 
 body { margin-left: 4px;
        background: #F5F0E7;
 }
 
-SELECT {  
+SELECT {
   font-family: Arial, Helvetica, sans;
   font-size: 10pt;
  }
 
-INPUT, TEXTAREA {  
+INPUT, TEXTAREA {
   font-family: Arial, Helvetica, sans;
   font-size: small;
  }
 
-TEXTAREA {  
+TEXTAREA {
   font-family: Arial, Helvetica, sans;
   font-size: small;
  }
- 
+
 H1 {
   font-family: Arial, Helvetica, sans;
   font-size: medium;
-  margin-left: 20px;  
+  margin-left: 20px;
 }
 
 .navbar {
@@ -65,7 +65,7 @@ H1 {
 	font-size : 13pt;
 	color: #584011;
 	font-weight : bold;
-  background: #EBDABE;
+    background: #EBDABE;
 }
 
 .leftmenu  {
@@ -130,12 +130,16 @@ H1 {
 }
 
 .copymsg {
-       background: #213F21;
-       font-family: Verdana, Arial, Helvetica, sans-serif;
-       font-size: 8pt;
-       color: #999999;
+  background: #213F21;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  color: #999999;
 }
 
 .sel_on {
-       background: #DDDDDD;
-}    
+  background: #DDDDDD;
+}
+
+.sel_title {
+  background: #F5F0E7;
+}

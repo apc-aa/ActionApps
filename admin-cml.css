@@ -1,12 +1,12 @@
-td.scroller {background: #a0a0a0;} 
+td.scroller {background: #a0a0a0;}
 
 .scrhead {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #4A4A4A;
-} 
+}
 
-BODY { 
+BODY {
 /*  margin-left: 4px; */
   background: #ffffff;
   font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -19,7 +19,7 @@ B {
   font-weight: normal;
 }
 
-.login { 
+.login {
 	background: #A8C8B0;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
@@ -60,19 +60,19 @@ TR.tabtxt TD {
 	border-bottom: 1px solid black;
 } */
 
-SELECT {  
+SELECT {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 10pt;	
+  font-size: 10pt;
 }
 
-SELECT.tabtxt {  
+SELECT.tabtxt {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 10pt;
   background: #FFFFFF;
 }
 
 
-TD, INPUT, TEXTAREA {  
+TD, INPUT, TEXTAREA {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
 	vertical-align: top;
@@ -82,11 +82,11 @@ TD.tablename {
   vertical-align: middle;
 	text-align: center;
 }
- 
+
 H1 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: medium;
-  margin-left: 20px;  
+  margin-left: 20px;
  /* color: #FFFFFF; */
   color: #000000;
 }
@@ -94,7 +94,7 @@ H1 {
 .navbar {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
-	background: #A8C8B0; 
+	background: #A8C8B0;
 	color: #FFFFFF;
 	vertical-align: middle;
 }
@@ -220,7 +220,7 @@ TD.leftmenu {
 .tablename {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 12pt;
-  font-weight: bold; 
+  font-weight: bold;
   color: #FFFFFF;
   background: #589868;
 }
@@ -293,11 +293,16 @@ TD.leftmenuy {
 
 .copymsg {
 /*       background: #213F21; */
-       font-family: Verdana, Arial, Helvetica, sans-serif;
-       font-size: 8pt;
-       color: #999999;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  color: #999999;
 }
 
 .sel_on {
-       background: #DDDDDD;
-}    
+  background: #DDDDDD;
+}
+
+.sel_title {
+ background: #A8C8B0;
+ color: #4A4A4A;
+}

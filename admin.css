@@ -1,10 +1,10 @@
-td.scroller {background: #a0a0a0;} 
+td.scroller {background: #a0a0a0;}
 
 .scrhead {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #4A4A4A;
-} 
+}
 
 body { margin-left: 4px;
        background: #213F21;
@@ -13,19 +13,19 @@ body { margin-left: 4px;
 			 color: #FFFFFF;
 }
 
-.login { 
+.login {
 	background: #A8C8B0;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
 	color: #000000;
 }
 
-SELECT {  
+SELECT {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 10pt;
  }
 
-TD, INPUT, TEXTAREA {  
+TD, INPUT, TEXTAREA {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
  }
@@ -33,7 +33,7 @@ TD, INPUT, TEXTAREA {
 H1 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: medium;
-  margin-left: 20px;  
+  margin-left: 20px;
   color: #FFFFFF;
 }
 
@@ -41,12 +41,12 @@ H2 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: small;
   color: 0;
-}	
+}
 
 .navbar {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
-	background: #A8C8B0; 
+	background: #A8C8B0;
 	color: #FFFFFF;
 	vertical-align: middle;
 }
@@ -77,7 +77,7 @@ H2 {
 .nbactive {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
-    background: #FFFFFF; 
+    background: #FFFFFF;
 	color: #000000;
 }
 
@@ -193,7 +193,7 @@ TD.leftmenu {
 .tablename {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 12pt;
-  font-weight: bold; 
+  font-weight: bold;
   color: #FFFFFF;
   background: #589868;
 }
@@ -227,16 +227,16 @@ TD.leftmenuy {
 .tabtxt {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
-	background: #A8C8B0;
-	color: #4A4A4A;
+  background: #A8C8B0;
+  color: #4A4A4A;
 }
 
 .tabtxt_field_alerts {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
-    background-color : #ADD8E6;
-	color: #4A4A4A;
-}    
+  background-color : #ADD8E6;
+  color: #4A4A4A;
+}
 
 .tabhlp {
   font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -257,7 +257,6 @@ TD.leftmenuy {
   color: red;
 }
 
-
 .err {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
@@ -270,14 +269,18 @@ TD.leftmenuy {
   color: green;
 }
 
-
 .copymsg {
-       background: #213F21;
-       font-family: Verdana, Arial, Helvetica, sans-serif;
-       font-size: 8pt;
-       color: white;
-}   
+  background: #213F21;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  color: white;
+}
 
 .sel_on {
-       background: #DDDDDD;
-}        
+  background: #DDDDDD;
+}
+
+.sel_title {
+ background: #A8C8B0;
+ color: #4A4A4A;
+}
