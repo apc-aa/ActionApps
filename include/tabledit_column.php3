@@ -1,7 +1,17 @@
 <?php
-//$Id$
+/**
+ * In this file only the function ColumnFunctions() is defined.
+ * This function is meant to be called from @link Tabledit::ShowColumnValuesClass.
+ * DOCUMENTATION: @link doc/tabledit.html, 
+ *                @link doc/tabledit_developer.html, 
+ *                @link doc/tableview.html
+ * @package TableEdit
+ * @version $Id$
+ * @author Jakub Adamek, Econnect
+ * @copyright (c) 2002-3 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2003 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,20 +29,14 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// (c) Econnect, Jakub Adamek, December 2002
-// DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
-
-// In this file only the function ColumnFunctions() is defined.
-// This function is meant to be called from TableEdit::ShowColumnValues
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 * Does column type-specific work. 
 *
-* @param $function      "show" prints HTML code showing the column value
+* @param string $function "show" prints HTML code showing the column value
 *                       "form" transforms the returned value if needed and returns it
-* @param $val           value to be shown ("show") or to be changed ("form")
+* @param mixed $val     value to be shown ("show") or to be changed ("form")
+* @param array $record  the whole record for the current row, to be used by "calculated" fields
 * @return nothing
-* @param $record        the whole record for the current row, to be used by "calculated" fields
 */                    
 
 function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false, $record="") 

@@ -31,7 +31,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }  
 
@@ -68,11 +68,11 @@ function ShowField($id, $name, $pri, $required, $show, $type="", $alias="") {
     if( $type=="new")
         echo "<td class=tabtxt>&nbsp;</td><td class=tabtxt>&nbsp;</td>";
     else { 
-        echo "<td class=tabtxt><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". L_EDIT ."</a></td>";
+        echo "<td class=tabtxt><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
         if( $type=="in_item_tbl" )
-            echo "<td class=tabtxt>". L_DELETE ."</td>";
+            echo "<td class=tabtxt>". _m("Delete") ."</td>";
         else 
-            echo "<td class=tabtxt><a href=\"javascript:DeleteField('$id')\">". L_DELETE ."</a></td>";
+            echo "<td class=tabtxt><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
             
         if (is_array ($alias)) 
             echo "<td class=tabtxt><font size='-2'>".join($alias," ")."</font></td>";
@@ -97,8 +97,8 @@ if( $update )
       if( $key == "New_Field" )
         continue;
       $prior = $pri[$key];
-      ValidateInput("val", L_FIELD, $val, $err, true, "text");
-      ValidateInput("prior", L_FIELD_PRIORITY, $prior, $err, true, "number");
+      ValidateInput("val", _m("Field"), $val, $err, true, "text");
+      ValidateInput("prior", _m("Priority"), $prior, $err, true, "number");
     }
       
     if( count($err) > 1)
@@ -157,7 +157,7 @@ if( $update )
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
     if( count($err) <= 1 ) {
-      $Msg = MsgOK(L_FIELDS_OK);
+      $Msg = MsgOK(_m("Fields update successful"));
       if( $name["New_Field"] )
         go_url( $sess->url($PHP_SELF) );  # reload to incorporate new field
     }    
@@ -172,10 +172,10 @@ $s_fields = GetTable2Array($SQL, $db);
          
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_FIELDS_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - configure Fields");?></TITLE>
  <SCRIPT Language="JavaScript"><!--
    function DeleteField(id) {
-     if( !confirm("<?php echo L_DELETE_FIELD; ?>"))
+     if( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>"))
        return
      var url="<?php echo $sess->url(con_url("./se_inputform.php3", "del=1")); ?>"
      document.location=url + "&fid=" + escape(id);
@@ -188,25 +188,25 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "fields");  
   
-  echo "<H1><B>" . L_A_FIELDS_EDT . "</B></H1>";
+  echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
   PrintArray($err);
   echo $Msg;  
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_FIELDS_HDR?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Fields")?></b>
 </td>
 </tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
- <td class=tabtxt align=center><b><?php echo L_FIELD ?></b></td>
- <td class=tabtxt align=center><b><?php echo L_FIELD_TYPE ?></b></td>
- <td class=tabtxt align=center><b><?php echo L_FIELD_PRIORITY ?></b></td>
- <td class=tabtxt align=center><b><?php echo L_NEEDED_FIELD ?></b></td>
- <td class=tabtxt align=center><b><?php echo L_FIELD_IN_EDIT ?></b></td>
+ <td class=tabtxt align=center><b><?php echo _m("Field") ?></b></td>
+ <td class=tabtxt align=center><b><?php echo _m("Id") ?></b></td>
+ <td class=tabtxt align=center><b><?php echo _m("Priority") ?></b></td>
+ <td class=tabtxt align=center><b><?php echo _m("Required") ?></b></td>
+ <td class=tabtxt align=center><b><?php echo _m("Show") ?></b></td>
  <td class=tabtxt colspan=2>&nbsp;</td>
- <td class=tabtxt align=center><b><?php echo L_FIELD_ALIASES?></b></td>
+ <td class=tabtxt align=center><b><?php echo _m("Aliases")?></b></td>
 </tr>
 <tr><td colspan=8><hr></td></tr>
 <?php
@@ -230,8 +230,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td align="center">
 <?php 
   echo "<input type=hidden name=\"update\" value=1>";
-  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;
+  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;
 </td></tr></table>
 </FORM>';
 HtmlPageEnd();

@@ -58,7 +58,7 @@ function PrintModuleSelection() {
       echo ">". str_replace("'","`",safe($v['name'])) . "'\n";
     }
     if( !$slice_id )   // new slice
-      echo "\t+'<option value=\"new\" selected>". L_NEW_SLICE_HEAD + "'";
+      echo "\t+'<option value=\"new\" selected>". _m("New slice") + "'";
     echo ";
         document.write('<select name=slice_id onChange=\'document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\'>');
         document.write(modulesOptions);
@@ -89,12 +89,8 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
         $smmenus = get_aamenus();
 
     // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
-    if ($activeMain == "aaadmin") {
-        if (substr (LANG_FILE, 4, 4) != "news") {
-            $lang = substr (LANG_FILE, 0, 2);
-            require $GLOBALS[AA_INC_PATH].$lang."_news_lang.php3";
-        }
-    }
+    if ($activeMain == "aaadmin") 
+        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".get_mgettext_lang()."_news_lang.inc");
          
     if( $useOnLoad )
         echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
@@ -104,9 +100,9 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     if ($debug) { echo "<p><font color=purple>showMenu:activeMain=$activeMain;activeSubmenu=$activeSubmenu;showMain=$showMain;showSub=$showSub:</font></p>";  }
    
     if( !$slice_id )
-        $r_slice_headline = L_NEW_SLICE_HEAD;
+        $r_slice_headline = _m("New slice");
 
-    $nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$AA_INSTAL_PATH.'images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
+    $nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$AA_INSTAL_PATH.'images/action.gif" width="106" height="73" border="0" alt="'. _m("APC Action Applications") .'"></a>';
 
     echo "<TABLE border=0 cellspacing=0 cellpadding=0><TR>";
 
@@ -148,7 +144,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
         
         echo "</td><TD class=navbar align=right><span class=nbdisable> &nbsp;";
         if( is_array($g_modules) AND (count($g_modules) > 1) ) 
-            echo L_SWITCH_TO ."&nbsp; ";
+            echo _m("Switch to:") ."&nbsp; ";
         echo "</span></TD>
         <TD class=navbar>\n";
         PrintModuleSelection();
@@ -206,6 +202,6 @@ function showSubmenu (&$aamenu, $active)
   
     echo '<tr><td class=leftmenu>&nbsp;</td></tr>
           <tr><td class=leftmenu height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
-          <tr><td class=copymsg ><small>'. L_COPYRIGHT .'</small></td></tr>
+          <tr><td class=copymsg ><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
           </table>'."\n";
 }

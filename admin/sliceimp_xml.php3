@@ -117,7 +117,7 @@ function endElement($parser, $name) {
 			$chardata = $gzipped ? gzuncompress($chardata) : $chardata;
 			$slice = unserialize ($chardata);
 			if (!is_array($slice)) {
-				MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_WRONG_FILE, "standalone");
+				MsgPage($sess->url(self_base())."index.php3", _m("ERROR: Text is not OK. Check whether you copied it well from the Export."), "standalone");
 				exit;
 			}
 			$slice["id"] = $curid;
@@ -129,7 +129,7 @@ function endElement($parser, $name) {
 			$chardata = $curdatagzip ? gzuncompress($chardata) : $chardata;
 			$content4id = unserialize ($chardata);
 			if (!is_array($content4id)) {
-				MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_WRONG_FILE, "standalone");
+				MsgPage($sess->url(self_base())."index.php3", _m("ERROR: Text is not OK. Check whether you copied it well from the Export."), "standalone");
 				exit;
 			}
 			import_slice_data($curid, $curdataid, $content4id, true, true);
@@ -138,7 +138,7 @@ function endElement($parser, $name) {
 		if ($expver == "1.0") {
 			$slice = unserialize (base64_decode($chardata));
 			if (!is_array($slice)) {
-				MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_WRONG_FILE, "standalone");
+				MsgPage($sess->url(self_base())."index.php3", _m("ERROR: Text is not OK. Check whether you copied it well from the Export."), "standalone");
 				exit;
 			}
 			$slice["id"] = $curid;

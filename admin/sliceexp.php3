@@ -39,7 +39,7 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require "./sliceexp_text.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
-	MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EXPORT_IMPORT, "standalone");
+	MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
 	exit;
 }
 
@@ -52,7 +52,7 @@ if (isset($b_export_to_file))
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 ?>
-<TITLE><?php echo L_E_EXPORT_TITLE?></TITLE>
+<TITLE><?php echo _m("Export slice structure")?></TITLE>
 
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
 <!-- Hide script from old browsers
@@ -97,7 +97,7 @@ function b_export_date_onchange(vstup)
 	function validate () {
 		form = document.forms["f"];
 		if (form.SliceID.value.length != 16) {
-			alert (<?php echo '"'.L_E_EXPORT_IDLENGTH.'"' ?>
+			alert (<?php echo '"'._m("The identificator should be 16 characters long, not ").'"' ?>
 				+ form.SliceID.value.length);
 			form.SliceID.focus();
 		}
@@ -113,7 +113,7 @@ function b_export_date_onchange(vstup)
 		  sl_count += (x.options[i].selected ? 1 : 0);
 		};
 		if (sl_count == 0) {
-		  alert (<?php  echo '"'.L_E_EXPORT_MUST_SELECT.'"' ?>);
+		  alert (<?php  echo '"'._m("You must select one or more slices to backup").'"' ?>);
 		  return false;
 		}
 		else {
@@ -134,7 +134,7 @@ function b_export_date_onchange(vstup)
   showMenu ($aamenus, "aaadmin","sliceexp");
 ?>
 
-<h1><b><?php echo L_E_EXPORT_TITLE ?></b></h1>
+<h1><b><?php echo _m("Export slice structure") ?></b></h1>
 
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
 
@@ -152,21 +152,21 @@ if ($SHOWTEXT == ""): ?>
 	<tr><td class=tabtxt colspan=2>
 	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr><td class=tabtxt>
-		<b><?php echo L_E_EXPORT_DESC_EXPORT ?></b><br>
-		<input type="checkbox" name="b_export_struct" value="1" checked><?php echo L_E_EXPORT_EXPORT_STRUCT ?><br>
-		<input type="checkbox" name="b_export_data" value="1"><?php echo L_E_EXPORT_EXPORT_DATA ?><br>
+		<b><?php echo _m("Choose, if you want export slices structure, data or both.") ?></b><br>
+		<input type="checkbox" name="b_export_struct" value="1" checked><?php echo _m("Export structure") ?><br>
+		<input type="checkbox" name="b_export_data" value="1"><?php echo _m("Export data") ?><br>
 		<?php if (function_exists('gzcompress')) { 
 		// this is checking, if your php have zlib support
 		// i don't know, if it works, because we have php with it...
 		?>
-		<input type="checkbox" name="b_export_gzip" value="1"><?php echo L_E_EXPORT_EXPORT_GZIP ?><br>
+		<input type="checkbox" name="b_export_gzip" value="1"><?php echo _m("Use compression") ?><br>
 		<?php } ?>
-		<input type="checkbox" name="b_export_to_file" value="1"><?php echo L_E_EXPORT_EXPORT_TO_FILE ?><br><br>
+		<input type="checkbox" name="b_export_to_file" value="1"><?php echo _m("Store exported data in file") ?><br><br>
 		<table>
 		<tr>
-			<td class=tabtxt><input type="checkbox" name="b_export_spec_date" value="1"><?php echo L_E_EXPORT_SPEC_DATE ?></td>
-			<td class=tabtxt><?php echo L_E_EXPORT_FROM_DATE ?><input type="text" name="b_export_from_date" length="10" maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
-			<td class=tabtxt><?php echo L_E_EXPORT_TO_DATE ?><input type="text" name="b_export_to_date" length="10"  maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
+			<td class=tabtxt><input type="checkbox" name="b_export_spec_date" value="1"><?php echo _m("Export data from specified dates: ") ?></td>
+			<td class=tabtxt><?php echo _m("From ") ?><input type="text" name="b_export_from_date" length="10" maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
+			<td class=tabtxt><?php echo _m("to") ?><input type="text" name="b_export_to_date" length="10"  maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
 		</tr>
 		</table>		
 		</td>
@@ -175,15 +175,15 @@ if ($SHOWTEXT == ""): ?>
 	</td></tr>
 
 	<tr><td class=tabtit colspan=2>
-	<br><p><b><?php echo L_E_EXPORT_MEMO ?> </b></P>
+	<br><p><b><?php echo _m("Choose one of two export kinds:") ?> </b></P>
 	</td></tr>
 
 	<tr>
 		<td class=tabtxt width=50%>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr><td class=tabtxt width="100%">
-			<b><?php echo L_E_EXPORT_DESC_BACKUP ?></b></P>
-			<?php echo L_E_EXPORT_LIST ?>
+			<b><?php echo _m("When exporting \"to Backup\" you may choose more slices at once.") ?></b></P>
+			<?php echo _m("Select slices which you WANT to export:") ?>
 			</td>
 			<tr><td class=tabtxt width="100%">
 				<table width=200><tr><td width=100%>
@@ -199,15 +199,15 @@ if ($SHOWTEXT == ""): ?>
 		</table>		
 		</td>	
 		<td class=tabtxt width=50% valign=top>
-			<b><?php echo L_E_EXPORT_DESC ?></b></P>
-			<b><?php echo L_E_EXPORT_MEMO_ID ?></b>
+			<b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator.") ?></b></P>
+			<b><?php echo _m("Choose a new slice identificator exactly 16 characters long: ") ?></b>
 			<INPUT TYPE="TEXT" NAME="SliceID" VALUE="template" SIZE=16 MAXLENGTH=16></P>
 			<INPUT TYPE="HIDDEN" NAME="SHOWTEXT" VALUE="OHYES">			
 		</td>
 	</tr>
 	<tr>
-		<td><INPUT TYPE=submit NAME="b_export_type" VALUE="<?php echo L_E_EXPORT_SWITCH ?>"></td>
-		<td><INPUT TYPE=button NAME="b_export_type" VALUE="<?php echo L_E_EXPORT_SWITCH_BACKUP ?>" onClick="javascript:validate()"></td>
+		<td><INPUT TYPE=submit NAME="b_export_type" VALUE="<?php echo _m("Export to Backup") ?>"></td>
+		<td><INPUT TYPE=button NAME="b_export_type" VALUE="<?php echo _m("Export to another ActionApps") ?>" onClick="javascript:validate()"></td>
 	</tr>
 	</form>
 	</tr></td>

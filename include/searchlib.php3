@@ -173,7 +173,7 @@ function ParseMultiSelectConds (&$conds)
 
 # function finds group_id in field.input_show_func parameter
 function GetConstantGroup( $input_show_func ) {
-  global $INPUT_SHOW_FUNC_TYPES;
+  $INPUT_SHOW_FUNC_TYPES = inputShowFuncTypes();
   list($fnc,$constgroup) = explode(':', $input_show_func);
 
   # does this field use constants?

@@ -61,7 +61,7 @@ global $db, $sess;
 	// but add them in sliceimp.php3 too!
 	$slice["owner"] = unpack_id ($slice["owner"]);
 	
-	if ($b_export_type != L_E_EXPORT_SWITCH) {
+	if ($b_export_type != _m("Export to Backup")) {
 		if (strlen ($SliceID) != 16) {
 			MsgPage($sess->url(self_base())."index.php3", L_E_EXPORT_TITLE_IDLENGTH.strlen($SliceID), "standalone");
 			exit;	
@@ -133,7 +133,7 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 	
 	fwrite($temp_file, "<sliceexport version=\"1.1\">\n");
 	fwrite($temp_file, "<comment>\nThis text contains exported slices definitions (and/or slices data). You may import them to any ActionApps.\n");
-	if ($b_export_type != L_E_EXPORT_SWITCH) {
+	if ($b_export_type != _m("Export to Backup")) {
 		fwrite($temp_file, "This text is exported slice data for use in another ActionApps instalation (new slice_id)\n");
 	} else {
 		fwrite($temp_file, "This text is backuped slice data with the same slice_id as is in the source slice\n");
@@ -145,7 +145,7 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 	
 	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
 	
-	if ($b_export_type != L_E_EXPORT_SWITCH) {
+	if ($b_export_type != _m("Export to Backup")) {
 		unset ($export_slices);
 		$export_slices = array($slice_id);
 	}
@@ -159,7 +159,7 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 		while($db->next_record())
 			$slice_name = $db->f(name);
 
-		if ($b_export_type != L_E_EXPORT_SWITCH) {
+		if ($b_export_type != _m("Export to Backup")) {
 			if (strlen ($SliceID) != 16) {
 				MsgPage($sess->url(self_base())."index.php3", L_E_EXPORT_TITLE_IDLENGTH.strlen($SliceID), "standalone");
 				exit;	
@@ -168,7 +168,7 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 		}
 						
 		fwrite($temp_file, "<slice id=\"");
-		fwrite($temp_file, ($b_export_type != L_E_EXPORT_SWITCH ? $SliceIDunpack : unpack_id($slice_id)));
+		fwrite($temp_file, ($b_export_type != _m("Export to Backup") ? $SliceIDunpack : unpack_id($slice_id)));
 		fwrite($temp_file, "\" name=\"".$slice_name."\">\n");	
 		
 		if ($b_export_struct) {
@@ -219,7 +219,7 @@ function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices,
 	echo "
 		<tr><td class = tabtxt>
 		<FORM>
-		<b>".  L_E_EXPORT_TEXT_LABEL ."</b>
+		<b>".  _m("Save this text. You may use it to import the slices into any ActionApps:") ."</b>
 		</P>
 		<TEXTAREA COLS = 80 ROWS = 20>";
 

@@ -24,17 +24,17 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<title><?php echo L_FEEDTO_TITLE ?></title>
+<title><?php echo _m("Export Item to Selected Slice") ?></title>
 </head><?php
 
 echo '<body>
       <center>
-      <h1>'. L_FEED_TO .'</h1>
+      <h1>'. _m("Export selected items to selected slice") .'</h1>
       <form name=incf>
        <table border=0 cellspacing=0 cellpadding=0>
-         <tr><td align=center>'. L_SLICE .'</td>
-             <td width=60 align=center>'. L_FEED .'</td>
-             <td width=60 align=center>'. L_ACTIVE_BIN .'</td></tr>'; 
+         <tr><td align=center>'. _m("Slice") .'</td>
+             <td width=60 align=center>'. _m("Export") .'</td>
+             <td width=60 align=center>'. _m("Active") .'</td></tr>'; 
 
 $i=1;     // slice checkbox counter
 $app=1;   // approved checkbox conter
@@ -50,12 +50,12 @@ if( is_array($g_modules) AND (count($g_modules) > 1) ) {
       if( CheckPerms( $auth->auth["uid"], "slice", $k, PS_ITEMS2ACT) )
         echo '<td align=center><input type=checkbox name=a'. $app++ .' value="'. $k .'"></td>';
        else 
-        echo '<td align=center>'. L_NO_PERMISSION_TO_FEED .'</td></tr>';
+        echo '<td align=center>'. _m("No permission") .'</td></tr>';
     }
   }
 }
 if( $i==1 )    // can't feed to any slice  
-  echo '<tr><td colspan=3>'. L_NO_PERM_TO_FEED .'</td></tr>'; ?>
+  echo '<tr><td colspan=3>'. _m("No permission to set feeding for any slice") .'</td></tr>'; ?>
 
       </table>
       <SCRIPT Language="JavaScript"><!--  // do not move this script up - it uses php3 variables
@@ -83,7 +83,7 @@ if( $i==1 )    // can't feed to any slice
       }
       // -->
       </SCRIPT>
-      <input type=button name=sendfeeded value="<?php echo L_FEED ?>" onclick="SendFeed()">
+      <input type=button name=sendfeeded value="<?php echo _m("Export") ?>" onclick="SendFeed()">
       </center>
     </form>
 <?php 

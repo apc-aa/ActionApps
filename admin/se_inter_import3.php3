@@ -29,7 +29,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base()."index.php3"), L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
 require $GLOBALS[AA_INC_PATH]."varset.php3";
@@ -46,7 +46,7 @@ while (list(,$f_slice) = each($f_slices)) {
   $db->query("SELECT feed_id FROM external_feeds WHERE slice_id='".q_pack_id($slice_id)."'
                                                    AND remote_slice_id='".q_pack_id($remote_slice_id)."'");
   if ($db->next_record()) {       // feed from $remote_slice_id to $slice_id is already contained in the table
-    $msg = rawurlencode(MsgOK(L_IMPORT2_ERR));
+    $msg = rawurlencode(MsgOK(_m("The import was already created")));
     continue;
   }
 
@@ -103,7 +103,7 @@ while (list(,$f_slice) = each($f_slices)) {
         $err["DB"] .= MsgErr("Can't add external import");
     }
   }
-  $msg = rawurlencode(MsgOK(L_IMPORT2_OK));
+  $msg = rawurlencode(MsgOK(_m("The import was successfully created")));
 }
 
 go_url( $sess->url(self_base() . "se_inter_import.php3"). "&Msg=" . $msg );

@@ -61,12 +61,14 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
 function SendErrorPage($txt) {
-  echo (L_OFFLINE_ERR_BEGIN . $txt . L_OFFLINE_ERR_END );
+  HTMLPageBegin();
+  echo "</head><body>".$txt."</body></html>";
   exit;
 }  
 
 function SendOkPage($txt) {
-  echo (L_OFFLINE_OK_BEGIN . $txt . L_OFFLINE_OK_END );
+  HTMLPageBegin();
+  echo "</head><body>".$txt."</body></html>";
   exit;
 }  
 
@@ -77,7 +79,7 @@ $varset = new Cvarset();
 $itemvarset = new Cvarset();
 
 if( !$slice_id )
-  SendErrorPage(L_NO_SLICE_ID);
+  SendErrorPage(_m("Slice ID not defined"));
 
 $error = "";
 $ok = "";
@@ -89,10 +91,10 @@ $offline_data = stripslashes($offline_data);
 $offline_data = str_replace(chr(14),' ',$offline_data);  // remove wrong chars
 
 if( !$slice_info )
-  SendErrorPage(L_NO_SUCH_SLICE);
+  SendErrorPage(_m("Bad slice ID"));
 
 if( $slice_info["permit_offline_fill"] < 1 )
-  SendErrorPage(L_OFFLINE_ADMITED);
+  SendErrorPage(_m("You don't have permission to fill this slice off-line"));
  else
   $bin2fill = $slice_info["permit_offline_fill"]; 
   
@@ -109,13 +111,13 @@ while( list(,$packet) = each($packets) ) {
     continue;
   switch (StoreWDDX2DB( "<wddxPacket".$packet,$slice_id,$fields,$bin2fill)) {
    case WDDX_DUPLICATED:
-     $ok .= MsgOk( L_WDDX_DUPLICATED );  # this is error but not fatal - i
+     $ok .= MsgOk( _m("Duplicated item send - skipped") );  # this is error but not fatal - i
      break;
    case WDDX_BAD_PACKET:
-     $error .= MsgErr( L_WDDX_BAD_PACKET );
+     $error .= MsgErr( _m("Wrong data (WDDX packet)") );
      break;
    case WDDX_OK:
-     $ok .= MsgOk( L_WDDX_OK );  # this is error but not fatal - i
+     $ok .= MsgOk( _m("Item OK - stored in database") );  # this is error but not fatal - i
      break;
   }   
 }  
@@ -123,7 +125,7 @@ while( list(,$packet) = each($packets) ) {
 if( $error )
   SendErrorPage( $error );
  else
-  SendOkPage( "$ok<br>". L_CAN_DELETE_WDDX_FILE . 
-                  " <a href='$del_url'>".L_DELETE_WDDX."</a>", $del_url );
+  SendOkPage( "$ok<br>". _m("Now you can dalete local file. ") . 
+                  " <a href='$del_url'>"._m(" Delete ")."</a>", $del_url );
 
 ?>

@@ -21,10 +21,10 @@ http://www.apc.org/
 
 // array params: column header, default sort order
 $sortable_columns = array (
-    "name"=>array("label"=>L_SC_NAME,"sort"=>"a"), 
-    "size"=>array("label"=>L_SC_SIZE,"sort"=>"a"),
-    "type"=>array("label"=>L_SC_TYPE,"sort"=>"a"),
-    "lastm"=>array("label"=>L_SC_LAST_MODIFIED,"sort"=>"d"));
+    "name"=>array("label"=>_m("Name"),"sort"=>"a"), 
+    "size"=>array("label"=>_m("Size"),"sort"=>"a"),
+    "type"=>array("label"=>_m("Type"),"sort"=>"a"),
+    "lastm"=>array("label"=>_m("Last modified"),"sort"=>"d"));
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */    
 
@@ -73,28 +73,28 @@ function format_file_size ($size) {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 $filetypes = array (
-    L_FILETYPE_HTML => array ("img"=>"html", "ext"=>array ("shtml","html","htm","js")),
-    L_FILETYPE_WEB => array ("img"=>"ie", "ext"=>array ("php","php3","asp")),
-    L_FILETYPE_IMAGE => array ("img"=>"image2", "ext"=>array("gif","jpg","jpeg","tiff","img")),
-    L_FILETYPE_TEXT => array ("img"=>"txt", "ext"=>array("txt")),
-    L_FILETYPE_DIRECTORY => array ("img"=>"folder"), 
-    L_FILETYPE_PARENT => array ("img"=>"parent"),
-    L_FILETYPE_OTHER => array ("img"=>"oth"));
+    _m("HTML file") => array ("img"=>"html", "ext"=>array ("shtml","html","htm","js")),
+    _m("Web file") => array ("img"=>"ie", "ext"=>array ("php","php3","asp")),
+    _m("Image file") => array ("img"=>"image2", "ext"=>array("gif","jpg","jpeg","tiff","img")),
+    _m("Text file") => array ("img"=>"txt", "ext"=>array("txt")),
+    _m("Directory") => array ("img"=>"folder"), 
+    _m("Parent") => array ("img"=>"parent"),
+    _m("Other") => array ("img"=>"oth"));
     
 function get_filetype ($filepath) {
     global $filetypes;
 
     if ($filepath == ".." || substr ($filepath,-3) == "/..")
-        return L_FILETYPE_PARENT;
+        return _m("Parent");
     else if (is_dir ($filepath)) 
-        return L_FILETYPE_DIRECTORY;
+        return _m("Directory");
     else {
         $ext = filesuffix ($filepath);
         reset ($filetypes);
         while (list ($filetype, $val) = each ($filetypes)) 
             if (my_in_array ($ext, $val["ext"])) 
                 return $filetype;
-        return L_FILETYPE_OTHER;
+        return _m("Other");
     }
 }
     
@@ -234,22 +234,22 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
 
     // Create file
     else if ($cmd=='createfile') {
-        if( !EReg("^[0-9a-zA-Z_.]*$", $arg)) { $err[] = L_WRONG_FILE_NAME; return; }
+        if( !EReg("^[0-9a-zA-Z_.]*$", $arg)) { $err[] = _m("Wrong file name."); return; }
         if (filesuffix($arg) == "") $arg .= ".html";
         $newfile = $basedir.$directory.$arg;
-        if (file_exists ($newfile)) { $err[] = L_FILE_EXISTS." ($newfilename)."; return; }
-        if (!fopen ($newfile, "w")) { $err[] = L_UNABLE_TO_CREATE_FILE." $newfilename."; return; }
+        if (file_exists ($newfile)) { $err[] = _m("File already exists")." ($newfilename)."; return; }
+        if (!fopen ($newfile, "w")) { $err[] = _m("Unable to create file")." $newfilename."; return; }
         chmod ($newfile, $FILEMAN_MODE_FILE);
         $fe_filename = $directory.$arg;
     }
 
     // Create directory
     else if ($cmd=='createdir') {
-        if( !EReg("^[0-9a-zA-Z_]*$", $arg)) { $err[] = L_WRONG_DIR_NAME; return; }
+        if( !EReg("^[0-9a-zA-Z_]*$", $arg)) { $err[] = _m("Wrong directory name."); return; }
         $newdir = $basedir.$directory.$arg;
         mkdir ($newdir, $FILEMAN_MODE_DIR);
         if (!is_dir ($newdir)) 
-            $err[] = L_UNABLE_TO_CREATE_DIR." $newdirname.";
+            $err[] = _m("Unable to create directory")." $newdirname.";
     }
 
     // Delete
@@ -258,11 +258,11 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         while (list ($arg) = each ($chb)) {
             $f = $basedir.$arg;
             if (is_dir ($f)) {
-                if (!is_dir_empty ($f)) $err[] = L_FIRST_DELETE_ALL_FILES." $arg.";
-                else if (!rmdir ($f)) $err[] = L_UNABLE_TO_DELETE_DIR." $arg.";
+                if (!is_dir_empty ($f)) $err[] = _m("First delete all files from directory")." $arg.";
+                else if (!rmdir ($f)) $err[] = _m("Unable to delete directory")." $arg.";
             }
             else {
-                if (!unlink ($f)) $err[] = L_UNABLE_TO_DELETE_FILE." $arg.";
+                if (!unlink ($f)) $err[] = _m("Unable to delete file")." $arg.";
             }
         }
     }
@@ -285,12 +285,12 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         if ($cmd=='savefile') {
             $f = $basedir.$filename;
             $filedes = fopen ($f,"w");
-            if (!$filedes) $err[] = L_UNABLE_TO_WRITE." ($filename).";
+            if (!$filedes) $err[] = _m("Unable to open file for writing")." ($filename).";
             else {
                 if (get_magic_quotes_gpc()) 
                     $arg = stripslashes ($arg);                
                 $bytes = fwrite ($filedes, $arg);
-                if ($bytes == -1) $err[] = L_ERROR_WRITING." $filename.";
+                if ($bytes == -1) $err[] = _m("Error writing to file")." $filename.";
                 fclose ($filedes);
             }
         }
@@ -299,8 +299,8 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         else if ($cmd=='rename' && $filename) {
             make_secure ($renamearg);    
             $newname = dirname ($basedir.$filename)."/".$arg;
-            if (file_exists ($newname)) $err[] = L_FILE_ALREADY_EXISTS." ($arg).";
-            else if (!rename ($basedir.$filename, $newname)) $err[] = L_UNABLE_RENAME." $filename.";
+            if (file_exists ($newname)) $err[] = _m("File with this name already exists")." ($arg).";
+            else if (!rename ($basedir.$filename, $newname)) $err[] = _m("Unable to rename")." $filename.";
         }
     }
 }
@@ -342,20 +342,20 @@ function fileman_copy_template ($srcdir, $dstdir) {
     $db->next_record();
     $aliases["_#SLICNAME"] = $db->f('name'); 
 
-    if (!is_dir ($srcdir)) return L_ERR_WRONG_DIR." ($srcdir)";
+    if (!is_dir ($srcdir)) return _m("Wrong directory name")." ($srcdir)";
     $files = get_files_subtree ($srcdir);
     reset ($files);
     while (list (,$file) = each ($files)) 
         if (file_exists ($dstdir."/".$file)) 
             $errfiles[] = $file;
     if (is_array ($errfiles)) 
-        return L_SOME_FILES_EXIST . " (".join(", ",$errfiles).").";
+        return _m("Files with the same names as some in the template already exist. Please change the file names first.") . " (".join(", ",$errfiles).").";
     reset ($files);
     while (list (,$file) = each ($files)) {
         $ft = get_filetype ($srcdir."/".$file);
-        if ($ft == L_FILETYPE_HTML || $ft == L_FILETYPE_TEXT) {
+        if ($ft == _m("HTML file") || $ft == _m("Text file")) {
             $fd = fopen ($dstdir."/".$file, "w");
-            if (!$fd) return L_UNABLE_TO_CREATE_FILE." $dstdir/$file.";
+            if (!$fd) return _m("Unable to create file")." $dstdir/$file.";
             $fcontent = file ($srcdir."/".$file);
             reset ($fcontent);
             while (list (,$frow) = each ($fcontent)) {
@@ -398,7 +398,7 @@ $fileman_js = "
             case 'uncheckall': 
                 SelectVis (formname,'chb',0); break;
             case 'delete':
-                if (confirm('".L_SURE_TO_DELETE."'))
+                if (confirm('"._m("Are you sure you want to delete the selected files and folders?")."'))
                     submitCommand ('delete');
                 break;
             case 'reset':

@@ -29,7 +29,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base()."index.php3"), L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -66,7 +66,7 @@ while ($db->next_record()) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_IMPORT_TIT;?></TITLE>
+ <TITLE><?php echo _m("Inter node import settings");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 
 function InitPage() {}
@@ -80,10 +80,10 @@ function SelectValue(sel) {
 function Delete() {
   sel = SelectValue('document.f.feed_id')
   if (sel == null) {
-    alert('<?php echo L_IMPORT_SEL_NONE; ?>')
+    alert('<?php echo _m("No selected import"); ?>')
     return
   }
-  if (!confirm('<?php echo L_IMPORT_CONFIRM_DELETE; ?>'))
+  if (!confirm('<?php echo _m("Are you sure you want to delete the import?"); ?>'))
     return
 
   var url = "<?php echo $sess->url(self_base() . "se_inter_import.php3"); ?>"
@@ -93,7 +93,7 @@ function Delete() {
 
 function Submit() {
   if (SelectValue(document.f.rem_nodes) == null) {
-     alert('<?php echo L_IMPORT_NODE_SEL; ?>')
+     alert('<?php echo _m("No selected node"); ?>')
      return false
   }
 }
@@ -108,16 +108,16 @@ function Submit() {
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin","n_import");
 
-  echo "<H1><B>" . L_IMPORT_TIT . "</B></H1>";
+  echo "<H1><B>" . _m("Inter node import settings") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
 <form method=post name="f" action="<?php echo $sess->url(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
   <table width="400" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo L_IMPORT_TIT ?></b></td></tr>
+    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Inter node import settings") ?></b></td></tr>
      <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABBG ?>">
-      <tr><td ><?php echo L_IMPORT_LIST ."<b>" .$r_slice_headline ."</b>" ?></td></tr>
+      <tr><td ><?php echo _m("Existing remote imports into the slice ") ."<b>" .$r_slice_headline ."</b>" ?></td></tr>
       <tr><td align=center>
         <SELECT name="feed_id" size=5>
          <?php
@@ -132,10 +132,10 @@ function Submit() {
         </SELECT>
       </td></tr>
       <tr><td align="center">
-        <input type=button VALUE="<?php echo L_DELETE ?>" onClick = "Delete()">
+        <input type=button VALUE="<?php echo _m("Delete") ?>" onClick = "Delete()">
        </td></tr>
 
-      <tr><td ><?php echo L_IMPORT_NODES_LIST; ?>
+      <tr><td ><?php echo _m("All remote nodes"); ?>
       </td></tr>
       <tr><td align="center">
         <SELECT name="rem_nodes" class=tabtxt size=5>
@@ -146,7 +146,7 @@ function Submit() {
         ?>
         </SELECT>
       </td></tr>
-      <tr><td align=center ><input type=submit value="<?php echo L_IMPORT_CREATE ?>" ></td></tr>
+      <tr><td align=center ><input type=submit value="<?php echo _m("Create new feed from node") ?>" ></td></tr>
   </table>
   </td></tr>
   </table>

@@ -35,8 +35,11 @@ else return;
   # (on the other hand, new type can be added just by placing new fileld
   # in database table fields as for 'AA_Core_Fields..' slice).
 
-// in the array MODULES "name" is a description of the module, "hide_create_module" doesn't show the module in the Create Slice / Module page
-
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+* @global array $MODULES 
+*     "name" is a description of the module, 
+*     "hide_create_module" doesn't show the module in the Create Slice / Module page
+*/
 $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => 'Slice',
                                 'hide_create_module' => 1,
@@ -85,7 +88,9 @@ $MODULES['Links'] =  array ('table' => 'links',
                             'menu' => $AA_BASE_PATH ."modules/links/menu.php3",
                             'letter' => 'L');
 
-# language files for slices (not for some modules, e.g. site)
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+* @global array $LANGUAGE_FILES language files for slices (not for some modules, e.g. site)
+*/
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "es_news_lang.php3" => "es_news_lang.php3",
                          "cz_news_lang.php3" => "cz_news_lang.php3",
@@ -94,6 +99,9 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "ro_news_lang.php3" => "ro_news_lang.php3",
                          "ja_news_lang.php3" => "ja_news_lang.php3");
 
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+* @global array $LANGUAGE_CHARSETS charsets to be used in HTML HEAD and otherwere
+*/                         
 $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "en" => "iso-8859-1",
                             "es" => "iso-8859-1",
@@ -102,6 +110,9 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "sk" => "windows-1250",
                             "ja" => "EUC-JP");
 
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+* @global array $LANGUAGE_NAMES 
+*/                         
 $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "en" => "English",
                          "es" => "Espanol",
@@ -110,7 +121,25 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "sk" => "Slovenština",
                          "ja" => "Japanian");
 
-
+/// number of items in editor window
+define("EDIT_ITEM_COUNT", 20);                 
+  
+define("DEFAULT_FULLTEXT_HTML", '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT>'
+                               .'<BR><B>_#PUB_DATE</B> <BR>_#FULLTEXT');
+define("DEFAULT_ODD_HTML", 
+     '<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font>'
+    .'<font color=red><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font>'
+    .'<font color=#808080 size=-1><br>_#PLACE###(<a href="_#SRC_URL#">_#SOURCE##</a>) - </font>'
+    .'<font color=black size=-1>_#ABSTRACT<br></font><br>');
+define("DEFAULT_EVEN_HTML", "");
+define("DEFAULT_TOP_HTML", "<br>");
+define("DEFAULT_BOTTOM_HTML", "<br>");
+define("DEFAULT_CATEGORY_HTML", "<p>_#CATEGORY</p>");
+define("DEFAULT_EVEN_ODD_DIFFER", false);
+define("DEFAULT_CATEGORY_SORT", true);
+define("DEFAULT_COMPACT_REMOVE", "()");
+define("DEFAULT_FULLTEXT_REMOVE", "()");
+                                                   
 # MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and
 # specifies how many items from the begining we have to search
 define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
@@ -143,87 +172,100 @@ $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
   "search_pri", "search_show", "search_ft_show", "search_ft_default",
   "content_edit", "html_default", "html_show", "input_show", "text_stored");
 
-  // array of default function description
-$INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
-                              "dte" => L_INPUT_DEFAULT_DTE,
-                              "uid" => L_INPUT_DEFAULT_UID,
-                              "log" => L_INPUT_DEFAULT_LOG,
-                              "now" => L_INPUT_DEFAULT_NOW,
-			      "variable" =>L_INPUT_DEFAULT_VAR);
-
-$INPUT_SHOW_FUNC_TYPES = array (
-    "txt" => array( 'name' => L_INPUT_SHOW_TXT, #textarea
+/// @return array default function description
+function inputDefaultTypes ()
+{ 
+    return array ("txt" => _m("Text"),
+                  "dte" => _m("Date"),
+                  "uid" => _m("User ID"),
+                  "log" => _m("Login name"),
+                  "now" => _m("Now"),
+			      "variable" =>_m("Variable"));
+}
+  
+/// @return array input show function types
+function inputShowFuncTypes ()
+{
+    return array (
+    "txt" => array( 'name' => _m("Text Area"), #textarea
                     'multiple' => false,
                     'paramformat' => 'fnc:param' ),
-    "tpr" => array( 'name' => L_INPUT_SHOW_TPR, #textarea with preset
+    "tpr" => array( 'name' => _m("Textarea with Presets"), #textarea with preset
                     'multiple' => false,
                     'paramformat' => 'fnc:const:param' ),
-    "edt" => array( 'name' => L_INPUT_SHOW_EDT, #rich text edit
+    "edt" => array( 'name' => _m("Rich Edit Text Area"), #rich text edit
                     'multiple' => false,
                     'paramformat' => 'fnc:param' ),
-    "fld" => array( 'name' => L_INPUT_SHOW_FLD, #textfield
+    "fld" => array( 'name' => _m("Text Field"), #textfield
                     'multiple' => false,
                     'paramformat' => 'fnc:param' ),
-    "sel" => array( 'name' => L_INPUT_SHOW_SEL, #selectbox
+    "sel" => array( 'name' => _m("Select Box"), #selectbox
                     'multiple' => false,
                     'paramformat' => 'fnc:const:param' ),
-    "pre" => array( 'name' => L_INPUT_SHOW_PRE, #selectbox with preset
+    "pre" => array( 'name' => _m("Select Box with Presets"), #selectbox with preset
                     'multiple' => false,
                     'paramformat' => 'fnc:const:param' ),
-    "rio" => array( 'name' => L_INPUT_SHOW_RIO, #radio button
+    "rio" => array( 'name' => _m("Radio Button"), #radio button
                     'multiple' => false,
                     'paramformat' => 'fnc:const:param' ),
-    "dte" => array( 'name' => L_INPUT_SHOW_DTE, #date
+    "dte" => array( 'name' => _m("Date"), #date
                     'multiple' => false,
                     'paramformat' => 'fnc:param' ),
-    "chb" => array( 'name' => L_INPUT_SHOW_CHB, #check box
+    "chb" => array( 'name' => _m("Check Box"), #check box
                     'multiple' => false,
                     'paramformat' => 'fnc' ),
-    "mch" => array( 'name' => L_INPUT_SHOW_MCH, #multiple checkbox
+    "mch" => array( 'name' => _m("Multiple Checkboxes"), #multiple checkbox
                     'multiple' => true,
                     'paramformat' => 'fnc:const:param' ),
-    "mse" => array( 'name' => L_INPUT_SHOW_MSE, #multiple selectbox
+    "mse" => array( 'name' => _m("Multiple Selectbox"), #multiple selectbox
                     'multiple' => true,
                     'paramformat' => 'fnc:const:param' ),
-    "wi2" => array( 'name' => L_INPUT_SHOW_WI2, #2 windows
+    "wi2" => array( 'name' => _m("Two Boxes"), #2 windows
                     'multiple' => true,
                     'paramformat' => 'fnc:const:param' ),
-    "fil" => array( 'name' => L_INPUT_SHOW_FIL, #file
+    "fil" => array( 'name' => _m("File Upload"), #file
                     'multiple' => false,
                     'paramformat' => 'fnc:param' ),
-  # "isi" => array( 'name' => L_INPUT_SHOW_ISI, #
+  # "isi" => array( 'name' => _m("Related Item Select Box"), #
   #                 'multiple' => true,
   #                 'paramformat' => 'fnc:const:param' ),
-    "iso" => array( 'name' => L_INPUT_SHOW_ISO, #related items selectbox - outer
+    "iso" => array( 'name' => _m("Related Item Window"), #related items selectbox - outer
                     'multiple' => true,
                     'paramformat' => 'fnc:const:param' ),
-    "nul" => array( 'name' => L_INPUT_SHOW_NUL, #
+    "nul" => array( 'name' => _m("Do not show"), #
                     'multiple' => false,
                     'paramformat' => 'fnc' ),
-    "hco" => array( 'name' => L_INPUT_SHOW_HCO, #hierarchy constant
+    "hco" => array( 'name' => _m("Hierachical constants"), #hierarchy constant
                     'multiple' => false,
                     'paramformat' => 'fnc:const:param' ));
+}
 
-$INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
-                               "url" => L_INPUT_VALIDATE_URL,
-                               "e-mail" => L_INPUT_VALIDATE_EMAIL,
-                               "number" => L_INPUT_VALIDATE_NUMBER,
-                               "id" => L_INPUT_VALIDATE_ID,
-                               "date" => L_INPUT_VALIDATE_DATE,
-                               "bool" => L_INPUT_VALIDATE_BOOL,
-			                         "user" => L_INPUT_VALIDATE_USER);	//added 03/01/02,setu
+function inputValidateTypes ()
+{
+    return array ("text" => _m("Text"),
+                   "url" => _m("URL"),
+                   "e-mail" => _m("E-mail"),
+                   "number" => _m("Number"),
+                   "id" => _m("Id"),
+                   "date" => _m("Date"),
+                   "bool" => _m("Boolean"),
+                   "user" => _m("User"));	//added 03/01/02,setu
+}
 
-$INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
-                             "boo" => L_INPUT_INSERT_BOO,
-                             "fil" => L_INPUT_INSERT_FIL,
-                             "uid" => L_INPUT_INSERT_UID,
-                             "log" => L_INPUT_INSERT_LOG,
-                             "ids" => L_INPUT_INSERT_IDS, 
-                             "now" => L_INPUT_INSERT_NOW
-                           /*"dte" => L_INPUT_INSERT_DTE, 
-                             "cns" => L_INPUT_INSERT_CNS, 
-                             "num" => L_INPUT_INSERT_NUM, 
-                             "nul" => L_INPUT_INSERT_NUL*/);
+function inputInsertTypes ()
+{
+    return array ("qte" => _m("Text"),
+                 "boo" => _m("Boolean"),
+                 "fil" => _m("File"),
+                 "uid" => _m("User ID"),
+                 "log" => _m("Login name"),
+                 "ids" => _m("Item IDs"), 
+                 "now" => _m("Now")
+               /*"dte" => _m("Date"), 
+                 "cns" => _m("Constant"), 
+                 "num" => _m("Number"), 
+                 "nul" => _m("None")*/);
+}                 
                              
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "1"   => LOG_EVENTS_,
@@ -258,321 +300,335 @@ define( "STATE_FEEDABLE_UPDATE_LOCKED",4);
 # relation table flags
 define( "REL_FLAG_FEED", 2 );    # 2 - just to be compatible with content table
 
-$INPUT_FEED_MODES = array ( STATE_FEEDABLE => L_STATE_FEEDABLE,
-                            STATE_UNFEEDABLE => L_STATE_UNFEEDABLE,
-                            STATE_FEEDNOCHANGE => L_STATE_FEEDNOCHANGE,
-                            STATE_FEEDABLE_UPDATE => L_STATE_FEEDABLE_UPDATE,
-                            STATE_FEEDABLE_UPDATE_LOCKED => L_STATE_FEEDABLE_UPDATE_LOCKED
-                          );
+function inputFeedModes ()
+{
+  return array ( STATE_FEEDABLE => _m("Feed"),
+                STATE_UNFEEDABLE => _m("Do not feed"),
+                STATE_FEEDNOCHANGE => _m("Feed locked"),
+                STATE_FEEDABLE_UPDATE => _m("Feed & update"),
+                STATE_FEEDABLE_UPDATE_LOCKED => _m("Feed & update & lock")
+              );
+}              
 
-# se_views.php3 - view field definition
-/* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
+function getViewFields ()
+{    
+    # se_views.php3 - view field definition
+    /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
+    
+    $VIEW_FIELDS["name"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+    $VIEW_FIELDS["before"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["even"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["even_odd_differ"] = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
+    $VIEW_FIELDS["odd"]             = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["after"]           = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["group_by1"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
+    $VIEW_FIELDS["g1_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
+    $VIEW_FIELDS["group_by2"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
+    $VIEW_FIELDS["g2_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
+    $VIEW_FIELDS["group_title"]     = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["group_bottom"]    = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["remove_string"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["modification"]    = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"seltype" );
+    $VIEW_FIELDS["parameter"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selgrp" );
+    $VIEW_FIELDS["img1"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+    $VIEW_FIELDS["img2"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+    $VIEW_FIELDS["img3"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+    $VIEW_FIELDS["img4"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+    $VIEW_FIELDS["order1"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
+    $VIEW_FIELDS["o1_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
+    $VIEW_FIELDS["order2"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
+    $VIEW_FIELDS["o2_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
+    $VIEW_FIELDS["selected_item"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["cond1field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"cond" );
+    $VIEW_FIELDS["cond1op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
+    $VIEW_FIELDS["cond1cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
+    $VIEW_FIELDS["cond2field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"cond" );
+    $VIEW_FIELDS["cond2op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
+    $VIEW_FIELDS["cond2cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
+    $VIEW_FIELDS["cond3field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"cond" );
+    $VIEW_FIELDS["cond3op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
+    $VIEW_FIELDS["cond3cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
+    $VIEW_FIELDS["listlen"]         = array( "validate"=>"number", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+    $VIEW_FIELDS["flag"]            = array( "validate"=>"number", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
+    $VIEW_FIELDS["scroller"]        = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
+    $VIEW_FIELDS["aditional"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["aditional2"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["aditional3"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["aditional4"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["aditional5"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["aditional6"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["noitem_msg"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+    $VIEW_FIELDS["field1"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+    $VIEW_FIELDS["field2"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+    $VIEW_FIELDS["field3"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+    $VIEW_FIELDS["calendar_type"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"select", 
+                                             "values"=>array ("mon"=>_m("Month List"),"mon_table"=>_m("Month Table")));
+    return $VIEW_FIELDS;
+}                                         
 
-$VIEW_FIELDS["name"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-$VIEW_FIELDS["before"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["even"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["even_odd_differ"] = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
-$VIEW_FIELDS["odd"]             = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["after"]           = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["group_by1"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
-$VIEW_FIELDS["g1_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
-$VIEW_FIELDS["group_by2"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
-$VIEW_FIELDS["g2_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
-$VIEW_FIELDS["group_title"]     = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["group_bottom"]    = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["remove_string"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["modification"]    = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"seltype" );
-$VIEW_FIELDS["parameter"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selgrp" );
-$VIEW_FIELDS["img1"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-$VIEW_FIELDS["img2"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-$VIEW_FIELDS["img3"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-$VIEW_FIELDS["img4"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-$VIEW_FIELDS["order1"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
-$VIEW_FIELDS["o1_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
-$VIEW_FIELDS["order2"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
-$VIEW_FIELDS["o2_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"number", "input"=>"none" );
-$VIEW_FIELDS["selected_item"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["cond1field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"cond" );
-$VIEW_FIELDS["cond1op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-$VIEW_FIELDS["cond1cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-$VIEW_FIELDS["cond2field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"cond" );
-$VIEW_FIELDS["cond2op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-$VIEW_FIELDS["cond2cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-$VIEW_FIELDS["cond3field"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"cond" );
-$VIEW_FIELDS["cond3op"]         = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-$VIEW_FIELDS["cond3cond"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"none" );
-$VIEW_FIELDS["listlen"]         = array( "validate"=>"number", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-$VIEW_FIELDS["flag"]            = array( "validate"=>"number", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
-$VIEW_FIELDS["scroller"]        = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"chbox" );
-$VIEW_FIELDS["aditional"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["aditional2"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["aditional3"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["aditional4"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["aditional5"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["aditional6"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["noitem_msg"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
-$VIEW_FIELDS["field1"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
-$VIEW_FIELDS["field2"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
-$VIEW_FIELDS["field3"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
-$VIEW_FIELDS["calendar_type"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"select", 
-                                         "values"=>array ("mon"=>L_MONTH,"mon_table"=>L_MONTH_TABLE));
-
-# se_views.php3 - view types
-$VIEW_TYPES['list']  = array( "name" => L_COMPACT_VIEW,
-                              "before" => L_V_BEFORE ,
-                              "odd" => L_V_ODD ,
-                              "even_odd_differ" => L_V_EVENODDDIF ,
-                              "even" => L_V_EVEN ,
-                              "after" => L_V_AFTER ,
-                              "remove_string" => L_V_REMOVE_STRING ,
-// TODO                              "modification" => L_V_MODIFICATION ,
-#                              "parameter" => L_V_PARAMETER ,
-#                              "img1" => L_V_IMG1 ,
-#                              "img2" => L_V_IMG2 ,
-#                              "img3" => L_V_IMG3 ,
-#                              "img4" => L_V_IMG4 ,
-                              "order1" => L_V_ORDER1 ,
-                              "o1_direction" => L_V_ORDER1DIR ,
-                              "order2" => L_V_ORDER2 ,
-                              "o2_direction" => L_V_ORDER2DIR ,
-                              "group_by1" => L_V_GROUP_BY1 ,
-                              "g1_direction" => L_V_GROUP1DIR ,
-#                              "group_by2" => L_V_GROUP_BY2 ,
-#                              "g2_direction" => L_V_GROUP2DIR ,
-                              "group_title" => L_V_GROUP ,
-                              "group_bottom" => L_V_GROUP_BOTTOM ,
-#                              "selected_item" => L_V_SELECTED ,
-                              "cond1field" => L_V_COND1FLD ,
-                              "cond1op" => L_V_COND1OP ,
-                              "cond1cond" => L_V_COND1COND ,
-                              "cond2field" => L_V_COND2FLD ,
-                              "cond2op" => L_V_COND2OP ,
-                              "cond2cond" => L_V_COND2COND ,
-                              "cond3field" => L_V_COND3FLD ,
-                              "cond3op" => L_V_COND3OP ,
-                              "cond3cond" => L_V_COND3COND ,
-                              "listlen" => L_V_LISTLEN ,
-                              "noitem_msg" => L_V_NO_ITEM );
-#                              "flag" => L_V_FLAG ,
-// TODO                              "scroller" => L_V_SCROLLER ,
-#                              "aditional" => L_V_ADITIONAL );
-
-$VIEW_TYPES['full'] = array( 'name' => L_FULLTEXT_VIEW,
-                              "before" => L_V_BEFORE ,
-                              "odd" => L_V_ODD ,
-                              "after" => L_V_AFTER ,
-                              "remove_string" => L_V_REMOVE_STRING ,
-// TODO                              "modification" => L_V_MODIFICATION ,
-                              "cond1field" => L_V_COND1FLD ,
-                              "cond1op" => L_V_COND1OP ,
-                              "cond1cond" => L_V_COND1COND ,
-                              "cond2field" => L_V_COND2FLD ,
-                              "cond2op" => L_V_COND2OP ,
-                              "cond2cond" => L_V_COND2COND ,
-                              "cond3field" => L_V_COND3FLD ,
-                              "cond3op" => L_V_COND3OP ,
-                              "cond3cond" => L_V_COND3COND ,
-                              "noitem_msg" => L_V_NO_ITEM );
-
-$VIEW_TYPES['discus'] = array( 'name' => L_DISCUSSION_VIEW,
-                              "before" => L_V_BEFORE ,
-                              "odd" => L_D_COMPACT ,
-                              "after" => L_V_AFTER ,
-                              "aditional2" => L_V_D_SEL_BUTTON ,
-                              "aditional3" => L_V_D_ALL_BUTTON ,
-                              "aditional4" => L_V_D_NEW_BUTTON ,
-                              "even_odd_differ" => L_D_SHOWIMGS ,
-                              "modification" => L_D_ORDER ,
-                              "img1" => L_V_IMG1 ,
-                              "img2" => L_V_IMG2 ,
-                              "img3" => L_V_IMG3 ,
-                              "img4" => L_V_IMG4 ,
-                              "even" => L_D_FULLTEXT,
-                              "aditional" => L_V_D_SPACE ,
-                              "remove_string" => L_D_FORM
-                              );
-
-// discussion to mail
-$VIEW_TYPES['disc2mail'] = array( 'name' => L_DISCUSSION_2_MAIL,
-                              "aditional" => L_V_MAIL_FROM,
-                              "aditional2" => L_V_MAIL_REPLY_TO,
-                              "aditional3" => L_V_MAIL_ERRORS_TO,
-                              "aditional4" => L_V_MAIL_SENDER,
-                              "aditional5" => L_V_MAIL_SUBJECT,
-                              "even" => L_V_MAIL_BODY
-                              );
-
-/*  TODO
-$VIEW_TYPES['seetoo'] = array( 'name' => L_RELATED_VIEW,
-                              "before" => L_V_BEFORE ,
-                              "odd" => L_V_ODD ,
-                              "even_odd_differ" => L_V_EVENODDDIF ,
-                              "even" => L_V_EVEN ,
-                              "after" => L_V_AFTER ,
-                              "modification" => L_V_MODIFICATION ,
-                              "order1" => L_V_ORDER1 ,
-                              "o1_direction" => L_V_ORDER1DIR ,
-                              "order2" => L_V_ORDER2 ,
-                              "o2_direction" => L_V_ORDER2DIR ,
-                              "selected_item" => L_V_SELECTED ,
-                              "listlen" => L_V_LISTLEN );
-*/
-                              
-$VIEW_TYPES['const'] = array( 'name' => L_CONSTANT_VIEW,
-                              "before" => L_V_BEFORE ,
-                              "odd" => L_V_ODD ,
-                              "even" => L_V_EVEN ,
-                              "after" => L_V_AFTER ,
-#                              "selected_item" => L_V_SELECTED ,
-                              "parameter" => L_V_CONSTANT_GROUP ,
-                              "order1" => L_V_ORDER1 ,
-                              "listlen" => L_V_LISTLEN ,
-                              "even_odd_differ" => L_V_EVENODDDIF ,
-                              "o1_direction" => L_V_ORDER1DIR);
-
-
-$VIEW_TYPES['rss'] = array( 'name' => L_RSS_VIEW,
-                              "before" => L_V_BEFORE ,
-                              "odd" => L_V_ODD ,
-                              "after" => L_V_AFTER ,
-                              "order1" => L_V_ORDER1 ,
-                              "o1_direction" => L_V_ORDER1DIR ,
-                              "order2" => L_V_ORDER2 ,
-                              "o2_direction" => L_V_ORDER2DIR ,
-                              "cond1field" => L_V_COND1FLD ,
-                              "cond1op" => L_V_COND1OP ,
-                              "cond1cond" => L_V_COND1COND ,
-                              "cond2field" => L_V_COND2FLD ,
-                              "cond2op" => L_V_COND2OP ,
-                              "cond2cond" => L_V_COND2COND ,
-                              "cond3field" => L_V_COND3FLD ,
-                              "cond3op" => L_V_COND3OP ,
-                              "cond3cond" => L_V_COND3COND ,
-                              "listlen" => L_V_LISTLEN ,
-                              "noitem_msg" => L_V_NO_ITEM );
-
-$VIEW_TYPES['static'] = array( 'name' => L_STATIC_VIEW, 
-                              "odd" => L_V_ODD );
-                              
-
-# for javascript list of items 
-$VIEW_TYPES['script'] = array( 'name' => L_SCRIPT_VIEW,  
-                              "before" => L_V_BEFORE ,
-                              "odd" => L_V_ODD ,
-                              "after" => L_V_AFTER ,
-                              "order1" => L_V_ORDER1 ,
-                              "o1_direction" => L_V_ORDER1DIR ,
-                              "order2" => L_V_ORDER2 ,
-                              "o2_direction" => L_V_ORDER2DIR ,
-                              "cond1field" => L_V_COND1FLD ,
-                              "cond1op" => L_V_COND1OP ,
-                              "cond1cond" => L_V_COND1COND ,
-                              "cond2field" => L_V_COND2FLD ,
-                              "cond2op" => L_V_COND2OP ,
-                              "cond2cond" => L_V_COND2COND ,
-                              "cond3field" => L_V_COND3FLD ,
-                              "cond3op" => L_V_COND3OP ,
-                              "cond3cond" => L_V_COND3COND ,
-                              "listlen" => L_V_LISTLEN ,
-                              "noitem_msg" => L_V_NO_ITEM );
-                              
-$VIEW_TYPES['calendar'] = array ('name' => L_CALENDAR_VIEW,
-                              "calendar_type" => L_V_CALENDAR_TYPE,
-                              "before" => L_V_BEFORE ,
-                              "aditional3" => L_V_EVENT_TD ,
-                              "odd" => L_V_EVENT ,
-                              "after" => L_V_AFTER ,
-                              "remove_string" => L_V_REMOVE_STRING ,
-                              "order1" => L_V_ORDER1 ,
-                              "o1_direction" => L_V_ORDER1DIR ,
-                              "order2" => L_V_ORDER2 ,
-                              "o2_direction" => L_V_ORDER2DIR ,
-                              "field1" => L_V_FROM_DATE,
-                              "field2" => L_V_TO_DATE,
-                              "group_title" => L_V_DAY ,
-                              "group_bottom" => L_V_DAY_BOTTOM ,
-                              "even_odd_differ" => L_V_EMPTY_DIFFER,
-                              "aditional" => L_V_DAY_EMPTY,
-                              "aditional2" => L_V_DAY_EMPTY_BOTTOM,
-#                              "selected_item" => L_V_SELECTED ,
-                              "cond1field" => L_V_COND1FLD ,
-                              "cond1op" => L_V_COND1OP ,
-                              "cond1cond" => L_V_COND1COND ,
-                              "cond2field" => L_V_COND2FLD ,
-                              "cond2op" => L_V_COND2OP ,
-                              "cond2cond" => L_V_COND2COND ,
-                              "cond3field" => L_V_COND3FLD ,
-                              "cond3op" => L_V_COND3OP ,
-                              "cond3cond" => L_V_COND3COND ,
-                              "listlen" => L_V_LISTLEN ,
-                              "noitem_msg" => L_V_NO_ITEM );
-#                              "flag" => L_V_FLAG ,
-// TODO                              "scroller" => L_V_SCROLLER ,
-#                              "aditional" => L_V_ADITIONAL );
-
-$VIEW_TYPES['digest']  = array( "name" => L_ALERTS_VIEW,
-                              "function:digest_filters" => "",
-                              "before" => L_V_BEFORE ,
-                              "odd" => L_V_ODD ,
-                              "even_odd_differ" => L_V_EVENODDDIF ,
-                              "even" => L_V_EVEN ,
-                              "after" => L_V_AFTER ,
-                              "remove_string" => L_V_REMOVE_STRING ,
-                              "order1" => L_V_ORDER1 ,
-                              "o1_direction" => L_V_ORDER1DIR ,
-                              "order2" => L_V_ORDER2 ,
-                              "o2_direction" => L_V_ORDER2DIR ,
-                              "group_by1" => L_V_GROUP_BY1 ,
-                              "g1_direction" => L_V_GROUP1DIR ,
-                              "group_title" => L_V_GROUP ,
-                              "group_bottom" => L_V_GROUP_BOTTOM ,
-                              "listlen" => L_V_MAXLISTLEN,
-                              "noitem_msg" => L_V_NO_ITEM);
-
-# modification - options for modification field of views
-# alias - which aliases to show
-$VIEW_TYPES_INFO['list'] = array('modification'=>array('1'=>'search',
-                                                       '2'=>'parameter',
-                                                       '3'=>'statistic',
-                                                       '4'=>'all in thread',
-                                                       '5'=>'related',
-                                                       '6'=>'keyword related'),
-                                 'aliases' => 'field');
-$VIEW_TYPES_INFO['full'] = array('modification'=>array ('11'=>'newest',
-                                                        '12'=>'newest with condition',
-                                                        '13'=>'oldest with condition',
-                                                        '14'=>'id', '15'=>'parameter'),
-                                 'aliases' => 'field');
-$VIEW_TYPES_INFO['digest'] = array('aliases' => 'field');
-$VIEW_TYPES_INFO['discus'] = array('modification'=>array('21'=>'timeorder', 
-                                                         '22'=>'reverse timeorder', 
-                                                         '23'=>'thread' ),
-                                   'aditional' =>array('default'=>'<img src="'.$AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">'),
-                                   'aditional2'=>array('default'=>'<input type=button name=sel_ids value="' .L_D_SHOW_SELECTED. '" onClick=showSelectedComments() class="discbuttons">'),
-                                   'aditional3'=>array('default'=>'<input type=button name=all_ids value="' .L_D_SHOW_ALL. '" onClick=showAllComments() class="discbuttons">'),
-                                   'aditional4'=>array('default'=>'<input type=button name=add_disc value="' .L_D_ADD_NEW. '" onClick=showAddComments() class="discbuttons">'),
-                                   'aliases' => 'discus');
-$VIEW_TYPES_INFO['discus2mail'] = array ('aliases' => 'discus2mail');                                   
-$VIEW_TYPES_INFO['seetoo'] = array('modification'=>array('31'=>'related', 
-                                                         '32'=>'keyword with OR',
-                                                         '33'=>'keyword with AND' ),
-                                 'aliases' => 'field');
-$VIEW_TYPES_INFO['const'] = array('aliases' => 'const',
-                                  'order' => array('name'=>'name', 
-                                                   'value'=>'value',
-                                                   'pri'=>'priority'));
+function getViewTypes ()
+{
+    # se_views.php3 - view types
+    $VIEW_TYPES['list']  = array( "name" => _m("Item listing"),
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("Odd Rows") ,
+                                  "even_odd_differ" => _m("Use different HTML code for even rows") ,
+                                  "even" => _m("Even Rows") ,
+                                  "after" => _m("Bottom HTML") ,
+                                  "remove_string" => _m("Remove strings") ,
+    // TODO                              "modification" => _m("Type") ,
+    #                              "parameter" => _m("Parameter") ,
+    #                              "img1" => _m("View image 1") ,
+    #                              "img2" => _m("View image 2") ,
+    #                              "img3" => _m("View image 3") ,
+    #                              "img4" => _m("View image 4") ,
+                                  "order1" => _m("Sort primary") ,
+                                  "o1_direction" => " " ,
+                                  "order2" => _m("Sort secondary") ,
+                                  "o2_direction" => " " ,
+                                  "group_by1" => _m("Group by") ,
+                                  "g1_direction" => " " ,
+    #                              "group_by2" => _m("Group by") ,
+    #                              "g2_direction" => " " ,
+                                  "group_title" => _m("Group title format") ,
+                                  "group_bottom" => _m("Group bottom format") ,
+    #                              "selected_item" => _m("HTML for Selected") ,
+                                  "cond1field" => _m("Condition 1") ,
+                                  "cond1op" => " " ,
+                                  "cond1cond" => " " ,
+                                  "cond2field" => _m("Condition 2") ,
+                                  "cond2op" => " " ,
+                                  "cond2cond" => " " ,
+                                  "cond3field" => _m("Condition 3") ,
+                                  "cond3op" => " " ,
+                                  "cond3cond" => " " ,
+                                  "listlen" => _m("Listing length") ,
+                                  "noitem_msg" => _m("HTML code for \"No item found\" message") );
+    #                              "flag" => _m("Flag") ,
+    // TODO                              "scroller" => _m("Display page scroller") ,
+    #                              "aditional" => _m("Additional") );
+    
+    $VIEW_TYPES['full'] = array( 'name' => _m("Fulltext view"),
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("Odd Rows") ,
+                                  "after" => _m("Bottom HTML") ,
+                                  "remove_string" => _m("Remove strings") ,
+    // TODO                              "modification" => _m("Type") ,
+                                  "cond1field" => _m("Condition 1") ,
+                                  "cond1op" => " " ,
+                                  "cond1cond" => " " ,
+                                  "cond2field" => _m("Condition 2") ,
+                                  "cond2op" => " " ,
+                                  "cond2cond" => " " ,
+                                  "cond3field" => _m("Condition 3") ,
+                                  "cond3op" => " " ,
+                                  "cond3cond" => " " ,
+                                  "noitem_msg" => _m("HTML code for \"No item found\" message") );
+    
+    $VIEW_TYPES['discus'] = array( 'name' => _m("Discussion"),
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("HTML code for index view of the comment") ,
+                                  "after" => _m("Bottom HTML") ,
+                                  "aditional2" => _m("HTML code for \"Show selected\" button") ,
+                                  "aditional3" => _m("HTML code for \"Show all\" button") ,
+                                  "aditional4" => _m("HTML code for \"Add\" button") ,
+                                  "even_odd_differ" => _m("Show images") ,
+                                  "modification" => _m("Order by") ,
+                                  "img1" => _m("View image 1") ,
+                                  "img2" => _m("View image 2") ,
+                                  "img3" => _m("View image 3") ,
+                                  "img4" => _m("View image 4") ,
+                                  "even" => _m("HTML code for fulltext view of the comment"),
+                                  "aditional" => _m("HTML code for space before comment") ,
+                                  "remove_string" => _m("HTML code of the form for posting comment")
+                                  );
+    
+    // discussion to mail
+    $VIEW_TYPES['disc2mail'] = array( 'name' => _m("Discussion To Mail"),
+                                  "aditional" => _m("From: (email header)"),
+                                  "aditional2" => _m("Reply-To:"),
+                                  "aditional3" => _m("Errors-To:"),
+                                  "aditional4" => _m("Sender:"),
+                                  "aditional5" => _m("Mail Subject:"),
+                                  "even" => _m("Mail Body:")
+                                  );
+    
+    /*  TODO
+    $VIEW_TYPES['seetoo'] = array( 'name' => _m("Related item"),
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("Odd Rows") ,
+                                  "even_odd_differ" => _m("Use different HTML code for even rows") ,
+                                  "even" => _m("Even Rows") ,
+                                  "after" => _m("Bottom HTML") ,
+                                  "modification" => _m("Type") ,
+                                  "order1" => _m("Sort primary") ,
+                                  "o1_direction" => " " ,
+                                  "order2" => _m("Sort secondary") ,
+                                  "o2_direction" => " " ,
+                                  "selected_item" => _m("HTML for Selected") ,
+                                  "listlen" => _m("Listing length") );
+    */
                                   
-$VIEW_TYPES_INFO['rss'] = array('aliases' => 'field');
-$VIEW_TYPES_INFO['calendar'] = array('aliases' => 'field',
-    'aliases_additional' => array (
-        '_#CV_TST_1' => array ('hlp'=>L_C_TIMESTAMP1),
-        '_#CV_TST_2' => array ('hlp'=>L_C_TIMESTAMP2),
-        '_#CV_NUM_D' => array ('hlp'=>L_C_NUMD),
-        '_#CV_NUM_M' => array ('hlp'=>L_C_NUMM),
-        '_#CV_NUM_Y' => array ('hlp'=>L_C_NUMY)));
-        
-$VIEW_TYPES_INFO['static'] = array('aliases' => 'none');
-$VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
+    $VIEW_TYPES['const'] = array( 'name' => _m("View of Constants"),
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("Odd Rows") ,
+                                  "even" => _m("Even Rows") ,
+                                  "after" => _m("Bottom HTML") ,
+    #                              "selected_item" => _m("HTML for Selected") ,
+                                  "parameter" => _m("Constant Group") ,
+                                  "order1" => _m("Sort primary") ,
+                                  "listlen" => _m("Listing length") ,
+                                  "even_odd_differ" => _m("Use different HTML code for even rows") ,
+                                  "o1_direction" => " ");
+    
+    
+    $VIEW_TYPES['rss'] = array( 'name' => _m("RSS exchange"),
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("Odd Rows") ,
+                                  "after" => _m("Bottom HTML") ,
+                                  "order1" => _m("Sort primary") ,
+                                  "o1_direction" => " " ,
+                                  "order2" => _m("Sort secondary") ,
+                                  "o2_direction" => " " ,
+                                  "cond1field" => _m("Condition 1") ,
+                                  "cond1op" => " " ,
+                                  "cond1cond" => " " ,
+                                  "cond2field" => _m("Condition 2") ,
+                                  "cond2op" => " " ,
+                                  "cond2cond" => " " ,
+                                  "cond3field" => _m("Condition 3") ,
+                                  "cond3op" => " " ,
+                                  "cond3cond" => " " ,
+                                  "listlen" => _m("Listing length") ,
+                                  "noitem_msg" => _m("HTML code for \"No item found\" message") );
+    
+    $VIEW_TYPES['static'] = array( 'name' => _m("Static page"), 
+                                  "odd" => _m("Odd Rows") );
+                                  
+    
+    # for javascript list of items 
+    $VIEW_TYPES['script'] = array( 'name' => _m("Javascript item exchange"),  
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("Odd Rows") ,
+                                  "after" => _m("Bottom HTML") ,
+                                  "order1" => _m("Sort primary") ,
+                                  "o1_direction" => " " ,
+                                  "order2" => _m("Sort secondary") ,
+                                  "o2_direction" => " " ,
+                                  "cond1field" => _m("Condition 1") ,
+                                  "cond1op" => " " ,
+                                  "cond1cond" => " " ,
+                                  "cond2field" => _m("Condition 2") ,
+                                  "cond2op" => " " ,
+                                  "cond2cond" => " " ,
+                                  "cond3field" => _m("Condition 3") ,
+                                  "cond3op" => " " ,
+                                  "cond3cond" => " " ,
+                                  "listlen" => _m("Listing length") ,
+                                  "noitem_msg" => _m("HTML code for \"No item found\" message") );
+                                  
+    $VIEW_TYPES['calendar'] = array ('name' => _m("Calendar"),
+                                  "calendar_type" => _m("Calendar Type"),
+                                  "before" => _m("Top HTML") ,
+                                  "aditional3" => _m("Additional attribs to the TD event tag") ,
+                                  "odd" => _m("Event format") ,
+                                  "after" => _m("Bottom HTML") ,
+                                  "remove_string" => _m("Remove strings") ,
+                                  "order1" => _m("Sort primary") ,
+                                  "o1_direction" => " " ,
+                                  "order2" => _m("Sort secondary") ,
+                                  "o2_direction" => " " ,
+                                  "field1" => _m("Start date field"),
+                                  "field2" => _m("End date field"),
+                                  "group_title" => _m("Day cell top format") ,
+                                  "group_bottom" => _m("Day cell bottom format") ,
+                                  "even_odd_differ" => _m("Use other header for empty cells"),
+                                  "aditional" => _m("Empty day cell top format"),
+                                  "aditional2" => _m("Empty day cell bottom format"),
+    #                              "selected_item" => _m("HTML for Selected") ,
+                                  "cond1field" => _m("Condition 1") ,
+                                  "cond1op" => " " ,
+                                  "cond1cond" => " " ,
+                                  "cond2field" => _m("Condition 2") ,
+                                  "cond2op" => " " ,
+                                  "cond2cond" => " " ,
+                                  "cond3field" => _m("Condition 3") ,
+                                  "cond3op" => " " ,
+                                  "cond3cond" => " " ,
+                                  "listlen" => _m("Listing length") ,
+                                  "noitem_msg" => _m("HTML code for \"No item found\" message") );
+    #                              "flag" => _m("Flag") ,
+    // TODO                              "scroller" => _m("Display page scroller") ,
+    #                              "aditional" => _m("Additional") );
+    
+    $VIEW_TYPES['digest']  = array( "name" => _m("Alerts Digest"),
+                                  "function:digest_filters" => "",
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("Odd Rows") ,
+                                  "even_odd_differ" => _m("Use different HTML code for even rows") ,
+                                  "even" => _m("Even Rows") ,
+                                  "after" => _m("Bottom HTML") ,
+                                  "remove_string" => _m("Remove strings") ,
+                                  "order1" => _m("Sort primary") ,
+                                  "o1_direction" => " " ,
+                                  "order2" => _m("Sort secondary") ,
+                                  "o2_direction" => " " ,
+                                  "group_by1" => _m("Group by") ,
+                                  "g1_direction" => " " ,
+                                  "group_title" => _m("Group title format") ,
+                                  "group_bottom" => _m("Group bottom format") ,
+                                  "listlen" => _m("Max number of items"),
+                                  "noitem_msg" => _m("HTML code for \"No item found\" message"));
+    return $VIEW_TYPES;
+}                                  
+
+function getViewTypesInfo() {
+    # modification - options for modification field of views
+    # alias - which aliases to show
+    $VIEW_TYPES_INFO['list'] = array('modification'=>array('1'=>'search',
+                                                           '2'=>'parameter',
+                                                           '3'=>'statistic',
+                                                           '4'=>'all in thread',
+                                                           '5'=>'related',
+                                                           '6'=>'keyword related'),
+                                     'aliases' => 'field');
+    $VIEW_TYPES_INFO['full'] = array('modification'=>array ('11'=>'newest',
+                                                            '12'=>'newest with condition',
+                                                            '13'=>'oldest with condition',
+                                                            '14'=>'id', '15'=>'parameter'),
+                                     'aliases' => 'field');
+    $VIEW_TYPES_INFO['digest'] = array('aliases' => 'field');
+    $VIEW_TYPES_INFO['discus'] = array('modification'=>array('21'=>'timeorder', 
+                                                             '22'=>'reverse timeorder', 
+                                                             '23'=>'thread' ),
+                                       'aditional' =>array('default'=>'<img src="'.$AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">'),
+                                       'aditional2'=>array('default'=>'<input type=button name=sel_ids value="' ._m("Show selected"). '" onClick=showSelectedComments() class="discbuttons">'),
+                                       'aditional3'=>array('default'=>'<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">'),
+                                       'aditional4'=>array('default'=>'<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">'),
+                                       'aliases' => 'discus');
+    $VIEW_TYPES_INFO['discus2mail'] = array ('aliases' => 'discus2mail');                                   
+    $VIEW_TYPES_INFO['seetoo'] = array('modification'=>array('31'=>'related', 
+                                                             '32'=>'keyword with OR',
+                                                             '33'=>'keyword with AND' ),
+                                     'aliases' => 'field');
+    $VIEW_TYPES_INFO['const'] = array('aliases' => 'const',
+                                      'order' => array('name'=>'name', 
+                                                       'value'=>'value',
+                                                       'pri'=>'priority'));
+                                      
+    $VIEW_TYPES_INFO['rss'] = array('aliases' => 'field');
+    $VIEW_TYPES_INFO['calendar'] = array('aliases' => 'field',
+        'aliases_additional' => array (
+            '_#CV_TST_1' => array ('hlp'=>_m("Calendar: Time stamp at 0:00 of processed cell")),
+            '_#CV_TST_2' => array ('hlp'=>_m("Calendar: Time stamp at 24:00 of processed cell")),
+            '_#CV_NUM_D' => array ('hlp'=>_m("Calendar: Day in month of processed cell")),
+            '_#CV_NUM_M' => array ('hlp'=>_m("Calendar: Month number of processed cell")),
+            '_#CV_NUM_Y' => array ('hlp'=>_m("Calendar: Year number of processed cell"))));
+            
+    $VIEW_TYPES_INFO['static'] = array('aliases' => 'none');
+    $VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
+    return $VIEW_TYPES_INFO;
+}
 
 # flag in the feedmap table 
 define ("FEEDMAP_FLAG_MAP", 0);
@@ -588,11 +644,10 @@ $conds_not_field_names = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuej
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);
 
-$FILEMAN_ACCESSES = array (
-    "0" => L_SUPERADMIN,
-//    "EDITOR" => L_EDITOR,
-    "ADMINISTRATOR" => L_ADMINISTRATOR);
-    
-$ALERTS_DEFAULT_COLLECTION = "__default__";
-$ALERTS_SUBSCRIPTION_COLLECTION = "__subscription__";
+function getFilemanAccesses ()
+{ return array (
+    "0" => _m("Superadmin"),
+//    "EDITOR" => _m("Slice Editor"),
+    "ADMINISTRATOR" => _m("Slice Administrator"));
+}
 ?>

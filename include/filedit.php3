@@ -60,13 +60,13 @@ $filedit_js = "
     </script>";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<TITLE>".L_A_FTP_TIT."</TITLE>";
+echo "<TITLE>"._m("File Manager")."</TITLE>";
 echo "</HEAD>";
 
 require $GLOBALS[AA_INC_PATH]."menu.php3"; 
 showMenu ($aamenus, "sliceadmin","fileman");
 
-echo "<H1><B>" . L_A_FTP_TIT . " - ".L_FILE." ".$fe_filename . "</B></H1>";
+echo "<H1><B>" . _m("File Manager") . " - "._m("File")." ".$fe_filename . "</B></H1>";
 
 PrintArray($err);
 echo $Msg;
@@ -80,14 +80,14 @@ echo "
 <input type=hidden name='cmd'>
 <input type=hidden name='fmset[filename]' value='$fe_filename'>
 <input type=hidden name='fmset[directory]' value='".dirname($fe_filename)."'>"
-.fileAction ("cancel", L_BACK_TO_FILE_LIST)
-.formatAction("<a href='$fe_wwwpath$fe_filename'>".L_DOWNLOAD_BY_RIGHTCLICK."</a>&nbsp;&nbsp;")
-.fileAction ("rename",L_RENAME_TO)."<input type=text name='arg[rename]' value='".basename($fe_filename)."'>";
+.fileAction ("cancel", _m("Back to file list"))
+.formatAction("<a href='$fe_wwwpath$fe_filename'>"._m("Download (right-click)")."</a>&nbsp;&nbsp;")
+.fileAction ("rename",_m("Rename to"))."<input type=text name='arg[rename]' value='".basename($fe_filename)."'>";
 
 echo "<hr>";
 
 $filetype = get_filetype ($fe_filename); 
-if ($filetype == L_FILETYPE_TEXT || $filetype == L_FILETYPE_WEB || $filetype == L_FILETYPE_HTML) {
+if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == _m("HTML file")) {
        
     // don't edit the file if you won't be able to save it - only show it's contents
     $filedes = @fopen ($fe_path.$fe_filename, "a");
@@ -98,8 +98,8 @@ if ($filetype == L_FILETYPE_TEXT || $filetype == L_FILETYPE_WEB || $filetype == 
         while (!feof ($filedes)) 
             $value .= fgets($filedes, 4096);
         fclose ($filedes);
-/*            if ($filetype == L_FILETYPE_HTML && !$arg["norichedit"]) {
-            echo formatAction(L_EDIT.":")."&nbsp;&nbsp;".
+/*            if ($filetype == _m("HTML file") && !$arg["norichedit"]) {
+            echo formatAction(_m("Edit").":")."&nbsp;&nbsp;".
                 fileAction("norichedit",L_NORICHEDIT).
                 "<input type=hidden name='arg[norichedit]' value=$arg[norichedit]>
                 <input type=hidden name='arg[edit]' value='$arg[edit]'><br>";            
@@ -109,10 +109,10 @@ if ($filetype == L_FILETYPE_TEXT || $filetype == L_FILETYPE_WEB || $filetype == 
             while (list ($find,$rep) = each ($repl))
                 $value = str_replace ($find, $rep, $value);
             echo "<INPUT TYPE=HIDDEN NAME='arg[savefile]' VALUE='$value'>";
-            echo fileAction ("savefile", L_SAVE_CHANGES);
+            echo fileAction ("savefile", _m("Save changes"));
         }
         else {*/
-            echo formatAction(L_EDIT.":")."<br>";
+            echo formatAction(_m("Edit").":")."<br>";
             echo "<textarea name='arg[savefile]' cols=80 rows=30>
             </textarea><br>";
             $value = str_replace ("'", "\\'", $value);
@@ -125,14 +125,14 @@ if ($filetype == L_FILETYPE_TEXT || $filetype == L_FILETYPE_WEB || $filetype == 
                 document.forms['fileman']['arg[savefile]'].value = filetext;
             //-->
             </script>";           
-            echo fileAction ("savefile", L_SAVE_CHANGES)
-                .fileAction ("reset", L_RESET_CONTENT);
+            echo fileAction ("savefile", _m("Save changes"))
+                .fileAction ("reset", _m("Reset content"));
 //            }
     }
     else {
         $filedes = @fopen ($fe_path.$fe_filename, "r");
         if ($filedes) {
-            echo formatAction(L_FILE_CONTENT.":")."<br>";
+            echo formatAction(_m("File content").":")."<br>";
             while (!feof ($filedes)) {
                 $row = fgets($filedes, 4096);
                 echo str_replace("\t","    ",nl2br (HTMLEntities ($row)));
@@ -141,10 +141,10 @@ if ($filetype == L_FILETYPE_TEXT || $filetype == L_FILETYPE_WEB || $filetype == 
         }
     }
 }
-else if ($filetype == L_FILETYPE_IMAGE) 
+else if ($filetype == _m("Image file")) 
     echo "<img src='$fe_wwwpath$fe_filename' border=0>";
 else 
-    echo L_THIS_IS_FILE." $filetype. ".L_I_CANT_VIEW;
+    echo _m("This is a file of type")." $filetype. "._m("I can't view it. If you want to view or edit it, change it's extension.");
 //echo "</td></tr></table>";
 echo "</form>";
 

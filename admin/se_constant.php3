@@ -37,13 +37,13 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }  
 
 if( $categ OR $category ) {
   if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY)) {
-    MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_CATEGORY, "admin");
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change category settings"), "admin");
     exit;
   }  
 }
@@ -78,7 +78,7 @@ if (! $category && $group_id ) {
     myQuery ($db, $SQL);
       
     if ($db->next_record() && !CheckPerms( $auth->auth["uid"], "slice", unpack_id($db->f("slice_id")), PS_FIELDS)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FIELDS_GROUP." (".$db->f("name").")", "admin");
+        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings for the slice owning this group")." (".$db->f("name").")", "admin");
         exit;
     }  
 }
@@ -136,7 +136,7 @@ function propagateChanges ($cid, $newvalue, $short=true)
 			AND field_id='".addslashes($db->f("field_id"))."' 
 			AND text='$oldvalue'");
 	}
-	if ($cnt) $Msg .= $cnt . L_CONSTANT_ITEM_CHNG . "'$newvalue'<br>";
+	if ($cnt) $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
 }
 
 hcUpdate();
@@ -150,22 +150,22 @@ if( $update ) {
       $prior = $pri[$key];
       $val =   $value[$key];
       $cid[$key] = ( ($cid[$key]=="") ? "x".new_id() : $cid[$key] );  # unpacked, with beginning 'x' for string indexing array
-      ValidateInput("nam", L_CONSTANT_NAME, $nam, $err, false, "text");   // if not filled it will be deleted
-      ValidateInput("val", L_CONSTANT_VALUE, $val, $err, false, "text");
-      ValidateInput("prior", L_CONSTANT_PRIORITY, $prior, $err, false, "number");
+      ValidateInput("nam", _m("Name"), $nam, $err, false, "text");   // if not filled it will be deleted
+      ValidateInput("val", _m("Value"), $val, $err, false, "text");
+      ValidateInput("prior", _m("Priority"), $prior, $err, false, "number");
     }
       
     if( !$group_id ) {  # new constant group  
       $new_group_id = str_replace(':','-',$new_group_id);  # we don't need ':'
                                                            # in id (parameter separator)
       
-      ValidateInput("new_group_id", L_CONSTANT_GROUP, $new_group_id, $err, true, "text");
+      ValidateInput("new_group_id", _m("Constant Group"), $new_group_id, $err, true, "text");
       if( count($err) > 1)
         break;
       $SQL = "SELECT * FROM constant WHERE group_id = '$new_group_id'";
       myQuery ($db, $SQL);
       if( $db->next_record() )
-        $err["DB"] = L_CONSTANT_GROUP_EXIST;
+        $err["DB"] = _m("This constant group already exists");
        else {
         $add_new_group = true;
         $group_id = $new_group_id;
@@ -247,7 +247,7 @@ if( $update ) {
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     
     if( count($err) <= 1 )
-      $Msg .= MsgOK(L_CONSTANTS_OK);
+      $Msg .= MsgOK(_m("Constants update successful"));
   } while( 0 );           #in order we can use "break;" statement
 }    
 
@@ -257,7 +257,7 @@ if( $category ) {
   if( $group_id )
     $categ=true;
   else {
-    MsgPage($sess->url(self_base())."slicedit.php3", L_NO_CATEGORY_FIELD, "admin");
+    MsgPage($sess->url(self_base())."slicedit.php3", _m("No category field defined in this slice.<br>Add category field to this slice first (see Field page)."), "admin");
     exit;
   }
 }  
@@ -278,13 +278,13 @@ $classes = GetTable2Array($SQL, $db, "id");
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_CONSTANTS_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - Constants Setting");?></TITLE>
 </HEAD>
 <?php 
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", $categ ? "category" : "");
     
-  echo "<H1><B>" . L_A_CONSTANTS_EDT . "</B></H1>";
+  echo "<H1><B>" . _m("Admin - Constants Setting") . "</B></H1>";
   PrintArray($err);
   echo $Msg;  
 ?>
@@ -298,13 +298,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   }
 ?>
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HDR?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Constants")?></b>
 </td>
 </tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
- <td class=tabtxt><b><?php echo L_CONSTANT_GROUP ?></b></td>
+ <td class=tabtxt><b><?php echo _m("Constant Group") ?></b></td>
  <td class=tabtxt colspan=3><?php
    echo ( $group_id ? safe($group_id) :
          "<input type=\"Text\" name=\"new_group_id\" size=16 maxlength=16 value=\"".safe($new_group_id)."\">");
@@ -324,7 +324,7 @@ if( $group_id && $where_used ) {
     $delim = ', ';
   }
   echo "
-      <tr><td><b>".L_CONSTANT_USED."</b></td>
+      <tr><td><b>"._m("Constants used in slice")."</b></td>
         <td colspan=3>$using_slices</td>
       </tr>";
 }
@@ -338,11 +338,11 @@ myQuery ($db, "
 if ($db->next_record()) $owner_id = unpack_id ($db->f("slice_id"));
 
 echo "
-<tr><td><b>".L_CONSTANT_OWNER."</b></td>
+<tr><td><b>"._m("Constant group owner - slice")."</b></td>
 <td colspan=3>";
 
 if (!$owner_id || !$group_id) 
-	echo L_CONSTANT_OWNER_HELP;
+	echo _m("Whoever first updates values becomes owner.");
 	
 // display the select box to change group owner if requested ($chown)
 elseif($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
@@ -357,20 +357,20 @@ elseif($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
 }
 else {
 	echo $db->f("name")."&nbsp;&nbsp;&nbsp;&nbsp; 
-	<input type=submit name='chown' value='".L_CONSTANT_CHOWN."'>";
+	<input type=submit name='chown' value='"._m("Change owner")."'>";
 }
 	
 echo "</td></tr>
-<tr><td colspan=4><input type=checkbox name='propagate_changes'".($db->f("propagate") ? " checked" : "").">".L_CONSTANT_PROPAGATE;
+<tr><td colspan=4><input type=checkbox name='propagate_changes'".($db->f("propagate") ? " checked" : "").">"._m("Propagate changes into current items");
 if( !$where_used ) 
-  echo "&nbsp;&nbsp;<input type=submit name='where_used' value='".L_CONSTANT_WHERE_USED;
+  echo "&nbsp;&nbsp;<input type=submit name='where_used' value='"._m("Where are these constants used?");
 echo "'</td></tr>
-<tr><td colspan=4><input type=submit name='hierarch' value='".L_CONSTANT_HIERARCH_EDITOR."'></td></tr>
+<tr><td colspan=4><input type=submit name='hierarch' value='"._m("Edit in Hierarchical editor (allows to create constant hierarchy)")."'></td></tr>
 <tr>
- <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('name')\">". L_CONSTANT_NAME ."</a></b><br>". L_CONSTANT_NAME_HLP ."</td>
- <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('value')\">". L_CONSTANT_VALUE ."</a></b><br>". L_CONSTANT_VALUE_HLP ."</td>
- <td class=tabtxt align=center><b><a href=\"javascript:SortPri()\">". L_CONSTANT_PRI ."</a></b><br>". L_CONSTANT_PRI_HLP ."</td>
- <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('class')\">". L_CONSTANT_CLASS ."</a></b><br>". L_CONSTANT_CLASS_HLP ."</td>
+ <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
+ <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
+ <td class=tabtxt align=center><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
+ <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('class')\">". _m("Parent") ."</a></b><br>". _m("categories&nbsp;only") ."</td>
 </tr>
 <tr><td colspan=4><hr></td></tr>";
 
@@ -402,16 +402,16 @@ $lastIndex = $i-1;    // lastindex used in javascript (below) to get number of r
 echo '</table>
 <tr><td align="center">
   <input type=hidden name="update" value=1>
-  <input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;
-  <input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;
-  <input type=button value="'. L_CONST_DELETE .'" onclick="deleteWholeGroup();">&nbsp;&nbsp;
+  <input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;
+  <input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;
+  <input type=button value="'. _m("Delete whole group") .'" onclick="deleteWholeGroup();">&nbsp;&nbsp;
   <input type=hidden name=deleteGroup value=0>
 </td></tr></table>
 </FORM>
 <SCRIPT language=javascript>
 <!--
     function deleteWholeGroup() {
-        if (prompt ("'.L_CONST_DELETE_PROMPT.'","'.L_NO.'") == "'.L_YES.'") {
+        if (prompt ("'._m("Are you sure you want to PERMANENTLY DELETE this group? Type yes or no.").'","'._m("no").'") == "'._m("yes").'") {
             document.f.deleteGroup.value = 1;
             document.f.submit();
         }

@@ -216,7 +216,7 @@ class itemview{
           }
           url += \"\#disc\"
           if (done == 0) {
-            alert (\" ". L_D_SELECTED_NONE ."\" )
+            alert (\" ". _m("No comment was selected") ."\" )
           } else {
             document.location = url
           }

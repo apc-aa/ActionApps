@@ -1,7 +1,16 @@
 <?php
-//$Id$
+/**
+ * Several functions needed by the @link Tabledit class.
+ * DOCUMENTATION: @link doc/tabledit.html, 
+ *                @link doc/tabledit_developer.html, 
+ *                @link doc/tableview.html
+ * @package TableEdit
+ * @version $Id$
+ * @author Jakub Adamek, Econnect
+ * @copyright (c) 2002-3 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2003 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,15 +28,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// (c) Econnect, Jakub Adamek, December 2002
-// DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
-
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 
 // -----------------------------------------------------------------------------------
 
 /** Processes TableEdit form data. To be called in each script using TableEdit before
-    showing the TableEdit class.
+*   showing the TableEdit class.
 */
 function ProcessFormData ($getTableViewsFn, $val, &$cmd) 
 {   
@@ -109,15 +115,17 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
 
 // -----------------------------------------------------------------------------------
 
-/**   $columns is array of columns, see "fields" in tableviews.php3
-*    appends ["type"] to each column, with column type
-*    appends ["primary"] to primary columns, if not exist, adds them with ["view"]["type"]=hide 
-*    <br>
+/** 
+* Enhances the column information.
 *
-*    @param $primary is an input array ("tablename" => array ("primary_field1", "primary_field2", ...)).
-*                    Send only info for tables with more than 1 primary key.                        
-*    @param $primary_aliases is an output array with a complete list of field aliases of primary fields 
-*                       in all tables
+* Appends ["type"] to each column, with column type.
+* Appends ["primary"] to primary columns, if not exist, adds them with ["view"]["type"]=hide.
+*
+* @param array $columns  The "fields" part of a TableView, see @link ../tableview.html
+* @param array $primary  Input array ("tablename" => array ("primary_field1", "primary_field2", ...)).
+*                        Use only for tables with more than 1 primary key.                        
+* @param array $primary_aliases Output array with a complete list of field aliases of primary fields 
+*                       in all tables.
 */
 function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $join="", 
     $default_readonly=false, $primary="") {
@@ -239,10 +247,10 @@ function TableDelete ($table, $key, $columns, $primary_aliases, $error_msg="", $
 
 // -----------------------------------------------------------------------------------
 
-/** inserts or updates a record
+/** Updates a record.
 *
-* @param  $primary see SetColumnTypes
-* @return returns true if successfull, false if not
+* @param  array $primary see SetColumnTypes
+* @return true if successfull, false if not
 */
 function TableUpdate ($default_table, $val, $columns, $primary_aliases, $primary="", $error_msg="", 
     $triggers = "", $be_cautious=1) {
@@ -298,6 +306,7 @@ function TableUpdate ($default_table, $val, $columns, $primary_aliases, $primary
 
 // -----------------------------------------------------------------------------------
 
+/** Inserts a record */
 function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_aliases, 
     $primary="", $error_msg="", $triggers="", $be_cautious=1) {
     global $db, $err;
@@ -364,7 +373,8 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
 
 // -----------------------------------------------------------------------------------
 
-// processes insert form data, returns true on success, false on fail
+/** Processes insert
+* @return true on success, false on fail */
 function ProcessInsert ($myviewid, $myview, $primary_aliases, $val, &$cmd) {
     // WARNING: a bit hackish: after inserting an item, the command is changed 
     TableInsert ($newkey, $where, $myview["table"], $val[$GLOBALS[new_key]],

@@ -228,7 +228,7 @@ if($edit) {
     # fill content array from item and content tables
   $content = GetItemContent($id);
   if( !$content ) {
-    $err["DB"] = MsgErr(L_BAD_ITEM_ID);
+    $err["DB"] = MsgErr(_m("Bad item ID"));
     MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"),
             $err, "standalone");
     exit;
@@ -246,7 +246,7 @@ if( !$encap ) {
     <style>
     #body_white_color { color: #000000; }
     </style>
-    <title>'.( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT). '</title>
+    <title>'.( $edit=="" ? _m("Add Item") : _m("Edit Item")). '</title>
     <script Language="JavaScript"><!--
       function SelectAllInBox( listbox ) {
         var len = eval(listbox).options.length
@@ -314,7 +314,7 @@ if( !$encap ) {
     echo '
   </head>
   <body id="body_white_color">
-    <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
+    <H1><B>' . ( $edit=="" ? _m("Add Item") : _m("Edit Item")) . '</B></H1>';
  }
  
  PrintArray($err);
@@ -342,7 +342,7 @@ echo "<form name=inputform $html_form_type method=post action=\""
     .($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PASS_PARAM).'"'
     .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>'
     .'<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center" class="inputtab">'; ?>
-<tr><td class=tabtit align="center"><b>&nbsp;<?php //echo L_ITEM_HDR?></b>
+<tr><td class=tabtit align="center"><b>&nbsp;<?php //echo _m("News Article")?></b>
 </td>
 </tr>
 <tr><td>
@@ -394,25 +394,25 @@ else {
 };
  
 if($edit || $update || ($insert && $added_to_db)) { ?>
-   <input type=submit name=update accesskey=S value="<?php echo L_POST." $accesskey" ?>">
+   <input type=submit name=update accesskey=S value="<?php echo _m("Update")." $accesskey" ?>">
   <?php
   if ((!($post_preview==0)) or (!(isset($post_preview)))) {
-    echo "<input type=submit name=upd_preview value='".L_POST_PREV."'>";
+    echo "<input type=submit name=upd_preview value='"._m("Update & View")."'>";
   }
   ?>
 
-   <input type=submit name=insert value="<?php echo L_INSERT_AS_NEW ?>">
-   <input type=reset value="<?php echo L_RESET ?>"><?php
+   <input type=submit name=insert value="<?php echo _m("Insert as new") ?>">
+   <input type=reset value="<?php echo _m("Reset form") ?>"><?php
    $r_hidden["id"] = $id;
 } else { ?>
-   <input type=submit name=insert accesskey=S value="<?php echo L_INSERT." $accesskey"?>">
-   <input type=submit name=ins_preview value="<?php echo L_INSERT_PREV ?>"><?php
+   <input type=submit name=insert accesskey=S value="<?php echo _m("Insert")." $accesskey"?>">
+   <input type=submit name=ins_preview value="<?php echo _m("Insert & View") ?>"><?php
 }
 $cancel_url = ($anonymous  ? $r_slice_view_url :
               ($return_url ? expand_return_url(1) :
                              con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id")));
 ?>
-&nbsp;<input type=button name=cancel value="<?php echo L_CANCEL ?>" onclick="document.location='<?php echo $cancel_url ?>'">
+&nbsp;<input type=button name=cancel value="<?php echo _m("Cancel") ?>" onclick="document.location='<?php echo $cancel_url ?>'">
 </td>
 </tr>
 </table>

@@ -26,9 +26,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <body>
 <center>
 <?php
-echo '<a href="'. con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=$sh_itm") .'" target="_parent" class="ipreview">'. L_EDIT .'</a>';
+echo '<a href="'. con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=$sh_itm") .'" target="_parent" class="ipreview">'. _m("Edit") .'</a>';
 echo '<IMG src="../images/spacer.gif" width=50 height=1>';
-echo '<a href="'. $sess->url("index.php3") .'" target="_parent" class="ipreview">'. L_OK .'</a>';
+echo '<a href="'. $sess->url("index.php3") .'" target="_parent" class="ipreview">'. _m("OK") .'</a>';
 ?>
 </center>
 </body>

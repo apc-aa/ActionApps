@@ -96,8 +96,7 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
   while( $db->next_record() ){
     // unalias the text
    $email = $db->f('uid');
-   // CHARSET is defined in language files
-   mail_html_text ($email, $subject, $body, $headers, CHARSET, 0);
+   mail_html_text ($email, $subject, $body, $headers, $LANGUAGE_CHARSETS[get_mgettext_lang()], 0);
    // you cant output here, you are still in the headers section!
    // echo "DONE $email, $s, $body <BR>";
   }

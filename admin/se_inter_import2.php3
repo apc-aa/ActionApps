@@ -27,7 +27,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base()."index.php3"), L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -42,15 +42,15 @@ if ($db->next_record()) {
 }
 
 if (!($data = xml_fetch($server_url, ORG_NAME, $password, $auth->auth["uname"],"",0,""))) {
-  MsgPage($sess->url(self_base() . "se_inter_import.php3"), L_RSS_ERROR );
+  MsgPage($sess->url(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
 }
 
 // find out first character of fetched data: if it is not '<' exit
 if (substr($data,0,1) != "<") {
   writeLog("CSN","Establishing mode: $data");
   switch ($data) {
-    case ERR_NO_SLICE : $err_msg = L_RSS_ERROR4; break;
-    case ERR_PASSWORD : $err_msg = L_RSS_ERROR2 . " ".ORG_NAME . ". ".L_RSS_ERROR3; break;
+    case ERR_NO_SLICE : $err_msg = _m("No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."); break;
+    case ERR_PASSWORD : $err_msg = _m("Invalid password for the node name:") . " ".ORG_NAME . ". "._m("Contact the administrator of the local node."); break;
   }
   MsgPage($sess->url(self_base() . "se_inter_import.php3"), $err_msg); // $data contains error message
 }                                                                   // from the server module
@@ -58,7 +58,7 @@ if (substr($data,0,1) != "<") {
 // try to parse xml document
 if (!($aa_rss = aa_rss_parse($data,"establish_mode"))) {
   writeLog("CSN","Establishing mode: Unable to parse XML data");
-  MsgPage($sess->url(self_base() . "se_inter_import.php3"), L_RSS_ERROR );
+  MsgPage($sess->url(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
 }
 
 while (list($id,) = each($aa_rss[channels])) {
@@ -68,7 +68,7 @@ while (list($id,) = each($aa_rss[channels])) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo L_IMPORT_TIT;?></TITLE>
+<TITLE><?php echo _m("Inter node import settings");?></TITLE>
 <HEAD>
 <SCRIPT Language="JavaScript"><!--
 function InitPage() {}
@@ -91,16 +91,16 @@ function Cancel() {
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin","n_import");
 
-  echo "<H1><B>" . L_IMPORT_TIT. "</B></H1>";
+  echo "<H1><B>" . _m("Inter node import settings"). "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
 <form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_inter_import3.php3")?>">
   <table width="400" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo L_IMPORT_TIT ?></b></td></tr>
+    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Inter node import settings") ?></b></td></tr>
      <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABBG ?>">
-      <tr><td><?php echo L_IMPORT_SLICES2 . "<b>" . $rem_nodes . "</b>" ?></td></tr>
+      <tr><td><?php echo _m("List of available slices from the node ") . "<b>" . $rem_nodes . "</b>" ?></td></tr>
       <tr><td align=center>
         <SELECT name="f_slices[]" size=5>
          <?php
@@ -114,8 +114,8 @@ function Cancel() {
         </SELECT>
       </td></tr>
       <tr><td align=center >
-          <input type=submit value="<?php echo L_IMPORT_SUBMIT ?>" >
-          <input type=button VALUE="<?php echo L_CANCEL ?>" onClick = "Cancel()">
+          <input type=submit value="<?php echo _m("Choose slice") ?>" >
+          <input type=button VALUE="<?php echo _m("Cancel") ?>" onClick = "Cancel()">
           <input type=hidden name="remote_node_name" value="<?php echo $rem_nodes ?>">
           <input type=hidden name="aa" value="<?php echo htmlspecialchars(serialize($aa_rss)); ?>">
       </tr>

@@ -30,7 +30,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING, "admin")) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
   exit;
 }  
 
@@ -76,7 +76,7 @@ if($db->next_record())
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
 ?>
- <TITLE><?php echo L_A_SLICE_TIT;?></TITLE>
+ <TITLE><?php echo _m("Slice Administration");?></TITLE>
 
 
 <SCRIPT Language="JavaScript"><!--
@@ -113,19 +113,19 @@ function UpdateImportExport(slice_id)
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "import");
   
-  echo "<H1><B>" . L_A_SLICE_IMP . "</B></H1>";
+  echo "<H1><B>" . _m("Admin - configure Content Pooling") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_IMP_EXPORT ?></b></td></tr>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Enable export to slice:") ?></b></td></tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
-	<td width="45%" class=tabtxt align=center><b><?php echo L_IMP_EXPORT_N ?></b></td>
+	<td width="45%" class=tabtxt align=center><b><?php echo _m("Export disable") ?></b></td>
 	<td width="10%">&nbsp;</td>
-	<td width="45%" class=tabtxt align=center><b><?php echo L_IMP_EXPORT_Y ?></b></td>
+	<td width="45%" class=tabtxt align=center><b><?php echo _m("Export enable") ?></b></td>
 </tr>
 <tr>
 <td align="CENTER" valign="TOP">
@@ -156,18 +156,18 @@ function UpdateImportExport(slice_id)
 </tr>
 <tr><td colspan=3><table>
 <?php
-  FrmInputChBox("export_to_all", L_EXPORT_TO_ALL, $export_to_all, true, "OnClick=\"ExportAllClick()\"");
+  FrmInputChBox("export_to_all", _m("Enable export to any slice"), $export_to_all, true, "OnClick=\"ExportAllClick()\"");
 ?>  
 </table></td></tr>
 <tr><td colspan=3>&nbsp;</td></tr>
 </table></tr></td>
-<tr><td class=tabtit><b>&nbsp;<?php echo L_IMP_IMPORT ?></b></td></tr>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Import from slice:") ?></b></td></tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
-	<td width="45%" class=tabtxt align=center><b><?php echo L_IMP_IMPORT_N ?></b></td>
+	<td width="45%" class=tabtxt align=center><b><?php echo _m("Do not import") ?></b></td>
 	<td width="10%">&nbsp;</td>
-	<td width="45%" class=tabtxt align=center><b><?php echo L_IMP_IMPORT_Y ?></b></td>
+	<td width="45%" class=tabtxt align=center><b><?php echo _m("Import") ?></b></td>
 </tr>
 <tr>
 <td align="CENTER" valign="TOP">
@@ -199,8 +199,8 @@ function UpdateImportExport(slice_id)
 </table></tr></td>
 <tr><td align="center">
 <input type=hidden name="slice_id" value="<?php echo $slice_id ?>">
-<input type="button" VALUE="<?php echo L_UPDATE ?>" onClick = "UpdateImportExport('<?php echo $slice_id ?>')" align=center>&nbsp;&nbsp;
-<input type=submit name=cancel value="<?php echo L_CANCEL ?>">
+<input type="button" VALUE="<?php echo _m("Update") ?>" onClick = "UpdateImportExport('<?php echo $slice_id ?>')" align=center>&nbsp;&nbsp;
+<input type=submit name=cancel value="<?php echo _m("Cancel") ?>">
 </td></tr></table>
 </FORM>
 <?php HtmlPageEnd();

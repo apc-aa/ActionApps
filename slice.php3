@@ -118,6 +118,7 @@ require $GLOBALS[AA_INC_PATH]."view.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
 require $GLOBALS[AA_INC_PATH]."discussion.php3";
+require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 // function definitions:
 require $GLOBALS[AA_INC_PATH]."slice.php3";
 
@@ -160,12 +161,12 @@ if($slicetext) {
 if( $inc ) {                   # this section must be after add_vars()
 //  StoreVariables(array("inc")); # store in session
   if( !eregi("^([0-9a-z_])+(\.[0-9a-z]*)?$", $inc) ) {
-    echo L_BAD_INC. " $inc";
+    echo _m("Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"). " $inc";
     ExitPage();
   } else {  
     $fp = @fopen( shtml_base().$inc, "r");    #   if encapsulated
     if( !$fp )
-      echo L_NO_SUCH_FILE ." $inc";
+      echo _m("No such file") ." $inc";
      else
       FPassThru($fp); 
     ExitPage();
@@ -192,10 +193,10 @@ list($fields,) = GetSliceFields($slice_id);
   # get slice info
 $slice_info = GetSliceInfo($slice_id);
 if ($slice_info AND ($slice_info[deleted]<1)) {
-  include $GLOBALS[AA_INC_PATH] . $slice_info[lang_file];  // language constants (used in searchform...)
+//  include $GLOBALS[AA_INC_PATH] . $slice_info[lang_file];  // language constants (used in searchform...)
 }
 else {
-  echo L_SLICE_INACCESSIBLE . " (ID: $slice_id)";
+  echo _m("Invalid slice number or slice was deleted") . " (ID: $slice_id)";
   ExitPage();
 }  
 
@@ -230,10 +231,10 @@ if( $fview || $iview ) {
     }  
   }
 }
-  
-if (!$encap)
-  Page_HTML_Begin(DEFAULT_CODEPAGE, $slice_info[name] );  // TODO codepage
+  define("DEFAULT_CODEPAGE","windows-1250");
 
+if (!$encap)
+  Page_HTML_Begin ($slice_info[name]);
 
 if( $bigsrch ) {  # big search form ------------------------------------------
    echo '<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br> See 
@@ -494,7 +495,7 @@ if( count( $item_ids ) > 0 ) {
     $scr->pnavbar();
 }  
 else 
-  echo $slice_info['noitem_msg'] ? $slice_info['noitem_msg'] : ("<div>".L_NO_ITEM ."</div>");
+  echo $slice_info['noitem_msg'] ? $slice_info['noitem_msg'] : ("<div>"._m("No item found") ."</div>");
 
 if ($searchlog) PutSearchLog ();
 

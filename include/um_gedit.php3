@@ -21,8 +21,8 @@ http://www.apc.org/
 
   do  {
     # Procces group data ---------------------
-    ValidateInput("group_name", L_GROUP_NAME, $group_name, $err, ($add_submit ? true : false), "text");
-    ValidateInput("group_description", L_GROUP_DESCRIPTION, $group_description, $err, false, "text");
+    ValidateInput("group_name", _m("Name"), $group_name, $err, ($add_submit ? true : false), "text");
+    ValidateInput("group_description", _m("Description"), $group_description, $err, false, "text");
     if( count($err) > 1)
       break;
 
@@ -32,18 +32,18 @@ http://www.apc.org/
 
     if( $add_submit ) {
       if(!($newgroupid = AddGroup($grouprecord)))
-        $err["LDAP"] = MsgErr( L_ERR_GROUP_ADD );
+        $err["LDAP"] = MsgErr( _m("It is impossible to add group to permission system") );
       if( count($err) <= 1 ) {
 	if ($group_super) {	// set super admin privilege
 	  AddPerm($newgroupid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
 	}
-        $Msg = MsgOK(L_NEWGROUP_OK);
+        $Msg = MsgOK(_m("Group successfully added to permission system"));
         go_url( con_url($sess->url($PHP_SELF), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);
       }
     } else {
       $grouprecord["uid"] = $selected_group;
       if(!ChangeGroup($grouprecord))
-        $err["LDAP"] = MsgErr( L_ERR_GROUP_CHANGE );
+        $err["LDAP"] = MsgErr( _m("Can't change group") );
       if ($group_super) {		// set or revoke super admin privilege
 	AddPerm($grouprecord["uid"], AA_ID, "aa", $perms_roles["SUPER"]['id']);
       } else {

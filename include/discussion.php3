@@ -122,10 +122,10 @@ function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
 
 function GetButtons($empty, $script_loc) {
   if (!$empty) {
-    $out.= "<input type=button name=sel_ids value=\"" .L_D_SHOW_SELECTED. "\" onClick=showSelectedComments() class=\"discbuttons\">
-            <input type=button name=all_ids value=\"" .L_D_SHOW_ALL ."\" onClick=document.location=\"".con_url($script_loc,"nocache=1&all_ids=1")."\" class=\"discbuttons\">";
+    $out.= "<input type=button name=sel_ids value=\"" ._m("Show selected"). "\" onClick=showSelectedComments() class=\"discbuttons\">
+            <input type=button name=all_ids value=\"" ._m("Show all") ."\" onClick=document.location=\"".con_url($script_loc,"nocache=1&all_ids=1")."\" class=\"discbuttons\">";
   }
-    $out.= " <input type=button name=add_disc value=\"". L_D_ADD_NEW. "\" onClick=document.location=\"".con_url($script_loc,"nocache=1&add_disc=1")."\" class=\"discbuttons\">";
+    $out.= " <input type=button name=add_disc value=\"". _m("Add new"). "\" onClick=document.location=\"".con_url($script_loc,"nocache=1&add_disc=1")."\" class=\"discbuttons\">";
   return $out;
 }
 
@@ -137,23 +137,23 @@ function GetAlias($fce, $param, $help) {
 
 function GetDiscussionAliases() {
   #  Standard aliases
-  $aliases["_#SUBJECT_"] = GetAlias("f_h", "d_subject.......", L_D_SUBJECT_ALIAS);
-  $aliases["_#BODY###_"] = GetAlias("f_t", "d_body..........", L_D_BODY_ALIAS);
-  $aliases["_#AUTHOR#_"] = GetAlias("f_h", "d_author........", L_D_AUTHOR_ALIAS);
-  $aliases["_#EMAIL##_"] = GetAlias("f_h", "d_e_mail........", L_D_EMAIL_ALIAS);
-  $aliases["_#WWW_URL_"] = GetAlias("f_h", "d_url_address...", L_D_WWWURL_ALIAS);
-  $aliases["_#WWW_DESC"] = GetAlias("f_h", "d_url_descript..", L_D_WWWDES_ALIAS);
-  $aliases["_#DATE###_"] = GetAlias("f_d:d M  H:i",     "d_date..........", L_D_DATE_ALIAS);
-  $aliases["_#IP_ADDR_"] = GetAlias("f_h", "d_remote_addr...", L_D_REMOTE_ADDR_ALIAS);
-  $aliases["_#CHECKBOX"] = GetAlias("f_h", "d_checkbox......", L_D_CHECKBOX_ALIAS);
-  $aliases["_#TREEIMGS"] = GetAlias("f_h", "d_treeimages....", L_D_TREEIMGS_ALIAS);
-  $aliases["_#DITEM_ID"] = GetAlias("f_h", "d_item_id.......", L_D_ITEM_ID_ALIAS);
-  $aliases["_#ITEM_ID_"] = GetAlias("f_h", "d_item_id.......", L_D_ITEM_ID_ALIAS);
-  $aliases["_#DISC_ID_"] = GetAlias("f_h", "d_id............", L_D_ID_ALIAS);
-  $aliases["_#URL_BODY"] = GetAlias("f_h", "d_url_fulltext..", L_D_URLBODY_ALIAS);
-  $aliases["_#URLREPLY"] = GetAlias("f_h", "d_url_reply.....", L_D_URLREPLY_ALIAS);
-  $aliases["_#DISC_URL"] = GetAlias("f_h", "d_disc_url......", L_D_URL);
-  $aliases["_#BUTTONS_"] = GetAlias("f_h", "d_buttons.......", L_D_BUTTONS);
+  $aliases["_#SUBJECT_"] = GetAlias("f_h", "d_subject.......", _m("Alias for subject of the discussion comment"));
+  $aliases["_#BODY###_"] = GetAlias("f_t", "d_body..........", _m(" Alias for text of the discussion comment"));
+  $aliases["_#AUTHOR#_"] = GetAlias("f_h", "d_author........", _m(" Alias for written by"));
+  $aliases["_#EMAIL##_"] = GetAlias("f_h", "d_e_mail........", _m("Alias for author's e-mail"));
+  $aliases["_#WWW_URL_"] = GetAlias("f_h", "d_url_address...", _m("Alias for url address of author's www site"));
+  $aliases["_#WWW_DESC"] = GetAlias("f_h", "d_url_descript..", _m("Alias for description of author's www site"));
+  $aliases["_#DATE###_"] = GetAlias("f_d:d M  H:i",     "d_date..........", _m("Alias for publish date"));
+  $aliases["_#IP_ADDR_"] = GetAlias("f_h", "d_remote_addr...", _m("Alias pro IP address of author's computer"));
+  $aliases["_#CHECKBOX"] = GetAlias("f_h", "d_checkbox......", _m("Alias for checkbox used for choosing discussion comment"));
+  $aliases["_#TREEIMGS"] = GetAlias("f_h", "d_treeimages....", _m("Alias for images"));
+  $aliases["_#DITEM_ID"] = GetAlias("f_h", "d_item_id.......", _m(" Alias for comment ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"));
+  $aliases["_#ITEM_ID_"] = GetAlias("f_h", "d_item_id.......", _m(" Alias for comment ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"));
+  $aliases["_#DISC_ID_"] = GetAlias("f_h", "d_id............", _m(" Alias for item ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"));
+  $aliases["_#URL_BODY"] = GetAlias("f_h", "d_url_fulltext..", _m("Alias for link to text of the discussion comment<br>\n                             <i>Usage: </i>in HTML code for index view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"));
+  $aliases["_#URLREPLY"] = GetAlias("f_h", "d_url_reply.....", _m("Alias for link to a form<br>\n                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"));
+  $aliases["_#DISC_URL"] = GetAlias("f_h", "d_disc_url......", _m("Alias for link to discussion<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"));
+  $aliases["_#BUTTONS_"] = GetAlias("f_h", "d_buttons.......", _m("Alias for buttons Show all, Show selected, Add new<br>\n                             <i>Usage: </i> in the Bottom HTML code"));
 //  $aliases["_#SHOW_ALL"] = GetAlias("f_h", "d_show_all......", L_D_SHOW_ALL_ALIAS);
 //  $aliases["_#SHOW_SEL"] = GetAlias("f_h", "d_show_sel......", L_D_SHOW_SEL_ALIAS);
 //  $aliases["_#ADD_NEW#"] = GetAlias("f_h", "d_add_new.......", L_D_ADD_NEW_ALIAS);
@@ -162,7 +162,7 @@ function GetDiscussionAliases() {
 }
 
 function GetDiscussionFormat(&$view_info) {
-  global $VIEW_TYPES_INFO;
+  $VIEW_TYPES_INFO = getViewTypesInfo();
 
   $format['d_name'] = $view_info['name'];
   $format['d_top'] = $view_info['before'];
@@ -176,11 +176,11 @@ function GetDiscussionFormat(&$view_info) {
   $format['d_spacer']   = ( $view_info['aditional']  ? $view_info['aditional'] :
                                                        '<img src="'.$GLOBALS[AA_INSTAL_PATH].'images/blank.gif" width=20 height=1 border="0">');
   $format['d_sel_butt'] = ( $view_info['aditional2'] ? $view_info['aditional2'] :
-                                                       '<input type=button name=sel_ids value="' .L_D_SHOW_SELECTED. '" onClick=showSelectedComments() class="discbuttons">');
+                                                       '<input type=button name=sel_ids value="' ._m("Show selected"). '" onClick=showSelectedComments() class="discbuttons">');
   $format['d_all_butt'] = ( $view_info['aditional3'] ? $view_info['aditional3'] :
-                                                       '<input type=button name=all_ids value="' .L_D_SHOW_ALL. '" onClick=showAllComments() class="discbuttons">');
+                                                       '<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">');
   $format['d_add_butt'] = ( $view_info['aditional4'] ? $view_info['aditional4'] : 
-                                                       '<input type=button name=add_disc value="' .L_D_ADD_NEW. '" onClick=showAddComments() class="discbuttons">');
+                                                       '<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">');
   $format['images'] = array(
                          D_VLINE_IMG => $view_info['img1'],
                          D_CORNER_IMG => $view_info['img2'],

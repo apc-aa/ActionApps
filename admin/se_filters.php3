@@ -33,7 +33,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "sliceadmin", "filters");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "sliceadmin", "filters");
   exit;
 }  
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -64,7 +64,7 @@ while($db->next_record()) {
 }
 
 if( !isset($impslices) OR !is_array($impslices)){
-  MsgPageMenu(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE, "sliceadmin", "filters");
+  MsgPageMenu(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"), "sliceadmin", "filters");
   exit;
 }  
   
@@ -83,7 +83,7 @@ if( $group ) {
   $first_time = true;               # in order to The Same to be first in array
   while($db->next_record()) {
     if( $first_time AND !$remote_slices[$import_id]) {  # for remote categories must be set
-      $to_categories["0"] = L_THE_SAME;
+      $to_categories["0"] = _m("-- The same --");
       $first_time = false;
     } 
     $to_categories[unpack_id($db->f(id))] = $db->f(name);
@@ -143,7 +143,7 @@ if ($feed_id = $remote_slices[$import_id]) {
   }    
 }
 ?>
- <TITLE><?php echo L_A_FILTERS_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - Content Pooling - Filters");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 
 function ChBoxState(chbox) {
@@ -216,7 +216,7 @@ function UpdateFilters(slice_id, import_id) {
     }    
   }  
   if (done == 0) {
-    alert ( "<?php echo L_FLT_NONE ?>" )
+    alert ( "<?php echo _m("No From category selected!") ?>" )
   } else {
     document.location=url
   }
@@ -229,28 +229,28 @@ function UpdateFilters(slice_id, import_id) {
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "filters");
   
-  echo "<H1><B>" . L_A_FILTERS_FLT . "</B></H1>";
+  echo "<H1><B>" . _m("Admin - Content Pooling - Filters") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
   
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_FLT_SETTING ?></b></td></tr>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Content Pooling - Configure Filters") ?></b></td></tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
-  <td colspan class=tabtxt align=center><b><?php echo L_FLT_FROM_SL . "&nbsp; "?></b></td>
+  <td colspan class=tabtxt align=center><b><?php echo _m("Filter for imported slice") . "&nbsp; "?></b></td>
   <td><?php FrmSelectEasy("import_id", $impslices, $import_id, "OnChange=\"ChangeImport()\""); ?></td>
 </tr>
 </table></td></tr>
-<tr><td class=tabtit><b>&nbsp;<?php echo L_FLT_CATEGORIES ?></b></td></tr>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Categories") ?></b></td></tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
-  <td width="40%" colspan=2 class=tabtxt align=center><b><?php echo L_FLT_FROM ?></b></td>
-  <td width="30%" class=tabtxt align=center><b><?php echo L_FLT_TO ?></b></td>
-  <td width="30%" class=tabtxt align=center><b><?php echo L_FLT_APPROVED ?></b></td>
+  <td width="40%" colspan=2 class=tabtxt align=center><b><?php echo _m("From") ?></b></td>
+  <td width="30%" class=tabtxt align=center><b><?php echo _m("To") ?></b></td>
+  <td width="30%" class=tabtxt align=center><b><?php echo _m("Active") ?></b></td>
 </tr>  
 
 <tr>
@@ -261,14 +261,14 @@ if ($imp_count) {
    echo "</td>"; 
 }
 ?>
-<td class=tabtxt <?php if (!$imp_count) { echo "colspan=2 align=center"; } ?>><?php echo L_ALL_CATEGORIES ?></td>
+<td class=tabtxt <?php if (!$imp_count) { echo "colspan=2 align=center"; } ?>><?php echo _m("All Categories") ?></td>
 </td>
 
 <TD><?php 
   if( isset($to_categories) AND is_array($to_categories) )
     FrmSelectEasy("categ_0", $to_categories, $categ_0);
    else   
-    echo "<span class=tabtxt>". L_NO_CATEGORY ."</span>";
+    echo "<span class=tabtxt>". _m("No category defined") ."</span>";
 ?></td>
 <td align="CENTER"><?php FrmChBoxEasy("approved_0", $approved_0); ?></td>
 </tr>
@@ -286,7 +286,7 @@ function PrintOneRow($id, $cat_name, $i) {
     if( isset($to_categories) AND is_array($to_categories) )
      FrmSelectEasy($selectname, $to_categories, isset($selcat[$id]) ? $selcat[$id] : $id);
      else   
-       echo "<span class=tabtxt>". L_NO_CATEGORY ."</span>";
+       echo "<span class=tabtxt>". _m("No category defined") ."</span>";
     echo "</td>\n<TD align=CENTER>";
     $chboxname = "approved_". $i;
      FrmChBoxEasy($chboxname, $chboxapp[$id] );
@@ -319,8 +319,8 @@ else {
 </table></tr></td>
 <tr><td align="center">
 <input type=hidden name="slice_id" value="<?php echo $slice_id ?>">
-<input type="button" VALUE="<?php echo L_UPDATE ?>" onClick = "UpdateFilters('<?php echo $slice_id ?>','<?php echo $import_id ?>')" align=center>&nbsp;&nbsp;
-<input type=submit name=cancel value="<?php echo L_CANCEL ?>">
+<input type="button" VALUE="<?php echo _m("Update") ?>" onClick = "UpdateFilters('<?php echo $slice_id ?>','<?php echo $import_id ?>')" align=center>&nbsp;&nbsp;
+<input type=submit name=cancel value="<?php echo _m("Cancel") ?>">
 </td></tr></table>
 </FORM>
 <?php

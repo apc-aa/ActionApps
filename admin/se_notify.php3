@@ -61,7 +61,7 @@ if(! $slice_id){
 }
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT, "standalone");
+  MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"), "standalone");
   exit;
 }
 
@@ -79,7 +79,7 @@ $superadmin = IsSuperadmin();
 if( $update ) {
 
   //validate input
-  //  ValidateInput("name", L_SLICE_NAME, $name, $err, true, "text");
+  //  ValidateInput("name", _m("Title"), $name, $err, true, "text");
 
   // check to make sure we passed our validation cleanly
   if( count($err) > 1)
@@ -213,11 +213,11 @@ while ($row = mysql_fetch_array ($result)){
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 HtmlPageBegin();
-echo '<TITLE> '. L_A_NOTIFY_TIT. '</TITLE></HEAD>';
+echo '<TITLE> '. _m("Email Notifications of Events"). '</TITLE></HEAD>';
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin","notify");
   
-  echo "<H1><B>" . L_A_NOTIFY_TIT . "</B></H1>";
+  echo "<H1><B>" . _m("Email Notifications of Events") . "</B></H1>";
   PrintArray($err);
   echo $Msg;  
 ?>
@@ -225,7 +225,7 @@ echo '<TITLE> '. L_A_NOTIFY_TIT. '</TITLE></HEAD>';
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 
-<tr><td class=tabtit><b>&nbsp;<?php echo L_A_NOTIFY_TIT?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Email Notifications of Events")?></b>
 </td>
 </tr>
 
@@ -233,34 +233,34 @@ echo '<TITLE> '. L_A_NOTIFY_TIT. '</TITLE></HEAD>';
 
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
-echo "<TR><TD COLSPAN =2>". L_NOTIFY_HOLDING . "</TD></TR>"; 
-  FrmTextArea("notify_holding_item_e", L_NOTIFY_EMAILS, $notify_holding_item_e, 3, 40, false);
-  FrmInputText("notify_holding_item_s", L_NOTIFY_SUBJECT, $notify_holding_item_s, 99, 40, true);
-  FrmTextArea("notify_holding_item_b", L_NOTIFY_BODY, $notify_holding_item_b, 3, 40, true);
+echo "<TR><TD COLSPAN =2>". _m("<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>"; 
+  FrmTextArea("notify_holding_item_e", _m("Email addresses, one per line"), $notify_holding_item_e, 3, 40, false);
+  FrmInputText("notify_holding_item_s", _m("Subject of the Email message"), $notify_holding_item_s, 99, 40, true);
+  FrmTextArea("notify_holding_item_b", _m("Body of the Email message"), $notify_holding_item_b, 3, 40, true);
 
-echo "<TR><TD COLSPAN =2>". L_NOTIFY_HOLDING_EDIT . "</TD></TR>"; 
-FrmTextArea("notify_holding_item_edit_e", L_NOTIFY_EMAILS, $notify_holding_item_edit_e, 3, 40, false);
-  FrmInputText("notify_holding_item_edit_s", L_NOTIFY_SUBJECT, $notify_holding_item_edit_s, 99, 40, true);
-  FrmTextArea("notify_holding_item_edit_b", L_NOTIFY_BODY, $notify_holding_item_edit_b, 3, 40, true);
+echo "<TR><TD COLSPAN =2>". _m("<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>"; 
+FrmTextArea("notify_holding_item_edit_e", _m("Email addresses, one per line"), $notify_holding_item_edit_e, 3, 40, false);
+  FrmInputText("notify_holding_item_edit_s", _m("Subject of the Email message"), $notify_holding_item_edit_s, 99, 40, true);
+  FrmTextArea("notify_holding_item_edit_b", _m("Body of the Email message"), $notify_holding_item_edit_b, 3, 40, true);
 
-echo "<TR><TD COLSPAN =2>". L_NOTIFY_APPROVED . "</TD></TR>"; 
-  FrmTextArea("notify_active_item_e", L_NOTIFY_EMAILS, $notify_active_item_e, 3, 40, false);
-  FrmInputText("notify_active_item_s", L_NOTIFY_SUBJECT, $notify_active_item_s, 99, 40, true);
-  FrmTextArea("notify_active_item_b", L_NOTIFY_BODY, $notify_active_item_b, 3, 40, true);
+echo "<TR><TD COLSPAN =2>". _m("<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>"; 
+  FrmTextArea("notify_active_item_e", _m("Email addresses, one per line"), $notify_active_item_e, 3, 40, false);
+  FrmInputText("notify_active_item_s", _m("Subject of the Email message"), $notify_active_item_s, 99, 40, true);
+  FrmTextArea("notify_active_item_b", _m("Body of the Email message"), $notify_active_item_b, 3, 40, true);
 
-echo "<TR><TD COLSPAN =2>". L_NOTIFY_APPROVED_EDIT . "</TD></TR>"; 
-FrmTextArea("notify_active_item_edit_e", L_NOTIFY_EMAILS, $notify_active_item_edit_e, 3, 40, false);
-  FrmInputText("notify_active_item_edit_s", L_NOTIFY_SUBJECT, $notify_active_item_edit_s, 99, 40, true);
-  FrmTextArea("notify_active_item_edit_b", L_NOTIFY_BODY, $notify_active_item_edit_b, 3, 40, true);
+echo "<TR><TD COLSPAN =2>". _m("<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>"; 
+FrmTextArea("notify_active_item_edit_e", _m("Email addresses, one per line"), $notify_active_item_edit_e, 3, 40, false);
+  FrmInputText("notify_active_item_edit_s", _m("Subject of the Email message"), $notify_active_item_edit_s, 99, 40, true);
+  FrmTextArea("notify_active_item_edit_b", _m("Body of the Email message"), $notify_active_item_edit_b, 3, 40, true);
 
 ?>
 </table>
 </td></tr><tr><td align="center">
 <?php
   echo "<input type=hidden name=\"update\" value=1>";
-  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=reset value="'. L_RESET .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
+  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
+  echo '<input type=reset value="'. _m("Reset form") .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
 ?>
 
 </td></tr></table></FORM>

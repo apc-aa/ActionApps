@@ -35,7 +35,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base()."index.php3"), L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
 
@@ -100,7 +100,7 @@ while ($db->next_record()) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_RSSFEEDS_ADMIN_TIT;?></TITLE>
+ <TITLE><?php echo _m("Remote RSS Feed administration");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 
 function InitPage() {}
@@ -119,10 +119,10 @@ function Submit(mode) {
 
   sel = SelectValue('document.f.rssfeeds')
   if (sel == null)
-    alert('<?php echo L_RSSFEEDS_SEL_NONE; ?>')
+    alert('<?php echo _m("No selected rssfeed"); ?>')
   else {
     if (mode == 'delete')
-      if (!confirm('<?php echo L_RSSFEEDS_CONFIRM_DELETE; ?>'))
+      if (!confirm('<?php echo _m("Are you sure you want to delete the rssfeed?"); ?>'))
         return
     document.f.sel_rssfeed_name.value = sel
     document.f.mode.value = mode;
@@ -152,16 +152,16 @@ function Cancel() {
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin","rssfeeds");
 
-  echo "<H1><B>" . L_RSSFEEDS_ADMIN_TIT . "</B></H1>";
+  echo "<H1><B>" . _m("Remote RSS Feed administration") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>" onSubmit="return checkData()">
   <table width="400" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo L_RSSFEEDS_ADMIN_TIT ?></b></td></tr>
+    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Remote RSS Feed administration") ?></b></td></tr>
      <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABBG ?>">
-      <tr><td colspan=2><?php echo L_RSSFEEDS_LIST ?></td></tr>
+      <tr><td colspan=2><?php echo _m("Current remote rssfeeds") ?></td></tr>
       <tr><td align=center colspan=2>
       <SELECT name="rssfeeds" class=tabtxt size=5>
       <?php
@@ -173,24 +173,24 @@ function Cancel() {
       ?>
       </SELECT>
     <tr><td colspan=2 align="center">
-      <input type=button value="<?php echo L_EDIT ?>" onClick = "Submit('edit')" >
-      <input type=button VALUE="<?php echo L_DELETE ?>" onClick = "Submit('delete')">
-      <input type=button VALUE="<?php echo L_ADD ?>" onClick = "Submit('add')">
+      <input type=button value="<?php echo _m("Edit") ?>" onClick = "Submit('edit')" >
+      <input type=button VALUE="<?php echo _m("Delete") ?>" onClick = "Submit('delete')">
+      <input type=button VALUE="<?php echo _m("Add") ?>" onClick = "Submit('add')">
      </td></tr>
     <tr><td colspan=2>&nbsp;</td></tr>
-    <tr><td colspan=2><?php echo ($new_mode=="insert" ? L_RSSFEEDS_ADD_NEW :
-                                                   L_RSSFEEDS_EDIT) ?>
+    <tr><td colspan=2><?php echo ($new_mode=="insert" ? _m("Add new rssfeed") :
+                                                   _m("Edit rssfeed data")) ?>
     </td></tr>
-    <tr><td><?php echo L_RSSFEEDS_RSSFEED_NAME ?></td>
-        <td><input type="text" name="rssfeed_name" size=40 value="<?php echo safe($rssfeed_name)?>" ><br><?php echo L_RSSFEEDS_YOUR_RSSFEED?></tr>
-    <tr><td><?php echo L_RSSFEEDS_SERVER_URL ?></td>
-         <td><input type="text" name="server_url" size=40 value="<?php echo safe($server_url)?>" ><br><?php echo L_RSSFEEDS_SERVER_URL_EXAMPLE?>"
+    <tr><td><?php echo _m("RSS Feed name") ?></td>
+        <td><input type="text" name="rssfeed_name" size=40 value="<?php echo safe($rssfeed_name)?>" ><br><?php echo _m("New rssfeed name")?></tr>
+    <tr><td><?php echo _m("URL of the feed") ?></td>
+         <td><input type="text" name="server_url" size=40 value="<?php echo safe($server_url)?>" ><br><?php echo _m("e.g. http://www.someplace.com/rss/index.xml")?>"
     <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">
     <input type="hidden" name="old_rssfeed_name" value="<?php echo safe($old_rssfeed_name) ?>">
     <input type="hidden" name="sel_rssfeed_name">
 </tr>
-    <tr><td colspan=2 align="center"><input type="submit" value="<?php echo L_SUBMIT ?>" >
-        <input type=button value="<?php echo L_CANCEL ?>" onClick="Cancel()" ></td>
+    <tr><td colspan=2 align="center"><input type="submit" value="<?php echo _m("Submit") ?>" >
+        <input type=button value="<?php echo _m("Cancel") ?>" onClick="Cancel()" ></td>
     </tr>
   </table>
   </td></tr>

@@ -32,7 +32,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_VIEWS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
   exit;
 }  
 
@@ -50,11 +50,12 @@ if( $del ) {
   $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
   $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
-  $Msg = MsgOK(L_VIEW_DELETE_OK);
+  $Msg = MsgOK(_m("View successfully deleted"));
 }
 
 function PrintViewRow($id, $name, $type) {
-  global $sess, $VIEW_TYPES;
+  global $sess;
+  $VIEW_TYPES = getViewTypes();
 
   $name=safe($name); $id=safe($id);     
   
@@ -63,8 +64,8 @@ function PrintViewRow($id, $name, $type) {
           <td class=tabtxt>". $VIEW_TYPES[$type]["name"] ."</td>
           <td class=tabtxt>$name</td>
           <td class=tabtxt><a href=\"". con_url($sess->url("./se_view.php3"),
-            "view_id=$id&view_type=$type"). "\">". L_EDIT . "</a></td>
-          <td class=tabtxt><a href=\"javascript:DeleteView('$id')\">". L_DELETE ."</a></td>
+            "view_id=$id&view_type=$type"). "\">". _m("Edit") . "</a></td>
+          <td class=tabtxt><a href=\"javascript:DeleteView('$id')\">". _m("Delete") ."</a></td>
          </tr>";
 }
 
@@ -75,10 +76,10 @@ function GetViewJSArray( $sid, $id, $name, $type, $i ) {
 }         
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>"; ?>
+echo "<TITLE>". _m("Admin - design View") ."</TITLE>"; ?>
   <SCRIPT Language="JavaScript"><!--
      function DeleteView(id) {
-       if( !confirm("<?php echo L_DELETE_VIEW; ?>"))
+       if( !confirm("<?php echo _m("Are you sure you want to delete selected view?"); ?>"))
          return
        var url="<?php echo $sess->url(con_url("./se_views.php3", "del=1")); ?>"
        document.location=url + "&vid=" + escape(id);
@@ -109,12 +110,12 @@ $useOnLoad = ($new_compact ? true : false);
 require $GLOBALS[AA_INC_PATH]."menu.php3";
 showMenu ($aamenus, "sliceadmin","views");
 
-echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
+echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";
 PrintArray($err);
 echo $Msg;
 ?>
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR></td></tr>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Defined Views")?></b><BR></td></tr>
 <tr>
 <form name="fvtype" method=post action="<?php echo $sess->url("./se_view.php3") ?>">
 <td>
@@ -141,24 +142,25 @@ echo "</td>
     </table>
    </td>
   </tr>
-  <tr><td class=tabtit><b>&nbsp;".L_VIEW_CREATE_NEW ."</b><BR></td></tr>
+  <tr><td class=tabtit><b>&nbsp;"._m("Create new view") ."</b><BR></td></tr>
   <tr>
    <td>
     <table width='100%' border=0 cellspacing=0 cellpadding=4 bgcolor='". COLOR_TABBG ."'>
       <tr class=tabtxt>
-        <td>".L_VIEW_CREATE_TYPE."</td>
+        <td>"._m("by&nbsp;type:")."</td>
         <td align=right><select name='view_type'>";	
+$VIEW_TYPES = getViewTypes();        
 reset($VIEW_TYPES);
 while(list($k, $v) = each($VIEW_TYPES)) { 
   echo "<option value='$k'> ". htmlspecialchars($v["name"]) ." </option>";
 }
 echo "</select></td>
-        <td><input type=submit name=new value='". L_NEW ."'></td>
+        <td><input type=submit name=new value='". _m("New") ."'></td>
      </tr>";
 
   # row for new view creaded from template
 echo "<tr class=tabtxt>
-        <td>".L_VIEW_CREATE_TEMPL."</td>
+        <td>"._m("by&nbsp;template:")."</td>
         <td align=right>
          <select name='view_slice' OnChange='SelectViewSlice()'>";
   # slice selection         
@@ -173,7 +175,7 @@ echo "   </select>&nbsp;<select name='view_view'>
           <option> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>
          </select>
          </td>
-        <td><input type=submit name='new_templ' value='". L_NEW ."'></td>
+        <td><input type=submit name='new_templ' value='". _m("New") ."'></td>
      </tr>
     </table>
   </td>
@@ -193,7 +195,7 @@ echo "   </select>&nbsp;<select name='view_view'>
 
 
 $viewuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF); #include help
-echo L_SLICE_HINT ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri . 
+echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri . 
          '?vid=<i>ID</i>&quot;--&gt;</pre>';
 HtmlPageEnd();
 page_close();

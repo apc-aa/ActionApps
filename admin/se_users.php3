@@ -31,7 +31,7 @@ require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 require $GLOBALS[AA_INC_PATH]."profile.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
   exit;
 }  
 
@@ -74,20 +74,20 @@ function PrintUser($usr, $usr_id, $editor_perm) {
 
   IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),
           $sess->url(self_base() . "se_users.php3") .
-               "&UsrAdd=$usr_id&role=AUTHOR", L_ROLE_AUTHOR);
+               "&UsrAdd=$usr_id&role=AUTHOR", _m("Author"));
   IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["EDITOR"]['perm']), 
           $sess->url(self_base() . "se_users.php3") .
-                "&UsrAdd=$usr_id&role=EDITOR", L_ROLE_EDITOR);
+                "&UsrAdd=$usr_id&role=EDITOR", _m("Editor"));
   IfLink( CanChangeRole($perm, $editor_perm,
                         $perms_roles["ADMINISTRATOR"]['perm']), 
           $sess->url(self_base() . "se_users.php3") .
                 "&UsrAdd=$usr_id&role=ADMINISTRATOR",
-          L_ROLE_ADMINISTRATOR);
+          _m("Administrator"));
   IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),
           $sess->url(self_base() . "se_users.php3") .
-                     "&UsrDel=$usr_id", L_REVOKE);
-  echo "<td class=tabtxt>". (($usr[type]!=L_USER)? "&nbsp;" :
-         "<input type='button' name='uid' value='". L_PROFILE ."' 
+                     "&UsrDel=$usr_id", _m("Revoke"));
+  echo "<td class=tabtxt>". (($usr[type]!=_m("User"))? "&nbsp;" :
+         "<input type='button' name='uid' value='". _m("Profile") ."' 
            onclick=\"document.location='". $sess->url("se_profile.php3?uid=$usr_id") ."'\"></td>\n");
   echo "</tr>\n";
 }
@@ -97,13 +97,13 @@ $show_adduser = $adduser || $GrpSrch || $UsrSrch;    // show add user form?
 HtmlPageBegin();   // Prints HTML start page tags 
                    // (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_PERMISSIONS;?></TITLE>
+ <TITLE><?php echo _m("Admin - Permissions");?></TITLE>
 </HEAD>
 <?php
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", $show_adduser ? "addusers" : "users");
 
-  echo "<H1><B>".L_A_PERMISSIONS."</B></H1>";
+  echo "<H1><B>"._m("Admin - Permissions")."</B></H1>";
 //  PrintArray($err);
   echo $Msg;
 
@@ -117,7 +117,7 @@ HtmlPageBegin();   // Prints HTML start page tags
     
     <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
     <tr>
-     <td class=tabtit><b>&nbsp;<?php echo L_PERM_CURRENT ?></b></td>
+     <td class=tabtit><b>&nbsp;<?php echo _m("Change current permissions") ?></b></td>
     </tr>
     <tr><td><form>
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">  <?php
@@ -150,8 +150,8 @@ HtmlPageBegin();   // Prints HTML start page tags
       PrintUser($usr,$usr_id,$editor_perms);
       
     echo "<tr><td class=tabtxt>&nbsp;</td>
-              <td class=tabtxt colspan='7'>". L_DEFAULT_USER_PROFILE ."</td>
-              <td class=tabtxt><input type='button' name='uid' value='". L_PROFILE ."' 
+              <td class=tabtxt colspan='7'>". _m("Default user profile") ."</td>
+              <td class=tabtxt><input type='button' name='uid' value='". _m("Profile") ."' 
            onclick=\"document.location='". $sess->url("se_profile.php3?uid=*") ."'\"></td>\n";
   echo "</tr>\n";
       

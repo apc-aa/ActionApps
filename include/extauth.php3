@@ -49,7 +49,7 @@ class AA_CP_Auth extends Auth {
                                               # to cookies username, then the 
                                               # cookies username is used - error
     
-    require ($GLOBALS[AA_INC_PATH] . "loginform.html");
+    require ($GLOBALS[AA_INC_PATH] . "loginform.inc");
   }
 
   function auth_validatelogin() {

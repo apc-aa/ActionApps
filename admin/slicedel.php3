@@ -42,15 +42,15 @@ function PrintSlice($id, $name, $type) {
   $url = (($type=='S') ? './slicedel2.php3' : $MODULES[$type]['directory']."moddelete.php3" );
 
   echo "<tr class=tabtxt><td>$name</td>
-          <td class=tabtxt><a href=\"javascript:DeleteSlice('$id', '$url')\">". L_DELETE ."</a></td></tr>";
+          <td class=tabtxt><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td></tr>";
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_DELSLICE_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - Delete Slice");?></TITLE>
  <SCRIPT Language="JavaScript"><!--
    function DeleteSlice(id,url2go) {
-     if( !confirm("<?php echo L_DELETE_SLICE; ?>"))
+     if( !confirm("<?php echo _m("Do you really want to delete this slice and all its fields and all its items?"); ?>"))
        return
      var url=url2go+"<?php echo $sess->url("?"); ?>"
      document.location=url+'&del='+id;
@@ -65,13 +65,13 @@ $useOnLoad = ($new_compact ? true : false);
 require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
 showMenu ($aamenus, "aaadmin","slicedel");
 
-echo "<H1><B>" . L_A_DELSLICE . "</B></H1>";
+echo "<H1><B>" . _m("Admin - Delete Slice") . "</B></H1>";
 echo $Msg;
-echo L_DEL_SLICE_HLP;
+echo _m("<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>");
 
 ?>
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
- <tr><td class=tabtit><b>&nbsp;<?php echo L_DELSLICE_HDR?></b><BR>
+ <tr><td class=tabtit><b>&nbsp;<?php echo _m("Select slice to delete")?></b><BR>
   </td></tr>
  <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
@@ -85,12 +85,12 @@ while( $db->next_record() ) {
   $slice_to_delete = true;
 }
 if( !$slice_to_delete )
-  echo "<tr class=tabtxt><td>". L_NO_SLICE_TO_DELETE ."</td></tr>";
+  echo "<tr class=tabtxt><td>". _m("No slice marked for deletion") ."</td></tr>";
 
 echo '
   </table>
  <tr><td align="center">
-  <input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;
+  <input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;
  </td></tr></table>
 </FORM>';
 

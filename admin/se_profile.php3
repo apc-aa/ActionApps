@@ -32,7 +32,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "./se_users.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
   exit;
 }
 
@@ -47,7 +47,7 @@ if( $del ) {
     break;
   }
 
-  $Msg = MsgOK(L_PROFILE_DELETE_OK);
+  $Msg = MsgOK(_m("Rule deleted"));
 }
 
 if( $add ) {
@@ -57,28 +57,28 @@ if( $add ) {
         if( $param > 0 ) {
           DeleteProfileProperty($property);
           InsertProfileProperty($uid, $property, '0', $param);
-          $Msg = MsgOK(L_PROFILE_ADD_OK);
+          $Msg = MsgOK(_m("Rule added"));
         }
         break;
       case 'admin_order':
         if( $field_id ) {
           DeleteProfileProperty($property);
           InsertProfileProperty($uid, $property, '0', $field_id.$fnction);
-          $Msg = MsgOK(L_PROFILE_ADD_OK);
+          $Msg = MsgOK(_m("Rule added"));
         }
         break;
       case 'admin_search':
         if( $field_id ) {
           DeleteProfileProperty($property);
           InsertProfileProperty($uid, $property, '0', "$field_id:$param");
-          $Msg = MsgOK(L_PROFILE_ADD_OK);
+          $Msg = MsgOK(_m("Rule added"));
         }
         break;
       case 'hide':
         if( $field_id ) {
           DeleteProfileProperty($property, $field_id);
           InsertProfileProperty($uid, $property, $field_id, '1');
-          $Msg = MsgOK(L_PROFILE_ADD_OK);
+          $Msg = MsgOK(_m("Rule added"));
         }
         break;
       case 'fill':
@@ -87,13 +87,13 @@ if( $add ) {
         if( $field_id ) {
           DeleteProfileProperty($property,$field_id);
           InsertProfileProperty($uid, $property, $field_id, "$html:$fnction:$param");
-          $Msg = MsgOK(L_PROFILE_ADD_OK);
+          $Msg = MsgOK(_m("Rule added"));
         }
         break;
    }
   } while( 0 );           #in order we can use "break;" statement
   if( count($err) > 1)
-    $Msg = MsgOK(L_PROFILE_ADD_ERR);
+    $Msg = MsgOK(_m("Error: Can't add rule"));
 }
 
 # prepare forms ---------------------------------------------------------------
@@ -113,19 +113,19 @@ while( list($k, $v) = each($fields) )
 
 
 # set property names array
-$PROPERTY_TYPES = array( 'listlen'=>L_PROFILE_LISTLEN,
-                         'admin_search'=>L_PROFILE_ADMIN_SEARCH,
-                         'admin_order'=>L_PROFILE_ADMIN_ORDER,
-                         'hide'=>L_PROFILE_HIDE,
-                         'hide&fill'=>L_PROFILE_HIDEFILL,
-                         'fill'=>L_PROFILE_FILL,
-                         'predefine'=>L_PROFILE_PREDEFINE);
+$PROPERTY_TYPES = array( 'listlen'=>_m("Item number"),
+                         'admin_search'=>_m("Item filter"),
+                         'admin_order'=>_m("Item order"),
+                         'hide'=>_m("Hide field"),
+                         'hide&fill'=>_m("Hide and Fill"),
+                         'fill'=>_m("Fill field"),
+                         'predefine'=>_m("Predefine field"));
 
-$SORTORDER_TYPES = array( '+'=>L_ASCENDING, '-' => L_DESCENDING );
+$SORTORDER_TYPES = array( '+'=>_m("Ascending"), '-' => _m("Descending") );
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_PROFILE_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - user Profiles");?></TITLE>
 <script language="JavaScript"><!--
   function addrule(n) {
     var si;
@@ -154,14 +154,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 require $GLOBALS[AA_INC_PATH]."menu.php3";
 showMenu ($aamenus, "sliceadmin","");
 
-echo "<H1><B>" . L_A_PROFILE_TIT . "</B></H1>";
+echo "<H1><B>" . _m("Admin - user Profiles") . "</B></H1>";
 PrintArray($err);
 echo $Msg;
 
 echo "
  <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
   <tr>
-   <td class=tabtit><b>&nbsp;". L_PROFILE_HDR ." - $uid</b></td>
+   <td class=tabtit><b>&nbsp;". _m("Rules") ." - $uid</b></td>
   </tr>
   <tr>
    <td>
@@ -172,32 +172,32 @@ if( isset($rules) AND is_array($rules) ) {
   while( list(,$v) = each($rules))
     PrintRule($v);
 } else
-  echo "<tr><td>".L_NO_RULE_SET."</td></tr>";
+  echo "<tr><td>"._m("No rule is set")."</td></tr>";
 
 echo "</table>
   <tr>
-   <td class=tabtit><b>&nbsp;". L_PROFILE_ADD_HDR ."</b></td>
+   <td class=tabtit><b>&nbsp;". _m("Add Rule") ."</b></td>
   </tr>
   <tr>
    <td>
     <form name=fr>
      <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" width=\"100%\" bgcolor=\"". COLOR_TABBG ."\">
       <tr class=tabtxt align=center>
-       <td><b>". L_RULE . "</b></td>
-       <td><b>". L_FIELD . "</b></td>
-       <td><b>". L_FUNCTION . "</b></td>
-       <td><b>". L_VALUE . "</b></td>
-       <td><b>". L_HTML . "</b></td>
+       <td><b>". _m("Rule") . "</b></td>
+       <td><b>". _m("Field") . "</b></td>
+       <td><b>". _m("Function") . "</b></td>
+       <td><b>". _m("Value") . "</b></td>
+       <td><b>". _m("HTML") . "</b></td>
        <td>&nbsp;</td>
       </tr>";
 
-PrintSetRule(1,'listlen',     0,0,                   1,0,L_PROFILE_LISTLEN_DESC );
-PrintSetRule(2,'admin_search',1,0,                   1,0,L_PROFILE_ADMIN_SEARCH_DESC);
-PrintSetRule(3,'admin_order', 1,$SORTORDER_TYPES,    0,0,L_PROFILE_ADMIN_ORDER_DESC);
-PrintSetRule(4,'hide',        1,0,                   0,0,L_PROFILE_HIDE_DESC);
-PrintSetRule(5,'hide&fill',   1,$INPUT_DEFAULT_TYPES,1,1,L_PROFILE_HIDEFILL_DESC);
-PrintSetRule(6,'fill',        1,$INPUT_DEFAULT_TYPES,1,1,L_PROFILE_FILL_DESC);
-PrintSetRule(7,'predefine',   1,$INPUT_DEFAULT_TYPES,1,1,L_PROFILE_PREDEFINE_DESC);
+PrintSetRule(1,'listlen',     0,0,                   1,0,_m("number of item displayed in Item Manager") );
+PrintSetRule(2,'admin_search',1,0,                   1,0,_m("preset \"Search\" in Itme Manager"));
+PrintSetRule(3,'admin_order', 1,$SORTORDER_TYPES,    0,0,_m("preset \"Order\" in Itme Manager"));
+PrintSetRule(4,'hide',        1,0,                   0,0,_m("hide the field in inputform"));
+PrintSetRule(5,'hide&fill',   1,inputDefaultTypes(), 1,1,_m("hide the field in inputform and fill it by the value"));
+PrintSetRule(6,'fill',        1,inputDefaultTypes(), 1,1,_m("fill the field in inputform by the value"));
+PrintSetRule(7,'predefine',   1,inputDefaultTypes(), 1,1,_m("predefine value of the field in inputform"));
 
 echo "</table>
     </form>

@@ -33,7 +33,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CONFIG)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_CONFIG, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have no permission to set configuration parameters of this slice"), "admin");
   exit;
 }  
 
@@ -51,10 +51,10 @@ if( $update )
 {
   do
   {
-    ValidateInput("admin_format_top", L_ADMIN_FORMAT_TOP, $admin_format_top, $err, false, "text");
-    ValidateInput("admin_format", L_ADMIN_FORMAT, $admin_format, $err, true, "text");
-    ValidateInput("admin_format_bottom", L_ADMIN_FORMAT_BOTTOM, $admin_format_bottom, $err, false, "text");
-    ValidateInput("admin_remove", L_ADMIN_REMOVE, $admin_remove, $err, false, "text");
+    ValidateInput("admin_format_top", _m("Top HTML"), $admin_format_top, $err, false, "text");
+    ValidateInput("admin_format", _m("Item format"), $admin_format, $err, true, "text");
+    ValidateInput("admin_format_bottom", _m("Bottom HTML"), $admin_format_bottom, $err, false, "text");
+    ValidateInput("admin_remove", _m("Remove strings"), $admin_remove, $err, false, "text");
     if( count($err) > 1)
       break;
 
@@ -64,7 +64,7 @@ if( $update )
     $varset->add("admin_remove", "quoted", $admin_remove);
     if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . 
                      "WHERE id='".q_pack_id($slice_id)."'")) {
-      $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
+      $err["DB"] = MsgErr( _m("Can't change slice settings") );
       break;    # not necessary - we have set the halt_on_error
     }
 
@@ -76,7 +76,7 @@ if( $update )
     $admin_format_bottom = dequote($admin_format_bottom);
   }while(false);
   if( count($err) <= 1 )
-    $Msg = MsgOK(L_ADMIN_OK);
+    $Msg = MsgOK(_m("Admin fields update successful"));
 }
 
 if( $slice_id!="" ) {  // set variables from database
@@ -94,7 +94,7 @@ if( $slice_id!="" ) {  // set variables from database
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo L_A_ADMIN_TIT;?></TITLE>
+<TITLE><?php echo _m("Admin - design Item Manager view");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 function Defaults() {
   document.f.admin_format_top.value = '<?php echo DEFAULT_ADMIN_TOP ?>'
@@ -110,26 +110,26 @@ function Defaults() {
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "config");
 
-  echo "<H1><B>" . L_A_ADMIN . "</B></H1>";
+  echo "<H1><B>" . _m("Admin - design Item Manager view") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_ADMIN_HDR?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Listing of items in Admin interface")?></b>
 </td>
 </tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
-  FrmTextarea("admin_format_top", L_ADMIN_FORMAT_TOP, $admin_format_top, 4, 60,
-              false, L_TOP_HLP, DOCUMENTATION_URL, 1); 
-  FrmTextarea("admin_format", L_ADMIN_FORMAT, $admin_format, 8, 60, true,
-                     L_FORMAT_HLP, DOCUMENTATION_URL, 1);
-  FrmTextarea("admin_format_bottom", L_ADMIN_FORMAT_BOTTOM, $admin_format_bottom,
-              4, 60, false, L_BOTTOM_HLP, DOCUMENTATION_URL, 1);
-  FrmInputText("admin_remove", L_ADMIN_REMOVE, $admin_remove, 254, 50, false,
-               L_REMOVE_HLP, DOCUMENTATION_URL);
+  FrmTextarea("admin_format_top", _m("Top HTML"), $admin_format_top, 4, 60,
+              false, _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1); 
+  FrmTextarea("admin_format", _m("Item format"), $admin_format, 8, 60, true,
+                     _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1);
+  FrmTextarea("admin_format_bottom", _m("Bottom HTML"), $admin_format_bottom,
+              4, 60, false, _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1);
+  FrmInputText("admin_remove", _m("Remove strings"), $admin_remove, 254, 50, false,
+               _m("Removes empty brackets etc. Use ## as delimeter."), DOCUMENTATION_URL);
 ?>
 </table></td></tr>
 <?php
@@ -138,9 +138,9 @@ function Defaults() {
 <tr><td align="center">
 <?php 
   echo "<input type=hidden name=\"update\" value=1>";
-  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
-  echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
+  echo '<input type=button onClick = "Defaults()" align=center value="'. _m("Default") .'">&nbsp;&nbsp;';
 ?>
 </td></tr></table>
 </FORM>

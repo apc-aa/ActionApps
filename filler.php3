@@ -93,12 +93,13 @@ function SendErrorPage($txt) {
   if( $GLOBALS["err_url"] ) {
     go_url( con_url($GLOBALS["err_url"], "err=".substr(serialize($txt),0,200)));
   }
-  echo (L_OFFLINE_ERR_BEGIN);
+  echo HtmlPageBegin("");
+  echo "</head><body>";
   if( isset( $txt ) AND is_array( $txt ) )
     PrintArray($txt);    
-   else 
+  else 
     echo $txt;
-  echo (L_OFFLINE_ERR_END );
+  echo "</body></html>";
   exit;
 }  
 
@@ -121,7 +122,7 @@ $varset = new Cvarset();
 $itemvarset = new Cvarset();
 
 if( !$slice_id )
-  SendErrorPage(L_NO_SLICE_ID);
+  SendErrorPage(_m("Slice ID not defined"));
 
 $error = "";
 $ok = "";
@@ -130,7 +131,7 @@ $p_slice_id = q_pack_id($slice_id);
 $slice_info = GetSliceInfo($slice_id);
 
 if( !$slice_info )
-  SendErrorPage(L_NO_SUCH_SLICE);
+  SendErrorPage(_m("Bad slice ID"));
 
 if( $slice_info["permit_anonymous_post"] < 1 )
   SendErrorPage(L_ANONYMOUS_POST_ADMITED);
@@ -141,7 +142,7 @@ if( $slice_info["permit_anonymous_post"] < 1 )
 list($fields,$prifields) = GetSliceFields($slice_id);   
 
 if( !(isset($prifields) AND is_array($prifields)) )
-  SendErrorPage(L_NO_FIELDS);
+  SendErrorPage(_m("No fields defined for this slice"));
   
 // get defaults 
 reset($prifields);

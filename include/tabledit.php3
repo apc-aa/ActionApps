@@ -1,7 +1,13 @@
 <?php
-//$Id$
+/**
+ * Class TableEdit definition.
+ * @package TableEdit
+ * @version $Id$
+ * @author Jakub Adamek, Econnect
+ * @copyright (c) 2002-3 Association for Progressive Communications 
+*/
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999-2003 Association for Progressive Communications 
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,19 +25,15 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// (c) Econnect, Jakub Adamek, December 2002
-// DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
-
 require "tabledit_column.php3";
 require "tabledit_util.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."scroller.php3";
 
-// identifies new record 
+/// identifies new record 
 $new_key = "__new__";
 
-/**  Class TableEdit
-*    See doc/tabledit.html for more info.
+/** See @link ../tabledit.html, @link ../tabledit_developer.html, @link ../tableview.html for more info.
 */	
 class tabledit {
     // serialization purposes??
@@ -154,7 +156,7 @@ class tabledit {
 
     // -----------------------------------------------------------------------------------
     
-    // shows one table form    
+    /// shows the complete table 
     function view ($where = "1") {
         global $db;
 

@@ -90,7 +90,7 @@ if($free) {           // anonymous login
   $username = $free;
   $password = $freepwd;
   if( !($auth->auth["uid"] = $auth->auth_validatelogin()) ){
-    echo L_BAD_LOGIN;
+    echo _m("Either your username or your password is not valid.");
     exit;
   }
 }
@@ -103,12 +103,13 @@ if( $new_sliceid )
 if( $Add_slice )
   unset($slice_id);
 
+require $GLOBALS["AA_INC_PATH"]."mgettext.php3";  
 if( !$require_default_lang AND isset($r_lang_file) AND is_array($r_lang_file) AND ($r_lang_file[$slice_id] != "")) {
-  include $GLOBALS[AA_INC_PATH] . $r_lang_file[$slice_id];  # do not delete the curly braces - include in condition statement must be in braces!
-}else{
-  include $GLOBALS[AA_INC_PATH] . DEFAULT_LANG_INCLUDE ;
-}
-
+  $lang_file = str_replace ("php3", "inc", $r_lang_file[$slice_id]);  # do not delete the curly braces - include in condition statement must be in braces!
+  bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$lang_file);
+}  
+else bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".str_replace ("php3","inc",DEFAULT_LANG_INCLUDE));
+    
 require $GLOBALS[AA_INC_PATH] . "util.php3"; // must be after language include because of lang constants in util.php3
 
 if( $slice_id )
@@ -122,7 +123,6 @@ $sess->register("r_slice_view_url");    // url of slice
 $sess->register("r_stored_module");     // id of module which values are in r_slice_headline, r_slice_view_url
 $sess->register("r_hidden");            // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
 $sess->register("r_profile");           // stores profile for loged user and current slice
-$sess->register("wrong_language_file"); // cares about the infinite loop with wrong language file
 //$sess->register("r_fields");            // array of fields for current slice
 
 if( !$save_hidden ) {      # sometimes we need to not unset hidden - popup for related stories ...
@@ -139,7 +139,7 @@ if (!$New_slice AND !$Add_slice AND !$slice_id)
 $perm_slices = GetUsersSlices( $auth->auth[uid] );
 
 if( !$New_slice AND !$Add_slice AND is_array($perm_slices) AND (reset($perm_slices)=="") ) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS, "standalone");
+  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"), "standalone");
   exit;
 }
 
@@ -167,7 +167,7 @@ while($db->next_record()) {
 
 if( !$Add_slice AND !$New_slice ) {
   if( !is_array($g_modules)) {   // this slice was deleted
-    MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("No slice found for you"), "standalone");
     exit;
   }
 
@@ -189,7 +189,7 @@ if( !$Add_slice AND !$New_slice ) {
 
 
   if( !isset($g_modules[$slice_id])) {   # this module was deleted
-    MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("No slice found for you"), "standalone");
     exit;
   }
 
@@ -250,27 +250,19 @@ if( !$Add_slice AND !$New_slice ) {
     exit;
   }
 
-
-	if( (LANG_FILE != $r_lang_file[$slice_id]) AND !$require_default_lang ) {
-  	if (++$wrong_language_file == 10) {
-      echo "<b>WRONG LANGUAGE FILE</b>: you must have<br>
-		    define(\"LANG_FILE\",\"file_name.php3\") in the language file, with file_name.php3 replaced by the real file name (which seems to be ".$r_lang_file[$slice_id].").";
-      page_close();
-      exit;
-    }
-
-    page_close();             // save variables
-
-  	if( $free && $encap)  {// anonymous login
-      $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
-   	  echo '<SCRIPT Language="JavaScript"><!--
-         		  document.location = "'. $sess->url($to_go_url) .'";
-              // -->
-            </SCRIPT>';
-    }
-    go_url( $sess->url($PHP_SELF));
-    exit;
-  }
+	if (get_mgettext_lang() != substr ($r_lang_file[$slice_id],0,2) AND !$require_default_lang ) {
+        page_close();             // save variables
+    
+      	if( $free && $encap)  {// anonymous login
+            $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+       	    echo '<SCRIPT Language="JavaScript"><!--
+             		  document.location = "'. $sess->url($to_go_url) .'";
+                  // -->
+                </SCRIPT>';
+        }
+        go_url( $sess->url($PHP_SELF));
+        exit;
+    }   
 }
 
 

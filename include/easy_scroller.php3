@@ -100,7 +100,7 @@ class easy_scroller {
 		$from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
 		$to = min(($mp + 1) * SCROLLER_LENGTH + 1, $pgcnt);
 		if($this->current > 1)
-			$arr[L_PREV] = $this->Relative(-1);
+			$arr[_m("Previous")] = $this->Relative(-1);
 		if($from > 1) $arr["1"] = $this->Absolute(1);
 		if($from > 2) $arr[".. "] = "";
 		for($i = $from; $i <= $to; $i++) {
@@ -111,7 +111,7 @@ class easy_scroller {
 		if($to < $pgcnt) 
 			$arr[(string) $pgcnt] = $this->Absolute($pgcnt);
 		if($this->current < $pgcnt)
-			$arr[L_NEXT] = $this->Relative(1);
+			$arr[_m("Next")] = $this->Relative(1);
 		return $arr;
 	}
 
@@ -184,7 +184,7 @@ class view_scroller {
 		$from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
 		$to = min(($mp + 1) * SCROLLER_LENGTH + 1, $pgcnt);
 		if($this->current > 1)
-			$arr[L_PREV] = $this->Absolute($this->current-1);
+			$arr[_m("Previous")] = $this->Absolute($this->current-1);
 		if($from > 1) $arr["1"] = $this->Absolute(1);
 		if($from > 2) $arr[".. "] = "";
 		for($i = $from; $i <= $to; $i++) {
@@ -195,7 +195,7 @@ class view_scroller {
 		if($to < $pgcnt) 
 			$arr[(string) $pgcnt] = $this->Absolute($pgcnt);
 		if($this->current < $pgcnt)
-			$arr[L_NEXT] = $this->Absolute($this->current+1);
+			$arr[_m("Next")] = $this->Absolute($this->current+1);
 		return $arr;
 	}
 

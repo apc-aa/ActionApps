@@ -25,8 +25,8 @@ http://www.apc.org/
 # returns unpacked owner_id or false (on error)
 function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
   $varset->clear();
-  ValidateInput("new_owner", L_NEW_OWNER, $new_owner, $err, true, "text");
-  ValidateInput("new_owner_email", L_NEW_OWNER_EMAIL, $new_owner_email, $err, true, "email");
+  ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
+  ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 
   if( count($err) > 1)
     return false;
@@ -47,10 +47,10 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
 
 # Validate all fields needed for module table (name, slice_url, lang_file, owner)
 function ValidateModuleFields( $name, $slice_url, $lang_file, $owner, &$err ) {
-  ValidateInput("name", L_SLICE_NAME, $name, $err, true, "text");
-  ValidateInput("owner", L_OWNER, $owner, $err, false, "id");
-  ValidateInput("slice_url", L_SLICE_URL, $slice_url, $err, false, "url");
-  ValidateInput("lang_file", L_LANG_FILE, $lang_file, $err, true, "text");
+  ValidateInput("name", _m("Title"), $name, $err, true, "text");
+  ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
+  ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
+  ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
 }
 
 # Updates or inserts all necessary fields to module table
@@ -102,7 +102,7 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
 # fills variables from module and owners table
 function GetModuleFields( $source_id, $db ) {
   # lookup owners
-  $slice_owners[0] = L_SELECT_OWNER;
+  $slice_owners[0] = _m("Select owner");
   $SQL= " SELECT id, name FROM slice_owner ORDER BY name";
   $db->query($SQL);
   while ($db->next_record()) {

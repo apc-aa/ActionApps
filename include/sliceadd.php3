@@ -24,7 +24,7 @@ function cmp ($a, $b) {
 } 
 
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_ADD, "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"), "standalone");
     exit;
 }
 
@@ -43,7 +43,7 @@ while( $db->next_record() ) {
 
 echo '
     <table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
-    <tr><td class=tabtit><b>&nbsp;'.L_A_SLICE.'</b>
+    <tr><td class=tabtit><b>&nbsp;'._m("Slice").'</b>
     </td></tr>
     <tr><td>
     <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="'.COLOR_TABBG.'">';
@@ -51,12 +51,12 @@ echo '
 if( isset( $templates ) AND is_array( $templates ) AND
     isset( $temp_slices ) AND is_array( $temp_slices )
     ){
-      echo "<tr><td class=tabtxt colspan=4>" . L_A_SLICE_ADD_HELP . "</TD></TR>";
+      echo "<tr><td class=tabtxt colspan=4>" . _m("To create the new Slice, please choose a template.\n        The new slice will inherit the template's default fields.  \n        You can also choose a non-template slice to base the new slice on, \n        if it has the fields you want.") . "</TD></TR>";
     }
 
   if( isset( $templates ) AND is_array( $templates )) {
     usort($templates, "cmp"); 
-    echo "<tr><td class=tabtxt><b>". L_TEMPLATE ."</b>";
+    echo "<tr><td class=tabtxt><b>". _m("Template") ."</b>";
     echo "</td><td><select name=\"template_id\">";	
     reset($templates);
     while(list(,$v) = each($templates)) { 
@@ -66,15 +66,15 @@ if( isset( $templates ) AND is_array( $templates ) AND
     echo '</select></td><td>';
     if ($wizard)
          echo '<input type="radio" name="template_slice_radio" value="template" checked>';
-    else echo '<input type="SUBMIT" name="template_slice_sel[template]" value="'.L_ADD.'" checked>';
+    else echo '<input type="SUBMIT" name="template_slice_sel[template]" value="'._m("Add").'" checked>';
     echo "</td></tr>";
   } else
-    echo "<tr><td class=tabtxt colspan=2>". L_NO_TEMPLATES ."</td></tr>";
+    echo "<tr><td class=tabtxt colspan=2>". _m("No templates") ."</td></tr>";
         
 
   if( isset( $temp_slices ) AND is_array( $temp_slices )) {
     usort($temp_slices, "cmp"); 
-    echo "<tr><td class=tabtxt><b>". L_SLICE ."</b>";
+    echo "<tr><td class=tabtxt><b>". _m("Slice") ."</b>";
     echo "</td>\n <td><select name=\"template_id2\">";	
     reset($temp_slices);
     while(list(,$v) = each($temp_slices)) { 
@@ -84,10 +84,10 @@ if( isset( $templates ) AND is_array( $templates ) AND
     echo '</select></td><td>';
     if ($wizard)
          echo '<input type="radio" name="template_slice_radio" value="slice" checked>';
-    else echo '<input type="SUBMIT" name="template_slice_sel[slice]" value="'.L_ADD.'">';
+    else echo '<input type="SUBMIT" name="template_slice_sel[slice]" value="'._m("Add").'">';
     echo '<input type="hidden" name="Add_slice" value="1">
         </td></tr>';
   } else
-    echo "<tr><td class=tabtxt colspan=2>". L_NO_SLICES ."</td></tr>";
+    echo "<tr><td class=tabtxt colspan=2>". _m("No slices") ."</td></tr>";
 
  ?>

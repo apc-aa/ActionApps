@@ -34,7 +34,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FULLTEXT, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fulltext formatting"), "admin");
   exit;
 }  
 
@@ -51,11 +51,11 @@ if( $update )
 {
   do
   {
-    ValidateInput("fulltext_format_top", L_FULLTEXT_FORMAT_TOP, $fulltext_format_top, $err, false, "text");
-    ValidateInput("fulltext_format", L_FULLTEXT_FORMAT, $fulltext_format, $err, true, "text");
-    ValidateInput("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, $fulltext_format_bottom, $err, false, "text");
-    ValidateInput("fulltext_remove", L_FULLTEXT_REMOVE, $fulltext_remove, $err, false, "text");
-    ValidateInput("discus_sel", L_DISCUS_SEL, $discus_sel, $err, true, "text");
+    ValidateInput("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, $err, false, "text");
+    ValidateInput("fulltext_format", _m("Fulltext HTML code"), $fulltext_format, $err, true, "text");
+    ValidateInput("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_bottom, $err, false, "text");
+    ValidateInput("fulltext_remove", _m("Remove strings"), $fulltext_remove, $err, false, "text");
+    ValidateInput("discus_sel", _m("Show discussion"), $discus_sel, $err, true, "text");
 
     if( count($err) > 1)
       break;
@@ -72,7 +72,7 @@ if( $update )
            " WHERE id='".q_pack_id($slice_id)."'";
            
     if( !$db->query($SQL)) {
-      $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
+      $err["DB"] = MsgErr( _m("Can't change slice settings") );
       break;    # not necessary - we have set the halt_on_error
     }     
     $fulltext_format_top = dequote($fulltext_format_top);
@@ -84,7 +84,7 @@ if( $update )
     
   }while(false);
   if( count($err) <= 1 )
-    $Msg = MsgOK(L_FULLTEXT_OK);
+    $Msg = MsgOK(_m("Fulltext format update successful"));
 }
 
 if( $slice_id!="" ) {  // set variables from database
@@ -103,7 +103,7 @@ if( $slice_id!="" ) {  // set variables from database
 }
 
 # lookup discussion views
-$discus_vids[0] = L_DISCUS_EMPTY;
+$discus_vids[0] = _m(" -- Empty -- ");
 $SQL = "SELECT id, name FROM view WHERE slice_id ='". $p_slice_id ."' AND type='discus'";
 $db->query($SQL);
 while ($db->next_record()) {
@@ -112,7 +112,7 @@ while ($db->next_record()) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo L_A_FULLTEXT_TIT;?></TITLE>
+<TITLE><?php echo _m("Admin - design Fulltext view");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 function Defaults() {
   document.f.fulltext_format_top.value = '<?php echo DEFAULT_FULLTEXT_TOP ?>'
@@ -128,28 +128,28 @@ function Defaults() {
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "fulltext");
   
-  echo "<H1><B>" . L_A_FULLTEXT . "</B></H1>&nbsp;&nbsp;" . L_A_FULLTEXT_HELP;
+  echo "<H1><B>" . _m("Admin - design Fulltext view") . "</B></H1>&nbsp;&nbsp;" . _m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item");
   PrintArray($err);
   echo $Msg;
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_FULLTEXT_HDR?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("HTML code for fulltext view")?></b>
 </td>
 </tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
-  FrmTextarea("fulltext_format_top", L_FULLTEXT_FORMAT_TOP, $fulltext_format_top, 4, 60, false,
-               L_TOP_HLP, DOCUMENTATION_URL, 1); 
-  FrmTextarea("fulltext_format", L_FULLTEXT_FORMAT, $fulltext_format, 8, 60, true,
-               L_FORMAT_HLP, DOCUMENTATION_URL, 1); 
-  FrmTextarea("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, $fulltext_format_bottom, 4, 60, false,
-               L_BOTTOM_HLP, DOCUMENTATION_URL, 1); 
-  FrmInputText("fulltext_remove", L_FULLTEXT_REMOVE, $fulltext_remove, 254, 50, false,
-               L_REMOVE_HLP, DOCUMENTATION_URL);
-  FrmInputSelect("discus_sel", L_DISCUS_SEL, $discus_vids, $discus_vid, false);
-  FrmInputChBox("discus_htmlf", L_DISCUS_HTML_FORMAT, $discus_htmlf);
+  FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,
+               _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1); 
+  FrmTextarea("fulltext_format", _m("Fulltext HTML code"), $fulltext_format, 8, 60, true,
+               _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1); 
+  FrmTextarea("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_bottom, 4, 60, false,
+               _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1); 
+  FrmInputText("fulltext_remove", _m("Remove strings"), $fulltext_remove, 254, 50, false,
+               _m("Removes empty brackets etc. Use ## as delimeter."), DOCUMENTATION_URL);
+  FrmInputSelect("discus_sel", _m("Show discussion"), $discus_vids, $discus_vid, false);
+  FrmInputChBox("discus_htmlf", _m("Use HTML tags"), $discus_htmlf);
 
 ?>
 </table></td></tr>
@@ -160,9 +160,9 @@ function Defaults() {
 <?php 
   echo "<input type=hidden name=\"update\" value=1>";
   echo "<input type=hidden name=\"slice_id\" value=$slice_id>";
-  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
-  echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
+  echo '<input type=button onClick = "Defaults()" align=center value="'. _m("Default") .'">&nbsp;&nbsp;';
 ?>
 </td></tr></table>
 </FORM>

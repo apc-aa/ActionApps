@@ -32,7 +32,7 @@ elseif( $grp_edit AND $selected_group AND ($selected_group>0) )
   go_url(	$sess->url(self_base() . "um_gedit.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
   exit;
 }  
 
@@ -51,14 +51,14 @@ function SelectGU_ID($name, $arr, $selected="") {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_USERS_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - User Management");?></TITLE>
 </HEAD>
 <?php
   $xx = ($slice_id!="");
   $show = Array("u_new"=>$xx, "u_edit"=>$xx, "g_new"=>$xx, "g_edit"=>$xx);
   require $GLOBALS[AA_INC_PATH]."um_inc.php3";   //show navigation column depending on $show variable
 
-  echo "<H1><B>".L_USER_MANAGEMENT."</B></H1>";
+  echo "<H1><B>"._m("Users")."</B></H1>";
   echo $Msg;
 
   include $GLOBALS[AA_INC_PATH]."um_usrch.php3";

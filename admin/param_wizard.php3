@@ -39,7 +39,8 @@ http://www.apc.org/
 */	
 
 require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
+require $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
+bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".get_mgettext_lang()."_param_wizard_lang.inc");
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
@@ -60,7 +61,7 @@ function processSlashes ($s)
 
 $desc = $$list;
 $desc = $desc[items][$item];
-$title = firstbig($desc[name])." ".L_PARAM_WIZARD_TITLE;
+$title = firstbig($desc[name])." "._m("Wizard");
 
 // by some item (I know only about the date input type) the parameters are divided with ' rather than :
 // so I allow to use ' when all params are INT or BOOL
@@ -148,8 +149,8 @@ if (is_array($desc[params])) {
 		echo $desc[name].": ".processSlashes($desc[desc]); 
 	else {
    	$what = $$list;
-	 	printf(L_PARAM_WIZARD_NOT_FOUND,$what[name]);
-		echo "<p align=center><input type=submit value=\"".L_PARAM_WIZARD_CLOSE."\">";
+	 	printf(_m("This is an undocumented %s. We don't recommend to use it."),$what[name]);
+		echo "<p align=center><input type=submit value=\""._m("Close the wizard")."\">";
 		echo "</td></tr></table></body></html>";
 		exit;
 	}
@@ -162,7 +163,7 @@ if (is_array($desc[params])) {
 	// show the parameter boxes with hints
 
 	if (is_array($desc[params])):
-		echo L_PARAM_WIZARD_PARAMS."<br><br>";
+		echo _m("Available parameters: ")."<br><br>";
 		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2>";
 		reset($desc[params]);
 		$iparam = 0;
@@ -174,10 +175,10 @@ if (is_array($desc[params])) {
 			."<INPUT TYPE=TEXT NAME=param$iparam VALUE=\"$param[example]\">"
 			."<span class=tabhlp>";
 			switch($param[type]) {
-			case "INT":  echo " (".L_PARAM_WIZARD_TYPE_INT.")"; break;
-			case "STR":  echo " (".L_PARAM_WIZARD_TYPE_STR.")"; break;
-			case "STRID":echo " (".L_PARAM_WIZARD_TYPE_STRID.")"; break;
-			case "BOOL": echo " (".L_PARAM_WIZARD_TYPE_BOOL.")"; break;
+			case "INT":  echo " ("._m("integer number").")"; break;
+			case "STR":  echo " ("._m("any text").")"; break;
+			case "STRID":echo " ("._m("field id").")"; break;
+			case "BOOL": echo " ("._m("boolean: 0=false,1=true").")"; break;
 			}
 			echo "<br>".processSlashes($param[desc])."</span>"
 			."</td></tr>";
@@ -190,15 +191,15 @@ if (is_array($desc[params])) {
 		// write, reread, example params
 		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2>"
 		."<tr><td class = tabtxt align=center>"
-		."<a href='javascript:writeParams()'>".L_PARAM_WIZARD_WRITE."</a>"
+		."<a href='javascript:writeParams()'>"._m("Write params")."</a>"
 		."</td><td class = tabtxt align=center>"
-		."<a href='javascript:readParams()'>".L_PARAM_WIZARD_READ."</a>"
+		."<a href='javascript:readParams()'>"._m("Reread params")."</a>"
 		."</td><td class = tabtxt align=center>"
-		."<a href='javascript:fillParams(\"$example\")'>".L_PARAM_WIZARD_EXAMPLE."</a>";
+		."<a href='javascript:fillParams(\"$example\")'>"._m("Example params")."</a>";
 	else:
 		echo "<table width = \"100%\" border=0 cellspacing=0 cellpadding = 2><tr><td>";
 		$what = $$list;
-		printf (L_PARAM_WIZARD_NO_PARAMS."<br>", strtolower($what[name]));
+		printf (_m("This %s has no parameters.")."<br>", strtolower($what[name]));
 	endif;
 ?>
 </td></tr>
@@ -207,14 +208,14 @@ if (is_array($desc[params])) {
 <tr><td class = tabtit>
 <?php 
 if (is_array ($desc[examples])) {
-	echo L_PARAM_WIZARD_CHOOSE_EXAMPLE;
+	echo _m("Have a look at these examples of parameters sets:");
 	echo "<table width = \"100%\" border=1 cellspacing=1 cellpadding = 2>";
 	for ($i = 0; $i < count($desc[examples]); ++$i) {
 		$exm = $desc[examples][$i];
 		echo "<tr><td class = tabtit>";
 		echo $exm[desc];
 		echo "</td><td class = tabtit>";
-		echo "<a href=\"javascript:useExample($i)\">".L_PARAM_WIZARD_SHOW_EXAMPLE."</a>\n";
+		echo "<a href=\"javascript:useExample($i)\">"._m("Show")."</a>\n";
 		echo "</td></tr>";
 	}
 	echo "</table>";
@@ -222,7 +223,7 @@ if (is_array ($desc[examples])) {
 ?>
 	
 <?php $what = $$list; echo $what[hint] ?>
-<p align=center><input type=submit value="<?php echo L_PARAM_WIZARD_CLOSE?>"></p>
+<p align=center><input type=submit value="<?php echo _m("Close the wizard")?>"></p>
 </td></tr>
 </table><br>
 </form>

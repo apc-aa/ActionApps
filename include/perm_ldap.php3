@@ -671,7 +671,7 @@ function GetApcAciPerm( $str ) {
 
 // returns an array containing basic information on $id (user DN or group DN)
 // or false if ID does not exist
-// array("mail => $mail", "name => $cn", "type => L_USER : L_GROUP")
+// array("mail => $mail", "name => $cn", "type => _m("User") : _m("Group")")
 function GetIDsInfo ($id, $ds = "") {
   global $aa_default_ldap;
 
@@ -692,12 +692,12 @@ function GetIDsInfo ($id, $ds = "") {
   
   for($i=0; $i < $arr["objectclass"]["count"]; $i++) {
     if(stristr($arr["objectclass"][$i], "groupofnames")) {
-       $res["type"] = L_GROUP;
+       $res["type"] = _m("Group");
     }
   }
 
   if (!$res["type"])
-    $res["type"] = L_USER;
+    $res["type"] = _m("User");
   $res["name"] = $arr["cn"][0];
   $res["mail"] = $arr["mail"][0];  
 

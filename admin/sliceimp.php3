@@ -38,7 +38,7 @@ require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 
 
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
-	MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EXPORT_IMPORT, "standalone");
+	MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
 	exit;
 }
 
@@ -60,7 +60,8 @@ function proove_ID ($slice)
 	$res = $resolve_conflicts[$slice["id"]];
 	if ((strlen($res)!=0)&&(strlen($res) != 16))	{
 		if ((strlen($res) != 16)||(strlen($res) != 32)) {
-			echo "Warning: ". _m("Slice_ID (". $res.") has wrong length (".strlen($res).", should be 32)<br>\n");
+			echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)",
+                array ($res, strlen ($res))."<br>\n";
 		}
 		$res = pack_id($res);
 		if (strlen($res) == 16)	$slice["id"] = unpack_id($res);
@@ -82,7 +83,7 @@ function proove_ID ($slice)
 	$db->query($SQL);
 	if($db->next_record()) {
 		// if we want overwrite, delete old slice definition
-		if ($GLOBALS["Submit"] == L_E_IMPORT_OVERWRITE) {
+		if ($GLOBALS["Submit"] == _m("Overwrite")) {
 			$SQL = "DELETE FROM slice WHERE id='$slice_id'";	$db->query($SQL);
 			$SQL = "DELETE FROM field WHERE slice_id='$slice_id'";	$db->query($SQL);
 			$SQL = "DELETE FROM module WHERE id='$slice_id'"; $db->query($SQL);
@@ -122,7 +123,7 @@ function proove_data_ID ($data_id)
 	$db->query($SQL);
 	if($db->next_record()) {
 		// if we want overwrite existing items, delete it
-		if ($GLOBALS["Submit"] == L_E_IMPORT_OVERWRITE) {
+		if ($GLOBALS["Submit"] == _m("Overwrite")) {
 			$SQL = "DELETE FROM item WHERE id='$old_data_id'";	$db->query($SQL);
 			$SQL = "DELETE FROM content WHERE item_id='$old_data_id'";	$db->query($SQL);
 			$data_overwrite = true;
@@ -151,12 +152,12 @@ function import_slice (&$slice)
 		   
 	if ($only_slice) { // import slice definition ?
 		$IDconflict = !proove_ID($slice);
-		if (($IDconflict)&&($GLOBALS["Submit"]!=L_E_IMPORT_INSERT_AS_NEW)) {
+		if (($IDconflict)&&($GLOBALS["Submit"]!=_m("Insert with new ids"))) {
 			$conflicts_ID[$slice["id"]] = $slice["name"];
 			$Cancel = 0;
 			return false;
 		}
-		if ($GLOBALS["Submit"] == L_E_IMPORT_INSERT_AS_NEW) {
+		if ($GLOBALS["Submit"] == _m("Insert with new ids")) {
 		  $slice["id"]=$new_slice_ids[$slice["id"]]["new_id"];
 		}  
 		// inserting to table slice
@@ -204,13 +205,13 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 			$newcont[$name]=addslashes($cont[$name]);
 		}
 		$data_IDconflict = !proove_data_ID($id);
-		if (($data_IDconflict)&&($GLOBALS["Submit"]!=L_E_IMPORT_INSERT_AS_NEW)) {
+		if (($data_IDconflict)&&($GLOBALS["Submit"]!=_m("Insert with new ids"))) {
 			$data_conflicts_ID[$id] = $newcont["headline........"][0]["value"];
 			$Cancel = 0;
 			return false;
 		}		
 
-		if ($GLOBALS["Submit"] == L_E_IMPORT_INSERT_AS_NEW) {
+		if ($GLOBALS["Submit"] == _m("Insert with new ids")) {
 		  // when iporting with new ids, we need create new id for item
 		  // and get new id of slice
 		  $new_data_id = new_id();		
@@ -252,13 +253,13 @@ if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
     if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
         if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) 
             if( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file")) 
-                echo L_CANT_UPLOAD;
+                echo _m("Can't upload Image");
         else if ($perms)
 	            chmod ($dirname.$dest_file, $perms);
     } 
     else {   # for php 3.x and php <4.0.3
         if (!copy($_FILES['slice_def_file']['tmp_name'],"$dirname$dest_file")) 
-            echo L_CANT_UPLOAD;
+            echo _m("Can't upload Image");
         else if ($perms)
             chmod ($dirname.$dest_file, $perms);
     }  
@@ -300,7 +301,7 @@ if ($slice_def != "") {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo L_E_IMPORT_TITLE?></TITLE>
+<TITLE><?php echo _m("Import exported data (slice structure and content)")?></TITLE>
 
 </HEAD>
 
@@ -312,36 +313,36 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <form name=formular method=post action="<?php echo $sess->url("sliceimp.php3") ?>"
 enctype="multipart/form-data">
 
-<h1><b><?php echo L_E_IMPORT_TITLE.$pom?></b></h1>
+<h1><b><?php echo _m("Import exported data (slice structure and content)").$pom?></b></h1>
 
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit>
 <?php
 if ($Cancel || $conflicts_list || $data_conflicts_list):
-	echo "<B>".sprintf(L_E_IMPORT_COUNT,count($imported_list)+count($overwritten_list))."</p>";
+	echo "<B>".sprintf(_m("Count of imported slices: %d."),count($imported_list)+count($overwritten_list))."</p>";
 	if (is_array($imported_list)) {
-		echo "</p>".L_E_IMPORT_ADDED."</p>";
+		echo "</p>"._m("Added were:")."</p>";
 		reset($imported_list);
 		while(list(,$desc)=each($imported_list))
 			echo $desc."<br>";
 	}
 	if (is_array($overwritten_list)) {
-		echo "</p>".L_E_IMPORT_OVERWRITTEN."</p>";
+		echo "</p>"._m("Overwritten were:")."</p>";
 		reset($overwritten_list);
 		while(list(,$desc)=each($overwritten_list))
 			echo $desc."<br>";
 	}
 	
-	echo "<br><br><B>".sprintf(L_E_IMPORT_DATA_COUNT,count($data_imported_list)+count($data_overwritten_list))."</p>";
+	echo "<br><br><B>".sprintf(_m("Count of imported stories: %d."),count($data_imported_list)+count($data_overwritten_list))."</p>";
 	echo $data_showme;
 	if (is_array($data_imported_list)) {
-		echo "</p>".L_E_IMPORT_ADDED."</p>";
+		echo "</p>"._m("Added were:")."</p>";
 		reset($data_imported_list);
 		while(list(,$desc)=each($data_imported_list))
 			echo $desc."<br>";
 	}
 	if (is_array($data_overwritten_list)) {
-		echo "</p>".L_E_IMPORT_OVERWRITTEN."</p>";
+		echo "</p>"._m("Overwritten were:")."</p>";
 		reset($data_overwritten_list);
 		while(list(,$desc)=each($data_overwritten_list))
 			echo $desc."<br>";
@@ -354,12 +355,12 @@ if ($Cancel || $conflicts_list || $data_conflicts_list):
 else:
 ?>
 
-<?php echo L_E_IMPORT_INFO ?></p>
+<?php echo _m("Here you can import exported data to toolkit. You can use two types of import:") ?></p>
 </td></tr>
 <?php 
 if ($IDconflict):?>
 	<tr><td class=tabtxt>
-	<b><?php echo sprintf (L_E_IMPORT_IDCONFLICT,pack_id($slice_id)) ?></b></p>
+	<b><?php echo sprintf (_m("Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"),pack_id($slice_id)) ?></b></p>
 	<p align=center>
 <TEXTAREA NAME=conflicts_list ROWS=<?php echo count($conflicts_ID) ?> COLS=60>
 <?php
@@ -374,7 +375,7 @@ endif;
 if ($data_IDconflict): ?>
 
 <tr><td class=tabtxt>
-<b><?php echo sprintf (L_E_IMPORT_DATA_IDCONFLICT) ?></b></p>
+<b><?php echo sprintf (_m("<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>")) ?></b></p>
 <p align=center>
 <TEXTAREA NAME=data_conflicts_list ROWS=<?php echo count($data_conflicts_ID) ?> COLS=60>
 <?php
@@ -387,7 +388,7 @@ if ($data_IDconflict): ?>
 endif;
 if($IDconflict || $data_IDconflict): ?>
 	</P>	
-<?php	echo L_E_IMPORT_CONFLICT_INFO ?>
+<?php	echo _m("<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>") ?>
 	<p align=center>
 <?php if ($only_slice)	 {?>
 	<input type=hidden name=only_slice value=1>
@@ -395,10 +396,10 @@ if($IDconflict || $data_IDconflict): ?>
 	if($only_data) { ?>
 	<input type=hidden name=only_data value=1>
 <?php }; ?>
-	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_OVERWRITE ?>">
-	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_INSERT ?>">
-	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_INSERT_AS_NEW ?>">
-	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo L_CANCEL ?>">
+	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Overwrite") ?>">
+	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Insert") ?>">
+	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Insert with new ids") ?>">
+	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo _m("Cancel") ?>">
 	</p>
 	</td></tr>
 <?php
@@ -406,25 +407,25 @@ endif;?>
 	<?php if (!$IDconflict || !$data_IDconflict): ?>
 <tr><td class=tabtit align=center>
 <br>
-		<?php echo L_E_IMPORT_FILE_SELECT ?><p>
+		<?php echo _m("1) If you have exported data in file, insert it's name here (eg. D:\data\apc_aa_slice.aaxml):") ?><p>
 		<input type="file" name="slice_def_file" size="60">
-<!--		<p><input type="submit" name="file_submit" value="<?php echo L_E_IMPORT_FILE_SEND; ?>">  -->
+<!--		<p><input type="submit" name="file_submit" value="<?php echo _m("Send file with slice structure and data"); ?>">  -->
 	</td></tr>	
 	<?php endif; ?>
 <tr><td class=tabtit align=center>
 <br>
 	<?php if (!$IDconflict || !$data_IDconflict): ?>	
-		<?php echo L_E_IMPORT_MEMO ?><p>
+		<?php echo _m("2) If you have exported data in browser's window, insert the exported text into the textarea below:") ?><p>
 	<?php endif; ?>
 	<TEXTAREA NAME="slice_def" ROWS = 10 COLS = 100><?php if ($IDconflict || $data_IDconflict) echo $slice_def_bck ?></TEXTAREA>
 	<p>	
 <?php if (!$IDconflict || !$data_IDconflict): ?>	
 <?php if (!$GLOBALS["Submit"]) { ?>
-	<?php echo L_E_IMPORT_SELECT_WHAT; ?><p>
-	<input type=checkbox name=only_slice checked><?php echo L_E_IMPORT_IMPORT_SLICE ?><br>
-	<input type=checkbox name=only_data checked><?php echo L_E_IMPORT_IMPORT_ITEMS ?><br><br>	
-	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_SEND ?>">
-	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo L_CANCEL ?>">
+	<?php echo _m("Here specify, what do you want to import:"); ?><p>
+	<input type=checkbox name=only_slice checked><?php echo _m("Import slice definition") ?><br>
+	<input type=checkbox name=only_data checked><?php echo _m("Import slice items") ?><br><br>	
+	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Send the slice structure and data") ?>">
+	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo _m("Cancel") ?>">
 <?php } ?>	
 <?php
 endif;

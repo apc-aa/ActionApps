@@ -24,12 +24,12 @@ require $GLOBALS[AA_INC_PATH]."slicewiz.php3";
 
 if($slice_id) {  // edit slice
   if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT)) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT, "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"), "standalone");
     exit;
   }
 } else {          // add slice
   if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_ADD, "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"), "standalone");
     exit;
   }
 }
@@ -46,8 +46,8 @@ if ($user_firstname || $user_surname) {
 if( $add || $update ) {
     do {
         if( !$owner ) {  # insert new owner
-          ValidateInput("new_owner", L_NEW_OWNER, $new_owner, $err, true, "text");
-          ValidateInput("new_owner_email", L_NEW_OWNER_EMAIL, $new_owner_email, $err, true, "email");
+          ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
+          ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
     
           if( count($err) > 1)
             break;
@@ -65,19 +65,19 @@ if( $add || $update ) {
           
           $varset->clear();
         }  
-        ValidateInput("name", L_SLICE_NAME, $name, $err, true, "text");
-        ValidateInput("owner", L_OWNER, $owner, $err, false, "id");
-        ValidateInput("slice_url", L_SLICE_URL, $slice_url, $err, false, "url");
-        ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, $err, true, "number");
-        ValidateInput("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post, $err, false, "number");
-        ValidateInput("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill, $err, false, "number");
-        ValidateInput("lang_file", L_LANG_FILE, $lang_file, $err, true, "text");
-        ValidateInput("fileman_access", L_FILEMAN_ACCESS, $fileman_access, $err, false, "text");
-        ValidateInput("fileman_dir", L_FILEMAN_DIR, $fileman_dir, $err, false, "filename");
+        ValidateInput("name", _m("Title"), $name, $err, true, "text");
+        ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
+        ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
+        ValidateInput("d_listlen", _m("Listing length"), $d_listlen, $err, true, "number");
+        ValidateInput("permit_anonymous_post", _m("Allow anonymous posting of items"), $permit_anonymous_post, $err, false, "number");
+        ValidateInput("permit_offline_fill", _m("Allow off-line item filling"), $permit_offline_fill, $err, false, "number");
+        ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
+        ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
+        ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
 
         if ($fileman_dir) {
             $db->query ("SELECT * FROM slice WHERE fileman_dir='$fileman_dir' AND id <> '".q_pack_id($slice_id)."'");
-            if ($db->num_rows()) $err[] = L_FILEMAN_DIR_USED;
+            if ($db->num_rows()) $err[] = _m("This File Manager Directory is already used by another slice.");
         }
     
         if( count($err) > 1)
@@ -197,7 +197,7 @@ if( $add || $update ) {
             // Copy constants
             if ($wiz["constants"] == "copy") {
                 if (!CopyConstants ($slice_id)) {
-                    $err[] = L_ERROR_CONS;
+                    $err[] = _m("Error when copying constants.");
                 }
             }
             // Copy views
@@ -207,14 +207,14 @@ if( $add || $update ) {
             		"slice_id='".q_pack_id($set_template_id)."'", 
             		array ("slice_id"=>q_pack_id($slice_id)), 
             		array ("id"))) {
-            	    $err[] = L_ERROR_VIEWS;
+            	    $err[] = _m("Error when copying views.");
                 }
             }        
             
             // Add new editor / administrator privileges from Wizard page
             if ($user_login) {
                 $myerr = add_user_and_welcome ($wiz["welcome"], $user_login, $slice_id, $user_role);
-                if ($myerr != "") $err[] = L_ERROR_CHANGE_ROLE." ($myerr)";
+                if ($myerr != "") $err[] = _m("Internal error when changing user role.")." ($myerr)";
             }
             /* End of Wizard stuff */
         }

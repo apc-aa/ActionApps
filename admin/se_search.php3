@@ -30,7 +30,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_SEARCH)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_SEARCH, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change search settings"), "admin");
   exit;
 }  
 
@@ -89,7 +89,7 @@ if( $update )
   $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     
   if( count($err) <= 1 )
-    $Msg = MsgOK(L_SEARCH_OK);
+    $Msg = MsgOK(_m("Search fields update successful"));
 }
 else if( $slice_id!="" ) { // update => set variables from database
   $SQL= "SELECT search_show, search_default FROM slices WHERE id='$p_slice_id'";
@@ -102,24 +102,24 @@ else if( $slice_id!="" ) { // update => set variables from database
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_SEARCH_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - design Search Page");?></TITLE>
 </HEAD>
 <?php 
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin","search");
   
-  echo "<H1><B>" . L_A_SEARCH_EDT . "</B></H1>";
+  echo "<H1><B>" . _m("Admin - design Search Page") . "</B></H1>";
   PrintArray($err);
   echo $Msg;  
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_SEARCH_HDR?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Search form criteria")?></b>
 </td>
 </tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<tr><td class=tabtxt width="40%"><b><?php echo L_FIELD ?></b></td><td class=tabtxt width="30%" align=center><b><?php echo L_SEARCH_SHOW ?></b></td><td>&nbsp;</td></tr>
+<tr><td class=tabtxt width="40%"><b><?php echo _m("Field") ?></b></td><td class=tabtxt width="30%" align=center><b><?php echo _m("Show") ?></b></td><td>&nbsp;</td></tr>
 <?php
   reset($SHOWN_SEARCH_FIELDS);
   $number=0;
@@ -131,14 +131,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   }  
 ?>  
 </table></td></tr>
-<tr><td class=tabtit><b>&nbsp;<?php echo L_SEARCH_HDR2?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Search in fields")?></b>
 </td>
 </tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<tr><td class=tabtxt width="40%"><b><?php echo L_FIELD ?></b></td>
-    <td class=tabtxt width="30%" align=center><b><?php echo L_SEARCH_SHOW ?></b></td>
-    <td class=tabtxt align=center><b><?php echo L_SEARCH_DEFAULT ?></b></td></tr>
+<tr><td class=tabtxt width="40%"><b><?php echo _m("Field") ?></b></td>
+    <td class=tabtxt width="30%" align=center><b><?php echo _m("Show") ?></b></td>
+    <td class=tabtxt align=center><b><?php echo _m("Default settings") ?></b></td></tr>
 <?php
   reset($DEFAULT_SEARCH_IN);
   $i=0;
@@ -152,8 +152,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php 
   echo "<input type=hidden name=\"update\" value=1>";
   echo "<input type=hidden name=\"slice_id\" value=$slice_id>";
-  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
 ?>   
 </td></tr></table>
 </FORM>

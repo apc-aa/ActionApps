@@ -60,7 +60,7 @@ switch ($g_modules[$del]['type']) {
 
 page_close();                                // to save session variables
 go_url(con_url($sess->url($AA_INSTAL_PATH . "slicedel.php3"),
-                                          "Msg=".rawurlencode(L_DELSLICE_OK)));
+                                          "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
 function DeleteAlerts ($module_id) {
     global $db;

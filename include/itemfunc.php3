@@ -275,7 +275,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="") {
 
         if( !is_dir( $dirname ))
           if( !mkdir( $dirname, IMG_UPLOAD_DIR_MODE ) )
-            return L_CANT_CREATE_IMG_DIR;
+            return _m("Can't create directory for image uploads");
     }
 
     $dest_file = GetDestinationFileName($dirname, $dest_file);
@@ -925,7 +925,7 @@ function GetFromProfile($value) {
 
 function ShowForm($content4id, $fields, $prifields, $edit) {
   if( !isset($prifields) OR !is_array($prifields) )
-    return MsgErr(L_NO_FIELDS);
+    return MsgErr(_m("No fields defined for this slice"));
 
 	global $list_fnc_edt;
 	$list_fnc_edt = array();

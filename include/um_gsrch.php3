@@ -23,29 +23,29 @@ http://www.apc.org/
   if( !is_array($groups) ) {
     if( $groups == "too much" ) {
       unset($groups);
-      $groups[0] = L_TOO_MUCH_USERS;
+      $groups[0] = _m("Too many users or groups found.");
     } else {
       unset($groups);
-      $groups[0] = L_NO_USERS;
+      $groups[0] = _m("No user (group) found");
     }  
   }    
 
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
  <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-  <tr><td class=tabtit><b>&nbsp;<?php echo L_GROUPS?></b></td></tr>
+  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
   <tr><td>
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
      <tr>
     	<td>&nbsp;</td>
     	<td><input type=Text name=grp value="<?php echo safe($grp)?>"></td>
-    	<td><input type=submit name="GrpSrch" value="<?php echo L_SEARCH?>"></td>
+    	<td><input type=submit name="GrpSrch" value="<?php echo _m("Search")?>"></td>
      </tr>
      <tr>
-    	<td class=tabtxt><b><?php echo L_GROUP ?></b></td>
+    	<td class=tabtxt><b><?php echo _m("Group") ?></b></td>
     	<td><?php SelectGU_ID("selected_group", $groups, $selected_group) ?></td>
-    	<td><input type=submit name="grp_edit" value="<?php echo L_EDIT?>">&nbsp;
-          <input type=submit name="grp_del" value="<?php echo L_DELETE?>">
+    	<td><input type=submit name="grp_edit" value="<?php echo _m("Edit")?>">&nbsp;
+          <input type=submit name="grp_del" value="<?php echo _m("Delete")?>">
           <input type=hidden name="usr" value="<?php echo safe($usr)?>"></td>
      </tr>
     </table>

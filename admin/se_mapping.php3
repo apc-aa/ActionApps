@@ -27,7 +27,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base()."index.php3"), L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
 
@@ -73,7 +73,7 @@ while( list( $k, $v) = each($g_modules) ) {
 }  
   
 if( !isset($impslices) OR !is_array($impslices)){
-  MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE);
+  MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"));
   exit;
 }
 
@@ -94,9 +94,9 @@ while($db->next_record())
   $to_fields[$db->f(id)] = $db->f(name);
 
 // find out list of "from fields"
-$from_fields[L_MAP_NOTMAP] = L_MAP_NOTMAP;
-$from_fields[L_MAP_VALUE] = L_MAP_VALUE;
-$from_fields[L_MAP_JOIN] = L_MAP_JOIN;
+$from_fields[_m("-- Not map --")] = _m("-- Not map --");
+$from_fields[_m("-- Value --")] = _m("-- Value --");
+$from_fields[_m("-- Joined fields --")] = _m("-- Joined fields --");
 
 if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
 $SQL= "SELECT id, name FROM field WHERE slice_id='$p_from_slice_id' ORDER BY name";
@@ -121,7 +121,7 @@ while( list( $k, $v ) = each( $to_fields ) ) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_MAP_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - Content Pooling - Fields' Mapping");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 
 function InitPage() {}
@@ -156,7 +156,7 @@ function Submit() {
   for ( i=1; i < fcnt; i++)
     for( j=i+1; j<fcnt+1; j++)
       if (e[i].selectedIndex !=0 && SelectValue(e[i]) == SelectValue(e[j])) {
-        alert("<?php echo L_MAP_DUP ?>");
+        alert("<?php echo _m("Cannot map to same field") ?>");
         return;
       }
   */
@@ -172,31 +172,31 @@ function Submit() {
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin","mapping");
 
-  echo "<H1><B>" . L_MAP_TIT . "</B></H1>";
+  echo "<H1><B>" . _m("Admin - Content Pooling - Fields' Mapping") . "</B></H1>";
   PrintArray($err);
   echo stripslashes($Msg);
 
 ?>
 <form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_mapping2.php3")?>">
   <table width="600" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo L_MAP_TABTIT ?></b></td></tr>
+    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Content Pooling - Fields' mapping") ?></b></td></tr>
 
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
         <tr>
-          <td align=left class=tabtxt align=center><b><?php echo L_MAP_FROM_SLICE . "&nbsp; "?></b>
+          <td align=left class=tabtxt align=center><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
           <?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, "OnChange=\"ChangeFromSlice()\""); ?></td>
          </tr>
       </table>
     </td></tr>
 
-    <tr><td class=tabtit><b>&nbsp;<?php echo L_MAP_FIELDS ?></b></td></tr>
+    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Fields' mapping") ?></b></td></tr>
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
         <tr>
-          <td class=tabtxt align=center><b><?php echo L_MAP_TO ?></b></td>
-          <td class=tabtxt align=center><b><?php echo L_MAP_FROM ?></b></td>
-          <td class=tabtxt align=center><b><?php echo L_MAP_VALUE2 ?></b></td>
+          <td class=tabtxt align=center><b><?php echo _m("To") ?></b></td>
+          <td class=tabtxt align=center><b><?php echo _m("From") ?></b></td>
+          <td class=tabtxt align=center><b><?php echo _m("Value") ?></b></td>
         </tr>
         <?php
            reset($to_fields);
@@ -207,12 +207,12 @@ function Submit() {
 
              switch ($field_map[$f_id][feedmap_flag]) {
                case FEEDMAP_FLAG_VALUE :
-                 $sel = L_MAP_VALUE;
+                 $sel = _m("-- Value --");
                  $val = htmlspecialchars($field_map[$f_id][value]); break;
                case FEEDMAP_FLAG_JOIN :
-                 $sel = L_MAP_JOIN;
+                 $sel = _m("-- Joined fields --");
                  $val = htmlspecialchars($field_map[$f_id][value]); break;
-               case FEEDMAP_FLAG_EMPTY: $sel =  L_MAP_NOTMAP; break;
+               case FEEDMAP_FLAG_EMPTY: $sel =  _m("-- Not map --"); break;
                case FEEDMAP_FLAG_MAP :
                case FEEDMAP_FLAG_EXTMAP :
                   $sel = $field_map[$f_id][value];
@@ -226,8 +226,8 @@ function Submit() {
     </td></tr>
     <tr><td align="center">
       <input type=hidden name="ext_slice" value="<?php echo $remote_slices[$from_slice_id]; ?>" >
-      <input type=button value="<?php echo L_UPDATE ?>" onClick = "Submit()" align=center>&nbsp;&nbsp;
-      <input type=button VALUE="<?php echo L_CANCEL ?>" onClick = "Cancel()">
+      <input type=button value="<?php echo _m("Update") ?>" onClick = "Submit()" align=center>&nbsp;&nbsp;
+      <input type=button VALUE="<?php echo _m("Cancel") ?>" onClick = "Cancel()">
      </td></tr>
 
   </table>

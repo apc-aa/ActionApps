@@ -68,61 +68,61 @@ if( $slice_id == "" ) {         // load default values for new slice
 }
 
 # lookup owners
-$slice_owners[0] = L_SELECT_OWNER;
+$slice_owners[0] = _m("Select owner");
 $SQL= " SELECT id, name FROM slice_owner ORDER BY name";
 $db->query($SQL);
 while ($db->next_record()) {
   $slice_owners[unpack_id($db->f(id))] = $db->f(name);
 }
 
-$PERMS_STATE = array( "0" => L_PROHIBITED,
-                      "1" => L_ACTIVE_BIN,
-                      "2" => L_HOLDING_BIN );
+$PERMS_STATE = array( "0" => _m("Not allowed"),
+                      "1" => _m("Active"),
+                      "2" => _m("Hold bin") );
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_SLICE_TIT;?></TITLE>
+ <TITLE><?php echo _m("Slice Administration");?></TITLE>
 </HEAD>
 <?php
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin","main");
 
-  echo "<H1><B>" . ( $slice_id=="" ? L_A_SLICE_ADD : L_A_SLICE_EDT) . "</B></H1>";
+  echo "<H1><B>" . ( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings")) . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_SLICES_HDR?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Slice")?></b>
 </td>
 </tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
-  FrmStaticText(L_ID, $slice_id);
-  FrmInputText("name", L_SLICE_NAME, $name, 99, 25, true);
-  FrmInputText("slice_url", L_SLICE_URL, $slice_url, 254, 25, false);
+  FrmStaticText(_m("Id"), $slice_id);
+  FrmInputText("name", _m("Title"), $name, 99, 25, true);
+  FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, 254, 25, false);
   $ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
-  echo "<TR><TD colspan=2>" . L_SLICE_HINT . "<BR><pre>" . 
+  echo "<TR><TD colspan=2>" . _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") . "<BR><pre>" . 
        "&lt;!--#include virtual=&quot;" . $ssiuri .
      "?slice_id=" . $slice_id . "&quot;--&gt;</pre></TD></TR>";
 
-  FrmInputSelect("owner", L_OWNER, $slice_owners, $owner, false);
+  FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
   if( !$owner ) {
-    FrmInputText("new_owner", L_NEW_OWNER, $new_owner, 99, 25, false);
-    FrmInputText("new_owner_email", L_NEW_OWNER_EMAIL, $new_owner_email, 99, 25, false);
+    FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);
+    FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99, 25, false);
   }  
-  FrmInputText("d_listlen", L_D_LISTLEN, $d_listlen, 5, 5, true);
+  FrmInputText("d_listlen", _m("Listing length"), $d_listlen, 5, 5, true);
   if( $superadmin ) {
-    FrmInputChBox("template", L_TEMPLATE, $template);
-    FrmInputChBox("deleted", L_DELETED, $deleted);
+    FrmInputChBox("template", _m("Template"), $template);
+    FrmInputChBox("deleted", _m("Deleted"), $deleted);
   }  
-  FrmInputSelect("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $PERMS_STATE, $permit_anonymous_post, false);
-  FrmInputSelect("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $PERMS_STATE, $permit_offline_fill, false);
-  FrmInputSelect("lang_file", L_LANG_FILE, $LANGUAGE_FILES, $lang_file, false);
+  FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), $PERMS_STATE, $permit_anonymous_post, false);
+  FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"), $PERMS_STATE, $permit_offline_fill, false);
+  FrmInputSelect("lang_file", _m("Used Language File"), $LANGUAGE_FILES, $lang_file, false);
   if ($superadmin) {
-      FrmInputSelect("fileman_access", L_FILEMAN_ACCESS, $FILEMAN_ACCESSES, $fileman_access, false);
-      FrmInputText("fileman_dir", L_FILEMAN_DIR, $fileman_dir, 99, 25, false);
+      FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $fileman_access, false);
+      FrmInputText("fileman_dir", _m("File Manager Directory"), $fileman_dir, 99, 25, false);
   }
 ?>
 </table>
@@ -141,12 +141,12 @@ if($slice_id=="") {
   echo "<input type=hidden name=\"user_role\" value='$user_role'>";
   // end of fields storing values from wizard
   
-  echo "<input type=submit name=insert value=\"". L_INSERT .'">';
+  echo "<input type=submit name=insert value=\"". _m("Insert") .'">';
 }else{
   echo "<input type=hidden name=\"update\" value=1>";
-  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=reset value="'. L_RESET .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
+  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
+  echo '<input type=reset value="'. _m("Reset form") .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
 }
 ?>
 </td></tr></table>

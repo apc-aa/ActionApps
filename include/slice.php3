@@ -19,16 +19,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-function Page_HTML_Begin($cp, $title="") {  
+function Page_HTML_Begin ($title="") {  
+    HTMLPageBegin (ADM_SLICE_CSS);
     echo '
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-    <HTML>
-    <HEAD>
-    <TITLE>'.$title.'</TITLE>
-    <LINK rel=StyleSheet href="<?php echo ADM_SLICE_CSS ?>" type="text/css" title="SliceCS">';
-    if ($cp) 
-        echo '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset='. $cp. '">';
-    echo '
+      <TITLE>'.$title.'</TITLE>
     </HEAD>
     <BODY>';
 }
@@ -59,9 +53,9 @@ function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps
    { echo "<input type=hidden name=slice_id value=$sli_id>";
      echo "<input type=hidden name=encap value=".($encaps ? "true":"false").">";
    }
-   echo L_SELECT_CATEGORY . "<select name=cat_id>";
+   echo _m("Select Category ") . "<select name=cat_id>";
    $seloption=(($selected=="")?"selected":"");
-   echo '<option value="all" $seloption>'.L_ALLCTGS.'</option>';
+   echo '<option value="all" $seloption>'._m("All categories").'</option>';
    while (list($id,$name)= each($cats)) {
      $seloption=(($selected==$id)?"selected":"");
      echo "<option value=$id $seloption>".htmlspecialchars($name)."</option>";  

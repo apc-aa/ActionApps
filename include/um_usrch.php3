@@ -32,23 +32,23 @@ http://www.apc.org/
     return $list;
   }  
       
-  $users  = GetFiltered("U", $usr, L_TOO_MUCH_USERS, L_NO_USERS);   // get list of users
-  $groups = GetFiltered("G", $grp, L_TOO_MUCH_GROUPS, L_NO_GROUPS); // get list of groups
+  $users  = GetFiltered("U", $usr, _m("Too many users or groups found."), _m("No user (group) found"));   // get list of users
+  $groups = GetFiltered("G", $grp, _m("Too much groups found."), _m("No groups found")); // get list of groups
 
   if( $grp1_flt )   // user editation - list of all groups
-    $all_groups = GetFiltered("G", $grp1_flt, L_TOO_MUCH_GROUPS, L_NO_GROUPS);  
+    $all_groups = GetFiltered("G", $grp1_flt, _m("Too much groups found."), _m("No groups found"));  
    else
     $all_groups = $groups;  // in user editation is $grp=="", so $groups are list of all groups 
 
   if( $usr1_flt )   // group editation - list of all users
-    $all_users = GetFiltered("U", $usr1_flt, L_TOO_MUCH_USERS, L_NO_USERS);  
+    $all_users = GetFiltered("U", $usr1_flt, _m("Too many users or groups found."), _m("No user (group) found"));  
    else
     $all_users = $users;  // in group editation is $usr=="", so $users are list of all users 
 
   if( $selected_user ) {
     $user_groups = GetMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
     if( !is_array($user_groups) ) 
-      $sel_groups["n"][name] = (( $user_groups == "too much" ) ? L_TOO_MUCH_GROUPS : "");
+      $sel_groups["n"][name] = (( $user_groups == "too much" ) ? _m("Too much groups found.") : "");
      else {
       reset($user_groups);
       while( list(,$foo_uid) = each($user_groups) )
@@ -59,7 +59,7 @@ http://www.apc.org/
   if( $selected_group ) {
     $groups_user = GetGroupMembers($selected_group);   // get list of users and groups right under $selected_group
     if( !is_array($group_users) ) 
-      $sel_users["n"][name] = (( $group_users == "too much" ) ? L_TOO_MUCH_USERS : "");
+      $sel_users["n"][name] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
      else 
       $sel_users = $groups_user;
   }
@@ -68,19 +68,19 @@ http://www.apc.org/
 <!-- Select user form -->
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
  <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-  <tr><td class=tabtit><b>&nbsp;<?php echo L_USERS?></b></td></tr>
+  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Users")?></b></td></tr>
   <tr><td>
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
      <tr>
     	<td>&nbsp;</td>
     	<td><input type=Text name=usr value="<?php echo safe($usr)?>"></td>
-    	<td><input type=submit name="UsrSrch" value="<?php echo L_SEARCH?>"></td>
+    	<td><input type=submit name="UsrSrch" value="<?php echo _m("Search")?>"></td>
      </tr>
      <tr>
-    	<td class=tabtxt><b><?php echo L_USER ?></b></td>
+    	<td class=tabtxt><b><?php echo _m("User") ?></b></td>
     	<td><?php SelectGU_ID("selected_user", $users, $selected_user) ?></td>
-    	<td><input type=submit name="usr_edit" value="<?php echo L_EDIT?>">&nbsp;
-          <input type=submit name="usr_del" value="<?php echo L_DELETE?>"></td>
+    	<td><input type=submit name="usr_edit" value="<?php echo _m("Edit")?>">&nbsp;
+          <input type=submit name="usr_del" value="<?php echo _m("Delete")?>"></td>
      </tr>
     </table>
    </td>

@@ -46,34 +46,34 @@ function GetAliasesFromFields($fields, $additional="") {
   #  Standard aliases
   $aliases["_#ID_COUNT"] = array("fce" => "f_e:itemcount",
                                  "param" => "id..............",
-                                 "hlp" => L_ID_COUNT_ALIAS);
+                                 "hlp" => _m("number of found items"));
   $aliases["_#ITEM_ID_"] = array("fce" => "f_n:id..............",
                                  "param" => "id..............",
-                                 "hlp" => L_ITEM_ID_ALIAS);
+                                 "hlp" => _m("alias for Item ID"));
   $aliases["_#SITEM_ID"] = array("fce" => "f_h",
                                  "param" => "short_id........",
-                                 "hlp" => L_SITEM_ID_ALIAS);
+                                 "hlp" => _m("alias for Short Item ID"));
   $aliases["_#EDITITEM"] = array("fce" => "f_e",
                                  "param" => "id..............",
-                                 "hlp" => L_EDITITEM_ALIAS);
+                                 "hlp" => _m("alias used on admin page index.php3 for itemedit url"));
   $aliases["_#EDITDISC"] = array("fce" => "f_e:disc",
                                  "param" => "id..............",
-                                 "hlp" => L_EDITDISC_ALIAS);
+                                 "hlp" => _m("Alias used on admin page index.php3 for edit discussion url"));
   $aliases["_#RSS_TITL"] = array("fce" => "f_r",
                                  "param" => "SLICEtitle",
-                                 "hlp" => L_RSS_TITL);
+                                 "hlp" => _m("Title of Slice for RSS"));
   $aliases["_#RSS_LINK"] = array("fce" => "f_r",
                                  "param" => "SLICElink",
-                                 "hlp" => L_RSS_LINK);
+                                 "hlp" => _m("Link to the Slice for RSS"));
   $aliases["_#RSS_DESC"] = array("fce" => "f_r",
                                  "param" => "SLICEdesc",
-                                 "hlp" => L_RSS_DESC);
+                                 "hlp" => _m("Short description (owner and name) of slice for RSS"));
   $aliases["_#RSS_DATE"] = array("fce" => "f_r",
                                  "param" => "SLICEdate",
-                                 "hlp" => L_RSS_DATE);
+                                 "hlp" => _m("Date RSS information is generated, in RSS date format"));
   $aliases["_#SLI_NAME"] = array("fce" => "f_e:slice_info",
                                  "param" => "name",
-                                 "hlp" => L_SLI_NAME_ALIAS);
+                                 "hlp" => _m("Slice name"));
 
   # database stored aliases
   while( list($k,$val) = each($fields) ) {
@@ -110,25 +110,25 @@ function GetConstantAliases( $additional="" ) {
   #  Standard aliases
   $aliases["_#NAME###_"] = array("fce" => "f_h",
                                  "param" => "const_name......",
-                                 "hlp" => L_CONST_NAME_ALIAS);
+                                 "hlp" => _m("Constant name"));
   $aliases["_#VALUE##_"] = array("fce" => "f_h",
                                  "param" => "const_value.....",
-                                 "hlp" => L_CONST_VALUE_ALIAS);
+                                 "hlp" => _m("Constant value"));
   $aliases["_#PRIORITY"] = array("fce" => "f_h",
                                  "param" => "const_priority..",
-                                 "hlp" => L_CONST_PRIORITY_ALIAS);
+                                 "hlp" => _m("Constant priority"));
   $aliases["_#GROUP##_"] = array("fce" => "f_n",
                                  "param" => "const_group.....",
-                                 "hlp" => L_CONST_GROUP_ALIAS);
+                                 "hlp" => _m("Constant group id"));
   $aliases["_#CLASS##_"]= array("fce" => "f_h",
                                  "param" => "const_class.....",
-                                 "hlp" => L_CONST_CLASS_ALIAS);
+                                 "hlp" => _m("Category class (for categories only)"));
   $aliases["_#COUNTER_"] = array("fce" => "f_h",
                                  "param" => "const_counter...",
-                                 "hlp" => L_CONST_COUNTER_ALIAS);
+                                 "hlp" => _m("Constant number"));
   $aliases["_#CONST_ID"] = array("fce" => "f_n",
                                  "param" => "const_id........",
-                                 "hlp" => L_CONST_ID_ALIAS);
+                                 "hlp" => _m("Constant unique id"));
 
   # add additoinal aliases
   if( isset( $additional ) AND is_array( $additional ) ) {
@@ -892,8 +892,8 @@ class item {
 
   // function shows full text navigation (back, home)
   function show_navigation($home_url) {
-    echo '<br><a href="javascript:history.back()">'. L_BACK .'</a> &nbsp; ';
-    echo "<a href=\"$home_url\">". L_HOME .'</a><br>';
+    echo '<br><a href="javascript:history.back()">'. _m("Back") .'</a> &nbsp; ';
+    echo "<a href=\"$home_url\">". _m("Home") .'</a><br>';
   }  
 
   function get_item() {

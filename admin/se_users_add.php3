@@ -33,31 +33,31 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
 
   IfLink(($editor_role > $perms_roles["AUTHOR"]['id']) && $new_usr, 
          $sess->url(self_base() . "se_users.php3") . 
-               "&UsrAdd=$usr_id&role=AUTHOR", L_ROLE_AUTHOR);
+               "&UsrAdd=$usr_id&role=AUTHOR", _m("Author"));
   IfLink(($editor_role > $perms_roles["EDITOR"]['id']) && $new_usr,
          $sess->url(self_base() . "se_users.php3") .
-               "&UsrAdd=$usr_id&role=EDITOR", L_ROLE_EDITOR);
+               "&UsrAdd=$usr_id&role=EDITOR", _m("Editor"));
   IfLink(($editor_role > $perms_roles["ADMINISTRATOR"]['id']) && $new_usr,
          $sess->url(self_base() . "se_users.php3") .
-               "&UsrAdd=$usr_id&role=ADMINISTRATOR", L_ROLE_ADMINISTRATOR);
+               "&UsrAdd=$usr_id&role=ADMINISTRATOR", _m("Administrator"));
   echo "</tr>\n";
 }
 
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_PERM_NEW ?></b></td></tr>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Search user or group") ?></b></td></tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
-        <td width="30%" class=tabtxt><b><?php echo L_USERS ?></b></td>
+        <td width="30%" class=tabtxt><b><?php echo _m("Users") ?></b></td>
         <td width="40%"><input type=Text name=usr value=<?php echo safe($usr)?>></td>
-        <td width="30%"><input type=submit name="UsrSrch" value=<?php echo L_SEARCH?>></td>
+        <td width="30%"><input type=submit name="UsrSrch" value=<?php echo _m("Search")?>></td>
 </tr>
 <tr>
-        <td class=tabtxt><b><?php echo L_GROUPS ?></b></td>
+        <td class=tabtxt><b><?php echo _m("Groups") ?></b></td>
         <td><input type=Text name=grp value=<?php echo safe($grp)?>></td>
-        <td><input type=submit name="GrpSrch" value=<?php echo L_SEARCH?>></td>
+        <td><input type=submit name="GrpSrch" value=<?php echo _m("Search")?>></td>
 </tr>
 </table></tr></td> <?php 
 $continue=false;       
@@ -66,7 +66,7 @@ if ($GrpSrch || $UsrSrch) {
     $addable = FindGroups($grp);
    else
     $addable = FindUsers($usr); ?>
-  <tr><td class=tabtit><b>&nbsp;<?php echo L_PERM_SEARCH ?></b></td></tr>
+  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Assign new permissions") ?></b></td></tr>
   <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>"><?php 
 
@@ -100,9 +100,9 @@ if ($GrpSrch || $UsrSrch) {
   $l_counter = 1;
   if( !is_array($addable) ) {
     if( $addable == "too much" )
-      echo "<tr><td class=tabtxt>". L_TOO_MUCH_USERS ." ". L_MORE_SPECIFIC."</td>\n";
+      echo "<tr><td class=tabtxt>". _m("Too many users or groups found.") ." ". _m("Try to be more specific.")."</td>\n";
      else      
-      echo "<tr><td class=tabtxt>". L_NO_USERS ."</td>\n";
+      echo "<tr><td class=tabtxt>". _m("No user (group) found") ."</td>\n";
   } else {  
     reset($addable);
     while( list($usr_id,$usr) = each($addable)) {
@@ -120,9 +120,9 @@ if ($GrpSrch || $UsrSrch) {
 ?>
 <tr><td align="center">
 <input type=hidden name="slice_id" value="<?php echo $slice_id ?>">
-<input type=submit name=back value="<?php echo L_BACK ?>">
+<input type=submit name=back value="<?php echo _m("Back") ?>">
 </td></tr>
 </table>
-<br><br><small><?php echo L_SEARCH_TIP ?></small>
+<br><br><small><?php echo _m("List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query") ?></small>
 </FORM>
 

@@ -41,10 +41,10 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_SLICE_WIZ_TIT;?></TITLE>
+ <TITLE><?php echo _m("Add Slice Wizard");?></TITLE>
 </HEAD>
 <?php
-  echo "<H1><B>" . L_A_SLICE_WIZ_TIT ."</B></H1>";
+  echo "<H1><B>" . _m("Add Slice Wizard") ."</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
@@ -54,9 +54,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
     require $GLOBALS["AA_INC_PATH"]."sliceadd.php3";
 
-    FrmInputRadio ("wiz[copyviews]", L_COPY_VIEWS, array (1=>L_YES,0=>L_NO), 1);
-    FrmInputRadio ("wiz[constants]", L_CATEGO_CONST, 
-        array ('share'=>L_SHARE_WITH_TEMPLATE,'copy'=>L_COPY_FROM_TEMPLATE),'copy');
+    FrmInputRadio ("wiz[copyviews]", _m("Copy Views"), array (1=>_m("yes"),0=>_m("no")), 1);
+    FrmInputRadio ("wiz[constants]", _m("Categories/Constants"), 
+        array ('share'=>_m("Share with Template"),'copy'=>_m("Copy from Template")),'copy');
 ?>
 
 </table>
@@ -65,31 +65,31 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <br><br>
 
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
-<tr><td class=tabtit colspan=2><b>&nbsp;<?php echo L_WIZ_NEWUSER_HDR; ?></b>
+<tr><td class=tabtit colspan=2><b>&nbsp;<?php echo _m("[Optional] Create New User"); ?></b>
 </td></tr>
 
 <?php
 
 # User data ---------------------------------------------------
-    FrmInputRadio("user_role", L_USER_LEVEL_OF_ACCESS, 
-        array ("EDITOR"=>L_ITEM_MANAGER, "ADMINISTRATOR"=>L_SLICE_ADMINIS), "EDITOR");
-    FrmInputText("user_login", L_USER_LOGIN, "", 50, 50, true);
-    FrmInputPwd("user_password1", L_USER_PASSWORD1, "", 50, 50, true);
-    FrmInputPwd("user_password2", L_USER_PASSWORD2, "", 50, 50, true);
-    FrmInputText("user_firstname", L_USER_FIRSTNAME, "", 50, 50, true);
-    FrmInputText("user_surname", L_USER_SURNAME, "", 50, 50, true);
-    FrmInputText("user_mail1", L_USER_MAIL." 1", "", 50, 50, false);
+    FrmInputRadio("user_role", _m("Level of Access"), 
+        array ("EDITOR"=>_m("Editor"), "ADMINISTRATOR"=>_m("Slice Administrator")), "EDITOR");
+    FrmInputText("user_login", _m("Login name"), "", 50, 50, true);
+    FrmInputPwd("user_password1", _m("Password"), "", 50, 50, true);
+    FrmInputPwd("user_password2", _m("Retype password"), "", 50, 50, true);
+    FrmInputText("user_firstname", _m("First name"), "", 50, 50, true);
+    FrmInputText("user_surname", _m("Surname"), "", 50, 50, true);
+    FrmInputText("user_mail1", _m("E-mail")." 1", "", 50, 50, false);
     echo '<input type=hidden name=add_submit value="1">
     <input type=hidden name=um_uedit_no_go_url value=1>';  
     
-    $email_welcomes = array (NOT_EMAIL_WELCOME => L_NOT_EMAIL_WELCOME);
+    $email_welcomes = array (NOT_EMAIL_WELCOME => _m("Do Not Email Welcome"));
         
     $db = new DB_AA;
     $db->query ("SELECT description, id FROM wizard_welcome");
     while ($db->next_record()) 
         $email_welcomes[$db->f("id")] = $db->f("description");
   
-    FrmInputSelect("wiz[welcome]", L_EMAIL_WELCOME, $email_welcomes, NOT_EMAIL_WELCOME);
+    FrmInputSelect("wiz[welcome]", _m("Email Welcome"), $email_welcomes, NOT_EMAIL_WELCOME);
 ?>
 </table>
 
@@ -98,14 +98,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td align="center">
 <?php 
-  echo '<input type=submit name=Add_slice value="'.L_ADD_SLICE.'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
+  echo '<input type=submit name=Add_slice value="'._m("Add Slice").'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
 ?>   
 </td></tr>
 </table>
 </FORM>
 </center>
-<?php echo L_APP_TYPE_HELP ?>
+<?php echo _m("<br><br><br><br>") ?>
 </BODY>
 </HTML>
 <?php page_close()?>

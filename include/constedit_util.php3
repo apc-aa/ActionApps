@@ -88,15 +88,15 @@ function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=t
 		
 	for ($i=0; $i < $levelCount; ++$i) {
 		if ($admin) {
-			$buttonAdd = "<input type=button value=\"".L_ADD_NEW."\" onClick=\"hcAddNew($i)\">";
-			$buttonSelect = "<input type=button value=\"".L_SELECT."\" onClick=\"hcSelectItem($i,1)\">";
+			$buttonAdd = "<input type=button value=\""._m("Add new")."\" onClick=\"hcAddNew($i)\">";
+			$buttonSelect = "<input type=button value=\""._m("Select")."\" onClick=\"hcSelectItem($i,1)\">";
 		}
 		else {
 			$buttonAdd = "";
 			if ($minLevelSelect > $i) $buttonSelect = "";
-			else $buttonSelect = "<input type=button value=\"".L_SELECT."\" onClick=\"hcAddItemTo ($i,'$targetBox');\">";
+			else $buttonSelect = "<input type=button value=\""._m("Select")."\" onClick=\"hcAddItemTo ($i,'$targetBox');\">";
 		}
-        if (!$levelNames[$i]) $levelNames[$i] = L_CONSTANT_LEVEL." $i";
+        if (!$levelNames[$i]) $levelNames[$i] = _m("Level")." $i";
 		if ($horizontal)
 			echo "
 			<td align=left valign=top width='10%'>

@@ -160,7 +160,7 @@ $perm_edit_all  = CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_AL
 $perm_edit_self = CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_SELF_ITEMS);
 
 if( !$perm_edit_all && !$perm_edit_self) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS);
+  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
   exit;
 }  
 
@@ -209,7 +209,7 @@ if ($akce) {
   switch( $akce ) {  // script post parameter
     case "app":
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
+        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to move items"), "items");
         exit;
       }
       MoveItems($chb,1);
@@ -217,14 +217,14 @@ if ($akce) {
       break;
     case "hold":
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
+        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to move items"), "items");
         exit;
       }
       MoveItems($chb,2);
       break;
     case "trash":
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
+        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to move items"), "items");
         exit;
       }
       MoveItems($chb,3);
@@ -297,7 +297,7 @@ switch( $More ) {
 if($Delete == "trash") {         // delete feeded items in trash bin
     // feeded items we can easy delete
   if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_DELETE_ITEMS )) {
-    MsgPageMenu($sess->url(self_base())."index.php3", L_NO_DELETE_ITEMS, "items");
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to remove items"), "items");
     exit;
   }  
  	$db->query("SELECT id FROM item 
@@ -339,7 +339,7 @@ if( $db->next_record() )
   
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<title><?php echo L_EDITOR_TITLE ?></title>
+<title><?php echo _m("Editor window - item manager") ?></title>
 <SCRIPT Language="JavaScript"><!--
 function SubmitItems(act) {
   document.itemsform.akce.value = act
@@ -428,27 +428,27 @@ switch( $r_bin_state ) {
   case "app":   $st_name = "st1";    // name of scroller for approved bin
                 $bin_condition = 'ACTIVE';
                 $table_icon = "../images/app.gif";
-                $table_name = L_ACTIVE_BIN;
+                $table_name = _m("Active");
                 break;
   case "appb":  $st_name = "st1b";    // name of scroller for approved bin - pending
                 $bin_condition = 'PENDING';
                 $table_icon = "../images/app.gif";
-                $table_name = L_ACTIVE_BIN_PENDING;
+                $table_name = _m("Pending");
                 break;
   case "appc":  $st_name = "st1c";    // name of scroller for approved bin - expired
                 $bin_condition = 'EXPIRED';
                 $table_icon = "../images/app.gif";
-                $table_name = L_ACTIVE_BIN_EXPIRED;
+                $table_name = _m("Expired");
                 break;
   case "hold":  $st_name = "st2";    // name of scroller for holding bin
                 $bin_condition = 'HOLDING';
                 $table_icon = "../images/hold.gif";
-                $table_name = L_HOLDING_BIN;
+                $table_name = _m("Hold bin");
                 break;
   case "trash": $st_name = "st3";    // name of scroller for trash bin
                 $bin_condition = 'TRASH';
                 $table_icon = "../images/trsh.gif";
-                $table_name = L_TRASH_BIN;
+                $table_name = _m("Trash bin");
                 break;
 }
 
@@ -519,11 +519,11 @@ if ($sort_filter != "0") {
     }
 
     $searchimage = "<a href='javascript:document.filterform.submit()'>"
-    ."<img src='../images/search.gif' alt='".L_SEARCH."' border=0></a>";
+    ."<img src='../images/search.gif' alt='"._m("Search")."' border=0></a>";
     
       # filter
     echo "<tr><td class=search>&nbsp;".$searchimage."&nbsp;&nbsp;<b>"
-        . L_SEARCH ."</b></td><td>";
+        . _m("Search") ."</b></td><td>";
 
     FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
     echo "<input type='Text' name='admin_search' size=20
@@ -535,11 +535,11 @@ if ($sort_filter != "0") {
       #order
     echo "<tr><td class=search>&nbsp;
     <a href='javascript:document.filterform.submit()'>
-    <img src='../images/order.gif' alt='".L_ORDER."' border=0></a>&nbsp;&nbsp;<b>"
-        . L_ORDER ."</b></td><td class=leftmenuy>";
+    <img src='../images/order.gif' alt='"._m("Order")."' border=0></a>&nbsp;&nbsp;<b>"
+        . _m("Order") ."</b></td><td class=leftmenuy>";
     FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order, "onchange='document.filterform.submit()'");
     echo "<input type='checkbox' name='admin_order_dir' onchange='document.filterform.submit()'". 
-         ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . L_DESCENDING. "</td></tr>";
+         ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . _m("Descending"). "</td></tr>";
     
     echo "</table></form></center><p></p>"; // workaround for align=left bug
 }
@@ -559,7 +559,7 @@ echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF).make_r
 
                          
 if( count( $item_ids ) == 0 ) {
-    echo "<tr><td><div class=tabtxt>". L_NO_ITEM_FOUND ."</div></td></table>";
+    echo "<tr><td><div class=tabtxt>". _m("No item found") ."</div></td></table>";
     HtmlPageEnd(); 
     page_close();
     exit;
@@ -590,41 +590,41 @@ if ($action_selected != "0")
         ($r_bin_state != "appb") AND 
         ($r_bin_state != "appc") AND 
         CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT))
-      $markedaction["1-app"] = L_MOVE_TO_ACTIVE_BIN; 
+      $markedaction["1-app"] = _m("Move to Active"); 
     
     if( ($r_bin_state != "hold") AND 
         CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD))
-      $markedaction["2-hold"] = L_MOVE_TO_HOLDING_BIN;
+      $markedaction["2-hold"] = _m("Move to Holding bin");
       
     if( ($r_bin_state != "trash") AND 
          CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH))
-      $markedaction["3-trash"] = L_MOVE_TO_TRASH_BIN;
+      $markedaction["3-trash"] = _m("Move to Trash");
     if ($feed_selected != "0")
-        $markedaction["4-feed"] = L_FEED;
+        $markedaction["4-feed"] = _m("Export");
     if ($view_selected != "0")
-        $markedaction["5-view"] = L_VIEW_FULLTEXT;
+        $markedaction["5-view"] = _m("Preview");
       
     if (is_array ($markedaction) && count ($markedaction)) {  
         echo "<img src='".$AA_INSTAL_PATH."images/arrow_ltr.gif'>
-            <a href='javascript:SelectVis()'>".L_SELECT_VISIBLE."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
+            <a href='javascript:SelectVis()'>"._m("Select all")."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
             
           // click "go" does not use markedform, it uses itemsfrom above...
           // maybe this action is not used.
         echo "<select name='markedaction_select'>
-              <option value=\"nothing\">".L_CHANGE_MARKED.":";
+              <option value=\"nothing\">"._m("Selected items").":";
         
         reset($markedaction);
         while(list($k, $v) = each($markedaction)) 
           echo "<option value=\"". htmlspecialchars($k)."\"> ".
                    htmlspecialchars($v);
-        echo "</select>&nbsp;&nbsp;<a href=\"javascript:MarkedActionGo()\" class=leftmenuy>".L_GO."</a>";
+        echo "</select>&nbsp;&nbsp;<a href=\"javascript:MarkedActionGo()\" class=leftmenuy>"._m("Go")."</a>";
     }
 }
 
 if($st->pageCount() > 1 || $action_selected != "0") {
     if ($st->pageCount() > 1) {
         echo "</td></tr><tr height=3><td></td></tr>
-            <tr><td class=tabtxt><b>".L_ITEMS_PAGE.":&nbsp;&nbsp;";
+            <tr><td class=tabtxt><b>"._m("Items Page").":&nbsp;&nbsp;";
         $st->pnavbar();
         echo "</b>";
     }

@@ -67,12 +67,13 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
           <td>$col3&nbsp;</td>
           <td>$col4&nbsp;</td>
           <td align='right'><a href=\"javascript:document.location='".
-            $sess->url("se_profile.php3?del=$rid&uid=$uid"). "'\">". L_DELETE ."</a></td>
+            $sess->url("se_profile.php3?del=$rid&uid=$uid"). "'\">". _m("Delete") ."</a></td>
         </tr>";
 }
 
 function PrintRule($rule) {
-  global $PROPERTY_TYPES, $SORTORDER_TYPES, $INPUT_DEFAULT_TYPES, $fields;
+  global $PROPERTY_TYPES, $SORTORDER_TYPES, $fields; 
+  $INPUT_DEFAULT_TYPES = inputDefaultTypes();
 
   $prop = $rule['property'];
   $rid  = $rule['id'];
@@ -107,7 +108,7 @@ function PrintRule($rule) {
 }
 
 function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
-  global $PROPERTY_TYPES, $lookup_fields, $SORTORDER_TYPES, $INPUT_DEFAULT_TYPES, $fields;
+  global $PROPERTY_TYPES, $lookup_fields, $SORTORDER_TYPES, $fields;
   echo "<tr class=tabtxt>
          <td>". $PROPERTY_TYPES[$rule]. "<input type=hidden name=prop$n value=$rule></td>
          <td>";
@@ -124,7 +125,7 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
   echo " </td>
          <td>". ($sparam ? "<input type=text name=param$n size=20>" : "&nbsp;"). "</td>
          <td>". ($shtml  ? "<input type=checkbox name=html$n>" : "&nbsp;"). "</td>
-         <td><a href=\"javascript:addrule($n)\">". L_ADD ."</a></td></tr>";
+         <td><a href=\"javascript:addrule($n)\">". _m("Add") ."</a></td></tr>";
 }  
 
 ?>

@@ -80,7 +80,7 @@ if( $akce == "filter" ) { // edit the first one
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<title><?php echo L_EDITOR_TITLE ?></title>
+<title><?php echo _m("Editor window - item manager") ?></title>
 <SCRIPT Language="JavaScript"><!--
   function ReplaceFirstChar( str, ch ) {
     return   ch + str.substring(1,str.length);
@@ -94,7 +94,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
       eval(starget).options[i].text = stext;
       eval(starget).options[i].value = svalue;
     } else 
-      alert( "<?php echo L_TOO_MUCH_RELATED; # the maximum number of related stories is here jut because
+      alert( "<?php echo _m("There are too many related items. The number of related items is limited."); # the maximum number of related stories is here jut because
                                              # we can't create new Option in to itemedit.hpp3 window
                                              # from this window in JavaScript 
                                              ?>" );
@@ -125,7 +125,7 @@ $de = getdate(time());
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
 $st_name = "st_rel";    // name of scroller for related selection table
 $bin_condition = 'ACTIVE';
-$table_name = L_SELECT_RELATED;
+$table_name = _m("Select related items");
 
 $st = $$st_name;   // use right scroller
 
@@ -154,11 +154,11 @@ if( !$mode )
   $mode='AMB';
 for( $i=0; $i<strlen($mode); $i++) {
   switch( substr($mode,$i,1) ) {
-    case 'A': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelation('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_1WAY ."</a>&nbsp;";
+    case 'A': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelation('x_#ITEM_ID_','_#HEADLINE')\">". _m("Add") ."</a>&nbsp;";
               break;
-    case 'M': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelation2Way('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_2WAY ."</a>&nbsp;";
+    case 'M': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelation2Way('x_#ITEM_ID_','_#HEADLINE')\">". _m("Add&nbsp;mutual") ."</a>&nbsp;";
               break;
-    case 'B': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelationBack('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_BACK ."</a>&nbsp;";
+    case 'B': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelationBack('x_#ITEM_ID_','_#HEADLINE')\">". _m("Backward") ."</a>&nbsp;";
               break;
   }
 }   
@@ -229,7 +229,7 @@ if( count( $item_ids ) > 0 ) {
     $st->pnavbar();
 }  
 else 
-  echo "<tr><td><div class=tabtxt>". L_NO_ITEM ."</div></td></td></table>";
+  echo "<tr><td><div class=tabtxt>". _m("No item found") ."</div></td></td></table>";
   
 echo '<input type=hidden name=akce value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
 echo '</form>';
@@ -248,23 +248,23 @@ while( list ($k, $v ) = each( $fields ) ) {
     
   #order
 echo "<tr>
-       <td class=leftmenuy><b>". L_ORDER ."</b></td>
+       <td class=leftmenuy><b>". _m("Order") ."</b></td>
        <td class=leftmenuy>";
 FrmSelectEasy('admin_order', $lookup_fields, $r_r_admin_order);
 echo "<input type='checkbox' name='admin_order_dir'". 
-     ( ($r_r_admin_order_dir=='d') ? " checked> " : "> " ) . L_DESCENDING. "</td>
+     ( ($r_r_admin_order_dir=='d') ? " checked> " : "> " ) . _m("Descending"). "</td>
      <td rowspan=2 align='right' valign='middle'><a
-      href=\"javascript:document.filterform.submit()\" class=leftmenuy>". L_GO ."</a> </td></tr>";
+      href=\"javascript:document.filterform.submit()\" class=leftmenuy>". _m("Go") ."</a> </td></tr>";
 
   # filter
-echo "<tr><td class=leftmenuy><b>". L_SEARCH ."</b></td>
+echo "<tr><td class=leftmenuy><b>". _m("Search") ."</b></td>
      <td>";
 FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_r_admin_search_field);
 echo "<input type='Text' name='admin_search' size=20
       maxlength=254 value=\"". safe($r_r_admin_search). "\"></td></tr></table>
       <input type=hidden name=var_id value='$var_id'><br><br>
       <input type=hidden name=akce value='filter'><br><br>
-      <input type=button value='". L_BACK ."' onclick='window.close()'>
+      <input type=button value='". _m("Back") ."' onclick='window.close()'>
       </form></center>";
   echo "</body></html>";
 

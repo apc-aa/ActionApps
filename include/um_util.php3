@@ -65,14 +65,14 @@ function PrintModulePermModificator($selected_user) {
   global $db;
   ?>
 
-  <tr><td class=tabtit><b>&nbsp;<?php echo L_PERMISSIONS?></b></td></tr>
+  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Permissions")?></b></td></tr>
   <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
   <?php
   echo '<tr>
-          <td>'. L_OBJECT .'</td>
-          <td>'. L_PERMISSIONS .'</td>
-          <td>'. L_REVOKE .'</td></tr>';
+          <td>'. _m("Object") .'</td>
+          <td>'. _m("Permissions") .'</td>
+          <td>'. _m("Revoke") .'</td></tr>';
 
   $perm_slices = GetIDPerms($selected_user, "slice", 1);  # there are not only Slices, but other Modules too
   $SQL = "SELECT name, type, id FROM module ORDER BY type,name";
@@ -88,7 +88,7 @@ function PrintModulePermModificator($selected_user) {
     }                                  # type of module the $mod_2B_add is
   }?>
     </table></td></tr>
-   <tr><td class=tabtit><b>&nbsp;<?php echo L_PERM_SEARCH?></b></td></tr>
+   <tr><td class=tabtit><b>&nbsp;<?php echo _m("Assign new permissions")?></b></td></tr>
    <tr><td>
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
       <?php
@@ -121,7 +121,7 @@ function PrintModulePermRow($mid, $type, $name, $perm) {
   }
   echo "  </td>
           <td nowrap align='top'>
-            <input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"REVOKE\">". L_REVOKE ."</td>
+            <input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"REVOKE\">". _m("Revoke") ."</td>
         </tr>";
 }
 

@@ -208,7 +208,7 @@ function GetViewConds($view_info, $param_conds) {
 function GetViewSort($view_info) {
 
   # translate sort codes (we use numbers in views from historical reason)
-  # '0'=>L_ASCENDING, '1' => L_DESCENDING, '2' => L_ASCENDING_PRI, '3' => L_DESCENDING_PRI 
+  # '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority") 
   $SORT_DIRECTIONS = array( 0 => 'a', 1 => 'd', 2 => '1', 3 => '9' );
 
   if( $view_info['group_by1'] )
@@ -295,7 +295,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
   $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
                    ( $view_info['noitem_msg'] ? $view_info['noitem_msg'] : 
-                                                ("<div>".L_NO_ITEM ."</div>")));
+                                                ("<div>"._m("No item found") ."</div>")));
   
   if( $view_param["banner"] ) {
     list( $foo_pos, $foo_vid, $foo_fld ) = explode('-',$view_param["banner"]);

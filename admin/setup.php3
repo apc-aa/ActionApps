@@ -50,18 +50,19 @@ require ("$GLOBALS[AA_INC_PATH]" . "perm_core.php3");
 require ("$GLOBALS[AA_INC_PATH]" . "perm_" . PERM_LIB . ".php3");
 require ("$GLOBALS[AA_INC_PATH]" . "util.php3");
 require ("$GLOBALS[AA_INC_PATH]" . "formutil.php3");
-require ("$GLOBALS[AA_INC_PATH]" . DEFAULT_LANG_INCLUDE);
+require ("$GLOBALS[AA_INC_PATH]" . "mgettext.php3");
+bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".str_replace ("php3","inc",DEFAULT_LANG_INCLUDE));
 
 function HtmlStart() {
-   echo L_SETUP_PAGE_BEGIN;
-   echo "<title>" . L_SETUP_TITLE . "</title></head>\n";
+   HTMLPageBegin ("../".ADMIN_CSS);
+   echo "<title>" . _m("AA Setup") . "</title></head>\n";
    echo "<body bgcolor=\"". COLOR_BACKGROUND ."\">\n";
    echo "<center>\n";
-   echo "<h1>" . L_SETUP_H1 . "</h1>\n";
+   echo "<h1>" . _m("AA Setup") . "</h1>\n";
 }
 
 function NoAction() {
-    echo L_SETUP_NO_ACTION;
+    echo _m("This script can't be used on a configured system.");
 }
 
 function PrintErr($err) {
@@ -77,22 +78,22 @@ function SuperForm() {
   <form action="setup.php3">
     <table border="0" cellspacing="0" cellpadding="1" width="440"
            bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-      <tr><td class=tabtit><b><?php echo L_SETUP_USER; ?></b></td></tr>
+      <tr><td class=tabtit><b><?php echo _m("Superadmin account"); ?></b></td></tr>
       <tr><td>
          <table border="0" cellspacing="0" cellpadding="4" width="100%"
                 bgcolor="<?php echo COLOR_TABBG ?>" align=center>
             <?php 
-              FrmInputText("login", L_SETUP_LOGIN, $login, 12, 30, true);
-              FrmInputPwd("password1", L_SETUP_PWD1, $password1, 12, 30, true);
-              FrmInputPwd("password2", L_SETUP_PWD2, $password2, 12, 30, true);
-              FrmInputText("fname", L_SETUP_FNAME, $fname, 50, 30, true);
-              FrmInputText("lname", L_SETUP_LNAME, $lname, 50, 30, true);
-              FrmInputText("email", L_SETUP_EMAIL, $email, 50, 30, false);
+              FrmInputText("login", _m("Login name"), $login, 12, 30, true);
+              FrmInputPwd("password1", _m("Password"), $password1, 12, 30, true);
+              FrmInputPwd("password2", _m("Retype Password"), $password2, 12, 30, true);
+              FrmInputText("fname", _m("First name"), $fname, 50, 30, true);
+              FrmInputText("lname", _m("Last name"), $lname, 50, 30, true);
+              FrmInputText("email", _m("E-mail"), $email, 50, 30, false);
             ?>
          </table>
       <tr><td align="center">
          <?php $sess->hidden_session(); ?>
-         <input type=submit name=phase value="<?php echo L_SETUP_CREATE ?>">
+         <input type=submit name=phase value="<?php echo _m("Create") ?>">
     </td></tr>
     </table>
   </form>
@@ -101,13 +102,13 @@ function SuperForm() {
 
 function InitForm() {
    global $sess;
-   echo L_SETUP_INFO1;
-   echo L_SETUP_INFO2;
+   echo _m("Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>");
+   echo _m("If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>");
    ?>
    <form method=get action="setup.php3">
    <?php $sess->hidden_session(); ?>
-   <input type=submit name=phase value="<?php echo L_SETUP_INIT; ?>">
-   <input type=submit name=phase value="<?php echo L_SETUP_RECOVER; ?>">
+   <input type=submit name=phase value="<?php echo _m(" Init "); ?>">
+   <input type=submit name=phase value="<?php echo _m("Recover"); ?>">
    </form>
    <?php
 }
@@ -128,7 +129,7 @@ if ($perms = GetObjectsPerms(AA_ID, "aa")) {
          $notusers[$key] = $value;      // non-existent user/group
       } else if ($value["perm"] != $perms_roles["SUPER"]['id']) {
          $others[$key] = $value;        // other than super privilege
-      } else if (stristr($value["type"], L_USER)) {
+      } else if (stristr($value["type"], _m("User"))) {
          $superusers[$key] = $value;    // users with super privileges
       } else {
          $supergroups[$key] = $value;   // groups with super privileges
@@ -152,7 +153,7 @@ HtmlStart();
 
 switch ($phase) {
 
-   case L_SETUP_INIT: 
+   case _m(" Init "): 
       if ($superusers || $supergroups) {
          NoAction();
          break;
@@ -161,12 +162,12 @@ switch ($phase) {
       if (AddPermObject(AA_ID, "aa")) {
          SuperForm();
       } else {         // Either AA_ID exists or there is more severe error
-         echo "<p>", L_SETUP_TRY_RECOVER, "</p>";
+         echo "<p>", _m("Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>"), "</p>";
       }
 
       break;
 
-   case L_SETUP_RECOVER:
+   case _m("Recover"):
 
       if ($superusers || $supergroups) {
          NoAction();
@@ -176,9 +177,9 @@ switch ($phase) {
       if (isset($notusers)) {                 // Delete orphan permissions 
          while (list($key,$value) = each ($notusers)) {
             if (!DelPerm ($key, AA_ID, "aa")) {
-               echo L_SETUP_ERR_DELPERM, "$key<br>";
+               echo _m("Can't delete invalid permission."), "$key<br>";
             } else {
-               echo L_SETUP_DELPERM, "$key<br>";
+               echo _m("Invalid permission deleted (no such user/group): "), "$key<br>";
             }
          }
       }
@@ -191,24 +192,24 @@ switch ($phase) {
       
       break;
 
-   case L_SETUP_CREATE: 
+   case _m("Create"): 
 
       if ($superusers || $supergroups) {
          NoAction();
          break;
       }
    
-      ValidateInput("login", L_SETUP_LOGIN, $login, $err, true, "login");
-      ValidateInput("password1", L_SETUP_PWD1, $password1,
+      ValidateInput("login", _m("Login name"), $login, $err, true, "login");
+      ValidateInput("password1", _m("Password"), $password1,
                     $err, true, "password");
-      ValidateInput("password2", L_SETUP_PWD2, $password2,
+      ValidateInput("password2", _m("Retype Password"), $password2,
                     $err, true, "password");
-      ValidateInput("fname", L_SETUP_FNAME, $fname, $err, true, "all");
-      ValidateInput("lname", L_SETUP_LNAME, $lname, $err, true, "all");
-      ValidateInput("email", L_SETUP_EMAIL, $email, $err, false, "email");
+      ValidateInput("fname", _m("First name"), $fname, $err, true, "all");
+      ValidateInput("lname", _m("Last name"), $lname, $err, true, "all");
+      ValidateInput("email", _m("E-mail"), $email, $err, false, "email");
    
       if( $password1 != $password2 ) {
-         $err[$password1] = MsgErr(L_BAD_RETYPED_PWD);
+         $err[$password1] = MsgErr(_m("Retyped password is not the same as the first one"));
       }
 
       if (count($err)) {        // Insufficient input data
@@ -234,7 +235,7 @@ switch ($phase) {
       $superid = AddUser($super);
    
       if (!$superid) {               // No success :-(
-         echo L_ERR_USER_ADD;
+         echo _m("It is impossible to add user to permission system");
          break;
       }
       
@@ -247,13 +248,13 @@ switch ($phase) {
       $perms = GetObjectsPerms(AA_ID, "aa");
 
       if ($perms[$superid]) {
-         echo L_SETUP_OK;
+         echo _m("Congratulations! The account was created.");
          if (!$recover) {
-            echo "<p>", L_SETUP_NEXT, "<p>";
-            echo "<a href=\"sliceadd.php3\">" . L_SETUP_SLICE . "</a>";
+            echo "<p>", _m("Use this account to login and add your first slice:"), "<p>";
+            echo "<a href=\"sliceadd.php3\">" . _m("Add Slice") . "</a>";
          }
       } else {
-         echo L_SETUP_ERR_ADDPERM;
+         echo _m("Can't assign super access permission.");
       }
 
       break;

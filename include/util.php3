@@ -40,12 +40,13 @@ function get_admin_url ($href) {
     return $sess->url ($AA_INSTAL_PATH."admin/".$href);
 }
 
-// adds slash at the end of a directory name
+/// Adds slash at the end of a directory name if it is not yet there.
 function endslash (&$s) {
     if (strlen ($s) && substr ($s,-1) != "/")
         $s .= "/";
 }
 
+/// Wraps the in_array function, which was introduced only in PHP 4.
 function my_in_array ($needle, $array) {
     return in_array ($needle, $array);
 }
@@ -853,9 +854,25 @@ function GetProfileProperty($property, $id=0) {
   return false;
 }
        
-# Prints HTML start page tags (html begin, encoding, style sheet, but no title)
-function HtmlPageBegin() {
-  echo HTML_PAGE_BEGIN;
+/**
+* Prints HTML start page tags (html begin, encoding, style sheet, but no title).
+* Chooses the right encoding by get_mgettext_lang().
+* @param string $stylesheet  if empty, no StyleSheet tag is printed
+*/
+function HtmlPageBegin ($stylesheet = "default") {
+    if ($stylesheet == "default")
+        $stylesheet = $GLOBALS["AA_INSTAL_PATH"].ADMIN_CSS;
+    echo 
+'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+  "http://www.w3.org/TR/html4/loose.dtd">
+  <HTML>
+    <HEAD>';
+    if ($stylesheet) echo '
+      <LINK rel="StyleSheet" href="'.$stylesheet.'" type="text/css">';
+    echo '
+      <META http-equiv="Content-Type" content="text/html; charset='
+        .$GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()].'">
+';
 }  
 
 # Displays page with message and link to $url
@@ -864,18 +881,16 @@ function HtmlPageBegin() {
 #   dummy - was used in past, now you should use MsgPageMenu from msgpage.php3 
 function MsgPage($url, $msg, $dummy="standalone") {   
   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-  ?>
-  <title><?php echo L_MSG_PAGE ?></title>  
-  </head>
-  <body>
-
-  <?php
+  
+  echo "<title>"._m("Toolkit news message")."</title>
+    </head>
+  <body>";
 
   if( isset($msg) AND is_array($msg))
     PrintArray($msg);
    else 
     echo "<P>$msg</p><br><br>";
-  echo "<a href=\"$url\">".L_BACK."</a>";
+  echo "<a href=\"$url\">"._m("Back")."</a>";
   echo "</body></html>";
   page_close();
   exit;
@@ -884,23 +899,22 @@ function MsgPage($url, $msg, $dummy="standalone") {
 # Prints alias names as help for fulltext and compact format page
 function PrintAliasHelp($aliases) {
   global $sess;
-  ?>
-  <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HLP ?></b></td></tr>
+  echo '
+  <tr><td class=tabtit><b>&nbsp;'._m("Use these aliases for database fields").'</b></td></tr>
   <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-  <?php
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'.COLOR_TABBG.'">';
+  
   $count = 0;
   while ( list( $ali,$v ) = each( $aliases ) ) {
     # if it is possible point to alias editing page
-    $aliasedit = ( !$v["fld"] ? L_EDIT :
+    $aliasedit = ( !$v["fld"] ? _m("Edit") :
       "<a href=\"". $sess->url(con_url("./se_inputform.php3", 
-                    "fid=".urlencode($v["fld"]))) ."\">". L_EDIT . "</a>");
+                    "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
     echo "<tr><td nowrap>$ali</td><td>". $v[hlp] ."</td><td>$aliasedit</td></tr>";
   }  
-  ?>  
-  </table>
-  </td></tr>
-  <?php
+   
+  echo ' 
+  </table></td></tr>';
 }
   
 # function returns true if $fld fits the field scheme (used in unaliasing)
@@ -1087,10 +1101,10 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
     }
 
     if( !is_dir( $destdir )) 
-        return L_DIR_NOT_EXISTS;
+        return _m("Internal error. File upload: Dir does not exist?!");
 
     if( file_exists("$destdir$filename") )
-        return L_FILE_NAME_EXISTS . " $destdir$filename";
+        return _m("File with this name already exists.") . " $destdir$filename";
 
     # copy the file from the temp directory to the upload directory, and test for success    
 
@@ -1099,13 +1113,13 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
     if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
         if (is_uploaded_file($GLOBALS[$varname])) 
             if( !move_uploaded_file($GLOBALS[$varname], "$destdir$filename")) 
-                return L_CANT_UPLOAD;
+                return _m("Can't upload Image");
             else if ($perms)
                 chmod ($destdir.$filename, $perms);
     } 
     else {   # for php 3.x and php <4.0.3
         if (!copy($GLOBALS[$varname],"$destdir$filename")) 
-            return L_CANT_UPLOAD;
+            return _m("Can't upload Image");
         else if ($perms)
             chmod ($destdir.$filename, $perms);
     }  
@@ -1301,5 +1315,12 @@ function get_email_types () {
         "alerts alert" => _m("alerts alert"),
         "alerts access" => _m("alerts single usage access"));
 }
-        
+
+/// @return array month names
+function monthNames ()
+{
+    return array( 1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'), 
+		_m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
+}
+
 ?>

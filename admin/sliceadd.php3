@@ -23,7 +23,6 @@ $New_slice = true;  // variable tells to init_page, there should not be defined 
 $require_default_lang = true;      // do not use module specific language file
 
 require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH] . DEFAULT_LANG_INCLUDE;  // aa menu is in default
 
 // the parts used by the slice wizard are in the included file
 
@@ -34,10 +33,10 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_SLICE_TIT;?></TITLE>
+ <TITLE><?php echo _m("Slice Administration");?></TITLE>
 </HEAD>
 <?php 
-  echo "<H1><B>" . L_A_MODULE_ADD ."</B></H1>";
+  echo "<H1><B>" . _m("Create New Slice / Module") ."</B></H1>";
   PrintArray($err);
   echo $Msg;  
 ?>
@@ -54,7 +53,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <br><br>
 
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_A_MODULE?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Module")?></b>
 <tr><td><table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php  reset ($MODULES);
     while (list ($type, $module) = each ($MODULES)) {
@@ -71,7 +70,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
         } else
             echo "&nbsp;";
         echo "</TD><TD>
-            <INPUT TYPE=SUBMIT NAME='create[$type]' value='".L_ADD."'></TD></TR>";
+            <INPUT TYPE=SUBMIT NAME='create[$type]' value='"._m("Add")."'></TD></TR>";
     }
 ?>
 </table></td></tr>
@@ -82,13 +81,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td align="center">
 <?php 
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
 ?>   
 </td></tr>
 </table>
 </FORM>
 </center>
-<?php echo L_APP_TYPE_HELP ?>
+<?php echo _m("<br><br><br><br>") ?>
 <?php echo "</body></html>";
 page_close()?>
 

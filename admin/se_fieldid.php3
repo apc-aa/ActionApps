@@ -127,7 +127,7 @@ if($cancel)
   
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }  
 
@@ -204,11 +204,11 @@ if ($update && $new_id_text && $p_slice_id) {
             $new_id .= ".";
         $new_id .= $new_id_number;
         if ($old_id != $new_id && strlen ($new_id) == 16) {      
-            if (my_in_array ($new_id, $reserved_ids)) $err[] = L_RESERVED_ID." ($new_id).";
+            if (my_in_array ($new_id, $reserved_ids)) $err[] = _m("This ID is reserved")." ($new_id).";
             else {
                 // proove the field does not exist
                 $db->query ("SELECT id FROM field WHERE slice_id='$p_slice_id' AND id='$new_id'");
-                if ($db->next_record()) $err[] = L_ID_EXISTS." ($new_id).";
+                if ($db->next_record()) $err[] = _m("This ID is already used")." ($new_id).";
             }
             if (count($err) <= 1 ) {
                 $nchanges ++;
@@ -227,28 +227,28 @@ $s_fields = GetTable2Array($SQL, $db);
          
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_FIELD_IDS_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - change Field IDs");?></TITLE>
 
 </HEAD>
 <?php 
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "field_ids");  
   
-  echo "<H1><B>" . L_A_FIELD_IDS_TIT . "</B></H1>";
+  echo "<H1><B>" . _m("Admin - change Field IDs") . "</B></H1>";
   PrintArray($err);
   echo $Msg;  
-  if ($update) echo "$nchanges ".L_FIELD_IDS_CHANGED.".<br>";
+  if ($update) echo "$nchanges "._m("field IDs were changed").".<br>";
 
 echo "
 <form method=post action='".$sess->url($PHP_SELF)."'>
 <table width=500 border=0 cellspacing=0 cellpadding=1 bgcolor='".COLOR_TABTXTBG."' align=center>
-<tr><td class=tabtit>".L_FIELD_ID_HELP."</td></tr>
-<tr><td class=tabtit align=center><br>".L_CHANGE_FROM.": <select name='old_id'>";
+<tr><td class=tabtit>"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
+<tr><td class=tabtit align=center><br>"._m("Change from").": <select name='old_id'>";
 reset ($s_fields);
 while (list (,$field) = each ($s_fields)) 
     if (!my_in_array ($field["id"], $reserved_ids))
         echo "<option value='$field[id]'>$field[id]";
-echo "</select> ".L_TO." <select name='new_id_text'>";
+echo "</select> "._m("to")." <select name='new_id_text'>";
 $db->query ("SELECT id FROM field 
              WHERE slice_id='AA_Core_Fields..'");
 while ($db->next_record()) {
@@ -261,16 +261,16 @@ for ($i = 1; $i < 100; ++$i)
     echo "<option value='$i'>$i";
 echo "</select><br><br>
     <input type=hidden name=\"update\" value=1>
-    <input type=submit name=update value='". L_UPDATE ."'>&nbsp;&nbsp;
-    <input type=submit name=cancel value='". L_CANCEL ."'>
+    <input type=submit name=update value='". _m("Update") ."'>&nbsp;&nbsp;
+    <input type=submit name=cancel value='". _m("Cancel") ."'>
     </td></tr></table>";
 ?>
 <br>
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr height=10><td class=tabtxt colspan=2></td></tr>
 <tr>
- <td class=tabtxt align=left><b>&nbsp;&nbsp;<?php echo L_FIELD_TYPE ?></b></td>
- <td class=tabtxt align=left><b>&nbsp;&nbsp;<?php echo L_FIELD ?></b></td>
+ <td class=tabtxt align=left><b>&nbsp;&nbsp;<?php echo _m("Id") ?></b></td>
+ <td class=tabtxt align=left><b>&nbsp;&nbsp;<?php echo _m("Field") ?></b></td>
 </tr>
 <tr><td colspan=2 class=tabtxt><hr></td></tr>
 <?php 

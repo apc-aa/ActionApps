@@ -111,7 +111,7 @@ class datectrl {
   function ValidateDate($inputName, &$err)  {
     if (( $this->get_date() > 0  ) or ($this->get_date()==-3600))
       return true;
-    $err[$this->name] = MsgErr(L_ERR_IN." $inputName");
+    $err[$this->name] = MsgErr(_m("Error in")." $inputName");
     return false;
   }  
                    
@@ -127,7 +127,7 @@ class datectrl {
 
 	# print select box for month
 	function getmonthselect() {
-		global $L_MONTH;
+		$L_MONTH = monthNames();
 		$at = getdate(time());
 		$sel =  ($this->month != 0 ? $this->month : $at[mon]);
 		for($i = 1; $i <= 12; $i++) {

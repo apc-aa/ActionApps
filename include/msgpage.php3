@@ -49,7 +49,7 @@ function MsgPageMenu ($url, $msg, $mode, $menu="") {
     
   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
   ?>
-  <title><?php echo L_MSG_PAGE ?></title>  
+  <title><?php echo _m("Toolkit news message") ?></title>  
   </head>
   <body>
 
@@ -69,7 +69,7 @@ function MsgPageMenu ($url, $msg, $mode, $menu="") {
     PrintArray($msg);
    else 
     echo "<P>$msg</p><br><br>";
-  echo "<a href=\"$url\">".L_BACK."</a>";
+  echo "<a href=\"$url\">"._m("Back")."</a>";
   HTMLPageEnd();
   page_close();
   exit;

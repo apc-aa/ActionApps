@@ -111,9 +111,9 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
   if( $html ){
     $htmlvar = $name."html";
     $htmlrow = "<input type='radio' name='$htmlvar' value='h'".
-              (( $html==1 ) ? " checked>" : ">" ). L_HTML."</input>
+              (( $html==1 ) ? " checked>" : ">" ). _m("HTML")."</input>
               <input type='radio' name='$htmlvar' value='t'".
-              (( $html==2 ) ? " checked>" : ">" ). L_PLAIN_TEXT."</input><br>";
+              (( $html==2 ) ? " checked>" : ">" ). _m("Plain text")."</input><br>";
   }    
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
@@ -196,15 +196,15 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
 			function load_rich_edit ()
 			{ window.location.href = window.location.href+"&showrich=1"; }
 			</script>
-			<a href="javascript:load_rich_edit();">'.L_SHOW_RICH.'</a><br>';
+			<a href="javascript:load_rich_edit();">'._m("Show this field as a rich text editor (use only after having installed the necessary components!)").'</a><br>';
 	}
 
   if( $html ){
     $htmlvar = $name."html";
     $htmlrow .= "<input type='radio' name='$htmlvar' value='h'".
-              (( $html==1 ) ? " checked>" : ">" ). L_HTML."</input>
+              (( $html==1 ) ? " checked>" : ">" ). _m("HTML")."</input>
               <input type='radio' name='$htmlvar' value='t'".
-              (( $html==2 ) ? " checked>" : ">" ). L_PLAIN_TEXT."</input><br>";
+              (( $html==2 ) ? " checked>" : ">" ). _m("Plain text")."</input><br>";
   }    
 
   if( $single )
@@ -606,8 +606,8 @@ function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
                    $needed=false, $wi2_offer, $wi2_selected, $hlp="", $morehlp="") {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
-  if ($wi2_offer == "") $wi2_offer = L_WI2_OFFER;
-  if ($wi2_selected == "") $wi2_selected = L_WI2_SELECTED;
+  if ($wi2_offer == "") $wi2_offer = _m("Offer");
+  if ($wi2_selected == "") $wi2_selected = _m("Selected");
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
@@ -742,8 +742,8 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
   PrintHelp($hlp);
   if( $relation )       // all selection in this box should be selected on submit
     echo "<br><center>
-          <input type='button' value='". L_ADD ."' onclick='OpenRelated(\"$name\", \"$relation\", \"$mode\", \"$design\" )'> 
-          <input type='button' value='". L_DELETE ."' 
+          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$relation\", \"$mode\", \"$design\" )'> 
+          <input type='button' value='". _m("Delete") ."' 
             onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
                      document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'> 
           <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
@@ -830,16 +830,16 @@ function FrmInputButtons( $buttons, $sess=false, $slice_id=false, $valign='middl
         $name = $properties;
       switch($name) {
         case 'update':
-          echo '&nbsp;<input type="submit" name="update" accesskey="S" value="'. L_UPDATE ."  $accesskey". '">&nbsp;';
+          echo '&nbsp;<input type="submit" name="update" accesskey="S" value="'. _m("Update") ."  $accesskey". '">&nbsp;';
           break;
         case 'insert':
-          echo '&nbsp;<input type="submit" name="insert" accesskey="S" value="'. L_INSERT ."  $accesskey". '">&nbsp;';
+          echo '&nbsp;<input type="submit" name="insert" accesskey="S" value="'. _m("Insert") ."  $accesskey". '">&nbsp;';
           break;
         case 'cancel':
-          echo '&nbsp;<input type="submit" name="cancel" value="'. L_CANCEL .'">&nbsp;';
+          echo '&nbsp;<input type="submit" name="cancel" value="'. _m("Cancel") .'">&nbsp;';
           break;
         case 'reset':
-          echo '&nbsp;<input type="reset" value="'. L_RESET .'">&nbsp;';
+          echo '&nbsp;<input type="reset" value="'. _m("Reset form") .'">&nbsp;';
           break;
         default:
           echo '&nbsp;<input type="'.  $properties['type'] .
@@ -867,7 +867,7 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
 {
   if($variable=="" OR Chop($variable)=="")
     if( $needed ) {                     // NOT NULL
-      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_NEED.")");
+      $err["$variableName"] = MsgErr(_m("Error in")." $inputName ("._m("it must be filled").")");
       return false;
     }
     else  return true;
@@ -876,29 +876,29 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
     case "id":     if((string)$variable=="0" AND !$needed)
                      return true;
                    if( !EReg("^[0-9a-f]{1,32}$",Chop($variable)))
-                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
+                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
     case "alias":  if((string)$variable=="0" AND !$needed)
                      return true;
                    if( !EReg("^_#[0-9_#a-zA-Z]{8}$",Chop($variable)))
-                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
+                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
     case "number": if( !EReg("^[0-9]+$",Chop($variable)) )
-                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
+                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
     case "perms":  if( !(($Promenna=="editor") OR ($Promenna=="admin")))
-                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
+                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
     case "email":  if( !EReg("^.+@.+\..+",Chop($variable)))
-                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
+                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
@@ -906,21 +906,21 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
       $len = strlen($variable);
       if( ($len>=3) AND ($len<=32) )
       { if( !EReg("^[a-zA-Z0-9]*$",Chop($variable)))
-        { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOG.")");
+        { $err["$variableName"] = MsgErr(_m("Error in")." $inputName ("._m("you should use a-z, A-Z and 0-9 characters").")");
           return false;
         }
         return true;
       }
-      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");
+      $err["$variableName"] = MsgErr(_m("Error in")." $inputName ("._m("it must by 5 - 32 characters long").")");
       return false;
     case "password":
       $len = strlen($variable);
       if( ($len>=5) AND ($len<=32) )
         return true;
-      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");                   
+      $err["$variableName"] = MsgErr(_m("Error in")." $inputName ("._m("it must by 5 - 32 characters long").")");                   
       return false; 
     case "filename": if( !EReg("^[-.0-9a-zA-Z_]+$", $variable)) {
-                       $err[$variableName] = MsgErr(L_ERR_IN." $inputName (".L_ERR_FILENAME.")");
+                       $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("only 0-9 A-Z a-z . _ and - are allowed").")");
                        return false;
                      }
                      return true;

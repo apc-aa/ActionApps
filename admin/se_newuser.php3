@@ -32,7 +32,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_NEW_USER, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
   exit;
 }  
 
@@ -43,16 +43,16 @@ if( $update )
 {
   do
   {
-    ValidateInput("user_login", L_USER_LOGIN, $user_login, $err, true, "login");
-    ValidateInput("user_password1", L_USER_PASSWORD1, $user_password1, $err, true, "password");
-    ValidateInput("user_password2", L_USER_PASSWORD2, $user_password2, $err, true, "password");
-    ValidateInput("user_mail1", L_USER_MAIL." 1", $user_mail1, $err, false, "email");
-    //    ValidateInput("user_mail2", L_USER_MAIL." 2", $user_mail2, $err, false, "email");
-    //   ValidateInput("user_mail3", L_USER_MAIL." 3", $user_mail3, $err, false, "email");
-    ValidateInput("user_surname", L_USER_SURNAME, $user_surname, $err, true, "text");
-    ValidateInput("user_firstname", L_USER_FIRSTNAME, $user_firstname, $err, true, "text");
+    ValidateInput("user_login", _m("Login name"), $user_login, $err, true, "login");
+    ValidateInput("user_password1", _m("Password"), $user_password1, $err, true, "password");
+    ValidateInput("user_password2", _m("Retype password"), $user_password2, $err, true, "password");
+    ValidateInput("user_mail1", _m("E-mail")." 1", $user_mail1, $err, false, "email");
+    //    ValidateInput("user_mail2", _m("E-mail")." 2", $user_mail2, $err, false, "email");
+    //   ValidateInput("user_mail3", _m("E-mail")." 3", $user_mail3, $err, false, "email");
+    ValidateInput("user_surname", _m("Surname"), $user_surname, $err, true, "text");
+    ValidateInput("user_firstname", _m("First name"), $user_firstname, $err, true, "text");
     if( $user_password1 != $user_password2 )
-      $err[$user_password2] = MsgErr(L_BAD_RETYPED_PWD);
+      $err[$user_password2] = MsgErr(_m("Retyped password is not the same as the first one"));
     if( count($err) > 1)
       break;
       
@@ -66,12 +66,12 @@ if( $update )
     //    if($user_mail3) $userrecord["mail"][] = $user_mail3;
 
     if(!AddUser($userrecord))
-      $err["LDAP"] = MsgErr( L_ERR_USER_ADD );
+      $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
   }while(false);
   if( count($err) <= 1 ) {
-    $Msg = MsgOK(L_NEWUSER_OK);
+    $Msg = MsgOK(_m("User successfully added to permission system"));
     $url = con_url($sess->url(self_base() . "se_users.php3"),"Msg=".rawurlencode($Msg));
-    $url = con_url($url, "UsrSrch=".rawurlencode(L_SEARCH));
+    $url = con_url($url, "UsrSrch=".rawurlencode(_m("Search")));
     $url = con_url($url, "usr=".rawurlencode($user_login));
     go_url($url);
   }  
@@ -79,7 +79,7 @@ if( $update )
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_COMPACT_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - design Index view");?></TITLE>
 </HEAD>
 
 <?php
@@ -87,34 +87,34 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin","newuser");
 
-  echo "<H1><B>" . L_A_NEWUSER . "</B></H1>";
+  echo "<H1><B>" . _m("New user in permission system") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_NEWUSER_HDR?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("New user")?></b>
 </td>
 </tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
-  FrmInputText("user_login", L_USER_LOGIN, $user_login, 50, 50, true);
-  FrmInputPwd("user_password1", L_USER_PASSWORD1, $user_password1, 50, 50, true);
-  FrmInputPwd("user_password2", L_USER_PASSWORD2, $user_password2, 50, 50, true);
-  FrmInputText("user_firstname", L_USER_FIRSTNAME, $user_firstname, 50, 50, true);
-  FrmInputText("user_surname", L_USER_SURNAME, $user_surname, 50, 50, true);
-  FrmInputText("user_mail1", L_USER_MAIL." 1", $user_mail1, 50, 50, false);
-//  FrmInputText("user_mail2", L_USER_MAIL." 2", $user_mail2, 50, 50, false);
-//  FrmInputText("user_mail3", L_USER_MAIL." 3", $user_mail3, 50, 50, false);
+  FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);
+  FrmInputPwd("user_password1", _m("Password"), $user_password1, 50, 50, true);
+  FrmInputPwd("user_password2", _m("Retype password"), $user_password2, 50, 50, true);
+  FrmInputText("user_firstname", _m("First name"), $user_firstname, 50, 50, true);
+  FrmInputText("user_surname", _m("Surname"), $user_surname, 50, 50, true);
+  FrmInputText("user_mail1", _m("E-mail")." 1", $user_mail1, 50, 50, false);
+//  FrmInputText("user_mail2", _m("E-mail")." 2", $user_mail2, 50, 50, false);
+//  FrmInputText("user_mail3", _m("E-mail")." 3", $user_mail3, 50, 50, false);
 ?>
 </table></td></tr>
 <tr><td align="center">
 <?php 
   echo "<input type=hidden name=\"update\" value=1>";
   echo "<input type=hidden name=\"slice_id\" value=$slice_id>";
-  echo '<input type=submit name=update value="'. L_ADD .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=update value="'. _m("Add") .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
 ?>
 </td></tr></table>
 </FORM>

@@ -40,7 +40,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "./se_fields.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }  
 
@@ -56,27 +56,29 @@ if( $del ) {
   $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
   $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
-  $Msg = MsgOK(L_FIELD_DELETE_OK);
+  $Msg = MsgOK(_m("Field delete OK"));
   go_url( $sess->url("./se_fields.php3") );  # back to field page
 }
 
+$INPUT_SHOW_FUNC_TYPES = inputShowFuncTypes();  
+      
 if( $update ) {
   do {
-    ValidateInput("input_before", L_INPUT_BEFORE, $input_before, $err, false, "text");
-    ValidateInput("input_help", L_INPUT_HELP, $input_help, $err, false, "text");
-    ValidateInput("input_morehlp", L_INPUT_MOREHLP, $input_morehlp, $err, false, "text");
-    ValidateInput("input_default", L_INPUT_DEFAULT, $input_default, $err, false, "text");
+    ValidateInput("input_before", _m("Before HTML code"), $input_before, $err, false, "text");
+    ValidateInput("input_help", _m("Help for this field"), $input_help, $err, false, "text");
+    ValidateInput("input_morehlp", _m("More help"), $input_morehlp, $err, false, "text");
+    ValidateInput("input_default", _m("Default"), $input_default, $err, false, "text");
     ValidateInput("input_show_func", L_INPUT_SHOW_FUNC, $input_show_func_f, $err, false, "text");
 
-    ValidateInput("alias1", L_ALIAS1, $alias1, $err, false, "alias");
-    ValidateInput("alias1_help", L_ALIAS_HLP ."1", $alias1_help, $err, false, "text");
-    ValidateInput("alias1_func", L_ALIAS_FUNC ."1", $alias1_func, $err, false, "text");
-    ValidateInput("alias2", L_ALIAS2, $alias2, $err, false, "alias");
-    ValidateInput("alias2_help", L_ALIAS_HLP ."2", $alias2_help, $err, false, "text");
-    ValidateInput("alias2_func", L_ALIAS_FUNC ."2", $alias2_func, $err, false, "text");
-    ValidateInput("alias3", L_ALIAS3, $alias3, $err, false, "alias");
-    ValidateInput("alias3_help", L_ALIAS_HLP ."3", $alias3_help, $err, false, "text");
-    ValidateInput("alias3_func", L_ALIAS_FUNC ."3", $alias3_func, $err, false, "text");
+    ValidateInput("alias1", _m("Alias 1"), $alias1, $err, false, "alias");
+    ValidateInput("alias1_help", _m("Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters.") ."1", $alias1_help, $err, false, "text");
+    ValidateInput("alias1_func", _m("Function") ."1", $alias1_func, $err, false, "text");
+    ValidateInput("alias2", _m("Alias 2"), $alias2, $err, false, "alias");
+    ValidateInput("alias2_help", _m("Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters.") ."2", $alias2_help, $err, false, "text");
+    ValidateInput("alias2_func", _m("Function") ."2", $alias2_func, $err, false, "text");
+    ValidateInput("alias3", _m("Alias 3"), $alias3, $err, false, "alias");
+    ValidateInput("alias3_help", _m("Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters.") ."3", $alias3_help, $err, false, "text");
+    ValidateInput("alias3_func", _m("Function") ."3", $alias3_func, $err, false, "text");
       
     if( count($err) > 1)
       break;
@@ -133,7 +135,7 @@ if( $update ) {
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
     if( count($err) <= 1 ) {
-      $Msg = MsgOK(L_FIELDS_OK);
+      $Msg = MsgOK(_m("Fields update successful"));
       go_url( $sess->url("./se_fields.php3") );  # back to field page
     }    
   } while( 0 );           #in order we can use "break;" statement
@@ -157,7 +159,7 @@ $db->query($SQL);
 if( $db->next_record()) 
   $fld = $db->Record;
 else {
-  $Msg = MsgErr(L_NO_FIELDS);
+  $Msg = MsgErr(_m("No fields defined for this slice"));
   go_url( $sess->url("./se_fields.php3") );  # back to field page
 }    
 
@@ -220,13 +222,13 @@ if( !$update ) {      # load defaults
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_FIELDS_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - configure Fields");?></TITLE>
 <script language="JavaScript"><!--
   function CallConstantEdit(as_new) {
     var url = "<?php echo EditConstantURL(); ?>"
     var conid = document.f.input_show_func_c.options[document.f.input_show_func_c.selectedIndex].value
     if( conid.substring(0,7) == '#sLiCe-' ) {
-      alert('<?php echo L_SLICE_NOT_CONST ?>');
+      alert('<?php echo _m("You selected slice and not constant group. It is unpossible to change slice. Go up in the list.") ?>');
       return;
     }
     if( conid != "" ) {
@@ -254,122 +256,122 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin");
   
-  echo "<H1><B>" . L_A_FIELDS_EDT . "</B></H1>";
+  echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
   PrintArray($err);
   echo $Msg;  
-  echo L_WARNING_NOT_CHANGE;
+  echo _m("<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
 
 echo "
 <form enctype=\"multipart/form-data\" method=post action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">
  <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
   <tr>
-   <td class=tabtit><b>&nbsp;". L_FIELDS_HDR ."</b></td>
+   <td class=tabtit><b>&nbsp;". _m("Fields") ."</b></td>
   </tr>
   <tr>
    <td>
     <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
      <tr>
-      <td class=tabtxt><b>". L_FIELD ."</b></td>
+      <td class=tabtxt><b>". _m("Field") ."</b></td>
       <td class=tabtxt>".  safe($fld[name]) ."</td>
-      <td class=tabtxt><b>". L_ID ."</b></td>
+      <td class=tabtxt><b>". _m("Id") ."</b></td>
       <td class=tabtxt>". safe($fld[id]) ."</td>
      </tr>
      <tr><td colspan=4><hr></td></tr>
      <tr>
-      <td class=tabtxt><b>". L_INPUT_FUNC ."</b></td>
+      <td class=tabtxt><b>". _m("Input type") ."</b></td>
       <td class=tabtxt colspan=3>";
        FrmSelectEasy("input_show_func_f", $INPUT_SHOW_FUNC_TYPES, $input_show_func_f);
 	   ?>
 	   <a href='javascript:CallParamWizard ("INPUT_TYPES","input_show_func_f","input_show_func_p")'>
-		<?php echo L_PARAM_WIZARD_LINK."</a>";
+		<?php echo _m("Wizard with help")."</a>";
 
-      echo "<div class=tabhlp>". L_INPUT_SHOW_FUNC_F_HLP ."</div>
+      echo "<div class=tabhlp>". _m("Function used for displaying in inputform. Some of them use the Constants,some of them use the Parameters. To get some more info, use the Wizard with Help.") ."</div>
             <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
              <tr>
-              <td class=tabtxt><b>". L_CONSTANTS ."</b> ";
+              <td class=tabtxt><b>". _m("Constants") ."</b> ";
                FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
-      echo "   <div class=tabhlp>". L_INPUT_SHOW_FUNC_C_HLP ."</div>
+      echo "   <div class=tabhlp>". _m("Choose a Constant Group or a Slice.") ."</div>
               </td>
-              <td class=tabtxt>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>". L_EDIT ."</a>
-                           <br>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>". L_USE_AS_NEW ."</a>
-                           <br>          <a href='". EditConstantURL(). "'>". L_NEW ."</a>
+              <td class=tabtxt>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>". _m("Edit") ."</a>
+                           <br>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>". _m("Use&nbsp;as&nbsp;new") ."</a>
+                           <br>          <a href='". EditConstantURL(). "'>". _m("New") ."</a>
               </td>
              </tr>
             </table>
-            <div class=tabtxt><b>". L_PARAMETERS ."</b>
+            <div class=tabtxt><b>". _m("Parameters") ."</b>
               <input type=\"Text\" name=\"input_show_func_p\" size=25 maxlength=240 value=\"". safe($input_show_func_p) ."\">
             </div> 
-            <div class=tabhlp>". L_INPUT_SHOW_FUNC_HLP ."</div>
+            <div class=tabhlp>". _m("Parameters are divided by double dot (:) or (in some special cases) by apostrophy (').") ."</div>
       </td>
      </tr>  
      <tr><td colspan=4><hr></td></tr>
      <tr>
-      <td class=tabtxt><b>". L_DEFAULT ."</b></td>
+      <td class=tabtxt><b>". _m("Default") ."</b></td>
       <td class=tabtxt colspan=3>";
-        FrmSelectEasy("input_default_f", $INPUT_DEFAULT_TYPES, $input_default_f);
-      echo "<div class=tabhlp>". L_INPUT_DEFAULT_F_HLP ."</div>
-            <div class=tabtxt><b>". L_PARAMETERS ."</b>
+        FrmSelectEasy("input_default_f", inputDefaultTypes(), $input_default_f);
+      echo "<div class=tabhlp>". _m("Which function should be used as default:<BR>Now - default is current date<BR>User ID - current user ID<BR>Text - default is text in Parameter field<br>Date - as default is used current date plus <Parameter> number of days") ."</div>
+            <div class=tabtxt><b>". _m("Parameters") ."</b>
               <input type=\"Text\" name=\"input_default\" size=25 value=\"". safe($input_default) ."\">
             </div> 
-            <div class=tabhlp>". L_INPUT_DEFAULT_HLP ."</div>
+            <div class=tabhlp>". _m("If default-type is Text, this sets the default text.<BR>If the default-type is Date, this sets the default date to the current date plus the number of days you set here.") ."</div>
       </td>
      </tr>  
      <tr><td colspan=4><hr></td></tr>
      <tr>
-      <td class=tabtxt><b>". L_VALIDATE ."</b></td>
+      <td class=tabtxt><b>". _m("Validate") ."</b></td>
       <td class=tabtxt colspan=3>";
-        FrmSelectEasy("input_validate", $INPUT_VALIDATE_TYPES, $input_validate);
-      echo "<div class=tabhlp>". L_INPUT_VALIDATE_HLP ."</div>
+        FrmSelectEasy("input_validate", inputValidateTypes(), $input_validate);
+      echo "<div class=tabhlp>". _m("Validate function") ."</div>
 
       </td>
      </tr>  
      <tr>
-      <td class=tabtxt><b>". L_INSERT ."</b></td>
+      <td class=tabtxt><b>". _m("Insert") ."</b></td>
       <td class=tabtxt colspan=3>";
-        FrmSelectEasy("input_insert_func_f", $INPUT_INSERT_TYPES, $input_insert_func_f);
-      echo "<div class=tabhlp>". L_INPUT_INSERT_HLP ."</div>
-            <div class=tabtxt><b>". L_PARAMETERS ."</b>
+        FrmSelectEasy("input_insert_func_f", inputInsertTypes(), $input_insert_func_f);
+      echo "<div class=tabhlp>". _m("This defines how the value is stored in the database.  Generally, use 'Text'.<BR>File will store an uploaded file.<BR>Now will insert the current time, no matter what the user sets.  Uid will insert the identity of the Current user, no matter what the user sets.  Boolean will store either 1 or 0.  ") ."</div>
+            <div class=tabtxt><b>". _m("Parameters") ."</b>
               <input type=\"Text\" name=\"input_insert_func_p\" size=25 maxlength=240 value=\"". safe($input_insert_func_p) ."\">
             </div> 
       </td>
      </tr>  
      <tr>
-      <td class=tabtxt><b>". L_HTML_SHOW ."</b></td>
+      <td class=tabtxt><b>". _m("Show 'HTML' / 'plain text' option") ."</b></td>
       <td class=tabtxt><input type=\"checkbox\" name=\"html_show\"". ($html_show ? " checked" : "") ."></td>
-      <td class=tabtxt><b>". L_HTML_DEFAULT ."</b></td>
+      <td class=tabtxt><b>". _m("HTML coded as default") ."</b></td>
       <td class=tabtxt><input type=\"checkbox\" name=\"html_default\"". ($html_default ? " checked" : "") ."></td>
      </tr>  
      <tr>
-      <td class=tabtxt><b>". L_INPUT_HELP ."</b></td>
+      <td class=tabtxt><b>". _m("Help for this field") ."</b></td>
       <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_help\" size=50 maxlength=254 value=\"". safe($input_help). "\">
-      <div class=tabhlp>". L_INPUT_HELP_HLP ."</div>
+      <div class=tabhlp>". _m("Shown help for this field") ."</div>
       </td>
      </tr>  
      <tr>
-      <td class=tabtxt><b>". L_INPUT_MOREHLP ."</b></td>
+      <td class=tabtxt><b>". _m("More help") ."</b></td>
       <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_morehlp\" size=50 maxlength=254 value=\"". safe($input_morehlp) ."\">
-      <div class=tabhlp>". L_INPUT_MOREHLP_HLP ."</div>
+      <div class=tabhlp>". _m("Text shown after user click on '?' in input form") ."</div>
       </td>
      </tr>
      <tr>
-      <td class=tabtxt><b>". L_INPUT_BEFORE ."</b></td>
+      <td class=tabtxt><b>". _m("Before HTML code") ."</b></td>
       <td class=tabtxt colspan=3><textarea name=\"input_before\" rows=4 cols=50 wrap=virtual>". safe($input_before) ."</textarea>
-      <div class=tabhlp>". L_INPUT_BEFORE_HLP ."</div>
+      <div class=tabhlp>". _m("Code shown in input form before this field") ."</div>
       </td>
      </tr>
      <tr><td colspan=4><hr></td></tr>
      <tr>
-      <td class=tabtxt><b>". L_FEED_STATE ."</b></td>
+      <td class=tabtxt><b>". _m("Feeding mode") ."</b></td>
       <td class=tabtxt colspan=3>";
-        FrmSelectEasy("feed", $INPUT_FEED_MODES, $feed);
-      echo "<div class=tabhlp>". L_INPUT_FEED_MODES_HLP ."</div>
+        FrmSelectEasy("feed", inputFeedModes(), $feed);
+      echo "<div class=tabhlp>". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
       </td>
      </tr>  
     </table>
    </td>
   </tr>  
   <tr>
-   <td class=tabtit><b>&nbsp;". L_ALIASES ."</b></td>
+   <td class=tabtit><b>&nbsp;". _m("When you go to Admin-Design, you use an Alias to show this field") ."</b></td>
   </tr>
   <tr>
    <td>
@@ -392,33 +394,33 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
       $alias_name = "alias".$iAlias;
 	  echo safe($$alias_name);
 	  echo "\">
-      <div class=tabhlp>". L_ALIAS_HLP ."</div>
+      <div class=tabhlp>". _m("Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters.") ."</div>
       </td>
      </tr>  
      <tr>
-      <td class=tabtxt><b>". L_ALIAS_FUNC ."</b></td>
+      <td class=tabtxt><b>". _m("Function") ."</b></td>
       <td class=tabtxt colspan=3>";
 	  
        $alias_func_f = "alias".$iAlias."_func_f";
        FrmSelectEasy("alias$iAlias"."_func_f", $func_types, $$alias_func_f);
-	   echo "<a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\", \"alias$iAlias"."_func\")'>".L_PARAM_WIZARD_LINK."</a>
-      		<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
-            <div class=tabtxt><b>". L_PARAMETERS ."</b>
+	   echo "<a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\", \"alias$iAlias"."_func\")'>"._m("Wizard with help")."</a>
+      		<div class=tabhlp>". _m("Function which handles the database field and displays it on page<BR>usually, use 'print'.<BR>") ."</div>
+            <div class=tabtxt><b>". _m("Parameters") ."</b>
               <input type=\"Text\" name=\"alias$iAlias"."_func\" size=25 maxlength=250 value=\"";
                 $alias_func = "alias".$iAlias."_func";
 			  	echo safe($$alias_func);
 				echo "\">
             </div> 
-            <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
+            <div class=tabhlp>". _m("Parameter passed to alias handling function. For detail see include/item.php3 file") ."</div>
       </td>
      </tr>  
      <tr>
-      <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
+      <td class=tabtxt><b>". _m("Help text") ."</b></td>
       <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias".$iAlias."_help\" size=50 maxlength=254 value=\"";
         $alias_help = "alias".$iAlias."_help";
 		echo safe($$alias_help);
 		echo "\">
-      <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
+      <div class=tabhlp>". _m("Help text for the alias") ."</div>
       </td>
      </tr>
      <tr><td colspan=4><hr></td></tr>";
@@ -433,8 +435,8 @@ endfor;
    <td align=\"center\">
     <input type=hidden name=\"update\" value=1>
     <input type=hidden name=\"fid\" value=\"$fid\">
-    <input type=submit name=update value=\"". L_UPDATE ."\">&nbsp;&nbsp;
-    <input type=submit name=cancel value=\"". L_CANCEL ."\">&nbsp;&nbsp;
+    <input type=submit name=update value=\"". _m("Update") ."\">&nbsp;&nbsp;
+    <input type=submit name=cancel value=\"". _m("Cancel") ."\">&nbsp;&nbsp;
    </td></tr></table>
  </FORM>";
 HtmlPageEnd();

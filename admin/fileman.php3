@@ -77,14 +77,14 @@ if ($cmd == 'edit' || $cmd == 'createfile') {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_FTP_TIT;?></TITLE>
+ <TITLE><?php echo _m("File Manager");?></TITLE>
 </HEAD>
 <?php
 require $GLOBALS[AA_INC_PATH]."menu.php3"; 
 showMenu ($aamenus, "sliceadmin","fileman");
 
-echo "<H1><B>" . L_A_FTP_TIT;
-if ($directory) echo " - ".L_DIRECTORY." ".$directory;
+echo "<H1><B>" . _m("File Manager");
+if ($directory) echo " - "._m("Directory")." ".$directory;
 echo "</B></H1>";
 
 PrintArray($err);
@@ -111,9 +111,9 @@ function fileAction ($name,$value) {
 
 echo $jsSender;
 echo "<tr><td class=tabtit align=left>";
-echo //fileAction ("checkall",L_SELECT_ALL) . 
-     fileAction ("uncheckall",L_UNSELECT_ALL) . 
-     fileAction ("delete",L_DELETE);
+echo //fileAction ("checkall",_m("Select All")) . 
+     fileAction ("uncheckall",_m("Unselect all")) . 
+     fileAction ("delete",_m("Delete"));
 echo "</td></tr>
 <tr><td class=tabtxt align=center>";
 echo '<table border="1" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
@@ -154,24 +154,24 @@ $space = 0;
 
 echo "<tr height=$space><td class=tabtxt colspan=2></td></tr>";
 
-echo "<tr><td class=tabtxt>".fileAction ("createfile",L_CREATE_NEW_FILE) ."</td>
+echo "<tr><td class=tabtxt>".fileAction ("createfile",_m("Create new file")) ."</td>
 <td class=tabtxt><input type=text name='arg[createfile]'></td></tr>";
 
-echo "<tr><td class=tabtxt>".fileAction ("upload",L_UPLOAD_FILE." (max. 10 MB)") ."</td>
+echo "<tr><td class=tabtxt>".fileAction ("upload",_m("Upload file")." (max. 10 MB)") ."</td>
 <td class=tabtxt><input type='hidden' name='MAX_FILE_SIZE' value='10485760'>
 <input type='file' name='uploadarg'></td></tr>";
 echo "<tr height=$space><td class=tabtxt colspan=2></td></tr>";
 
 $db->query ("SELECT * FROM wizard_template");
 if ($db->num_rows()) {
-    echo "<tr><td class=tabtxt>".fileAction("copytmp",L_COPY_TEMPLATE). "</td>
+    echo "<tr><td class=tabtxt>".fileAction("copytmp",_m("Copy template dir")). "</td>
     <td class=tabtxt><select name='arg[copytmp]'>";
     while ($db->next_record()) 
         echo "<option value='".$db->f("dir")."'>".$db->f("dir")." (".$db->f("description").")";
     echo "</select></td></tr>";    
 }
 
-echo "<tr><td class=tabtxt>".fileAction ("createdir",L_CREATE_NEW_DIR) ."</td>
+echo "<tr><td class=tabtxt>".fileAction ("createdir",_m("Create new directory")) ."</td>
 <td class=tabtxt><input type=text name='arg[createdir]'></td></tr>
 </table></td></tr>";
 

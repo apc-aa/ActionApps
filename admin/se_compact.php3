@@ -34,7 +34,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_COMPACT)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_COMPACT, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change compact view formatting"), "admin");
   exit;
 }  
 
@@ -51,17 +51,17 @@ if( $update )
 {
   do
   {
-    ValidateInput("odd_row_format", L_ODD_ROW_FORMAT, $odd_row_format, $err, true, "text");
-    ValidateInput("compact_top", L_COMPACT_TOP, $compact_top, $err, false, "text");
-    ValidateInput("compact_bottom", L_COMPACT_BOTTOM, $compact_bottom, $err, false, "text");
-    ValidateInput("compact_remove", L_COMPACT_REMOVE, $compact_remove, $err, false, "text");
-    ValidateInput("noitem_msg", L_NOITEM_MSG, $noitem_msg, $err, false, "text");
+    ValidateInput("odd_row_format", _m("Odd Rows"), $odd_row_format, $err, true, "text");
+    ValidateInput("compact_top", _m("Top HTML"), $compact_top, $err, false, "text");
+    ValidateInput("compact_bottom", _m("Bottom HTML"), $compact_bottom, $err, false, "text");
+    ValidateInput("compact_remove", _m("Remove strings"), $compact_remove, $err, false, "text");
+    ValidateInput("noitem_msg", _m("'No item found' message"), $noitem_msg, $err, false, "text");
     if( $even_odd_differ )
-      ValidateInput("even_row_format", L_EVEN_ROW_FORMAT, $even_row_format, $err, true, "text");
+      ValidateInput("even_row_format", _m("Even Rows"), $even_row_format, $err, true, "text");
     if( $group_by ) {
-      ValidateInput("category_top", L_CATEGORY_TOP, $category_top, $err, false, "text");
-      ValidateInput("category_format", L_CATEGORY_FORMAT, $category_format, $err, true, "text");
-      ValidateInput("category_bottom", L_CATEGORY_BOTTOM, $category_bottom, $err, false, "text");
+      ValidateInput("category_top", _m("Category top HTML"), $category_top, $err, false, "text");
+      ValidateInput("category_format", _m("Category Headline"), $category_format, $err, true, "text");
+      ValidateInput("category_bottom", _m("Category bottom HTML"), $category_bottom, $err, false, "text");
     }  
     if( count($err) > 1)
       break;
@@ -85,7 +85,7 @@ if( $update )
 
     if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . " 
                       WHERE id='".q_pack_id($slice_id)."'")) {
-      $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
+      $err["DB"] = MsgErr( _m("Can't change slice settings") );
       break;   # not necessary - we have set the halt_on_error
     }     
     
@@ -94,7 +94,7 @@ if( $update )
     
   }while(false);
   if( count($err) <= 1 )
-    $Msg = MsgOK(L_COMPACT_OK);
+    $Msg = MsgOK(_m("Design of compact design successfully changed"));
 }
 
 if( $slice_id!="" ) {  // set variables from database - allways
@@ -134,7 +134,7 @@ if( $slice_id!="" ) {  // set variables from database - allways
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_COMPACT_TIT;?></TITLE>
+ <TITLE><?php echo _m("Admin - design Index view");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 function Defaults()
 {
@@ -173,13 +173,13 @@ function EnableClick(cond,what) {
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "compact");
 
-  echo "<H1><B>" . L_A_COMPACT . "</B></H1>&nbsp;" . L_COMPACT_HELP;
+  echo "<H1><B>" . _m("Admin - design Index view") . "</B></H1>&nbsp;" . _m("Use these boxes ( and the tags listed below ) to control what appears on summary page");
   PrintArray($err);
   echo $Msg;
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_COMPACT_HDR?></b><BR>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("HTML code for index view")?></b><BR>
 </td>
 </tr>
 <tr><td>
@@ -192,36 +192,36 @@ function EnableClick(cond,what) {
   while($db->next_record())
     $lookup_fields[$db->f(id)] = $db->f(name);
 
-  FrmTextarea("compact_top", L_COMPACT_TOP, $compact_top, 4, 50, false,
-               L_TOP_HLP, DOCUMENTATION_URL, 1);
-  FrmTextarea("odd_row_format", L_ODD_ROW_FORMAT, $odd_row_format, 6, 50, false,
-               L_FORMAT_HLP, DOCUMENTATION_URL, 1); 
-  FrmInputChBox("even_odd_differ", L_EVEN_ODD_DIFFER, $even_odd_differ, true, "OnClick=\"EnableClick('document.f.even_odd_differ','document.f.even_row_format')\"");
-  FrmTextarea("even_row_format", L_EVEN_ROW_FORMAT, $even_row_format, 6, 50, false,
-               L_EVEN_ROW_HLP, DOCUMENTATION_URL, 1); 
-  FrmTextarea("compact_bottom", L_COMPACT_BOTTOM, $compact_bottom, 4, 50, false,
-               L_BOTTOM_HLP, DOCUMENTATION_URL, 1); 
-  echo "<tr><td class=tabtxt><b>".L_GROUP_BY."</b></td><td>";
+  FrmTextarea("compact_top", _m("Top HTML"), $compact_top, 4, 50, false,
+               _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1);
+  FrmTextarea("odd_row_format", _m("Odd Rows"), $odd_row_format, 6, 50, false,
+               _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1); 
+  FrmInputChBox("even_odd_differ", _m("Use different HTML code for even rows"), $even_odd_differ, true, "OnClick=\"EnableClick('document.f.even_odd_differ','document.f.even_row_format')\"");
+  FrmTextarea("even_row_format", _m("Even Rows"), $even_row_format, 6, 50, false,
+               _m("You can define different code for odd and ever rows\n                         <br>first red, second black, for example"), DOCUMENTATION_URL, 1); 
+  FrmTextarea("compact_bottom", _m("Bottom HTML"), $compact_bottom, 4, 50, false,
+               _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1); 
+  echo "<tr><td class=tabtxt><b>"._m("Group by")."</b></td><td>";
   FrmSelectEasy ("group_by", $lookup_fields, $group_by);
-  echo "<br>".L_GROUP_BY_HLP;
+  echo "<br>"."";
   echo "</td></tr>
   <tr><td>&nbsp;</td><td>";
-  FrmSelectEasy ("gb_header", array (L_WHOLE_TEXT,L_FIRST_LETTER,"2 ".L_LETTERS,"3 ".L_LETTERS), $gb_header);
-  FrmSelectEasy("gb_direction", array( '2'=>L_ASCENDING, '8' => L_DESCENDING, '1' => L_ASCENDING_PRI, '9' => L_DESCENDING_PRI  ), 
+  FrmSelectEasy ("gb_header", array (_m("Whole text"),_m("1st letter"),"2 "._m("letters"),"3 "._m("letters")), $gb_header);
+  FrmSelectEasy("gb_direction", array( '2'=>_m("Ascending"), '8' => _m("Descending"), '1' => _m("Ascending by Priority"), '9' => _m("Descending by Priority")  ), 
                 $gb_direction);
-  PrintHelp( L_SORT_DIRECTION_HLP );
+  PrintHelp( _m("'by Priority' is usable just for fields using constants (like category)") );
   echo "<input type=hidden name='category_sort' value='$category_sort'>";
   echo "</td></tr>";
-  FrmTextarea("category_top", L_CATEGORY_TOP, $category_top, 4, 50, false,
-               L_TOP_HLP, DOCUMENTATION_URL, 1);
-  FrmTextarea("category_format", L_CATEGORY_FORMAT, $category_format, 6, 50, false,
-               L_FORMAT_HLP, DOCUMENTATION_URL, 1); 
-  FrmTextarea("category_bottom", L_CATEGORY_BOTTOM, $category_bottom, 4, 50, false,
-               L_BOTTOM_HLP, DOCUMENTATION_URL, 1); 
-  FrmInputText("compact_remove", L_COMPACT_REMOVE, $compact_remove, 254, 50, false,
-               L_REMOVE_HLP, DOCUMENTATION_URL);
-  FrmInputText("noitem_msg", L_NOITEM_MSG, $noitem_msg, 254, 50, false,
-               L_NOITEM_MSG_HLP, DOCUMENTATION_URL);
+  FrmTextarea("category_top", _m("Category top HTML"), $category_top, 4, 50, false,
+               _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1);
+  FrmTextarea("category_format", _m("Category Headline"), $category_format, 6, 50, false,
+               _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1); 
+  FrmTextarea("category_bottom", _m("Category bottom HTML"), $category_bottom, 4, 50, false,
+               _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1); 
+  FrmInputText("compact_remove", _m("Remove strings"), $compact_remove, 254, 50, false,
+               _m("Removes empty brackets etc. Use ## as delimeter."), DOCUMENTATION_URL);
+  FrmInputText("noitem_msg", _m("'No item found' message"), $noitem_msg, 254, 50, false,
+               _m("message to show in place of slice.php3, if no item matches the query"), DOCUMENTATION_URL);
 ?>
 </table></td></tr>
 <?php
@@ -231,9 +231,9 @@ function EnableClick(cond,what) {
 <?php 
   echo "<input type=hidden name=\"update\" value=1>";
   echo "<input type=hidden name=\"slice_id\" value=$slice_id>";
-  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
-  echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
+  echo '<input type=button onClick = "Defaults()" align=center value="'. _m("Default") .'">&nbsp;&nbsp;';
 ?>
 </td></tr></table>
 </FORM>

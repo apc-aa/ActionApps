@@ -25,7 +25,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base()."index.php3"), L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -61,7 +61,7 @@ while ($db->next_record()) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_EXPORT_TIT;?></TITLE>
+ <TITLE><?php echo _m("Inter node export settings");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 
 function InitPage() {}
@@ -75,10 +75,10 @@ function SelectValue(sel) {
 function Delete() {
   sel = SelectValue('document.f.perms')
   if (sel == null) {
-    alert('<?php echo L_EXPORT_SEL_NONE; ?>')
+    alert('<?php echo _m("No selected export"); ?>')
     return
   }
-  if (!confirm('<?php echo L_EXPORT_CONFIRM_DELETE; ?>'))
+  if (!confirm('<?php echo _m("Are you sure you want to delete the export?"); ?>'))
     return
   document.f.mode.value='delete';
   document.f.submit();
@@ -96,17 +96,17 @@ function Cancel() {
   require $GLOBALS[AA_INC_PATH]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "n_export");
 
-  echo "<H1><B>" . L_EXPORT_TIT . "</B></H1>";
+  echo "<H1><B>" . _m("Inter node export settings") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
 
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>" >
   <table width="400" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo L_EXPORT_TIT   ?></b></td></tr>
+    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Inter node export settings")   ?></b></td></tr>
      <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABBG ?>">
-      <tr><td colspan=2 ><?php echo L_EXPORT_LIST. "<B>".$r_slice_headline."</B>"; ?></td></tr>
+      <tr><td colspan=2 ><?php echo _m("Existing exports of the slice "). "<B>".$r_slice_headline."</B>"; ?></td></tr>
       <tr><td colspan=2 align=center>
         <SELECT name="perms" size=5>
          <?php
@@ -124,12 +124,12 @@ function Cancel() {
         </SELECT>
       </td></tr>
       <tr><td colspan=2 align="center">
-        <input type=button VALUE="<?php echo L_DELETE ?>" onClick = "Delete()">
+        <input type=button VALUE="<?php echo _m("Delete") ?>" onClick = "Delete()">
        </td></tr>
 
       <tr><td colspan=2 >&nbsp;</td></tr>
-      <tr><td colspan=2><?php echo L_EXPORT_ADD; ?></td></tr>
-      <tr><td width="40%"><?php echo L_EXPORT_NODES; ?></td><td align="left">
+      <tr><td colspan=2><?php echo _m("Insert new item"); ?></td></tr>
+      <tr><td width="40%"><?php echo _m("Remote Nodes"); ?></td><td align="left">
         <SELECT name="r_nodes" class=tabtxt size=5>
         <?php
           if ($nodes && is_array($nodes)) {
@@ -140,13 +140,13 @@ function Cancel() {
         ?>
         </SELECT>
       </td></tr>
-      <tr><td colspan=2><?php echo L_EXPORT_NAME; ?>
+      <tr><td colspan=2><?php echo _m("User name"); ?>
           <input type="text" name="user_name" size=40 value="<?php echo safe($user_name)?>" >
       </td></tr>
       <input type="hidden" name="mode" value="insert">
       <tr><td colspan="2" align=center >
-           <input type="submit" value="<?php echo L_SUBMIT ?>" >
-           <input type=button value="<?php echo L_CANCEL ?>" onClick="Cancel()" >
+           <input type="submit" value="<?php echo _m("Submit") ?>" >
+           <input type=button value="<?php echo _m("Cancel") ?>" onClick="Cancel()" >
       </td></tr>
   </table>
   </td></tr>

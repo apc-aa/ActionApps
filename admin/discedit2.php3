@@ -32,7 +32,7 @@ if($cancel)
   go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS);
+  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
   exit;
 }
 
@@ -45,12 +45,12 @@ $varset = new Cvarset();
 
 if ($update) {
   #update discussion table
-    ValidateInput("subject", L_D_SUBJECT, $subject, $err, true, "text");
-    ValidateInput("author", L_D_AUTHOR, $author, $err, true, "text");
-    ValidateInput("e_mail", L_D_EMAIL, $e_mail, $err, false, "text");
-    ValidateInput("body", L_D_BODY, $body, $err, false, "text");
-    ValidateInput("url_address", L_D_URL_ADDRESS, $url_address, $err, false, "url");
-    ValidateInput("url_description", L_D_URL_DES, $url_description, $err, false, "text");
+    ValidateInput("subject", _m("Subject"), $subject, $err, true, "text");
+    ValidateInput("author", _m("Author"), $author, $err, true, "text");
+    ValidateInput("e_mail", _m("E-mail"), $e_mail, $err, false, "text");
+    ValidateInput("body", _m("Text of discussion comment"), $body, $err, false, "text");
+    ValidateInput("url_address", _m("Authors's WWW  - URL"), $url_address, $err, false, "url");
+    ValidateInput("url_description", _m("Authors's WWW - description"), $url_description, $err, false, "text");
     ValidateInput("remote_addr", L_D_REMOTE_ADDR, $remote_addr, $err, true, "text");
 
     if (count($err)<=1) {
@@ -94,23 +94,23 @@ function InitPage() {}
 </HEAD>
 <BODY>
 <?php
-  echo "<H1><B>" . L_D_EDITDISC . "</B></H1>";
+  echo "<H1><B>" . _m("Items managment - Discussion comments managment - Edit comment") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
   <form method=post action="<?php echo $sess->url($PHP_SELF . "?d_id=".$d_id) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_D_EDITDISC_TABTIT ?></b></td></tr>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Edit comment") ?></b></td></tr>
 <tr><td>
 <table width="540" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   FrmStaticText("id", $d_id);
-  FrmInputText("subject",L_D_SUBJECT, $subject, 99, 50, true);
-  FrmInputText("author",L_D_AUTHOR, $author, 60, 25, true);
-  FrmInputText("e_mail",L_D_EMAIL, $e_mail, 60, 25, false);
-  FrmTextArea("body", L_D_BODY, $body, 10, 40, false);
-  FrmInputText("url_address",L_D_URL_ADDRESS, $url_address, 99, 50, false);
-  FrmInputText("url_description", L_D_URL_DES, $url_description, 60, 25, false);
+  FrmInputText("subject",_m("Subject"), $subject, 99, 50, true);
+  FrmInputText("author",_m("Author"), $author, 60, 25, true);
+  FrmInputText("e_mail",_m("E-mail"), $e_mail, 60, 25, false);
+  FrmTextArea("body", _m("Text of discussion comment"), $body, 10, 40, false);
+  FrmInputText("url_address",_m("Authors's WWW  - URL"), $url_address, 99, 50, false);
+  FrmInputText("url_description", _m("Authors's WWW - description"), $url_description, 60, 25, false);
   FrmInputText("remote_addr",L_D_REMOTE_ADDR, $remote_addr, 60, 25, false);
 ?>
 </table>
@@ -118,9 +118,9 @@ function InitPage() {}
 <?php
   echo "<input type=hidden name=d_id value=".$d_id.">";
   echo "<input type=hidden name=item_id value=".unpack_id($item_id).">";
-  echo "<input type=submit name=update value=". L_UPDATE .">&nbsp;&nbsp;";
-  echo "<input type=reset value=". L_RESET .">&nbsp;&nbsp;";
-  echo "<input type=submit name=cancel value=". L_CANCEL .">";
+  echo "<input type=submit name=update value=". _m("Update") .">&nbsp;&nbsp;";
+  echo "<input type=reset value=". _m("Reset form") .">&nbsp;&nbsp;";
+  echo "<input type=submit name=cancel value=". _m("Cancel") .">";
 ?>
 </td></tr></table>
 </FORM>

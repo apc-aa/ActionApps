@@ -121,7 +121,7 @@ function FindGroups ($pattern, $flags = 0) {
   $sql = sprintf( "SELECT id, name 
                      FROM users 
                     WHERE name like '%s%%' AND
-                          type = '%s'", addslashes($pattern), L_GROUP);
+                          type = '%s'", addslashes($pattern), _m("Group"));
   $sth = $db->query( $sql );
 
   # TODO: something about a sizelimit??
@@ -152,7 +152,7 @@ function FindUsers ($pattern, $flags = 0) {
      SELECT id, mail, givenname, sn 
        FROM users 
       WHERE ( name  LIKE '%s%%' OR mail LIKE '%s%%' OR uid LIKE '%s%%') AND
-            type = '%s'", $pattern, $pattern, $pattern, L_USER);
+            type = '%s'", $pattern, $pattern, $pattern, _m("User"));
   $sth = $db->query( $sql );
 
   # TODO: something about a sizelimit??
@@ -321,7 +321,7 @@ function AddUser($user, $flags = 0) {
 
   # do a little bit of QA on the $user array
   # 
-  $array["type"] = L_USER;
+  $array["type"] = _m("User");
   $array["uid"] = $user[uid];
   $array["mail"] = ((is_array($user[mail])) ? $user[mail][0] : $user[mail]);
   $array["name"] = $user["givenname"]." ".$user["sn"];
@@ -441,7 +441,7 @@ function AddGroup ($group, $flags = 0) {
 
   $db  = new DB_AA;
    # do a little bit of QA on the $user array
-  $array["type"] = L_GROUP;
+  $array["type"] = _m("Group");
   $array["name"] = $group["name"];
   $array["description"] = $group["description"];
   $array["password"] = 'crypt will never return this';
@@ -556,7 +556,7 @@ function ChangePerm ($id, $objectID, $objectType, $perm, $flags = 0) {
 
 // returns an array containing basic information on $id (user DN or group DN)
 // or false if ID does not exist
-// array("mail => $mail", "name => $cn", "type => L_USER : L_GROUP")
+// array("mail => $mail", "name => $cn", "type => _m("User") : _m("Group")")
 function GetIDsInfo ($id, $ds = "") {
 
   $db  = new DB_AA;
@@ -570,7 +570,7 @@ function GetIDsInfo ($id, $ds = "") {
 
   if ($db->next_record()) {
     $res[type] = $db->f("type");
-    $res[name] = ( ($res[type] == L_USER) ? $db->f("givenname")." ".$db->f("sn") : $db->f("name"));
+    $res[name] = ( ($res[type] == _m("User")) ? $db->f("givenname")." ".$db->f("sn") : $db->f("name"));
     $res[mail] = $db->f("mail");
   }  
 

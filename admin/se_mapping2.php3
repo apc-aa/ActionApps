@@ -32,7 +32,7 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."csn_util.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
+  MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
   exit;
 }
 
@@ -57,13 +57,13 @@ while (list($to_field_id,$val) = each($fmap)) {
   $catVS->add("from_field_name", "quoted", $map_to[$val]);
 
   switch ($val) {
-    case L_MAP_NOTMAP :
+    case _m("-- Not map --") :
       $flag = FEEDMAP_FLAG_EMPTY;
       break;
-    case L_MAP_VALUE:
+    case _m("-- Value --"):
       $flag = FEEDMAP_FLAG_VALUE ;
       $catVS->add("value", "quoted", $fval[$to_field_id]); break;
-	case L_MAP_JOIN:
+	case _m("-- Joined fields --"):
 	  $flag = FEEDMAP_FLAG_JOIN;
       $catVS->add("value", "quoted", $fval[$to_field_id]); break;  
     case  FEEDMAP_FLAG_EXTMAP :
@@ -99,6 +99,6 @@ if ($map_to && is_array($map_to)) {
 }
 
 go_url( $sess->url(self_base() . "se_mapping.php3") . "&from_slice_id=".rawurlencode($from_slice_id) .
-        "&Msg=" . rawurlencode(MsgOK(L_MAP_OK)));
+        "&Msg=" . rawurlencode(MsgOK(_m("Fields' mapping update succesful"))));
 page_close();
 ?>

@@ -40,8 +40,8 @@ function show_digest_filters ()
         if ($irow <= $db->num_rows()) $db->next_record();
         $rowid = $db->f("id");
         if (!$rowid) $rowid = "new$irow";
-        FrmInputText("filters[$rowid][description]", L_FILTER." ".($irow+1)." ".L_DESCRIPTION, $db->f("description"), 100, 50, false);
-        FrmTextarea("filters[$rowid][conds]", L_FILTER." ".($irow+1)." conds[]", $db->f("conds"), 3, 50, false); 
+        FrmInputText("filters[$rowid][description]", _m("Filter")." ".($irow+1)." "._m("Description"), $db->f("description"), 100, 50, false);
+        FrmTextarea("filters[$rowid][conds]", _m("Filter")." ".($irow+1)." conds[]", $db->f("conds"), 3, 50, false); 
     }
 }
 
@@ -72,7 +72,7 @@ function store_digest_filters ()
             $SQL = "UPDATE alerts_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";
         else $SQL = "INSERT INTO alerts_filter ".$varset->makeINSERT();
         if( !$db->query($SQL)) {
-            $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
+            $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;   # not necessary - we have set the halt_on_error
         }
     }
@@ -87,7 +87,7 @@ function OrderFrm($name, $txt, $val, $order_fields) {
   FrmSelectEasy($name, $order_fields, $val);
      # direction variable name - construct from $name
   $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
-  FrmSelectEasy($dirvarname, array( '0'=>L_ASCENDING, '1' => L_DESCENDING, '2' => L_ASCENDING_PRI, '3' => L_DESCENDING_PRI ), 
+  FrmSelectEasy($dirvarname, array( '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority") ), 
                 $vw_data[$dirvarname]);
 
   PrintMoreHelp(DOCUMENTATION_URL);
@@ -124,13 +124,17 @@ if($cancel)
   go_url( $sess->url(self_base() . "se_views.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_VIEWS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
   exit;
 }  
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 $p_slice_id = q_pack_id($slice_id);
+
+$VIEW_FIELDS = getViewFields();
+$VIEW_TYPES = getViewTypes();
+$VIEW_TYPES_INFO = getViewTypesInfo();
 
 if( $update )
 {
@@ -158,7 +162,7 @@ if( $update )
     if( $view_id ) {
       $SQL = "UPDATE view SET ". $varset->makeUPDATE() ." WHERE id='$view_id'";
       if( !$db->query($SQL)) {
-        $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
+        $err["DB"] = MsgErr( _m("Can't change slice settings") );
         break;   # not necessary - we have set the halt_on_error
       }
     } else {  
@@ -181,7 +185,7 @@ if( $update )
   }while(false);
 
   if( count($err) <= 1 )
-    $Msg = MsgOK(L_VIEW_OK);
+    $Msg = MsgOK(_m("View successfully changed"));
 }
 
 if( !$update ) {  # set variables from database
@@ -238,7 +242,7 @@ while($db->next_record())
 
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>
+echo "<TITLE>". _m("Admin - design View") ."</TITLE>
       <SCRIPT Language=\"JavaScript\"><!--
       function InitPage() {
         EnableClick('document.f.even_odd_differ','document.f.even_row_format')
@@ -256,20 +260,20 @@ $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
 require $GLOBALS[AA_INC_PATH]."menu.php3";
 showMenu ($aamenus, "sliceadmin","");
 
-echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
+echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";
 PrintArray($err);
 echo $Msg;
 
 ?>
 <form name=f enctype='multipart/form-data' method=post action='<?php echo $sess->url($PHP_SELF) ?>'>
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Defined Views")?></b><BR>
 </td></tr>
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
 
-FrmStaticText(L_ID, $view_id );
+FrmStaticText(_m("Id"), $view_id );
 
 echo "<input type=hidden name='view_type' value='$view_type'>";
 
@@ -315,13 +319,13 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
 
 echo "<tr><td align='center'>
       <input type=hidden name=view_id value='$view_id'>
-      <input type=submit name=update value='". L_UPDATE ."'>&nbsp;&nbsp;<input
-             type=submit name=cancel value='". L_CANCEL ."'></td></tr></table>
+      <input type=submit name=update value='". _m("Update") ."'>&nbsp;&nbsp;<input
+             type=submit name=cancel value='". _m("Cancel") ."'></td></tr></table>
     </FORM><br>";
     
 if( $view_id ) {
   $ssiuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF);
-  echo L_SLICE_HINT ."<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
+  echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
        "?vid=$view_id&quot;--&gt;</pre>";
 }    
 HtmlPageEnd();

@@ -43,7 +43,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_NEW_USER, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
   exit;
 }
 
@@ -59,21 +59,21 @@ if( $usr OR $UsrSrch )
 if( $usr_new )
   $rusr = $selected_user = "";
 
-$users  = GetFiltered("U", $rusr, L_TOO_MUCH_USERS, L_NO_USERS);   // get list of users
+$users  = GetFiltered("U", $rusr, _m("Too many users or groups found."), _m("No user (group) found"));   // get list of users
 if( $UsrSrch ) {
   reset( $users );
   $selected_user = key($users);
   $usr_edit = true;
 }
-$groups = GetFiltered("G", $grp, L_TOO_MUCH_GROUPS, L_NO_GROUPS); // get list of groups
+$groups = GetFiltered("G", $grp, _m("Too much groups found."), _m("No groups found")); // get list of groups
 
 if( $grp1_flt )   // user editation - list of all groups
-  $all_groups = GetFiltered("G", $grp1_flt, L_TOO_MUCH_GROUPS, L_NO_GROUPS);
+  $all_groups = GetFiltered("G", $grp1_flt, _m("Too much groups found."), _m("No groups found"));
  else
   $all_groups = $groups;  // in user editation is $grp=="", so $groups are list of all groups
 
 if( $usr1_flt )   // group editation - list of all users
-  $all_users = GetFiltered("U", $usr1_flt, L_TOO_MUCH_USERS, L_NO_USERS);
+  $all_users = GetFiltered("U", $usr1_flt, _m("Too many users or groups found."), _m("No user (group) found"));
  else
   $all_users = $users;  // in group editation is $rusr=="", so $users are list of all users
 
@@ -82,7 +82,7 @@ if( $selected_user ) {
   if( $selected_user != "n" )  // none user selected 
     $user_groups = GetMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
   if( !isset($user_groups) OR !is_array($user_groups) )
-    $sel_groups["n"][name] = (( $user_groups == "too much" ) ? L_TOO_MUCH_GROUPS : "");
+    $sel_groups["n"][name] = (( $user_groups == "too much" ) ? _m("Too much groups found.") : "");
    else {
     reset($user_groups);
     while( list(,$foo_gid) = each($user_groups) )
@@ -94,7 +94,7 @@ if( $selected_group ) {
   if( $selected_group != "n" )  // none group selected 
     $groups_user = GetGroupMembers($selected_group);   // get list of users and groups right under $selected_group
   if( !isset($group_users) OR !is_array($group_users) )
-    $sel_users["n"][name] = (( $group_users == "too much" ) ? L_TOO_MUCH_USERS : "");
+    $sel_users["n"][name] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
    else
     $sel_users = $groups_user;
 }
@@ -111,7 +111,7 @@ if( $add_submit OR ($submit_action == "update_submit")) {
   require $GLOBALS[AA_INC_PATH]."um_uedit.php3";
 
   if( count($err) <= 1 ) {
-    $Msg = MsgOK(L_NEWUSER_OK);
+    $Msg = MsgOK(_m("User successfully added to permission system"));
     go_url( con_url($sess->url($PHP_SELF), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
   }
 }
@@ -121,7 +121,7 @@ if( $add_submit OR ($submit_action == "update_submit")) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
 ?>
- <TITLE><?php echo L_A_UM_USERS_TIT;?></TITLE>
+ <TITLE><?php echo _m("User management - Users");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
   function UpdateUser(action) {
     var foo= CommaDelimeted( 'document.fx.sel_groups_sel' )
@@ -131,7 +131,7 @@ include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
   }
 
   function RealyDelete() {
-    if( window.confirm('<?php echo L_REALY_DELETE_USER ?>')) {
+    if( window.confirm('<?php echo _m("Are you sure you want to delete selected user from whole permission system?") ?>')) {
       document.f2.submit_action.value = 'usr_del'
       document.f2.submit()
     }
@@ -161,21 +161,21 @@ include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
   require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin", $usr_new ? "u_new" : "u_edit");
 
-  echo "<H1><B>". ( $usr_new ? L_NEW_USER : L_EDIT_USER )."</B></H1>";
+  echo "<H1><B>". ( $usr_new ? _m("New User") : _m("Edit User") )."</B></H1>";
   PrintArray($err);
   echo $Msg;
 
 ?>
 <!-- Select user form -->
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align=center>
- <tr><td class=tabtit><b>&nbsp;<?php echo L_USERS?></b></td></tr>
+ <tr><td class=tabtit><b>&nbsp;<?php echo _m("Users")?></b></td></tr>
  <tr><td>
    <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
             <td>&nbsp;</td>
             <td><input type=Text name=usr value="<?php echo safe($rusr)?>"></td>
-            <td><input type=submit value="<?php echo L_SEARCH?>">
+            <td><input type=submit value="<?php echo _m("Search")?>">
           <input type=hidden name="UsrSrch" value=1></td>
      </tr>
     </table>
@@ -186,12 +186,12 @@ include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
   <td><form name=f2 method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
-            <td class=tabtxt><b><?php echo L_USER ?></b></td>
+            <td class=tabtxt><b><?php echo _m("User") ?></b></td>
             <td><?php SelectGU_ID("selected_user", $users, $selected_user);
           ?></td>
-            <td><input type=submit name="usr_edit" value="<?php echo L_EDIT?>">&nbsp;
+            <td><input type=submit name="usr_edit" value="<?php echo _m("Edit")?>">&nbsp;
                 <input type=hidden name=submit_action value=0>  <!-- to this variable store "usr_del" (by javascript) -->
-                <input type=button name="usr_del" value="<?php echo L_DELETE?>" onclick="RealyDelete()"></td>
+                <input type=button name="usr_del" value="<?php echo _m("Delete")?>" onclick="RealyDelete()"></td>
      </tr>
     </table>
    </FORM>
@@ -233,9 +233,9 @@ do {
 <tr><td class=tabtit><b>&nbsp;
 <?php
 if( $usr_edit OR ($submit_action == "update_submit") )
-  echo L_EDITUSER_HDR;
+  echo _m("Edit User");
  else
-  echo L_NEWUSER_HDR;
+  echo _m("New user");
 ?></b>
 </td>
 </tr>
@@ -246,32 +246,32 @@ if( $usr_edit OR ($submit_action == "update_submit") )
 # User data ---------------------------------------------------
 
   if( $usr_edit OR ($submit_action == "update_submit") )
-    FrmStaticText( L_USER_LOGIN, $user_data[login]);
+    FrmStaticText( _m("Login name"), $user_data[login]);
    else
-    FrmInputText("user_login", L_USER_LOGIN, $user_login, 50, 50, true);
-  FrmInputPwd("user_password1", L_USER_PASSWORD1, $user_password1, 50, 50, true);
-  FrmInputPwd("user_password2", L_USER_PASSWORD2, $user_password2, 50, 50, true);
-  FrmInputText("user_firstname", L_USER_FIRSTNAME, $user_firstname, 50, 50, true);
-  FrmInputText("user_surname", L_USER_SURNAME, $user_surname, 50, 50, true);
-  FrmInputText("user_mail1", L_USER_MAIL." 1", $user_mail1, 50, 50, false);
-//  FrmInputText("user_mail2", L_USER_MAIL." 2", $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php3
-//  FrmInputText("user_mail3", L_USER_MAIL." 3", $user_mail3, 50, 50, false);
-  FrmInputChBox("user_super", L_USER_SUPER, $user_super, false, "", 1, false);
+    FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);
+  FrmInputPwd("user_password1", _m("Password"), $user_password1, 50, 50, true);
+  FrmInputPwd("user_password2", _m("Retype password"), $user_password2, 50, 50, true);
+  FrmInputText("user_firstname", _m("First name"), $user_firstname, 50, 50, true);
+  FrmInputText("user_surname", _m("Surname"), $user_surname, 50, 50, true);
+  FrmInputText("user_mail1", _m("E-mail")." 1", $user_mail1, 50, 50, false);
+//  FrmInputText("user_mail2", _m("E-mail")." 2", $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php3
+//  FrmInputText("user_mail3", _m("E-mail")." 3", $user_mail3, 50, 50, false);
+  FrmInputChBox("user_super", _m("Superadmin account"), $user_super, false, "", 1, false);
 echo '</table></td></tr>';
 
 if( !$add_submit AND !$usr_new) {
 
   # User - group membership -----------------------------------------?>
 
-  <tr><td class=tabtit><b>&nbsp;<?php echo L_GROUPS?></b></td></tr>
+  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
   <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
   <?php
-  echo '<tr><td width=190 align=center>'. L_ALL_GROUPS .'</td>
+  echo '<tr><td width=190 align=center>'. _m("All Groups") .'</td>
                   <td width=60>&nbsp;</td>
-                  <td width=190 align=center>'. L_USERS_GROUPS .'</td></tr>
+                  <td width=190 align=center>'. _m("User's Groups") .'</td></tr>
         <tr><td><input type=Text name=grp1_flt value="'. safe($grp1_flt) .'">
-                <input type=submit name="grp1_submit" value="'. L_SEARCH .'"></td>
+                <input type=submit name="grp1_submit" value="'. _m("Search") .'"></td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td></tr>
         <tr><td align="CENTER" valign="TOP">';
@@ -294,13 +294,13 @@ if( !$add_submit AND !$usr_new) {
 echo '<tr><td align="center">';
 
 if( $usr_new OR $add_submit ){
-  echo '<input type=submit name=add_submit value="'. L_ADD .'" >&nbsp;&nbsp;';
+  echo '<input type=submit name=add_submit value="'. _m("Add") .'" >&nbsp;&nbsp;';
   echo '<input type=hidden name=usr_new value=1>&nbsp;&nbsp;';
 } else {
-  echo '<input type=button name=submit_button value="'. L_UPDATE .'" onClick="UpdateUser(\'update_submit\')">&nbsp;&nbsp;';
+  echo '<input type=button name=submit_button value="'. _m("Update") .'" onClick="UpdateUser(\'update_submit\')">&nbsp;&nbsp;';
   echo '<input type=hidden name=usr_edit value=1>&nbsp;&nbsp;';
 }
-echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
+echo '<input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;';
 echo '<input type=hidden name=selected_user value="'.$selected_user.'">&nbsp;&nbsp;';
 echo '<input type=hidden name=posted_groups value=0>';  // to this variable store assigned groups (by javascript)
 echo '<input type=hidden name=submit_action value=0>';  // to this variable store "add_submit" or "update_submit" (by javascript)

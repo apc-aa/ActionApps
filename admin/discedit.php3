@@ -84,12 +84,12 @@ GetDiscussionThread($tree, "0", 0, $outcome);         // get array of images
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo L_MAP_TIT;?></TITLE>
+<TITLE><?php echo _m("Admin - Content Pooling - Fields' Mapping");?></TITLE>
 
 <SCRIPT Language="JavaScript"><!--
   function InitPage() {}
   function DeleteComment(id) {
-    if( !confirm("<?php echo L_D_DELETE_COMMENT; ?>"))
+    if( !confirm("<?php echo _m("Are you sure you want to delete selected comment?"); ?>"))
        return
     var url="<?php echo $sess->url(con_url("./discedit.php3", "mode=delete")); ?>"
     document.location=url + "&d_id=" + escape(id) + "&item_id=" + "<?php echo $item_id; ?>"
@@ -100,7 +100,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <BODY>
 <?php
   echo "<center>
-        <H1><B>" . L_D_ADMIN . "</B></H1>";
+        <H1><B>" . _m("Discussion comments management") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 
@@ -110,19 +110,19 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   <form method="post" action=<?php echo $sess->url(self_base()."index.php3") ?> >
   <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
   <tr><td class=tabtit><b>&nbsp;<?php 
-     echo L_D_ITEM." $headline</b> (". 
+     echo _m("Item: ")." $headline</b> (". 
            $content[$item_id]["disc_app........"][0][value]. "/".
            $content[$item_id]["disc_count......"][0][value]. ")" ?> </td></tr>
   <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="<?php echo COLOR_TABBG ?>">
      <tr><td width="10">&nbsp;</td>
-        <td><b><?php echo L_D_TOPIC ?></td>
+        <td><b><?php echo _m("Title") ?></td>
         <td width="10">&nbsp;</td>
-        <td><b><?php echo L_D_AUTHOR ?></td>
+        <td><b><?php echo _m("Author") ?></td>
         <td width="10">&nbsp;</td>
-        <td><b><?php echo L_D_DATE ?></td>
+        <td><b><?php echo _m("Date") ?></td>
         <td width="10">&nbsp;</td>
-        <td align="center"><b><?php echo L_D_ACTIONS ?></td>
+        <td align="center"><b><?php echo _m("Actions") ?></td>
         <td width="10">&nbsp;</td>
     </tr>
       <tr><td colspan=9>&nbsp;</td></tr>
@@ -131,7 +131,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   $item = new item("","",$aliases,"","","");
   $i=0;
   if (!$outcome)
-    echo "<tr><td colspan=9 align=center class=tabtxt>". L_D_NODISCUS ."<br><br></td></tr>";
+    echo "<tr><td colspan=9 align=center class=tabtxt>". _m("No discussion comments") ."<br><br></td></tr>";
   else {
     reset( $outcome );
     while (list($d_id, $images) = each($outcome)) {
@@ -157,10 +157,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
        $item->columns = $dcontent[$d_id];
        echo $item->get_item();
 
-       echo "<td align=center>&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><SMALL>". L_D_DELETE ."</SMALL></a>";
+       echo "<td align=center>&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><SMALL>". _m("Delete") ."</SMALL></a>";
        echo "&nbsp;<a href=". con_url($sess->url("discedit2.php3"),"d_id=".
-            $d_id."&item_id=".$item_id) ."><SMALL>". L_D_EDIT ."</SMALL></a>";
-       $s = ($h = !$dcontent[$d_id]["d_state........."][0][value]) ? L_D_HIDE : L_D_APPROVE;
+            $d_id."&item_id=".$item_id) ."><SMALL>". _m("Edit") ."</SMALL></a>";
+       $s = ($h = !$dcontent[$d_id]["d_state........."][0][value]) ? _m("Hide") : _m("Approve");
        echo "&nbsp;<a href=" . con_url($sess->url("discedit.php3"), "mode=hide&h=".$h.
             "&d_id=".$d_id. "&item_id=".$item_id) ."><SMALL>". $s. "</SMALL></a></td>
             <td>&nbsp;</td>";
@@ -170,7 +170,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  ?>
   </table>
   </td></tr>
-  <tr><td class=tabtit  align=center><input type="submit" value="<?php echo L_BACK ?>"></td></tr>
+  <tr><td class=tabtit  align=center><input type="submit" value="<?php echo _m("Back") ?>"></td></tr>
   </table>
   </form>
   </center>

@@ -20,7 +20,7 @@ require $GLOBALS[AA_INC_PATH]."../misc/alerts/util.php3";
 // ----------------------------------------------------------------------------------------    
 
 if (!IsSuperadmin()) {
-    MsgPage ($sess->url(self_base()."index.php3"), L_NO_PS_ADD, "standalone");
+    MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
     exit;
 }
 

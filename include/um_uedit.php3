@@ -29,18 +29,18 @@ require $GLOBALS[AA_INC_PATH]."um_util.php3";
     # Procces user data -------------------------------------------------------
     if(($submit_action == "update_submit") AND ($user_password1 == "nOnEwpAsswD") AND ($user_password2 == "nOnEwpAsswD"))
       $passwd_stay=true;
-    ValidateInput("user_login", L_USER_LOGIN, $user_login, $err, ($add_submit ? true : false), "login");
+    ValidateInput("user_login", _m("Login name"), $user_login, $err, ($add_submit ? true : false), "login");
     if( !$passwd_stay ) {
-      ValidateInput("user_password1", L_USER_PASSWORD1, $user_password1, $err, true, "password");
-      ValidateInput("user_password2", L_USER_PASSWORD2, $user_password2, $err, true, "password");
+      ValidateInput("user_password1", _m("Password"), $user_password1, $err, true, "password");
+      ValidateInput("user_password2", _m("Retype password"), $user_password2, $err, true, "password");
     }
-    ValidateInput("user_mail1", L_USER_MAIL." 1", $user_mail1, $err, false, "email");
-    ValidateInput("user_mail2", L_USER_MAIL." 2", $user_mail2, $err, false, "email");
-    ValidateInput("user_mail3", L_USER_MAIL." 3", $user_mail3, $err, false, "email");
-    ValidateInput("user_surname", L_USER_SURNAME, $user_surname, $err, true, "text");
-    ValidateInput("user_firstname", L_USER_FIRSTNAME, $user_firstname, $err, true, "text");
+    ValidateInput("user_mail1", _m("E-mail")." 1", $user_mail1, $err, false, "email");
+    ValidateInput("user_mail2", _m("E-mail")." 2", $user_mail2, $err, false, "email");
+    ValidateInput("user_mail3", _m("E-mail")." 3", $user_mail3, $err, false, "email");
+    ValidateInput("user_surname", _m("Surname"), $user_surname, $err, true, "text");
+    ValidateInput("user_firstname", _m("First name"), $user_firstname, $err, true, "text");
     if( $user_password1 != $user_password2 )
-      $err[$user_password2] = MsgErr(L_BAD_RETYPED_PWD);
+      $err[$user_password2] = MsgErr(_m("Retyped password is not the same as the first one"));
     if( count($err) > 1)
       break;
 
@@ -56,19 +56,19 @@ require $GLOBALS[AA_INC_PATH]."um_util.php3";
     if( $add_submit ) {      # -------------------- new user ------------------
       $userrecord["uid"] = $user_login;
       if(!($newuserid = AddUser($userrecord)))
-        $err["LDAP"] = MsgErr( L_ERR_USER_ADD );
+        $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
       if( count($err) <= 1 ) {
       	if ($user_super) {	// set super admin privilege
       	  AddPerm($newuserid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
       	}
-        $Msg = MsgOK(L_NEWUSER_OK);
+        $Msg = MsgOK(_m("User successfully added to permission system"));
         if (!$um_uedit_no_go_url)
           go_url( con_url($sess->url($PHP_SELF), 'UsrSrch=1&usr='. urlencode($user_login)), $Msg);
       }
     } else {                 # ----------------- update user ------------------
       $userrecord["uid"] = $selected_user;
       if(!ChangeUser($userrecord)) {
-        $err["LDAP"] = MsgErr( L_ERR_USER_CHANGE );
+        $err["LDAP"] = MsgErr( _m("Can't change user") );
       } else {
       	if ($user_super) {		// set or revoke super admin privilege
       	  AddPerm($userrecord["uid"], AA_ID, "aa", $perms_roles["SUPER"]['id']);
