@@ -337,6 +337,8 @@ define("L_ITEMS_PAGE", "Items Page");
 define("L_WI2_OFFER","Offer");
 define("L_WI2_SELECTED","Selected");
 
+define("L_ALERTS_CF_WIZARD","Collection Form Wizard");
+
 define("L_RSSFEEDS_MANAGER","RSS Feeds");
 define("L_RSSFEEDS_ADMIN_TIT","Remote RSS Feed administration");
 define("L_RSSFEEDS_LIST","Current remote rssfeeds");
@@ -349,4 +351,6 @@ define("L_RSSFEEDS_SERVER_URL_EXAMPLE","e.g. http://www.someplace.com/rss/index.
 define("L_RSSFEEDS_SEL_NONE","No selected rssfeed");
 define("L_RSSFEEDS_CONFIRM_DELETE","Are you sure you want to delete the rssfeed?");
 define("L_RSSFEEDS_RSSFEED_EMPTY","RSS Feed name must be filled");
+
+define ("L_EMAILS","Emails");
 ?>
