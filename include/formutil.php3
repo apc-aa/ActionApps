@@ -179,26 +179,35 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM OR $single)
     echo "</tr><tr>";
-	$val = str_replace('"','&quot;',str_replace("'","&#039",str_replace("\n","",str_replace("\r","",$val))));
-  echo "<td $colspan>$htmlrow";
+
+  if( $html==2 ) // text only
+  	$val = nl2br (htmlspecialchars ($val));
+  else {
+		$repl = array ("'"=>'"',"\n"=>" ","\r"=>"");
+		reset ($repl);
+		while (list ($find,$rep) = each ($repl))
+			$val = str_replace ($find, $rep, $val);
+  }
+  echo "<td $colspan>";
 /*
-	$nom_editor = "edt$name";
-	$idi_edit = 'eng';
-	$editor_height = 150;
-	$editor_width= 700;
-	$document_complet = 0;
-	$content_inicial = "$val";
-	include "../misc/wysiwyg/wysiwyg_web_edit.php3";
+$nom_editor = "edt$name";
+$idi_edit = 'eng';
+$editor_height = 150;
+$editor_width= 700;
+$document_complet = 0;
+$content_inicial = "$val";
+include "../misc/wysiwyg/wysiwyg_web_edit.php3";
 */
-	$scriptStart = "<script language=javascript src=\"". AA_INSTAL_URL. "misc/wysiwyg/richedt_";
-	echo $scriptStart . ($BName == "MSIE " ? "ie.js\">" : "ns.js\">").
-	"</script>
-	<script>
-		var edt$name"."_doc_complet = 0;
- 		var edt = \"edt$name\";
-	</script>";
-	echo $scriptStart . ($BName == "MSIE " ? "ie.html\">" : "ns.html\">");
-    echo "</script>";
+//	$scriptStart = "<script language=javascript src=\"". AA_INSTAL_URL. "misc/wysiwyg/richedt_";
+$scriptStart = "<script language=javascript src=\"../misc/wysiwyg/richedt_";
+echo $scriptStart . ($BName == "MSIE " ? "ie.js\">" : "ns.js\">").
+"</script>
+<script>
+	var edt$name"."_doc_complet = 0;
+		var edt = \"edt$name\";
+</script>";
+echo $scriptStart . ($BName == "MSIE " ? "ie.html\">" : "ns.html\">");
+   echo "</script>";
 
 echo "<script language =javascript >
  edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100);
@@ -206,16 +215,20 @@ echo "<script language =javascript >
  ($BName == "MSIE "
 	? "if( document[\"edt$name\"]){ 
   	   obj_editor = document.edt$name;
-		   document.edt$name.DocumentHTML = \"$val\";"
+		   document.edt$name.DocumentHTML = '$val';"
   : "if( window[\"PropertyAccessor\"] && window[\"edt$name\"]){ 
  		   obj_editor = edt$name;
- 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",\"$val\");").
+ 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",'$val');").
  	"    clearInterval(edt$name"."_timerID);
     } 
     return true;
  } 
  </script>	";
-	echo "<input type=hidden name=\"$name\" value=\"$val\">\n";
+	echo "<input type=hidden name=\"$name\" value='$val'>\n";
+	//echo "<textarea name=\"$name\">$val</textarea>\n";
+  $htmlvar = $name."html";
+	echo "<input type=hidden name=\"$htmlvar\" value=\"h\">\n";
+//	echo "<input type=text name=\"$htmlvar\" value=\"h\">\n";
 		
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
@@ -537,6 +550,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.20  2002/02/12 15:45:36  jakubadamek
+Repaired Rich Edit Text Area.
+
 Revision 1.19  2001/12/18 11:49:26  honzam
 new WYSIWYG richtext editor for inputform (IE5+)
 
