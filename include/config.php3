@@ -232,4 +232,18 @@ if (defined ("SITE_CONFIG")) {
 // end SITE_CONFIG
 // ------------------------------------------------------------------
 
+// ------------------------------------------------------------------
+// FILE MANAGER CONFIG
+
+# mkdir and create file perms (508 = 0774 in octal, but octal value in constant don't work)
+define("FILEMAN_MODE", 508);
+# in this directory individual slice directories and directory "templates" are created
+define("FILEMAN_BASE_DIR","/www/apc-aa/wizard/"); 
+# URL path to the base directory
+define("FILEMAN_BASE_URL","http://work.ecn.cz/apc-aa/wizard/"); 
+# time in seconds to allow to upload big files
+define("FILEMAN_UPLOAD_TIME_LIMIT",600);
+
+// ------------------------------------------------------------------
+
 ?>
