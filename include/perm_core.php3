@@ -250,13 +250,13 @@ function JoinAA_SlicePerm($slice_perm, $aa_perm) {
 
 function GetUserSlices( $user_id = "current") {
   global $permission_uid, $permission_to, $auth;
-
+  if ($GLOBALS[debugpermissions]) huhl("GetUserSlices:pu=",$permission_uid," pt=",$permission_to);
   if ($user_id == "current")
     $user_id = $auth->auth ["uid"];
 
   if($permission_uid != $user_id)
     CachePermissions($user_id);
-
+  if ($GLOBALS[debugpermissions] && !$permission_to["aa"][AA_ID]) huhe("Warning: No global permission on this system",AA_ID);
   if( IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) )
     return "all";
 

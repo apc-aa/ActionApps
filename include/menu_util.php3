@@ -48,6 +48,7 @@ function PrintModuleSelection() {
 
     // create the modulesOptions content:
     $permitted = GetUserSlices();
+    if ($GLOBALS[debugpermissions]) huhl("Slice permissions=",$permissions);
     if ($permitted != "all") {
         reset ($permitted);
         while (list ($perm_slice_id) = each ($permitted))
@@ -78,7 +79,6 @@ function PrintModuleSelection() {
         //if (! $module_types[$db->f("type")]) { echo $db->f("type")."!!"; exit; }
         $modules[$order][$db->f("id")] = $db->f("name");
     }
-
     // count($modules) - count of module types
     $display_modtypes = ( count($modules) > 1 ); // display types in selectbox?
 

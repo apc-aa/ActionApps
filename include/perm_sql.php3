@@ -41,7 +41,6 @@ users        membership     perms
 
 // returns uid if user is authenticated, else false.
 function AuthenticateUsername($username, $password, $flags = 0) {
-
   $db  = new DB_AA;
   $id = false; $i = 0;
   # build and execute a query for $username
@@ -82,11 +81,10 @@ function AuthenticateUsername($username, $password, $flags = 0) {
   // echo "$row[password] (stored crypted, ", strlen($row[password]), ")<br>";
   // echo "$slength (salt length)<br>";  
 
-/*
-if ($GLOBALS[debugmitra]) {  
-    echo "PASSWORD=$password id=$id len1=",strlen($row[password])," len2=",strlen($cryptpw),"Prefix1=",substr($row[password],0,3)," Prefix2=",substr($cryptpw,0,3); 
-}
-*/
+
+  if ($GLOBALS[debugpermissions]) {  
+    echo "USER=",$row[uid]," PASSWORD=$password id=$id len1=",strlen($row[password])," len2=",strlen($cryptpw)," Prefix1=",substr($row[password],0,3)," Prefix2=",substr($cryptpw,0,3); 
+  }
 
   // Uncomment this if and only if you have problems with login after copying
   // a database from one machine to another.
@@ -102,10 +100,10 @@ if ($GLOBALS[debugmitra]) {
 # UnComment this when debugging a particular user, then comment it back!
 #    || ($password == "DEBUG")
     )  {
-    #echo "Hacked successfully...";
+    if ($GLOBALS[debugpermissions]) 
+        print("<br>Passwords created on different database, Bypassing check");
     return $id;
   }
-
 
   // The next substr looks odd, but $cryptpw is under 
   // certain circumstances 4 chars longer than $row[password]

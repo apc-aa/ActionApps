@@ -39,6 +39,7 @@ class AA_CP_Auth extends Auth {
 //  var $database_table = "auth_user";
   
   function relogin_if( $t ) {
+    if ($GLOBALS[debugpermissions]) print("extauthnobody:relogin_if:$t");
     if ( $t )  {
       printf ("<center><b>User ".$this->auth["uname"]." has been logged out.</b></center><br>");
       $this->unauth();

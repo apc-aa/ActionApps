@@ -11,22 +11,27 @@
 
 function page_open($feature) {
   global $_PHPLIB;
-
   # enable sess and all dependent features.
+  if ($GLOBALS[debugpermissions]) 
+    {print("<br>page_open ");print_r($feature);print(" sess=");print_r($sess);print(" auth="); print_r($auth);}
   if (isset($feature["sess"])) {
     global $sess;
     $sess = new $feature["sess"];
     $sess->start();
+    if ($GLOBALS[debugpermissions]) 
+      {print("<br>page_open after sess start");print_r($feature);print(" sess=");print_r($sess);print(" auth="); print_r($auth);}
     
     # the auth feature depends on sess
     if (isset($feature["auth"])) {
       global $auth;
       
       if (!isset($auth)) {
+        if ($GLOBALS[debugpermissions]) print("<br>New");
         $auth = new $feature["auth"];
       }
+    if ($GLOBALS[debugpermissions]) 
+        {print("<br>page_open:auth=");print_r($auth);}
       $auth->start();
-  
       
       # the perm feature depends on auth and sess
       if (isset($feature["perm"])) {

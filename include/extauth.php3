@@ -35,6 +35,7 @@ class AA_CP_Auth extends Auth {
 //  var $database_table = "auth_user";
   
   function relogin_if( $t ) {
+    if ($GLOBALS[debugpermissions]) print("extauth:relogin_if:$t");
     if ( $t )  {
       printf ("<center><b>User ".$this->auth["uname"]." has been logged out.</b></center><br>");
       $this->unauth();
@@ -58,6 +59,8 @@ class AA_CP_Auth extends Auth {
     $password = $HTTP_POST_VARS["password"];  # in cookies - if someone writes 
                                               # to cookies username, then the 
                                               # cookies username is used - error
+    if ($GLOBALS[debugpermissions]) 
+        print("<br>auth_validatelogin username=$username password=$password");
     if(isset($username))
       $this->auth["uname"]=$username;
 

@@ -46,7 +46,7 @@ class Auth {
   function start() {
     $cl = $this->cancel_login;
     global $sess, $$cl;
-
+    if ($GLOBALS[debugpermissions]) { print("<br>auth:start:"); print_r($this);}
     ## This is for performance, I guess but I'm not sure if it could
     ## be safely removed -- negro
     if (! $this->in) {
@@ -66,6 +66,7 @@ class Auth {
     #  3) Login in progress (if $$cl, revert to state 1)
     if ($this->is_authenticated()) {
       $uid = $this->auth["uid"];
+      if ($GLOBALS[debugpermissions]) print("<br>auth->start:authenticated uid=$uid");
       switch ($uid) {
         case "form":
           # Login in progress
@@ -86,6 +87,7 @@ class Auth {
           break;
       }
     } else {
+      if ($GLOBALS[debugpermissions]) print("<br>auth->start:not yet");
       # User is not (yet) authenticated
       $this->unauth();
       $state = 1;
@@ -156,6 +158,8 @@ class Auth {
               $this->auth["uid"] = $uid;
               $this->auth["exp"] = time() + (60 * $this->lifetime);
               $this->auth["refresh"] = time() + (60 * $this->refresh);
+              if($GLOBALS[debugpermissions]) 
+                { print_r("<br>auth.inc built"); print_r($this); }
               return true;
             } else {
               $this->auth_loginform();
@@ -199,6 +203,7 @@ class Auth {
   }
 
   function login_if( $t ) {
+    if ($GLOBALS[debugpermissions]) print("<br>auth.inc:login_if:$t");
     if ( $t ) {
       $this->unauth();  # We have to relogin, so clear current auth info
       $this->nobody = false; # We are forcing login, so default auth is 
