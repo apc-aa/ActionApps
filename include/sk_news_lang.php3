@@ -83,6 +83,9 @@ define("L_NO_DELETE_ITEMS", "Nemáte právo maza správy");
 define("L_NO_PS_MOVE_ITEMS", "Nemáte právo presúva správy");
 define("L_NO_PS_COPMPACT", "Nemáte právo upravova vzh¾ad preh¾adu správ");
 define("L_FULLTEXT_OK", "Vzh¾ad textu správy bol úspešne zmenenı");
+define("L_NO_ITEM", "iadna správa nevyhovuje vášmu zadaniu.");
+
+
 
 # aa toolkit common labels
 # can be the same for all toolkit aplications
@@ -153,7 +156,7 @@ define("L_NEWUSER_HDR", "Novı uivate¾");
 define("L_USER_LOGIN", "Uivate¾ské meno");
 define("L_USER_PASSWORD1", "Heslo");
 define("L_USER_PASSWORD2", "Potvrdi heslo");
-define("L_USER_FIRSTNAME", "Méno");
+define("L_USER_FIRSTNAME", "Meno");
 define("L_USER_SURNAME", "Priezvisko");
 define("L_USER_MAIL", "E-mail");
 define("L_USER_SUPER", "Administratívny úèet");
@@ -188,7 +191,7 @@ define("L_FEEDING", "Vımena správ");
 define("L_IMPORT", "Zasielanie & Príjem");
 define("L_FILTERS", "Filtre");
 
-define("L_A_SLICE_ADD", "Správa modulu - Pridánie modulu");
+define("L_A_SLICE_ADD", "Správa modulu - Pridanie modulu");
 define("L_A_SLICE_EDT", "Správa modulu - Úprava modulu");
 define("L_A_SLICE_CAT", "Správa modulu - Nastavenie kategórií");
 define("L_A_SLICE_IMP", "Správa modulu - Vımena správ");
@@ -315,9 +318,9 @@ define("L_ALL_GROUPS", "Všetky skupiny");
 define("L_USERS_GROUPS", "Uivate¾ove skupiny");
 define("L_REALY_DELETE_USER", "Naozaj chcete vymaza daného uivate¾a zo systému?");
 define("L_REALY_DELETE_GROUP", "Naozaj chcete vymaza danú skupinu zo systému?");
-define("L_TOO_MUCH_GROUPS", "Too much groups found.");
+define("L_TOO_MUCH_GROUPS", "Príliš vela skupín.");
 define("L_NO_GROUPS", "Skupina nenájdená");
-define("L_GROUP_NAME", "Méno");
+define("L_GROUP_NAME", "Meno");
 define("L_GROUP_DESCRIPTION", "Popis");
 define("L_GROUP_SUPER", "Administratívna skupina");
 define("L_ERR_GROUP_ADD", "Nie je moné prida skupinu do systému");
@@ -325,14 +328,15 @@ define("L_NEWGROUP_OK", "Skupina bola úspešne pridaná");
 define("L_ERR_GROUP_CHANGE", "Nie je moné zmenit skupinu");
 define("L_A_UM_USERS_TIT", "Správa uivate¾ov - Uivatelia");
 define("L_A_UM_GROUPS_TIT", "Správa uivate¾ov - Skupiny");
-define("L_EDITGROUP_HDR", "Editácai skupiny");
+define("L_EDITGROUP_HDR", "Editácia skupiny");
 define("L_NEWGROUP_HDR", "Nová skupina");
 define("L_GROUP_ID", "ID skupiny");
 define("L_ALL_USERS", "Všetci uivatelia");
 define("L_GROUPS_USERS", "Uivatelia v skupine");
 define("L_POST", "Posla");
+define("L_INSERT_PREV", "Vloit a pozriet");
+define("L_INPUT_SHOW_EDT","Rich Edit Text Area");
 define("L_POST_PREV", "Posla a pozrie");
-define("L_INSERT_PREV", "Vloit a pozrie");
 define("L_OK", "OK");
 define("L_ACTIVE_BIN_EXPIRED", "Aktuálne - Expirované");
 define("L_ACTIVE_BIN_PENDING", "Aktuálne - Pripravené");
@@ -362,9 +366,9 @@ define("L_VALIDATE", "Zkontrolova");
 define("L_FIELD_DELETE_OK", "Pole odstránené");
 
 define("L_WARNING_NOT_CHANGE","<p>POZOR: Tieto nastavenia by mal meni iba ten, kto vie èo robí!</p>");
-define("L_INPUT_SHOW_FUNC_F_HLP","Funkce, která se pouije pro zobrazení pole ve vstupním formuláøi. Nìkteré pouívají Konstanty, nìkteré pouívají Parametry. Více informací se dozvíte, kdy pouijete Prùvodce s Nápovìdou.");
-define("L_INPUT_SHOW_FUNC_C_HLP","Vyberte Skupinu Konstant nebo Webík.");
-define("L_INPUT_SHOW_FUNC_HLP","Parametry jsou oddìleny dvojteèkou (:) nebo (ve speciálních pøípadech) apostrofem (').");
+define("L_INPUT_SHOW_FUNC_F_HLP","Funkcia, ktorá sa pouije pre zobrazenie pola vo vstupnom formulári. Niektoré pouívajú Konštanty, niektoré pouívajú Parametre. Viac informácií nájdete v Sprievodcovi s Nápovedou.");
+define("L_INPUT_SHOW_FUNC_C_HLP","Vyberte Skupinu Konštánt alebo Modul.");
+define("L_INPUT_SHOW_FUNC_HLP","Parametre sú oddelené dvojbodkou (:) alebo (v špeciálnych prípadoch) apostrofom (').");
 define("L_INPUT_DEFAULT_F_HLP","Funkcia, ktorá sa pouije pre generovanie defaultnıch hodnôt po¾a:<BR>Now - aktuálny dátum<BR>User ID - identifikátor prihláseného uivate¾a<BR>Text - text uvedenı v poli Parameter<br>Date - aktuálny dátum plus <Parametr> dní");
 define("L_INPUT_DEFAULT_HLP","Parameter pre defaulné hodnoty Text a Date (viï vyššie)");
 
@@ -374,7 +378,6 @@ define("L_INPUT_DEFAULT_UID", "ID uívate¾a");
 define("L_INPUT_DEFAULT_NOW", "Aktuálny dátum a èas*");
 
 define("L_INPUT_SHOW_TXT","Text Area");
-define("L_INPUT_SHOW_EDT","Rich Edit Text Area");
 define("L_INPUT_SHOW_FLD","Text Field");
 define("L_INPUT_SHOW_SEL","Select Box");
 define("L_INPUT_SHOW_RIO","Radio Button");
@@ -436,7 +439,7 @@ define("L_CONSTANT_CLASS", "Nadkategórie");
 define("L_CONSTANT_CLASS_HLP", "len&nbsp;pre&nbsp;kategórie");
 define("L_CONSTANT_DEL_HLP", "Pre odstránenie kartegórie vymate jej meno");
 
-$L_MONTH = array( 1 => 'Január', 'Február', 'Marec', 'Apríln', 'Máj', 'Jún', 
+$L_MONTH = array( 1 => 'Január', 'Február', 'Marec', 'Apríl', 'Máj', 'Jún', 
 		'Júl', 'August', 'September', 'Október', 'November', 'December');
 
 define("L_NO_CATEGORY_FIELD","Pole kategórie nie je v tomto module definované.<br>  Pridajte pole kategórie do modulu na stránke Polia.");
@@ -462,7 +465,7 @@ define("L_BOTTOM_HLP", "HTML kód, ktorı sa zobrazí za vlastnım kódom modulu");
 define("L_EVEN_ROW_HLP", "TIP: Rozlíšením párnych a nepárnych záznamov môete dosiahnú napríklad farebné odlíšenie riadkov");
 
 define("L_SLICE_URL", "URL modulu");
-define("L_BRACKETS_ERR", "Brackets doesn't match in query: ");
+define("L_BRACKETS_ERR", "Zátvorky v query nie sú spárované: ");
 define("L_A_SLICE_ADD_HELP", "Novı modul môete vytvori na základe šablóny, alebo skopírova nastavenia z u existujúceho modulu (vytvorí sa presná kópia vrátane nastavení.");
 define("L_REMOVE_HLP", "Odstráni prázdné zátvorky a pod. Pouite ## ako oddelovaè.");
 
@@ -471,7 +474,7 @@ define("L_A_FULLTEXT_HELP", "Na tejto stránke je moné nastavi, èo sa objaví na
 define("L_PROHIBITED", "Zakázané");
 define("L_HTML", "HTML");
 define("L_PLAIN_TEXT", "Obyèajnı text");
-define("L_A_DELSLICE", "Správa modulu - Vymaza modulu");
+define("L_A_DELSLICE", "Správa modulu - Vymaza modul");
 define("L_DELSLICE_TIT", L_A_DELSLICE);
 define("L_DELSLICE_HDR", "Vyber modul pre vymazanie");
 define("L_DEL_SLICE_HLP","<p>Je moné vymaza len moduly, ktoré boli oznaèené pre vymazanie na stránke &quot;<b>". L_SLICE_SET ."</b>&quot;</p>");
@@ -559,240 +562,240 @@ define("L_MAP_OK","Nastavenie mapovania polí úspešne zmenené");
 define("L_STATE_FEEDABLE_UPDATE", "Kopírova obsah a zmeny" );
 define("L_STATE_FEEDABLE_UPDATE_LOCKED", "Kopírova obsah a zmeny nemenite¾ne");
 
-define("L_SITEM_ID_ALIAS",'alias pro skrátené èíslo èlánku');
+define("L_SITEM_ID_ALIAS",'alias pre skrátené císlo clánku');
 define("L_MAP_VALUE","-- Hodnota --");
 define("L_MAP_VALUE2","Hodnota");
-define("L_ORDER", "Seradit");
-define("L_INSERT_AS_NEW","Vloi ako novı");
+define("L_ORDER", "Zoradit");
+define("L_INSERT_AS_NEW","Vloit ako novı");
 
 // constnt view constants
-define("L_CONST_NAME_ALIAS", "Jméno");
+define("L_CONST_NAME_ALIAS", "Meno");
 define("L_CONST_VALUE_ALIAS", "Hodnota");
 define("L_CONST_PRIORITY_ALIAS", "Priorita");
-define("L_CONST_GROUP_ALIAS", "Skupina hodnot");
-define("L_CONST_CLASS_ALIAS", "Nadkategorie (pouitelné jen pro kategorie)");
-define("L_CONST_COUNTER_ALIAS", "Poøadové èíslo hodnoty");
-define("L_CONST_ID_ALIAS", "Identifikaèní èíslo hodnoty");
+define("L_CONST_GROUP_ALIAS", "Skupina hodnôt");
+define("L_CONST_CLASS_ALIAS", "Nadkategórie (pouitelné len pre kategórie)");
+define("L_CONST_COUNTER_ALIAS", "Poradové císlo hodnoty");
+define("L_CONST_ID_ALIAS", "Identifikacné císlo hodnoty");
 
-define('L_V_CONSTANT_GROUP','Skupina hodnot');
-define("L_NO_CONSTANT", "Hodnota nenalezena");
+define('L_V_CONSTANT_GROUP','Skupina hodnôt');
+define("L_NO_CONSTANT", "Hodnota nenájdená");
 
 // Discussion constants.
-define("L_DISCUS_SEL","Zobrazit diskusi");
-define("L_DISCUS_EMPTY"," -- ádná -- ");
-define("L_DISCUS_HTML_FORMAT","Diskusi formátovat v HTML");
-define("L_EDITDISC_ALIAS","Alias pouívanı v administrativních stránkách index.php3 pro URL discedit.php3");
+define("L_DISCUS_SEL","Zobrazit diskusiu");
+define("L_DISCUS_EMPTY"," -- iadna -- ");
+define("L_DISCUS_HTML_FORMAT","Diskusiu formátovat v HTML");
+define("L_EDITDISC_ALIAS","Alias pouívanı v administratívnych stránkách index.php3 pre URL discedit.php3");
 
-define("L_D_SUBJECT_ALIAS","Alias pro pøedmìt pøíspìvku");
-define("L_D_BODY_ALIAS"," Alias pro text pøíspìvku");
-define("L_D_AUTHOR_ALIAS"," Alias pro autora pøíspìvku");
-define("L_D_EMAIL_ALIAS","Alias pro e-mail autora");
-define("L_D_WWWURL_ALIAS","Alias pro adresu WWW stránek autora ");
-define("L_D_WWWDES_ALIAS","Alias for popis WWW stránek autora");
-define("L_D_DATE_ALIAS","Alias pro datum a èas poslání pøíspìvku");
-define("L_D_REMOTE_ADDR_ALIAS","Alias pro IP adresu autorova poèítaèe");
-define("L_D_URLBODY_ALIAS","Alias pro odkaz na text pøíspìvku<br>
-                             <i>Uití: </i>v kódu pro pøehledové zobrazení pøíspìvku<br>
-                             <i>Pøíklad: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>");
-define("L_D_CHECKBOX_ALIAS","Alias pro checkbox pro vybrání pøíspìvku");
-define("L_D_TREEIMGS_ALIAS","Alias pro obrázky");
-define("L_D_ALL_COUNT_ALIAS","Alias pro poèet všech pøíspìvkù k danému èlánku");
-define("L_D_APPROVED_COUNT_ALIAS","Alias pro poèet schválenıch pøíspìvkù k danému èlánku");
-define("L_D_URLREPLY_ALIAS","Alias pro odkaz na formuláø<br>
-                             <i>Uití: </i>v kódu pro plné znìní pøíspìvku<br>
-                             <i>Pøíklad: </i>&lt;a href=_#URLREPLY&gt;Odpovìdìt&lt;/a&gt;");
-define("L_D_URL","Alias pro odkaz na diskusi<br>
-                             <i>Uití: </i>v kódu formuláøe<br>
-                             <i>Pøíklad: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">");
-define("L_D_ID_ALIAS"," Alias pro èíslo pøíspìvku<br>
-                             <i>Uití: </i>v kódu formuláøe<br>
-                             <i>Pøíklad: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">");
-define("L_D_ITEM_ID_ALIAS"," Alias pro èíslo èlánku<br>
-                             <i>Uití: </i>v kódu formuláøe<br>
-                             <i>Pøíklad: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">");
+define("L_D_SUBJECT_ALIAS","Alias pre predmet príspevku");
+define("L_D_BODY_ALIAS"," Alias pre text príspevku");
+define("L_D_AUTHOR_ALIAS"," Alias pre autora príspevku");
+define("L_D_EMAIL_ALIAS","Alias pre e-mail autora");
+define("L_D_WWWURL_ALIAS","Alias pre adresu WWW stránok autora ");
+define("L_D_WWWDES_ALIAS","Alias pre popis WWW stránok autora");
+define("L_D_DATE_ALIAS","Alias pre dátum a cas odoslania príspevku");
+define("L_D_REMOTE_ADDR_ALIAS","Alias pre IP adresu autorovho pocítaca");
+define("L_D_URLBODY_ALIAS","Alias pre odkaz na text príspevku<br>
+                             <i>Pouitie: </i>v kóde pre prehladové zobrazenie príspevkov<br>
+                             <i>Príklad: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>");
+define("L_D_CHECKBOX_ALIAS","Alias pre checkbox pre vybranie príspevku");
+define("L_D_TREEIMGS_ALIAS","Alias pre obrázky");
+define("L_D_ALL_COUNT_ALIAS","Alias pre pocet všetkıch príspevkov k danému clánku");
+define("L_D_APPROVED_COUNT_ALIAS","Alias pre pocet schválenıch príspevkov k danému èlánku");
+define("L_D_URLREPLY_ALIAS","Alias pre odkaz na formulár<br>
+                             <i>Pouitie: </i>v kóde pre plné znenie príspevku<br>
+                             <i>Príklad: </i>&lt;a href=_#URLREPLY&gt;Odpovedat&lt;/a&gt;");
+define("L_D_URL","Alias pre odkaz na diskusiu<br>
+                             <i>Poitie: </i>v kóde formulára<br>
+                             <i>Príklad: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">");
+define("L_D_ID_ALIAS"," Alias pre císlo príspevku<br>
+                             <i>Poitie: </i>v kóde formulára<br>
+                             <i>Príklad: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">");
+define("L_D_ITEM_ID_ALIAS"," Alias pre èíslo èlánku<br>
+                             <i>Poitie: </i>v kóde formulára<br>
+                             <i>Príklad: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">");
 
-define("L_D_BUTTONS","Alias pro tlaèítka Zobraz vše, Zobraz vybrané, Pøidej novı<br>
-                             <i>Uití: </i>ve spodním HTML kódu");
+define("L_D_BUTTONS","Alias pre tlacítka Zobrazit všetko, Zobrazit vybrané, Pridat novı<br>
+                             <i>Pouitie: </i>v spodnom HTML kóde");
 
-define("L_D_COMPACT" , "HTML kód pro pøehledové zobrazení pøíspìvku");
+define("L_D_COMPACT" , "HTML kód pre prehladové zobrazenie príspevkov");
 define("L_D_SHOWIMGS" , "Zobrazit obrázky");
-define("L_D_ORDER" , "Seøadit");
-define("L_D_FULLTEXT" ,"HTML kód pro plné znìní pøíspìvku");
+define("L_D_ORDER" , "Zoradit");
+define("L_D_FULLTEXT" ,"HTML kód pre plné znenie príspevku");
 
-define("L_D_ADMIN","Správa zpráv - Správa diskusních pøíspìvkù");
-define("L_D_NODISCUS","ádné diskusní pøíspìvky");
-define("L_D_TOPIC","Titulek");
+define("L_D_ADMIN","Správy - Správa diskusnıch príspevkov");
+define("L_D_NODISCUS","iadne diskusné príspevky");
+define("L_D_TOPIC","Titulok");
 define("L_D_AUTHOR","Autor");
-define("L_D_DATE","Datum");
-define("L_D_ACTIONS","Akce");
-define("L_D_DELETE","Smazat");
+define("L_D_DATE","Dátum");
+define("L_D_ACTIONS","Akcia");
+define("L_D_DELETE","Zmazat");
 define("L_D_EDIT","Editovat");
-define("L_D_HIDE","Skrıt");
+define("L_D_HIDE","Skryt");
 define("L_D_APPROVE","Schválit");
 
-define("L_D_EDITDISC","Správa zpráv - Správa diskusních pøíspìvkù - Editace pøíspìvku");
-define("L_D_EDITDISC_TABTIT","Editace pøíspìvku");
-define("L_D_SUBJECT","Pøedmìt");
+define("L_D_EDITDISC","Správy - Správa diskusnıch príspevkov - Editácia príspevku");
+define("L_D_EDITDISC_TABTIT","Editácia príspevku");
+define("L_D_SUBJECT","Predmet");
 define("L_D_AUTHOR","Autor");
 define("L_D_EMAIL","E-mail");
-define("L_D_BODY","Text pøíspìvku");
+define("L_D_BODY","Text príspevku");
 define("L_D_URL_ADDRESS","WWW autora - URL");
 define("L_D_URL_DES","WWW autora - popis");
-define("L_D_REMOTE_ADDR","IP adresa poèítaèe autora");
+define("L_D_REMOTE_ADDR","IP adresa pocítaca autora");
 
-define('L_D_SELECTED_NONE',"Nebyl vybrán ádnı pøíspìvek");
-define("L_D_DELETE_COMMENT","Pøejete si smazat pøíspìvek?");
+define('L_D_SELECTED_NONE',"Nebol vybranı iaden príspevok");
+define("L_D_DELETE_COMMENT","Chcete zmazat príspevok?");
 
-define("L_D_FORM","HTML kód formuláøe pro poslání pøíspìvku");
-define("L_D_BACK","Zpìt");
-define("L_D_ITEM","Èlánek: ");
-define("L_D_ADMIN2","Správa diskusních pøíspìvkù");
+define("L_D_FORM","HTML kód formulára pre poslanie príspevku");
+define("L_D_BACK","Spät");
+define("L_D_ITEM","Clánok: ");
+define("L_D_ADMIN2","Správa diskusnıch príspevkov");
 
 define("L_D_SHOW_SELECTED","Zobraz vybrané");
-define("L_D_SHOW_ALL","Zobraz vše");
-define("L_D_ADD_NEW","Pøidej novı");
+define("L_D_SHOW_ALL","Zobraz všetko");
+define("L_D_ADD_NEW","Pridaj novı");
 
-define("L_TOO_MUCH_RELATED","Je vybráno pøíliš mnoho souvisejících èlánkù.");
-define("L_SELECT_RELATED","Vıbìr souvisejících èlánkù");
-define("L_SELECT_RELATED_1WAY","Ano");
-define("L_SELECT_RELATED_2WAY","Vzájemnì");
+define("L_TOO_MUCH_RELATED","Je vybránıch príliš vela súvisiacich clánkov.");
+define("L_SELECT_RELATED","Vıber souvisiacich clánkov");
+define("L_SELECT_RELATED_1WAY","Áno");
+define("L_SELECT_RELATED_2WAY","Vzájomne");
 
 // - Cross server networking --------------------------------------
 
-define("L_INNER_IMPORT","Lokální vımìna");
-define("L_INTER_IMPORT","Pøíjem z uzlù");
-define("L_INTER_EXPORT","Zasílání do uzlù");
+define("L_INNER_IMPORT","Lokálna vımena");
+define("L_INTER_IMPORT","Príjem z uzlov");
+define("L_INTER_EXPORT","Zasielanie do uzlov");
 
 define("L_NODES_MANAGER","Uzly");
-define("L_NO_PS_NODES_MANAGER","Nemáte práva pro správu uzlù");
-define("L_NODES_ADMIN_TIT","Správa uzlù");
-define("L_NODES_LIST","Seznam uzlù");
-define("L_NODES_ADD_NEW","Pøidání uzlu");
-define("L_NODES_EDIT","Editace uzlu");
-define("L_NODES_NODE_NAME","Jméno uzlu ");
-define("L_NODES_YOUR_NODE","Your node name");
-define("L_NODES_SERVER_URL","URL souboru getxml.php3");
-define("L_NODES_YOUR_GETXML","Your getxml is");
+define("L_NO_PS_NODES_MANAGER","Nemáte práva pre správu uzlov");
+define("L_NODES_ADMIN_TIT","Správa uzlov");
+define("L_NODES_LIST","Zoznam uzlov");
+define("L_NODES_YOUR_NODE","Názov vášho uzlu");
+define("L_NODES_YOUR_GETXML","Váš getxml je");
+define("L_NODES_ADD_NEW","Pridanie uzlu");
+define("L_NODES_EDIT","Editácia uzlu");
+define("L_NODES_NODE_NAME","Meno uzlu ");
+define("L_NODES_SERVER_URL","URL súboru getxml.php3");
 define("L_NODES_PASWORD","Heslo");
 define("L_SUBMIT","Poslat");
-define("L_NODES_SEL_NONE","Nebyl vybrán uzel");
-define("L_NODES_CONFIRM_DELETE","Opravdu chcete smazat uzel?");
-define("L_NODES_NODE_EMPTY","Jméno uzlu musí bıt vyplnìno");
+define("L_NODES_SEL_NONE","Nebol vybranı uzol");
+define("L_NODES_CONFIRM_DELETE","Naozaj chcete zmazat uzol?");
+define("L_NODES_NODE_EMPTY","Meno uzla musí byt vyplnené");
 
-define("L_IMPORT_TIT","Správa pøijímanıch webíkù");
-define("L_IMPORT_LIST","Seznam pøijímanıch webíkù do webíku ");
-define("L_IMPORT_CONFIRM_DELETE","Opravdu chcete zrušit pøíjem z tohoto webíku?");
-define("L_IMPORT_SEL_NONE","Nebyl zvolen webík");
-define("L_IMPORT_NODES_LIST","Seznam uzlù");
-define("L_IMPORT_CREATE","Pøijímat webíky z tohoto uzlu");
-define("L_IMPORT_NODE_SEL","Nebyl vybrán uzel");
-define("L_IMPORT_SLICES","Seznam pøijímanıch webíkù");
-define("L_IMPORT_SLICES2","Seznam dostupnıch webíkù z uzlu ");
-define("L_IMPORT_SUBMIT","Zvolte webík");
-define("L_IMPORT2_OK","Pøíjem z webíku úspìšnì vytvoøen");
-define("L_IMPORT2_ERR","Pøíjem z webíku byl ji vytvoøen");
+define("L_IMPORT_TIT","Správa prijmanıch modulov");
+define("L_IMPORT_LIST","Zoznam príjmanıch modulov do modulu ");
+define("L_IMPORT_CONFIRM_DELETE","Naozaj chcete zrušit príjem z tohto modulu?");
+define("L_IMPORT_SEL_NONE","Nebol vybranı modul");
+define("L_IMPORT_NODES_LIST","Zoznam uzlov");
+define("L_IMPORT_CREATE","Príjmat moduly z tohto uzla");
+define("L_IMPORT_NODE_SEL","Nebol vybranı uzol");
+define("L_IMPORT_SLICES","Zoznam príjmanıch modulov");
+define("L_IMPORT_SLICES2","Zoznam dostupnıch modulov z uzla ");
+define("L_IMPORT_SUBMIT","Zvolte modul");
+define("L_IMPORT2_OK","Príjem z modulu úspešne vytvorenı");
+define("L_IMPORT2_ERR","Príjem z modulu bol u vytvorenı");
 
-define("L_RSS_ERROR","Nepodaøilo se navázat spojení nebo pøijmout data. Kontaktuje administrátora");
-define("L_RSS_ERROR2","Neplatné heslo pro uzel: ");
-define("L_RSS_ERROR3","Kontaktujte administrátora lokálního uzlu.");
-define("L_RSS_ERROR4","ádné dostupné webíky. Nemáte práva pøijímat data z tohoto uzlu. ".
- "Kontaktujte administrátora vzdáleného webíku a zkontrolujte, e obdrel vaše správné uivatelské jméno.");
+define("L_RSS_ERROR","Nepodarilo se nadviazat spojenie alebo prijat údaje. Kontaktuje administrátora");
+define("L_RSS_ERROR2","Neplatné heslo pre uzol: ");
+define("L_RSS_ERROR3","Kontaktujte administrátora lokálneho uzla.");
+define("L_RSS_ERROR4","iadne dostupné moduly. Nemáte práva príjmat údaje z tohto uzla. ".
+ "Kontaktujte administrátora vzdialeného modulu a skontrolujte, e dostal vaše správne uivatelské meno.");
 
-define("L_EXPORT_TIT","Správa povolení zasílání webíkù");
-define("L_EXPORT_CONFIRM_DELETE","Opravdu chcete zrušit povolení zasílání tohoto webíku?");
-define("L_EXPORT_SEL_NONE","Nebyl zvolen uzel a uivatel");
-define("L_EXPORT_LIST","Seznam uzlù a uivatelù, kam bude zasílán webík ");
-define("L_EXPORT_ADD","Pøidejte uzel a uivatele");
-define("L_EXPORT_NAME","Jméno uivatele");
-define("L_EXPORT_NODES","Seznam uzlù");
+define("L_EXPORT_TIT","Správa povolení zasielania modulov");
+define("L_EXPORT_CONFIRM_DELETE","Naozaj chcete zrušit povolenie zasielania tohto modulu?");
+define("L_EXPORT_SEL_NONE","Nebol vybranı uzol a uivatel");
+define("L_EXPORT_LIST","Zoznam uzlov a uivatelov, kde bude zasielanı modul ");
+define("L_EXPORT_ADD","Pridajte uzol a uivatela");
+define("L_EXPORT_NAME","Meno uivatela");
+define("L_EXPORT_NODES","Zoznam uzlov");
 
-define("L_RSS_TITL", "Jméno webíku pro RSS");
-define("L_RSS_LINK", "Odkaz na webík pro RSS");
-define("L_RSS_DESC", "Krátkı popisek (vlastník a jméno) webíku pro RSS");
-define("L_RSS_DATE", "Datum v RSS pøehledu je generováno v datovém formátu RSS");
+define("L_RSS_TITL", "Meno modulu pre RSS");
+define("L_RSS_LINK", "Odkaz na modul pre RSS");
+define("L_RSS_DESC", "Krátkı popis (vlastník a meno) modulu pre RSS");
+define("L_RSS_DATE", "Dátum v RSS prehlade je generovanı vo formáte RSS");
 
-define("L_NO_PS_EXPORT_IMPORT", "Nemáte právo exportovat / importovat webíky");
+define("L_NO_PS_EXPORT_IMPORT", "Nemáte právo exportovat / importovat moduly");
 define("L_EXPORT_SLICE", "Export");
 define("L_IMPORT_SLICE", "Import");
-define("L_EXPIMP_SET", "Struktura webíku");
+define("L_EXPIMP_SET", "Štruktúra modulu");
 
-define("L_E_EXPORT_TITLE", "Export struktury webíku");
-define("L_E_EXPORT_MEMO", "Vyberte si jeden ze dvou zpùsobù exportu:");
-define("L_E_EXPORT_DESC", "Pøi exportu \"do jiného Toolkitu\" se bude exportovat pouze aktuální šablona "
-		."a vy pro ni zvolíte novı identifikátor.");
-define("L_E_EXPORT_DESC_BACKUP", "Pøi exportu \"do Backupu\" si mùete vybrat nìkolik šablon najednou.");
-define("L_E_EXPORT_MEMO_ID","Zvolte novı identifikátor šablony o délce pøesnì 16 znakù: ");
+define("L_E_EXPORT_TITLE", "Export štruktúry modulu");
+define("L_E_EXPORT_MEMO", "Vyberte si jeden z dvoch spôsobov exportu:");
+define("L_E_EXPORT_DESC", "Pri exporte \"do iného Toolkitu\" sa bude exportovat len aktuálna šablóna "
+		."a vy pre nu vyberiete novı identifikátor.");
+define("L_E_EXPORT_DESC_BACKUP", "Pri exporte \"do Backupu\" si môete vybrat niekolko šablón naraz.");
+define("L_E_EXPORT_MEMO_ID","Vyberte novı identifikátor šablóny dlhı presne 16 znakov: ");
 define("L_E_EXPORT_SWITCH", "Export do Backupu");
-define("L_E_EXPORT_SWITCH_BACKUP", "Export do jiného Toolkitu");
-define("L_E_EXPORT_IDLENGTH", "Délka identifikátoru musí bıt 16 znakù, a ne ");
-define("L_E_EXPORT_TEXT_LABEL", "Tento text si nìkde ulote. Mùete ho pouít pro naimportování šablony do Toolkitu:");
-define("L_E_EXPORT_LIST", "Oznaète webíky, které CHCETE exportovat:");
+define("L_E_EXPORT_SWITCH_BACKUP", "Export do iného Toolkitu");
+define("L_E_EXPORT_IDLENGTH", "Dlka identifikátora musí byt 16 znakov, a nie ");
+define("L_E_EXPORT_TEXT_LABEL", "Tento text si niekde ulote. Môete ho pouit pro import šablóny do Toolkitu:");
+define("L_E_EXPORT_LIST", "Oznacte moduly, ktoré CHCETE exportovat:");
 
-define("L_E_IMPORT_TITLE", "Import struktury webíkù");
-define("L_E_IMPORT_SEND", "Odeslat strukturu webíkù");
-define("L_E_IMPORT_MEMO", "Import struktury webíku probìhne takto:<br>"
-			."Vlote exportovanı text do rámeèku a stisknìte tlaèítko Odeslat.<br>"
-			."Struktura webíku s definicemi políèek se naète a pøidá do Toolkitu.");
-define("L_E_IMPORT_OPEN_ERROR","Neznámá chyba pøi otevírání souboru.");
-define("L_E_IMPORT_WRONG_FILE","CHYBA: Text není v poøádku. Zkontrolujte, e jste ho správnì zkopírovali z Exportu.");
+define("L_E_IMPORT_TITLE", "Import štruktúry modulov");
+define("L_E_IMPORT_SEND", "Odoslat štruktúru modulov");
+define("L_E_IMPORT_MEMO", "Import štruktúry modulu probehne takto:<br>"
+			."Vlote exportovanı text do rámika a stlacte tlaèítko Odeslat.<br>"
+			."Štruktúra modulu s definíciami polí sa nacíta a pridá do Toolkitu.");
+define("L_E_IMPORT_OPEN_ERROR","Neznáma chyba pri otevávaní súboru.");
+define("L_E_IMPORT_WRONG_FILE","CHYBA: Text nie je v poriadku. Skontrolujte, ci ste ho správne skopírovali z Exportu.");
 define("L_E_IMPORT_WRONG_ID","CHYBA: ");
-define("L_E_IMPORT_OVERWRITE", "Pøepsat");
-define("L_E_IMPORT_IDLENGTH", "Délka identifikátoru musí bıt 32 znakù, a ne ");
+define("L_E_IMPORT_OVERWRITE", "Prepísat");
+define("L_E_IMPORT_IDLENGTH", "Dlka identifikátora musí byt 32 znakov, a nie ");
 
-define("L_E_IMPORT_IDCONFLICT", "Webíky s nìkterımi ID ji existují. Zmìòte ID na pravé stranì šipky.<br> "
-			."Pouívejte pouze hexadecimální znaky 0-9,a-f. "
-			."Pokud udìláte nìco špatnì (špatnı poèet znakù, špatné znaky, nebo zmìníte ID vlevo od šipky), "
-			."bude pøíslušné ID povaováno za nezmìnìné.</p>"
-			."Pokud zvolíte PØEPSAT, pøepíší se všechny šablony s nezmìnìnım ID a nové se pøidají. <br>"
-			."Pokud zvolíte ODESLAT, šablony s konfliktem ID se budou ignorovat a nové se pøidají.");
-define ("L_E_IMPORT_COUNT", "Poèet importovanıch šablon: %d.");			
-define ("L_E_IMPORT_ADDED", "Pøidány byly:");
-define ("L_E_IMPORT_OVERWRITTEN", "Pøepsány byly:");
+define("L_E_IMPORT_IDCONFLICT", "Moduly s niektorımi ID u existujú. Zmente ID na pravej strane šípky.<br> "
+			."Pouívajte len hexadecimálne znaky 0-9,a-f. "
+			."Ak urobíte nieco chybne (chybnı pocet znakov, chybné znaky, alebo zmeníte ID vlavo od šípky), "
+			."bude príslušné ID povaované za nezmenené.</p>"
+			."Ak zvolíte PREPÍSAT, prepíšu sa všetky šablóny s nezmenenım ID a nové se pridajú. <br>"
+			."Ak zvolíte ODOSLAT, šablóny s konfliktom ID sa budoú ignorovat a nové se pridajú.");
+define ("L_E_IMPORT_COUNT", "Poèet importovanıch šablón: %d.");			
+define ("L_E_IMPORT_ADDED", "Pridané boli:");
+define("L_SHOW_RICH", "Zobraz toto pole v rich text editore (pouijte sa po nainštalování potrebnıch komponentov!)");
+define("L_MAP_JOIN","-- Spojenie polí --");
+define ("L_E_IMPORT_OVERWRITTEN", "Prepísané boli:");
 
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 
-define("L_PARAM_WIZARD_LINK", "Prùvodce s nápovìdou");
-define("L_SHOW_RICH", "Zobraz toto pole v rich text editoru (pouijte a po nainstalování potøebnıch komponent!)");
-define("L_MAP_JOIN","-- Spojení polí --");
+define("L_PARAM_WIZARD_LINK", "Sprievodca s nápovedou");
 
-// aliases used in se_notify.php3 
-define("L_NOTIFY_SUBJECT", "Pøedmìt e-mailu (Subject)"); 
-define("L_NOTIFY_BODY", "Vlastní e-mailová zpráva"); 
-define("L_NOTIFY_EMAILS", "E-mailová adresa (jedna na øádek)");
-define("L_NOTIFY_HOLDING", "<h4>Nová zpráva v Zásobníku</h4> Kdokoliv mùe bıt informován o tom, e pøibyla nová zpráva do zásobníku. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou."); 
-define("L_NOTIFY_HOLDING_EDIT", "<h4>Zpráva v Zásobníku byla zmìnìna</h4> Kdokoliv mùe bıt informován o tom, e byla zmìnìna zpráva v zásobníku. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou."); 
-define("L_NOTIFY_APPROVED", "<h4>Nová zpráva mezi Aktuálními</h4> Kdokoliv mùe bıt informován o tom, e pøibyla nová zpráva na web. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou."); 
-define("L_NOTIFY_APPROVED_EDIT", "<h4>Aktuální zpráva zmìnìna</h4> Kdokoliv mùe bıt informován o tom, e byla zmìnìna vystavená zpráva. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou.");
-define("L_NOTIFY", "Upozornìní e-mailem"); 
-define("L_A_NOTIFY_TIT", "E-mailová upozornìní na události");
 
-define("L_NOITEM_MSG", "Hláška 'Nenalezena ádná zpráva'");
-define("L_NOITEM_MSG_HLP", "zpráva, která se objeví pøi nenalezení ádného odpovídajícího èlánku");
+// aliases used in se_notify.php3
+define("L_NOTIFY_SUBJECT", "Predmet e-mailu (Subject)");
+define("L_NOTIFY_BODY", "Text e-mailovej správy");
+define("L_NOTIFY_EMAILS", "E-mail adresa (jedna na riadok)");
+define("L_NOTIFY_HOLDING", "<h4>Nová správa v Zásobníku</h4> Ktokolvek môe byt informovanı o tom, e bola pridaná nová správa do zásobníku. Adresy príjemcov napíšte nišie, do nasledujúcích polí vyplnte, text správy, ktorı uivatelia dostanú emailom.");
+define("L_NOTIFY_HOLDING_EDIT", "<h4>Správa v Zásobníku bola zmenená</h4> Ktokolvek môe byt informovanı o tom, e bola zmenená správa v zásobníku. Adresy príjemcov napíšte nišie, do nasledujúcích polí vyplnte, text správy, ktorı uivatelia dostanú emailom.");
+define("L_NOTIFY_APPROVED", "<h4>Nová správa medzi Aktuálnymi</h4> Ktokolvek môe byt informovanı o tom, e pribudla nová vystavená správa. Adresy príjemcov napíšte nišie, do nasledujúcích polí vyplnte, text správy, ktorı uivatelia dostanú emailom.");
+define("L_NOTIFY_APPROVED_EDIT", "<h4>Aktuálna správa zmenená</h4> Ktokolvek môe byt informovanı o tom, e bola zmenená vystavená správa. Adresy príjemcov napíšte nišie, do nasledujúcích polí vyplnte, text správy, ktorı uivatelia dostanú emailom.");
+define("L_NOTIFY", "Upozornenie e-mailom");
+define("L_A_NOTIFY_TIT", "E-mailové upozornenia na udalost");
+define("L_NOITEM_MSG", "Hláška 'Nenájdená iadna správa'");
+define("L_NOITEM_MSG_HLP", "správa, ktorá sa objaví pri nenájdení iadneho odpovedajúceho záznamu");
 
 # ---------------- Users profiles -----------------------------------------
 define('L_PROFILE','Profil');
-define('L_DEFAULT_USER_PROFILE','Spoleènı profil');
-define('L_PROFILE_DELETE_OK','Pravidlo úspìšnì vymazáno');
-define('L_PROFILE_ADD_OK','Pravidlo pøidáno');
-define('L_PROFILE_ADD_ERR','Chyba pøi pøidávání nového pravidla');
-define('L_PROFILE_LISTLEN','Poèet zpráv');
-define('L_PROFILE_ADMIN_SEARCH','Filtr zpráv');
-define('L_PROFILE_ADMIN_ORDER','Øazení');
-define('L_PROFILE_HIDE','Skrıt políèko');
-define('L_PROFILE_HIDEFILL','Skrıt a vyplnit');
-define('L_PROFILE_FILL','Vyplnit políèko');
-define('L_PROFILE_PREDEFINE','Pøednastavit políèíko');
-define('L_A_PROFILE_TIT','Správa webíku - Uivatelské profily');
-define('L_PROFILE_HDR','Nastavená pravidla');
-define('L_NO_RULE_SET','ádné pravidlo nebylo definováno');
-define('L_PROFILE_ADD_HDR','Pøidat pravidlo');
-define('L_PROFILE_LISTLEN_DESC','poèet zpráv zobrazenıch v administraci');
-define('L_PROFILE_ADMIN_SEARCH_DESC','pøednastavení "Hledání" v administraci');
-define('L_PROFILE_ADMIN_ORDER_DESC','pøednastavení "Seøadit" v administraci');
-define('L_PROFILE_HIDE_DESC','skıt políèko ve vstupním foruláøi');
-define('L_PROFILE_HIDEFILL_DESC','skıt políèko ve vstupním foruláøi a vyplnit je danou hodnotou');
-define('L_PROFILE_FILL_DESC','vyplnit políèko ve vstupním foruláøi vdy danou hodnotou');
-define('L_PROFILE_PREDEFINE_DESC','pøednastavit hodnotu do políèka ve vstupním formuláøi');
+define('L_DEFAULT_USER_PROFILE','Spoloènı profil');
+define('L_PROFILE_DELETE_OK','Pravidlo úspešne vymazané');
+define('L_PROFILE_ADD_OK','Pravidlo pridané');
+define('L_PROFILE_ADD_ERR','Chyba pri pridávaní nového pravidla');
+define('L_PROFILE_LISTLEN','Poèet správ');
+define('L_PROFILE_ADMIN_SEARCH','Filter správ');
+define('L_PROFILE_ADMIN_ORDER','Radenie');
+define('L_PROFILE_HIDE','Skryt pole');
+define('L_PROFILE_HIDEFILL','Skryt a vyplnit');
+define('L_PROFILE_FILL','Vyplnit pole');
+define('L_PROFILE_PREDEFINE','Prednastavit pole');
+define('L_A_PROFILE_TIT','Správa modulu - Uivatelské profily');
+define('L_PROFILE_HDR','Nastavené pravidlá');
+define('L_NO_RULE_SET','iadne pravidlo nebolo definované');
+define('L_PROFILE_ADD_HDR','Pridat pravidlo');
+define('L_PROFILE_LISTLEN_DESC','poèet správ zobrazenıch v administrácii');
+define('L_PROFILE_ADMIN_SEARCH_DESC','prednastavenie "Hladanie" v administrácii');
+define('L_PROFILE_ADMIN_ORDER_DESC','prednastavenie "Zoradit" v administrácii');
+define('L_PROFILE_HIDE_DESC','skryt pole vo vstupnom formulári');
+define('L_PROFILE_HIDEFILL_DESC','skryt pole vo vstupnom formulári a vyplnit ho danou hodnotou');
+define('L_PROFILE_FILL_DESC','vyplnit pole vo vstupnom formulári vdy danou hodnotou');
+define('L_PROFILE_PREDEFINE_DESC','prednastavit hodnotu do pola vo vstupnom formulári');
 define('L_VALUE',L_MAP_VALUE2);
 define('L_FUNCTION',L_ALIAS_FUNC);
 define('L_RULE','Pravidlo');
@@ -801,7 +804,6 @@ define('L_ID_COUNT_ALIAS','poèet nalezenıch èlánkù');
 define('L_V_NO_ITEM','HTML code for "No item found" message');
 
 /*
-$Log$
 Revision 1.15  2002/02/05 21:46:04  honzam
 the message "no item found" can be redefined
 
@@ -820,6 +822,10 @@ new WYSIWYG richtext editor for inputform (IE5+)
 Revision 1.10  2001/11/29 08:40:09  mitraearth
 Provides help when using the Nodes screen to configre inter-node feeding
 It informs of the correect values to tell the superadmin of the other node.
+
+$Log$
+Revision 1.16  2002/02/08 10:13:35  honzam
+corrected slovak language by Norbert Brazda
 
 Revision 1.9  2001/10/24 18:44:10  honzam
 new parameter wizard for function aliases and input type parameters
@@ -847,107 +853,7 @@ feeding improved - field value redefine possibility in se_mapping.php3
 
 Revision 1.1  2001/06/12 16:07:22  honzam
 new feeding modes -  "Feed & update" and "Feed & update & lock"
-
-Revision 1.28  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.27  2001/04/17 21:32:08  honzam
-New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
-
-Revision 1.26  2001/03/30 11:54:35  honzam
-offline filling bug and others small bugs fixed
-
-Revision 1.25  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.24  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-Revision 1.21  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.20  2000/12/23 19:56:50  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
-
-Revision 1.19  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.18  2000/12/05 14:01:58  honzam
-Better help for upload image alias
-
-Revision 1.17  2000/11/13 10:41:14  honzam
-Fixed bad order for default setting of show fields and needed fields
-
-Revision 1.16  2000/10/12 15:56:09  honzam
-Updated language files with better defaults
-
-Revision 1.15  2000/10/10 18:28:00  honzam
-Support for Web.net's extended item table
-
-Revision 1.14  2000/08/17 15:17:55  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.13  2000/08/15 08:58:31  kzajicek
-Added missing L_HLP_CATEGORY_ID
-
-Revision 1.12  2000/08/15 08:43:41  kzajicek
-Fixed spelling error in constant name
-
-Revision 1.11  2000/08/14 12:39:13  kzajicek
-Language definitions required by setup.php3
-
-Revision 1.10  2000/08/03 15:19:57  kzajicek
-Language changes
-
-Revision 1.9  2000/08/03 12:49:22  kzajicek
-English editing
-
-Revision 1.8  2000/08/03 12:34:27  honzam
-Default values for new slice defined.
-
-Revision 1.7  2000/07/27 18:17:21  kzajicek
-Added superadmin settings in User/Group management
-
-Revision 1.6  2000/07/27 13:23:58  kzajicek
-Language correction
-
-Revision 1.5  2000/07/17 13:40:11  kzajicek
-Alert box when no input category selected
-
-Revision 1.4  2000/07/17 12:29:56  kzajicek
-Language changes
-
-Revision 1.3  2000/07/12 11:06:26  kzajicek
-names of image upload variables were a bit confusing
-
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.1.1.1  2000/06/21 18:40:27  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:14  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.6  2000/06/12 19:58:34  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.5  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.4  2000/04/24 16:50:33  honzama
-New usermanagement interface.
-
-Revision 1.3  2000/03/29 15:54:46  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.2  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
 */
 ?>
+
 
