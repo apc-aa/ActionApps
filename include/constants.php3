@@ -23,31 +23,28 @@ http://www.apc.org/
 # Used constants. Do not edit if you are not developer.
 #
 
-  // list of text fields in items table (used in feeding.php3 for inserting into database)
-$ITEM_FIELDS_TEXT = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height");
-$ITEM_FIELDS_NUM  = array("status_code", "link_only", "html_formatted", "highlight" );
-
-  // list of fields in packed array of shown fields in itemedit.php3
-$ITEMEDIT_FIELDS = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_upload=>L_IMG_UPLOAD);
-
-  // list of fields in packed array of shown fields in big_srch.php3
-$SHOWN_SEARCH_FIELDS = array( slice=>L_SRCH_SLICE, category=>L_SRCH_CATEGORY, author=>L_SRCH_AUTHOR, language=>L_SRCH_LANGUAGE, from=>L_SRCH_FROM, to=>L_SRCH_TO, headline=>L_SRCH_HEADLINE, abstract=>L_SRCH_ABSTRACT, full_text=>L_SRCH_FULL_TEXT, edit_note=>L_SRCH_EDIT_NOTE);
-  // list of fields in packed array of default values in big_srch.php3
-$DEFAULT_SEARCH_IN = array( headline=>L_SRCH_HEADLINE, abstract=>L_SRCH_ABSTRACT, full_text=>L_SRCH_FULL_TEXT, edit_note=>L_SRCH_EDIT_NOTE);
-
-
-// - new --
-
   # There we can mention $FIELD_TYPES, but they are not defined in this file, 
-  # but in database as slecial slice with id 'AA_Core_Fields..'
+  # but in database as special slice with id 'AA_Core_Fields..'
   
   # Field types - each field in slice is one of this type. 
   # The types are defined APC wide for easy item interchanging between APC nodes
   # (on the other hand, new type can be added just by placing new fileld 
   # in database table fields as for 'AA_Core_Fields..' slice).
 
-# ---  
 
+$MODULES = array( 'S' => array( 'table' => 'slice',
+                                'name' => 'slice',
+                                'directory' => AA_INSTAL_URL ."admin/"),
+                  'W' => array( 'table' => 'site',
+                                'name' => 'site',
+                                'directory' => AA_INSTAL_URL ."modules/site/"),
+                  'A' => array( 'table' => 'module', # this module doesn't have any special info yet
+                                'name' => 'MySQL Auth',
+                                'directory' => AA_INSTAL_URL ."modules/mysql_auth/"),
+                  'J' => array( 'table' => 'jump',
+                                'name' => 'Jump inside AA control panel',
+                                'directory' => AA_INSTAL_URL ."modules/jump/"));
+                  
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "es_news_lang.php3" => "es_news_lang.php3",
                          "cz_news_lang.php3" => "cz_news_lang.php3",
@@ -90,7 +87,7 @@ $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
 			      "variable" =>L_INPUT_DEFAULT_VAR);
   
 $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
-								"edt" => L_INPUT_SHOW_EDT,
+																"edt" => L_INPUT_SHOW_EDT,
                                 "fld" => L_INPUT_SHOW_FLD, 
                                 "sel" => L_INPUT_SHOW_SEL, 
                                 "pre" => L_INPUT_SHOW_PRE, 
@@ -104,7 +101,7 @@ $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
 #                               "isi" => L_INPUT_SHOW_ISI,
                                 "iso" => L_INPUT_SHOW_ISO,
                                 "nul" => L_INPUT_SHOW_NUL,
-								"hco" => L_INPUT_SHOW_HCO);
+				"hco" => L_INPUT_SHOW_HCO);
                               
 $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
                                "url" => L_INPUT_VALIDATE_URL, 
@@ -178,6 +175,7 @@ $VIEW_FIELDS["g1_direction"]    = array( "validate"=>"", "insert"=>"quoted", "ty
 $VIEW_FIELDS["group_by2"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"order" );
 $VIEW_FIELDS["g2_direction"]    = array( "validate"=>"", "insert"=>"quoted", "type"=>"bool", "input"=>"none" );
 $VIEW_FIELDS["group_title"]     = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["group_bottom"]    = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
 $VIEW_FIELDS["remove_string"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
 $VIEW_FIELDS["modification"]    = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"seltype" );
 $VIEW_FIELDS["parameter"]       = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selgrp" );
@@ -209,6 +207,11 @@ $VIEW_FIELDS["aditional4"]      = array( "validate"=>"text", "insert"=>"quoted",
 $VIEW_FIELDS["aditional5"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
 $VIEW_FIELDS["aditional6"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
 $VIEW_FIELDS["noitem_msg"]      = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
+$VIEW_FIELDS["field1"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["field2"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["field3"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
+$VIEW_FIELDS["calendar_type"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"select", 
+                                         "values"=>array ("mon"=>L_MONTH,"mon_table"=>L_MONTH_TABLE));
 
 # se_views.php3 - view types
 $VIEW_TYPES['list']  = array( "name" => L_COMPACT_VIEW,
@@ -233,6 +236,7 @@ $VIEW_TYPES['list']  = array( "name" => L_COMPACT_VIEW,
 #                              "group_by2" => L_V_GROUP_BY2 ,
 #                              "g2_direction" => L_V_GROUP2DIR ,
                               "group_title" => L_V_GROUP ,
+                              "group_bottom" => L_V_GROUP_BOTTOM ,
 #                              "selected_item" => L_V_SELECTED ,
                               "cond1field" => L_V_COND1FLD ,
                               "cond1op" => L_V_COND1OP ,
@@ -275,6 +279,9 @@ $VIEW_TYPES['discus'] = array( 'name' => L_DISCUSSION_VIEW,
                               "before" => L_V_BEFORE ,
                               "odd" => L_D_COMPACT ,
                               "after" => L_V_AFTER ,
+                              "aditional2" => L_V_D_SEL_BUTTON ,
+                              "aditional3" => L_V_D_ALL_BUTTON ,
+                              "aditional4" => L_V_D_NEW_BUTTON ,
                               "even_odd_differ" => L_D_SHOWIMGS ,
                               "modification" => L_D_ORDER ,
                               "img1" => L_V_IMG1 ,
@@ -282,6 +289,7 @@ $VIEW_TYPES['discus'] = array( 'name' => L_DISCUSSION_VIEW,
                               "img3" => L_V_IMG3 ,
                               "img4" => L_V_IMG4 ,
                               "even" => L_D_FULLTEXT,
+                              "aditional" => L_V_D_SPACE ,
                               "remove_string" => L_D_FORM
                               );
 
@@ -312,6 +320,7 @@ $VIEW_TYPES['const'] = array( 'name' => L_CONSTANT_VIEW,
                               "listlen" => L_V_LISTLEN ,
                               "even_odd_differ" => L_V_EVENODDDIF ,
                               "o1_direction" => L_V_ORDER1DIR);
+
 
 $VIEW_TYPES['rss'] = array( 'name' => L_RSS_VIEW,
                               "before" => L_V_BEFORE ,
@@ -357,6 +366,39 @@ $VIEW_TYPES['script'] = array( 'name' => L_SCRIPT_VIEW,
                               "cond3cond" => L_V_COND3COND ,
                               "listlen" => L_V_LISTLEN ,
                               "noitem_msg" => L_V_NO_ITEM );
+                              
+$VIEW_TYPES['calendar'] = array ('name' => L_CALENDAR_VIEW,
+                              "calendar_type" => L_V_CALENDAR_TYPE,
+                              "before" => L_V_BEFORE ,
+                              "aditional3" => L_V_EVENT_TD ,
+                              "odd" => L_V_EVENT ,
+                              "after" => L_V_AFTER ,
+                              "remove_string" => L_V_REMOVE_STRING ,
+                              "order1" => L_V_ORDER1 ,
+                              "o1_direction" => L_V_ORDER1DIR ,
+                              "order2" => L_V_ORDER2 ,
+                              "o2_direction" => L_V_ORDER2DIR ,
+                              "field1" => L_V_FROM_DATE,
+                              "field2" => L_V_TO_DATE,
+                              "group_title" => L_V_DAY ,
+                              "group_bottom" => L_V_DAY_BOTTOM ,
+                              "even_odd_differ" => L_V_EMPTY_DIFFER,
+                              "aditional" => L_V_DAY_EMPTY,
+                              "aditional2" => L_V_DAY_EMPTY_BOTTOM,
+#                              "selected_item" => L_V_SELECTED ,
+                              "cond1field" => L_V_COND1FLD ,
+                              "cond1op" => L_V_COND1OP ,
+                              "cond1cond" => L_V_COND1COND ,
+                              "cond2field" => L_V_COND2FLD ,
+                              "cond2op" => L_V_COND2OP ,
+                              "cond2cond" => L_V_COND2COND ,
+                              "cond3field" => L_V_COND3FLD ,
+                              "cond3op" => L_V_COND3OP ,
+                              "cond3cond" => L_V_COND3COND ,
+                              "noitem_msg" => L_V_NO_ITEM );
+#                              "flag" => L_V_FLAG ,
+// TODO                              "scroller" => L_V_SCROLLER ,
+#                              "aditional" => L_V_ADITIONAL );
 
 # modification - options for modification field of views
 # alias - which aliases to show
@@ -376,7 +418,11 @@ $VIEW_TYPES_INFO['digest'] = array('aliases' => 'field');
 $VIEW_TYPES_INFO['discus'] = array('modification'=>array('21'=>'timeorder', 
                                                          '22'=>'reverse timeorder', 
                                                          '23'=>'thread' ),
-                                 'aliases' => 'field');
+                                   'aditional' =>array('default'=>'<img src="'.AA_INSTAL_URL.'images/blank.gif" width=20 height=1 border="0">'),
+                                   'aditional2'=>array('default'=>'<input type=button name=sel_ids value="' .L_D_SHOW_SELECTED. '" onClick=showSelectedComments() class="discbuttons">'),
+                                   'aditional3'=>array('default'=>'<input type=button name=all_ids value="' .L_D_SHOW_ALL. '" onClick=showAllComments() class="discbuttons">'),
+                                   'aditional4'=>array('default'=>'<input type=button name=add_disc value="' .L_D_ADD_NEW. '" onClick=showAddComments() class="discbuttons">'),
+                                   'aliases' => 'field');
 $VIEW_TYPES_INFO['seetoo'] = array('modification'=>array('31'=>'related', 
                                                          '32'=>'keyword with OR',
                                                          '33'=>'keyword with AND' ),
@@ -387,6 +433,14 @@ $VIEW_TYPES_INFO['const'] = array('aliases' => 'const',
                                                    'pri'=>'priority'));
                                   
 $VIEW_TYPES_INFO['rss'] = array('aliases' => 'field');
+$VIEW_TYPES_INFO['calendar'] = array('aliases' => 'field',
+    'aliases_additional' => array (
+        '_#CV_TST_1' => array ('hlp'=>L_C_TIMESTAMP1),
+        '_#CV_TST_2' => array ('hlp'=>L_C_TIMESTAMP2),
+        '_#CV_NUM_D' => array ('hlp'=>L_C_NUMD),
+        '_#CV_NUM_M' => array ('hlp'=>L_C_NUMM),
+        '_#CV_NUM_Y' => array ('hlp'=>L_C_NUMY)));
+        
 $VIEW_TYPES_INFO['static'] = array('aliases' => 'none');
 $VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
 
@@ -400,141 +454,4 @@ define ("FEEDMAP_FLAG_JOIN", 4);
 define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in slice table
 
 require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
-
-/*
-$Log$
-Revision 1.27  2002/03/14 11:20:45  mitraearth
-[[ User Validation for add item / edit item (itemedit.php3). ]]
-
-(by Setu)
- - new selection "User" at admin->field->edit(any field)->validation.
- - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
- - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
- - It can validate the value and return new value for the field.
-
- - Related files:
-   - admin/itemedit.php3
-   - include/constants.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_VALIDATE_USER" for User Validation.
-
-* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
-
-[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
-(by Ram)
- - if the field is blank, it can load default value from URL query strings.
- - new selection "Variable" in admin->field->edit(any field)->Default:
- - "parameter" is the name of variable in URL query strings
-   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
-
- - Related files:
-   - include/constant.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_DEFAULT_VAR" for Default by variable.
-   - include/itemfunc.php3
-     - new function "default_fnc_variable()" for "Default by variable"
-
-
-[[ admin/index.php3 ]]
-(by Setu)
- - more switches to allow admin/index.php3 to be called from another program (with return_url).
-   - sort_filter=1
-   - action_selected=1
-     - "feed selected" is not supported.
-     - "view selected" is not supported.
- - scroller now works with return_url.
-   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
-     - scr_st3_Mv
-     - scr_st3_Go
- - more changes to work with &return_url.
-
- - related files:
-   - admin/index.php3
-   - include/item.php3
-     - new function make_return_url()
-     - new function sess_return_url()
-
-* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
-
-[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
-(by Setu)
- - it supports "&return_url=...." to jump to another web page after  submission.
- - related files:
-   - admin/slicedit.php3
-
-Revision 1.26  2002/03/12 16:29:16  honzam
-new romanian language supprt (Thanks to Mihály Bakó, StrawberryNet Foundation), new_news_lang.php3 file introduced for better support of many language versions
-
-Revision 1.25  2002/02/05 21:46:03  honzam
-the message "no item found" can be redefined
-
-Revision 1.24  2002/01/10 13:50:05  honzam
-new possibilty to anonymously edit items on public sites
-
-Revision 1.23  2001/12/18 12:30:50  honzam
-new notification e-mail possibility (notify new item in slice, bins, ...), new possibility to join fields when fields are fed to another slice
-
-Revision 1.22  2001/12/12 18:38:02  honzam
-Better item table flags setting
-
-Revision 1.21  2001/11/26 16:34:09  honzam
-Linked new lang files
-
-Revision 1.20  2001/11/07 16:30:38  udosw
-Included German language files -- UdoSW
-
-Revision 1.19  2001/10/24 18:44:10  honzam
-new parameter wizard for function aliases and input type parameters
-
-Revision 1.18  2001/10/08 17:03:35  honzam
-Language constants fixes
-
-Revision 1.17  2001/09/27 15:50:57  honzam
-New related stories support, Aliases for view and mail displaying
-
-Revision 1.16  2001/09/12 06:19:00  madebeer
-Added ability to generate RSS views.
-Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
-
-Revision 1.15  2001/07/09 09:28:45  honzam
-New supported User defined alias functions in include/usr_aliasfnc.php3 file
-
-Revision 1.14  2001/06/21 14:15:44  honzam
-feeding improved - field value redefine possibility in se_mapping.php3
-
-Revision 1.13  2001/06/12 16:07:22  honzam
-new feeding modes -  "Feed & update" and "Feed & update & lock"
-
-Revision 1.12  2001/06/03 16:00:49  honzam
-multiple categories (multiple values at all) for item now works
-
-Revision 1.11  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.10  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.9  2001/04/17 21:32:08  honzam
-New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
-
-Revision 1.8  2001/03/30 11:54:35  honzam
-offline filling bug and others small bugs fixed
-
-Revision 1.7  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.6  2001/02/26 17:22:30  honzam
-color profiles, itemmanager interface changes
-
-Revision 1.5  2001/02/25 08:50:38  madebeer
-removed some insert functions
-
-Revision 1.4  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
-
-Revision 1.2  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-*/
 ?>
