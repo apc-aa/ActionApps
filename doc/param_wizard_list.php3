@@ -20,12 +20,13 @@ http://www.apc.org/
 */
 
 /*	Author: Jakub Adámek
-    
-    Params: $list
-    
-    Shows all the help to all the list items (i.e. all alias functions, all field types)
-*/	
 
+    Params: $list
+
+    Shows all the help to all the list items (i.e. all alias functions, all field types)
+*/
+
+require_once "../include/config.php3";
 require_once "../include/util.php3";
 require_once "../include/mgettext.php3";
 bind_mgettext_domain ("../include/lang/".get_mgettext_lang()."_param_wizard_lang.php3");
@@ -53,7 +54,7 @@ if (!is_array ($list)) {
     echo "</FORM></BODY></HTML>";
     exit;
 }
-        
+
 echo "<a id='top'>";
 echo "<h1>".$list["name"]."s</h1>\n";
 
@@ -78,8 +79,8 @@ while (list ($name, $item) = each ($list["items"])) {
     echo "<tr><td><b>$name</b></td><td><a href='#$name'>$item[name]</a></td></tr>\n";
     $bottom_row .= " - <a href='#$name'>$name</a>";
 }
-echo "</table>\n";    
-    
+echo "</table>\n";
+
 reset ($list["items"]);
 while (list ($name, $item) = each ($list["items"])) {
     echo "<hr>";
@@ -112,7 +113,7 @@ while (list ($name, $item) = each ($list["items"])) {
         echo "</TABLE>\n";
     }
     echo "<font size=-1><br>$bottom_row</font>\n";
-}   
+}
 
 echo "</body></html>";
 
