@@ -1,3 +1,4 @@
+01/13/02 - added "add" as option to f_e for adding an item; created parameter wizard for f_e
 01/12/02 - changed site module to go to prior sibling when deleting rather than parent
 01/12/02 - added default $item=null to new_unalias_recurent to allow calling from site module without warnings
 01/12/02 - fixed adding AA_CP_Session to url in site module AAPage where it is already there.

@@ -282,6 +282,12 @@ define("L_PARAM_WIZARD_FUNC_F_L_PAR1_DESC","additional text to the \"\\<a\\>\" t
 define("L_PARAM_WIZARD_FUNC_F_L_PAR1_EXAMPLE","target=_blank");
 define("L_PARAM_WIZARD_FUNC_F_E_NAME","edit item");
 define("L_PARAM_WIZARD_FUNC_F_E_DESC","_#EDITITEM used on admin page index.php3 for itemedit url");
+define("L_PARAM_WIZARD_FUNC_F_E_PAR0_NAME","type");
+define("L_PARAM_WIZARD_FUNC_F_E_PAR0_DESC","disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item");
+define("L_PARAM_WIZARD_FUNC_F_E_PAR0_EXAMPLE","edit");
+define("L_PARAM_WIZARD_FUNC_F_E_PAR1_NAME","return url");
+define("L_PARAM_WIZARD_FUNC_F_E_PAR1_DESC","Return url being called from, usually leave blank and allow default");
+define("L_PARAM_WIZARD_FUNC_F_E_PAR1_EXAMPLE","/mysite.shtml");
 define("L_PARAM_WIZARD_FUNC_F_C_NAME","condition");
 define("L_PARAM_WIZARD_FUNC_F_C_DESC","This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it.");
 define("L_PARAM_WIZARD_FUNC_F_C_PAR0_NAME","condition");

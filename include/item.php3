@@ -725,13 +725,17 @@ class item {
       case "slice_info":
         if( !is_array( $slice_info ) )
           $slice_info = GetSliceInfo(unpack_id( $this->getval('slice_id........')));
-        return $slice_info[$col]; 
+        return $slice_info[$col];
+      case "add":
+	$add="add=1";
+	// drop through to default
       default:  {
 	// If Session is set, then append session id, otherwise append slice_id and it will prompt userid
           return con_url(
 		isset($sess) ? $sess->url($admin_path ."itemedit.php3") 
 		: ($admin_path . "itemedit.php3" . ((isset($AA_CP_Session)) ? ("?AA_CP_Session=" . $AA_CP_Session) : "" )),
-		"encap=false&edit=1&id=". unpack_id( $this->getval('id..............') ).
+		(isset($add) ? $add : "edit=1").
+		"&encap=false&id=". unpack_id( $this->getval('id..............') ).
 		  (isset($sess) ? "" : ("&change_id=". unpack_id($this->getval('slice_id........')))).
              		   make_return_url("&return_url=",$p[1]) );	// it return "" if return_url is not defined.
 	}
