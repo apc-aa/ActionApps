@@ -73,9 +73,8 @@ $new_sliceid = $change_id;
  
 if( $encap ) // we can't use AA_CP_Session - it uses more Header information
   page_open(array("sess" => "AA_SL_Session", "auth" => "AA_CP_Auth"));
- else 
+else 
   page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
-//page_open(array("sess" => "AA_CP_Session"));
 
 if($free) {           // anonymous login
   $username = $free;
@@ -99,6 +98,7 @@ if(isset($r_lang_file) AND is_array($r_lang_file) AND ($r_lang_file[$slice_id] !
 }else{
   include $GLOBALS[AA_INC_PATH] . DEFAULT_LANG_INCLUDE ;
 }
+
 
 require $GLOBALS[AA_INC_PATH] . "util.php3"; // must be after language include because of lang constants in util.php3
 
@@ -151,6 +151,7 @@ while($db->next_record()) {
     $g_modules[$up] = array('name' => $db->f('name'),
                             'type' => ( ($db->f('type') AND $MODULES[$db->f('type')] ) ? $db->f('type') : 'S'));
 }
+
   
 if( !$Add_slice AND !$New_slice ) {
   if( !is_array($g_modules)) {   // this slice was deleted

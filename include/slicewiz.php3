@@ -10,12 +10,14 @@ function resolve_email_aliases ($aliases, $text) {
 
 function find_user_by_login ($login) {
     $users = FindUsers ($login);
-    reset ($users);
-    while (list ($userid,$user) = each ($users)) {
-        list ($user_login) = split (",", $userid);
-        list (,$user_login) = split ("=", $user_login);
-        if ($user_login == $login)
-            return array ($userid=>$user);
+    if (is_array ($users)) {
+        reset ($users);
+        while (list ($userid,$user) = each ($users)) {
+            list ($user_login) = split (",", $userid);
+            list (,$user_login) = split ("=", $user_login);
+            if ($user_login == $login)
+                return array ($userid=>$user);
+        }
     }
     return false;
 }

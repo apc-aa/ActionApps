@@ -39,7 +39,7 @@ $varset = new CVarset();
 $superadmin = IsSuperadmin();
 
 // Add new editor / administrator from Wizard page
-if ($user_firstname) {
+if ($user_firstname || $user_surname) {
     require $GLOBALS[AA_INC_PATH]."um_uedit.php3";
 }
 

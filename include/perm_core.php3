@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined ("AA_PERM_CORE_INCLUDED"))
+	define ("AA_PERM_CORE_INCLUDED",1);
+else return;
 
 # perm_core.php3 
 # Definitions and functions used no matter which one perm_*.php3 backend 
@@ -234,7 +237,7 @@ function GetUsersSlices( $user_id ) {
 
   if($permission_uid != $user_id) 
     CachePermissions($user_id);
-
+    
   if( IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) )
     return "all";
 
