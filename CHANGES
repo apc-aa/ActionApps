@@ -1,23 +1,64 @@
-04/28/03 - fixed spurious edit=1 in Inputform_url with vid paramater 
+04/29/04 - special field "all_fields" and "all_fields_numeric" which you can use
+(honzam)   with slice conditions (search form, ...)
+              conds[0][all_fields]="hi"
+           will find ANY text field containing "hi"
+           You can use this syntax for simplified search conditions as well as
+           for extended condition syntax. It is also possible to use
+           "united field conditions" like
+              conds[0][headline........,abstract........]='Hi'
+           as equivalent to
+              conds[0][headline........]=1&conds[0][abstract........]=1&
+              conds[0][value]='Hi',conds[0][operator]=LIKE
+           Number of united field conds is unlimited and you can use it
+           in simplified condition syntax as well as in extended one
+         - new aliases
+             {cookie:<name>}
+           which prints content of the cookie of the <name> and
+             {item:<item_id_long_or_short>:<field_id_or_alias>}
+           which returns <field_id> or _#ALIAS___ substitution for item
+           of <short_id> or <long_id> - just like:
+             {item:8ebc541d3703e64042cc198e6d0b026c:short_id........}
+           or
+             {item:171055:_#HEADLINE}
+         - new log viewer and searchlog viewer for superadministrators
+           (see "AA" menu)
+         - designs and setting in Links module could be set also
+           by administrator - not only by superadmins
+         - default operation in searchbar is "contain", not "begins with"
+         - time is incremented in steps also in admin interface, so the state
+           of item in admin interface is the same as on the web
+         - expired items not shown by default in related item selection window
+         - better help text for Node setting (Cross Server feeding)
+         - fixed feeding between slices (inner)
+         - fixed sending discussion comments to mailinglist
+         - fixed convertors (DOC/XLS/...) calling and htmlarea
+         - fix logging - it do not report SQL errors when selector or event
+           contains apostrophs, ...
+         - item manager skips to page 1 if new search is invoked
+         - fixed "Stored searched" feature - now works also for editors
+         - fixed (old) "restrict" slice.php3 parameter - now works
+           with apostrophs
+         - fixed url variables passing to php script (add_vars)
+04/28/04 - fixed spurious edit=1 in Inputform_url with vid paramater
 (mitra)  - fixed permissions on live_checkbox and editbrief from
            PS_EDIT to PS_EDIT_ALL_ITEMS
-         - added input_view from profile to _#EDITITEM 
+         - added input_view from profile to _#EDITITEM
          - added ; on javascript in um_gedit.php3
          - added stringexpand_sessurl to expand {sessurl:xxxx}
          - added admin_notiem_msg to sql_update.php3
          - fixes to searchbar when have a profile
          - added {urlencode:xxxxx}
 03/26/04 - small fixes and improvements to sql_update.php3 (pep)
-03/14/03 - added stringexpand_sessurl to expand {sessurl:xxxx}
+03/14/04 - added stringexpand_sessurl to expand {sessurl:xxxx}
          - added admin_notiem_msg to sql_update.php3
          - removed new DB_AA in itemedit.php3
          - removed extra } in sliceexp.php3
-         - added stringexpand_sessurl 
+         - added stringexpand_sessurl
          - turned off warning about packing empty strings, too many bugs!
          - allowed c-OR-1-aaa-2-bbbb in param_conds and conds[0]
          - added admin/view.php3, like view.php3 but inside admin i/f
          - added editbrief.php3, change specific fields of specific items
-02/26/04 - fixed rss to ignore unparsable dates (and use Now) 
+02/26/04 - fixed rss to ignore unparsable dates (and use Now)
          - rss2.0 dates still need handling in xml_fetch
 02/16/04 - uploaded new developer's version of AA (unstable yet). Changes:
 (honzam) - used HTMLAREA 3 (http://www.interactivetools.com/products/htmlarea)
