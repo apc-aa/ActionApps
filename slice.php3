@@ -42,6 +42,7 @@ http://www.apc.org/
 #timeorder           // rev - reverse publish date order
                      // (less priority than "order")
 #no_scr              // if true, no scroller is displayed
+#all_scr             // if true, scroller shows also 'All no scroller is displayed
 #scr_go              // sets scroller to specified page
 #scr_url             // redefines the page where the scroller should go (it is
                      // usefull if you include slice.php3 from another php script)
@@ -303,7 +304,8 @@ if( $sh_itm OR $x OR $o ) {
   }
 
   // show discussion if assigned
-  $discussion_vid = ( $dview ? $dview : $slice_info['vid']);
+  $discussion_vid = ( isset($dview) ? $dview : $slice_info['vid']);
+  // you can set dview=0 to not show discussion
   if( $discussion_vid > 0 ) {
     $db->query("SELECT view.*, slice.flag
                 FROM view, slice
@@ -342,22 +344,22 @@ if( $items AND is_array($items) ) {   # shows all $items[] as fulltext one after
 }
 
 # compact view ----------------------------------------------------------------
-if(!is_object($scr)) {
-  $sess->register(scr);
-  $scr = new easy_scroller("scr",
-     ($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap))."&",
-     $slice_info[d_listlen]);
+if (!is_object($scr)) {
+    $sess->register('scr');
+    $scr_url_param = ($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap))."&";
+    $scr = new easy_scroller( 'scr', $scr_url_param, $slice_info['d_listlen'], 0);
 }
+// display 'All' option in scroller
+if ($all_scr) { $scr->setShowAll($all_scr); }
 
 // change number of listed items
-if( $listlen )
-  $scr->metapage = $listlen;
-// optional script parameter
-if( ! $scr_go )
-  $scr_go = 1; // default start page = 1
-// comes from easy_scroller -----------
-if( $scrl && is_object ($scr))
-  $scr->update();
+if ($listlen) { $scr->setMetapage($listlen); }
+
+// default start page = 1
+if (!$scr_go) { $scr_go = 1; }
+
+// $scrl comes from easy_scroller
+if ($scrl)    { $scr->update(); }
 
 /* $easy_query .. easy query form
    $srch .. bigsrch form ?? */
@@ -396,7 +398,7 @@ else {
           Parse parameters posted by query form and from $slice_info
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","order","cat_id", "cat_name",
+  $r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_name",
                       "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator")); # store in session
 
   // ***** CONDS *****
