@@ -800,8 +800,13 @@ define('L_VALUE',L_MAP_VALUE2);
 define('L_FUNCTION',L_ALIAS_FUNC);
 define('L_RULE','Rule');
 
+define('L_ID_COUNT_ALIAS','number of found items');
+
 /*
 $Log$
+Revision 1.18  2002/01/10 13:51:43  honzam
+new alias for number of returned items
+
 Revision 1.17  2002/01/04 13:07:40  honzam
 Added language constants for profiles, notifications.
 

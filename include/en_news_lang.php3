@@ -769,10 +769,6 @@ define("L_NOTIFY_APPROVED_EDIT", "<h4>Item Changed in Approved Bin</h4>  People 
 define("L_NOTIFY", "Email Notification"); 
 define("L_A_NOTIFY_TIT", "Email Notifications of Events");
 
-// ------------------------- New ----------------------------
-// not appended to other lang files
-//define("", "");
-
 define("L_NOITEM_MSG", "'No item found' message");
 define("L_NOITEM_MSG_HLP", "message to show in place of slice.php3, if no item matches the query");
 
@@ -804,9 +800,17 @@ define('L_VALUE',L_MAP_VALUE2);
 define('L_FUNCTION',L_ALIAS_FUNC);
 define('L_RULE','Rule');
 
+define('L_ID_COUNT_ALIAS','number of found items');
+
+// ------------------------- New ----------------------------
+// not appended to other lang files
+//define("", "");
 
 /*
 $Log$
+Revision 1.57  2002/01/10 13:51:43  honzam
+new alias for number of returned items
+
 Revision 1.56  2002/01/04 13:07:40  honzam
 Added language constants for profiles, notifications.
 

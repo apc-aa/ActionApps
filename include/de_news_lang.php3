@@ -877,12 +877,15 @@ define('L_FUNCTION',L_ALIAS_FUNC);
 define('L_RULE','Rule');
 
 // ------------------------- New ----------------------------
-// not appended to other lang files
 //define("", "");
+define('L_ID_COUNT_ALIAS','number of found items');
 
 
 /*
 $Log$
+Revision 1.7  2002/01/10 13:51:42  honzam
+new alias for number of returned items
+
 Revision 1.6  2002/01/04 13:07:40  honzam
 Added language constants for profiles, notifications.
 
