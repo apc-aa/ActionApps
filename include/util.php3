@@ -26,6 +26,7 @@ http://www.apc.org/
 require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
+require_once $GLOBALS["AA_INC_PATH"]."logs.php3";
 require_once $GLOBALS["AA_INC_PATH"]."go_url.php3";
 
 function get_aa_url ($href) {
@@ -1092,27 +1093,29 @@ function CountHit($id) {
 
     if ( rand(0,COUNTHIT_PROBABILITY) == 1) {
         $logarray = getLogEvents("COUNT_HIT", $from="", $to="", true, true);
-        reset($logarray);
-        while(list(,$log) = each($logarray)) {
-            $myid = $log["params"];
-            $zid->refill($myid);
-            switch ($zid->onetype()) {
-                case "l":
-                case "t":
-                    $myid = $zid->q_packedids(0);
-                    $where = "id='".$myid."'";
-                    break;
-                case "s":
-                    $myid = $zids->shortids(0);
-                    $where = "short_id='".$myid."'";
-                    break;
-                default:
+        if ( isset($logarray) AND is_array($logarray) ) {
+            reset($logarray);
+            while(list(,$log) = each($logarray)) {
+                $myid = $log["params"];
+                $zid->refill($myid);
+                switch ($zid->onetype()) {
+                    case "l":
+                    case "t":
+                        $myid = $zid->q_packedids(0);
+                        $where = "(id='".$myid."')";
+                        break;
+                    case "s":
+                        $myid = $zid->shortids(0);
+                        $where = "(short_id='".$myid."')";
+                        break;
+                    default:
+                }
+                $zid->clear();
+                $SQL = "UPDATE item
+                           SET display_count=(display_count+".$log["count"].")
+                         WHERE $where";         
+                $db->tquery($SQL);
             }
-            $zid->clear();
-            $SQL = "UPDATE item
-                       SET display_count=(display_count+".$log["count"].")
-                     WHERE $where";
-            $db->tquery($SQL);
         }
     }
 }
