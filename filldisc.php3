@@ -121,7 +121,7 @@ function send2mailList () {
     if ($db->next_record()) {
         list ($vid, $maillist, $subject, $from, $reply_to, $errors_to) = split_escaped (":", $db->f("text"), "#:");
         
-        $db->query("SELECT * FROM view WHERE id=$vid");
+        $db->query("SELECT * FROM view WHERE id='$vid'");
         if ($db->next_record()) {
             $view_info = $db->Record;
             $html = $view_info[flag] & DISCUS_HTML_FORMAT;
