@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// (c) Econnect, Jakub Adamek, December 2002
+// DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
+
 /* Shows a Table View, allowing to edit, delete, update fields of a table
    Params:
        $set_tview -- required, name of the table view
@@ -27,13 +30,6 @@ http://www.apc.org/
 require "$directory_depth../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."tabledit.php3";
 require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
-
-$tableview_definitions = array (
-    "emails" => "tv_email",
-    "email" => "tv_email",
-    "ww" => "tv_misc",
-    "wt" => "tv_misc",
-    "cron" => "tv_misc");
     
 // ----------------------------------------------------------------------------------------
 
@@ -41,11 +37,10 @@ $sess->register("tview");
 if ($set_tview) $tview = $set_tview;
 
 require $GLOBALS[AA_INC_PATH]."tv_common.php3";
+require $GLOBALS[AA_INC_PATH]."tv_misc.php3";
 
-if (!$tableview_definitions [$tview]) { echo "This tableview is not in \$tableview_definitions: $tview. Bailing out."; exit; }
-require $GLOBALS[AA_INC_PATH].$tableview_definitions [$tview].".php3";
-
-$tableview = GetTableView($tview);
+$func = "GetMiscTableView";
+$tableview = $func($tview);
 
 if (!is_array ($tableview)) { MsgPage ($sess->url(self_base()."index.php3"), "Bad Table view ID: ".$tview); exit; }
 if (! $tableview["cond"] )  { MsgPage ($sess->url(self_base()."index.php3"), L_NO_PS_ADD, "standalone"); exit; }
@@ -56,15 +51,21 @@ echo '<LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.'/tabledit.css" type="text/cs
 echo "<TITLE>".$tableview["title"]."</TITLE></HEAD>";
 showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
 echo "<H1><B>" . $tableview["caption"] . "</B></H1>";
-PrintArray($err);
+
+ProcessFormData ($func, $val, $cmd);
+
+PrintArray($Err);
 echo $Msg;
 
-$script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
+$script = $sess->url("tabledit.php3");
 
-$tabledit = new tabledit ($tview, $script, $cmd, $val, $tableview, $AA_INSTAL_PATH."images/", $sess, "GetTableView");
+$tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."images/", $sess, $func);
 $err = $tabledit->view ($where);
-
 if ($err) echo "<b>$err</b>";
+
+if (!$err && $tview == "email_edit")
+    ShowEmailAliases();
+    
 HTMLPageEnd();
 page_close ();
 ?>
