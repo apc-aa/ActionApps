@@ -63,7 +63,7 @@ class cattree {
 
   var $catnames;       // asociative array with names of columns and values of current row
   var $assignments;    // category assignments - stores which category is subcategory of another
-
+  var $ancesors_idx;   // for each category it defines array of ancessors - used just for speedup (walkTree)
 
   var $STATES_CODING = array('highlight'=>'!', 'visible'=>'-', 'hidden'=>'x');
 
@@ -101,6 +101,8 @@ class cattree {
       $db = $this->db;
       unset( $this->catnames );
       unset( $this->assignments );
+      unset( $this->ancesors_idx );
+      $this->ancesors_idx = array();
 
       # lookup - all categories names
       $SQL= " SELECT id, name FROM links_categories WHERE deleted='n'";
@@ -123,6 +125,9 @@ class cattree {
                                         $this->STATES_CODING[$db->f('state')]);
       }
       $this->sort_categories();
+      foreach( $this->assignments as $idx => $assig ) {
+          $this->ancesors_idx[$assig->getFrom()][] = $idx;
+      }
   }
 
   /** Not filled yet? ==> Fill it from database  */
@@ -137,11 +142,12 @@ class cattree {
    */
   function subcatExist($parentid, $name) {
       $this->updateIfNeeded();
-      if ( isset($this->assignments) AND is_array($this->assignments) ) {
-          foreach( $this->assignments as $assig ) {
-              if ( ($parentid == $assig->getFrom()) AND
-                   ($this->catnames[$assig->getTo()]==$name) )
+      if( isset($this->ancesors_idx) AND is_array($this->ancesors_idx[$parentid]) ) {
+          foreach( $this->ancesors_idx[$parentid] as $idx ) {
+              $assig = $this->assignments[$idx];
+              if ( $this->catnames[$assig->getTo()]==$name ) {
                   return $assig->getTo();
+              }
           }
       }
       return false;
@@ -295,14 +301,13 @@ class cattree {
       if ( !$width )  $width=250;
       if ( !$rows )   $rows=8;
       $ret = "<select name=\"$name\" size=\"$rows\" $onWhat style=\"width:${width}px\">";
-      if ( isset($this->assignments) AND is_array($this->assignments) ) {
-          foreach( $this->assignments as $assig ) {
-              if( $assig->getFrom() == $cat2show ) {        // start position
-                  $ret .= '<option value="'. $assig->getTo() .'">';
-                  $ret .= ($withState ? '('. $assig->getState(). ') ' : '');
-                  $ret .= $this->catnames[$assig->getTo()]. $assig->getBase();
-                  $ret .= '</option>';
-              }
+      if( isset($this->ancesors_idx) AND is_array($this->ancesors_idx[$cat2show]) ) {
+          foreach( $this->ancesors_idx[$cat2show] as $idx ) {  // start position
+              $assig = $this->assignments[$idx];
+              $ret .= '<option value="'. $assig->getTo() .'">';
+              $ret .= ($withState ? '('. $assig->getState(). ') ' : '');
+              $ret .= $this->catnames[$assig->getTo()]. $assig->getBase();
+              $ret .= '</option>';
           }
       }
       $ret .=  '</select>';
@@ -316,19 +321,18 @@ class cattree {
    * @param string $function - called function
    */
   function walkTree($start_id, $function, $level=0) {
-      if( !isset($this->assignments) OR !is_array($this->assignments) )
+      if( !isset($this->ancesors_idx) OR !is_array($this->ancesors_idx[$start_id]) )
         return false;
 
-      foreach( $this->assignments as $assig ) {
-          if ( $assig->getFrom() == $start_id ) {
-              $function( $assig->getTo(), $this->catnames[$assig->getTo()],
-                         $assig->getBase(), $assig->getState(),
-                         $assig->getFrom(), $level);
+      foreach( $this->ancesors_idx[$start_id] as $idx ) {
+          $assig = $this->assignments[$idx];
+          $function( $assig->getTo(), $this->catnames[$assig->getTo()],
+                     $assig->getBase(), $assig->getState(),
+                     $assig->getFrom(), $level);
 
-              // not crossreferenced and never ending cycles protection
-              if( ($assig->getBase() != '@') AND ($level <= 100) )
-                  $this->walkTree($assig->getTo(), $function, $level+1);
-          }
+          // not crossreferenced and never ending cycles protection
+          if( ($assig->getBase() != '@') AND ($level <= 100) )
+              $this->walkTree($assig->getTo(), $function, $level+1);
       }
   }
 }

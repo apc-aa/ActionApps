@@ -343,11 +343,14 @@ if (isset($checked_url))
 
 // AND now display the form --------------------------------------------------
 
+$r_state['cat_id'] = get_if( $r_state['cat_id'], $_GET['cid'] );   // used for anonymous forms
+$select_start      = get_if( $_GET['select_start'], $links_info['select_start'], 2);   // used for anonymous forms
+
 // Print HTML start page (html begin, encoding, style sheet, no title)
 HtmlPageBegin();
 echo '<title>'. _m('APC ActionApps') ." - $pagename</title>";
 
-$tree = new cattree( $db, $links_info['select_start'] ? $links_info['select_start'] : 2, false, ' > ');
+$tree = new cattree( $db, $select_start, false, ' > ');
 // special javascript for category selection
 echo '<script language="JavaScript" type="text/javascript"
       src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/js_lib_links.js"></script>';
@@ -359,7 +362,6 @@ if( !$r_state['link_id'] ) {  // add new link
     $on_load = 'onLoad="GoToCategoryID('.$r_state['cat_id'].', eval(document.f.tree), \'patharea\', \'\');'.
                'MoveCategoryTo('.$r_state['cat_id'].', \'selcat0\', \'document.f.selcatSelect0\');"';
 }
-
 
 echo '
  <style>
@@ -433,8 +435,12 @@ echo '
           </tr>
           <tr>
            <td align="CENTER" valign="TOP">'.
-           $tree->getFrmTree(false, 'dblclick', $links_info['select_start'] ? $links_info['select_start'] : 2,
-                                  'patharea', '', false, '', 15, 'f') .'</td>
+           $tree->getFrmTree(false, 'dblclick', $select_start,
+                                  'patharea', '', false, '', 15, 'f');
+           if( $r_state['cat_id'] ) {
+                $tree->goCategory(GetCategoryPath( $r_state['cat_id'] ), 'patharea', '', 'f' );
+           }
+echo      '</td>
            <td  align="LEFT" valign="TOP" colspan=2>
            <table border="0" width="100%" cellpadding="0" cellspacing="3">';
 
