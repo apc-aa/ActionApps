@@ -79,7 +79,7 @@ if( $slice_info["permit_anonymous_post"] < 1 )
   SendErrorPage(L_ANONYMOUS_POST_ADMITED);
  else
   $bin2fill = $slice_info["permit_anonymous_post"]; 
-  
+
   # get slice fields and its priorities in inputform
 list($fields,$prifields) = GetSliceFields($slice_id);   
 
@@ -134,6 +134,9 @@ if( count($err)>1 )
   # prepare content4id array before call StoreItem function
 $content4id = GetContentFromForm( $fields, $prifields );
 
+  # put an item to the right bin
+$content4id["status_code....."][0][value] = ($bin2fill==1 ? 1 : 2);
+
 // p_arr_m( $content4id );
 
   # update database
@@ -147,8 +150,8 @@ if( count($err) > 1)
 
 /*
 $Log$
-Revision 1.2  2001/04/04 18:27:43  honzam
-Morehelp question mart in itemedit opens new window.
+Revision 1.3  2001/04/09 20:42:29  honzam
+fixed bug in selecting bin, where to put item in filler.php3
 
 Revision 1.1  2001/03/20 15:23:09  honzam
 standardized content management for items - filler, itemedit, offline, feeding

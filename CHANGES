@@ -1,3 +1,8 @@
+04/09/01 - order parameter works with '+' sign too in slice.php3
+         - new timeorder parameter in slice.php3
+         - fixed bug in selecting bin, where to put item in filler.php3
+         - fixed bug of not stored parameter for field input type in 
+           se_inputform.php3
 03/30/01 - uploaded images goes to sepatrate directories (separated by slice)
            (subdirectories under IMG_UPLOAD_PATH with name based on slice_id)
          - offline filling bug fixed
