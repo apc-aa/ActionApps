@@ -315,8 +315,14 @@ function map1field($value,$item,$channel) {
 			return map1field($vals[2],$item,$channel);
 		  } elseif (ereg("^DATE\((.*)\)$",$value,$vals)) { // Postprocess to turn into unix
 		  	$try1 = map1field($vals[1],$item,$channel);
+            if ($debugfeed >= 9) huhl($try1);
 			if (isset($try1) && is_array($try1) && $try1[0][value])
+                # Often won't work cos not iso8601
+                # Wed, 25 Feb 2004 17:19:37 EST   - BAD
+                # 2004-02-25 17:19:37+10:00   GOOD
 				$try1[0][value] =  iso8601_to_unixstamp($try1[0][value]);
+            if ($try1[0][value] == -1) $try1[0][value] = null;
+            if ($debugfeed >= 9) huhl($try1);
 	  		return $try1;
 		  } elseif ($value == "NOW") {
 		  	return array (0 => array ( value => time(), flag => 0, format => 1 )); 

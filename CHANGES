@@ -1,3 +1,5 @@
+02/26/04 - fixed rss to ignore unparsable dates (and use Now) 
+         - rss2.0 dates still need handling in xml_fetch
 02/16/04 - uploaded new developer's version of AA (unstable yet). Changes:
 (honzam) - used HTMLAREA 3 (http://www.interactivetools.com/products/htmlarea)
            instead of old RichText Editor
