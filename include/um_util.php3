@@ -186,8 +186,7 @@ function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
     SetRole(3);
     // -->
   </script>
-  </BODY>
-  </HTML> <?php
+  <?php HtmlPageEnd();
 }
 
 ?>

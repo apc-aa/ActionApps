@@ -808,6 +808,13 @@ function HtmlPageBegin() {
   echo HTML_PAGE_BEGIN;
 }  
 
+function HtmlPageEnd() {
+  echo "
+    </TD></TR></TABLE>
+    </TD></TR></TABLE>
+    </BODY></HTML>";
+}
+
 # Displays page with message and link to $url
 #   url - where to go if user clicks on Back link on this message page
 #   msg - displayed message
@@ -1005,6 +1012,13 @@ function filesuffix ($filename) {
     return substr ($filename,$i+1);
 }
 
+function filepath ($filename) {
+    if (!strstr ($filename,"/")) return "./";
+    $i = strlen($filename);
+    while ($filename[$i] != "/") $i --;
+    return substr ($filename,0,$i+1);
+}
+
 function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE")
 {
   if(is_array($conds)) {
@@ -1183,7 +1197,7 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
 function split_escaped ($pattern, $string, $escape_pattern)
 {
     $dummy = "~#$?_";
-    if (strstr ($dummy, $string)) { echo "INTERNAL ERROR."; return "INTERNAL ERROR"; }
+    if (strstr ($string,$dummy)) { echo "INTERNAL ERROR."; return "INTERNAL ERROR"; }
     $string = str_replace ($escape_pattern,$dummy,$string);
     $strings = split ($pattern, $string);
     reset ($strings);
