@@ -414,8 +414,8 @@ class zids {
 # leading to shorter (as short as 14) character ids.
 function guesstype($str) {
         $s = strlen($str);
-        if (($s >= 12) and ($s <= 16)) return 'p';
-        if (($s >= 24) and ($s <= 32)) return 'l'; # Could also test 32 hex
+        if (($s >= 12) and ($s <= 16))              return 'p';
+        if (preg_match("/[0-9a-f]{24,32}/i", $str)) return 'l';
         if ($s > 32) return 't'; # Could also test last 32 hex
         if ($s < 16) return 's';
         print("Error, unable to guess type of id '$str' - ask mitra");
