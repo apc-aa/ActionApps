@@ -59,7 +59,7 @@ $nb_view = (!$r_slice_view_url ?
   '<span class=nbenable>'. L_VIEW_SITE .'</span>' :
   " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". L_VIEW_SITE .'</span></a>');
 
-$nb_logo = '<a href="'. AA_INSTAL_URL .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
+$nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
 
 $nb_go = '<span class=nbenable>'. L_GO .'</span>';
 
@@ -90,6 +90,9 @@ echo "</TD></TR></TABLE>";
 
 /*
 $Log$
+Revision 1.2  2002/10/14 14:26:51  jakubadamek
+no message
+
 Revision 1.1  2002/04/25 12:07:26  honzam
 initial version
 
