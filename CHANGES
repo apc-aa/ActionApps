@@ -1,3 +1,9 @@
+10/11/04 - Added script support, mlx.php has its own mappings table which indicates
+           what kind of DIR to use for controls in the Add/Edit Item
+           This gets passed through a global mlxFormControlExtra to formutil
+           - changed formutil to include the value of this global
+           - added a new utf-8 language file and a language def en-utf8 which
+             can be selected in the slice settings
 10/06/04 - Added MLX support for views and finetuning slice settings interface
            Parameter for view.php3
            - set[vid]=mlx-(lang)-(lang1)-..-(MODE) same as for slice.php3

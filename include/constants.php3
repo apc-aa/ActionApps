@@ -109,7 +109,8 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "vn_news_lang.php3" => "vn_news_lang.php3",
                          "ja_news_lang.php3" => "ja_news_lang.php3",
                          "hr_news_lang.php3" => "hr_news_lang.php3",
-                         "fr_news_lang.php3" => "fr_news_lang.php3"
+                         "fr_news_lang.php3" => "fr_news_lang.php3",
+                         "en-utf8_news_lang.php3" => "en-utf8_news_lang.php3",
                         );
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -125,7 +126,8 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "sk" => "windows-1250",
                             "ja" => "EUC-JP",
                             "hr" => "windows-1250",
-                            "fr" => "iso-8859-1"
+                            "fr" => "iso-8859-1",
+                            "en-utf8" => "utf-8"
                             );
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -141,7 +143,8 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "sk" => "Slovenština",
                          "ja" => "Japanian",
                          "hr" => "Hrvatski",
-                         "fr" => "Français"
+                         "fr" => "Français",
+                         "en-utf8" => "English Unicode"
                          );
 
 /** Standard Reader Management field IDs defined in Reader Minimal Template */
@@ -784,9 +787,6 @@ define ("FEEDMAP_FLAG_EMPTY",  2);
 define ("FEEDMAP_FLAG_EXTMAP", 3);
 define ("FEEDMAP_FLAG_JOIN",   4);
 define ("FEEDMAP_FLAG_RSS",    5);
-
-/** site module spot flags */
-define ("MODW_FLAG_JUST_TEXT", 1);  // do not unalias this spot
 
 define ("DISCUS_HTML_FORMAT",  1);  // discussion html format flag in slice table
 

@@ -3,6 +3,16 @@
 // ver.: 0.2
 // http://mimo.gn.apc.org/mlx
 // mimo/at/gn.apc.org
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* @global array $mlxScriptsTable
+* this maps names to scripts and the script direction
+* @note the names dont follow any standard (but are based on DIN) and can be extended
+*/
+$mlxScriptsTable = array( 
+	"DR" => array("name"=>"Dari", "DIR"=>"RTL"),
+	"AR" => array("name"=>"Arabic","DIR"=>"RTL"),
+	"PS" => array("name"=>"Pashtoo","DIR"=>"RTL")
+);
 
 /** name of column in table slice **/
 define ('MLX_SLICEDB_COLUMN','mlxctrl'); // 
@@ -225,6 +235,8 @@ class MLX
 				//$this->dbg(GetItemContent($mlxid));
 				break;
 		}
+		if(!$GLOBALS['g_const_Lang'])
+			$GLOBALS['g_const_Lang'] = GetConstants('lt_languages',0);
 		foreach( $this->ctrlFields as $k => $v ) {
 			$href = "";
 			$modstr = "";
@@ -257,18 +269,22 @@ class MLX
 					."&o=1&mlxl=".$v[name]."' target=_blank>("._m("view").")</a>"
 					."</span>\n";
 			}				
-			$mlxout .= "'>&nbsp;&nbsp;";
+			$mlxout .= "'>&nbsp;";
 			if($href) //TODO implement something that saves on switch
 				$mlxout .= "<a href='$mlx_url$href'>";			
 //				$mlxout .= "<a href='javascript:mlx_saveOnSwitch($mlx_url$href)'>";
-			$mlxout .= $modstr.$v[name].($href?"</a>":"").$extra;
-			$mlxout .= "&nbsp;&nbsp;</td>\n ";
+			$langName = $GLOBALS['g_const_Lang'][$v[name]];
+			$mlxout .= $modstr.($langName?$langName:$v[name]).($href?"</a>":"").$extra;
+			$mlxout .= "&nbsp;</td>\n ";
 			
 		}
 		//finally set hidden fields for AA
-		$r_hidden[mlxid] = "$mlxid";
-		$r_hidden[mlxl] = "$lang";
-		
+		$r_hidden[mlxid] = (string)$mlxid;
+		$r_hidden[mlxl] = (string)$lang;
+		//this is a hack
+		if($GLOBALS['mlxScriptsTable'][(string)$lang]
+			&& $GLOBALS['mlxScriptsTable'][(string)$lang]['DIR'])
+			$GLOBALS['mlxFormControlExtra'] = " DIR=".$GLOBALS['mlxScriptsTable'][(string)$lang]['DIR']." ";
 		return $mlxout.MLX_HTML_TABFT;//"\n</tr>\n</tbody>\n</table>\n<br>\n";
 		//$r_hidden[mlxcontent] = $content4id;
 	}

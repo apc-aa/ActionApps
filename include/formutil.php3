@@ -820,6 +820,7 @@ class aainputfield {
         $this->field_name('plus');
         $this->html_radio();
         $this->echovar( "<input type=\"$type\" name=\"$name\" size=\"$size\"".
+                        $GLOBALS['mlxFormControlExtra'].
                         " maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">" );
         $this->helps('plus');
     }
@@ -870,7 +871,7 @@ class aainputfield {
         }
         $this->echoo("<td colspan=\"$colspan\">");
         $this->html_radio($showhtmlarea ? false : 'convertors');
-        $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" cols=\"$cols\"".getTriggers("textarea",$name).">$val</textarea>\n";
+        $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']." cols=\"$cols\"".getTriggers("textarea",$name).">$val</textarea>\n";
         if ($showhtmlarea) {
             $tarea .= '
             <script type="text/javascript" language="javascript"><!--
