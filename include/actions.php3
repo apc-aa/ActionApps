@@ -94,7 +94,7 @@ function Item_Feed($slice, $item_arr, $akce_param) {
  *  @param $param      Not used in this handler
  */
 function Item_DeleteTrash($param, $item_arr, $akce_param) {
-    global $pagecache, $slice_id;
+    global $pagecache, $slice_id, $event;
     $db = getDB();
 
     if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
@@ -106,7 +106,8 @@ function Item_DeleteTrash($param, $item_arr, $akce_param) {
     while( $db->next_record() )
         $items_to_delete[] = $db->f("id");
 
-//    $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
+//mimo enabled -- problem?
+    $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
 
     // delete content of all fields
     // don't worry about fed fields - content is copied

@@ -194,19 +194,6 @@ if($lang_control ) {
 
 // end mimo changes
 
-//mimo changes
-if($lang_control ) {
-	if(MLX_TRACE)
-		print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
-	if(empty($mlx)) 
-		$mlx = new MLX($slice);
-	$mlx_formheading = $mlx->itemform($lang_control,
-		array('AA_CP_Session'=>$AA_CP_Session,'slice_id'=>$slice_id,'encap'=>$encap),
-		$content4id,$action,$mlxl,$mlxid);
-}
-
-// end mimo changes
-
 $r_hidden["slice_id"] = $slice_id;
 $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
 

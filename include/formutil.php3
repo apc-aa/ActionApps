@@ -90,12 +90,11 @@ class inputform {
     var $cancel_url;
     var $messages;
     var $result_mode;
-    var $formheading;
 
     var $template;        // if you want to display alternate form design,
                           // template holds view_id of such template
                           // view type 'inputform'
-
+    var $formheading;     // add extra form heading here (default none, used by MLX)
     var $msg;             // stores return code from functions
 
 
@@ -115,7 +114,7 @@ class inputform {
         $this->messages             = $settings['messages'];
         $this->result_mode          = $settings['result_mode'];  // if not supplied, standard form is used
         $this->template             = $settings['template'];
-        $this->formheading	    = $settings['formheading'];
+	$this->formheading          = $settings['formheading']; //aded for MLX
     }
 
     function printForm($content4id, $fields, $prifields, $edit, $slice_id) {
@@ -138,7 +137,6 @@ class inputform {
                   $html_form_type = 'enctype="multipart/form-data"';
             }
         }
-
         echo "<form name=inputform $html_form_type method=post
                     action=\"" . $this->form_action .'"'.
                     getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>';
@@ -155,13 +153,14 @@ class inputform {
         }
 
 //        debug( $form, $GLOBALS['contentcache']);
-
+	//added for MLX
         // print the inputform
         $CurItem = new item($content4id, GetAliasesFromFields($fields), '', $form, $remove_string);   # just prepare
-        $out = $CurItem->get_item();
+        
+	$out = $CurItem->get_item();
 
         FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"' );
-       $parts = $GLOBALS['g_formpart'];
+        $parts = $GLOBALS['g_formpart'];
         if ( $parts ) {
             $idx = 0;
             while ( $parts+1 ) {
@@ -172,10 +171,10 @@ class inputform {
             // print tabs for form switching
             FrmTabs( $tabs, 'formtabs' );
         }
-  	if($this->formheading) {
-  		echo $this->formheading;
-  	}
 
+	if($this->formheading) // added for mlx tab
+		echo $this->formheading;
+	
 
         echo $out;
 
@@ -183,7 +182,7 @@ class inputform {
             // print tabs for form switching
             FrmTabs( $tabs, 'formtabs' );
         }
-
+	
 
         $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );
         $buttons['encap']               = array('value' => (($encap) ? "true" : "false"));
@@ -262,7 +261,6 @@ class inputform {
                     $GLOBALS[$varname]     = stripslashes($x[0]);  // it is quoted!!!
                     $GLOBALS[$htmlvarname] = $x[1];
                 }
-
                 # get values from form (values are filled when error on form ocures
                 if( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {
                       # get the multivalues
@@ -275,6 +273,8 @@ class inputform {
                 $field_html_flag = (((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
             }            // Display the field
             $aainput = new aainputfield($field_value, $field_html_flag, $field_mode);
+	    //fix -- otherwise $field_value keeps array
+	    unset($field_value);
             $aainput->setFromField($f);
 
             // do not return template for anonymous form wizard

@@ -34,6 +34,9 @@ require_once $GLOBALS["AA_INC_PATH"]."auth.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mailman.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/event.php3";
+//mimo add
+require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
+
 
 /**
  * aahandler class - stores handler function and 'trigger' conditions for
@@ -183,6 +186,9 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, &$item_ids, $fo
        perhaps better to make sure. */
     AuthDeleteReaders( $item_ids, $slice_id );
     MailmanCreateSynchroFiles ($slice_id);
+    //mimo added
+    $mlx = new MLXEvents();
+    $mlx->itemsBeforeDelete($item_ids,$slice_id);
     return true;
 }
 

@@ -21,6 +21,8 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"]."se_users.php3";
 require_once $GLOBALS["AA_INC_PATH"]."slicewiz.php3";
+// add mlx functions
+require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
 
 if($slice_id) {  // edit slice
   if(!IfSlPerm(PS_EDIT)) {
@@ -73,6 +75,9 @@ if( $add || $update ) {
         ValidateInput("permit_anonymous_edit", _m("Allow anonymous editing of items"), $permit_anonymous_edit, $err, false, "number");
         ValidateInput("permit_offline_fill", _m("Allow off-line item filling"), $permit_offline_fill, $err, false, "number");
         ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
+//mimo change        
+        ValidateInput(MLX_SLICEDB_COLUMN, _m("Language Control Slice"), $mlxctrl, $err, false, "id");
+//       
         ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
         ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
 
@@ -97,7 +102,7 @@ if( $add || $update ) {
           if( $superadmin ) 
             $varset->add("deleted", "number", $deleted);
           $varset->add("lang_file", "quoted", $lang_file);
-    
+    	
           $SQL = "UPDATE module SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
           if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change slice");
@@ -115,7 +120,10 @@ if( $add || $update ) {
           $varset->add("auth_field_group", "text", $auth_field_group);
           $varset->add("mailman_field_lists", "text", $mailman_field_lists);
           $varset->add("reading_password", "text", $reading_password);
-    
+//mimo
+	  //print("<br>$lang_control<br>");
+          $varset->add(MLX_SLICEDB_COLUMN, "quoted", $mlxctrl);
+   
           $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
           if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change slice");
@@ -173,6 +181,8 @@ if( $add || $update ) {
           $varset->add("auth_field_group", "text", $auth_field_group);
           $varset->add("mailman_field_lists", "text", $mailman_field_lists);
           $varset->add("reading_password", "text", $reading_password);
+//mimo
+          $varset->add(MLX_SLICEDB_COLUMN, "quoted", $mlxctrl);
     
              # create new slice
           if( !$db->query("INSERT INTO slice" . $varset->makeINSERT() )) {

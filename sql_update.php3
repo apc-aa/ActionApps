@@ -19,6 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+
+
 # script for MySQL database update
 
 # this script updates the database to last structure, create all tables, ...
@@ -778,6 +780,7 @@ $tablelist = array(   'active_sessions' => "(
                           auth_field_group varchar(16) NOT NULL default '',
                           mailman_field_lists varchar(16) NOT NULL default '',
                           reading_password varchar(100) NOT NULL default '',
+			  mlxctrl varchar(32) NOT NULL default '',
                           PRIMARY KEY  (id),
                           KEY type (type)
                       )",
@@ -1089,6 +1092,8 @@ $SQL_aacore[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_h
 // Jakub added auth_group and mail_lists on 6.3.2003
 $SQL_aacore[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('auth_group......', '', 'AA_Core_Fields..', 'Auth Group', 350, 'Sets permissions for web sections', '${AA_DOC_URL}help.html', 'txt:', 0, 0, 0, 'sel:', '', 100, '', '', '', '', 1, 1, 1, '_#AUTGROUP', 'f_h:', 'Auth Group (membership type)', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);";
 $SQL_aacore[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('mail_lists......', '', 'AA_Core_Fields..', 'Mailing Lists', 1000, 'Select mailing lists which you read', '${AA_DOC_URL}help.html', 'txt:', 0, 0, 1, 'mch::3:1', '', 100, '', '', '', '', 1, 1, 1, '_#MAILLIST', 'f_h:;&nbsp', 'Mailing Lists', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);";
+// mimo added mlxctrl on 4.10.2004
+$SQL_aacore[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('mlxctrl', '', 'AA_Core_Fields..', 'MLX Control', 6000, '', 'http://mimo.gn.apc.org/mlx/', 'txt:', 0, 0, 1, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 0, 1);";
 
 // News EN slice template
 $SQL_templates[] = "DELETE FROM field WHERE slice_id='News_EN_tmpl....'";
@@ -1318,7 +1323,7 @@ $SQL_links_create[] = "REPLACE INTO links_regions (id, name, level) VALUES (6050
 
 
 # -------------------------------- Executive part -----------------------------
-
+echo "<h2>update=".$update."</h2>";
 if( !$update AND !$restore AND !$restore_now) {
   echo '
   <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -1337,7 +1342,7 @@ if( !$update AND !$restore AND !$restore_now) {
   <p><font color="red">However, it is strongly recommended backup your current
   database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u '.DB_USER.' -p --opt '.DB_NAME.' &gt; ./aadb/aadb.sql</code></p>
 
-  <form name=f action="' .$PHP_SELF .'">
+  <form name=f action="' .$PHP_SELF .'" method=post>
   <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
   <tr><td class=tabtit><b>&nbsp;APC-AA database update options</b>
   </td>
@@ -1410,7 +1415,7 @@ if( substr( DB_PASSWORD, 0, 5 ) != $dbpw5 ) {
 
     <h1>APC AA</h1>
 
-    <form name=f action="' .$PHP_SELF .'">
+    <form name=f action="' .$PHP_SELF .'" >
     <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
     <tr><td class=tabtit><b>&nbsp;Bad password. Please fill "first five characters from aa database password (DB_PASSWORD in config.php3 file)".</b></td></tr>
     <tr><td align="center">

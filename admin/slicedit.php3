@@ -28,6 +28,8 @@ require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+// add mlx functions
+require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
 
 trace("+","slicedit.php3");
 $PERMS_STATE = array( "0" => _m("Not allowed"),
@@ -77,11 +79,15 @@ $id = unpack_id128($db->f("id"));  // correct ids
 $owner = unpack_id($db->f("owner"));  // correct ids
 trace("=","","post id and owner");
 
+$mlxctrl = $db->f(MLX_SLICEDB_COLUMN);  // should we use unpack_id here...
+
+
 if( $slice_id == "" ) {         // load default values for new slice
   $name = "";
   $owner = "";
   $template = "";
   $slice_url = "";
+  $lang_control = "";
 }
 
 # lookup owners
@@ -152,6 +158,12 @@ if ($slice_id == "") {
   FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"), 
       $PERMS_STATE, $permit_offline_fill, false);
   FrmInputSelect("lang_file", _m("Language"), $biglangs, $lang_file, false);
+//mimo change
+  //print("<h2>lang_control:".$db->f("lang_control")."</h2>");
+  FrmInputText(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlxctrl, 40,40, false, "", 
+  	"http://mimo.gn.apc.org/mlx/");
+//
+
   if ($superadmin) {
       FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $fileman_access, false, "", "http://apc-aa.sourceforge.net/faq/#1106");
       FrmInputText("fileman_dir", _m("File Manager Directory"), $fileman_dir, 99, 25, false,

@@ -78,6 +78,13 @@ http://www.apc.org/
                       // are grouped by some field (category, for example))
                       // good for display all the items of last magazine issue
                       // ( group_n=1 )
+		      //
+#optionally mlx       // set language extension options (needs MLX field filled in Slice Settings)
+                      // mlx=EN sets English as default language
+		      // mlx=EN-FR-DE first looks for EN, then FR, then DE 
+		      //              and then displays the first one found
+		      // mlx=EN-ONLY  displays only EN items (like conds)
+		      // mlx=ALL      turns of language extension
 
 function getmicrotime(){
   list($usec, $sec) = explode(" ",microtime());
@@ -126,6 +133,9 @@ require_once $GLOBALS["AA_INC_PATH"]."slice.php3";
 
 if ($encap){require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";}
 else {require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";}
+
+//MLX stuff
+require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
 
 page_open(array("sess" => "AA_SL_Session"));
 
@@ -370,7 +380,7 @@ if ( ($easy_query || $srch)
     if($easy_query) {     # posted by easy query form ----------------
 
       $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
-                          "easy_query", "qry", "srch_relev")); # store in session
+                          "easy_query", "qry", "srch_relev", "mlx")); # store in session, added mlx
 
       $item_ids = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld,
                                    $srch_from, $srch_to, $qry, $srch_relev);
@@ -381,7 +391,7 @@ if ( ($easy_query || $srch)
     }
 
     elseif($srch) {            # posted by bigsrch form -------------------
-      $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col")); # store in session
+      $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col", "mlx")); # store in session
       if( !$big )
         $search[slice] = $slice_id;
       $item_ids = SearchWhere($search, $s_col);
@@ -399,7 +409,7 @@ else {
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   $r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_name",
-                      "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator")); # store in session
+                      "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator","mlx")); # store in session, added mlx
 
   // ***** CONDS *****
 
@@ -498,9 +508,21 @@ else {
   else
     $sort[] = array ( 'publish_date....' => 'd' );
 
+  //mlx stuff    
+  if(isMLXSlice($slice_info)) {
+    if(!$mlxView)
+      $mlxView = new MLXView($mlx);
+    $restrict_zids = $mlxView->preQueryZIDs($slice_info[MLX_SLICEDB_COLUMN],$conds,$slices); 
+  }
   $zids=QueryZIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by],
                      "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator, true );
 
+  if(isMLXSlice($slice_info)) { 
+    $mlxView->postQueryZIDs($zids,$slice_info[MLX_SLICEDB_COLUMN],$slice_id, $conds, $sort,
+		$slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
+		$defaultCondsOperator,$nocache);
+  }
+     
 // Commented out because queryids doesn't return error strings
 //  if( isset($item_ids) AND !is_array($item_ids))
 //    echo "<div>$item_ids</div>";
