@@ -79,7 +79,8 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
     $content4id["expiry_date....."][0][value] = time()+157680000;
   if( !$content4id["last_edit......."] ) 
     $content4id["last_edit......."][0][value] = time();
-
+  $content4id["flags..........."][0][value] = ITEM_FLAG_OFFLINE;
+    
   StoreItem( $id, $slice_id, $content4id, $fields, true, true, true );
                                         # insert, invalidatecache, feed
   RegisterItem( q_pack_id($id), $packet, $db );
@@ -88,6 +89,9 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
 
 /*
 $Log$
+Revision 1.6  2001/12/12 18:38:02  honzam
+Better item table flags setting
+
 Revision 1.5  2001/03/30 11:54:35  honzam
 offline filling bug and others small bugs fixed
 

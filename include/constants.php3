@@ -134,6 +134,10 @@ define( "FLAG_FREEZE", 4 );    # content can't be changed
 define( "FLAG_OFFLINE", 8 );   # off-line filled
 define( "FLAG_UPDATE", 16 );   # content should be updated if source is changed
                                #   (after feeding)
+                               
+# item table flags (numbers - just to be compatible with content table)
+define( "ITEM_FLAG_FEED", 2 );      # item is fed
+define( "ITEM_FLAG_OFFLINE", 8 );   # off-line filled or imported from file
 
 # states of feed field of field table
 define( "STATE_FEEDABLE", 0 );
@@ -379,6 +383,9 @@ require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 
 /*
 $Log$
+Revision 1.22  2001/12/12 18:38:02  honzam
+Better item table flags setting
+
 Revision 1.21  2001/11/26 16:34:09  honzam
 Linked new lang files
 
