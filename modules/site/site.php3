@@ -68,8 +68,6 @@ trace("=","site.php3","precachecheck");
 // CACHE_TTL defines the time in seconds the page will be stored in cache
 // (Time To Live) - in fact it can be infinity because of automatic cache
 // flushing on page change
-// CACHE_PURGE_FREQ - frequency in which the cache is checked for old values
-//                    (in seconds)
 
 /** Create keystring from values, which exactly identifies resulting content */
 //  25June03 - Mitra - added post2shtml into here, maybe should add all URL?
@@ -106,8 +104,8 @@ echo $res;
 // (item addition) - the page is regenerated, then.
 
 if (is_array($slices4cache) && !$nocache) {
-    $clear_cache_str = "slice_id=". join(',slice_id=', $slices4cache);
-    $GLOBALS['pagecache']->store($key_str, $res, $clear_cache_str);
+    $str2find = new CacheStr2find($slices4cache, 'slice_id');
+    $GLOBALS['pagecache']->store($key_str, $res, $str2find);
 }
 
 if( $debugtime ) {
@@ -180,7 +178,7 @@ function ModW_unalias( &$text, &$state ) {
 // id = an item id, unpacked or short
 // short_ids = boolean indicating type of $ids (default is false => unpacked)
 function ModW_id2item($id,$use_short_ids="false") {
-    return GetItemFromId($id, $use_short_ids);
+    return GetItemFromId(new zids($id, $use_short_ids ? 's' : 'l'));
 }
 
 /** Convert a state string into an array, based on the variable names and

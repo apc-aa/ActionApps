@@ -34,16 +34,10 @@ http://www.apc.org/
 
 class PageCache  {
     var $cacheTime     = 600; // number of seconds to store cached informations
-    var $lastClearTime = 0;   // timestamp of last purging of cache database (removed obsolete cache informations)
-    var $clearFreq     = 600; // number of seconds between database cleaning
-    var $caller;              // just for debugging
 
-    // PageCache class constructor
-    function PageCache($ignoreddb, $ct=600, $cf=600, $caller="") {
-        if ($GLOBALS[debugcache]) huhl("Cache:new:$caller:$ct,$cf");
-        $this->caller    = $caller; // Just for debugging
+    /** PageCache class constructor */
+    function PageCache($ct = 600) {
         $this->cacheTime = $ct;
-        $this->clearFreq = $cf;
     }
 
     /** Private method - serialized specified global variables
@@ -72,13 +66,9 @@ class PageCache  {
         $ret   = false;
         $db    = getDB();
         $SQL   = "SELECT * FROM pagecache WHERE id='$keyid'";
-        if ($GLOBALS['debugcache']) $GLOBALS['debug'] = 1;
         $db->tquery($SQL);
-        if ($GLOBALS['debugcache']) $GLOBALS['debug'] = 0;
         if ($db->next_record()) {
-            if ($GLOBALS['debugcache']) { huhl("Cache:get:Got a hit:time=",time()," ct=",$this->cacheTime," st=",$db->f("stored"),"t-ct=",time()-$this->cacheTime); }
             if ( (time() - $this->cacheTime) < $db->f("stored") ) {
-                if ($GLOBALS['debugcache']) { huhl("found:str2find=".$db->f('str2find')); }
                 $ret = $db->f('content');
             }
         }
@@ -95,23 +85,20 @@ class PageCache  {
     /** Cache informations based on $keyString
      *  Returns database identifier of the cache value (MD5 of keystring)
      */
-    function store($keyString, $content, $str2find="") {
-        global $debugcache, $cache_nostore;
-        if ($GLOBALS['debugcache']) {
-            huhl("Cache:store:keystring=",htmlentities($keyString));
-            huhl("$str2find:",$this->caller,htmlentities($content)); trace("p");
-        }
+    function store($keyString, $content, $str2find) {
+        global $cache_nostore;
         if( ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when
             $db    = getDB();                         // {user:xxxx} alias is used
             $tm    = time();
             $keyid = $this->getKeyId($keyString);
             $SQL   = "REPLACE pagecache SET id='$keyid',
-                              str2find='". quote($str2find). "',
+                              str2find='". quote($str2find->getStr2find()). "',
                               content='". quote($content). "',
                               stored='$tm',
                               flag=''";
             $db->tquery($SQL);
-            if( ($this->lastClearTime + $this->clearFreq) < $tm ) {
+            if (rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
+                // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
                 $this->purge();
             }
             freeDB($db);
@@ -121,19 +108,16 @@ class PageCache  {
 
     /** Clears all old cached data */
     function purge() {
-        if ($GLOBALS['debugcache']) huhl("Cache:purge:".$this->caller);
         $db  = getDB();
         $tm  = time();
         $SQL = "DELETE FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'";
         $db->query_nohalt($SQL);
         freeDB($db);
-        $this->lastClearTime = $tm;
     }
 
     /** Remove cached informations for all rows which have the $cond in str2find
      */
     function invalidateFor($cond) {
-        if ($GLOBALS['debugcache']) { huhl("Cache:invalidateFor:$cond"); }
         $db = getDB();
 
         // We do not want to report errors here. Sometimes this SQL leads to:
@@ -141,6 +125,7 @@ class PageCache  {
         //    restarting transaction)" error.
         // It is not so big problem if we do not invalidate cache - much less than
         // halting the operation.
+
         $SQL = "DELETE FROM pagecache WHERE str2find LIKE '%". quote($cond) ."%'";
         $db->query_nohalt($SQL);
         freeDB($db);
@@ -148,7 +133,6 @@ class PageCache  {
 
     /** Remove cached informations for all rows */
     function invalidate() {
-        if ($GLOBALS['debugcache']) { huhl("Cache:invalidate"); }
         $db  = getDB();
         $SQL = "DELETE FROM pagecache";
         $db->query_nohalt($SQL);
@@ -156,5 +140,44 @@ class PageCache  {
     }
 }
 
-$GLOBALS['pagecache'] = new PageCache(null,CACHE_TTL,CACHE_PURGE_FREQ);
+
+/** CacheStr2find class - storage for str2find pairs used by pagecache
+ *  to identify records to be deleted (invalidated) from cache
+ */
+class CacheStr2find {
+    var $ids = array();   /** */
+
+    function CacheStr2find( $ids=null, $type='slice_id') {
+        $this->add($ids, $type);
+    }
+
+    /** Add ids (array) of specified type (common to all added ids) */
+    function add($ids, $type='slice_id') {
+        if ( !$ids ) {
+            return;
+        }
+        foreach ((array)$ids as $id) {
+            $this->ids["$type=$id"] = true;   // match type-id pair
+        }
+    }
+
+    function add_str2find($str2find) {
+        if (strtolower(get_class($str2find)) == 'cachestr2find') {
+            foreach ($str2find->ids as $k => $v) {
+                $this->ids[$k] = true;   // copy all the $str2find ids to this
+            }
+        }
+    }
+
+    function clear() {
+        unset($this->ids);
+        $this->ids = array();
+    }
+
+    function getStr2find() {
+        return implode(',', $this->ids);
+    }
+}
+
+$GLOBALS['pagecache'] = new PageCache(CACHE_TTL);
 ?>

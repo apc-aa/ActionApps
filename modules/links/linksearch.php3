@@ -2,10 +2,6 @@
 require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
 require_once $GLOBALS['AA_BASE_PATH']. "modules/links/constants.php3";
 
-if (!defined ("LINKS_LINKSEARCH_INCLUDED"))
-      define ("LINKS_LINKSEARCH_INCLUDED",1);
-else return;
-
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -140,7 +136,8 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
     $SQL .=  $where_sql . $order_by_sql;
 
     # get result --------------------------
-    return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr, "cat_path=$cat_path");
+    $str2find = new CacheStr2find($cat_path, 'cat_path');
+    return GetZidsFromSQL($SQL, 'id', $cache_condition, $keystr, $str2find);
 }
 
 
@@ -186,7 +183,8 @@ function Links_QueryCatZIDs($cid, $conds, $sort="", $subcat=false, $type="app") 
     $SQL .=  $where_sql . $order_by_sql;
 
     # get result --------------------------
-    return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr, "cat_path=" . Links_GetCategoryColumn( $cid, 'path'));
+    $str2find = new CacheStr2find(Links_GetCategoryColumn($cid, 'path'), 'cat_path');
+    return GetZidsFromSQL($SQL, 'id', $cache_condition, $keystr, $str2find);
 }
 
 ?>

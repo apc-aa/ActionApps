@@ -341,26 +341,20 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
   global $nocache, $debug;
-  trace("+","GetView",$view_param);
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param).stringexpand_keystring();
 
   if( !$nocache && ($res = $GLOBALS['pagecache']->get($keystr)) ) {
-    trace("-");
     return $res;
   }
 
-  $str2find_save = $GLOBALS['str2find_passon']; //Save str2find from same level
-  $GLOBALS['str2find_passon'] = ""; // clear it for caches stored further down
-  $res = GetViewFromDB($view_param, $cache_sid);
-  trace("=","GetView","after GetViewFromDB");
-  $str2find_this = ",slice_id=$cache_sid";
-  if (!strstr($GLOBALS['str2find_passon'],$str2find_this))
-    $GLOBALS['str2find_passon'] .= $str2find_this; // append our str2find
-    // Note cache_sid set by GetViewFromDB
-  $GLOBALS['pagecache']->store($keystr, $res, $GLOBALS['str2find_passon']);
-  $GLOBALS['str2find_passon'] .= $str2find_save; // and append saved for above
-  trace("-");
+  global $str2find_passon, $pagecache;
+  $str2find_save   = $str2find_passon;    // Save str2find from same level
+  $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
+  $res             = GetViewFromDB($view_param, $cache_sid);
+  $str2find_passon->add($cache_sid, 'slice_id');
+  $pagecache->store($keystr, $res, $str2find_passon);
+  $str2find_passon->add_str2find($str2find_save); // and append saved for above
   return $res;
 }
 
@@ -453,7 +447,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                              $conds, $sort,
                                              $slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
                                              $defaultCondsOperator,$GLOBALS['nocache'],
-					     "vid=$vid t=full i=".serialize($zids3));
+                         "vid=$vid t=full i=".serialize($zids3));
           $zids->a = $zids3->a;
           $zids->type = $zids3->type;
         }

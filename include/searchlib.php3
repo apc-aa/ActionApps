@@ -331,14 +331,14 @@ function CachedSearch($cache_condition, $keystr) {
  * @param string $col              - column in database containing id
  * @param bool   $cache_condition  - have we store result into cache?
  * @param string $keystr           - id_string which identifies cache content
- * @param string $cache_del_str    - string used to delete cache
+ * @param string $cache_str2find   - CacheStr2find object for cache invalidation
  * @param bool   $empty_result_condition - have we return empty set?
  * @param zids   $sort_zids        - used for sorting zids to right order
  *                                 - if specified, return zids are sorted
  *                                   in the same order as in $sort_zids
  * @return zids from SQL query;
  */
-function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_del_str,
+function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_str2find,
                          $zid_type='s', $empty_result_condition=false,
                          $sort_zids=null ) {
     global $pagecache, $QueryIDsCount, $debug;
@@ -359,8 +359,9 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_del_str,
         $zids->sort_and_restrict_as_in($sort_zids);
     }
 
-    if( $cache_condition )
-        $pagecache->store($keystr, serialize($zids), $cache_del_str);
+    if ( $cache_condition ) {
+        $pagecache->store($keystr, serialize($zids), $cache_str2find);
+    }
 
     freeDB($db);
     return $zids;
@@ -754,9 +755,10 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   if ($GLOBALS['view_info'])  $SQL .= ", view_name: ".  $GLOBALS['view_info']['name'];
 
   // if neverAllItems is set, return empty set if no conds[] are used
-  return GetZidsFromSQL( $SQL, 'itemid', $cache_condition, $keystr,
-                  "slice_id=$slice_id,slice_id=".  @join(',slice_id=', $slices),
-                  'p', !is_array($select_conds) && $neverAllItems,
+  $str2find = new CacheStr2find($slices, 'slice_id');
+  $str2find->add($slice_id, 'slice_id');
+  return GetZidsFromSQL($SQL, 'itemid', $cache_condition, $keystr, $str2find, 'p',
+                  !is_array($select_conds) && $neverAllItems,
                   // last parameter is used for sorting zids to right order
                   // - if no order specified and restrict_zids are specified,
                   // return zids in unchanged order
@@ -828,7 +830,8 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
 
 
     # get result --------------------------
-    return GetZidsFromSQL( $SQL, 'short_id', $cache_condition, $keystr, "group_id=$group_id");
+    $str2find = new CacheStr2find($group_id, 'group_id');
+    return GetZidsFromSQL($SQL, 'short_id', $cache_condition, $keystr, $str2find);
 }
 
 // -------------------------------------------------------------------------------------------
