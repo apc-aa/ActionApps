@@ -44,14 +44,14 @@ if (0) {
 
 HtmlPageBegin();
 ?>
- <TITLE><?php echo _m("One Off code");?></TITLE>
+ <TITLE><?php echo _m("Console");?></TITLE>
 </HEAD>
 
 <?php
     require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
-    showMenu($aamenus, "aaadmin","summarize");
+    showMenu($aamenus, "aaadmin","console");
   
-    echo "<H1><B>" . _m("AA - One Off code") . "</B></H1>";
+    echo "<H1><B>" . _m("AA - Administration Console") . "</B></H1>";
     PrintArray($err);
     echo $Msg;
     $nocache=1;
