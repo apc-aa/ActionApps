@@ -118,7 +118,7 @@ function RealyDelete() {
     var idx=document.f.elements['new_module['+no+']'].selectedIndex;
     var roles;
     // which roles is defined for the module
-    roles = ( idx > 0 ) ? mod[mod_types.charCodeAt(idx-1)] : new Array('                     ');
+      roles = ( idx > 0 ) ? mod[mod_types.charCodeAt(idx-1)] : new Array('                     ');
     // clear selectbox
     for( i=(document.f.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
       document.f.elements['new_module_role['+no+']'].options[i] = null
@@ -226,7 +226,7 @@ if( $grp_new OR $add_submit ){
                           "submit_action"=>array("value"=>"0"));
 } else {
     $form_buttons = array("submit_button" => array("type"=>"button","value"=>_m("Update"),"accesskey"=>"S",
-                                                   "add"=>'onclick="UpdateGroup\'update_submit\')"'),
+                                                   "add"=>'onclick="UpdateGroup(\'update_submit\')"'),
                           "grp_edit" => array("value"=>"1"),
                           "cancel" => array("url"=>"um_gedit.php3"),
                           "selected_group"=>array("value"=>$selected_group),
