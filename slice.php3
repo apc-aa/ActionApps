@@ -259,7 +259,6 @@ function CompactView($where, $catsel=false) {
     require $GLOBALS[AA_INC_PATH]."big_srch.php3";
   }
   elseif( $sh_itm ) {   // fulltext view
-echo "------$cni-------";
     $SQL= "SELECT items.*, fulltexts.full_text, categories.name as category 
              FROM items, fulltexts 
              LEFT JOIN categories ON categories.id=items.category_id 
@@ -321,9 +320,7 @@ echo "------$cni-------";
       }  
     }    
     //$debugtimes["callcompact"]=microtime();
-echo "------$cni-------";
     CompactView(pack_id($r_unpacked_where), (!$srch AND !$encap) );
-echo "------$cni-------";
     //$debugtimes[]=microtime();
   }
 ?>
@@ -339,6 +336,9 @@ echo "------$cni-------";
 //    p_arr_m($debugtimes);
 /*
 $Log$
+Revision 1.6  2000/08/19 11:53:31  kzajicek
+Removed debugging output ()
+
 Revision 1.5  2000/08/17 15:09:11  honzam
 new inc parameter for displaying specified file instead of slice data
 
