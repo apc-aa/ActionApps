@@ -1,0 +1,154 @@
+<?php
+//$Id$
+/* 
+Copyright (C) 2002 Association for Progressive Communications 
+http://www.apc.org/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+/* PHP cron: reads items from database and runs them. The item format is UNIX-cron-like. 
+
+	Author: Jakub Adamek, February 2002
+*/
+
+/* See cron.php3 documentation in FAQ pages.
+
+UNIX Cron documentation:
+
+Field          Allowed Values
+-----          --------------
+Minute         0-59
+Hour           0-23
+Day of Month   1-31
+Month          1-12, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, 
+               nov, dec
+Day of Week    0-7, sun, mon, tue, wed, thu, fri, sat (0 and 7 are "sun")
+
+A field may be an asterisk (*), which indicates all values in the range are acceptable. Ranges of numbers are allowed, i.e. "2-5" or "8-11", and lists of numbers are allowed, i.e. "1,3,5" or "1,3,8-11". Step values can be represented as a sequence, i.e. "0-59/15", "1-31/3", or "* /2". 
+*/
+
+require "./include/config.php3";
+require $GLOBALS[AA_INC_PATH]."locsess.php3";
+require $GLOBALS[AA_INC_PATH]."varset.php3";
+
+echo "<HTML><BODY>";
+
+// you may call cron with specified timestamp to simulate the behavior 
+
+function cron ($time = 0) {
+
+	$translate["mon"] = array ("jan"=>1,"feb"=>2,"mar"=>3,"apr"=>4,"may"=>5,"jun"=>6,"jul"=>7,"aug"=>8,"sep"=>9,"oct"=>10,"nov"=>11,"dec"=>12);
+	$translate["wday"] = array ("sun"=>0,"mon"=>1,"tue"=>2,"wed"=>3,"thu"=>4,"fri"=>5,"sat"=>6,"7"=>0);
+
+	if (!$time) $time = time();
+
+	$db = new DB_AA;
+	$db_update = new DB_AA;
+	
+	// FIXME: the month day step is not always 31
+	$parts = array ("mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60);
+
+	echo "<B>".date("m.d.y H:i",$time)."</B></BR>";
+	
+	$db->query ("SELECT * FROM cron");
+	while ($db->next_record()) {
+		/* $nearest is the nearest of times on which item should run to now (nearest <= now)
+		   $nearest_part is value of current part of nearest */
+		$nearest_part = 0;
+		
+		// when last_run is NULL, run item always
+		if ($db->f("last_run")) {
+			$last_run = getdate ($db->f("last_run"));
+			
+			// If an hour passed, I want to have minutes as 60+minutes etc.
+			$now = getdate ($time);
+			$now["mon"] += -12 * ($last_run["year"]-$now["year"]);
+			$now["wday"] += -28 * ($last_run["mon"]-$now["mon"]);
+			$now["mday"] += -28 * ($last_run["mon"]-$now["mon"]);
+			$now["hours"] += -24 * ($last_run["mday"]-$now["mday"]);
+			$now["minutes"] += -60 * ($last_run["hours"]-$now["hours"]);
+			
+			reset ($parts);
+			while ((list($part,$units) = each($parts)) && $nearest_part > -1) {
+				$now_part = $now[$part];
+				
+				$value = $db->f($part);
+				if ($value == "*") {
+					$nearest[$part] = $now_part;
+					continue;
+				}
+				$nearest_part = -1;
+				
+				$tr = $translate[$part];
+				if (is_array ($tr)) {
+					reset ($tr);
+					while (list($search,$replace) = each($tr))
+						$value = str_replace ($search,$replace,$value);
+				}
+				
+				if (strstr ($value,'/')) {
+					list($from,$to,$step) = split ('[/-]',$value);
+					for ($i = $from; $i <= $to; $i += $step)
+						if ($i <= $now_part && $i > $nearest_part) 
+							$nearest_part = $i;
+				}
+				else {
+					$ranges = split (',',$value);
+					reset ($ranges);
+					while ((list(,$range) = each ($ranges)) && !$matches) {
+						if (strstr ($range,"-")) {
+							list($from,$to) = split('-',$value);
+							for ($i = $from; $i <= $to; $i++)
+								if ($i <= $now_part && $i > $nearest_part) 
+									$nearest_part = $i;
+						}
+						else if ($range <= $now_part && $range > $nearest_part) 
+							$nearest_part = $range;
+					}
+				}
+				$nearest[$part] = $nearest_part;
+			}
+		}
+		
+		$nearest_time = mktime ($nearest["hours"], $nearest["minutes"],0, $nearest["mon"], $nearest["mday"], $now["year"]);
+		//echo date("m.d.y H:i",$nearest_time)."</BR>";	
+		
+		if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
+			$url = AA_INSTAL_URL.$db->f("script")."?".$db->f("params");
+			echo "$url<BR>";
+			$db_update->query ("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
+			fopen ($url,"r");
+		}
+	}
+}
+
+// Use this to try function of script
+/*
+$db = new DB_AA;
+$db->query ("UPDATE cron SET last_run = NULL");
+
+
+$time = time(); 
+for ($i = 0; $i < 30; $i++) {
+	cron ($time);
+	$time += 60*37;
+}
+*/
+
+cron();
+
+echo "</BODY></HTML>";
+?>
