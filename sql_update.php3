@@ -149,7 +149,7 @@ $tablelist = array( 'active_sessions' => "(
                          class char(16),
                          pri smallint(5) DEFAULT '100' NOT NULL,
                          ancestors char(160) default NULL,
-                         description char(250) default NULL,
+                         description text default NULL,
                          short_id int(11) NOT NULL auto_increment,
                          PRIMARY KEY (id),
                          KEY group_id (group_id),
