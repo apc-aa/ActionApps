@@ -43,7 +43,7 @@ function MoveItems($chb,$status) {
        last_edit   = '$now',
        edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999") ."'
                    WHERE id='".q_pack_id(substr($it_id,1))."'"); 
-                   
+
                                          // substr removes first 'x'
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
@@ -113,16 +113,16 @@ if(!isset($r_admin_order) OR $change_id){ # we are here for the first time
   $r_admin_order_dir = "d";
   if( $r_admin_order ) {
     if( substr($r_admin_order,-1) == '-' )
-      $r_admin_order = substr($order,0,-1);
-    if( substr($order,-1) == '+' ) {
-      $r_admin_order = substr($order,0,-1);
+      $r_admin_order = substr($r_admin_order,0,-1);
+    if( substr($r_admin_order,-1) == '+' ) {
+      $r_admin_order = substr($r_admin_order,0,-1);
       $r_admin_order_dir = "a";
-    }  
-  }    
+    }
+  }
   if( !$r_admin_order )
     $r_admin_order = "publish_date....";
 
-  $sess->register(r_admin_order); 
+  $sess->register(r_admin_order);
   $sess->register(r_admin_order_dir); 
 
   // $r_admin_search, $r_admin_search_field - controls article filter

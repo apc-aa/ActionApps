@@ -1,6 +1,6 @@
 <?php
 //$Id$
-/* 
+/*
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
 
@@ -33,7 +33,7 @@ function InsertProfileProperty($uid, $property, $selector, $value) {
                                   property = '$property',
                                   selector = '$selector',
                                   value = '$value'";
-  if (!$db->query($SQL)) 
+  if (!$db->query($SQL))
     $err["DB"] = MsgErr("Can't update profile");
 }
 
@@ -60,42 +60,42 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
           <td>$col2&nbsp;</td>
           <td>$col3&nbsp;</td>
           <td>$col4&nbsp;</td>
-          <td align='right'><a href=\"javascript:document.location='". 
+          <td align='right'><a href=\"javascript:document.location='".
             $sess->url("se_profile.php3?del=$rid&uid=$uid"). "'\">". L_DELETE ."</a></td>
-        </tr>";  
-}          
+        </tr>";
+}
 
 function PrintRule($rule) {
   global $PROPERTY_TYPES, $SORTORDER_TYPES, $INPUT_DEFAULT_TYPES, $fields;
-  
+
   $prop = $rule['property'];
   $rid  = $rule['id'];
 
   switch($prop) {
-    case 'listlen': 
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", $rule['value']); 
+    case 'listlen':
+      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", $rule['value']);
       break;
-    case 'admin_order': 
+    case 'admin_order':
       $fid = substr( $rule['value'], 0, -1 );
       $ord = substr( $rule['value'], -1 );
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $SORTORDER_TYPES[$ord]); 
+      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $SORTORDER_TYPES[$ord]);
       break;
     case 'admin_search':
       $pos = strpos($rule['value'],':');
       $fid = substr($rule['value'], 0, $pos);
       $val = substr($rule['value'], $pos+1);
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $val); 
+      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $val);
       break;
     case 'hide':
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name']); 
+      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name']);
       break;
     case 'fill':
     case 'hide&fill':
     case 'predefine':
       $fnc = ParseFnc(substr($rule['value'],2));  # all default should have fnc:param format
       PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name'],
-                   $INPUT_DEFAULT_TYPES[$fnc['fnc']], $fnc['param'], 
-                   ($rule['value'][0] == '1')? 'HTML' : "" ); 
+                   $INPUT_DEFAULT_TYPES[$fnc['fnc']], $fnc['param'],
+                   ($rule['value'][0] == '1')? 'HTML' : "" );
       break;
   }
 }
@@ -104,16 +104,16 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
   global $PROPERTY_TYPES, $lookup_fields, $SORTORDER_TYPES, $INPUT_DEFAULT_TYPES, $fields;
   echo "<tr class=tabtxt>
          <td>". $PROPERTY_TYPES[$rule]. "<input type=hidden name=prop$n value=$rule></td>
-         <td>"; 
+         <td>";
   if($sfld)
     FrmSelectEasy("fld$n", $lookup_fields, "");
-   else 
+   else
     echo "&nbsp;";
   echo " </td>
          <td>";
   if($func)
     FrmSelectEasy("fnc$n", $func, "");
-   else 
+   else
     echo "&nbsp;";
   echo " </td>
          <td>". ($sparam ? "<input type=text name=param$n size=20>" : "&nbsp;"). "</td>
@@ -130,14 +130,14 @@ if($cancel)
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
   exit;
-}  
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if( $del ) {
-  $SQL = "DELETE FROM profile WHERE id='$del' 
-             AND slice_id='$p_slice_id'"; #slice identification is not neccessry 
+  $SQL = "DELETE FROM profile WHERE id='$del'
+             AND slice_id='$p_slice_id'"; #slice identification is not neccessry
   if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
     $err["DB"] = MsgErr("Can't delete profile");
     break;
@@ -155,28 +155,28 @@ if( $add ) {
           InsertProfileProperty($uid, $property, '0', $param);
           $Msg = MsgOK(L_PROFILE_ADD_OK);
         }
-        break;  
+        break;
       case 'admin_order':
         if( $field_id ) {
           DeleteProfileProperty($property);
-          InsertProfileProperty($uid, $property, '0', $field_id.$funct);
+          InsertProfileProperty($uid, $property, '0', $field_id.$fnction);
           $Msg = MsgOK(L_PROFILE_ADD_OK);
         }
-        break;  
+        break;
       case 'admin_search':
         if( $field_id ) {
           DeleteProfileProperty($property);
           InsertProfileProperty($uid, $property, '0', "$field_id:$param");
           $Msg = MsgOK(L_PROFILE_ADD_OK);
         }
-        break;  
+        break;
       case 'hide':
         if( $field_id ) {
           DeleteProfileProperty($property, $field_id);
           InsertProfileProperty($uid, $property, $field_id, '1');
           $Msg = MsgOK(L_PROFILE_ADD_OK);
         }
-        break;  
+        break;
       case 'fill':
       case 'hide&fill':
       case 'predefine':
@@ -185,8 +185,8 @@ if( $add ) {
           InsertProfileProperty($uid, $property, $field_id, "$html:$fnction:$param");
           $Msg = MsgOK(L_PROFILE_ADD_OK);
         }
-        break;  
-   }    
+        break;
+   }
   } while( 0 );           #in order we can use "break;" statement
   if( count($err) > 1)
     $Msg = MsgOK(L_PROFILE_ADD_ERR);
@@ -207,7 +207,7 @@ reset( $fields );
 while( list($k, $v) = each($fields) )
   $lookup_fields[$k] = $v[name];
 
-  
+
 # set property names array
 $PROPERTY_TYPES = array( 'listlen'=>L_PROFILE_LISTLEN,
                          'admin_search'=>L_PROFILE_ADMIN_SEARCH,
@@ -218,7 +218,7 @@ $PROPERTY_TYPES = array( 'listlen'=>L_PROFILE_LISTLEN,
                          'predefine'=>L_PROFILE_PREDEFINE);
 
 $SORTORDER_TYPES = array( '+'=>L_ASCENDING, '-' => L_DESCENDING );
-                         
+
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo L_A_PROFILE_TIT;?></TITLE>
@@ -235,23 +235,23 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     if( eval('document.fr.fnc'+n) != null ) {
       si = eval('document.fr.fnc'+n+'.options.selectedIndex');
       document.sf.fnction.value = eval('document.fr.fnc'+n+'.options['+si+'].value');
-    }  
+    }
     if( eval('document.fr.fld'+n) != null ) {
       si = eval('document.fr.fld'+n+'.options.selectedIndex');
 //      alert( si );
       document.sf.field_id.value = eval('document.fr.fld'+n+'.options['+si+'].value');
-    }  
+    }
     document.sf.submit();
   }
 //-->
 </script>
 </HEAD>
-<?php 
+<?php
 require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
 echo "<H1><B>" . L_A_PROFILE_TIT . "</B></H1>";
 PrintArray($err);
-echo $Msg;  
+echo $Msg;
 
 echo "
  <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
@@ -261,7 +261,7 @@ echo "
   <tr>
    <td>
     <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">";
-    
+
 if( isset($rules) AND is_array($rules) ) {
   reset($rules);
   while( list(,$v) = each($rules))
@@ -269,7 +269,7 @@ if( isset($rules) AND is_array($rules) ) {
 } else
   echo "<tr><td>".L_NO_RULE_SET."</td></tr>";
 
-echo "</table>  
+echo "</table>
   <tr>
    <td class=tabtit><b>&nbsp;". L_PROFILE_ADD_HDR ."</b></td>
   </tr>
@@ -284,7 +284,7 @@ echo "</table>
        <td><b>". L_VALUE . "</b></td>
        <td><b>". L_HTML . "</b></td>
        <td>&nbsp;</td>
-      </tr>"; 
+      </tr>";
 
 PrintSetRule(1,'listlen',     0,0,                   1,0,L_PROFILE_LISTLEN_DESC );
 PrintSetRule(2,'admin_search',1,0,                   1,0,L_PROFILE_ADMIN_SEARCH_DESC);
