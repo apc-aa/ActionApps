@@ -282,7 +282,7 @@ if( $sh_itm OR $x ) {
                     'type'=>$add_disc ? "adddisc" : (($sel_ids || $all_ids) ? "fulltext" : "thread"),
                     'item_id'=> $sh_itm,
                     'vid'=> $view_info[id],
-                    'html_format' => ($view_info[flag] & DISCUS_HTML_FORMAT) ? true : false,
+                    'html_format' => $view_info[flag] & DISCUS_HTML_FORMAT,
                     'parent_id' => $parent_id
                      );
       $aliases = GetDiscussionAliases();
