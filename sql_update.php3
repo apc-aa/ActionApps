@@ -761,6 +761,7 @@ $tablelist = array(   'active_sessions' => "(
                           admin_format text,
                           admin_format_bottom text,
                           admin_remove text,
+                          admin_noitem_msg text,
                           permit_anonymous_post smallint(5) default NULL,
                           permit_anonymous_edit smallint(5) default NULL,
                           permit_offline_fill smallint(5) default NULL,

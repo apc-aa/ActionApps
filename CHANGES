@@ -1,3 +1,10 @@
+03/14/03 - added stringexpand_sessurl to expand {sessurl:xxxx}
+         - added admin_notiem_msg to sql_update.php3
+         - removed new DB_AA in itemedit.php3
+         - removed extra } in sliceexp.php3
+         - added stringexpand_sessurl 
+         - turned off warning about packing empty strings, too many bugs!
+         - allowed c-OR-1-aaa-2-bbbb in param_conds and conds[0]
 02/26/04 - fixed rss to ignore unparsable dates (and use Now) 
          - rss2.0 dates still need handling in xml_fetch
 02/16/04 - uploaded new developer's version of AA (unstable yet). Changes:

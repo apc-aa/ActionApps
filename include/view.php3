@@ -99,6 +99,7 @@ function CheckConditionCommand($field, $value) {
     return ($field && ($value != 'AAnoCONDITION'));
 }
 
+/** Converts a query string into a data view_params data structure */
 function ParseViewParameters($query_string="") {
   global $cmd, $set, $vid, $als, $slice_id, $conds, $slices, $mapslices, $debug;
 
@@ -146,7 +147,13 @@ function ParseViewParameters($query_string="") {
                  CountHit($s_or_l_ids[0]);
                }
                break;
-    case 'c':  if( CheckConditionCommand($command[1], $command[2]) )
+    case 'c':  // Check for experimental c-OR-1-aaa-2-bbb-3-ccc syntax
+               // Note param_conds[0] is not otherwise used
+               // It is converted into conds in GetViewConds 
+               // which is consumed in ParseMultiSelectConds
+               if ( $command[1] == 'OR')
+                { $param_conds[0] = 'OR'; array_shift($command); }
+               if( CheckConditionCommand($command[1], $command[2]) )
                  $param_conds[$command[1]] = stripslashes($command[2]);
                if( CheckConditionCommand($command[3], $command[4]) )
                  $param_conds[$command[3]] = stripslashes($command[4]);
@@ -227,6 +234,8 @@ function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
  * @param array $param_conds possibly redefinition of conds from url (cmd[]=c)
  * @return array conditions array
  */
+// If param_conds[0] = "OR" as set by ParseViewParameters then set valuejoin
+// used by ParseMultiSelectConds
 function GetViewConds($view_info, $param_conds) {
   trace("+","GetViewConds");
   # param_conds - redefines default condition values by url parameter (cmd[]=c)
@@ -236,6 +245,8 @@ function GetViewConds($view_info, $param_conds) {
                                $view_info['cond2cond'],  $param_conds[2]);
   ResolveCondsConflict($conds, $view_info['cond3field'], $view_info['cond3op'],
                                $view_info['cond3cond'],  $param_conds[3]);
+  if ($param_conds[0]) 
+    $cond['valuejoin'] = $param_conds[0];
   trace("-");
   return $conds;
 }
@@ -598,6 +609,14 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $ret = $itemview->get_output_cached($itemview_type);
       }   #zids2->count >0
       else {
+/* Not sure if this was a necessary change that got missed, or got changed again
+        # $ret = $noitem_msg; 
+        $level = 0; $maxlevel = 0;
+        # This next line is not 100% clear, might not catch aliases 
+        #since there are two formats for aliases structures. (mitra)
+    huhl("XYZZY:v578, msg=",$noitem_msg);
+        $ret = new_unalias_recurent($noitem_msg,"",$level,$maxlevel,null,null,$aliases);
+*/
         $ret = $itemview->unaliasWithScroller($noitem_msg);
       }
       // 	if( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();

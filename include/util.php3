@@ -77,6 +77,7 @@ function expand_return_url ($addsess) {
     else	return $r1;
 }
 
+
 // This function goes to either $return_url if set, or to $url
 // if $usejs is set, then it will use inline Javascript, its not clear why this is done
 //    sometimes (item.php3) but not others.
@@ -325,8 +326,11 @@ function string2id ($str) {
 # Note that pack_id is used in many places where it is NOT 128 bit ids.
 function pack_id ($unpacked_id){
     global $errcheck;
+    // Give up tracking this, too many errors in Honza's code!
+    /*
     if ($errcheck && !preg_match("/^[0-9a-f]+$/", $unpacked_id)) # Note was + instead {32}
-        huhe("Warning: trying to pack $unpacked_id.<br>\n");
+         huhe("Warning: trying to pack $unpacked_id.<br>\n");
+    */
   return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
 }
 

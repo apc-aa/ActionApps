@@ -545,14 +545,14 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true, $oldcontent4id="",
                     $context='direct' ) {
     global $varset, $itemvarset, $event;
+    //$GLOBALS[debugsi] = 1;
     $debugsi=$GLOBALS[debugsi];
-#$GLOBALS[debug] = 1;
     if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id, fields size=",count($fields));
     if (!is_object ($varset)) $varset = new CVarset();
     if (!is_object ($itemvarset)) $itemvarset = new CVarset();
 
     if ( !( $id AND is_array($fields) AND is_array($content4id)) ) {
-        if ($GLOBALS[errcheck]) huhl("Warning: StoreItem failed parameter check");
+        if ($GLOBALS[errcheck]) huhl("Warning: StoreItem ". sliceid2name($slice_id) . " failed parameter check id='",$id,"' content=".$content4id);
         return false;
     }
     // do not store item, if status_code==4
@@ -568,7 +568,9 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
             $oldcontent4id = $oldcontent4id[$id];
         }
 
+        if ($debugsi) huhl("StoreItem: events slice_id=",$slice_id);
         $event->comes('ITEM_BEFORE_UPDATE', $slice_id, 'S', new ItemContent ($content4id), new ItemContent ($oldcontent4id));
+        if ($debugsi) huhl("StoreItem: done events");
 
         reset($content4id);
         $delim="";
@@ -589,6 +591,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
             freeDB($db);
             // note extra images deleted in insert_fnc_fil if needed
         }
+        if ($debugsi) huhl("StoreItem: done overwriting");
     }
     else {
         $event->comes('ITEM_BEFORE_INSERT', $slice_id, 'S', new ItemContent ($content4id));

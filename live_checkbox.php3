@@ -22,7 +22,7 @@ http://www.apc.org/
 
     Used by live checkboxes (item alias function f_k).
     Updates a boolean field in database and sends
-    back a cookie with the given acknowlegement.
+    back an image file
 
     Params: live_checkbox[short_id][field_id]=action
     
@@ -30,15 +30,16 @@ http://www.apc.org/
         short_id is the item short ID
         field_id is the field ID (like "highlight......")
         action is one of on, off and decides whether the checkbox should be switched on or off
+        (it looks like action is ignored, and the field is just toggled - mitra)
 */
-
+/*
 function f () {
-$image_path = "http://localhost/aa_jakub/images/";
-header ("Content-Type: image/gif");
-readfile ($image_path.'cb_on.gif');
-exit;
+    $image_path = "http://localhost/aa_jakub/images/";
+    header ("Content-Type: image/gif");
+    readfile ($image_path.'cb_on.gif');
+    exit;
 }
-         
+*/       
 $directory_depth = "base";           
 require_once "./include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
@@ -65,12 +66,12 @@ if (!IfSlPerm(PS_EDIT))
 header ("Content-Type: image/gif");
 
 $content4ids = GetItemContent($item_id);
-reset ($content4ids);
-$content4id = current ($content4ids);
+reset($content4ids);
+$content4id = current($content4ids);
 $oldcontent4id = $content4id;
 $action = ! ($content4id[$field_id][0]["value"]);
 $content4id = array ($field_id => array (0 => array ("value" => $action)));
-list($fields) = GetSliceFields ($slice_id);   
+list($fields) = GetSliceFields($slice_id);   
     
 StoreItem ($item_id,
            $slice_id,

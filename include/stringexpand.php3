@@ -290,6 +290,18 @@ function stringexpand_substr($string,$start,$length=999999999) {
     return substr($string,$start,$length);
 }
 
+/** Expand URL by adding session, 
+    also handle special cases like {sessurl:hidden} */
+function stringexpand_sessurl($url) {
+    global $sess;
+    switch ($url) {
+        case "hidden":
+            return "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">";
+            break;
+        default: 
+            return $sess->url($url);
+    }
+}
 
 # Expand a single, syntax element.
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {

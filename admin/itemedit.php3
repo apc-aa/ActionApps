@@ -80,7 +80,8 @@ if($cancel) {
   else
     go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
 }
-$db = new DB_AA;
+
+#$db = new DB_AA;
 
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
@@ -95,6 +96,7 @@ else $action = "edit";
 //   $js_proove_fields - JavaScript code for form validation
 //   list ($fields, $prifields) = GetSliceFields ()
 //   $oldcontent4id
+
 ValidateContent4Id ($err, $slice_id, $action, $id);
 
 $slice = new slice($slice_id);
@@ -175,7 +177,6 @@ if( !$encap ) {
         'show_func_used'       => $show_func_used,
         'js_proove_fields'     => $js_proove_fields);
 }
-
 $inputform_settings['messages']            = array('err' => $err);
 $inputform_settings['form_action']         = ($DOCUMENT_URI != "" ? $DOCUMENT_URI :
                                              $PHP_SELF . ($return_url ? "?return_url=".urlencode($return_url) : ''));
