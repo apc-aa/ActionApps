@@ -1,3 +1,13 @@
+03/17/01 - feeding now respects current setting of feeding permission (fixed 
+           the "disable feeding doesn't terminate feeding" bug
+         - new "Delete slice" admin page for superusers
+         - better anonymous posting support (new filler.php3 script introduced
+           which allows full HTML customization and images and other files
+           uploads from anonymous forms)
+03/14/01 - HTML/plaintext switch now works
+         - some fields are hidden for not superusers (template, deleted, ...)
+         - counting of items in each bin
+         - better feeding support (internaly prepared for unfeedable fields)
 03/03/01 - feeding support
          - fixed bug with radiobuttons, ...
          - better seting of News template

@@ -58,7 +58,7 @@ $error = "";
 $ok = "";
 
 $p_slice_id = q_pack_id($slice_id);
-$slice_info = GetSliceInfo($p_slice_id);
+$slice_info = GetSliceInfo($slice_id);
 
 $offline_data = stripslashes($offline_data);
 $offline_data = str_replace(chr(14),' ',$offline_data);  // remove wrong chars
@@ -68,9 +68,11 @@ if( !$slice_info )
 
 if( $slice_info["permit_offline_fill"] < 1 )
   SendErrorPage(L_OFFLINE_ADMITED);
+ else
+  $bin2fill = $slice_info["permit_offline_fill"]; 
   
   # get slice fields and its priorities in inputform
-list($fields,$prifields) = GetSliceFields($p_slice_id);   
+list($fields,$prifields) = GetSliceFields($slice_id);   
 
 $packets = explode( "<wddxPacket", $offline_data );
 
@@ -80,7 +82,7 @@ reset($packets);
 while( list(,$packet) = each($packets) ) {
   if( strlen($packet) < 6 )   # throw first, it should be "";
     continue;
-  switch ( StoreWDDX2DB( "<wddxPacket".$packet, $slice_id, $fields ) ) {
+  switch (StoreWDDX2DB( "<wddxPacket".$packet,$slice_id,$fields,$bin2fill)) {
    case WDDX_DUPLICATED:
      $ok .= MsgOk( L_WDDX_DUPLICATED );  # this is error but not fatal - i
      break;
@@ -101,6 +103,9 @@ if( $error )
    
 /*
 $Log$
+Revision 1.3  2001/03/20 15:23:09  honzam
+standardized content management for items - filler, itemedit, offline, feeding
+
 Revision 1.2  2001/02/20 13:25:15  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 
