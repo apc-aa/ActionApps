@@ -1,7 +1,7 @@
 <?php
 //$Id$
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
 }
 
 function PrintRule($rule) {
-  global $PROPERTY_TYPES, $SORTORDER_TYPES, $fields; 
+  global $PROPERTY_TYPES, $SORTORDER_TYPES, $fields, $DEFAULT_VALUE_TYPES;
   $INPUT_DEFAULT_TYPES = getSelectBoxFromParamWizard ($DEFAULT_VALUE_TYPES);
 
   $prop = $rule['property'];
@@ -128,6 +128,6 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
          <td>". ($sparam ? "<input type=text name=param$n size=20>" : "&nbsp;"). "</td>
          <td>". ($shtml  ? "<input type=checkbox name=html$n>" : "&nbsp;"). "</td>
          <td><a href=\"javascript:addrule($n)\">". _m("Add") ."</a></td></tr>";
-}  
+}
 
 ?>
