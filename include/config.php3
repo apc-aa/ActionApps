@@ -139,6 +139,9 @@ $ActionAppConfig[en_media_mon][file] = "en_news_lang.php3";
 
 /*
 $Log$
+Revision 1.1  2000/07/11 09:31:54  kzajicek
+Renamed config.inc to config.php3
+
 Revision 1.3  2000/07/07 21:41:42  honzam
 SCROLLER_LENGTH missing bug fixed
 
