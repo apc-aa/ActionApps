@@ -1215,39 +1215,39 @@ $_m["e-mail or link"]
 
 # include/constants_param_wizard.php3, row 637
 $_m["mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag adition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>."]
-  = "";
+  = "enlace a correo - muestra:<br>\"<b>inicio</b>\\<a href=\"(mailto:)<i>el campo</i>\" <b>añadir al tag</b>\\><b>campo/texto</b>\\</a\\>. Si <i>el campo</i> no tiene contenido, muestra <b>si_no/texto</b>.";
 
 # include/constants_param_wizard.php3, row 640
 $_m["text before the link"]
-  = "";
+  = "texto antes del enlace";
 
 # include/constants_param_wizard.php3, row 642
 $_m["e-mail"]
-  = "";
+  = "Correo#:";
 
 # include/constants_param_wizard.php3, row 643
 $_m["field/text"]
-  = "";
+  = "campo/texto";
 
 # include/constants_param_wizard.php3, row 644
 $_m["if this parameter is a field id, the field's content is used, else it is used verbatim"]
-  = "";
+  = "si escribe un id de campo, se muestra el contenido de ese campo. De lo contrario, se muestra el texto literal";
 
 # include/constants_param_wizard.php3, row 647
 $_m["else_field/text"]
-  = "";
+  = "si_no/texto";
 
 # include/constants_param_wizard.php3, row 648
 $_m["if <i>the field</i> is empty, only this text (or field content) is printed"]
-  = "";
+  = "si <i>el campo</i> está vacío, muestra solo este texto (si escribe un id de campo, se mostrará el contenido de ese campo)";
 
 # include/constants_param_wizard.php3, row 651
 $_m["linktype"]
-  = "";
+  = "tipo";
 
 # include/constants_param_wizard.php3, row 652
 $_m["mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter"]
-  = "";
+  = "mailto / href (por defecto es mailto). Si quiere usar esta función para enlaces normales, escriba href en este parámetro";
 
 # include/constants_param_wizard.php3, row 654
 $_m["href"]
@@ -1259,15 +1259,15 @@ $_m["'New' sign"]
 
 # include/constants_param_wizard.php3, row 660
 $_m["prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time."]
-  = "";
+  = "para mostrar 'Nuevo' o 'Viejo' o cualquier otro texto en <b>texto nuevo</b> o <b>texto viejo</b> en función del <b>tiempo</b>, relativo a la fecha y hora actuales.";
 
 # include/constants_param_wizard.php3, row 662
 $_m["time"]
-  = "";
+  = "tiempo";
 
 # include/constants_param_wizard.php3, row 663
 $_m["Time in minutes from current time."]
-  = "";
+  = "minutos desde la hora actual";
 
 # include/constants_param_wizard.php3, row 665
 $_m["1440"]
@@ -1275,23 +1275,23 @@ $_m["1440"]
 
 # include/constants_param_wizard.php3, row 666
 $_m["newer text"]
-  = "";
+  = "texto nuevo";
 
 # include/constants_param_wizard.php3, row 667
 $_m["Text to be printed, if the date in <i>the filed</i> is newer than <i>current_time</i> - <b>time</b>."]
-  = "";
+  = "Texto que se muestra si la fecha en <i>el campo</i> es más reciente que la hora actual menos <b>tiempo</b>";
 
 # include/constants_param_wizard.php3, row 669
 $_m["NEW"]
-  = "NUEVO";
+  = "<b>¡NUEVO!</b>";
 
 # include/constants_param_wizard.php3, row 670
 $_m["older text"]
-  = "";
+  = "texto viejo";
 
 # include/constants_param_wizard.php3, row 671
 $_m["Text to be printed, if the date in <i>the filed</i> is older than <i>current_time</i> - <b>time</b>"]
-  = "";
+  = "Texto que se muestra si la fecha en <i>el campo</i> es posterior a la hora actual menos <b>tiempo</b>";
 
 # include/constants_param_wizard.php3, row 673
 $_m[""]
@@ -1303,19 +1303,19 @@ $_m["id"]
 
 # include/constants_param_wizard.php3, row 675
 $_m["prints unpacked id (use it, if you watn to show 'item id' or 'slice id')"]
-  = "";
+  = "mostrar el identificador interno dentro de las ActionApps, sean de items o de canales.";
 
 # include/constants_param_wizard.php3, row 676
 $_m["text (blurb) from another slice"]
-  = "";
+  = "texto de otro canal";
 
 # include/constants_param_wizard.php3, row 677
 $_m["prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specifield by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>."]
-  = "";
+  = "muestra un pedazo de texto de otro canal, basandose en una codición simple.<br>Si <i>el campo</i> (o el campo especificado en <b>cadenaAComparar</b>) del canal actual coincide con el contenido de <b>campoAComparar</b> en <b>canalPedazo</b>, muestra el contenido de <b>campoContenido</b> del <b>canalContenido</b>";
 
 # include/constants_param_wizard.php3, row 679
 $_m["stringToMatch"]
-  = "";
+  = "cadenaAComparar";
 
 # include/constants_param_wizard.php3, row 680
 $_m["By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text."]
@@ -1323,7 +1323,7 @@ $_m["By default it is <i>the field</i>.  It can be formatted either as the id of
 
 # include/constants_param_wizard.php3, row 683
 $_m["blurbSliceId"]
-  = "";
+  = "canalPedazo";
 
 # include/constants_param_wizard.php3, row 684
 $_m["unpacked slice id of the slice where the blurb text is stored"]
@@ -1335,7 +1335,7 @@ $_m["41415f436f72655f4669656c64732e2e"]
 
 # include/constants_param_wizard.php3, row 687
 $_m["fieldToMatch"]
-  = "";
+  = "campoAComparar";
 
 # include/constants_param_wizard.php3, row 688
 $_m["field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>"]
@@ -1347,7 +1347,7 @@ $_m["headline........"]
 
 # include/constants_param_wizard.php3, row 691
 $_m["fieldToReturn"]
-  = "";
+  = "campoContenido";
 
 # include/constants_param_wizard.php3, row 692
 $_m["field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)"]
@@ -1355,43 +1355,43 @@ $_m["field id of the field in <b>blurbSliceId</b> where the blurb text is stored
 
 # include/constants_param_wizard.php3, row 695
 $_m["RSS tag"]
-  = "";
+  = "tag RSS";
 
 # include/constants_param_wizard.php3, row 696
 $_m["serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags."]
-  = "";
+  = "función usada internamente para los alias de RSS predefinidos (ej. _#RSS_TITL). Añade los tags RSS 0.91";
 
 # include/constants_param_wizard.php3, row 697, 700, 794
 $_m["default"]
-  = "";
+  = "por defecto";
 
 # include/constants_param_wizard.php3, row 698
 $_m["prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>."]
-  = "";
+  = "muestra <i>el campo</i> o un valor por defecto si <i>el campo</i> está vacío. Se puede hacer exactamente lo mismo con la función f_c con los parámetros :::<b>valor por defecto</b>.";
 
 # include/constants_param_wizard.php3, row 701
 $_m["default value"]
-  = "";
+  = "valor por defecto";
 
 # include/constants_param_wizard.php3, row 703
 $_m["javascript: window.alert('No source url specified')"]
-  = "";
+  = "javascript#:window.alert(\"No se especificó URL de la fuente\")";
 
 # include/constants_param_wizard.php3, row 704
 $_m["print HTML"]
-  = "";
+  = "mostrar HTML";
 
 # include/constants_param_wizard.php3, row 705
 $_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
-  = "";
+  = "muestra <i>el campo</i> (o la <b>cadena</b>), alterando o no su contenido dependiendo de la selección hecha en 'HTML / texto plano': si se seleccionó 'texto plano', convierte el contenido a HTML, añadiendo cambios de linea etc.";
 
 # include/constants_param_wizard.php3, row 707
 $_m["unalias string"]
-  = "";
+  = "cadena";
 
 # include/constants_param_wizard.php3, row 708
 $_m["if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string"]
-  = "";
+  = "si está definida, la función ignora <i>el campo</i> y muestra esta cadena. Tenga en cuenta que puede escribir aquí otros alias.";
 
 # include/constants_param_wizard.php3, row 710
 $_m["<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>"]
@@ -1407,11 +1407,11 @@ $_m["Allows to transform the field value to another value.<br>Usage: <b>content_
 
 # include/constants_param_wizard.php3, row 714, 722, 730, 738, 746, 754, 762, 770, 778, 786
 $_m["content"]
-  = "";
+  = "contenido";
 
 # include/constants_param_wizard.php3, row 715, 723, 731, 739, 747, 755, 763, 771, 779, 787
 $_m["string for comparison with <i>the field</i> for following return value"]
-  = "";
+  = "valor a comparar con <i>el campo</i> para que se muestre el valor siguiente";
 
 # include/constants_param_wizard.php3, row 718, 726, 734, 742, 750, 758, 766, 774, 782, 790
 $_m["return value"]
@@ -1419,15 +1419,15 @@ $_m["return value"]
 
 # include/constants_param_wizard.php3, row 719, 727, 735, 743, 751, 759, 767, 775, 783, 791
 $_m["string to return if previous content matches - You can use field_id too"]
-  = "texto a retornar si el contenido anterior coincide - También puede usar id_campo";
+  = "texto a retornar si el contenido anterior coincide - También puede usar id_campo para mostrar el contenido de otro campo";
 
 # include/constants_param_wizard.php3, row 721, 729, 737, 745, 753, 761, 769, 777, 785, 793
 $_m["Environment"]
-  = "";
+  = "Educación";
 
 # include/constants_param_wizard.php3, row 795
 $_m["if no content matches, use this string as return value"]
-  = "";
+  = "si ninguno coincide, mostrar este valor";
 
 # include/constants_param_wizard.php3, row 798
 $_m["user function"]
@@ -1435,7 +1435,7 @@ $_m["user function"]
 
 # include/constants_param_wizard.php3, row 799
 $_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
-  = "hace un llamado a una función definida por el administrador de este sistema (vea <em>How to create new aliases</em> en el <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)";
+  = "hace un llamado a una función definida por el administrador de este sistema (vea <em>How to create new aliases</em> en el <a href='http://apc-aa.sourceforge.net/faq/#aliases' target=_blank>FAQ</a>)";
 
 # include/constants_param_wizard.php3, row 801
 $_m["function"]
@@ -1443,11 +1443,11 @@ $_m["function"]
 
 # include/constants_param_wizard.php3, row 802
 $_m["name of the function in the include/usr_aliasfnc.php3 file"]
-  = "";
+  = "nombre de la función en el archivo include/usr_aliasfnc.php3";
 
 # include/constants_param_wizard.php3, row 804
 $_m["usr_start_end_date_cz"]
-  = "";
+  = "usr_encuentra_fecha";
 
 # include/constants_param_wizard.php3, row 805
 $_m["parameter"]
@@ -1455,7 +1455,7 @@ $_m["parameter"]
 
 # include/constants_param_wizard.php3, row 806
 $_m["a parameter passed to the function"]
-  = "";
+  = "un parámetro a pasar a la función";
 
 # include/constants_param_wizard.php3, row 809
 $_m["view"]
@@ -1463,15 +1463,15 @@ $_m["view"]
 
 # include/constants_param_wizard.php3, row 810
 $_m["allows to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows to display any view in place of the alias. It can be used for 'related stories' table or for dislaying content of related slice."]
-  = "";
+  = "permite mostrar vistas. Esta función es potente y complicada, y está descrita en el <a href=\"http://apc-aa.sourceforge.net/faq#viewparam\" target=_blank>FAQ</a>. Muestra una vista en el lugar del alias. Es útil, entre otras cosas, para hacer enlaces a items relacionados de otros canales.";
 
 # include/constants_param_wizard.php3, row 812
 $_m["complex parameter"]
-  = "";
+  = "parámetro complejo";
 
 # include/constants_param_wizard.php3, row 813
 $_m["this parameter is the same as we use in view.php3 url parameter - see the FAQ"]
-  = "";
+  = "este parámetro sigue la sintaxis de los parámetros de view.php3";
 
 # include/constants_param_wizard.php3, row 815
 $_m["vid=4&amp;cmd[23]=v-25"]
@@ -1487,11 +1487,11 @@ $_m["An old-style function. Prints <i>the field</i> as image width value (\\<img
 
 # doc/param_wizard_list.php3, row 35
 $_m["Param Wizard Summary"]
-  = "";
+  = "Resumen de Asistentes de parámetros";
 
 # doc/param_wizard_list.php3, row 43
 $_m["Choose a Parameter Wizard"]
-  = "";
+  = "Escoja un Asistente de parámetros";
 
 # doc/param_wizard_list.php3, row 52, 69
 $_m["Go"]
