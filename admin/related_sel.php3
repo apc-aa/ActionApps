@@ -123,9 +123,9 @@ $st = $$st_name;   // use right scroller
 
 # create or update scroller for actual bin
 if(is_object($st)) {
-  $st->updateScr($sess->url($PHP_SELF) . "&");
+  $st->updateScr($sess->url($PHP_SELF) . "&var_id=$var_id&");
 }else {
-  $st = new scroller($st_name, $sess->url($PHP_SELF) . "&");	
+  $st = new scroller($st_name, $sess->url($PHP_SELF) . "&var_id=$var_id&");	
   $st->metapage=($listlen ? $listlen : EDIT_ITEM_COUNT);
   $sess->register($st_name); 
 }
@@ -176,7 +176,7 @@ if( count( $item_ids ) > 0 ) {
   $aliases["_#SITEM_ID"] = array("fce" => "f_h",
                                  "param" => "short_id........",
                                  "hlp" => "");
-  $aliases["_#HEADLINE"] = array("fce" => "f_h",
+  $aliases["_#HEADLINE"] = array("fce" => "f_e:safe",
                                  "param" => GetHeadlineFieldID($r_sid, $db),
                                  "hlp" => "");
 
@@ -225,6 +225,7 @@ echo "<tr><td class=leftmenuy><b>". L_SEARCH ."</b></td>
 FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_r_admin_search_field);
 echo "<input type='Text' name='admin_search' size=20
       maxlength=254 value=\"". safe($r_r_admin_search). "\"></td></tr></table>
+      <input type=hidden name=var_id value='$var_id'><br><br>
       <input type=hidden name=action value='filter'><br><br>
       <input type=button value='". L_BACK ."' onclick='window.close()'>
       </form></center>
