@@ -187,3 +187,5 @@
 7/14/00  - fixed filters bug (no defined categories)
 7/17/00  - fixed login without password bug (LDAP)
 7/18/00  - added support for other crypt() variants
+7/21/00  - Edit User prints login names instead of DB specific IDs
+         - added support for PHP in CGI mode with --enable-force-cgi-redirect

@@ -1,8 +1,17 @@
 <!doctype linuxdoc system>
 
-<!-- No comment...
-
- -->
+<!-- 
+TODO:
+QuickStart
+Security
+Requirements (php version, apache settings,)
+Integration
+Sql permissions
+Superadmin account(s)
+config.php3 - detail description
+FAQ:
+config.php3 and <?php (first characters)
+-->
 
 <article>
 
@@ -82,14 +91,14 @@ RPM packages:
 (Versions prior 3.22.32 contain possible security holes, upgrade to
 latest versions is recommended.)
 
-<sect1>OpenLDAP
+<sect1>OpenLDAP (optional)
 
 <p>
 OpenLDAP (e.g. openldap-1.2.9.tgz) is available at <url
 url="http://www.openldap.org/software/download/">
 
 RPM version is available in RedHat's contrib archive at <url
-url="ftp://contrib.redhat.com/contrib/libc6/i386/">.
+url="ftp://contrib.redhat.com/contrib/libc6/i386/">. 
 
 <itemize>
 <item>openldap-1.2.9-1.rpm 
@@ -101,6 +110,12 @@ The RPMs are built without threads and with kerberos support, if you
 want other options, use either source RPM or original source
 distribution.
 
+Since RedHat 6.2 is OpenLDAP part of the distribution:
+
+<itemize>
+<item>openldap-1.2.9-6.rpm 
+<item>openldap-devel-1.2.9-6.rpm
+</itemize>
 
 <sect>Installation steps
 
