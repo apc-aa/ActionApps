@@ -115,9 +115,14 @@ function AddUser($user, $flags = 0) {
   if ($user["phone"]) { $record["telephoneNumber"] = $user["phone"]; };
 
   // add data to directory
-  $r=@ldap_add($ds, "uid=$user[uid]," . $aa_default_ldap[people], $record);
+  $user_dn = "uid=$user[uid]," . $aa_default_ldap[people];  
+  $r=@ldap_add($ds, $user_dn, $record);
   ldap_close($ds);
-  return $r; 
+  if ($r) {
+     return $user_dn;
+  } else {
+     return false;
+  }
 }
 
 // deletes an user in LDAP permission system
@@ -685,6 +690,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.9  2000/08/10 15:37:18  kzajicek
+UserAdd now returns user_id on success and false on error.
+
 Revision 1.8  2000/08/09 15:13:24  kzajicek
 Fixed incorrect default for  in DelUser
 
