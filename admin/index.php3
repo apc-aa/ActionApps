@@ -270,6 +270,15 @@ if ($akce) {
       $r_admin_search = stripslashes($admin_search);
       $r_admin_search_field = $admin_search_field;
       break;
+    case "email":
+      if (! $called_from_wizard) {
+          ShowWizardFrames (
+              $sess->url($AA_INSTAL_PATH."admin/tabledit.php3?set_tview=email"),
+              $sess->url($AA_INSTAL_PATH."admin/wizard_email.php3?step=2"), 
+              _m("Send Emails Wizard"));
+          exit;
+      }
+      break;
   }
   // If we are just doing stuff for the action, then should go to return_url if present
   // rather than staying here on index.php3
@@ -339,79 +348,75 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 ?>
 <title><?php echo _m("Editor window - item manager") ?></title>
 <SCRIPT Language="JavaScript"><!--
-function SubmitItems(act) {
-  document.itemsform.akce.value = act
-  document.itemsform.submit()
-}
-
-function MarkedActionGo() {
-  var ms = document.itemsform.markedaction_select;
-  switch( ms.options[ms.selectedIndex].value ) {
-    case "1-app": SubmitItems('app'); 
-                  break;
-    case "2-hold": SubmitItems('hold'); 
-                  break;
-    case "3-trash": SubmitItems('trash'); 
-                  break;
-    case "4-feed": OpenFeedForm(); 
-                  break;
-    case "5-view": OpenPreview(); 
-                  break;
-  }
-}
-
-var previewwindow
-var feedformwindow
-
-function OpenPreview() {
-  var len = document.itemsform.elements.length
-  var i=0
-  var name = document.itemsform.elements[i].name
-  for( i=0; i<len; i++ ) {
-    name = document.itemsform.elements[i].name
-    if( name.substring(0,3) == 'chb') {  //items checkboxes
-      if( document.itemsform.elements[i].checked == true) {
-        if ((previewwindow != null) && (!previewwindow.closed)) {
-          previewwindow.close()    // in order to preview go on top after open
-        }  // extract id from chb[x14451...]  - x is just foo character
-        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(5,name.indexOf(']')),'fullwindow');
-        return;
-      }  
+    function SubmitItems(act) {
+      document.itemsform.akce.value = act
+      document.itemsform.submit()
     }
-  }    
-}  
-
-function SelectVis(state) {
-  var len = document.itemsform.elements.length
-  state = 2
-  for( var i=0; i<len; i++ )
-    if( document.itemsform.elements[i].name.substring(0,3) == 'chb') { //items checkboxes
-      if (state == 2) {
-        state = ! document.itemsform.elements[i].checked;
+    
+    function MarkedActionGo() {
+      var ms = document.itemsform.markedaction_select;
+      switch( ms.options[ms.selectedIndex].value ) {
+        case "1-app":   SubmitItems('app'); break;
+        case "2-hold":  SubmitItems('hold'); break;
+        case "3-trash": SubmitItems('trash'); break;
+        case "4-feed":  OpenFeedForm(); break;
+        case "5-view":  OpenPreview(); break;
+        case "6-email": SubmitItems('email'); break;
       }
-      document.itemsform.elements[i].checked = state;    
     }
-}
-
-function OpenFeedForm(){
-  if( feedformwindow != null ) 
-    feedformwindow.close()    // in order to feedform window go on top after open
-  feedformwindow = open('<?php echo $sess->url("feed_to.php3")?>','feedform','scrollbars')
-}
-
-//called by the f_k alias function (see item.php3) 
-function CallLiveCheckbox (controlName) {
-    myimg = document.itemsform[controlName];
-    myimg.src = "<?php echo $AA_INSTAL_PATH ?>images/cb_2off.gif";
-
-    imgsrc = "<?php echo $sess->url ($AA_INSTAL_PATH."live_checkbox.php3") 
-        ?>&"+controlName+"=1&no_cache="+Math.random();
-    setTimeout("ChangeImgSrc ('"+controlName+"','"+imgsrc+"')", 1);
-}
-
-function ChangeImgSrc (imageName, newsrc) {
-    document.itemsform [imageName].src = newsrc;
-}
+    
+    var previewwindow
+    var feedformwindow
+    
+    function OpenPreview() {
+      var len = document.itemsform.elements.length
+      var i=0
+      var name = document.itemsform.elements[i].name
+      for( i=0; i<len; i++ ) {
+        name = document.itemsform.elements[i].name
+        if( name.substring(0,3) == 'chb') {  //items checkboxes
+          if( document.itemsform.elements[i].checked == true) {
+            if ((previewwindow != null) && (!previewwindow.closed)) {
+              previewwindow.close()    // in order to preview go on top after open
+            }  // extract id from chb[x14451...]  - x is just foo character
+            previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(5,name.indexOf(']')),'fullwindow');
+            return;
+          }  
+        }
+      }    
+    }  
+    
+    function SelectVis(state) {
+      var len = document.itemsform.elements.length
+      state = 2
+      for( var i=0; i<len; i++ )
+        if( document.itemsform.elements[i].name.substring(0,3) == 'chb') { //items checkboxes
+          if (state == 2) {
+            state = ! document.itemsform.elements[i].checked;
+          }
+          document.itemsform.elements[i].checked = state;    
+        }
+    }
+    
+    function OpenFeedForm(){
+      if( feedformwindow != null ) 
+        feedformwindow.close()    // in order to feedform window go on top after open
+      feedformwindow = open('<?php echo $sess->url("feed_to.php3")?>','feedform','scrollbars')
+    }
+    
+    //called by the f_k alias function (see item.php3) 
+    function CallLiveCheckbox (controlName) {
+        myimg = document.itemsform[controlName];
+        myimg.src = "<?php echo $AA_INSTAL_PATH ?>images/cb_2off.gif";
+    
+        imgsrc = "<?php echo $sess->url ($AA_INSTAL_PATH."live_checkbox.php3") 
+            ?>&"+controlName+"=1&no_cache="+Math.random();
+        setTimeout("ChangeImgSrc ('"+controlName+"','"+imgsrc+"')", 1);
+    }
+    
+    function ChangeImgSrc (imageName, newsrc) {
+        document.itemsform [imageName].src = newsrc;
+    }
 
 // -->
 </SCRIPT>
@@ -606,6 +611,8 @@ if ($action_selected != "0")
         $markedaction["4-feed"] = _m("Export");
     if ($view_selected != "0")
         $markedaction["5-view"] = _m("Preview");
+    if ($slice_info["type"] == "ReaderManagement") 
+        $markedaction["6-email"] = _m("Send email wizard");
       
     if (is_array ($markedaction) && count ($markedaction)) {  
         echo "<img src='".$AA_INSTAL_PATH."images/arrow_ltr.gif'>

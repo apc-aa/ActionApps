@@ -83,12 +83,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     echo '<input type=hidden name=add_submit value="1">
     <input type=hidden name=um_uedit_no_go_url value=1>';  
     
-    $email_welcomes = array (NOT_EMAIL_WELCOME => _m("Do Not Email Welcome"));
-        
-    $db = new DB_AA;
-    $db->query("SELECT description, id FROM wizard_welcome");
-    while ($db->next_record()) 
-        $email_welcomes[$db->f("id")] = $db->f("description");
+    $email_welcomes = GetUserEmails ("slice wizard welcome");
+    $email_welcomes [NOT_EMAIL_WELCOME] = _m("Do Not Email Welcome");
   
     FrmInputSelect("wiz[welcome]", _m("Email Welcome"), $email_welcomes, NOT_EMAIL_WELCOME);
 ?>

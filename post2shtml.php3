@@ -21,6 +21,9 @@
  * Parameters: <br>
  *     URL $shtml_page = complete URL of the requested .shtml page
  *
+ * If you do not send $shtml_page, no HTTP headers are sent and the post2shtml_id
+ * is set as a global variable.
+ *
  * @package UserInput
  * @version $Id$
  * @author Jakub Adámek, Econnect, December 2002
@@ -78,19 +81,24 @@ function store_vars ()
         INSERT INTO post2shtml (id, vars, time) 
         VALUES ('$id', '$vars', ".time().")");
 
-    header("Status: 302 Moved Temporarily");
-    $shtml_page = stripslashes ($shtml_page);
-    $shtml_page .= (strchr ($shtml_page,"?") ? "&" : "?") . "post2shtml_id=$id";
-    header("Location: $shtml_page");
+    if ($shtml_page) {
+        header("Status: 302 Moved Temporarily");
+        $shtml_page = stripslashes ($shtml_page);
+        $shtml_page .= (strchr ($shtml_page,"?") ? "&" : "?") . "post2shtml_id=$id";
+        header("Location: $shtml_page");
+    }
+    else $GLOBALS["post2shtml_id"] = $id;
 }    
 
-# returns new unpacked md5 unique id, except these which can  force unexpected end of string  
-function new_id ($seed="hugo"){
-  do {
-   $foo=md5(uniqid($seed));
-  } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
-  return $foo;
-} 
+if (!function_exists ("new_id")) {
+    # returns new unpacked md5 unique id, except these which can  force unexpected end of string  
+    function new_id ($seed="hugo"){
+      do {
+       $foo=md5(uniqid($seed));
+      } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
+      return $foo;
+    } 
+}    
 
 function md5_array (&$array) {
     if (is_array ($array)) {

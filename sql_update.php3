@@ -720,14 +720,6 @@ $tablelist = array( 'active_sessions' => "(
                         PRIMARY KEY  (id),
                         UNIQUE KEY dir (dir)
                       )",
-                      'wizard_welcome' => "(
-                        id int(11) NOT NULL auto_increment,
-                        description varchar(200) NOT NULL default '',
-                        email text,
-                        subject varchar(255) NOT NULL default '',
-                        mail_from varchar(255) NOT NULL default '_#ME_MAIL_',
-                        PRIMARY KEY (id)
-                      )"
 );
                    
                    
@@ -1001,7 +993,6 @@ $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, eve
 $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"http://work.ecn.cz/apc-aa/view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', 0, '', 0, NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
 $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'rss', 'rss', '<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"<http://my.netscape.com/publish/formats/rss-0.91.dtd>http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>', NULL, ' <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>', NULL, '</channel></rss>>', NULL, NULL, 'publish_date....', 0, 'headline........', 0, NULL, NULL, NULL, NULL, 'source..........', '', '', '', '<', '', '', '<', '', 15, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NO ITEM FOUND', NULL, NULL, NULL, NULL, 'mon')";
 $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Calendar', 'calendar', '<table border=1>\r\n<tr><td>Mon</td><td>Tue</td><td>Wen</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr>', NULL, '_#STARTDAT-_#END_DATE <b>_#HEADLINE</b>', 1, '</table>', '', '<td><font size=+2><A href=\"calendar.shtml?vid=319&cmd[319]=c-1-_#CV_TST_2-2-_#CV_TST_1&month=_#CV_NUM_M&year=_#CV_NUM_Y&day=_#CV_NUM_D\"><B>_#CV_NUM_D</B></A></font></td>', '', 0, '', 0, NULL, NULL, NULL, NULL, 'publish_date....', '<', '', '', '<', '', '', '<', '', 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<td><font size=+2>_#CV_NUM_D</font></td>', '', 'bgcolor=\"_#COLOR___\"', NULL, NULL, NULL, 'There are no events in this month.', '', 'start_date.....1', 'end_date.......1', NULL, 'mon_table')";
-$SQL_view_templates[] = "REPLACE INTO wizard_welcome (id, description, email, subject, mail_from) VALUES (1,'Generic Item Manager Welcome','You have been assigned an Item Manager for the slice _#SLICNAME. Your username is _#LOGIN___. See <a href=\"http://apc-aa.sf.net/faq\">FAQ</a> for help.','Welcome, AA _#ROLE____','\"_#ME_NAME_\" <_#ME_MAIL_>')";
 
 $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner, 0 FROM slice";
 $SQL_update_modules[] = "REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'http://domain.org/index.shtml', 'en_site_lang.php3', 1000000000, '', '', 0)";
@@ -1013,6 +1004,10 @@ $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script,
 $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (4, '*',          '1', '*', '*', '*', 'misc/alerts/admin_mails.php3', '', NULL)";        
 $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (5, '8,23,38,53', '*', '*', '*', '*', 'admin/xmlclient.php3', '', NULL)";
 $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (6, '38',         '2', '*', '*', '2', 'misc/optimize.php3', 'key=".substr( DB_PASSWORD, 0, 5 )."', NULL)";
+
+$SQL_email_templates[] = "INSERT INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Welcome', 'Welcome to Econnect Alerts', 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'somebody@haha.cz', '', '', '', 'cz', 1, 'alerts welcome');";
+$SQL_email_templates[] = "INSERT INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Alert', '{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}', '_#FILTERS_\r\n<br><hr>\r\nTo change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'econnect@team.cz', '', '', '', 'cz', 1, 'alerts alert');";
+$SQL_email_templates[] = "INSERT INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Item Manager Welcome', 'Welcome, AA _#ROLE____', 'You have been assigned an Item Manager for the slice _#SLICNAME. Your username is _#LOGIN___. See <a href=\"http://apc-aa.sf.net/faq\">FAQ</a> for help.', '\"_#ME_NAME_\" <_#ME_MAIL_>', '', '', '', 'en', 1, 'slice wizard welcome');";
 
 # -------------------------------- Executive part -----------------------------
 
@@ -1063,6 +1058,8 @@ if( !$update AND !$restore AND !$restore_now) {
                 "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice). The default site and poll module is also created/renewed with this option.","");
   FrmInputChBox("alerts", "Add Alerts entries to Cron", true, false, "", 1, false,
                 "Alerts are run by cron.php3, 5 entries to table cron are added/renewed (4 for alerts, 1 for cross server networking).");
+  FrmInputChBox("generic_emails", "Add generic email templates", true, false, "", 1, false,
+                "These are examples of each email type.");
   FrmStaticText("", "<hr>", false, "", "", false );
   FrmInputText("dbpw5", "5 characters of database password", "", 5, 5, false,
                 "Fill in first five characters of the database password (see DB_PASSWORD in config.php3 file) - it is from security reasons");
@@ -1355,6 +1352,14 @@ if( $alerts ) {
         safe_echo ($SQL);
         $db->query( $SQL );
       }  
+  }
+}
+
+if( $generic_emails ) {
+  reset ($SQL_email_templates);
+  while (list (, $SQL) = each ($SQL_email_templates)) {
+    safe_echo ($SQL);
+    $db->query( $SQL );
   }
 }
 
