@@ -37,13 +37,16 @@ class ItemContent {
 
     // PUBLIC:
 
-
     // PRIVATE:
     var $content;
 
-    /// Constructor which takes content for ID.
+    /// Constructor which takes content for ID or item_id (unpacked).
     function ItemContent ($content4id = "") {
-        $this->setFromArray ($content4id);
+        if ( is_array($content4id) ) {
+            $this->setFromArray ($content4id);
+        } elseif ( $content4id ) {
+            $this->setByItemID ($content4id );
+        }
     }
 
     function setFromArray (&$content4id) {
