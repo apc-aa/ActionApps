@@ -300,7 +300,7 @@ define("L_EDIT_WIZARD_TEMPLATE","Wizard Templates");
 
 /* E-MAIL ALERTS */
 
-define("L_ALERTS_VIEW","E-mail Alerts");
+define("L_ALERTS_VIEW","Alerts Digest");
 define("L_V_MAXLISTLEN","Max number of items");
 define("L_FILTER","Filter");
 define("L_DESCRIPTION","Description");
@@ -343,6 +343,8 @@ define("L_NOT_SUBSCRIBED","not subscribed");
 define("L_NEW_USER_SUBSCRIBE","New user? Subscribe!");
 define("L_ALERTS_SUBSCRIBE_TIT","Subscribe to AA Alerts");
 define("L_ALERTS_SUBSCRIBE_HINT","We will send an e-mail message to the address given. Follow the instructions in it to complete your subscription.");
+define("L_ALERTS_COLLECTIONS","Alerts Collections");
+define("L_A_COLLECTIONS_TIT","Alerts Collections");
 
 /* END OF E-MAIL ALERTS */
 
