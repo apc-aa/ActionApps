@@ -46,13 +46,10 @@ function get_aamenus()
     global $r_slice_view_url,
            $auth,
            $slice_id,
-           $r_bin_state,
-           $item_bin_cnt,
-           $item_bin_cnt_exp,
-           $item_bin_cnt_pend,
-           $apple_design,
+           $r_state,
            $AA_INSTAL_PATH,
-           $AA_CP_Session;
+           $AA_CP_Session,
+           $profile;
     trace("+","get_aamenus");
 
     $aamenus["view"] = array (
@@ -61,9 +58,12 @@ function get_aamenus()
         "cond"  => 1,
         "level" => "main");
 
+    $input_view = (isset($profile) AND $profile->getProperty('input_view')) ?
+                  '&vid='.$profile->getProperty('input_view') : '';
+
     $aamenus["additem"] = array (
         "label" => _m("Add Item"),
-        "href"  => "admin/itemedit.php3?encap=false&add=1",
+        "href"  => "admin/itemedit.php3?encap=false&add=1$input_view",
         "level" => "main");
 
     $aamenus["itemmanager"] = array (
@@ -101,6 +101,10 @@ function get_aamenus()
                         slice_id is included in the cond automatically
             href        link, relative to aa/
             exact_href  link, absolute (use either exact_href or href, not both)
+            js          javascript function to call after click on link
+                        you can use following aliases as function parameters:
+                        {href} - alias for href (link, relative to aa/)
+                        {exact_href} - alias for exact_href (link, absolute)
             show_always don't include slice_id in cond
             no_slice_id don't add slice_id to the URL
     */
@@ -162,18 +166,20 @@ function get_aamenus()
         "items"=> array(
         "header1"=>_m("Folders"),
         "app"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=app",
-            "label"=>"<img src='../images/ok.gif' border=0>"._m("Active")." (".($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).")"),
+            "label"=>"<img src='../images/ok.gif' border=0>"._m("Active")." (". $r_state['bin_cnt']['app'] .")"),
         "appb"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/index.php3?Tab=appb",
-            "label"=>_m("... pending")." ($item_bin_cnt_pend)"),
+            "label"=>_m("... pending")." (". $r_state['bin_cnt']['pending'] .")"),
         "appc"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/index.php3?Tab=appc",
-            "label"=>_m("... expired")." ($item_bin_cnt_exp)"),
+            "label"=>_m("... expired")." (". $r_state['bin_cnt']['expired'] .")"),
         "hold"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=hold",
-            "label"=>"<img src='../images/edit.gif' border=0>"._m("Hold bin")." ($item_bin_cnt[2])"),
+            "label"=>"<img src='../images/edit.gif' border=0>"._m("Hold bin")." (". $r_state['bin_cnt']['folder2'] .")"),
         "trash"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=trash",
-            "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." ($item_bin_cnt[3])"),
+            "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". $r_state['bin_cnt']['folder3'] .")"),
         "header2" => _m("Misc"),
-        "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php3?Delete=trash",
-            "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash")),
+        "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS),
+                        "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')",
+                        "href"=>"admin/index.php3?Delete=trash",
+                        "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash")),
         "line" => "",
     ));
 
@@ -189,6 +195,13 @@ function get_aamenus()
                 WHERE slice_id='".q_pack_id($slice_id)."'");
             AddAlertsModules ($items, $db, _m("Alerts"),
                     _m("List of Alerts modules using this slice as Reader Management."));
+
+            $items["header4"] = _m("Bulk Emails&nbsp;&nbsp;&nbsp;".GetAAImage ("help50.gif", _m("Send bulk email to selected users or to users in Stored searches")));
+            $items["item1"] = array("cond" => 1,
+                                    "exact_href" => "javascript:WriteEmailGo()",
+                                    "label" => _m("Send emails"),
+                                    "no_slice_id"=>1);
+
         }
         trace("=","","module ids slice_id=".$slice_id);
         $db->query ("SELECT DISTINCT AC.module_id, module.name FROM alerts_collection AC
