@@ -47,12 +47,20 @@ function PrintModuleSelection() {
   if( is_array($g_modules) AND (count($g_modules) > 1) ) {
 
     // create the modulesOptions content:
+    $permitted = GetUserSlices();
+    if ($permitted != "all") {
+        reset ($permitted);
+        while (list ($slice_id) = each ($permitted)) 
+            $slice_ids .= ",'" . q_pack_id ($slice_id) ."'";
+        $slice_ids = "WHERE module.id IN (".substr($slice_ids,1).") ";
+    }
     echo "
     <SCRIPT language=JAVASCRIPT><!-- 
         var modulesOptions = ''\n";
     $db->query ("SELECT module.id, module.type, slice.type AS slice_type, module.name 
-        FROM module LEFT JOIN slice ON module.id=slice.id
-        ORDER BY module.type, slice.type, name");
+        FROM module LEFT JOIN slice ON module.id=slice.id "
+        .$slice_ids
+        ."ORDER BY module.type, slice.type, name");
     $option_begin = "\t+'<option value=\"";
     while ($db->next_record()) {
         switch ($db->f("type")) {
