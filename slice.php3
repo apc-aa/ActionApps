@@ -26,7 +26,7 @@ http://www.apc.org/
                      // implemented for shorter item url (see _#SITEM_ID alias)
 #optionaly srch      // true if this script have to show search results
 #optionaly highlight // when true, shows only highlighted items in compact view
-#optionaly bigsrch   // true, if this script have to show big search form
+#optionaly bigsrch   // NOT SUPPORTED IN AA v 1.5+
 #optionaly cat_id    // select only items in category with id cat_id
 #optionaly cat_name  // select only items in category with name cat_name
 #optionaly inc       // for dispalying another file instead of slice data 
@@ -42,6 +42,8 @@ http://www.apc.org/
                      // (less priority than "order")
 #no_scr              // if true, no scroller is displayed                     
 #scr_go              // sets scroller to specified page
+#scr_url             // redefines teh page where the scroller should go (it is 
+                     // usefull if you include slice.php3 from another php script)
 #restrict            // field id used with "res_val" and "exact" for restricted
                      // output (display only items with 
                      //       "restrict" field = "res_val"
@@ -217,7 +219,7 @@ function LogItem($id, $column) {
   $db->query($SQL);
   if( $db->next_record() )
     return unpack_id( $db->f('id') );
-  return false;  
+  return false;
 }  
 
 function GetSortArray( $sort ) {
@@ -317,6 +319,7 @@ if( $fview || $iview ) {
     if ($iview_info AND ($iview_info['deleted']<1)) {
       $slice_info['group_by'] = $iview_info['group_by1'];
       $slice_info['category_format'] = $iview_info['group_title'];
+      $slice_info['category_bottom'] = $iview_info['group_bottom'];
       $slice_info['compact_top'] = $iview_info['before'];
       $slice_info['compact_bottom'] = $iview_info['after'];
       $slice_info['compact_remove'] = $iview_info['remove_string'];
@@ -330,13 +333,11 @@ if( $fview || $iview ) {
 if (!$encap)
   Page_HTML_Begin(DEFAULT_CODEPAGE, $slice_info[name] );  // TODO codepage
 
-# big search form -------------------------------------------------------------
 
-if( $bigsrch ) {
-  $r_state_vars = StoreVariables(array("bigsrch")); # store in session
-  $show = Array("slice"=>true, "category"=>true, "author"=>true, "lang"=>true, "headline"=>true,
-                "full_text"=>true, "abstract"=>true, "from"=>true, "to"=>true, "edit_note"=>true);
-  require $GLOBALS[AA_INC_PATH]."big_srch.php3";
+if( $bigsrch ) {  # big search form ------------------------------------------
+   echo 'bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br> See 
+         <a href="http://apc-aa.sourceforge.net/faq/index.shtml#215">AA FAQ</a> 
+         for more details.';
   ExitPage();
 }
 
@@ -396,7 +397,9 @@ if( $items AND is_array($items) ) {   # shows all $items[] as fulltext one after
 # compact view ----------------------------------------------------------------
 if(!is_object($scr)) {
   $sess->register(scr); 
-  $scr = new easy_scroller("scr",$sess->MyUrl($slice_id, $encap)."&", $slice_info[d_listlen]);	
+  $scr = new easy_scroller("scr",
+     ($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap))."&",
+     $slice_info[d_listlen]);
 }
 if( $listlen )    // change number of listed items
   $scr->metapage = $listlen;
@@ -417,7 +420,7 @@ if($query) {              # complex query - posted by big search form ---
   if( !$scrl )
     $scr->current = 1;
 }
-elseif( (isset($conds) AND is_array($conds)) OR isset($group_by)) {     # posted by query form ----------------
+elseif( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) {     # posted by query form ----------------
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","conds", "sort", "group_by")); # store in session
 
   if(isset($conds) AND is_array($conds)) {
@@ -546,8 +549,10 @@ $debugtimes[]=microtime();*/
   if( $slice_info[category_sort] ) {
     $group_field = GetCategoryFieldId( $fields );
     $grp_odir = (($order==$group_field) AND ($orderdirection!='d')) ? 'a':'d';
-    $srt[] = array ( GetCategoryFieldId( $fields ) => $grp_odir );
+    $srt[] = array ( $group_field => $grp_odir );
   }  
+  else if ($slice_info[group_by]) 
+  	$srt[] = array ( $slice_info[group_by] => ($slice_info[gb_direction] == 'd' ? 'd' : 'a'));
 
   if( $order )
     $srt[] = array ( $order => (( $orderdirection == 'd' ) ? 'd' : 'a'));
@@ -583,117 +588,4 @@ else
 
 ExitPage();
 
-/*
-$Log$
-Revision 1.35  2002/03/06 13:49:04  honzam
-new parameter slicetext to slice.php3 to display just the text
-
-Revision 1.34  2002/02/05 21:38:34  honzam
-url alias substitution in slice.php3, bug in BLURB fixed
-
-Revision 1.33  2002/01/10 14:09:45  honzam
-new possibility to redefine the design of output by fview and iview url parameter
-
-Revision 1.32  2002/01/04 13:15:49  honzam
-new hide fulltext parameter for slice (good for discussion)
-
-Revision 1.31  2001/12/26 22:11:37  honzam
-Customizable 'No item found' message. Added missing language constants.
-
-Revision 1.30  2001/12/18 11:37:38  honzam
-scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.29  2001/11/05 13:46:11  honzam
-Improved sort url parameters
-
-Revision 1.28  2001/10/24 16:45:17  honzam
-search expressions with AND, OR, NOT, (, ) allowed in conditions; group_by parametr extension for direction specification (+/-)
-
-Revision 1.27  2001/10/17 21:55:56  honzam
-fixed bug in url passed aliases
-
-Revision 1.26  2001/10/05 10:56:48  honzam
-slice.php3 allows grouping items
-
-Revision 1.25  2001/09/27 16:09:33  honzam
-New discussion support
-
-Revision 1.24  2001/07/09 18:01:43  honzam
-user defined aliases passed by url
-
-Revision 1.23  2001/06/15 20:05:16  honzam
-little search imrovements and bugfixes
-
-Revision 1.22  2001/06/05 08:59:23  honzam
-default codepage for slice not hard-coded now - moved to *_common_lang
-
-Revision 1.21  2001/06/03 15:51:59  honzam
-new short_id for item (and new x parameter to slice.php3 script) for shorter item urls
-
-Revision 1.20  2001/05/25 16:10:52  honzam
-New search parameters in slice.php3, which uses beter search function
-
-Revision 1.19  2001/05/18 13:41:02  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.18  2001/04/09 20:36:33  honzam
-Order parameter works with '+' sign too, new timeorder parameter.
-
-Revision 1.16  2001/03/20 15:21:33  honzam
-Scrollers used in search output too, better parameters handling
-
-Revision 1.15  2001/03/07 14:34:56  honzam
-no message
-
-Revision 1.14  2001/02/23 11:18:03  madebeer
-interface improvements merged from wn branch
-
-Revision 1.13  2001/02/20 13:25:15  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-Revision 1.10  2000/12/23 19:56:02  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
-
-Revision 1.9  2000/12/21 16:39:33  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.8  2000/08/23 12:29:57  honzam
-fixed security problem with inc parameter to slice.php3
-
-Revision 1.7  2000/08/22 12:30:06  honzam
-fixed problem with lost session id AA_SL_Session in cgi (PHP4) instalation.
-
-Revision 1.6  2000/08/19 11:53:31  kzajicek
-Removed debugging output ()
-
-Revision 1.5  2000/08/17 15:09:11  honzam
-new inc parameter for displaying specified file instead of slice data
-
-Revision 1.4  2000/07/12 16:53:09  kzajicek
-No min-max games are necessary, scroller keeps us within boundaries.
-
-Revision 1.3  2000/07/07 21:31:15  honzam
-Wrong parameter count in min() - fixed
-
-Revision 1.22  2000/06/12 19:57:51  madebeer
-added GPL LICENSE file, added copyright notice to all files that
-added GPL LICENSE
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.21  2000/05/30 09:11:13  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.20  2000/04/24 16:35:18  honzama
-Small changes in design.
-
-Revision 1.19  2000/03/29 15:56:34  honzama
-Encap=true is default parameter to this script.
-
-Revision 1.18  2000/03/22 09:36:17  madebeer
-config.inc now allows ecn and igc to have different .css files
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
-
