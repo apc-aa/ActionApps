@@ -75,29 +75,14 @@ if($cancel) {
            </SCRIPT>';
     } else
       go_url( $r_slice_view_url );
-  } else  {
-
-    /*
-    Code Added by Ram Prasad on 07-Feb-2002
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Function: 
-    ~~~~~~~~~
-    This checks if the parameter return_url is present, and redirects the user
-    to the $redirect_url page.
-    if not present, it redirects the user to default (index.php3) page. 
-    */	
-    // Begin Ram's Code
-    if ($return_url){
-      echo '<SCRIPT Language="JavaScript"><!--
+  } 
+  else if ($return_url)
+    echo '<SCRIPT Language="JavaScript"><!--
             document.location = "'. $return_url.'";
             // -->
            </SCRIPT>';			
-    } else {
-        // Old Version ? go_url( $sess->url(self_base() . "index.php3"));
-        go_url( con_url($sess->url(self_base() .  "index.php3"), "slice_id=$slice_id"));
-    }    
-    // End of Ram's Code
-  }    
+  else 
+    go_url( con_url($sess->url(self_base() .  "index.php3"), "slice_id=$slice_id"));
 }
 $db = new DB_AA;
 
@@ -105,64 +90,88 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
-
+                
   # get slice fields and its priorities in inputform
 list($fields,$prifields) = GetSliceFields($slice_id);   
 
 if( isset($prifields) AND is_array($prifields) ) {
 
-  #it is needed to call IsEditable() function and GetContentFromForm()
-  if( $update ) { 
-    $oldcontent = GetItemContent($id);
-    $oldcontent4id = $oldcontent[$id];   # shortcut
-  }  
+    // javascript for input validation 
+    $js_proove_fields = "
+         <SCRIPT language=javascript>
+            <!--" 
+            . get_javascript_field_validation (). "
+                function proove_fields () {
+                    myform = document.inputform;\n";
+
+    #it is needed to call IsEditable() function and GetContentFromForm()
+    if( $update ) { 
+        $oldcontent = GetItemContent($id);
+        $oldcontent4id = $oldcontent[$id];   # shortcut
+    }   
 
 	reset($prifields);
 	while(list(,$pri_field_id) = each($prifields)) {
-    $f = $fields[$pri_field_id];
-	  $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
-    $htmlvarname = $varname."html";
-
-    if( $add OR (!$f[input_show] AND ($insert OR $update) )) {
-      $$varname = GetDefault($f);
-      $$htmlvarname = GetDefaultHTML($f);
-    }    
+        $f = $fields[$pri_field_id];
+        $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
+        $htmlvarname = $varname."html";
     
-      # validate input data
-    if( $insert || $update )
-    {
-      if( IsEditable($oldcontent4id[$pri_field_id], $f)) {
+        if( $add OR (!$f[input_show] AND ($insert OR $update) )) {
+            $$varname = GetDefault($f);
+            $$htmlvarname = GetDefaultHTML($f);
+        }    
+        
         switch( $f[input_validate] ) {
-          case 'text': 
-          case 'url':  
-          case 'email':  
-          case 'number':  
-          case 'id':  
-            ValidateInput($varname, $f[name], $$varname, $err,
-                          $f[required] ? 1 : 0, $f[input_validate]);
-            break;
-          case 'date':  
-            $foo_datectrl_name = new datectrl($varname);
-            $foo_datectrl_name->update();                   # updates datectrl
-            if( $$varname != "")                            # loaded from defaults
-              $foo_datectrl_name->setdate_int($$varname);
-            $foo_datectrl_name->ValidateDate($f[name], $err);
-            $$varname = $foo_datectrl_name->get_date();  # write to var
-            break;
-          case 'bool':  
-            $$varname = ($$varname ? 1 : 0);
-            break;
-	  case 'user':
-	    // this is under development.... setu, 2002-0301
-	    // value can be modified by $$varname = "new value";
-	    $$varname = usr_validate($varname, $f[name], $$varname, $err, $f, $fields);
-##	echo "ItemEdit- user value=".$$varname."<br>";
-	    break;
-
+            case 'text': 
+            case 'url':  
+            case 'email':  
+            case 'number':  
+            case 'id':  
+                $js_proove_fields .= "
+                    if (!validate (myform['$varname'], '$f[input_validate]', "
+                        .($f[required] ? "1" : "0")."))
+                        return false;";
+                break;
         }
-      }
-    }   
-  }
+
+          # validate input data
+        if( ( $insert || $update ) 
+            && IsEditable($oldcontent4id[$pri_field_id], $f)) {
+            switch( $f[input_validate] ) {
+                case 'text': 
+                case 'url':  
+                case 'email':  
+                case 'number':  
+                case 'id':  
+                    ValidateInput($varname, $f[name], $$varname, $err,
+                              $f[required] ? 1 : 0, $f[input_validate]);
+                    break;
+                case 'date':  
+                    $foo_datectrl_name = new datectrl($varname);
+                    $foo_datectrl_name->update();                   # updates datectrl
+                    if( $$varname != "")                            # loaded from defaults
+                      $foo_datectrl_name->setdate_int($$varname);
+                    $foo_datectrl_name->ValidateDate($f[name], $err);
+                    $$varname = $foo_datectrl_name->get_date();  # write to var
+                    break;
+                case 'bool':  
+                    $$varname = ($$varname ? 1 : 0);
+                    break;
+        	    case 'user':
+            	    // this is under development.... setu, 2002-0301
+            	    // value can be modified by $$varname = "new value";
+            	    $$varname = usr_validate($varname, $f[name], $$varname, $err, $f, $fields);
+                    ##	echo "ItemEdit- user value=".$$varname."<br>";
+            	    break;    
+            }
+        }   
+    }
+    
+    $js_proove_fields .= "
+                    return true; 
+                } 
+            // -->
+         </script>";         
 }
 
   # update database
@@ -196,16 +205,6 @@ if( ($insert || $update) AND (count($err)<=1)
     elseif( $ins_preview OR $upd_preview ) 
       go_url( con_url($sess->url(self_base() .  "preview.php3"), "slice_id=$slice_id&sh_itm=$id"));
     else  {
-      /*
-      Code Added by Ram Prasad on 07-Feb-2002
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      Function: 
-      ~~~~~~~~~ 
-      This checks if the parameter return_url is present, and redirects the user
-      to the $redirect_url page.
-      if not present, it redirects the user to default (index.php3) page.
-      */      
-      // Begin Ram's Code        
       if ($return_url) {
         echo '<SCRIPT Language="JavaScript"><!--
               document.location = "'. $return_url.'";
@@ -214,7 +213,6 @@ if( ($insert || $update) AND (count($err)<=1)
       } else {
         go_url( $sess->url(self_base() . "index.php3"));
       }
-      // End of Ram's Code
     }      	
   }  
 }
@@ -276,7 +274,7 @@ if( !$encap ) {
           SelectAllInBox( listboxes[i] );';
         if ( richEditShowable() )	echo 'saveRichEdits();';            
         echo '
-        return true;  
+        return proove_fields ();  
       }    
     
       function OpenRelated(varname, sid, mode, design) {
@@ -288,9 +286,9 @@ if( !$encap ) {
       
     // -->
     </script>';
-/*		// load the rich editor module:
-	  if (richEditShowable ())
-			echo '<?import namespace="XS" implementation="htmlEditor.htc" />';*/
+
+    echo $js_proove_fields;     
+    
 		echo '
     </head>
   <body id="body_white_color">
@@ -299,21 +297,10 @@ if( !$encap ) {
 PrintArray($err);
 echo $Msg;  
 
-/* 
-Code Added by Ram Prasad on 07-Feb-2002
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Function: 
-~~~~~~~~~ 
-This checks if the parameter return_url is present. If yes, it passes the parameter 
-instead of using $PHP_SELF , we use $PASS_PARAM
-*/      
-
-// Begin Ram's Code
 if ($return_url)
   $PASS_PARAM=$PHP_SELF."?return_url=".urlencode($return_url);
 else
   $PASS_PARAM=$PHP_SELF;
-// End of Ram's Code
 
 // field javascript feature (see /include/javascript.php3)
 $javascript = getJavascript();
@@ -330,7 +317,7 @@ if ($javascript) {
 
 echo '<form name=inputform enctype="multipart/form-data" method=post action="'
     .($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PASS_PARAM).'"'
-    .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"BeforeSubmit()")).'>'
+    .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>'
     .'<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center" class="inputtab">'; ?>
 <tr><td class=tabtit align="center"><b>&nbsp;<?php //echo L_ITEM_HDR?></b>
 </td>
@@ -369,31 +356,33 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
 </tr>
 </table></td></tr>
 <tr><td align=center><?php
+
+// is the accesskey working?
+detect_browser();
+if ($BPlatform == "Macintosh") {
+    if ($BName == "MSIE"
+        || ($BName == "Netscape" && $BVersion >= "6"))
+        $accesskey = "(ctrl+S)";
+}
+else {
+    if ($BName == "MSIE"
+        || ($BName == "Netscape" && $BVersion > "5"))
+       $accesskey = "(alt+S)";
+};
+ 
 if($edit || $update || ($insert && $added_to_db)) { ?>
-   <input type=submit name=update accesskey=s value="<?php echo L_POST ?>">
+   <input type=submit name=update accesskey=S value="<?php echo L_POST." $accesskey" ?>">
   <?
-
-  /*
-  Code Added by Ram Prasad on 07-Feb-2002
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  Function
-  ~~~~~~~~
-  This checks if the parameter for post_preview, if passed and if equals 0 (zero)
-  it does not display the "Post and Preview Option".
-  */
-
-  // Begin Ram's Code
   if ((!($post_preview==0)) or (!(isset($post_preview)))) {	 
     echo "<input type=submit name=upd_preview value='".L_POST_PREV."'>";
   }
-  // End Ram's Code
   ?>
 
    <input type=submit name=insert value="<?php echo L_INSERT_AS_NEW ?>">
    <input type=reset value="<?php echo L_RESET ?>"><?php
    $r_hidden["id"] = $id;
 } else { ?>
-   <input type=submit name=insert value="<?php echo L_INSERT ?>">
+   <input type=submit name=insert accesskey=S value="<?php echo L_INSERT." $accesskey"?>">
    <input type=submit name=ins_preview value="<?php echo L_INSERT_PREV ?>"><?php
 } ?>
 &nbsp;<input type=submit name=cancel value="<?php echo L_CANCEL ?>">
