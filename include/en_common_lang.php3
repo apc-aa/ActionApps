@@ -35,7 +35,7 @@ define("L_SETUP_INFO1", "Welcome! Use this script to create " .
                         "the superadmin account.<p>" .
       "If you are installing a new copy of AA, press <b>Init</b>.<br>");
 define("L_SETUP_INFO2", "If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>");
-define("L_SETUP_INIT", "Init");  
+define("L_SETUP_INIT", " Init ");  
 define("L_SETUP_RECOVER", "Recover");
 define("L_SETUP_TRY_RECOVER", "Can't add primary permission object.<br>" .
        "Please check the access settings to your permission system.<br>" .
@@ -149,6 +149,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.6  2000/08/14 12:41:50  kzajicek
+*** empty log message ***
+
 Revision 1.5  2000/08/14 12:39:13  kzajicek
 Language definitions required by setup.php3
 
