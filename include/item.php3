@@ -33,7 +33,7 @@ function txt2html($txt) {          #converts plain text to html
 }  
 
 function DeHtml($txt, $flag) {
-  return ( ($flag & FLAG_HTML) ? $txt : htmlspecialchars( $txt ) );
+  return ( ($flag & FLAG_HTML) ? $txt : nl2br(htmlspecialchars( $txt )) );
 }  
 
 function GetAliasesFromFields($fields, $additional="") {
@@ -296,11 +296,11 @@ class item {
   #    no_sess  - if true, it does not add session id to url
   function f_b($col, $param="") { 
     list ($link_only, $url_field, $redirect, $txt, $condition, $addition, $no_sess) = ParamExplode($param);
-//p_arr_m(  $this->columns );
-
+    $condition = ($condition ? $this->columns[$condition][0][value] : true );
+    
     # last parameter - condition field
-    $url = $this->getitemurl($link_only, $url_field, $redirect, $this->columns[$condition][0][value], $no_sess);
-      
+    $url = $this->getitemurl($link_only, $url_field, $redirect, $condition, $no_sess);
+
     if ( $this->columns[$txt] ) 
   		$txt = $this->columns[$txt][0][value];
                
@@ -629,6 +629,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.30  2001/12/12 18:40:48  honzam
+Better handling newlines in f_h, bugfix in f_b alias function
+
 Revision 1.29  2001/11/26 11:07:30  honzam
 No session add option for itemlink in alias
 
