@@ -277,7 +277,7 @@ if( $slice_id == "" ) {         // load default values for new slice
 
 # lookup owners
 $slice_owners[0] = L_SELECT_OWNER;
-$SQL= " SELECT id, name FROM slice_owner";
+$SQL= " SELECT id, name FROM slice_owner ORDER BY name";
 $db->query($SQL);
 while ($db->next_record()) {
   $slice_owners[unpack_id($db->f(id))] = $db->f(name);
