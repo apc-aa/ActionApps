@@ -31,9 +31,9 @@ if (!is_object ($db))
 
 function set_collectionid () {    
     global $collectionid, $collectionprop,
-        $db, $new_module, $slice_id;
+        $db, $no_slice_id, $slice_id;
     
-    if (!$new_module) {
+    if (!$no_slice_id) {
         if (!$slice_id) { echo "Error: no slice ID"; exit; }
         $db->query ("SELECT AC.*, module.name, module.lang_file, module.slice_url
 			FROM alerts_collection AC INNER JOIN module
@@ -74,11 +74,19 @@ function new_user_id () {
 function new_collection_id() {
     global $db;
     do { 
-        $new_id = new_numeric_id (32767);
-        $db->query("SELECT id FROM alerts_collection WHERE id = $new_id");        
+        $new_id = new_alphanumeric_id (5);
+        $db->query("SELECT id FROM alerts_collection WHERE id = '$new_id'");        
     } while ($db->next_record());
     return $new_id;
 } 
+
+function new_alphanumeric_id ($saltlen) {
+    srand((double) microtime() * 1000000);
+    $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
+    for ($i = 0; $i < $saltlen; $i ++) 
+        $salt .= $salt_chars [rand (0,strlen($salt_chars)-1)];
+    return $salt;
+}
     
 function new_numeric_id ($max) {
     list($usec, $sec) = explode(' ', microtime());

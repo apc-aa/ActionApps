@@ -11,7 +11,7 @@
     $set_tview = "modedit";
     $cmd[$set_tview]["show_new"] = 1;
     $directory_depth = "../";
-    $new_module = true;
+    $no_slice_id = true;
     
     require "tabledit.php3";
 ?>

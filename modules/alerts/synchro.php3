@@ -53,8 +53,12 @@ if ($add_fields)
 if ($change_to_cmd && pack_id ($change_to) != $collectionprop["sliceid"])	{
 	if ($change_to_delete) 
 		echo "<b>".delete_fields_from_slice ($collectionid, $collectionprop["sliceid"])."</b><br><br>";
-	$db->query ("UPDATE alerts_collection SET sliceid='".q_pack_id($change_to)."' 
-		WHERE id=$collectionid");
+    if ($change_to)
+    	$db->query ("UPDATE alerts_collection SET sliceid='".q_pack_id($change_to)."' 
+	    	WHERE id=$collectionid");
+    else $db->query ("UPDATE alerts_collection SET sliceid = NULL 
+	    	WHERE id=$collectionid");
+
 	$collectionprop["sliceid"] = pack_id ($change_to);
 }
 

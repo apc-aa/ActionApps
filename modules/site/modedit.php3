@@ -25,7 +25,7 @@ http://www.apc.org/
 */
 
 if( $template['W'] )
-  $Add_slice = true;       # message for init_page.php3
+  $no_slice_id = true;       # message for init_page.php3
 
 $directory_depth = "../";
 require "../../include/init_page.php3";
@@ -209,7 +209,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
 if( $template['W'] ) {
   echo "<input type=hidden name=\"add\" value=1>";        // action
-//  echo "<input type=hidden name=\"Add_slice\" value=1>";  // detects new slice
+//  echo "<input type=hidden name=\"no_slice_id\" value=1>";  // detects new slice
   echo "<input type=hidden name=\"template[W]\" value=\"". $template['W'] .'">';
   echo "<input type=submit name=insert value=\"". _m("Insert") .'">';
 } else {

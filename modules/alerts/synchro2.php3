@@ -34,18 +34,6 @@ require $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
 
 // -------------------------------------------------------------- 
 
-/// Fields from the Reader Management Minimal template, used to 
-/// find Reader Management slices.
-$required_fields_in_reader_management = array (
-	"headline........",
-    "con_email.......",
-    "password........",
-    "text...........1",
-    "text...........2" 
-);
-
-// -------------------------------------------------------------- 
-
 /* Fields to be added into the Reader Management Slice.
    Field ID consists of "alerts1/2/3/4", dots, and collection ID, e.g. "alerts1.....154".
 */
@@ -73,14 +61,6 @@ $alerts_specific_fields = array (
 		"alias1" => "_#STATCODE",
 		"alias1_func" => "f_h",
 		"alias1_help" => _m("Status for {ALERNAME}"),
-	),
-	"alerts3" => array (
-		"name" => _m("Confirm"),
-		"input_help" => _m("Confirmation code for {ALERNAME}. If empty, user is confirmed."),
-		"input_show_func" => "fld:10:10:", 
-		"alias1" => "_#CONFIRM_",
-		"alias1_func" => "f_c:!:*::&nbsp;::1",
-		"alias1_help" => _m("Confirmation code for {ALERNAME}"),
 	),
 	"alerts4" => array (
 		"name" => _m("Filters"),
@@ -227,13 +207,12 @@ function delete_fields_from_slice ($collectionid, $sliceid)
 *   all fields listed in $required_fields_in_reader_management. */
 function getReaderManagementSlices ()
 {
-	global $db, $required_fields_in_reader_management;
+	global $db, $required_fields_in_reader_management, $slice_id,
+           $collectionprop;
 	
 	$slices = GetUsersSlices();
-	$SQL = "SELECT DISTINCT slice.id slice_id, slice.name, field.id 
-			FROM slice INNER JOIN field ON slice.id = field.slice_id 
-			WHERE slice.template = 0
-			AND field.id IN ('".join ("','", $required_fields_in_reader_management)."') ";
+	$SQL = "SELECT id, name FROM slice WHERE type='Alerts..........' 
+        AND id <> '".addslashes($collectionprop["sliceid"])."'";
 	if (is_array ($slices)) {
 		reset ($slices);
 		$where = "";
@@ -241,19 +220,13 @@ function getReaderManagementSlices ()
 			if ($where) $where .= "'";
 			$where .= "'".q_pack_id ($slice_id)."'";
 		}
-		$SQL = "AND slice_id IN (".$where.") ";
+		$SQL = " AND id IN (".$where.")";
 	}
-	$SQL .= "ORDER BY slice.id";	
 	$db->query ($SQL);
-	$slices = "";
-	while ($db->next_record()) {
-		$slices [$db->f("slice_id")] ++;
-		if ($slices [$db->f("slice_id")] == count ($required_fields_in_reader_management))
-			$retval [unpack_id($db->f("slice_id"))] = $db->f("name");
-	}
-	if (!is_array ($retval))
-		$retval [""] = _m("First create some Reader Management Slice");
-	else $retval [""] = " ";
+	while ($db->next_record()) 
+        $retval [unpack_id128 ($db->f("id"))] = $db->f("name");
+    if ($collectionprop["sliceid"])
+        $retval[""] = _m("not set");        
 	return $retval;
 }
 ?>

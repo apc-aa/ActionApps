@@ -145,7 +145,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "search" => false,
         "caption" => _m("Filters"),
         "title" => _m("Filters"),
-        "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
+        "cond" => IfSlPerm(PS_FULLTEXT),
         "orderby" => "myindex",
         "where" => "collectionid = $collectionid",
         "fields" => array (
@@ -214,7 +214,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                 "view" => array ("type" => "text", "size" => array("cols"=>60)),
 				"caption" => _m("name"),
                 "required" => true),
-            "slice_url" => array ("caption" => _m("form URL"), "required"=>true),
+            "slice_url" => array ("caption" => _m("form URL"), "required"=>false),
             "lang_file" => array (
                 "caption" => _m("language"),
                 "view" => array ("type"=>"select","source"=>$alertslangs)),
