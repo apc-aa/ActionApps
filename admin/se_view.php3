@@ -225,6 +225,7 @@ while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
     case "cond":    ConditionFrm($k, $v, $value); break;
     case "order":   OrderFrm($k, $v, $value, $VIEW_TYPES_INFO[$view_type][order] ? 
                                      $VIEW_TYPES_INFO[$view_type][order] : $lookup_fields); break;
+    case "select":  FrmInputSelect($k, $v, $VIEW_FIELDS[$k]["values"], $vw_data[$k], false, "", DOCUMENTATION_URL); break;
     case "none": break;
   }
 }  
