@@ -30,7 +30,8 @@ function ShowEmailAliases () {
         "aliases" => array (
             "_#FILTERS_" => _m("complete filter text"),
             "_#HOWOFTEN" => _m("howoften")." (".join(", ",get_howoften_options()).")",
-            "_#COLLFORM" => _m("Collection Form URL (set in Alerts Admin - Settings)"),
+            "_#COLLFORM" => _m("Anonym Form URL (set in Alerts Admin - Settings)"),
+            "_#UNSBFORM" => _m("Unsubscribe Form URL"),
         ));
         
     $ali[] = array (

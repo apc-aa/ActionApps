@@ -254,6 +254,9 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                     $alias["_#HOWOFTEN"] = $ho;
                     $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"],
                         "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE));
+                    $alias["_#UNSBFORM"] = alerts_con_url ($collection["slice_url"],
+                        "au=".$readerContent->getValue(FIELDID_ACCESS_CODE).
+                        "&c=".$cid);
 
                     if (send_mail_from_table ($collection["emailid_alert"],
                         $readerContent->getValue(FIELDID_EMAIL), $alias))
@@ -268,6 +271,8 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                 $alias["_#FILTERS_"] = get_filter_text_4_reader (null, $filters, $cid);
                 $alias["_#HOWOFTEN"] = $ho;
                 $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"], "ac=ABCDE");
+                $alias["_#UNSBFORM"] = alerts_con_url ($collection["slice_url"],
+                    "au=ABCDE&c=".$cid);
 
                 $GLOBALS["debug_email"] = 0;
                 if (send_mail_from_table ($collection["emailid_alert"],
@@ -361,10 +366,12 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
         $set = &get_view_settings_cached ($vid);
         // set language
         bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".
-            $set["lang"]."_alerts_lang.php3", true);
+            $set["lang"]."_alerts_lang.php3", true);            
         // $set["info"]["aditional2"] stores item URL
+        $item_url = $set["info"]["aditional2"];
+        if (! $item_url) $item_url = "You didn't set the item URL in the view $vid settings!";
         $itemview = new itemview( $db, $set["format"], $set["fields"],
-            $set["aliases"], $zids, 0, 9999, $set["info"]["aditional2"]);
+            $set["aliases"], $zids, 0, 9999, $item_url);
         $items_text = $itemview->get_output ("view");
     //echo "<h1>items $items_text</h1>"; print_r ($set["format"]); exit;
         //if (! strstr ($filter_settings, ","))
