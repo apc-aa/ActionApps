@@ -122,7 +122,7 @@ function DelUser ($user_id, $flags = 3) {
 
   if ($flags & 2) {            // cancel asssigned permissions
      $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
-     $r = ldap_search($ds, $aa_default_ldap[acls], $filter,
+     $r = ldap_search($ds, $aa_default_ldap['acls'], $filter,
                       array("apcObjectType","apcaci","apcObjectID"));
      $arr = ldap_get_entries($ds,$r);
      for($i=0; $i < $arr["count"]; $i++) {
@@ -225,7 +225,7 @@ function AddGroup ($group, $flags = 0) {
 
 // deletes a group in LDAP permission system
 // $group_id is DN
-function DelGroup ($group_id, $flags = 3) {
+function DelGroup($group_id, $flags = 3) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -507,15 +507,20 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
   $filter = "objectclass=apcacl";
   $basedn = "apcobjectid=" . $objectID . "," . $aa_default_ldap[acls];
   $result = @ldap_read($ds, $basedn, $filter, array("apcaci"));
-  if (!$result) return false;
+  if (!$result) {
+      return false;
+  }
   $entry = ldap_first_entry ($ds, $result);
   $arr = ldap_get_attributes($ds, $entry);
 
-  for($i=0; $i < $arr["apcaci"]["count"]; $i++) { // copy old ApcAci values
-    if(!stristr($arr["apcaci"][$i], $id)) {   // except the modified/deleted one
-      $new["apcaci"][] = $arr["apcaci"][$i];
+  // some older AAs could have mixed case atributes :-( (apcAci)
+  $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
+
+  for($i=0; $i < $aci['count']; $i++) { // copy old apcAci values
+    if(!stristr($aci[$i], $id)) {   // except the modified/deleted one
+      $new["apcaci"][] = $aci[$i];
     } else {
-      $old["apcaci"][] = $arr["apcaci"][$i];
+      $old["apcaci"][] = $aci[$i];
     }
   }
 
@@ -524,26 +529,26 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
   }
 
   if (count($new) > 0) {
-    $r=@ldap_mod_replace($ds, $basedn, $new);
+    $r=ldap_mod_replace($ds, $basedn, $new);
   } else {
-    $r=@ldap_mod_del($ds, $basedn, $old);
+    $r=ldap_mod_del($ds, $basedn, $old);
   }
 
   ldap_close($ds);
   return $r;          // true or false
 }
 
-function DelPerm ($id, $objectID, $objectType, $flags = 0) {
-  return AddPerm ($id, $objectID, $objectType, false);
+function DelPerm($id, $objectID, $objectType, $flags = 0) {
+  return AddPerm($id, $objectID, $objectType, false);
 }
 
-function ChangePerm ($id, $objectID, $objectType, $perm, $flags = 0) {
-  return AddPerm ($id, $objectID, $objectType, $perm);
+function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
+  return AddPerm($id, $objectID, $objectType, $perm);
 }
 
 // returns an array of user/group identities and their permissions
 // granted on specified object $objectID
-function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
+function GetObjectsPerms($objectID, $objectType, $flags = 0) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -557,12 +562,13 @@ function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
   $entry = ldap_first_entry ($ds, $result);
   $arr = ldap_get_attributes($ds, $entry);
 
+  // some older AAs could have mixed case atributes :-( (apcAci)
   $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
 
   for($i=0; $i < $aci["count"]; $i++) {
     $apcaci = ParseApcAci( $aci[$i] );
     if( $apcaci ) {
-      $info[$apcaci["dn"]]   = GetIDsInfo($apcaci["dn"]);
+      $info[$apcaci["dn"]]         = GetIDsInfo($apcaci["dn"]);
       $info[$apcaci["dn"]]["perm"] = $apcaci["perm"];
     }
   }
@@ -572,7 +578,7 @@ function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
 // returns an array of user/group identities and their permissions
 // granted on all objects of type $objectType
 // flags & 1 -> do not involve membership in groups
-function GetIDPerms ($id, $objectType, $flags = 0) {
+function GetIDPerms($id, $objectType, $flags = 0) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -596,16 +602,16 @@ function GetIDPerms ($id, $objectType, $flags = 0) {
   $arr = ldap_get_entries($ds,$result);
 
   for($i=0; $i < $arr["count"]; $i++) {
-     for($j=0; $j < $arr[$i]["apcaci"]["count"]; $j++) {
+     // some older AAs could have mixed case atributes :-( (apcAci)
+     $aci = (is_array($arr[$i]["apcaci"]) ? $arr[$i]["apcaci"] : $arr[$i]["apcAci"]);
+     for($j=0; $j < $aci["count"]; $j++) {
         for ($k = 0; $k < sizeof($groups); $k++) {
-           if (stristr($arr[$i]["apcaci"][$j],$groups[$k])) {
-              $perms[$arr[$i]["apcobjectid"][0]] .=
-                 GetApcAciPerm ($arr[$i]["apcaci"][$j]);
+           if (stristr($aci[$j],$groups[$k])) {
+              $perms[$arr[$i]["apcobjectid"][0]] .= GetApcAciPerm($aci[$j]);
            }
         }
-        if (stristr($arr[$i]["apcaci"][$j],$id)) {
-           $perms[$arr[$i]["apcobjectid"][0]] =
-               GetApcAciPerm ($arr[$i]["apcaci"][$j]);
+        if (stristr($aci[$j],$id)) {
+           $perms[$arr[$i]["apcobjectid"][0]]     = GetApcAciPerm($aci[$j]);
            break;           // specific ID's perm is stronger
         }
      }
@@ -639,14 +645,13 @@ function InitLDAP() {
 
 // parse apcaci LDAP entry
 function ParseApcAci($str) {
-  if( ereg("(.*):([^:]*)$", $str, $foo))
-    return array("dn"=>$foo[1], "perm"=>$foo[2]);
-  return false;
+  $foo = explode(':', $str);
+  return ((count($foo) < 2) ? false : array("dn"=>$foo[0], "perm"=>$foo[1]));
 }
 
-function GetApcAciPerm( $str ) {
-  ereg("(.*):([^:]*)$", $str, $foo);
-  return $foo[2];                          // permission string
+function GetApcAciPerm($str) {
+  $foo = explode(':', $str);
+  return $foo[1];         // permission string
 }
 
 // returns an array containing basic information on $id (user DN or group DN)
@@ -668,8 +673,8 @@ function GetIDsInfo($id, $ds = "") {
   $filter = "(|(objectclass=groupOfNames)(objectclass=inetOrgPerson))";
   $result = @ldap_read($ds, $id, $filter, array("objectclass","mail","cn"));
   if (!$result) return false;
-  $entry = ldap_first_entry ($ds, $result);
-  $arr = ldap_get_attributes($ds, $entry);
+  $entry = ldap_first_entry($ds, $result);
+  $arr   = $entry ? ldap_get_attributes($ds, $entry) : array();
 
   if ( !is_array($arr["objectclass"]) )   // new LDAP is case sensitive (v3)
       $arr["objectclass"] = $arr["objectClass"];
