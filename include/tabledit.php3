@@ -165,7 +165,7 @@ class tabledit {
         else {
             $$scrname = new scroller($scrname, $scrurl);
             $scroll = $$scrname;
-            if (is_object ($sess))
+            if (is_object ($this->sess))
                 $this->sess->register ($scrname);
             $scroll->metapage = $this->view["listlen"];
             $scroll->countPages ($rowcount);
