@@ -39,32 +39,32 @@ function ech($text) {
     echo "<div><font color=blue>";
     print_r( $text );
     echo "</font></div>";
-  } else 
+  } else
     echo "<div><font color=blue>$text</font></div>";
 }
-*/    
+*/
 
 # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
-  }  
+  }
   for (reset($val); list($k, $v) = each($val); )
     $ret[$k] = Myaddslashes($v, $n+1);
   return $ret;
-}    
+}
 
-if (!get_magic_quotes_gpc()) { 
-  // Overrides GPC variables 
+if (!get_magic_quotes_gpc()) {
+  // Overrides GPC variables
   if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
+      $$k = Myaddslashes($v);
 }
 
 require_once "../include/config.php3";
@@ -98,8 +98,8 @@ $XML_BEGIN = '<'.'?xml version="1.0"?'. ">\n".
 
 //-------------------------- Function definitons -------------------------------
 
-function code($v) {
-  return utf8_encode(htmlspecialchars($v));
+function code($v, $html=true) {
+  return $html ? utf8_encode(htmlspecialchars($v)) : utf8_encode($v);
 }
 
 function GetFlagFormat($flag) {
@@ -206,10 +206,10 @@ function GetBaseFieldContent(&$slice_fields, $ftype, &$content4id) {
     return "";
   $f = GetBaseFieldId($slice_fields,$ftype);
   $cont = $content4id[$f][0];
-  if ($cont[flag] & HTML_FLAG == HTML_FLAG)
-    return strip_tags($cont[value]);
+  if ($cont['flag'] & HTML_FLAG == HTML_FLAG)
+    return strip_tags($cont['value']);
   else
-    return $cont[value];
+    return $cont['value'];
 }
 
 function GetXMLFieldData($slice_id,&$slice_fields, $field_id, &$content4id) {
@@ -220,13 +220,13 @@ function GetXMLFieldData($slice_id,&$slice_fields, $field_id, &$content4id) {
     return;
 
   while (list( ,$v) = each($cont_vals)) {
-    $flag_format = GetFlagFormat($v[flag]);
+    $flag_format = GetFlagFormat($v['flag']);
     $out .= "\t\t<rdf:li><aa:fielddata>\n".
                "\t\t\t<aa:field rdf:resource=\"".AA_INSTAL_URL."field/$slice_id/$field_id\"/>\n".
-               "\t\t\t<aa:fieldflags>".$v[flag]."</aa:fieldflags>\n".
+               "\t\t\t<aa:fieldflags>".$v['flag']."</aa:fieldflags>\n".
                "\t\t\t<aa:format rdf:resource=\"".$FORMATS[$flag_format]."\"/>\n".
-               "\t\t\t<rdf:value>". ($flag_format=="HTML" ? "<![CDATA[".$v[value]."]]>\n" :
-                                                             code($v[value])).
+               "\t\t\t<rdf:value>". ($flag_format=="HTML" ? "<![CDATA[".code($v['value'], false)."]]>\n" :
+                                                             code($v['value'])).
                     "</rdf:value>\n".
             "\t\t</aa:fielddata></rdf:li>\n";
    }
@@ -253,13 +253,13 @@ function GetXMLItem($slice_id,$item_id, &$content4id, &$item_categs, &$slice_fie
   if (!$link_only) {
     $f = GetBaseFieldId($slice_fields, "full_text");
     if ($f) {
-      $flag_format = GetFlagFormat($content4id[$f][0][flag]);
+      $flag_format = GetFlagFormat($content4id[$f][0]['flag']);
       $xml_items .="\t<content:items><rdf:Bag>\n".
                       "\t\t<rdf:li><content:item>\n".
                           "\t\t\t<content:format rdf:resource=\"".$FORMATS[$flag_format]."\"/>\n".
                           "\t\t\t<rdf:value>".
-                          ($flag_format=="HTML" ? ("<![CDATA[".$content4id[$f][0][value]."]]>\n") :
-                                                  code($content4id[$f][0][value])).
+                          ($flag_format=="HTML" ? ("<![CDATA[".code($content4id[$f][0]['value'],false)."]]>\n") :
+                                                  code($content4id[$f][0]['value'])).
                           "</rdf:value>\n".
                       "\t\t</content:item></rdf:li>\n".
                    "\t</rdf:Bag></content:items>\n";
@@ -330,7 +330,7 @@ function GetItemCategories(&$categs, &$content_vals) {
     return;
     reset($content_vals);
   while (list(,$v) = each($content_vals)) {
-      if ($cat_id = $categs[$v[value]])
+      if ($cat_id = $categs[$v['value']])
         $cat_ids[] = $cat_id;
   }
   return $cat_ids;
@@ -377,9 +377,9 @@ if (!$slice_id) {                           // feed establishing mode
   $cond2 = "(item.last_edit >'$start_timestamp' OR item.publish_date > '$start_timestamp')";
 
   $SQL   = "SELECT id, publish_date, last_edit FROM item
-            WHERE slice_id = '$p_slice_id' 
+            WHERE slice_id = '$p_slice_id'
               AND $cond1
-              AND $cond2";  
+              AND $cond2";
 // AND (externally_fed='' OR externally_fed IS NULL)
 
   $db->query($SQL);
@@ -393,7 +393,7 @@ if (!$slice_id) {                           // feed establishing mode
   $time = unixstamp_to_iso8601($time);
 
 //ech( $ids );
-  
+
   if ($ids) {
     $content = GetItemContent($ids);     // get the content of all items
 
@@ -404,15 +404,15 @@ if (!$slice_id) {                           // feed establishing mode
       $c = explode(" ",$categories);     // create array of requested categories ids indexed by value
       while (list(,$cat ) = each($c)) {
         if ($consts[$cat]) {
-          $categs[$consts[$cat][value]] = $cat;
+          $categs[$consts[$cat]['value']] = $cat;
         }
       }
       reset($ids);
       while (list($k,$id) = each($ids)) {        // find out all items, which belongs to requested categories
 
-#  commented out - why to send all items without category definned if we want 
+#  commented out - why to send all items without category definned if we want
 #  just categories specified by $categories? - Honza
-#        if (!($cat_vals = $content[$id][$cat_field][0][value]))  // get category of the item => if empty
+#        if (!($cat_vals = $content[$id][$cat_field][0]['value']))  // get category of the item => if empty
 #          continue;                                              // send the item;
         if (!($items_categs[$id] = GetItemCategories($categs,$content[$id][$cat_field])))
           unset($ids[$k]);     // if the item categories are not in the set of requested categories
