@@ -225,6 +225,18 @@ function AddslashesArray($val) {
   return $ret;
 }    
 
+function stripslashes_magic ($str) {
+    if (get_magic_quotes_gpc()) 
+        return stripslashes($str);
+    else return $str;
+}
+
+function addslashes_magic ($str) {
+    if( get_magic_quotes_gpc() )
+        return $str;
+    else return addslashes($str);
+}
+
 # function for processing posted or get variables
 # adds quotes, if magic_quotes are switched off
 function QuoteVars($method="get") {
