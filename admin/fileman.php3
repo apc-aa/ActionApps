@@ -174,8 +174,9 @@ if ($db->num_rows()) {
 echo "<tr><td class=tabtxt>".fileAction ("createdir",L_CREATE_NEW_DIR) ."</td>
 <td class=tabtxt><input type=text name='arg[createdir]'></td></tr>
 </table></td></tr>";
+echo '<tr><td class=tabtxt></td><td class=tabtxt><input type=submit name="Upload"></td></tr>'; //You cant upload a file without a submit button
 
-echo "</table></form>";
+echo "</table></form><p></p></body></html>";
 
 page_close();
 exit;
