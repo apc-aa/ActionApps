@@ -1,141 +1,381 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-<title>APC Action Applications - Development Roadmap</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<style type="text/css">
+  <title>APC Action Applications - Development Roadmap</title>
+
+      
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+                                             
+  <style type="text/css">
 <!--
 .code {  font-family: "Courier New", Courier, mono; position: relative; left: 2pc; clip:  rect(   )}
+BODY,TABLE,TR, TD {  font-family: Verdana, Arial, Helvetica, sans-serif; 
+                     font-size: 12pt; 
+                   }
 -->
-</style>
+  </style>
 </head>
 <body>
+                       
 <h1>APC Action Applications - Development Roadmap</h1>
-<a href="http://www.apc.org/actionapps">apc-aa home</a> | 
-<a href="http://apc-aa.sourceforge.net/aa/doc/">
-docs home
-</a>
-<br>
-
-<a name="Process">
-<h2>How to put an item on the development priorities list</h2>
-
-The list below contains
-all the requests posted to the apc-aa-general@lists.sourceforge.net
-mailinglist, that have the word 'feature request' in the subject.
-
-<p> The list below is prioritized by Honza Malik, the primary developer of
-the software.  Honza's organization, <a
-href=http://www.ecn.cz/>ECONNECT</a>, is actively developing the
-software to meet the needs of its users.
-
-<p>If there is a feature on this list that you need done right away,
-you could either program it yourself (the software is open-source) or
-pay someone to develop it.  Several projects realized that the
-ActionApps meet 90% of their needs, and they can get a full-featured
-solution by paying for or writing the 10% of the code they need and
-contributing it back to the ActionApps development tree. <p>
-
+            <a href="http://www.apc.org/actionapps">apc-aa home</a> | <a
+ href="http://apc-aa.sourceforge.net/aa/doc/"> docs home </a> <br>
+             <a name="Process"> </a>           
+<h2><a name="Process">How to put an item on the development priorities list</a></h2>
+             <a name="Process">The list below contains all the requests posted
+   to  the  apc-aa-general@lists.sourceforge.net mailinglist, that have the
+  word  'feature  request' in the subject.  </a>           
+<p><a name="Process"> The list below is prioritized by Honza Malik, the primary 
+     developer of the software.  Honza's organization, </a><a
+ href="http://www.ecn.cz/">ECONNECT</a>, is actively developing the software 
+     to meet the needs of its users.  </p>
+                     
+<p>If there is a feature on this list that you need done right away, you could
+either program it yourself (the software is open-source) or pay someone to
+develop it.  Several projects realized that the ActionApps meet 90% of their
+needs, and they can get a full-featured solution by paying for or writing 
+     the 10% of the code they need and contributing it back to the ActionApps 
+    development tree. </p>
+                     
+<p>  </p>
+                     
 <p> If you want a new feature, but cannot pay for it or program it yourself,
-mention your request on the apc-aa-general mailinglist, and say what you
-want, why it is a good idea, and as much details as you can about how 
-it could work.  The apps communinity values your good ideas about making the
-software better, and your idea will be put on this list.  
-
-<a name="List">
-<h2>Prioritized List of New Features</h2>
-NOTE: This list is prioritized by the list of 
-needs of the developers, <a href="#Process">please see above</a>.
-
-<OL>
-
-<li>DHTML/Java WYSIWYG editor for inputform
-   (we finishing it in Econnect)
-
-<li>1.2 -> 1.6 transformation script
-   (nearly finished)
-
-<li>E-mail subscription (sending item diggest by e-mail)
-   (partialy developped)
-
-<li>E-mail alerts on some actions (add new item, slice, category,
-   feeding)
-
-<li>constant management impovements
-    - add permission to edit specific group of categories
-    - change the value in existing items when someone change the
-      constant definition
-
-<li>user profiles for admin interface (user specific settings for 
-  slices depending on login account - start slice, length of listing,
-  predefinned item  order/filter, hide/show/set specific fields in
-  inputform for specific user)
-
-<li>slice backup for users
-
-<li>possibility to change message "Item not found"
-
-<li>introduce interface for new modules (polls, petitions)
-
-<li>link catalog (like Yahoo)  (partialy done)
-<li>polls
-<li>petitions
-
-<li>calculated field (the possibility to fill some field with value 
-  calculated from others)
-
-<li>multilingual slices support
-
-<li>batch processing & shedule manager - plan actions on items to
-  specific time (sending e-mail diggest, backup, unhighlight, get
-  items from other server, get items from RSS, ...)
-
-<li>more configuration fields for discussions (Top/bottom HTML code for
-  full discussions listing, configurable buttons, configurable date
-  view)
-
-<li>automatical search form generation
-
-<li>RSS / IDML items import/(export)
-
-<li>feeding filters (the possibility to fed only highlighted items, ...
-  for example)
-
-<li>configurable page scroller (number of pages ...)
-
-<li>some kind of portal layer in order we can easily create big portals
-   with many cooperating views, polls, menus, ...
-
-<li>group operations on articles (moving all to ..., unhighlight all,
-  change category of all items in slice ...)
-
-<li>complete content senzitive help
-
-<li>more than three aliases per field (separate Alias page)
-
-<li>set order items are displayed, when they are grouped by a category.
-    Need to be able to set the order in which the categories are displayed.
-
-<li>Logging of admin events (slice delete, design change, ...)
-
-<li>porting AA to PostgreSQL
-
-<li>Linker - component for automatical replacement keywords by link in
-  fulltext (something like SmartTags - replace APC by 
-  <a href="...">APC</a>
-  (on this feature works Alfredo - new volunteer developer - Hello 
-   Alfredo!)
-
-<li>more item info in admin interface - possibility to the get all
-  information about the item (time of first posting, "poster", last
-  edited, where the item is fed and from which slice is fed ...)
-
-<li>permission manager (possibility to set individual permissions for
-   user (in order someone is able just change design,but (s)he can't
-   set the feeding,... - BTW the permission sysytem is prepared for
-   it - only the admin inteface missing)
-
-<li>feeding improvements (the change in child item will be offered for 
-  acceptance/rejection to ALL "sharers"
-
-</OL>
+      mention your request on the apc-aa-general mailinglist, and say what
+ you    want, why it is a good idea, and as much details as you can about
+how it   could work.  The apps communinity values your good ideas about making
+  the   software better, and your idea will be put on this list.  <a
+ name="List">  </a></p>
+                     
+<h2><a name="List">Prioritized List of New Features</a></h2>
+            <a name="List">NOTE: This list is prioritized by the list of
+needs    of  the  developers, </a><a href="#Process">please see above</a>.<br>
+                     
+<ul>
+           <li>Create module for polls (partialy done - Econnect works on
+this)</li>
+      <li>Code improvements<br>
+                       
+    <ul>
+        <li>new language environment - mgettext() - for easier translation
+ &amp; development<br>
+         </li>
+         <li>comment the code using PHPDoc and create developer documentation</li>
+         <li>update the code of admin pages to use $_GET and $_POST variables 
+ instead of $GLOBALS (due to recent changes in PHP default configuration, 
+where register_globals option is off as default</li>
+         <li>update the code of admin pages to not use slice_id as session
+ variable. It will be end of problems with creation of new browser window
+for admin pages.<br>
+         </li>
+                       
+    </ul>
+            </li>
+     <li>RSS / IDML, HTML, XML import   possibility   (Mitra works on this)<br>
+  This feature should allow the sliceadmins to set import of   articles from
+   an RSS (HTML or XML) page into the slice.  <br>
+ Ideas:<br>
+   
+    <ul>
+      <li>Most  pages are generated    form database, so it have the same
+structure (mainly  the RSS). The configuration    of this tool should allow
+to define string,  where to start parsing articles    on source page. Also
+there will be format  string (mask), in order we can   specify which part
+is headline (so it will  go into headline........ field),   ... &nbsp;</li>
+      <li>The regular expressions seems to  be good option for mask.</li>
+      <li>There should  be also time interval specifiing  how often you want
+to update slice from the external source - probably using  cron.php3 script
+ </li>
+    </ul>
+ </li>
+  <li>Wizard for generation of search form/anonymous posting page/offline
+filling page/... - you select the fields and the template of the page/form
+is generated for you. Then you can copy it and manyally add styles, ... 
+  </li>
+  <li>Add scroller possibility to view.php3 (teach '<i>view</i>' the same 
+ things as '<i>slice</i>')<br>
+     </li>
+     <li>Find solution for Rich Text Edit on Linux</li>
+  <li>Create module for link catalog (like Yahoo)  (partialy done - Econnect
+works on this) </li>
+  <li>Complete content senzitive help  </li>
+  <li>Group operations on articles (moving all to ..., unhighlight   all,
+    change category of all items in slice ...)<br>
+Possibility to fill all fields    in slice with some value (after addition 
+  of new fields, ...). It will be   nice to have special multichange page 
+or  multichange bar (just like search   bar under the items in 'Item Manager'. 
+   On the page (or bar) would be two   sections: 'Which items'  an 'What to
+  do with the items'.  <br>
+ The options for   'Which items'  would be:<br>
+   
+    <ul>
+      <li>   all items  in slice</li>
+      <li>   all approved  </li>
+      <li> all  in holdin bin</li>
+      <li>   all in trash  </li>
+      <li> selected  (by the checkbox)</li>
+      <li>   matching  condition (condition just like in Search bar) - it
+could be omitted if we  would implement it as multichange bar in Item Manager
+      </li>
+    </ul>
+ The options  for 'What to do with the items' would be:<br>
+   
+    <ul>
+      <li>   fill with specified value</li>
+      <li>   fill with the value of the specified  field in the same slice/item
+ </li>
+      <li> fill with the specified value if the current  value is ...   
+      </li>
+    </ul>
+ </li>
+  <li>Possibility to add user defined fields to slice (just like users can
+ add fields to item)<br>
+     </li>
+            <li>Add possibility to change fields directly from Item Manager 
+ - set dates, set text field for priority  of items  ...   (this is simillar 
+ to allready implemented live_checkbox)<br>
+           </li>
+            <li>Better search in Item Manager (add possibility to search
+in  dates/numbers/logical     values, ..). Also the search in fields with
+multiple values should be improved - the AND operator do not return allways
+the value you expect.<br>
+           </li>
+            <li>Site module improvements<br>
+                                                     
+    <ul>
+               <li>add {include file} posibility to the site module <br>
+         </li>
+         <li>create tool for quick access to specified view&nbsp;(probably
+ text field where user write view number)        </li>
+               <li>add possibility to highlight all spots for specified state 
+ - the spots will be highligted in sitetree on site admin page        </li>
+               <li>better design of tree (visible better, colapsable branches, 
+ ...)  </li>
+                                                     
+    </ul>
+           </li>
+            <li>Alerts <br>
+                                                         
+    <dl>
+      <dt>User info fields</dt>
+      <dd>  Add additional user info fields to create a better profile of
+   people using the system. Suggested fields are: organization, postal code,
+   year of birth. As with current name and address fields, this information
+   should be optional.       </dd>
+      <dt>Send on demand</dt>
+      <dd> Make it possible for administrators to send an alerts feed / newsletter
+   'on demand' -- ie. Whenever they feel it is the right time to send a collection.
+    A 'send on post' option could also be included. This would send out individual
+    AA articles as soon as they were approved.             <br>
+         Possible approach:<br>
+         	Administrators should be able to choose 'send on demand' or 'send 
+ based    on user preferences' in the set up screen of each collection. This 
+ screen    should also include a 'send newsletter now' button. This would 
+send all  approved  articles meeting the collection criteria at the time that
+the message  is sent.&nbsp;</dd>
+      <dt>Random message</dt>
+      <dd> Send out a 'random' message to a list of collection subscribers
+    -- ie. a message not made up of ActionApps content. Ideally, should be
+ possible   to send to multiple collections owned by the same organization
+ with one action.  This should link to the modified user list functions (see
+ below).<br>
+          Possible approach:<br>
+         	Text box that a message can be pasted into.&nbsp;</dd>
+      <dt>User list - collection</dt>
+      <dd> Each collection admin page should have a list of subscribed users.
+   This list should include name, organization and e-mail for each user.
+The    total number of users subscribed to the collection should appear at
+the  top  of the list. A button to download a delimited version of the list
+should   appear at the bottom. A button labeled 'send e-mail to all users'
+should  also appear on this page. This should open a blank form window that
+is used  to send a 'random' message (see above).&nbsp;</dd>
+      <dt>User list - all</dt>
+      <dd> It should be possible to see a list of all users subscribed to
+   collections owned by a particular administrator. This list should show
+ each   user only once, even if they are subscribed to multiple collections
+  owned   by the administrator in question. The total number of users should
+  appear   at the top of the list. A button to download a delimited version
+  of the list  should appear at the bottom. A button labeled 'send e-mail
+to  all users'  should also appear on this page. This should open a blank
+form  window that  is used to send a 'random' message. (see above)</dd>
+      <dt>Bulk subscription</dt>
+      <dd> Ability to subscribe multiple users to an Alerts feed with a 
+single action. Bulk subscription should not require user confirmation / user
+ confirmation should be optional.  <br>
+         Possible approach:<br>
+          Paste multiple addresses  into a text box in a form. One line per 
+ address.    Could even use delimited  format: firstname,lastname,e-mail address.&nbsp;</dd>
+      <dt>Welcome message</dt>
+      <dd>  Ability to customize the  welcome message that is sent to a user
+   when they are signed up to a collection.<br>
+           Possible approach<br>
+        	Include in collection set up screen.&nbsp;</dd>
+      <dt>Headers + footers&nbsp;</dt>
+      <dd>Ability  to create custom header and footer informaiton for e-mail
+   messages sent out  for each collection.&nbsp;<br>
+              Possible approach&nbsp;<br>
+              Include in collection set up screen.</dd>
+      <dt>Bulk delete</dt>
+      <dd>Ability  to delete multiple users at one time.&nbsp;<br>
+              Possible approach&nbsp;<br>
+              Multi-select users  from a scroll box or use check boxes.</dd>
+      <dt>Traffic statistics</dt>
+      <dd>View click throughs  from individual items included in an alerts
+    feed.<br>
+              Possible approach&nbsp;<br>
+              List of 'title' field from recently sent out alerts items.
+Each   title  has a number beside it indicating the number of click throughs.<br>
+              </dd>
+      <dt>Sign up workflow</dt>
+      <dd>Users should be able to sign up in two steps -- filling in a simple
+   form and clicking on a confirmation link. Logging in to set preferences 
+ should  be optional.       </dd>
+      <dt>Bounce back</dt>
+      <dd>Ability to bulk delete based on an automatically generated list
+   of e-mail address boucebacks.<br>
+        Possible approach&nbsp;<br>
+              Automatically generated bounce back report integrated with
+bulk   delete  function.</dd>
+    </dl>
+       </li>
+        <li>Linker - component for automatical replacement keywords by  link
+  in    fulltext (something like SmartTags - replace APC by   <a
+ href="file:///home/honza/texty/...">APC</a>) <br>
+ There will be vocabulary defined which will be attached to the slice(s). 
+In the vocabulary you specify, which words should be replaced and which link 
+will be used. A submitted item will be scaned for the vocabulary words and 
+the words will be enhanced by links.<br>
+ </li>
+  <li>Password protected items editing on public website<br>
+   new setting for slice - user can edit items if (knows password for item/knows 
+ password for item and the item was not edited in admin interface/allways/never)<br>
+     </li>
+  <li>Logging of admin events <br>
+     All possible events should be logged (event,    time, who, ...). The 
+events   are for example: new item filled, item moved   to holding bin, item 
+edited,   item fed, new slice added, slice deleted, changed    slice parameters/design, 
+  new share offer, deletion of content pooling, new   user, ... <br>
+     Ideas: <br>
+   
+    <ul>
+      <li>     Superadmins should be able to select which events to log 
+and which  not.</li>
+      <li>     E-mail (or any other) notification should be generated  from
+ this log.   The cron.php3 will run a script which will go through the  log
+each  5 min,   and send alerts to people, who is monitoring the event (new
+ item in  holding   bin, new slice, sharing notification). Each user can
+subscribe only to subset   of events. </li>
+      <li>     maybe we can then  generate  some kind of statistics from
+the log</li>
+    </ul>
+ </li>
+  <li>Undo/Redo - go back to previous  'slice setting'/'version     of item'<br>
+ When we changing some setting of slice, we can save old values. Then we
+can go back in history to Undo changes. This feature could be related with
+previous - 'Logging of admin events'<br>
+   </li>
+  <li>Image manipulation (resize, get image   size,  make thumbnail, ...) 
+     <br>
+           </li>
+  <li>Image/document upload mangement (browse image upload directory  for
+the slice, delete images/documents, get informations about image (in which
+item used, ...)<br>
+           </li>
+  <li>Profile improvements<br>
+                 
+    <ul>
+      <li>profile for groups - If a user is assigned to a group, the user
+   inherits   the   profile of the group.</li>
+      <li>add new profile property: start slice, default  value  for field, 
+ hide parts of admin interface for the user (search-box, left navigation column,
+ action-box))&nbsp;</li>
+    </ul>
+                </li>
+  <li>Allow Slice Admin  to add Users  <br>
+Create webinterface which will allow (at least some) slice administrators
+add users in his group/slice. Now every user has to be entered by the 'super
+    admin'    which will most likely be the APC provider that   runs the
+AA.    If we  rent  the AA to many clients, these should be   able to add
+users to  their  own  slices.&nbsp;</li>
+  <li>Discussion enhancement<br>
+           
+    <ul>
+        <li>    Possibility  to  display titles and/or texts of   discussion
+ comments (grouped  according  to articles).   Usefull for hot articles/discussions 
+ listing, latest   comments   listing, etc.    </li>
+        <li>    Possibility to send discussion comments to email   address
+   (watch all  discussions in this slice,   discussion in this article, discussion
+   in this thread,   only replyies to my comment).</li>
+        <li>   Discussion as view</li>
+           
+    </ul>
+       </li>
+    <li>Web interfacre  for mass import of data <br>
+      Add web interface for  mass import of data (now  done   via /misc/file2slice/)
+   into AA Admin interface.     The simpliest way could be just to have two
+  text area   filed (one for  definition what to import where - see   import.php3)
+   and another one for pasting imported data   into.&nbsp;</li>
+    <li>Update of a value of a field by visitor  <br>
+       AA should support  update of value of selected field by   an anonymous 
+  user (visitor) (e.g. increase value by 1   or other calculation, change 
+value,  add value to list    of existing ones). Usefull for article ratings, 
+  opinion  pools, etc.         </li>
+  <li>Slice backup for users  </li>
+  <li>More item info in admin interface<br>
+     possibility to the get all    information  about the item (time of first 
+  posting, "poster", last   edited,   where the  item is fed and from which 
+  slice is fed ...)  </li>
+  <li>"Skins" for Admin interface<br>
+         Design of Admin interface should be customizable (at   least some
+ parts   of it) so the design of Admin   interface  is consistent with design
+ of public  pages   where slice data are included/displayed.&nbsp;</li>
+  <li>Database integrity check - checking for inconsistence in database 
+- lost items, ...</li>
+  <li>"Remove string" enhancements<br>
+It would be useful if the Remove String on the Design   view could<br>
+   </li>
+  <ul>
+    <li>be longer than 255 characters;</li>
+    <li>         accept single quote characters;</li>
+    <li>         implement  regular expressions.</li>
+  </ul>
+    <li>Feeding improvements<br>
+    <ul>
+      <li>feedind filtering (the possibility to fed only highlighted items,
+   ...     for example)</li>
+      <li>rewrite 'Filters' page for feeds -&nbsp;add possibility to change 
+ not only content of category field</li>
+      <li>feeding improvements (the change in child item will be offered 
+for     acceptance/rejection to ALL "sharers"</li>
+    </ul>
+  </li>
+                     <li>Configurable page scroller (number of pages ...)
+ </li>
+             <li>Permission manager (possibility to set individual permissions
+   for      user (in order someone is able just change design,but (s)he can't
+      set  the feeding,... - BTW the permission sysytem is prepared for 
+  it  - only  the admin inteface missing)</li>
+  <li>More than three aliases per field (separate Alias page)     </li>
+             <li>Porting AA to PostgreSQL  </li>
+                          <li>Email notification enhancement   <br>
+      If a field included in email  notification is type of   HTML (e.g.
+full   text of item/article formated as    html), it should be either converted 
+ into plain  text   or email message  should contain correct Mime headers, 
+   etc. before  it is send.&nbsp;</li>
+  <li>Read access permissions<br>
+         AA need possibility to assign also "read" access    permissions to
+ the  slice data. Not only to slice   itself, but to individual  items/articles.
+      Now it is not safe to use AA for publishing   private/sensitive  information.
+   Anyonye can display    such information by guesing view ID and  short
+item    ID   (/apc-aa/view.php3?vid=xxx&amp;x=yyy),  even with use of   different
+   view which has the same aliases...&nbsp;</li>
+  <li>New module for petitions  </li>
+  <li>Multilingual slices support</li>
+  <li>(I'm not sure about this) The idea of External News vs. not external 
+News   isn't   immediately  apparent.  Maybe Have one button for Add News 
+Item,  and another   item for Add External News.  Then itemedit would hide 
+the appropriate   fields.                </li>
+</ul>
+                        
+</body>
+</html>
