@@ -1931,6 +1931,13 @@ function get_if($value, $else, $else2='aa_NoNe') {
            (($else2=='aa_NoNe') ? $else : $else2));
 }
 
+/** Version of AA - automaticaly included also date and revision of util.php3
+ *  file, for better version informations
+ */
+function aa_version() {
+    return 'APC ActionApps 2.6.1 ($Date$, $Revision$)';
+}
+
 // file_get_contents works in PHP >=4.3.0
 if (!function_exists("file_get_contents")) {
   function file_get_contents($filename, $use_include_path = 0) {

@@ -146,7 +146,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     if( !$slice_id )
         $r_slice_headline = _m("New slice");
 
-    $nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$AA_INSTAL_PATH.'images/action.gif" width="106" height="73" border="0" alt="'. _m("APC Action Applications") .'"></a>';
+    $nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$AA_INSTAL_PATH.'images/action.gif" width="106" height="73" border="0" title="'. aa_version() .'"></a>';
 
     echo "<TABLE border=0 cellspacing=0 cellpadding=0 width='100%'><TR>";
 
