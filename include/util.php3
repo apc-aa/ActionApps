@@ -146,26 +146,37 @@ function add_vars($query_string="", $debug="") {
         $lvalue = substr($var,0,$pos);
         $value  = substr($var,$pos+1);
         $arrindex = strstr ($lvalue,'[');
-        if (!$arrindex) 
+        if (!$arrindex) {
             $GLOBALS[$lvalue]= $value;   # normal variable
-    else {
-            $lvalue = substr ($lvalue, 0, strpos ($lvalue,'['));
-            // are we inside some [] brackets?
-            $in = 0;
-            for ($i = 0; $i < strlen($arrindex); $i ++) {
-                if ($arrindex[$i] == '[') $in = 1;
-                if ($in) {
-                    $evalindex .= $arrindex[$i];
-                    if ($arrindex[$i] == ']') $in = 0;
-                }
-            }
-            $evalcode = '$'.$lvalue.$arrindex."=\$value;";
-            if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
-                global $$lvalue;
-                // make sure the array indexes are in quotes when there are unusual chars like .,
-                // e.g. [headline........] causes problems, should be ['headline.......']
-                eval ($evalcode);
-            }
+            continue;
+        }    
+        
+        # array variable
+        unset($indexes);
+        $lindex = "";
+        $lvalue = substr ($lvalue, 0, strpos ($lvalue,'['));
+        // are we inside some [] brackets?
+        
+        while( strpos('x'.$arrindex, '[')==1 AND          # correct array index
+               ($end = strpos($arrindex, ']'))) {         #  = no == !!
+            $indexes[] = substr( $arrindex, 1, $end-1 );  # extract just index
+            $arrindex = substr( $arrindex, $end+1 );      # next index
+        }
+        reset($indexes);
+        while( list(,$v) = each($indexes) ) {
+            # add apostrophs for textual indexed
+            $first = substr($v,0,1);                      # first letter
+            if( $first!='"' AND 
+                $first!="'" AND 
+                strlen($v) != strspn($v,'0123456789') )   # [] and [12] allowed
+                $lindex .= "['$v']";
+             else
+                $lindex .= "[$v]";
+        }
+        $evalcode = '$'.$lvalue.$lindex."=\$value;";
+        if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
+            global $$lvalue;
+            eval ($evalcode);
         }
     }
     return count ($vars);
