@@ -281,34 +281,34 @@ $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "7"   => LOG_EVENTS_,
                       "8"   => LOG_EVENTS_);
 
-# content table flags
-define( "FLAG_HTML", 1 );      # content is in HTML
-define( "FLAG_FEED", 2 );      # item is fed
-define( "FLAG_FREEZE", 4 );    # content can't be changed
-define( "FLAG_OFFLINE", 8 );   # off-line filled
-define( "FLAG_UPDATE", 16 );   # content should be updated if source is changed
-                               #   (after feeding)
+/** content table flags */
+define( "FLAG_HTML",    1 );   // content is in HTML
+define( "FLAG_FEED",    2 );   // item is fed
+define( "FLAG_FREEZE",  4 );   // content can't be changed
+define( "FLAG_OFFLINE", 8 );   // off-line filled
+define( "FLAG_UPDATE", 16 );   // content should be updated if source is changed
+                               //   (after feeding)
 
-# item table flags (numbers - just to be compatible with content table)
-define( "ITEM_FLAG_FEED", 2 );      # item is fed
-define( "ITEM_FLAG_OFFLINE", 8 );   # off-line filled or imported from file
-define( "ITEM_FLAG_ANONYMOUS_EDITABLE", 32); # anonymously added and thus anonymously editable (reset on every use of itemedit.php3)
+/** item table flags (numbers - just to be compatible with content table) */
+define( "ITEM_FLAG_FEED",                2 );   // item is fed
+define( "ITEM_FLAG_OFFLINE",             8 );   // off-line filled or imported from file
+define( "ITEM_FLAG_ANONYMOUS_EDITABLE", 32);    // anonymously added and thus anonymously editable (reset on every use of itemedit.php3)
 
-# states of feed field of field table
-define( "STATE_FEEDABLE", 0 );
-define( "STATE_UNFEEDABLE", 1 );
-define( "STATE_FEEDNOCHANGE", 2 );
-define( "STATE_FEEDABLE_UPDATE",3);
+/** states of feed field of field table */
+define( "STATE_FEEDABLE",              0 );
+define( "STATE_UNFEEDABLE",            1 );
+define( "STATE_FEEDNOCHANGE",          2 );
+define( "STATE_FEEDABLE_UPDATE",       3);
 define( "STATE_FEEDABLE_UPDATE_LOCKED",4);
 
-# relation table flags
-define( "REL_FLAG_FEED", 2 );    # 2 - just to be compatible with content table
+/** relation table flags */
+define( "REL_FLAG_FEED", 2 );    // 2 - just to be compatible with content table
 
 function inputFeedModes() {
-  return array( STATE_FEEDABLE => _m("Feed"),
-                STATE_UNFEEDABLE => _m("Do not feed"),
-                STATE_FEEDNOCHANGE => _m("Feed locked"),
-                STATE_FEEDABLE_UPDATE => _m("Feed & update"),
+  return array( STATE_FEEDABLE               => _m("Feed"),
+                STATE_UNFEEDABLE             => _m("Do not feed"),
+                STATE_FEEDNOCHANGE           => _m("Feed locked"),
+                STATE_FEEDABLE_UPDATE        => _m("Feed & update"),
                 STATE_FEEDABLE_UPDATE_LOCKED => _m("Feed & update & lock")
               );
 }
@@ -774,18 +774,18 @@ function getViewTypesInfo() {
     return $VIEW_TYPES_INFO;
 }
 
-# flag in the feedmap table
-define ("FEEDMAP_FLAG_MAP", 0);
-define ("FEEDMAP_FLAG_VALUE", 1);
-define ("FEEDMAP_FLAG_EMPTY", 2);
+/** flag in the feedmap table */
+define ("FEEDMAP_FLAG_MAP",    0);
+define ("FEEDMAP_FLAG_VALUE",  1);
+define ("FEEDMAP_FLAG_EMPTY",  2);
 define ("FEEDMAP_FLAG_EXTMAP", 3);
-define ("FEEDMAP_FLAG_JOIN", 4);
-define ("FEEDMAP_FLAG_RSS", 5);
+define ("FEEDMAP_FLAG_JOIN",   4);
+define ("FEEDMAP_FLAG_RSS",    5);
 
-define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in slice table
+define ("DISCUS_HTML_FORMAT",  1);  // discussion html format flag in slice table
 
 // don't check whether these fields exist (in the conds[] array used by searchform):
-$conds_not_field_names = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuejoin"=>1);
+$CONDS_NOT_FIELD_NAMES = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuejoin"=>1);
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);
 // CountHit probability - how offen write logged hits to item table
@@ -795,17 +795,17 @@ define ("COUNTHIT_PROBABILITY", 1000);
 define ("LINKS_VALIDATION_COUNT", 100);
 
 /** constants for manager class used in $manager->show */
-define("MGR_ACTIONS", 2);        // show actions
+define("MGR_ACTIONS",       2);  // show actions
 define("MGR_SB_SEARCHROWS", 4);  // show search rows in searchbar
-define("MGR_SB_ORDERROWS", 8);   // show order rows in searchbar
+define("MGR_SB_ORDERROWS",  8);  // show order rows in searchbar
 define("MGR_SB_BOOKMARKS", 16);  // show bookmarks in searchbar
 
 /** constants for bins, used in new QueryZIDS function */
-define("AA_BIN_ACTIVE", 1);
-define("AA_BIN_PENDING", 2);
-define("AA_BIN_EXPIRED", 4);
-define("AA_BIN_HOLDING", 8);
-define("AA_BIN_TRASH", 16);
+define("AA_BIN_ACTIVE",   1);
+define("AA_BIN_PENDING",  2);
+define("AA_BIN_EXPIRED",  4);
+define("AA_BIN_HOLDING",  8);
+define("AA_BIN_TRASH",   16);
 
 /** HTMLArea constants */
 define("AA_HTMLAREA_SPELL_CGISCRIPT",""); // path for spellchecker cgi script (read misc/htmlarea/readme.aa)
