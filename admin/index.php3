@@ -188,7 +188,7 @@ switch( $action ) {  // script post parameter
     $r_admin_order = ( $admin_order ? $admin_order : "publish_date...." );
     $r_admin_order_dir = ( $admin_order_dir ? "d" : "a");
     
-    $r_admin_search = $admin_search;
+    $r_admin_search = stripslashes($admin_search);
     $r_admin_search_field = $admin_search_field;
     break;
 }
@@ -526,6 +526,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.29  2001/10/24 16:41:34  honzam
+search expressions with AND, OR, NOT, (, ) allowed in conditions
+
 Revision 1.28  2001/10/05 10:51:29  honzam
 Slice import/export allows backup of more slices, bugfixes
 
