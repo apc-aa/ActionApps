@@ -276,7 +276,7 @@ function GetDestinationFileName($dirname, $uploaded_name) {
 // 2: file name left over from existing record, just stores the value
 // 3: newly entered URL, this is not distinguishable from case #2 so
 //    its just stored, and no thumbnails etc generated, this could be
-//    fixed later (mtira)
+//    fixed later (mitra)
 function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
 {
     global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR, $debugupload, $err;

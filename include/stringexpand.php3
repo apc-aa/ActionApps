@@ -174,11 +174,25 @@ function DeQuoteColons($text) {
     return strtr($text, $UnQuoteArray);
 }
 
+/*
 // In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax
 $GLOBALS[eb_functions] = array (
     fmod => fmod,    # php > 4.2.0
     substr => substr
 );
+*/
+
+
+// Alternative is to create functions starting with "stringexpand_"
+function stringexpand_testexpfnctn($var) {
+    return "Just testing it".$var;
+}
+function stringexpand_fmod($x,$y) { return fmod($x,$y); }
+
+function stringexpand_substr($string,$start,$length=999999999) {
+    return substr($string,$start,$length);
+}
+
 
 # Expand a single, syntax element.
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
@@ -341,6 +355,19 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         }
         return QuoteColons($level,$maxlevel,$ebres);
     }
+    if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) 
+      && is_callable("stringexpand_".$parts[1])) {
+        $fnctn = "stringexpand_".$parts[1];
+        $parts = ParamExplode($parts[2]);
+        switch(count($parts)) {
+          case 0: $ebres=$fnctn(); break;
+          case 1: $ebres=$fnctn($parts[0]); break;
+          case 2: $ebres=$fnctn($parts[0],$parts[1]); break;
+          case 3: $ebres=$fnctn($parts[0],$parts[1],$parts[2]); break;
+          case 4: $ebres=$fnctn($parts[0],$parts[1],$parts[2],$parts[3]); break;
+        }
+        return QuoteColons($level,$maxlevel,$ebres);
+    }
     if (isset($item) ) {
         if (($out == "unpacked_id.....") || ($out == "id..............")) {
             return QuoteColons($level, $maxlevel, $item->f_n('id..............'));
@@ -450,4 +477,17 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
     }
 }
 
-
+// This isn't used yet, might be changed
+// remove this comment if you use it!
+function stringexpand_slice_comments($slice_id) {
+    $SQL = "SELECT sum(disc_count) FROM item WHERE slice_id=\"$slice_id\"";
+    $db = getDB();
+    $res = $db->tquery($SQL);
+    if ($db->next_record()) {
+        $dc = $db->f("sum(disc_count)");
+    } else {
+        $dc = 0;
+    }
+    freeDB($db);
+    return $dc;
+}

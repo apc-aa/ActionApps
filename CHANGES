@@ -1,3 +1,8 @@
+08/27/03 - added stringexpand_ prefix for extending string expansion
+(mitra)  - replaced existing eb_functions for substr and fmod
+         - added return_url to discedit.php3
+         - removed unneeded warning on resizing
+         - added commented out code for password problem on cross-architectures
 08/26/03 - added "Select all" option on Filters admin page;
 (honzam) - fixed crossserver feeding and its filter setting
 08/24/03 - added pointers to Honza's demo slices to documentation

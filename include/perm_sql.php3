@@ -81,21 +81,31 @@ function AuthenticateUsername($username, $password, $flags = 0) {
   // echo "$cryptpw (given crypted, ", strlen($cryptpw), ")<br>";
   // echo "$row[password] (stored crypted, ", strlen($row[password]), ")<br>";
   // echo "$slength (salt length)<br>";  
-  
-/* 
+
+/*
+if ($GLOBALS[debugmitra]) {  
+    echo "PASSWORD=$password id=$id len1=",strlen($row[password])," len2=",strlen($cryptpw),"Prefix1=",substr($row[password],0,3)," Prefix2=",substr($cryptpw,0,3); 
+}
+*/
+
   // Uncomment this if and only if you have problems with login after copying
   // a database from one machine to another.
   //
   // This is a hack, if the user's stored password is the wrong length
   // then its a copy of a database on a different architecture. 
   // so let the user in, 
-  // It should then set the password to that entered.
-  if (strlen($row[password]) != strlen($cryptpw)
-        && (substr($row[password],0,3) == '$1$')) {
-    #echo "Hacked successfully...";
+  // It should (but doesn't) then set the password to that entered.
+  if (
+    (strlen($row[password]) != strlen($cryptpw)
+        && (substr($row[password],0,3) == '$1$')
+        && (substr($cryptpw,0,3) != '$1$'))
+# UnComment this when debugging a particular user, then comment it back!
+#    || ($password == "DEBUG")
+    )  {
+    echo "Hacked successfully...";
     return $id;
   }
-*/
+
 
   // The next substr looks odd, but $cryptpw is under 
   // certain circumstances 4 chars longer than $row[password]

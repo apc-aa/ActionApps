@@ -433,13 +433,15 @@ class itemview {
         $foo_zids = $this->zids;
       }
     }
-
+    trace("=","",$view_type." after zids");
     // fill Abstract Data Structure by the right function
     // (GetItemContent / GetItemContent_Short / GetLinkContent)
     $function2call = $this->get_content_funct;
+    trace("=","",$view_type." pre call to ".$function2call);
     // Create an array of content, indexed by either long or short id (not tagged id)
     $content = $function2call($foo_zids);
 
+    trace("=","",$view_type." after content");
     if ($debug) huhl("itemview:get_content: found",$content);
 
     $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare

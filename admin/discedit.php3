@@ -106,7 +106,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   $content = GetItemContent($item_id);
   $headline = getHeadline($content[$item_id]);
   ?>
-  <form method="post" action=<?php echo $sess->url(self_base()."index.php3") ?> >
+  <form method="post" action=<?php echo sess_return_url(self_base()."index.php3") ?> >
   <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
   <tr><td class=tabtit><b>&nbsp;<?php 
      echo _m("Item: ")." $headline</b> (". 
