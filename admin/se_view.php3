@@ -299,16 +299,15 @@ while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
 echo "</table></td></tr>";
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
-  case 'field': if ($view_type == 'discus') {
-                   PrintAliasHelp(GetDiscussionAliases());
-                } else {
-                  if( $r_fields )
+  case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases());
+  case 'discus': PrintAliasHelp(GetDiscussionAliases());
+                 break;
+  case 'field' :  if( $r_fields )
                     $fields = $r_fields;
                   else
                     list($fields,) = GetSliceFields($slice_id);
                   PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']));
-                }
-                break;
+                  break;
   case 'const': PrintAliasHelp(GetConstantAliases());
                 break;
   case 'none':  break;
