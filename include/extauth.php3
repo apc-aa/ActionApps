@@ -43,6 +43,31 @@ class AA_CP_Auth extends Auth {
   }
   
   function auth_loginform() {
+    global $sess, $_PHPLIB, $HTTP_POST_VARS, $anonymous_user;
+    $username = $HTTP_POST_VARS["username"];  # there was problem with variables
+    $password = $HTTP_POST_VARS["password"];  # in cookies - if someone writes 
+                                              # to cookies username, then the 
+                                              # cookies username is used - error
+    
+    require ($GLOBALS[AA_INC_PATH] . "loginform.html");
+  }
+
+  function auth_validatelogin() {
+    global $HTTP_POST_VARS;
+    $username = $HTTP_POST_VARS["username"];  # there was problem with variables
+    $password = $HTTP_POST_VARS["password"];  # in cookies - if someone writes 
+                                              # to cookies username, then the 
+                                              # cookies username is used - error
+    if(isset($username))
+      $this->auth["uname"]=$username;
+
+    $user=$username;
+    $uid = AuthenticateUsername($user, $password);
+    return $uid;
+  }
+
+
+  function auth_loginform() {
     global $sess;
     global $_PHPLIB;
     global $username, $password, $anonymous_user;
@@ -63,6 +88,9 @@ class AA_CP_Auth extends Auth {
 }
 /*
 $Log$
+Revision 1.3  2002/03/06 12:49:48  honzam
+fixed problem with failed authentication, when cookie username was filled
+
 Revision 1.2  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 
