@@ -197,7 +197,7 @@ function stringexpand_substr($string,$start,$length=999999999) {
 # Expand a single, syntax element.
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
-    global $als,$debug,$errcheck;
+    global $als,$debug,$errcheck,$contentcache;
 
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
@@ -222,6 +222,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     #   - als[xxxx]
     #   - aliases[xxxx]
     # {_#ABCDEFGH}
+    # {const_<what>:<field_id>} - returns <what> column from constants for the value from <field_id>
     #   {any text}                                       - return "any text"
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which are processed before expanding the function
@@ -401,6 +402,34 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     // Look for {_#.........} and expand now, rather than wait till top
     elseif ( isset($item) && (substr($out,0,2) == "_#")) {
         return $item->substitute_alias_and_remove($out);
+    }
+    elseif (substr($out, 0, 6) == "const_") {
+        // $what - name of column (eg. from const_name we get name)
+        $what = substr($out, strpos($out, "_")+1, strpos($out, ":") - strpos($out, "_")-1);
+        // parameters - first is field
+        $parts = ParamExplode(substr($out,strpos($out,":")+1));
+
+        // get constant group_id from content cache or get it from db
+        $zids = new zids($item->columns["slice_id........"][0]["value"], "p");
+        $long_id = $zids->longids();
+        // GetCategoryGroup looks in database - there is a good chance, we will
+        // expand {const_*} very soon (again), so we cache the result for future
+        $group_id = $contentcache->get_result("GetCategoryGroup", array($long_id[0], $parts[0]));
+        switch ($what) {
+            case "name" :
+            case "value" :
+            case "short_id":
+            case "description" :
+            case "pri" :
+            case "group" :
+            case "class" :
+            case "id" :
+            // get values from contentcache or use GetConstants function to get it from db
+                $val = $contentcache->get_result("GetConstants", array($group_id, "pri", $what));
+                           return $val[$item->columns[$parts[0]][0]["value"]];
+                           break;
+            default : break;
+        }
     }
      // Put the braces back around the text and quote them if we can't match
     else {
