@@ -246,6 +246,7 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
 if($edit || $update || ($insert && $added_to_db)) { ?>
    <input type=submit name=update value="<?php echo L_POST ?>">
    <input type=submit name=upd_preview value="<?php echo L_POST_PREV ?>">
+   <input type=submit name=insert value="<?php echo L_INSERT_AS_NEW ?>">
    <input type=reset value="<?php echo L_RESET ?>"><?php
    $r_hidden["id"] = $id;
 } else { ?>
@@ -265,6 +266,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.24  2001/07/09 09:29:54  honzam
+New sort and search possibility in admin interface
+
 Revision 1.23  2001/06/03 15:57:45  honzam
 multiple categories (multiple values at all) for item now works
 
