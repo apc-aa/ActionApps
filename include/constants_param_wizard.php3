@@ -436,7 +436,7 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
 "f_i"=>array("name"=>_m("image src"),
 	"desc"=>_m("prints <i>the field</i> as image source (\<img src=...\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. ")),
 "i_s"=>array("name"=>_m("image size"),
-	"desc"=>_m("prints <i>the field</i> as image width (height="xxx" width="yyy") empty string if cant work out, does not special case URLs from uploads directory, might do later! ")),
+	"desc"=>_m("prints <i>the field</i> as image width (height='xxx' width='yyy') empty string if cant work out, does not special case URLs from uploads directory, might do later! ")),
 "f_j"=>array("name"=>_m("substring with case change"),
 	"desc"=>_m("prints a part of <i>the field</i>"),
 	"params"=>array(
