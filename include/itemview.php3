@@ -256,7 +256,7 @@ class itemview{
   function unaliasWithScroller($txt, $item) {
     # get HTML code, unalias it and add scroller, if needed
     $txt = $item->unalias( $txt, "");
-    if( ereg("^(.*){scroller:?([^}]*)}(.*)$", $txt, $parts) ) {
+    if( ereg("^(.*)[{]scroller:?([^}]*)[}](.*)$", $txt, $parts) ) {
       $viewScr = new view_scroller($this->slice_info['vid'],
                                    $this->clean_url,
                                    $this->num_records,
