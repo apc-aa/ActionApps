@@ -454,6 +454,7 @@ define("L_ALIAS_FUNC_I", "f_i - image src");
 define("L_ALIAS_FUNC_L", "f_l - linked field");
 define("L_ALIAS_FUNC_M", "f_m - e-mail");
 define("L_ALIAS_FUNC_N", "f_n - id");
+define("L_ALIAS_FUNC_Q", "f_q - text (blurb) from another slice");
 define("L_ALIAS_FUNC_R", "f_r - rss util");
 define("L_ALIAS_FUNC_S", "f_s - url");
 define("L_ALIAS_FUNC_T", "f_t - fulltext");
@@ -738,21 +739,21 @@ define("L_EXPIMP_SET", "Slice structure");
 
 define("L_E_EXPORT_TITLE", "Export slice structure");
 define("L_E_EXPORT_MEMO", "Choose one of two export kinds:");
-define("L_E_EXPORT_DESC", "When exporting \"to another Toolkit\" only the current slice will be exported "
+define("L_E_EXPORT_DESC", "When exporting \"to another ActionApps\" only the current slice will be exported "
 		."and you choose her new identificator.");
 define("L_E_EXPORT_DESC_BACKUP", "When exporting \"to Backup\" you may choose more slices at once.");
 define("L_E_EXPORT_MEMO_ID","Choose a new slice identificator exactly 16 characters long: ");
 define("L_E_EXPORT_SWITCH", "Export to Backup");
-define("L_E_EXPORT_SWITCH_BACKUP", "Export to another Toolkit");
+define("L_E_EXPORT_SWITCH_BACKUP", "Export to another ActionApps");
 define("L_E_EXPORT_IDLENGTH", "The identificator should be 16 characters long, not ");
-define("L_E_EXPORT_TEXT_LABEL", "Save this text. You may use it to import the slices into any Toolkit:");
+define("L_E_EXPORT_TEXT_LABEL", "Save this text. You may use it to import the slices into any ActionApps:");
 define("L_E_EXPORT_LIST", "Select slices which you WANT to export:");
 
 define("L_E_IMPORT_TITLE", "Import slice structure");
 define("L_E_IMPORT_SEND", "Send the slices structure");
 define("L_E_IMPORT_MEMO", "The import of the slices structure is done this way:<br>"
 			."Insert the exported text into the frame and click on Send. <br>"
-			."The slices structure with fields definitions will be read and added to the Toolkit.");
+			."The slices structure with fields definitions will be read and added to the ActionApps.");
 define("L_E_IMPORT_OPEN_ERROR","Unknown failur when opening the file.");
 define("L_E_IMPORT_WRONG_FILE","ERROR: Text is not OK. Check whether you copied it well from the Export.");
 define("L_E_IMPORT_WRONG_ID","ERROR: ");
@@ -778,6 +779,9 @@ define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 
 /*
 $Log$
+Revision 1.51  2001/10/08 17:03:35  honzam
+Language constants fixes
+
 Revision 1.50  2001/10/05 10:51:29  honzam
 Slice import/export allows backup of more slices, bugfixes
 

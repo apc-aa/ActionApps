@@ -90,9 +90,9 @@ $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
                                 "chb" => L_INPUT_SHOW_CHB, 
                                 "mch" => L_INPUT_SHOW_MCH,
                                 "mse" => L_INPUT_SHOW_MSE,
-                                "wi2" => L_INPUT_SHOW_WI2,
+#                               "wi2" => L_INPUT_SHOW_WI2,
                                 "fil" => L_INPUT_SHOW_FIL,
-                                "isi" => L_INPUT_SHOW_ISI,
+#                               "isi" => L_INPUT_SHOW_ISI,
                                 "iso" => L_INPUT_SHOW_ISO,
                                 "nul" => L_INPUT_SHOW_NUL);
                               
@@ -396,6 +396,9 @@ define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in 
 
 /*
 $Log$
+Revision 1.18  2001/10/08 17:03:35  honzam
+Language constants fixes
+
 Revision 1.17  2001/09/27 15:50:57  honzam
 New related stories support, Aliases for view and mail displaying
 

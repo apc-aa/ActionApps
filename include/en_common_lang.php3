@@ -140,8 +140,6 @@ define("DEFAULT_CODEPAGE","iso-8859-1");
             
 # ------------------- New constants (not in other lang files ------------------
 
-				     define("L_ALIAS_FUNC_Q", "f_q - text (blurb) from another slice");
-
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
 // break year for short year description is 1950
 function userdate2sec ($dttm, $time="") {
@@ -161,6 +159,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.22  2001/10/08 17:03:35  honzam
+Language constants fixes
+
 Revision 1.21  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 

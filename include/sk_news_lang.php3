@@ -458,6 +458,8 @@ define("L_ALIAS_FUNC_I", "f_i - zdroj obrázku");
 define("L_ALIAS_FUNC_L", "f_l - pole s odkazom");
 define("L_ALIAS_FUNC_M", "f_m - e-mail");
 define("L_ALIAS_FUNC_N", "f_n - id");
+define("L_ALIAS_FUNC_Q", "f_q - text (blurb) z jineho slice");
+define("L_ALIAS_FUNC_R", "f_r - rss util");
 define("L_ALIAS_FUNC_S", "f_s - url");
 define("L_ALIAS_FUNC_T", "f_t - plný text");
 define("L_ALIAS_FUNC_U", "f_u - user function");
@@ -770,6 +772,9 @@ define ("L_E_IMPORT_OVERWRITTEN", "Pøepsány byly:");
 
 /*
 $Log$
+Revision 1.8  2001/10/08 17:03:35  honzam
+Language constants fixes
+
 Revision 1.7  2001/10/05 10:51:29  honzam
 Slice import/export allows backup of more slices, bugfixes
 
