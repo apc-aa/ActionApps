@@ -34,7 +34,7 @@ function show_digest_filters ()
 {
     global $view_id;
     $db = new DB_AA;
-    $db->query ("SELECT * FROM alerts_digest_filter WHERE vid=".($view_id ? $view_id : 0));
+    $db->query ("SELECT * FROM alerts_filter WHERE vid=".($view_id ? $view_id : 0));
     $rows = $db->num_rows();
     for ($irow = 0; $irow < $rows+2; $irow ++) {
         if ($irow <= $db->num_rows()) $db->next_record();
@@ -59,7 +59,7 @@ function store_digest_filters ()
     while (list ($rowid, $filter) = each ($filters)) {
         if (!$filter["description"]) {
             if (substr ($rowid,0,3) != "new")
-                $db->query ("DELETE FROM alerts_digest_filter WHERE id=$rowid");
+                $db->query ("DELETE FROM alerts_filter WHERE id=$rowid");
             continue;
         }    
         $varset->clear();
@@ -69,8 +69,8 @@ function store_digest_filters ()
         $varset->add("showme", "number", 1);
 
         if (substr ($rowid,0,3) != "new") 
-            $SQL = "UPDATE alerts_digest_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";
-        else $SQL = "INSERT INTO alerts_digest_filter ".$varset->makeINSERT();
+            $SQL = "UPDATE alerts_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";
+        else $SQL = "INSERT INTO alerts_filter ".$varset->makeINSERT();
         if( !$db->query($SQL)) {
             $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
             break;   # not necessary - we have set the halt_on_error
