@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 /* 
-	Author: Jakub Adámek
+	Author: Jakub Adámek, Pavel  Jisl
 
 	Exports the slice definition as a template (without the data).
 	Two kinds of export:
@@ -31,12 +31,19 @@ http://www.apc.org/
 */
 
 require "../include/init_page.php3";
+require "./sliceexp_text.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 	MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EXPORT_IMPORT, "standalone");
 	exit;
 }
 
+if (isset($b_export_to_file))
+{
+	exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data);
+    exit;
+} else {
+  
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 ?>
@@ -45,14 +52,25 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
 	<!-- Hide script from old browsers
 	function validate () {
-		form = document.forms["f"];
+		form = document.forms["f"];	
 		if (form.SliceID.value.length != 16) {
 			alert (<?php echo '"'.L_E_EXPORT_IDLENGTH.'"' ?>
 				+ form.SliceID.value.length);
 			form.SliceID.focus();
 		}
 		else form.submit();
-	};		
+	};	
+	function validate2(what) {
+		sl_count = 0;
+		x = document.f[what];
+		for (i=0; i<x.length; i++) {
+		  sl_count += (x.option[i].selected ? 1 : 0);
+		}
+		if (sl_count == 0) {
+		  alert (<?  echo '"'.L_E_EXPORT_MUST_SELECT.'"' ?>);
+		} 
+		else form.submit();
+	}	
 	-->
 </SCRIPT>	
 
@@ -89,7 +107,12 @@ if ($SHOWTEXT == ""): ?>
 	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr><td class=tabtxt>
 		<b><?php echo L_E_EXPORT_DESC_BACKUP ?></b></P>
-		<INPUT TYPE=SUBMIT NAME="b_export_type" VALUE="<?php echo L_E_EXPORT_SWITCH ?>">
+		<b><?php echo L_E_EXPORT_DESC_EXPORT ?></b><br>
+		<input type="checkbox" name="b_export_struct" value="1" checked> <?php echo L_E_EXPORT_EXPORT_STRUCT ?><br>
+		<input type="checkbox" name="b_export_data" value="1"><?php echo L_E_EXPORT_EXPORT_DATA ?><br>
+		<input type="checkbox" name="b_export_gzip" value="1"><?php echo L_E_EXPORT_EXPORT_GZIP ?><br>
+		<input type="checkbox" name="b_export_to_file" value="1"><?php echo L_E_EXPORT_EXPORT_TO_FILE ?><br><br><br>
+		<INPUT TYPE=SUBMIT NAME="b_export_type" VALUE="<?php echo L_E_EXPORT_SWITCH ?>" onClick="javascript:validate2('export_slices[]');">
 		</td>
 		<td class=tabtit width=200>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -120,23 +143,11 @@ if ($SHOWTEXT == ""): ?>
 	</tr></td>
 <?php
 else:
-	require "./sliceexp_text.php3";
+	exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data);
 endif;
 ?>
 
 </TABLE>
 </BODY>
 </HTML>
-<?PHP
-/*
-$Log$
-Revision 1.3  2001/10/24 18:45:02  honzam
-fixed bug of two listed slices in slice export
-
-Revision 1.2  2001/10/05 10:51:29  honzam
-Slice import/export allows backup of more slices, bugfixes
-
-*/
-?>
-
-	
+<?php page_close(); } ?>

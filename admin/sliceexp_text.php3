@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 /* 
-	Author: Jakub Adámek
+	Author: Jakub Adámek, Pavel Jisl
 	
 	This page is called from sliceexp.php3 to generate the exported text.
 
@@ -32,6 +32,8 @@ http://www.apc.org/
 	slice array, in the form of a third-level associative array. 
 */
 
+
+
 function getRecord (&$array, &$record) 
 {
 	reset($record);
@@ -39,14 +41,8 @@ function getRecord (&$array, &$record)
 		if (!is_integer($key)) $array[$key] = $val;
 }	
 
-if ($b_export_type != L_E_EXPORT_SWITCH) {
-	unset ($export_slices);
-	$export_slices = array($slice_id);
-}
-
-reset($export_slices);
-while (list(,$slice_id_bck) = each($export_slices)) {
-	$slice_id = addslashes(pack_id($slice_id_bck));
+function exportOneSliceStruct ($slice_id, $b_export_type, $SliceID) {
+global $db, $sess;
 	$SQL = "SELECT * FROM slice WHERE id='$slice_id'";
 	$db->query($SQL);
 	if (!$db->next_record()) {
@@ -86,41 +82,76 @@ while (list(,$slice_id_bck) = each($export_slices)) {
 	
 		$slice["fields"][] = $new;
 	}
+	return $slice;
+}
+
+function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data) 
+{
+	global $db;
+	$header .= "<sliceexport version=\"1.1\">\n";
+	$header .= "<comment>This text contains exported slices definitions. You may import them to any Toolkit.</comment>\n";
 	
-	$export_text .= "<slice id=\"".$uid."\" name=\"".$slice["name"]."\">";
-	$export_text .= HTMLEntities(base64_encode(serialize($slice)));
-	$export_text .= "</slice>\n\n\n";
-}	
-$header .= "<sliceexport version=\"1.0\">\n";
-$header .= "<comment>This text contains exported slices definitions. You may import them to any Toolkit.</comment>\n";
+	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
 
-$export_text = $header.$export_text."</sliceexport>";
-?>
+	if ($b_export_type != L_E_EXPORT_SWITCH) {
+		unset ($export_slices);
+		$export_slices = array($slice_id);
+	}
+	
+	reset($export_slices);
+	while (list(,$slice_id_bck) = each($export_slices)) {
+		$slice_id = addslashes(pack_id($slice_id_bck));
 
-<tr><td class = tabtxt>
-<FORM>
-<b><?php echo L_E_EXPORT_TEXT_LABEL ?></b>
-</P>
-<TEXTAREA COLS = 80 ROWS = 20>
-<?php echo $export_text ?>
-</TEXTAREA>
-</FORM>
-</P>
-</tr></td>
+		$SQL= "SELECT name FROM slice WHERE id like '".$slice_id."' ORDER BY name";
+		$db->query($SQL);
+		while($db->next_record())
+			$slice_name = $db->f(name);
+	
+		if ($b_export_struct) {
+			$slice_str = exportOneSliceStruct($slice_id, $b_export_type, $SliceID, $b_export_gzip);	
+			$slice_struct = serialize($slice_str);
+			$slice_struct = $b_export_gzip ? gzcompress($slice_struct) : $slice_struct;
+			$slice_struct = HTMLEntities(base64_encode($slice_struct));
+		}
+		if ($b_export_data) {
+		}
+		$export_text .= "<slice id=\"".unpack_id($slice_id)."\" name=\"".$slice_name."\">\n";
+		$export_text .= "<slicestuct gzip=\"".$b_export_gzip."\">\n$slice_struct\n</slicestruct>\n";
+		$export_text .= "</slice>\n\n\n";
+	}	
+	
+	$export_text = $header.$export_text."</sliceexport>";
+	return $export_text;	
+}
+	
+function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID) {
+	
+	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
+	
+	$export_text = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data);
+		
+	header("Content-type: application/octec-stream");
+	header("Content-Disposition: attachment; filename=aaa.aaxml");
+	echo "$export_text";
+}
 
-<?PHP
-/*
-$Log$
-Revision 1.3  2001/10/24 18:45:02  honzam
-fixed bug of two listed slices in slice export
+function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data) 
+{	
+	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
+	
+	$export_text = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data);
 
-Revision 1.2  2001/10/05 10:51:29  honzam
-Slice import/export allows backup of more slices, bugfixes
-
-Revision 1.1  2001/10/02 11:33:54  honzam
-new sliceexport/import feature
-
-*/
+	echo "
+		<tr><td class = tabtxt>
+		<FORM>
+		<b>".  L_E_EXPORT_TEXT_LABEL ."</b>
+		</P>
+		<TEXTAREA COLS = 80 ROWS = 20>". $export_text ."</TEXTAREA>
+		</FORM>
+		</P>
+		</tr></td>";
+}
+page_close();
 ?>
 
 	
