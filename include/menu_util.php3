@@ -101,7 +101,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     if ($showSub) {
         $submenu = $smmenus[$activeMain]["submenu"];
         if ($submenu) {
-            echo "<TD>";
+            echo "<TD valign=top>";
             showSubmenu ($smmenus[$submenu], $activeSubmenu);
             echo "</TD>";
         }
