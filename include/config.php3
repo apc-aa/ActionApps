@@ -56,7 +56,7 @@ if (defined ("SITE_CONFIG")) {
 // new INSTALL, set this variable
 #  $AA_INC_PATH = ""; 
 if (!isset($AA_INC_PATH)){
-  echo "you must set AA_INC_PATH and other variables in config.inc !";
+  echo "you must set AA_INC_PATH and other variables in config.php3 !";
 };
 
 # Your Internet Domain
@@ -139,6 +139,9 @@ $ActionAppConfig[en_media_mon][file] = "en_news_lang.php3";
 
 /*
 $Log$
+Revision 1.2  2000/07/12 10:47:28  kzajicek
+ fixed print of old config name
+
 Revision 1.1  2000/07/11 09:31:54  kzajicek
 Renamed config.inc to config.php3
 
