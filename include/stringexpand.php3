@@ -165,7 +165,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       return QuoteColons($level, $maxlevel, $fileout);
       # QuoteColons used to mark colons, which is not parameter separators.
     }
-    if( ereg("^scroller:?([^}]*)$", $txt, $parts)) {
+    if( ereg("^scroller:?([^}]*)$", $out, $parts)) {
 	if (!isset($itemview) OR ($itemview->num_records<0) ) {   #negative is for n-th grou display
 		return "Scroller not valid without a view, or for group display"; }
 	$viewScr = new view_scroller($itemview->slice_info['vid'],
