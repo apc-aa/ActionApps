@@ -28,11 +28,53 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";     // GetAliasesFromField funct def 
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 
+function OrderFrm($name, $txt, $val) {
+  global $lookup_fields, $vw_data;
+  $name=safe($name); $txt=safe($txt);
+  echo "<tr><td class=tabtxt><b>$txt</b> ";
+  if (!SINGLE_COLUMN_FORM)
+    echo "</td>\n<td>";
+  FrmSelectEasy($name, $lookup_fields, $val);
+     # direction variable name - construct from $name
+  $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
+  FrmSelectEasy($dirvarname, array( '0'=>L_ASCENDING, '1' => L_DESCENDING ), 
+                $vw_data[$dirvarname]);
+
+  PrintMoreHelp(DOCUMENTATION_URL);
+//  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}  
+
+function ConditionFrm($name, $txt, $val) {
+  global $lookup_fields, $lookup_op, $vw_data;
+  $name=safe($name); $txt=safe($txt);
+  echo "<tr><td class=tabtxt><b>$txt</b> ";
+  if (!SINGLE_COLUMN_FORM)
+    echo "</td>\n<td>";
+  FrmSelectEasy($name, $lookup_fields, $val);
+     # direction variable name - construct from $name
+  $opvarname = substr($name,0,5)."op";
+  FrmSelectEasy($opvarname, $lookup_op, $vw_data[$opvarname]);
+     # direction variable name - construct from $name
+  if (!SINGLE_COLUMN_FORM)
+    echo "</td></tr>\n<tr><td>&nbsp;</td><td>";
+   else 
+    echo "</td></tr>\n<tr><td>&nbsp; &nbsp;";
+
+  $condvarname = substr($name,0,5)."cond";
+  echo "<input type=\"Text\" name=\"$condvarname\" size=50
+          maxlength=254 value=\"". $vw_data[$condvarname] ."\">";
+
+  PrintMoreHelp(DOCUMENTATION_URL);
+//  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}  
+
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_VIEWS);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_VIEWS, "admin");
   exit;
 }  
 
@@ -40,51 +82,11 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 $p_slice_id = q_pack_id($slice_id);
 
-  
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>
-      <SCRIPT Language=\"JavaScript\"><!--
-      function InitPage() {
-        EnableClick('document.f.even_odd_differ','document.f.even_row_format')
-        EnableClick('document.f.category_sort','document.f.category_format')
-      }
-      function EnableClick(cond,what) {
-        eval(what).disabled=!(eval(cond).checked);
-        // property .disabled supported only in MSIE 4.0+
-      }   
-      // -->
-      </SCRIPT>
-    </HEAD>";
-
-$xx = ($slice_id!="");
-$useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
-$show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-              "views"=>true, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
-require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
-
-echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
-PrintArray($err);
-echo $Msg;
-?>
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR>
-</td></tr>
-<tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?php
-  
-# -- get slice fields
-$s_fields[0] = L_NONE;
-$SQL = "SELECT id, name FROM field WHERE slice_id='$p_slice_id' ORDER BY pri");
-$db->query($SQL);
-while($db->next_record())
-  $s_fields[$db->f(id)] = $db->f(name);
-
 if( $update )
 {
   do
   {
-    reset($VIEW_FIELDS)
+    reset($VIEW_FIELDS);
     while(list($k, $v) = each($VIEW_FIELDS)) {
       if( $v["validate"] AND $VIEW_TYPES[$view_type][$k] )
         ValidateInput($k, $VIEW_TYPES[$view_type][$k], &$$k, &$err, false, $v["validate"]);
@@ -96,11 +98,11 @@ if( $update )
     $varset->add("name", "quoted", $name);
     $varset->add("type", "quoted", $view_type);
 
-    reset($VIEW_FIELDS)
+    reset($VIEW_FIELDS);
     while(list($k, $v) = each($VIEW_FIELDS)) {
       if( $VIEW_TYPES[$view_type][$k] )
         $varset->add($k, $v["insert"], (($v["type"]=="bool") ? ($$k ? 1 : 0) 
-                                                             : $$k);
+                                                             : $$k));
     }  
 
     if( $view_id ) {
@@ -117,6 +119,7 @@ if( $update )
     }
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    go_url( $sess->url(self_base() . "se_views.php3"));
   }while(false);
 
   if( count($err) <= 1 )
@@ -128,12 +131,13 @@ if( !$update ) {  # set variables from database
     $SQL= " SELECT * FROM view WHERE id='$view_id'";
    else           # new view - get default values from view table - 
                   #            take first view of the same type
-    $SQL= " SELECT * FROM view WHERE view_type='$view_type' ORDER by id";
+    $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
   $db->query($SQL);
-  if ($db->next_record()) 
+  if ($db->next_record()) {
     $vw_data = $db->Record;
-} elseif {        # updating - load data into vw_data array
-  reset($VIEW_FIELDS)
+  }  
+} else {        # updating - load data into vw_data array
+  reset($VIEW_FIELDS);
   while(list($k, $v) = each($VIEW_FIELDS)) {
     if( $VIEW_TYPES[$view_type][$k] )
       $vw_data[$k] = $$k;
@@ -158,33 +162,76 @@ while($db->next_record())
   $lookup_fields[$db->f(id)] = $db->f(name);
 
 
-echo "
-<form name=f enctype='multipart/form-data' method=post action='". $sess->url($PHP_SELF) ."'>
-<table width='440' border='0' cellspacing='0' cellpadding='1' bgcolor='". COLOR_TABTITBG ."' align='center'>
- <tr><td class=tabtit><b>&nbsp;" L_COMPACT ."</b><BR>
-  </td></tr>
- <tr><td>
-<table width='100%' border='0' cellspacing='0' cellpadding='4' bgcolor='". COLOR_TABBG ."'>";
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>
+      <SCRIPT Language=\"JavaScript\"><!--
+      function InitPage() {
+        EnableClick('document.f.even_odd_differ','document.f.even_row_format')
+        EnableClick('document.f.category_sort','document.f.category_format')
+      }
+      function EnableClick(cond,what) {
+        eval(what).disabled=!(eval(cond).checked);
+        // property .disabled supported only in MSIE 4.0+
+      }   
+      // -->
+      </SCRIPT>
+    </HEAD>";
 
-FrmStaticText(L_ID, $view_id);
+$xx = ($slice_id!="");
+$useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
+$show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+              "views"=>true, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
-reset($VIEW_TYPES[$view_type])
+echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
+PrintArray($err);
+echo $Msg;
+
+?>
+<form name=f enctype='multipart/form-data' method=post action='<?php echo $sess->url($PHP_SELF) ?>'>
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+<tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR>
+</td></tr>
+<tr><td>
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<?php
+
+FrmStaticText(L_ID, $view_id );
+
+reset($VIEW_TYPES[$view_type]);
 while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
   switch ( $VIEW_FIELDS[$k]["input"] ) {
-    case "field":   FrmInputText($k, $v, $vw_data($k), 254, 50, false, "", DOCUMENTATION_URL); break;
-    case "area":    FrmTextarea($k, $v, $vw_data($k), 4, 50, false, "", "", DOCUMENTATION_URL, 1); break;
-    case "seltype": FrmInputSelect($k, $v, $VIEW_TYPES_TYPES[$view_type], $vw_data($k), false, "", DOCUMENTATION_URL); break;
-    case "selfld":  FrmInputSelect($k, $v, $lookup_fields, $vw_data($k), false, "", DOCUMENTATION_URL); break;
-    case "selgrp":  FrmInputSelect($k, $v, $lookup_groups, $vw_data($k), false, "", DOCUMENTATION_URL); break;
-    case "op":      FrmInputSelect($k, $v, $lookup_op, $vw_data($k), false, "", DOCUMENTATION_URL); break;
-    case "chbox":   FrmInputChBox($k, $v, $vw_data($k), true); break;
+    case "field":   FrmInputText($k, $v, $vw_data[$k], 254, 50, false, "", DOCUMENTATION_URL); break;
+    case "area":    FrmTextarea($k, $v, $vw_data[$k], 4, 50, false, "", DOCUMENTATION_URL); break;
+    case "seltype": FrmInputSelect($k, $v, $VIEW_TYPES_INFO[$view_type][modification], $vw_data[$k], false, "", DOCUMENTATION_URL); break;
+    case "selfld":  FrmInputSelect($k, $v, $lookup_fields, $vw_data[$k], false, "", DOCUMENTATION_URL); break;
+    case "selgrp":  FrmInputSelect($k, $v, $lookup_groups, $vw_data[$k], false, "", DOCUMENTATION_URL); break;
+    case "op":      FrmInputSelect($k, $v, $lookup_op, $vw_data[$k], false, "", DOCUMENTATION_URL); break;
+    case "chbox":   FrmInputChBox($k, $v, $vw_data[$k], true); break;
+    case "cond":    ConditionFrm($k, $v, $vw_data[$k]); break;
+    case "order":   OrderFrm($k, $v, $vw_data[$k]); break;
+    case "none": break;
+  }
 }  
-
 echo "</table></td></tr>";
+
+switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
+  case 'field': if( $r_fields )
+                  $fields = $r_fields;
+                else
+                  list($fields,) = GetSliceFields($slice_id);
+                PrintAliasHelp(GetAliasesFromFields($fields));
+                break;
+  case 'const': // TODO
+                break;
+  case 'none':  break;
+}                
+
 echo "<tr><td align='center'>
+      <input type=hidden name=view_id value='$view_id'>
+      <input type=hidden name=view_type value='$view_type'>
       <input type=submit name=update value='". L_UPDATE ."'>&nbsp;&nbsp;<input
-             type=submit name=cancel value='". L_CANCEL ."'>
-     </td></tr></table>
+             type=submit name=cancel value='". L_CANCEL ."'></td></tr></table>
     </FORM><br>";
     
 if( $view_id ) {
@@ -196,10 +243,11 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.2  2001/05/18 13:43:43  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.1  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 
 */
 ?>
-
-

@@ -31,30 +31,54 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_VIEWS);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_VIEWS, "admin");
   exit;
 }  
+
+$err["Init"] = "";          // error array (Init - just for initializing variable
+$varset = new Cvarset();
+$p_slice_id = q_pack_id($slice_id);
+
+if( $del ) {
+  # check if deleted view is from this slice (for security)
+  $SQL = "DELETE FROM view WHERE id='$vid' AND slice_id='$p_slice_id'";
+  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+    $err["DB"] = MsgErr("Can't change field");
+    break;
+  }
+  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+  $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+
+  $Msg = MsgOK(L_VIEW_DELETE_OK);
+}
 
 function PrintView($id, $name, $type) {
   global $sess, $VIEW_TYPES;
 
   $name=safe($name); $id=safe($id);     
   
-  echo "<tr class=tabtxt><td>$id</td>
-          <td>$id</td>
-          <td>$name</td>
-          <td>". $VIEW_TYPES[$type]["name"] ."</td>
-          <td><a href=\"". con_url($sess->url("./se_view.php3"),
-            "view_id=$id&view_type=$type"). "\">". L_EDIT . "</a></td></tr>";
+  echo "<tr class=tabtxt>
+          <td class=tabtxt>$id</td>
+          <td class=tabtxt>$name</td>
+          <td class=tabtxt>". $VIEW_TYPES[$type]["name"] ."</td>
+          <td class=tabtxt><a href=\"". con_url($sess->url("./se_view.php3"),
+            "view_id=$id&view_type=$type"). "\">". L_EDIT . "</a></td>
+          <td class=tabtxt><a href=\"javascript:DeleteView('$id')\">". L_DELETE ."</a></td>
+         </tr>";
 }
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
-$varset = new Cvarset();
-$p_slice_id = q_pack_id($slice_id);
-
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>
-      </HEAD>";
+echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>"; ?>
+  <SCRIPT Language="JavaScript"><!--
+     function DeleteView(id) {
+       if( !confirm("<?php echo L_DELETE_VIEW; ?>"))
+         return
+       var url="<?php echo $sess->url(con_url("./se_views.php3", "del=1")); ?>"
+       document.location=url + "&vid=" + escape(id);
+     }
+  // -->
+  </SCRIPT>
+</HEAD><?php
 
 $xx = ($slice_id!="");
 $useOnLoad = ($new_compact ? true : false);
@@ -70,7 +94,7 @@ echo $Msg;
 <tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR>
 </td></tr>
 <tr><td>
-<form name="fvtype" action="<?php echo $sess->url("./se_view.php3") ?>">
+<form name="fvtype" method=post action="<?php echo $sess->url("./se_view.php3") ?>">
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   
@@ -93,12 +117,15 @@ echo "</select>
 
 $viewuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF); #include help
 echo L_SLICE_HINT ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri . 
-         '?v=<i>ID</i>&quot;--&gt;</pre>
+         '?vid=<i>ID</i>&quot;--&gt;</pre>
  </BODY></HTML>';
 page_close();
 
 /*
 $Log$
+Revision 1.6  2001/05/18 13:43:43  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.5  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

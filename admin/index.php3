@@ -112,7 +112,7 @@ else
 switch( $action ) {  // script post parameter 
   case "app":
     if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
-      MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS);
+      MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
       exit;
     }  
     MoveItems($chb,1);
@@ -120,14 +120,14 @@ switch( $action ) {  // script post parameter
     break;
   case "hold":
     if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
-      MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS);
+      MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
       exit;
     }  
     MoveItems($chb,2);
     break;
   case "trash":
     if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH)) {
-      MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS);
+      MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
       exit;
     }  
     MoveItems($chb,3);
@@ -187,7 +187,7 @@ switch( $More ) {
 
 if($Delete == "trash") {         // delete feeded items in trash bin
     // feeded items we can easy delete
-  if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_DELETE_ITEMS )) {
+  if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_DELETE_ITEMS, "items" )) {
     MsgPage($sess->url(self_base())."index.php3", L_NO_DELETE_ITEMS);
     exit;
   }  
@@ -288,36 +288,30 @@ require $GLOBALS[AA_INC_PATH] . "leftbar.php3";
 
 $de = getdate(time());
 
+  # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
 switch( $r_bin_state ) {
   case "app":   $st_name = "st1";    // name of scroller for approved bin
-                if( $apple_design )   // apple_design is old admin interface design with three bins Approved, Holding bin and Trash, where expired and pending items was shown by apples.
-                  $conditions['status_code.....'] = 1;
-                 else {
-                  $item_cond="";   # it means the same as on webpage (see searchlib)
-                                   # = "(status_code = 1) AND (publish_date <= '". mktime(23,59,59,$de[mon],$de[mday],$de[year]) ."') AND (expiry_date > '". mktime(0,0,0,$de[mon],$de[mday],$de[year]). "')";
-                }                   
+                $bin_condition = 'ACTIVE';
                 $table_icon = "../images/app.gif";
                 $table_name = L_ACTIVE_BIN;
                 break;
   case "appb":  $st_name = "st1b";    // name of scroller for approved bin - pending
-                $item_cond = "(status_code = 1) AND ".
-                             "(publish_date > '". mktime(23,59,59,$de[mon],$de[mday],$de[year]) ."') ";
+                $bin_condition = 'PENDING';
                 $table_icon = "../images/app.gif";
                 $table_name = L_ACTIVE_BIN_PENDING;
                 break;
   case "appc":  $st_name = "st1c";    // name of scroller for approved bin - expired
-                $item_cond = "(status_code = 1) AND ".
-                             "(expiry_date <= '". mktime(0,0,0,$de[mon],$de[mday],$de[year]). "')";
+                $bin_condition = 'EXPIRED';
                 $table_icon = "../images/app.gif";
                 $table_name = L_ACTIVE_BIN_EXPIRED;
                 break;
   case "hold":  $st_name = "st2";    // name of scroller for holding bin
-                $item_cond = "status_code = 2";
+                $bin_condition = 'HOLDING';
                 $table_icon = "../images/hold.gif";
                 $table_name = L_HOLDING_BIN;
                 break;
   case "trash": $st_name = "st3";    // name of scroller for trash bin
-                $item_cond = "status_code = 3";
+                $bin_condition = 'TRASH';
                 $table_icon = "../images/trsh.gif";
                 $table_name = L_TRASH_BIN;
                 break;
@@ -352,12 +346,15 @@ $st->addFilter("slice_id", "md5", $slice_id);
 //  where (($bin_condition) AND fulltexts.ft_id=items.master_id AND created_by='".$auth->auth[uid]."' AND (". $st->sqlCondFilter().")) ");
 
 //huh ( "PSlice:$p_slice_id");
-$conditions['slice_id........'] = $p_slice_id;
+
+# find item ids to show
 if (! $perm_edit_all )
-  $conditions['posted_by.......'] = $auth->auth[uid];
-  
-$item_ids = GetItemAppIds($fields, $db, $slice_id, 
-                            $conditions, "DESC", "", "",$item_cond);
+  $conds[]=array( 'operator' => '=',
+                  'value' => $auth->auth[uid],
+                  'posted_by.......' => 1 );
+$sort[] = array ( 'pub_date........' => 'd' );
+
+$item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, $bin_condition);
 
 $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
                           "category_sort"=>false,
@@ -460,6 +457,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.21  2001/05/18 13:43:43  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.20  2001/05/10 10:01:42  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

@@ -166,7 +166,7 @@ function RestoreVariables() {
 //-----------------------------End of functions definition---------------------
 # $debugtimes[]=microtime();
 
-if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
+if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED
 
 // p_arr_m( $r_state_vars );
@@ -175,7 +175,7 @@ if( ($key != $lock) OR $scrl ) # command is for other slice on page
   RestoreVariables();          # or scroller
 
 # url posted command to display another file ----------------------------------
-if( $inc ) {                   # this section must be after $sess->add_vars()
+if( $inc ) {                   # this section must be after add_vars()
 //  StoreVariables(array("inc")); # store in session
   if( !eregi("^([0-9a-z_])+(\.[0-9a-z]*)?$", $inc) ) {
     echo L_BAD_INC. " $inc";
@@ -236,7 +236,7 @@ if( $sh_itm ) {
 }
 
 # multiple items fulltext view ------------------------------------------------
-if( $items  AND is_array($items) ) {   # shows all $items[] as fulltext one after one
+if( $items AND is_array($items) ) {   # shows all $items[] as fulltext one after one
 //  $r_state_vars = StoreVariables(array("items")); # store in session
   while(list($k,) = each( $items ))
     $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
@@ -334,9 +334,33 @@ else {
   if( $highlight != "" )
     $conditions['highlight.......'] = 1;
 
-  $item_ids=GetItemAppIds($fields, $db, $slice_id, $conditions, $pubdate_order,
-    ($slice_info[category_sort] ? GetCategoryFieldId( $fields ) : $order),
-    $orderdirection, "", $exact );
+/*$debugtimes[]=microtime();
+  $item_ids=GetItemAppIds($fields, $db, $slice_id, $conditions, $pubdate_order,    ($slice_info[category_sort] ? GetCategoryFieldId( $fields ) : $order),    $orderdirection, "", $exact );
+$debugtimes[]=microtime();*/
+  
+  # prepare parameters for QueryIDs()
+  if( isset($conditions) AND is_array($conditions) ) {
+    reset($conditions);
+    while( list( $k, $v) = each( $conditions ))
+      $conds[]=array( 'operator' => ($exact ? '=' : 'LIKE'),
+                      'value' => $v,
+                      $k => 1 );
+  }                    
+
+  if( $slice_info[category_sort] )
+    $sort[] = array ( GetCategoryFieldId( $fields ) => 'a' );
+
+  if( $order )
+    $sort[] = array ( $order => (( $orderdirection == "DESC" ) ? 'd' : 'a'));
+  $sort[] = array ( 'pub_date........' => 'd' );
+
+    
+  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by );
+
+// p_arr_m($debugtimes);
+// echo "<br>old: ". (double)((double)($debugtimes[1]) - (double)($debugtimes[0]));
+// echo "<br>new: ". (double)((double)($debugtimes[3]) - (double)($debugtimes[2]));
+
 }    
 if(!$encap) 
   echo '<a href="'. $sess->MyUrl($slice_id, $encap). '&bigsrch=1">Search form</a><br>';
@@ -364,6 +388,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.19  2001/05/18 13:41:02  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.18  2001/04/09 20:36:33  honzam
 Order parameter works with '+' sign too, new timeorder parameter.
 
