@@ -78,6 +78,8 @@ if( isset( $templates ) AND is_array( $templates ) AND
     echo "</td>\n <td><select name=\"template_id2\">";	
     reset($temp_slices);
     while(list(,$v) = each($temp_slices)) { 
+      if( substr( $v['value'], 0, 32 ) == '41415f436f72655f4669656c64732e2e' ) 
+        continue;    // 'Action Aplication Core' slice - do not use as template
       echo "<option value=\"". htmlspecialchars($v[value])."\"";
       echo "> ". htmlspecialchars($v[name]) ." </option>";
     }
