@@ -140,11 +140,10 @@ function ChangeFieldID ($old_id, $new_id)
     global $maintain_fields, $maintain_sql, $p_slice_id;
     
     $varset = new Cvarset();
-    reset ($maintain_fields);
-    while (list ($table,$settings) = each ($maintain_fields)) {
+    foreach ( $maintain_fields as $table => $settings) {
         $keyfield = $settings[primary];
         if (!$keyfield) $keyfield = $settings[primary_part];
-        $SQL = "SELECT $keyfield,".join($settings[fields],",")." FROM $table 
+        $SQL = "SELECT `$keyfield`, `".join($settings['fields'],"`, `")."` FROM `$table` 
                 WHERE $settings[slice_id] = '$p_slice_id'";
         $rows = GetTable2Array ($SQL);
         if (is_array ($rows)) {

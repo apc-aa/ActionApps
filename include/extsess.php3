@@ -68,6 +68,13 @@ class DB_AA extends DB_Sql {
     return $retval;
   }
 
+  function query_nohalt($SQL) {
+      $store_halt          = $this->Halt_On_Error;
+      $this->Halt_On_Error = 'no';
+      $this->query($SQL);
+      $this->Halt_On_Error = $store_halt;
+  }
+
   function halt($msg) {
     if( $this->Halt_On_Error == "no" )
       return;
@@ -102,13 +109,13 @@ class AA_CP_Session extends Session {
 
   function start($sid = "") {
     global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $HTTP_HOST, $HTTPS;
-   	$name = $this->that_class;
-	$this->that = new $name;
-	$this->that->ac_start();
+    $name = $this->that_class;
+    $this->that = new $name;
+    $this->that->ac_start();
 
-	$this->name = $this->cookiename==""?$this->classname:$this->cookiename;
+    $this->name = $this->cookiename==""?$this->classname:$this->cookiename;
 
-	if (   isset($this->fallback_mode)
+    if (   isset($this->fallback_mode)
       && ( "get" == $this->fallback_mode )
       && ( "cookie" == $this->mode )
       && ( ! isset($HTTP_COOKIE_VARS[$this->name]) ) ) {

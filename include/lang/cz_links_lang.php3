@@ -708,7 +708,7 @@ $_m["Organization e-mail"]
 
 # modules/links/constants.php3, row 77
 $_m["Folder"]
-  = "Stav";
+  = "Schránka";
 
 # modules/links/constants.php3, row 78
 $_m["Last validation date"]
@@ -888,7 +888,7 @@ $_m["Link organization e-mail"]
 
 # modules/links/constants.php3, row 133
 $_m["Link folder (status code) - 1~Active, 2~Holding, 3~Trash"]
-  = "";
+  = "Odkaz - Schránka (1~Aktivní, 2~Zásobník, 3~Koš)";
 
 # modules/links/constants.php3, row 134
 $_m["Link - ids of regions (comma separated)"]
@@ -1000,7 +1000,7 @@ $_m["Folders"]
 
 # modules/links/menu.php3, row 111
 $_m["Folders with links, sorted by their status (active, changed, new, ...)"]
-  = "";
+  = "Odkazy rozdìlené podle jejích stavu - aktivní, zmìnìné, nové,...";
 
 # modules/links/menu.php3, row 114
 $_m["Active"]

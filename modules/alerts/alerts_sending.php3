@@ -53,7 +53,6 @@ require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 * @param $ho = how often
 * @return array ($filterid => new items)
 */
-
 function create_filter_text($ho, $collectionid, $update, $item_id)
 {
     global $debug_alerts, $auth;
@@ -75,33 +74,35 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
     $db = getDB();
     if ($item_id) {
         $db->tquery("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
-        if (!$db->next_record())
-            { freeDB($db); return ""; }
+        if (!$db->next_record()) {
+            freeDB($db);
+            return "";
+        }
         $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
     }
 
-
-
     // fill alerts_collection_howoften.last in cases the row for this period
     // (= how_often) not exist, yet
-    initialize_last ();
+    initialize_last();
 
     $db->tquery($SQL);
     while ($db->next_record()) {
-        $last = $db->f("last");
-        $slices[$db->f("slice_id")]["name"] = $db->f("slicename");
-        $slices[$db->f("slice_id")]["lang"] = substr ($db->f("lang_file"),0,2);
-        $myview = &$slices[$db->f("slice_id")]["views"][$db->f("vid")];
+        $last                                  = $db->f("last");
+        $slices[$db->f("slice_id")]["name"]    = $db->f("slicename");
+        $slices[$db->f("slice_id")]["lang"]    = substr($db->f("lang_file"),0,2);
+        $myview                                = &$slices[$db->f("slice_id")]["views"][$db->f("vid")];
         $myview["filters"][$db->f("filterid")] = array ("conds"=>$db->f("conds"));
         // Group by selections?
         $myview["group"] = $db->f("aditional");
         if (! $myview["group"]) {
             // Sort variable for the whole view
             $myview["sort"] = $db->f("aditional3");
-            $test = "ok:".$myview["sort"];
         }
     }
-    if (! is_array($slices)) { freeDB($db);  return; }
+    if (! is_array($slices)) {
+        freeDB($db);
+        return;
+    }
 
     $howoften_options = get_howoften_options();
 
@@ -165,9 +166,9 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
 
                 $retval[$fid] = array (
                     "group" => $view["group"],
-                    "sort" => $view["sort"],
-                    "vid" => $vid,
-                    "zids" => $zids,
+                    "sort"  => $view["sort"],
+                    "vid"   => $vid,
+                    "zids"  => $zids,
                 );
             }
         }
@@ -175,8 +176,8 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
 
     if (!$debug_alerts && $update) {
         $varset = new CVarset();
-        $varset->addkey ("howoften", "text", $ho);
-        $varset->addkey ("collectionid", "text", $collectionid);
+        $varset->addkey("howoften", "text", $ho);
+        $varset->addkey("collectionid", "text", $collectionid);
         $varset->add ("last", "number", $now);
         $db->tquery($varset->makeINSERTorUPDATE("alerts_collection_howoften"));
     }
@@ -201,22 +202,26 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
     global $debug_alerts;
 
     $db = getDB();
-    if (is_array ($collection_ids))
+    if (is_array($collection_ids)) {
         $where = " WHERE AC.id IN ('".join ("','", $collection_ids)."')";
+    }
     $db->tquery("
             SELECT module.slice_url, AC.id AS collectionid, AC.*, email.*
             FROM alerts_collection AC
             INNER JOIN email ON AC.emailid_alert = email.id
             INNER JOIN module ON AC.module_id = module.id
             $where");
-    while ($db->next_record())
+    while ($db->next_record()) {
         $colls[$db->f("collectionid")] = $db->Record;
-    if (!is_array ($colls)) { freeDB($db); return; }
+    }
+    if (!is_array ($colls)) {
+        freeDB($db);
+        return;
+    }
 
     $readerContent = new ItemContent ();
 
-    reset ($colls);
-    while (list ($cid, $collection) = each ($colls)) {
+    foreach ($colls as $cid => $collection) {
         $unordered_filters = create_filter_text ($ho, $cid, $update, $item_id);
 
         // find filters for this collection
@@ -230,12 +235,10 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
             $filters[$db->f("filterid")] = &$unordered_filters[$db->f("filterid")];
         }
 
-
         if ($GLOBALS['debug_email']) { huhl("\n-------\n send_emails\n",$collection); }
 
         // Find all users who should receive anything
         if (! is_array ($emails)) {
-
             $db->tquery("
                 SELECT id FROM item
                 WHERE slice_id = '".addslashes($collection["slice_id"])."'
@@ -243,44 +246,48 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                   AND publish_date <= ".time()."
                   AND expiry_date >= ".time());
 
-            $field_howoften = getAlertsField (FIELDID_HOWOFTEN, $cid);
+            $field_howoften = getAlertsField(FIELDID_HOWOFTEN, $cid);
 
             // loop through items might want to send
             while ($db->next_record()) {
                 $readerContent->setByItemID( unpack_id( $db->f("id")), true);
-                if( $readerContent->getValue( $field_howoften ) != $ho
-                    || ! $readerContent->getValue( FIELDID_MAIL_CONFIRMED ))
+                if ( $readerContent->getValue( $field_howoften ) != $ho
+                     || ! $readerContent->getValue( FIELDID_MAIL_CONFIRMED )) {
                     continue;
+                }
 
-                $user_text = get_filter_text_4_reader ($readerContent, $filters, $cid);
+                $user_text = get_filter_text_4_reader($readerContent, $filters, $cid);
 
                 // Don't send if nothing new emerged
                 if ($user_text) {
                     $alias["_#FILTERS_"] = $user_text;
                     $alias["_#HOWOFTEN"] = $ho;
                     $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"],
-                        "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE));
+                                           "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE));
                     $alias["_#UNSBFORM"] = alerts_con_url ($collection["slice_url"],
-                        "au=".$readerContent->getValue(FIELDID_ACCESS_CODE).
-                        "&c=".$cid);
+                                           "au=".$readerContent->getValue(FIELDID_ACCESS_CODE).
+                                           "&c=".$cid);
 
-                    if (send_mail_from_table($collection["emailid_alert"], $readerContent->getValue(FIELDID_EMAIL), $alias))
-                        $email_count ++;
+                    if ($GLOBALS['debug_email']) {
+                        huhl("\n<br>send_mail_from_table(".$collection["emailid_alert"].", ".$readerContent->getValue(FIELDID_EMAIL).", $alias)");
+                        $email_count++;
+                    } elseif (send_mail_from_table($collection["emailid_alert"], $readerContent->getValue(FIELDID_EMAIL), $alias)) {
+                        $email_count++;
+                    }
                 }
             }
 
         // Use the emails sent as param
         } else {
-            reset ($emails);
-            while (list (,$email) = each ($emails)) {
-                $alias["_#FILTERS_"] = get_filter_text_4_reader (null, $filters, $cid);
+            foreach ( (array)$emails as $email ) {
+                $alias["_#FILTERS_"] = get_filter_text_4_reader(null, $filters, $cid);
                 $alias["_#HOWOFTEN"] = $ho;
-                $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"], "ac=ABCDE");
-                $alias["_#UNSBFORM"] = alerts_con_url ($collection["slice_url"],
-                    "au=ABCDE&c=".$cid);
+                $alias["_#COLLFORM"] = alerts_con_url($collection["slice_url"], "ac=ABCDE");
+                $alias["_#UNSBFORM"] = alerts_con_url($collection["slice_url"], "au=ABCDE&c=".$cid);
 
-                if (send_mail_from_table($collection["emailid_alert"], $email, $alias))
+                if (send_mail_from_table($collection["emailid_alert"], $email, $alias)) {
                     $email_count++;
+                }
             }
         }
     }
@@ -335,21 +342,22 @@ function initialize_last ()
 
 function get_view_settings_cached ($vid) {
     global $cached_view_settings;
-    if (! $vid)
+    if (!$vid) {
         return "";
-    if (! $cached_view_settings [$vid]) {
-        $view_info = GetViewInfo($vid);
-        list($fields) = GetSliceFields (unpack_id ($view_info ["slice_id"]));
-        $slice_info = GetSliceInfo (unpack_id ($view_info ["slice_id"]));
+    }
+    if (!$cached_view_settings[$vid]) {
+        $view_info    = GetViewInfo($vid);
+        list($fields) = GetSliceFields( unpack_id($view_info["slice_id"]));
+        $slice_info   = GetSliceInfo( unpack_id($view_info["slice_id"]));
         $cached_view_settings[$vid] = array (
-            "lang" => substr ($slice_info["lang_file"],0,2),
-            "info" => $view_info,
-            "fields" => $fields,
-            "aliases" => GetAliasesFromFields ($fields),
-            "format" => GetViewFormat ($view_info),
+            "lang"    => substr($slice_info["lang_file"],0,2),
+            "info"    => $view_info,
+            "fields"  => $fields,
+            "aliases" => GetAliasesFromFields($fields),
+            "format"  => GetViewFormat($view_info),
         );
     }
-    return $cached_view_settings [$vid];
+    return $cached_view_settings[$vid];
 }
 
 // -------------------------------------------------------------------------------------
@@ -365,28 +373,26 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
            $cached_filter_outputs;
 
     //echo "zids"; print_r ($zids);
-    if ($zids->count() == 0)
+    if ($zids->count() == 0) {
         return "";
-
-    if (! isset ($cached_filter_settings [$filter_settings])) {
-        $set = &get_view_settings_cached ($vid);
+    }
+    if ( !isset($cached_filter_settings[$filter_settings])) {
+        $set = &get_view_settings_cached($vid);
         // set language
-        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".
-            $set["lang"]."_alerts_lang.php3", true);
+        bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/". $set["lang"]."_alerts_lang.php3", true);
         // $set["info"]["aditional2"] stores item URL
         $item_url = $set["info"]["aditional2"];
-        if (! $item_url) $item_url = "You didn't set the item URL in the view $vid settings!";
-        $itemview = new itemview($set["format"], $set["fields"],
-            $set["aliases"], $zids, 0, 9999, $item_url);
+        if (! $item_url) {
+            $item_url = "You didn't set the item URL in the view $vid settings!";
+        }
+        $itemview   = new itemview($set["format"], $set["fields"], $set["aliases"], $zids, 0, 9999, $item_url);
         $items_text = $itemview->get_output ("view");
     //echo "<h1>items $items_text</h1>"; print_r ($set["format"]); exit;
         //if (! strstr ($filter_settings, ","))
         $cached_filter_settings [$filter_settings] = $items_text;
+    } else {
+        $items_text = $cached_filter_settings[$filter_settings];
     }
-
-    else $items_text = $cached_filter_settings [$filter_settings];
-
-  //  echo "items $items_text"; exit;
     return $items_text;
 }
 
@@ -399,29 +405,28 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
 function get_filter_text_4_reader ($readerContent, $filters, $cid)
 {
     if ($readerContent) {
-        $user_filters_value = $readerContent->getValues(
-            getAlertsField (FIELDID_FILTERS, $cid));
+        $user_filters_value = $readerContent->getValues( getAlertsField(FIELDID_FILTERS, $cid));
 
-        if (! is_array ($user_filters_value))
+        if ( !is_array($user_filters_value)) {
             return "";
+        }
 
-        foreach ($user_filters_value as $user_filter)
+        foreach ($user_filters_value as $user_filter) {
             // filter numbers are stored with "f" added to the beginning
             $user_filters [substr ($user_filter ["value"], 1)] = 1;
+        }
     }
 
     $last_fprop = "";
     $filter_ids = "";
-    $user_zids = new zids (null, "p");
+    $user_zids  = new zids(null, "p");
 
     // add dummy filter
     $filters[99999] = "dummy";
 
-    for (reset ($filters); list ($filterid, $fprop) = each ($filters); ) {
+    foreach ( $filters as $filterid => $fprop ) {
         // Send items from filters with "group" not set when the view changes.
-        if ($last_fprop["vid"] != $fprop["vid"]
-          && is_array ($filter_ids)
-          && $user_zids->count()) {
+        if ( $last_fprop["vid"] != $fprop["vid"] AND is_array($filter_ids) AND $user_zids->count()) {
             // WARNING - HACK: we need to sort the zids according to the common
             // sort[]: we use the same global trick as in create_filter_text
             if ($last_fprop["sort"]) {
@@ -433,20 +438,18 @@ function get_filter_text_4_reader ($readerContent, $filters, $cid)
                     "", $sort, "", "ACTIVE", "", 0, $user_zids);
             }
 
-            $user_text .= get_filter_output_cached (
-                $last_fprop["vid"], join (",",$filter_ids), $user_zids);
+            $user_text .= get_filter_output_cached($last_fprop["vid"], join (",",$filter_ids), $user_zids);
             $filter_ids = "";
             $user_zids->clear("p");
         }
-        if ($fprop == "dummy")
+        if ($fprop == "dummy") {
             break;
-        if (! $readerContent || $user_filters [$filterid]) {
+        }
+        if (! $readerContent || $user_filters[$filterid]) {
             if ($fprop["group"]) {
-                $user_text .= get_filter_output_cached (
-                    $fprop["vid"], $filterid, $fprop["zids"]);
-            }
-            else {
-                $user_zids->union ($fprop["zids"]);
+                $user_text .= get_filter_output_cached( $fprop["vid"], $filterid, $fprop["zids"]);
+            } else {
+                $user_zids->union($fprop["zids"]);
                 $filter_ids[] = $filterid;
             }
             $last_fprop = $fprop;

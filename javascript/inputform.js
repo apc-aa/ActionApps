@@ -21,11 +21,11 @@ function BeforeSubmit() {
 }
 
 
-function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw) {
+function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, relwind_url) {
     if ((relatedwindow != null) && (!relatedwindow.closed)) {
         relatedwindow.close()    // in order to preview go on top after open
     }
-    relatedwindow = open( "'. get_admin_url('related_sel.php3') . '&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design + "&frombins=" + frombins + "&showcondsro=" + conds + "&showcondsrw=" + condsrw, "relatedwindow", "scrollbars=1, resizable=1, width=500");
+    relatedwindow = open( relwind_url + "&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design + "&frombins=" + frombins + "&showcondsro=" + conds + "&showcondsrw=" + condsrw, "relatedwindow", "scrollbars=1, resizable=1, width=500");
 }
 
 function removeItem(selectbox) {

@@ -125,7 +125,7 @@ class PageCache  {
         $db  = getDB();
         $tm  = time();
         $SQL = "DELETE FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'";
-        $db->query($SQL);
+        $db->query_nohalt($SQL);
         freeDB($db);
         $this->lastClearTime = $tm;
     }
@@ -141,11 +141,8 @@ class PageCache  {
         //    restarting transaction)" error.
         // It is not so big problem if we do not invalidate cache - much less than
         // halting the operation.
-        $store_halt        = $db->Halt_On_Error;
-        $db->Halt_On_Error = "no";
         $SQL = "DELETE FROM pagecache WHERE str2find LIKE '%". quote($cond) ."%'";
-        $db->query($SQL);
-        $db->Halt_On_Error = $store_halt;
+        $db->query_nohalt($SQL);
         freeDB($db);
     }
 
@@ -154,7 +151,7 @@ class PageCache  {
         if ($GLOBALS['debugcache']) { huhl("Cache:invalidate"); }
         $db  = getDB();
         $SQL = "DELETE FROM pagecache";
-        $db->query($SQL);
+        $db->query_nohalt($SQL);
         freeDB($db);
     }
 }

@@ -606,12 +606,13 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
     $column    = str_replace( 'const_', '', $column);
     $keycolumn = str_replace( 'const_', '', $keycolumn);
 
-    $db = getDB();
-    if ( $order )      { $order_by  = "ORDER BY $order"; }
-    if ( !$column )    { $column    = 'name';            }
-    if ( !$keycolumn ) { $keycolumn = 'value';           }
-    $fields = ($column==$keycolumn ? $column : "$keycolumn, $column");
+    $const_fields = array('id'=>1,'group_id'=>1,'name'=>1,'value'=>1,'class'=>1,'pri'=>1,'ancestors'=>1,'description'=>1,'short_id'=>1);
 
+    $db = getDB();
+    if (  $const_fields[$order] )     { $order_by  = "ORDER BY $order"; }
+    if ( !$const_fields[$column] )    { $column    = 'name';            }
+    if ( !$const_fields[$keycolumn] ) { $keycolumn = 'value';           }
+    $fields = ($column==$keycolumn ? $column : "$keycolumn, $column");
 
     $db->tquery("SELECT $fields FROM constant WHERE group_id='$group' $order_by");
     while($db->next_record()) {

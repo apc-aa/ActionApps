@@ -687,7 +687,6 @@ class linkobj {
 
     /** load link data from database (if not loaded already) */
     function load( $force=false ) {
-        $GLOBALS['debug'] = true;
         if ( !$this->lid ) return;
         if ( !$force AND isset($this->data) AND is_array($this->data) ) return;
 
@@ -907,7 +906,6 @@ debug("SAVE (loaded): ", $this);
         $this->normalize();
 
         debug("link->save() - After normalization:", $this);
-        $GLOBALS['debug']=1;
 
         // save data
         foreach ( $LINK_DATA_FIELDS as $aafield ) {
