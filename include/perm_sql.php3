@@ -60,7 +60,14 @@ function AuthenticateUsername($username, $password, $flags = 0) {
   $row = mysql_fetch_array($sth);
   $id  = $row[id];
   $uid = $row[uid];
-  $cryptpw = crypt($password, substr($row[password], 0, 2) );
+  
+  if (defined(CRYPT_SALT_LENGTH)) {              // set by PHP
+     $slength = CRYPT_SALT_LENGTH;
+  } else {
+     $slength = 2;
+  }
+  
+  $cryptpw = crypt($password, substr($row[password], 0, $slength));
   // if the passwords match, return the authenticated userid, otherwise false
   // echo "$cryptpw == $row[password])\n";
 
@@ -588,8 +595,11 @@ function in_array($needle,$haystack)
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:46  madebeer
-Initial revision
+Revision 1.2  2000/07/18 14:38:28  kzajicek
+Some operating system replace standard crypt().
+
+Revision 1.1.1.1  2000/06/21 18:40:46  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:26  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
