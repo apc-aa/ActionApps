@@ -106,18 +106,18 @@ function cron ($time = 0) {
 							$nearest_part = $i;
 				}
 				else {
-					$ranges = split (',',$value);
-					reset ($ranges);
-					while ((list(,$range) = each ($ranges)) && !$matches) {
-						if (strstr ($range,"-")) {
-							list($from,$to) = split('-',$value);
+				$ranges = split (',',$value);
+				reset ($ranges);
+				while ((list(,$range) = each ($ranges)) && !$matches) {
+					if (strstr ($range,"-")) {
+						list($from,$to) = split('-',$value);
 							for ($i = $from; $i <= $to; $i++)
-								if ($i <= $now_part && $i > $nearest_part) 
-									$nearest_part = $i;
-						}
-						else if ($range <= $now_part && $range > $nearest_part) 
-							$nearest_part = $range;
+							if ($i <= $now_part && $i > $nearest_part) 
+								$nearest_part = $i;
 					}
+					else if ($range <= $now_part && $range > $nearest_part) 
+						$nearest_part = $range;
+				}
 				}
 				$nearest[$part] = $nearest_part;
 			}

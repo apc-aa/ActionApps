@@ -164,21 +164,25 @@ function createConstsArray ($group_id, $admin, &$consts)
 	$consts = "array(";
 	$error_data = array();
 	$ok_data = 0;
+    $depth = 0;
 	reset ($data);
 	while (list ($ancestors,$col) = each ($data)) {
 		$error = false;
 		if (!$path) {
 			if (strlen($ancestors) != 16)
 				$error = true;
-			else $consts .= "array($col";
+			else 
+                $consts .= "array($col";
 		}
 		else if (strlen($ancestors) % 16 != 0)
 			$error = true;
 		// step over one layer
 		else if (strlen($ancestors) > strlen($path)
 			&& substr ($ancestors,0,strlen($path)) == $path) {
-			if (strlen($ancestors)-strlen($path) == 16)
+			if (strlen($ancestors)-strlen($path) == 16) {
 				$consts .= ",array(array($col";
+                $depth++;
+            }
 			else $error = true; // error: missing layer, jump over 
 		}
 		else if (strlen($ancestors) == strlen($path)) {
@@ -191,8 +195,10 @@ function createConstsArray ($group_id, $admin, &$consts)
 			$level=0;
 			while (substr($ancestors,0,$level*16) == substr($path,0,$level*16)) 
 				++$level;
-			for ($i = 0; $i < strlen($path) / 16 - $level; ++$i)
+			for ($i = 0; $i < strlen($path) / 16 - $level && $depth > 0; ++$i) {
 				$consts .= "))";
+                $depth --;
+            }
 			$consts .= ",array($col";
 		}
 		if ($error)
@@ -203,7 +209,7 @@ function createConstsArray ($group_id, $admin, &$consts)
 		}
 	}
 	if ($ok_data) $consts .= ")";
-	for ($i = 0; $i < strlen ($path) / 16 - 1; ++$i)
+	for ($i = 0; $i < $depth; ++$i)
 		$consts .= "))";
 	if (count($error_data)) {
 		if ($ok_data) $consts .= ",";
@@ -279,7 +285,7 @@ function hcUpdate ()
 		else $db->query (
 				"INSERT INTO constant_slice (group_id,slice_id,horizontal,hidevalue,levelcount)
 				VALUES ('$group_id','$p_slice_id',".($levelsHorizontal ? 1 : 0)
-				.",".($hide_value ? 1 : 0).",".$levelcount.")");
+				.",".($hide_value ? 1 : 0).",".$levelCount.")");
 	}
 	else {
 		$hide_value = 0;
@@ -293,22 +299,45 @@ function hcUpdate ()
 	}
 
 	global $hcalldata, $varset;
-	if ($hcalldata) 
-		eval (str_replace ("\'","'",str_replace ("\\\'","\\'",$hcalldata)));
+	if ($hcalldata) {
+        if (get_magic_quotes_gpc()) 
+            $hcalldata = stripslashes ($hcalldata);
+		$hcalldata = str_replace ("\\'","'",$hcalldata);
+        $hcalldata = str_replace ("\\:", "--$--", $hcalldata);
+        $hcalldata = str_replace ("\\~", "--$$--", $hcalldata);
+        $chtag = ":changes:";
+        if (strstr ($hcalldata, "$chtag")) {
+            $changes = substr ($hcalldata, strpos ($hcalldata,$chtag) + strlen($chtag) + 1);
+            $hcalldata = substr ($hcalldata, 0, strpos ($hcalldata,$chtag) - 1);
+            $chs = split (":", $changes);
+            $changes = array ();
+            reset ($chs);
+            while (list(,$ch) = each ($chs)) {
+                if (!strchr ($ch,"~")) continue;
+                $ar = split ("~",$ch);
+                for ($i=0; $i < count($ar); ++$i)
+                    $ar[$i] = str_replace ("--$$--","~",str_replace("--$--",":",$ar[$i]));
+                $changes[] = $ar;
+            }
+            print_r ($changes);
+        }
+    }
 	
 	// delete items
-
-	if (is_array ($hcDeletedIDs) && count($hcDeletedIDs) > 0) {
-		$IDs = join (",",$hcDeletedIDs);
-		$db->query ("DELETE FROM constant WHERE short_id IN ($IDs)");
-	}
+	if ($hcalldata > "0")
+        $db->query ("DELETE FROM constant WHERE short_id IN ($hcalldata)");
 
 	// update items
 
 	if (is_array ($changes)) {
 		$db->query ("SELECT id, short_id FROM constant;");
 		while ($db->next_record())
-			$shortIDmap [$db->f("short_id")] = $db->f("id");
+			$shortIDmap [$db->f("short_id")] = addslashes($db->f("id"));
+
+        $db->query ("SELECT propagate FROM constant_slice WHERE group_id='$group_id'");
+        if ($db->next_record())
+            $propagate_changes = $db->f("propagate");
+        else $propagate_changes = false;
 	
 		reset ($changes);
 		while (list (,$change) = each($changes)) {
@@ -334,14 +363,14 @@ function hcUpdate ()
 					if (!$myid) continue;
 					$ancestors .= $shortIDmap[$myid];
 				}
-				$ancestors = str_replace ("'","\\'",$ancestors);
 				$varset->set("id",$id,"quoted");
 				$varset->set("group_id",$group_id,"quoted");
 				$varset->set("ancestors",$ancestors,"quoted");
 				$db->query ("INSERT INTO constant ".$varset->makeINSERT());
 			}
 			else {
-				propagateChanges ($new_id, $newvalue);
+                if ($propagate_changes) 
+    				propagateChanges ($new_id, $newvalue);
 				$db->query ("UPDATE constant SET ".$varset->makeUPDATE()
 					." WHERE short_id = ".$new_id);
 			}
