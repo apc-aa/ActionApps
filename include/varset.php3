@@ -75,7 +75,7 @@ class Cvariable {
 }  
 
 class Cvarset {
-	var $vars;  // array of varialbes
+	var $vars;  // array of variables
 
 	# constructor
 	function Cvarset() {

@@ -40,14 +40,19 @@ if(!IfSlPerm(PS_FEEDING)) {
 }
 
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."xml_fetch.php3";
 
 $err["Init"]="";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 $qp_slice_id=q_pack_id($slice_id);
 
- if ($mode == "edit") {
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+ if ($mode == "edit" || $mode == "test") {
     $db->query("SELECT * FROM rssfeeds WHERE name='$sel_rssfeed_name' AND slice_id = '$qp_slice_id'");
     if ($db->next_record()) {
+      $testfeed = $db->Record;
+      $testfeed["feed_type"] = FEEDTYPE_RSS;
       $old_rssfeed_name = $sel_rssfeed_name;
       $rssfeed_name = $db->f(name);
       $server_url = $db->f(server_url);
@@ -82,23 +87,23 @@ $qp_slice_id=q_pack_id($slice_id);
 		  $catVS->add("name", "quoted", $rssfeed_name);
 		  $catVS->add("server_url","quoted",$server_url);
 		  $SQL = "INSERT INTO rssfeeds" . $catVS->makeINSERT();
-        $db->query("UPDATE rssfeeds SET ". $catVS->makeUPDATE()." WHERE name='$old_rssfeed_name' AND slice_id = '$qp_slice_id'");
+        $db->query("UPDATE rssfeeds SET ". $catVS->makeUPDATE()
+            ." WHERE name='$old_rssfeed_name' AND slice_id = '$qp_slice_id'");
         break;
 
       case "add" : $new_mode = "insert"; break;
-    }
+    } // switch
     $rssfeed_name = $server_url = "";
-    $new_mode = "insert";
+    $new_mode = "insert";  // So show "Add" rather than "Edit" on next page, and set in hidden input
 
    }
 
-$db->query("SELECT * FROM rssfeeds WHERE slice_id = '$qp_slice_id' ORDER BY name ");
-$rssfeeds="";
-while ($db->next_record()) {
-  $rssfeeds[] = $db->f(name);
+  $db->query("SELECT * FROM rssfeeds WHERE slice_id = '$qp_slice_id' ORDER BY name ");
+  $rssfeeds="";
+  while ($db->next_record()) {
+    $rssfeeds[] = $db->f(name);
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo _m("Remote RSS Feed administration");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
@@ -176,6 +181,7 @@ function Cancel() {
       <input type=button value="<?php echo _m("Edit") ?>" onClick = "Submit('edit')" >
       <input type=button VALUE="<?php echo _m("Delete") ?>" onClick = "Submit('delete')">
       <input type=button VALUE="<?php echo _m("Add") ?>" onClick = "Submit('add')">
+      <input type=button VALUE="<?php echo _m("Test") ?>" onClick = "Submit('test')">
      </td></tr>
     <tr><td colspan=2>&nbsp;</td></tr>
     <tr><td colspan=2><?php echo ($new_mode=="insert" ? _m("Add new rssfeed") :
@@ -197,6 +203,9 @@ function Cancel() {
   </table>
 </FORM>
 <?php
+    if ($mode == "test") {
+        onefeed($testfeed["feed_id"],$testfeed, 5, false);
+    }
 HtmlPageEnd();
 page_close()
 ?>

@@ -44,15 +44,13 @@ function getRecord (&$array, &$record)
 }	
 
 // Export information about the slice
-function exportOneSliceStruct ($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file,$b_export_hex) {
-global $db, $sess;
-    // Mitra thinks this should be unpack_id128(stripslashes($slice_id))
-	$slice_id_bck = stripslashes(unpack_id128($slice_id));
+function exportOneSliceStruct ($slobj, $b_export_type, $new_slice_id, $b_export_gzip, $temp_file,$b_export_hex) {
+    global $db, $sess;
 	
-	$SQL = "SELECT * FROM slice WHERE id='$slice_id'";
+	$SQL = "SELECT * FROM slice WHERE id='".$slobj->sql_id()."'";
 	$db->query($SQL);
 	if (!$db->next_record()) {
-		MsgPage($sess->url(self_base())."index.php3", "ERROR - slice $slice_id_bck (".pack_id128($slice_id_bck).") not found", "standalone");
+		MsgPage($sess->url(self_base())."index.php3", "ERROR - slice ".$slobj->unpacked_id() ." not found", "standalone");
 		exit;	
 	}
 	
@@ -65,29 +63,35 @@ global $db, $sess;
 	$slice["owner"] = unpack_id ($slice["owner"]);
 	
 	if ($b_export_type != _m("Export to Backup")) {
-		if (strlen ($SliceID) != 16) {
-			MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length: ").strlen($SliceID), "standalone");
+		if (strlen ($new_slice_id) != 16) {
+			MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length: ").strlen($new_slice_id), "standalone");
 			exit;	
 		}
-		else $uid = unpack_id128($SliceID);
+		else $uid = unpack_id128($new_slice_id);
 	}
 	
 	$slice["id"] = $uid;
 	
-	$SQL = "SELECT * FROM field WHERE slice_id='$slice_id'";
+	$SQL = "SELECT * FROM field WHERE slice_id='".$slobj->sql_id()."'";
 	$db->query($SQL);
 	
 	while($db->next_record()) {	
 		//add the record to the fields array:
 		getRecord($new, $db->Record);
-		$new["slice_id"] = $uid;
+		$new["slice_id"] = $uid; // Use new id if set
 	
 		//unpack the IDs
 		//TODO: add fields which contain IDs that should be unpacked
 		// but add them in sliceimp.php3 too!
-	
+        // I don't think so, this can't know about struc of actual fields
+        // better to take care to handle any binary data
+
 		$slice["fields"][] = $new;
 	}
+
+
+// TODO: Get Views and Constants
+
     if ($b_export_hex) {
         $slice_data = serialize($slice);
        	$slice_data = $b_export_gzip ? gzcompress($slice_data) : $slice_data;
@@ -100,10 +104,31 @@ global $db, $sess;
 }
 
 
-function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
+// Export each view
+function exportOneSliceViews($slobj, $b_export_gzip, $temp_file, 
+        $b_export_hex) {
+    $a = " ";
+    if (!($slova = $slobj->views())) return;
+    if ($b_export_hex) {
+        $a .= " coding=\"serialize".($b_export_gzip ? "gzip" : "")."\"";
+	    $e_temp = serialize($slova);
+       	$e_temp = $b_export_gzip ? gzcompress($e_temp) : $e_temp;	
+	    $e_temp = HTMLEntities(base64_encode($e_temp));
+        $e_temp = "<views $a>$e_temp</views>";
+    } else {
+        reset($slova);
+        while (list($k,$v) = each($slova)) {
+            unset($slova[$k]->fields[deleted]);
+        }
+        $e_temp = xml_serialize("views",$slova,"\n","    ",$a);
+    }
+    fwrite($temp_file,$e_temp."\n");
+}
+
+
+function exportOneSliceData ($slobj, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
 {
-    $slice_id2 = unpack_id128($slice_id);
-    list($fields,) = GetSliceFields($slice_id2);
+    list($fields,) = GetSliceFields($slobj->unpacked_id());
 	if ($b_export_spec_date) {
 		$conds[0]["operator"] = "e:>=";
 		$conds[0]["publish_date...."] = 1;
@@ -114,7 +139,7 @@ function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_sp
 	} else {
 		$conds="";
 	}
-	$zids=QueryZIDs($fields, $slice_id2, $conds, "", "", "ALL");
+	$zids=QueryZIDs($fields, $slobj->unpacked_id(), $conds, "", "", "ALL");
 	if ($zids->count() == 0) { 
 		if ($b_export_spec_date) { fwrite($temp_file, "<comment>\nThere are no data in selected days (from ".$b_export_from_date." to ".$b_export_to_date.").\n</comment>\n");}
 		else {fwrite($temp_file, "<comment>\nThere are no data in slice.\n</comment>\n");}
@@ -140,10 +165,18 @@ function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_sp
 }
 
 // Generate the output and write to a temporary file
-function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
+// I'm assuming $export_slices contains UNPACKED slice ids
+function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views) 
 {
 	global $db;
 	$temp_file = tmpfile();
+
+	if ($b_export_type != _m("Export to Backup")) {
+		unset ($export_slices);
+		$export_slices = array($slice_id);
+	}
+    // Changed to work with slice objects, to better share code
+    $slices = new slices($export_slices);
 	
 	fwrite($temp_file, "<sliceexport version=\"1.1\">\n");
 	fwrite($temp_file, "<comment>\nThis text contains exported slices definitions (and/or slices data). You may import them to any ActionApps.\n");
@@ -159,37 +192,33 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 	
 	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
 	
-	if ($b_export_type != _m("Export to Backup")) {
-		unset ($export_slices);
-		$export_slices = array($slice_id);
-	}
-
 	reset($export_slices);
-	while (list(,$slice_id_bck) = each($export_slices)) {
-        $slice_id = addslashes(pack_id128($slice_id_bck));
-
-        $slice_name = sliceid2name($slice_id_bck);
+    foreach($slices->objarr() as $slobj) {
 
 		if ($b_export_type != _m("Export to Backup")) {
-			if (strlen ($SliceID) != 16) {
-				MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length:").strlen($SliceID), "standalone");
+			if (strlen ($new_slice_id) != 16) {
+				MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length:").strlen($new_slice_id), "standalone");
 				exit;	
 			}
-			else $SliceIDunpack = unpack_id128($SliceID);
+			else $new_slice_idunpack = unpack_id128($new_slice_id);
 		}
 						
 		fwrite($temp_file, "<slice id=\"");
-		fwrite($temp_file, ($b_export_type != _m("Export to Backup") ? $SliceIDunpack : unpack_id128($slice_id)));
-		fwrite($temp_file, "\" name=\"".$slice_name."\">\n");	
+		fwrite($temp_file, ($b_export_type != _m("Export to Backup") ? $new_slice_idunpack : $slobj->unpacked_id()));
+		fwrite($temp_file, "\" name=\"".HTMLEntities($slobj->name())."\">\n");	
 		
 		if ($b_export_struct) {
 		// export of slice structure
-			exportOneSliceStruct($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file,$b_export_hex);	
+			exportOneSliceStruct($slobj, $b_export_type, $new_slice_id, $b_export_gzip, $temp_file,$b_export_hex);	
 		}
 		if ($b_export_data) {		  
 		// export of slice data
-		  exportOneSliceData($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex);
+		  exportOneSliceData($slobj, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex);
 		}
+        if ($b_export_views) {
+            // export of views 
+		  exportOneSliceViews($slobj, $b_export_gzip, $temp_file, $b_export_hex);
+        }
 		fwrite($temp_file, "</slice>\n");
 	}	
 	
@@ -197,13 +226,13 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 	return $temp_file;
 }
 	
-function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
+function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views) 
 // Export data to file:
 //   Opens browser's dialog to write file to disk...
 {	
 	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
 	
-	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex);
+	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
 	
 	rewind($temp_file);
 		
@@ -218,13 +247,13 @@ function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices,
 	fclose($temp_file);
 }
 					
-function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
+function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views) 
 // Export data to text area in browser's window ...
 {		
 
 	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
 	
-	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex);
+	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
 	
 	rewind($temp_file);
 	

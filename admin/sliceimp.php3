@@ -58,7 +58,7 @@ function proove_ID ($slice)
 		   
 	$res = $resolve_conflicts[$slice["id"]];
 	if ((strlen($res)!=0)&&(strlen($res) != 16))	{
-		if ((strlen($res) != 16)||(strlen($res) != 32)) {
+		if ((strlen($res) != 16)&&(strlen($res) != 32)) {
 			echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)",
                 array ($res, strlen ($res)))."<br>\n";
 		}
@@ -73,7 +73,7 @@ function proove_ID ($slice)
 //		echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", $slice["id"], strlen($slice["id"]));
 //	}
 	// back-up old ids, if you want import slice definition with new id	
-	$new_slice_ids[$slice["id"]]["new_id"]=new_id();
+	$new_slice_ids[$slice["id"]]["new_id"] = new_id();
 		
 	$slice_id = addslashes(pack_id128($slice["id"]));
 	//echo "$slice_id";
@@ -215,8 +215,9 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 		}		
 
 		if ($GLOBALS["Submit"] == _m("Insert with new ids")) {
-		  // when iporting with new ids, we need create new id for item
+		  // when importing with new ids, we need create new id for item
 		  // and get new id of slice
+        // This looks like a bug to me, won't use new id if Overwrite (mitra)
 		  $new_data_id = new_id();		
 		  $new_slice_id = $new_slice_ids[$slice_id]["new_id"];
 		  $slice_id = $new_slice_id;
@@ -284,6 +285,16 @@ if ($conflicts_list) {
 	}
 }
 
+if ($view_conflicts_list) {
+	$temp = split ("\n",$view_conflicts_list);
+	reset($temp);
+	while (list(,$line)=each($temp)) {
+		list(,$line) = split(":",$line);
+		list($old,$new) = split("->",$line);
+		$view_resolve_conflicts[trim($old)] = trim($new);
+	}
+}
+
 if ($data_conflicts_list) {
 	$temp = split ("\n",$data_conflicts_list);
 	reset($temp);
@@ -295,7 +306,7 @@ if ($data_conflicts_list) {
 }
 
 if ($slice_def != "") {
-	$err = sliceimp_xml_parse ($slice_def);	
+	$err = sliceimp_xml_parse ($slice_def,true);	//XYZZY set dry run
 	if ($err != "") si_err($err);
 }
 
@@ -318,7 +329,7 @@ enctype="multipart/form-data">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit>
 <?php
-if ($Cancel || $conflicts_list || $data_conflicts_list):
+if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list):
 	echo "<B>".sprintf(_m("Count of imported slices: %d."),count($imported_list)+count($overwritten_list))."</p>";
 	if (is_array($imported_list)) {
 		echo "</p>"._m("Added were:")."</p>";
@@ -362,7 +373,7 @@ if ($IDconflict):?>
 	<tr><td class=tabtxt>
 	<b><?php echo sprintf (_m("Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"),pack_id128($slice_id)) ?></b></p>
 	<p align=center>
-<TEXTAREA NAME=conflicts_list ROWS=<?php echo count($conflicts_ID) ?> COLS=60>
+<TEXTAREA NAME=conflicts_list ROWS=<?php echo count($conflicts_ID) ?> COLS=90>
 <?php
 	reset($conflicts_ID);
 	while (list($c_id,$name)=each($conflicts_ID))
@@ -372,8 +383,20 @@ if ($IDconflict):?>
 
 <?php
 endif;
-if ($data_IDconflict): 
+if ($view_IDconflict): ?>
+<tr><td class=tabtxt>
+<b><?php echo sprintf (_m("<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>")) ?></b></p>
+<p align=center>
+<TEXTAREA NAME=view_conflicts_list ROWS=<?php echo count($view_conflicts_ID) ?> COLS=90>
+<?php
+	reset($view_conflicts_ID);
+	while (list($c_id,$name)=each($view_conflicts_ID))
+		echo $name.":\t".$c_id." -> ".$c_id."\n";
 ?>
+</TEXTAREA>
+<?php
+endif;
+if ($data_IDconflict): ?>
 
 <tr><td class=tabtxt>
 <b><?php echo sprintf (_m("<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>")) ?></b></p>
@@ -443,6 +466,8 @@ endif; //if ($cancel || $coflicts_list)?>
 </table>
 
 <?php
+/* Testing ....
+*/
 HtmlPageEnd();
 page_close();
 ?>

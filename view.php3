@@ -79,7 +79,7 @@ require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";    # DB_AA object definiti
 
 add_vars();
 
-$p_slice_id= q_pack_id($slice_id);
+if (isset($slice_id)) $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 	   	 // open BD	
 $db2 = new DB_AA; 		 // open BD	
 $db3 = new DB_AA; 		 // open BD	

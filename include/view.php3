@@ -20,6 +20,7 @@ http://www.apc.org/
 */
 
 require_once $GLOBALS["AA_INC_PATH"] . "itemview.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "viewobj.php3";
 
 # ----------------------------------------------------------------------------
 #                         view functions
@@ -252,10 +253,11 @@ function GetViewFormat($view_info) {
   return $format;
 }
 
+// Expand a set of view parameters, and return the view
 function GetView($view_param) {
-  global $db, $nocache;
+  global $db, $nocache, $debug;
   $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
-
+  if ($debug) huhl("GetView:",$view_param);
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param);
 
@@ -264,13 +266,14 @@ function GetView($view_param) {
   } 
   
   $res = GetViewFromDB($view_param, $cache_sid);
+    // Note cache_sid set by GetViewFromDB
   $cache->store($keystr, $res, "slice_id=$cache_sid");
 
   return $res;
 }
 
 
-# return view result based on parameters
+// Return view result based on parameters, set cache_sid
 function GetViewFromDB($view_param, &$cache_sid) {
   global $db,$debug;
 

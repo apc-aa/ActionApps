@@ -92,10 +92,15 @@ function default_fnc_($param) {
   return "";
 }
 
-/** @author Ram Prasad, 05-March-2002 */      
+/*
+//Originally used by Mitra/Setu/Ram in PTS, but Commented out because of 
+//security risk, if required should be rewritten with a list of variables
+//permitted 
+
 function default_fnc_variable($param) {
   return ($GLOBALS[$param]);
 }
+*/
 # ----------------------- insert functions ------------------------------------
 
 function insert_fnc_qte($item_id, $field, $value, $param) {

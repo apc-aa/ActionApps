@@ -328,7 +328,7 @@ function GetXMLItemsRefs(&$items_ids) {
 function GetItemCategories(&$categs, &$content_vals) {
   if (!$content_vals || !is_array($content_vals))
     return;
-
+    reset($content_vals);
   while (list(,$v) = each($content_vals)) {
       if ($cat_id = $categs[$v[value]])
         $cat_ids[] = $cat_id;
@@ -402,13 +402,12 @@ if (!$slice_id) {                           // feed establishing mode
       $consts = GetGroupConstants($slice_id, $slice_fields);      // get categories belongs to $slice_id
 
       $c = explode(" ",$categories);     // create array of requested categories ids indexed by value
-
       while (list(,$cat ) = each($c)) {
         if ($consts[$cat]) {
           $categs[$consts[$cat][value]] = $cat;
         }
       }
-
+      reset($ids);
       while (list($k,$id) = each($ids)) {        // find out all items, which belongs to requested categories
 
 #  commented out - why to send all items without category definned if we want 

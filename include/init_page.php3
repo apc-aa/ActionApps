@@ -145,9 +145,11 @@ if( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_do
 $after_login = !$no_slice_id && !$slice_id;
 $perm_slices = GetUsersSlices( $auth->auth[uid] );
 
-if( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices [$slice_id] ) {
-  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"), "standalone");
-  exit;
+if( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_login ) {
+    require_once $GLOBALS["AA_INC_PATH"] . "sessionobj.php3"; 
+    MsgPage($sess->url(self_base())."index.php3", 
+        _m("You do not have permission to edit items in the slice").": ".slice2name($slice_id),"standalone");
+    exit;
 }
 
 $db = new DB_AA;

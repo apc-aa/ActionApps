@@ -544,6 +544,7 @@ function GetSliceInfo($slice_id) {
   return  GetModuleInfo($slice_id,'S');
 }  
 
+/*Obsoleted - see viewobj.php3 (mitra)
 # gets view fields
 function GetViewInfo($vid) {
   global $db;
@@ -552,6 +553,7 @@ function GetViewInfo($vid) {
                  AND view.id='$vid'");
   return  ($db->next_record() ? $db->Record : false);
 }  
+*/
 
 # function converts table from SQL query to array
 # $idcol specifies key column for array or "NoCoLuMn" for none
@@ -1404,5 +1406,33 @@ function getSelectBoxFromParamWizard ($var)
     while (list ($value, $prop) = each ($var["items"]))
         $retval[$value] = $prop["name"];
     return $retval;
+}
+
+// This pair of functions remove the guessing about which of $db $db2 $db3 
+// to use
+// Usage: $db = getDB(); ..do stuff with sql ... freeDB($db)
+//
+$spareDBs = array();
+
+function getDB() {
+    global $spareDBs;
+    if (!($db = array_pop($spareDBs)))
+        $db = new DB_AA;
+    return $db;
+}
+function freeDB($db) {
+    global $spareDBs;
+    array_push($spareDBs,$db);
+}
+
+// Return an array of fields, skipping numeric ones
+function DBFields($db) {
+    $a = array();
+    while (list($key,$val,,) = each($db->Record)) {
+        if( EReg("^[0-9]*$", $key))
+            continue;
+        $a[$key] = $val;
+    }
+    return $a;
 }
 ?>

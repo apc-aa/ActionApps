@@ -212,11 +212,16 @@ Than set the right permisions. Example:
   </CODE></BLOCKQUOTE>
 
 
-<p>Edit apc-aa/include/config.php3, edit the defines IMG_UPLOAD_PATH and
+<p>Edit apc-aa/include/config.php3, edit the defines IMG_UPLOAD_PATH and IMG_UPLOAD_URL to point to this directory. Note the trailing "/". IMG_UPLOAD_TYPE allows you to specify what MIME types you will allow people to upload.
+<p>To stop someone uploading a PHP file and then executing it, edit your httpd.conf file and add 
 
-IMG_UPLOAD_URL to point to this directory. Note the trailing "/".
+<BLOCKQUOTE><HR><PRE><CODE>
+<Directory "/home/httpd/html/apc-aa-uploads">
+ Options None
+ php_flag engine off
+</Directory>
+</CODE></PRE><HR></BLOCKQUOTE>
 
-IMG_UPLOAD_TYPE allows you to specify what MIME types you will allow people to upload.
 <p>
 For installing cron, please refer to the <a href=http://apc-aa.sourceforge.net/faq/>FAQ</a> page.
 

@@ -23,6 +23,10 @@ if (!defined ("AA_EXTSESSI_INCLUDED"))
     define ("AA_EXTSESSI_INCLUDED", 1);
 else return;
 
+if (!defined ("AA_EXTSESSEITHER_INCLUDED"))
+    define ("AA_EXTSESSEITHER_INCLUDED", 1);
+else return;
+
 class DB_AA extends DB_Sql {
   var $Host     = DB_HOST;
   var $Database = DB_NAME;

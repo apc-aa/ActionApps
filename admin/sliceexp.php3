@@ -52,7 +52,7 @@ if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 
 if (isset($b_export_to_file))
 {
-    exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex);
+    exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
     exit;
 } else {
 
@@ -162,11 +162,12 @@ if ($SHOWTEXT == ""): ?>
         <b><?php echo _m("Choose, if you want export slices structure, data or both.") ?></b><br>
         <input type="checkbox" name="b_export_struct" value="1" checked><?php echo _m("Export structure") ?><br>
         <input type="checkbox" name="b_export_data" value="1"><?php echo _m("Export data") ?><br>
+        <input type="checkbox" name="b_export_views" value="1"><?php echo _m("Export views") ?><br>
         <?php if (function_exists('gzcompress')) {  //Check for Zlib support
         ?>
         <input type="checkbox" name="b_export_gzip" value="1"><?php echo _m("Use compression") ?><br>
         <?php } ?>
-        <input type="checkbox" name="b_export_hex" value="1"><?php echo _m("HEX output - alternative is not fully supported yet)") ?><br>
+        <input type="checkbox" name="b_export_hex" value="1" checked><?php echo _m("HEX output") ?><br>
         <input type="checkbox" name="b_export_to_file" value="1"><?php echo _m("Store exported data in file") ?><br><br>
         <table>
         <tr>
@@ -219,10 +220,22 @@ if ($SHOWTEXT == ""): ?>
     </tr></td>
 <?php
 else:
-    exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex);
+    exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
 endif;
 ?>
 
 </TABLE>
-<?php HtmlPageEnd();
+<?php 
+/* Testing code
+$slobj = new slice($slice_id);
+$sv = $so->views();
+#$j = $sv[18]->fields;
+#$j = $sv[18];
+$j = $sv;
+$xf = xml_serialize("18",$j,"\n","    ");
+huhl("XYZZY:SE:",$j);
+huhl("XYZZY:SE2:",$xf);
+huhl("XYZZY:SE3:",xml_unserialize($xf));
+*/
+HtmlPageEnd();
 page_close(); } ?>

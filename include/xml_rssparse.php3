@@ -182,8 +182,9 @@ function endElement($parser, $name) {
 	case "^RSS^CHANNEL^ITEM":			// RSS 0.9
     case "^RDF:RDF^RSS:ITEM":
       // dc elements decode
-      while (list($k,$v) =each($item[dc]))
-        $item[dc][$k] = decode($v);
+      if (isset($item[dc])) 
+        while (list($k,$v) =each($item[dc]))
+            $item[dc][$k] = decode($v);
 	  if (!($item_uri)) { $item_uri = string2id($item[title] . $item["link"] . $item[description]); } // RSS 0.9
       $aa_rss[items][$item_uri] = $item;
       $item="";
