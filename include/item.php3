@@ -36,7 +36,7 @@ function DeHtml($txt, $flag) {
   return ( ($flag & FLAG_HTML) ? $txt : htmlspecialchars( $txt ) );
 }  
 
-function GetAliasesFromFields($fields) {
+function GetAliasesFromFields($fields, $additional="") {
   if( !( isset($fields) AND is_array($fields)) )
     return false;
 
@@ -50,6 +50,9 @@ function GetAliasesFromFields($fields) {
   $aliases["_#EDITITEM"] = array("fce" => "f_e",
                                  "param" => "id..............",
                                  "hlp" => L_EDITITEM_ALIAS);
+  $aliases["_#EDITDISC"] = array("fce" => "f_e:disc",
+                                 "param" => "id..............",
+                                 "hlp" => L_EDITDISC_ALIAS);
   $aliases["_#RSS_TITL"] = array("fce" => "f_r",
                                  "param" => "SLICEtitle",
                                  "hlp" => L_RSS_TITL);
@@ -82,7 +85,48 @@ function GetAliasesFromFields($fields) {
                                      "param" => ( $val[id] ),
                                      "hlp" => $val[alias3_help],
                                      "fld" => $k);
-  }                                   
+  }
+
+  #add additional aliases
+  if( isset( $additional ) AND is_array( $additional ) ) {
+    reset( $additional );
+    while( list($k,$v) = each( $additional ) )
+      $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+  }
+  
+  return($aliases);
+}  
+
+function GetConstantAliases( $additional="" ) {
+  #  Standard aliases
+  $aliases["_#NAME####"] = array("fce" => "f_h",
+                                 "param" => "const_name......",
+                                 "hlp" => L_CONST_NAME_ALIAS);
+  $aliases["_#VALUE###"] = array("fce" => "f_h",
+                                 "param" => "const_value.....",
+                                 "hlp" => L_CONST_VALUE_ALIAS);
+  $aliases["_#PRIORITY"] = array("fce" => "f_h",
+                                 "param" => "const_priority..",
+                                 "hlp" => L_CONST_PRIORITY_ALIAS);
+  $aliases["_#GROUP###"] = array("fce" => "f_n",
+                                 "param" => "const_group.....",
+                                 "hlp" => L_CONST_GROUP_ALIAS);
+  $aliases["_#CLASS###"] = array("fce" => "f_h",
+                                 "param" => "const_class.....",
+                                 "hlp" => L_CONST_CLASS_ALIAS);
+  $aliases["_#COUNTER#"] = array("fce" => "f_h",
+                                 "param" => "const_counter...",
+                                 "hlp" => L_CONST_COUNTER_ALIAS);
+  $aliases["_#CONST_ID"] = array("fce" => "f_n",
+                                 "param" => "const_id........",
+                                 "hlp" => L_CONST_ID_ALIAS);
+
+  # add additoinal aliases
+  if( isset( $additional ) AND is_array( $additional ) ) {
+    reset( $additional );
+    while( list($k,$v) = each( $additional ) )
+      $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+  }
   return($aliases);
 }  
 
@@ -124,14 +168,18 @@ class item {
   }
   
   # get item url - take in mind: item_id, external links and redirection
-  function getitemurl($extern, $extern_url, $redirect) {
+  function getitemurl($extern, $extern_url, $redirect,$condition=true) {
     if( $extern AND $this->columns[$extern][0][value] )       # link_only
       return ($this->columns[$extern_url][0][value] ? 
                 $this->columns[$extern_url][0][value] :
                 NO_OUTER_LINK_URL);
+    if( !$condition )
+      return false;
+      
     $url_param = ( $GLOBALS['USE_SHORT_URL'] ? 
             "x=".$this->columns["short_id........"][0][value] :
             "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
+            
 
     if( $redirect )      # redirecting to another page 
       return con_url( $redirect, $url_param );
@@ -142,7 +190,7 @@ class item {
   # get link from url and text
   function getahref($url, $txt, $add="") { 
     if( $url AND $txt )
-      return '<a href="'. htmlspecialchars($url) ."\" $add>". 
+      return '<a href="'. $url ."\" $add>". 
                           htmlspecialchars($txt).'</a>';
     return htmlspecialchars($txt); 
   }
@@ -245,9 +293,10 @@ class item {
   #    addition      - additional parameter to <a tag (like target=_blank)
   function f_b($col, $param="") { 
     $p = ParamExplode($param);
-    if( $this->columns[$p[4]][0][value] )   # condition field filled
 //p_arr_m(  $this->columns );
-      $url = $this->getitemurl($p[0], $p[1], $p[2]);
+
+    # last parameter - condition field
+    $url = $this->getitemurl($p[0], $p[1], $p[2], $this->columns[$p[4]][0][value]);
       
     $txt = ( ( $this->columns[$p[3]] ) ? 
                $this->columns[$p[3]][0][value] : $p[3] );
@@ -404,6 +453,10 @@ function RSS_restrict($txt, $len) {
   # param: 0
   function f_e($col, $param="") { 
     global $sess;
+    if( $param == "disc" )
+      # _#DISCEDIT used on admin page index.php3 for edit discussion comments
+      return con_url($sess->url("discedit.php3"),
+        "item_id=".unpack_id( $this->columns["id.............."][0][value]));
     return con_url($sess->url("itemedit.php3"),
                    "encap=false&edit=1&id=".
                    unpack_id( $this->columns["id.............."][0][value]));
@@ -433,6 +486,57 @@ function RSS_restrict($txt, $len) {
     $fnc = $p[0];
     return $fnc($this->columns, $col, $param);
   }  
+
+  # display specified view
+  # param: 
+  #    link_only     - field id (like "link_only.......")
+  #    url_field     - field id of external url for link_only 
+  #                  - (like hl_href.........)
+  #    redirect      - url of another page which shows the content of item 
+  #                  - this page should contain SSI include ../slice.php3 too
+  #    txt           - if txt is field_id content is shown as link, else txt
+  #    condition_fld - field id - if no content of this field, no link
+  #    addition      - additional parameter to <a tag (like target=_blank)
+
+
+  function f_v($col, $param="") { 
+    global $vid, $als, $conds, $param_conds, $item_ids, $use_short_ids;
+
+    # if no parameter specified, the content of this field specifies view id
+    if( !$param )
+      $param = "vid=".$this->columns[$col][0][value]; 
+    
+    # substitute aliases by real item content
+    $part = $param;
+    while( $part = strstr( $part, "_#" )) {  # aliases for field content
+      $fid = substr( $part, 2, 16 );         # looks like _#headline........
+      
+      if( substr( $fid, 0, 4 ) == "this" )   # special alias _#this
+        $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
+      else
+        $param = str_replace( "_#$fid", $this->f_h($col, "-"), $param );
+      $part = substr( $part, 6 );
+    }  
+    
+    return GetView(ParseViewParameters($param));
+  }    
+
+  # mailto link
+  # prints: "begin<a href="mailto:$col">field/text</a>"
+  # if no $col is filled, prints "else_fileld/text"
+  # param: begin:field/text:else_fileld/text
+  function f_m($col, $param="") { 
+    $p = ParamExplode($param);
+    if( !$this->columns[$col][0][value] )
+      return ($this->columns[$p[2]] ? $this->columns[$p[2]][0][value] : $p[2]);
+    if( $this->columns[$p[1]] )
+      $txt = ($this->columns[$p[1]][0][value] ? 
+             $this->columns[$p[1]][0][value] : $this->columns[$col][0][value]);
+     else 
+      $txt = ( $p[1] ? $p[1] : $this->columns[$col][0][value]);        
+    return getahref( "mailto:".$this->columns[$col][0][value], $txt);
+  }
+
   
   # ----------------- alias function definition end --------------------------
 
@@ -475,13 +579,13 @@ function RSS_restrict($txt, $len) {
           # like f_d("start_date......", "mm-dd")
         $contents[$als_name] = $this->$fce($ali_arr[param], $function[param]);
 
-        if( $contents[$als_name] != "")  // remove empty aliases
-          $out .= "_#".current($piece);
-        else 
+        if( $contents[$als_name] != "")   # remove empty aliases
+          $out .= "_##".current($piece);  # one cross more to not replace 
+        else                           # strings with "_#", which is not aliases
           $out .= substr(current($piece),8);
       }
       else
-        $out .= current($piece);
+        $out .= "_#".current($piece);
       next($piece);
     }    
     
@@ -498,12 +602,12 @@ function RSS_restrict($txt, $len) {
     }    
    
 // remove ()
-    $piece = explode("_#",$out);
+    $piece = explode("_##",$out);
 //p_arr($piece,"2. explode");
 
     unset($out);
     reset($piece);
-    if( substr(current($piece),0,2) != "_#" ) {   // skip to first alias
+    if( substr(current($piece),0,3) != "_##" ) {   // skip to first alias
       $out = current($piece);
       next($piece);
     }
@@ -519,6 +623,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.24  2001/09/27 15:59:33  honzam
+New discussion support, New constant view, Aliases for view and mail
+
 Revision 1.23  2001/09/12 06:19:00  madebeer
 Added ability to generate RSS views.
 Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
