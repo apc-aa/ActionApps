@@ -4,10 +4,10 @@
  * @package TableEdit
  * @version $Id$
  * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications 
+ * @copyright (c) 2002-3 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2003 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2003 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -30,11 +30,11 @@ require_once $GLOBALS["AA_INC_PATH"]."tabledit_util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."scroller.php3";
 
-/// identifies new record 
+/// identifies new record
 $new_key = "__new__";
 
 /** See @link ../tabledit.html, @link ../tabledit_developer.html, @link ../tableview.html for more info.
-*/	
+*/
 class tabledit {
     // serialization purposes??
     var $classname = "tabledit";
@@ -53,17 +53,17 @@ class tabledit {
     /** session (for session-stored variables) */
     var $sess;
     /** URL path for images */
-    var $imagepath;    
-    /**  Function to get other Table View definitions by ID. 
+    var $imagepath;
+    /**  Function to get other Table View definitions by ID.
     *    Used in $this->ShowChildren() and ProcessFormData(), see tabledit_util.php3.
     *    The function must get two parameters: string $viewID and bool $processForm.
     *
     *    The parameter $processForm tells whether the function is called from ProcessFormData().
     *    In that case not all settings are important and you can leave out
     *    some of them. Useful when creating a new module with TableEdit, because you must not
-    *    call init_page.php3 before the module is added. */    
+    *    call init_page.php3 before the module is added. */
     var $getTableViewsFn;
-    
+
     // PRIVATE VARIABLES
     // command for this particular Table View (exactly $all_cmd[$viewID])
     var $cmd;
@@ -77,12 +77,12 @@ class tabledit {
     var $cols;
     /// view type (edit / browse)
     var $type;
-    /** array of aliases of fields forming primary keys for each table 
-    *   (if not using "join", there is only one table) 
+    /** array of aliases of fields forming primary keys for each table
+    *   (if not using "join", there is only one table)
     */
     var $primary_aliases;
 
-	/** constructor, see above for parameter description */
+    /** constructor, see above for parameter description */
     function tabledit($viewID, $action, $cmd, $view, $imagepath, &$sess, $getTableViewsFn, $is_child=false) {
         $this->viewID = $viewID;
         $this->all_cmd = $cmd;
@@ -90,16 +90,16 @@ class tabledit {
         $this->view = $view;
         $this->cols = $this->view["fields"];
         // complete the column info
-        SetColumnTypes ($this->cols, $this->primary_aliases, 
+        SetColumnTypes ($this->cols, $this->primary_aliases,
             $this->view["table"], $this->view["join"],
             $this->view["readonly"], $this->view["primary"]);
         $this->is_child = $is_child;
-        $this->action = $action;       
+        $this->action = $action;
         $this->sess = &$sess;
         $this->imagepath = $imagepath;
         $this->getTableViewsFn = $getTableViewsFn;
         $this->type = $this->view["type"];
-        
+
         $this->UpdateCmd ();
     }
 
@@ -109,7 +109,7 @@ class tabledit {
             $this->sess->register("tabledit_cmd");
         global $tabledit_cmd;
         $tecmd = &$tabledit_cmd[$this->viewID];
-        
+
         // update ORDERBY and ORDERDIR
         $orderby = $this->cmd["orderby"];
         if (is_array ($orderby)) {
@@ -117,7 +117,7 @@ class tabledit {
             $orderby = key ($orderby);
             $this->orderby = $orderby;
             if ($tecmd["orderby"][$orderby]) {
-                $tecmd["orderdir"] = 
+                $tecmd["orderdir"] =
                     $tecmd["orderdir"] == 'd' ? 'a' : 'd';
                 $this->orderdir = $tecmd["orderdir"];
             }
@@ -138,7 +138,7 @@ class tabledit {
                 $this->orderdir = $this->view["orderdir"];
             }
         }
-        
+
         // update EDIT
         if ($this->cmd["show_new"]) {
             unset($tecmd["edit"]);
@@ -150,32 +150,32 @@ class tabledit {
             $edit_key = key ($edit);
             $tecmd["edit"] = $edit;
         }
-        else if (is_array ($tecmd["edit"])) 
+        else if (is_array ($tecmd["edit"]))
             $this->cmd["edit"] = $tecmd["edit"];
-    }    
+    }
 
     // -----------------------------------------------------------------------------------
-    
-    /// shows the complete table 
+
+    /// shows the complete table
     function view ($where = "1") {
         global $db;
 
         /*
         echo "<table width='100%'><tr><td width='50%'>&nbsp;</td><td align=right class=tabtxt><span class=te_help_link>";
-        if ($this->type == "browse") 
+        if ($this->type == "browse")
             echo _m("This is a Browse view in TableEdit. ");
         else echo _m("This is an Edit view in TableEdit. ");
         echo "<a href='http://aa.ecn.cz/aaa/doc/tabledit_user.html'>"
             ._m ("Do you need Help?")."</a></span></td></tr></table>";
         */
-        $this->SetViewDefaults();    
+        $this->SetViewDefaults();
         $where = $this->GetWhere ($where);
-        
+
         $db->query("SELECT COUNT(*) AS mycount FROM ".$this->getSelectFrom()." WHERE ".$where);
-        $db->next_record();        
+        $db->next_record();
         $rowcount = $db->f("mycount");
 
-        // scroller stuff                                           
+        // scroller stuff
         $scrname = "te_".$this->viewID;
         global $$scrname;
         $scroll = $$scrname;
@@ -197,11 +197,15 @@ class tabledit {
         }
         $$scrname = $scroll;
 
-        if ($this->orderby) 
+        if ($this->orderby)
             $orderby = " ORDER BY ".$this->orderby.($this->orderdir == 'd' ? " DESC" : "");
-        
+
         reset ($this->cols);
         while (list ($cname,$cprop) = each ($this->cols)) {
+            if ( $cprop['table'] == 'aa_notable' ) {
+                $collist[] = '"'. get_if($cprop['default'],'') . "\" as $cname";
+                continue;
+            }
             $col = "";
             if ($this->view["join"])
                 $col = $cprop["table"].".";
@@ -210,17 +214,17 @@ class tabledit {
                 $col .= " ".$cname;
             $collist[] = $col;
         }
-            
+
         $db->query(
              " SELECT ".join(",",$collist)
             ." FROM ".$this->getSelectFrom()
             ." WHERE ".$where
             . $orderby
             ." LIMIT ".($scroll->current-1)*$scroll->metapage.",".$scroll->metapage);
-            
+
         $record_count = $db->num_rows();
 
-        if (!$record_count) 
+        if (!$record_count)
             $no_item = !$this->cmd["search"]["value"];
         else $no_item = false;
 
@@ -229,18 +233,18 @@ class tabledit {
                 .$this->view["help"]
                 .'</td></tr></table><br>';
         }
-        
+
         if (!$record_count && !$this->show_new) {
             if ($no_item)
                 echo "<span class=te_no_item_msg>".$this->view["messages"]["no_item"]."</span>";
             else echo "<span class=te_no_item_msg>"._m("No record matches your search condition.")."</span>";
         }
-            
-        if ($record_count || $this->show_new) {      
+
+        if ($record_count || $this->show_new) {
 
             if ($this->view["search"] && !$no_item)
-                $this->ShowSearchRow ();       
-        
+                $this->ShowSearchRow ();
+
             $fnname = "prooveFields_".$this->viewID;
             $this->ShowProoveFields ($fnname);
 
@@ -265,17 +269,17 @@ class tabledit {
             reset ($records);
             reset ($all_keys);
             $irow = 0;
-            while (list (, $record) = each ($records)) {                
+            while (list (, $record) = each ($records)) {
                 $new_record = $record == "new";
                 list (,$key) = each ($all_keys);
                 // row number helps to use different CSS styles for even and odd rows
                 $irow ++;
                 // show new record in row 1 color always
                 if ($new_record) $irow = 1;
-    
+
                 if ($this->type == "browse") {
                     if ($new_record && count ($records) > 1)
-                        $this->showBrowseFooter ($formname, $all_keys, $record_count, $scroll);                    
+                        $this->showBrowseFooter ($formname, $all_keys, $record_count, $scroll);
                     echo "<TR>";
                     $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "left");
                 }
@@ -284,57 +288,64 @@ class tabledit {
                     echo "<TABLE ".$this->view["attrs"]["table"].">";
                     echo "<FORM name='$formname' method=post action='".$this->action."'>\n";
                 }
-                                            
+
                 $this->ShowColumnValues ($record, $new_record, $key, $irow);
-                
+
                 if ($this->type == "browse") {
                     //$this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "left");
                     echo "</TR>";
                 }
                 else {
                     echo "<TR><TD align=center colspan=100>";
-                    $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "down", $all_keys, $record_count);                    
+                    $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "down", $all_keys, $record_count);
                     echo "</TD></TR></FORM></TABLE>";
-                    if (is_array ($this->view["children"]) && !$new_record) 
+                    if (is_array ($this->view["children"]) && !$new_record)
                         $err = $this->ShowChildren($record);
                 }
             }
             if ($this->type == "browse") {
                 if (!$this->show_new)
-                    $this->showBrowseFooter ($formname, $all_keys, $record_count, $scroll); 
+                    $this->showBrowseFooter ($formname, $all_keys, $record_count, $scroll);
                 echo "</FORM>";
                 echo "</TABLE>";
             }
             //echo "</TABLE>";
         }
         else if ($this->type == "browse") {
-            $this->ShowButtons (false, "", "", "", 0, "down", array (), $record_count);        
+            $this->ShowButtons (false, "", "", "", 0, "down", array (), $record_count);
             // scroller
             if ($scroll->pageCount() > 1) {
                 echo "<P align=\"center\">";
-            	$scroll->pnavbar();
-                echo "</P>";        
+                $scroll->pnavbar();
+                echo "</P>";
             }
         }
-        
+
         return $err;
-    }        
+    }
 
     // -----------------------------------------------------------------------------------
-    
+
     function showBrowseHeader ($record_count) {
         echo "<TR>";
-        if (is_array ($this->view["buttons_left"]))
-            $header = "<TD colspan=".count ($this->view["buttons_left"]).">&nbsp;</TD>";
+        if (is_array ($this->view["buttons_left"])) {
+            $left_buttons_count = 0;
+            foreach ( $this->view["buttons_left"] as $visible ) {
+                if ( $visible ) $left_buttons_count++;
+            }
+            if ( $left_buttons_count ) {
+                $header = "<TD colspan=\"$left_buttons_count\">&nbsp;</TD>";
+            }
+        }
         /*
         reset ($this->view["buttons_left"]);
         while (list ($button, $use) = each ($this->view["buttons_left"])) {
             $bt = $this->ButtonsText (false);
             $bt = $bt[$button];
             $alt = $bt["alt"] ? $bt["alt"] : "&nbsp;";
-            $header .= "<TD class=te_b_col_head align=center>".$alt."</TD>\n"; 
+            $header .= "<TD class=te_b_col_head align=center>".$alt."</TD>\n";
         }*/
-    
+
         echo $header;
         $td = "<TD class=te_".substr($this->type,1,1)."_td>";
         reset ($this->cols);
@@ -352,7 +363,7 @@ class tabledit {
                          if ($this->orderdir == 'd')
                               echo "down.gif' alt='"._m("order ascending")."'";
                          else echo "up.gif' alt='"._m("order descending")."'";
-                         echo " border=0>";                                                
+                         echo " border=0>";
                      }
                      echo "</a>";
                 }
@@ -363,16 +374,16 @@ class tabledit {
             }
         }
         //echo $header;
-        echo "</TR>";    
+        echo "</TR>";
     }
 
     // -----------------------------------------------------------------------------------
-    
+
     function showBrowseFooter ($formname, $all_keys, $record_count, $scroll) {
         echo "<TR><TD colspan=100><TABLE width=\"100%\">
             <TR><TD class=\"te_b_col_head\" width=\"100\" valign=top>";
         // icon explanation ("= update" etc.)
-        if ($record_count && is_array ($this->view["buttons_left"])) {    
+        if ($record_count && is_array ($this->view["buttons_left"])) {
             reset ($this->view["buttons_left"]);
             while (list ($button, $use) = each ($this->view["buttons_left"])) {
                 $bt = $this->ButtonsText (false);
@@ -385,11 +396,11 @@ class tabledit {
         else echo "&nbsp;";
         $space = $scroll->pageCount() > 1 ? 20 : 50;
         echo '</TD><TD width="'.$space.'">&nbsp;</TD>';
-    
-        // scroller 
+
+        // scroller
         if ($scroll->pageCount() > 1) {
             echo "<TD>";
-        	$scroll->pnavbar();
+            $scroll->pnavbar();
             echo "</TD><TD width=20>&nbsp;</TD>";
         }
         echo "<TD>";
@@ -397,14 +408,14 @@ class tabledit {
         // scroller
         echo "\n</TD></TR></TABLE></TD></TR>";
     }
-    
+
     // -----------------------------------------------------------------------------------
 
     function getAction ($viewID) {
         return $this->action. (strstr($this->action,"?") ? "&" : "?") . "set_tview=".$viewID
             .($this->is_child ? "#" . $this->viewID : "");
-    } 
-        
+    }
+
     // -----------------------------------------------------------------------------------
 
     function SetViewDefaults () {
@@ -415,28 +426,28 @@ class tabledit {
             echo join ("<BR>", $err);
             exit;
         }
-    
+
         setDefault ($this->view["addrecord"], true);
         setDefault ($this->view["listlen"],   15);
         setDefault ($this->view["search"],    $this->type == "browse");
         setDefault ($this->view["messages"]["no_item"], _m("Nothing to be shown."));
         setDefault ($this->view["readonly"],  true);
-                       
+
         $this->view["attrs"]["table"] .= " class=te_".substr($this->type,0,1)."_table ";
-                
+
         $this->setDefaultButtons();
-    }        
-    
+    }
+
     // -----------------------------------------------------------------------------------
 
     function getSelectFrom () {
-        $from = $this->view[table];    
+        $from = $this->view[table];
         if (is_array ($this->view["join"])) {
             reset ($this->view["join"]);
             while (list ($tname, $tprop) = each ($this->view["join"])) {
                 unset ($froms);
                 reset ($tprop["joinfields"]);
-                while (list ($thisfield, $joinfield) = each ($tprop["joinfields"])) 
+                while (list ($thisfield, $joinfield) = each ($tprop["joinfields"]))
                     $froms[] = $this->view["table"].".$thisfield=".$tname.".$joinfield";
                 switch ($tprop["jointype"]) {
                 case "1 to 1":
@@ -445,25 +456,25 @@ class tabledit {
                 }
                 $from .= $tname." ON ".join(" AND ", $froms);
             }
-        }                 
+        }
         return $from;
-    }   
-                
-    // -----------------------------------------------------------------------------------    
+    }
+
+    // -----------------------------------------------------------------------------------
     // sets $where and $this->show_new
     function GetWhere ($where)
     {
         //echo "edit ".$this->cmd["edit"]." show new ".$this->cmd["show_new"]." readonly ".$this->view["readonly"]." addrecord ".$this->view["addrecord"]." gotoview ".$this->view["gotoview"];
         $this->show_new = false;
-        // create SQL SELECT        
+        // create SQL SELECT
         // finish processing of insert
         if ($this->cmd["insert"] && $this->view["where"]) {
             // value of $this->cmd["insert"] was changed in TableInsert to the SQL WHERE clause
-            $this->view["where"] = "(".$this->view["where"].") OR ".$this->cmd["insert"];            
-        }        
+            $this->view["where"] = "(".$this->view["where"].") OR ".$this->cmd["insert"];
+        }
         // apply edit command only in Edit view
         if ($this->cmd["edit"] && $this->type == "edit") {
-            $where = CreateWhereCondition (key ($this->cmd["edit"]), 
+            $where = CreateWhereCondition (key ($this->cmd["edit"]),
                 $this->primary_aliases [$this->view["table"]], $this->cols, $this->view["table"]);
         }
         else if ($this->cmd["show_new"]) {
@@ -472,9 +483,9 @@ class tabledit {
         }
         else if (!$this->view["readonly"] && $this->view["addrecord"])
             $this->show_new = true;
-        if (!isset($where)) 
-            $where = "1";            
-        
+        if (!isset($where))
+            $where = "1";
+
         // process search row
         $srch = &$this->cmd["search"];
         if ($srch["where"]) {
@@ -489,22 +500,22 @@ class tabledit {
                  $where .= " AND $srch[field] = $srch[value] ";
             else $where .= " AND $srch[field] LIKE '%".addslashes_magic($srch[value])."%' ";
         }
-        
-        if (isset ($this->view["where"])) 
+
+        if (isset ($this->view["where"]))
             $where .= " AND (".$this->view["where"].") ";
-            
+
         echo "<!-- where_condition $where -->";
-            
+
         return $where;
-    }   
+    }
 
     // -----------------------------------------------------------------------------------
 
-    function ShowSearchRow () 
+    function ShowSearchRow ()
     {
         $td = "<TD class=te_search_td>";
         $tdd = "</span></TD>";
-        
+
         $formname = "search_".$this->viewID;
         $searchimage = "<a href='javascript:document.".$formname.".submit()'>"
             ."<img src='".$this->imagepath."search.gif' alt='"._m("Search")."' border=0></a>";
@@ -516,15 +527,15 @@ class tabledit {
             ._m("search").": $tdd"
             ."$td";
         reset ($this->cols);
-        while (list ($colname,$column) = each ($this->cols)) 
-            if ($column["view"]["type"] != "hide" && $column["view"]["type"] != "ignore") 
+        while (list ($colname,$column) = each ($this->cols))
+            if ($column["view"]["type"] != "hide" && $column["view"]["type"] != "ignore")
                 $options[$colname] = $column["caption"];
         $srch = $this->cmd["search"];
         FrmSelectEasy ("cmd[".$this->viewID."][search][field]", $options, $srch["field"]);
         echo "&nbsp;<INPUT name='cmd[".$this->viewID."][search][value]' type=text size=30 "
                 ."value=\"".stripslashes_magic($srch[value])."\">$tdd"
             ."$td".$searchimage.$tdd."</TR>";
-    /*  echo "<TR>$td"._m("Complex Search (SQL WHERE clause): ")."$tdd"  
+    /*  echo "<TR>$td"._m("Complex Search (SQL WHERE clause): ")."$tdd"
             ."$td<INPUT name='cmd[".$this->viewID."][search][where]' type=text size=50 "
                 ."value=\"".stripslashes_magic($srch[where])."\">$tdd"
             ."$td<INPUT type=submit name='go' value='"._m("Go")."'>$tdd</TR>"; */
@@ -532,8 +543,8 @@ class tabledit {
     }
 
     // -----------------------------------------------------------------------------------
-   
-    // prints javascript for input validation 
+
+    // prints javascript for input validation
     function ShowProoveFields ($fnname)
     {
         PrintJavaScript_Validate();
@@ -544,13 +555,13 @@ class tabledit {
                 myform = document.forms[formname];
                 for (ikey = 0; ikey < keys.length; ikey ++) {
                     name = 'val[' + keys [ikey] + ']';
-                    \n";                
+                    \n";
         reset ($this->cols);
         while (list ($colname, $column) = each ($this->cols)) {
             $req = $column["required"];
             if (!$req) $req = "0";
             if ($column["validate"] || $req != 0) {
-                if ($column["validate_min"] && $column["validate"] == "number") 
+                if ($column["validate_min"] && $column["validate"] == "number")
                      echo "if (!validate_number(myform,name+'[".$colname."]',".$column["validate_min"].",".$column["validate_max"].", $req))
                         return false;\n";
                 else echo "if (!validate(myform,name+'[".$colname."]',\"".$column["validate"]."\", $req))
@@ -564,12 +575,12 @@ class tabledit {
         // -->
         </script>";
     }
-    
+
     // -----------------------------------------------------------------------------------
-    
+
     function ShowColumnValues ($record, $new_record, $key, $irow)
     {
-        if ($this->type == "browse") 
+        if ($this->type == "browse")
             $td = "<TD class=te_b_row".($irow % 2 ? "1" : "2").">";
         else $td .= "<TD class=te_e_td>";
         reset ($this->cols);
@@ -577,9 +588,9 @@ class tabledit {
             $cview = $column["view"];
             if ($new_record && $column["view_new_record"])
                 $cview = $column["view_new_record"];
-                
+
             $val = $new_record ? $column["default"] : $record[$alias];
-            
+
             $visible = $cview["type"] != "ignore" && $cview["type"] != "hide";
             if ($visible && $this->type == "edit") {
                 $caption = $column["caption"];
@@ -590,7 +601,7 @@ class tabledit {
                 if ($column["hint"])
                     echo "<span class=\"te_e_col_hint\">".$column["hint"]."</span>";
                 echo "</TD>\n";
-			}        
+            }
 
             if ($cview["href_view"])
                 $href = "<a href='".$this->getAction($cview["href_view"])
@@ -600,30 +611,30 @@ class tabledit {
                 $href = "<a href='".$cview["href"]."'>";
             else $href = "";
 
-            if ($visible && $href && $cview["readonly"]) 
+            if ($visible && $href && $cview["readonly"])
                 echo $href;
-                    
+
             if ($visible)
-                echo $td;        
-            
+                echo $td;
+
             $name = str_replace ("\"", "\\\"", "val[$key][$alias]");
-            
+
             // in tabledit_column.php3
             ColumnFunctions ($cview, $val, "show", $name, $new_record, $record);
-        
+
             if ($visible) {
                 if ($href && !$new_record) {
-                    if ($cview["readonly"]) 
+                    if ($cview["readonly"])
                         echo "</a>\n";
                     else echo $href.
                         '<img border="0" src="'.$this->imagepath.'edit_big.gif" alt="'._m("edit").'">
                         </a>'."\n";
                 }
 
-                echo "</TD>\n";                
+                echo "</TD>\n";
                 if ($this->type == "edit") {
                     echo "</TR>";
-                    if ($column["colspan_hint"]) 
+                    if ($column["colspan_hint"])
                         echo '<TR><TD colspan="2" class="te_e_td"><SPAN class="te_e_col_hint">'.
                         $column["colspan_hint"].'</SPAN></TD></TR>';
                 }
@@ -637,25 +648,25 @@ class tabledit {
     function gotoview () {
         return $this->view["gotoview"] ? $this->view["gotoview"] : $this->viewID;
     }
-    
+
     // gotoview2 = delete,update in browse view; search form
     function gotoview2() {
-        return ($this->is_child && $this->view["gotoview"]) 
+        return ($this->is_child && $this->view["gotoview"])
             ? $this->view["gotoview"]
             : $this->viewID;
     }
-                
+
     // -----------------------------------------------------------------------------------
-    
+
     function SetDefaultButtons ()
     {
         $bl = $this->view["buttons_left"];
         $bd = $this->view["buttons_down"];
-        
+
         $gotoview = $this->view["gotoview"] && $this->view["gotoview"] != $this->gotoview2();
-        
+
         // default buttons:
-        
+
         if ($this->view["type"] == "edit") {
             if ($gotoview) {
                 if (!$this->view["readonly"]) {
@@ -667,9 +678,9 @@ class tabledit {
             else if (!$this->view["readonly"])
                 $bd["update"] = 1;
         }
-                
-        // browse view        
-                
+
+        // browse view
+
         else {
             if ($this->view["readonly"]) {
                 if ($gotoview) {
@@ -687,40 +698,40 @@ class tabledit {
                 $bd["delete_all"] = true;
                 $bl["delete_checkbox"] = true;
             }
-                    
-            if ($bd["update"] || $bd["delete"]) 
+
+            if ($bd["update"] || $bd["delete"])
                 echo $this->viewID.": You should not use bottom buttons 'update' or 'delete' in
                         browse view, use 'update_all' and 'delete_all' instead.";
         }
-        
+
         setDefault ($this->view["buttons_left"], $bl);
         setDefault ($this->view["buttons_down"], $bd);
     }
 
     // -----------------------------------------------------------------------------------
-    
+
     function ButtonsText ($new_record) {
-        // "new" is label for new record, "new_name" is command for new record, 
-        // "view" is view on which $this->cmd operates, "gotoview" is view which will be shown                
+        // "new" is label for new record, "new_name" is command for new record,
+        // "view" is view on which $this->cmd operates, "gotoview" is view which will be shown
         $buttons_text["edit"] = array (
             "name" => "edit",
             "img" => $new_record ? "" : "edit",
             "alt" => _m("edit"),
-            "view" => $this->gotoview(), 
+            "view" => $this->gotoview(),
             "gotoview" => $this->gotoview());
         $buttons_text["add"] = array (
             "name" => "add",
             "img" => "edit",
             "alt" => _m("add"),
             "view" => $this->viewID,
-            "gotoview" => $this->gotoview());            
+            "gotoview" => $this->gotoview());
         $buttons_text["delete"] = array (
             "name" => "delete",
             "img" => $new_record ? "" : "delete",
             "alt" => _m("delete"),
-            "view" => $this->viewID, 
+            "view" => $this->viewID,
             "gotoview" => $this->type == "browse" ? $this->gotoview2() : $this->gotoview());
-            
+
         // SPECIAL: "delete_checkbox" becomes "add" on new records
         $buttons_text["delete_checkbox"] = array (
             "name" => $new_record ? "insert" : "delete_all",
@@ -739,13 +750,13 @@ class tabledit {
             "name" => $new_record ? "insert" : "update",
             "img" => "ok",
             "alt" => $new_record ? _m("insert") : _m("update"),
-            "view" => $this->viewID, 
+            "view" => $this->viewID,
             "gotoview" => $this->gotoview2());
         $buttons_text["update_all"] = array (
             "name" => "update_all",
             "img" => "ok",
             "alt" => _m("update all"),
-            "view" => $this->viewID, 
+            "view" => $this->viewID,
             "gotoview" => $this->gotoview2());
         $buttons_text["cancel"] = array (
             "name" => "cancel",
@@ -754,15 +765,15 @@ class tabledit {
             "view" => $this->viewID,
             "gotoview" => $this->gotoview());
         return $buttons_text;
-    }    
-    
-    function ShowButtons ($new_record, $key, $fnname, $formname, $irow, $place="left", $all_keys="", $record_count=0) {                
-        if (!is_array ($this->view["buttons_$place"])) 
+    }
+
+    function ShowButtons ($new_record, $key, $fnname, $formname, $irow, $place="left", $all_keys="", $record_count=0) {
+        if (!is_array ($this->view["buttons_$place"]))
             return;
 
         if ($place == "down")
             echo "<TABLE><TR>\n";
-            
+
         reset ($this->view["buttons_$place"]);
         while (list ($button,$use) = each ($this->view["buttons_$place"])) {
             $bt = $this->ButtonsText ($new_record);
@@ -780,10 +791,10 @@ class tabledit {
             echo "</TR></TABLE>\n";
     }
 
-    function ShowButton ($bt, $new_record, $key, $fnname, $formname, $place, $all_keys, $record_count) {               
+    function ShowButton ($bt, $new_record, $key, $fnname, $formname, $place, $all_keys, $record_count) {
         if ($place != "left")
             $big = "_big";
-                
+
         switch ($bt["name"]) {
             case "add":
                 $url = $this->getAction($bt[gotoview])."&cmd[$bt[gotoview]][show_new]=1";
@@ -811,7 +822,7 @@ class tabledit {
                 break;
             case "update_all":
                  // javascript array of all keys for form validation
-                $js_all_keys = 'new Array ("'.join ('","', $all_keys).'")';          
+                $js_all_keys = 'new Array ("'.join ('","', $all_keys).'")';
                 $hidden = "cmd[".$this->viewID."][update_all]";
                 $url = "javascript:if ($fnname (\"$formname\",$js_all_keys))\n exec_commit (\"$formname\",\"$hidden\");";
                 echo "<INPUT type=hidden name='$hidden' value=0>\n";
@@ -824,47 +835,47 @@ class tabledit {
         if ($bt["img"])
              $img = '<img border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
         else $img = "";
-    
+
         if ($this->type == "browse" && $place == "down" && $record_count == 0 && $bt["name"] != "add")
             $text = "";
-        //if ($bl["delete_checkbox"] && $bl["update"] && $new_record) 
+        //if ($bl["delete_checkbox"] && $bl["update"] && $new_record)
             //echo "";
-        else if ($bt["checkbox"]) 
+        else if ($bt["checkbox"])
             $text = "$img<INPUT TYPE=checkbox NAME=cmd[$bt[view]][$bt[name]][$key]>\n";
-        else if ($img) $text = "<a href='$url'>$img</a>";                
-        else $text = "";   
-        
+        else if ($img) $text = "<a href='$url'>$img</a>";
+        else $text = "";
+
         echo $text ? $text : "&nbsp;";
-        // show the text label for bottom buttons and for insert                     
-        if ($text && ($place == "down" || $new_record)) 
-            echo "<br><a href='$url'><span class=te_button_text>".$bt["alt"]."</span></a>"; 
+        // show the text label for bottom buttons and for insert
+        if ($text && ($place == "down" || $new_record))
+            echo "<br><a href='$url'><span class=te_button_text>".$bt["alt"]."</span></a>";
     }
-    
+
     // -----------------------------------------------------------------------------------
-    
+
     /** shows children forms
     *
     * @param $key - identification of the parent row
     */
     function ShowChildren ($record) {
         reset ($this->view["children"]);
-        while (list ($chview, $child) = each ($this->view["children"])) {       
+        while (list ($chview, $child) = each ($this->view["children"])) {
             $fn = $this->getTableViewsFn;
             $chtv = $fn ($chview);
 
-            SetColumnTypes ($chtv["fields"], $primary_aliases, $chtv["table"], 
+            SetColumnTypes ($chtv["fields"], $primary_aliases, $chtv["table"],
                 $chtv["join"], $chtv["readonly"], $chtv["primary"]);
 
             $varset = new CVarset;
 
             reset ($child["join"]);
-            while (list ($masterf,$childf) = each ($child["join"])) {                
+            while (list ($masterf,$childf) = each ($child["join"])) {
                 reset ($chtv["fields"]);
-                while (list ($alias, $cprop) = each ($chtv["fields"])) 
+                while (list ($alias, $cprop) = each ($chtv["fields"]))
                     if ($cprop["field"] == $childf)
                         break;
                 reset ($this->cols);
-                while (list ($malias, $mcprop) = each ($this->cols)) 
+                while (list ($malias, $mcprop) = each ($this->cols))
                     if ($mcprop["field"] == $masterf)
                         break;
                 $cprop = &$chtv["fields"][$alias];
@@ -872,15 +883,15 @@ class tabledit {
                 $cprop["default"] = $record[$malias];
                 $varset->addkey ($cprop["field"], "text", $record[$malias]);
             }
-            
+
             $where = $varset->makeWHERE();
-            
+
             echo "<br>
                 <a name='$chview'>
                 <span class=te_child_header>".$child["header"]."</span><br>";
             $chtv["gotoview"] = $this->viewID;
-            $childte = new tabledit ($chview, $this->action, 
-                $this->all_cmd[$chview], $chtv, $this->imagepath, $this->sess, 
+            $childte = new tabledit ($chview, $this->action,
+                $this->all_cmd[$chview], $chtv, $this->imagepath, $this->sess,
                 $this->getTableViewsFn, true);
             $err = $childte->view($where);
             if ($err) return $err;
