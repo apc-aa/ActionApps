@@ -39,7 +39,7 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 $p_slice_id = q_pack_id($slice_id);
 
-// lookup internal slices
+// lookup internal fed slices
 $SQL= "SELECT name, id FROM slice, feeds
         LEFT JOIN feedperms ON slice.id=feedperms.from_id
         WHERE slice.id=feeds.from_id
@@ -49,7 +49,7 @@ $db->query($SQL);
 while($db->next_record())
   $impslices[unpack_id($db->f(id))] = $db->f(name);
 
-// lookup external slices
+// lookup external fed slices
 $SQL = "SELECT remote_slice_id, remote_slice_name, node_name
         FROM external_feeds
         WHERE slice_id='$p_slice_id'";
@@ -59,6 +59,19 @@ while($db->next_record()) {
   $remote_slices[unpack_id($db->f(remote_slice_id))] = 1;       // mark slice as external
 }
 
+// add all slices where I have permission to (for setting of mapping for slices, 
+// which is only manualy fed)
+reset( $g_modules );
+$first=true;
+while( list( $k, $v) = each($g_modules) ) {
+  if( $impslices[$k] OR $v['type']!='S' OR $k==$slice_id )
+    continue;
+  if( $first AND isset($impslices) AND is_array($impslices) ) 
+    $impslices[0] = '---------------';             # put delimeter there
+  $impslices[$k] = $v['name'];
+  $first=false;
+}  
+  
 if( !isset($impslices) OR !is_array($impslices)){
   MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE);
   exit;
@@ -121,8 +134,11 @@ function SelectValue(sel) {
 function ChangeFromSlice()
 {
   var url = "<?php echo $sess->url(self_base() . "se_mapping.php3")?>"
+  var from_sl = SelectValue('document.f.from_slice_id')
+  if( from_sl == 0 )
+    return;
   url += "&slice_id=<?php echo $slice_id ?>"
-  url += "&from_slice_id=" + SelectValue('document.f.from_slice_id')
+  url += "&from_slice_id=" + from_sl
   document.location=url
 }
 
@@ -155,7 +171,7 @@ function Submit() {
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   echo "<H1><B>" . L_MAP_TIT . "</B></H1>";
   PrintArray($err);
-  echo $Msg;
+  echo stripslashes($Msg);
 
 ?>
 <form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_mapping2.php3")?>">
