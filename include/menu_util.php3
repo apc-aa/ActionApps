@@ -50,8 +50,8 @@ function PrintModuleSelection() {
     $permitted = GetUserSlices();
     if ($permitted != "all") {
         reset ($permitted);
-        while (list ($slice_id) = each ($permitted)) 
-            $slice_ids .= ",'" . q_pack_id ($slice_id) ."'";
+        while (list ($perm_slice_id) = each ($permitted)) 
+            $slice_ids .= ",'" . q_pack_id ($perm_slice_id) ."'";
         $slice_ids = "WHERE module.id IN (".substr($slice_ids,1).") ";
     }
     echo "
