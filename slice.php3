@@ -201,18 +201,21 @@ function RestoreVariables() {
 # two purpose function - it loggs item view and it translates short_id to id
 function LogItem($id, $column) {
   global $db;
+
   $where = (( $column == "id" ) ? "id='".q_pack_id($id)."'" : "short_id=$id");
+  $SQL = "UPDATE item 
+             SET display_count=(display_count+1) 
+          WHERE $where";
+  $db->query($SQL);
+
+  if( $column == "id" )
+    return $id;
+    
   $SQL = "SELECT id, display_count FROM item WHERE $where";
   $db->query($SQL);
-  if( $db->next_record() ) {
-    $rec = $db->Record;
-    $SQL = "UPDATE LOW_PRIORITY item 
-               SET display_count=". ($rec['display_count']+1). 
-           " WHERE $where";
-    $db->query($SQL);
-    return unpack_id( $rec['id'] );
-  }
-  return false;
+  if( $db->next_record() )
+    return unpack_id( $db->f('id') );
+  return false;  
 }  
 
 function GetSortArray( $sort ) {
@@ -221,6 +224,14 @@ function GetSortArray( $sort ) {
   if( substr($sort,-1) == '+' )
     return array ( substr($sort,0,-1) => 'a' );
   return array ( $sort => 'a' );
+}    
+
+function SubstituteAliases( $als, &$var ) {
+  if( !isset( $als ) OR !is_array( $als ) )  # substitute url aliases in cmd
+    return;
+  reset( $als );
+  while( list($k,$v) = each( $als ) )
+    $var = str_replace ($k, $v, $var);
 }    
 
 
@@ -262,6 +273,7 @@ if( $inc ) {                   # this section must be after add_vars()
 $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 		 // open BD	
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
+$db3 = new DB_AA; 	 // open BD	(for another subqueries)
 
   # get fields info
 list($fields,) = GetSliceFields($slice_id);
@@ -411,6 +423,7 @@ elseif( (isset($conds) AND is_array($conds)) OR isset($group_by)) {     # posted
         $conds[$k]['value'] = current($cond);
       if( !isset($cond['operator']) )
         $conds[$k]['operator'] = 'LIKE';
+      SubstituteAliases( $als, $conds[$k]['value'] );
     }    
   }
 
@@ -564,6 +577,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.34  2002/02/05 21:38:34  honzam
+url alias substitution in slice.php3, bug in BLURB fixed
+
 Revision 1.33  2002/01/10 14:09:45  honzam
 new possibility to redefine the design of output by fview and iview url parameter
 
