@@ -69,7 +69,7 @@ function ParseSettings($set) {
 }  
 
 function ParseViewParameters($query_string="") {
-  global $cmd, $set, $vid, $als;
+  global $cmd, $set, $vid, $als, $slice_id;
 
   add_vars($query_string);       # adds values from url (it's not automatical in SSIed script)
 
@@ -185,11 +185,7 @@ function GetView($view_param) {
   $listlen = $view_param["listlen"];
   
   # gets view data
-  $db->query("SELECT view.*, slice.deleted FROM view, slice
-               WHERE slice.id=view.slice_id
-                 AND view.id='$vid'");
-  if( $db->next_record() )
-    $view_info = $db->Record;
+  $view_info = GetViewInfo($vid);
   
   if (!$view_info OR ($view_info['deleted']>0)) {
     return false; 
@@ -684,6 +680,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.23  2002/01/10 13:56:58  honzam
+fixed bug in user profiles
+
 Revision 1.22  2002/01/04 13:15:49  honzam
 new hide fulltext parameter for slice (good for discussion)
 

@@ -408,6 +408,15 @@ function GetSliceInfo($slice_id) {
   return  ($db->next_record() ? $db->Record : false);
 }  
 
+# gets view fields
+function GetViewInfo($vid) {
+  global $db;
+  $db->query("SELECT view.*, slice.deleted FROM view, slice
+               WHERE slice.id=view.slice_id
+                 AND view.id='$vid'");
+  return  ($db->next_record() ? $db->Record : false);
+}  
+
 # function converts table from SQL query to array
 # $idcol specifies key column for array or "NoCoLuMn" for none
 function GetTable2Array($SQL, $db, $idcol="id") {
@@ -486,7 +495,10 @@ function GetItemContent($ids, $use_short_ids=false) {
   $delim = "";
   $id_column = ($use_short_ids ? "short_id" : "id");   
   $SQL = "SELECT * FROM item WHERE $id_column $sel_in";
-  $db->query($SQL);
+  if( $GLOBALS['debug'] )
+    $db->dquery($SQL);
+  else
+    $db->query($SQL);
   while( $db->next_record() ) {
     reset( $db->Record );
     if( $use_short_ids ) {
@@ -517,11 +529,13 @@ function GetItemContent($ids, $use_short_ids=false) {
    # feeding - don't worry about it - when fed item is updated, informations
    # in content table is updated too
 
-  $db->query("SELECT * FROM content 
-               WHERE item_id $sel_in");  # usable just for constants
+  $SQL = "SELECT * FROM content 
+           WHERE item_id $sel_in";  # usable just for constants
                
   if( $GLOBALS['debug'] )
-     echo "<br>Sel_in: $sel_in";
+    $db->dquery($SQL);
+  else
+    $db->query($SQL);
 
   while( $db->next_record() ) {
     $fooid = ( $use_short_ids ? $translate[unpack_id($db->f(item_id))] : 
@@ -580,7 +594,11 @@ function GetItemHeadlines( $db, $sid="", $ids="", $type="all" ) {
              AND publish_date <= '$time_now'
         ORDER BY publish_date DESC";
 
-  $db->query($SQL);
+  if( $GLOBALS['debug'] )
+    $db->dquery($SQL);
+   else
+    $db->query($SQL);
+    
   while($db->next_record())
     $arr[unpack_id($db->f(id))] = substr($db->f(text), 0, 50);  #truncate long headlines
         
@@ -748,20 +766,25 @@ function clean_email($line) {
   */ 
 }
 
-function GetProfileProperty($property, $id='_NoIdeeee.') {
+function GetProfileProperty($property, $id=0) {
   global $r_profile;
-  if( $id=='_NoIdeeee.' ) {
-    if( isset($r_profile) AND isset($r_profile[$property]) AND isset($r_profile[$property][$id]))
-      return $r_profile[$property][$id];
-     else 
-      return false;
-  } elseif( isset($r_profile) AND isset($r_profile[$property]) )
-    return $r_profile[$property];
+
+  if( ($GLOBALS['slice_id'] == '7dade492ba449615c5672ebcb2a45875') OR
+      ($GLOBALS['slice_id'] == '3a7e18c1249b899407e75e7f626db792')) {
+    print_r($r_profile);
+    echo "<br>$property, $id";
+  }
+
+  if( isset($r_profile) AND isset($r_profile[$property]) )
+    return $r_profile[$property][$id];
   return false;
 }       
 
 /*
 $Log$
+Revision 1.29  2002/01/10 13:56:58  honzam
+fixed bug in user profiles
+
 Revision 1.28  2001/12/18 16:27:28  honzam
 new WYSIWYG richtext editor for inputform (IE5+), new possibility to join fields when fields are fed to another slice, new notification e-mail possibility (notify new item in slice, bins, ...)
 

@@ -38,12 +38,13 @@ function InsertProfileProperty($uid, $property, $selector, $value) {
 }
 
 function DeleteProfileProperty($property, $selector="") {
-  global $db, $p_slice_id, $err;
+  global $db, $p_slice_id, $err, $uid;
   # first delete the records in order we can add new
   if( $selector )
     $add = " AND selector = '$selector' ";
 
   $SQL = "DELETE FROM profile WHERE property='$property'
+                                AND uid='$uid'
                                 AND slice_id='$p_slice_id' $add";
   if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
     $err["DB"] = MsgErr("Can't delete profile");
@@ -86,7 +87,7 @@ function PrintRule($rule) {
       PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $val); 
       break;
     case 'hide':
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selecor']]['name']); 
+      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name']); 
       break;
     case 'fill':
     case 'hide&fill':
@@ -237,7 +238,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     }  
     if( eval('document.fr.fld'+n) != null ) {
       si = eval('document.fr.fld'+n+'.options.selectedIndex');
-      alert( si );
+//      alert( si );
       document.sf.field_id.value = eval('document.fr.fld'+n+'.options['+si+'].value');
     }  
     document.sf.submit();
@@ -255,7 +256,7 @@ echo $Msg;
 echo "
  <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
   <tr>
-   <td class=tabtit><b>&nbsp;". L_PROFILE_HDR ."</b></td>
+   <td class=tabtit><b>&nbsp;". L_PROFILE_HDR ." - $uid</b></td>
   </tr>
   <tr>
    <td>
@@ -313,6 +314,9 @@ echo "</form>
 
 /*
 $Log$
+Revision 1.4  2002/01/10 13:56:58  honzam
+fixed bug in user profiles
+
 Revision 1.3  2002/01/04 13:16:43  honzam
 new hide fulltext parameter for slice (good for discussion)
 

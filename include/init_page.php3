@@ -70,10 +70,8 @@ if($free) {           // anonymous login
 
 $auth->relogin_if($relogin); // relogin if requested
 
-if( $new_sliceid ) {
+if( $new_sliceid )
   $slice_id = $new_sliceid;
-  unset( $r_profile );
-}  
 
 if( $Add_slice )
   unset($slice_id);
@@ -175,6 +173,7 @@ if( !$Add_slice AND !$New_slice ) {
     }
 
     # Get user profile for the slice
+    unset( $r_profile );
     $SQL= " SELECT * FROM profile 
              WHERE slice_id='$p_slice_id' 
                AND (uid='". $auth->auth["uid"] ."' OR uid='*')";
@@ -219,6 +218,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.18  2002/01/10 13:56:58  honzam
+fixed bug in user profiles
+
 Revision 1.17  2001/12/18 12:19:14  honzam
 new user profile feature, scripts are now "magic_quotes" independent - no matter how it is set
 
