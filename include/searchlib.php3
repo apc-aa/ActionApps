@@ -76,7 +76,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
       $arr = explode( ",", $querystring );
       return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
     case 'ISNULL': 
-      return ( " ($field IS NULL) ");
+      return ( " (($field IS NULL) OR ($field='0')) ");
     default:
       $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ? 
                                  substr( $querystring, 1, -1 ) : $querystring ;
@@ -830,6 +830,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.25  2002/02/05 21:49:19  honzam
+fixed bug in searching in boolean fields
+
 Revision 1.24  2002/01/10 14:08:09  honzam
 sorting and querying blank fields now fixed (bug 492331)
 
