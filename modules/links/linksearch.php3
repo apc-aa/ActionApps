@@ -3,7 +3,7 @@ require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
 require_once $GLOBALS['AA_BASE_PATH']. "modules/links/constants.php3";
 
 if (!defined ("LINKS_LINKSEARCH_INCLUDED"))
-   	  define ("LINKS_LINKSEARCH_INCLUDED",1);
+      define ("LINKS_LINKSEARCH_INCLUDED",1);
 else return;
 
 //$Id$
@@ -34,8 +34,8 @@ http://www.apc.org/
  */
 function IsFieldSupported($field_info, $v, $param) {
     $field = $field_info['field'];
-      // param is 'type' for this function   
-    return ( ($param != 'unasigned' ) OR 
+      // param is 'type' for this function
+    return ( ($param != 'unasigned' ) OR
              ( (substr($field, 0, 12) =='links_links.') OR
                (substr($field, 0, 14) =='links_regions.') OR
                (substr($field, 0, 15) =='links_link_reg.') OR
@@ -49,17 +49,17 @@ function IsFieldSupported($field_info, $v, $param) {
  *  @param string $cat_path - path to category (like '1,4,78' for category 78)
  *  @param array  $conds    - search conditions (see FAQ)
  *  @param array  $sort     - sort fields (see FAQ)
- *  @param bool   $subcat   - search in the specified category only, or search 
+ *  @param bool   $subcat   - search in the specified category only, or search
  *                            also in all subcategories
  *  @param string $type     - type is something like bins as known from items
  *                            type is one of the following:
- *                            'app'       - approved (normal shown links) 
+ *                            'app'       - approved (normal shown links)
  *                            'changed'   - links containing unapproved changes
  *                            'new'       - not approved links
  *                            'unasigned' - links which belongs to no category
  *                                          (cat_path param is not used here)
  *                            'folderX'   - links in folder X (where X is folder
- *                                          number) - links in folder > 1 are 
+ *                                          number) - links in folder > 1 are
  *                                          hidden to public users
  *                            'all'       - all links in any folder
  *  @global int  $QueryIDsCount - set to the count of IDs returned
@@ -132,7 +132,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
         default:          $folder = Links_GetFolder($type);
                           // folder string (like folder3) contains folder number
 
-                          $SQL .= " AND (links_link_cat.proposal = 'n') ";
+                          // $SQL .= " AND (links_link_cat.proposal = 'n') ";
                           $SQL .= ($folder ?
                                       " AND (links_links.folder = $folder) " :
                                       " AND (links_links.folder < 2) " );
@@ -148,11 +148,11 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
  *  @param string $cat_path - path to category (like '1,4,78' for category 78)
  *  @param array  $conds    - search conditions (see FAQ)
  *  @param array  $sort     - sort fields (see FAQ)
- *  @param bool   $subcat   - search in the specified category only, or search 
+ *  @param bool   $subcat   - search in the specified category only, or search
  *                            also in all subcategories
  *  @param string $type     - type is something like bins as known from items
  *                            type is one of the following:
- *                            'app'       - approved (normal shown categories) 
+ *                            'app'       - approved (normal shown categories)
  *                            'all'       - all categories in any folder
  *  @global int  $QueryIDsCount - set to the count of IDs returned
  *  @global bool $debug=1       - many debug messages
@@ -177,7 +177,7 @@ function Links_QueryCatZIDs($cid, $conds, $sort="", $type="app") {
     $order_by_sql = MakeSQLOrderBy(   $CATEGORY_FIELDS, $sort,  $foo);
 
     $SQL  = "SELECT DISTINCT links_categories.id  FROM links_categories, links_cat_cat
-              WHERE links_categories.id = links_cat_cat.what_id 
+              WHERE links_categories.id = links_cat_cat.what_id
                 AND links_cat_cat.category_id = $cid ";
 
     $SQL .=  $where_sql . $order_by_sql;
