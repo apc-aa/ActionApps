@@ -497,8 +497,8 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
 
   # the ststus_code must be set in order we can use email_notify() 
   # in StoreItem() function.
-  if( !$insert AND !$content4id['status_code.....'][0]['value'] ); 
-    $content4id['status_code.....'][0]['value'] = $oldcontent4id['status_code.....'][0]['value'];
+  if( !$insert AND !$content4id['status_code.....'][0]['value'] )
+    $content4id['status_code.....'][0]['value'] = max(1,$oldcontent4id['status_code.....'][0]['value']);
 
   return $content4id;
 }                                             
@@ -560,6 +560,8 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     $itemvarset->add("edited_by", "quoted", default_fnc_uid(""));
     $SQL = "UPDATE item SET ". $itemvarset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
   } else {
+    if( $itemvarset->get('status_code') < 1 )
+      $itemvarset->set('status_code', 1);
     $itemvarset->add("id", "unpacked", $id);
     $itemvarset->add("slice_id", "unpacked", $slice_id);
     $itemvarset->add("flags", "quoted", "");
@@ -706,6 +708,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.20  2001/12/21 11:44:56  honzam
+fixed bug of includes in e-mail notify
+
 Revision 1.19  2001/12/20 00:27:18  honzam
 Fixed bugs in notify - now works with PHP3
 

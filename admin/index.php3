@@ -26,6 +26,7 @@ require $GLOBALS[AA_INC_PATH] . "pagecache.php3";
 require $GLOBALS[AA_INC_PATH] . "item.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
 require $GLOBALS[AA_INC_PATH] . "itemfunc.php3";
+require $GLOBALS[AA_INC_PATH] . "notify.php3";
 require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
 require $GLOBALS[AA_INC_PATH] . "formutil.php3";
 
@@ -557,6 +558,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.31  2001/12/21 11:44:55  honzam
+fixed bug of includes in e-mail notify
+
 Revision 1.30  2001/12/18 11:42:21  honzam
 new user profile feature
 

@@ -51,6 +51,7 @@ require $GLOBALS[AA_INC_PATH]."xml_fetch.php3";
 require $GLOBALS[AA_INC_PATH]."xml_rssparse.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
+require $GLOBALS[AA_INC_PATH]."notify.php3";
 
 //---------------------------------------------------------
 
@@ -282,6 +283,9 @@ while (list ($feed_id,$feed) = each($feeds)) {
 }
 /*
 $Log$
+Revision 1.3  2001/12/21 11:44:56  honzam
+fixed bug of includes in e-mail notify
+
 Revision 1.2  2001/12/18 11:37:39  honzam
 scripts are now "magic_quotes" independent - no matter how it is set
 

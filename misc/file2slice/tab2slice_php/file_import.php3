@@ -60,6 +60,7 @@ require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
+require $GLOBALS[AA_INC_PATH]."notify.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
@@ -209,6 +210,9 @@ while (list ($line_num, $line) = each ($import)) {
 	
 /*
 $Log$
+Revision 1.3  2001/12/21 11:44:56  honzam
+fixed bug of includes in e-mail notify
+
 Revision 1.2  2001/12/18 12:26:10  honzam
 scripts are now "magic_quotes" independent - no matter how it is set
 

@@ -24,8 +24,8 @@ http://www.apc.org/
 #
 
 
-require $GLOBALS[AA_INC_PATH]."item.php3";
-require $GLOBALS[AA_INC_PATH]."view.php3";
+if( !defined("ITEM_PHP3_INC") ) { include $GLOBALS[AA_INC_PATH]."item.php3"; }
+if( !defined("VIEW_PHP3_INC") ) { include $GLOBALS[AA_INC_PATH]."view.php3"; }  
 
 // notify users of an event
 function email_notify($slice_id, $event, $item_id, $extra = ""){
@@ -87,6 +87,9 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
 
 /*
 $Log$
+Revision 1.3  2001/12/21 11:44:56  honzam
+fixed bug of includes in e-mail notify
+
 Revision 1.2  2001/12/20 00:27:18  honzam
 Fixed bugs in notify - now works with PHP3
 

@@ -127,6 +127,7 @@ require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
+require $GLOBALS[AA_INC_PATH]."notify.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
@@ -446,6 +447,9 @@ else
 
 /*
 $Log$
+Revision 1.2  2001/12/21 11:44:56  honzam
+fixed bug of includes in e-mail notify
+
 Revision 1.1  2001/12/18 11:29:40  honzam
 database conversion script - working version
 

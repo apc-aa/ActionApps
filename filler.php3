@@ -54,6 +54,7 @@ require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
+require $GLOBALS[AA_INC_PATH]."notify.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
@@ -170,6 +171,9 @@ if( count($err) > 1)
 
 /*
 $Log$
+Revision 1.5  2001/12/21 11:44:55  honzam
+fixed bug of includes in e-mail notify
+
 Revision 1.4  2001/12/18 11:37:38  honzam
 scripts are now "magic_quotes" independent - no matter how it is set
 

@@ -31,6 +31,7 @@ require $GLOBALS[AA_INC_PATH] . "pagecache.php3";
 require $GLOBALS[AA_INC_PATH] . "item.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
 require $GLOBALS[AA_INC_PATH] . "itemfunc.php3";
+require $GLOBALS[AA_INC_PATH] . "notify.php3";
 require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
 require $GLOBALS[AA_INC_PATH] . "formutil.php3";
 
@@ -235,6 +236,9 @@ echo "<input type='Text' name='admin_search' size=20
 
 /*
 $Log$
+Revision 1.4  2001/12/21 11:44:56  honzam
+fixed bug of includes in e-mail notify
+
 Revision 1.3  2001/11/26 11:03:43  honzam
 sort slice/constant in listbox by name
 
