@@ -22,6 +22,8 @@ http://www.apc.org/
 // (c) Jakub Adámek, Econnect, December 2002
 
 require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item_content.php3";
+require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
 require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 require_once $GLOBALS["AA_INC_PATH"]."htmlMimeMail/htmlMimeMail.php";
 
@@ -155,67 +157,77 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
     return send_mail_from_table_inner ($mail_id, $to, $item);
 }
 
-// ---------------------------------------------------------------------------
+/** Sends mail defined in e-mail template id $mail_id to all $recipients.
+ *  Mail template is unaliased using aliases and data form item identified by
+ *  $zids (often Reader item). The recipients are Reders itself, by default.
+ */
+function send_mail_to_reader($mail_id, $zids, $recipient='aa_field_email') {
+    $mail_count = 0;
+    for( $i=0; $i<$zids->count(); $i++) {
+        $item = GetItemFromId($zids->longids($i));
+        $to   = (($recipient=='aa_field_email') ? $item->getval(FIELDID_EMAIL) : $recipient);
+        $mail_count += send_mail_from_table_inner($mail_id, $to, $item);
+    }
+    return $mail_count;
+}
 
-function send_mail_from_table_inner ($mail_id, $to, $item, $aliases = null) {
-    global $db, $LANGUAGE_CHARSETS;
+/** Sends mail defined in e-mail template id $mail_id to all e-mails listed
+ *  in $to (array ir string) and ulalias aliases according to $item and possibly
+ *  additional $aliases
+ */
+function send_mail_from_table_inner($mail_id, $to, $item, $aliases = null) {
+    global $db, $LANGUAGE_CHARSETS, $err;
     // email has the templates in it
-    $db->query("SELECT * FROM email WHERE id = $mail_id");
-    if (!$db->next_record())
-        return false;
-    $record = $db->Record;
-    reset ($record);
+    $record = GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
+    if (!$record) return false;
 
     /* Old version - Jakub's
     while (list ($key, $value) = each ($record))
         $record[$key] = $item->unalias ($value);
     */
     // Mitra's version, - should be working now
-    while (list ($key, $value) = each ($record)) {
+    foreach ( $record as $key => $value) {
         $level = 0; $maxlevel = 0;
-
-        $record[$key] = new_unalias_recurent($value, "", $level,
-            $maxlevel, $item, null, $aliases);
+        $record[$key] = new_unalias_recurent($value, "", $level, $maxlevel, $item, null, $aliases);
     }
 
-    if (! is_array ($to))
-        $tos = array ($to);
-    else $tos = $to;
-
+    $tos = (is_array($to) ? $to : array ($to));
     $sent = 0;
 
+    /*
     if ($tos[0] == "jakubadamek@ecn.cz")
-        $record["body"] .= "<br>Text version is:<hr>" .
-            nl2br(HtmlEntities(html2text ($record["body"])));
+        $record["body"] .= "<br>Text version is:<hr>". nl2br(HtmlEntities(html2text ($record["body"])));
+    */
 
     $mail = new HtmlMail;
-    if ($record["html"])
+    if ($record["html"]) {
         $mail->setHtml ($record["body"], html2text ($record["body"]));
-    else $mail->setText (html2text( nl2br($record["body"])));
+    } else {
+        $mail->setText (html2text( nl2br($record["body"])));
+    }
     $mail->setSubject ($record["subject"]);
     $mail->setBasicHeaders ($record, "");
     $mail->setTextCharset ($LANGUAGE_CHARSETS [$record["lang"]]);
     $mail->setHtmlCharset ($LANGUAGE_CHARSETS [$record["lang"]]);
 
     foreach ($tos as $to) {
-        if (! $to)
+        if (!$to OR !ValidateInput("mail", _m('User mail') , $to, $err, true, 'email')) {
             continue;
+        }
 
         if (! $GLOBALS["EMAILS_INTO_TABLE"]) {
             #huhl("Sending mail $to");
-            if ($mail->send (array ($to)))
-                $sent ++;
-        }
-        else {
-            if ($db->query ("
+            if ($mail->send( array($to) )) {
+                $sent++;
+            }
+        } elseif ($db->query ("
                 INSERT INTO email_sent (email_id, send_to, subject, headers, body, text_body, created_at)
                 VALUES ($mail_id, '".addslashes($to)."', '".addslashes($record["subject"])."',
                    '','".addslashes($record["body"])."','".
-                   addslashes(html2text($record["body"]))."', ".time().")"))
-                $sent ++;
+                   addslashes(html2text($record["body"]))."', ".time().")")) {
+            $sent++;
         }
     }
-
     return $sent;
 }
 

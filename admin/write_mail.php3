@@ -33,126 +33,17 @@ require_once $GLOBALS["AA_INC_PATH"]. "searchbar.class.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 require_once $GLOBALS["AA_INC_PATH"]. "varset.php3";
 
-/** Print one row with one 'sliceexport' radiobuttons */
-function PrintRadioBookmarkRow( $name, $value, $safe=true, $bookparams="") {
-    global $slice_id, $items;
-
-    static $checked = ' checked';  // mark first option when no $group selected
-
-    if ( isset( $GLOBALS['group'] ) ) {
-        $checked = (((string)$GLOBALS['group'] == (string)$value) ? ' checked' : '');
-    }
-
-    if ( $safe ) $name = safe($name);
-    echo "
-    <tr>
-      <td align=center><input type=\"radio\" name=\"group\" value=\"$value\" $checked></td>";
-      if ((string)$value == (string)"testuser") {
-          echo "<td colspan=6>";
-      } else {
-          echo "<td>";
-      }
-
-      echo "$name</td>";
-      if (is_array($bookparams)) {
-          $event = getLogEvents("BM_%", "", "", false, false, $bookparams['id']);
-          $lastused = getLogEvents("EMAIL_SENT", "", "", false, false, (string)$value);
-          if (is_array($event)) {
-              foreach ($event as $evkey => $evval) {
-                  if ($evval["type"] == "BM_CREATE") {
-                      $created = $evval["time"];
-                      $createdby = $evval["user"];
-                  }
-              }
-              rsort($event);
-              $last_edited = $event[key($event)]["time"];
-              echo "<td>". perm_username($createdby) . "</td><td>". date("j.n.Y G:i:s",$created). "</td>";
-              echo "<td>". date("j.n.Y G:i:s",$last_edited). "</td>";
-             if (is_array($lastused)) {
-                 rsort($lastused);
-                 $last_used = $lastused[key($lastused)]["time"];
-                 echo "<td>". date("j.n.Y G:i:s",$last_used). "</td>";
-             }
-          } else {
-              echo "<td colspan=4></td>";
-          }
-      }
-      echo "<td>";
-      if ((string)$value != (string)"testuser") {
-          $grp = $value;
-          $js = "OpenUsershowPopup('".get_admin_url("usershow.php3")."&sid=".$slice_id."&group=".$grp."')";
-/*          if ((string)$value == (string)"user") {
-              $js .= "&group=user";
-              foreach ($items as $key=>$it) {
-                  $js .= "&items[$key]";
-              }
-          } else {
-              $js .= "&group=$value";
-          }
-          $js.= "', 'user_popup', 'scrollbars=1,resizable=1,width=700,height=600');"; */
-          echo "<a href=\"javascript:$js;\">". _m("View Recipients"). "</a>";
-      }
-    echo "</td>
-    </tr>";
-    $checked = '';
-}
-
-function TestMailAddress($mail, &$good, &$bad) {
-    global $err;
-    if ( ValidateInput("mail", _m('User mail') , $mail, $err, true, 'email') ) {
-        $good[] = $mail;
-    } else {
-        $bad[] = $mail;  // used for listing bad mails
-    }
-}
-
-/** Gets list of good_mails and bad_mails form the form or boormark, ...
- *  Values returned in $good_mail and $bad_mail arrays */
-function GetMails2Send($group,$testemail,&$items,&$searchbar,$slice_id,&$good_mail,&$bad_mail ) {
-    global $err;
-    if ( $group == 'testuser') {
-        TestMailAddress($testemail, $good_mail, $bad_mail);
-    } else {
-        // --- get user ids ---
-        if ( $group == 'user' ) {  // user specified users
-            $zids = new zids(null, 'l');
-            $zids->set_from_item_arr($items);
-        } else {                   // user defined by bookmark
-            $slice = new slice($slice_id);
-            $searchbar->setFromBookmark($group);
-            $conds = $searchbar->getConds();
-            $zids=QueryZIDs($slice->fields('record'), $slice_id, $conds, "", "", 'ACTIVE');
-        }
-        // --- get user emails ---
-        $content = GetItemContent($zids);
-        if ( isset($content) AND is_array($content) ) {
-            foreach ( $content as $content4id ) {
-                $mail = $content4id[FIELDID_EMAIL][0]['value'];
-                TestMailAddress($mail, $good_mail, $bad_mail);
-            }
-        }
-    }
-}
-
-
 $searchbar = new searchbar();   // mainly for bookmarks
-
 $items=$chb;
 
-if ( !$send AND !$list ) {               // for the first time - directly from item manager
+if ( !$send ) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
     unset($r_wm_state);       // clear if it was filled
     $r_wm_state['items'] = $items;
     $lang = get_mgettext_lang();
     $html = 1;
 } else {
-    $items = $r_wm_state['items'];
-    $good_mail = array();  // array of good (== syntax validated) mails
-    $bad_mail = array();
-    // --- get user's e-mails - returned in $good_mail and $bad_mail arrays --
-    GetMails2Send( $group, $testemail, $items, $searchbar, $slice_id, $good_mail, $bad_mail );
-    $good_mail_count = count($good_mail);
-    $users_count = $good_mail_count + count($bad_mail);
+    $items     = $r_wm_state['items'];  // session variable holds selected items fmom item manager
     if ( $send ) {    // we really want to send email - so store template
         do {
             // --- write the e-mail template to the table ---
@@ -187,25 +78,36 @@ if ( !$send AND !$list ) {               // for the first time - directly from i
 
             $mail_id = get_last_insert_id($db, 'email');  // get mail template id
 
-            if ( ($good_mail_count<1) OR !is_numeric($mail_id) )  {
-                $err["mail"] = MsgErr( _m("No user or template set") );
+            if ( !is_numeric($mail_id) )  {
+                $err["mail"] = MsgErr( _m("No template set (which is strange - template was just written to the database") );
                 break;
             }
 
             // --- send emails
-            $mails_sent = send_mail_from_table ($mail_id, $good_mail);
-            $Msg = MsgOK(_m("Email sucessfully sent (Users: %1, Valid emails: %2, Emails sent: %3)",
-                                               array($users_count, $good_mail_count, $mails_sent)));
+            if ( $group == 'testuser') {
+                $mails_sent  = send_mail_from_table($mail_id, $testemail);
+                $users_count = 1;
+            } else {
+                // get reader's zids
+                $zids = getZidsFromGroupSelect($group, $items, $searchbar);
+                // following functionality could be extend by adding third
+                // parameter $recipient (for testing e-mail)
+                $mails_sent  = send_mail_to_reader($mail_id, $zids);
+                $users_count = $zids->count();
+            }
+            $Msg = MsgOK(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2)",
+                                               array($users_count, $mails_sent)));
 
-            if ((string)$group == (string)"user") {
+            if ((string)$group == (string)"sel_item") {
                 $sel = "LIST";
             } elseif ((string)$group == (string)"testuser") {
                 $sel = "TEST";
             } else {
-                $sel = $group;
+                $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
             }
-            writeLog("EMAIL_SENT",array($users_count, $good_mail_count, $mails_sent),$sel);
+            writeLog("EMAIL_SENT",array($users_count, $mails_sent),$sel);
             // remove temporary email template from database
+            // TODO - store the tamplate and allow user to reuse it
             $SQL = "DELETE FROM email WHERE id='$mail_id'";
             if( !$db->tquery($SQL)) {
                 $err["DB"] = MsgErr( _m("Can't delete email template") );
@@ -233,37 +135,13 @@ echo $Msg;
 $slice = new slice($slice_id);
 
 FrmTabCaption( (is_array($items) ? _m("Recipients") : ( _m("Stored searches for ").$slice->name()) ));
-if( isset($items) AND is_array($items) ) {
-    PrintRadioBookmarkRow( _m('Selected users').' ('.count($items).')', 'user');
-} else {
-    echo "<tr><td></td><td><b>"._m("Group Name")."</b></td><td><b>". _m("Created by"). "</td><td><b>"
-         ._m("Created on"). "</b></td><td><b>". _m("Last updated") ."</b></td><td><b>"._m("Last used"). "</b></td></tr>";
-    $book_arr = $searchbar->getBookmarkNames();
-    if ( isset($book_arr) AND is_array($book_arr) ) {
-        foreach ( $book_arr as $k => $v ) {
-            $bookparams = $searchbar->getBookmarkParams($k);
-            PrintRadioBookmarkRow( $v, $k, true, $bookparams);
-        }
-    }
-}
 
-PrintRadioBookmarkRow( '<input type="text" name="testemail" value="'.$testemail.'" size="80"> '._m('Test email address'), 'testuser', false);
-/*
-if ($list) {  // list users
-    FrmTabSeparator( _m("User's e-mail list (Users: %1, Valid emails: %2)",
-                                        array($users_count, $good_mail_count)));
-    if ( isset($good_mail) AND is_array($good_mail) ) {
-        foreach ( $good_mail as $mail ) {
-            FrmTabRow(array($mail, _m('valid')));
-        }
-    }
-    if ( isset($bad_mail) AND is_array($bad_mail) ) {
-        foreach ( $bad_mail as $mail ) {
-            FrmTabRow(array($mail, _m('invalid')));
-        }
-    }
-}
-*/
+$messages['view_items']     = _m("View Recipients");
+$messages['selected_items'] = _m('Selected users');
+$additional[]               = array( 'text'    => '<input type="text" name="testemail" value="'.$testemail.'" size="80"> '._m('Test email address'),
+                                     'varname' => 'testuser');
+FrmItemGroupSelect( $items, $searchbar, 'users', $messages, $additional);
+
 FrmTabSeparator( _m('Write the email') );
 
 FrmInputText(  'subject',     _m('Subject'),           dequote($subject),     254, 80, true);
@@ -272,27 +150,16 @@ FrmInputText(  'header_from', _m('From (email)'),      dequote($header_from), 25
 FrmInputText(  'reply_to',    _m('Reply to (email)'),  dequote($reply_to),    254, 80, false);
 FrmInputText(  'errors_to',   _m('Errors to (email)'), dequote($errors_to),   254, 80, false);
 FrmInputText(  'sender',      _m('Sender (email)'),    dequote($sender),      254, 80, false);
-FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),            $lang, false);
-FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $html, false);
+FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),            $lang, true);
+FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $html, true);
 
 FrmTabEnd(array( 'send' =>array('type'=>'submit', 'value'=>_m('Send')),
-//                 'list' =>array('type'=>'submit', 'value'=>_m('List users')),
                  'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')),
           $sess, $slice_id);
 
-
-echo '
-  </form>
-  <form name="itform" method="post">';
-  if (is_array($items))
-    foreach ($items as $key=>$it) {
-      echo '<input type="hidden" name="items['.$key.']" value="">';
-    }
-echo '
-  </form>
- </body>
-</html>';
+// list selected items to special form - used by manager.js to show items (recipients)
+echo "\n  </form>";
+FrmItemListForm($items);
+echo "\n  </body>\n</html>";
 page_close();
 ?>
-
-
