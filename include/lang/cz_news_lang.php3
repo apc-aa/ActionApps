@@ -3029,31 +3029,39 @@ $_m["No comment was selected"]
 
 # include/loginform.inc, row 9
 $_m["Welcome!"]
-  = "";
+  = "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.6";
 
 # include/loginform.inc, row 11
 $_m["Welcome! Please identify yourself with a username and a password:"]
-  = "";
+  = "19. 3. 2003 - Právì jsme zveøejnili novou verzi Toolkitu. Verze 2.6 má
+     spoustu <a href=\"http://econnect.ecn.cz/index.stm?apc=e31x1-127123\">vylepšení</a>.
+     <br>Narazíte-li na vìc, která nefunguje úplnì stoprocentnì, dejte nám prosím 
+     <a href=\"mailto:actionapps@ecn.cz\">vìdìt</a>.<br><br>
+     <br>Vítejte! Pøihlašte se prosím Vaším jménem a heslem
+     <br>(Welcome! Log in by your name and password):";
 
 # include/loginform.inc, row 20
 $_m["Username:"]
-  = "";
+  = "Uivatelské jméno<br>(User name):  ";
 
 # include/loginform.inc, row 24
 $_m["Type your username or mail"]
-  = "";
+  = " ";
 
 # include/loginform.inc, row 27
 $_m["Password:"]
-  = "";
+  = "Heslo<br>(Password):";
 
 # include/loginform.inc, row 44
 $_m["Please try again!"]
-  = "";
+  = "Zkuste to znovu, prosím!<br>Please try again!";
 
 # include/loginform.inc, row 47
 $_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>."]
-  = "";
+  = "Pokud jste si jisti, e zadáváte správné jméno a heslo, obrate se prosím 
+     na <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.
+     <br>If you are sure you have typed the correct password, please e-mail 
+     <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.";
 
 # include/menu.php3, row 61
 $_m["View site"]
@@ -3062,7 +3070,7 @@ $_m["View site"]
 # include/menu.php3, row 72, 73, 129
 # other translations: Správa zpráv
 $_m["Item Manager"]
-  = "Administrace";
+  = "Správa zpráv";
 
 # include/menu.php3, row 79
 $_m["Slice Admin"]

@@ -21,6 +21,8 @@ http://www.apc.org/
 
 # discussion.php3 - discussion utility functions
 
+require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
+
 # discussion images
 define ("D_EXPAND_IMG", 0);
 define ("D_HLINE_IMG", 1);
@@ -351,17 +353,19 @@ function send2mailList ($d_item_id, $new_id) {
                 $mail [$part] = $CurItem->get_item();
             }
             
-            $mailheaders = $mail["from"] ? "From: $mail[from]\r\n" : "";
-            $mailheaders .= $mail["reply_to"] ? "Reply-To: $mail[reply_to]\r\n" : "";
-            $mailheaders .= $mail["errors_to"] ? "Errors-To: $mail[errors_to]\r\n" : "";
-            $mailheaders .= $mail["sender"] ? "Sender: $mail[sender]\r\n" : "";
+            $mail = new HtmlMail;
+            $mail->setSubject ($mail["subject"]);
+            $mail->setHtml ($mail["body"], html2text ($mail["body"]));
+            if ($mail["from"])      $mail->setHeader ("From", $mail["from"]);
+            if ($mail["reply_to"])  $mail->setHeader ("Reply-To", $mail["reply_to"]);
+            if ($mail["errors_to"]) $mail->setHeader ("Errors-To", $mail["errors_to"]);
+            if ($mail["sender"])    $mail->setHeader ("Sender", $mail["sender"]);
                         
             $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
                          WHERE item.id='".q_pack_id($d_item_id)."'");
             $db->next_record();                         
-            global $LANGUAGE_CHARSETS;                         
-            $charset = $LANGUAGE_CHARSETS [substr ($db->f("lang_file"),0,2)];
-            mail_html_text ($maillist, $mail["subject"], $mail["body"], $mailheaders, $charset, 0);
+            $mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
+            $mail->send (array ($maillist));            
         }
     }
 }

@@ -122,9 +122,9 @@ function SendErrorPage($txt) {
     if( !$GLOBALS["err_url"] ) {
         echo HtmlPageBegin("");
         echo "</head><body>";
-        if( is_array( $txt ) )
-            PrintArray($txt);    
-        else echo $txt;
+        if( is_array( $txt ) ) {
+            PrintArray($txt);   
+        } else echo $txt;
         echo "</body></html>";
         exit;
     }

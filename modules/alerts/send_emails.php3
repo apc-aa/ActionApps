@@ -81,7 +81,7 @@ function showCollectionAddOns ()
         <INPUT TYPE="text" NAME="example[email]" size="40" 
             VALUE="'.$example["email"].'">'.'&nbsp;';    
     echo _m("as if")."&nbsp;";
-    FrmSelectEasy("example[howoften]", get_howoften_options(false), $example["howoften"]);
+    FrmSelectEasy("example[howoften]", get_howoften_options(true), $example["howoften"]);
     echo '</B> <INPUT TYPE=SUBMIT NAME="example[go]" VALUE="'._m("Go!").'"></FORM>';
     
     // SEND EMAILS
@@ -106,7 +106,7 @@ function showCollectionAddOns ()
     echo "</table>";
     
     echo _m("Send now alerts to all users subscribed to ").'
-        '; FrmSelectEasy("fire[howoften]", get_howoften_options(false), $fire["howoften"]);
+        '; FrmSelectEasy("fire[howoften]", get_howoften_options(true), $fire["howoften"]);
     echo " "._m("digest").'</B>
         <INPUT TYPE=SUBMIT NAME="fire[fire]" VALUE="'._m("Go!").'"><BR><B>'
         ._m("Warning: This is a real command!")

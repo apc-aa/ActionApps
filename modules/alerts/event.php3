@@ -1,5 +1,11 @@
 <?php
-//$Id$
+/** Event handlers called from include/event_handler.php3 
+ * 
+ * @package Alerts
+ * @version $Id$
+ * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, March 2003
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+*/
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
@@ -24,6 +30,9 @@ require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 require_once "util.php3";
 require_once "alerts_sending.php3";
 
+/** Sends welcome e-mail to newly subscribed readers, which means new
+*   "items" appearing in a Reader Management Slice.
+*/
 function AlertsSendWelcome( $item_id, $slice_id, &$itemContent ) {
     $mydb = new DB_AA;
 
@@ -48,6 +57,15 @@ function AlertsSendWelcome( $item_id, $slice_id, &$itemContent ) {
     }
 }            
 
+/** Sends instant Alert when a new item appears in any slice which is 
+*   involved by selections in some of its "Alerts Selection Set" view
+*   in an Alert module. 
+*
+*   Only the Active items are sent, not the Pending ones. The Pending items
+*   are sent when they become active
+*   by the regular call from the cron.php3 script in the same way
+*   as daily, weekly or monthly alerts.
+*/
 function AlertsSendInstantAlert( $item_id, $slice_id ) {
     global $db;
     
@@ -66,6 +84,9 @@ function AlertsSendInstantAlert( $item_id, $slice_id ) {
         if (is_array ($collection_ids)) {
             initialize_last();
             send_emails ("instant", $collection_ids, "", true, $item_id);
+            // We must reset moved2active so that the item is not re-sent on update.
+            $db->query ("UPDATE item SET moved2active = 0 WHERE item_id='"
+                .q_pack_id($item_id)."'");
         }
     }
 }

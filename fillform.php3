@@ -116,7 +116,7 @@ function RestoreVariables() {
 RestoreVariables();
 
 // core JavaScript functions
-echo "<SCRIPT language=javascript src='".$AA_INSTAL_PATH."javascript/fillform.js'></SCRIPT>";
+echo "<SCRIPT language=javascript src='".AA_INSTAL_URL."javascript/fillform.js'></SCRIPT>\n";
 
 # init used objects
 $db = new DB_AA;
@@ -310,13 +310,13 @@ function fillForm () {
 	is enough. */
 
 function fillFormWithContent ($oldcontent4id) {
-	global $form, $conds, $dateConds, $my_item_id;
+	global $form, $suffix, $conds, $dateConds, $my_item_id;
 	
     $timezone = getTimeZone();
 
     echo $GLOBALS["jsstart"];
 	echo "
-    var fillform_fields = new Array (\n";
+    var fillform_fields".$suffix." = new Array (\n";
 	
     $first = true;
 	if (is_array ($oldcontent4id)) {
@@ -344,10 +344,10 @@ function fillFormWithContent ($oldcontent4id) {
 	
     echo "); 
     
-    function fillForm () { 
+    function fillForm".$suffix."() { 
         setControl ('$form','my_item_id','$my_item_id');
-        for (i=0; i < fillform_fields.length; ++i) { 
-            var item = fillform_fields[i]; 
+        for (i=0; i < fillform_fields".$suffix.".length; ++i) { 
+            var item = fillform_fields".$suffix."[i]; 
             setControlOrAADate (item[0],item[1],item[2],item[3],item[4],item[5]); 
         } 
     }\n";
