@@ -7,10 +7,10 @@
  * @package Utils
  * @version $Id$
  * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications 
+ * @copyright (c) 2002-3 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2003 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2003 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -28,11 +28,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/** Appends any number of QUERY_STRING (separated by &) parameters 
+/** Appends any number of QUERY_STRING (separated by &) parameters
 *   to given URL, using apropriate ? or &. */
 function con_url($Url,$Params){
-    return strstr($Url, '?') ? $Url."&".$Params : $Url."?".$Params;
-} 
+    list( $path,$fragment ) = explode( '#', $Url, 2 );
+    return $path . (strstr($path, '?') ? "&" : "?"). $Params. ($fragment ? '#'.$fragment : '') ;
+}
 
 /// Move to another page (must be before any output from script)
 function go_url($url, $add_param="") {
@@ -41,19 +42,19 @@ function go_url($url, $add_param="") {
         page_close();
     if( $add_param != "" )
         $url = con_url( $url, rawurlencode($add_param));
-    // special parameter for Netscape to reload page        
-    $netscape = (rXn=="") ? "rXn=1" : "rXn=".++$rXn;   
+    // special parameter for Netscape to reload page
+    $netscape = (rXn=="") ? "rXn=1" : "rXn=".++$rXn;
     header("Status: 302 Moved Temporarily");
-	header("Location: ". con_url($url,$netscape));
- 	exit;
+    header("Location: ". con_url($url,$netscape));
+    exit;
 }
 
 /// Note this doesn't appear to be used (mitra)
 function go_url_javascript ($to_go_url) {
-	echo "
+    echo "
     <SCRIPT language=JavaScript>
     <!--\n
-   		document.location = \"".$sess->url($to_go_url)."\";\n
+        document.location = \"".$sess->url($to_go_url)."\";\n
     // -->\n
     </SCRIPT>";
 }
