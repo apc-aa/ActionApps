@@ -32,7 +32,7 @@ require $GLOBALS[AA_INC_PATH] . "locauth.php3";
 require $GLOBALS[AA_INC_PATH] . "scroller.php3";  
 
 $new_sliceid = $slice_id;
-
+ 
 if( $encap ) // we can't use AA_CP_Session - it uses more Header information
   page_open(array("sess" => "AA_SL_Session", "auth" => "AA_CP_Auth"));
  else 
@@ -143,16 +143,31 @@ if( !$Add_slice AND !$New_slice ) {
 
   // The config file not loaded -> the slice type was changed
   if( CONFIG_FILE != $ActionAppConfig[$r_config_type[$slice_id]][file] ) {
+//echo CONFIG_FILE . "!= ". $ActionAppConfig[$r_config_type[$slice_id]][file];
     page_close();             // save variables
     // Netscape does not reload when URL does not change
-    $netscape = (r=="") ? "r=1" : "r=".++$r;
-    $url_foo = con_url($sess->url($PHP_SELF),$netscape);
-    header("Location: $url_foo");
+
+    $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+
+    if( $free )  // anonymous login
+      if( $encap ) {
+        $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+        echo '<SCRIPT Language="JavaScript"><!--
+                document.location = "'. $sess->url($to_go_url) .'";
+              // -->
+             </SCRIPT>';
+      } else
+        go_url( $sess->url($PHP_SELF));
+    else 
+      go_url( $sess->url($PHP_SELF));
     exit;
   }
 }
 /*
 $Log$
+Revision 1.7  2000/11/20 16:45:58  honzam
+fixed bug with anonymous posting to other aplications than news
+
 Revision 1.6  2000/11/15 16:20:41  honzam
 Fixed bugs with anonymous posting via SSI and bad viewed item in itemedit
 

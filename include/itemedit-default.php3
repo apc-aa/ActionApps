@@ -3,7 +3,7 @@
 ?>
 
 <center>
-<form enctype="multipart/form-data" method="<?php echo $method ?>" action="<?php echo $sess->url( ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF) ?>">
+<form enctype="multipart/form-data" method="<?php echo $method ?>" action="<?php echo ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF ?>">
 
 <table class=inouter border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
 <tr class=inoutertr><td class=inoutertd><b>&nbsp;<?php echo L_ITEM_HDR ?></b>
@@ -200,7 +200,8 @@
   # anonymous must be in hidden and no in r_hidden - there is no session
   echo '<input type=hidden name="anonymous" value="'. (($free OR $anonymous) ? "true" : "") .'">'; 
   echo '<input type=hidden name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
-  echo '<input type=hidden name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
+  echo '<input type=hidden name="encap" value="'. (($encap) ? "true" : "false") .'">'; 
+  $sess->hidden_session(); # hidden form element for session id name and value?>
   </td>
 </tr>
 </table></td></tr>
@@ -223,6 +224,9 @@ if($edit || $update || ($insert && $added_to_db)) { ?>
 
 <?php
 // $Log$
+// Revision 1.2  2000/11/20 16:45:58  honzam
+// fixed bug with anonymous posting to other aplications than news
+//
 // Revision 1.1  2000/11/17 19:10:05  madebeer
 // this is the default form file for itemedit.
 // new form files can be created as itemedit-en_news.php3, for example
