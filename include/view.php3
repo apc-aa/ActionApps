@@ -614,7 +614,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $level = 0; $maxlevel = 0;
         # This next line is not 100% clear, might not catch aliases 
         #since there are two formats for aliases structures. (mitra)
-    huhl("XYZZY:v578, msg=",$noitem_msg);
+#    huhl("XYZZY:v578, msg=",$noitem_msg);
         $ret = new_unalias_recurent($noitem_msg,"",$level,$maxlevel,null,null,$aliases);
 */
         $ret = $itemview->unaliasWithScroller($noitem_msg);

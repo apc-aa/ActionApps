@@ -271,9 +271,10 @@ class searchbar extends storable_class{
         } else {
             $this->addOrder( array( 0=>$foo_order ));
         }
-        list($fld,$search_str) = split( ',', $profile->getProperty('admin_search') );
+        list($fld,$search_str) = split( ':', $profile->getProperty('admin_search') );
         if ( $fld ) {
-            $this->addSearch( array( 0=>array( $fld => 1, 'value'=>$search_str, 'operator'=>'RLIKE')));
+          /* path.net specific change to make profiles readonly */
+          //            $this->addSearch( array( 0=>array( $fld => 1, 'value'=>$search_str, 'operator'=>'RLIKE', 'readonly' => 1)),1);
         }
     }
 

@@ -210,10 +210,13 @@ function Inputform_url($add, $iid, $sid, $ret_url, $vid='') {
     $url2go = isset($sess) ?
                      $sess->url($admin_path)	:
                      ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
+    global $profile;
     $param = get_if($add, "edit=1").
-             ($vid ? "&vid=$vid" : "edit=1").
+             ($vid ? "&vid=$vid" : "").
              "&encap=false&id=$iid".
              (isset($sess) ? "" : "&change_id=$sid").
+             ((isset($profile) AND $profile->getProperty('input_view')) ?
+                  '&vid='.$profile->getProperty('input_view') : '').
              make_return_url("&return_url=",$ret_url);	// it return "" if return_url is not defined.
     return con_url($url2go,$param);
 }

@@ -71,7 +71,7 @@ while (list($short_ids, $ar) = each($edit)) {
         else failed("Can't find short_id=".$short_id);
 
         // Check have permissions on slice item is in
-        if (!IfSlPerm(PS_EDIT)) 
+        if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) 
             failed ("Insufficient permissions to change data");
 
 /* Don't think need old content, StoreItem will find
@@ -92,9 +92,9 @@ while (list($short_ids, $ar) = each($edit)) {
                true, false); 
       }
     }
-    go_url(expand_return_url($return_url));
 }
 freeDB($db);
+go_url(expand_return_url($return_url));
 exit;
 
 // ------------------------------------------------------------------------------------

@@ -1,3 +1,12 @@
+04/28/03 - fixed spurious edit=1 in Inputform_url with vid paramater 
+(mitra)  - fixed permissions on live_checkbox and editbrief from
+           PS_EDIT to PS_EDIT_ALL_ITEMS
+         - added input_view from profile to _#EDITITEM 
+         - added ; on javascript in um_gedit.php3
+         - added stringexpand_sessurl to expand {sessurl:xxxx}
+         - added admin_notiem_msg to sql_update.php3
+         - fixes to searchbar when have a profile
+         - added {urlencode:xxxxx}
 03/26/04 - small fixes and improvements to sql_update.php3 (pep)
 03/14/03 - added stringexpand_sessurl to expand {sessurl:xxxx}
          - added admin_notiem_msg to sql_update.php3

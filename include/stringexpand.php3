@@ -632,3 +632,8 @@ function stringexpand_slice_comments($slice_id) {
     freeDB($db);
     return $dc;
 }
+
+// Use this inside URLs e.g. {urlencode:_#EDITITEM}
+function stringexpand_urlencode($raw) {
+    return urlencode($raw);
+}

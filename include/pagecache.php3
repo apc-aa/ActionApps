@@ -63,15 +63,18 @@ class PageCache  {
     return $ks;
   }  
 
-  # returns cached informations or false
+  #returns cached informations or false
   function get($keyString) {
     if ($GLOBALS[debugcache]) { 
-        huhl("Cache:get:$keyString:"); trace("p"); }
+        huhl("Cache:get:keystring=",htmlentities($keyString)); trace("p"); }
     if( ENABLE_PAGE_CACHE ) {
       $db = getDB(); 
       $SQL = "SELECT * FROM pagecache WHERE id='".md5($keyString)."'";
+if ($GLOBALS[debugcache]) $GLOBALS[debug]=1;
       $db->tquery($SQL);
+if ($GLOBALS[debugcache]) $GLOBALS[debug]=0;
       if($db->next_record()) {
+        if ($GLOBALS[debugcache]) { huhl("Cache:get:Got a hit:time=",time()," ct=",$this->cacheTime," st=",$db->f("stored"),"t-ct=",time()-$this->cacheTime); }
         if( (time() - $this->cacheTime) < $db->f("stored") ) {
           if ($GLOBALS[debugcache]) huhl("found:str2find=".$db->f(str2find));
           $c = $db->f(content);
@@ -88,7 +91,7 @@ class PageCache  {
   function store($keyString, $content, $str2find="") {
     global $debugcache, $cache_nostore;
     if ($GLOBALS[debugcache]) { 
-        huhl("Cache:store:keystring:",htmlentities($keyString));
+        huhl("Cache:store:keystring=",htmlentities($keyString));
         huhl("$str2find:",$this->caller,htmlentities($content)); trace("p");
     }
     if( ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when 
@@ -99,7 +102,7 @@ class PageCache  {
                                  content='". quote($content). "',
                                  stored='$tm',
                                  flag=''";
-      $db->query($SQL);
+      $db->tquery($SQL);
       if( ($this->lastClearTime + $this->clearFreq) < $tm )
         $this->purge();
       freeDB($db);

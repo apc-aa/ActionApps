@@ -206,6 +206,7 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
       trace("-");
       return($ret);
     case "slice":
+#huhl("XYZZY","pc209",$permission_to,$perm); exit;
       $ret = IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
       trace("-");
       return($ret);
@@ -265,7 +266,10 @@ function GetUserSlices( $user_id = "current") {
 
 // shortcut for slice permission checking
 function IfSlPerm($perm) {
-  global $auth, $slice_id;
+  global $auth, $slice_id,$debugpermissions;
+if ($debugpermissions) {
+    huhl("Slice_id=",$slice_id," Perm=",$perm);
+}
   return CheckPerms( $auth->auth["uid"], "slice", $slice_id, $perm);
 }
 

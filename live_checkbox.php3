@@ -60,11 +60,12 @@ if ($db->next_record()) {
 }
 else failed();
 
-if (!IfSlPerm(PS_EDIT)) 
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) 
     failed ();
 
-header ("Content-Type: image/gif");
-
+if (!$debug) {
+  header ("Content-Type: image/gif");
+}
 $content4ids = GetItemContent($item_id);
 reset($content4ids);
 $content4id = current($content4ids);
