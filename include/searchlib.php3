@@ -200,7 +200,7 @@ function GetConstantGroup( $input_show_func ) {
 */
 
 function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", 
-    $slices="", $neverAllItems=0, $restrict_ids=array() ) {
+    $slices="", $neverAllItems=0, $restrict_ids=array(), $defaultCondsOperator = "LIKE" ) {
   # parameter format example:  
   # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
   # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
@@ -223,10 +223,7 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
 
   global $debug, $QueryIDsCount;          # displays debug messages
   global $conds_not_field_names; # list of special conds[] indexes (defined in constants.php3)
-  global $defaultCondsOperator;  # used to override LIKE
-  if (!$defaultCondsOperator) 
-    $defaultCondsOperator = 'LIKE';
-    
+  
   $db = new DB_AA;
 
     if ($GLOBALS[debugfields] || $debug) {

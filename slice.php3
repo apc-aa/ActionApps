@@ -122,7 +122,6 @@ page_open(array("sess" => "AA_SL_Session"));
 
 $sess->register(r_packed_state_vars); 
 $sess->register(slices);
-$sess->register(defaultCondsOperator);
 
 $r_state_vars = unserialize($r_packed_state_vars);
 
@@ -452,7 +451,7 @@ else {
   else 
     $sort[] = array ( 'publish_date....' => 'd' );
 
-  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by], "ACTIVE", $slices, $neverAllItems );
+  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by], "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator );
 
   if( isset($item_ids) AND !is_array($item_ids))
     echo "<div>$item_ids</div>";
