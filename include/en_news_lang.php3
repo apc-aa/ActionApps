@@ -66,19 +66,19 @@ define("L_EDITOR_TITLE", "Editor window - news management");
 define("L_FULLTEXT_FORMAT_TOP", "Top HTML code");
 define("L_FULLTEXT_FORMAT", "Fulltext HTML code");
 define("L_FULLTEXT_FORMAT_BOTTOM", "Bottom HTML code");
-define("L_A_FULLTEXT_TIT", "Slice Administration - News Fulltext Format");
+define("L_A_FULLTEXT_TIT", "Administration - News Fulltext Format");
 define("L_FULLTEXT_HDR", "HTML code for fulltext view of news");
 define("L_COMPACT_HDR", "HTML code for compact view of news");
 define("L_ITEM_HDR", "News Data");
 define("L_A_ITEM_ADD", "Add News");
 define("L_A_ITEM_EDT", "Edit News");
 define("L_IMP_EXPORT", "Enable export of news to slice:");
-define("L_ADD_NEW_ITEM", "Add Article");
+define("L_ADD_NEW_ITEM", "Add Item");
 define("L_DELETE_TRASH", "Empty trash");
 define("L_VIEW_FULLTEXT", "Preview");
 define("L_FULLTEXT", "Public View: Fulltext");
 define("L_HIGHLIGHTED", "Highlighted");
-define("L_A_FIELDS_EDT", "Slice Administration - News Fields Settings");
+define("L_A_FIELDS_EDT", "Administration - News Fields Settings");
 define("L_FIELDS_HDR", "News fields");
 define("L_NO_PS_EDIT_ITEMS", "You have not permissions to edit news in this slice");
 define("L_NO_DELETE_ITEMS", "You have not permissions to remove news");
@@ -106,8 +106,8 @@ define("L_CATEGORY_BOTTOM", "Category bottom HTML");
 define("L_CATEGORY_SORT", "Sort items by category");
 define("L_COMPACT_TOP", "Top HTML");
 define("L_COMPACT_BOTTOM", "Bottom HTML");
-define("L_A_COMPACT_TIT", "Slice Administration - Compact view format");
-define("L_A_FILTERS_TIT", "Slice Administration - Feeding filters setting");
+define("L_A_COMPACT_TIT", "Administration - Compact view format");
+define("L_A_FILTERS_TIT", "Administration - Feeding filters setting");
 define("L_FLT_SETTING", "Feeding import filters setting");
 define("L_FLT_FROM_SL", "Filter for imported slice");
 define("L_FLT_FROM", "From");
@@ -132,7 +132,7 @@ define("L_ERR_LOG", "you should use a-z, A-Z and 0-9 characters");
 define("L_ERR_LOGLEN", "it must by 5 - 32 characters long");
 define("L_ERR_NO_SRCHFLDS", "No searchfield specified!");
 
-define("L_FIELDS", "Author: Add Article");
+define("L_FIELDS", "Author View: Add Item");
 define("L_EDIT", "Edit");
 define("L_DELETE", "Delete");
 define("L_REVOKE", "Revoke");
@@ -160,10 +160,10 @@ define("L_USER_FIRSTNAME", "First name");
 define("L_USER_SURNAME", "Surname");
 define("L_USER_MAIL", "E-mail");
 define("L_USER_SUPER", "Superadmin account");
-define("L_A_USERS_TIT", "Slice Administration - User Management");
-define("L_A_PERMISSIONS", "Slice Administration - Permissions");
-define("L_A_ADMIN", "Slice Administration - Administration Design");
-define("L_A_ADMIN_TIT", "Slice Administration - Administration Design");
+define("L_A_USERS_TIT", "Administration - User Management");
+define("L_A_PERMISSIONS", "Administration - Permissions");
+define("L_A_ADMIN", "Administration - Item Manager Design");
+define("L_A_ADMIN_TIT", "Administration - Item Manager Design");
 define("L_ADMIN_FORMAT", "Item format");
 define("L_ADMIN_FORMAT_BOTTOM", "Bottom HTML");
 define("L_ADMIN_FORMAT_TOP", "Top HTML");
@@ -191,14 +191,14 @@ define("L_FEEDING", "Feeding");
 define("L_IMPORT", "Import & Export");
 define("L_FILTERS", "Filters");
 
-define("L_A_SLICE_ADD", "Slice Administration - Add Slice");
-define("L_A_SLICE_EDT", "Slice Administration - Edit Slice");
-define("L_A_SLICE_CAT", "Slice Administration - Category Assignment");
-define("L_A_SLICE_IMP", "Slice Administration - Feeding Settings");
+define("L_A_SLICE_ADD", "Administration - Add Slice");
+define("L_A_SLICE_EDT", "Administration - Edit Slice");
+define("L_A_SLICE_CAT", "Administration - Category Assignment");
+define("L_A_SLICE_IMP", "Administration - Feeding Settings");
 define("L_FIELD", "Field");
 define("L_FIELD_IN_EDIT", "Show");
 define("L_NEEDED_FIELD", "Required");
-define("L_A_SEARCH_TIT", "Slice Administration - Search Form Settings");
+define("L_A_SEARCH_TIT", "Administration - Search Form Settings");
 define("L_SEARCH_HDR", "Search form criteria");
 define("L_SEARCH_HDR2", "Search in fields");
 define("L_SEARCH_SHOW", "Show");
@@ -284,7 +284,6 @@ define("L_SRCH_FULL_TEXT", L_FULL_TEXT);
 define("L_SRCH_EDIT_NOTE", L_EDIT_NOTE);
 define("L_SLICES_HDR", L_SLICE);
 define("L_A_SEARCH_EDT", L_A_SEARCH_TIT);
-define("L_A_SLICE_TIT", L_SLICE_ADM);
 define("L_A_FIELDS_TIT", L_A_FIELDS_EDT);
 define("L_SLICE_SET", L_SLICE);
 define("L_FULLTEXT_REMOVE", L_COMPACT_REMOVE);
@@ -296,7 +295,7 @@ define("L_FEEDTO_TITLE", "Export Item to Selected Slice");
 define("L_FEED_TO", "Export selected items to selected slice");
 define("L_NO_PERMISSION_TO_FEED", "No permission");
 define("L_NO_PS_CONFIG", "You have no permission to set configuration parameters of this slice");
-define("L_SLICE_CONFIG", "Administration");
+define("L_SLICE_CONFIG", "Editor View: Item Manager");
 define("L_CHBOX_HEAD", "&nbsp;");   // title of checkbox in admin interface
 define("L_CHBOX", "Checkbox"); 
 define("L_CATNAME", "Category Name");
@@ -307,13 +306,13 @@ define("L_CHANGE_MARKED", "Change Marked");
 define("L_MOVE_TO_ACTIVE_BIN", "Move to Approved");
 define("L_MOVE_TO_HOLDING_BIN", "Move to Holding bin");
 define("L_MOVE_TO_TRASH_BIN", "Move to Trash");
-define("L_OTHER_ARTICLES", "Other Articles");
+define("L_OTHER_ARTICLES", "Other Items");
 define("L_MISC", "Misc");
 define("L_HEADLINE_EDIT", "Headline (edit on click)");
 define("L_HEADLINE_PREVIEW", "Headline (preview on click)");
 define("L_EDIT_LINK", "&nbsp;");
 define("L_PREVIEW_LINK", "&nbsp;");
-define("L_ARTICLE_MANAGER", "Article Manager");
+define("L_ARTICLE_MANAGER", "Item Manager");
 define("L_SWITCH_TO", "Switch to slice");
 define("L_ADMIN", "Admin");
 
@@ -427,8 +426,8 @@ define("L_CONSTANT_PRI", "Priority");
 define("L_CONSTANT_GROUP", "Constant Group");
 define("L_CONSTANT_GROUP_EXIST", "This constant group already exists");
 define("L_CONSTANTS_OK", "Constants update successful");
-define("L_A_CONSTANTS_TIT", "Slice Administration - Constants Setting");
-define("L_A_CONSTANTS_EDT", "Slice Administration - Constants Setting");
+define("L_A_CONSTANTS_TIT", "Administration - Constants Setting");
+define("L_A_CONSTANTS_EDT", "Administration - Constants Setting");
 define("L_CONSTANTS_HDR", "Constants");
 define("L_CONSTANT_NAME_HLP", "shown&nbsp;on&nbsp;inputpage");
 define("L_CONSTANT_VALUE_HLP", "stored&nbsp;in&nbsp;database");
@@ -448,9 +447,16 @@ define("L_PERMIT_OFFLINE_FILL","Allow off-line item filling");
 //define("", "");
 
 // ------------------------- New ----------------------------
-    
+define("L_SLICE_ADM","Administration Menu");
+// this one is not new. I moved it below L_SLICE_ADM
+define("L_A_SLICE_TIT", L_SLICE_ADM);
+
 /*
 $Log$
+Revision 1.22  2001/01/13 19:51:01  madebeer
+changed some english titles in en_news_lang.
+Removed extra references to 'slice', and changed Article to Item
+
 Revision 1.21  2001/01/08 13:31:58  honzam
 Small bugfixes
 
