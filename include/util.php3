@@ -160,18 +160,20 @@ function shtml_url() {
   return (self_server(). document_uri());
 }
 
-# returns url of current shtml file
+/** returns query string passed to shtml file (variables are not quoted) */
 function shtml_query_string() {
-  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $REQUEST_URI;
+    global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $REQUEST_URI;
     // there is problem (at least with $QUERY_STRING_UNESCAPED), when
     // param=a%26a&second=2 is returned as param=a\\&a\\&second=2 - we can't
     // expode it! - that's why we use $REQUEST_URI, if possible
 
-  return ($REQUEST_URI AND strpos($REQUEST_URI, '?')) ?
+    $ret_string = ($REQUEST_URI AND strpos($REQUEST_URI, '?')) ?
                             substr($REQUEST_URI, strpos($REQUEST_URI, '?')+1) :
-         ( isset($REDIRECT_QUERY_STRING_UNESCAPED)    ?
+                  ( isset($REDIRECT_QUERY_STRING_UNESCAPED)    ?
                             $REDIRECT_QUERY_STRING_UNESCAPED :
                             $QUERY_STRING_UNESCAPED );
+    // get off magic quotes
+    return magic_strip($ret_string);
 }
 
 # skips terminating backslashes
@@ -200,25 +202,63 @@ function ParamImplode($param) {
    return implode(":", $param);
 }
 
+/** stripslashes if magic quotes are set */
+function magic_strip($val) {
+    return !get_magic_quotes_gpc() ? $val : StripslashesArray($val);
+}
+
 /** Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
 *   to GLOBALS.
-*   @param array $restrict_vars  Array ("var name"=>1, ...) allows to
-*       restrict the variables added, used
-*       e.g. in alerts_sending to restrict to sort[] and conds[].
 */
-function add_vars($query_string="", $debug="", $restrict_vars="") {
+function add_vars($query_string="") {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
 
     if ( !$varstring ) return;
     if ( ($pos = strpos('#', $varstring)) === true ) {  // remove 'fragment' part
         $varstring = substr($str,0,$pos);
     }
-    parse_str( $varstring, $aa_query_arr);
-    foreach ( $aa_query_arr as $var => $val) {
-        if ( !$restrict_vars[$var] ) {
-            $GLOBALS[$var] = $val;
+    // parse_str function is quite unusable, if used with magic_quotes_gpc ON
+    // - it adds slashes not only to values, but ALSO to ARRAY KEYS!
+    // we have to call magic_strip() to repair it
+    parse_str($varstring, $aa_query_arr);
+    // we also need PHP to think a['key'] is the same as a[key], that's why we
+    // call NormalizeArrayIndex()
+    $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
+    array_merge_append($GLOBALS, $aa_query_arr);
+}
+
+/** Removes starting and closing quotes from array index
+ *   arr["key"]=...   transforms to arr[key]=...       */
+function NormalizeArrayIndex($arr) {
+    if (!is_array($arr)) {
+        return $arr;
+    }
+    foreach ($arr as $k => $v) {
+        if ( (($k{0}=='"') AND (substr($k,-1)=='"')) ||
+             (($k{0}=="'") AND (substr($k,-1)=="'")) ) {
+            $k = substr($k, 1, -1);
+        }
+        $ret[$k] = NormalizeArrayIndex($v);
+    }
+    return $ret;
+}
+
+/** Adds second array to the first one - values are appended to the array, if
+ *  uses the same key (regardless if string or numeric!)
+ *  Example:
+ *    array_merge_append( $conds[0][value]=x, $conds[0][operator]=LIKE )
+ *    results in $conds[0] = array( 'value'=>'x', 'operator'=>'LIKE' )
+ *  no PHP function do it ($a+$b nor array_merge()  array_merge_recursive())
+ */
+function array_merge_append(&$array, $newValues) {
+    foreach ($newValues as $key => $value ) {
+        if ( !isset($array[$key]) || !is_array($array[$key]) || !is_array($value)) {
+            $array[$key] = $value;
+        } else {
+            $array[$key] = array_merge_append($array[$key], $value);
         }
     }
+    return $array;
 }
 
 # function to double backslashes and apostrofs
@@ -232,17 +272,19 @@ function AddslashesArray($val) {
   if (!is_array($val)) {
     return addslashes($val);
   }
-  for (reset($val); list($k, $v) = each($val); )
+  foreach ($val as $k => $v)
     $ret[$k] = AddslashesArray($v);
   return $ret;
 }
 
 function StripslashesArray($val) {
-  if (!is_array($val))
-    return stripslashes($val);
-  for (reset($val); list($k, $v) = each($val); )
-    $ret[$k] = StripslashesArray($v);
-  return $ret;
+    if (!is_array($val)) {
+       return stripslashes($val);
+    }
+    foreach ($val as $k => $v) {
+        $ret[stripslashes($k)] = StripslashesArray($v);
+    }
+    return $ret;
 }
 
 # function for processing posted or get variables
@@ -344,10 +386,14 @@ function unpack_id($packed_id){
 
 
 
-# returns current date/time as timestamp
- function now(){
-   return time();
- }
+/** returns current date/time as timestamp;
+ *  $step - time could be returned in steps (good for database query speedup)
+ */
+function now($step=false) {
+    return (($step!='step') ?
+        time() :
+        ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
+}
 
 # returns number of second since 1970 from date in MySQL format
 function date2sec($dat) {
@@ -601,21 +647,41 @@ function GetViewInfo($vid) {
 }
 */
 
-# function converts table from SQL query to array
-# $idcol specifies key column for array or "NoCoLuMn" for none
-# See also DBFields
-function GetTable2Array($SQL, $idcol="id",$nonnumeric=0) {
-  $db = getDB();
-  $db->tquery($SQL);
-  if( $idcol == "NoCoLuMn") {
-    while($db->next_record())
-      $arr[] = $nonnumeric ? DBFields($db) : $db->Record;
-  } else {
-    while($db->next_record())
-      $arr[$db->f($idcol)] = $nonnumeric ? DBFields($db) : $db->Record;
-  }
-  freeDB($db);
-  return $arr;
+/** function converts table from SQL query to array
+ *  $key    - return array's key - 'NoCoLuMn' | '' | 'aa_first' | <database_column> | 'unpack:<database_column>'
+ *  $values - return array's val - 'aa_all' |
+ *                                 'aa_mark' |
+ *                                 'aa_fields' |
+ *                                 <database_column> |
+ *                                 true
+ */
+function GetTable2Array($SQL, $key="id", $values='aa_all') {
+    $db = getDB();
+    $db->tquery($SQL);
+    while($db->next_record()) {
+        if ($values == 'aa_all') {
+            $val = $db->Record;
+        } elseif ($values == 'aa_mark') {
+            $val = true;
+        } elseif (is_string($values) AND isset( $db->Record[$values] )) {
+            $val = $db->Record[$values];
+        } else {  // true or 'aa_fields'
+            $val = DBFields($db);
+        }
+
+        if ( $key == 'aa_first' ) {
+            freeDB($db);
+            return $val;
+        } elseif ( ($key == "NoCoLuMn") OR !$key ) {
+            $arr[] = $val;
+        } elseif ( substr($key,0,7) == 'unpack:' ) {
+            $arr[unpack_id128($db->f(substr($key,7)))] = $val;
+        } else {
+            $arr[$db->f($key)] = $val;
+        }
+    }
+    freeDB($db);
+    return isset($arr) ? $arr : false;
 }
 
 # function returns two arrays - SliceFields (key is field_id)
@@ -1323,38 +1389,61 @@ function filename ($filename) {
 }
 
 /**
- * Transforms simplified version of conditions to th eextended syntax
+ * Transforms simplified version of conditions to the extended syntax
  * for example conds[0][headline........]='Hi' transforms into
  * conds[0][headline........]=1,conds[0][value]='Hi',conds[0][operator]=LIKE
+ *
+ * It also replaceS all united field conds
+ *    like conds[0][headline........,abstract........]='Hi'
+ * with its equivalents:
+ *     conds[0][headline........]=1,conds[0][abstract........]=1,
+ *     conds[0][value]='Hi',conds[0][operator]=LIKE
+ * (number of united field conds is unlimited and you can use it in simplified
+ *  condition syntax as well as in extended condition syntax)
  *
  * @param array $conds input/output - transformed conditions
  * @param array $defaultCondsOperator - could be scalar (default), but also
  *              array: field_id => array('operator'=>'LIKE')
  */
 function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE") {
-  if(is_array($conds)) {
-    reset($conds);
-    while( list( $k, $cond) = each( $conds )) {
-      if( !is_array($cond) ) {
-        unset ($conds[$k]);
-        continue;             # bad condition - ignore
-      }
-      if( !isset($cond['value']) && count ($cond) == 1 ) {
-        reset ($cond);
-        $conds[$k]['value'] = current($cond);
-      }
-      if( !isset($cond['operator']) ) {
-        if( is_array($defaultCondsOperator) AND
-            is_array($defaultCondsOperator[key($cond)] ))
-          $conds[$k]['operator'] = isset($defaultCondsOperator[key($cond)]['operator']) ?
-                              $defaultCondsOperator[key($cond)]['operator'] : 'LIKE';
-         else
-          $conds[$k]['operator'] = $defaultCondsOperator;
-      }
-      if (!isset($conds[$k]['value']) OR ($conds[$k]['value']==""))
-        unset ($conds[$k]);
+    if (is_array($conds)) {
+        // In first step we remove conds with wrong syntax (like conds[xx]=yy)
+        // and replace easy conds with extended syntax conds
+        foreach ($conds as $k => $cond) {
+            if( !is_array($cond) ) {
+                unset($conds[$k]);
+                continue;             // bad condition - ignore
+            }
+            if( !isset($cond['value']) && (count($cond) == 1) ) {
+                $conds[$k]['value'] = reset($cond);
+            }
+            if( !isset($cond['operator']) ) {
+                if ( is_array($defaultCondsOperator) ) {
+                    if ( is_array($defaultCondsOperator[key($cond)] )) {
+                        $conds[$k]['operator'] = get_if($defaultCondsOperator[key($cond)]['operator'], 'LIKE');
+                    } else {
+                        $conds[$k]['operator'] = 'LIKE';
+                    }
+                } else {
+                    $conds[$k]['operator'] = $defaultCondsOperator;
+                }
+            }
+            if (!isset($conds[$k]['value']) OR ($conds[$k]['value']==""))
+            unset ($conds[$k]);
+        }
+        // and now replace all united conds (like conds[0][headline........,abstract........]=1)
+        // with its equivalents
+        foreach ($conds as $k => $cond) {
+            foreach ( $cond as $field => $val ) {
+                if ( strpos( $field, ',') !== false ) {
+                    unset($conds[$k][$field]);
+                    foreach ( explode(',',$field) as $separate_field ) {
+                        $conds[$k][$separate_field] = $val;
+                    }
+                }
+            }
+        }
     }
-  }
 }
 
 function GetTimeZone () {
