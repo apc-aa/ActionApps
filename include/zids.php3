@@ -363,6 +363,7 @@ function pack_id128($unpacked_id){
 }
 
 # returns unpacked md5 id
+# Note this will NOT unpack correctly a quoted packed id
 function unpack_id128($packed_id){
   if( (string)$packed_id == "0" )
     return "0";

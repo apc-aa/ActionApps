@@ -373,7 +373,7 @@ while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
         case "chbox":   FrmInputChBox($k, $label, $value, true); break;
         case "cond":    ConditionFrm($k, $label, $value); break;
         case "order":   OrderFrm($k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
-        case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]["values"], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
+        case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]["value"], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
         case "none":    break;
     }
 }

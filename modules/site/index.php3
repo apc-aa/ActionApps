@@ -124,6 +124,12 @@ elseif( $content OR $name ) {
 //print_r($tree);
 $tree->set( 'flag', $r_spot_id, 0 );  
 
+// This is only run with a hand-coded URL to clean out the site 
+// and remove corruption, ideally should fix the cause of the corruption! 
+// - Mitra
+if ($sitefix) {
+    $tree->walkTree($apc_state, 1, 'ModW_DoNothing', 'all');
+}
 ModW_StoreTree( $tree, $module_id );
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -145,6 +151,7 @@ echo '<br>
   <br>';
 
 # show tree
+if ($debugsite) huhl("XYZZY:SiteIndex tree=",$tree);
 $tree->walkTree($apc_state, 1, 'ModW_PrintSpotName', 'all');
 
 echo '</td><td valign="top">';

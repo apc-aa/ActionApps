@@ -372,6 +372,8 @@ class sitetree {
 
   //Walk the tree, starting at $id, calling $function
   function walkTree(&$state, $id, $function, $method='cond', $depth=0) {
+    global $debugsite;
+    if ($debugsite) huhl("state=",$state,"id=",$id,"function=$function method=$method depth=$depth");
     $current =& $this->tree[$id];
     $positions = $current->get("positions");
     #huhl($positions);
@@ -381,6 +383,7 @@ class sitetree {
     }
     reset( $positions );
     while( list( , $pos) = each($positions) ) {
+     if ($debugsite) huhl("Position",$pos);
      if($pos) {
       // There is a bug that introduced empty positions
       // this is to skip them.
@@ -393,17 +396,31 @@ class sitetree {
           echo "neco je spatne - haveBranches a pritom nema choices[]";
           exit;
         }
+        ksort($choices); // might not be in key order
         reset( $choices );
-        while( list( ,$cho) = each($choices) ) {
-          if( ($method=='all') OR $this->conditionMatches( $cho, $state ) ) {
-            $this->walkTree($state, $cho, $function, $method, $depth+1);
-            if( $method=='cond' )
-              break;                 # one matching spot is enough
+        while( list($k ,$cho) = each($choices) ) {
+          if ($debugsite) huhl("Choice: $cho");
+          if ($cho) { // skip buggy empty choices
+            if( ($method=='all') OR $this->conditionMatches( $cho, $state ) ) {
+              $this->walkTree($state, $cho, $function, $method, $depth+1);
+              if( $method=='cond' )
+                break;                 # one matching spot is enough
+            }
+          } else {
+            if ($GLOBALS["sitefix"]) {
+                huhl("Before fix position($pos)=",$chcurrent);
+                unset($chcurrent->ch[$k]);
+                huhl("After fix position($pos)=",$chcurrent);
+            } else {
+              huhe("Warning: skipping Empty choice in position=$pos, run with &amp;sitefix=1 to fix; tree=",$this);
+            }
           }
-        }
-      }
+        } // each choice
+      } // haveBranches
+     } else { 
+       huhe("Warning: skipping Empty position in id=$id of tree=",$this);
      }
-    }
-  }
+    } // each position
+  } // function
 };
 ?>

@@ -1,3 +1,7 @@
+07/09/03 - rearranged GetViewFromDB to fix bug in calendar drop-thru
+(mitra)  - fixed bug in sliceid in GetViewFromDB (unpack doesnt work on quoted)
+         - some changes to trace
+         - fixes to site module to get rid of bad "co" 
 07/10/03 - added user id to the user edit form (AA -> Edit User)
 (honzam) - fixed posted_by (Author permissions) problem
 07/08/03 - fixed huhe with multiple arguments

@@ -675,15 +675,14 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
 */
 function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
-    global $db;
 
-    if ($GLOBALS[debug]) huhl("GetItemContent short='",$use_short_ids,"' " ,$zids);
-    if (!is_object ($db)) $db = new DB_AA;
+    trace("+","GetItemContent",$zids);
+
+    $db = getDB();
 
     # construct WHERE clause
     list($sel_in, $settags) = itemContent_getWhere($zids, $use_short_ids);
-    if(!$sel_in)
-    return false;
+    if(!$sel_in) { freeDB($db); trace("-"); return false; }
 
     # get content from item table
     $delim = "";
@@ -729,7 +728,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     }
 
     // Skip the rest if no items found
-    if ($n_items == 0) return null;
+    if ($n_items == 0) { freeDB($db); trace("-"); return null; }
 
     # If its a tagged id, then set the "idtag..........." field
     if ($settags) {
@@ -768,6 +767,8 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             : array( "value" => _m("Error: Missing Reading Password"));
     }
 
+    freeDB($db);
+    trace("-");
     return $content;   // Note null returned above if no items found
 }
 
@@ -1704,12 +1705,17 @@ $tracearr = array();
 // Support function for debugging, because of the lack of a stacktrace in PHP
 // $d = + for entering a function - for leaving = for a checkpoint.
 function trace($d,$v="NONE",$c="") {
-    global $tracearr;
-    if ($d == "+") {
-        array_push($tracearr,$v,$c);
+    global $tracearr,$traceall;
+    if ($traceall) huhl("TRACE: $d:",$v," ",$c);
+// Below here you can put variables you want traced
+    if ($traceall) huhl("TRACE:slice_id=",$slice_id);
+// end variables 
+    switch ($d) {
+    case "+": array_push($tracearr,$v,$c); break;
+    case "-": array_pop($tracearr); array_pop($tracearr); break;
+    case "=": array_pop($tracearr); array_push($tracearr,$c); break ;
+    case "p": huhl("TRACE: ",$tracearr); break;
+    default: echo "Illegal argument to trace:$d"; break; 
     }
-    if ($d == "-") { array_pop($tracearr); array_pop($tracearr); }
-    if ($d == "=") { array_pop($tracearr); array_push($tracearr,$c); }
-    if ($trace || $debug || $d == "p" ) { huhl("TRACE: ",$tracearr); }
 }
 ?>

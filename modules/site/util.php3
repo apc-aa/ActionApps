@@ -60,6 +60,10 @@ function ModW_GetTree( &$tree, $site_id ){
     $tree = unserialize( $db->f('structure') );
 }  
 
+// This function does nothing and is used when walking the tree fixing it
+function ModW_DoNothing($spot_id,$depth) {
+    return;
+}
 function ModW_PrintSpotName($spot_id, $depth) {
   global $r_spot_id, $tree;
   $width = 10 * ($depth+1);

@@ -311,7 +311,6 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
   global $nocache, $debug;
-
   trace("+","GetView",$view_param);
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param).stringexpand_keystring();
@@ -324,6 +323,7 @@ function GetView($view_param) {
   $str2find_save = $GLOBALS['str2find_passon']; //Save str2find from same level
   $GLOBALS['str2find_passon'] = ""; // clear it for caches stored further down
   $res = GetViewFromDB($view_param, $cache_sid);
+  trace("=","GetView","after GetViewFromDB");
   $str2find_this = ",slice_id=$cache_sid";
   if (!strstr($GLOBALS['str2find_passon'],$str2find_this))
     $GLOBALS['str2find_passon'] .= $str2find_this; // append our str2find
@@ -338,7 +338,7 @@ function GetView($view_param) {
 function GetViewFromDB($view_param, &$cache_sid) {
   global $debug;
 
-  trace("+","GetViewFromDB");
+  trace("+","GetViewFromDB",$view_param);
   $vid = $view_param["vid"];
   $als = $view_param["als"];
   $conds = $view_param["conds"];
@@ -371,12 +371,25 @@ function GetViewFromDB($view_param, &$cache_sid) {
   ParseBannerParam($view_info, $view_param["banner"]);  // if banner set format
 
   $listlen    = ($view_param["listlen"] ? $view_param["listlen"] : $view_info['listlen'] );
+
+/* Old code, had problems because unpack_id128 won't unpack quoted
   $p_slice_id = ($view_param["slice_id"] ? q_pack_id($view_param["slice_id"]) : $view_info['slice_id'] );
   // This is to fix a bug where get_output_cached, caches under wrong slice (mitra)
     $view_info['slice_id'] = $p_slice_id;
   $slice_id = unpack_id128($p_slice_id);
+*/
 
-  $cache_sid = $slice_id;     # store the slice id for use in cache (GetView())
+    if ($view_param["slice_id"]) {
+        $view_info["slice_id"] = pack_id($view_param["slice_id"]);  // packed,not quoted
+        $slice_id = $view_param["slice_id"]; // unpacked
+    } else {
+        $slice_id = unpack_id128($view_info["slice_id"]);
+    }
+
+    // At this point, view_info["slice_id"] = $slice_id 
+    // and view_param[slice_id] is empty or same
+
+  $cache_sid = $slice_id;     # pass back to GetView (passed by reference)
 
   # ---- display content in according to view type ----
   if ($debug) huhl("GetViewFromDB:view_info=",$view_info);
@@ -415,7 +428,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $aliases = GetDiscussionAliases();
 
       $format = GetDiscussionFormat($view_info);
-      $format['id'] = $p_slice_id;                  // set slice_id because of caching
+    // This is probably a bug, I think it should be
+    //  $format['slice_id'] = pack_id128($slice_id); // packed, not quoted
+      $format['id'] = pack_id128($slice_id);                  // set slice_id because of caching
 
       // special url parameter disc_url - tell us, where we have to show
       // discussion fulltext (good for discussion search)
@@ -430,30 +445,11 @@ function GetViewFromDB($view_param, &$cache_sid) {
       return($ret);
 
 
-    case 'seetoo':
-
-    case 'calendar':
-        $today = getdate();
-        $month = $view_param['month'];
-        if ($month < 1 || $month > 12) $month = $today['mon'];
-        $year = $view_param['year'];
-        if ($year < 1900 || $year > 3000) $year = $today['year'];
-
-        $calendar_conds =
-        array (array( 'operator' => '<',
-                      'value' => mktime (0,0,0,$month+1,1,$year),
-                      $view_info['field1'] => 1 ),
-               array( 'operator' => '>=',
-                      'value' => mktime (0,0,0,$month,1,$year),
-                      $view_info['field2'] => 1 ));
-        # Note drops through to next case
-        trace("=","","calendar - drop through");
-
     case 'links':              // links       (module Links)
     case 'categories':         // categories  (module Likns)
     case 'const':              // constants
       if ( !$category_id )
-          $category_id = Links_SliceID2Category(unpack_id128($view_info['slice_id']));             // get default category for the view
+          $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
       $format    = GetViewFormat($view_info);
       $aliases   = GetAliases4Type($view_info['type'],$als);
       if (! $conds )         # conds could be defined via cmd[]=d command
@@ -484,6 +480,25 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                 "", $content_function);
       return $itemview->get_output_cached($itemview_type);
 
+    case 'seetoo':
+
+    case 'calendar':
+        $today = getdate();
+        $month = $view_param['month'];
+        if ($month < 1 || $month > 12) $month = $today['mon'];
+        $year = $view_param['year'];
+        if ($year < 1900 || $year > 3000) $year = $today['year'];
+        if ($debug) huhl("GetViewFromDB:year=$year;month=$month");
+        $calendar_conds =
+        array (array( 'operator' => '<',
+                      'value' => mktime (0,0,0,$month+1,1,$year),
+                      $view_info['field1'] => 1 ),
+               array( 'operator' => '>=',
+                      'value' => mktime (0,0,0,$month,1,$year),
+                      $view_info['field2'] => 1 ));
+        # Note drops through to next case
+        trace("=","","calendar - drop through to digest, script etc");
+
     case 'digest':
     case 'list':
     case 'rss':
@@ -497,7 +512,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
           while (list(,$v)=each($calendar_conds))
               $conds[] = $v;
       }
-
+     trace("=","","in script with slice_id=".$slice_id."; and view_param=".$view_param["slice_id"].";");
       list($fields,) = GetSliceFields($slice_id);
       $aliases = GetAliasesFromFields($fields, $als);
 
