@@ -18,8 +18,6 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-
 define("ITEM_PHP3_INC",1);
 
 if( file_exists( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" ) ) {
@@ -228,7 +226,7 @@ class item {
       
     $url_param = ( $GLOBALS['USE_SHORT_URL'] ? 
             "x=".$this->getval('short_id........') :
-            "sh_itm=".unpack_id($this->getvel('id..............')));
+            "sh_itm=".unpack_id($this->getval('id..............')));
 
        # redirecting to another page 
     $url_base = ($redirect ? $redirect : $this->clean_url );
@@ -317,18 +315,19 @@ class item {
   }  
 
   
-  function unalias( $text, $remove="", $level=0 ) {
+  function unalias( &$text, $remove="", $level=0 ) {
     $parts_start[0] = 0;      # three variables used to identify the parts
     $parts_end   = array();   # of output string, where we have to aply 
     $parts_count = 0;         # "remove strings"
     
     $pos = strcspn( $text, "{}" );
-    while( $text[$pos] == '{' ) {
+    
+    while( (strlen($text) != $pos) AND ($text[$pos] == '{') ) {
       $out .= substr( $text,0,$pos );           # initial sequence
       $text = substr( $text,$pos+1 );           # remove processed text
                                                 # from $text is removed {...} on return
         # $remove is not needed in deeper levels - we use remove strings just on base level (0)
-      $substitution = $this->unalias( &$text, "", $level+1 ); 
+      $substitution = $this->unalias( $text, "", $level+1 ); 
       if( $substitution != "" ) {   # brackets produced some output, so we have 
                               # to mark the previous section as removestringable
         $parts_end[$parts_count++] = strlen($out);
@@ -641,9 +640,12 @@ class item {
       return $this->RSS_restrict( $foo, $p[0]);
   }
 
-  # converts text to html or escape html (due to html flag)
-  # param: 0
+  # prints the field content and converts text to html or escape html (due to 
+  # html flag). If param is specified, it prints rather param (instead of field)
+  # param: string to be printed (like <img src="{img_src........1}"></img> 
   function f_t($col, $param="") { 
+    if($param) 
+      return $this->subst_alias( $param );
     return ( ($this->getval($col,'flag') & FLAG_HTML) ? 
                          $this->getval($col) : 
                          txt2html($this->getval($col)) );
