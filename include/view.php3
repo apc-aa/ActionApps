@@ -175,31 +175,18 @@ function GetViewFormat($view_info) {
 
 
 function GetView($view_param) {
-  global $db;
+  global $db, $nocache;
   $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
 
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param);
 
-if( $GLOBALS['debug'] ) {
-  echo "<br>$keystr<br>";
-}
 
-  if( $res = $cache->get($keystr) ) {
-
-if( $GLOBALS['debug'] ) {
-  echo "<h1>FOUND</h1>";
-}
-      
+  if( !$nocache && ($res = $cache->get($keystr)) ) {
     return $res;
-  }
-
+  } 
+  
   $res = GetViewFromDB($view_param, $cache_sid);
-
-if( $GLOBALS['debug'] ) {
-  echo "<h1>xxxxx$cache_sid</h1>";
-}
-
   $cache->store($keystr, $res, "slice_id=$cache_sid");
 
   return $res;
@@ -293,8 +280,10 @@ function GetViewFromDB($view_param, &$cache_sid) {
             $page_n = substr($list_page,0,$pos)-1;      #count from zero
             $items = count($item_ids);
             $items_plus = $items + ($no_of_pages-1); # to be last page shorter than others if there is not so good number of items
-            $list_from = floor(($page_n * $items_plus)/$no_of_pages);
-            $listlen = floor($items_plus/$no_of_pages);
+//            $list_from = $page_n * floor($items_plus/$no_of_pages);
+//            $listlen = floor($items_plus/$no_of_pages);
+            $list_from = $page_n * floor($items/$no_of_pages);
+            $listlen = floor(($items*($page_n+1))/$no_of_pages) - floor(($items*$page_n)/$no_of_pages);
           } else  # second parameter is not specified - take listlen parameter
             $list_from = $listlen * ($list_page-1);
         }                     
@@ -383,24 +372,12 @@ class itemview{
     for( $i=$this->from_record; $i<$this->from_record+$this->num_records; $i++)
       $keystr .= $this->ids[$i];
     $keystr .=serialize($this->disc);
+    $keystr .=serialize($this->aliases);
 
-if( $GLOBALS['debug'] ) {
-  echo "<br>$keystr<br>";
-}
-
-    if( $res = $cache->get($keystr) ) {
-
-if( $GLOBALS['debug'] ) {
-  echo "<h1>FOUND</h1>";
-}
-      
+    if( !$GLOBALS['nocache'] && ($res = $cache->get($keystr)) ) {
       return $res;
     }
 
-
-if( $GLOBALS['debug'] ) {
-  echo "<b>NOT FOUND IN CACHE<br>";
-}
 
     #cache new value 
     $res = $this->get_output($view_type);
@@ -752,6 +729,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.26  2002/03/12 17:13:02  honzam
+aliases added to pagecache lookup for views - bugfix
+
 Revision 1.25  2002/03/06 12:37:15  honzam
 new view cache implemented
 
