@@ -111,22 +111,25 @@ function ParseViewParameters($query_string="") {
     case 'i':  $vid = $command[1];
 //               for( $i=2; $i<count($command); $i++)
 //                 $item_ids[] = $command[$i];
-		$zids = new zids(array_slice($command,2));
-		// TODO figure out why CountHit not called here - mitra
+               $zids = new zids(array_slice($command,2));
+               // TODO figure out why CountHit not called here - mitra
                break;
+    case 'o':  // the same as x, but no hit for item is added 
     case 'x':  $vid = $command[1];
-  		$zids = new zids(array_slice($command,2));
+  	           $zids = new zids(array_slice($command,2));
 //               for( $i=2; $i<count($command); $i++)
 //                 $item_ids[] = $command[$i];
 // This is bizarre code, just incrementing the first item, left as it is
 // but questioned on apc-aa-coders - mitra
-          if ($zids->use_short_ids()) {
-			$si = $zids->shortids();
-			CountHit($si[0],'short_id');
-		  } else {
-			$li = $zids->longids();
-			CountHit($li[0],'id');
-		  }
+               if ( ($command[0]=='x') AND ($zids->count()>0)) {
+                 if( $zids->use_short_ids()) {
+                   $si = $zids->shortids();
+                   CountHit($si[0],'short_id');
+                 } else {
+                   $li = $zids->longids();
+                   CountHit($li[0],'id');
+                 }
+               }  
                break;
     case 'c':  if( $command[1] && ($command[2] != 'AAnoCONDITION')) 
                  $param_conds[$command[1]] = stripslashes($command[2]);
@@ -276,19 +279,19 @@ function GetView($view_param) {
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param);
 
-  if( !$nocache && ($res = $GLOBALS[pagecache]->get($keystr)) ) {
+  if( !$nocache && ($res = $GLOBALS['pagecache']->get($keystr)) ) {
     return $res;
   } 
   
-  $str2find_save = $GLOBALS[str2find_passon]; //Save str2find from same level
-  $GLOBALS[str2find_passon] = ""; // clear it for caches stored further down
+  $str2find_save = $GLOBALS['str2find_passon']; //Save str2find from same level
+  $GLOBALS['str2find_passon'] = ""; // clear it for caches stored further down
   $res = GetViewFromDB($view_param, $cache_sid);
   $str2find_this = ",slice_id=$cache_sid";
-  if (!strstr($GLOBALS[str2find_passon],$str2find_this)) 
-    $GLOBALS[str2find_passon] .= $str2find_this; // append our str2find
+  if (!strstr($GLOBALS['str2find_passon'],$str2find_this)) 
+    $GLOBALS['str2find_passon'] .= $str2find_this; // append our str2find
     // Note cache_sid set by GetViewFromDB
-  $GLOBALS[pagecache]->store($keystr, $res, $GLOBALS[str2find_passon]);
-  $GLOBALS[str2find_passon] .= $str2find_save; // and append saved for above
+  $GLOBALS['pagecache']->store($keystr, $res, $GLOBALS['str2find_passon']);
+  $GLOBALS['str2find_passon'] .= $str2find_save; // and append saved for above
   return $res;
 }
 
@@ -319,8 +322,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
     return false; 
 
   $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
-                   ( $view_info['noitem_msg'] ? $view_info['noitem_msg'] : 
-                                                ("<div>"._m("No item found") ."</div>")));
+                   ( $view_info['noitem_msg'] ? 
+                   str_replace( '<!--Vacuum-->', '', $view_info['noitem_msg']) :
+                                     ("<div>"._m("No item found") ."</div>")));
   
   ParseBannerParam($view_info, $view_param["banner"]);  // if banner set format
 
@@ -427,10 +431,11 @@ function GetViewFromDB($view_param, &$cache_sid) {
       }
 
       $sort  = GetViewSort($view_info);
+      
 	$zids2 = 
 	    QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
-                         $group_by, "ACTIVE", $slices, 0, 
-			 $zids);
+                         $group_by, "ACTIVE", $slices, 0, $zids);
+
     # Note this zids2 is always packed ids, so lost tag information
     if ($debug) huhl("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count : 0)." IDS");
     if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
