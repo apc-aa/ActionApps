@@ -29,7 +29,7 @@ http://www.apc.org/
     label       to be shown
     cond        if not satisfied, don't show the label linked  
                 slice_id is included in the cond automatically
-    href        link, relative to aa/admin/
+    href        link, relative to aa/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
@@ -99,7 +99,7 @@ function get_aamenus ()
             label       to be shown
             cond        if not satisfied, don't show the label linked  
                         slice_id is included in the cond automatically
-            href        link, relative to aa/admin/
+            href        link, relative to aa/
             exact_href  link, absolute (use either exact_href or href, not both)
             show_always don't include slice_id in cond
     */
@@ -182,8 +182,8 @@ function get_aamenus ()
         "sliceimp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"admin/sliceimp.php3", "label"=>L_IMPORT_SLICE),
 
         "header6"=>L_ALERTS,
-        "alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/alerts_collections.php3", "label"=>L_ALERTS_COLLECTIONS),
-        "te_alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set[tview]=ac", "label"=>L_TE_ALERTS_COLLECTIONS),        
+        "te_alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set[tview]=ac", "label"=>L_ALERTS_COLLECTIONS),        
+        "te_alerts_users"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set[tview]=au", "label"=>L_ALERTS_USERS),      
         
         "header70"=>L_MISC,
         "te_wizard_welcome" => array ("label"=>L_EDIT_WIZARD_WELCOME, "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set[tview]=ww"),

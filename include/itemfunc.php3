@@ -164,6 +164,54 @@ function GetDestinationFileName($dirname, $uploaded_name) {
 }
   
   # File upload
+/*
+function insert_fnc_fil($item_id, $field, $value, $param) {
+  $filevarname = "v".unpack_id($field[id])."x";
+    
+  # look if the uploaded picture exists
+  if(($GLOBALS[$filevarname] <> "none")&&($GLOBALS[$filevarname] <> "")) {
+
+    # get filename and replace bad characters
+    $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
+
+    # new behavior, added by Jakub on 2.8.2002 -- related to File Manager
+    $db = new DB_AA;
+    $db->query ("SELECT fileman_dir FROM slice WHERE id='".q_pack_id($GLOBALS["slice_id"])."'");
+
+    if ($db->num_rows() == 1) {
+        $db->next_record();
+        $fileman_dir = $db->f("fileman_dir");
+        if ($fileman_dir && is_dir (FILEMAN_BASE_DIR.$fileman_dir)) {
+            $dirname = FILEMAN_BASE_DIR.$fileman_dir."/items";
+            $dirurl = FILEMAN_BASE_URL.$fileman_dir."/items";
+            if (!is_dir ($dirname)) 
+               mkdir ($dirname, $FILEMAN_MODE_DIR);
+            $fileman_used = true;
+        }
+    }
+    if (!$dirname) {
+        # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
+        $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
+        $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
+
+        if( !is_dir( $dirname ))
+          if( !mkdir( $dirname, IMG_UPLOAD_DIR_MODE ) )
+            return L_CANT_CREATE_IMG_DIR;
+    }
+        
+    $dest_file = GetDestinationFileName($dirname, $dest_file);
+        
+    # copy the file from the temp directory to the upload directory, and test for success    
+    $err = aa_move_uploaded_file ($filevarname, $dirname, $fileman_used ? $FILEMAN_MODE_FILE : 0, $dest_file);
+    if ($err) return $err;
+
+    $value["value"] = "$dirurl/$dest_file";
+  }
+  # store link to uploaded file or specified file URL if nothing was uploaded
+  insert_fnc_qte($item_id, $field, $value, "");
+}    
+*/
+
 function insert_fnc_fil($item_id, $field, $value, $param) {
   $varname = 'v'.unpack_id($field[id]);
   $filevarname = $varname."x";
@@ -173,32 +221,17 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
     # get filename and replace bad characters
     $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
 
-    # new behavior, added by Jakub on 2.8.2002 -- related to File Manager
-    $dirname = "";
-    $db = new DB_AA;
-    $db->query ("SELECT fileman_dir FROM slice WHERE id='".q_pack_id($GLOBALS["slice_id"])."'");
-    if ($db->num_rows() == 1) {
-        $db->next_record();
-        $fileman_dir = $db->f("fileman_dir");
-        if ($fileman_dir && is_dir (FILEMAN_BASE_DIR.$fileman_dir)) {
-            $dirname = FILEMAN_BASE_DIR.$fileman_dir."/items";
-            $dirurl = FILEMAN_BASE_URL.$fileman_dir."/items";
-            if (!is_dir ($dirname)) 
-               mkdir ($dirname, $FILEMAN_MODE_DIR);
-        }
-    }
-    if (!$dirname) {
-        # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
-        $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
-        $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
-    }
+    # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
+    $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
+    $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
 
     if( !is_dir( $dirname ))
       if( !mkdir( $dirname, IMG_UPLOAD_DIR_MODE ) ){
         return L_CANT_CREATE_IMG_DIR;
       }    
 
-    $dest_file = GetDestinationFileName($dirname, $dest_file);
+    if( file_exists("$dirname/$dest_file") )
+      $dest_file = new_id().substr(strrchr($dest_file, "." ), 0 );
 
     # copy the file from the temp directory to the upload directory, and test for success    
 
@@ -209,13 +242,11 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
         if( !move_uploaded_file($GLOBALS[$filevarname], "$dirname/$dest_file")) {
           return L_CANT_UPLOAD;
         }  
-        else chmod ("$dirname/$dest_file",IMG_UPLOAD_DIR_MODE);
       }
     } else {   # for php 3.x and php <4.0.3
       if(!copy($GLOBALS[$filevarname],"$dirname/$dest_file")) {
         return L_CANT_UPLOAD;
       }  
-      else chmod ("$dirname/$dest_file",IMG_UPLOAD_DIR_MODE);
     }  
     $value["value"] = "$dirurl/$dest_file";
   }

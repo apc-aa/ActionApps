@@ -103,6 +103,10 @@ function array_add ($source, &$target)
     }
 }   
 
+function self_complete_url() {
+    return self_server().$GLOBALS[REQUEST_URI];
+}
+
 # returns server name with protocol and port
 function self_server() {
   global $HTTP_HOST, $SERVER_NAME, $HTTPS, $SERVER_PORT;
@@ -894,8 +898,9 @@ function CountHit($id, $column='id') {
 
 function is_field_type_numerical ($field_type) {
     $number_db_types = array ("float","double","decimal","int", "timestamp");
+    reset ($number_db_types);
 
-    while ($n_col = each ($number_db_types)) 
+    while (list (,$n_col) = each ($number_db_types)) 
         if (strstr ($field_type, $n_col)) 
             return true;
     
@@ -1082,7 +1087,9 @@ function html2text ($html) {
 /*  Function:    mail_html_text
     Author:      Jakub Adámek
     Purpose:     sends safely HTML messages
-    Parameters:  same as PHP mail(), plus $charset 
+    Parameters:  same as PHP mail()
+                 $additional_headers - use \r\n at the end of each row!
+                 $charset - e.g. iso-8859-1, iso-8859-2, windows-1250
                  $use_base64 - set to 0 if you want to pass the message 8 bit encoded
     Description: some e-mail clients don't understand HTML. This function creates a multipart message containing both the HTML and the plain-text version of the message (by leaving out the HTML tags). Each e-mail client displays what it understands better (and hides all the rest of the message). */
 
@@ -1119,4 +1126,70 @@ function mail_html_text ($to, $subject, $message, $additional_headers = "", $cha
      mail ($to, $subject, "", $additional_headers);
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+# Moves uploaded file to given directory and (optionally) changes permissions
+# Returns: error description or empty string
+
+function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "") 
+{   
+    endslash ($destdir);    
+    if (!$GLOBALS[$varname]) return "No $varname?";
+    if ($filename == "") {
+        # get filename and replace bad characters
+        $filename = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$varname."_name"]);
+    }
+
+    if( !is_dir( $destdir )) 
+        return L_DIR_NOT_EXISTS;
+
+    if( file_exists("$destdir$dest_file") )
+        return L_FILE_NAME_EXISTS . $destdir . $filename;
+
+    # copy the file from the temp directory to the upload directory, and test for success    
+
+    # file uploads are handled differently in PHP >4.0.3
+    list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
+    if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
+        if (is_uploaded_file($GLOBALS[$varname])) 
+            if( !move_uploaded_file($GLOBALS[$varname], "$destdir$dest_file")) 
+                return L_CANT_UPLOAD;
+            else if ($perms)
+                chmod ($destdir.$filename, $perms);
+    } 
+    else {   # for php 3.x and php <4.0.3
+        if (!copy($GLOBALS[$varname],"$destdir$dest_file")) 
+            return L_CANT_UPLOAD;
+        else if ($perms)
+            chmod ($destdir.$filename, $perms);
+    }  
+    return "";
+}    
+
+// ---------------------------------------------------------------------------------------------
+
+// like PHP split, but additionally provides $escape_pattern to stand for occurences of $pattern,
+// e.g. split_escaped (":", "a#:b:c", "#:") returns array ("a:b","c")
+
+function split_escaped ($pattern, $string, $escape_pattern)
+{
+    $dummy = "~#$?_";
+    if (strstr ($dummy, $string)) { echo "INTERNAL ERROR."; return "INTERNAL ERROR"; }
+    $string = str_replace ($escape_pattern,$dummy,$string);
+    $strings = split ($pattern, $string);
+    reset ($strings);
+    while (list ($key,$val) = each ($strings))
+        $strings[$key] = str_replace ($dummy, $pattern, $val);
+    return $strings;
+}
+    
+function join_escaped ($pattern, $strings, $escape_pattern)
+{
+    reset ($strings);
+    while (list (,$val) = each ($strings)) {
+        if ($retval) $retval .= $pattern;
+        $retval .= str_replace ($pattern, $escape_pattern, $val);
+    }
+    return $retval;
+}
 ?>
