@@ -1,3 +1,4 @@
+03/26/04 - small fixes and improvements to sql_update.php3 (pep)
 03/14/03 - added stringexpand_sessurl to expand {sessurl:xxxx}
          - added admin_notiem_msg to sql_update.php3
          - removed new DB_AA in itemedit.php3
