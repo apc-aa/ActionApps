@@ -32,16 +32,15 @@ http://www.apc.org/
               if you don't like this behavior, delete the destination files
 */
 
+if (!isset($LANGUAGE_CHARSETS))
+    require "../../include/constants.php3";
 require "../../include/mgettext.php3";
 
 function translate_files ($old_lang_file, $src_dir, $dst_dir)
 {
     set_time_limit(10000);
     
-    include $old_lang_file;
-    
-    create_log ($old_lang_file, $dst_dir);
-
+    include $old_lang_file;    
     $consts = get_defined_constants();
     // we want to replace first L_NO_EVENT and only later L_NO
     krsort ($consts);  
@@ -90,26 +89,5 @@ function translate_files ($old_lang_file, $src_dir, $dst_dir)
     closedir ($dir);    
 }
 
-// -------------------------------------------------------------------------------------
-                      
-function create_log ($old_lang_file, $dst_dir)
-{    
-    $fd = fopen ($dst_dir.basename($old_lang_file), "w");
-    if (!$fd) return;
-    chmod ($dst_dir.basename($old_lang_file), 0777);
-    fwrite ($fd,"# this is a log file of the language translation on ".date("d.j.Y H:i")."\n\n");
-    $consts = get_defined_constants();
-    reset ($consts);
-    while (list ($name, $value) = each($consts)) {
-        if (substr ($name,0,2) == "L_" && $value) {
-            $value = str_replace(
-                array ('"',"\n","\r"),
-                array ('\\"',"\\n",""),
-                $value);
-            fwrite ($fd, "_m[\"$value\"] = \"$name\";\n");
-        }
-    }
-    fclose ($fd);
-}    
 
 ?>

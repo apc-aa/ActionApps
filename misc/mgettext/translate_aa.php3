@@ -5,25 +5,42 @@ require "./translate.php3";
 
 //translate_aa_files ("/raid/www/htdocs/work.ecn.cz/aa_jakub/", "/raid/www/htdocs/work.ecn.cz/aa_jakub/php_rw/tr1/");
 
-create_language_files_updates ("/raid/www/htdocs/work.ecn.cz/aa_jakub/", "/raid/www/htdocs/work.ecn.cz/aa_jakub/php_rw/lang/");
+// call this script several times if it does not manage to go through all files 
+// it will continue where it stopped last time
 
-function create_language_files_updates ($aadir, $destdir)
+create_language_files_updates ("/raid/www/htdocs/work.ecn.cz/aa_jakub/", "/raid/www/htdocs/work.ecn.cz/aa_jakub/php_rw/lang/", 0);
+
+function create_language_files_updates ($aadir, $destdir, $addlogs = false)
 {    
     @mkdir ($destdir, 0777);
-    xmgettext ("$destdir/??_alerts_lang.inc",
-        $aadir, 
-        array ("misc/alerts/alerts.php3", 
-               "misc/alerts/confirm.php3",
-               "misc/alerts/add_user_collection.php3",
-               "misc/alerts/index.php3",
-               "misc/alerts/newuser.php3",
-               "misc/alerts/print_collections_select.php3",
-               "misc/alerts/subscribe.php3",
-               "misc/alerts/user_filter.php3",
-               "misc/alerts/util.php3",
-               "admin/alerts_collections.php3",
-               "admin/te_alerts_collections.php3"),
-        0666);
+    $lang_groups ["alerts"] =
+        array ("misc/alerts/");
+    $lang_groups ["news"] =
+        array ("admin/",
+               "include/");
+
+    $logfile = $destdir."log_language_updates.php3";
+    if (file_exists ($logfile)) 
+        include $logfile;
+
+    $xmgettext_logfile = $destdir."collect_msg_log.php3";
+            
+    reset ($lang_groups);
+    while (list ($langfiles, $srcfiles) = each ($lang_groups)) {
+        if ($log_group_processed == $langfiles)
+            unset ($log_group_processed);
+        if (!$log_group_processed) {
+            $fd = fopen ($logfile, "w");
+            fwrite ($fd, "<?php \$log_group_processed = \"$langfiles\"; ?>\n");
+            fclose ($fd);
+            chmod ($logfile, 0664);
+            if (!$addlogs)
+                xmgettext ($xmgettext_logfile, $destdir."??_".$langfiles."_lang.inc", $aadir, $srcfiles, 0666, false);
+            else xmgettext ($xmgettext_logfile, $destdir."??_".$langfiles."_lang.inc", $aadir, $srcfiles, 0666, false,
+                $destdir."log_??_".$langfiles."_lang.inc");
+        }
+    }
+    unlink ($logfile);
     echo "Ready<Br>";
 }
 
