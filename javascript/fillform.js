@@ -237,6 +237,8 @@ function setMeTop ()
 /* gets a control by name in IE and Netscape */
 
 function getControlByName (formName, controlName) {
+    if (document.forms[formName] == null)
+        return null;
 	return document.forms[formName][controlName];
 }
 
