@@ -53,7 +53,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             $type            = 'bulk email';
             ValidateInput("subject",     _m("Subject"),            $subject,     $err, true,  "text");
             ValidateInput("body",        _m("Body"),               $body,        $err, true,  "text");
-            ValidateInput("header_from", _m("From (email)"),       $header_from, $err, false, "text");
+            ValidateInput("header_from", _m("From (email)"),       $header_from, $err, true, "text");
             ValidateInput("reply_to",    _m("Reply to (email)"),   $reply_to,    $err, false, "text");
             ValidateInput("errors_to",   _m("Errors to (email)"),  $errors_to,   $err, false, "text");
             ValidateInput("sender",      _m("Sender (email)"),     $sender,      $err, false, "text");
@@ -146,7 +146,7 @@ FrmTabSeparator( _m('Write the email') );
 
 FrmInputText(  'subject',     _m('Subject'),           dequote($subject),     254, 80, true);
 FrmTextarea(   'body',        _m('Body'),              dequote($body),         12, 80, true);
-FrmInputText(  'header_from', _m('From (email)'),      dequote($header_from), 254, 80, false);
+FrmInputText(  'header_from', _m('From (email)'),      dequote($header_from), 254, 80, true);
 FrmInputText(  'reply_to',    _m('Reply to (email)'),  dequote($reply_to),    254, 80, false);
 FrmInputText(  'errors_to',   _m('Errors to (email)'), dequote($errors_to),   254, 80, false);
 FrmInputText(  'sender',      _m('Sender (email)'),    dequote($sender),      254, 80, false);

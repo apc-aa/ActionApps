@@ -30,19 +30,26 @@ require_once $GLOBALS["AA_INC_PATH"]."htmlMimeMail/htmlMimeMail.php";
 class HtmlMail extends HtmlMimeMail {
 
     /// This function fits a record from the @c email table.
-    function setBasicHeaders ($record, $default) {
+    function setBasicHeaders($record, $default) {
         $headers = array (
-            "From" => "header_from",
-            "Reply-To" => "reply_to",
-            "Errors-To" => "errors_to",
-            "Sender" => "sender");
-        reset ($headers);
-        while (list ($header, $field) = each ($headers)) {
-            if ($record[$field])
-                $this->setHeader ($header, $record[$field]);
-            else if ($default[$field])
-                $this->setHeader ($header, $default[$field]);
+            "From"        => "header_from",
+            "Reply-To"    => "reply_to",
+            "Errors-To"   => "errors_to",
+            "Sender"      => "sender"
+            );
+        foreach ( $headers as $header => $field) {
+            if ($record[$field]) {
+                $this->setHeader($header, $record[$field]);
+            }
+            elseif ($default[$field]) {
+                $this->setHeader($header, $default[$field]);
+            }
         }
+        // bounces are going to errors_to (if defined) or ...
+        $return_path = ( $record['errors_to']    ? $record['errors_to'] :
+                        ( $record['header_from'] ? $record['header_from'] :
+                          ERROR_REPORTING_EMAIL));
+        $this->setReturnPath($return_path);
     }
 
     // header encoding does not seem to work correctly
@@ -50,10 +57,17 @@ class HtmlMail extends HtmlMimeMail {
         return $input;
     }
 
-    function setCharset ($charset) {
-        $this->setHeadCharset ($charset);
-        $this->setHtmlCharset ($charset);
-        $this->setTextCharset ($charset);
+    function setCharset($charset) {
+        $this->setHeadCharset($charset);
+        $this->setHtmlCharset($charset);
+        $this->setTextCharset($charset);
+    }
+
+    /** Toexecutelater - special function called from toexecute class
+     *  - used for queued tasks (runed form cron)
+     */
+    function toexecutelater($to) {
+        return $this->send($to);
     }
 };
 
@@ -61,13 +75,13 @@ class HtmlMail extends HtmlMimeMail {
 *   Replaces URL links by the link in compound brackets behind the linked text.
 *   Removes diacritics.
 */
-function html2text ($html) {
+function html2text($html) {
 
     // reverse to htmlentities
     if (function_exists ("get_html_translation_table")) {
-        $trans_tbl = get_html_translation_table (HTML_ENTITIES);
-        $trans_tbl = array_flip ($trans_tbl);
-        $html = strtr ($html, $trans_tbl);
+        $trans_tbl = get_html_translation_table(HTML_ENTITIES);
+        $trans_tbl = array_flip($trans_tbl);
+        $html      = strtr($html, $trans_tbl);
     }
 
     // Strip diacritics
@@ -78,15 +92,15 @@ function html2text ($html) {
     /* We can't directly use preg_replace, because it would find the first <a href
        and the last </a>. */
     $ahref = "<[ \t]*a[ \t][^>]*href[ \t]*=[ \t]*[\"\\']([^\"\\']*)[\"\\'][^>]*>";
-    preg_match_all ("'$ahref'si", $html, $html_ahrefs);
-    $html_parts = preg_split ("'$ahref'si", $html);
+    preg_match_all("'$ahref'si", $html, $html_ahrefs);
+    $html_parts = preg_split("'$ahref'si", $html);
 
-    reset ($html_parts);
-    reset ($html_ahrefs[0]);
+    reset($html_parts);
+    reset($html_ahrefs[0]);
     // Take the first part before any <a href>
-    list (, $html) = each ($html_parts);
-    while (list (, $html_part) = each ($html_parts)) {
-        list (, $html_ahref) = each ($html_ahrefs[0]);
+    list(, $html) = each ($html_parts);
+    while (list(, $html_part) = each($html_parts)) {
+        list(, $html_ahref) = each($html_ahrefs[0]);
         preg_match ( "'$ahref(.*)</[ \t]*a[ \t]*>(.*)'si", $html_ahref. $html_part , $matches);
         if ( $matches[1] == $matches[2] ) {
             $html .= $matches[1]. $matches[3];
@@ -120,9 +134,9 @@ function html2text ($html) {
         // evaluate as php
         "'&#(\d+);'e"     => "chr(\\1)");
 
-    reset ($search_replace);
-    while (list ($search, $replace) = each ($search_replace))
-        $html = preg_replace ($search, $replace, $html);
+    foreach ( $search_replace as $search => $replace) {
+        $html = preg_replace($search, $replace, $html);
+    }
 
     return $html;
 }
@@ -138,23 +152,23 @@ function html2text ($html) {
 *        array $aliases   (optional) array of alias => text
 * @return int count of successfully sent emails
 */
-function send_mail_from_table ($mail_id, $to, $aliases="")
+function send_mail_from_table($mail_id, $to, $aliases="")
 {
-    if (! is_array ($aliases))
+    if (!is_array($aliases)) {
         $aliases = array ("_#dUmMy__aLiAsSs#_" => "");
+    }
 
     // I try to pretend having an item.
-    reset ($aliases);
-    while (list ($alias, $translate) = each ($aliases)) {
+    foreach ($aliases as $alias => $translate) {
         // I create the "columns"
         $cols[$alias][0] = array (
             "value" => $translate,
-            "flag" => FLAG_HTML);
+            "flag"  => FLAG_HTML);
         // and "aliases"
         $als [$alias] = array ("fce"=>"f_h", "param"=>$alias);
     }
     $item = new item($cols, $als);
-    return send_mail_from_table_inner ($mail_id, $to, $item);
+    return send_mail_from_table_inner($mail_id, $to, $item);
 }
 
 /** Sends mail defined in e-mail template id $mail_id to all $recipients.
@@ -193,7 +207,7 @@ function send_mail_from_table_inner($mail_id, $to, $item, $aliases = null) {
         $record[$key] = new_unalias_recurent($value, "", $level, $maxlevel, $item, null, $aliases);
     }
 
-    $tos = (is_array($to) ? $to : array ($to));
+    $tos  = (is_array($to) ? $to : array ($to));
     $sent = 0;
 
     /*
@@ -203,14 +217,16 @@ function send_mail_from_table_inner($mail_id, $to, $item, $aliases = null) {
 
     $mail = new HtmlMail;
     if ($record["html"]) {
-        $mail->setHtml ($record["body"], html2text ($record["body"]));
+        $mail->setHtml( $record["body"], html2text($record["body"]));
     } else {
-        $mail->setText (html2text( nl2br($record["body"])));
+        $mail->setText( html2text( nl2br($record["body"])));
     }
-    $mail->setSubject ($record["subject"]);
-    $mail->setBasicHeaders ($record, "");
-    $mail->setTextCharset ($LANGUAGE_CHARSETS [$record["lang"]]);
-    $mail->setHtmlCharset ($LANGUAGE_CHARSETS [$record["lang"]]);
+    $mail->setSubject($record["subject"]);
+    $mail->setBasicHeaders($record, "");
+    $mail->setTextCharset($LANGUAGE_CHARSETS [$record["lang"]]);
+    $mail->setHtmlCharset($LANGUAGE_CHARSETS [$record["lang"]]);
+
+    $toexecute = new toexecute;
 
     foreach ($tos as $to) {
         if (!$to OR !valid_email($to)) {
@@ -222,16 +238,9 @@ function send_mail_from_table_inner($mail_id, $to, $item, $aliases = null) {
             set_time_limit( 120 );
         }
 
-        if (! $GLOBALS["EMAILS_INTO_TABLE"]) {
-            #huhl("Sending mail $to");
-            if ($mail->send( array($to) )) {
-                $sent++;
-            }
-        } elseif ($db->query ("
-                INSERT INTO email_sent (email_id, send_to, subject, headers, body, text_body, created_at)
-                VALUES ($mail_id, '".addslashes($to)."', '".addslashes($record["subject"])."',
-                   '','".addslashes($record["body"])."','".
-                   addslashes(html2text($record["body"]))."', ".time().")")) {
+        // Yes, two nested arrays - mail->send() accepts array($to) and
+        // all parameters to later must be in another only one array
+        if ( $toexecute->later($mail, array(array($to))) ) {
             $sent++;
         }
     }
