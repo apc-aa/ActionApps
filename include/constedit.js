@@ -12,8 +12,20 @@ var hcDeletedIDs = new Array ();
 // ID counter to be set for new items
 var hcNewID = 0;
 
+function hcResolveValues (arr) {
+    var i = new Number();
+    for (i=0; i < arr.length; ++i) {
+        if (arr[i][colValue] == '#')
+            arr[i][colValue] = arr[i][colName];
+        if (arr[i].length > colChild)
+            hcResolveValues (arr[i][colChild]);
+    }
+}
+
 // call at the start of this page 
 function hcInit () {
+    hcResolveValues (hcConsts);
+
 	// init the hcSelectedItems array
 	for (i=0; i < hcLevelCount; ++i)
 		hcSelectedItems[i] = -1;
@@ -22,7 +34,7 @@ function hcInit () {
 	var selectBox = document[hcForm]['hclevel0'];
 	selectBox[0] = null;
 	for (i=0; i < hcConsts.length; ++i) {
-		opt = new Option(hcConsts[i][colName],i,false,false);
+		opt = new Option(hcConsts[i][colName],hcConsts[i][colValue],false,false);
 		selectBox.options[i] = opt;
 	}
 	if (hcConsts.length > 0) 
@@ -57,9 +69,7 @@ function hcSelectItem (iBox, admin) {
 	if (arr.length > 0 && admin) {
 		var f = document[hcForm];
 		f['hcfName'].value = arr[colName];	
-		if (arr[colValue] == '#')
-			f['hcfValue'].value = arr[colName];
-		else f['hcfValue'].value = arr[colValue];
+		f['hcfValue'].value = arr[colValue];
 		f['hcfDesc'].value = arr[colDesc];
 		f['hcfPrior'].value = arr[colPrior];
 	}
@@ -70,9 +80,7 @@ function hcSelectItem (iBox, admin) {
 		if (arr.length > colChild) {
 			arr = arr[colChild];
 			for (i=0; i < arr.length; ++i) {
-				value = arr[i][colValue];
-				if (value == '#') value = arr[i][colName];
-				opt = new Option(arr[i][colName],value,false,false);
+				opt = new Option(arr[i][colName],arr[i][colValue],false,false);
 				selectBox.options[i] = opt;
 			}
 			selectBox.selectedIndex = -1;
@@ -96,7 +104,7 @@ function refreshBox (iBox) {
 		for (i=0; i < iBox; ++i) 
 			arr = arr[hcSelectedItems[i]][colChild];
 		for (i=0; i < arr.length; ++i) {
-			opt = new Option(arr[i][colName],i,false,false);
+			opt = new Option(arr[i][colName],arr[i][colValue],false,false);
 			selectBox.options[i] = opt;
 		}
 	}
@@ -307,6 +315,7 @@ function hcAddItemTo (i,targetBox) {
 	if (selectBox.selectedIndex == -1) return;
 	name = selectBox.options[selectBox.selectedIndex].text;
 	value = selectBox.options[selectBox.selectedIndex].value;
+    alert ('name '+name+' value '+value);
 	opt = new Option(name,value,false,false);
 	var target = document[hcForm][targetBox];
 	target.options [target.length] = opt;
