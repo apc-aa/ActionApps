@@ -51,7 +51,7 @@ require ("$GLOBALS[AA_INC_PATH]" . "perm_" . PERM_LIB . ".php3");
 require ("$GLOBALS[AA_INC_PATH]" . "util.php3");
 require ("$GLOBALS[AA_INC_PATH]" . "formutil.php3");
 require ("$GLOBALS[AA_INC_PATH]" . "mgettext.php3");
-bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".str_replace ("php3","inc",DEFAULT_LANG_INCLUDE));
+bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".DEFAULT_LANG_INCLUDE);
 
 function HtmlStart() {
    HTMLPageBegin ("../".ADMIN_CSS);

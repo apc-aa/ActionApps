@@ -1,3 +1,5 @@
+01/20/03 - modified mgettext language files extension from .inc to .php3 
+           (mainly for backward compatibility) (jakub)
 01/17/03 - changed all January dates here from /02 to /03 :-)) (jakub)
 01/17/03 - changed name loginform.html to loginform.inc, the name was nonsense (jakub)
 01/17/03 - BIG CHANGE: moved the complete AA to mgettext (jakub)

@@ -105,10 +105,10 @@ if( $Add_slice )
 
 require $GLOBALS["AA_INC_PATH"]."mgettext.php3";  
 if( !$require_default_lang AND isset($r_lang_file) AND is_array($r_lang_file) AND ($r_lang_file[$slice_id] != "")) {
-  $lang_file = str_replace ("php3", "inc", $r_lang_file[$slice_id]);  # do not delete the curly braces - include in condition statement must be in braces!
+  $lang_file = $r_lang_file[$slice_id];  # do not delete the curly braces - include in condition statement must be in braces!
   bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$lang_file);
 }  
-else bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".str_replace ("php3","inc",DEFAULT_LANG_INCLUDE));
+else bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".DEFAULT_LANG_INCLUDE);
     
 require $GLOBALS[AA_INC_PATH] . "util.php3"; // must be after language include because of lang constants in util.php3
 
