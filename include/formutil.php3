@@ -733,23 +733,23 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
             while(list($k, $v) = each($arr)) 
                 OneChBox ($k, $v, $name, $selected);
         } else {
-            for ($i = 0, reset ($arr); list ($k,$v) = each ($arr); $i ++)
-                $matrix [$i % $ncols][$i / $ncols] = array ($k=>$v);               
-    
+            for ($i = 0, reset ($arr); list ($k,$v) = each ($arr); $i ++) {
+                $keys[$i] = $k;
+                $values[$i] = $v;
+            }    
+
             $nrows = ceil (count ($arr) / $ncols);
             echo '<table border="0" cellspacing="0">';
             for ($irow = 0; $irow < $nrows; $irow ++) {
                 echo '<tr>';
                 for ($icol = 0; $icol < $ncols; $icol ++) {
                     echo '<td>';
-                    if ($move_right) 
-                         $arr = $matrix [$icol][$irow];
-                    else $arr = $matrix [$irow][$icol];
-                    if (!is_array ($arr))
+                    $pos = ( $move_right ? $ncols*$irow+$icol : 
+                                           $nrows*$icol+$irow );
+                    if (!$keys[$pos] AND !$values[$pos]) {
                         echo "&nbsp;";
-                    else {
-                        reset ($arr);
-                        OneChBox (key($arr), current($arr), $name, $selected);
+                    } else {
+                        OneChBox ($keys[$pos], $values[$pos], $name, $selected);
                     }
                     echo '</td>';
                 }
