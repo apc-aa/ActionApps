@@ -21,7 +21,7 @@ http://www.apc.org/
 
 // Settings for each table view (see include/tabledit.php3 for more info)
 
-/* Grammar: * = required, | = alternatives
+/* Table Views Grammar: * = required, | = alternatives
     
    "table"* => table name
    "type"* => "edit" | "browse"  browse view = table, edit view = fields one on a row each 
@@ -38,7 +38,9 @@ http://www.apc.org/
                  array (button_name => 1, ...), where button_name is 
                  "delete" | "update" | "edit" 
    "button_add" => true | false  show Insert button in browse view
-   "gotoview" => which to show after submitting form (if other than current view)
+   "gotoview" => which view to show after clicking on Edit or Insert (Browse view)
+   				 or after clicking on Cancel (Edit view)
+				 default: stay in the same view
    "help" => text to be shown above the table
    "listlen" => number of records to be shown at once, default: 15
    "orderby" => field to sort by (default: don't sort)

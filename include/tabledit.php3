@@ -19,7 +19,71 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-//require $GLOBALS[AA_INC_PATH]."scroller.php3";
+/*  Class TableEdit
+
+	(c) Jakub Adámek, Econnect, September 2002
+
+	This is a multi-purpose class allowing to edit various tables. 
+	It works based on a configuration array called Table View, see tableviews.php3. 
+	The main features are:
+	
+	* two basic view types: browse x edit
+	* insert, update, delete records
+	* input validation
+	* sort data by clicking on column headers
+	* filter data by easy conditions or by complex WHERE SQL clauses
+	* show hints about the table, columns etc.
+	* scroller to easy go through lots of records
+	* user-defined messages to show on errors
+	* show 1:n tables as a parent and child
+	* show m:n relations with a select box in a child
+	
+	VIEW TYPES: BROWSE x EDIT
+	
+	The Browse view is used to view many records at once. 
+	It looks like a table with one row for each table record. If there are many
+	records, a scroller is shown under the table allowing to jump through the records. 
+	A search form may be shown to quickly find records. 
+	After clicking on Edit on the left of a record you usually go to an Edit view,
+	set by "gotoview".
+		
+	The Edit view is used to edit a record. Each field is shown on a separate row. 
+	Usually only one record is shown although you may show many at once if you wish.
+	
+	INSERT, UPDATE, DELETE RECORDS AND INPUT VALIDATION
+	
+	Separate functions are prepared to do this. They work with a part of the
+	Table View, describing columns to be shown. Input is first validated by 
+	JavaScript before sending the form and again by PHP itself. 
+	See "Table View grammar" in tableviews.php3 for validation types.
+	
+	PARENTS AND CHILDREN
+	
+	A 1:n (one-to-many) relationship means that 1 record in a Parent table is connected by
+	key values to many records in the Child table. For example table Countries contains
+	Czech republic with ID 54 and table Towns contains records (54, Praha), (54, Brno),
+	(54, Ostrava) etc.
+	
+	The usual way to view one-to-many related tables is to use Edit view to show one
+	parent record and one or more Browse view with related children records. Use "children"
+	in the Table View definition to create such a view.
+	
+	A m:n (many-to-many) relationship always needs 3 tables A, B, C, with relationship
+	1:n between A and B and 1:n between C and B. Table B contains the relation info,
+	i.e. keys from both A and C. To view such a relationship you may use a child view
+	on one 1:n relationship (e.g. parent A and child B) and use a select box which maps
+	keys from C (as OPTION values) to some other field from C.
+	
+	For example A = country, B = place, C = place type (city / town / village). 
+	You may have records like (54, Praha, city), (54, Brno, town), (54, Ostrava, town) 
+	in table B and (1,city), (2,town), (3,village) in table C. 
+	You view A as parent, B as child and the field typeID from table B
+	is shown as a select box with values got from C.
+	
+	TABLE EDIT CLASS USAGE
+	
+	See admin/tabledit.php3 for an example of the class usage. 
+*/	
 
 // identifies new record 
 $new_key = "__new__";
@@ -33,14 +97,14 @@ class tabledit {
     var $view;
     // view ID
     var $viewID;
-    // main script URL
+    // main script URL, used as FORM action
     var $action;
-    // cmd[] parameter (commands for all table views)
+    // global cmd[] parameter, created by this class, sent by a form
     var $all_cmd;
-    // command to be executed 
+    // command to be executed (exactly $all_cmd[$viewID])
     var $cmd;
     /* used for CHILD tables only, contains joining field values
-                        e.g. array ("collectionid" => 7)    */
+                        e.g. array ("id" => 7)    */
     var $joincols;
     // session (for scroller management)
     var $sess;
@@ -59,6 +123,7 @@ class tabledit {
     // show an empty record to add new data?
     var $show_new;
 
+	/* constructor, see above for parameter description */
     function tabledit($viewID, $action, $cmd, $view, $imagepath, &$sess, $joincols="", $parentViewID="", $getTableViewsFn="") {
         $this->viewID = $viewID;
         $this->all_cmd = $cmd;
