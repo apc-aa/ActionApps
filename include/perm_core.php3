@@ -256,4 +256,33 @@ function IsSuperadmin() {
   return $r_superuser[AA_ID];
 }
 
+// Permissions for the on-line file manager
+    
+function FilemanPerms ($auth, $slice_id) {
+    global $db, $sess;
+    // Sets the fileman_dir var:
+    global $fileman_dir; 
+    
+    
+    $db->query ("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
+   
+    if ($db->num_rows() != 1) return false;
+        
+    $db->next_record();
+    $fileman_dir = $db->f("fileman_dir");
+    if (IsSuperadmin()) return true;
+    else if (!$fileman_dir) return false;
+  
+    if ($GLOBALS[debug]) echo "FILEMAN ACCESS ".$db->f("fileman_access");
+    $perms_ok = false;
+    if ($db->f("fileman_access") == "EDITOR" 
+        && CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS)) 
+        $perms_ok = true;
+    else if ($db->f("fileman_access") == "ADMINISTRATOR" 
+        && CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) 
+        $perms_ok = true;
+        
+    return $perms_ok;
+}
+
 ?>
