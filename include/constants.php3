@@ -333,6 +333,7 @@ $VIEW_TYPES['full'] = array( 'name' => L_FULLTEXT_VIEW,
                               "before" => L_V_BEFORE ,
                               "odd" => L_V_ODD ,
                               "after" => L_V_AFTER ,
+                              "remove_string" => L_V_REMOVE_STRING ,
 // TODO                              "modification" => L_V_MODIFICATION ,
                               "cond1field" => L_V_COND1FLD ,
                               "cond1op" => L_V_COND1OP ,
@@ -363,7 +364,7 @@ $VIEW_TYPES['discus'] = array( 'name' => L_DISCUSSION_VIEW,
                               "remove_string" => L_D_FORM
                               );
 
-// discussion to mail 
+// discussion to mail
 $VIEW_TYPES['disc2mail'] = array( 'name' => L_DISCUSSION_2_MAIL,
                               "aditional" => L_V_MAIL_FROM,
                               "aditional2" => L_V_MAIL_REPLY_TO,
