@@ -61,7 +61,7 @@ a file <CODE>/etc/rc.d/init.d/mysqld</CODE>
   </CODE></BLOCKQUOTE>
 
 Since the server is now running, it can be accessed. It is a 
-good idea to immediately set a password for the MySQL root user. Remind the 
+good idea to immediately set a password for the MySQL root user. Remind the
 password - better not use <EM>mysqlpass</EM> for obvious reasons. We will refer 
 to this password as the <EM>mysql root password</EM>. 
 <BLOCKQUOTE><CODE>
@@ -109,7 +109,7 @@ example, the apache itself was already installed, but the development package
 was missing (this is the default case for RedHat Linux).
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE># rpm -Uvh /mnt/cdrom/RedHat/RPMS/apache-1.3.23-14.i386.rpm 
+<PRE># rpm -Uvh /mnt/cdrom/RedHat/RPMS/apache-1.3.23-14.i386.rpm
 package apache-1.3.23-14 is already installed
 # rpm -Uvh /mnt/cdrom/RedHat/RPMS/apache-devel-1.3.23-14.i386.rpm 
 apache-devel-1.3.23-14
@@ -119,7 +119,7 @@ apache-devel-1.3.23-14
 <P>Configuring the web server is a task for a later point in time because RPM 
 will do part of this work. 
 <P>
-<H2><A name=php_install></A><A name=ss3.5>3.5 PHP3</A> </H2>
+<H2><A name=php_install></A><A name=ss3.5>3.5 PHP</A> </H2>
 <H3>PHP installation</H3>
 <P>php runs within the apache web server as a module. We need a version of php 
   which includes support for <EM>two optional php modules</EM>, namely ldap and 
@@ -154,10 +154,10 @@ Access the page with a web browser (http://localhost/test.php).
     php. Browse through the <CODE>Configuration</CODE> section. Look for an extension 
     named <CODE>MySQL</CODE> and, if you are using the LDAP permission system, 
     for one named <CODE>LDAP</CODE>. If both are there, you are lucky because 
-    the php setup id complete; otherwise, you must install the missing parts.
-  <li>If you see the string <code>php phpinfo() ?</code>, you do not have php4 
+    the php setup is complete; otherwise, you must install the missing parts.
+  <li>If you see the string <code>php phpinfo() ?</code>, you do not have php4
     installed or at least it is not enabled. In which case, you can try again 
-    with a test file test.php3 which will work if the PHP3 is installed. APC-AA 
+    with a test file test.php3 which will work if the PHP3 is installed. APC-AA
     should work with this. 
 </UL>
 <P>
@@ -209,13 +209,13 @@ Remove the leading "#" from the lines if it is there.
   </CODE></BLOCKQUOTE>
 <P>After these configuration steps, PHP and server side includes should work. You can test PHP by 
 browsing to your test page ( <A 
-href="http://localhost/test.php3">http://localhost/test.php3</A>) again. 
+href="http://localhost/test.php3">http://localhost/test.php3</A>) again.
 <P>
-<P>To test if SSI works, create sample .shtml file. This can be for example done by executing this command (assuming <CODE>/home/httpd/html</CODE> 
-  is your DocumentRoot directory: 
+<P>To test if SSI works, create sample .shtml file. This can be for example done by executing this command (assuming <CODE>/home/httpd/html</CODE>
+  is your DocumentRoot directory:
 <BLOCKQUOTE><CODE>
   <HR>
-  <PRE>echo "&lt;!--#include virtual="test.php"--&gt;" &gt /home/httpd/html/test.php</PRE>
+  <PRE>echo "&lt;!--#include virtual="test.php"--&gt;" &gt /home/httpd/html/test.shtml    </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
 <P>Now test it by browsing to your test page ( <A
