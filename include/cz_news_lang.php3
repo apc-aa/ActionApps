@@ -909,6 +909,10 @@ define('L_MODULE_ID','ID modulu');
 define('L_UPDATE','Zmìò');
 define('L_CREATE','Vytvoø');
 
+define("L_ASCENDING_PRI","Vzestupnì dle Øazení");
+define("L_DESCENDING_PRI","Sestupnì dle Øazení");
+define("L_SORT_DIRECTION_HLP","'dle Øazení' lze použít jen pro pole používající konstant (kategorie) - tam take najdete hodnoty pro 'Øazení'");
+
 define("L_ALERTS","Zasílání zpráv");
 define("L_ALERTS_COLLECTIONS", "Kolekce");
 define("L_ALERTS_USERS","Uživatelé");
