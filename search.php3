@@ -67,29 +67,6 @@ while ($db->next_record()) {
    $i++;
 }
 echo("</table>");
-   
-/*
-$Log$
-Revision 1.3  2000/07/11 12:05:18  kzajicek
-Renamed config.inc to config.php3
-
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.5  2000/06/12 19:57:51  madebeer
-added GPL LICENSE file, added copyright notice to all files that
-added GPL LICENSE
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.4  2000/03/29 15:57:03  honzama
-*** empty log message ***
-
-Revision 1.3  2000/03/22 09:36:17  madebeer
-config.inc now allows ecn and igc to have different .css files
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
 
 </body>
