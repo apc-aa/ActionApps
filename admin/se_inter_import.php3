@@ -49,19 +49,11 @@ if (isset($feed_id)) {
   $db->query("DELETE FROM external_feeds WHERE feed_id='$feed_id'");     // delete feed
 }
 
-$db->query("SELECT feed_id, name, remote_slice_id, remote_slice_name FROM external_feeds, nodes
-             WHERE external_feeds.node_name = nodes.name
-               AND slice_id='$p_slice_id' ORDER BY name");
-unset($ext_feeds);
-while ($db->next_record()) {
-  $ext_feeds[$db->f(feed_id)] = $db->Record;
-}
-
-$db->query('SELECT * FROM nodes ORDER BY name ');
-unset($nodes);
-while ($db->next_record()) {
-  $nodes[] = $db->Record;
-}
+$SQL       = "SELECT feed_id, name, node_name, remote_slice_id, remote_slice_name
+                FROM external_feeds LEFT JOIN nodes ON external_feeds.node_name = nodes.name
+               WHERE slice_id='$p_slice_id' ORDER BY name";
+$ext_feeds = GetTable2Array($SQL, 'feed_id');
+$nodes     = GetTable2Array('SELECT * FROM nodes ORDER BY name', 'NoCoLuMn');
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -111,32 +103,45 @@ function Submit() {
   echo "<H1><B>" . _m("Inter node import settings") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
+  $form_buttons = array("submit"=>array("value" => _m("Create new feed from node")),
+                        "cancel"=>array("url"=>"se_fields.php3"));
 ?>
 <form method=post name="f" action="<?php echo $sess->url(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
+<?php
+
+  FrmTabCaption(_m("Inter node import settings"));
+/*
   <table width="400" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
     <tr><td class=tabtit><b>&nbsp;<?php echo _m("Inter node import settings") ?></b></td></tr>
      <tr><td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABBG ?>">
+      <table width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABBG ?>">*/
+?>
       <tr><td ><?php echo _m("Existing remote imports into the slice ") ."<b>" .$r_slice_headline ."</b>" ?></td></tr>
       <tr><td align=center>
         <SELECT name="feed_id" size=5>
          <?php
            if ($ext_feeds && is_array($ext_feeds)) {
-              reset($ext_feeds);
-              while(list($k,$v) = each($ext_feeds)) {
-                $str = str_replace(" ","&nbsp;",substr($v[name]."                              ",0,30)."  ");
-                echo "<option value=\"$k\">".$str.$v[remote_slice_name]."</option>";
+               foreach($ext_feeds as $k => $v) {
+                   $node_name = ( ( $v['node_name'] == $v['name'] ) ?
+                       $v['node_name'] :
+                       $v['node_name'].' - '. _m('Missing!!!'));
+                   $str = str_replace(" ","&nbsp;",str_pad($node_name,30)."  ");
+                   echo "<option value=\"$k\">".$str.$v['remote_slice_name']."</option>";
               }
            }
           ?>
         </SELECT>
       </td></tr>
+
       <tr><td align="center">
         <input type=button VALUE="<?php echo _m("Delete") ?>" onClick = "Delete()">
        </td></tr>
+<?php
+       FrmTabSeparator(_m("All remote nodes"));
 
-      <tr><td ><?php echo _m("All remote nodes"); ?>
-      </td></tr>
+/*      <tr><td ><?php echo _m("All remote nodes"); ?>
+      </td></tr>*/
+?>
       <tr><td align="center">
         <SELECT name="rem_nodes" class=tabtxt size=5>
         <?php
@@ -146,10 +151,13 @@ function Submit() {
         ?>
         </SELECT>
       </td></tr>
-      <tr><td align=center ><input type=submit value="<?php echo _m("Create new feed from node") ?>" ></td></tr>
+<?php
+/*      <tr><td align=center ><input type=submit value="<?php echo _m("Create new feed from node") ?>" ></td></tr>
   </table>
   </td></tr>
-  </table>
+  </table>*/
+  FrmTabEnd($form_buttons, $sess, $slice_id);
+?>
 </FORM>
 <?php
 HtmlPageEnd();
