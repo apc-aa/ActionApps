@@ -146,11 +146,15 @@ function ParseViewParameters($query_string="") {
     case 'd':  $i=1;
                while( $command[$i] ) {
                    if( CheckConditionCommand($command[$i], $command[$i+2]) ) {
-                       $v_conds[]=array( 'operator' => $command[$i+1],
-                                         'value' => stripslashes($command[$i+2]),
-                                          $command[$i] => 1 );
+                       foreach( explode(',',$command[$i]) as $cond_field ) {
+                           $field_arr[$cond_field] = 1;
+                       }
+                       $v_conds[]= array_merge( $field_arr,
+                                                array('operator' => $command[$i+1],
+                                                      'value' => stripslashes($command[$i+2])));
                    }
                    $i += 3;
+                   $field_arr=Array();
                }
                break;
   }
@@ -226,11 +230,13 @@ function GetViewConds($view_info, $param_conds) {
   return $conds;
 }
 
-function GetViewSort($view_info) {
+function GetViewSort($view_info, $param_sort="") {
     // translate sort codes (we use numbers in views from historical reason)
     // '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
     $SORT_DIRECTIONS = array( 0 => 'a', 1 => 'd', 2 => '1', 3 => '9' );
 
+    if( $param_sort )
+      $sort[] = GetSortArray( $param_sort );
     if( $view_info['group_by1'] )
       $sort[] = array ( $view_info['group_by1'] => $SORT_DIRECTIONS[$view_info['g1_direction']]);
     if( $view_info['group_by2'] )
@@ -350,6 +356,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
   $slices = $view_param["slices"];
   $mapslices = $view_param["mapslices"];
   $param_conds = $view_param["param_conds"];
+  $param_sort  = $view_param["sort"];
   $category_id = $view_param['cat'];
 //  $item_ids = $view_param["item_ids"];
   $zids = $view_param["zids"];
@@ -465,7 +472,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $aliases   = GetAliases4Type($view_info['type'],$als);
       if (! $conds )         # conds could be defined via cmd[]=d command
           $conds = GetViewConds($view_info, $param_conds);
-      $sort      = GetViewSort($view_info);
+      $sort      = GetViewSort($view_info, $param_sort);
       if ( $view_info['type'] == 'const' ) {
           $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
           $content_function = 'GetConstantContent';
@@ -476,7 +483,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
               $content_function = 'Links_GetLinkContent';
           }
       } elseif ( ($view_info['type'] == 'categories') AND $category_id ) {
-          $zids             = Links_QueryCatZIDs($category_id, $conds, $sort);
+          $zids             = Links_QueryCatZIDs($category_id, $conds, $sort, $view_param['show_subcat']);
           $content_function = 'Links_GetCategoryContent';
       }
 
@@ -541,7 +548,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
           }
       }
 
-      $sort  = GetViewSort($view_info);
+      $sort  = GetViewSort($view_info, $param_sort);
 
     $zids2 =
         QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
