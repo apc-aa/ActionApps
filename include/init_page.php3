@@ -166,26 +166,27 @@ srand((double)microtime()*1000000);
 $db->query("SELECT id, name, type, deleted FROM module ORDER BY name");
 while( $db->next_record() ) {
     $my_slice_id = unpack_id128($db->f('id'));
-    if( IsSuperadmin() OR ( !$db->f('deleted') AND $perm_slices[$my_slice_id] ) )
+    if (IsSuperadmin() OR (!$db->f('deleted') AND $perm_slices[$my_slice_id])) {
         $g_modules[$my_slice_id] = array(
             'name' => $db->f('name'),
             'type' => $MODULES[$db->f('type')] ? $db->f('type') : 'S');
+    }
 }
 
-if( !$no_slice_id ) {
+if (!$no_slice_id) {
     if( !is_array($g_modules)) {
         MsgPage($sess->url(self_base())."index.php3", _m("No slice found for you"), "standalone");
         exit;
     }
 
-    if($after_login
-        // slice was just deleted, thus is not in $g_modules
-        OR ! $g_modules[$slice_id]) {
+    if ($after_login OR !$g_modules[$slice_id]) {
+                        // slice was just deleted, thus is not in $g_modules
         reset($g_modules);
         $slice_id = key($g_modules);
         // skip AA Core Field slice, if possible
-        if( ($slice_id == "41415f436f72655f4669656c64732e2e") AND next($g_modules) )
+        if (($slice_id == "41415f436f72655f4669656c64732e2e") AND next($g_modules)) {
             $slice_id = key($g_modules);
+        }
     }
 
     $p_slice_id = q_pack_id($slice_id);
