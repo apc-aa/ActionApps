@@ -1,18 +1,29 @@
+09/26/02 - nested aliases work in f_v alias function too
+         - renamed all defaults aliases, which ends by '#' character (_#ITEM_ID#
+           => _#ITEM_ID_) - there was problem with colon ':' escaping '#:'. 
+           old aliases works, so all code is backward compatible
 09/12/02 - added Editorial to Alerts Collection
 09/11/02 - fixed problems with related items view
 08/20/02 - first parts of new language environment mini gettext 
-08/20/02 - new AA Alerts introduced, allowing to send new items to users by e-mail
-08/20/02 - because MsgPage is sometimes called with menu which again uses some permissions functions, these occurences were changed to MsgPageMenu in include/msgpage.php3
-08/02/02 - files uploaded to a slice with file manager set on, are uploaded to directory "items" in File Manager
-07/25/02 - hierarchical constants: added check not to allow users to select one constant twice
+08/20/02 - new AA Alerts introduced, allowing to send new items to users by 
+           e-mail
+08/20/02 - because MsgPage is sometimes called with menu which again uses some 
+           permissions functions, these occurences were changed to MsgPageMenu 
+           in include/msgpage.php3
+08/02/02 - files uploaded to a slice with file manager set on, are uploaded to 
+           directory "items" in File Manager
+07/25/02 - hierarchical constants: added check not to allow users to select one 
+           constant twice
 07/23/02 - fixed minor bug, added als[] to scroller sessions
 07/23/02 - added 5th param to hier const field type, Level Names
 07/22/02 - added sorting (and grouping) by constant-priority to view
 07/21/02 - better names for uploaded files
 07/18/02 - bug fix: sort didn't work with scroller
 07/16/02 - fully functional File Manager with Copy Template feature
-07/12/02 - added a new defaultCondsOperator URL parameter which changes the default operator LIKE to another one
-07/12/02 - changed slice.php3 - it didn't combine correctly URL defined group_by etc. with the slice defined parameters.
+07/12/02 - added a new defaultCondsOperator URL parameter which changes the 
+           default operator LIKE to another one
+07/12/02 - changed slice.php3 - it didn't combine correctly URL defined group_by
+           etc. with the slice defined parameters.
 07/11/02 - fixed itemview - group by ignores upper/lower case now
 07/08/02 - new 'group_n' parameter for slice.php3 allowing display of first 
            (second, ...) category only 

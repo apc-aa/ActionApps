@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -22,17 +22,17 @@ define("ITEM_PHP3_INC",1);
 
 if( file_exists( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" ) ) {
   include( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" );
-}  
+}
 
 function txt2html($txt) {          #converts plain text to html
   $txt = nl2br(htmlspecialchars($txt));
 //  $txt = ERegI_Replace('  ', ' &nbsp;', $txt);
   return $txt;
-}  
+}
 
 function DeHtml($txt, $flag) {
   return ( ($flag & FLAG_HTML) ? $txt : nl2br(htmlspecialchars( $txt )) );
-}  
+}
 
 function GetAliasesFromFields($fields, $additional="") {
   if( !( isset($fields) AND is_array($fields)) )
@@ -42,7 +42,7 @@ function GetAliasesFromFields($fields, $additional="") {
   $aliases["_#ID_COUNT"] = array("fce" => "f_e:itemcount",
                                  "param" => "id..............",
                                  "hlp" => L_ID_COUNT_ALIAS);
-  $aliases["_#ITEM_ID#"] = array("fce" => "f_n:id..............",
+  $aliases["_#ITEM_ID_"] = array("fce" => "f_n:id..............",
                                  "param" => "id..............",
                                  "hlp" => L_ITEM_ID_ALIAS);
   $aliases["_#SITEM_ID"] = array("fce" => "f_h",
@@ -94,28 +94,28 @@ function GetAliasesFromFields($fields, $additional="") {
       while (list($k,$v) = each($additional))
           $aliases[$k] = $v;
   }
-  
+
   return($aliases);
-}  
+}
 
 function GetConstantAliases( $additional="" ) {
   #  Standard aliases
-  $aliases["_#NAME####"] = array("fce" => "f_h",
+  $aliases["_#NAME###_"] = array("fce" => "f_h",
                                  "param" => "const_name......",
                                  "hlp" => L_CONST_NAME_ALIAS);
-  $aliases["_#VALUE###"] = array("fce" => "f_h",
+  $aliases["_#VALUE##_"] = array("fce" => "f_h",
                                  "param" => "const_value.....",
                                  "hlp" => L_CONST_VALUE_ALIAS);
   $aliases["_#PRIORITY"] = array("fce" => "f_h",
                                  "param" => "const_priority..",
                                  "hlp" => L_CONST_PRIORITY_ALIAS);
-  $aliases["_#GROUP###"] = array("fce" => "f_n",
+  $aliases["_#GROUP##_"] = array("fce" => "f_n",
                                  "param" => "const_group.....",
                                  "hlp" => L_CONST_GROUP_ALIAS);
-  $aliases["_#CLASS###"] = array("fce" => "f_h",
+  $aliases["_#CLASS##_"]= array("fce" => "f_h",
                                  "param" => "const_class.....",
                                  "hlp" => L_CONST_CLASS_ALIAS);
-  $aliases["_#COUNTER#"] = array("fce" => "f_h",
+  $aliases["_#COUNTER_"] = array("fce" => "f_h",
                                  "param" => "const_counter...",
                                  "hlp" => L_CONST_COUNTER_ALIAS);
   $aliases["_#CONST_ID"] = array("fce" => "f_n",
@@ -129,7 +129,7 @@ function GetConstantAliases( $additional="" ) {
       $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
   }
   return($aliases);
-}  
+}
 
 #explodes $param by ":". The "#:" means true ":" - don't separate
 function ParamExplode($param) {
@@ -139,7 +139,7 @@ function ParamExplode($param) {
   $d = str_replace ("__-__.", ":", $c);         # change "#:" to ":"
   $e = str_replace ("__-__2", "://", $d);         # change back "://"
   return explode( "##Sx", $e );
-}  
+}
 
 # Substitutes all colons with special AA string and back depending on unalias nesting.
 # Used to mark colons, which is not parameter separators.
@@ -170,7 +170,7 @@ function sess_return_url($url) {
     return urldecode($return_url);
 }
 
- 
+
 # helper function for f_e
 # this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
 # added by setu@gwtech.org 2002-0211
@@ -203,7 +203,7 @@ class item {
   var $format;         # format string with aliases 
   var $bottom;
   var $remove;         # remove string
-  var $aliases;        # array of usable aliases              
+  var $aliases;        # array of usable aliases
   
   
   function item($ic, $cols, $ali, $c, $ff, $gl, $fr="", $top="", $bottom=""){   #constructor 
@@ -225,7 +225,7 @@ class item {
   }
 
   function getval($column, $what='value') {
-    return ( is_array($this->columns[$column]) ? 
+    return ( is_array($this->columns[$column]) ?
                                     $this->columns[$column][0][$what] : false);
   }  
   
@@ -244,34 +244,39 @@ class item {
     $url_base = ($redirect ? $redirect : $this->clean_url );
 
        # add state variable, if defined (apc - AA Pointer Cache)
-    if( $GLOBALS['apc_state'] )                
+    if( $GLOBALS['apc_state'] )
       $url_param .= '&apc='.$GLOBALS['apc_state']['state'];
 
     if( $no_sess ) {                     #remove session id
       $pos = strpos($url_base, '?');
       if($pos)
         $url_base = substr($url_base,0,$pos);
-    }    
+    }
     return con_url( $url_base, $url_param );
-  }    
+  }
 
   # get link from url and text
-  function getahref($url, $txt, $add="", $html=false) { 
+  function getahref($url, $txt, $add="", $html=false) {
     if( $url AND $txt ) {
       # repair url if user omits to write http://
       if( substr($url,4)=='www.' )
         $url = 'http://'.$url;
       return '<a href="'. $url ."\" $add>". DeHtml($txt, $html).'</a>';
-    }                      
-    return DeHtml($txt,$html); 
+    }
+    return DeHtml($txt,$html);
   }
 
   function get_alias_subst( $alias ) {
     $ali_arr = $this->aliases[$alias];
-       #is this realy alias?
-    if( !is_array($ali_arr) )
-      return $alias;
- 
+      # is this realy alias?
+
+    if( !is_array($ali_arr) ) {
+      # try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
+      # unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
+      if( ! ((substr($alias,9,1)=='#') AND is_array($ali_arr = $this->aliases[substr($alias,0,9).'_'])))
+        return $alias;
+    }
+
     # get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
     $function = ParseFnc($ali_arr['fce']);
     $fce = $function['fnc'];
@@ -279,7 +284,7 @@ class item {
     # call function (called by function reference (pointer))
     # like f_d("start_date......", "mm-dd")
     return $this->$fce($ali_arr['param'], $function['param']);
-  }  
+  }
 
   function parseSwitch($text) {
     $variable = strtok($text,")");
@@ -306,7 +311,7 @@ class item {
   }      
 
   # the function substitutes all _#... aliases and then aplies "remove strings"
-  # it searches for removal just in parts where all aliases are expanded 
+  # it searches for removal just in parts where all aliases are expanded
   # to empty string
   function substitute_alias_and_remove( $text, $remove_arr ) {
     $piece = explode( "_#", $text );
@@ -315,7 +320,7 @@ class item {
     while( $vparam = next($piece) ) {
           #search for alias definition (fce,param,hlp)
       $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
-      if( $substitution != "" ) {   # alias produced some output, so we can remove 
+      if( $substitution != "" ) {   # alias produced some output, so we can remove
                               # strings in previous section and we can start new
                               # section
         $clear_output .= $this->remove_strings($out,$remove_arr).$substitution;
@@ -324,9 +329,9 @@ class item {
         $out .= substr($vparam,8);
     }
     return $clear_output . $this->remove_strings($out,$remove_arr);
-  }  
+  }
 
-  # we can't call unalias() function recurently because of referenced variable 
+  # we can't call unalias() function recurently because of referenced variable
   # maxlevel (can't have implicit value), that's why we introduce unalias_recurent()
   function unalias_recurent( &$text, $remove, $level, &$maxlevel ) {
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
@@ -335,9 +340,9 @@ class item {
     $parts_start[0] = 0;      # three variables used to identify the parts
     $parts_end   = array();   # of output string, where we have to apply
     $parts_count = 0;         # "remove strings"
-    
+
     $pos = strcspn( $text, "{}" );
-    
+
     while( (strlen($text) != $pos) AND ($text[$pos] == '{') ) {
       $out .= substr( $text,0,$pos );           # initial sequence
       $text = substr( $text,$pos+1 );           # remove processed text
@@ -347,17 +352,17 @@ class item {
         # QuoteColons substitutes all colons with special AA string.
         # Used to mark colons, which is not parameter separators.
 
-      if( $substitution != "" ) {   # brackets produced some output, so we have 
+      if( $substitution != "" ) {   # brackets produced some output, so we have
                               # to mark the previous section as removestringable
         $parts_end[$parts_count++] = strlen($out);
         $parts_start[$parts_count] = strlen($out)+strlen($substitution);
-      }  
+      }
       $out .= $substitution;
       $pos = strcspn( $text, "{}" );            # process next bracket (in text: "...{..}..{.}..")
     }
     $out .= substr( $text,0,$pos );           # end sequence
     $text = substr( $text,$pos+1 );           # remove processed text
-    
+
     # now we know, there is no bracket in $out - we can substitute
 
     # bracket could look like:
@@ -366,14 +371,14 @@ class item {
     #   {any text}                                       - return "any text"
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which is processed first (see above)
-    
+
     if( ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
       $fce = $parts[2];
       return QuoteColons($level, $maxlevel, $this->$fce($parts[1], $parts[3]));
       # QuoteColons used to mark colons, which is not parameter separators.
-    } 
+    }
     elseif( substr($out, 0, 7) == "switch(" ) {
       # replace switches
       return QuoteColons($level, $maxlevel, $this->parseSwitch( substr($out,7) ));
@@ -402,9 +407,9 @@ class item {
       for( $i=0; $i < $parts_count; $i++ ) {
         $txt = substr($out,$parts_start[$i],$parts_end[$i]-$parts_start[$i]);
         $bracket = substr($out,$parts_end[$i],$parts_start[$i+1]-$parts_end[$i]);
-        $clear_output .= $this->substitute_alias_and_remove( $txt, $remove_arr ). 
+        $clear_output .= $this->substitute_alias_and_remove( $txt, $remove_arr ).
                          $this->substitute_alias_and_remove( $bracket, "" );
-      }                   
+      }
       $txt = substr($out,$parts_start[$i]);         # remaining string
       $clear_output .= $this->substitute_alias_and_remove( $txt, $remove_arr );
       return QuoteColons($level, $maxlevel, ($level==0) ? $clear_output : '{'.$clear_output.'}');
@@ -428,7 +433,7 @@ class item {
     reset( $var );
     while( list($k,$v) = each($var) )
       $ret[$k] = $this->subst_alias( $v );
-    return $ret;  
+    return $ret;
   }
 
   # --------------- functions called for alias substitution -------------------
@@ -535,7 +540,7 @@ class item {
   # prints text with link to fulltext (hedline url)
   # param: link_only:url_field:redirect:txt:condition_fld
   #    link_only     - field id (like "link_only.......")
-  #    url_field     - field id of external url for link_only 
+  #    url_field     - field id of external url for link_only
   #                  - (like hl_href.........)
   #    redirect      - url of another page which shows the content of item 
   #                  - this page should contain SSI include ../slice.php3 too
@@ -557,7 +562,7 @@ class item {
     return $this->getahref($url,$ptxt,$paddition,$flg);
   }    
 
-  # prints 'blurb' (piece of text) based from another slice, 
+  # prints 'blurb' (piece of text) based from another slice,
   # based on a simple condition.
   /*
     Blurb slice, has fields
@@ -598,7 +603,7 @@ class item {
       $fieldToReturn   = quote(     $p[3] ? $p[3] : BLURB_FIELD_TO_RETURN );
      /*
      This SQL effectively narrows down through three sets:
-    a) all the items from our blurb slice 
+    a) all the items from our blurb slice
        (all the item_ids from item where item.slice_id  = $blurb_sliceid_packed)
     b) take set a) and filter to find where the headline (category name)
        matches our category name.
@@ -639,7 +644,7 @@ class item {
 
     $p_slice_id = $this->getval('slice_id........');
     $slice_id = unpack_id( $p_slice_id );
-    
+
     if (! $title) {
       if ($slice_id==""){ echo "Error: slice_id not defined"; exit; }
 
@@ -748,6 +753,7 @@ class item {
     }  
     
     $p = ParamExplode($param);
+
     list ($pcond, $pbegin, $pend, $pnone, $pccol, $pskip_col) = $this->subst_aliases($p);
 
     $cond = ( $p[4] ? $pccol : $this->subst_alias($col) );
@@ -782,7 +788,8 @@ class item {
     # if no parameter specified, the content of this field specifies view id
     if( !$param )
       $param = "vid=".$this->getval($col); 
-    
+
+  # older aliases substitution ------------- (_#publish_date....) -----------
     # substitute aliases by real item content
     $part = $param;
 
@@ -804,11 +811,13 @@ class item {
         $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
       elseif( $fid == 'unpacked_id.....' )
         $param = str_replace( "_#$fid", $this->f_n('id..............'), $param );
-      else
+      elseif( IsField($fid) )
         $param = str_replace( "_#$fid", $this->f_h($fid, "-"), $param );
       $part = substr( $part, 6 );
-    }  
+    }
     
+  # unalias new ------------ ({publish_date....}, _#ITEM_ID_, ...) -----------
+    $param = $this->subst_alias($param);
     return GetView(ParseViewParameters($param));
   }    
 

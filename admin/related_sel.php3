@@ -149,8 +149,8 @@ $format_strings = array ( "compact_top"=>"",
                           "even_odd_differ"=>false,
                           "even_row_format"=>"",
                           "odd_row_format"=>"<tr><td class=tabtxt>_#HEADLINE</td>
-                                                 <td class=tabtxt><a href=\"javascript:SelectRelation('x_#ITEM_ID#','_#HEADLINE')\">". L_SELECT_RELATED_1WAY ."</a>&nbsp;&nbsp;</td>
-                                                 <td class=tabtxt><a href=\"javascript:SelectRelation2Way('x_#ITEM_ID#','_#HEADLINE')\">". L_SELECT_RELATED_2WAY ."</a></td>
+                                                 <td class=tabtxt><a href=\"javascript:SelectRelation('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_1WAY ."</a>&nbsp;&nbsp;</td>
+                                                 <td class=tabtxt><a href=\"javascript:SelectRelation2Way('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_2WAY ."</a></td>
                                              </tr>",
                           "compact_remove"=>"",
                           "compact_bottom"=>"",
@@ -170,7 +170,7 @@ echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
 
                          
 if( count( $item_ids ) > 0 ) {
-  $aliases["_#ITEM_ID#"] = array("fce" => "f_n:id..............",
+  $aliases["_#ITEM_ID_"] = array("fce" => "f_n:id..............",
                                  "param" => "id..............",
                                  "hlp" => "");
   $aliases["_#SITEM_ID"] = array("fce" => "f_h",

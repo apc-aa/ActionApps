@@ -133,24 +133,24 @@ function GetAlias($fce, $param, $help) {
 }
 
 function GetDiscussionAliases() {
-  #  Standard aliases 
-  $aliases["_#SUBJECT#"] = GetAlias("f_h", "d_subject.......", L_D_SUBJECT_ALIAS);
-  $aliases["_#BODY####"] = GetAlias("f_t", "d_body..........", L_D_BODY_ALIAS);
-  $aliases["_#AUTHOR##"] = GetAlias("f_h", "d_author........", L_D_AUTHOR_ALIAS);
-  $aliases["_#EMAIL###"] = GetAlias("f_h", "d_e_mail........", L_D_EMAIL_ALIAS);
-  $aliases["_#WWW_URL#"] = GetAlias("f_h", "d_url_address...", L_D_WWWURL_ALIAS);
+  #  Standard aliases
+  $aliases["_#SUBJECT_"] = GetAlias("f_h", "d_subject.......", L_D_SUBJECT_ALIAS);
+  $aliases["_#BODY###_"] = GetAlias("f_t", "d_body..........", L_D_BODY_ALIAS);
+  $aliases["_#AUTHOR#_"] = GetAlias("f_h", "d_author........", L_D_AUTHOR_ALIAS);
+  $aliases["_#EMAIL##_"] = GetAlias("f_h", "d_e_mail........", L_D_EMAIL_ALIAS);
+  $aliases["_#WWW_URL_"] = GetAlias("f_h", "d_url_address...", L_D_WWWURL_ALIAS);
   $aliases["_#WWW_DESC"] = GetAlias("f_h", "d_url_descript..", L_D_WWWDES_ALIAS);
-  $aliases["_#DATE####"] = GetAlias("f_d:d M  H:i",     "d_date..........", L_D_DATE_ALIAS);
-  $aliases["_#IP_ADDR#"] = GetAlias("f_h", "d_remote_addr...", L_D_REMOTE_ADDR_ALIAS);
+  $aliases["_#DATE###_"] = GetAlias("f_d:d M  H:i",     "d_date..........", L_D_DATE_ALIAS);
+  $aliases["_#IP_ADDR_"] = GetAlias("f_h", "d_remote_addr...", L_D_REMOTE_ADDR_ALIAS);
   $aliases["_#CHECKBOX"] = GetAlias("f_h", "d_checkbox......", L_D_CHECKBOX_ALIAS);
   $aliases["_#TREEIMGS"] = GetAlias("f_h", "d_treeimages....", L_D_TREEIMGS_ALIAS);
   $aliases["_#DITEM_ID"] = GetAlias("f_h", "d_item_id.......", L_D_ITEM_ID_ALIAS);
-  $aliases["_#ITEM_ID#"] = GetAlias("f_h", "d_item_id.......", L_D_ITEM_ID_ALIAS);
-  $aliases["_#DISC_ID#"] = GetAlias("f_h", "d_id............", L_D_ID_ALIAS);
+  $aliases["_#ITEM_ID_"] = GetAlias("f_h", "d_item_id.......", L_D_ITEM_ID_ALIAS);
+  $aliases["_#DISC_ID_"] = GetAlias("f_h", "d_id............", L_D_ID_ALIAS);
   $aliases["_#URL_BODY"] = GetAlias("f_h", "d_url_fulltext..", L_D_URLBODY_ALIAS);
   $aliases["_#URLREPLY"] = GetAlias("f_h", "d_url_reply.....", L_D_URLREPLY_ALIAS);
   $aliases["_#DISC_URL"] = GetAlias("f_h", "d_disc_url......", L_D_URL);
-  $aliases["_#BUTTONS#"] = GetAlias("f_h", "d_buttons.......", L_D_BUTTONS);
+  $aliases["_#BUTTONS_"] = GetAlias("f_h", "d_buttons.......", L_D_BUTTONS);
 //  $aliases["_#SHOW_ALL"] = GetAlias("f_h", "d_show_all......", L_D_SHOW_ALL_ALIAS);
 //  $aliases["_#SHOW_SEL"] = GetAlias("f_h", "d_show_sel......", L_D_SHOW_SEL_ALIAS);
 //  $aliases["_#ADD_NEW#"] = GetAlias("f_h", "d_add_new.......", L_D_ADD_NEW_ALIAS);
