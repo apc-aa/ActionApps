@@ -62,7 +62,10 @@ class PageCache  {
     if( ENABLE_PAGE_CACHE ) {
       $db = $this->db;
       $SQL = "SELECT * FROM pagecache WHERE id='".md5($keyString)."'";
-      $db->query($SQL);
+      if( $GLOBALS['debug'] ) 
+        $db->dquery($SQL);
+      else 
+        $db->query($SQL);
       if($db->next_record()) {
 //  echo 'c-+ ';
         if( (time() - $this->cacheTime) < $db->f("stored") ) {
@@ -117,6 +120,9 @@ class PageCache  {
 
 /*
 $Log$
+Revision 1.2  2002/03/06 12:37:15  honzam
+new view cache implemented
+
 Revision 1.1  2001/01/22 17:32:49  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

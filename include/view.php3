@@ -172,10 +172,44 @@ function GetViewFormat($view_info) {
   return $format;
 }
 
-# return view result based on parameters
-function GetView($view_param) {
-   global $db;
 
+
+function GetView($view_param) {
+  global $db;
+  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
+
+  #create keystring from values, which exactly identifies resulting content
+  $keystr = serialize($view_param);
+
+if( $GLOBALS['debug'] ) {
+  echo "<br>$keystr<br>";
+}
+
+  if( $res = $cache->get($keystr) ) {
+
+if( $GLOBALS['debug'] ) {
+  echo "<h1>FOUND</h1>";
+}
+      
+    return $res;
+  }
+
+  $res = GetViewFromDB($view_param, $cache_sid);
+
+if( $GLOBALS['debug'] ) {
+  echo "<h1>xxxxx$cache_sid</h1>";
+}
+
+  $cache->store($keystr, $res, "slice_id=$cache_sid");
+
+  return $res;
+}
+
+
+# return view result based on parameters
+function GetViewFromDB($view_param, &$cache_sid) {
+  global $db;
+   
   $vid = $view_param["vid"];
   $als = $view_param["als"];
   $conds = $view_param["conds"];
@@ -194,6 +228,8 @@ function GetView($view_param) {
   $listlen    = ($view_param["listlen"] ? $view_param["listlen"] : $view_info['listlen'] );
   $p_slice_id = ($view_param["slice_id"] ? q_pack_id($view_param["slice_id"]) : $view_info['slice_id'] );
   $slice_id = unpack_id($p_slice_id);
+  
+  $cache_sid = $slice_id;     # store the slice id for use in cache (GetView())
   
   # ---- display content in according to view type ----
   switch( $view_info['type'] ) {
@@ -241,7 +277,9 @@ function GetView($view_param) {
   //p_arr_m( $format );
   
       $ids_cnt = count( $item_ids );
-      if( $ids_cnt > 0 ) {
+
+      if( ($ids_cnt > 0) AND !( ($ids_cnt==1) AND !$item_ids[0]) ) {
+
         $aliases = GetAliasesFromFields($fields, $als);
         
         if( $list_to )
@@ -255,8 +293,8 @@ function GetView($view_param) {
             $page_n = substr($list_page,0,$pos)-1;      #count from zero
             $items = count($item_ids);
             $items_plus = $items + ($no_of_pages-1); # to be last page shorter than others if there is not so good number of items
-            $list_from = ($page_n * $items_plus)/$no_of_pages;
-            $listlen = ((($page_n+1) * $items_plus)/$no_of_pages) - $list_from;
+            $list_from = floor(($page_n * $items_plus)/$no_of_pages);
+            $listlen = floor($items_plus/$no_of_pages);
           } else  # second parameter is not specified - take listlen parameter
             $list_from = $listlen * ($list_page-1);
         }                     
@@ -345,9 +383,24 @@ class itemview{
     for( $i=$this->from_record; $i<$this->from_record+$this->num_records; $i++)
       $keystr .= $this->ids[$i];
     $keystr .=serialize($this->disc);
+
+if( $GLOBALS['debug'] ) {
+  echo "<br>$keystr<br>";
+}
+
+    if( $res = $cache->get($keystr) ) {
+
+if( $GLOBALS['debug'] ) {
+  echo "<h1>FOUND</h1>";
+}
       
-    if( $res = $cache->get($keystr) )
       return $res;
+    }
+
+
+if( $GLOBALS['debug'] ) {
+  echo "<b>NOT FOUND IN CACHE<br>";
+}
 
     #cache new value 
     $res = $this->get_output($view_type);
@@ -699,6 +752,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.25  2002/03/06 12:37:15  honzam
+new view cache implemented
+
 Revision 1.24  2002/02/05 21:54:52  honzam
 added new parametrs to view - from, to, page and slice_id. "No item found" message is redefinable
 
