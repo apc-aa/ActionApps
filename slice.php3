@@ -256,8 +256,9 @@ if( $fview || $iview ) {
 }
   define("DEFAULT_CODEPAGE","windows-1250");
 
-if (!$encap)
-  Page_HTML_Begin ($slice_info[name]);
+if (!$encap) {
+  Page_HTML_Begin ($slice_info['name']);
+}
 
 if( $bigsrch ) {  # big search form ------------------------------------------
    echo '<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br> See

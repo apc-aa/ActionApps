@@ -90,7 +90,7 @@ if ($debug) huhl("Starting view");
 // Need to be able to set content-type for RSS, cannot tdo it in the view
 // because the cache wont reflect this
 if ($contenttype) {
-	header("Content-type: $contenttype");
+    header("Content-type: $contenttype");
 }
 echo GetView(ParseViewParameters());
 
