@@ -943,7 +943,7 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $
 
 // -----------------------------------------------------------------------------
 
-function get_last_insert_id (&$db, $table)
+function get_last_insert_id ($db, $table)
 {
     $db->tquery ("SELECT LAST_INSERT_ID() AS lid FROM $table");
     $db->next_record();
@@ -1306,6 +1306,32 @@ function mail_html_text_body ($message, $charset, $use_base64) {
 
 function setdefault (&$var, $default) {
     if (!isset ($var)) $var = $default;
+}
+
+// Cooperates with the script post2shtml, which allows to easily post variables
+// to PHP scripts called through shtml.
+
+function add_post2shtml_vars () {
+    global $db, $debug, $post2shtml_id;
+    
+    add_vars();
+    if (!$post2shtml_id) return;
+    if (!is_object ($db)) $db = new DB_AA;
+    $db->query ("SELECT * FROM post2shtml WHERE id='$post2shtml_id'");
+    $db->next_record();
+    $vars = unserialize ($db->f("vars"));
+    $var_types = array ("post","get","files","cookie");
+    reset ($var_types);
+    while (list (,$var_type) = each ($var_types)) {
+        if (is_array ($vars[$var_type])) {
+            reset ($vars[$var_type]);
+            while (list ($var, $value) = each ($vars[$var_type])) {
+                global $$var;
+                $$var = $value;
+                if ($debug) { echo "<b>$var</b> = "; print_r ($value); echo "<br>"; }
+            }
+        }
+    }
 }
 
 ?>
