@@ -248,7 +248,7 @@ function GetCategoriesFromForm() {
 
 # End of function definitions -------------------------------------------------
 
-$senderUrlOK  = ( Links_IsPublic() ? "/templates_new/diky.html" : $sess->url(self_base()."index.php3"));      // TODO - poradne
+$senderUrlOK  = ( Links_IsPublic() ? "/podekovani.shtml" : $sess->url(self_base()."index.php3"));      // TODO - poradne
 $senderUrlErr = ( Links_IsPublic() ? $sess->url(self_base()."linkedit.php3") : $sess->url(self_base()."linkedit.php3"));
 
 # page where to go after this script execution

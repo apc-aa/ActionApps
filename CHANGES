@@ -1,3 +1,12 @@
+09/30/03 - loop through multivalues in stringexpand:
+(honzam)   {@category.......1},
+           {@category.......1(const_name,const_value,_#MY_ALIAS):,:_#1 _#2 _#3}
+         - new {user:role} alias - returns
+           author/editor/administrator/super/undefined
+         - view setting for Links module (links, categories) allows to define
+           sorting/conditions
+         - "check URL" page and "linkedit" page in Links now print information
+           about folder of found link
 09/29/03 - related items now are displayed in user defined order (user can
 (honzam)   easily move related items up and down by arrows - it must be allowed
            in "Field-setting -> Intut type"

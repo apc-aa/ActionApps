@@ -41,9 +41,9 @@ function MarkChanged($txt) {
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id = $slice_id;
+$module_id   = get_if($slice_id,$sid);
 $p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
-$links_info = GetModuleInfo($module_id,'Links');
+$links_info  = GetModuleInfo($module_id,'Links');
 // count tree start category depth
 $links_info['tree_depth'] = substr_count (Links_GetCategoryColumn( $links_info['tree_start'], 'path' ), ',') + 1;
 
@@ -145,6 +145,7 @@ if( !$getOldV AND $r_state['link_id'] ) {
     $rate          = $db_link['rate'];
     $type          = $db_link['type'];
     $url           = $db_link['url'];
+    $folder        = max( 1, $db_link['folder']);
     $org_city      = $db_link['org_city'];
     $org_street    = $db_link['org_street'];
     $org_post_code = $db_link['org_post_code'];
@@ -346,6 +347,8 @@ if (isset($checked_url))
 $r_state['cat_id'] = get_if( $r_state['cat_id'], $_GET['cid'] );   // used for anonymous forms
 $select_start      = get_if( $_GET['select_start'], $links_info['select_start'], 2);   // used for anonymous forms
 
+//huhl($links_info['select_start'],"----",$select_start );
+
 // Print HTML start page (html begin, encoding, style sheet, no title)
 HtmlPageBegin();
 echo '<title>'. _m('APC ActionApps') ." - $pagename</title>";
@@ -379,7 +382,11 @@ unset($r_msg);
 echo '
 <form name="f" method=post action="'. $sess->url("linkedit2.php3") .'">';
 FrmTabCaption( _m('Link') );
-FrmStaticText( _m('Id'),  $id, false, "", "", false);
+
+$bin_names = get_bin_names();
+if ( $id ) {
+    FrmStaticText( _m('Id'),  $id .' ('.$bin_names[$folder].')', false, "", "", false);
+}
 echo '
     <tr>
       <td class=tabtxt valign="top"><b>'. _m('Url') .'</b>&nbsp;*</td>
@@ -449,8 +456,8 @@ echo      '</td>
                      href="javascript:MoveSelectedTo(\'document.f.tree\',\'selcat'.$i.'\',\'document.f.selcatSelect'.$i.'\')"><img
                      src="'.$AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td><td width="1px"><a
                      href="javascript:DeleteField(\''.$i.'\')"><img src="'.$AA_INSTAL_PATH.'images/bx.gif" border="0"
-                     alt="delete"></a></td><td class="sel_title"><SMALL><DIV id=selcat'.$i.'>'.$selcatValue[$i].'</DIV>
-                     </td><td><small>'.$selcatPropAdd[$i].$selcatPropDel[$i].'
+                     alt="delete"></a></td><td class="sel_title"><SMALL><DIV id=selcat'.$i.'>'.$selcatValue[$i].'&nbsp;</DIV></SMALL>
+                     </td><td><small>'.$selcatPropAdd[$i].$selcatPropDel[$i].'</small>
                      <input type="hidden" name="selcatSelect'.$i.'" value="'.$selcatSelectValue[$i].'">
                      <input type="hidden" name="selcatState'.$i.'" value="'.$selcatState[$i].'"></td></tr>';
                 }
