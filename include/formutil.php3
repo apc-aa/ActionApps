@@ -41,7 +41,7 @@ require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 require_once($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
 
 define( 'AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
-
+define( 'AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
 # Easy to redefine this functionality by changing the array below
 # prefix is what goes in the selection box in "Edit Item",
 # tag is what goes on the front of the id as stored in the database
@@ -140,7 +140,6 @@ class inputform {
         echo "<form name=inputform $html_form_type method=post
                     action=\"" . $this->form_action .'"'.
                     getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>';
-        FrmTabCaption( '', 'class="inputtab"', 'class="inputtab2"' );
 
         // get the default form and FILL CONTENTCACHE with fields
         $form = $this->getForm($content4id, $fields, $prifields, $edit);
@@ -157,7 +156,29 @@ class inputform {
 
         // print the inputform
         $CurItem = new item($content4id, GetAliasesFromFields($fields), '', $form, $remove_string);   # just prepare
-        echo $CurItem->get_item();
+        $out = $CurItem->get_item();
+
+        FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"' );
+        $parts = $GLOBALS['g_formpart'];
+        if ( $parts ) {
+            $idx = 0;
+            while ( $parts+1 ) {
+                $tabs['formrow'.(string)$parts] = get_if( $GLOBALS['g_formpart_names'][$parts], _m('Part'). " ".($idx+1));
+                $idx++;
+                $parts--;
+            }
+            // print tabs for form switching
+            FrmTabs( $tabs, 'formtabs' );
+        }
+
+
+        echo $out;
+
+        if ( $parts ) {
+            // print tabs for form switching
+            FrmTabs( $tabs, 'formtabs' );
+        }
+
 
         $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );
         $buttons['encap']               = array('value' => (($encap) ? "true" : "false"));
@@ -176,6 +197,12 @@ class inputform {
         $buttons['cancel']              = array('type'=>'button', 'value'=>_m("Cancel"),
                                                 'add'=>'onclick="document.location=\''.$this->cancel_url.'\'"');
         FrmTabEnd( $buttons, $sess, $slice_id );
+
+        if ( $GLOBALS['g_formpart'] ) {
+            FrmJavascript('document.getElementById("inputtabrows").style.disply = \'\';
+                           TabWidgetToggle(\'formrow'.$GLOBALS['g_formpart'].'\');');
+        }
+
         echo '</form>';
         if ( $this->display_aa_begin_end ) {
             echo "</body></html>";
@@ -252,6 +279,15 @@ class inputform {
     }
 }
 
+
+/** Special constructor shortcut for aainputfield class
+ *  Returns new aainputfield object with setting defined in array */
+function getAAField( $settings ) {
+    $x = new aainputfield();
+    $x->setFromArray( $settings );
+    return $x;
+}
+
 /**
  * aainputfield class - used for displaying input field
  */
@@ -275,6 +311,8 @@ class aainputfield {
     var $additional;       // additional code for input (like 'class="chleba")
     var $html_rb_show;     // show HTML/Plaintext radiobutton?
 
+    var $valid;            // validation function used (this function we added in order we can use this class for AA Admin forms as well)
+
     // --- private ---
     var $result;           // result string (depends on result_mode if variables are as aliases or it is expanded)
     var $result_mode;      // expand | template | cache
@@ -295,19 +333,54 @@ class aainputfield {
     function aainputfield($value='', $html_flag=true, $mode='normal',
                           $varname="", $name="", $add=false, $required=false,
                           $hlp="", $morehlp="", $arr=null) {
-        $this->value             = is_array($value) ? $value : array( 0=>array('value'=>$value));
-        $this->html_flag         = $html_flag;
-        $this->mode              = $mode;
-        $this->varname           = $varname;
-        $this->name              = $name;
-        $this->required          = $required;
-        $this->input_help        = $hlp;
-        $this->input_morehlp     = $morehlp;
-        $this->additional        = $add;
-        $this->const_arr         = $arr;
-        $this->result_mode       = 'expand';
-        $this->html_rb_show      = false;
-        if ( !is_object($GLOBALS['contentcache']) ) $GLOBALS['contentcache'] = new contentcache;
+        $this->clear();
+        $settings = array( 'value'         => is_array($value) ? $value : array( 0=>array('value'=>$value)),
+                           'html_flag'     => $html_flag,
+                           'mode'          => $mode,
+                           'varname'       => $varname,
+                           'name'          => $name,
+                           'required'      => $required,
+                           'input_help'    => $hlp,
+                           'input_morehlp' => $morehlp,
+                           'additional'    => $add,
+                           'const_arr'     => $arr
+                         );
+        $this->setFromArray($settings);
+
+        contentcache::global_instance();   // make sure $contentcache exists
+    }
+
+    /** private function - Returns list of class variables and its defaults */
+    function getDefaults() {
+        return array( 'value'         =>  array( 0 => array( 'value' => '')),
+                      'html_flag'     => true,
+                      'mode'          => 'normal',
+                      'varname'       => '',
+                      'name'          => '',
+                      'required'      => false,
+                      'input_help'    => '',
+                      'input_morehlp' => '',
+                      'additional'    => false,
+                      'const_arr'     => null,
+                      'result_mode'   => 'expand',
+                      'html_rb_show'  => false,
+                      'valid'         => 'text'
+                    );
+    }
+
+    /** Set all class variables to its defaults */
+    function clear() {
+        foreach ( $this->getDefaults() as $propname => $defvalue ) {
+            $this->$propname = $defvalue;
+        }
+    }
+
+    function setFromArray( $settings ) {
+        foreach ( $this->getDefaults() as $propname => $defvalue) {
+            if ( isset($settings[$propname]) ) {
+                $this->$propname = $settings[$propname];
+            }
+        }
     }
 
     /** Sets object variables according to field setting */
@@ -325,6 +398,11 @@ class aainputfield {
             $this->param         = array_slice( $funct, 1 );
             $this->html_rb_show  = $field["html_show"];
         }
+    }
+
+    /** Validates $value is is 'valid' */
+    function validate($value, &$err) {
+        return ValidateInput($this->varname, $this->name, $value, $err, $this->required, $this->valid);
     }
 
     // private methods - helper - data manipulation
@@ -345,7 +423,7 @@ class aainputfield {
       * @returns unpacked slice_id if array is filled from slice
       * (not so important value, isn't?)
       */
-    function fill_const_arr($whichitems='active', $slice_field="", $zids='', $tagprefix=null) {
+    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $zids=false, $tagprefix=null) {
         if ( isset($this->const_arr) and is_array($this->const_arr) ) {  // already filled
             return;
         }
@@ -353,17 +431,7 @@ class aainputfield {
             $this->const_arr = array();
         } elseif ( substr($constgroup,0,7) == "#sLiCe-" ) { # prefix indicates select from items
             $sid = substr($constgroup, 7);
-            switch ($whichitems ) {
-                case 'all':    // show also pending and expired items
-                               $this->const_arr = GetItemHeadlines( $sid, $slice_field,'','all', null, 'all');
-                               break;
-                case 'ids':    // show only zids, which are active items  (used for 'iso' input type)
-                               $this->const_arr = GetItemHeadlines( $sid, $slice_field, $zids, 'ids', $tagprefix);
-                               break;
-                default:       // only active items - default
-                               $this->const_arr = GetItemHeadlines( $sid, $slice_field);
-                               break;
-            }
+            $this->const_arr = GetItemHeadlines( $sid, $slice_field, $zids, $whichitems, $conds, $sort, $tagprefix);
             return $sid; // in most cases not very impotant information, but used in related() input type
         } else {
             $this->const_arr = GetConstants($constgroup);
@@ -497,24 +565,25 @@ class aainputfield {
                                $GLOBALS['list_fnc_edt'][] = $this->varname();
                                break;
             case 'anonym_sel':
-            case 'normal_sel': list(,$slice_field, $usevalue, $allitems) = $this->param;
-                               $this->fill_const_arr($allitems, $slice_field);  // if we fill it there, it is not refilled in inputSel()
+            case 'normal_sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str) = $this->param;
+                               if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+                               $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
                                $this->inputSelect($usevalue);
                                break;
             case 'anonym_rio':
-            case 'normal_rio': $this->inputRadio($this->param[1],   // ncols
-                                                 $this->param[2]);  // move_right
+            case 'normal_rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
+                               $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str);
                                break;
             case 'anonym_mch':
-            case 'normal_mch': $this->varname_modify('[]');         // use slightly modified varname
-                               $this->inputMultiChBox($this->param[1],   // ncols
-                                                      $this->param[2]);  // move_right
+            case 'normal_mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
+                               $this->varname_modify('[]');         // use slightly modified varname
+                               $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str);  // move_right
                                break;
             case 'anonym_mse':
-            case 'normal_mse': $selectsize  = ($this->param[1] < 1) ? 5 :  $this->param[1];
-                               $slice_field = $this->param[2];
+            case 'normal_mse': list(,$size, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
+                               $size = ($size < 1) ? 5 : $size;
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->inputMultiSelect($selectsize,$slice_field);
+                               $this->inputMultiSelect($size, $slice_field, $whichitems, $conds_str, $sort_str);
                                break;
             case 'anonym_fil':
             case 'normal_fil': list($accepts, $text, $hlp) = $this->param;
@@ -528,9 +597,10 @@ class aainputfield {
                                $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_time);
                                break;
             case 'anonym_pre':
-            case 'normal_pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant) = $this->param;
-                               # add2constant is used in insert_fnc_qte - adds new value to constant table
-                               $this->fill_const_arr('active', $slice_field);  // if we fill it there, it is not refilled in inputSel()
+            case 'normal_pre': list(, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str) = $this->param;
+                               // add2constant is used in insert_fnc_qte - adds new value to constant table
+                               if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+                               $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
                                $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue );
                                break;
             case 'anonym_tpr':
@@ -539,7 +609,7 @@ class aainputfield {
                                break;
             case 'anonym_iso':
             case 'normal_iso':
-            case 'freeze_iso': list(, $selectsize, $mode, $design, $tp, $movebuttons, $frombins, $conds, $condsrw) = $this->param;
+            case 'freeze_iso': list(, $selectsize, $mode, $design, $tp, $movebuttons, $whichitems, $conds, $condsrw) = $this->param;
                                $mode      = get_if($mode,'AMB');         # AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
                                $tp        = get_if($tp,  'AMB');         # Default to use the AMP table
                                $tagprefix = ( isset($GLOBALS['tps'][$tp])              ? $GLOBALS['tps'][$tp] :
@@ -549,12 +619,12 @@ class aainputfield {
                                    $this->msg[] = _m("Unable to find tagprefix table %1", array($tp));
                                }
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $sid = $this->fill_const_arr('ids', "", $this->value, $tagprefix=null);  // if we fill it there, it is not refilled in inputSel()
+                               $sid = $this->fill_const_arr('', false, false, AA_BIN_ACT_PEND|AA_BIN_EXPIRED|AA_BIN_HOLDING, $this->value, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
                                if ( $this->mode == 'freeze' ) {
                                    $this->value_modified = $this->implodaval('<br>');
                                    $this->staticText();
                                } else {
-                                   $this->related($selectsize, $sid, $mode, $design, $movebuttons, $frombins, $conds, $condsrw);
+                                   $this->related($selectsize, $sid, $mode, $design, $movebuttons, $whichitems, $conds, $condsrw);
                                }
                                break;
             case 'anonym_hco':
@@ -563,9 +633,9 @@ class aainputfield {
                                $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
                                break;
             case 'anonym_wi2':
-            case 'normal_wi2': list($constgroup, $size, $wi2_offer, $wi2_selected) = $this->param;
+            case 'normal_wi2': list($constgroup, $size, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->twoBox(get_if($size,5), $wi2_offer, $wi2_selected);
+                               $this->twoBox(get_if($size,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str);
                                break;
             case 'anonym_pwd':  // handled in passwordModify
             case 'normal_pwd': list($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) = $this->param;
@@ -595,7 +665,7 @@ class aainputfield {
     /** Prints field name (and 'needed' sign - star) in table cell for inputform*/
     function field_name( $plus=false, $colspan=1, $name=null ) {
         $name = is_null($name) ? $this->name : $name;
-        if ( $plus=='plus' ) $this->echoo("\n<tr align=left>");
+        if ( $plus=='plus' ) $this->echoo("\n<tr class=\"formrow{formpart}\">");
         $this->echoo("\n <td class=\"tabtxt\" ".
                       (($colspan==1) ? '': "colspan=\"$colspan\"").
                       '><b>'. $name .'</b>');
@@ -696,7 +766,7 @@ class aainputfield {
     function inputChBox($changeorder=false, $colspan=1){
         list($name,$val,$add) = $this->prepareVars();
 
-        $this->echoo("\n<tr align=left>");
+        $this->echoo("\n<tr class=\"formrow{formpart}\">");
         if( !$changeorder ) {
             $this->field_name(false, $colspan);
         }
@@ -787,10 +857,10 @@ class aainputfield {
         list($name,$val,$add) = $this->prepareVars();
         $val = htmlspecialchars($val);
         $colspan = $single ? 2 : 1;
-        $this->echoo("<tr align=left>");
+        $this->echoo("<tr class=\"formrow{formpart}\">");
         $this->field_name(false, $colspan);
         if ($single) {
-            $this->echoo("</tr>\n<tr align=left>");
+            $this->echoo("</tr>\n<tr class=\"formrow{formpart}\">");
         }
         $this->echoo("<td colspan=\"$colspan\">");
         $this->html_radio($showhtmlarea ? false : 'convertors');
@@ -817,72 +887,6 @@ class aainputfield {
     */
 
     function richEditTextarea($rows=10, $cols=80, $type="class", $single="") {
-        /*
-        global $BName, $BPlatform;
-        if ( !richEditShowable() ) {
-            $this->textarea($rows, $cols, $single, $BName != "MSIE");
-            return;
-        }
-
-        list($name,$val,$add) = $this->prepareVars();
-
-        $colspan = $single ? 2 : 1;
-        $this->echoo("<tr>");
-        $this->field_name(false, $colspan);
-        if ($single) {
-            $this->echoo("</tr>\n<tr>");
-        }
-        $this->echoo("<td colspan=\"$colspan\">");
-
-        $val = ( !$this->html_flag ? // text only
-            str_replace("\r","",str_replace ("\n","", nl2br(htmlspecialchars ($val,ENT_QUOTES)))) :
-            str_replace( array("'","\n","\r"), array("\\'","\\n","\\r"), $val));
-
-        if (!$BName || !$BPlatform) detect_browser();
-
-        $this->echoo("<!-- Browser $BName -->");
-        if     ($type == "iframe") $richedit = "richedit_iframe";
-        elseif ($BName == "MSIE")  $richedit = "richedt_ie";
-        else                       $richedit = "richedit_ns";
-
-        $this->echoo(
-            "<script language=\"javascript\" type=\"text/javascript\">
-            <!--
-            var edt$name"."_doc_complet = $doc_complet;
-            var edt = \"edt$name\";
-            var edtdoc = \"edt$name.document\";
-            var richHeight = ".($rows * 22).";
-            var richWidth = ".($cols * 8).";
-            var imgpath = '../misc/wysiwyg/images/';
-
-            richedits[richedits.length] = '".$name."';
-            // -->
-        </script>
-        <script language=\"javascript\"  type=\"text/javascript\" src=\"../misc/wysiwyg/".$richedit.".js\">
-        </script>
-        <script language=\"javascript\" type=\"text/javascript\" src=\"../misc/wysiwyg/".$richedit.".html\">
-        </script>");
-
-        $q_val = str_replace('"', '\"', $val);   // quote quotes for tag attribs
-
-        $this->echovar("
-            <script language =\"javascript\"  type=\"text/javascript\">
-                <!--
-                edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100);
-                var edt$name"."_content = \"$q_val\";
-                function edt$name"."_inicial() {
-                    //change_state ('edt$name');
-                    posa_contingut_html('edt$name',edt$name"."_content);
-                    //change_state ('edt$name');
-                    clearInterval(edt$name"."_timerID);
-                    return true;
-                }
-                // -->
-            </script>
-            <input type=\"hidden\" name=\"$name\" value=\"$q_val\">
-            <input type=\"hidden\" name=\"${name}html\" value=\"h\">");
-        $this->helps('plus');
-        */
         $this->textarea($rows, $cols, false, false, true);
     }
 
@@ -891,9 +895,10 @@ class aainputfield {
     * Prints a radio group, html tags <input type="radio" .. to 2-column table
     * for use within <form> and <table> tag
     */
-    function inputRadio($ncols=0, $move_right=true) {
+    function inputRadio($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $this->fill_const_arr();
+        if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getRadioButtonTag($k, $v);
         }
@@ -905,9 +910,10 @@ class aainputfield {
     * Prints html tag <input type="radio" .. to 2-column table
     * for use within <form> and <table> tag
     */
-    function inputMultiChBox($ncols=0, $move_right=true) {
+    function inputMultiChBox($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $this->fill_const_arr();
+        if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getOneChBoxTag($k, $v);
         }
@@ -962,7 +968,7 @@ class aainputfield {
         }
         // now add all values, which is not in the array, but field has this value
         // (this is slice inconsistence, which could go from feeding, ...)
-        if (isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict != 'unselected')) {
+        if ( isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict != 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
                     $ret .= "<option value=\"". htmlspecialchars($k) ."\" selected class=\"sel_missing\">".htmlspecialchars($k)."</option>";
@@ -982,23 +988,37 @@ class aainputfield {
     * Prints html tag <select multiple .. to 2-column table
     * for use within <form> and <table> tag
     */
-    function inputMultiSelect($size=6, $slice_field="") {
-        $this->related($size, false, 'AMB', false, true, 3, '', '', MAX_RELATED_COUNT, $slice_field);
-    }
-
-    /**
-    * Prints html tag <select multiple .. to 2-column table
-    * for use within <form> and <table> tag
-    */
-    function related($size=6, $sid=false, $mode='AMB', $design=false, $movebuttons=true, $frombins=3, $conds="", $condsrw="", $minrows=MAX_RELATED_COUNT, $slice_field="") {
+    function inputMultiSelect($size=6, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
         $size                 = get_if($size, 6);
-        $frombins             = get_if($frombins, AA_BIN_ACTIVE | AA_BIN_PENDING );  // =3
-        if (!$sid) $this->fill_const_arr('active', $slice_field);
+        if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
 
         $this->field_name('plus');
         $ret ="<select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";
-        $ret .= $this->get_options( $this->const_arr, false, false, 'all', ($sid ? false : !$this->required));
+        $ret .= $this->get_options( $this->const_arr, false, false, 'all', !$this->required);
+        $option_no = count($this->const_arr) + ($this->required ? 0:1);
+        // add blank rows if asked for
+        while( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
+            $ret .= AA_WIDTHTOR;
+        }
+        $ret .= "</select>";
+        $this->echovar( $ret );
+        $this->helps('plus');
+    }
+
+    /**
+    * Prints html tag <select multiple .. and "Add" relation button
+    * to 2-column table for use within <form> and <table> tag
+    */
+    function inputRelation($size=6, $sid='', $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
+        list($name,$val,$add) = $this->prepareVars('multi');
+        $size                 = get_if($size, 6);
+        if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+
+        $this->field_name('plus');
+        $ret ="<select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";
+        $ret .= $this->get_options( $this->const_arr, false, false, 'all', false);
         $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
         while( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
@@ -1006,40 +1026,36 @@ class aainputfield {
         }
         $ret .= "</select>";
 
-        if( !$sid )  { // all selection in this box should be selected on submit
-            $this->echovar( $ret );
+        $this->echoo('<table border="0" cellspacing="0"><tr>');
+        if ($movebuttons) { $this->echoo("\n <td rowspan=\"2\">");
         } else {
-            $this->echoo('<table border="0" cellspacing="0"><tr>');
-            if ($movebuttons) { $this->echoo("\n <td rowspan=\"2\">");
-            } else {
-                $this->echoo("\n <td>");
-            }
-            $this->echovar( $ret );
-            $this->echoo("</td>\n");
-            if ($movebuttons) {
-                 $this->echoo("<td valign=\"top\">");
-                 $this->echoo("<input type=\"button\" value=\" /\ \" ".
-                 " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
-                 $this->echoo('</td></tr>');
-                 $this->echoo('<tr><td valign="bottom">');
-                 $this->echoo("<input type=\"button\" value=\" \/ \" ".
-                 " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
-                 $this->echoo("</td>");
-            }
-            $this->echoo("</tr>\n <tr><td valign=\"bottom\"><center>
-              <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$frombins\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\" )'>
-              &nbsp;&nbsp;");
-/*              <input type='button' value='". _m("Delete") ."' size='250'
-                onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
-                         document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'>*/
-            $this->echoo("<input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>
-              <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
-
-                 listboxes[listboxes.length] = '$name'
-                // -->
-              </SCRIPT>\n" );
-            $this->echoo("</td></tr></table>\n");
+            $this->echoo("\n <td>");
         }
+        $this->echovar( $ret );
+        $this->echoo("</td>\n");
+        if ($movebuttons) {
+             $this->echoo("<td valign=\"top\">");
+             $this->echoo("<input type=\"button\" value=\" /\ \" ".
+             " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
+             $this->echoo('</td></tr>');
+             $this->echoo('<tr><td valign="bottom">');
+             $this->echoo("<input type=\"button\" value=\" \/ \" ".
+             " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
+             $this->echoo("</td>");
+        }
+        $this->echoo("</tr>\n <tr><td valign=\"bottom\"><center>
+          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\" )'>
+          &nbsp;&nbsp;");
+/*              <input type='button' value='". _m("Delete") ."' size='250'
+            onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
+                     document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'>*/
+        $this->echoo("<input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>
+          <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
+
+             listboxes[listboxes.length] = '$name'
+            // -->
+          </SCRIPT>\n" );
+        $this->echoo("</td></tr></table>\n");
         $this->helps('plus');
     }
 
@@ -1160,6 +1176,7 @@ class aainputfield {
         $val=safe($val);
 
         $this->field_name('plus');
+        $this->html_radio();
         $this->echovar( "<textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual".getTriggers("textarea",$name).">$val</textarea>" );
         $out = "<select name=\"foo_$name\" onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">";
         $out .= $this->get_options( $this->const_arr );
@@ -1168,12 +1185,17 @@ class aainputfield {
         $this->helps('plus');
     }
 
+    function related($size, $sid, $mode, $design, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
+        $this->inputRelation($size, $sid, MAX_RELATED_COUNT, $mode, $design, $movebuttons, $whichitems, $conds, $condsrw);
+    }
+
     /**
     * Prints two boxes for multiple selection for use within <form> and <table> tag
     */
-    function twoBox($size, $wi2_offer, $wi2_selected) {
+    function twoBox($size, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $this->fill_const_arr();
+        if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
         $wi2_offer    = get_if( $wi2_offer,    _m("Offer") );
         $wi2_selected = get_if( $wi2_selected, _m("Selected") );
 
@@ -1351,6 +1373,19 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", 
     $input->print_result();
 }
 
+/** Prints html tag <select multiple .. to 2-column table
+ *  for use within <form> and <table> tag
+ */
+function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5, $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
+    $input = new aainputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    if ( $relation ) {
+        $input->inputRelation($size, $relation, $minrows, $mode, $design);
+    } else {
+        $input->inputMultiSelect($size);
+    }
+    $input->print_result();
+}
+
 /** Print boxes allowing to choose constant in a hiearchical way */
 function FrmHierarchicalConstant($name, $txt, $value, $group_id, $levelCount, $boxWidth, $size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") {
     $input = new aainputfield($value, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
@@ -1397,6 +1432,12 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $nee
 function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $morehelp="",  $rows=4, $cols=60) {
     $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->textareaPreSelect($rows,$cols);
+    $input->print_result();
+}
+
+function FrmRelated($name, $txt, $arr, $size, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="") {
+    $input = new aainputfield('', $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input->inputRelation($size, $relation, $minrows, $mode, $design);
     $input->print_result();
 }
 
@@ -1725,7 +1766,7 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
 function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false) {
     global $BName, $BVersion, $BPlatform;
 
-    if ($tr) { echo '<tr>'; }
+    if ($tr) { echo '<tr class="formbuttons">'; }
     echo '<td align="center" valign="'.$valign.'" bgcolor='.$bgcolor. '>';
     if( isset($buttons) AND is_array($buttons) ) {
         // preparison: is the accesskey working?
@@ -1847,6 +1888,24 @@ function FrmTabRow( $row ) {
     echo getFrmTabRow( $row );
 }
 
+/**
+* Prints TAB widget
+*/
+function getFrmTabs( $tabs, $tabsId ) {
+    if ( isset($tabs) AND is_array($tabs) ) {
+        $ret = "\n <tr id=\"$tabsId\"><td colspan=\"2\" class=\"tabsrow\">";
+        foreach ( $tabs as $class => $name ) {
+            $ret .= "<a href=\"javascript:TabWidgetToggle('$class')\" id=\"${tabsId}${class}\" class=\"tabs${non}activ\">$name</a>";
+            $non = 'non';
+        }
+        $ret .= "</td></tr>";
+    }
+    return $ret;
+}
+
+function FrmTabs( $tabs, $tabsId ) { echo getFrmTabs( $tabs, $tabsId ); }
+
+
 /** Returns table based on config array */
 function GetHtmlTable( $content ) {
     if ( !(isset($content) AND is_array($content)) )   return "";
@@ -1857,6 +1916,32 @@ function GetHtmlTable( $content ) {
     return  $ret . '</table>';
 }
 
+
+function getFrmJavascriptFile( $src ) {
+    return "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". get_aa_url($src,false) . "\"></script>";
+}
+
+function getFrmJavascript( $jscode ) {
+    return '
+    <script language="JavaScript" type="text/javascript"> <!--
+      '.$jscode.'
+      //-->
+    </script>
+    ';
+}
+
+function getFrmCSS( $stylecode ) {
+    return '
+    <style type="text/css">  <!--
+      '.$stylecode.'
+      //-->
+    </style>
+    ';
+}
+
+function FrmJavascript( $jscode )  { echo getFrmJavascript( $jscode );  }
+function FrmJavascriptFile( $src ) { echo getFrmJavascriptFile( $src ); }
+function FrmCSS( $stylecode )      { echo getFrmCSS( $stylecode );      }
 
 /** returns one row with one radiobutton - asociated to bookmark (stored search)
  *  or item list
