@@ -29,7 +29,7 @@ require $GLOBALS[AA_INC_PATH]."constants.php3";
 function go_url($url, $add_param="") {
   if( $add_param != "" )
     $url = con_url( $url, rawurlencode($add_param));
-  $netscape = (r=="") ? "r=1" : "r=".++$r;   // special parameter for Natscape to reload page
+  $netscape = (r=="") ? "r=1" : "r=".++$r;   // special parameter for Netscape to reload page
   header("Status: 302 Moved Temporarily");
 	header("Location: ". con_url($url,$netscape));
  	exit;
@@ -73,14 +73,16 @@ function DeBackslash($txt) {
 	return str_replace('\\', "", $txt);        // better for two places
 }   
  
-// adds variables passesd by QUERY_STRING_UNESCAPED to GLOBALS 
-function add_vars($debug="") {
+# adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string) 
+# to GLOBALS 
+function add_vars($query_string="", $debug="") {
   global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
-  if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
+  if ( $query_string ) 
+    $varstring = $query_string;
+  elseif (isset($REDIRECT_QUERY_STRING_UNESCAPED))
     $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
-  } else {  
+  else
     $varstring = $QUERY_STRING_UNESCAPED;
-  }  
   $a = explode("&",$varstring);
   $i = 0;
 
@@ -352,6 +354,8 @@ function GetSliceFields($slice_id) {
 
 # create field id from type and number
 function CreateFieldId ($ftype, $no) {
+  if( (string)$no == "0" )
+    $no="";    # id for 0 is "xxxxx..........."
   return $ftype. substr("................$no", -(16-strlen($ftype)));
 }
 
@@ -366,31 +370,48 @@ function GetFieldNo($id) {
 }
 
 # fills content arr with current content of $sel_in items (comma separated ids)
-function GetItemContent($ids) {
+function GetItemContent($ids, $use_short_ids=false) {
   global $db;
 
+  # construct WHERE clausule
   if( $ids and is_array($ids) ) {
-    $sel_in = " IN (";
-    $delim = "";
-    reset($ids);
-    while( list( ,$v) = each ($ids) ) {
-      if( $v ) {
-        $sel_in .= $delim. "'".q_pack_id($v)."'";
-        $delim = ",";
+    if( $use_short_ids )
+      $sel_in = " IN (". implode( $ids, "," ). ")";
+     else { 
+      $sel_in = " IN (";
+      $delim = "";
+      reset($ids);
+      while( list( ,$v) = each ($ids) ) {
+        if( $v ) {
+          $sel_in .= $delim. "'".q_pack_id($v)."'";
+          $delim = ",";
+        }  
       }  
+      $sel_in .= ( ($delim=="") ? "'')" : ")");
     }  
-    $sel_in .= ( ($delim=="") ? "'')" : ")");
   } elseif($ids) {
-    $sel_in = "='".q_pack_id($ids)."'";
+    if( $use_short_ids )
+      $sel_in = "='$ids'";
+     else
+      $sel_in = "='".q_pack_id($ids)."'";
   } else 
     return false;
 
     # get content from item table
-  $SQL = "SELECT * FROM item WHERE id $sel_in";
+  $delim = "";
+  $id_column = ($use_short_ids ? "short_id" : "id");   
+  $SQL = "SELECT * FROM item WHERE $id_column $sel_in";
   $db->query($SQL);
   while( $db->next_record() ) {
     reset( $db->Record );
-    $foo_id = unpack_id($db->f(id));
+    if( $use_short_ids ) {
+      $foo_id = $db->f("short_id");
+      $translate[unpack_id($db->f("id"))] = $db->f("short_id"); # id -> short_id
+        # WHERE for query to content table
+      $new_sel_in .= "$delim '". quote($db->f("id")) ."'"; 
+      $delim = ",";
+    } else 
+      $foo_id = unpack_id($db->f("id"));
     while( list( $key, $val ) = each( $db->Record )) {
       if( EReg("^[0-9]*$", $key))
         continue;
@@ -398,7 +419,15 @@ function GetItemContent($ids) {
                                                         array("value" => $val);
     }  
   }  
-
+  
+    # construct WHERE query to content table if used short_ids
+  if( $use_short_ids ) {
+    if( count($translate)>1 )
+      $sel_in = " IN ( $new_sel_in ) ";
+     else 
+      $sel_in = " = $new_sel_in ";
+  }
+  
    # get content from content table
    # feeding - don't worry about it - when fed item is updated, informations
    # in content table is updated too
@@ -406,10 +435,88 @@ function GetItemContent($ids) {
   $db->query("SELECT * FROM content 
                WHERE item_id $sel_in");  # usable just for constants
   while( $db->next_record() ) {
-    $content[unpack_id($db->f(item_id))][$db->f(field_id)][] = 
+    $fooid = ( $use_short_ids ? $translate[unpack_id($db->f(item_id))] : 
+                               unpack_id($db->f(item_id)));
+    $content[$fooid][$db->f(field_id)][] = 
       array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
              "flag"=> $db->f(flag) );
   }
+  return $content;
+}  
+
+function GetHeadlineFieldID($sid, $db) {
+  # get id of headline field  
+  $SQL = "SELECT id FROM field 
+           WHERE slice_id = '". q_pack_id( $sid ) ."'
+             AND id LIKE 'headline%'
+        ORDER BY id";
+  $db->query( $SQL );
+  return ( $db->next_record() ? $db->f(id) : false );
+}
+
+# fills array by headlines of items in specified slice (unpacked_id => headline)
+function GetItemHeadlines( $db, $sid="", $ids="", $type="all" ) {
+  $psid = q_pack_id( $sid );
+  $time_now = time();
+
+  if ( $sid ) {
+    if ( !($headline_fld = GetHeadlineFieldID($sid, $db)) )
+      return false;
+  } else {
+    $headline_fld = "headline........";
+  }  
+
+  if( $type == "all" )                          # select all items from slice
+    $cond = " AND item.slice_id = '". q_pack_id( $sid ) ."' ";
+  elseif( !(isset($ids) && is_array($ids)) )
+    return false;
+  else {  
+    $cond = ' AND id IN ( '; 
+    reset( $ids );  
+    while( list( , $v ) = each( $ids )) {
+      $cond .= "$delim'". q_pack_id($v[value]) ."'";
+      $delim=',';
+    }
+    $cond .= ' ) ';
+  }
+  if( $cond == " AND id IN ( '' ) ")
+    return false;
+  
+  $SQL = "SELECT id, text FROM content, item 
+           WHERE item.id=content.item_id
+             $cond
+             AND field_id = '$headline_fld'
+             AND status_code='1'
+             AND expiry_date > '$time_now'
+             AND publish_date <= '$time_now'
+        ORDER BY publish_date DESC";
+
+  $db->query($SQL);
+  while($db->next_record())
+    $arr[unpack_id($db->f(id))] = substr($db->f(text), 0, 50);  #truncate long headlines
+        
+  return $arr;
+}
+
+# fills content arr with specified constant data
+function GetConstantContent( $group, $order='pri' ) {
+  global $db;
+
+  $db->query("SELECT * FROM constant 
+               WHERE group_id='$group'
+               ORDER BY $order");
+  $i=1;               
+  while($db->next_record()) {
+    $foo_id = unpack_id($db->f(id));
+    $content[$foo_id]["const_name......"][] = array( "value"=> $db->f("name") );
+    $content[$foo_id]["const_value....."][] = array( "value"=> $db->f("value"),
+                                                     "flag" => FLAG_HTML );
+    $content[$foo_id]["const_priority.."][] = array( "value"=> $db->f("pri") );
+    $content[$foo_id]["const_group....."][] = array( "value"=> $db->f("group_id") );
+    $content[$foo_id]["const_class....."][] = array( "value"=> $db->f("class") );
+    $content[$foo_id]["const_counter..."][] = array( "value"=> $i++ );
+    $content[$foo_id]["const_id........"][] = array( "value"=> $db->f("id") );
+  }  
   return $content;
 }  
 
@@ -446,6 +553,42 @@ function GetCategoryFieldId( $fields ) {
   $no = ( ($no==-1) ? '.' : (string)$no);
   return CreateFieldId("category", $no);
 }  
+
+
+# get id from item short id
+function GetId4Sid($sid) {
+  global $db;
+  
+  if (!$sid) 
+    return false;
+  $SQL = "SELECT id FROM item WHERE short_id='$sid'";
+  $db->query( $SQL );
+  if( $db->next_record() ) 
+    return unpack_id($db->f("id"));
+  return false;  
+}
+
+# get short item id item short id
+function GetSid4Id($iid) {
+  global $db;
+  
+  if (!$iid) 
+    return false;
+  $SQL = "SELECT short_id FROM item WHERE id='". q_pack_id($iid) ."'";
+  $db->query( $SQL );
+  if( $db->next_record() ) 
+    return $db->f("short_id");
+  return false;  
+}
+
+function GetModule($mod_id) {
+  # module_id is in format <type>:<id> 
+  # (like "petition:53663a5e9fb524723626bca342e463c4")
+  if( !($foo = strpos( $mod_id, ":" )) )
+    return array("slice", $mod_id );       # slice is default - no type identifier is needed
+  else
+    return explode( $mod_id, ":");
+}    
 
 # in_array and compact is available since PHP4
 if (substr(PHP_VERSION, 0, 1) < "4") {
@@ -497,6 +640,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.24  2001/09/27 16:10:48  honzam
+Field ids will begin with zero ( headline........), New related stories support
+
 Revision 1.23  2001/06/21 14:15:44  honzam
 feeding improved - field value redefine possibility in se_mapping.php3
 
