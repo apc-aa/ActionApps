@@ -37,7 +37,7 @@ $catVS = new Cvarset();
 $expVS = new Cvarset();
 
 $p_slice_id = q_pack_id($slice_id);
-$slice_info = GetSliceInfo($p_slice_id);
+$slice_info = GetSliceInfo($slice_id);
 
 // update export_to_all switch
 if( ($slice_info[export_to_all] ? 1:0) != ($to_all ? 1:0) ) {
@@ -135,6 +135,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.6  2001/03/20 15:28:53  honzam
+Fixed "terminate feeding after canceling permissions" bug + changes due to "slice delete" feature
+
 Revision 1.5  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

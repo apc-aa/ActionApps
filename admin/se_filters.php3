@@ -38,8 +38,13 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 // lookup (slices) 
-$SQL= "SELECT name, id FROM slice, feeds WHERE slice.id=feeds.from_id 
-                                AND feeds.to_id='$p_slice_id' ORDER BY name";
+$SQL= "SELECT name, id FROM slice, feeds 
+        LEFT JOIN feedperms ON slice.id=feedperms.from_id 
+        WHERE slice.id=feeds.from_id 
+          AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
+          AND feeds.to_id='$p_slice_id' ORDER BY name";
+
+
 $db->query($SQL);
 while($db->next_record())
   $impslices[unpack_id($db->f(id))] = $db->f(name);
@@ -179,7 +184,7 @@ function UpdateFilters(slice_id, import_id) {
 <?php
   $xx = ($slice_id!="");
   $useOnLoad = true;
-  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
                 "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>false);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   echo "<H1><B>" . L_A_FILTERS_FLT . "</B></H1>";
@@ -255,6 +260,9 @@ if( $imp_group ) {
 } 
 /*
 $Log$
+Revision 1.9  2001/03/20 15:28:53  honzam
+Fixed "terminate feeding after canceling permissions" bug + changes due to "slice delete" feature
+
 Revision 1.8  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

@@ -57,8 +57,12 @@ while($db->next_record())
   $importable[unpack_id($db->f(id))] = $db->f(name);
 
 // lookup imported slices
-$SQL= "SELECT name, id FROM slice, feeds WHERE slice.id=feeds.from_id 
-                                AND feeds.to_id='$p_slice_id' ORDER BY name";
+$SQL= "SELECT name, id FROM slice, feeds 
+        LEFT JOIN feedperms ON slice.id=feedperms.from_id 
+        WHERE slice.id=feeds.from_id 
+          AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
+          AND feeds.to_id='$p_slice_id' ORDER BY name";
+
 $db->query($SQL);
 while($db->next_record())
   $imported[unpack_id($db->f(id))] = $db->f(name);
@@ -107,7 +111,7 @@ function UpdateImportExport(slice_id)
 <?php
   $xx = ($slice_id!="");
   $useOnLoad = true;
-  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
                 "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>false, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
@@ -206,6 +210,9 @@ function UpdateImportExport(slice_id)
 <?php
 /*
 $Log$
+Revision 1.6  2001/03/20 15:28:53  honzam
+Fixed "terminate feeding after canceling permissions" bug + changes due to "slice delete" feature
+
 Revision 1.5  2001/02/26 17:26:08  honzam
 color profiles
 
