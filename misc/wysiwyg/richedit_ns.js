@@ -93,28 +93,29 @@
                 '#666666','#CC0000','#CC6600','#999900','#009900','#3333FF','#993366',
                 '#333333','#660000','#993300','#666600','#006600','#000099','#663366',
                 '#000000','#330000','#663300','#333300','#003300','#000066','#330033');
-	function html2text (html) {
-		html = html.replace (/&/g,"&amp;");
-		html = html.replace (/</g,"&lt;");
-		html = html.replace (/>/g,"&gt;");
-		html = html.replace (/\"/g, "&quot;");
-		html = html.replace (/\'/g, "&#039;");
-		return html;
-	}
+        function html2text (html) {
+                html = html.replace (/</g,"&lt;");
+                html = html.replace (/>/g,"&gt;");
+                html = html.replace (/\\/g, "&quot;");
+                html = html.replace (/\'/g, "&#039;");
+                return html;
+        }
 
-	function text2html (text) {
-		text = text.replace (/&lt;/g,"<");
-		text = text.replace (/&gt;/g,">");
-		text = text.replace (/&amp;/g,"&");
-		text = text.replace (/&quot;/g, "\"");
-		text = text.replace (/&#039;/g, "'");
-		return text;
-	}
-	        text_state = "HTML";
+        function text2html (text) {
+                text = text.replace (/&lt;/g,"<");
+                text = text.replace (/&gt;/g,">");
+                text = text.replace (/&quot;/g, "\"");
+                text = text.replace (/&#039;/g, "'");
+                return text;
+        }
+        
+        text_state = "HTML";
         
         function get_text (nom_editor) {
                 text = contingut_html (nom_editor);
                 if (text_state == "TEXT") text = text2html (text);
+                // there is a nonsence text when the field is empty
+                if (text == "<P>&nbsp;</P>" || text == "<P> </P>") text = "";
                 return text;
         }
 
@@ -304,11 +305,11 @@
  k.writeln('</HEAD><BODY bgcolor=white ><center>') 
  k.writeln('<form name=info_table onsubmit="comprova_valors();" >'); 
  k.writeln("<font color=black face=arial size=-1 ><b> Give values for the parameters and press OK:</b></font>") 
- k.writeln('<TABLE CELLSPACING=10><TR><TD valign=absmiddle >Rows:&nbsp;&nbsp;&nbsp;<INPUT TYPE=TEXT SIZE=3  maxlength=2 NAME=NumRows value='+NR+' ></TD>') 
- k.writeln('<TD valign=absmiddle >Columns:&nbsp;&nbsp;&nbsp;<INPUT TYPE=TEXT SIZE=3 maxlength=2 NAME=NumCols value='+NC+'></TD></TR>') 
- k.writeln('<TR><TD>Table attributes:</TD><TD valign=absmiddle ><INPUT TYPE=TEXT SIZE=20 NAME=TableAttrs maxlength=120 value='+TA+'></TD></TR>') 
- k.writeln('<TR><TD>Cell attributes:</TD><TD><INPUT TYPE=TEXT SIZE=20 NAME=CellAttrs value='+CA+'></TD></TR>') 
- k.writeln('<TR><TD>Table title:</TD><TD><INPUT TYPE=TEXT SIZE=20 NAME=Caption ></TD></TR></TABLE>') 
+ k.writeln('<TABLE CELLSPACING=10><TR><TD valign=absmiddle >Files:&nbsp;&nbsp;&nbsp;<INPUT TYPE=TEXT SIZE=3  maxlength=2 NAME=NumRows value='+NR+' ></TD>') 
+ k.writeln('<TD valign=absmiddle >Columnes:&nbsp;&nbsp;&nbsp;<INPUT TYPE=TEXT SIZE=3 maxlength=2 NAME=NumCols value='+NC+'></TD></TR>') 
+ k.writeln('<TR><TD>Atributs de la taula:</TD><TD valign=absmiddle ><INPUT TYPE=TEXT SIZE=20 NAME=TableAttrs maxlength=120 value='+TA+'></TD></TR>') 
+ k.writeln('<TR><TD>Atributs cel·la:</TD><TD><INPUT TYPE=TEXT SIZE=20 NAME=CellAttrs value='+CA+'></TD></TR>') 
+ k.writeln('<TR><TD>Títol de la taula:</TD><TD><INPUT TYPE=TEXT SIZE=20 NAME=Caption ></TD></TR></TABLE>') 
  k.writeln('<TR><TD valign=absmiddle colspan=2 align=center ><INPUT TYPE=BUTTON NAME=OK VALUE=OK onclick="comprova_valors()" ></TD></TR></TABLE></form>') 
  k.writeln('</center></BODY></HTML>') 
  k.close() 
