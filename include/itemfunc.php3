@@ -1028,7 +1028,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         && $itemvarset->get('status_code') >= 1))
     {
         $itemvarset->add("moved2active", "number", 
-            $itemvarset->get('status_code') == 1 ? time () : 0);
+            $itemvarset->get('status_code') > 1 ? 0 : time ());
     }
 
     // update item table    

@@ -242,11 +242,11 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
             $field_howoften = getAlertsField (FIELDID_HOWOFTEN, $cid);
             
             while ($db2->next_record()) {
-                $readerContent->setByItemID( unpack_id( $db2->f("id")));
+                $readerContent->setByItemID( unpack_id( $db2->f("id")), true);
                 if( $readerContent->getValue( $field_howoften ) != $ho
                     || ! $readerContent->getValue( FIELDID_MAIL_CONFIRMED ))
                     continue;
-                    
+                   
                 $user_filters = "";
                 $user_text = "";    
                 $user_filters_value = $readerContent->getValues( 
@@ -262,7 +262,6 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                         if ($user_filters [$filterid])
                             $user_text .= $text;
                 }
-                
                 // Don't send if nothing new emerged         
                 if ($user_text) {        
                     $alias["_#FILTERS_"] = $user_text;

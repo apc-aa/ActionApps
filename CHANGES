@@ -1,3 +1,4 @@
+03/24/03 - fixed several things in Alerts (jakub)
 03/24/03 - fixed bug of empty row appearing in "Two boxes" input type
 (honzam) - new keyword "<!--Vacuum-->" can be used in "No item message" 
            parameter in view or slice setup, which will display nothing

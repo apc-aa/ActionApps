@@ -99,9 +99,8 @@ function showCollectionAddOns ()
     while ($db->next_record())  
         $last[$db->f("howoften")] = $db->f("last");
     echo "<TABLE border=0>";
-    $hos = get_howoften_options();
+    $hos = get_howoften_options(true);
     while (list($ho,$msg) = each($hos)) 
-        if ($ho != "instant")
         echo "<TR><TD>".$msg."</TD><TD>".date("j.n. H:i", $last[$ho])."</TD></TR>\n";         
     echo "</table>";
     

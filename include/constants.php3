@@ -19,6 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once "mgettext.php3";
+
 #
 # Used constants. Do not edit if you are not developer.
 #
@@ -30,14 +32,14 @@ http://www.apc.org/
   # The types are defined APC wide for easy item interchanging between APC nodes
   # (on the other hand, new type can be added just by placing new fileld
   # in database table fields as for 'AA_Core_Fields..' slice).
-
+  
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 * @global array $MODULES 
 *     "name" is a description of the module, 
 *     "hide_create_module" doesn't show the module in the Create Slice / Module page
 */
 $MODULES = array( 'S' => array( 'table' => 'slice',
-                                'name' => 'Slice',
+                                'name' => _m('Slice'),
                                 'hide_create_module' => 1,
                                 'directory' => "admin/",
                                 'menu' => "include/menu.php3"),
@@ -50,21 +52,21 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                     'en_site_lang.php3' => 'en_site_lang.php3',
                                     'cz_site_lang.php3' => 'cz_site_lang.php3')),
                   'A' => array( 'table' => 'module', # this module doesn't have any special info yet
-                                'name' => 'MySQL Auth',
+                                'name' => _m('MySQL Auth'),
                                 'hide_create_module' => 1,
                                 'directory' => "modules/mysql_auth/",
                                 'menu' => "modules/mysql_auth/menu.php3"),
                   'J' => array( 'table' => 'jump',
-                                'name' => 'Jump inside AA control panel',
+                                'name' => _m('Jump inside AA control panel'),
                                 'directory' => "modules/jump/",
                                 'menu' => "menu.php3"),
             	  'P' => array ('table' => 'polls',
-                  				'name' => 'Polls for AA',
+                  				'name' => _m('Polls for AA'),
                                 'show_templates' => 1,
                    				'directory' => "modules/polls/",
                                 'menu' => "modules/polls/menu.php3"));
 $MODULES['Alerts'] = array ('table' => 'module',
-                            'name' => 'Alerts',
+                            'name' => _m('Alerts'),
                             'directory' => "modules/alerts/",
                             'menu' => "modules/alerts/menu.php3",
                             'letter' => 'A');  // letter is used for the modules 
@@ -73,7 +75,7 @@ $MODULES['Alerts'] = array ('table' => 'module',
                                                // identification for some 
                                                // javascripts in um_util.php3
 $MODULES['Links'] =  array ('table' => 'links',
-                            'name' => 'Links',
+                            'name' => _m('Links'),
                             'show_templates' => 1,
                             'directory' => "modules/links/",
                             'menu' => "modules/links/menu.php3",

@@ -51,8 +51,8 @@ class ItemContent {
     }
 
     // Set by unpacked item ID
-    function setByItemID ($item_id) {
-        $this->content = GetItemContent ($item_id);
+    function setByItemID ($item_id, $ignore_reading_password = false) {
+        $this->content = GetItemContent ($item_id, false, $ignore_reading_password);
         $this->content = $this->content [$item_id];
     }
     

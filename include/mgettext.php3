@@ -99,4 +99,9 @@ function _m ($id, $params = 0) {
     return $retval;
 } 
 
+/** Works the same as _m() but is not parsed by xmgettext. This way it is 
+*   useful to translate a non constant message, counted at run-time. */
+function _mdelayed ($id, $params = 0) {
+    return _m ($id, $params);
+}
 ?>

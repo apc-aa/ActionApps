@@ -633,8 +633,12 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
 }    
 
 /** Basic function to get item content. Use this function, not direct SQL queries.
+*
+*   @param bool $ignore_reading_password 
+*       Use carefully only when you are sure the data is used safely and not viewed
+*       to unauthorized persons.
 */
-function GetItemContent($zids, $use_short_ids=false) {
+function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false) {
   // Fills array $content with current content of $sel_in items (comma separated ids). 
   global $db;
 
@@ -663,7 +667,8 @@ function GetItemContent($zids, $use_short_ids=false) {
   $n_items = 0;
   while( $db->next_record() ) {
     // proove permissions for password-read-protected slices
-    $reading_permitted = ($db->f("reading_password") == "")
+    $reading_permitted = $ignore_reading_password
+       || ($db->f("reading_password") == "")
        || ($db->f("reading_password") == $GLOBALS["slice_pwd"]);
        
     $n_items = $n_items+1;

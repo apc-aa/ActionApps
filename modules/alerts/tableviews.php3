@@ -27,6 +27,7 @@ http://www.apc.org/
 require_once "util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tv_email.php3";
 require_once $GLOBALS["AA_INC_PATH"]."perm_core.php3";
+require_once $GLOBALS["AA_INC_PATH"]."extauth.php3";
 
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
 function GetAlertsTableView ($viewID, $processForm = false) {        
@@ -370,7 +371,7 @@ function te_au_confirm ($val) {
 
 function AlertsModeditAfterInsert ($varset) {
     global $change_id;
-    $change_id = unpack_id128($varset->get ("id"));
+    $change_id = unpack_id128($varset->get ("id"));    
     AddPermObject($change_id, "slice");
 }
 ?>
