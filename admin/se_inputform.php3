@@ -39,7 +39,7 @@ function EditConstantURL() {
 if($cancel)
   go_url( $sess->url(self_base() . "./se_fields.php3"));
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
+if(!IfSlPerm(PS_FIELDS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }  
@@ -90,15 +90,13 @@ if( $update ) {
     $varset->add("input_default", "quoted", "$input_default_f:$input_default");
     $varset->add("multiple", "quoted",                     # mark as multiple
               ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0));
-    $varset->add("alias1", "quoted", $alias1);
-    $varset->add("alias1_help", "quoted", $alias1_help);
-    $varset->add("alias1_func", "quoted", "$alias1_func_f:$alias1_func");
-    $varset->add("alias2", "quoted", $alias2);
-    $varset->add("alias2_help", "quoted", $alias2_help);
-    $varset->add("alias2_func", "quoted", "$alias2_func_f:$alias2_func");
-    $varset->add("alias3", "quoted", $alias3);
-    $varset->add("alias3_help", "quoted", $alias3_help);
-    $varset->add("alias3_func", "quoted", "$alias3_func_f:$alias3_func");
+              
+    for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
+        $varset->add("alias".$iAlias, "quoted", $GLOBALS["alias".$iAlias]);
+        $varset->add("alias".$iAlias."_help", "quoted", $GLOBALS["alias".$iAlias."_help"]);
+        $varset->add("alias".$iAlias."_func", "quoted", 
+            $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]);
+    }
 
     # setting input show function 
     switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
@@ -117,14 +115,14 @@ if( $update ) {
     $iif="$input_insert_func_f:$input_insert_func_p";
     
     $varset->add("input_show_func", "quoted", "$isf");
-    $varset->add("input_validate", "quoted", "$input_validate");
+    $varset->add("input_validate", "quoted", "$input_validate_f:$input_validate_p");
     $varset->add("feed", "quoted", "$feed");
     $varset->add("input_insert_func", "quoted","$iif" );
     $varset->add("html_default", "number", ($html_default ? 1 : 0));
     $varset->add("html_show", "number", ($html_show ? 1 : 0));
-    $varset->add("text_stored", "number", ((($input_validate=="number") 
-                                         OR ($input_validate=="bool")  
-                                         OR ($input_validate=="date")) ? 0:1));
+    $varset->add("text_stored", "number", ((($input_validate_f=="number") 
+                                         OR ($input_validate_f=="bool")  
+                                         OR ($input_validate_f=="date")) ? 0:1));
    $SQL = "UPDATE field SET ". $varset->makeUPDATE() . 
            " WHERE id='$fid' AND slice_id='$p_slice_id'";
 
@@ -168,61 +166,45 @@ else {
   go_url( $sess->url("./se_fields.php3") );  # back to field page
 }    
 
+/** Finds the first ":" and fills the part before ":" into $fnc, after ":" into $params.
+*   (c) Jakub, 28.1.2003 */
+function get_params ($src, &$fnc, &$params) {
+    if (strchr ($src,":")) {
+        $params = substr ($src, strpos ($src,":")+1);
+        $fnc = substr ($src, 0, strpos ($src,":"));
+    }
+    else {
+        $params = "";
+        $fnc = $src;
+    }    
+}
+
 if( !$update ) {      # load defaults
   $input_before = $fld[input_before];
   $input_help = $fld[input_help];
   $input_morehlp = $fld[input_morehlp];
 
-  $alias1 = $fld[alias1];
-  $alias1_help = $fld[alias1_help];
-  $alias1_func_f = substr($fld[alias1_func],0,3);
-  $alias1_func = substr($fld[alias1_func],4);
+  for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
+      $GLOBALS["alias".$iAlias] = $fld["alias".$iAlias];
+      $GLOBALS["alias".$iAlias."_help"] = $fld["alias".$iAlias."_help"];
+      get_params ($fld["alias".$iAlias."_func"], 
+          $GLOBALS["alias".$iAlias."_func_f"],
+          $GLOBALS["alias".$iAlias."_func"]);
+  }
 
-  $alias2 = $fld[alias2];
-  $alias2_help = $fld[alias2_help];
-  $alias2_func_f = substr($fld[alias2_func],0,3);
-  $alias2_func = substr($fld[alias2_func],4);
-
-  $alias3 = $fld[alias3];
-  $alias3_help = $fld[alias3_help];
-  $alias3_func_f = substr($fld[alias3_func],0,3);
-  $alias3_func = substr($fld[alias3_func],4);
-  
-  $input_default_f = substr($fld[input_default],0,3);
-  $input_default = substr($fld[input_default],4);
-  $input_show_func_f = substr($fld[input_show_func],0,3);
-
-
-  # type of insert is fnc:param
-  $input_insert_func_f=substr($fld[input_insert_func],0,3);
-  $input_insert_func_p=substr($fld[input_insert_func],4);
+  get_params ($fld["input_default"], $input_default_f, $input_default); 
+  get_params ($fld["input_insert_func"], $input_insert_func_f, $input_insert_func_p);
+  get_params ($fld["input_validate"], $input_validate_f, $input_validate_p);
   
   # switching type of show
-  switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
-    case "fnc:param": 
-      $input_show_func_p = substr($fld[input_show_func],4);
-                break;
-    case "fnc:const:param": 
-      $pos = strpos($fld[input_show_func], ":", 4);
-                if( !$pos ) {     #there is no third parameter (= Parameters)  
-                  $input_show_func_c = substr($fld[input_show_func],4);
-                  $input_show_func_p = '';
-                } else {
-                  $input_show_func_c = substr($fld[input_show_func],4,$pos-4);
-                  $input_show_func_p = substr($fld[input_show_func],$pos+1);
-                }  
-                break;
-    case "fnc": 
-    default: 
-      $input_show_func_p = substr($fld[input_show_func],4);
-  }  
+  get_params ($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
+  if( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']
+    == "fnc:const:param") 
+      get_params ($input_show_func_p, $input_show_func_c, $input_show_func_p);
   
-  $input_insert_func = $fld[input_insert_func];
-  $html_default = $fld[html_default];
-  $html_show = $fld[html_show];
-  $text_stored = $fld[text_stored];
-  $input_validate = $fld[input_validate];
-  $feed = $fld[feed];
+  $html_default = $fld["html_default"];
+  $html_show = $fld["html_show"];
+  $feed = $fld["feed"];
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -292,11 +274,16 @@ echo "
              <tr>
               <td class=tabtit><b>". _m("Constants") ."</b> ";
                FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
+      $constants_menu = split ("\|", str_replace (" ","&nbsp;",_m("Edit|Use as new|New")));         
       echo "   <div class=tabtit>". _m("Choose a Constant Group or a Slice.") ."</div>
               </td>
-              <td class=tabtit>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>". _m("Edit") ."</a>
-                           <br>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>". _m("Use&nbsp;as&nbsp;new") ."</a>
-                           <br>          <a href='". EditConstantURL(). "'>". _m("New") ."</a>
+              <td class=tabtit>
+                <font class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>"
+                    . $constants_menu[0] ."</a></b></font><br>
+                <span class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>"
+                    . $constants_menu[1] ."</a></b></span><br>
+                <span class=tabtxt>
+                    <B><a href='". EditConstantURL(). "'>". $constants_menu[2] ."</a></B></span>
               </td>
              </tr>
             </table>
@@ -322,25 +309,33 @@ echo "
      </tr>  
      <tr><td colspan=4><hr></td></tr>
      <tr>
-      <td class=tabtxt><b>". _m("Validate") ."</b></td>
-      <td class=tabtxt colspan=3>";
-        FrmSelectEasy("input_validate", inputValidateTypes(), $input_validate);
-      echo "<div class=tabhlp>". _m("Validate function") ."</div>
-
+         <td class=tabtxt><b>". _m("Validate") ."</b></td>
+         <td class=tabtxt colspan=3>";
+         FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard ($VALIDATE_TYPES), 
+            $input_validate_f);
+         echo "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
+             <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+       	     <td class=tabhlp><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
+       		 ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
+         <input type=\"Text\" name=\"input_validate_p\" size=50 maxlength=240 value=\"". safe($input_validate_p) ."\">
+         </td>
       </td>
      </tr>  
+     <tr><td colspan=4><hr></td></tr>
      <tr>
-      <td class=tabtxt><b>". _m("Insert") ."</b></td>
-      <td class=tabtxt colspan=3>";
-        FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard ($INSERT_TYPES), $input_insert_func_f);
-      echo "<div class=tabhlp>". _m("Defines how value is stored in database.") ."</div>
-            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
-                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
-          	    <td class=tabhlp><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
-        		 ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-            <input type=\"Text\" name=\"input_insert_func_p\" size=50 maxlength=240 value=\"". safe($input_insert_func_p) ."\">
-      </td>
+         <td class=tabtxt><b>". _m("Insert") ."</b></td>
+         <td class=tabtxt colspan=3>";
+         FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard ($INSERT_TYPES), 
+            $input_insert_func_f);
+         echo "<div class=tabhlp>"._m("Defines how value is stored in database.")."</div>
+         <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
+             <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
+       	     <td class=tabhlp><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
+       		 ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
+         <input type=\"Text\" name=\"input_insert_func_p\" size=50 maxlength=240 value=\"". safe($input_insert_func_p) ."\">
+         </td>
      </tr>  
+     <tr><td colspan=4><hr></td></tr>
      <tr>
       <td class=tabtxt><b>HTML</b></td>
 	  <td class=tabtxt colspan=3>
@@ -422,7 +417,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias):
 				echo "\">
        </td></tr>
 	 <tr><td class=tabtxt>&nbsp;</td>
-	   <td class=tabhlp><strong>
+	   <td class=tabhlp colspan=3><strong>
 			<a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\", 
 				\"alias$iAlias"."_func\")'>"._m("Help: Parameter Wizard")."</a></strong>
 		</td></tr>  
