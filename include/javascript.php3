@@ -1,0 +1,97 @@
+<?php
+//$Id$
+/* 
+Copyright (C) 1999, 2000 Association for Progressive Communications 
+http://www.apc.org/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+// used by the itemedit.php3 page, which calls getTrig ()
+
+if (!defined ("aa_javascript_included")) 
+    define ("aa_javascript_included","1");
+else return;
+ 
+$js_triggers = array (
+    "input" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
+    "select" => array ("onBlur", "onFocus", "onChange"),
+    "textarea" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
+    "form"=> array ("onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit"));
+
+function getJavascript ()
+{
+    global $slice_id;
+    
+    $db = new DB_AA;
+    if ($slice_id) {
+        $p_slice_id = q_pack_id ($slice_id);
+        $db->query ("SELECT javascript FROM slice WHERE id='$p_slice_id'");
+        if ($db->next_record())
+            $javascript = $db->f("javascript");
+    }
+    return $javascript;
+}
+
+/* $js_trig is an array with triggers used, e.g. 
+    $js_trig["onBlur"] = 1 
+    $js_trig["onClick"] = 1
+    means: aa_onBlur, aa_onClick are defined */
+
+function getTrig ()
+{
+    global $js_triggers;
+    
+    unset ($js_trig);
+    
+    reset ($js_triggers);
+    while (list ($control, $ctrigs) = each ($js_triggers)) {
+        reset ($ctrigs);
+        while (list (,$ctrig) = each ($ctrigs))
+            $js_trig[$ctrig] = 1;
+    }
+    
+    $javascript = getJavascript();
+    
+    $ws = "[ \t\n\r]*";
+    reset ($js_trig);
+    while (list ($trg) = each ($js_trig)) 
+        // match e.g. aa_onSubmit ( fieldid ) {
+        $js_trig[$trg] = preg_match ("/aa_$trg$ws\($ws"."fieldid$ws\)$ws\{/", $javascript) ? 1 : 0;
+    return $js_trig;
+}
+
+// $unpacked_fieldid -- the function ignores the first character (usually 'v')
+
+function getTriggers ($control, $unpacked_fieldid, $add="") {
+    global $js_triggers;
+    global $js_trig;
+
+    if (!is_array ($js_trig)) return;
+    $fieldid = pack_id (substr ($unpacked_fieldid,1,32));
+    
+    reset ($js_triggers[$control]);
+    while (list (,$ctrig) = each ($js_triggers[$control])) {
+        $funcs = "";
+        if ($add[$ctrig])
+            $funcs = $add[$ctrig].";";
+        if ($js_trig[$ctrig]) 
+            $funcs .= "aa_$ctrig('$fieldid');";
+        if ($funcs)
+            $retval .= " $ctrig=\"$funcs\"";
+    }        
+    return $retval;
+}
+?>
