@@ -199,7 +199,8 @@ define("L_HLP_LASTEDIT",'alias for Date of last editation');
 define("L_HLP_EDITNOTE","alias for Editor's note");
 define("L_HLP_IMGWIDTH",'alias for Image Width<br>(if no width defined, program tries to remove <em>width=</em> atribute from format string<div class=example><em>Example: </em>&lt;img src="_#IMAGESRC" width=_#IMGWIDTH height=_#IMG_HGHT&gt;</div>');
 define("L_HLP_IMG_HGHT",'alias for Image Height<br>(if no height defined, program tries to remove <em>height=</em> atribute from format string<div class=example><em>Example: </em>&lt;img src="_#IMAGESRC" width=_#IMGWIDTH height=_#IMG_HGHT&gt;</div>');
-define("L_HLP_ITEM_ID",'alias for News ID<br>(can be used as parameter sh_itm= given to slice.php3 (or to any .shtml file, which this scrit includes))');
+define("L_HLP_ITEM_ID",'alias for News ID<br>(can be used as parameter sh_itm= given to slice.php3 (or to any .shtml file, which this script includes))');
+define("L_HLP_CATEGORY_ID",'alias for Category ID<br>(can be used with HTML tag &lt;A NAME="_#CATEG_ID"&gt; in Category headline field)');
 
 define("L_CANT_UPLOAD","Can't upload Image"); 
 define("L_GRAB_LEN", "Fulltext into abstract grab length [characters]");
@@ -539,6 +540,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.11  2000/08/15 08:58:31  kzajicek
+Added missing L_HLP_CATEGORY_ID
+
 Revision 1.10  2000/08/15 08:43:41  kzajicek
 Fixed spelling error in constant name
 

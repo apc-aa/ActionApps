@@ -202,6 +202,7 @@ define("L_HLP_EDITNOTE","alias pro poznámku editora");
 define("L_HLP_IMGWIDTH",'alias pro šíøku obrázku<br>(pokud není šíøka zadaná, program se pokusí odstranit <em>width=</em> atribut z formátovacího øetìzce<div class=example><em>Pøíklad: </em>&lt;img src="_#IMAGESRC" width=_#IMGWIDTH height=_#IMG_HGHT&gt;</div>');
 define("L_HLP_IMG_HGHT",'alias pro výšku obrázku<br>(pokud není výška zadaná, program se pokusí odstranit <em>height=</em> atribut z formátovacího øetìzce<div class=example><em>Pøíklad: </em>&lt;img src="_#IMAGESRC" width=_#IMGWIDTH height=_#IMG_HGHT&gt;</div>');
 define("L_HLP_ITEM_ID",'alias pro èíslo pøíspìvku<br>(lze použít jako parametr sh_itm= pødávaný skriptu slice.php3 (nebo souboru .shtml, který tento do sebe vkládá (include)))');
+define("L_HLP_CATEGORY_ID",'alias for èíslo kategorie<br>(lze použít s HTML tagem &lt;A NAME="_#CATEG_ID"&gt; v poli Nadpis kategorie)');
 
 define("L_GRAB_LEN", "Poèet znakù textu použitých jako abstrakt");
 define("L_D_EXPIRY_LIMIT", "Limit vypršení [dny]");
@@ -558,6 +559,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.13  2000/08/15 08:58:31  kzajicek
+Added missing L_HLP_CATEGORY_ID
+
 Revision 1.12  2000/08/15 08:43:41  kzajicek
 Fixed spelling error in constant name
 
