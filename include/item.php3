@@ -1018,6 +1018,7 @@ class item {
    *         <format>      - category link modification (not used, yet)
    *         <delimeter>   - delimeter character (default is ' &gt; ')
    *         <categs delimeter>   - delimeter character (default is ' &gt; ')
+   *         <add url param>      - url parameter added to cat=xxx (id=links)
    */
   function l_p($col, $param="") {
     global $contentcache;
@@ -1025,7 +1026,7 @@ class item {
     $translate = $contentcache->get_result( 'GetTable2Array', array(
        "SELECT id, name FROM links_categories WHERE deleted='n'", 'id', true));
 
-    list ($start, $format, $separator, $catseparator) = $this->subst_aliases(ParamExplode($param));
+    list ($start, $format, $separator, $catseparator, $urlprm) = $this->subst_aliases(ParamExplode($param));
     if ( !$separator ) {
         $separator = ' &gt; ';
     }
@@ -1045,7 +1046,7 @@ class item {
                 $last = $linklast ? '' : end($way);
                 foreach ( $way as $catid ) {
                     if($start_count-- > 0)  continue;
-                    $cat_url = con_url( $url_base, 'cat='.$catid );
+                    $cat_url = con_url( $url_base, $urlprm.'&cat='.$catid );
                     $ret .= ( ( $catid == $last ) ?  // do not make link for last category
                         $delimeter.$translate[$catid]['name'] :
                         $delimeter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
