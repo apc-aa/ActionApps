@@ -186,22 +186,23 @@ class tabledit {
             ." LIMIT ".($scroll->current-1)*$scroll->metapage.",".$scroll->metapage);
             
         $record_count = $db->num_rows();
+
+        if (!$record_count) 
+            $no_item = !$this->cmd["search"]["value"];
+        else $no_item = false;
         
-        if ($db->num_rows() == 0 && !$this->show_new) 
-            echo "<span class=te_no_item_msg>".$this->view["messages"]["no_item"]."</span>";
+        if (!$record_count && !$this->show_new) {
+            if ($no_item)
+                echo "<span class=te_no_item_msg>".$this->view["messages"]["no_item"]."</span>";
+            else echo "<span class=te_no_item_msg>"._m("No record matches your search condition.")."</span>";
+        }
             
-        else {      
+        if ($record_count || $this->show_new) {      
             echo "<TABLE ".$this->view["attrs"]["table"].">";
             $td = "<TD class=te_".substr($this->type,0,1)."_td>";
 
-            if ($this->type == "browse") {
-                echo "<TR>";
-                if (is_array ($this->view["buttons_left"]))
-                    echo "<TD class=te_b_td"
-                        ." colspan=".count($this->view["buttons_left"]).">&nbsp;</TD>\n";   
-                else echo "\n";
-                $this->showClickableColumnHeaders ($record_count);
-            }
+            if ($this->type == "browse") 
+                $this->showBrowseHeader ($record_count);
             
             $fnname = "prooveFields_".$this->viewID;
             $this->ShowProoveFields ($fnname);
@@ -246,18 +247,22 @@ class tabledit {
                 
                 $this->ShowColumnValues ($record, $new_record, $key, $irow);
                 
-                if ($this->type == "browse") echo "</TR>";
+                if ($this->type == "browse") {
+                    //$this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "left");
+                    echo "</TR>";
+                }
                 else {
-                    $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "down", $all_keys);
-                    echo "</FORM>";
+                    echo "<TR><TD align=center colspan=100>";
+                    $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "down", $all_keys, $record_count);                    
+                    echo "</TD></TR></FORM>";
                 }
             }
-            if ($this->type == "browse") {
-                $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "down", $all_keys);
-                echo "</FORM>";
-            }
+            if ($this->type == "browse") 
+                $this->showBrowseFooter ($formname, $all_keys, $record_count);
             echo "</TABLE>";
         }
+        else if ($this->type == "browse")
+            $this->ShowButtons (false, "", "", "", 0, "down", array (), $record_count);        
         
         // scroller
         if ($scroll->pageCount() > 1) {
@@ -266,16 +271,8 @@ class tabledit {
             echo "</P>";        
         }
         
-        if ($this->view["search"]) {
-            if (!$record_count) {
-                $db->query ("SELECT COUNT(*) AS mycount FROM ".$this->view["table"]);
-                $db->next_record();
-                $show_search = $db->f("mycount");
-            }
-            else $show_search = true;
-            if ($show_search)
-                $this->ShowSearchRow ();
-        }
+        if ($this->view["search"] && !$no_item)
+            $this->ShowSearchRow ();       
         
         if (is_array ($this->view["children"]) && $record_count == 1) 
              $err = $this->ShowChildren();
@@ -285,29 +282,65 @@ class tabledit {
 
     // -----------------------------------------------------------------------------------
 
-    function showClickableColumnHeaders ($record_count) {
+    function showBrowseHeader ($record_count) {
+        echo "<TR>";
+        $header = "<TD colspan=".count ($this->view["buttons_left"]).">&nbsp;</TD>";
+        /*
+        reset ($this->view["buttons_left"]);
+        while (list ($button, $use) = each ($this->view["buttons_left"])) {
+            $bt = $this->ButtonsText (false);
+            $bt = $bt[$button];
+            $alt = $bt["alt"] ? $bt["alt"] : "&nbsp;";
+            $header .= "<TD class=te_b_col_head align=center>".$alt."</TD>\n"; 
+        }*/
+    
+        echo $header;
         $td = "<TD class=te_".substr($this->type,1,1)."_td>";
         reset ($this->cols);
-        while (list ($colname,$column) = each ($this->cols)) 
+        while (list ($colname,$column) = each ($this->cols)) {
             if ($column["view"]["type"] != "hide") {
-            if ($record_count > 1) {
-                 echo "$td<a href='".$this->getAction($this->gotoview2())."&cmd[".$this->viewID."]"
-                     ."[orderby][$colname]=1'><span class=te_b_col_head>$column[caption]</span>\n";
-                 if ($this->orderby == $colname) {
-                     echo "&nbsp;<img src='".$this->imagepath;
-                     if ($this->orderdir == 'd')
-                          echo "down.gif' alt='"._m("order ascending")."'";
-                     else echo "up.gif' alt='"._m("order descending")."'";
-                     echo " border=0>";                                                
-                 }
-                 echo "</a>";
+                if ($record_count > 1) {
+                     echo "$td<a href='".$this->getAction($this->gotoview2())."&cmd[".$this->viewID."]"
+                         ."[orderby][$colname]=1'><span class=te_b_col_head>$column[caption]</span>\n";
+                     if ($this->orderby == $colname) {
+                         echo "&nbsp;<img src='".$this->imagepath;
+                         if ($this->orderdir == 'd')
+                              echo "down.gif' alt='"._m("order ascending")."'";
+                         else echo "up.gif' alt='"._m("order descending")."'";
+                         echo " border=0>";                                                
+                     }
+                     echo "</a>";
+                }
+                else echo "$td<span class=te_b_col_head>$column[caption]</span>\n";
+                if ($column["hint"])
+                    echo "<br>\n<span class=te_b_col_hint>".$column["hint"]."</span>";
+                echo "</TD>\n";
             }
-            else echo "$td<span class=te_b_col_head>$column[caption]</span>\n";
-            if ($column["hint"])
-                echo "<br>\n<span class=te_b_col_hint>".$column["hint"]."</span>";
-            echo "</TD>\n";
+        }
+        //echo $header;
+        echo "</TR>";    
+    }
+
+    // -----------------------------------------------------------------------------------
+    
+    function showBrowseFooter ($formname, $all_keys, $record_count) {
+        echo "<TR><TD colspan=100><TABLE width=\"100%\">
+            <TR><TD class=\"te_b_col_head\" width=\"100\" valign=top>";
+        if ($record_count) {    
+            reset ($this->view["buttons_left"]);
+            while (list ($button, $use) = each ($this->view["buttons_left"])) {
+                $bt = $this->ButtonsText (false);
+                $bt = $bt[$button];
+                $alt = $bt["alt"] ? $bt["alt"] : "&nbsp;";
+                $img = '<image border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
+                echo "$img = $alt<br>";
             }
-        echo "</TR>\n";        
+        }
+        else echo "&nbsp;";
+        echo '</TD><TD width="50">&nbsp;</TD><TD>';
+    
+        $this->ShowButtons (false, "", "", $formname, 0, "down", $all_keys, $record_count);
+        echo "</TD></TR></TABLE></TD></TR></FORM>";
     }
     
     // -----------------------------------------------------------------------------------
@@ -409,9 +442,9 @@ class tabledit {
         $td = "<TD class=te_search_td>";
         $tdd = "</span></TD>";
         
-        echo "<FORM name='search_".$this->viewID."' method=post action='".$this->getAction($this->gotoview())."'>
+        echo "<FORM name='search_".$this->viewID."' method=post action='".$this->getAction($this->gotoview2())."'>
               <TABLE ".$this->view["attrs"]["table_search"]." class=te_search_table>"
-            ."<TR>$td"._m("Search: ")."$tdd"
+            ."<TR>$td"._m("Search").": $tdd"
             ."$td";
         reset ($this->cols);
         while (list ($colname,$column) = each ($this->cols)) 
@@ -607,73 +640,83 @@ class tabledit {
 
     // -----------------------------------------------------------------------------------
     
-    function ShowButtons ($new_record, $key, $fnname, $formname, $irow, $place="left", $all_keys="") {                
-                
+    function ButtonsText ($new_record) {
         // "new" is label for new record, "new_name" is command for new record, 
         // "view" is view on which $this->cmd operates, "gotoview" is view which will be shown                
-        if ($place != "left")
-            $big = "_big";
         $buttons_text["edit"] = array (
             "name" => "edit",
-            "label" => $new_record ? "" : "<img border=0 src=\"".$this->imagepath."edit${big}.gif\" alt=\""._m("edit")."\">", 
+            "img" => $new_record ? "" : "edit",
+            "alt" => _m("edit"),
             "view" => $this->gotoview(), 
             "gotoview" => $this->gotoview());
         $buttons_text["add"] = array (
             "name" => "add",
-            "label" => "<img border=0 src=\"".$this->imagepath."edit${big}.gif\" alt=\""._m("add")."\">",
+            "img" => "edit",
+            "alt" => _m("add"),
             "view" => $this->viewID,
             "gotoview" => $this->gotoview());            
         $buttons_text["delete"] = array (
             "name" => "delete",
-            "label" => $new_record ? "" : "<img border=0 src=\"".$this->imagepath."delete${big}.gif\" alt=\""._m("delete")."\">", 
+            "img" => $new_record ? "" : "delete",
+            "alt" => _m("delete"),
             "view" => $this->viewID, 
             "gotoview" => $this->type == "browse" ? $this->gotoview2() : $this->gotoview());
             
         // SPECIAL: "delete_checkbox" becomes "add" on new records
         $buttons_text["delete_checkbox"] = array (
             "name" => $new_record ? "insert" : "delete_all",
-            "label" => "<img border=0 src=\"".$this->imagepath.($new_record ? "ok" : "delete"). "${big}.gif\" alt=\"".($new_record ? _m("insert") : _m("delete"))."\">", 
+            "img" => $new_record ? "ok" : "delete",
+            "alt" => $new_record ? _m("insert") : _m("delete"),
             "checkbox" => !$new_record,
             "view" => $this->viewID,
             "gotoview" => $this->gotoview2());
         $buttons_text["delete_all"] = array (
             "name" => "run_delete_all",
-            "label" => "<img border=0 src=\"".$this->imagepath."delete${big}.gif\" alt=\""._m("delete checked")."\">", 
+            "img" => "delete",
+            "alt" => _m("delete checked"),
             "view" => $this->viewID,
             "gotoview" => $this->gotoview2());
         $buttons_text["update"] = array (
             "name" => $new_record ? "insert" : "update",
-            "label" => "<img border=0 src=\"".$this->imagepath."ok${big}.gif\" alt=\"".($new_record ? _m("insert") : _m("update"))."\">", 
+            "img" => "ok",
+            "alt" => $new_record ? _m("insert") : _m("update"),
             "view" => $this->viewID, 
             "gotoview" => $this->gotoview2());
         $buttons_text["update_all"] = array (
             "name" => "update_all",
-            "label" => "<img border=0 src=\"".$this->imagepath."ok${big}.gif\" alt=\""._m("update all")."\">", 
+            "img" => "ok",
+            "alt" => _m("update all"),
             "view" => $this->viewID, 
             "gotoview" => $this->gotoview2());
         $buttons_text["cancel"] = array (
             "name" => "cancel",
-            "label" => "<img border=0 src=\"".$this->imagepath."exit${big}.gif\" alt=\""._m("cancel")."\">",
+            "img" => "exit",
+            "alt" => _m("cancel"),
             "view" => $this->viewID,
             "gotoview" => $this->gotoview());
-/*
-                <FORM name='tv_".$this->viewID."_insert' method=post action='".$this->getAction($this->gotoview())."'>
-                <INPUT type=submit name='cmd[".$this->gotoview()."][show_new]' value='".L_INSERT."'>
-*/
+        return $buttons_text;
+    }    
+    
+    function ShowButtons ($new_record, $key, $fnname, $formname, $irow, $place="left", $all_keys="", $record_count=0) {                
+        if ($place != "left")
+            $big = "_big";
                 
         if (!is_array ($this->view["buttons_$place"])) 
             return;
 
         if ($place == "down")
-            echo "<TR><TD colspan=100 class=te_".substr($this->type,0,1)."_td align=center>\n";
+            echo "<TABLE><TR>\n";
             
         reset ($this->view["buttons_$place"]);
         while (list ($button,$use) = each ($this->view["buttons_$place"])) {
-            $bt = $buttons_text[$button];
+            $bt = $this->ButtonsText ($new_record);
+            $bt = $bt[$button];
             if (!$use || !$bt)
                 continue;
-            if ($place == "left") 
-                echo "<TD class=te_b_row".($irow % 2 ? "1" : "2").">";
+            switch ($place) {
+                case "left": echo "<TD class=te_b_row".($irow % 2 ? "1" : "2").">"; break;
+                case "down" :echo "<TD class=te_button_text align=center width=50>"; break;
+            }
             switch ($bt["name"]) {
                 case "add":
                     $url = $this->getAction($bt[gotoview])."&cmd[$bt[gotoview]][show_new]=1";
@@ -710,19 +753,28 @@ class tabledit {
                     $url = "";
                     break;
             }
+
+            if ($bt["img"])
+                 $img = '<image border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
+            else $img = "";
         
-            if ($bl["delete_checkbox"] && $bl["update"] && $new_record) 
-                echo "&nbsp;";
+            if ($this->type == "browse" && $place == "down" && $record_count == 0 && $bt["name"] != "add")
+                $text = "";
+            //if ($bl["delete_checkbox"] && $bl["update"] && $new_record) 
+                //echo "";
             else if ($bt["checkbox"]) 
-                echo "$bt[label]<INPUT TYPE=checkbox NAME=cmd[$bt[view]][$bt[name]][$key]>";
-            else if ($bt[label]) echo "<a href='$url'>".$bt[label]."</a>";                
-            else echo "&nbsp;";            
-            if ($place == "left") 
-                echo "</td>\n";
-            else echo "&nbsp;&nbsp;\n";
+                $text = "$img<INPUT TYPE=checkbox NAME=cmd[$bt[view]][$bt[name]][$key]>";
+            else if ($img) $text = "<a href='$url'>$img</a>";                
+            else $text = "";   
+            
+            echo $text ? $text : "&nbsp;";
+            // show the text label for bottom buttons and for insert                     
+            if ($text && ($place == "down" || $new_record)) 
+                echo "<br>".$bt["alt"]; 
+            echo "</td>\n";
         }
         if ($place == "down")
-            echo "</TD></TR>\n";
+            echo "</TR></TABLE>\n";
     }    
 
     // -----------------------------------------------------------------------------------
