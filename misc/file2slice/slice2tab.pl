@@ -17,8 +17,8 @@ $slice_id || die $usage;
 
 $host     = 'localhost';
 $user     = 'aadbuser';
-$password = 'secret';
-$database = 'db1';
+$password = 'bob';
+$database = 'www_apc_org';
 
 $p_slice_id = pack 'H*', $slice_id;
 
@@ -39,7 +39,13 @@ $dbh = DBI->connect($dsn, $user, $password);
 
 # =================================
 # 2. Get @field_order and print it on STDOUT
-#       select id from field where slice_id = ? and ( required = 1 OR input_show = 1 order by input_pri
+#       select id, name from field where slice_id = ? and input_show = 1 
+#       order by input_pri
+#    We print both the 'common names' of the fields (on one line) AND
+#    the Action Apps names of the field, like headline......1, (on the next line)
+#  If editing the data in excel, you can choose which one you want to use.
+#  This select statement only selects data where the input_show is set to 1,
+#  so it will not get 'hidden' fields -- that may not be what you want.
 
 $sth = $dbh->prepare(
    q{select id, name from field where slice_id = ? and input_show = 1 
@@ -53,6 +59,7 @@ while ($ptrResult = $sth->fetchrow_hashref) {
 
 #push @field_order, 'status_code';
 print_line (\@field_names_ordered);
+print_line (\@field_ids_ordered);
 
 # =================================
 # 3. Get @item_ids
