@@ -19,6 +19,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined("AA_UM_UEDIT_INCLUDED"))
+     define ("AA_UM_UEDIT_INCLUDED",1);
+else return;
+
+require $GLOBALS[AA_INC_PATH]."um_util.php3";
+
   do  {
     # Procces user data -------------------------------------------------------
     if(($submit_action == "update_submit") AND ($user_password1 == "nOnEwpAsswD") AND ($user_password2 == "nOnEwpAsswD"))
@@ -88,27 +94,12 @@ http://www.apc.org/
     }
 
     # Procces module permissions ----------------------------------------------
-   
+
     # Change module permissions if user wants
-    if( isset($perm_mod) AND is_array($perm_mod) ) {
-      $perm_slices = GetIDPerms($selected_user, "slice", 1);  # there are not only Slices, but other Modules too
-      reset($perm_mod);
-      while( list($xmid,$role) = each($perm_mod) ) {
-        $mid=substr($xmid,1);   # removes first 'x' character (makes index string)
-        if( $role == 'REVOKE' )
-          DelPerm($selected_user, $mid, 'slice');
-        elseif( ComparePerms($perm_slices[$mid], $perms_roles[$role]['id']) != 'E' )
-          ChangePerm($selected_user, $mid, 'slice', $perms_roles[$role]['id']);
-      }
-    }  
+    ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles );
     
     # Add new modules for this user
-    if( isset($new_module) AND is_array($new_module) ) {
-      reset($new_module);
-      while( list($no,$mid) = each($new_module) ) {
-        if( (trim($mid) != "") AND isset($perms_roles[$new_module_role[$no]]) )
-          AddPerm($selected_user, $mid, 'slice', $perms_roles[$new_module_role[$no]]['id']); 
-      }
-    }
+    AddUserModulePerms( $new_module, $new_module_role, $selected_user, $perms_roles);
+
   } while(false);
 ?>
