@@ -56,7 +56,7 @@ define("L_SETUP_NEXT", "Zalogujte se tímto úètem a vytvoøte první webík:");
 define("L_SETUP_SLICE", "Pøidat webík");
 
 // loginform language constants
-define("L_LOGIN", "Pøihlášení");
+define("L_LOGIN", "Pøihlášení - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.0");
 define("L_LOGIN_TXT", "Vítejte! Pøihlašte se prosím Vaším jménem a heslem:");
 define("L_LOGINNAME_TIP", "Uživatelské jméno èi e-mail");
 define("L_SEARCH_TIP", "Seznam je omezen na 5 uživatelù.<br>Pokud v seznamu není požadovaný uživatel, upøesnìte svùj dotaz");
@@ -157,6 +157,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.19  2001/12/20 14:32:43  honzam
+*** empty log message ***
+
 Revision 1.18  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 
