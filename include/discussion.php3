@@ -90,6 +90,9 @@ function GetDiscussionContentSQL ($SQL, $item_id, $ids, $vid, $state, $html_flag
         $col["d_body.........."][0][flag] = FLAG_HTML;
       $col["d_checkbox......"][0][flag] = FLAG_HTML;
       $col["d_treeimages...."][0][flag] = FLAG_HTML;
+      $col["d_url_fulltext.."][0][flag] = FLAG_HTML;   // we do not need to
+      $col["d_url_reply....."][0][flag] = FLAG_HTML;   // replace & by &amp;
+      $col["d_disc_url......"][0][flag] = FLAG_HTML;   // in urls
 
       $col["hide"] = ($db->f(state) == '1' && $state);     //mark hidden comment.
       $d_content[$d_id] = $col;

@@ -193,6 +193,7 @@ class itemview{
      $col["d_buttons......."][0][flag] = FLAG_HTML;
      $col["d_item_id......."][0][value] = $this->disc['item_id'];
      $col["d_disc_url......"][0][value] = $this->clean_url ."&nocache=1&sh_itm=".$this->disc['item_id'];
+     $col["d_disc_url......"][0][flag] = FLAG_HTML;   // do not change &->&amp;
      $CurItem->columns = $col;
      $out.= $CurItem->get_item() ;
 
@@ -262,7 +263,7 @@ class itemview{
           $out .= "
               <td valign=top>$spacer</td>";
         $out .= "
-              <td>".$CurItem->get_item()."
+              <td width=\"99%\">".$CurItem->get_item()."
               </td>
             </tr>
                   </table>
@@ -285,6 +286,7 @@ class itemview{
     } else {
       $col["d_item_id......."][0][value] = $this->disc['item_id'];
       $col["d_disc_url......"][0][value] = $this->clean_url . "&sh_itm=".$this->disc['item_id'];
+      $col["d_disc_url......"][0][flag] = FLAG_HTML;   // do not change &->&amp;
       $CurItem->columns = $col;
     }
     // show a form for posting a comment
