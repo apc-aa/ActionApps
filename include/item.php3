@@ -257,6 +257,13 @@ class item {
       else return false;
   }
 
+  function getmultipleval($column) {
+      if ( is_array($this->columns[$column]) )
+           return $this->columns[$column];
+      else return false;
+  }
+
+
   function getbaseurl($redirect=false, $no_sess=false) {
       # redirecting to another page
       $url_base = ($redirect ? $redirect : $this->clean_url );

@@ -174,6 +174,17 @@ function DeBackslash($txt) {
     return str_replace('\\', "", $txt);        // better for two places
 }
 
+#explodes $param by ":". The "#:" means true ":" - don't separate
+# Returns array
+function ParamExplode($param) {
+  $a = str_replace ("#:", "__-__.", $param);    # dummy string
+  $b = str_replace ("://", "__-__2", $a);       # replace all <http>:// too
+  $c = str_replace (":", "##Sx",$b);            # Separation string is ##Sx
+  $d = str_replace ("__-__.", ":", $c);         # change "#:" to ":"
+  $e = str_replace ("__-__2", "://", $d);         # change back "://"
+  return explode( "##Sx", $e );
+}
+
 /** Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
 *   to GLOBALS.
 *   @param array $restrict_vars  Array ("var name"=>1, ...) allows to
@@ -903,14 +914,16 @@ function GetItemHeadlines( $sid="", $slice_field="headline........",
   if (isset($zids) && is_array($zids))
     $zids = new zids($zids); # Don't guess the type, could be l or t
 
-  if( $type == "all" )                          # select all items from slice
+  if( $type == "all" ) {                          # select all items from slice
     $cond = " AND item.slice_id = '". q_pack_id( $sid ) ."' ";
-  elseif (isset($zids) && is_object($zids) && ($zids->count() > 0)) {
+    $sort_order = "ORDER BY text";
+  } elseif (isset($zids) && is_object($zids) && ($zids->count() > 0)) {
     if ($debug) huhl("Getting sql from ",$zids);
     $cond .= ' AND ' . $zids->sqlin();
-  }
-  else
+    $sort_order = '';
+  } else {
     return false;
+  }
 
   $restrict = (( $timecond == 'all' ) ?
                  "" :
@@ -922,7 +935,7 @@ function GetItemHeadlines( $sid="", $slice_field="headline........",
              AND field_id = '$headline_fld'
              AND status_code='1'
              $restrict
-        GROUP BY text"; //        ORDER BY text";
+        GROUP BY text $sort_order";
 
   $headlines = GetTable2Array($SQL, "id", true);
 
@@ -935,12 +948,21 @@ function GetItemHeadlines( $sid="", $slice_field="headline........",
   }
 
   // we want headlines in the same order than in zids
-  for( $i=0; $i<$zids->count(); $i++ ) {
-    $u_id = $zids->longids($i);
-    $p_id = $zids->packedids($i);
-    $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
-        = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
-            . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
+  if (isset($zids) && is_object($zids)) {
+      for( $i=0; $i<$zids->count(); $i++ ) {
+        $u_id = $zids->longids($i);
+        $p_id = $zids->packedids($i);
+        $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
+            = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
+                . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
+      }
+  } else { // $type == 'all'
+      foreach( $headlines as $p_id => $val ) {
+        $u_id = unpack_id($p_id);
+        $arr[(isset($tags) ? ($tags[$u_id] . $u_id) :$u_id)]
+            = ((isset($tags) ? ($t2p[$tags[$u_id]]) : "")
+                . substr($headlines[$p_id]['text'], 0, 50));  #truncate long headlines
+      }
   }
 
   if ($debug)  huhl("GetItemHeadlines found ",$arr);

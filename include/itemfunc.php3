@@ -449,7 +449,7 @@ function insert_fnc_nul($item_id, $field, $value, $param, $additional='') {
 }
 
 # not defined insert func in field table (it is better to use insert_fnc_nul)
-function insert_fnc_($item_id, $field, $value, $param, $additional) {
+function insert_fnc_($item_id, $field, $value, $param, $additional='') {
 }
 
 # ----------------------- show functions --------------------------------------

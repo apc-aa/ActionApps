@@ -34,24 +34,8 @@ else return;
 require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
 require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
 
-#explodes $param by ":". The "#:" means true ":" - don't separate
-# Returns array
-function ParamExplode($param) {
-  $a = str_replace ("#:", "__-__.", $param);    # dummy string
-  $b = str_replace ("://", "__-__2", $a);       # replace all <http>:// too
-  $c = str_replace (":", "##Sx",$b);            # Separation string is ##Sx
-  $d = str_replace ("__-__.", ":", $c);         # change "#:" to ":"
-  $e = str_replace ("__-__2", "://", $d);         # change back "://"
-  return explode( "##Sx", $e );
-}
-
-
-function parseSwitch($text) {
-    $variable = substr(strtok('_'.$text,")"),1);   # add and remove '_' - this
-                                                   # is hack for empty variable
-                                                   # (when $text begins with ')')
-    $variable = DeQuoteColons($variable);	# If expanded, will be quoted ()
-    $twos = ParamExplode( strtok("") );
+function translateString( $string, $translation ) {
+    $twos = ParamExplode( $translation );
     $i=0;
     while( $i < count($twos) ) {
       if( $i == (count($twos)-1)) {                # default option
@@ -59,12 +43,20 @@ function parseSwitch($text) {
       }
       $val = trim($twos[$i]);
       # Note you can't use !$val, since this will match a pattern of exactly "0"
-      if( ($val=="") OR ereg($val, $variable) ) {    # Note that variable, might be expanded {headline.......} or {m}
+      if( ($val=="") OR ereg($val, $string) ) {    # Note that $string, might be expanded {headline.......} or {m}
         return $twos[$i+1];
       }
       $i+=2;
     }
     return "";
+}
+
+function parseSwitch($text) {
+    $variable = substr(strtok('_'.$text,")"),1);   # add and remove '_' - this
+                                                   # is hack for empty variable
+                                                   # (when $text begins with ')')
+    $variable = DeQuoteColons($variable);	# If expanded, will be quoted ()
+    return translateString( $variable, strtok("") );
 }
 
 /** Fills content array for current loged user */
@@ -98,16 +90,40 @@ function GetAuthData() {
 *   @param $field - field to show ('headline........', 'alerts1....BWaFs' ...).
 *                   empty for username (of curent logged user)
 *                   'password' for plain text password of current user
+*                   'permission'
+*                   'role'
 */
 function parseUser($field) {
-    global $auth_user_info, $cache_nostore;
+    global $auth_user_info, $cache_nostore, $auth, $slice_id;
     // this GLOBAL :-( variable is message for pagecache to NOT store views (or
     // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
     // cache's keyString.
+    // $auth_user_info caches values about auth user
     $cache_nostore = true;             // GLOBAL!!!
     switch ($field = trim($field)) {
-        case '':         return $_SERVER['PHP_AUTH_USER'];
+        case '':         return get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uname"]);
         case 'password': return $_SERVER['PHP_AUTH_PW'];
+        case 'role' : // returns users permission to slice
+        case 'permission' :
+            $user = $auth->auth["uid"];
+            if ($user) {
+                $perm = GetSlicePerms($user, $slice_id);
+                switch ($perm) {
+                    case 4 : $role = "super";
+                             break;
+                    case 3 : $role = "administrator";
+                             break;
+                    case 2 : $role = "editor";
+                             break;
+                    case 1 : $role = "author";
+                             break;
+                    default: $role = "undefined";
+                }
+                return $role;
+            } else {
+                return "undefined";
+            }
+            break;
         default:
             if ( !isset($auth_user_info[$_SERVER['PHP_AUTH_USER']]) ) {
                 if( ( $auth_user_info = GetAuthData() ) == false )
@@ -144,6 +160,118 @@ function parseMath($text) {
      $i++;
     }
     return $ret;
+}
+
+/** parseLoop - in loop writes out values from field
+ */
+function parseLoop($out, &$item) {
+    global $contentcache;
+
+    // @field........... - without parameters
+    if (strpos($out, ":") == false) {
+        $field = substr($out, 1);
+    } else { // with parameters
+        // get field name
+        $field = substr($out, 1, strpos($out, ":") - strpos($out, "@")-1);
+        // parameters - first is separator, second is format string
+        list($separator,$format_str) = ParamExplode(substr($out,strpos($out,":")+1));
+
+        if (strpos($field, "(") == true) { // if we have special parameters - in () after field name
+            // get this special parameters
+            $param = substr($field, strpos($field, "(")+1,strpos($field, ")")-strpos($field, "(")-1);
+            $params = explode(",",$param);
+            // field name
+            $field = substr($field, 0, strpos($field, "("));
+            $group_id = getConstantsGroupID($item->columns["slice_id........"][0]["value"], $field);
+        }
+    }
+    if (!$separator) {
+        $separator = ", "; // default separator
+    }
+    $val = $item->getmultipleval($field);
+    if (!is_array($val)) {
+        return '';
+    }
+
+    if (!$format_str) { // we don't have format string, so we return
+                        // separated values by $separator (default is ", ")
+        foreach($val as $value) {
+            $ret_str = $ret_str . ($ret_str ? $separator : "") . $value['value'];
+        }
+    } else { // we have format string
+        if( !is_array($params) ) {
+            // case if we have only one parameter for substitution
+            foreach($val as $value) {
+                $dummy = str_replace("_#1", $value["value"], $format_str);
+                $ret_str = $ret_str . ($ret_str ? $separator : "") . $dummy;
+            }
+        } else {
+            // case with special parameters in ()
+            foreach($val as $value) { // loop for all values
+                $dummy = $format_str; // make work-copy of format string
+                for ($i=0; $i<count($params); $i++) { // for every special parameter do:
+                    if (substr($params[$i],0,6) == "const_") {
+                        // what we need some constants parameters ( like name, short_id, value, ...)
+                        $what = substr($params[$i], strpos($params[$i], "_")+1);
+                        if ($what == 'value') {
+                            $par = $value['value']; // value is in $item, no need to use db
+                        } else {
+                            // for something else we need use db
+                            $par = getConstantValue($group_id, $what, $value['value']);
+                        }
+                    } elseif(substr($params[$i],0,2) == "_#") { // special parameter is alias
+                        // we need set some special field, which will be changed to actual
+                        // constant value
+                        $item->set_field_value("loop............", "_#1");
+                        // get for this alias his output
+                        $par = $item->get_alias_subst($params[$i],"loop............");
+                        // change _#1 to value
+                        $par = str_replace("_#1", $value['value'], $par);
+                    }
+                    $dummy = str_replace("_#".($i+1), $par, $dummy);
+                }
+                $ret_str = $dummy;
+            }
+        }
+    }
+    return $ret_str;
+}
+
+/* getConstantsGroupGroupID returns group id for specified field */
+function getConstantsGroupID($slice_id, $field) {
+    global $contentcache;
+    // get constant group_id from content cache or get it from db
+    $zids = new zids($slice_id, "p");
+    $long_id = $zids->longids();
+    // GetCategoryGroup looks in database - there is a good chance, we will
+    // expand {const_*} very soon (again), so we cache the result for future
+    $group_id = $contentcache->get_result("GetCategoryGroup", array($long_id[0], $field));
+    // get values from contentcache or use GetConstants function to get it from db
+    // $val = $contentcache->get_result("GetConstants", array($group_id, "pri", "value"));
+    return $group_id;
+}
+
+/* getConstantValue returns $what (name, value, short_id,...) of constants with
+   group $group and name $field_name) */
+function getConstantValue($group, $what, $field_name) {
+    global $contentcache;
+    switch ($what) { // this switch is for future changes in this code
+            case "name" :
+            case "value" :
+            case "short_id":
+            case "description" :
+            case "pri" :
+            case "group" :
+            case "class" :
+            case "id" :
+                // get values from contentcache or use GetConstants function to get it from db
+                $val = $contentcache->get_result("GetConstants", array($group, "pri", $what));
+                return $val[$field_name];
+                break;
+            default :
+                return false;
+                break;
+        }
 }
 
 # Do not change strings used, as they can be used to force an escaped character
@@ -199,6 +327,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
     global $als,$debug,$errcheck,$contentcache;
 
+//    print_r($itemview);
+
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
     # See http://apc-aa.sourceforge.net/faq#aliases for details
@@ -212,6 +342,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {scroller.....}
     # {#comments}
     # {debug}
+    # {inputvar:<field_id>:part:param}
     # {view.php3?vid=12&cmd[12]=x-12-34}
     # {dequote:already expanded and quoted string}
     # {fnctn:xxx:yyyy}   - expand $eb_functions[fnctn]
@@ -223,7 +354,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     #   - aliases[xxxx]
     # {_#ABCDEFGH}
     # {const_<what>:<field_id>} - returns <what> column from constants for the value from <field_id>
-    #   {any text}                                       - return "any text"
+    # {any text}                                       - return "any text"
+    #
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which are processed before expanding the function
 
@@ -244,6 +376,11 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     elseif( substr($out, 0, 5) == "user:" ) {
       # replace user auth informations
       return QuoteColons($level, $maxlevel, parseUser( substr($out,5) ));
+      # QuoteColons used to mark colons, which is not parameter separators.
+          }
+    elseif( substr($out, 0, 9) == "inputvar:" ) {
+      # replace intutform field
+      return QuoteColons($level, $maxlevel, $contentcache->get($out));
       # QuoteColons used to mark colons, which is not parameter separators.
           }
     elseif( substr($out, 0, 5) == "math(" ) {
@@ -356,7 +493,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         }
         return QuoteColons($level,$maxlevel,$ebres);
     }
-    if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) 
+    if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts)
       && is_callable("stringexpand_".$parts[1])) {
         $fnctn = "stringexpand_".$parts[1];
         $parts = ParamExplode($parts[2]);
@@ -400,36 +537,26 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         return QuoteColons($level, $maxlevel, $aliases[$out]);
     }
     // Look for {_#.........} and expand now, rather than wait till top
-    elseif ( isset($item) && (substr($out,0,2) == "_#")) {
+    elseif (isset($item) && (substr($out,0,2) == "_#")) {
         return $item->substitute_alias_and_remove($out);
     }
+    // first char of alias is @ - make loop to view all values from field
+    elseif (substr($out,0,1) == "@") {
+        return parseLoop($out, $item);
+    }
+    // look for {const_*:} for changing viewing type of constants
     elseif (substr($out, 0, 6) == "const_") {
         // $what - name of column (eg. from const_name we get name)
         $what = substr($out, strpos($out, "_")+1, strpos($out, ":") - strpos($out, "_")-1);
         // parameters - first is field
         $parts = ParamExplode(substr($out,strpos($out,":")+1));
+        // get group id
+        $group_id = getConstantsGroupID($item->columns["slice_id........"][0]["value"], $parts[0]);
+        /* get short_id/name/... of constant with specified value from constants category with
+           group $group_id */
+        $value = getConstantValue($group_id, $what, $item->columns[$parts[0]][0]["value"]);
 
-        // get constant group_id from content cache or get it from db
-        $zids = new zids($item->columns["slice_id........"][0]["value"], "p");
-        $long_id = $zids->longids();
-        // GetCategoryGroup looks in database - there is a good chance, we will
-        // expand {const_*} very soon (again), so we cache the result for future
-        $group_id = $contentcache->get_result("GetCategoryGroup", array($long_id[0], $parts[0]));
-        switch ($what) {
-            case "name" :
-            case "value" :
-            case "short_id":
-            case "description" :
-            case "pri" :
-            case "group" :
-            case "class" :
-            case "id" :
-            // get values from contentcache or use GetConstants function to get it from db
-                $val = $contentcache->get_result("GetConstants", array($group_id, "pri", $what));
-                           return $val[$item->columns[$parts[0]][0]["value"]];
-                           break;
-            default : break;
-        }
+        return $value;
     }
      // Put the braces back around the text and quote them if we can't match
     else {
