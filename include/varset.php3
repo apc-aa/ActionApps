@@ -181,7 +181,7 @@ class Cvarset {
     $predznak = " ( ";
     while ( list( $varname, $variable ) = each($this->vars) )
     {
-      $foo .= $predznak . $varname;
+      $foo .= $predznak . "`$varname`";
       $predznak = ", ";
     }
     reset($this->vars);
@@ -201,7 +201,7 @@ class Cvarset {
     while ( list( $varname, $variable ) = each($this->vars) ) {
       //echo $varname." -> ".$variable->getSQLValue()."<br>";
       if (!$variable->iskey)
-          $updates[] = $varname ."=". $variable->getSQLValue();
+          $updates[] = "`$varname`" ."=". $variable->getSQLValue();
     }
     if ($tablename)
         $retval = "UPDATE $tablename SET";
