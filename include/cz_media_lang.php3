@@ -249,6 +249,7 @@ define("L_ACTIVE_BIN", "Vystaveno");
 define("L_HOLDING_BIN", "Zásobník");
 define("L_TRASH_BIN", "Koš");
 
+define("L_SLICE_NAME", "Jméno");
 define("L_SHORT_NAME", "Zkrácené jméno");
 define("L_DELETED", "Vymazán");
 define("L_SLICE_DEFAULTS", "Pøednastavené hodnoty položek");
@@ -554,6 +555,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.9  2000/08/03 12:49:22  kzajicek
+English editing
+
 Revision 1.8  2000/08/03 12:34:27  honzam
 Default values for new slice defined.
 

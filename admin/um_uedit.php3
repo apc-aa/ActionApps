@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 # um_uedit.php3 - adds new user to permission system
-# optionaly $Msg to show under <h1>Headline</h1> (typicaly: update succesfull)
+# optionaly $Msg to show under <h1>Headline</h1> (typicaly: update successful)
 # selected_user
 # state variables:
 #    $usr_edit       - comes from um_usrch - button Edit $selected_user
@@ -392,6 +392,9 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.6  2000/08/03 12:49:22  kzajicek
+English editing
+
 Revision 1.5  2000/07/28 15:11:41  kzajicek
 Functions DeleteUserComplete and buggy DeleteGroupComlete are now
 obsolete, DelUser and DelGroup do the job.

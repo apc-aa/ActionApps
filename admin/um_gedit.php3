@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 # um_gedit.php3 - adds and edits groups in permission system (now LDAP directory)
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update succesfull)
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 # selected_group
 # state variables:
 #    $grp_edit       - comes from um_gsrch - button Edit $selected_group
@@ -335,6 +335,9 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.5  2000/08/03 12:49:22  kzajicek
+English editing
+
 Revision 1.4  2000/07/28 15:11:41  kzajicek
 Functions DeleteUserComplete and buggy DeleteGroupComlete are now
 obsolete, DelUser and DelGroup do the job.

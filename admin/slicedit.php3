@@ -55,7 +55,7 @@ $varset = new Cvarset();
 
 if( $add || $update ) {
   do {
-    ValidateInput("headline", L_HEADLINE, &$headline, &$err, true, "text");
+    ValidateInput("headline", L_SLICE_NAME, &$headline, &$err, true, "text");
     ValidateInput("short_name", L_SHORT_NAME, &$short_name, &$err, true, "text");
     ValidateInput("slice_url", L_SLICE_URL, &$slice_url, &$err, false, "url");
     ValidateInput("d_expiry_limit", L_D_EXPIRY_LIMIT, $d_expiry_limit, &$err, false, "number");
@@ -240,7 +240,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
   FrmStaticText(L_ID, $slice_id);
-  FrmInputText("headline", L_HEADLINE, $headline, 254, 25, true);
+  FrmInputText("headline", L_SLICE_NAME, $headline, 254, 25, true);
   FrmInputText("short_name", L_SHORT_NAME, $short_name, 254, 25, true);
   FrmInputText("slice_url", L_SLICE_URL, $slice_url, 254, 25, false);
   FrmInputText("d_listlen", L_D_LISTLEN, $d_listlen, 5, 5, true);
@@ -294,6 +294,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.8  2000/08/03 12:49:22  kzajicek
+English editing
+
 Revision 1.7  2000/08/03 12:34:27  honzam
 Default values for new slice defined.
 

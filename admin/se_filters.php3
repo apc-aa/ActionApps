@@ -22,7 +22,7 @@ http://www.apc.org/
 # se_filters.php3 - feeding filters settings
 # expected $slice_id for edit slice
 # optionaly $import_id for selected imported slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Filters update succesfull)
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Filters update successful)
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -247,6 +247,9 @@ while($db->next_record()) {
 }  
 /*
 $Log$
+Revision 1.4  2000/08/03 12:49:22  kzajicek
+English editing
+
 Revision 1.3  2000/07/17 13:40:11  kzajicek
 Alert box when no input category selected
 

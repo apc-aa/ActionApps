@@ -21,7 +21,7 @@ http://www.apc.org/
 
 # se_compact.php3 - assigns html format for compact view
 # expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update succesfull)
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -163,6 +163,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.3  2000/08/03 12:49:22  kzajicek
+English editing
+
 Revision 1.2  2000/07/25 11:25:26  kzajicek
 Fixed Javascript error in Netscape.
 

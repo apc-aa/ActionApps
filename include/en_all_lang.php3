@@ -159,8 +159,8 @@ define("L_FULL_TEXT", "Full text");
 define("L_STATUS_CODE", "Status");
 define("L_LANGUAGE_CODE", "Language");
 define("L_CP_CODE", "Encoding");
-define("L_LINK_ONLY", "Outer link");
-define("L_HL_HREF", "Outer link URL");
+define("L_LINK_ONLY", "External link");
+define("L_HL_HREF", "External link URL");
 define("L_FT_FORMATTING", "Formatting");
 define("L_FT_FORMATTING_HTML", "HTML tags");
 define("L_FT_FORMATTING_PLAIN", "Plain text"); 
@@ -170,7 +170,7 @@ define("L_IMG_SRC","Image URL");
 define("L_IMG_WIDTH","Image width"); 
 define("L_IMG_HEIGHT","Image height");
 define("L_E_POSTED_BY","E-mail"); 
-define("L_PLACE","Place");
+define("L_PLACE","Location");
 define("L_SOURCE","Source ");
 define("L_SOURCE_HREF","Source URL");
 define("L_CREATED_BY","Author");
@@ -229,13 +229,14 @@ define("L_FIELDS_HDR", "Item fields");
 define("L_NO_PS_EDIT_ITEMS", "You have not permissions to edit items in this slice");
 define("L_NO_DELETE_ITEMS", "You have not permissions to remove items");
 define("L_NO_PS_MOVE_ITEMS", "You have not permissions to move items");
-define("L_FULLTEXT_OK", "Fulltext format update succesfull");
+define("L_FULLTEXT_OK", "Fulltext format update successful");
 
 # aa toolkit common labels
 # can be the same for all toolkit aplications
 define("L_ACTIVE_BIN", "Approved");
 define("L_HOLDING_BIN", "Holding bin");
 define("L_TRASH_BIN", "Trash");
+define("L_SLICE_NAME", "Title");          // slice
 define("L_SHORT_NAME", "Short name");     // slice
 define("L_DELETED", "Deleted");           // slice
 define("L_D_LISTLEN", "Listing length");  // slice
@@ -373,10 +374,10 @@ define("L_NEW_SLICE", "Add Slice");
 define("L_SLICE_NEW", "New Slice");
 define("L_RENAME_CATEG", "Enter the new name for this category");
 define("L_ASSIGN", "Assign");
-define("L_CATBINDS_OK", "Category update succesfull");
-define("L_IMPORT_OK", "Feeding update succesfull");
-define("L_FIELDS_OK", "Fields update succesfull");
-define("L_SEARCH_OK", "Search fields update succesfull");
+define("L_CATBINDS_OK", "Category update successful");
+define("L_IMPORT_OK", "Feeding update successful");
+define("L_FIELDS_OK", "Fields update successful");
+define("L_SEARCH_OK", "Search fields update successful");
 define("L_ADMINPAGE", "Back to Main Administration Page");
 define("L_NO_CATEGORY", "No category defined");
 define("L_NO_IMPORTED_SLICE", "There are no imported slices");
@@ -539,6 +540,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.9  2000/08/03 12:49:22  kzajicek
+English editing
+
 Revision 1.8  2000/08/03 12:34:27  honzam
 Default values for new slice defined.
 
