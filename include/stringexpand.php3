@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -27,10 +27,11 @@ http://www.apc.org/
 
 # Code by Mitra based on code in existing other files
 
-if (!defined ("STRINGEXPAND_INCLUDED")) 
+if (!defined ("STRINGEXPAND_INCLUDED"))
      define ("STRINGEXPAND_INCLUDED",1);
 else return;
 
+require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
 
 #explodes $param by ":". The "#:" means true ":" - don't separate
 function ParamExplode($param) {
@@ -44,8 +45,8 @@ function ParamExplode($param) {
 
 
   function parseSwitch($text) {
-    $variable = substr(strtok('_'.$text,")"),1);   # add and remove '_' - this 
-                                                   # is hack for empty variable 
+    $variable = substr(strtok('_'.$text,")"),1);   # add and remove '_' - this
+                                                   # is hack for empty variable
                                                    # (when $text begins with ')')
     $variable = DeQuoteColons($variable);	# If expanded, will be quoted ()
     $twos = ParamExplode( strtok("") );
@@ -64,7 +65,7 @@ function ParamExplode($param) {
     return "";
   }
 
-  # text = [ decimals [ # dec_point [ thousands_sep ]]] )  
+  # text = [ decimals [ # dec_point [ thousands_sep ]]] )
   function parseMath($text)
   {
     // get format string, need to add and remove # to
@@ -129,14 +130,14 @@ $GLOBALS[eb_functions] = array (
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
     global $als,$debug,$errcheck;
-    
+
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
     # See http://apc-aa.sourceforge.net/faq#aliases for details
     # bracket could look like:
     # {alias:[<field id>]:<f_* function>[:parameters]} - return result of f_*
     # {switch(testvalue)test:result:test2:result2:default}
-    # {math(<format>)expression}  
+    # {math(<format>)expression}
     # {include(file)}
     # {scroller.....}
     # {#comments}
@@ -145,7 +146,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {dequote:already expanded and quoted string}
     # {fnctn:xxx:yyyy}   - expand $eb_functions[fnctn]
     # {unpacked_id.....}
-    # {xxxx}                            
+    # {xxxx}
     #   - looks for a field xxxx
     #   - or in $GLOBALS[apc_state][xxxx]
     #   - als[xxxx]
@@ -157,7 +158,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     if( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
-      if ($parts[1] && ! isField($parts[1])) 
+      if ($parts[1] && ! isField($parts[1]))
         huhe("Warning: $out: $parts[1] is not a field, don't wrap it in { } ");
       $fce = $parts[2];
       return QuoteColons($level, $maxlevel, $item->$fce($parts[1], $parts[3]));
@@ -168,7 +169,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       return QuoteColons($level, $maxlevel, parseSwitch( substr($out,7) ));
       # QuoteColons used to mark colons, which is not parameter separators.
           }
-    elseif( substr($out, 0, 5) == "math(" ) { 
+    elseif( substr($out, 0, 5) == "math(" ) {
       # replace math
       return QuoteColons($level, $maxlevel,
         parseMath( # Need to unalias in case expression contains _#XXX or ( )
@@ -180,17 +181,17 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       # include file
       if( !($pos = strpos($out,')')) )
         return "";
-      $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), 
+      $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()),
                                DeQuoteColons( substr($out, 8, $pos-8)));
            # filename do not use colons as separators => dequote before callig
-      
+
       if( !$filename || trim($filename)=="" )
         return "";
 
       // if no http request - add server name
-      if( !(substr($filename, 0, 7) == 'http://') AND 
+      if( !(substr($filename, 0, 7) == 'http://') AND
           !(substr($filename, 0, 8) == 'https://')   )
-        $filename = self_server().'/'. $filename; 
+        $filename = self_server().'/'. $filename;
 
       $fp = @fopen( $filename, 'r' );
       $fileout = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
@@ -206,7 +207,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                                    $itemview->num_records,
                                    $itemview->idcount(),
                                    $itemview->from_record);
-        list( $begin, $end, $add, $nopage ) = ParamExplode($parts[1]);                         
+        list( $begin, $end, $add, $nopage ) = ParamExplode($parts[1]);
         return $viewScr->get( $begin, $end, $add, $nopage );
     }
     elseif( substr($out, 0, 1) == "#" )
@@ -223,7 +224,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         return "";
     }
     elseif ( substr($out, 0,10) == "view.php3?" )
-        return QuoteColons($level, $maxlevel, 
+        return QuoteColons($level, $maxlevel,
             GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
             # view do not use colons as separators => dequote before callig
     // This is a little hack to enable a field to contain expandable { ... } functions
@@ -235,13 +236,13 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) && $GLOBALS[eb_functions][$parts[1]]) {
         $fnctn = $GLOBALS[eb_functions][$parts[1]];
         $parts = ParamExplode($parts[2]);
-        return QuoteColons($level,$maxlevel, 
+        return QuoteColons($level,$maxlevel,
             $fnctn($parts[0],$parts[1],$parts[2],$parts[3],$parts[4],
                 $parts[5],$parts[6],$parts[7],$parts[8],$parts[9]));
     }
     if (isset($item) && ($out == "unpacked_id.....")) {
         return QuoteColons($level, $maxlevel, $item->f_n('id..............'));
-    } 
+    }
     elseif( isset($item) && IsField($out) ) {
 //      return QuoteColons($level, $maxlevel, $item->getval($out));
       return QuoteColons($level, $maxlevel, $item->f_h($out,"-"));
@@ -249,18 +250,18 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
     # Look and see if its in the state variable in module site
     # note, this is ignored if apc_state isn't set, i.e. not in that module
-    # If found, unalias the value, then quote it, this expands 
+    # If found, unalias the value, then quote it, this expands
     # anything inside the value, and then makes sure any remaining quotes
     # don't interfere with caller
     elseif (isset($GLOBALS['apc_state'][$out])) {
-        return QuoteColons($level, $maxlevel, 
+        return QuoteColons($level, $maxlevel,
             new_unalias_recurent($GLOBALS['apc_state'][$out],"",$level+1,
                 $maxlevel,$item,$itemview,$aliases));
     }
-    # Pass these in URLs like als[foo]=bar, 
+    # Pass these in URLs like als[foo]=bar,
     # Note that 8 char aliases like als[foo12345] will expand with _#foo12345
     elseif (isset($als[$out])) {
-        return QuoteColons($level, $maxlevel, 
+        return QuoteColons($level, $maxlevel,
             new_unalias_recurent($als[$out],"",$level+1,
                 $maxlevel,$item,$itemview,$aliases));
         return QuoteColons($level, $maxlevel, $als[$out]);
@@ -268,7 +269,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     elseif (isset($aliases[$out])) {   # look for an alias (this is used by mail)
         return QuoteColons($level, $maxlevel, $aliases[$out]);
     }
-    // Look for {_#.........} and expand now, rather than wait till top 
+    // Look for {_#.........} and expand now, rather than wait till top
     elseif ( isset($item) && (substr($out,0,2) == "_#")) {
         return $item->substitute_alias_and_remove($out);
     }
@@ -279,10 +280,10 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
 }
 
-# This is based on the old unalias_recurent, it is intended to replace 
-# string substitution wherever its occurring. 
-# Differences .... 
-#   - remove is applied to the entire result, not the parts! 
+# This is based on the old unalias_recurent, it is intended to replace
+# string substitution wherever its occurring.
+# Differences ....
+#   - remove is applied to the entire result, not the parts!
 function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $itemview=null, $aliases=null ) {
     global $debug;
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
@@ -293,14 +294,14 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
 
     while (preg_match("/^(.*)[{]([^{}]+)[}](.*)$/s",$text,$vars)) {
         if ($debug) huhl("Expanding:".isset($item).":$level:'$vars[2]'");
-        
+
         $t1 = expand_bracketed($vars[2],$level+1,$maxlevel,$item,$itemview,$aliases);
 
         if ($debug) huhl("Expanded:$level:'$t1'");
         $text = $vars[1] . $t1 . $vars[3];
         if ($debug) huhl("Continue with:$level:'$text'");
     }
-    
+
     if (isset($item)) {
             return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));
     } else {
