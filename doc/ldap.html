@@ -1,0 +1,312 @@
+<!-- $id$ -->
+<H2>Intro on using LDAP with ActionApplications</H2>
+
+
+<B>OpenLDAP</B> server software. Other LDAP servers should work, too, but the 
+Action Applications have been tested with OpenLDAP only. 
+<P>If you have already an OpenLDAP server running, you may skip the rest of this 
+section. 
+<P><A name=ldap_thoughts></A>Using LDAP, some thoughts about the LDAP database 
+organization should be wasted. An LDAP database is an hierarchically structured 
+system of objects, each member of one or more certain classes. Every object in 
+your database has its place in the potentially global LDAP hierarchy. Each 
+object has a unique name, the so called <EM>distinguished name</EM>, or short 
+<EM>dn</EM>. The dn consists of the full "path" from the global LDAP name space 
+to the object, similar to names in the domain name system. 
+<P>In order to set up the LDAP server for Action Applications, you need to 
+figure out some information you want to use: 
+<UL>
+  <LI>Your base dn. This is the common part all your LDAP objects will have in 
+  their dn, describing the "path" from the global LDAP name space to your 
+  organization. It is recommended that you use a domain name you own for that. 
+  (You could also use a geographical category, but this is not described here.) 
+  A domain name can be described in a LDAP dn using the <EM>dc</EM> attribute. 
+  For example, the base dn for a possible domain name <EM>ecn.apc.org</EM> would 
+  be <CODE>dc=ecn,dc=apc,dc=org</CODE>. 
+  <LI>Your LDAP administrative account. OpenLDAP's built-in access control needs 
+  a <EM>root</EM> object which has all privileges. Once it exists, the root 
+  object can be used to modify the data stored in the LDAP database. Like every 
+  object in the database, the root object needs a dn. It is recommended that you 
+  use the canonical name <EM>root</EM>. Following the example above, this gives 
+  us a root object dn of <CODE>cn=root,dc=ecn,dc=apc,dc=org</CODE>. </LI></UL>
+<P>Note: As with the database server, the OpenLDAP server does not necessarily 
+need to be running on the same machine as the Action Applications. 
+
+
+<H2>Step by Step instruction for Installing OpenLDAP</H2>
+The OpenLDAP server does not need to be on the same host as 
+the Action Applications themselves are. 
+<P>Check if you have already the OpenLDAP server installed: 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE>% man slapd
+No manual entry for slapd
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>If the manual page appears, it is very likely you have the 
+OpenLDAP server on the machine. (This check is preferred over the rpm way 
+because the OpenLDAP rpm exists only for a short time so far and many machines 
+probably have it installed without the rpm.) 
+<P>OpenLDAP is included in RedHat Linux 6.1; releases prior to 6.1 don't have 
+it. It is possible to install the rpms on any 6.x RedHat Linux though. 
+<P>If you don't have the OpenLDAP server installed, and if you don't have the 
+rpm's, get the rpm's from a RedHat mirror site, for example from <A 
+href="ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-1.2.9-6.i386.rpm">ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-1.2.9-6.i386.rpm</A> 
+and <A 
+href="ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-devel-1.2.9-6.i386.rpm">ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-devel-1.2.9-6.i386.rpm</A> 
+and install them: 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE># rpm -Uv openldap-1.2.9-6.i386.rpm
+openldap-1.2.9-6
+# rpm -Uv openldap-devel-1.2.9-6.i386.rpm                
+openldap-devel-1.2.9-6
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>
+<H3>Setup: Configuration</H3>
+<P>If you didn't have an OpenLDAP server running, you will need to create the 
+<CODE>/etc/openldap/slapd.conf</CODE> file - this is the server configuration 
+file. Use the file <CODE>doc/slapd.conf</CODE> from the Action Applications 
+distribution to create it. This file is well documented and contains hints about 
+which spots need to be modified. <EM>The LDAP server will not work properly if 
+you don't edit this file.</EM> You will need some basic data to fill in here; 
+see at <A href="install-2.html#ldap_thoughts">LDAP 
+basic info</A> for details. 
+<P>The root dn password in this file can be trivial for now (leave it as it is, 
+"password"), we will replace it shortly with a secure one. We refer to this 
+password as the <EM>ldap root dn</EM> password. 
+<P>Also you need to copy some other files from the Action Applications doc 
+directory to the <CODE>/etc/openldap/</CODE> directory and change the file mode 
+of the main configuration file: 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE># chmod 600 /etc/openldap/slapd.conf 
+# cp slapd.oc.netscape.conf slapd.at.netscape.conf slapd.oc.apc.conf slapd.at.apc.conf /etc/openldap/
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>Edit the file <CODE>/etc/openldap/ldap.conf</CODE>. After installation, it 
+only contains comments. Put in two lines containing your base dn and the host 
+where the ldap server runs: 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE>BASE    dc=ecn,dc=apc,dc=org
+HOST    localhost
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>(This file is used by the programs that <EM>access</EM> a 
+ldap server, not by the server itself. It only affects accessing programs on the 
+machine where the programs run.) 
+<P>Create the directory where the LDAP database will live (again, replace the 
+domain name with the one your base dn was derived from): 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE># mkdir /var/lib/ldap/ecn.apc.org
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>
+<P>
+<H3>Start the ldap server</H3>
+<P>Try to start the ldap server and check messages from the messages logfile 
+(normally <CODE>/var/log/messages</CODE>): 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE># /etc/rc.d/init.d/ldap start
+Starting ldap:                                             [  OK  ]
+# tail /var/log/messages
+[...]
+Jul 17 11:01:28 ecn ldap: slapd startup succeeded
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>Make the ldap server start on system boots: 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE># chkconfig ldap on
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>
+<H3>Initial database creation</H3>
+<P>The OpenLDAP server needs an initial database before its first start. To 
+create this database, you need a <EM>ldif</EM> format file which can be 
+translated into the database by the ldapmodify command. There is an example ldif 
+file, namely <CODE>LDIF.ini</CODE>, in the doc/ directory. Edit this file to 
+suit your needs according to the following instructions. 
+<P>The initial ldif file should contain five objects: 
+<UL>
+  <LI>Your base object 
+  <LI>The Action Applications account object (used by Action Applications to 
+  access the ldap server) 
+  <LI>A group object for Action Applications administrators (superadmins) 
+  <LI>One initial superadmin account object which is the initial member of the 
+  group of superadmins 
+  <LI>The Action Applications APCACL object (Action Applications access control 
+  storage object) of Action Applications administrators </LI></UL>Objects are 
+separated by blank lines. Each line consists of a keyword, followed by a colon, 
+followed by a value. The first line of each object is the dn, thus the keyword 
+is "dn". The other object lines are its attributes. 
+<P>Edit these spots: 
+<UL>
+  <LI>Everywhere: replace all occurances of the example "dc=ecn,dc=apc,dc=org" 
+  base dn with your own one (hopefully your editor has a good search and replace 
+  function). 
+  <LI>root object (first block) 
+  <DL>
+    <DT><B>o: Econnect</B>
+    <DD>
+    <P>Replace "Econnect" with your organization name. </P>
+    <DT><B>dc: ecn</B>
+    <DD>
+    <P>Replace "ecn" with your base dn domain name, but only the first word up 
+    to but not including the first dot. </P>
+    <DT><B>description</B>
+    <DD>
+    <P>Fill in a descriptive text describing your organization. </P></DD></DL>
+  <LI>Action Applications account object (second block) 
+  <P>No modifications </P>
+  <LI>Action Applications administrator (superadmin) group object (third block) 
+  <DL>
+    <DT><B>member</B>
+    <DD>
+    <P>Fill in the dn of the personal initial member object (see below) 
+  </P></DD></DL>
+  <LI>Initial superadmin account object (forth block) 
+  <DL>
+    <DT><B>dn</B>
+    <DD>
+    <P>Replace "uid=karel" with "uid=XXX" where XXX is a user id for the initial 
+    administrator group member (for example, use qour first name). </P>
+    <DT><B>cn</B>
+    <DD>
+    <P>Fill in the canonical name of the initial member. </P>
+    <DT><B>sn</B>
+    <DD>
+    <P>Fill in the surname of the initial member. </P>
+    <DT><B>uid</B>
+    <DD>
+    <P>Repeat the user id from above. </P>
+    <DT><B>mail</B>
+    <DD>
+    <P>Fill in an email address of the initial member. </P></DD></DL>
+  <LI>The APCACL object (Action Applications access control storage) (fifth 
+  block) For this object you need to invent a unique identifier. The identifier 
+  should consist of 32 characters only containing characters from the set 
+  <EM>0123456789abcdef</EM>. This is your <EM>aa id</EM>. You will need it later 
+  again. 
+  <DL>
+    <DT><B>dn</B>
+    <DD>
+    <P>Replace the string after "apcobjectid=" up to the next comma with your aa 
+    id. </P>
+    <DT><B>apcobjectid</B>
+    <DD>
+    <P>Replace the content with your aa id. </P>
+    <DT><B>description</B>
+    <DD>
+    <P>Put in "Action Applications at ..." where ... is your organization. 
+    </P></DD></DL></LI></UL>
+<P>Having made these modifications, we can tell the ldap server to create the 
+objects: 
+<P>
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE>% ldapmodify -a -f ldiffile -D "cn=root,dc=ecn,dc=apc,dc=org" -w password
+adding new entry dc=ecn,dc=apc,dc=org
+
+adding new entry cn=aalduser,dc=ecn,dc=apc,dc=org
+
+adding new entry cn=Action Applications Admins,dc=ecn,dc=apc,dc=org
+
+adding new entry uid=moritz,dc=ecn,dc=apc,dc=org
+
+adding new entry apcobjectid=000111222333444555666777888999Action Applications,dc=ecn,dc=apc,dc=org
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>
+<P>If the server responds with an error message: 
+<DL>
+  <DT><B>ldap_add: Insufficient access</B>
+  <DD>
+  <P>Check the rootdn: entry in the slapd.conf file and what you typed after the 
+  -D switch to ldapmodify. They must match. </P>
+  <DT><B>ldap_add: Object class violation</B>
+  <DD>
+  <P>The objects in the ldif file are not consistent. Check if you accidently 
+  deleted lines from the file. </P></DD></DL>
+<P>In order to check the server, search all the objects you just added. The 
+result should be similar to the ldif file you just used. 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE>% ldapsearch -L objectclass=\*
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>If you get an error message or nothing, check the 
+<CODE>/etc/openldap/ldap.conf</CODE> file for the BASE and HOST entries. 
+<P>
+<H3>LDAP passwords</H3>
+<P>There are no less than three passwords we must maintain for the ldap server. 
+We refer to them as the <EM>root dn password</EM>, which is used to access the 
+LDAP root account; the <EM>initial superadmin account password</EM>, which is 
+used to access the initial Action Applications superadmin account; and the 
+<EM>aalduser account password</EM>, which the Action Applications use to access 
+the aalduser account and the LDAP server. 
+<P>We should now set the root dn password in 
+<CODE>/etc/openldap/slapd.conf</CODE> as well as for the initial superadmin 
+account password. To do this, first set the initial superadmin account password 
+using ldappasswd, then make a query to the ldap server so we get an encrypted 
+version of the password back, and copy and paste the encrypted password into the 
+sldap.conf file. When you issue the following commands, the password given after 
+the -w switches must match the <EM>old</EM> root dn password which is still 
+defined in clear text in <CODE>/etc/openldap/slapd.conf</CODE>. When prompted 
+for the new password, enter the new root dn password you want to set. And remind 
+it! 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE>% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -t "uid=moritz,dc=ecn,dc=apc,dc=org" -H ssha
+New password: 
+Re-enter new password: 
+% ldapsearch -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -L uid=moritz
+dn: uid=moritz,dc=ecn,dc=apc,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalperson
+objectclass: inetorgperson
+cn: Moritz Both
+sn: Both
+uid: moritz
+mail: moritz@aldebaran.de
+userpassword: {ssha}1KoDEQd/MrY+JPnFgotki5AZrCyfGZYr
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>If everything worked right, you get the line "userpassword" as shown. This is 
+the encrypted version of the new root dn password you entered. Paste this string 
+(including the "{ssha}") into the rootpw: line in 
+<CODE>/etc/openldap/slapd.conf</CODE>. After the next server restart, the old 
+root dn password "password" will no longer work, instead, you use the password 
+you just entered. 
+<P>If you want, you can change the password for the initial superadmin account 
+again so it is different from the root dn password. 
+<P>Try to access the ldap server using your initial superadmin account: 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE>% ldapsearch -D "uid=moritz,dc=ecn,dc=apc,dc=org" -W -L objectclass=\*
+Enter LDAP Password: 
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>You should get all the objects that are stored. In case of 
+an error message, check the spelling of the command line... errors most likely 
+have to do with spelling errors. 
+<P><B>Finally</B>, set a aalduser account password. 
+<BLOCKQUOTE><CODE>
+  <HR>
+<PRE>% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha -W
+</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>
