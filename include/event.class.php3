@@ -94,7 +94,7 @@ class aaevent {
 
             // matches and function begins with 'Event_' - security check
             if ( $function AND (substr($function, 0, 6) == 'Event_') ) {
-                $this->returns[] = $function($type, $slice, $slice_type, &$ret_params, $params, $params2);
+                $this->returns[] = $function($type, $slice, $slice_type, $ret_params, $params, $params2);
             }
         }
     }
@@ -135,7 +135,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     $name    = $params;              // name of general category is in params
     $oldname = $params2;             // name of old general category in params2
 
-    // if new link type is not general (global) category or general category 
+    // if new link type is not general (global) category or general category
     // was already set - return
     if( !( trim($name)) OR trim($oldname) )
         return false;
