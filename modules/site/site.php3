@@ -98,7 +98,7 @@ echo $res;
 # mention the slice in this array, cache is cleared on any change of the slice
 # (item addition) - the page is regenerated, then.
 
-if (is_array($slices4cache) && !$nocache) {
+if (is_array($slices4cache)) {
   $clear_cache_str = "slice_id=". join(',slice_id=', $slices4cache);
   $GLOBALS[pagecache]->store($key_str, $res, $clear_cache_str);
 }  

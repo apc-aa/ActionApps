@@ -135,6 +135,9 @@ class itemview {
             $keystr .= $this->zids->id($i);
         $keystr .=serialize($this->disc);
         $keystr .=serialize($this->aliases);
+            
+        $keystr .= stringexpand_keystring();
+
         if( !$GLOBALS['nocache'] && ($res = $GLOBALS['pagecache']->get($keystr)) ) {
             trace("-");
             return $res;

@@ -65,7 +65,8 @@ class PageCache  {
 
   # returns cached informations or false
   function get($keyString) {
-    if ($GLOBALS[debugcache]) huhl("Cache:get:$keyString");
+    if ($GLOBALS[debugcache]) { 
+        huhl("Cache:get:$keyString:"); trace("p"); }
     if( ENABLE_PAGE_CACHE ) {
       $db = getDB(); 
       $SQL = "SELECT * FROM pagecache WHERE id='".md5($keyString)."'";

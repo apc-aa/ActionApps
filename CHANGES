@@ -1,3 +1,5 @@
+05/15/03 - removed test for nocache in site.php3 on store, for consistency
+(mitra)  - made get_output_cached include apc_state and als in keystr
 05/14/03 - fix bug in caching of views run under other slices (mitra)
 05/12/03 - changed UI elements in fileAction to buttons from links 
          - this included changing parameter from uploadarg to upload

@@ -282,6 +282,14 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
 }
 
+# Return some strings to use in keystr for cache if could do a stringexpand
+function stringexpand_keystring() {
+    $ks = "";
+    if (isset($GLOBALS["apc_state"])) $ks .= serialize($GLOBALS["apc_state"]);
+    if (isset($GLOBALS["als"])) $ks .= serialize($GLOBALS["als"]);
+    return $ks;
+}
+
 # This is based on the old unalias_recurent, it is intended to replace
 # string substitution wherever its occurring.
 # Differences ....
