@@ -187,8 +187,8 @@ switch( $More ) {
 
 if($Delete == "trash") {         // delete feeded items in trash bin
     // feeded items we can easy delete
-  if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_DELETE_ITEMS, "items" )) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_DELETE_ITEMS);
+  if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_DELETE_ITEMS )) {
+    MsgPage($sess->url(self_base())."index.php3", L_NO_DELETE_ITEMS, "items");
     exit;
   }  
  	$db->query("SELECT id FROM item 
@@ -352,7 +352,7 @@ if (! $perm_edit_all )
   $conds[]=array( 'operator' => '=',
                   'value' => $auth->auth[uid],
                   'posted_by.......' => 1 );
-$sort[] = array ( 'pub_date........' => 'd' );
+$sort[] = array ( 'publish_date....' => 'd' );
 
 $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, $bin_condition);
 
@@ -458,6 +458,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.23  2001/06/03 15:58:21  honzam
+small fixes, better user interface
+
 Revision 1.22  2001/05/23 23:05:34  honzam
 fixed bug of not updated list of item in Item manager after item edit
 

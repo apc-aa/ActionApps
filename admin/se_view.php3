@@ -100,14 +100,14 @@ if( $update )
 
     reset($VIEW_FIELDS);
     while(list($k, $v) = each($VIEW_FIELDS)) {
-      if( $VIEW_TYPES[$view_type][$k] )
+      if( $VIEW_TYPES[$view_type][$k] ) {
         $varset->add($k, $v["insert"], (($v["type"]=="bool") ? ($$k ? 1 : 0) 
-                                                             : $$k));
+                                                                      : $$k));
+      }                                                       
     }  
-
     if( $view_id ) {
-      if( !$db->query("UPDATE view SET ". $varset->makeUPDATE() . " 
-                      WHERE id='$view_id'")) {
+      $SQL = "UPDATE view SET ". $varset->makeUPDATE() ." WHERE id='$view_id'";
+      if( !$db->query($SQL)) {
         $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
         break;   # not necessary - we have set the halt_on_error
       }
@@ -133,9 +133,10 @@ if( !$update ) {  # set variables from database
                   #            take first view of the same type
     $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
   $db->query($SQL);
-  if ($db->next_record()) {
+  if ($db->next_record())
     $vw_data = $db->Record;
-  }  
+   else
+    $vw_data = array( "listlen" => 10 );   # default values
 } else {        # updating - load data into vw_data array
   reset($VIEW_FIELDS);
   while(list($k, $v) = each($VIEW_FIELDS)) {
@@ -158,6 +159,7 @@ $lookup_groups = GetConstants('lt_groupNames', $db);
 # lookup slice fields
 $db->query("SELECT id, name FROM field
              WHERE slice_id='$p_slice_id' ORDER BY name");
+$lookup_fields[''] = " ";  # default - none
 while($db->next_record())
   $lookup_fields[$db->f(id)] = $db->f(name);
 
@@ -243,6 +245,9 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.3  2001/06/03 15:58:21  honzam
+small fixes, better user interface
+
 Revision 1.2  2001/05/18 13:43:43  honzam
 New View feature, new and improved search function (QueryIDs)
 
