@@ -54,6 +54,12 @@ if($encap == "false")    # used in itemedit for anonymous form
 # modules other than slices are in deeper directory -> $directory_depth
 require "$directory_depth../include/config.php3";
 
+# should be set in config.php3 - used for relative path to image directory
+if (!$AA_INSTAL_PATH) {
+  $url_components = parse_url(AA_INSTAL_URL);
+	$AA_INSTAL_PATH = $url_components['path'];
+}
+
 if($free)            // anonymous authentication
   $nobody = true;
 

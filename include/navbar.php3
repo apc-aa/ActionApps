@@ -58,7 +58,7 @@ $nb_view = (!$slice_id ?
   '<span class=nbenable>'. L_VIEW_SLICE .'</span>' :
   " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". L_VIEW_SLICE .'</span></a>');
 
-$nb_logo = '<a href="'. AA_INSTAL_URL .'"><img src="'.AA_INSTAL_URL.'images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
+$nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$AA_INSTAL_PATH.'images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
 
 $nb_go = '<span class=nbenable>'. L_GO .'</span>';
 
@@ -67,11 +67,12 @@ $nb_aasettings = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
   '<a href="'. get_url("um_uedit.php3") .'"><span class=nbenable>'. L_AA_ADMIN2 .'</span></a>');
 
 ?>
+
 <TABLE border=0 cellpadding=0 cellspacing=0>
   <TR>
-    <TD><IMG src="<?php echo AA_INSTAL_URL ?>images/spacer.gif" width=122 height=1></TD>
-    <TD><IMG src="<?php echo AA_INSTAL_URL ?>images/spacer.gif" width=300 height=1></TD>
-    <TD><IMG src="<?php echo AA_INSTAL_URL ?>images/spacer.gif" width=267 height=1></TD>
+    <TD><IMG src="<?php echo $AA_INSTAL_PATH ?>images/spacer.gif" width=122 height=1></TD>
+    <TD><IMG src="<?php echo $AA_INSTAL_PATH ?>images/spacer.gif" width=300 height=1></TD>
+    <TD><IMG src="<?php echo $AA_INSTAL_PATH ?>images/spacer.gif" width=267 height=1></TD>
   </TR>
   <TR>
     <TD rowspan=2 align=center class=nblogo> <?php echo $nb_logo; ?></td>

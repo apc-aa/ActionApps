@@ -27,7 +27,7 @@ $menus = array (
     "main" => array ("label"=>L_SLICE_SET, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"slicedit.php3?slice_id=$slice_id", "show_always"=>1), 
     "category" => array("label"=>L_CATEGORY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY), "href"=> "se_constant.php3"),
     "fields" => array ("label"=>L_FIELDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fields.php3?slice_id=$slice_id"), 
-    "javascript" => array ("label"=>L_F_JAVASCRIPT, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_javascript.php3"),
+//    "javascript" => array ("label"=>L_F_JAVASCRIPT, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_javascript.php3"),
     "notify" => array ("label"=>L_NOTIFY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"se_notify.php3?slice_id=$slice_id"), 
     "header2" => L_PERMISSIONS,
     "addusers"=> array ("label"=>L_PERM_ASSIGN, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ADD_USER), "href"=> "se_users.php3?adduser=1&slice_id=$slice_id"),
@@ -69,7 +69,7 @@ $menus = array (
     "header0" => L_MODULES,
     "sliceadd" => array ("label" => L_ADD_MODULE, "cond"=>IfSlPerm(PS_ADD), "href"=>"sliceadd.php3"),
     "slicedel" => array ("label" => L_DELETE_MODULE, "cond"=>IsSuperadmin(), "href"=>"slicedel.php3"),
-    "jumpedit" => array ("label"=>L_EDIT_JUMP, "cond"=>IfSlPerm(PS_ADD), "exact_href" => AA_INSTAL_URL."modules/jump/modedit.php3?edit=1&AA_CP_Session=$AA_CP_Session"),
+    "jumpedit" => array ("label"=>L_EDIT_JUMP, "cond"=>IfSlPerm(PS_ADD), "exact_href" => $AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1&AA_CP_Session=$AA_CP_Session"),
 /*    "delete" => array ("label" => L_DELETE_TRASH, "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"index.php3?Delete=trash"),*/
     "header1"=>L_USERS,
     "u_edit" => array ("href"=>"um_uedit.php3", "cond"=>1, "label"=>L_EDIT_USER),
@@ -82,13 +82,14 @@ $menus = array (
     "sliceimp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceimp.php3", "label"=>L_IMPORT_SLICE)
 )));
   
-echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.' cellpadding="1" align="LEFT" class="leftmenu">';
+echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">';
 
 if (isset ($menu)) $menu = $menus[$menu];
 else $menu = $menus["sliceadmin"];
 
 function get_admin_url ($href) {
-    $res = AA_INSTAL_URL."admin/".$href;
+    global $AA_INSTAL_PATH;
+    $res = $AA_INSTAL_PATH."admin/".$href;
     if (strstr ($href,"?")) $res .= "&"; else $res .= "?";
     $res .= "AA_CP_Session=".$GLOBALS[AA_CP_Session];
     return $res;
@@ -99,11 +100,11 @@ reset ($menuitems);
 while (list ($itemshow, $item) = each ($menuitems)) {
     if (substr($itemshow,0,6) == "header") 
         echo '<tr><td>&nbsp;</td></tr>
-  <tr><td><img src="'.AA_INSTAL_URL.'images/black.gif" width=120 height=1></td></tr>
+  <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>
               <tr><td class=leftmenu>'.$item.'</td></tr>
-              <tr><td><img src="'.AA_INSTAL_URL.'images/black.gif" width=120 height=1></td></tr>';
+              <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>';
     else if (substr($itemshow,0,4) == "line")
-        echo '<tr><td><img src="'.AA_INSTAL_URL.'images/black.gif" width=120 height=1></td></tr>';
+        echo '<tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>';
     else {
         echo '<tr><td width="122" valign="TOP">&nbsp;&nbsp;';
         if (($slice_id || $item["show_always"]) && !isset($show[$itemshow]) && $item["cond"]) {
@@ -121,3 +122,4 @@ echo '<tr><td>&nbsp;</td></tr>
       <tr><td height="'.$menu["bottom_td"].'">
       <tr><td class=copymsg ><small>'. L_COPYRIGHT .'</small>
       </td></tr></table>';
+?>

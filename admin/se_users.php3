@@ -109,7 +109,9 @@ HtmlPageBegin();   // Prints HTML start page tags
  <TITLE><?php echo L_A_PERMISSIONS;?></TITLE>
 </HEAD>
 <?php
-  $show = Array("users"=>$show_adduser, "addusers"=>!$show_adduser);
+
+  $show[ $show_adduser ?  "addusers" : "users" ] = false;
+
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   // show navigation column in dependance
                                                  // on $show variable
 
