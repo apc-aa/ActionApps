@@ -109,10 +109,8 @@ function UpdateImportExport(slice_id)
 </SCRIPT>
 </HEAD>
 <?php
-  $xx = ($slice_id!="");
   $useOnLoad = true;
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>false, "filters"=>$xx,"mapping"=>$xx);
+  $show ["import"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . L_A_SLICE_IMP . "</B></H1>";
@@ -146,7 +144,7 @@ function UpdateImportExport(slice_id)
 <td><input type="button" VALUE="  >>  " onClick = "MoveSelected('document.f.export_n','document.f.export_y')" align=center>
     <br><br><input type="button" VALUE="  <<  " onClick = "MoveSelected('document.f.export_y','document.f.export_n')" align=center></td>
 <td align="CENTER" valign="TOP">
-<SELECT name="export_y" size=8 class=tabtxt>
+<SELECT name="export_y" size=8 class=tabtxt multiple>
   <?php
   if( isset($export_to) AND is_array($export_to)) {
     reset($export_to);
@@ -210,6 +208,9 @@ function UpdateImportExport(slice_id)
 <?php
 /*
 $Log$
+Revision 1.10  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.9  2001/05/21 13:52:31  honzam
 New "Field mapping" feature for internal slice to slice feeding
 

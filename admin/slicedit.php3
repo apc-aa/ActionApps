@@ -25,7 +25,7 @@ if($template_slice_sel=="slice")          # new slice - template as slice
 if( $template_id ) {
   $foo = explode("{", $template_id);
   $template_id = $foo[0];
-  $slice_lang_file = $foo[1];
+  $change_lang_file = $foo[1];
 }  
 
 require "../include/init_page.php3";
@@ -268,9 +268,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo L_A_SLICE_TIT;?></TITLE>
 </HEAD>
 <?php
-  $xx = ($slice_id!="");
-  $show = Array("main"=>false, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx, "mapping"=>$xx);
+  $show ["main"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . ( $slice_id=="" ? L_A_SLICE_ADD : L_A_SLICE_EDT) . "</B></H1>";
@@ -324,6 +322,9 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.22  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.21  2001/05/21 13:52:32  honzam
 New "Field mapping" feature for internal slice to slice feeding
 

@@ -167,9 +167,10 @@ if( $group_id ) {
 }  
 
   # lookup apc categories classes
-$SQL = "SELECT name, value, pri FROM constant
+$SQL = "SELECT name, value, pri, id FROM constant
          WHERE group_id='lt_apcCategories' ORDER BY name";
-$classes = GetTable2Array($SQL, $db, "value");
+$classes = GetTable2Array($SQL, $db, "id");
+
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -177,8 +178,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php 
   $xx = ($slice_id!="");
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>($xx && !$categ), "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
+  $show["category"] = $xx && !$categ;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
   echo "<H1><B>" . L_A_CONSTANTS_EDT . "</B></H1>";
@@ -244,6 +244,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.14  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.13  2001/05/27 21:23:35  honzam
 Parent categories sorted by name, now
 

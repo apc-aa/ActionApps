@@ -107,8 +107,8 @@ if( $update )
           # get new field id
         $SQL = "SELECT id FROM field 
                  WHERE slice_id='$p_slice_id' AND id like '". $ftype ."%'";
+        $max=0;
         $db->query($SQL);   # get all fields with the same type in this slice
-        $max=0; 
         while( $db->next_record() ) 
           $max = max( $max, substr (strrchr ($db->f(id), "."), 1 ));
         $max++;
@@ -173,9 +173,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 </HEAD>
 <?php 
-  $xx = ($slice_id!="");
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>false, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
+  $show ["fields"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
   echo "<H1><B>" . L_A_FIELDS_EDT . "</B></H1>";
@@ -224,6 +222,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.13  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.12  2001/05/25 16:07:26  honzam
 Field ID is displayed instead of field type
 

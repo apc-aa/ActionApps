@@ -56,10 +56,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php
 
-$xx = ($slice_id!="");
 $useOnLoad = ($new_compact ? true : false);
-$show = Array("main"=>true, "slicedel"=>false, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-              "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+$show ["slicedel"] = false;
 require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
 echo "<H1><B>" . L_A_DELSLICE . "</B></H1>";
@@ -96,6 +94,9 @@ echo '
 page_close();
 /*
 $Log$
+Revision 1.5  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.4  2001/05/18 13:50:09  honzam
 better Message Page handling (not so much)
 

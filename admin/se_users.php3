@@ -107,11 +107,7 @@ HtmlPageBegin();   // Prints HTML start page tags
  <TITLE><?php echo L_A_PERMISSIONS;?></TITLE>
 </HEAD>
 <?php
-  $xx = ($slice_id!="");
-  $show = Array("main"=>true,"config"=>$xx, "category"=>$xx, "compact"=>$xx,
-                "fields"=>$xx, "search"=>$xx, "users"=>$show_adduser, 
-                "fulltext"=>$xx, "views"=>$xx, "addusers"=>!$show_adduser, "newusers"=>$xx, 
-                "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
+  $show = Array("users"=>$show_adduser, "addusers"=>!$show_adduser);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   // show navigation column in dependance
                                                  // on $show variable
 
@@ -195,6 +191,9 @@ HtmlPageBegin();   // Prints HTML start page tags
   }  
 /*
 $Log$
+Revision 1.10  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.9  2001/05/21 13:52:32  honzam
 New "Field mapping" feature for internal slice to slice feeding
 

@@ -82,10 +82,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 
 <?php
-  $xx = ($slice_id!="");
   $useOnLoad = false;
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>false, "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
+  $show ["newuser"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . L_A_NEWUSER . "</B></H1>";
@@ -118,6 +116,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.9  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.8  2001/05/21 13:52:31  honzam
 New "Field mapping" feature for internal slice to slice feeding
 

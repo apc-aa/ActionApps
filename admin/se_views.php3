@@ -52,7 +52,7 @@ if( $del ) {
   $Msg = MsgOK(L_VIEW_DELETE_OK);
 }
 
-function PrintView($id, $name, $type) {
+function PrintViewRow($id, $name, $type) {
   global $sess, $VIEW_TYPES;
 
   $name=safe($name); $id=safe($id);     
@@ -80,10 +80,8 @@ echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>"; ?>
   </SCRIPT>
 </HEAD><?php
 
-$xx = ($slice_id!="");
 $useOnLoad = ($new_compact ? true : false);
-$show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-              "views"=>false, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
+$show ["views"] = false;
 require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
 echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
@@ -99,10 +97,10 @@ echo $Msg;
 <?php
   
 # -- get views for current slice --
-$SQL = "SELECT * FROM view WHERE slice_id='$p_slice_id'";
+$SQL = "SELECT * FROM view WHERE slice_id='$p_slice_id' ORDER BY id";
 $db->query($SQL);
 while( $db->next_record() )
-  PrintView($db->f(id), $db->f(name), $db->f(type));
+  PrintViewRow($db->f(id), $db->f(name), $db->f(type));
 
   # row for new view
 echo "<tr class=tabtit><td align=center colspan=4>
@@ -123,6 +121,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.8  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.7  2001/05/21 13:52:32  honzam
 New "Field mapping" feature for internal slice to slice feeding
 

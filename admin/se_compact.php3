@@ -143,10 +143,8 @@ function EnableClick(cond,what) {
 </HEAD>
 
 <?php
-  $xx = ($slice_id!="");
   $useOnLoad = true;
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>false, "fulltext"=>$xx, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
+  $show ["compact"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . L_A_COMPACT . "</B></H1>&nbsp;" . L_COMPACT_HELP;
@@ -193,6 +191,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.16  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.15  2001/05/21 13:52:31  honzam
 New "Field mapping" feature for internal slice to slice feeding
 

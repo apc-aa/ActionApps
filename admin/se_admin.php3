@@ -106,9 +106,7 @@ function Defaults() {
 </HEAD>
 
 <?php
-  $xx = ($slice_id!="");
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>false, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
+  $show ["config"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . L_A_ADMIN . "</B></H1>";
@@ -144,6 +142,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.12  2001/09/27 15:44:35  honzam
+Easiest left navigation bar editation
+
 Revision 1.11  2001/05/21 13:52:31  honzam
 New "Field mapping" feature for internal slice to slice feeding
 
