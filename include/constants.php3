@@ -711,11 +711,14 @@ function getViewTypesInfo() {
                                      'aliases' => 'field');
     $VIEW_TYPES_INFO['const']      = array('aliases' => 'const',
                                            'order' => 'easy',
-                                           'fields' => 'constant');
+                                           'fields' => 'GetConstantFields');
     $VIEW_TYPES_INFO['urls']       = array('aliases' => 'justids');
-    $VIEW_TYPES_INFO['links']      = array('aliases' => 'links');
-    $VIEW_TYPES_INFO['categories'] = array('aliases' => 'categories');
-
+    $VIEW_TYPES_INFO['links']      = array('aliases' => 'links',
+                                           'order' => 'easy',
+                                           'fields' => 'GetLinkFields');
+    $VIEW_TYPES_INFO['categories'] = array('aliases' => 'categories',
+                                           'order' => 'easy',
+                                           'fields' => 'GetCategoryFields');
     $VIEW_TYPES_INFO['rss']        = array('aliases' => 'field');
     $VIEW_TYPES_INFO['calendar']   = array('aliases' => 'field',
         'aliases_additional' => array (

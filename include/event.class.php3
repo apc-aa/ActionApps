@@ -154,6 +154,8 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // category translations are stored in 'description' field of constants
     // the format of translations are: 1,2-1,2,1224:1,2,4-1,2,4,42:...
     // which means - do not store to category 1,2 but to the category 1,2,1224
+
+    // Example: 1,2-1,2,1223:1,2,4-1,2,4,43:1,2,983-1,2,983,1226:1,2,984-1,2,984,1229:1,2,985-1,2,985,1232:1,2,986-1,2,986,1235:1,2,987-1,2,987,1238
     $trans_string = str_replace( array("\n","\t","\r",' '), '', $general_cat['description'] );
     $translations = explode(':', $trans_string);             // parse
     if ( isset($translations) AND is_array($translations) ) {
@@ -216,7 +218,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
     foreach ( $subcat_translated as $cid => $path ) {
         $sub_cat_id = $tree->subcatExist($cid, $name);
-        if ( !$sub_cat_id AND !Links_IsGlobalCategory($tree->getName($cid)) ) {
+        if ( !$sub_cat_id AND ($tree->getName($cid) != $name) ) {
             $sub_cat_id = Links_AddCategory($name, $cid, $path);
             Links_AssignCategory($cid, $sub_cat_id, $general_cat['pri']);
         }

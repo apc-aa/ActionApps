@@ -48,7 +48,7 @@ if( !$updated ) {
         $cat_name       = $db->f('name');
         $cat_path       = $db->f('path');
         $description    = $db->f('description');
-        $additional      = $db->f('additional');
+        $additional     = $db->f('additional');
         $note           = $db->f('note');
     }
 }
@@ -87,7 +87,7 @@ echo '<form name=f method=post action="catedit2.php3">';
     FrmInputText( 'cat_name',     _m('Category name'),          $cat_name,  250, 50, false);
     FrmTextarea(  'description',  _m('Category description'),   $description, 3, 60, false);
     FrmTextarea(  'note',         _m('Editor\'s note'),         $note, 3, 60, false);
-//  FrmInputText( 'additional',   _m('Additional inormations'), $additional,  250, 50, false);
+    FrmHidden(    'additional',   $additional);
     FrmTabSeparator( _m('Subcategories') );
 echo '
       <tr>
