@@ -1,0 +1,177 @@
+11/3/99  - new category buton functionality added (in slice management)
+11/4/99  - category management for slices (for both - new slice and edit slice)
+11/5/99  - add and modify items work with selected slice (not only with the hardwired one]
+         - main admin page switched from index.html to index.php3
+11/8/99  - new class Ctable for better table manipulation
+         - no category column for slices without categories
+         - fixed bug on storing filters when switching to another slice (now are filters cleared)
+-- CVS commit all --         
+11/9/99  - user view in compact form works well with categories now
+         - better navigation bar behavior in compact item view
+         - category rename feature in se_category.php3
+         - items, which is in category not defined for this slice are shown in red (in editor.php3)
+         - better converting plaintext to html in fulltext view (spaces are accepted now)
+11/10/99 - fixed bug in add_vars() function (extsessi.php3) which doesn't works with arrays.
+           (It does now)
+         - small search window installed to slice.shtml and search background changed to work with 
+           scroller and rewrited from search.php3 to slice.php3
+11/11/99 - left navigation column in slicedit.php3 is called via require se_inc.php3 now
+         - added links to feeding and design setting for slice (slicedit.php3), but it does not work yet
+11/12/99 - added correct codepage in HTML HEAD in not encapsulated slice.php3 page
+         - added new page for fulltext format setting (se_fulltext.php3)
+         - added new page for compact view format setting (se_compact.php3)         
+11/15/99 - compact view format now works (item.php3 completely changed)
+         - fulltext format works
+         - Econnect-like slice.shtml added
+11/16/99 - category sorting posibility in compact view (you can set it on se_compact.php3 page)
+         - category headline is showed in category sorted compact view  
+         - category headline format can be set on se_compact.php3 page
+         - you can use top/bottom HTML code which is added before/after compact view (se_compact.php3)
+         - sort looks only into selected slice
+11/18/99 - added new page for feeding setting (import part is function, export part does not (due to 
+           permission system))
+11/22/99 - implemented feeding background
+         - removed bug in new_id() - function doesn't return ids which packed containts >'<
+11/23/99 - removed bug in se_import.php3 - list of not imported slices is correct now
+         - new interface page for feeding filtering (se_filters.php3)
+11/24/99 - feeding filtering background (se_filters2.php3) - writing to database         
+         - new user slices examples (Altavista like slice, Press.cz like slice)
+11/25/99 - fulltext is shown correctly in feeded items now
+         - default format string values for compact and fulltext view are defined
+         - feeding seems to work good including category renaming
+         - publish date is extended by actual time when publish date is today (getdatetime() in date.php3)
+         - expiry date is shown correctly in add item (itemedit.php3) now
+         - date ranges are changed for expiry and publish date in itemedit.php3 and sliedit.php3 
+           (extended date.php3 to accept "year plus range" and "year minus range")
+         - there are no longer shown expired items in compact view (slice.php3)
+         - the items with publish date somewhere in future are not displayed in compact view
+         - new parameter highlight to slice.php3 which selected just highlighted items (if true)
+11/26/99 - expired items are shown with red headline in editor tables (editor.php3)
+         - if item is not published yet (due to publish_date) the headline in editor tables is blue (editor.php3)
+11/29/99 - editor table shows highlighted items now (in editor.php3)
+         - editor table shows feeded/base items now (in editor.php3) - maybe it is useful for debugging only
+11/30/99 - new delete trash bin command in editor.php3 (it is smart - do not delete base items which have some feed)
+         - highlight checkbox added to itemedit.php3
+         - default highlight checkbox added to slicedit.php3
+12/2/99  - new se_fields.php3 page for seting, which data fields are shown and which of them are needed to fill in itemedit
+12/3/99  - comlpetely new itemedit.php3 in order to work with hiding settings (se_fields.php3)
+12/6/99  - full functionality of itemedit with hiding fields
+         - little bug in feeding fixed (do not feed items posted to holding bin)
+12/7/99  - slice headline and id shown in all sliceedit pages
+-- CVS commit all --         
+12/8/99  - compact view sorting is by publish_date and not post_date
+         - default fulltext and compact html changed to view publish date and not post date
+         - fixed bug in html formatted preview (it replaces NL with <BR> before)
+         - listing length settings in slicedit is now applayed to compact view
+12/9/99  - slice url field added to slices database and related scripts, which means 
+           link to home page of this slice (slice.shtml)
+         - new parameter cat_id to slice.php3 - shows only items in category with id ...
+         - new parameter cat_name to slice.php3 - shows only items in category with name LIKE '%cat_name%'
+         - new version of scroller - easy_scroller - simplified version of scroller used in slice.php3
+12/10/99 - table items divided to items and fulltexts, where fulltexts of items are stored
+           (its very useful for searching, expecialy when you want to search feeded items)
+         - new parameter bigsearch to slice.php3 - shows big search form 
+           (the searching is not 100%, yet - not search in feeded items and maybe other bugs)
+-- CVS commit all --         
+12/13/99 - search works with feeded items, now (I changed name of full_text field in items table
+           to full_text_old, because it should not longer be used. Use full_text in fulltexts
+           table instead)           
+12/14/99 - fixed bug in deleting items (bug due to move full_text to new database)
+12/15/99 - new slice administration page se_search.php3 for big search form setting
+12/16/99 - new example slice with examples of category links, homepage (highlight) links, 
+           small search field and full search form link
+         - improved managing of spdecial characters in forms (like ', ", \)  
+12/17/99 - big search form works correctly and its behavior can be set on se_search.php3 page.
+-- CVS commit all --         
+12/22/99 - Refresh message page is not displayed, when you click back button in browser.
+         - LDAP authentification instead MySQL database (changes in phplib)
+1/5/00   - new file perm_all.php3 which is modified permission library perm_ldap.php3. perm_all.php3 
+           gives any permisiion to any user.  
+         - simple user management works
+1/6/00   - if you add slice, new ldap entry for this object is created.           
+1/11/00  - max nesting of groups of users is checked (it avoids cycle in group definition)
+1/12/00  - new LDAP permission system (user management with roles, add user from ldap directory, 
+           not new LDAP users interface)
+         - all known pages (without index.php3) support LDAP permission system
+-- CVS commit all --         
+1/13/00  - new: item fulltext preview button in editor.php3
+         - new: slice management strip in editor.php3
+1/14/00  - editor.php3 ranamed to index.php3, index.php3 removed
+1/19/00  - new: se_newuser.php3 for adding new user to LDAP permission system 
+           (password is md5 encrypted)
+1/20/00  - fixed bugs on category sorting (1. database error ocurred, 2. skipped to another slice)
+         - Deleted slices are not accessible for authors-administrators from editor page index.php3
+           (super user (as toolkit one) see all slices)
+         - Deleted slices are not accessible for view, too (in slice.php3)
+           (items from deleted slice are still accessible from search engine, if user do not specify
+           slice, where to search)
+1/21/00  - Improved speed of compact and fulltext view displaying. 
+           (Names os aliases changed to equal lenth one)
+         - new: grabing fulltext into abstract, when abstract is empty. Length is controlled 
+           on slicedit.php3 page.
+         - "Posting enabled" and "Show recents" removed from slicedit.php3 - recrement information
+         - New "Remove strings" in compact and fulltext view (in order to remove empty braces and 
+           other things from display)
+-- CVS commit all --       
+1/31/00  - updated perm_all.php3 - pure permission function file - all users have all permissions  
+2/2/00   - new design of editor page index.php3
+2/3/00   - feeding export enabling/disabling now works
+2/5/00   - aplication prepared for multiple types of AA (slice type select for new slice, ...)
+2/7/00   - image uploading from itemedit.php3 page
+2/8/00   - safer html headers within pages (charset specified)
+2/10/00  - speed up page view by spliting util.php3 into util.php3 and formutil.php3 
+           (and selective incuding of these files)
+
+2/14/00  - fixed URL generation in Permissions pages
+2/16/00  - fixed bug in Delete of last assigned permission; changes now at
+           attribute level
+2/17/00  - simplified AuthenticateUsername(), changed declaration of 
+           AddPermissionPerson() - now requires an array
+           
+2/21/00  - add user search return all matched users (not only addable one)
+2/22/00  - expiry date limit now works
+         - when you insert new user you will go directly to add slice user page
+2/24/00  - bug fixed: no LDAP warning message if number of results exceeds limit (500)
+         - removed organization select in Add user interface (not needed in new permission system)
+2/25/00  - new category administration interface
+         - enhanced permission system API
+         - new caching feature of permission system (just one (LDAP ...) search for each user)
+2/28/00  - new navigation bar
+2/29/00  - new: fulltext preview comes to separate window
+3/2/00   - bug fixed in slice URL setting (slice_url in form colided vith slice_url in navigation bar)
+3/7/00   - alias substitution optimized for speed
+3/8/00   - new directive OPTIMIZE_FOR_MYSQL which optimizes SQL queries for MySQL database 
+         - new aliases and alises help 
+3/9/00   - SGML version of INSTALL
+         - all configuration options moved to config.php3
+3/13/00  - new graphics design
+         - perm_sql
+3/16/00  - solved problem of adding new slice to empty database
+         - new aplications: Press release publisher, News in czech language
+         - fixed bug in detailed list of items (editor index.php3 page)
+3/17/00  - javascript in category setting supports NN3 (Netscape Navigator 3.0) too.
+         - javascript for selecting/unselecting visible items on editor page supports NN3.
+         - javascript for Import & Export feeding setting supports NN3, now.
+3/20/00  - fulltext preview window go allways on top, now
+         - categories and slices too are sorted in listboxes in se_catogory.php3
+3/22/00  - updated perm function GetMembership - if $flags==1 then groups are not scanned recursively
+         - bug fixed in perm_ldap.php3: ($flags && 1) changed to ($flags & 1) for bitwise AND
+3/24/00  - bug fixed in index.php3 - zero length items list makes no error message if
+           OPTIMIZE_FOR_MYSQL == false
+3/28/00  - new direct feeding feature from index.php3
+3/29/00  - fulltext slash bug fixed (no additional slashes before ' " and \)
+         - updated icon legend just below items in index.php3
+         - encap=true is default setting of parameter given to slice.php3
+3/30/00  - fixed bug of wrong displaying "feeded from" and "feeded into" (more details in index.php3)
+4/11/00  - fixed bug of category sorting in index.php3 (436)
+4/12/00  - fixed bug in remove all fed slices from import
+4/13/00  - new public permission function GetGroup (analogic to GetUser)
+4/14/00  - some language corrections
+4/17/00  - new user management interface
+4/18/00  - corrections to design
+4/24/00  - new anonymous posting feature (465)
+         - new preview of editted item feature (467)
+5/19/00  - MySQL perms fixed
+5/22/00  - sort order of items in compact view changed (newer items go first)
+5/29/00  - fixed bug for OPTIMIZED_FOR_MYSQL compact view - navigation bar are shown now
+ 

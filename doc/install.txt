@@ -1,0 +1,528 @@
+  AA Installation
+  Karel Zajicek, karel.zajicek@ecn.cz
+  v0.26, 27 April 2000
+
+  This document describes how to install the Action Applications pack-
+  age.
+  ______________________________________________________________________
+
+  Table of Contents
+
+
+  1. Introduction
+
+  2. What software will you need
+
+     2.1 AA
+     2.2 Apache
+     2.3 PHP3
+     2.4 PHPLIB
+     2.5 MySQL
+     2.6 OpenLDAP
+
+  3. Installation steps
+
+     3.1 MySQL installation (RPM)
+     3.2 OpenLDAP installation (RPM)
+        3.2.1 RPM install
+        3.2.2 Customize configuration files
+        3.2.3 Create the directory for the first LDAP database.
+        3.2.4 Setup logging
+        3.2.5 Start the OpenLDAP server:
+        3.2.6 Create initial LDAP database
+     3.3 OpenLDAP - AA specific configuration
+     3.4 Apache with PHP support
+     3.5 Install PHPLIB
+     3.6 Create AA database in MySQL
+     3.7 Customize AA configuration file
+
+  4. Done?
+
+
+
+  ______________________________________________________________________
+
+  11..  IInnttrroodduuccttiioonn
+
+  Here is a brief guide to install all components (focused on RedHat
+  6.x, it should work on RH systems with glibc2), using RPMs where
+  possible or appropriate. PHP is built statically with Apache, MySQL
+  and OpenLDAP are installed from RPMs packages. For detail installation
+  instructions of these components follow original documentations.
+
+
+  22..  WWhhaatt ssooffttwwaarree wwiillll yyoouu nneeeedd
+
+  You need these components to install AA: the AA package, a WWW server
+  (Apache), the PHP scripting engine, the library PHPLIB, a SQL database
+  server (MySQL) and optionally a LDAP server (OpenLDAP).
+
+
+  22..11..  AAAA
+
+  Download and extract the AA package in your htdocs directory (e.g.
+  /usr/local/httpd/htdocs/aa). You will need files in aa/doc
+  subdirectory during the installation/configuration process.
+
+  22..22..  AAppaacchhee
+
+  Download the latest source tarball (e.g. apache_1.3.9.tar.gz). It is
+  not necessary to recompile Apache, if you can load mod_php
+  dynamically, but the Apache source includes XML files usefull to
+  seamlessly compile PHP (3.0.14). I tested onle the static version.
+
+  <http://www.apache.org/httpd.html>
+
+
+  22..33..  PPHHPP33
+
+  The latest version of PHP (eg. php-3.0.14.tar.gz) is available at
+  <http://www.php.net/download-php.php3>.
+
+
+  22..44..  PPHHPPLLIIBB
+
+  Download the latest PHPLIB archive (eg. phplib-7.2.tar.gz) from
+  <http://phplib.netuse.de/download/index.php3>.
+
+
+  22..55..  MMyySSQQLL
+
+  MySQL can be downloaded from  <http://www.mysql.org/download.html>.
+
+  RPM packages:
+
+
+  +o  MySQL-3.22.32-1.i386.rpm
+
+  +o  MySQL-client-3.22.32-1.i386.rpm
+
+  +o  MySQL-devel-3.22.32-1.i386.rpm (to recompile PHP MySQL support)
+
+  (Versions prior 3.22.32 contain possible security holes, upgrade to
+  latest versions is recommended.)
+
+
+  22..66..  OOppeennLLDDAAPP
+
+  OpenLDAP (e.g. openldap-1.2.9.tgz) is available at
+  <http://www.openldap.org/software/download/>
+
+  RPM version is available in RedHat's contrib archive at
+  <ftp://contrib.redhat.com/contrib/libc6/i386/>.
+
+
+  +o  openldap-1.2.9-1.rpm
+
+  +o  openldap-servers-1.2.9-1.rpm
+
+  +o  openldap-devel-1.2.9-1.rpm (to build PHP with LDAP support)
+
+  The RPMs are built without threads and with kerberos support, if you
+  want other options, use either source RPM or original source
+  distribution.
+
+
+
+  33..  IInnssttaallllaattiioonn sstteeppss
+
+
+
+
+
+  33..11..  MMyySSQQLL iinnssttaallllaattiioonn ((RRPPMM))
+
+  Skip this step if you have MySQL already running.
+
+
+
+       # rpm -ivh MySQL-client-3.22.32-1.i386.rpm
+       # rpm -ivh MySQL-3.22.32-1.i386.rpm
+
+
+
+
+  Set the initial MySQL root password:
+
+
+
+       # /usr/bin/mysqladmin -u root password 'password1'
+
+
+
+
+  Install development files:
+
+
+
+       # rpm -ivh MySQL-devel-3.22.32-1.i386.rpm
+
+
+
+
+
+  33..22..  OOppeennLLDDAAPP iinnssttaallllaattiioonn ((RRPPMM))
+
+  If you plan to use the LDAP permissions module, you need the LDAP
+  server. Here is a quick installation guide for OpenLDAP. Detail
+  inctructions can be found at the OpenLDAP HomePage
+  <http://www.openldap.org>. If you are already running a LDAP server,
+  read this and next step and load listed entries into your server.
+
+
+  33..22..11..  RRPPMM iinnssttaallll
+
+
+
+       # rpm -ivh openldap-1.2.9-1.rpm
+       # rpm -ivh openldap-servers-1.2.9-1.rpm
+       # rpm -ivh openldap-devel-1.2.9-1.rpm
+
+
+
+
+
+  33..22..22..  CCuussttoommiizzee ccoonnffiigguurraattiioonn ffiilleess
+
+  Edit the //eettcc//ssllaappdd..ccoonnff file - you can use the AA's doc/slapd.conf as
+  a template. This file should not be world readable.
+
+  Decide your basedn (dc=ecn,dc=apc,dc=org is an example in the AA
+  package), rootpw, directory where the LDAP databases will be stored.
+
+  Edit llddaapp..ccoonnff - BASE and HOST. This file is used by local LDAP
+  clients (ldapmodify etc.).
+
+
+
+
+  33..22..33..  CCrreeaattee tthhee ddiirreeccttoorryy ffoorr tthhee ffiirrsstt LLDDAAPP ddaattaabbaassee..
+
+
+
+       # mkdir /var/ldap/ecn.apc.org
+
+
+
+
+
+  33..22..44..  SSeettuupp llooggggiinngg
+
+  I recommend to define a separate file for logging in syslog.conf:
+
+
+  local4.*                                     /var/log/ldaplog
+
+
+
+
+  33..22..55..  SSttaarrtt tthhee OOppeennLLDDAAPP sseerrvveerr::
+
+
+
+       # /etc/rc.d/init.d/ldap start
+
+
+
+
+
+  33..22..66..  CCrreeaattee iinniittiiaall LLDDAAPP ddaattaabbaassee
+
+  To create the initial database, you can use the doc/LDIF.init example.
+  It includes the root object, a AA Admins group, a personal account
+  (karel) and an account for the AA scrips. Customize this file!
+  (basedn, uid of your personal account). Then use ldapmodify, rootdn
+  and rootpw defined in slapd.conf to add new entries into LDAP:
+
+
+
+       # ldapmodify -a -f doc/LDIF.init -D "cn=root,dc=ecn,dc=apc,dc=org" -W
+
+
+
+
+  Test if you can search new entries:
+
+
+
+       # ldapsearch -L objectclass=\*
+
+
+
+
+  Set password of your LDAP account:
+
+
+
+       # ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" \
+       -W -t "uid=karel,dc=ecn,dc=apc,dc=org" -H ssha
+
+
+
+
+  In this example, LDIF.init has set the uid karel to be the superuser
+  in the Action Applications.  The superuser can add slices and users.
+  So remember this password for the action application login page.
+
+  _l_d_a_p_p_a_s_s_w_d _c_a_n _b_e _u_s_e_d _t_o _c_o_n_v_e_r_t _t_h_e _p_l_a_i_n_t_e_x_t _p_a_s_s_w_o_r_d _i_n _s_l_a_p_d_._c_o_n_f
+  _t_o _a_n _e_n_c_r_y_p_t_e_d _f_o_r_m _(_c_h_a_n_g_e _p_a_s_s_w_d _o_f _a_r_b_i_t_r_a_r_y _a_c_c_o_u_n_t _i_n _L_D_A_P_,
+  _s_e_a_r_c_h _i_t _u_s_i_n_g _l_d_a_p_s_e_a_r_c_h _a_s _r_o_o_t _a_n_d _t_h_e_n _p_a_s_t_e _i_t _i_n_t_o _s_l_a_p_d_._c_o_n_f_)_.
+
+  Try to bind to LDAP using your account:
+
+
+
+       # ldapsearch -D "uid=karel,dc=ecn,dc=apc,dc=org" -W objectclass=\*
+
+
+
+
+
+  33..33..  OOppeennLLDDAAPP -- AAAA ssppeecciiffiicc ccoonnffiigguurraattiioonn
+
+  You need to include AA specific objectclasses into the schema used by
+  your LDAP server, create ACL object for the AA aplication and an
+  account used by the AA scripts to access LDAP.
+
+  Copy schema extensions from the AA doc directory:
+
+
+
+       # cp doc/slapd.oc.* /etc/ldap
+       # cp doc/slapd.at.* /etc/ldap
+
+
+
+
+  Modify slapd.conf to include these files (done in the doc/slapd.conf
+  example).
+
+  Restart slapd to reread its config.
+
+
+  Create the aalduser account and set its password (password4 in the
+  LDIF.init example). This account should have permissions in slapd.conf
+  to modify the LDAP database. You need only set the password if you
+  used the LDIF.init and example slapd.conf.
+
+
+
+       # ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" \
+       -W -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha
+
+
+
+
+  Create the APCACL object (you are done if you used the LDIF.init
+  example, otherwise customize it and use ldapadd or ldapmodify -a to
+  add it into your LDAP).
+
+
+
+  33..44..  AAppaacchhee wwiitthh PPHHPP ssuuppppoorrtt
+
+  Here is a overview how to build Apache with PHP:
+
+
+
+
+
+
+  % cd /usr/local/src
+  % tar xvzf apache_1.3.9.tar.gz
+  % tar xvzf php-3.0.14.tar.gz
+  % cd apache_1.3.9/
+  % ./configure --prefix=/usr/local/httpd/
+  % cd ../php-3.0.14/
+  % ./configure --with-mysql=yes --with-apache=../apache_1.3.9 \
+     --enable-track-vars --enable-safe-mode --with-xml --with-ldap
+  % make
+  % make install
+  % cd ../apache_1.3.9/
+  % ./configure --prefix=/usr/local/httpd \
+  --enable-module=so \  (if you wand to use DSO)
+  --activate-module=src/modules/php3/libphp3.a
+  % make
+  % su
+  # make install (or "make install-programs" if you want just to upgrade Apache binaries)
+  # cd ../php-3.0.14/
+  # cp php3.ini-dist /usr/local/lib/php3.ini
+
+
+
+
+  Uncomment following lines in //uussrr//llooccaall//hhttttppdd//ccoonnff//hhttttppdd..ccoonnff:
+
+
+
+       AddType application/x-httpd-php3 .php3
+
+       AddType text/html .shtml
+
+       AddHandler server-parsed .shtml
+
+
+
+
+  Optionally add index.php3 to index files:
+
+
+
+       DirectoryIndex index.html index.php3
+
+
+
+
+  Restart Apache and test the PHP functionality: in the htdocs directory
+  create simple script test.php3:
+
+
+
+       --- cut ---
+       <?php phpinfo() ?>
+       --- cut ---
+
+
+
+
+  and try to access with your browser ( http://localhost/test.php3).
+
+
+  33..55..  IInnssttaallll PPHHPPLLIIBB
+
+  Extract the phplib-7.2.tar.gz, create a directory
+  /usr/local/httpd/phplib and copy all files from phplib-7.2/php/* to
+  this directory.
+
+  In //uussrr//llooccaall//lliibb//pphhpp33..iinnii, include this directory in the include_path
+  variable.
+
+
+
+       include_path = /usr/local/httpd/phplib
+
+
+
+
+  You can also include this path in httpd.conf:
+
+
+
+       <Directory /usr/local/httpd/aa>
+            php3_include_path "/usr/local/httpd/phplib"
+       </Directory>
+
+
+
+
+  Restart Apache. You do not need to edit PHPLIB files, all class
+  extensions are in AA scripts.
+
+
+
+  33..66..  CCrreeaattee AAAA ddaattaabbaassee iinn MMyySSQQLL
+
+  Use the template aaaaddbb..ssqqll in AA doc directory:
+
+
+
+       # mysql -u root -p
+       mysql> CREATE DATABASE aadb;
+       mysql> QUIT
+       #mysql -u root -p aadb < doc/aadb.sql
+
+
+
+
+  Create a user in MySQL that will be able to access the new aadb
+  database:
+
+
+
+       # mysql -u root -p
+       mysql> USE mysql;
+       mysql> GRANT SELECT,INSERT,UPDATE,DELETE
+       ON aadb.*
+       TO aadbuser@localhost
+       IDENTIFIED BY 'password2';
+       mysql> FLUSH PRIVILEGES;
+       mysql> quit
+
+
+
+
+
+  33..77..  CCuussttoommiizzee AAAA ccoonnffiigguurraattiioonn ffiillee
+
+  Customize defines and global variables in aaaa//iinncclluuddee//ccoonnffiigg..pphhpp33.
+  This file should not be world readable!
+
+
+  +o  Absolute path to the AA include directory
+
+  +o  Hostname of your MySQL server, the name of the database and
+     username/password pair
+
+  +o  Change the id for your node (32 characters, only alfanumerical)
+
+  +o  Select the permission library of your choice
+
+  +o  Configure options specific for the selected permissions library
+
+  +o  Select language
+
+
+  44..  DDoonnee??
+
+  Now you should be able to use AA - point your browser to
+  http://localhost/aa/admin/sliceadd.php3
+
+  Login with your AA admin account.
+
+  You should see the page "Slice Administration - Add Slice"
+
+  Click on Add. In the next page fill the form with required values,
+  Insert new slice.
+
+  Now you can create categories, new users, write new articles etc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

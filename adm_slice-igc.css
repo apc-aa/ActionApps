@@ -1,0 +1,188 @@
+.srchtit {
+  font-family: Arial, Helvetica, sans;
+  font-size: medium;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.srchtxt {
+  font-family: Arial, Helvetica, sans;
+  font-size: medium;
+  font-weight: bold;
+}
+
+.srchhlp {
+  font-family: Arial, Helvetica, sans;
+  font-size: medium;
+}
+
+
+    .aaTableO  {    	/* Main table style for compact view, odd */
+    	background : #404040;
+    	color : #ffc97b;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-stretch : extra-expanded;
+    }
+    
+    .aaTableE  {
+    	/* which ontains date and post information, even */
+    	background : #656565;
+    	color : blue;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-stretch : extra-expanded;
+    }
+    
+    .aaImgTableO  {
+    	/* which encapsulates image */
+    	background : #ffffcc;
+    	color : blue;
+    	font-size : medium;
+    }
+    
+    .aaImgTableE  {
+    	/* which encapsulates image */
+    	background : #ffffcc;
+    	color : blue;
+    	font-size : medium;
+    }
+    
+    .aaInfoTableO  {
+    	/* which encapsulates source and place info */
+    	color : black;
+    	font-size : medium;
+    	font-weight : bold;
+    	font-family : Arial, Helvetica, sans;
+    }
+    
+    .aaInfoTableE  {
+    	/* which encapsulates source and place info */
+    	color : red;
+    	font-size : medium;
+    	font-weight : bold;
+    }
+    
+    .aaSource  {
+    	/* which encapsulates source and place info */
+    	color : #FFCC33;
+    	font-size :medium;
+    	font-family : Zurich BdXCn BT, Arial;
+    	font-weight : normal;
+    	font-style : normal;
+    }
+    
+    .aaPlace  {
+    	/* which encapsulates source and place info */
+    	color : black;
+    	font-size : medium;
+    	font-weight : normal;
+    	font-family : Arial, Helvetica, sans;
+        font-style : normal;
+    }
+    
+    .aaTitleC  {
+    	/* Title style for compact view */
+    	color : #4b93ca;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-weight : bold;
+    	font-style : normal;
+    }
+    
+    .aaTitleF  {
+    	/* Title style for compact view */
+    	color : #ffc97b;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-weight : bold;
+    	font-style : normal;
+    }
+    
+    .aaTableHeadO  {
+    	background : #023546;
+    	color : #AAAAAA;
+    	font-style : italic;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-weight : normal;
+    }
+    
+    .aaTableHeadE  {
+    	background : #023546;
+    	color : #FFCC33;
+    	font-style : italic;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-weight : normal;
+    }
+    
+    .aaEmailC  {
+    	color : gray;
+    	font-style : italic;
+    	font-size : medium;
+    }
+    
+    .aaEmailF  {
+    	color : gray;
+    	font-style : italic;
+    	font-size : medium;
+    }
+    
+    .aaPostDateF  {
+    	color : #AAAAAA;
+    	font-style : italic;
+    	font-size : medium;
+    }
+    
+    .aaPostbyF  {
+    	color : #AAAAAA;
+    	font-style : Arial, Helvetica, sans;
+    	font-size : medium;
+    }
+    
+    .aaPostDateC  {
+    	color : #FFCC33;
+    	font-style : italic;
+    	font-size : medium;
+    }
+    
+    .aaPostbyC  {
+    	color : #FFCC33;
+    	font-style : Arial, Helvetica, sans;
+    	font-size : medium;
+    }
+    
+    .aaAbstractO  {
+    	/* Abstract span */
+    	color : #4b93ca;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-weight : normal;
+    	font-style : normal;
+    }
+    
+    .aaAbstractE  {
+    	/* Abstract span */
+    	color : #ffc97b;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-weight : normal;
+    	font-style : normal;
+    }
+    
+    .aaMoreO  {
+    	color : #0B1D53;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-weight : bold;
+    	font-style : normal;
+    }
+    
+    .aaMoreC  {
+    	color : #793D00;
+    	font-size : medium;
+    	font-family : Arial, Helvetica, sans;
+    	font-weight : bold;
+    	font-style : normal;
+    }

@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title>Action Aplication AAdb Database Description</title>
+  <style type="text/css"> <!--
+    BODY {
+      font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+      font-size : 9pt;
+    } 
+    H2 {
+      font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+      font-size : 12pt;
+      border-top-style : solid;
+    } 
+    CODE {
+      font-family : "Courier New", Courier, monospace;
+      font-size : 10pt;
+    } 
+    .description {
+      font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+      margin-left: 44px;
+      font-size : 9pt;
+    } -->
+  </style> 
+
+</head>
+
+<body>
+<h1>Action Aplication AAdb Database Description</h1>
+This is the commented <b>aadb</b> database dump (see <a href="AAdb_ER.html">AAdb E-R diagram</a>).<br>
+
+<h2>Most important tables</h2>
+
+<p>Nearly all fields of each item are stored in <i>items</i> table. The <i>fulltext</i> field is stored in separate table linked via items.id = fulltexts.ft_id. This is true for base items - items which is not feeded. When we fed item, we copy whole record in items table, but we do not copy fulltext (it means that it is possible to set title, summary ... in feeded item, but it is imposible to change fulltext - it is shared). The link to appropriate fulltext of fed items is provided by master_id. It points to id of base item so then (fed)items.master_id = fulltexts.ft_id. Because for base items is items.id = items.master_id (master_id points to itself), the relation items.master_id = fulltexts.ft_id is true for all items.</p>
+<p>It is important to say, that all ids is 16 characters long and can contain any character except zero and ' character. Internaly we use this ids unpacked to 32 place hexadecimal number</p>
+<p>Maybe you find strange we don't use boolean data types and many others. We only use smallint, datetime, varchar and mediumtext datatypes. The reason is based on Jirka Hejsek research on databases. This types are common to most database engines, so it should be easy to switch from one database to another one.</p>
+
+<h3>CREATE TABLE <b>items</b> (</h3>
+   <code><b>id</b> varchar(16) NOT NULL,</code><br><div class="description">Unique id of item</div>
+   <code><b>master_id</b> varchar(16) NOT NULL,</code><br><div class="description">Id of base item (if this item is fed). master_id = id for base items (not fed).</div>
+   <code><b>slice_id</b> varchar(16) NOT NULL,</code><br><div class="description">Id of slice in which this item belongs.</div>
+   <code><b>category_id</b> varchar(16) NOT NULL,</code><br><div class="description">Id of category in which this item belongs. (It should be changed in future - item should belongs to more than one category, so we have to create table item_category - M:N relation)</div>
+   <code><b>status_code</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">Three state status of this item 1 - Approved, 2 - in holding bin, 3 - in trash bin</div>
+   <code><b>language_code</b> varchar(8) NOT NULL,</code><br><div class="description">Like EN, DE, HU - see lt_langs table</div>
+   <code><b>cp_code</b> varchar(32) NOT NULL,</code><br><div class="description">Codepage for character encoding like iso8859-1, windows-1250 - see lt_cps</div>
+   <code><b>headline</b> varchar(255) NOT NULL,</code><br><div class="description">Title</div>
+   <code><b>hl_href</b> varchar(255) NOT NULL,</code><br><div class="description">URL of external link - used as link to external page if fulltext is (or can't be) filled - link_only must be set then.</div>
+   <code><b>link_only</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">Boolean 1 or 0 - determines if use fulltext or hl_href</div>
+   <code><b>post_date</b> datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,</code><br><div class="description">date of filling</div>
+   <code><b>publish_date</b> datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,</code><br><div class="description">The date, when item is shown on public web page</div>
+   <code><b>expiry_date</b> datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,</code><br><div class="description">The date, when item is removed from public web page</div>
+   <code><b>abstract</b> text,</code><br><div class="description">Summary</div>
+   <code><b>full_text_old</b> mediumtext,</code><br><div class="description">not used - should be deleted</div>
+   <code><b>img_src</b> varchar(255),</code><br><div class="description">Name of image related to the item</div>
+   <code><b>img_width</b> varchar(32),</code><br><div class="description">Image width</div>
+   <code><b>img_height</b> varchar(32),</code><br><div class="description">Image height</div>
+   <code><b>html_formatted</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">Boolean value 1 / 0 - if html_formatted, fulltext is written on page as is. In opposite case all special characters are substituted.</div>
+   <code><b>source</b> varchar(255),</code><br><div class="description">Name of source of item</div>
+   <code><b>source_href</b> varchar(255),</code><br><div class="description">URL of source of item</div>
+   <code><b>place</b> varchar(255),</code><br><div class="description">Related locality to item content </div>
+   <code><b>highlight</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">Imprtant item - should be displayed on homepage ...</div>
+   <code><b>posted_by</b> varchar(255),</code><br><div class="description">author</div>
+   <code><b>e_posted_by</b> varchar(255),</code><br><div class="description">email of author</div>
+   <code><b>created_by</b> varchar(60) NOT NULL,</code><br><div class="description"></div>
+   <code><b>edited_by</b> varchar(60),</code><br><div class="description"></div>
+   <code><b>last_edit</b> datetime,</code><br><div class="description"></div>
+   <code><b>contact1</b> varchar(16),</code><br><div class="description">not used - related stories (the purpose of this field) will be provided by another table (reletion M:N)</div>
+   <code><b>contact2</b> varchar(16),</code><br><div class="description"> -"- </div>
+   <code><b>contact3</b> varchar(16),</code><br><div class="description"> -"- </div>
+   <code><b>edit_note</b> varchar(255),</code><br><div class="description">Editor's note</div>
+   <code>PRIMARY KEY (id),</code><br><div class="description"></div>
+   <code>KEY slice_id (slice_id),</code><br><div class="description"></div>
+   <code>KEY publish_date (publish_date)</code><br><div class="description"></div>
+);
+
+<p>Fulltexts table stores full texts of items. Tables are related by fulltexts.ft_id which points to items.id. fulltexts.ft_id always ponits to id of base item (base = not fed)</p>
+
+<h3>CREATE TABLE <b>fulltexts</b> (</h3>
+   <code><b>ft_id</b> varchar(16) NOT NULL,</code><br><div class="description">Foreign key items.id - link to id (master_id respectively - see above) of item in items table</div>
+   <code><b>full_text</b> mediumtext,</code><br><div class="description">Text of item</div>
+   <code>PRIMARY KEY (ft_id),</code><br><div class="description"></div>
+   <code>KEY id (ft_id),</code><br><div class="description"></div>
+   <code>UNIQUE id_2 (ft_id)</code><br><div class="description"></div>
+);
+
+<p>Slices table holds values for slices data (interesting, isn't?). There are two types of such data.<br><ul type="disc">
+	<li>Parameters of slice (like type ...)</li>
+	<li>Default values for new created items in this slice</li>
+</ul></p>
+
+<h3>CREATE TABLE <b>slices</b> (</h3>
+   <code><b>id</b> varchar(16) NOT NULL,</code><br><div class="description">Slice id</div>
+   <code><b>headline</b> varchar(255) NOT NULL,</code><br><div class="description">the full name of slice</div>
+   <code><b>short_name</b> varchar(255) NOT NULL,</code><br><div class="description">Short name of slice used in administration interface (in select lists ...)</div>
+   <code><b>type</b> varchar(20) DEFAULT 'en_news' NOT NULL,</code><br><div class="description">Type of this slice (like "News EN") - on this field depends which aplication language file is loaded (see en_news_lang.php3 for example)</div>
+   <code><b>slice_url</b> varchar(255),</code><br><div class="description">The url of public - live page. It is used from admin interface to preview slice.</div>
+   <code><b>grab_len</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">The number of characters to be grabed from fulltext in user do not fill abstract</div>
+   <code><b>post_enabled</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">not used (should be removed)</div>
+   <code><b>created_by</b> varchar(60),</code><br><div class="description">user's (creator's) id</div>
+   <code><b>created_at</b> datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,</code><br><div class="description">time of creation of this slice</div>
+   <code><b>res_persID</b> varchar(60),</code><br><div class="description">not used (should be removed)</div>
+   <code><b>export_to_all</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">Boolean value - "1" means "enable export items from this slice to any slice".</div>
+   <code><b>deleted</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">Boolean value - completely disables the slice (user can't switch to this slice - it is acessible only for super users</div>
+   <code><b>fulltext_format</b> mediumtext,</code><br><div class="description">HTML code with aliases for fulltext view of live page</div>
+   <code><b>odd_row_format</b> mediumtext,</code><br><div class="description">HTML code with aliases for odd rows of compact (list) view of items.</div>
+   <code><b>even_row_format</b> mediumtext,</code><br><div class="description">HTML code with aliases for even rows of compact (list) view of items. Will be used only if even_odd_differ field is set to true</div>
+   <code><b>even_odd_differ</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">Boolean value - is set if even rows of compact view should look different from odd rows of compact view (other background ...)</div>
+   <code><b>compact_top</b> varchar(255),</code><br><div class="description">HTML code which is prior to all rows in compact view.</div>
+   <code><b>compact_bottom</b> varchar(255),</code><br><div class="description">HTML code which is below the last row in compact view.</div>
+   <code><b>category_sort</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">Boolean value - set if compact view should be sorted by category.</div>
+   <code><b>category_format</b> mediumtext,</code><br><div class="description">HTML code with aliases for category headline. This HTML code is shown only if category_sort field is set to 1 (true)</div>
+   <code><b>compact_remove</b> varchar(255),</code><br><div class="description">The remove strings for compact view. The purpose of remove string is to remove rubbish from result live page - like empty braces etc. The way how it works is:<ul type="disc">
+	<li>The format string (like fulltext_format, odd_row_format) is searched for aliases.</li>
+	<li>If corresponding value for matched alias is empty, alias is removed from format string (so there should arise rubbish).</li>
+	<li>The modified format string is searched for remove strings. If search is succesfull the all matches are removed from format string.</li>
+	<li>At the end we substitute all remaining aliases with database fields.</li>
+</ul> </div>
+   <code><b>fulltext_remove</b> varchar(255),</code><br><div class="description">The remove strings for fulltext view. (see compact_remove)</div>
+   <code><b>edit_fields</b> varchar(40),</code><br><div class="description">This is the string field, but the sense of this string should be interpretted as array of boolean values. Each boolean value ("y" / "n") corresponds to one field of item table. The value of "y" (yes) means "show corresponding field on itemedit.php3 page (input item form)". For corresponding fields see en_news_lang.php3.</div>
+   <code><b>needed_fields</b> varchar(40),</code><br><div class="description">Boolean array as in case edit_fields field (see above). The value of "y" (yes) means "corresponding field will be required on itemedit.php3 page (input item form) - user must fill it in". For corresponding fields see en_news_lang.php3.</div>
+   <code><b>search_show</b> varchar(15),</code><br><div class="description">The same as edit_fields but for search form. For corresponding fields see en_news_lang.php3.</div>
+   <code><b>search_default</b> varchar(10),</code><br><div class="description">The same as search_show. Each value sets a field which is searched by default (title, abstract, fulltext, editor's note). For corresponding fields see en_news_lang.php3.</div>
+
+   <code><b>d_link_only</b> smallint(5) unsigned DEFAULT '0',</code><br><div class="description"></div>
+   <code><b>d_highlight</b> smallint(5) unsigned DEFAULT '0',</code><br><div class="description"></div>
+   <code><b>d_language_code</b> varchar(8) NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_cp_code</b> varchar(32) NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_category_id</b> varchar(16) NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_status_code</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_expiry_limit</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_expiry_date</b> datetime,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_hl_href</b> varchar(255) NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_source</b> varchar(255),</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_source_href</b> varchar(255),</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_place</b> varchar(255),</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_listlen</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_html_formatted</b> smallint(5) unsigned DEFAULT '0' NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_img_src</b> varchar(255),</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_img_width</b> varchar(32),</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_img_height</b> varchar(32),</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_posted_by</b> varchar(255) NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code><b>d_e_posted_by</b> varchar(255) NOT NULL,</code><br><div class="description">default value (see items table)</div>
+   <code>PRIMARY KEY (id)</code><br><div class="description"></div>
+);
+
+<h2>Constants tables</h2>
+
+<p>Constants tables are tables where several constants are stored. Most of these constants are shown to users in listboxes and most of these tables can't be changed by user - their modification is occasional only.</p>
+<p>Each rule has its exception, so special constant table is categories. Categories table contains set of categories in which each item can belong. The slice administrator can set the subset of all categories, which will be used in the slice (see catbinds table). There will be set the set of common categoris. All slice administrators are recommended to use preset categories (the data exchange between slices and servers would be easier then), but there is possibility to create the new categories if slice administrator wants to.</p>
+
+<h3>CREATE TABLE <b>categories</b> (</h3>
+   <code><b>id</b> varchar(16) NOT NULL,</code><br><div class="description">Category id</div>
+   <code><b>name</b> varchar(255) NOT NULL,</code><br><div class="description">Category name</div>
+   <code>PRIMARY KEY (id)</code><br><div class="description"></div>
+);
+
+<p>lt_cps is constant table which holds set of codepages names. Codepage should be used in HTML meta tag for character encoding settings (iso8859-1, windows-1250).</p>
+<h3>CREATE TABLE <b>lt_cps</b> (</h3>
+   <code><b>code</b> varchar(32) NOT NULL,</code><br><div class="description">Name of codepage.</div>
+   <code><b>w32cp</b> varchar(64),</code><br><div class="description"></div>
+   <code>PRIMARY KEY (code)</code><br><div class="description"></div>
+);
+
+<p>lt_langs holds language names in which each item can be written.</p>
+<h3>CREATE TABLE <b>lt_langs</b> (</h3>
+   <code><b>code</b> varchar(8) NOT NULL,</code><br><div class="description">Language code like EN, CS, HU ...</div>
+   <code><b>name</b> varchar(64) NOT NULL,</code><br><div class="description">Name of language (English, Czech, Hungarian ...)</div>
+   <code><b>altcode</b> varchar(8),</code><br><div class="description"></div>
+   <code>PRIMARY KEY (code)</code><br><div class="description"></div>
+);
+
+<h2>Relation tables</h2>
+
+<p>The relation tables keeps relation between two tables. Mostly they represents M:N relation between two tables like in case table <i>slices</i> and <i>categories</i> - one slice uses more categories, but one category can be used by more than one slice. This M:N relation is stored in <i>catbinds</i> table.</p>
+
+<h3>CREATE TABLE <b>catbinds</b> (</h3>
+   <code><b>slice_id</b> varchar(16) NOT NULL,</code><br><div class="description">Foreign key from table slice (slice.id)</div>
+   <code><b>category_id</b> varchar(16) NOT NULL,</code><br><div class="description">Foreign key from table categories (categories.id)</div>
+   <code>KEY slice_id (slice_id)</code><br><div class="description"></div>
+);
+
+<p>Feedperms table is special type of relational table, because it keeps relation between records of the same table <i>slices</i>. This table holds kind of permission information - which slice allows exporting its items to another slice (see feeding setting in administrators slice setting). This is just permission - so administrator of such slice can set automatical feeding. This table don't tell us from which slice is items realy fed to another one. For information on real feeding settings see <i>feeds</i> table. </p>
+<p>There is one exception for feeding permission settings - enabling export of items to all other slices. This information is not in <i>feedperms</i> table, but it is in <i>slices.export_to_all</i> field of <i>slices</i> table.</p>
+
+<h3>CREATE TABLE <b>feedperms</b> (</h3>
+   <code><b>from_id</b> varchar(16) NOT NULL,</code><br><div class="description">Slices.id of slice from which is the feeding permited</div>
+   <code><b>to_id</b> varchar(16) NOT NULL</code><br><div class="description">Slices.id of slice into which is the feeding permited</div>
+);
+
+<p>Real setting of automatical items feeding is in <i>feeds</i> table. Again, it is relation between the records of the same table - <i>slices</i>. In contrast to <i>feedperms</i> table there are additional parameters for each relation, which restrict the feeding.</p>
+<p>The automatical feeding process is raised after any item comes to approved bin of the slice. This is the case of new item is written and set as approved, case of change status of any item from holding bin (2) or trash bin (3) to approved (1) and the case of an item is fed into approved bin of the slice.</p>
+<h3>CREATE TABLE <b>feeds</b> (</h3>
+   <code><b>from_id</b> varchar(16) NOT NULL,</code><br><div class="description">Slices.id of slice from which the items are automaticaly fed into slices.id defined in to_id field.</div>
+   <code><b>to_id</b> varchar(16) NOT NULL,</code><br><div class="description">Slices.id of slice into which are items automaticaly fed.</div>
+   <code><b>category_id</b> varchar(16),</code><br><div class="description">If we want to restrict feedind just from one category of from_id slice, we must set category_id (Of course there is possibility to export more than one specific category - we just add anoher record to this table). In oposite case we should have all_categories field set to true.</div>
+   <code><b>all_categories</b> smallint(5),</code><br><div class="description">If all categories is set to true, all categories of souce slice (from_id) are fed into destination slice (to_id)</div>
+   <code><b>to_category_id</b> varchar(16),</code><br><div class="description">The id of category into which the item should be fed. If to_category_id is not set, category_id remains the same as in source slice (see option "The same" in admin interface for feeding setting)</div>
+   <code><b>to_approved</b> smallint(5),</code><br><div class="description">If you want to automaticaly fed items to be i approved bin (items.status = 1) then this boolean field is set to true. Else is the item fed into holding bin (items.status = 2).</div>
+   <code>KEY from_id (from_id)</code><br><div class="description"></div>
+);
+
+<h2>MySQL permission tables</h2>
+<p>Next three tables are used only if you want to use MySQL permission sysstem. The switching the permission system can be done in config.php3 file (see constankt PERM_LIB). The default permission system is based on LDAP but it's up to you which one to use. If LDAP permission systerm is used, those tables are unnecessary.</p>
+<p>The user table holds both user data and group data. The benefit of this approach is that we have distinct ids set for users and groups. Field specific for users are: password, uid, mail, name (= givenname + sn), givenname and sn (= surname). Field specific to groups are: name and description.</p>
+<h3>CREATE TABLE <b>users</b> (</h3>
+   <code><b>id</b> int(11) DEFAULT '0' NOT NULL auto_increment,</code><br><div class="description">User/group id</div>
+   <code><b>type</b> char(10) NOT NULL,</code><br><div class="description">User or Group - two state field</div>
+   <code><b>password</b> char(30) NOT NULL,</code><br><div class="description">Password for user</div>
+   <code><b>uid</b> char(40) NOT NULL,</code><br><div class="description">User id</div>
+   <code><b>mail</b> char(40) NOT NULL,</code><br><div class="description">e-mail adres of user</div>
+   <code><b>name</b> char(80) NOT NULL,</code><br><div class="description">name of group or user (name of user = givenname + sn)</div>
+   <code><b>description</b> char(255) NOT NULL,</code><br><div class="description">dascription of group</div>
+   <code><b>givenname</b> char(40) NOT NULL,</code><br><div class="description"> Given name of user</div>
+   <code><b>sn</b> char(40) NOT NULL,</code><br><div class="description">Surname of user</div>
+   <code><b>last_mod</b> timestamp(14),</code><br><div class="description">Time of last modification</div>
+   <code>PRIMARY KEY (id),</code><br><div class="description"></div>
+   <code>KEY type (type),</code><br><div class="description"></div>
+   <code>KEY mail (mail),</code><br><div class="description"></div>
+   <code>KEY name (name),</code><br><div class="description"></div>
+   <code>KEY sn (sn)</code><br><div class="description"></div>
+);
+
+
+<p>Relational table - holds informations about which user belongs to which group. Each record means: User memberid belongs to group groupid</p>
+<h3>CREATE TABLE <b>membership</b> (</h3>
+   <code><b>groupid</b> int(11) DEFAULT '0' NOT NULL,</code><br><div class="description">Group id. Foreign key from users table.</div>
+   <code><b>memberid</b> int(11) DEFAULT '0' NOT NULL,</code><br><div class="description">User id. Foreign key from users table. We use the term member instead of user, because it is posible to have group id in this field, which implements group of groups. For this situation are prepared LDAP permissions too, even if this possibility is not used in current version of AA.</div>
+   <code><b>last_mod</b> timestamp(14),</code><br><div class="description">Time of last modification.</div>
+   <code>PRIMARY KEY (groupid, memberid),</code><br><div class="description"></div>
+   <code>KEY memberid (memberid)</code><br><div class="description"></div>
+);
+
+<p>Table perms sets permission for an object to some user/group. The object is defined by object_type and objectid. There are only two objects types in AA - object "slice" and object "aa" which is superrior to "slice" object.</p>
+
+<h3>CREATE TABLE <b>perms</b> (</h3>
+   <code><b>object_type</b> char(30) NOT NULL,</code><br><div class="description">Type of permited object "aa" or "slice"</div>
+   <code><b>objectid</b> char(32) NOT NULL,</code><br><div class="description">Id of permited object</div>
+   <code><b>userid</b> int(11) DEFAULT '0' NOT NULL,</code><br><div class="description">User/group id to whom belongs perm </div>
+   <code><b>perm</b> char(32) NOT NULL,</code><br><div class="description">Permission string</div>
+   <code><b>last_mod</b> timestamp(14),</code><br><div class="description">Time of last modification.</div>
+   <code>PRIMARY KEY (objectid, userid, object_type),</code><br><div class="description"></div>
+   <code>KEY userid (userid)</code><br><div class="description"></div>
+);
+<br><br><a href="index.html">Other documentation</a><br>
+
+</body>
+</html>
+

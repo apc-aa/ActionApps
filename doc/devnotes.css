@@ -1,0 +1,44 @@
+BODY {
+  font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+  font-size : 9pt;
+} 
+H2 {
+  font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+  font-size : 12pt;
+  border-top-style : solid;
+} 
+CODE {
+  font-family : "Courier New", Courier, monospace;
+  font-size : 10pt;
+} 
+.description {
+  font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+  margin-left: 44px;
+  font-size : 9pt;
+}
+
+.hlight  {
+  	color: blue;
+ }
+
+h3  {
+  	font-size : small;
+  	font-family : Verdana CE, Arial CE, Helvetica CE, sans-serif;
+  	font-weight : bold;
+   text-indent: 25;
+ }
+
+.zvyraz {background: #eeeeee;}  
+ 
+A.Menu:hover {
+   color: red;} 
+
+A.Menu:link {
+   color: white;
+   } 
+
+A.Menu:visited {
+   color: white;
+   } 
+   
+ 

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
+ <TITLE>AA Installation: What software will you need</TITLE>
+ <LINK HREF="install-3.html" REL=next>
+ <LINK HREF="install-1.html" REL=previous>
+ <LINK HREF="install.html#toc2" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="install-3.html">Next</A>
+<A HREF="install-1.html">Previous</A>
+<A HREF="install.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="s2">2. What software will you need</A></H2>
+
+<P>You need these components to install AA: the AA package, a WWW server
+(Apache), the PHP scripting engine, the library PHPLIB, a SQL database
+server (MySQL) and optionally a LDAP server (OpenLDAP).
+<P>
+<H2><A NAME="ss2.1">2.1 AA</A>
+</H2>
+
+<P>Download and extract the AA package in your htdocs directory
+(e.g. /usr/local/httpd/htdocs/aa). You will need files in aa/doc
+subdirectory during the installation/configuration process.
+<P>
+<H2><A NAME="ss2.2">2.2 Apache</A>
+</H2>
+
+<P>Download the latest source tarball (e.g. apache_1.3.9.tar.gz). It is not
+necessary to recompile Apache, if you can load mod_php dynamically,
+but the Apache source includes XML files usefull to seamlessly compile
+PHP (3.0.14). I tested onle the static version.
+<P>
+<A HREF="http://www.apache.org/httpd.html">http://www.apache.org/httpd.html</A><P>
+<H2><A NAME="ss2.3">2.3 PHP3</A>
+</H2>
+
+<P>The latest version of PHP (eg. php-3.0.14.tar.gz) is available at
+<A HREF="http://www.php.net/download-php.php3">http://www.php.net/download-php.php3</A>.
+<P>
+<H2><A NAME="ss2.4">2.4 PHPLIB</A>
+</H2>
+
+<P>Download the latest PHPLIB archive (eg. phplib-7.2.tar.gz) from 
+<A HREF="http://phplib.netuse.de/download/index.php3">http://phplib.netuse.de/download/index.php3</A>.
+<P>
+<H2><A NAME="ss2.5">2.5 MySQL</A>
+</H2>
+
+<P>MySQL can be downloaded from 
+<A HREF="http://www.mysql.org/download.html">http://www.mysql.org/download.html</A>.
+<P>RPM packages:
+<P>
+<UL>
+<LI>MySQL-3.22.32-1.i386.rpm</LI>
+<LI>MySQL-client-3.22.32-1.i386.rpm</LI>
+<LI>MySQL-devel-3.22.32-1.i386.rpm (to recompile PHP MySQL support)</LI>
+</UL>
+<P>(Versions prior 3.22.32 contain possible security holes, upgrade to
+latest versions is recommended.)
+<P>
+<H2><A NAME="ss2.6">2.6 OpenLDAP</A>
+</H2>
+
+<P>OpenLDAP (e.g. openldap-1.2.9.tgz) is available at 
+<A HREF="http://www.openldap.org/software/download/">http://www.openldap.org/software/download/</A><P>RPM version is available in RedHat's contrib archive at 
+<A HREF="ftp://contrib.redhat.com/contrib/libc6/i386/">ftp://contrib.redhat.com/contrib/libc6/i386/</A>.
+<P>
+<UL>
+<LI>openldap-1.2.9-1.rpm </LI>
+<LI>openldap-servers-1.2.9-1.rpm</LI>
+<LI>openldap-devel-1.2.9-1.rpm (to build PHP with LDAP support)</LI>
+</UL>
+<P>The RPMs are built without threads and with kerberos support, if you
+want other options, use either source RPM or original source
+distribution.
+<P>
+<P>
+<HR>
+<A HREF="install-3.html">Next</A>
+<A HREF="install-1.html">Previous</A>
+<A HREF="install.html#toc2">Contents</A>
+</BODY>
+</HTML>
