@@ -62,7 +62,7 @@ if (IsSuperadmin()) {
 }
 
 set_directory ($fmset['directory']);
-
+//echo "<p><font color=purple>fileman_execute_command:basedir=$basedir;directory=$directory,cmd=$cmd,arg=$arg,chb=$chb,fmset=$fmset;</font></p>";
 fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset);
 
 // One file page
@@ -174,7 +174,6 @@ if ($db->num_rows()) {
 echo "<tr><td class=tabtxt>".fileAction ("createdir",L_CREATE_NEW_DIR) ."</td>
 <td class=tabtxt><input type=text name='arg[createdir]'></td></tr>
 </table></td></tr>";
-echo '<tr><td class=tabtxt></td><td class=tabtxt><input type=submit name="Upload"></td></tr>'; //You cant upload a file without a submit button
 
 echo "</table></form><p></p></body></html>";
 
