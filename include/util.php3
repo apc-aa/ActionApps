@@ -147,9 +147,16 @@ function shtml_url() {
 
 # returns url of current shtml file
 function shtml_query_string() {
-  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
-  return isset($REDIRECT_QUERY_STRING_UNESCAPED) ?
-               $REDIRECT_QUERY_STRING_UNESCAPED : $QUERY_STRING_UNESCAPED;
+  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $REQUEST_URI;
+    // there is problem (at least with $QUERY_STRING_UNESCAPED), when 
+    // param=a%26a&second=2 is returned as param=a\\&a\\&second=2 - we can't 
+    // expode it! - that's why we use $REQUEST_URI, if possible
+
+  return ($REQUEST_URI AND strpos($REQUEST_URI, '?')) ? 
+                            substr($REQUEST_URI, strpos($REQUEST_URI, '?')+1) :
+         ( isset($REDIRECT_QUERY_STRING_UNESCAPED)    ?
+                            $REDIRECT_QUERY_STRING_UNESCAPED : 
+                            $QUERY_STRING_UNESCAPED );
 }
 
 # skips terminating backslashes
@@ -162,10 +169,7 @@ function DeBackslash($txt) {
 function add_vars($query_string="", $debug="") {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
 
-    // there is problem (at least with $QUERY_STRING_UNESCAPED), when 
-    // param=a%26a is returned as param=a\\&a and not param=a%26a
-    // taht's why we can escape \\& string
-    $vars = split_escaped ('&', $varstring, '\\\\&');
+    $vars = explode('&', $varstring);
     
     if( isset($vars) AND is_array($vars) ) {
         reset($vars);
