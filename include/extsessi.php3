@@ -114,7 +114,6 @@ class AA_SL_Session extends Session {
   
  
  // adds variables passesd by QUERY_STRING_UNESCAPED to GLOBALS 
-
   function add_vars($debug="") {
     global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
     if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
@@ -145,19 +144,25 @@ class AA_SL_Session extends Session {
     return $i;
   }
   
+  # adds variables passesd by QUERY_STRING_UNESCAPED to HTTP_GET_VARS
+  # SSI patch - passes variables to SSIed script
   function expand_getvars() {
   global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $HTTP_GET_VARS;   
-    $a = explode ("\&",$QUERY_STRING_UNESCAPED);
-    for( $i=0 ; $i < count($a); $i++) {
-      $b = explode ('=', $a [$i]);
-      $HTTP_GET_VARS[urldecode ($b [0])]= urldecode ($b [1]);
-    }
+    if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
+      $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
+      # $REDIRECT_QUERY_STRING_UNESCAPED
+      #  - necessary for cgi version compiled with --enable-force-cgi-redirect      
+    } else {  
+      $varstring = $QUERY_STRING_UNESCAPED;
+    }  
 
-    # the same for $REDIRECT_QUERY_STRING_UNESCAPED
-    #  - necessary for cgi version compiled with --enable-force-cgi-redirect      
-    $a = explode ("\\\&",$REDIRECT_QUERY_STRING_UNESCAPED);
-    for( $j = 0; $j < count($a); $j++) {
-      $b = explode ('=', $a [$j]);
+    $a = explode("&",$varstring);
+    $i = 0;
+
+    while ($i < count ($a)) {
+      $b = explode ('=', $a [$i]);
+      $b[0] = DeBackslash($b[0]);
+      $b[1] = DeBackslash($b[1]);
       $HTTP_GET_VARS[urldecode ($b [0])]= urldecode ($b [1]);
       $i++;
     }
@@ -260,6 +265,9 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
+Revision 1.7  2000/11/08 12:23:55  honzam
+Fixed problem with bad AA_SL_Sess id - bad copy QUERY_STRING to HTTP_GET_VARS
+
 Revision 1.6  2000/10/10 10:04:24  honzam
 better backslashes handling for Query string parsing
 
@@ -290,6 +298,5 @@ perm_mysql improvements
 Id and Log added to all .php3 and .inc files
 system for config-ecn.inc and config-igc.inc both called from
 config.inc
-
 */
 ?>
