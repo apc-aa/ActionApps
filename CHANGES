@@ -1,3 +1,27 @@
+06/01/02 - http/https problem fixed for admin images
+         - fixed parsing arrays from .shtml URL parameters (unlimited depth)
+         - added possibility to define field mapping for manualy fed slices
+         - the possibility to filter 'to the same' category on Filters page is 
+           back (for inner feeding)
+05/31/02 - changes in navigation - new AA menu introduced instead of users menu
+         - multiple selects now works well in fillform
+         - interface for new module adition
+         - include path generalization for richedit
+         - fixed bug in jump module - jump between two slices
+         - hierarchical constant editor - support for default value selection, 
+           support for addidion to public pages
+         - new field_id change utility (good for multiple slice searching)
+         - new alias listing column in Admin -> Fields
+         - slice export/import now allows gzipping of data; storing the data to 
+           the file; storing not only slice setting, but the item's data too  
+05/24/02 - added 'number of item viewed counting' to view.php3, too
+           (when cmd[]=x-.. used)
+         - added information, where constants are used - on constant admin page
+         - fixed bug in constant group deletion (all tracks removed, now)
+         - newly created slices uses the same categories as template (no new 
+           constant group is created, now (BTW - it was buggy, so long))
+         - fixed bug in 'Related item' input type (you can switch from page to 
+           page and it works, now)
 05/17/02 - new 'textarea with presets' input type
          - added new possibility to "selectbox with presets" - two field could 
            be filled by single selection (source and source_href, for example)
