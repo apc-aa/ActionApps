@@ -228,7 +228,7 @@ if ($lang_control) {
 if( !$encap ) {
     $inputform_settings = array(
         'display_aa_begin_end' => true,
-        'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")),
+        'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim($r_slice_headline).")",
 
         // next two variables are used for GetFormJavascript() function - javascript
         // validation when display_aa_begin_end is true
