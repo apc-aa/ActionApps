@@ -60,7 +60,7 @@ $format_strings = array ( "compact_top"   =>'<table border=0 cellspacing=0 cellp
 // zarazeno v kategorii
 
 if( $links_zids->count() != 0 ) {
-    $itemview = new itemview( $db, $format_strings, '', $LINK_ALIASES,
+    $itemview = new itemview( $db, $format_strings, '', GetLinkAliases(),
                           $links_zids, 0, 100, '', '', 'Links_GetLinkContent' );
     $itemview->print_view("NOCACHE");
 } else {

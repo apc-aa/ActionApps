@@ -628,7 +628,6 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
     global $debug;                 # displays debug messages
     global $nocache;               # do not use cache, if set
     global $conds_not_field_names; # list of special conds[] indexes (defined in constants.php3)
-    global $CONSTANT_FIELDS;
 
     // set default sortorder for constants if sortorder is not set
     if ( !isset($sort) OR !is_array($sort) ) {
@@ -659,8 +658,8 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
     if( $debug ) huhl( "<br>Conds after ParseEasyConds():", $conds, "<br>--");
 
     // parse conditions and sort order ----------------------------------
-    $where_sql    = MakeSQLConditions($GLOBALS['CONSTANT_FIELDS'], $conds, $foo);
-    $order_by_sql = MakeSQLOrderBy(   $GLOBALS['CONSTANT_FIELDS'], $sort,  $foo);
+    $where_sql    = MakeSQLConditions( GetConstantFields(), $conds, $foo);
+    $order_by_sql = MakeSQLOrderBy(    GetConstantFields(), $sort,  $foo);
 
     // construct query --------------------------
     $SQL  = "SELECT DISTINCT constant.short_id FROM constant

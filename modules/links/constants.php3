@@ -44,11 +44,11 @@ $LINK_TYPE_CONSTANTS = 'Ekolink_obecne_k';
 define('LINKS_BASE_CAT','y');
 define('LINKS_NOT_BASE_CAT','n');
 
-/**
- * List of fields, which will be listed in searchbar in Links Manager (search)
- * (modules/links/index.php3)
+/** List of fields, which will be listed in searchbar in Links Manager (search)
+ *  (modules/links/index.php3)
  */
-$LINKS_FIELDS = array (
+function GetLinkFields() {  // function - we need trnslate _m() on use (not at include time)
+    return array (
                 // function GetFieldDef( $name,                        $field,                 operators='text', $table=false, $search_pri=false, $order_pri=false
     'id'                  => GetFieldDef( _m('Id'),                    'links_links.id',                'numeric', false,          0,    0),
     'name'                => GetFieldDef( _m('Name'),                  'links_links.name',              'text',    false,       1002, 1002),
@@ -96,10 +96,12 @@ $LINKS_FIELDS = array (
     'cat_proposal_delete' => GetFieldDef( _m('To be deleted'),         'links_link_cat.proposal_delete','numeric', false,          0,    0),
     'cat_priority'        => GetFieldDef( _m('Priority'),              'links_link_cat.priority',       'numeric', false,          0,    0),
     'change'              => GetFieldDef( _m('Change'),                'links_changes.rejected',        'numeric', 'changes',      0,    0)
-    );                                                                                                                               
+    );    
+}                                                                                                                           
     
 /** Predefined aliases for links. For another aliases use 'inline' aliases. */
-$LINK_ALIASES = array(
+function GetLinkAliases() {  // function - we need trnslate _m() on use (not at include time)
+  return array(
     "_#LINK_ID_" => GetAliasDef( "f_t",               "id",              _m('Link id')),
     "_#L_NAME__" => GetAliasDef( "f_t",               "name",            _m('Link name')),
     "_#L_O_NAME" => GetAliasDef( "f_t",               "original_name",   _m('Link original name')),
@@ -134,20 +136,35 @@ $LINK_ALIASES = array(
     "_#L_L_SNAM" => GetAliasDef( "f_h:, ",            "lang_short_name", _m('Link - short names of languages (comma separated)')),
     "_#L_CATIDS" => GetAliasDef( "f_h:, ",            "cat_id",          _m('Category ids (comma separated)')),
     "_#L_CATNAM" => GetAliasDef( "f_h:, ",            "cat_name",        _m('Category names (comma separated)')),
+    "_#L_VCOLOR" => GetAliasDef( "f_e:link_valid",    "cat_id",          _m('Link - validity color')),
     "_#EDITLINK" => GetAliasDef( "f_e:link_edit",     "cat_id",          _m('Link to link editing page (for admin interface only)')),
     "_#CATEG_GO" => GetAliasDef( "f_e:link_go_categ", "cat_id",          _m('Category listing with links (for admin interface only)'))
-);
+    );
+}    
 
 
-/**
- * List of fields, which will be listed in searchbar in Links Manager (search)
+/** List of fields, which will be listed in searchbar in Links Manager (search)
  * (modules/links/index.php3)
  */
-$CATEGORY_FIELDS = array(
+function GetCategoryFields() {  // function - we need trnslate _m() on use (not at include time)
+    return array(
      'id'=>              GetFieldDef( _m('Id'),          'links_categories.id',          'numeric'),
      'name'=>            GetFieldDef( _m('Name'),        'links_categories.name',        'text'),
      'path'=>            GetFieldDef( _m('Path'),        'links_categories.path',        'text'),
      'link_count'=>      GetFieldDef( _m('Link Count'),  'links_categories.link_count',  'numeric'),
      'description'=>     GetFieldDef( _m('Description'), 'links_categories.description', 'text'),
      'note'=>            GetFieldDef( _m('Note'),        'links_categories.note',        'text'));
+}     
+     
+/** Predefined aliases for links. For another aliases use 'inline' aliases. */
+function GetCategoryAliases() {  // function - we need trnslate _m() on use (not at include time)
+    return array(
+    "_#CATEG_ID" => GetAliasDef( "f_t", "id",          _m('Category id')),
+    "_#C_NAME__" => GetAliasDef( "f_t", "name",        _m('Category name')),
+    "_#C_LCOUNT" => GetAliasDef( "f_t", "link_count",  _m('Number of links in category')),
+    "_#C_DESCRI" => GetAliasDef( "f_t", "description", _m('Category description')),
+    "_#C_NOTE__" => GetAliasDef( "f_t", "note",        _m('Cetegory editor\'s note'))
+    );
+}    
+     
 ?>

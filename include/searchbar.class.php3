@@ -76,18 +76,31 @@ class searchbar extends storable_class{
     function searchbar($fields, $f, $srcm=1, $orcm=1, $aesr=1) { // constructor 
         $this->fields               = $fields;
         if( isset($fields) AND is_array($fields) ) {
-            usort ($fields, "searchfields_cmp");
-//            print_r($fields);
+            uasort ($fields, "searchfields_cmp");
             foreach ( $fields as $fid => $v) {
-                if ($v['search_pri'] > 0 ) {
+                if ($v['search_pri'] > 0 ) {           // not searchable fields
+                    // searchfields could be splited into groups
+                    // one group is allways with search_pri 0-999, 1000-1999, ...
+                    if ( $last_pri AND (floor($last_pri/1000) != floor($v['search_pri']/1000)) ) {
+                        $this->search_fields['foo'.$last_pri] = '---------------';
+                        $this->search_operators[$fid] = 'text';
+                    }
+                    $last_pri = $v['search_pri'];
                     $this->search_fields[$fid]    = $v['name'];
                     $this->search_operators[$fid] = $v['operators'];
+                    
                 }    
             }
-            usort ($fields, "orderfields_cmp");
-//            print_r($fields);
+            uasort ($fields, "orderfields_cmp");
+            $last_pri = 0;
             foreach ( $fields as $fid => $v) {
                 if ($v['order_pri'] > 0 ) {
+                    // orderfields could be splited into groups
+                    // one group is allways with order_pri 0-999, 1000-1999, ...
+                    if ( $last_pri AND (floor($last_pri/1000) != floor($v['order_pri']/1000)) ) {
+                        $this->order_fields['foo'.$last_pri] = '---------------';
+                    }
+                    $last_pri = $v['search_pri'];
                     $this->order_fields[$fid]     = $v['name'];
                 }    
             }

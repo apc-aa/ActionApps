@@ -816,7 +816,7 @@ function GetConstantContent( $zids ) {
     $content[$coid]["const_name"][]        = array( "value"=> $db->f("name") );
     $content[$coid]["const_value"][]       = array( "value"=> $db->f("value"),
                                                     "flag" => FLAG_HTML );
-    $content[$coid]["const_priority"][]    = array( "value"=> $db->f("pri") );
+    $content[$coid]["const_pri"][]         = array( "value"=> $db->f("pri") );
     $content[$coid]["const_group"][]       = array( "value"=> $db->f("group_id") );
     $content[$coid]["const_class"][]       = array( "value"=> $db->f("class") );
     $content[$coid]["const_counter"][]     = array( "value"=> $i++ );
@@ -1123,9 +1123,13 @@ function PrintAliasHelp($aliases, $fields=false) {
 }
 
 # function returns true if $fld fits the field scheme (used in unaliasing)
-# function returns true if $fld fits the field scheme (used in unaliasing)
 function IsField($fld) {
-  return( ((strlen($fld)==16) && ereg("^[a-z_]+\.+[0-9]*$",$fld))
+    if( !isset($GLOBALS['LINKS_FIELDS']) ) {
+         $GLOBALS['LINKS_FIELDS'] = GetLinkFields();
+         $GLOBALS['CATEGORY_FIELDS'] = GetCategoryFields();
+         $GLOBALS['CONSTANT_FIELDS'] = GetConstantFields();
+    }
+    return( ((strlen($fld)==16) && ereg("^[a-z_]+\.+[0-9]*$",$fld))
            OR $GLOBALS['LINKS_FIELDS'][$fld]
            OR $GLOBALS['CATEGORY_FIELDS'][$fld]
            OR $GLOBALS['CONSTANT_FIELDS'][$fld] );

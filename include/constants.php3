@@ -206,19 +206,22 @@ $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
     $content[$foo_id]["const_level....."][] = array( "value"=> strlen($db->f("ancestors"))/16);
 */
 
-$CONSTANT_FIELDS = array(
-    'const_short_id'    => GetFieldDef( _m('Short Id'),    'constant.short_id',   'numeric'),
-    'const_name'        => GetFieldDef( _m('Name'),        'constant.name',       'text'),
-    'const_value'       => GetFieldDef( _m('Value'),       'constant.value',      'text'),
-    'const_priority'    => GetFieldDef( _m('Priority'),    'constant.pri',        'numeric'),
-    'const_group'       => GetFieldDef( _m('Group'),       'constant.group',      'text'),
-    'const_class'       => GetFieldDef( _m('Class'),       'constant.class',      'text'),
-//  'const_counter'     => GetFieldDef( _m('Counter'),     '',                    'numeric'),
-    'const_id'          => GetFieldDef( _m('Id'),          'constant.id',         'id'),
-    'const_descriptio'  => GetFieldDef( _m('Description'), 'constant.description','text'),
-    'const_level'       => GetFieldDef( _m('Level'),       'constant.level',      'numeric'));
 
-    function GetInputShowFuncTypesDef( $name, $multiple, $paramformat) {
+function GetConstantFields() {  // function - we need trnslate _m() on use (not at include time)
+    return array(
+        'const_short_id'    => GetFieldDef( _m('Short Id'),    'constant.short_id',   'numeric'),
+        'const_name'        => GetFieldDef( _m('Name'),        'constant.name',       'text'),
+        'const_value'       => GetFieldDef( _m('Value'),       'constant.value',      'text'),
+        'const_pri'         => GetFieldDef( _m('Priority'),    'constant.pri',        'numeric'),
+        'const_group'       => GetFieldDef( _m('Group'),       'constant.group',      'text'),
+        'const_class'       => GetFieldDef( _m('Class'),       'constant.class',      'text'),
+    //  'const_counter'     => GetFieldDef( _m('Counter'),     '',                    'numeric'),
+        'const_id'          => GetFieldDef( _m('Id'),          'constant.id',         'id'),
+        'const_description' => GetFieldDef( _m('Description'), 'constant.description','text'),
+        'const_level'       => GetFieldDef( _m('Level'),       'constant.level',      'numeric'));
+}        
+
+function GetInputShowFuncTypesDef( $name, $multiple, $paramformat) {
     return array( 'name'=>$name, 'multiple'=>$multiple, 'paramformat'=>$paramformat);
 }
 
@@ -712,17 +715,19 @@ function getViewTypesInfo() {
                                        'aditional4'=>array('default'=>'<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">'),
                                        'aliases' => 'discus');
     $VIEW_TYPES_INFO['discus2mail'] = array ('aliases' => 'discus2mail');
-    $VIEW_TYPES_INFO['seetoo'] = array('modification'=>array('31'=>'related',
+    $VIEW_TYPES_INFO['seetoo']     = array('modification'=>array('31'=>'related',
                                                              '32'=>'keyword with OR',
                                                              '33'=>'keyword with AND' ),
                                      'aliases' => 'field');
-    $VIEW_TYPES_INFO['const'] = array('aliases' => 'const',
-                                      'order' => 'easy',
-                                      'fields' => 'constant');
-    $VIEW_TYPES_INFO['urls'] = array('aliases' => 'justids');
+    $VIEW_TYPES_INFO['const']      = array('aliases' => 'const',
+                                           'order' => 'easy',
+                                           'fields' => 'constant');
+    $VIEW_TYPES_INFO['urls']       = array('aliases' => 'justids');
+    $VIEW_TYPES_INFO['links']      = array('aliases' => 'links');
+    $VIEW_TYPES_INFO['categories'] = array('aliases' => 'categories');
 
-    $VIEW_TYPES_INFO['rss'] = array('aliases' => 'field');
-    $VIEW_TYPES_INFO['calendar'] = array('aliases' => 'field',
+    $VIEW_TYPES_INFO['rss']        = array('aliases' => 'field');
+    $VIEW_TYPES_INFO['calendar']   = array('aliases' => 'field',
         'aliases_additional' => array (
             '_#CV_TST_1' => array ('hlp'=>_m("Calendar: Time stamp at 0:00 of processed cell")),
             '_#CV_TST_2' => array ('hlp'=>_m("Calendar: Time stamp at 24:00 of processed cell")),
@@ -730,8 +735,8 @@ function getViewTypesInfo() {
             '_#CV_NUM_M' => array ('hlp'=>_m("Calendar: Month number of processed cell")),
             '_#CV_NUM_Y' => array ('hlp'=>_m("Calendar: Year number of processed cell"))));
 
-    $VIEW_TYPES_INFO['static'] = array('aliases' => 'none');
-    $VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
+    $VIEW_TYPES_INFO['static']     = array('aliases' => 'none');
+    $VIEW_TYPES_INFO['script']     = array('aliases' => 'field');
     return $VIEW_TYPES_INFO;
 }
 
