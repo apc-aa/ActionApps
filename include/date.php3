@@ -96,24 +96,29 @@ class datectrl {
 		$this->time = $d[hours].":".$d[minutes].":".$d[seconds] ;
 	}
 
-  # get stored date as integer
-	function get_date() {
-    $t = explode( ':', $this->time );
-    return  mktime ($t[0],$t[1],$t[2],$this->month,$this->day,$this->year);
-	}
+    # get stored date as integer
+    function get_date() {
+        $t = explode( ':', $this->time );
+        return  mktime ($t[0],$t[1],$t[2],$this->month,$this->day,$this->year);
+    }
 
-  # get stored date as integer
-	function get_datestring() {
-    return  $this->day. " - ". $this->month." - ".$this->year." ". $this->time;
-	}
+    # get stored date as integer
+    function get_datestring() {
+        return  $this->day. " - ". $this->month." - ".$this->year." ". $this->time;
+    }
 
-  # check if date is valid  
-  function ValidateDate($inputName, &$err)  {
-    if (( $this->get_date() > 0  ) or ($this->get_date()==-3600))
-      return true;
-    $err[$this->name] = MsgErr(_m("Error in")." $inputName");
-    return false;
-  }  
+    // check if date is valid and possibly set date to "default" value if it is
+    // not required and default value is specified
+    function ValidateDate($inputName, &$err, $required=true, $deafult='0')  {
+        if (( $this->get_date() > 0  ) OR ($this->get_date()==-3600))
+        return true;
+        if ($required) {  
+            $err[$this->name] = MsgErr(_m("Error in")." $inputName");
+            return false;
+        } 
+        $this->setdate_int($deafult);        
+        return (( $this->get_date() > 0  ) OR ($this->get_date()==-3600));
+    }  
                    
 	# print select box for day
 	function getdayselect() {
@@ -121,7 +126,7 @@ class datectrl {
 		$sel =  ($this->day != 0 ? $this->day : $at[mday]);
 		for($i = 1; $i <= 31; $i++)
 			$ret .= "<option value=\"$i\"". 
-              (($i == $sel) ? " selected" : "") . ">$i</option>";
+              (($i == $sel) ? ' selected class="sel_on"' : "") . ">$i</option>";
 		return "<select name=\"tdctr_" . $this->name . "_day\"".getTriggers("select",$this->name).">$ret</select>";
 	}	
 
@@ -131,7 +136,7 @@ class datectrl {
 		$at = getdate(time());
 		$sel =  ($this->month != 0 ? $this->month : $at[mon]);
 		for($i = 1; $i <= 12; $i++) {
-			$ret .= "<option value=\"$i\"". (($i == $sel) ? " selected" : "") . ">".
+			$ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">".
              $L_MONTH[$i] ."</option>";
 		}
 		return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">$ret</select>";
@@ -145,7 +150,7 @@ class datectrl {
     $to   = ( $this->from_now ? $at[year] + $this->y_range_plus : 
                                 $this->y_range_plus );
 		for($i = $from; $i <= $to; $i++) {
-			$ret .= "<option value=\"$i\"" . (($i == $this->year) ? " selected":""). 
+			$ret .= "<option value=\"$i\"" . (($i == $this->year) ? ' selected class="sel_on"':""). 
 			       ">$i</option>";
 		}
     return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">$ret</select>";

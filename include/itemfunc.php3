@@ -969,7 +969,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
             // delete content just for displayed fields
             $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($id). "'
                             AND field_id IN ($in)";
-            $db->query($SQL);
+            $db->tquery($SQL);
             // note extra images deleted in insert_fnc_fil if needed
         }
     }
@@ -1047,7 +1047,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         
         $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
     }  
-    $db->query($SQL);
+    $db->tquery($SQL);
     if( $invalidatecache ) {
         $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     }  
@@ -1324,6 +1324,11 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
 	reset($prifields);
 	while(list(,$pri_field_id) = each($prifields)) {
         $f = $fields[$pri_field_id];
+        if( ($pri_field_id=='edited_by.......') || 
+            ($pri_field_id=='posted_by.......') ||
+            ($pri_field_id=='status_code.....') ) {
+            continue;   // filed by AA - it could not be filled here 
+        }
         $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
         $htmlvarname = $varname."html";
 
@@ -1337,7 +1342,9 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
         if ($setdefault) {
             $$varname = GetDefault($f);
             $$htmlvarname = GetDefaultHTML($f);            
-        }
+        } elseif ($validate=='date') {         // we do not know at this moment, 
+            $default_val = GetDefault($f);     // if we have to use default
+        }    
                 
         $editable = IsEditable ($oldcontent4id[$pri_field_id], $f)
                     && ! $notshown [$varname];                   
@@ -1378,7 +1385,7 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
                 $foo_datectrl_name->update();                   # updates datectrl
                 if( $$varname != "")                            # loaded from defaults
                   $foo_datectrl_name->setdate_int($$varname);
-                $foo_datectrl_name->ValidateDate($f["name"], $err);
+                $foo_datectrl_name->ValidateDate($f["name"], $err, $f["required"], $default_val);
                 $$varname = $foo_datectrl_name->get_date();  # write to var
                 break;
             case 'bool':
