@@ -481,8 +481,12 @@ function ExtSearch ($query,$p_slice_id,$debug=0) {
 				$field[$i]["boolop"]="and !";
 			}
 
-			if (InputIsDate($field[$i]["value"])) # conversion date value to seconds
-				$field[$i]["value"]= userdate2sec( CutHash($field[$i]["value"]) );
+			if (InputIsDate($field[$i]["value"])) { # conversion date value to seconds
+        $time = "";
+        if( strstr( $field[$i]["matchop"],"<" ))  # to search whole end day
+          $time = "23:59:59";
+				$field[$i]["value"]= userdate2sec( CutHash($field[$i]["value"]),$time );
+      }  
 			
 		} else {
 			return "Field ".$field[$i]["name"]." doesn't exist in this slice!";
@@ -544,6 +548,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.11  2001/05/10 09:44:35  honzam
+Extended search end date problem fixed (now it searches whole end date)
+
 Revision 1.10  2001/03/30 11:54:35  honzam
 offline filling bug and others small bugs fixed
 
