@@ -212,9 +212,9 @@ if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
     $manager->setFromProfile($profile);
 }
 
-if( $r_state['manager'] )        // do not set state for the first time calling
+if ($r_state['manager']) {        // do not set state for the first time calling
     $manager->setFromState($r_state['manager']);
-
+}
 
 $manager->performActions();
 
@@ -223,7 +223,7 @@ $r_state['bin_cnt'] = CountItemsInBins();
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
 
 require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
-showMenu ($aamenus, "itemmanager", $r_state['bin'], $navbar != "0", $leftbar != "0");
+showMenu($aamenus, "itemmanager", $r_state['bin'], $navbar != "0", $leftbar != "0");
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();

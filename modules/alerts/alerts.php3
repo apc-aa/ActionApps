@@ -69,7 +69,7 @@ if ($howoften_options[$howoften]) {
     initialize_last();
     //echo "<h1>$ho</h1>";
     $mail_count = send_emails($howoften, "all", "all", true, "");
-    echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
+    //echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
 }
 
 ?>

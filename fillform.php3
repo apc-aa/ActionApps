@@ -120,38 +120,38 @@ require_once $GLOBALS["AA_INC_PATH"]."fillform.php3";
 page_open(array("sess" => "AA_SL_Session"));
 
 function RestoreVariables() {
-  $r_state_vars = unserialize($GLOBALS[r_packed_state_vars]);
-  if( isset($r_state_vars) AND is_array($r_state_vars) ) {
-    reset($r_state_vars);
-    while( list($k,$v) = each( $r_state_vars ) )
-      $GLOBALS[$k] = $v;
-  }
+    $r_state_vars = unserialize($GLOBALS['r_packed_state_vars']);
+    if (isset($r_state_vars) AND is_array($r_state_vars)) {
+        foreach ( $r_state_vars as $k=>$v ) {
+            $GLOBALS[$k] = $v;
+        }
+    }
 }
 RestoreVariables();
 
 echo fillFormFromVars($fillConds);
 
 if ($show_result) {
-    if ($result)
-        readfile (con_url ($show_result, "result=".urlencode(serialize($result))));
-    else readfile ($show_result);
-
-} else if (is_array ($result)) {
+    if ($result) {
+        readfile(con_url ($show_result, "result=".urlencode(serialize($result))));
+    } else {
+        readfile($show_result);
+    }
+} elseif (is_array($result)) {
     echo "<b>";
-    reset ($result);
-    while (list ($k,$v) = each ($result)) {
+    foreach ( $result as $k => $v) {
         echo $k.": ";
         if (is_array ($v)) {
-            reset ($v);
-            while (list ($kk,$vv) = each ($v))
+            foreach ( $v as $kk => $vv) {
                 echo "$kk - $vv ";
+            }
+        } else {
+            echo $v;
         }
-        else echo $v;
         echo "<br>\n";
     }
     echo "</b>";
 }
-
 
 ?>
 

@@ -33,16 +33,16 @@ BM_UPDATE       bookmark id in profile table    name
 BM_RENAME       bookmark id in profile table    new_name:old_name
 BM_DELETE       bookmark id in profile table    name
 EMAIL_SENT      bookmark id/LIST/TEST           users:valid_emails:emails_sent
-
+TOEXECUTE       object's class                  return code
 */
 
-# Write log entry
+/** Write log entry */
 function writeLog($event, $params="", $selector="" ) {
-    global $auth, $LOG_EVENTS;
+    global $auth;
     $db = getDB();
 
     if (is_array($params)) {
-      $params = ParamImplode($params);
+        $params = ParamImplode($params);
     }
 
     $event    = addslashes($event);
@@ -58,12 +58,14 @@ function writeLog($event, $params="", $selector="" ) {
     freeDB($db);
 }
 
-# get events from log
-# event - type of event
-# from - events from date
-# to - events to date
-# group_by_params - if true, returns events grouped by params and their count as count
-# delete_old_logs -
+/** Get events from log
+ *  event           - type of event
+ *  from            - events from date
+ *  to              - events to date
+ *  group_by_params - if true, returns events grouped by params and their count
+ *                    as count
+ *  delete_old_logs -
+ */
 function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_old_logs=false, $selector="") {
 
     $time = time();
@@ -78,14 +80,14 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
 
     if ($group_by_param) {
         $SQL = "SELECT *,COUNT(*) AS count FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
-        if ($from) { $SQL .= " AND time >= '$from'"; }
-        if ($to) { $SQL .= " AND time <= '$to'";}
+        if ($from)  { $SQL .= " AND time >= '$from'"; }
+        if ($to)    { $SQL .= " AND time <= '$to'";}
         if ($slctr) { $SQL .= $slctr; }
         $SQL .= " GROUP BY params";
     } else {
         $SQL = "SELECT * FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
-        if ($from) { $SQL .= " AND time >= '$from'"; }
-        if ($to) { $SQL .= " AND time <= '$to'"; }
+        if ($from)  { $SQL .= " AND time >= '$from'"; }
+        if ($to)    { $SQL .= " AND time <= '$to'"; }
         if ($slctr) { $SQL .= $slctr;  }
         // $SQL .= "ORDER BY TIME";
     }
@@ -94,8 +96,8 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
     // remove old log entries from table
     if ($delete_old_logs) {
         $SQL = "DELETE FROM log WHERE type='$event'";
-        if ($from) { $SQL .= " AND time >= '$from'"; }
-        if ($to) { $SQL .= " AND time <= '$to'"; }
+        if ($from)  { $SQL .= " AND time >= '$from'"; }
+        if ($to)    { $SQL .= " AND time <= '$to'"; }
         if ($slctr) { $SQL .= $slctr;  }
         tryQuery($SQL);
     }

@@ -48,6 +48,39 @@ function MoveCategoryTo(catid, totxt, toval)
   eval(toval).value = catid;
 }
 
+// Encodes all values from listbox to comma delimeted string
+// prepared for sending as url parameter
+function CrossDelimeted(listbox,valueVar,textVar,stateVar) {
+    var delimeter=''
+    var delimeter2=''
+
+    eval(valueVar).value = "";
+    eval(textVar).value  = "";
+
+    for (var i = 0; i < eval(listbox).options.length; i++) {
+        // blank rows are just for <select> size setting
+        if (eval(listbox).options[i].value != 'wIdThTor' ) {
+            if (eval(listbox).options[i].text.length >=4) {
+                switch (eval(listbox).options[i].text.substring(0,4)) {
+                    case "(!) ":
+                        eval(stateVar).value += delimeter + "highlight"
+                        break
+                    case "(-) ":
+                        eval(stateVar).value += delimeter + "visible"
+                        break
+                }
+                eval(textVar).value += delimeter + eval(listbox).options[i].text.substring(4)
+            } else {
+                eval(stateVar).value += delimeter + "visible"
+                eval(textVar).value += delimeter + eval(listbox).options[i].text
+            }
+            eval(valueVar).value += delimeter2 + eval(listbox).options[i].value
+            delimeter='#'
+            delimeter2=','
+        }
+    }
+}
+
 function DelCateg(msg) {
   var i=document.f.selcat.selectedIndex
   if( !confirm(msg) )

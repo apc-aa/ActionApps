@@ -29,6 +29,9 @@ function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, relwi
 }
 
 function sb_RemoveItem(selectbox) {
+    if ( selectbox.selectedIndex == null ) {
+        return;
+    }
     s=selectbox.selectedIndex;
     for (i=s; i<selectbox.length; i++) {
         if (selectbox.options[i].value != "wIdThTor") {
@@ -39,6 +42,9 @@ function sb_RemoveItem(selectbox) {
 }
 
 function sb_GetSelectedValue(selectbox) {
+    if ( selectbox.selectedIndex == null ) {
+        return null;
+    }
     return selectbox.options[selectbox.selectedIndex].value;
 }
 
@@ -46,7 +52,7 @@ function sb_SetValue(selectbox, index, text, value) {
     if (index=='new') {
         // find "empty" row
         for( i=0; i < maxcount; i++ ) { // maxcount is global as well as relmessage
-            if( selectbox.options[i].value == 'wIdThTor' ) break;
+            if( (selectbox.options[i].value == 'wIdThTor') || selectbox.options[i].value == '') break;
         }
         if ( i >= maxcount ) {
             alert(relmessage);
@@ -83,6 +89,9 @@ function sb_AddValue(selectbox, text) {
 
 function sb_EditValue(selectbox, text) {
     val     = sb_GetSelectedValue(selectbox);
+    if ( val == null ) {
+        return;
+    }
     // wIdThTor is special AA constant, which behaves as empty string, but the
     // width of selectbox is not zero for it
     new_val = prompt(text, (val=='wIdThTor') ? '' : val);

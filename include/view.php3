@@ -199,7 +199,7 @@ function ParseViewParameters($query_string="") {
   if( !$arr["cat"] )         $arr["cat"]         = $GLOBALS['cat'];
   if( !$arr["show_subcat"] ) $arr["show_subcat"] = $GLOBALS['show_subcat'];
 
-  $arr['als']=GetAliasesFromUrl(true);
+  $arr['als']=GetAliasesFromUrl($GLOBALS['als']);
   $arr['vid']=$vid;
   $arr['conds']=$v_conds;
   if ( !$arr['slices'] )   $arr['slices']=$slices;
@@ -461,38 +461,41 @@ function GetViewFromDB($view_param, &$cache_sid) {
       return $ret;
     case 'discus':
       // create array of discussion parameters
-      $disc = array('ids'=> ($view_param["all_ids"] ? "" : $view_param["ids"]),
-                    'item_id'=> $view_param["sh_itm"],
-                    'vid'=> $vid,
-                    'html_format' => ($view_info[flag] & DISCUS_HTML_FORMAT),
-                    'parent_id' => $view_param["parent_id"],
-                    'disc_ids' => $view_param["disc_ids"]);
-      if (($view_param["disc_type"] == "list") || is_array ($view_param["disc_ids"]))
+      $disc = array('ids'         => ($view_param["all_ids"] ? "" : $view_param["ids"]),
+                    'item_id'     => $view_param["sh_itm"],
+                    'vid'         => $vid,
+                    'html_format' => ($view_info['flag'] & DISCUS_HTML_FORMAT),
+                    'parent_id'   => $view_param["parent_id"],
+                    'disc_ids'    => $view_param["disc_ids"]);
+      if (($view_param["disc_type"] == "list") || is_array ($view_param["disc_ids"])) {
           $disc['type'] = "list";
-      else if ($view_param["add_disc"])
+      } elseif ($view_param["add_disc"]) {
           $disc['type'] = "adddisc";
-      else if ($view_param["sel_ids"] || $view_param["all_ids"])
+      } elseif ($view_param["sel_ids"] || $view_param["all_ids"]) {
           $disc['type'] = "fulltext";
-      else $disc['type'] = "thread";
+      } else {
+          $disc['type'] = "thread";
+      }
       $aliases = GetDiscussionAliases();
 
       $format = GetDiscussionFormat($view_info);
-    // This is probably a bug, I think it should be
-    //  $format['slice_id'] = pack_id128($slice_id); // packed, not quoted
-    //  Re: No, it is not bug - format normaly holds data from slice table,
-    //      where id of slice is stored in 'id' column (honzam)
+      // This is probably a bug, I think it should be
+      //  $format['slice_id'] = pack_id128($slice_id); // packed, not quoted
+      //  Re: No, it is not bug - format normaly holds data from slice table,
+      //      where id of slice is stored in 'id' column (honzam)
 
       $format['id'] = pack_id128($slice_id);                  // set slice_id because of caching
 
       // special url parameter disc_url - tell us, where we have to show
       // discussion fulltext (good for discussion search)
       $durl = ( $view_param["disc_url"] ? $view_param["disc_url"] : shtml_url());
-       # add state variable, if defined (apc - AA Pointer Cache)
-      if( $GLOBALS['apc_state'] )
+      // add state variable, if defined (apc - AA Pointer Cache)
+      if ( $GLOBALS['apc_state'] ) {
         $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
+      }
 
       $itemview = new itemview($format,"",$aliases,null,"","",$durl, $disc);
-      $ret=$itemview->get_output_cached("discussion");
+      $ret      = $itemview->get_output_cached("discussion");
       trace("-");
       return($ret);
 

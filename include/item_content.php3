@@ -63,7 +63,7 @@ class ItemContent {
     function setByItemID($item_id, $ignore_reading_password=false) {
         if ( !$item_id ) return false;
         $zid           = (strtolower(get_class($item_id))=='zids') ? $item_id : new zids($item_id);
-        $content       = GetItemContent($zid);
+        $content       = GetItemContent($zid, false, $ignore_reading_password);
         $this->content = is_array($content) ? reset($content) : null;
     }
 

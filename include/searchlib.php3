@@ -23,7 +23,6 @@ require_once $GLOBALS["AA_INC_PATH"]."sql_parser.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 
-
 /** Returns sort[] array used by QueryZids functions
  *  $sort - sort definition in varios formats:
  *     1)   sort = headline........-
@@ -955,11 +954,8 @@ if( $debug ) {
     if( isset($select_order) )                                 # order ----------
         $SQL .= " ORDER BY $select_order";
 
-    # get result --------------------------
-    if( $debug )
-        $db->dquery($SQL);
-    else
-        $db->query($SQL);
+    // get result --------------------------
+    $db->tquery($SQL);
 
     while( $db->next_record() )
         $arr[] = unpack_id128($db->f(id));
