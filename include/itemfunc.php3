@@ -479,10 +479,10 @@ function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
 function show_fnc_hco($varname, $field, $value, $param, $html) {
   global $db;
   if (!empty($param)) 
-    list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels) = explode(':', $param);
+    list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable) = explode(':', $param);
 
   FrmHierarchicalConstant ($varname."[]", $field['name'], $value, $constgroup, $levelCount, $boxWidth, 
-  	$size, $horizontalLevels, $field[required],$field[input_help], $field[input_morehlp]);
+  	$size, $horizontalLevels, $firstSelectable, $field[required],$field[input_help], $field[input_morehlp]);
 }
 
 function show_fnc_nul($varname, $field, $value, $param, $html) {
@@ -628,7 +628,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     $itemvarset->add("display_count", "quoted", "0");
     $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
   }  
-
   $db->query($SQL);
   if( $invalidatecache ) {
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
