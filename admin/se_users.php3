@@ -26,23 +26,12 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require $GLOBALS[AA_INC_PATH]."se_users.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
   exit;
 }  
-
-// Function decides whether current user can change role
-// of specified user. Only allowed when $editor_perm (current user) is greater 
-// than $perm (user's role) and $perm_role (new user's role)
-function CanChangeRole ($user_perm, $editor_perm, $role_perm) {
-  if ((ComparePerms($editor_perm, $user_perm)=="G") &&
-      (ComparePerms($editor_perm, $role_perm)=="G")) {
-    return true;
-  } else {
-    return false;
-  }
-}    
 
 // function shows link only if condition is true
 function IfLink( $cond, $url, $txt ) {
@@ -120,26 +109,11 @@ HtmlPageBegin();   // Prints HTML start page tags
   echo $Msg;
 
   $continue=true;
-  $editor_perms = GetSlicePerms($auth->auth["uid"], $slice_id);
 
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-  
   if( $show_adduser ) {
     include "./se_users_add.php3";
-  } elseif( $UsrAdd ) {
-    if( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false),
-                       $editor_perms,
-                       $perms_roles_perms[$role]) ) {
-      AddPerm($UsrAdd, $slice_id, "slice", $perms_roles_id[$role]);
-      $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-    }
-  } elseif( $UsrDel ) {
-    if( CanChangeRole(GetSlicePerms($UsrDel, $slice_id, false),
-                      $editor_perms,
-                      $perms_roles_perms["AUTHOR"]) )  // smallest permission
-      DelPerm($UsrDel, $slice_id, "slice");
-      $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-  }
+  } elseif( $UsrAdd || $UsrDel) 
+    ChangeRole (); // in include/se_users.php3
   if( $continue ) {
 /* # unused code (I hope)
 
