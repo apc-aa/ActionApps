@@ -10,6 +10,10 @@
 	Function "hcUpdate" deletes and updates all things in Admin panel
 */
 
+if (!defined ("AA_CONSTEDIT_UTIL_INCLUDED"))
+    define ("AA_CONSTEDIT_UTIL_INCLUDED", 1);
+else return;
+
 $hcCol = array (
 	"Name" => 0,
 	"Value"=>1,
