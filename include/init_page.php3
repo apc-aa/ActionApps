@@ -154,7 +154,7 @@ srand((double)microtime()*1000000);
 $SQL= "SELECT id, name, type, deleted FROM module ORDER BY name";
 $db->query($SQL);
 while($db->next_record()) {
-  $up = unpack_id($db->f('id'));
+  $up = unpack_id128($db->f('id'));
 
   # g_modules is global array which holds user editable modules
   # hide the deleted slices (if the user is not superadmin)
