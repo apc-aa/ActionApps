@@ -90,13 +90,14 @@ function debuglog ($text)
 }
 
 // adds all items from source to target, but doesn't overwrite items
-function array_add ($source, &$target)
+function array_add($source, &$target)
 {
-    if (is_array ($source)) {
-        reset ($source);
-        while (list ($k,$v) = each ($source))
-            if (!isset ($target[$k])) $target[$k] = $v;
-            else $target[] = $v;
+    foreach ( (array)$source as $k => $v) {
+        if (!isset($target[$k])) {
+            $target[$k] = $v;
+        } else {
+            $target[]   = $v;
+        }
     }
 }
 
@@ -969,64 +970,6 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
 }
 
 // -------------------------------------------------------------------------------
-
-# fills array by headlines of items in specified slice (unpacked_id => headline)
-# $tagprefix is array as defined in itemfunc.php3
-function GetItemHeadlines( $sid, $headline_field="",
-    $restrict_zids=false, $frombins=AA_BIN_ACTIVE, $conds="", $sort="", $tagprefix=null) {
-
-    if (!$headline_field) {
-        $headline_field = GetHeadlineFieldID($sid, "headline.");
-    }
-    if (!$headline_field ) {
-        return;
-    }
-
-    $slice = new slice($sid);
-    $conds = String2Conds( $conds );
-    $sort  = String2Sort( $sort );
-
-    $zids  = QueryZIDs($slice->fields('record'), $sid, $conds, $sort, "", $frombins, "", 0, $restrict_zids);
-
-    if ( $zids->count() <= 0 ) {
-        return false;
-    }
-
-    $content = GetItemContent($zids, false, false, array($headline_field) );
-    $item = new item('',$slice->aliases());
-    $item->setformat( '{'.$headline_field.'}' );  // we can specify the format in future
-    for ( $i=0; $i<$zids->count(); $i++ ) {
-        $iid = $zids->short_or_longids($i);
-        $item->set_data($content[$iid]);
-        $ret[$iid] = substr($item->get_item(), 0, 50);
-    }
-
-    if (!(isset($restrict_zids) && is_object($restrict_zids) && ($restrict_zids->onetype() == 't') && isset($tagprefix))) {
-        return $ret;
-    }
-
-    // following code is just for tagged ids
-    // (I hope it works, but I can't test it, since I do not want to use it.)
-    // Honza 8/27/04
-
-    // See if need to Put the tags back on the ids
-    $tags = $restrict_zids->gettags() ;
-    if ( !isset($tags) ) {
-        return $ret;
-    }
-
-    while (list(,$v) = each($tagprefix)) {
-        $t2p[$v["tag"]] = $v["prefix"];
-    }
-
-    // we want headlines in the same order than in zids
-    foreach ( $ret as $u_id => $headline ) {
-        $new_ret[$tags[$u_id] . $u_id] = $t2p[$tags[$u_id]]. $headline;
-    }
-    return $new_ret;
-}
-
-// -------------------------------------------------------------------------------
 # returns group_id from $show_input_func string
 function GetCategoryGroupId($input_show_func) {
     $arr = explode( ":", $input_show_func);
@@ -1866,8 +1809,20 @@ function GetSortArray( $sort ) {
 }
 
 
-// contentcache class
 
+
+/** contentcache class - prevents from executing the same - time consuming code
+ *  twice in one run of the script.
+ *  Ussage:
+ *    Instead of calling:
+ *        $result = function_name(param1, param2);
+ *    we will use
+ *        $result = $contentcache->get_result("function_name", array(param1, param2));
+ *    For the first time call teh function_name is called, for second, third,...
+ *    time calling, the result is returned from cache (for the same parameters)
+ *
+ *    The best to use this class for time-consuming functions with small results
+ */
 class contentcache {
     // used for global cache of contents
     var $content;
@@ -1902,7 +1857,9 @@ class contentcache {
      */
     function get_result( $function, $params=array() ) {
         $key = md5($function.serialize($params));
-        if ( isset( $this->content[$key]) )  return $this->content[$key];
+        if ( isset( $this->content[$key]) ) {
+            return $this->content[$key];
+        }
         $val = call_user_func_array($function, $params);
         $this->content[$key] = $val;
         return $val;

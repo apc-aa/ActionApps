@@ -438,12 +438,26 @@ class aainputfield {
         if ( isset($this->const_arr) and is_array($this->const_arr) ) {  // already filled
             return;
         }
+        $this->const_arr = array();  // Initialize
+
         $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
         if ( !($constgroup=$this->param[0]) ) {  // assignment
             $this->const_arr = array();
         } elseif ( substr($constgroup,0,7) == "#sLiCe-" ) { # prefix indicates select from items
             $sid = substr($constgroup, 7);
-            $this->const_arr = GetItemHeadlines( $sid, $slice_field, $zids, $whichitems, $conds, $sort, $tagprefix);
+            /** Get format for which represents the id
+             *  Could be field_id (then it is grabbed from item and truncated to 50
+             *  characters, or normal AA format string.
+             *  Headline is default (if empty "$slice_field" is passed)
+             */
+            if (!$slice_field) {
+                $slice_field = GetHeadlineFieldID($sid, "headline.");
+                if (!$slice_field) {
+                    return;
+                }
+            }
+            $format = IsField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+            $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix);
             return $sid; // in most cases not very impotant information, but used in related() input type
         } else {
             $this->const_arr = GetConstants($constgroup, 'pri', $slice_field);

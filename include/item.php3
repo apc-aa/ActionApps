@@ -226,6 +226,58 @@ function Inputform_url($add, $iid, $sid, $ret_url, $vid='') {
     return con_url($url2go,$param);
 }
 
+/** Fills array - [unpacked_item_id] => unaliased string (headline) for item_id
+ *  @param $sid       - slice id
+ *         $format    - normal AA alias string like {headline.......1} or more
+ *                      complicated
+ *         $tagprefix - array as defined in itemfunc.php3
+ */
+function GetFormatedItems( $sid, $format="",  $restrict_zids=false, $frombins=AA_BIN_ACTIVE, $conds="", $sort="", $tagprefix=null) {
+
+    $slice = new slice($sid);
+    $conds = String2Conds( $conds );
+    $sort  = String2Sort( $sort );
+
+    $zids  = QueryZIDs($slice->fields('record'), $sid, $conds, $sort, "", $frombins, "", 0, $restrict_zids);
+
+    if ( $zids->count() <= 0 ) {
+        return false;
+    }
+
+    $content = GetItemContent($zids);
+    $item    = new item('',$slice->aliases());
+    $item->setformat( $format );
+    for ( $i=0; $i<$zids->count(); $i++ ) {
+        $iid = $zids->short_or_longids($i);
+        $item->set_data($content[$iid]);
+        $ret[$iid] = $item->get_item();
+    }
+
+    if (!(isset($restrict_zids) AND is_object($restrict_zids) AND ($restrict_zids->onetype() == 't') AND isset($tagprefix))) {
+        return $ret;
+    }
+
+    // following code is just for tagged ids
+    // (I hope it works, but I can't test it, since I do not want to use it.)
+    // Honza 8/27/04
+
+    // See if need to Put the tags back on the ids
+    $tags = $restrict_zids->gettags() ;
+    if ( !isset($tags) ) {
+        return $ret;
+    }
+
+    while (list(,$v) = each($tagprefix)) {
+        $t2p[$v["tag"]] = $v["prefix"];
+    }
+
+    // we want headlines in the same order than in zids
+    foreach ( $ret as $u_id => $headline ) {
+        $new_ret[$tags[$u_id] . $u_id] = $t2p[$tags[$u_id]]. $headline;
+    }
+    return $new_ret;
+}
+
 /** Creates item object just from item id and fills all necessary structures
  * @param         id        - an item id, unpacked or short
  *                          - could be also ZID - then $use_short_ids is ignored
@@ -249,6 +301,9 @@ class item {
   var $parameters;     // optional additional parameters - copied from itemview->parameters
 
   /** Constructor
+   *  @param $content4id could be ItemContent as well as zids as well as old
+   *                     contentent array
+   *
    *  Take a look at GetItemFromId() above, if you want to create item from id
    */
   function item($content4id='', $aliases='', $clean_url='', $format='', $remove='', $param=false){
