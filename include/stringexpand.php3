@@ -66,6 +66,7 @@ function ParamExplode($param) {
   # text = [ decimals [ # dec_point [ thousands_sep ]]] )  
   function parseMath($text)
   {
+    global $debug;
   	$variable = strtok($text,")");
     $twos = ParamExplode( strtok("") );
 	//print_r ($twos);
@@ -78,10 +79,10 @@ function ParamExplode($param) {
 			if ($val) $ret.=str_replace("#:","",$val); $key=false;
 		}
 	  else
-	  	{	$val=str_replace ("{", "", $val);
-			$val=str_replace ("}", "", $val);
+	  	{	#$val=str_replace ("{", "", $val);
+			#$val=str_replace ("}", "", $val);
+            if ($debug) huhl("Math on: '$val'");
             $val = calculate ($val); // defined in math.php3
-			
 			$format=explode("#",$variable);
 			$val = number_format($val, $format[0], $format[1], $format[2]);
 			
@@ -148,8 +149,11 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 	  }
     elseif( substr($out, 0, 5) == "math(" ) { #TODO REMOVE item
       # replace math
-      return QuoteColons($level, $maxlevel, parseMath( substr($out,5) ));
-      # QuoteColons used to mark colons, which is not parameter separators.  
+      return QuoteColons($level, $maxlevel,
+        parseMath( # Need to unalias in case expression contains _#XXX or ( )
+            new_unalias_recurent(substr($out,5),"",0,
+        		$maxlevel,$item,$itemview,$aliases)) );
+
 	  }
     elseif( substr($out, 0, 8) == "include(" ) {
       # include file
