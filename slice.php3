@@ -293,7 +293,7 @@ if($query) {              # complex query - posted by big search form ---
   if( !$scrl )
     $scr->current = 1;
 }
-elseif(isset($conds) AND is_array($conds)) {     # posted by easy query form ----------------
+elseif(isset($conds) AND is_array($conds)) {     # posted by query form ----------------
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","conds", "sort")); # store in session
 
   reset($conds); 
@@ -453,6 +453,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.23  2001/06/15 20:05:16  honzam
+little search imrovements and bugfixes
+
 Revision 1.22  2001/06/05 08:59:23  honzam
 default codepage for slice not hard-coded now - moved to *_common_lang
 

@@ -22,13 +22,42 @@ http://www.apc.org/
 */
 
 function GetWhereExp( $field, $operator, $querystring ) {
+
+  # search operator for functions (some operators can be in function:operator
+  # fomat - the function is called to $querystring (good for date transform ...)
+  if ( $pos = strpos($operator,":") ) {  # not ==
+    $operator = substr($operator,$pos+1);
+    switch( substr($s,0,$pos) ) {
+      case 'd': # english style datum (like '12/31/2001' or '10 September 2000')
+                $querystring = strtotime($querystring);
+                break;
+      case 'e': # european datum style (like 24. 12. 2001)
+                if( !ereg("^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$", $dttm, $part))
+                  if( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$", $dttm, $part))
+                    if( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$", $dttm, $part))
+                      $querystring = time();
+                $querystring = mktime(0,0,0,$part[1],$part[2],$part[3]);
+                break;
+    }
+  }               
+
   switch( $operator ) {
-    case 'LIKE':  return "$field LIKE '%$querystring%'";
-    case 'RLIKE': return "$field LIKE '%$querystring'";
-    case 'LLIKE': return "$field LIKE '$querystring%'";
-    case 'XLIKE': return "$field LIKE '$querystring'";
-    default:      return "$field $operator '$querystring'";
+    case 'LIKE':   $bgn='%';  $end='%';  $op='LIKE';    break;
+    case 'RLIKE':  $bgn='%';  $end='';   $op='LIKE';    break;
+    case 'LLIKE':  $bgn='';   $end='%';  $op='LIKE';    break;
+    case 'XLIKE':  $bgn='';   $end='';   $op='LIKE';    break;
+    default:       $bgn='%';  $end='%';  $op=$operator; break;
   }  
+
+  $arr = explode( " OR ", $querystring );
+  $delim = "";
+  while( list( ,$v) = each($arr) ) {
+    $str = ( ($v[0] == '"') OR ($v[0] == "'") ) ? substr( $v, 1, -1 ) : $v ;
+    $ret .= "$delim ($field $op '$bgn$str$end')";
+    $delim = ' OR ';
+  }
+    
+  return $ret;
 }  
 
 function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE" ) {
@@ -745,6 +774,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.14  2001/06/15 20:05:16  honzam
+little search imrovements and bugfixes
+
 Revision 1.13  2001/05/27 20:59:30  honzam
 fixed problem with doubled item from search
 

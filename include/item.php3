@@ -140,7 +140,7 @@ class item {
   # print due to html flag set (escape html special characters or just print)
   # param: 0
   function f_h($col, $param="") {
-    if( $param ) {  # create list of values for multivalue fields
+    if( $param AND is_array($this->columns[$col])) {  # create list of values for multivalue fields
       reset( $this->columns[$col] );
       while( list( ,$v) = each( $this->columns[$col] ) ) {
         $res .= $delim . DeHtml($v[value], $v[flag]);
@@ -370,6 +370,9 @@ class item {
 
 /*
 $Log$
+Revision 1.18  2001/06/15 20:05:16  honzam
+little search imrovements and bugfixes
+
 Revision 1.17  2001/06/15 15:27:58  honzam
 improved f_h alias function for displaying multiple values
 
