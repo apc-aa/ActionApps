@@ -143,6 +143,7 @@ define( "FLAG_UPDATE", 16 );   # content should be updated if source is changed
 # item table flags (numbers - just to be compatible with content table)
 define( "ITEM_FLAG_FEED", 2 );      # item is fed
 define( "ITEM_FLAG_OFFLINE", 8 );   # off-line filled or imported from file
+define( "ITEM_FLAG_ANONYMOUS_EDITABLE", 32); # anonymously added and thus anonymously editable (reset on every use of itemedit.php3)
 
 # states of feed field of field table
 define( "STATE_FEEDABLE", 0 );
@@ -389,6 +390,9 @@ require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 
 /*
 $Log$
+Revision 1.24  2002/01/10 13:50:05  honzam
+new possibilty to anonymously edit items on public sites
+
 Revision 1.23  2001/12/18 12:30:50  honzam
 new notification e-mail possibility (notify new item in slice, bins, ...), new possibility to join fields when fields are fed to another slice
 

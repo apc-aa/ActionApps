@@ -50,7 +50,7 @@ function default_fnc_($param) {
 # ----------------------- insert functions ------------------------------------
 
 function insert_fnc_qte($item_id, $field, $value, $param) {
-  global $varset, $itemvarset, $db;
+  global $varset, $itemvarset, $db, $slice_id ;
 
   #huh( "insert_fnc_qte($item_id, $field, $value, $param)"); 
   #p_arr_m($field);
@@ -507,6 +507,12 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true ) {
   global $db, $varset, $itemvarset;
 
+/*  if( $slice_id == '50443b7564df3ac6d5e40defaecb5a75') {
+    print_r($content4id);
+	print_r($fields);
+    exit;
+  }  
+*/
   if( !( $id AND isset($fields) AND is_array($fields)
         AND isset($content4id) AND is_array($content4id)) )
     return false;
@@ -564,7 +570,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
       $itemvarset->set('status_code', 1);
     $itemvarset->add("id", "unpacked", $id);
     $itemvarset->add("slice_id", "unpacked", $slice_id);
-    $itemvarset->add("flags", "quoted", "");
     $itemvarset->add("display_count", "quoted", "0");
     $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
   }  
@@ -708,6 +713,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.21  2002/01/10 13:50:05  honzam
+new possibilty to anonymously edit items on public sites
+
 Revision 1.20  2001/12/21 11:44:56  honzam
 fixed bug of includes in e-mail notify
 

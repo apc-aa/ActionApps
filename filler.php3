@@ -160,8 +160,31 @@ $content4id["status_code....."][0][value] = ($bin2fill==1 ? 1 : 2);
 
 // p_arr_m( $content4id );
 
+# insert_item should be true for INSERT, false for UPDATE
+$insert_item = true;
+
+# if the form wants to post the item several times, it should prepare the ID into 
+# the my_item_id hidden field
+if (!isset ($my_item_id)) $my_item_id = new_id();
+else {
+	$item_pid = addslashes(pack_id($my_item_id));
+	$SQL = "SELECT * FROM item WHERE id='$item_pid'";
+	$db->query($SQL);
+	if ($db->next_record())	{
+	 	# are we allowed to update this item?
+		if (!($db->f("flags") & ITEM_FLAG_ANONYMOUS_EDITABLE)) 
+			$err[] = "This item isn't allowed to be changed anonymously.";
+		$content4id["flags..........."][0]['value'] = $db->f("flags");
+		# set to UPDATE
+		$insert_item = false;
+	}
+	else
+		$content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
+}
+
   # update database
-$added_to_db = StoreItem( new_id(), $slice_id, $content4id, $fields, true, 
+if (count($err) == 1)
+	$added_to_db = StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert_item, 
                           true, true );     # insert, invalidatecache, feed
 
 if( count($err) > 1)
@@ -171,6 +194,9 @@ if( count($err) > 1)
 
 /*
 $Log$
+Revision 1.6  2002/01/10 13:50:05  honzam
+new possibilty to anonymously edit items on public sites
+
 Revision 1.5  2001/12/21 11:44:55  honzam
 fixed bug of includes in e-mail notify
 
