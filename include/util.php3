@@ -139,16 +139,20 @@ function self_base () {
   return (self_server(). ereg_replace("/[^/]*$", "", $PHP_SELF) . "/");
 }
 
+/** On some serevers isn't defined DOCUMENT_URI
+    (canaca.com 2003-09-19 - Apache/1.3.27 (Unix) (Red-Hat/Linux), Honza) */
+function document_uri() {
+    return get_if($_SERVER['DOCUMENT_URI'],$_SERVER['SCRIPT_URL']);
+}
+
 # returns server name with protocol, port and current directory of shtml file
 function shtml_base() {
-  global $DOCUMENT_URI;
-  return (self_server(). ereg_replace("/[^/]*$", "", $DOCUMENT_URI) . "/");
+  return (self_server(). ereg_replace("/[^/]*$", "", document_uri()) . "/");
 }
 
 # returns url of current shtml file
 function shtml_url() {
-  global $DOCUMENT_URI;
-  return (self_server(). $DOCUMENT_URI);
+  return (self_server(). document_uri());
 }
 
 # returns url of current shtml file
@@ -940,21 +944,28 @@ function GetItemHeadlines( $sid="", $slice_field="headline........",
 }
 
 // -------------------------------------------------------------------------------
+# returns group_id from $show_input_func string
+function GetCategoryGroupId($input_show_func) {
+    $arr = explode( ":", $input_show_func);
+    return $arr[1];
+}
 
 # find group_id for constants of the slice
-function GetCategoryGroup($slice_id) {
-  global $db;
-  $SQL = "SELECT input_show_func FROM field
-          WHERE slice_id='". q_pack_id($slice_id) ."'
-            AND id LIKE 'category%'
-          ORDER BY id";  # first should be category........,
-                          # then category.......1, etc.
-  $db->query($SQL);
-  if( $db->next_record() ){
-    $arr = explode( ":", $db->f(input_show_func));
-    return $arr[1];
-  } else
-    return false;
+function GetCategoryGroup($slice_id, $field='') {
+    global $db;
+
+    $condition = $field ? "id = '$field'" : "id LIKE 'category%'";
+    $SQL  = "SELECT input_show_func FROM field
+              WHERE slice_id='". q_pack_id($slice_id) ."'
+                AND $condition
+                ORDER BY id";  # first should be category........,
+                               # then category.......1, etc.
+    $db->tquery($SQL);
+    if( $db->next_record() ){
+        return GetCategoryGroupId($db->f('input_show_func'));
+    } else {
+        return false;
+    }
 }
 
 // -------------------------------------------------------------------------------
@@ -1754,21 +1765,26 @@ class contentcache {
         $this->content[md5($access_code)] = $val;
     }
 
-    /** Get value for $access_code. If value is not present, $acess_code is
-     *  performed (it is normal php code which returns the result) and
-     *  $access_code - result pair is stored for future usage
+    /** Get value for $access_code.
+     *  Returns false if the value is not cached for the $access_code (use ===)
      */
     function get($access_code) {
         $key = md5($access_code);
-        if ( isset( $this->content[$key] ) ) {
-            $ret = $this->content[$key];
-        } else {
-            // access_code is normal php code. The code should return the value
-            // please never return false - false is returned on FATAL ERROR
-            $ret = eval($access_code);
-            $this->content[$key] = $ret;   // set it for future ussage
-        }
-        return $ret;
+        if ( isset($this->content[$key]) )  return $this->content[$key];
+        return false;
+    }
+
+    /** Calls $function with $params and returns its return value. The result
+     *  value is then stored into cache, so next call of the $function with the
+     *  same parameters is returned from cache - function is not performed.
+     *  Use this feature mainly for repeating, time consuming functions!
+     */
+    function get_result( $function, $params=array() ) {
+        $key = md5($function.serialize($params));
+        if ( isset( $this->content[$key]) )  return $this->content[$key];
+        $val = call_user_func_array($function, $params);
+        $this->content[$key] = $val;
+        return $val;
     }
 
     // clear key or all content from contentcache

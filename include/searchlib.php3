@@ -1,6 +1,6 @@
 <?php
 if (!defined ("SEARCHLIB_INCLUDED"))
-   	  define ("SEARCHLIB_INCLUDED",1);
+      define ("SEARCHLIB_INCLUDED",1);
 else return;
 
 //$Id$
@@ -73,7 +73,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
     case '=':
       $querystring = str_replace('*', '%', trim($querystring));
       $querystring = str_replace('?', '_', $querystring);
-    	$syntax = new Syntax($field, $operator, lex( trim($querystring) ) );
+        $syntax = new Syntax($field, $operator, lex( trim($querystring) ) );
       $ret = $syntax->S();
       if( $ret == "_SYNTAX_ERROR" ) {
         if( $GLOBALS['debug'] )
@@ -194,6 +194,7 @@ function MakeSQLConditions($fields_arr, $conds, &$join_tables, $additional_field
     if( isset($conds) AND is_array($conds)) {
         foreach ($conds as $cond) {
             if( isset($cond) AND is_array($cond) ) {
+                unset($onecond);                    // clear
                 foreach ( $cond as $fid => $v ) {
                     $finfo = $fields_arr[$fid];
                     if ( isset($finfo) AND is_array($finfo) ) {
@@ -201,12 +202,14 @@ function MakeSQLConditions($fields_arr, $conds, &$join_tables, $additional_field
                             if ( !$additional_field_cond( $finfo, $v, $add_param ) )
                                 continue;
                         }
-                        $ret[] = GetWhereExp( $finfo['field'],
+                        $onecond[] = GetWhereExp( $finfo['field'],
                                             $cond['operator'], $cond['value'] );
                         if( $finfo['table'] )
                             $join_tables[$finfo['table']] = true;
                     }
-                }
+                }  // between conditions inside one cond is OR
+                if     ( count($onecond) == 1 ) $ret[] = $onecond[0];
+                elseif ( count($onecond) >  1 ) $ret[] = '( '. join( ' OR ',$onecond ) . ')';
             }
         }
     }
@@ -398,9 +401,9 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
           continue;           # it is not field_id parameters - skip it for now
 
         if( !$fields[$fid] OR $v=="") {
-		  if ($debug) echo "Skipping $fid in conds[]: not known.<br>";
+          if ($debug) echo "Skipping $fid in conds[]: not known.<br>";
           continue;            # bad field_id or not defined condition - skip
-	    }
+        }
 
         if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
           $select_conds[] = GetWhereExp( 'item.'.$fields[$fid]['in_item_tbl'],
@@ -529,9 +532,9 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
   }
 
   if( $debug )
-	huhl("QueryZIDs:slice_id=",$slice_id,"  select_tabs=",$select_tabs,
-		"  select_conds=",$select_conds,"  select_order",$select_order,
-		"  select_group=",$select_group);
+    huhl("QueryZIDs:slice_id=",$slice_id,"  select_tabs=",$select_tabs,
+        "  select_conds=",$select_conds,"  select_order",$select_order,
+        "  select_group=",$select_group);
 
   # construct query --------------------------
   $SQL = "SELECT DISTINCT item.id FROM item ";
@@ -822,13 +825,13 @@ function test_for_closed($search) {
       case "(" : $zavorky++;
                  break;
       case ")" : $zavorky--;
-            		 break;
+                     break;
       case "\"" :
                   if ($uvozovky==1)
                     $uvozovky--;
-     		          else
+                      else
                     $uvozovky++;
-      		        break;
+                    break;
     }
   }
   $retval = $zavorky+$uvozovky;
@@ -958,10 +961,10 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
 
   # prepare query
   $search=trim(stripslashes(rawurldecode($query)));
-	$query = str_replace("\\", "\\\\", $query);
-	$query = str_replace("%", "\%", $query);
-	$query = str_replace("_", "\_", $query);
-	$query = str_replace("'", "\'", $query);
+    $query = str_replace("\\", "\\\\", $query);
+    $query = str_replace("%", "\%", $query);
+    $query = str_replace("_", "\_", $query);
+    $query = str_replace("'", "\'", $query);
 
   if (test_for_closed($search) != 0)
    return false;

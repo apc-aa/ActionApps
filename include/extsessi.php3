@@ -137,7 +137,7 @@ class AA_SL_Session extends Session {
 
   //rewriten to return URL of shtml page that includes this script instead to return self url of this script. If noquery parameter is true, session id is not added
    function MyUrl($SliceID=0, $Encap=true, $noquery=false){  //SliceID is here just for compatibility with MyUrl function in extsess.php3
-      global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REDIRECT_DOCUMENT_URI, $scr_url;
+      global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REDIRECT_DOCUMENT_URI, $SCRIPT_URL, $scr_url;
       if (isset($HTTPS) && $HTTPS == 'on') {
          ## You will need to fix suexec as well, if you use Apache and CGI PHP
          $PROTOCOL='https';
@@ -149,8 +149,10 @@ class AA_SL_Session extends Session {
          $foo = $PROTOCOL. "://". $HTTP_HOST.$scr_url;
       } elseif (isset($REDIRECT_DOCUMENT_URI)) {  ## CGI --enable-force-cgi-redirect
          $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_DOCUMENT_URI;
-      } else {
+      } elseif (isset($DOCUMENT_URI)) {
          $foo = $PROTOCOL. "://". $HTTP_HOST.$DOCUMENT_URI;
+      } else {
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$SCRIPT_URL;
       }
 
       switch ($this->mode) {

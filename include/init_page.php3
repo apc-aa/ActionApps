@@ -155,6 +155,7 @@ if( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_l
 
 $db    = new DB_AA;
 $event = new aaevent;
+$contentcache = new contentcache;
 
 // if we want to use random number generator, we have to use srand just once per
 // script. That's why we called it here. Do not use it on other places in scripts
