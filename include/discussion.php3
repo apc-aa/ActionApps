@@ -131,7 +131,7 @@ function GetAlias($fce, $param, $help) {
 function GetDiscussionAliases() {
   #  Standard aliases
   $aliases["_#SUBJECT#"] = GetAlias("f_h", "d_subject.......", L_D_SUBJECT_ALIAS);
-  $aliases["_#BODY####"] = GetAlias("f_h", "d_body..........", L_D_BODY_ALIAS);
+  $aliases["_#BODY####"] = GetAlias("f_t", "d_body..........", L_D_BODY_ALIAS);
   $aliases["_#AUTHOR##"] = GetAlias("f_h", "d_author........", L_D_AUTHOR_ALIAS);
   $aliases["_#EMAIL###"] = GetAlias("f_h", "d_e_mail........", L_D_EMAIL_ALIAS);
   $aliases["_#WWW_URL#"] = GetAlias("f_h", "d_url_address...", L_D_WWWURL_ALIAS);
@@ -279,6 +279,9 @@ function updateDiscussionCount($item_id) {
 }
 /*
 $Log$
+Revision 1.2  2001/12/12 18:39:44  honzam
+Better handling newlines (<BR>)
+
 Revision 1.1  2001/09/27 13:15:47  honzam
 New discussion support
 
