@@ -22,13 +22,15 @@ figure out some information you want to use:
   (You could also use a geographical category, but this is not described here.)
   A domain name can be described in a LDAP dn using the <EM>dc</EM> attribute.
   For example, the base dn for a possible domain name <EM>ecn.apc.org</EM> would
-  be <CODE>dc=ecn,dc=apc,dc=org</CODE>.
+  be <CODE>dc=ecn,dc=apc,dc=org</CODE> or in new version we are using as default dn
+  <CODE>ou=AA</CODE>.
   <LI>Your LDAP administrative account. OpenLDAP's built-in access control needs
   a <EM>root</EM> object which has all privileges. Once it exists, the root
   object can be used to modify the data stored in the LDAP database. Like every
   object in the database, the root object needs a dn. It is recommended that you
   use the canonical name <EM>root</EM>. Following the example above, this gives
-  us a root object dn of <CODE>cn=root,dc=ecn,dc=apc,dc=org</CODE>. </LI></UL>
+  us a root object dn of <CODE>cn=root,dc=ecn,dc=apc,dc=org</CODE> or in new version 
+  we are using as default a root object dn <CODE>cn=root,ou=AA</CODE>. </LI></UL>
 <P>Note: As with the database server, the OpenLDAP server does not necessarily
 need to be running on the same machine as the ActionApps.
 
@@ -83,7 +85,7 @@ of the main configuration file:
 <BLOCKQUOTE><CODE>
   <HR>
 <PRE># chmod 600 /etc/openldap/slapd.conf
-# cp slapd.oc.netscape.conf slapd.at.netscape.conf slapd.oc.apc.conf slapd.at.apc.conf /etc/openldap/
+# cp slapd.apc.schema /etc/openldap/schema/
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
@@ -92,7 +94,7 @@ only contains comments. Put in two lines containing your base dn and the host
 where the ldap server runs:
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE>BASE    dc=ecn,dc=apc,dc=org
+<PRE>BASE    ou=AA
 HOST    localhost
 </PRE>
   <HR>
@@ -103,7 +105,7 @@ machine where the programs run.)
 domain name with the one your base dn was derived from):
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE># mkdir /var/lib/ldap/ecn.apc.org
+<PRE># mkdir /var/lib/ldap/aa
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
@@ -141,9 +143,7 @@ suit your needs according to the following instructions.
   <LI>Your base object
   <LI>The ActionApps account object (used by ActionApps to
   access the ldap server)
-  <LI>A group object for ActionApps administrators (superadmins)
-  <LI>One initial superadmin account object which is the initial member of the
-  group of superadmins
+  <LI>A group object for ActionApps users
   <LI>The ActionApps APCACL object (ActionApps access control
   storage object) of ActionApps administrators </LI></UL>Objects are
 separated by blank lines. Each line consists of a keyword, followed by a colon,
@@ -151,79 +151,23 @@ followed by a value. The first line of each object is the dn, thus the keyword
 is "dn". The other object lines are its attributes.
 <P>Edit these spots:
 <UL>
-  <LI>Everywhere: replace all occurances of the example "dc=ecn,dc=apc,dc=org"
+  <LI>Everywhere: replace all occurances of the example "ou=AA"
   base dn with your own one (hopefully your editor has a good search and replace
   function).
-  <LI>root object (first block)
-  <DL>
-    <DT><B>o: Econnect</B>
-    <DD>
-    <P>Replace "Econnect" with your organization name. </P>
-    <DT><B>dc: ecn</B>
-    <DD>
-    <P>Replace "ecn" with your base dn domain name, but only the first word up
-    to but not including the first dot. </P>
-    <DT><B>description</B>
-    <DD>
-    <P>Fill in a descriptive text describing your organization. </P></DD></DL>
-  <LI>ActionApps account object (second block)
-  <P>No modifications </P>
-  <LI>ActionApps administrator (superadmin) group object (third block)
-  <DL>
-    <DT><B>member</B>
-    <DD>
-    <P>Fill in the dn of the personal initial member object (see below)
-  </P></DD></DL>
-  <LI>Initial superadmin account object (forth block)
-  <DL>
-    <DT><B>dn</B>
-    <DD>
-    <P>Replace "uid=karel" with "uid=XXX" where XXX is a user id for the initial
-    administrator group member (for example, use qour first name). </P>
-    <DT><B>cn</B>
-    <DD>
-    <P>Fill in the canonical name of the initial member. </P>
-    <DT><B>sn</B>
-    <DD>
-    <P>Fill in the surname of the initial member. </P>
-    <DT><B>uid</B>
-    <DD>
-    <P>Repeat the user id from above. </P>
-    <DT><B>mail</B>
-    <DD>
-    <P>Fill in an email address of the initial member. </P></DD></DL>
-  <LI>The APCACL object (ActionApps access control storage) (fifth
-  block) For this object you need to invent a unique identifier. The identifier
-  should consist of 32 characters only containing characters from the set
-  <EM>0123456789abcdef</EM>. This is your <EM>aa id</EM>. You will need it later
-  again.
-  <DL>
-    <DT><B>dn</B>
-    <DD>
-    <P>Replace the string after "apcobjectid=" up to the next comma with your aa
-    id. </P>
-    <DT><B>apcobjectid</B>
-    <DD>
-    <P>Replace the content with your aa id. </P>
-    <DT><B>description</B>
-    <DD>
-    <P>Put in "ActionApps at ..." where ... is your organization.
-    </P></DD></DL></LI></UL>
+</UL>
 <P>Having made these modifications, we can tell the ldap server to create the
 objects:
 <P>
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE>% ldapmodify -a -f ldiffile -D "cn=root,dc=ecn,dc=apc,dc=org" -w password
-adding new entry dc=ecn,dc=apc,dc=org
+<PRE>% ldapmodify -a -f ldiffile -D "cn=root,ou=AA" -w password
+adding new entry ou=AA
 
-adding new entry cn=aalduser,dc=ecn,dc=apc,dc=org
+adding new entry cn=aauser,ou=AA
 
-adding new entry cn=ActionApps Admins,dc=ecn,dc=apc,dc=org
+adding new entry ou=People,ou=AA
 
-adding new entry uid=moritz,dc=ecn,dc=apc,dc=org
-
-adding new entry apcobjectid=000111222333444555666777888999ActionApps,dc=ecn,dc=apc,dc=org
+adding new entry ou=ACLs,ou=AA
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
@@ -249,15 +193,14 @@ result should be similar to the ldif file you just used.
 <CODE>/etc/openldap/ldap.conf</CODE> file for the BASE and HOST entries.
 <P>
 <H3>LDAP passwords</H3>
-<P>There are no less than three passwords we must maintain for the ldap server.
+<P>There are no less than two passwords we must maintain for the ldap server.
 We refer to them as the <EM>root dn password</EM>, which is used to access the
-LDAP root account; the <EM>initial superadmin account password</EM>, which is
-used to access the initial ActionApps superadmin account; and the
-<EM>aalduser account password</EM>, which the ActionApps use to access
-the aalduser account and the LDAP server.
+LDAP root account; and the
+<EM>aauser account password</EM>, which the ActionApps use to access
+the aauser account and the LDAP server.
 <P>We should now set the root dn password in
-<CODE>/etc/openldap/slapd.conf</CODE> as well as for the initial superadmin
-account password. To do this, first set the initial superadmin account password
+<CODE>/etc/openldap/slapd.conf</CODE> as well as for the aauser
+account password. To do this, first set the auser account password
 using ldappasswd, then make a query to the ldap server so we get an encrypted
 version of the password back, and copy and paste the encrypted password into the
 sldap.conf file. When you issue the following commands, the password given after
@@ -267,20 +210,16 @@ for the new password, enter the new root dn password you want to set. And remind
 it!
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE>% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -t "uid=moritz,dc=ecn,dc=apc,dc=org" -H ssha
+<PRE>% ldappasswd -D "cn=root,ou=AA" -w password -t "cn=aauser,ou=AA" -H ssha
 New password:
 Re-enter new password:
-% ldapsearch -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -L uid=moritz
-dn: uid=moritz,dc=ecn,dc=apc,dc=org
+% ldapsearch -D "cn=root,ou=AA" -w password -L cn=aauser
+dn: cn=aauser,ou=AA
 objectclass: top
 objectclass: person
-objectclass: organizationalperson
-objectclass: inetorgperson
-cn: Moritz Both
-sn: Both
-uid: moritz
-mail: moritz@aldebaran.de
-userpassword: {ssha}1KoDEQd/MrY+JPnFgotki5AZrCyfGZYr
+cn: aa
+sn: Toolkit
+description: Account used by AA to access LDAP DB
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>
@@ -290,23 +229,16 @@ the encrypted version of the new root dn password you entered. Paste this string
 <CODE>/etc/openldap/slapd.conf</CODE>. After the next server restart, the old
 root dn password "password" will no longer work, instead, you use the password
 you just entered.
-<P>If you want, you can change the password for the initial superadmin account
+<P>If you want, you can change the password for the aauser account
 again so it is different from the root dn password.
-<P>Try to access the ldap server using your initial superadmin account:
+<P>Try to access the ldap server using your aauser account:
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE>% ldapsearch -D "uid=moritz,dc=ecn,dc=apc,dc=org" -W -L objectclass=\*
+<PRE>% ldapsearch -D "cn=aauser,ou=AA" -W -L objectclass=\*
 Enter LDAP Password:
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>You should get all the objects that are stored. In case of
 an error message, check the spelling of the command line... errors most likely
 have to do with spelling errors.
-<P><B>Finally</B>, set a aalduser account password.
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha -W
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
 <P>
