@@ -19,9 +19,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Settings for emails table views (see doc/tabledit.html for more info)       
+// (c) Econnect, Jakub Adamek, December 2002
+// DOCUMENTATION: doc/tableview.html
 
-function GetTableView ($viewID) {        
+// Settings for emails table views 
+/** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
+function GetTableView ($viewID, $processForm = false) {        
     global $auth, $slice_id, $db;
     global $attrs_edit, $attrs_browse, $format, $langs;
 

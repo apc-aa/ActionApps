@@ -207,8 +207,8 @@ class scroller {
 		$arr = $this->navarray();
 		while(list($k, $v) = each($arr)) {
             if($i++) echo " | ";	
-			if($v) echo "<a href=\"$url$v\" class=\"scroller\">$k</a>";
-			else   echo "<span class=\"scroller_actual\">$k</span>";
+			if($v) echo "<a href=\"$url$v\" class=\"scroller\">$k</a>\n";
+			else   echo "<span class=\"scroller_actual\">$k</span>\n";
 		}
  	}
 

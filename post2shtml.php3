@@ -27,6 +27,7 @@ require "include/config.php3";
 require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
 
 $db = new DB_AA;
+
 $vars = array (
     "post" => $HTTP_POST_VARS,
     "get" => $HTTP_GET_VARS,
@@ -73,6 +74,9 @@ function md5_array (&$array) {
         $array = md5 ($array);
 }
 
+/** Adds all values from the $source array to the $dest array. Follows all paths
+* in order that all values present in $dest and not in $source are kept.
+*/
 function add_var2 (&$source, &$dest) {
     if (is_array ($source)) {
         reset ($source);
@@ -81,6 +85,9 @@ function add_var2 (&$source, &$dest) {
     }
 }
 
+/** Recursively adds all values from the $source array to the $dest array. Follows all paths
+* in order that all values present in $dest and not in $source are kept.
+*/
 function add_var3 ($varname, &$source, &$dest) {
     if (is_array ($source)) {
         reset ($source);

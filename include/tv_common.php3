@@ -19,7 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Table view common settings
+// (c) Econnect, Jakub Adamek, December 2002
+// DOCUMENTATION: doc/tableview.html
+// This file is meant to be included before any TableViews are defined.
 
 $attrs_edit = array (
     "table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'");
@@ -62,4 +64,3 @@ function CreateWhereFromList ($column, $list, $type="number") {
 }
 
 ?>
-

@@ -1,6 +1,29 @@
 <?php
+//$Id$
+/* 
+Copyright (C) 1999, 2000 Association for Progressive Communications 
+http://www.apc.org/
 
-// To be called from TableEdit::ShowColumnValues
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+// (c) Econnect, Jakub Adamek, December 2002
+// DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
+
+// In this file only the function ColumnFunctions() is defined.
+// This function is meant to be called from TableEdit::ShowColumnValues
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 * Does column type-specific work. 
@@ -103,20 +126,18 @@ function ColumnFunctions ($cview, &$val, $function, $name="")
         return;
 
     // ********************** CHECKBOX **************************       
-/*    case 'checkbox':
+    case 'checkbox':
     
         switch ($function) {
         case 'show':
-            echo "<INPUT type=\"checkbox\" name=\"$name\"".($val ? " checked" : "").">"; 
+            //echo "<INPUT type=\"checkbox\" name=\"$name\"".($val ? " checked" : "").">"; 
+            FrmSelectEasy ($name, array (0 => _m("no"), 1 => _m("yes")), $val ? 1 : 0);
             break;
         case 'show_ro':
             echo $val ? _m("yes") : _m("no");
             break;
-        case 'form':
-            $val = $val ? 1 : 0;
-            break;
         }                    
-*/
+        return;
 
     // ********************** USERDEF ***************************
     case "userdef" : 

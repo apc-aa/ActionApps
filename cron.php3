@@ -20,11 +20,8 @@ http://www.apc.org/
 */
 
 /* PHP cron: reads items from database and runs them. The item format is UNIX-cron-like. 
-
-	Author: Jakub Adamek, February 2002
-*/
-
-/* See cron.php3 documentation in FAQ pages.
+   (c) Econnect, Jakub Adamek, February 2002
+   DOCUMENTATION: See cron.php3 documentation in FAQ pages.
 
 UNIX Cron documentation:
 
@@ -43,8 +40,6 @@ A field may be an asterisk (*), which indicates all values in the range are acce
 require "./include/config.php3";
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
-
-#echo "<HTML><BODY>";
 
 // you may call cron with specified timestamp to simulate the behavior 
 
@@ -169,7 +164,7 @@ function cron ($time = 0) {
     if ($debug) echo "</BODY></HTML>";
 }
 
-// Use this to try function of script
+// Use this for debug purposes
 /*
 $db = new DB_AA;
 $db->query ("UPDATE cron SET last_run = NULL");
@@ -183,6 +178,4 @@ for ($i = 0; $i < 50; $i++) {
 */
 
 cron();
-
-#echo "</BODY></HTML>";
 ?>

@@ -19,9 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/*  Class TableEdit
-    See doc/tabledit.html for more info.
-*/	
+// (c) Econnect, Jakub Adamek, December 2002
+// DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
 
 require "tabledit_column.php3";
 require "tabledit_util.php3";
@@ -30,68 +29,78 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 // identifies new record 
 $new_key = "__new__";
 
+/**  Class TableEdit
+*    See doc/tabledit.html for more info.
+*/	
 class tabledit {
     // serialization purposes??
     var $classname = "tabledit";
 
-    // PUBLIC VARIABLES
-    // active tableview
+    // VARIABLES SET IN CONSTRUCTOR
+    /// active TableView definition (see doc/tableview.html) completed by default values
     var $view;
-    // view ID
+    /// view ID
     var $viewID;
-    // main script URL, used as FORM action
+    /// calling script URL, used as FORM action="$action"
     var $action;
-    // global cmd[] parameter, created by this class, sent by a form
+    /** Global cmd[] parameter. See doc/tabledit.html for a description. */
     var $all_cmd;
-    // value array returned as form data (edit / update table row)
-    var $form_vals;
-    /* is this a CHILD table?  */
-    var $child;
-    // session (for scroller management)
+    /** is this a CHILD table?  */
+    var $is_child;
+    /** session (for session-stored variables) */
     var $sess;
-    // URL path for images (up.gif and down.gif)
+    /** URL path for images */
     var $imagepath;    
-    // function to get other Table View definitions by ID. Used in ShowChildren() and ProcessFormData()
+    /**  Function to get other Table View definitions by ID. 
+    *    Used in $this->ShowChildren() and ProcessFormData(), see tabledit_util.php3.
+    *    The function must get two parameters: string $viewID and bool $processForm.
+    *
+    *    The parameter $processForm tells whether the function is called from ProcessFormData().
+    *    In that case not all settings are important and you can leave out
+    *    some of them. Useful when creating a new module with TableEdit, because you must not
+    *    call init_page.php3 before the module is added. */    
     var $getTableViewsFn;
     
     // PRIVATE VARIABLES
-    // command to be executed (exactly $all_cmd[$viewID])
+    // command for this particular Table View (exactly $all_cmd[$viewID])
     var $cmd;
-    // field name to order by
+    /// field alias to order by
     var $orderby;
-    // ''='a' or 'd'
+    /// order direction: '' and 'a' mean ascending, 'd' means descending
     var $orderdir;
-    // show an empty record to add new data?
+    /// show a record allowing to add new data?
     var $show_new;
-    // columns (fields) definition from view with added types info
+    /// columns (fields) definition completed by GetColumnTypes (see tabledit_util.php3)
     var $cols;
-    // view type
+    /// view type (edit / browse)
     var $type;
-    // aliases of fields forming primary keys in individual tables
+    /** array of aliases of fields forming primary keys for each table 
+    *   (if not using "join", there is only one table) 
+    */
     var $primary_aliases;
 
-	/* constructor, see above for parameter description */
-    function tabledit($viewID, $action, $cmd, $form_vals, $view, $imagepath, &$sess, $getTableViewsFn, $child=false) {
+	/** constructor, see above for parameter description */
+    function tabledit($viewID, $action, $cmd, $view, $imagepath, &$sess, $getTableViewsFn, $is_child=false) {
         $this->viewID = $viewID;
         $this->all_cmd = $cmd;
         $this->cmd = $cmd[$viewID];
         $this->view = $view;
         $this->cols = $this->view["fields"];
+        // complete the column info
         SetColumnTypes ($this->cols, $this->primary_aliases, 
-            $this->view["table"], $this->view["readonly"], $this->view["primary"]);
-        $this->child = $child;
+            $this->view["table"], $this->view["join"],
+            $this->view["readonly"], $this->view["primary"]);
+        $this->is_child = $is_child;
         $this->action = $action;       
         $this->sess = &$sess;
         $this->imagepath = $imagepath;
         $this->getTableViewsFn = $getTableViewsFn;
-        $this->form_vals = $form_vals;
         $this->type = $this->view["type"];
         
-        $this->ProcessFormData();
         $this->UpdateCmd ();
     }
 
-    // exchanges data between session-stored cmd (as tabledit_cmd) and current URL cmd
+    /** exchanges data between session-stored cmd (as tabledit_cmd) and current URL cmd */
     function UpdateCmd () {
         if (is_object ($this->sess))
             $this->sess->register("tabledit_cmd");
@@ -247,9 +256,14 @@ class tabledit {
             while (list (, $record) = each ($records)) {                
                 $new_record = $record == "new";
                 list (,$key) = each ($all_keys);
+                // row number helps to use different CSS styles for even and odd rows
                 $irow ++;
+                // show new record in row 1 color always
+                if ($new_record) $irow = 1;
     
                 if ($this->type == "browse") {
+                    if ($new_record && count ($records) > 1)
+                        $this->showBrowseFooter ($formname, $all_keys, $record_count, $scroll);                    
                     echo "<TR>";
                     $this->ShowButtons ($new_record, $key, $fnname, $formname, $irow, "left");
                 }
@@ -273,18 +287,18 @@ class tabledit {
                         $err = $this->ShowChildren($record);
                 }
             }
-            if ($this->type == "browse") 
-                $this->showBrowseFooter ($formname, $all_keys, $record_count);
+            if ($this->type == "browse" && !$this->show_new)
+                $this->showBrowseFooter ($formname, $all_keys, $record_count, $scroll); 
             echo "</TABLE>";
         }
-        else if ($this->type == "browse")
+        else if ($this->type == "browse") {
             $this->ShowButtons (false, "", "", "", 0, "down", array (), $record_count);        
-        
-        // scroller
-        if ($scroll->pageCount() > 1) {
-            echo "<P align=\"center\">";
-        	$scroll->pnavbar();
-            echo "</P>";        
+            // scroller
+            if ($scroll->pageCount() > 1) {
+                echo "<P align=\"center\">";
+            	$scroll->pnavbar();
+                echo "</P>";        
+            }
         }
         
         return $err;
@@ -309,9 +323,13 @@ class tabledit {
         reset ($this->cols);
         while (list ($colname,$column) = each ($this->cols)) {
             if ($column["view"]["type"] != "hide" && $column["view"]["type"] != "ignore") {
+                $caption = $column["caption"];
+                if ($column["required"] && substr ($column["caption"], -1) != "*"
+                    && !$column["view"]["readonly"])
+                    $caption .= " *";
                 if ($record_count > 0) {
                      echo "$td<a href='".$this->getAction($this->gotoview2())."&cmd[".$this->viewID."]"
-                         ."[orderby][$colname]=1'><span class=te_b_col_head>$column[caption]</span>\n";
+                         ."[orderby][$colname]=1'><span class=te_b_col_head>$caption</span>\n";
                      if ($this->orderby == $colname) {
                          echo "&nbsp;<img src='".$this->imagepath;
                          if ($this->orderdir == 'd')
@@ -321,7 +339,7 @@ class tabledit {
                      }
                      echo "</a>";
                 }
-                else echo "$td<span class=te_b_col_head>$column[caption]</span>\n";
+                else echo "$td<span class=te_b_col_head>$caption</span>\n";
                 if ($column["hint"])
                     echo "<br>\n<span class=te_b_col_hint>".$column["hint"]."</span>";
                 echo "</TD>\n";
@@ -333,9 +351,10 @@ class tabledit {
 
     // -----------------------------------------------------------------------------------
     
-    function showBrowseFooter ($formname, $all_keys, $record_count) {
+    function showBrowseFooter ($formname, $all_keys, $record_count, $scroll) {
         echo "<TR><TD colspan=100><TABLE width=\"100%\">
             <TR><TD class=\"te_b_col_head\" width=\"100\" valign=top>";
+        // icon explanation ("= update" etc.)
         if ($record_count) {    
             reset ($this->view["buttons_left"]);
             while (list ($button, $use) = each ($this->view["buttons_left"])) {
@@ -343,21 +362,32 @@ class tabledit {
                 $bt = $bt[$button];
                 $alt = $bt["alt"] ? $bt["alt"] : "&nbsp;";
                 $img = '<image border="0" src="'.$this->imagepath.$bt["img"].$big.'.gif" alt="'.$bt["alt"].'">';
-                echo "$img = $alt<br>";
+                echo "<span class=te_button_text>$img = $alt</span><br>";
             }
         }
         else echo "&nbsp;";
-        echo '</TD><TD width="50">&nbsp;</TD><TD>';
+        $space = $scroll->pageCount() > 1 ? 20 : 50;
+        echo '</TD><TD width="'.$space.'">&nbsp;</TD><TD colspan=100>';
     
+        echo "<TABLE><TR>";
+        if ($scroll->pageCount() > 1) {
+            echo "<TD>";
+           //echo "<P align=\"center\">";
+        	$scroll->pnavbar();
+            echo "</TD><TD width=20></TD>";
+            //echo "</P>";        
+        }
+        echo "<TD>";
         $this->ShowButtons (false, "", "", $formname, 0, "down", $all_keys, $record_count);
-        echo "</TD></TR></TABLE></TD></TR></FORM>";
+        // scroller
+        echo "\n</TD></TR></TABLE></TD></TR></TABLE></TD></TR></FORM>";
     }
     
     // -----------------------------------------------------------------------------------
 
     function getAction ($viewID) {
         return $this->action. (strstr($this->action,"?") ? "&" : "?") . "set_tview=".$viewID
-            .($this->child ? "#" . $this->viewID : "");
+            .($this->is_child ? "#" . $this->viewID : "");
     } 
         
     // -----------------------------------------------------------------------------------
@@ -411,6 +441,11 @@ class tabledit {
         //echo "edit ".$this->cmd["edit"]." show new ".$this->cmd["show_new"]." readonly ".$this->view["readonly"]." addrecord ".$this->view["addrecord"]." gotoview ".$this->view["gotoview"];
         $this->show_new = false;
         // create SQL SELECT        
+        // finish processing of insert
+        if ($this->cmd["insert"] && $this->view["where"]) {
+            // value of $this->cmd["insert"] was changed in TableInsert to the SQL WHERE clause
+            $this->view["where"] = "(".$this->view["where"].") OR ".$this->cmd["insert"];            
+        }        
         // apply edit command only in Edit view
         if ($this->cmd["edit"] && $this->type == "edit") {
             $where = CreateWhereCondition (key ($this->cmd["edit"]), 
@@ -530,7 +565,11 @@ class tabledit {
             
             $visible = $cview["type"] != "ignore" && $cview["type"] != "hide";
             if ($visible && $this->type == "edit") {
-                echo "<TR>$td<span class=te_e_col_head>".$column["caption"]."</span><br>\n";
+                $caption = $column["caption"];
+                if ($column["required"] && substr ($column["caption"], -1) != "*"
+                    && !$cview["readonly"])
+                    $caption .= " *";
+                echo "<TR>$td<span class=te_e_col_head>".$caption."</span><br>\n";
                 if ($column["hint"])
                     echo "<span class=\"te_e_col_hint\">".$column["hint"]."</span>";
                 echo "</TD>\n";
@@ -568,7 +607,7 @@ class tabledit {
     
     // gotoview2 = delete,update in browse view; search form
     function gotoview2() {
-        return ($this->child && $this->view["gotoview"]) 
+        return ($this->is_child && $this->view["gotoview"]) 
             ? $this->view["gotoview"]
             : $this->viewID;
     }
@@ -702,7 +741,7 @@ class tabledit {
                 continue;
             switch ($place) {
                 case "left": echo "<TD class=te_b_row".($irow % 2 ? "1" : "2").">"; break;
-                case "down" :echo "<TD class=te_button_text align=center width=50>"; break;
+                case "down" :echo "<TD align=center width=50>"; break;
             }
             switch ($bt["name"]) {
                 case "add":
@@ -757,7 +796,7 @@ class tabledit {
             echo $text ? $text : "&nbsp;";
             // show the text label for bottom buttons and for insert                     
             if ($text && ($place == "down" || $new_record)) 
-                echo "<br>".$bt["alt"]; 
+                echo "<br><a href='$url'><span class=te_button_text>".$bt["alt"]."</span></a>"; 
             echo "</td>\n";
         }
         if ($place == "down")
@@ -804,111 +843,12 @@ class tabledit {
                 <span class=te_child_header>".$child["header"]."</span><br>";
             $chtv["gotoview"] = $this->viewID;
             $childte = new tabledit ($chview, $this->action, 
-                $this->all_cmd[$chview], $this->form_vals, $chtv, $this->imagepath, $this->sess, 
+                $this->all_cmd[$chview], $chtv, $this->imagepath, $this->sess, 
                 $this->getTableViewsFn, true);
             $err = $childte->view($where);
             if ($err) return $err;
         }
     }
-
-    // -----------------------------------------------------------------------------------
-
-    // processes insert form data, returns true on success, false on fail
-    function ProcessInsert ($myviewid) {
-        $getTableViewsFn = $this->getTableViewsFn;
-        $myview = $getTableViewsFn ($myviewid);
-        // WARNING: a bit hackish: after inserting an item, the command is changed to edit it
-        TableInsert ($newkey, $where, $myview["table"], $this->form_vals[$GLOBALS[new_key]],
-                    $myview["fields"], $myview["primary"], $myview["messages"]["error_insert"]);
-        unset ($this->all_cmd[$myviewid]["insert"]);
-        if ($newkey != "") {
-            // show inserted record again
-            $this->all_cmd[$myviewid]["edit"][$newkey] = 1;
-            
-            // add currently inserted item to editable items
-            if ($myviewid == $this->viewID && $this->view["where"]) 
-            	$this->view["where"] = "(".$this->view["where"].") OR $where";		 
-        }
-        // reload the actual command
-        $this->cmd = $this->all_cmd[$this->viewID];
-        return $newkey != "";
-    }
-
-    // -----------------------------------------------------------------------------------
-    
-    function ProcessFormData () {   
-        global $err, $debug;
-        // don't process again in children views 
-        if ($this->child) return;
-        if (!is_array ($this->all_cmd)) return;
-        $getTableViewsFn = $this->getTableViewsFn;
-        if ($debug) 
-        { echo "cmd: ";print_r ($this->all_cmd); echo "<br>val: ";print_r($this->form_vals); echo"<br>"; }
-
-        if (is_array ($this->form_vals)) {
-            reset ($this->form_vals);
-    		while (list ($key, $key_vals) = each ($this->form_vals)) 
-    	        while (list ($col, $val) = each ($key_vals))
-                    // defined in tabledit_column.php3 
-            	    ColumnFunctions ($this->cols[$col]["view"],
-                        &$this->form_vals[$key][$col],
-                        "form");
-        }
-
-        reset ($this->all_cmd);
-        while (list ($myviewid, $com) = each ($this->all_cmd)) {
-            $myview = $getTableViewsFn ($myviewid);
-            reset ($com);
-            while (list ($command, $par) = each ($com)) {                
-                switch ($command) {
-                case "update":
-                    if (current ($par)) {
-                        $ok = true;
-                        if (key($par) == $GLOBALS[new_key])                        
-                            $ok = $this->ProcessInsert ($myviewid);
-                        else $ok = TableUpdate (
-                            $myview["table"], $this->form_vals[key($par)], 
-                            $myview["fields"], $myview["primary"],
-                            $myview["messages"]["error_update"]);
-                        if (!$ok) { PrintArray ($err); $err = ""; }
-                    }
-                    break;
-                case "update_all":
-                    if ($par) {
-                        reset ($this->form_vals);
-                        $ok = true;
-                        while (list ($key, $vals) = each ($this->form_vals)) {
-                            if ($key != $GLOBALS[new_key])                        
-                                $ok = $ok && TableUpdate (
-                                    $myview["table"], $vals, 
-                                    $myview["fields"], $myview["primary"],
-                                    $myview["messages"]["error_update"]);
-                        }
-                        if (!$ok) { PrintArray ($err); $err = ""; }
-                    }
-                    break;
-                case "delete_all":
-                    if ($com["run_delete_all"]) {
-                        reset ($par);
-                        while (list ($key) = each ($par))                        
-                            TableDelete ($myview["table"], $this->form_vals[$key],
-                                         $myview["fields"],
-                                         $myview["messages"]["error_delete"]);
-                    }
-                    break;
-                case "delete":
-                    TableDelete ($myview["table"], $this->form_vals[key($par)],
-                        $myview["fields"], $myview["messages"]["error_delete"]);
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
-        
-        PrintArray($err);
-    }
-    
 }
 // END of class tabledit
 
