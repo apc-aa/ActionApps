@@ -1729,4 +1729,69 @@ function trace($d,$v="NONE",$c="") {
     default: echo "Illegal argument to trace:$d"; break;
     }
 }
+
+/** Transforms 'publish_date....-' like sort definition (used in prifiles, ...)
+ *  to $arr['publish_date....'] = 'd' as used in sort[] array
+ */
+function GetSortArray( $sort ) {
+    if ( !$sort )  return array();
+    switch ( substr($sort,-1) ) {    // last character
+        case '-':  return array( substr($sort,0,-1) => 'd' );
+        case '+':  return array( substr($sort,0,-1) => 'a' );
+    }
+    return array ( $sort => 'a' );
+}
+
+// contentcache class
+
+class contentcache {
+    // used for global cache of contents
+    var $content;
+
+    // set new value for key $key
+    function set($access_code, $val) {
+        $this->content[md5($access_code)] = $val;
+    }
+
+    /** Get value for $access_code. If value is not present, $acess_code is
+     *  performed (it is normal php code which returns the result) and
+     *  $access_code - result pair is stored for future usage
+     */
+    function get($access_code) {
+        $key = md5($access_code);
+        if ( isset( $this->content[$key] ) ) {
+            $ret = $this->content[$key];
+        } else {
+            // access_code is normal php code. The code should return the value
+            // please never return false - false is returned on FATAL ERROR
+            $ret = eval($access_code);
+            $this->content[$key] = $ret;   // set it for future ussage
+        }
+        return $ret;
+    }
+
+    // clear key or all content from contentcache
+    function clear($key="") {
+        if ($key) {
+            unset($this->content[$key]);
+        } else {
+            unset($this->content);
+        }
+    }
+
+// end of contentcache class
+}
+
+/**  */
+function IncludeManagerJavascript() {
+    global $AA_INSTAL_PATH, $sess;
+    echo '
+    <script language="JavaScript" type="text/javascript"> <!--
+        var aa_instal_path        = "'. $AA_INSTAL_PATH .'";
+        var aa_live_checkbox_file = "'. $sess->url($AA_INSTAL_PATH."live_checkbox.php3") .'";
+        var aa_live_change_file   = "'. $sess->url($AA_INSTAL_PATH."live_change.php3") .'";
+        //-->
+    </script>
+    <script language="JavaScript" type="text/javascript" src="'.$AA_INSTAL_PATH.'javascript/manager.js"></script>';
+}
 ?>
