@@ -1,5 +1,5 @@
 7/28/00  - deletion of groups now works
-         - resolved differencies between perm_sql and perm_ldap behaviour
+         - resolved differencies in behaviour of perm_sql and perm_ldap
 7/27/00  - to change privileges of other accounts, equality of permissions 
            is no longer adequate (higher role is required)
          - superadmin privilege settings in User / Group management
