@@ -37,9 +37,12 @@ require_once $GLOBALS["AA_INC_PATH"] . "notify.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
 
-$sess->register(r_sid);
-if( $sid )
+if ( $sid ) {
+  $sess->register(r_sid);
   $r_sid = $sid;
+  $sess->register(r_design);  // we are here for the first time  
+  $r_design = $design;        // (not scroller or filters) => store $design
+}  
 
 
 $slice_info = GetSliceInfo($r_sid);
@@ -164,7 +167,7 @@ $format_strings = array ( "compact_top"=>"",
                           "id"=>$slice_info['id']);
 
 # design - boolean - use standard or admin design
-if($design) {
+if($r_design) {
   $format_strings["compact_top"]    = $slice_info['admin_format_top'];
   $format_strings["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">', 
                                                   $mode_string, $slice_info['admin_format']);
@@ -187,7 +190,7 @@ echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
 '<table width="460" border="0" cellspacing="0" cellpadding="2" bgcolor="#F5F0E7">';
 
 if( isset($zids) && ($zids->count() > 0) ) {
-  if( $design )
+  if( $r_design )
     $aliases = GetAliasesFromFields($fields);
    else {                     # define just used aliases, including HEADLINE
     $aliases["_#ITEM_ID_"] = array("fce" => "f_n:id..............",
