@@ -44,8 +44,7 @@ require "include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 
-$image_path = "http://localhost/aa_jakub/images/";
-//$image_path = $AA_INSTAL_PATH."images/";
+$image_path = $AA_BASE_PATH."images/";
 
 reset ($live_checkbox);
 list ($short_id, $ar) = each ($live_checkbox);
