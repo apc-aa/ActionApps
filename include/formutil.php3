@@ -201,7 +201,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
 
 /*  Function: RawRichEditTextarea
     Purpose: Shows a rich edit text area - Wysiwyg editor
-    Params: 
+    Params:
         $type = "class" | "iframe" (iframes are not completely implemented)
         $doc_complet = do you edit complete documents or HTML fragments only? */
 
@@ -211,7 +211,7 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
         $BName = $GLOBALS['BName'];
     }
 
-    $name=safe($name); 
+    $name=safe($name);
 
     if( $html==2 ) // text only
         $val = str_replace ("\r","",str_replace ("\n","",
@@ -222,17 +222,17 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
         while (list ($find,$rep) = each ($repl))
             $val = str_replace ($find, $rep, $val);
     }
- 
+
     echo "<!-- Browser $BName -->";
-    if ($type == "iframe") 
+    if ($type == "iframe")
         $richedit = "richedit_iframe";
-    else if ($BName == "MSIE") 
+    else if ($BName == "MSIE")
         $richedit = "richedt_ie";
     else $richedit = "richedit_ns";
-        
+
 	if ($GLOBALS[debug]) echo $richedit;
     echo
-        "<script language=javascript> 
+        "<script language=javascript>
         <!--
 		var edt$name"."_doc_complet = $doc_complet; 
         var edt = \"edt$name\"; 
@@ -383,19 +383,6 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25,
   if ($secondfield) {
     $varsecfield = 'v'. unpack_id($secondfield);
   }
-  if ($adding) {
-    echo "\n<script language=\"JavaScript\">
-	<!--
-		function add_to_line(inputbox, value) {
-		  if (inputbox.value.length != 0) {
-		    inputbox.value=inputbox.value+\",\"+value;
-		  } else {
-		    inputbox.value=value;
-		  }	
-		}
-	//-->
-	</script>\n";
-  }
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
@@ -403,20 +390,20 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25,
     echo "</tr><tr align=left>";
   echo "<td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"".getTriggers("input",$name).">
           <select name=\"foo_$name\"";
-  if ($secondfield) { 	  
+  if ($secondfield) {
     echo "onchange=\"$name.value=this.options[this.selectedIndex].text;";
-    echo "$varsecfield.value=this.options[this.selectedIndex].value\">";	
+    echo "$varsecfield.value=this.options[this.selectedIndex].value\">";
   } else {
     if ($adding) {
-	  echo "onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">";
-	} else {
-	  echo "onchange=\"$name.value=this.options[this.selectedIndex].value\">";
-	}  
+      echo "onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">";
+    } else {
+      echo "onchange=\"$name.value=this.options[this.selectedIndex].value\">";
+    }
   }
   reset($arr);
-  while(list($k, $v) = each($arr)) { 
+  while(list($k, $v) = each($arr)) {
     echo "<option value=\"". htmlspecialchars($usevalue ? $v : $k)."\"";
-    if ((string)$val == (string)(($usevalue OR $secondfield) ? $v : $k)) 
+    if ((string)$val == (string)(($usevalue OR $secondfield) ? $v : $k))
       echo " selected";
     echo "> ". htmlspecialchars($v) ." </option>";
   }
@@ -425,49 +412,210 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25,
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo "</td></tr>\n";
-}  
+}
 
-# Prints two boxes for multiple selection for use within <form> and <table> tag
-function FrmTwoBox($name, $txt, $arr, $val, $maxsize=254, $size=25, 
-                           $needed=false, $hlp="", $morehlp="") {
-  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+# Prints html tag <intup type=text ...> with <select ...> and buttons
+# form moving with items
+# to 2-column table for use within <form> and <table> tag
+function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_size=25,
+                            $select_size=6, $numbered=0, $needed=false, $hlp="", $morehlp="", $adding=0,
+                            $secondfield="", $usevalue=false) {
+  $name=safe($name); $val=safe($val); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
-/*  TODO 
+  if( !$input_maxsize )
+    $input_maxsize = 254;
+  if( !$input_size )
+    $input_size = 25;
+  if ( !$select_size )
+    $select_size = 6;
+  if ($secondfield) {
+    $varsecfield = 'v'. unpack_id($secondfield);
+  }
+    echo "\n<script language=\"JavaScript\"  type=\"text/javascript\">
+  <!--
+    function add_to_select(selectbox, inputbox) {
+                  value = inputbox.value;
+                  length = selectbox.length;
+                  if (value.length != 0) {
+                    if((length == 1) && (selectbox.options[0].value=='wIdThTor') ){\n";
+
+        if ($numbered==1) {
+          echo "    text = length+'. '+value; ";
+        }
+        echo "
+                selectbox.options[0].text = text;
+                selectbox.options[0].value = value;
+              } else {";
+        if ($numbered==1) {
+          echo "    text = (length+1)+'. '+value; ";
+        }
+        echo "      selectbox.options[selectbox.length] = new Option (text, value);
+        }
+                    inputbox.select();
+                  }
+                }
+
+                function remove_selected(selectbox) {
+                  number = selectbox.selectedIndex;
+                  length = selectbox.length;
+                  selectbox.options[number] = null;\n";
+        if ($numbered==1) {
+          echo "
+                  for (i=number;i<length; i++){
+                    selectbox.options[i].text = (i+1)+'. '+selectbox.options[i].value;
+                  }";
+        }
+        echo "    selectbox.selectedIndex = number;
+                }
+
+                function move(selectbox, type) {
+                  length = selectbox.length;
+                  s = selectbox.selectedIndex;
+
+                  dontwork = 0;
+
+                  if (s < 0) { dontwork=1; }
+
+                  if (type=='up') {
+                    s2 = s-1;
+                    if (s2 < 0) { s2 = 0;}
+                  } else {
+                    s2 = s+1;
+                    if (s2 >= length-1) { s2 = length-1; }
+                  }
+
+                  if (dontwork == 0) {
+                    dummy_val = selectbox.options[s2].value;
+                    dummy_txt = selectbox.options[s2].text;
+                    selectbox.options[s2].value = selectbox.options[s].value;
+                    selectbox.options[s2].text = selectbox.options[s].text;
+                    selectbox.options[s].value = dummy_val;
+                    selectbox.options[s].text  = dummy_txt;
+
+                    selectbox.selectedIndex = s2;\n";
+        if ($numbered==1) {
+          echo "
+                  number = selectbox.selectedIndex;
+                  if (type == 'up') {
+                    for (i=number;i<length; i++){
+                      selectbox.options[i].text = (i+1)+'. '+selectbox.options[i].value;
+                    }
+                  } else {
+                    for (i=0;i<=number; i++){
+                      selectbox.options[i].text = (i+1)+'. '+selectbox.options[i].value;
+                    }
+                  }";
+        }
+        echo "
+
+                  }
+                }
+
+                listboxes[listboxes.length] = 'document.inputform.elements[\"".$name."[]\"]';
+  //-->
+  </script>\n";
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
     echo "</tr><tr align=left>";
-  echo "<table border="0" cellspacing="0" cellpadding="0"><tr align=left>
-      <td align='CENTER' valign='TOP'>
-      <SELECT name="export_n" size=8 class=tabtxt>
-        <?php
-        reset($all_slices);
-        if( isset($export_to) AND is_array($export_to)) {
-          while(list($s_id,$name) = each($all_slices))
-            if( $export_to[$s_id] == "" )
-              echo "<option value=\"$s_id\"> $name </option>"; 
-        }else 
-          while(list($s_id,$name) = each($all_slices))
-            echo "<option value=\"$s_id\"> $name </option>"; 
+  echo "<td align=left>
 
-      </SELECT></td>
-      <td><input type="button" VALUE="  >>  " onClick = "MoveSelected('document.f.export_n','document.f.export_y')" align=center>
-          <br><br><input type="button" VALUE="  <<  " onClick = "MoveSelected('document.f.export_y','document.f.export_n')" align=center></td>
-      <td align="CENTER" valign="TOP">
-      <SELECT name="export_y" size=8 class=tabtxt>
-        <?php
-        if( isset($export_to) AND is_array($export_to)) {
-          reset($export_to);
-          while(list($s_id,$name) = each($export_to))
-            echo "<option value=\"$s_id\"> $name </option>"; 
-        }    
-      </SELECT>
+        <table>
+        <tr><td><input type=\"Text\" name=\"foo_$name\" size=$input_size maxlength=$input_maxsize value=\"$val\"></td>
+        <td align=center><input type=\"button\" name=\"".$name."_add\" value=\"  Add  \" ".
+        " onclick=\"add_to_select(document.inputform['".$name."[]'], foo_$name)\"></td></tr>
+        <tr align=left><td rowspan=3><select name=\"".$name."[]\" multiple width=$input_size size=\"$select_size\">\n";
+
+  if (is_array($arr)) {
+    reset($arr);
+    $i=0;
+    while(list($k, $v) = each($arr)) {
+      $i++;
+      echo "<option value=\"". htmlspecialchars($usevalue ? $v : $k)."\"";
+      if ((string)$val == (string)(($usevalue OR $secondfield) ? $v : $k))
+        echo " selected";
+      echo "> ";
+      if ($numbered ==1) { echo htmlspecialchars($i.". ".$v); }
+      else { echo htmlspecialchars($v); }
+      echo " </option>";
+    }
+    reset($arr);
+  } else {
+    echo "<option value=\"wIdThTor\"> ";
+        for ($i=0; $i<$select_size*3; $i++) {
+          echo "&nbsp; ";}
+        echo "</option>";
+  }
+
+  echo "</select></td>
+        <td align=center><input type=\"button\" name=\"".$name."_up\" value=\" /\ \" ".
+                 " onclick = \"move(document.inputform['".$name."[]'],'up');\"></td></tr>
+        <tr><td align=center><input type=\"button\"  name=\"".$name."_remove\" value=\" "._m("Remove")."\" ".
+                 " onclick = \"remove_selected(document.inputform['".$name."[]']);\"></td></tr>
+        <tr><td align=center><input type=\"button\" name=\"".$name."_down\" value=\" \/ \" ".
+                 " onclick = \"move(document.inputform['".$name."[]'], 'down');\"></td></tr>
+        </table>";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}
+
+# Prints two boxes for multiple selection for use within <form> and <table> tag
+function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
+                   $needed=false, $wi2_offer, $wi2_selected, $hlp="", $morehlp="") {
+  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
+  if ($wi2_offer == "") $wi2_offer = L_WI2_OFFER;
+  if ($wi2_selected == "") $wi2_selected = L_WI2_SELECTED;
+
+  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
+  Needed($needed);
+  echo "</td>\n";
+  echo "<td>";
+  echo "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr align=left>
+      <td align='CENTER' valign='TOP'>". $wi2_offer ."</td><td></td>
+        <td align=\"CENTER\" valign=\"TOP\">". $wi2_selected ."</td></tr>
+      <tr align=left><td align='CENTER' valign='TOP'>
+      <SELECT name=\"".$name."_1\" size=$size ".getTriggers("select",$name).">\n";
+
+  reset($arr);
+  while (list($k,$v) = each($arr)) {
+    if (!($selected[$k])) {
+      echo "<option value=\"". htmlspecialchars($k)."\"> ".htmlspecialchars($v)." </option>\n";
+    }
+  }
+  echo "
+        </SELECT>
       </td>
-      </tr>
+      <td>&nbsp;&nbsp;<input type=\"button\" VALUE=\"  >>  \" onClick = \"MoveSelected(document.inputform.".$name."_1,document.inputform['".$name."[]'])\" align=center>
+          <br><br>&nbsp;&nbsp;<input type=\"button\" VALUE=\"  <<  \" onClick = \"MoveSelected(document.inputform['".$name."[]'],document.inputform.".$name."_1)\" align=center>&nbsp;&nbsp;</td>
+      <td align=\"CENTER\" valign=\"TOP\">
+      <SELECT multiple name=\"".$name."[]\" size=$size  ".getTriggers("select",$name).">";
 
-*/
+  $option_no=0;
+  while(list($k, $v) = each($selected)) {
+    echo "<option value=\"". htmlspecialchars($k)."\"> ".htmlspecialchars($v)." </option>\n";
+    $onption_no++;
+  }
+  if ($option_no == 0) {
+    echo '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
+  }
+  echo "
+      </SELECT>";
+  echo "
+  <script language=\"javascript\" type=\"text/javascript\"><!--
+    listboxes[listboxes.length] = 'document.inputform.elements[\"".$name."[]\"]';
+  //--></script>
+  ";
+
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "
+    </td></tr></table>
+      </td>
+      </tr>";
 }
 
 # Prints html tag <input type="radio" .. to 2-column table

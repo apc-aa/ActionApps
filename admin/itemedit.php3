@@ -282,8 +282,37 @@ if( !$encap ) {
           relatedwindow.close()    // in order to preview go on top after open
         }
         relatedwindow = open( "'. $sess->url("related_sel.php3") . '&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design, "relatedwindow", "scrollbars=1, resizable=1, width=500");
-      }  
+      }
       
+      function MoveSelected(left, right) {
+        var i=eval(left).selectedIndex;
+        if( !eval(left).disabled && ( i >= 0 ) )
+        {
+          var temptxt = eval(left).options[i].text;
+          var tempval = eval(left).options[i].value;
+          var length = eval(right).length;
+          if( (length == 1) && (eval(right).options[0].value==\'wIdThTor\') ){  // blank rows are just for <select> size setting
+            eval(right).options[0].text = temptxt;
+            eval(right).options[0].value = tempval;
+          } else
+            eval(right).options[length] = new Option(temptxt, tempval);
+          eval(left).options[i] = null;
+          if( eval(left).length != 0 )
+            if( i==0 )
+              eval(left).selectedIndex=0;
+            else
+              eval(left).selectedIndex=i-1;
+        }
+      }
+
+      function add_to_line(inputbox, value) {
+        if (inputbox.value.length != 0) {
+          inputbox.value=inputbox.value+","+value;
+        } else {
+          inputbox.value=value;
+        }
+      }
+
     // -->
     </script>';
 
@@ -293,7 +322,7 @@ if( !$encap ) {
     </head>
   <body id="body_white_color">
    <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
-}       
+}
 PrintArray($err);
 echo $Msg;  
 

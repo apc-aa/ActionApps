@@ -22,6 +22,7 @@ http://www.apc.org/
 # expected $slice_id for edit slice, nothing for adding slice
 
 require "../include/init_page.php3";
+require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";

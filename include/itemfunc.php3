@@ -114,7 +114,7 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
     # field in item table
     $itemvarset->add( $field[in_item_tbl], "quoted", $value['value']);
     return;
-  }  
+  }
 
     # field in content table
   $varset->clear();
@@ -408,32 +408,32 @@ function show_fnc_mse($varname, $field, $value, $param, $html) {
 
   # fill selected array from value
   if( isset($value) AND is_array($value) ) {
-    reset($value);   
+    reset($value);
     while( list( ,$x ) = each( $value )) {
       if( $x['value'] )
         $selected[$x['value']] = true;
     }
-  }  
-  
+  }
+
   echo $field[input_before];
-  FrmInputMultiSelect($varname."[]", $field['name'], $arr, $selected, $selectsize, 
+  FrmInputMultiSelect($varname."[]", $field['name'], $arr, $selected, $selectsize,
     false, $field[required], $field[input_help], $field[input_morehlp]);
 }
-  
+
 function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
   echo $field[input_before];
   FrmStaticText($field['name'], implode (", ", $value));
 }
 
 function show_fnc_sel($varname, $field, $value, $param, $html) {
-  global $db; 
-   list($constgroup,$slice_field, $usevalue) =explode(':', $param); 
+  global $db;
+   list($constgroup,$slice_field, $usevalue) =explode(':', $param);
   if( substr($param,0,7) == "#sLiCe-" ) { # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
     #add blank selection for not required field
-    if( !$field[required] )          
+    if( !$field[required] )
       $arr[''] = " ";
-  } else 
+  } else
     $arr = GetConstants($constgroup, $db);
   echo $field[input_before];
   FrmInputSelect($varname, $field['name'], $arr, $value[0]['value'],
@@ -449,13 +449,13 @@ function show_fnc_freeze_sel($varname, $field, $value, $param, $html) {
 # if no $param specified, no file upload field is displayed
 function show_fnc_fil($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmInputText($varname, $field['name'], $value[0]['value'], 255,60, 
+  FrmInputText($varname, $field['name'], $value[0]['value'], 255,60,
                $field[required], $field[input_help], $field[input_morehlp], 0);
   if( !$param )
     return;                       # no upload field displayed
-  $arr = explode(":",$param);  
+  $arr = explode(":",$param);
 
-  FrmInputFile($varname."x", $arr[1], 60, $field[required], 
+  FrmInputFile($varname."x", $arr[1], 60, $field[required],
                $arr[0], $arr[2], false );
 }
 
@@ -468,11 +468,11 @@ function show_fnc_dte($varname, $field, $value, $param, $html) {
   echo $field[input_before];
   if( strstr($param, "'"))
     $arr = explode("'",$param);  // old format
-   else 
+   else
     $arr = explode(":",$param);  // new format
   $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2], $arr[3]);
   $datectrl->setdate_int($value[0]['value']);
-  FrmStaticText($field['name'], $datectrl->getselect(), $field[required], 
+  FrmStaticText($field['name'], $datectrl->getselect(), $field[required],
                 $field[input_help], $field[input_morehlp], "0" );
 }
 
@@ -485,17 +485,17 @@ function show_fnc_freeze_dte($varname, $field, $value, $param, $html) {
 function show_fnc_pre($varname, $field, $value, $param, $html) {
   global $db;
 
-  if (!empty($param)) 
+  if (!empty($param))
     list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding,
          $secondfield, $add2constant) = explode(':', $param);
     # add2constant is used in insert_fnc_qte - adds new value to constant table
 
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
-   else 
+   else
     $arr = GetConstants($constgroup, $db);
   echo $field[input_before];
-  FrmInputPreSelect($varname, $field['name'], $arr, $value[0]['value'], $maxlength, 
+  FrmInputPreSelect($varname, $field['name'], $arr, $value[0]['value'], $maxlength,
     $fieldsize, $field[required], $field[input_help], $field[input_morehlp], $adding,
 	$secondfield, $usevalue );
 }
@@ -508,20 +508,20 @@ function show_fnc_freeze_pre($varname, $field, $value, $param, $html) {
 function show_fnc_tpr($varname, $field, $value, $param, $html) {
   global $db;
 
-  if (!empty($param)) 
+  if (!empty($param))
     list($constgroup, $rows, $cols) = explode(':', $param);
   $rows  = ($rows ? $rows : 4);
   $cols = ($cols ? $cols : 60);
-  
+
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7), "" );
-   else 
+   else
     $arr = GetConstants($constgroup, $db);
   echo $field[input_before];
-  FrmTextareaPreSelect($varname, $field['name'], $arr, $value[0]['value'],  
+  FrmTextareaPreSelect($varname, $field['name'], $arr, $value[0]['value'],
     $field[required], $field[input_help], $field[input_morehlp], $rows, $cols);
 }
-  
+
 function show_fnc_freeze_tpr($varname, $field, $value, $param, $html) {
   echo $field[input_before];
   FrmStaticText($field['name'], $value[0]['value']);
@@ -530,23 +530,23 @@ function show_fnc_freeze_tpr($varname, $field, $value, $param, $html) {
 function show_fnc_iso($varname, $field, $value, $param, $html) {
   global $db;
 
-  if (!empty($param)) 
+  if (!empty($param))
     list($constgroup, $selectsize, $mode, $design) = explode(':', $param);
-    
+
   if( !$mode )     # AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
     $mode = 'AMB';
-  
+
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $sid = substr($constgroup, 7);
    else
     return;                              # wrong - there must be slice selected
 
   $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids");
-    
-  FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid, $mode, 
+
+  FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid, $mode,
           $design, $field[required], $field[input_help], $field[input_morehlp]);
 }
-  
+
 function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
   echo $field[input_before];
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
@@ -559,11 +559,45 @@ function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
 
 function show_fnc_hco($varname, $field, $value, $param, $html) {
   global $db;
-  if (!empty($param)) 
+  if (!empty($param))
     list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, $levelNames) = explode(':', $param);
 
-  FrmHierarchicalConstant ($varname."[]", $field['name'], $value, $constgroup, $levelCount, $boxWidth, 
+  FrmHierarchicalConstant ($varname."[]", $field['name'], $value, $constgroup, $levelCount, $boxWidth,
   	$size, $horizontalLevels, $firstSelectable, $field[required],$field[input_help], $field[input_morehlp], split("~",$levelNames));
+}
+
+function show_fnc_wi2($varname, $field, $value, $param, $html) {
+  global $db;
+
+  if (!empty($param))
+    list($constgroup, $size, $wi2_offer, $wi2_selected) = explode(':', $param);
+
+  if( substr($param,0,7) == "#sLiCe-" ) {  # prefix indicates select from items
+    $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
+     #add blank selection for not required field
+     #    if( !$field[required] )
+     #      $arr[''] = " ";
+   } else {
+    $arr = GetConstants($constgroup, $db); }
+
+  # fill selected array from value
+  if( isset($value) AND is_array($value) ) {
+    reset($value);
+    while( list( ,$x ) = each( $value )) {
+      if( $x['value'] ) {
+        $selected[$x['value']] = $x['value'];
+        }
+    }
+  }
+
+  FrmTwoBox($varname, $field['name'], $arr, $constgroup, $size, $selected,
+            $field[required], $wi2_offer, $wi2_selected,$field[input_help],
+            $field[input_morehlp]);
+}
+
+function show_fnc_freeze_wi2($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field['name'], implode (", ", $value));
 }
 
 function show_fnc_nul($varname, $field, $value, $param, $html) {
@@ -575,8 +609,8 @@ function show_fnc_freeze_nul($varname, $field, $value, $param, $html) {
 # -----------------------------------------------------------------------------
 
 function IsEditable($fieldcontent, $field) {
-  return (!($fieldcontent[0]['flag'] & FLAG_FREEZE) 
-       AND $field[input_show] 
+  return (!($fieldcontent[0]['flag'] & FLAG_FREEZE)
+       AND $field[input_show]
        AND !GetProfileProperty('hide',$field['id'])
        AND !GetProfileProperty('hide&fill',$field['id'])
        AND !GetProfileProperty('fill',$field['id']));

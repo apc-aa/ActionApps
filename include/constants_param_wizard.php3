@@ -47,7 +47,7 @@ use the escape character \ - the wizard will translate the characters. Remember 
 	Each example has this structure:
 		"desc"=>a thoroughfull description
 		"params"=>the params in the internal format (divided by :)
-*/		
+*/
 	
 
 $INPUT_TYPES = array ("name"=>L_PARAM_WIZARD_INPUT_NAME,
@@ -227,6 +227,21 @@ $INPUT_TYPES = array ("name"=>L_PARAM_WIZARD_INPUT_NAME,
 		"desc"=>L_PARAM_WIZARD_INPUT_iso_PAR2_DESC,
 		"type"=>"BOOL",
 		"example"=>L_PARAM_WIZARD_INPUT_iso_PAR2_EXAMPLE))),
+"wi2"=>array("name"=>L_PARAM_WIZARD_INPUT_wi2_NAME,
+  "desc"=>L_PARAM_WIZARD_INPUT_wi2_DESC,
+  "params"=>array(
+    array("name"=>L_PARAM_WIZARD_INPUT_wi2_PAR0_NAME,
+    "desc"=>L_PARAM_WIZARD_INPUT_wi2_PAR0_DESC,
+    "type"=>"INT",
+    "example"=>L_PARAM_WIZARD_INPUT_wi2_PAR0_EXAMPLE),
+    array("name"=>L_PARAM_WIZARD_INPUT_wi2_PAR1_NAME,
+    "desc"=>L_PARAM_WIZARD_INPUT_wi2_PAR1_DESC,
+    "type"=>"STR",
+    "example"=>L_PARAM_WIZARD_INPUT_wi2_PAR1_EXAMPLE),
+    array("name"=>L_PARAM_WIZARD_INPUT_wi2_PAR2_NAME,
+    "desc"=>L_PARAM_WIZARD_INPUT_wi2_PAR2_DESC,
+    "type"=>"STR",
+    "example"=>L_PARAM_WIZARD_INPUT_wi2_PAR2_EXAMPLE))),
 "nul"=>array("name"=>L_PARAM_WIZARD_INPUT_nul_NAME,
 	"desc"=>L_PARAM_WIZARD_INPUT_nul_DESC)));
 

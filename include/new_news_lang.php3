@@ -146,34 +146,36 @@ define('L_UPDATE','Update');
 define('L_CREATE','Create');
 
 define("L_E_IMPORT_TITLE", "Import exported data (slice structure and content)");
-define("L_E_IMPORT_MEMO", "The import of the slices structure and content is done this way:<br>"
-			."Insert the exported text into the frame and click on Send. <br>"
-			."The slices structure with fields and its content definitions will be read and added to the ActionApps.");
+define("L_E_IMPORT_SEND","Send the slice structure and data");
+define("L_E_IMPORT_MEMO", "2) If you have exported data in browser's window, insert the exported text into the textarea below:");
+define("L_E_IMPORT_INFO","Here you can import exported data to toolkit. You can use two types of import:");
 define("L_E_IMPORT_OPEN_ERROR","Unknown failur when opening the file.");
 define("L_E_IMPORT_WRONG_FILE","ERROR: Text is not OK. Check whether you copied it well from the Export.");
 define("L_E_IMPORT_WRONG_ID","ERROR: ");
 define("L_E_IMPORT_INSERT", "Insert");
 define("L_E_IMPORT_OVERWRITE", "Overwrite");
 define("L_E_IMPORT_INSERT_AS_NEW","Insert with new ids");
-define("L_E_IMPORT_SEND","Send the slice structure and data");
 define("L_E_IMPORT_IDLENGTH", "The identificator should be 32 characters long, not ");
+define("L_E_IMPORT_FILE_SEND", "Send file with slice structure and data");
+define("L_E_IMPORT_FILE_SELECT", "1) If you have exported data in file, insert it's name here (eg. D:\data\apc_aa_slice.aaxml):");
+define("L_E_IMPORT_SELECT_WHAT", "Here specify, what do you want to import:");
 
-define("L_E_IMPORT_IDCONFLICT", 
+define("L_E_IMPORT_IDCONFLICT",
 			"Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> "
 			."Use only hexadecimal characters 0-9,a-f. "
 			."If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), "
 			."that ID will be considered unchanged.</p>");
-define ("L_E_IMPORT_COUNT", "Count of imported slices: %d.");			
-define("L_E_IMPORT_DATA_IDCONFLICT", 
+define ("L_E_IMPORT_COUNT", "Count of imported slices: %d.");
+define("L_E_IMPORT_DATA_IDCONFLICT",
 			"<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> "
 			."Use only hexadecimal characters 0-9,a-f. </p>");
 define("L_E_IMPORT_CONFLICT_INFO","<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>"
 			."If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>"
 			."And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>");
-define("L_E_IMPORT_IMPORT_SLICE","Import slice definition");		
-define("L_E_IMPORT_IMPORT_ITEMS","Import slice items");		
-		
-define ("L_E_IMPORT_DATA_COUNT", "Count of imported stories: %d.");			
+define("L_E_IMPORT_IMPORT_SLICE","Import slice definition");
+define("L_E_IMPORT_IMPORT_ITEMS","Import slice items");
+
+define ("L_E_IMPORT_DATA_COUNT", "Count of imported stories: %d.");
 define ("L_E_IMPORT_ADDED", "Added were:");
 define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 define ("L_CHOOSE_JUMP", "Choose module to be edited");
@@ -191,12 +193,12 @@ define('L_CONSTANT_USED','Constants used in slice');
 define('L_CHANGE_FROM','Change from');
 define('L_TO', 'to');
 define('L_FIELD_ID_HELP',
-    'This page allows to change field IDs. It is a bit dangerous operation and may last long. 
+    'This page allows to change field IDs. It is a bit dangerous operation and may last long.
     You need to do it only in special cases, like using search form for multiple slices. <br><br>
-    Choose a field ID to be changed and the new name and number, the dots ..... will be 
+    Choose a field ID to be changed and the new name and number, the dots ..... will be
     added automatically.<br>');
-define('L_VIEW_CREATE_NEW', 'Create new view');    
-define('L_VIEW_CREATE_TYPE', 'by&nbsp;type:');    
+define('L_VIEW_CREATE_NEW', 'Create new view');
+define('L_VIEW_CREATE_TYPE', 'by&nbsp;type:');
 define('L_VIEW_CREATE_TEMPL', 'by&nbsp;template:');
 define('L_USE_AS_NEW', 'Use&nbsp;as&nbsp;new');
 define('L_SLICE_NOT_CONST', 'You selected slice and not constant group. It is unpossible to change slice. Go up in the list.');
@@ -332,4 +334,6 @@ define("L_CODE_MANAGER", "Code&nbsp Manager");
 define("L_SITE_SETTINGS", "Module Settings");
 define("L_ITEMS_PAGE", "Items Page");
 
+define("L_WI2_OFFER","Offer");
+define("L_WI2_SELECTED","Selected");
 ?>

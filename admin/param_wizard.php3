@@ -39,6 +39,7 @@ http://www.apc.org/
 */	
 
 require "../include/init_page.php3";
+require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 

@@ -22,17 +22,17 @@ http://www.apc.org/
 if (!defined("ALERTS_CONSTANTS_INCLUDED"))
     define("ALERTS_CONSTANTS_INCLUDED",1);
 else return;
- 
+
 #
 # Used constants. Do not edit if you are not developer.
 #
 
-  # There we can mention $FIELD_TYPES, but they are not defined in this file, 
+  # There we can mention $FIELD_TYPES, but they are not defined in this file,
   # but in database as special slice with id 'AA_Core_Fields..'
-  
-  # Field types - each field in slice is one of this type. 
+
+  # Field types - each field in slice is one of this type.
   # The types are defined APC wide for easy item interchanging between APC nodes
-  # (on the other hand, new type can be added just by placing new fileld 
+  # (on the other hand, new type can be added just by placing new fileld
   # in database table fields as for 'AA_Core_Fields..' slice).
 
 // in the array MODULES "name" is a description of the module, "hide_create_module" doesn't show the module in the Create Slice / Module page
@@ -73,7 +73,7 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "ro" => "iso-8859-2",
                             "sk" => "windows-1250",
                             "ja" => "EUC-JP");
-                            
+
 $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "en" => "English",
                          "es" => "Espanol",
@@ -81,43 +81,43 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "ro" => "Romanian",
                          "sk" => "Slovenština",
                          "ja" => "Japanian");
-                            
-                         
-# MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and 
+
+
+# MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and
 # specifies how many items from the begining we have to search
 define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
-  
+
 $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom",
    "odd_row_format", "even_row_format", "compact_top", "compact_bottom",
    "category_top", "category_format", "category_bottom", "config", "slice_url",
-   "lang_file", "fulltext_remove", "compact_remove", "notify_sh_offer", 
-   "notify_sh_accept", "notify_sh_remove", "notify_holding_item_s", 
-   "notify_holding_item_b", "notify_holding_item_edit_s", 
-   "notify_holding_item_edit_b", "notify_active_item_edit_s", 
+   "lang_file", "fulltext_remove", "compact_remove", "notify_sh_offer",
+   "notify_sh_accept", "notify_sh_remove", "notify_holding_item_s",
+   "notify_holding_item_b", "notify_holding_item_edit_s",
+   "notify_holding_item_edit_b", "notify_active_item_edit_s",
    "notify_active_item_edit_b", "notify_active_item_s", "notify_active_item_b",
-   "noitem_msg", 
+   "noitem_msg",
    "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove",
    "fileman_dir","fileman_access","javascript","aditional");
 
-$SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template", 
-   "even_odd_differ", "category_sort", "d_expiry_limit", "d_listlen",  
+$SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template",
+   "even_odd_differ", "category_sort", "d_expiry_limit", "d_listlen",
    "email_sub_enable", "exclude_from_dir","permit_anonymous_post","permit_offline_fill",);
 
-$FIELD_FIELDS_TEXT = array(  "id", "type", "slice_id", "name", 
+$FIELD_FIELDS_TEXT = array(  "id", "type", "slice_id", "name",
   "input_help", "input_morehlp", "input_default",
   "input_show_func", "content_id", "search_type", "search_help",
   "search_before", "search_more_help", "alias1", "alias1_func", "alias1_help",
-  "alias2", "alias2_func", "alias2_help", "alias3","alias3_func", "alias3_help", 
-  "input_before", "aditional", "input_validate", "input_insert_func", "in_item_tbl"); 
+  "alias2", "alias2_func", "alias2_help", "alias3","alias3_func", "alias3_help",
+  "input_before", "aditional", "input_validate", "input_insert_func", "in_item_tbl");
 
 $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
   "search_pri", "search_show", "search_ft_show", "search_ft_default",
-  "content_edit", "html_default", "html_show", "input_show", "text_stored"); 
+  "content_edit", "html_default", "html_show", "input_show", "text_stored");
 
   // array of default function description
 $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
-                              "dte" => L_INPUT_DEFAULT_DTE, 
+                              "dte" => L_INPUT_DEFAULT_DTE,
                               "uid" => L_INPUT_DEFAULT_UID,
                               "log" => L_INPUT_DEFAULT_LOG,
                               "now" => L_INPUT_DEFAULT_NOW,
@@ -127,7 +127,7 @@ $INPUT_SHOW_FUNC_TYPES = array (
     "txt" => array( 'name' => L_INPUT_SHOW_TXT, #textarea
                     'multiple' => false,
                     'paramformat' => 'fnc:param' ),
-    "tpr" => array( 'name' => L_INPUT_SHOW_TPR, #textarea with preset								
+    "tpr" => array( 'name' => L_INPUT_SHOW_TPR, #textarea with preset
                     'multiple' => false,
                     'paramformat' => 'fnc:const:param' ),
     "edt" => array( 'name' => L_INPUT_SHOW_EDT, #rich text edit
@@ -157,9 +157,9 @@ $INPUT_SHOW_FUNC_TYPES = array (
     "mse" => array( 'name' => L_INPUT_SHOW_MSE, #multiple selectbox
                     'multiple' => true,
                     'paramformat' => 'fnc:const:param' ),
-  # "wi2" => array( 'name' => L_INPUT_SHOW_WI2, #2 windows
-  #                 'multiple' => true,
-  #                 'paramformat' => 'fnc:const:param' ),
+    "wi2" => array( 'name' => L_INPUT_SHOW_WI2, #2 windows
+                    'multiple' => true,
+                    'paramformat' => 'fnc:const:param' ),
     "fil" => array( 'name' => L_INPUT_SHOW_FIL, #file
                     'multiple' => false,
                     'paramformat' => 'fnc:param' ),
@@ -175,21 +175,21 @@ $INPUT_SHOW_FUNC_TYPES = array (
     "hco" => array( 'name' => L_INPUT_SHOW_HCO, #hierarchy constant
                     'multiple' => false,
                     'paramformat' => 'fnc:const:param' ));
-                              
+
 $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
-                               "url" => L_INPUT_VALIDATE_URL, 
-                               "e-mail" => L_INPUT_VALIDATE_EMAIL, 
-                               "number" => L_INPUT_VALIDATE_NUMBER, 
-                               "id" => L_INPUT_VALIDATE_ID, 
-                               "date" => L_INPUT_VALIDATE_DATE, 
+                               "url" => L_INPUT_VALIDATE_URL,
+                               "e-mail" => L_INPUT_VALIDATE_EMAIL,
+                               "number" => L_INPUT_VALIDATE_NUMBER,
+                               "id" => L_INPUT_VALIDATE_ID,
+                               "date" => L_INPUT_VALIDATE_DATE,
                                "bool" => L_INPUT_VALIDATE_BOOL,
 			                         "user" => L_INPUT_VALIDATE_USER);	//added 03/01/02,setu
 
 $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "boo" => L_INPUT_INSERT_BOO,
                              "fil" => L_INPUT_INSERT_FIL,
-                             "uid" => L_INPUT_INSERT_UID, 
-                             "log" => L_INPUT_INSERT_LOG, 
+                             "uid" => L_INPUT_INSERT_UID,
+                             "log" => L_INPUT_INSERT_LOG,
                              "ids" => L_INPUT_INSERT_IDS, 
                              "now" => L_INPUT_INSERT_NOW
                            /*"dte" => L_INPUT_INSERT_DTE, 
@@ -551,7 +551,7 @@ define ("FEEDMAP_FLAG_VALUE", 1);
 define ("FEEDMAP_FLAG_EMPTY", 2);
 define ("FEEDMAP_FLAG_EXTMAP", 3);
 define ("FEEDMAP_FLAG_JOIN", 4);
-                      
+
 define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in slice table
 
 // don't check whether these fields exist (in the conds[] array used by searchform):
@@ -566,6 +566,4 @@ $FILEMAN_ACCESSES = array (
     
 $ALERTS_DEFAULT_COLLECTION = "__default__";
 $ALERTS_SUBSCRIPTION_COLLECTION = "__subscription__";
-
-require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 ?>
