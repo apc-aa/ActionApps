@@ -1,11 +1,25 @@
 <?php
+//$Id$
+/* 
+Copyright (C) 1999, 2000 Association for Progressive Communications 
+http://www.apc.org/
 
-// ----------------------------------------------------------------------------------------    
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-// Settings for each table view 
-/*  Each table is shown in the Browse view where you see the table contents and buttons Edit, Delete and Add. After clicking on Edit or Add the Edit view is shown where you can edit the fields. 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-    The advanced feature "children" allows to view children from tables which have a relationship 1:n to the table edited.
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+// Settings for each table view (see include/tabledit.php3 for more info)
 
 /* Grammar: * = required, | = alternatives
     
@@ -16,20 +30,23 @@
    "cond"* => permissions needed to access this site
    "mainmenu"* => menu
    "submenu"* => menu
+   "help" => text to be shown above the table
    "fields"* => (array of many)
         "field_name"* => (array of)
+            "primary" => "number" | "text" | "packed"  
+                if filled, this field is a part of primary key
+                DON'T FORGET ANY PART OF PRIMARY KEY!!
             "hint" => hint to be shown in Edit view
             "view" => (array of) special view (if other than default)
-                "type" => view type = "select" | "blob" | "hide" | "text"
+                "type" => view type = "select" | "blob" | "hide" | "text" | "date"
                 "source" => required for "select", array of ("value"=>"option")
                 "size" => required for "text", array ("cols"=>..)
-                "readonly" => true | false  
+                "format" => required for "date", usable only on readonly field
+                "readonly" => true | false  if not set, the default readonly is used   
                 "href_view" => applicable only with readonly=true, links the text to another table view
             "view_new_record" => the same as "view", applied only on empty new record
                                    if not filled, "view" is used instead
                 "default" => default value for new record                                 
-            "primary" => "number" | "text" | "packed"  
-                if filled, this field is a part of primary key
    "attrs_edit" => attributes for TABLE and TD in Edit view
    "attrs_browse" => attributes for TABLE and TD in Browse view
    "children" => (array of many) tables with relationship n:1 
@@ -177,7 +194,8 @@ $tableviews["ac"] = array (
     "fields" => array (
         "id" => array (
             "primary" => "number", 
-            "view" => array ("type" => "hide")),
+            "view" => array ("readonly" => true),
+            "view_new_record" => array ("type"=>"hide")),
         "description" => array ("view" => array ("type"=>"text","size"=>array("cols"=>30))),
         "showme" => array ("view" => array (
                                 "type"=>"text",
@@ -199,8 +217,6 @@ $tableviews["ac_edit"] = array (
     "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT),
     "title" => _m("Alerts Collection"), 
     "caption" => _m("Alerts Collection"),
-    "mainmenu" => "aaadmin",
-    "submenu" => "te_alerts_collections",
     "fields" => array (
         "id" => array (
             "primary" => "number", 
@@ -232,6 +248,8 @@ while (list ($l) = each ($LANGUAGE_CHARSETS))
 $tableviews["au"] = array (
     "table" => "alerts_user",
     "type" => "browse",
+    "mainmenu" => "aaadmin",
+    "submenu" => "te_alerts_users",
     "readonly" => false,
     "buttons" => array ("update"=>1,"delete"=>1,"edit"=>1),
     "gotoview" => "au_edit",
@@ -314,4 +332,30 @@ $tableviews["auc"] = array (
         "howoften" => array (
             "view" => array ("type" => "select", "source" => get_howoften_options ()))
     ));        
+    
+$url = "http://apc-aa.sourceforge.net/faq/#cron";    
+$tableviews["cron"] = array (
+    "table" => "cron",
+    "type" => "browse",
+    "mainmenu" => "aaadmin",
+    "submenu" => "te_cron",
+    "help" => _m("For help see FAQ: ")."<a target=\"_blank\" href=\"$url\">$url</a>",
+    "readonly" => false,
+    "addrecord" => true,
+    "buttons" => array ("update" => 1, "delete" => 1),
+    "cond" => IsSuperadmin(),
+    "title" => _m ("Cron"),
+    "caption" => _m("Cron"),
+    "attrs" => $attrs_browse,
+    "fields" => array (
+        "id" => array ("primary" => "number", "view" => array ("type"=>"hide")),
+        "minutes" => array ("view" => array ("type" => "text", "size" => array ("cols"=>2))),
+        "hours" => array ("view" => array ("type" => "text", "size" => array ("cols"=>2))),
+        "mday" => array ("view" => array ("type" => "text", "size" => array ("cols"=>2))),
+        "mon" => array ("view" => array ("type" => "text", "size" => array ("cols"=>2))),
+        "wday" => array ("view" => array ("type" => "text", "size" => array ("cols"=>2))),
+        "script" => array ("view" => array ("type" => "text", "size" => array ("cols"=>20))),
+        "params" => array ("view" => array ("type" => "text", "size" => array ("cols"=>20))),
+        "last_run" => array ("view" => array ("readonly" => true, "type" => "date", "format" => "j.n.Y G:i"))
+    ));
 ?>

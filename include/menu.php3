@@ -39,6 +39,7 @@ else return;
 
 require $GLOBALS[AA_INC_PATH]."menu_util.php3";
 require $GLOBALS[AA_INC_PATH]."perm_core.php3";
+require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
@@ -185,9 +186,12 @@ function get_aamenus ()
         "te_alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set[tview]=ac", "label"=>L_ALERTS_COLLECTIONS),        
         "te_alerts_users"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set[tview]=au", "label"=>L_ALERTS_USERS),      
         
-        "header70"=>L_MISC,
-        "te_wizard_welcome" => array ("label"=>L_EDIT_WIZARD_WELCOME, "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set[tview]=ww"),
-        "te_wizard_template" => array ("label"=>L_EDIT_WIZARD_TEMPLATE, "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set[tview]=wt")
+        "header7"=>_m("Wizard"),
+        "te_wizard_welcome" => array ("label"=>_m("Welcomes"), "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set[tview]=ww"),
+        "te_wizard_template" => array ("label"=>_m("Templates"), "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set[tview]=wt"),
+ 
+        "header8"=>_m("Misc"),
+        "te_cron" => array ("label"=>_m("Cron"), "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set[tview]=cron")      
     ));
     
     return $aamenus;

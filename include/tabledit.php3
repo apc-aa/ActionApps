@@ -1,4 +1,23 @@
 <?php
+//$Id$
+/* 
+Copyright (C) 1999, 2000 Association for Progressive Communications 
+http://www.apc.org/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 
 // identifies new record 
 $new_key = "__new__";
@@ -181,8 +200,10 @@ class tabledit {
                     value='".str_replace("'","\"",$val)."'>"; 
             }
             else {
-                if ($type == "select") 
-                    $val = htmlentities($cview["source"][$record[$colname]]);
+                switch ($type) {
+                    case "select": $val = htmlentities($cview["source"][$record[$colname]]); break;
+                    case "date" :  $val = date($cview["format"], $val);
+                }
                 if (is_field_type_numerical ($column["type"]) && !$val)
                     if (!$new_record)
                          $val = "0";

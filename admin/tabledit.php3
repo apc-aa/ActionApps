@@ -40,6 +40,11 @@ showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
 echo "<H1><B>" . $tableview["caption"] . "</B></H1>";
 PrintArray($err);
 echo $Msg;
+
+if ($tableview["help"])     
+    echo '<table border="0" cellspacing="0" cellpadding="5"><tr><td class="tabtit">'
+        .$tableview["help"]
+        .'</td></tr></table><br>';
    
 if ($cmd["update"]) {
     $tview = key ($cmd["update"]);
