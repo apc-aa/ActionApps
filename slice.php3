@@ -512,7 +512,7 @@ else {
   if(isMLXSlice($slice_info)) {
     if(!$mlxView)
       $mlxView = new MLXView($mlx);
-    $restrict_zids = $mlxView->preQueryZIDs($slice_info[MLX_SLICEDB_COLUMN],$conds,$slices); 
+    $mlxView->preQueryZIDs($slice_info[MLX_SLICEDB_COLUMN],$conds,$slices); 
   }
   $zids=QueryZIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by],
                      "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator, true );

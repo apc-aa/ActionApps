@@ -24,6 +24,8 @@ require_once $GLOBALS["AA_INC_PATH"] . "itemview.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "viewobj.php3";
 require_once $GLOBALS["AA_BASE_PATH"]. "modules/links/util.php3";
 require_once $GLOBALS["AA_BASE_PATH"]. "modules/links/linksearch.php3";
+// add mlx functions
+require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
 
 # ----------------------------------------------------------------------------
 #                         view functions
@@ -580,10 +582,25 @@ function GetViewFromDB($view_param, &$cache_sid) {
       }
 
       $sort  = GetViewSort($view_info, $param_sort);
-
+    
+    //mlx stuff    
+    $slice_info = GetSliceInfo($slice_id);
+    if(isMLXSlice($slice_info)) {
+      $mlx = $view_param["mlx"];
+      if(!$GLOBALS['mlxView'])
+        $GLOBALS['mlxView'] = new MLXView($mlx);
+      $GLOBALS['mlxView']->preQueryZIDs($slice_info[MLX_SLICEDB_COLUMN],$conds,$slices); 
+    }
     $zids2 =
         QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
                          $group_by, "ACTIVE", $slices, 0, $zids);
+
+    if(isMLXSlice($slice_info)) { 
+      $GLOBALS['mlxView']->postQueryZIDs($zids2,$slice_info[MLX_SLICEDB_COLUMN],$slice_id, $conds, $sort,
+  		$slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
+  		$defaultCondsOperator,$GLOBALS['nocache']);
+    }
+    //end mlx stuff
 
     # Note this zids2 is always packed ids, so lost tag information
     if ($debug) huhl("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count : 0)." IDS");

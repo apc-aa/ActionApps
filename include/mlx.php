@@ -321,6 +321,7 @@ class MLXView
 	//                  ALL  -> show all articles regardless of language (like without MLX)
 	var $mode = "MLX";
 	var $supported_modes = array("MLX","ONLY","ALL");
+	
 	function MLXView($mlx) { 
 		if($mlx) {
 			$arr = explode("-",$mlx);

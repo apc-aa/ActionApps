@@ -1,3 +1,6 @@
+10/06/04 - Added MLX support for views and finetuning slice settings interface
+           Parameter for view.php3
+           - set[vid]=mlx-(lang)-(lang1)-..-(MODE) same as for slice.php3
 10/05/04 - Totally reworked MLX, now using packed ids for storing MLX info (mimo)
 10/04/04 - Added Multilingual Extension - dont use yet (mimo) 
              - mlx in URL to slice.php3
