@@ -33,7 +33,9 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
+//require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require $GLOBALS[AA_INC_PATH] . "itemfunc.php3";
 
 if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED
@@ -66,157 +68,6 @@ if($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
 }    
 
-# ----------------------- functions -------------------------------------------
-function default_fnc_now($param) {
-  return now();
-}  
-
-function default_fnc_uid($param) {
-  global $auth;
-  return quote($auth->auth["uid"]);
-}  
-
-function default_fnc_dte($param) {
-  return mktime(0,0,0,date("m"),date("d")+$param,date("Y"));
-}
-
-function default_fnc_qte($param) {
-  return quote($param);
-}
-
-function default_fnc_txt($param) {
-  return quote($param);
-}
-
-# ----------------------- insert functions
-
-function insert_fnc_qte($item_id, $field, $value, $param, $insert=true) {
-  global $varset, $itemvarset, $db;
-  if( $field[in_item_tbl] ) {
-    # field in item table
-    $itemvarset->add( $field[in_item_tbl], "quoted", $value);
-    return;
-  }  
-    # field in content table
-  $varset->clear();
-  $varset->add("text", "quoted", $value);
-  if( $insert ) {
-    $varset->add("item_id", "unpacked", $item_id);
-    $varset->add("field_id", "quoted", $field[id]);
-    $db->query("INSERT INTO content" . $varset->makeINSERT() );
-  } else {
-    $db->query("UPDATE content SET ". $varset->makeUPDATE() . " 
-                 WHERE item_id='". q_pack_id($item_id). "' 
-                   AND field_id='". $field[id] . "'");
-  }                 
-}
-
-function insert_fnc_dte($item_id, $field, $value, $param, $insert=true) {
-  insert_fnc_qte($item_id, $field, $value, $param, $insert);
-}
-
-function insert_fnc_cns($item_id, $field, $value, $param, $insert=true) {
-  insert_fnc_qte($item_id, $field, $value, $param, $insert);
-}
-
-function insert_fnc_num($item_id, $field, $value, $param, $insert=true) {
-  insert_fnc_qte($item_id, $field, $value, $param, $insert);
-}
-
-function insert_fnc_boo($item_id, $field, $value, $param, $insert=true) {
-  insert_fnc_qte($item_id, $field, $value ? 1:0, $param, $insert);
-}
-
-function insert_fnc_uid($item_id, $field, $value, $param, $insert=true) {
-  global $auth;
-  insert_fnc_qte($item_id, $field, $auth->auth["uid"], $param, $insert);
-}
-
-function insert_fnc_now($item_id, $field, $value, $param, $insert=true) {
-  insert_fnc_qte($item_id, $field, now(), $param, $insert);
-}
-
-  # File upload
-function insert_fnc_fil($item_id, $field, $value, $param, $insert=true) {
-  $varname = 'v'.unpack_id($field[id]);
-  
-  if(($value <> "none")&&($value <> "")) {   # see if the uploaded file exists
-    $dest_file = $GLOBALS[$varname . "_name"];
-    if( file_exists(IMG_UPLOAD_PATH.$dest_file) )
-      $dest_file = new_id().substr(strrchr($dest_file, "." ), 0 );
-
-    if(!copy($value,IMG_UPLOAD_PATH.$dest_file)){     // copy the file from the temp directory to the upload directory, and test for success
-      $err["Image"] = MsgErr(L_CANT_UPLOAD);          // error array (Init - just for initializing variable
-      break;
-    }   
-    insert_fnc_qte($item_id, $field, IMG_UPLOAD_URL.$dest_file, $param, $insert);
-  }
-}    
-
-function insert_fnc_nul($item_id, $field, $value, $param, $insert=true) {
-}
-
-# not defined insert func in field table (it is better to use insert_fnc_nul)
-function insert_fnc_($item_id, $field, $value, $param, $insert=true) {
-}
-
-# ----------------------- show functions
-
-function show_fnc_chb($varname, $field, $content, $value, $param, $edit) {
-  echo $field[input_before];
-  FrmInputChBox($varname, $field[name], $edit ? $content[0] : $value, false,
-    "", 1, $field[required], $field[input_help], $field[input_morehlp] );
-}
-
-function show_fnc_txt($varname, $field, $content, $value, $param, $edit) {
-  echo $field[input_before];
-  $rows = ($param ? $param : 4);
-  FrmTextarea($varname, $field[name], $edit ? $content[0] : $value, $rows, 60,
-   $field[required], $field[input_help], $field[input_morehlp] );
-}
-
-function show_fnc_fld($varname, $field, $content, $value, $param, $edit) {
-  echo $field[input_before];
-  FrmInputText($varname, $field[name], safe($edit ? $content[0]:$value), 255,60,
-   $field[required], $field[input_help], $field[input_morehlp] );
-}
-
-function show_fnc_rio($varname, $field, $content, $value, $param, $edit) {
-  global $db;
-  $arr = GetConstants($param, $db); 
-  echo $field[input_before];
-  FrmInputRadio($varname, $field[name], $arr, $edit ? $content[0] : $value,
-    $field[required], $field[input_help], $field[input_morehlp] );
-}
-  
-function show_fnc_sel($varname, $field, $content, $value, $param, $edit) {
-  global $db;
-  $arr = GetConstants($param, $db); 
-  echo $field[input_before];
-  FrmInputSelect($varname, $field[name], $arr, $edit ? $content[0] : $value,
-    $field[required], $field[input_help], $field[input_morehlp] );
-}
-
-  # $param is uploaded file type (like "image/*");
-function show_fnc_fil($varname, $field, $content, $value, $param, $edit) {
-  echo $field[input_before];
-  FrmInputFile($varname, $field[name], safe($edit ? $content[0]:$value), 255,60,
-       $field[required], $param, $field[input_help], $field[input_morehlp] );
-}
-
-function show_fnc_dte($varname, $field, $content, $value, $param, $edit) {
-  echo $field[input_before];
-  $arr = explode("'",$param);
-  $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2]);
-  $datectrl->setdate_int($edit ? $content[0] : $value);
-  FrmStaticText($field[name], $datectrl->getselect(), $field[required], 
-                $field[input_help], $field[input_morehlp] );
-}
-
-function show_fnc_nul($varname, $field, $content, $value, $param, $edit) {
-}
-
-# ----------------------- functions end ---------------------------------------
 
 $db = new DB_AA;
 
@@ -225,75 +76,77 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
 
-$SQL= " SELECT * FROM field WHERE slice_id='".q_pack_id($slice_id)."' 
-         ORDER BY input_pri";
-$db->query($SQL);
-while($db->next_record()) {
-  $fields[] = $db->Record;   # cache rows
+  # get slice fields and its priorities in inputform
+list($fields,$prifields) = GetSliceFields(q_pack_id($slice_id));   
 
-    # get default values if needed
-  $varname = 'v'. unpack_id($db->f(id));   # "v" prefix - database field var
-  if( $add OR (!$db->f(input_show) AND ($insert OR $update) )) {
-    $fnc = ParseFnc($db->f(input_default));    # all default should have fnc:param format
+if( isset($prifields) AND is_array($prifields) ) {
+	reset($prifields);
+	while(list(,$pri_field_id) = each($prifields)) {
+    $f = $fields[$pri_field_id];
+    $u_pri_field_id = unpack_id($pri_field_id);
+	  $varname = 'v'. $u_pri_field_id;   # "v" prefix - database field var
 
-    if( $fnc ) {                     # call function
-      $fncname = 'default_fnc_' . $fnc[fnc];
-      $$varname = $fncname($fnc[param]);
-    } else
-      $$varname = $foo;
-  }    
-    # validate input data
-  if( $insert || $update )
-  {
-    if( $db->f(input_show) AND !$db->f(feed) ) {
-      switch( $db->f(input_validate) ) {
-        case 'text': 
-          ValidateInput($varname, $db->f(name), &$$varname, &$err,
-                        $db->f(required) ? 1 : 0, "text");
-          break;
-        case 'url':  
-          ValidateInput($varname, $db->f(name), &$$varname, &$err,
-                        $db->f(required) ? 1 : 0, "url");
-          break;
-        case 'email':  
-          ValidateInput($varname, $db->f(name), &$$varname, &$err,
-                        $db->f(required) ? 1 : 0, "email");
-          break;
-        case 'number':  
-          ValidateInput($varname, $db->f(name), &$$varname, &$err,
-                        $db->f(required) ? 1 : 0, "number");
-          break;
-        case 'id':  
-          ValidateInput($varname, $db->f(name), &$$varname, &$err,
-                        $db->f(required) ? 1 : 0, "id");
-          break;
-        case 'date':  
-          $foo_datectrl_name = new datectrl($varname);
-          $foo_datectrl_name->update();                   # updates datectrl
-          if( $$varname != "")                            # loaded from defaults
-            $foo_datectrl_name->setdate_int($$varname);
-          $foo_datectrl_name->ValidateDate($db->f(name), &$err);
-          $$varname = $foo_datectrl_name->get_date();  # write to var
-          break;
-        case 'bool':  
-          $$varname = ($$varname ? 1 : 0);
-          break;
+    if( $add OR (!$f[input_show] AND ($insert OR $update) )) {
+      $fnc = ParseFnc($f[input_default]);    # all default should have fnc:param format
+  
+      if( $fnc ) {                     # call function
+        $fncname = 'default_fnc_' . $fnc[fnc];
+        $$varname = $fncname($fnc[param]);
+      } else
+        $$varname = $foo;
+    }    
+    
+      # validate input data
+    if( $insert || $update )
+    {
+      if( $f[input_show] AND !$f[feed] ) {
+        switch( $f[input_validate] ) {
+          case 'text': 
+            ValidateInput($varname, $f[name], &$$varname, &$err,
+                          $f[required] ? 1 : 0, "text");
+            break;
+          case 'url':  
+            ValidateInput($varname, $f[name], &$$varname, &$err,
+                          $f[required] ? 1 : 0, "url");
+            break;
+          case 'email':  
+            ValidateInput($varname, $f[name], &$$varname, &$err,
+                          $f[required] ? 1 : 0, "email");
+            break;
+          case 'number':  
+            ValidateInput($varname, $f[name], &$$varname, &$err,
+                          $f[required] ? 1 : 0, "number");
+            break;
+          case 'id':  
+            ValidateInput($varname, $f[name], &$$varname, &$err,
+                          $f[required] ? 1 : 0, "id");
+            break;
+          case 'date':  
+            $foo_datectrl_name = new datectrl($varname);
+            $foo_datectrl_name->update();                   # updates datectrl
+            if( $$varname != "")                            # loaded from defaults
+              $foo_datectrl_name->setdate_int($$varname);
+            $foo_datectrl_name->ValidateDate($f[name], &$err);
+            $$varname = $foo_datectrl_name->get_date();  # write to var
+            break;
+          case 'bool':  
+            $$varname = ($$varname ? 1 : 0);
+            break;
+        }
       }
-    }
-  }   
-}      
+    }   
+  }
+}
 
   # update database
 if( ($insert || $update) AND (count($err)<=1) 
-    AND isset($fields) AND is_array($fields) ) {
+    AND isset($prifields) AND is_array($prifields) ) {
   if( $insert )
     $id = new_id();
-
-//p_arr_m($fields);
-
-  reset($fields);
-  while(list(,$f) = each($fields)) {
-    $varname = 'v'. unpack_id($f[id]);   # "v" prefix - database field var
+  reset($prifields);
+  while(list(,$pri_field_id) = each($prifields)) {
+    $f = $fields[$pri_field_id];
+    $varname = 'v'. unpack_id($pri_field_id); # "v" prefix - database field var
     $fnc = ParseFnc($f[input_insert_func]);   # input insert function
     if( $fnc ) {                     # call function
       $fncname = 'insert_fnc_' . $fnc[fnc];
@@ -301,6 +154,7 @@ if( ($insert || $update) AND (count($err)<=1)
       $fncname($id, $f, $$varname, $fnc[param], $insert); # add to content table
     }                                                     # or to itemvarset
   }
+
   
     # update item table
   if( $update )
@@ -312,8 +166,11 @@ if( ($insert || $update) AND (count($err)<=1)
     $added_to_db = true;
   }  
   $db->query($SQL);
+
+  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+  $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
   
-//  FeedItem($id, $db);   // TODO - odstranit a feedovat
+//  FeedItem($id, $fields);
 
   if( count($err) <= 1) {
     page_close(); 
@@ -380,6 +237,8 @@ if($edit) {
   }     
 }    
 
+//print_r($content);
+
 # print begin ---------------------------------------------------------------
 
 if( !$encap ) {
@@ -404,21 +263,21 @@ echo $Msg;
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE" class="inputtab2">
 <?php
 //p_arr_m($fields);
-//p_arr_m($content);
-if( !isset($fields) OR !is_array($fields) ) {
+if( !isset($prifields) OR !is_array($prifields) ) {
   echo "<tr><td>". 	MsgErr(L_NO_FIELDS). "</td></tr>";
 } else {  
-	reset($fields);
-	while(list(,$f) = each($fields)) {
-    $field_id = unpack_id($f[id]);
-	  $varname = 'v'. $field_id;   # "v" prefix - database field var
-	  if( $content[$field_id][feed] OR !$f[input_show])
+	reset($prifields);
+	while(list(,$pri_field_id) = each($prifields)) {
+    $f = $fields[$pri_field_id];
+    $u_pri_field_id = unpack_id($pri_field_id);
+	  $varname = 'v'. $u_pri_field_id;   # "v" prefix - database field var
+	  if( $content[$u_pri_field_id][feed] OR !$f[input_show])
 	    continue;                  # fed fields or not shown fields do not show
 	  $fnc = ParseFnc($f[input_show_func]);   # input show function
 	  if( $fnc ) {                     # call function
 	    $fncname = 'show_fnc_' . $fnc[fnc];
 	      # updates content table or fills $itemvarset 
-	    $fncname($varname, $f, $content[$field_id], $$varname, $fnc[param], $edit);
+	    $fncname($varname, $f, $content[$u_pri_field_id], $$varname, $fnc[param], $edit);
 	  }
 	}
 }	
@@ -467,6 +326,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.15  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.14  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

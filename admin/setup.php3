@@ -27,8 +27,8 @@ require ("$GLOBALS[AA_INC_PATH]" . "perm_core.php3");
 require ("$GLOBALS[AA_INC_PATH]" . "perm_" . PERM_LIB . ".php3");
 require ("$GLOBALS[AA_INC_PATH]" . "util.php3");
 require ("$GLOBALS[AA_INC_PATH]" . "formutil.php3");
+require ("$GLOBALS[AA_INC_PATH]" . "pagecache.php3");
 require ("$GLOBALS[AA_INC_PATH]" . DEFAULT_LANG_INCLUDE);
-
 
 function HtmlStart() {
    echo L_SETUP_PAGE_BEGIN;
@@ -251,6 +251,9 @@ switch ($phase) {
 
 }
 
+$cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+$cache->invalidate();  # invalidate old cached values - all
+
 HtmlEnd();
 
 page_close();
@@ -259,6 +262,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.5  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.4  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

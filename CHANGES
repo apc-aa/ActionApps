@@ -1,3 +1,40 @@
+
+20/01/01 - final 'I hope' version of APC-wide categories implemented
+         - better categy handling for new slices (predefined its own category 
+           set)
+         - fixed problem with storing item ids to session in too big slices
+         - implemented posibility to view multiple fulltext items on one page
+           (see item parameter in slice.php3)         
+19/01/01 - removed absolute paths to some pictures
+         - fixed bug in displaying admin pages (table caption not displayed)
+14/01/01 - modified db table constant (added id column - used with categories)
+         - include/view.php3 modified to use page caching
+         - new include/pagecache.php3 with functions allowing caching of pages
+13/01/01 - loging for change slice feeding settings
+         - new include/logs.php3 with utilities for logging (log table modified)
+09/01/01 - located and fixed bug in in PHPLib. Fixed by patching ac_store()\
+           function in PHPLib :-(.
+08/01/01 - fixed problem with unpack_id() in some PHP versions (4.0.3) 
+           (Documents contain no data problem)
+04/01/01 - fixed "cannot redeclare sec2userdate() problem"
+         - fixed problem with wrong .htaccess file ("Internal Server Error"
+           problem)
+--------------------
+25/12/00 - v1.5.2
+--------------------
+The new structure allows
+  - more powerfull customisation of each slice (you can easy add the new 
+    field to your slice)
+  - new aplications (as joblist, resources, ...) can be done via admin
+    interface - not by editing language files.
+  - each item category has its parent - APC wide - category (suggestion on this
+    welcommed)
+  - allows threading and grouping of items in future - allows multiple
+    selection for the same field in future
+  - ... 
+--------------------
+18/12/00 - v1.2.3
+--------------------
 11/20/00 - fixed bug in anonymous posting from other than news aplication
 11/16/00 - changed admin leftbar menu order and labels
          - changed default article editor field order & fields

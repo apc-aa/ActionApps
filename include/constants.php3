@@ -106,7 +106,17 @@ $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "now" => L_INPUT_INSERT_NOW, 
                              "fil" => L_INPUT_INSERT_FIL,
                              "nul" => L_INPUT_INSERT_NUL);
-                              
+
+$LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
+                      "1"   => LOG_EVENTS_,
+                      "2"   => LOG_EVENTS_,
+                      "3"   => LOG_EVENTS_,
+                      "4"   => LOG_EVENTS_,
+                      "5"   => LOG_EVENTS_,
+                      "6"   => LOG_EVENTS_,
+                      "7"   => LOG_EVENTS_,
+                      "8"   => LOG_EVENTS_);
+                                                   
   // array of fields displayable in admin interface (index.php3)
   //   field - database field
   //   type - type of database field
@@ -151,6 +161,9 @@ $AF_COLUMNS = array ( "id" => array( "field"=>"id", "type"=>"md5", "title"=>L_ID
 
 /*
 $Log$
+Revision 1.3  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.2  2001/01/08 13:31:58  honzam
 Small bugfixes
 

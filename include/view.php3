@@ -53,8 +53,33 @@ class itemview{
     $this->clean_url = $clean_url;
   }  
     
-    #view_type used internaly for fulltext view  
-  function print_view($view_type="") {  
+
+  function get_output_cached($view_type="") {  
+    $cache = new PageCache($this->db, CACHE_TTL, CACHE_PURGE_FREQ);
+
+    #create keystring from values, which exactly identifies resulting content
+
+    $keystr = serialize($this->slice_info).
+              $view_type.
+              $this->from_record.
+              $this->num_records.
+              $this->clean_url.
+              $this->ids[0];
+    for( $i=$this->from_record; $i<$this->from_record+$this->num_records; $i++)
+      $keystr .= $this->ids[$i];
+      
+    if( $res = $cache->get($keystr) )
+      return $res;
+
+    #cache new value 
+    $res = $this->get_output($view_type);
+
+    $cache->store($keystr, $res, "slice_id=".unpack_id($this->slice_info["id"]));
+    return $res;
+  }  
+              
+  #view_type used internaly for different view types
+  function get_output($view_type="") {  
     $db = $this->db;
     if( !( isset($this->ids) AND is_array($this->ids) ))
       return;
@@ -69,7 +94,6 @@ class itemview{
       }  
     }  
     $sel_in .= ( ($delim=="") ? "'')" : ")"); 
-
     
        # get content from item table
     $SQL = "SELECT * FROM item WHERE id IN $sel_in";
@@ -87,17 +111,6 @@ class itemview{
        # feeding - don't worry about it - when fed item is updated, informations
        # in content table is updated too
 
-/* Constants are directly in fields - we don't need this join
-    $db->query("SELECT * FROM content LEFT JOIN constant 
-                    ON content.text=constant.value
-                    WHERE item_id IN $sel_in");  # usable just for constants
-    while( $db->next_record() ) {
-      $content[unpack_id($db->f(item_id))][$db->f(field_id)][] = 
-        array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
-               "name"=> $db->f(name) );
-    }
-*/    
-
     $db->query("SELECT * FROM content 
                  WHERE item_id IN $sel_in");  # usable just for constants
     while( $db->next_record() ) {
@@ -105,6 +118,7 @@ class itemview{
         array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
                "flag"=> $db->f(flag) );
     }
+    
 
     $CurItem = new item("", "", $this->aliases, $this->clean_url, "",
                         $this->slice_info[grab_len]);   # just prepare
@@ -121,7 +135,7 @@ class itemview{
                              $this->slice_info[fulltext_remove],
                              $this->slice_info[fulltext_format_top],
                              $this->slice_info[fulltext_format_bottom]);
-        $CurItem->print_item();
+        $out = $CurItem->get_item();
         break;
       case "itemlist":          # multiple items as fulltext one after one
         for( $i=0; $i<$this->num_records; $i++ ) {
@@ -136,12 +150,12 @@ class itemview{
                                $this->slice_info[fulltext_remove],
                                $this->slice_info[fulltext_format_top],
                                $this->slice_info[fulltext_format_bottom]);
-          $CurItem->print_item();
+          $out .= $CurItem->get_item();
         }
         break;
       default:                         # compact view
         $oldcat = "_No CaTeg";
-        echo $this->slice_info[compact_top];
+        $out = $this->slice_info[compact_top];
         for( $i=0; $i<$this->num_records; $i++ ) {
           $iid = $this->ids[$this->from_record+$i];
           if( !$iid )
@@ -156,7 +170,7 @@ class itemview{
             $CurItem->setformat( $this->slice_info[category_format], "",
                                  $this->slice_info[category_top],
                                  $this->slice_info[category_bottom] );
-            $CurItem->print_item();
+            $out .= $CurItem->get_item();
           }  
           
             # print item
@@ -165,18 +179,26 @@ class itemview{
              $this->slice_info[even_row_format] : $this->slice_info[odd_row_format],
              $this->slice_info[compact_remove], "", "");
 
-          $CurItem->print_item();
+          $out .= $CurItem->get_item();
         }
-        echo $this->slice_info[compact_bottom];
+        $out .= $this->slice_info[compact_bottom];
     }  
-  }
-    
-  function print_item() {
-    $this->print_view("fulltext");
+    return $out;
   }
 
+  # compact view
+  function print_view() {
+    echo $this->get_output_cached("view");
+  }  
+  
+  # fulltext of one item  
+  function print_item() {
+    echo $this->get_output_cached("fulltext");
+  }
+
+  # multiple items as fulltext one after one
   function print_itemlist() {
-    $this->print_view("itemlist");
+    echo $this->get_output_cached("itemlist");
   }
   
 };
@@ -184,6 +206,9 @@ class itemview{
 
 /*
 $Log$
+Revision 1.5  2001/01/22 17:32:49  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.4  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
 

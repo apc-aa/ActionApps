@@ -41,7 +41,7 @@ $aliases["_#IMAGESRC"] = array("fce"=>"f_i", "param"=>"", "hlp" => L_HLP_IMAGESR
 $aliases["_#SOURCE##"] = array("fce"=>"f_h", "param"=>"source", "hlp" => L_HLP_SOURCE);
 $aliases["_#SRC_URL#"] = array("fce"=>"f_s", "param"=>"", "hlp" => L_HLP_SRC_URL);
 $aliases["_#LINK_SRC"] = array("fce"=>"f_l", "param"=>"", "hlp" => L_HLP_LINK_SRC);
-$aliases["_#PLACE###"] = array("fce"=>"f_h", "param"=>"place", "hlp" => L_HLP_PLACE);
+aliases["_#PLACE###"] = array("fce"=>"f_h", "param"=>"place", "hlp" => L_HLP_PLACE);
 $aliases["_#POSTEDBY"] = array("fce"=>"f_h", "param"=>"posted_by", "hlp" => L_HLP_POSTEDBY);
 $aliases["_#E_POSTED"] = array("fce"=>"f_h", "param"=>"e_posted_by", "hlp" => L_HLP_E_POSTED);
 $aliases["_#CREATED#"] = array("fce"=>"f_h", "param"=>"created_by", "hlp" => L_HLP_CREATED);
@@ -209,13 +209,13 @@ class item {
     echo "<a href=\"$home_url\">". L_HOME .'</a><br>';
   }  
 
-  function print_item() {
+  function get_item() {
   // format string
 
     $out = $this->format;
     $remove = $this->remove;
     $out = $this->unalias($out, $remove);
-    echo $out;
+    return $out;
   }  
 
   function unalias($out, $remove_string="") {
@@ -279,6 +279,9 @@ class item {
 
 /*
 $Log$
+Revision 1.7  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.6  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
 

@@ -89,7 +89,7 @@ define("L_NEW_GROUP", "New Group");
 define("L_EDIT_GROUP", "Edit Group");
 
 // application not specific strings
-define("NO_PICTURE_URL", "http://aa.ecn.cz/aa/images/pixel_blank.gif");  // image used when 
+define("NO_PICTURE_URL", AA_INSTAL_URL ."images/pixel_blank.gif");  // image used when 
   // there is img_source in html format string but no img_source is stored in database 
   // (you can use blank pixel for none picture)
 
@@ -110,6 +110,10 @@ define( "L_SLICE_HINT", '
                   <br>
                   To include slice in your webpage type next line to your shtml code:
                   ');
+
+
+// log texts
+define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
 //transforms database date to human date format
 function sec2userdate($timestamp, $format="") {
@@ -137,6 +141,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.13  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.12  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

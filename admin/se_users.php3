@@ -25,6 +25,7 @@ http://www.apc.org/
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_USERS);
@@ -120,6 +121,8 @@ HtmlPageBegin();   // Prints HTML start page tags
 
   $continue=true;
   $editor_perms = GetSlicePerms($auth->auth["uid"], $slice_id);
+
+  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
   
   if( $show_adduser ) {
     include "./se_users_add.php3";
@@ -128,12 +131,14 @@ HtmlPageBegin();   // Prints HTML start page tags
                        $editor_perms,
                        $perms_roles_perms[$role]) ) {
       AddPerm($UsrAdd, $slice_id, "slice", $perms_roles_id[$role]);
+      $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     }
   } elseif( $UsrDel ) {
     if( CanChangeRole(GetSlicePerms($UsrDel, $slice_id, false),
                       $editor_perms,
                       $perms_roles_perms["AUTHOR"]) )  // smallest permission
       DelPerm($UsrDel, $slice_id, "slice");
+      $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
   }
   if( $continue ) {
 /* # unused code (I hope)
@@ -190,6 +195,9 @@ HtmlPageBegin();   // Prints HTML start page tags
   }  
 /*
 $Log$
+Revision 1.6  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.5  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

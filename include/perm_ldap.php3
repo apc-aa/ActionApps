@@ -689,8 +689,8 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
-Revision 1.12  2001/01/10 15:49:16  honzam
-Fixed problem with unpack_id (No content Error on index.php3)
+Revision 1.13  2001/01/22 17:32:49  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 
 Revision 1.11  2000/08/14 09:22:17  kzajicek
 Fixed incorrect default for in DelGroup

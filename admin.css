@@ -22,7 +22,7 @@ TD, INPUT, TEXTAREA {
   font-size: 8pt;
  }
 
-H1 {
+H1, .tablename {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: medium;
   margin-left: 20px;  

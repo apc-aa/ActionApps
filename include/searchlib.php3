@@ -126,6 +126,16 @@ function MakeWhere($p_slice_id, $cat, $high) {
   return $where;  
 }
 
+/*function aa_search_db ($where, $retflds) {
+  if( !isset($retflds) OR !is_array($retflds))
+    echo "No fields in SQL query (searchlib.php3)"; 
+  $sql = Join($retflds, ", ");
+  $sql = "SELECT " . $sql . " FROM items, fulltexts WHERE fultexts.id = items.master_id AND " . $where;
+  return $sql;
+}
+*/
+
+# -------------------- new functions 1.5.x -------------------------
 
 // returns array of item ids matching the conditions in right order
   # items_cond - SQL string added to WHERE clause to item table query
@@ -198,17 +208,198 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
   return $arr;           
 }
 
-/*function aa_search_db ($where, $retflds) {
-  if( !isset($retflds) OR !is_array($retflds))
-    echo "No fields in SQL query (searchlib.php3)"; 
-  $sql = Join($retflds, ", ");
-  $sql = "SELECT " . $sql . " FROM items, fulltexts WHERE fultexts.id = items.master_id AND " . $where;
-  return $sql;
+
+# cuts quotations from begin and end
+function CutQuote($foo) {
+	if (SubStr($foo,0,1)=='"')
+		$foo=SubStr($foo,1,StrLen($foo)-1);
+	if (SubStr($foo,-1,1)=='"')
+		$foo=SubStr($foo,0,StrLen($foo)-1);
+	return $foo;	
 }
-*/
+
+# cuts quotations from begin and end
+function CutHash($foo) {
+	if (SubStr($foo,0,1)=='#')
+		$foo=SubStr($foo,1,StrLen($foo)-1);
+	if (SubStr($foo,-1,1)=='#')
+		$foo=SubStr($foo,0,StrLen($foo)-1);
+	return $foo;	
+}
+
+# search value for date begins and ends with '#'
+function InputIsDate($foo) {
+	if ((SubStr($foo,0,1)=='#') and (SubStr($foo,-1,1)=='#'))
+		return true;
+	else 
+		return false;
+}
+
+# match number of query left and right brackets
+function BracketsMatch ($query) {
+	$leftq=$query;
+	$left=0;
+	while ($leftq=StrStr($leftq,'(')) {
+		$left++;
+		$leftq=SubStr($leftq,1,StrLen($leftq)-1);
+	}
+	$rightq=$query;
+	$right=0;
+	while ($rightq=StrStr($rightq,')')) {
+		$right++;
+		$rightq=SubStr($rightq,1,StrLen($rightq)-1);
+	}
+	if ($left==$right)	
+		return true;
+	else
+		return false;
+}
+	
+function ExtSearch ($query,$p_slice_id,$debug=0) {
+  set_time_limit(180);
+  
+  # 1) query preparation
+  if ($debug)
+    echo "query-$query<br>" ;
+  
+	if (!BracketsMatch($query))
+ 		return (L_BRACKETS_ERR . $query);
+	$query = Trim($query);
+	$query = str_replace("\\", "\\\\", $query);
+	$query = str_replace("%", "\%", $query);
+	$query = str_replace("*", "%", $query);	
+	$query = str_replace("'", "\'", $query);
+  	
+  # 2) parsing query for basis conditions (bool operators, left bracket, field name, 
+  #    comparison operator, value, right bracket)
+  
+  if ($debug)
+    echo "queryprep-$query<br><hr>";
+  
+	$istrue=true;	
+	for ($i=0;$istrue;$i++) {
+		if (Eregi("^(.*)( and | or | not )(.*)$",$query,$part)) {
+			$firstpart=Trim($part[3]);
+			$field[$i]["boolop"]=Trim($part[2]);
+			$query=$part[1];
+		} else {
+			$firstpart=Trim($query);
+			$field[$i]["boolop"]='';			
+			$istrue=false;	
+		}
+
+		if (Eregi("^([\(*|[[:space:]]*]*)[[:space:]]*([_\.1-9A-Za-z]{16})[[:space:]]*(<=|>=|<>|:|=|<|>)[[:space:]]*([^)]+)[[:space:]]*([\)*|[[:space:]]*]*)$",$firstpart,$part)) {
+			$field[$i]["leftbrack"]=Trim($part[1]);
+			$field[$i]["name"]=$part[2];
+			$field[$i]["matchop"]=$part[3];
+			$field[$i]["value"]=CutQuote(Trim($part[4]));
+			$field[$i]["rightbrack"]=Trim($part[5]);
+		} else {
+			return "Bad syntax near $firstpart!";
+		}
+				
+	}	
+  
+  if ($debug)
+   echo p_arr_m ($field)."<hr>";
+  
+  # 3) find informations needed for search (table, text vs numerical)
+  
+	$db = new DB_AA;
+	$sql="SELECT id,in_item_tbl,text_stored FROM field where slice_id='".$p_slice_id."'";
+	$db->query($sql);
+	while ($db->next_record()) {
+		$slicefield[$db->f(id)]["id"]=$db->f(id);
+		if ($db->f(in_item_tbl)=='') {
+			$slicefield[$db->f(id)]["table"]= 'content';
+			if ($db->f(text_stored)=='1') 
+				$slicefield[$db->f(id)]["field"]= 'text';
+			else
+				$slicefield[$db->f(id)]["field"]= 'number';		
+		} else {
+			$slicefield[$db->f(id)]["table"]= 'item';
+			$slicefield[$db->f(id)]["field"]= $db->f(in_item_tbl);
+		}		
+	}
+	$db->free();
+  	
+  # 4) change of bool and comparison operators, field names,
+  #    transformation date to number)
+  
+	for ($i=0;$i<count($field);$i++) {
+		if ($slicefield[$field[$i]["name"]]["id"]) { # field name exists in this slice
+
+			$field[$i]["value"] = str_replace("_", "\_", $field[$i]["value"]);
+
+			if ($field[$i]["matchop"]==":") { # like expresion
+				$field[$i]["matchop"]="like";
+				$field[$i]["value"] = str_replace("?", "_", $field[$i]["value"]);
+				$field[$i]["value"] = '%'.$field[$i]["value"].'%';
+			}
+
+			if (StrToUpper($field[$i]["boolop"])=="NOT") { # conversion to PHP negation
+				$field[$i]["boolop"]="and !";
+			}
+
+			if (InputIsDate($field[$i]["value"])) # conversion date value to seconds
+				$field[$i]["value"]= userdate2sec( CutHash($field[$i]["value"]) );
+			
+		} else {
+			return "Field ".$field[$i]["name"]." doesn't exist in this slice!";
+		}
+	}
+  
+  if ($debug)
+    echo p_arr_m ($field)."<hr>";	
+  
+  # search id for each basis condition
+  
+	for ($i=0;$i<count($field);$i++) {
+		if ($slicefield[$field[$i]["name"]]["table"]=='item')
+			$sql="SELECT id FROM item WHERE slice_id='".$p_slice_id."' AND ".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."'";
+		else 
+			$sql="SELECT b.id FROM ".$slicefield[$field[$i]["name"]]["table"]." a,item b
+				WHERE b.id=a.item_id AND b.slice_id='".$p_slice_id."' AND a.".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."' AND a.field_id='".$field[$i]["name"]."'";
+
+		$db->query($sql);
+		while ($db->next_record()) {
+			$id=unpack_id($db->f(id));
+			$possible[$id][$i]=1;
+		}
+		$db->free();
+  
+    if ($debug)
+      echo $sql."<br>";		
+	}
+  
+  if ($debug) echo "<hr>";
+  if ($debug) echo p_arr_m ($possible)."<hr>";
+  
+  # search for ids matching all conditions
+	if (Is_Array($possible)) {
+		Reset($possible);
+		While(Current($possible)) {
+			$id=Key($possible);
+			$condition="if (";
+			for ($i=count($field)-1;$i>=0;$i--) {
+				$condition.=" ".$field[$i][boolop]." ".$field[$i][leftbrack]." \$possible[\"".$id."\"][".$i."] ".$field[$i][rightbrack]." ";			
+			}
+			$condition.=") \$res[]=\$id;";
+if ($debug) echo "$condition<br>";
+			Eval($condition);
+			Next($possible);
+		}
+		return $res;
+	} else {
+ 		return false;   //  L_NO_ITEM;		
+ 	}
+}; # search function end
 
 /*
 $Log$
+Revision 1.5  2001/01/22 17:32:49  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.4  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
 

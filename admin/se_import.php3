@@ -206,6 +206,9 @@ function UpdateImportExport(slice_id)
 <?php
 /*
 $Log$
+Revision 1.4  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.3  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 
@@ -235,4 +238,4 @@ also added Id and Log keywords to all .php3 and .inc files
 *.php3 makes use of new variables in config.inc
 
 */
- page_close()?>
+page_close()?>

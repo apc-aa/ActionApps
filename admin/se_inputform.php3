@@ -24,6 +24,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 
 function EditConstantURL() {
   global $fld, $sess;
@@ -50,6 +51,9 @@ if( $del ) {
     $err["DB"] = MsgErr("Can't change field");
     break;
   }
+  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+  $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+
   $Msg = MsgOK(L_FIELD_DELETE_OK);
   go_url( $sess->url("./se_fields.php3") );  # back to field page
 }
@@ -91,9 +95,12 @@ if( $update ) {
       $err["DB"] = MsgErr("Can't change field");
       break;
     }
+    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+
     if( count($err) <= 1 ) {
       $Msg = MsgOK(L_FIELDS_OK);
-      go_url( $sess->url("./se_fields.php3") );  # back to field page
+//      go_url( $sess->url($PHP_SELF) ); 
     }    
   } while( 0 );           #in order we can use "break;" statement
 } 
@@ -253,6 +260,9 @@ echo "
 
 /*
 $Log$
+Revision 1.3  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.2  2001/01/08 13:31:58  honzam
 Small bugfixes
 

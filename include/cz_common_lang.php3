@@ -91,6 +91,9 @@ define("L_NEW_GROUP", "Nová skupina");
 define("L_EDIT_GROUP", "Editace Skupiny");
 
 // application not specific strings
+define("NO_PICTURE_URL", AA_INSTAL_URL ."images/pixel_blank.gif");  // image used when 
+  // there is img_source in html format string but no img_source is stored in database 
+  // (you can use blank pixel for none picture)
 define("L_ALLCTGS", "Všechny kategorie");
 define("L_BAD_INC", "Špatný parametr inc - soubor mùže být v tomtéž adresáøi, kde je .shtml soubor - smi obsahovat jen znaky a cisla");
 define("L_NO_SUCH_FILE", "Soubor nenalezen");
@@ -147,6 +150,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.12  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.11  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

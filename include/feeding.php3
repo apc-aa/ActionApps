@@ -23,10 +23,18 @@ http://www.apc.org/
 # Functions for feeding
 #
 
-function FeedItemTo($item_id, $destination, $approved, $db, $tocategory=0) {
-  global $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM;
-//huh("FeedItemTo($item_id, $destination, $approved, $db, $tocategory =0)");
+function FeedItemTo($item_id, $destination, $approved, $tocategory=0) {
+  global $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM, $db;
+//huh("FeedItemTo($item_id, $destination, $approved, $tocategory =0)");
    
+
+kouknout, zda uz tam neni feedly - pak jen update
+
+
+--    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+--    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+
+
   $varset = new Cvarset;
   $varset->addArray( $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM );
   $SQL = "SELECT items.* FROM items WHERE id='". q_pack_id($item_id) ."'";
@@ -62,10 +70,52 @@ function FeedItemTo($item_id, $destination, $approved, $db, $tocategory=0) {
   else return false;
 }
 
+
+# Find all slices, into which we should propagate the item
+function GetSlicesIntoExportItem($slice_id, $from_category_id) {
+  global $db;
+  
+  $slices[$slice_id] = array( approved=>"y",  # two purpose array - 1) set of feeding slices
+                                              #                     2) hold if import to approved
+                              category=>"0"); # stores categories we should import to
+  reset($slices);
+  while( $akt=key($slices) ) {
+//    huh("<br>slices:<br>");
+//    p_arr($slices);
+//    huh("<br>--$akt---------<br>");
+    
+    if ( $slices[$akt][approved] == "y" ) {   // if yes then continue feeding down
+      $SQL = "SELECT to_id, category_id, all_categories, to_approved, to_category_id 
+                FROM feeds 
+              WHERE from_id='". q_pack_id($akt) ."'";
+      $db->query($SQL);
+//      huh("akt == y<br>");
+      while($db->next_record()) {
+        $to_id = unpack_id($db->f(to_id));
+//        huh("try from: $akt to: $to_id<br>");
+        if( $slices[$to_id][approved] != "y" )   // condition is necessary for multi feeding to this slice
+          if( $from_category_id == $db->f(category_id)) OR $db->f(all_categories) ) {
+//            huh("add to slices: $to_id<br>");
+            $slices[$to_id][approved] = ($db->f(to_approved) ? "y" : "n");  // add new feed slice
+            $slices[$to_id][category] = unpack_id($db->f(to_category_id));
+          }  
+      }      
+    }  
+    next($slices);
+  }
+  return $slices;
+}
+
 # Feeds item to all apropriate slices
 # item_id is unpacked id of feeded item
-function FeedItem($item_id, $db) {               //TODO  - category problem when you feed down and down, the category can change
-  global $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM;    //      - it is no so big problem (19.11.99) 
+function FeedItem($item_id, $fields) {     //TODO  - category problem when you feed down and down, the category can change
+  global $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM, $db;    //      - it is no so big problem (19.11.99) 
+
+  # get item field definition
+nee - parametr  $fields = GetTable2Array("SELECT * FROM field WHERE slice_id='$p_slice_id'", $db);
+nacist obsah feedovaneho clanku
+
+neni-li approved - exit
 
 
 
@@ -75,13 +125,6 @@ function FeedItem($item_id, $db) {               //TODO  - category problem when
 
 
    
-//zkontolovat status_code (kdyz neni 1 - konec)
-
-
-
-
-
-
 
 
 
@@ -95,52 +138,22 @@ function FeedItem($item_id, $db) {               //TODO  - category problem when
     $varset->setFromArray($db->Record);
   }
   
-  $p_slice_id = $varset->value(slice_id);
-  $slice_id = unpack_id($p_slice_id);
-  $slices[$slice_id] = "y";            // two purpose array - 1) set of feeding slices
-                                       //                     2) hold if import to approved
-  $tocategory[$slice_id] = "0";        // array corresponds to $slices array 
-                                       // - stores categories we should import to
-  reset($slices);
-  while( $akt=key($slices) ) {
-//    huh("<br>slices:<br>");
-//    p_arr($slices);
-//    huh("<br>--$akt---------<br>");
-    
-    if ( $slices[$akt] == "y" ) {   // if yes then continue feeding down
-      $SQL = "SELECT to_id, category_id, all_categories, to_approved, to_category_id FROM feeds 
-              WHERE from_id='". q_pack_id($akt) ."'";
-      $db->query($SQL);
-//      huh("akt == y<br>");
-      while($db->next_record()) {
-        $to_id = unpack_id($db->f(to_id));
-//        huh("try from: $akt to: $to_id<br>");
-        if( $slices[$to_id] != "y" )   // condition is necessary for multi feeding to this slice
-          if( ($varset->value(category_id) == $db->f(category_id)) OR $db->f(all_categories) ) {
-//            huh("add to slices: $to_id<br>");
-            $slices[$to_id] = ($db->f(to_approved) ? "y" : "n");  // add new feed slice
-            $tocategory[$to_id] = unpack_id($db->f(to_category_id));
-          }  
-      }      
-    }  
-    next($slices);
-  }
-// now we have set of slices to export the item  
+  GetSlicesIntoExportItem($slice_id, $from_category_id) {
+
+# now we have in $slices array set of slices to export the item 
+# with destination category and state (approved or not)
 //  huh("xxxxxxxxxxx All feed slices<br>");
 //  p_arr($slices);
 
   // do not import the item twice
   reset( $slices );
-  while( list($slice,$approved) = each($slices) )
-    FeedItemTo($item_id, $slice, $approved=="y", $db, $tocategory[$slice]);
+  while( list($slice,$atribs) = each($slices) )
+    FeedItemTo($item_id, $slice, $atribs[approved]=="y", $atribs[category]);
 }
 /*
 $Log$
-Revision 1.4  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.3  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+Revision 1.5  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 
 Revision 1.2  2000/07/07 21:28:17  honzam
 Both manual and automatical feeding bug fixed

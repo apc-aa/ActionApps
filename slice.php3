@@ -22,7 +22,8 @@ http://www.apc.org/
 #expected  slice_id 
 #expected  encap     // determines wheather this file is ssi included or called directly  
 #optionaly sh_itm    // if specified - selected item is shown in full text
-#optionaly srch      // true if this script have to show search results
+#optionaly query     // query string sended by custom search form for extended
+                     // search
 #optionaly highlight // when true, shows only highlighted items in compact view
 #optionaly bigsrch   // true, if this script have to show big search form
 #optionaly cat_id    // select only items in category with id cat_id
@@ -33,6 +34,7 @@ http://www.apc.org/
                      // (aplicable in compact viewe only) 
 #optionaly items[x]  // array of items to show one after one as fulltext 
                      // the array format is 
+                     
 
 $encap = ( ($encap=="false") ? false : true );
 
@@ -42,6 +44,7 @@ require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";
 require $GLOBALS[AA_INC_PATH]."view.php3";
+require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
 
 # $debugtimes[]=microtime();
@@ -51,7 +54,13 @@ else {require $GLOBALS[AA_INC_PATH]."locsess.php3";}
 page_open(array("sess" => "AA_SL_Session"));
 $sess->register(r_highlight); 
 $sess->register(r_category); 
-$sess->register(r_item_ids); 
+
+# there was problems with storing too much ids in session veriable, 
+# so I commented it out. It is not necessary to have it in session. The only
+# reason to have it there is the display speed, but because of impementing
+# pagecache.php3, it is not problem now
+
+//$sess->register(item_ids);    
 
 //-----------------------------Functions definition--------------------------------------------------- 
 
@@ -140,18 +149,14 @@ $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
 # $debugtimes[]=microtime();
 
   # get fields info
-$fields = GetTable2Array("SELECT * FROM field WHERE slice_id='$p_slice_id'", $db);
+list($fields,) = GetSliceFields($p_slice_id);
 
 # $debugtimes[]=microtime();
 
   # get slice info
-$SQL= " SELECT * FROM slice WHERE id='".$p_slice_id."' AND deleted<1";
-//huh($SQL);
-
-$db->query($SQL);
-if ($db->next_record()) {
-  $slice_info = $db->Record;
-  include $GLOBALS[AA_INC_PATH] . $db->f(lang_file);  // language constants (used in searchform...)
+$slice_info = GetSliceInfo($p_slice_id);
+if ($slice_info AND ($slice_info[deleted]<1)) {
+  include $GLOBALS[AA_INC_PATH] . $slice_info[lang_file];  // language constants (used in searchform...)
 }
 else {
   echo L_SLICE_INACCESSIBLE . " (ID: $slice_id)";
@@ -182,7 +187,7 @@ elseif( $sh_itm ) {   // fulltext view ----------------------------------------
 }
 elseif( $items  AND is_array($items) ) {   // multiple items fulltext view --------------------------
   # shows all $items[] as fulltext one after one
-  while(list($k,$v) = each( $items ))
+  while(list($k,) = each( $items ))
     $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
   $aliases = GetAliasesFromFields($fields);
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, $ids, 0,count($ids), $sess->MyUrl($slice_id, $encap));
@@ -196,12 +201,12 @@ else {               //compact view -------------------------------------------
   if( $listlen )    // change number of listed items
     $scr->metapage = $listlen;
   
-  if($srch) {
+  if($query) {
     $r_category_id = "";
     $r_highlight = "";
-    if( !$big )      // posted by bigsrch form -------------------
-      $search[slice] = $slice_id;
-    $r_item_ids = unpack_id(SearchWhere($search, $s_col));  // it is problem to store packed slice_id in session variable
+    $item_ids = ExtSearch($query,$p_slice_id,0);
+    if( !isset($item_ids) OR !is_array($item_ids))
+      echo "<div>$item_ids</div>";  // display possible error msg
     $scr->current = 1;
   }
   else {
@@ -235,22 +240,18 @@ else {               //compact view -------------------------------------------
 
 # $debugtimes[]=microtime();
 
-    $r_item_ids = GetItemAppIds($fields, $db, $p_slice_id, $conditions, 
+    $item_ids = GetItemAppIds($fields, $db, $p_slice_id, $conditions, 
                    "DESC", $slice_info[category_sort] ? "category........" : "", "" );
 
 # $debugtimes[]=microtime();
-
-
   }    
-
-//p_arr_m( $r_item_ids );
 
   if(!$encap) 
     echo '<a href="'. $sess->MyUrl($slice_id, $encap). '&bigsrch=1">Search form</a><br>';
   if( !$srch AND !$encap )
     pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
 
-  if( count( $r_item_ids ) > 0 ) {
+  if( count( $item_ids ) > 0 ) {
 
 # $debugtimes[]=microtime();
 
@@ -258,7 +259,7 @@ else {               //compact view -------------------------------------------
 
 # $debugtimes[]=microtime();
 
-    $itemview = new itemview( $db, $slice_info, $fields, $aliases, $r_item_ids,
+    $itemview = new itemview( $db, $slice_info, $fields, $aliases, $item_ids,
                 $scr->metapage * ($scr->current - 1), $scr->metapage, $sess->MyUrl($slice_id, $encap) );
 
 # $debugtimes[]=microtime();
@@ -267,7 +268,7 @@ else {               //compact view -------------------------------------------
       
 # $debugtimes[]=microtime();
 
-    $scr->countPages( count( $r_item_ids ) );
+    $scr->countPages( count( $item_ids ) );
   	if($scr->pageCount() > 1)
       $scr->pnavbar();
   }  
@@ -287,6 +288,9 @@ page_close();
 #    p_arr_m( $debugtimes);
 /*
 $Log$
+Revision 1.11  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.10  2000/12/23 19:56:02  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
 

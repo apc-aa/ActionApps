@@ -1,3 +1,5 @@
+# add offline table, relation table, aditional and flag field in slice table
+
 
 # --------------------------------------------------------
 # Table structure for table 'active_sessions'
@@ -12,17 +14,47 @@ CREATE TABLE active_sessions (
 );
 
 # --------------------------------------------------------
+# Table structure for table 'offline' 
+# This table holds information about items, which is off-line filled
+# (such items have no identificating id before feed, so it must be created for
+# them; The identification of off-line filled items are done with digest - md5
+# of whole item content (prvent from multiple uploading of the same item))
+
+CREATE TABLE offline (
+   id char(16) NOT NULL,
+   digest char(32) NOT NULL,
+   flag int,
+   PRIMARY KEY (id),
+   KEY digest (digest)
+);
+
+
+# --------------------------------------------------------
+# Table structure for table 'relation'
+# Table used for storing relations between items (could hold discussion threads,
+# list of related items ...)
+
+CREATE TABLE relation (
+   source_id char(16) NOT NULL,
+   destination_id char(32) NOT NULL,
+   flag int,
+   KEY source_id (source_id),
+   KEY destination_id (destination_id)
+);
+
+# --------------------------------------------------------
 # Table structure for table 'constant'
 
 CREATE TABLE constant (
+   id char(16) NOT NULL,
    group_id char(16) NOT NULL,
    name char(150) NOT NULL,
    value char(150) NOT NULL,
    class char(16),
    pri smallint(5) DEFAULT '100' NOT NULL,
+   PRIMARY KEY (id),
    KEY group_id (group_id)
 );
-
 
 # --------------------------------------------------------
 # Table structure for table 'content'
@@ -178,7 +210,8 @@ CREATE TABLE log (
    id int(11) DEFAULT '0' NOT NULL auto_increment,
    time bigint(20) DEFAULT '0' NOT NULL,
    user varchar(60) NOT NULL,
-   text varchar(255) NOT NULL,
+   type char(10) NOT NULL,
+   params char(128),
    PRIMARY KEY (id),
    KEY time (time)
 );
@@ -195,6 +228,18 @@ CREATE TABLE membership (
    KEY memberid (memberid)
 );
 
+# --------------------------------------------------------
+# Table structure for table 'pagecache'
+
+CREATE TABLE pagecache (
+   id varchar(32) NOT NULL,
+   str2find text,
+   content mediumtext,
+   stored bigint,
+   flag int,
+   PRIMARY KEY (id),
+   KEY (stored)
+);
 
 # --------------------------------------------------------
 # Table structure for table 'perms'
@@ -255,6 +300,8 @@ CREATE TABLE slice (
    admin_remove text,
    permit_anonymous_post smallint(5),
    permit_offline_fill smallint(5),
+   aditional text,
+   flag int,   
    PRIMARY KEY (id)
 );
 
@@ -283,7 +330,6 @@ CREATE TABLE subscriptions (
    KEY uid (uid, frequency)
 );
 
-
 # --------------------------------------------------------
 # Table structure for table 'users'
 
@@ -308,126 +354,158 @@ CREATE TABLE users (
 # Dumping data for table 'constant'
 #
 
-INSERT INTO constant VALUES( 'lt_codepages', 'iso8859-1', 'iso8859-1', '', '100');
-INSERT INTO constant VALUES( 'lt_codepages', 'iso8859-2', 'iso8859-2', '', '100');
-INSERT INTO constant VALUES( 'lt_codepages', 'windows-1250', 'windows-1250', '', '100');
-INSERT INTO constant VALUES( 'lt_codepages', 'windows-1253', 'windows-1253', '', '100');
-INSERT INTO constant VALUES( 'lt_codepages', 'windows-1254', 'windows-1254', '', '100');
-INSERT INTO constant VALUES( 'lt_codepages', 'koi8-r', 'koi8-r', '', '100');
-INSERT INTO constant VALUES( 'lt_codepages', 'ISO-8859-8', 'ISO-8859-8', '', '100');
-INSERT INTO constant VALUES( 'lt_codepages', 'windows-1258', 'windows-1258', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Afrikaans', 'AF', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Arabic', 'AR', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Basque', 'EU', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Byelorussian', 'BE', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Bulgarian', 'BG', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Catalan', 'CA', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Chinese (ZH-CN)', 'ZH', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Chinese', 'ZH-TW', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Croatian', 'HR', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Czech', 'CS', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Danish', 'DA', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Dutch', 'NL', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'English', 'EN-GB', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'English (EN-US)', 'EN', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Estonian', 'ET', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Faeroese', 'FO', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Finnish', 'FI', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'French (FR-FR)', 'FR', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'French', 'FR-CA', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'German', 'DE', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Greek', 'EL', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Hebrew (IW)', 'HE', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Hungarian', 'HU', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Icelandic', 'IS', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Indonesian (IN)', 'ID', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Italian', 'IT', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Japanese', 'JA', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Korean', 'KO', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Latvian', 'LV', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Lithuanian', 'LT', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Neutral', 'NEUTRAL', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Norwegian', 'NO', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Polish', 'PL', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Portuguese', 'PT', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Portuguese', 'PT-BR', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Romanian', 'RO', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Russian', 'RU', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Serbian', 'SR', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Slovak', 'SK', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Slovenian', 'SL', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Spanish (ES-ES)', 'ES', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Swedish', 'SV', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Thai', 'TH', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Turkish', 'TR', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Ukrainian', 'UK', '', '100');
-INSERT INTO constant VALUES( 'lt_languages', 'Vietnamese', 'VI', '', '100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Environment', 'Environment', '', '1000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Environment - Transport', 'Environment - Transport', '', '1100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Environment - Energy', 'Environment - Energy', '', '1200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Environment - Forests', 'Environment - Forests', '', '1300');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Environment - Waste and Pollution', 'Environment - Waste and Pollution', '', '1400');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Environment - Nature Protection', 'Environment - Nature Protection', '', '1500');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Environment - Agriculture', 'Environment - Agriculture', '', '1600');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Environment - Animals', 'Environment - Animals', '', '1700');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Environment - Water', 'Environment - Water', '', '1800');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Nonprofits', 'Nonprofits', '', '2000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Nonprofits - Fundraising', 'Nonprofits - Fundraising', '', '2100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Nonprofits - Volunteers', 'Nonprofits - Volunteers', '', '2200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Nonprofits - Open Society', 'Nonprofits - Open Society', '', '2300');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Nonprofits - Management', 'Nonprofits - Management', '', '2400');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Society', 'Society', '', '3000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Society - Rights', 'Society - Rights', '', '3100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Society - Media', 'Society - Media', '', '3200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Society - Politics', 'Society - Politics', '', '3300');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Society - Government', 'Society - Government', '', '3400');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Society - Economy', 'Society - Economy', '', '3500');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Social area', 'Social area', '', '4000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Social area - Drugs', 'Social area - Drugs', '', '4100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Social area - Criminality', 'Social area - Criminality', '', '4200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Social area - Charity', 'Social area - Charity', '', '4300');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Social area - Health', 'Social area - Health', '', '4400');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Social area - (Un)employment', 'Social area - (Un)employment', '', '4600');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Social area - Social Aid', 'Social area - Social Aid', '', '4700');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Culture', 'Culture', '', '5000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Culture - Commemoration', 'Culture - Commemoration', '', '5100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Culture - Art', 'Culture - Art', '', '5200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Human and citizen`s rights', 'Human and citizen`s rights', '', '6000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Human and citizen`s rights - Democracy', 'Human and citizen`s rights - Democracy', '', '6100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Human and citizen`s rights - Consumer Protection', 'Human and citizen`s rights - Consumer Protection', '', '6200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Human and citizen`s rights - Minorities', 'Human and citizen`s rights - Minorities', '', '6300');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Education - School system', 'Education - School system', '', '7200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Education - Science', 'Education - Science', '', '7200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Education', 'Education', '', '7000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Religion', 'Religion', '', '8000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Spare time', 'Spare time', '', '9000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Spare time - Sport', 'Spare time - Sport', '', '9100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Regions', 'Regions', '', '10000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Regions - Self-government', 'Regions - Self-government', '', '10100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Regions - Comunities', 'Regions - Comunities', '', '10200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'Regions - Development', 'Regions - Development', '', '10300');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'People', 'People', '', '11000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'People - Children', 'People - Children', '', '11100');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'People - Gender', 'People - Gender', '', '11200');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'People - Seniors', 'People - Seniors', '', '11300');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'People - Family', 'People - Family', '', '11400');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'People - Adults', 'People - Adults', '', '11500');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'World', 'World', '', '12000');
-INSERT INTO constant VALUES( 'lt_apcCategories', 'World - Internacional Aid', 'World - Internacional Aid', '', '12100');
-INSERT INTO constant VALUES( 'lt_groupNames', 'Code Pages', 'lt_codepages', '', '0');
-INSERT INTO constant VALUES( 'lt_groupNames', 'Languages Shortcuts', 'lt_languages', '', '1000');
-INSERT INTO constant VALUES( 'lt_groupNames', 'APC-wide Categories', 'lt_apcCategories', '', '1000');
-INSERT INTO constant VALUES( 'lt_groupNames', 'AA Core Bins', 'AA_Core_Bins....', '', '10000');
-INSERT INTO constant VALUES( 'AA_Core_Bins....', 'Approved', '1', '', '100');
-INSERT INTO constant VALUES( 'AA_Core_Bins....', 'Holding Bin', '2', '', '200');
-INSERT INTO constant VALUES( 'AA_Core_Bins....', 'Trash Bin', '3', '', '300');
+INSERT INTO constant VALUES( 'AA-predefined000', 'lt_codepages', 'iso8859-1', 'iso8859-1', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined001', 'lt_codepages', 'iso8859-2', 'iso8859-2', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined002', 'lt_codepages', 'windows-1250', 'windows-1250', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined003', 'lt_codepages', 'windows-1253', 'windows-1253', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined004', 'lt_codepages', 'windows-1254', 'windows-1254', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined005', 'lt_codepages', 'koi8-r', 'koi8-r', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined006', 'lt_codepages', 'ISO-8859-8', 'ISO-8859-8', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined007', 'lt_codepages', 'windows-1258', 'windows-1258', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined008', 'lt_languages', 'Afrikaans', 'AF', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined009', 'lt_languages', 'Arabic', 'AR', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined010', 'lt_languages', 'Basque', 'EU', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined011', 'lt_languages', 'Byelorussian', 'BE', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined012', 'lt_languages', 'Bulgarian', 'BG', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined013', 'lt_languages', 'Catalan', 'CA', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined014', 'lt_languages', 'Chinese (ZH-CN)', 'ZH', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined015', 'lt_languages', 'Chinese', 'ZH-TW', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined016', 'lt_languages', 'Croatian', 'HR', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined017', 'lt_languages', 'Czech', 'CS', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined018', 'lt_languages', 'Danish', 'DA', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined019', 'lt_languages', 'Dutch', 'NL', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined020', 'lt_languages', 'English', 'EN-GB', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined021', 'lt_languages', 'English (EN-US)', 'EN', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined022', 'lt_languages', 'Estonian', 'ET', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined023', 'lt_languages', 'Faeroese', 'FO', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined024', 'lt_languages', 'Finnish', 'FI', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined025', 'lt_languages', 'French (FR-FR)', 'FR', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined026', 'lt_languages', 'French', 'FR-CA', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined027', 'lt_languages', 'German', 'DE', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined028', 'lt_languages', 'Greek', 'EL', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined029', 'lt_languages', 'Hebrew (IW)', 'HE', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined030', 'lt_languages', 'Hungarian', 'HU', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined031', 'lt_languages', 'Icelandic', 'IS', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined032', 'lt_languages', 'Indonesian (IN)', 'ID', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined033', 'lt_languages', 'Italian', 'IT', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined034', 'lt_languages', 'Japanese', 'JA', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined035', 'lt_languages', 'Korean', 'KO', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined036', 'lt_languages', 'Latvian', 'LV', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined037', 'lt_languages', 'Lithuanian', 'LT', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined038', 'lt_languages', 'Neutral', 'NEUTRAL', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined039', 'lt_languages', 'Norwegian', 'NO', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined040', 'lt_languages', 'Polish', 'PL', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined041', 'lt_languages', 'Portuguese', 'PT', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined042', 'lt_languages', 'Portuguese', 'PT-BR', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined043', 'lt_languages', 'Romanian', 'RO', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined044', 'lt_languages', 'Russian', 'RU', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined045', 'lt_languages', 'Serbian', 'SR', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined046', 'lt_languages', 'Slovak', 'SK', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined047', 'lt_languages', 'Slovenian', 'SL', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined048', 'lt_languages', 'Spanish (ES-ES)', 'ES', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined049', 'lt_languages', 'Swedish', 'SV', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined050', 'lt_languages', 'Thai', 'TH', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined051', 'lt_languages', 'Turkish', 'TR', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined052', 'lt_languages', 'Ukrainian', 'UK', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined053', 'lt_languages', 'Vietnamese', 'VI', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined054', 'lt_groupNames', 'Code Pages', 'lt_codepages', '', '0');
+INSERT INTO constant VALUES( 'AA-predefined055', 'lt_groupNames', 'Languages Shortcuts', 'lt_languages', '', '1000');
+INSERT INTO constant VALUES( 'AA-predefined056', 'lt_groupNames', 'APC-wide Categories', 'lt_apcCategories', '', '1000');
+INSERT INTO constant VALUES( 'AA-predefined057', 'lt_groupNames', 'AA Core Bins', 'AA_Core_Bins....', '', '10000');
+INSERT INTO constant VALUES( 'AA-predefined058', 'AA_Core_Bins....', 'Approved', '1', '', '100');
+INSERT INTO constant VALUES( 'AA-predefined059', 'AA_Core_Bins....', 'Holding Bin', '2', '', '200');
+INSERT INTO constant VALUES( 'AA-predefined060', 'AA_Core_Bins....', 'Trash Bin', '3', '', '300');
+
+INSERT INTO constant VALUES( 'AA-predefined100', 'lt_apcCategories', 'Internet & ICT', 'Internet & ICT', '', '1000');
+INSERT INTO constant VALUES( 'AA-predefined101', 'lt_apcCategories', 'Internet & ICT - Free software & Open Source', 'Internet & ICT - Free software & Open Source', '', '1100');
+INSERT INTO constant VALUES( 'AA-predefined102', 'lt_apcCategories', 'Internet & ICT - Access', 'Internet & ICT - Access', '', '1200');
+INSERT INTO constant VALUES( 'AA-predefined103', 'lt_apcCategories', 'Internet & ICT - Connectivity', 'Internet & ICT - Connectivity', '', '1300');
+INSERT INTO constant VALUES( 'AA-predefined104', 'lt_apcCategories', 'Internet & ICT - Women and ICT', 'Internet & ICT - Women and ICT', '', '1400');
+INSERT INTO constant VALUES( 'AA-predefined105', 'lt_apcCategories', 'Internet & ICT - Rights', 'Internet & ICT - Rights', '', '1500');
+INSERT INTO constant VALUES( 'AA-predefined106', 'lt_apcCategories', 'Internet & ICT - Governance', 'Internet & ICT - Governance', '', '1600');
+INSERT INTO constant VALUES( 'AA-predefined107', 'lt_apcCategories', 'Development', 'Development', '', '2000');
+INSERT INTO constant VALUES( 'AA-predefined108', 'lt_apcCategories', 'Development - Resources', 'Development - Resources', '', '2100');
+INSERT INTO constant VALUES( 'AA-predefined109', 'lt_apcCategories', 'Development - Structural adjustment', 'Development - Structural adjustment', '', '2200');
+INSERT INTO constant VALUES( 'AA-predefined110', 'lt_apcCategories', 'Development - Sustainability', 'Development - Sustainability', '', '2300');
+INSERT INTO constant VALUES( 'AA-predefined111', 'lt_apcCategories', 'News and media', 'News and media', '', '3000');
+INSERT INTO constant VALUES( 'AA-predefined112', 'lt_apcCategories', 'News and media - Alternative', 'News and media - Alternative', '', '3100');
+INSERT INTO constant VALUES( 'AA-predefined113', 'lt_apcCategories', 'News and media - Internet', 'News and media - Internet', '', '3200');
+INSERT INTO constant VALUES( 'AA-predefined114', 'lt_apcCategories', 'News and media - Training', 'News and media - Training', '', '3300');
+INSERT INTO constant VALUES( 'AA-predefined115', 'lt_apcCategories', 'News and media - Traditional', 'News and media - Traditional', '', '3400');
+INSERT INTO constant VALUES( 'AA-predefined116', 'lt_apcCategories', 'Environment', 'Environment', '', '4000');
+INSERT INTO constant VALUES( 'AA-predefined117', 'lt_apcCategories', 'Environment - Agriculture', 'Environment - Agriculture', '', '4100');
+INSERT INTO constant VALUES( 'AA-predefined118', 'lt_apcCategories', 'Environment - Animal rights/protection', 'Environment - Animal rights/protection', '', '4200');
+INSERT INTO constant VALUES( 'AA-predefined119', 'lt_apcCategories', 'Environment - Climate', 'Environment - Climate', '', '4300');
+INSERT INTO constant VALUES( 'AA-predefined120', 'lt_apcCategories', 'Environment - Biodiversity/conservetion', 'Environment - Biodiversity/conservetion', '', '4400');
+INSERT INTO constant VALUES( 'AA-predefined121', 'lt_apcCategories', 'Environment - Energy', 'Environment - Energy', '', '4500');
+INSERT INTO constant VALUES( 'AA-predefined122', 'lt_apcCategories', 'Environment - Campaigns', 'Environment - Campaigns', '', '4550');
+INSERT INTO constant VALUES( 'AA-predefined123', 'lt_apcCategories', 'Environment - Legislation', 'Environment - Legislation', '', '4600');
+INSERT INTO constant VALUES( 'AA-predefined124', 'lt_apcCategories', 'Environment - Genetics', 'Environment - Genetics', '', '4650');
+INSERT INTO constant VALUES( 'AA-predefined125', 'lt_apcCategories', 'Environment - Natural resources', 'Environment - Natural resources', '', '4700');
+INSERT INTO constant VALUES( 'AA-predefined126', 'lt_apcCategories', 'Environment - Rural development', 'Environment - Rural development', '', '5750');
+INSERT INTO constant VALUES( 'AA-predefined127', 'lt_apcCategories', 'Environment - Transport', 'Environment - Transport', '', '4800');
+INSERT INTO constant VALUES( 'AA-predefined128', 'lt_apcCategories', 'Environment - Urban ecology', 'Environment - Urban ecology', '', '4850');
+INSERT INTO constant VALUES( 'AA-predefined129', 'lt_apcCategories', 'Environment - Pollution & waste', 'Environment - Pollution & waste', '', '4900');
+INSERT INTO constant VALUES( 'AA-predefined130', 'lt_apcCategories', 'NGOs', 'NGOs', '', '5000');
+INSERT INTO constant VALUES( 'AA-predefined131', 'lt_apcCategories', 'NGOs - Fundraising', 'NGOs - Fundraising', '', '5100');
+INSERT INTO constant VALUES( 'AA-predefined132', 'lt_apcCategories', 'NGOs - Funding agencies', 'NGOs - Funding agencies', '', '5200');
+INSERT INTO constant VALUES( 'AA-predefined133', 'lt_apcCategories', 'NGOs - Grants/scholarships', 'NGOs - Grants/scholarships', '', '5300');
+INSERT INTO constant VALUES( 'AA-predefined134', 'lt_apcCategories', 'NGOs - Jobs', 'NGOs - Jobs', '', '5400');
+INSERT INTO constant VALUES( 'AA-predefined135', 'lt_apcCategories', 'NGOs - Management', 'NGOs - Management', '', '5500');
+INSERT INTO constant VALUES( 'AA-predefined136', 'lt_apcCategories', 'NGOs - Volunteers', 'NGOs - Volunteers', '', '5600');
+INSERT INTO constant VALUES( 'AA-predefined137', 'lt_apcCategories', 'Society', 'Society', '', '6000');
+INSERT INTO constant VALUES( 'AA-predefined138', 'lt_apcCategories', 'Society - Charities', 'Society - Charities', '', '6100');
+INSERT INTO constant VALUES( 'AA-predefined139', 'lt_apcCategories', 'Society - Community', 'Society - Community', '', '6200');
+INSERT INTO constant VALUES( 'AA-predefined140', 'lt_apcCategories', 'Society - Crime & rehabilitation', 'Society - Crime & rehabilitation', '', '6300');
+INSERT INTO constant VALUES( 'AA-predefined141', 'lt_apcCategories', 'Society - Disabilities', 'Society - Disabilities', '', '6400');
+INSERT INTO constant VALUES( 'AA-predefined142', 'lt_apcCategories', 'Society - Drugs', 'Society - Drugs', '', '6500');
+INSERT INTO constant VALUES( 'AA-predefined143', 'lt_apcCategories', 'Society - Ethical business', 'Society - Ethical business', '', '6600');
+INSERT INTO constant VALUES( 'AA-predefined144', 'lt_apcCategories', 'Society - Health', 'Society - Health', '', '6700');
+INSERT INTO constant VALUES( 'AA-predefined145', 'lt_apcCategories', 'Society - Law and legislation', 'Society - Law and legislation', '', '6750');
+INSERT INTO constant VALUES( 'AA-predefined146', 'lt_apcCategories', 'Society - Migration', 'Society - Migration', '', '6800');
+INSERT INTO constant VALUES( 'AA-predefined147', 'lt_apcCategories', 'Society - Sexuality', 'Society - Sexuality', '', '6850');
+INSERT INTO constant VALUES( 'AA-predefined148', 'lt_apcCategories', 'Society - Social services and welfare', 'Society - Social services and welfare', '', '6900');
+INSERT INTO constant VALUES( 'AA-predefined149', 'lt_apcCategories', 'Economy & Work', 'Economy & Work', '', '7000');
+INSERT INTO constant VALUES( 'AA-predefined150', 'lt_apcCategories', 'Economy & Work - Informal Sector', 'Economy & Work - Informal Sector', '', '7100');
+INSERT INTO constant VALUES( 'AA-predefined151', 'lt_apcCategories', 'Economy & Work - Labour', 'Economy & Work - Labour', '', '7200');
+INSERT INTO constant VALUES( 'AA-predefined152', 'lt_apcCategories', 'Culture', 'Culture', '', '8000');
+INSERT INTO constant VALUES( 'AA-predefined153', 'lt_apcCategories', 'Culture - Arts and literature', 'Culture - Arts and literature', '', '8100');
+INSERT INTO constant VALUES( 'AA-predefined154', 'lt_apcCategories', 'Culture - Heritage', 'Culture - Heritage', '', '8200');
+INSERT INTO constant VALUES( 'AA-predefined155', 'lt_apcCategories', 'Culture - Philosophy', 'Culture - Philosophy', '', '8300');
+INSERT INTO constant VALUES( 'AA-predefined156', 'lt_apcCategories', 'Culture - Religion', 'Culture - Religion', '', '8400');
+INSERT INTO constant VALUES( 'AA-predefined157', 'lt_apcCategories', 'Culture - Ethics', 'Culture - Ethics', '', '8500');
+INSERT INTO constant VALUES( 'AA-predefined158', 'lt_apcCategories', 'Culture - Leisure', 'Culture - Leisure', '', '8600');
+INSERT INTO constant VALUES( 'AA-predefined159', 'lt_apcCategories', 'Human rights', 'Human rights', '', '9000');
+INSERT INTO constant VALUES( 'AA-predefined160', 'lt_apcCategories', 'Human rights - Consumer Protection', 'Human rights - Consumer Protection', '', '9100');
+INSERT INTO constant VALUES( 'AA-predefined161', 'lt_apcCategories', 'Human rights - Democracy', 'Human rights - Democracy', '', '9200');
+INSERT INTO constant VALUES( 'AA-predefined162', 'lt_apcCategories', 'Human rights - Minorities', 'Human rights - Minorities', '', '9300');
+INSERT INTO constant VALUES( 'AA-predefined163', 'lt_apcCategories', 'Human rights - Peace', 'Human rights - Peace', '', '9400');
+INSERT INTO constant VALUES( 'AA-predefined164', 'lt_apcCategories', 'Education', 'Education', '', '10000');
+INSERT INTO constant VALUES( 'AA-predefined165', 'lt_apcCategories', 'Education - Distance learning', 'Education - Distance learning', '', '10100');
+INSERT INTO constant VALUES( 'AA-predefined166', 'lt_apcCategories', 'Education - Non-formal education', 'Education - Non-formal education', '', '10200');
+INSERT INTO constant VALUES( 'AA-predefined167', 'lt_apcCategories', 'Education - Schools', 'Education - Schools', '', '10300');
+INSERT INTO constant VALUES( 'AA-predefined168', 'lt_apcCategories', 'Politics & Government', 'Politics & Government', '', '11000');
+INSERT INTO constant VALUES( 'AA-predefined169', 'lt_apcCategories', 'Politics & Government - Internet', 'Politics & Government - Internet', '', '11100');
+INSERT INTO constant VALUES( 'AA-predefined170', 'lt_apcCategories', 'Politics & Government - Local', 'Politics & Government - Local', '', '11200');
+INSERT INTO constant VALUES( 'AA-predefined171', 'lt_apcCategories', 'Politics & Government - Policies', 'Politics & Government - Policies', '', '11300');
+INSERT INTO constant VALUES( 'AA-predefined172', 'lt_apcCategories', 'Politics & Government - Administration', 'Politics & Government - Administration', '', '11400');
+INSERT INTO constant VALUES( 'AA-predefined173', 'lt_apcCategories', 'People', 'People', '', '12000');
+INSERT INTO constant VALUES( 'AA-predefined174', 'lt_apcCategories', 'People - Children', 'People - Children', '', '12100');
+INSERT INTO constant VALUES( 'AA-predefined175', 'lt_apcCategories', 'People - Adolescents/teenagers', 'People - Adolescents/teenagers', '', '12200');
+INSERT INTO constant VALUES( 'AA-predefined176', 'lt_apcCategories', 'People - Gender', 'People - Gender', '', '12300');
+INSERT INTO constant VALUES( 'AA-predefined177', 'lt_apcCategories', 'People - Older people', 'People - Older people', '', '12400');
+INSERT INTO constant VALUES( 'AA-predefined178', 'lt_apcCategories', 'People - Family', 'People - Family', '', '12500');
+INSERT INTO constant VALUES( 'AA-predefined179', 'lt_apcCategories', 'World', 'World', '', '13000');
+INSERT INTO constant VALUES( 'AA-predefined180', 'lt_apcCategories', 'World - Globalization', 'World - Globalization', '', '13100');
+INSERT INTO constant VALUES( 'AA-predefined181', 'lt_apcCategories', 'World - Debt', 'World - Debt', '', '13200');
+
 
 INSERT INTO slice_owner VALUES( 'AA_Core.........', 'Action Aplications System', 'technical@ecn.cz');
 
 # --------------------------------------------------------
 # AA Core slice for internal use only (defines APC wide field types and its default values in process of  creation
 
-INSERT INTO slice VALUES( 'AA_Core_Fields..', 'Action Aplication Core', 'AA_Core_Fields..', '200', '0', '', '975157733', '1', 'AA_Core_Fields..', '1', '', '', '','', '', '0', '', '', '', '', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO slice VALUES( 'AA_Core_Fields..', 'Action Aplication Core', 'AA_Core_Fields..', '200', '0', '', '975157733', '1', 'AA_Core_Fields..', '0', '', '', '','', '', '0', '', '', '', '', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', '0');
 
 INSERT INTO field VALUES( 'headline', '', 'AA_Core_Fields..', 'Headline', '100', 'Headline', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '1', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1');
 INSERT INTO field VALUES( 'abstract', '', 'AA_Core_Fields..', 'Abstract', '189', 'Abstract', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'txt:8', '', '100', '', '', '', '', '0', '1', '1', '_#UNDEFINE', 'f_t', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '1', '', 'text', 'qte', '1', '1');
@@ -482,7 +560,7 @@ INSERT INTO field VALUES( 'url', '', 'AA_Core_Fields..', 'URL', '2055', 'Interne
 # --------------------------------------------------------
 # Templete slices
 
-INSERT INTO slice VALUES( 'News_EN_tmpl....', 'News (EN) Template', 'AA_Core.........', '200', '0', '', '975157733', '1', 'News_EN_tmpl....', '1', '', '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR><img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\">_#FULLTEXT ', '','<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font><font color=#FF0000><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font><font color=#808080 size=-1><br>_#PLACE###(<a href="_#SRC_URL#">_#SOURCE##</a>) - </font><font color=black size=-1>_#ABSTRACT<br></font><br>', '', '0', '<br>', '<br>', '', '<p>_#CATEGORY</p>', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '<tr><td><input type=checkbox name="chb[x_#ITEM_ID#]" value=""></td><td class=ipostdate>_#PUB_DATE</td><td><a href="_#EDITITEM" class=iheadline>_#HEADLINE</a></td></tr>', '', '', '1', '1');
+INSERT INTO slice VALUES( 'News_EN_tmpl....', 'News (EN) Template', 'AA_Core.........', '200', '0', '', '975157733', '1', 'News_EN_tmpl....', '1', '', '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR><img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\">_#FULLTEXT ', '','<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font><font color=#FF0000><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font><font color=#808080 size=-1><br>_#PLACE###(<a href="_#SRC_URL#">_#SOURCE##</a>) - </font><font color=black size=-1>_#ABSTRACT<br></font><br>', '', '0', '<br>', '<br>', '', '<p>_#CATEGORY</p>', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '<tr><td><input type=checkbox name="chb[x_#ITEM_ID#]" value=""></td><td class=ipostdate>_#PUB_DATE</td><td><a href="_#EDITITEM" class=iheadline>_#HEADLINE</a></td></tr>', '', '', '1', '1', '', '0');
 
 INSERT INTO field VALUES( 'category........', '', 'News_EN_tmpl....', 'Category', '1000', 'Category', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:', '0', '0', '0', 'sel:lt_apcCategories', '', '100', '', '', '', '', '1', '1', '1', '_#HEADLINE', 'f_h', 'alias for Item Headline', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1');
 INSERT INTO field VALUES( 'cp_code.........', '', 'News_EN_tmpl....', 'Code Page', '1800', 'Language Code Page', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:iso8859-1', '0', '0', '0', 'sel:lt_codepages', '', '100', '', '', '', '', '0', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1');

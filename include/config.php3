@@ -20,6 +20,10 @@
 # $AA_INC_PATH = "/home/httpd/html/aa/include/";
 $AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa2/include/"; 
 
+# URL of aa instalation (where are include, admin, images etc. subdirectories)
+# (there must be the slash at the end of string)
+define("AA_INSTAL_URL", "http://aa.ecn.cz/aa/");
+
 # Your Internet Domain
 define("DEFAULT_ORG_ID", "ecn.cz");
 
@@ -72,6 +76,18 @@ define("SCROLLER_LENGTH", 3);
 # Would you like to display debug messagess?
 define("DEBUG_FLAG", true);
                                                         
+# pages with items are cached - the caching system is quite smart - it caches
+# only unchanged pages. However, You can switch caching off.
+define( "ENABLE_PAGE_CACHE", true );
+
+# CACHE_TTL defines the time in seconds the page will be stored in cache
+# (Time To Live) - in fact it can be infinity because of automatic cache 
+# flushing on page change
+define("CACHE_TTL", 600 );
+
+# The frequency in which the cache is checked for old values (in seconds)
+define("CACHE_PURGE_FREQ", 1000);
+
 # Language: uncomment one language  file
 require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
 # require ($GLOBALS[AA_INC_PATH] . "cz_common_lang.php3");  # Czech

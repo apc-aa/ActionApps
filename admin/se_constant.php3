@@ -27,6 +27,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -46,12 +47,15 @@ if( $categ OR $category ) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-function ShowConstant($id, $name, $value, $pri, $class, $categ, $classes) {
+function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) {
   global $sess;
+  $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
+
   echo "
   <tr>
     <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=49 value=\"$name\"></td>
-    <td><input type=\"Text\" name=\"value[$id]\" size=25 maxlength=49 value=\"$value\"></td>
+    <td><input type=\"Text\" name=\"value[$id]\" size=25 maxlength=49 value=\"$value\">
+      <input type=\"Hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
     <td class=tabtxt><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>";
   if( $categ ){   # it is categories - show APC wide categories for parent category select
     echo "<td class=tabtxt>";
@@ -80,12 +84,13 @@ if( $update )
     while( list($key,$nam) = each($name) ) {
       $prior = $pri[$key];
       $val =   $value[$key];
+      $cid[$key] = ( ($cid[$key]=="") ? "x".new_id() : $cid[$key] );  # unpacked, with beginning 'x' for string indexing array
       ValidateInput("nam", L_CONSTANT_NAME, $nam, &$err, false, "text");   // if not filled it will be deleted
       ValidateInput("val", L_CONSTANT_VALUE, $val, &$err, false, "text");
       ValidateInput("prior", L_CONSTANT_PRIORITY, $prior, &$err, false, "number");
     }
       
-    if( !$group_id ) {  # new constant grop  
+    if( !$group_id ) {  # new constant group  
       ValidateInput("new_group_id", L_CONSTANT_GROUP, $new_group_id, &$err, true, "text");
       if( count($err) > 1)
         break;
@@ -104,7 +109,8 @@ if( $update )
 
     # add new group to constant group list
     if ($add_new_group) {
-      $SQL = "INSERT INTO constant SET group_id='lt_groupNames',
+      $SQL = "INSERT INTO constant SET id='". q_pack_id(new_id()) ."',
+                                       group_id='lt_groupNames',
                                        name='$group_id',
                                        value='$group_id',
                                        class='',
@@ -122,6 +128,7 @@ if( $update )
         continue;
 
       $varset->clear();
+      $varset->set("id", substr($cid[$key],1), "unpacked" );  # remove beginning 'x'
       $varset->set("group_id", $group_id, "quoted" );
       $varset->set("name",  $name[$key], "quoted");
       $varset->set("value", $value[$key], "quoted");
@@ -132,6 +139,10 @@ if( $update )
         break;
       }
     }
+    
+    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    
     if( count($err) <= 1 )
       $Msg = MsgOK(L_CONSTANTS_OK);
   } while( 0 );           #in order we can use "break;" statement
@@ -153,7 +164,7 @@ if( $category ) {
 
   # lookup constants
 if( $group_id ) {
-  $SQL = "SELECT name, value, class, pri FROM constant
+  $SQL = "SELECT id, name, value, class, pri FROM constant
            WHERE group_id='$group_id' ORDER BY pri";
   $s_constants = GetTable2Array($SQL, $db, "NoCoLuMn");
 }  
@@ -169,7 +180,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php 
   $xx = ($slice_id!="");
-  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+  $show = Array("main"=>true, "config"=>$xx, "category"=>($xx && !$categ), "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
                 "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
@@ -188,7 +199,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <td class=tabtxt><b><?php echo L_CONSTANT_GROUP ?></b></td>
  <td class=tabtxt colspan=3><?php
    echo ( $group_id ? safe($group_id) :
-         "<input type=\"Text\" name=\"new_group_id\" size=16 maxlength=16 value=\"$new_group_id\">");?>
+         "<input type=\"Text\" name=\"new_group_id\" size=16 maxlength=16 value=\"".safe($new_group_id).\">");?>
  </td>
 </tr>
 <tr><?php
@@ -200,14 +211,16 @@ echo "
 </tr>
 <tr><td colspan=4><hr></td></tr>";
 
+
+   # existing constants
 if( $s_constants ) {
   reset($s_constants);
   $i=0;
   while( list(, $v) = each($s_constants)) {
     if( $update ) # get values from form
-      ShowConstant($i, $name[$i], $value[$i], $pri[$i], $class[$i], $categ, $classes);
-    else  
-      ShowConstant($i, $v["name"], $v["value"], $v["pri"], $v["class"], $categ, $classes);
+      ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $categ, $classes);
+    else          # get values from database
+      ShowConstant($i, $v["name"], $v["value"], 'x'.unpack_id($v["id"]), $v["pri"], $v["class"], $categ, $classes);
     $i++;  
   }
 }  
@@ -215,9 +228,9 @@ if( $s_constants ) {
   # ten rows for possible new constants
 for( $j=0; $j<10; $j++) {
   if( $update ) # get values from form
-    ShowConstant($i, $name[$i], $value[$i], $pri[$i], $class[$i], $categ, $classes);
+    ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $categ, $classes);
   else  
-    ShowConstant($i, "", "", 1000, "", $categ, $classes);
+    ShowConstant($i, "", "", "", 1000, "", $categ, $classes);
   $i++;
 }  
 
@@ -235,6 +248,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.3  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.2  2001/01/08 13:31:58  honzam
 Small bugfixes
 

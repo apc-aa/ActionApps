@@ -57,7 +57,7 @@ $p_import_id = q_pack_id($import_id);
 
 // lookup (to_categories) 
 $SQL = "SELECT input_show_func FROM field
-         WHERE slice_id='$p_slice_id' AND id='category........'
+         WHERE slice_id='$p_slice_id' AND id like 'category.%'
          ORDER BY input_pri";
 $db->query($SQL);
 if( $db->next_record()) {
@@ -232,7 +232,7 @@ if ($imp_count) {
 
 // lookup (to_categories) 
 $SQL = "SELECT input_show_func FROM field
-         WHERE slice_id='$p_import_id' AND id='category........'";
+         WHERE slice_id='$p_import_id' AND id like 'category.%'";
 $db->query($SQL);
 if( $db->next_record()) {
   $foo = ParseFnc($db->f(input_show_func));
@@ -262,6 +262,9 @@ if( $db->next_record()) {
 } 
 /*
 $Log$
+Revision 1.6  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.5  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

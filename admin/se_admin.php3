@@ -26,6 +26,7 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";     // GetAliasesFromField funct def 
+require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -37,13 +38,14 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CONFIG)) {
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
+$p_slice_id = q_pack_id($slice_id);
 
-$fields = ($r_fields ? 
-             $r_fields : 
-             GetTable2Array("SELECT * FROM field 
-                              WHERE slice_id='$p_slice_id'
-                              ORDER BY input_pri", $db));
+if( $r_fields )
+  $fields = $r_fields;
+else
+  list($fields,) = GetSliceFields($p_slice_id);
 
+  
 if( $update )
 {
   do
@@ -63,7 +65,11 @@ if( $update )
                      "WHERE id='".q_pack_id($slice_id)."'")) {
       $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
       break;    # not necessary - we have set the halt_on_error
-    }     
+    }
+
+    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+
     $admin_format_top = dequote($admin_format_top);
     $admin_format = dequote($admin_format);
     $admin_format_bottom = dequote($admin_format_bottom);
@@ -134,6 +140,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.3  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.2  2001/01/08 13:31:57  honzam
 Small bugfixes
 

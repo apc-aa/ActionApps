@@ -257,9 +257,6 @@ define("L_EXPIRED", "Vypršeno");
 define("L_NOT_PUBLISHED", "Dosud nepublikováno");
 define("L_EDIT_USER", "Editace uživatele");
 define("L_EDITUSER_HDR", L_EDIT_USER);
-define("NO_PICTURE_URL", "http://web.ecn.cz/aauser/images/no_pict.gif");  // image used when 
-  // there is img_source in html format string but no img_source is stored in database 
-  // (you can use blank pixel for none picture)
 define("NO_SOURCE_URL", "javascript: window.alert('Nebylo zadáno url zdroje')"); 
 define("NO_OUTER_LINK_URL", "javascript: window.alert('Nebylo zadáno url odkazu ven')");
 
@@ -482,9 +479,15 @@ $L_MONTH = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 		'Èervenec', 'Srpen', 'Záøí', 'Øíjen', 'Listopad', 'Prosinec');
 
 define("L_NO_CATEGORY_FIELD","Pole kategorie není v tomto webíku definováno.<br>  Pøidejte pole kategorie do webíku na stránce Políèka.");
+define("L_PERMIT_ANONYMOUS_POST","Povolit anonymní vkládání");
+define("L_PERMIT_OFFLINE_FILL","Povolit off-line plnìní");
+define("L_SOME_CATEGORY", "<kategorie>");
     
 /*
 $Log$
+Revision 1.22  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.21  2001/01/08 13:31:58  honzam
 Small bugfixes
 

@@ -68,10 +68,9 @@ require $GLOBALS[AA_INC_PATH] . "util.php3"; // must be after language include b
 
 $sess->register("slice_id");
 $sess->register("r_config_file");
-$sess->register("r_slice_config");      // stores many config parameters for slice (WDDX in slices.config field)
 $sess->register("r_slice_headline");    // stores headline of slice
 $sess->register("r_slice_view_url");    // url of slice
-$sess->register("r_stored_slice");      // id of slice which values are in r_slice_headline ,r_slice_config and r_slice_view_url
+$sess->register("r_stored_slice");      // id of slice which values are in r_slice_headline, r_slice_view_url
 $sess->register("r_hidden");            // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
 //$sess->register("r_fields");            // array of fields for current slice
 
@@ -134,8 +133,7 @@ if( !$Add_slice AND !$New_slice ) {
       $r_stored_slice = $slice_id;
       $r_slice_view_url = ($db->f(slice_url)=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                       : $db->f(slice_url));
-      $r_fields = GetTable2Array("SELECT * FROM field 
-                                   WHERE slice_id='$p_slice_id'", $db);
+      list($r_fields,) = GetSliceFields($p_slice_id);
     }
   }  
   
@@ -160,6 +158,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.11  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.10  2001/01/10 15:49:16  honzam
 Fixed problem with unpack_id (No content Error on index.php3)
 

@@ -22,10 +22,11 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH] . "varset.php3";
 require $GLOBALS[AA_INC_PATH] . "view.php3";
+require $GLOBALS[AA_INC_PATH] . "pagecache.php3";
 require $GLOBALS[AA_INC_PATH] . "item.php3";
-require $GLOBALS[AA_INC_PATH] . "feeding.php3";
+//require $GLOBALS[AA_INC_PATH] . "feeding.php3";
 require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
-                     
+
 function MoveItems($chb,$status) {
   global $db;
   if( isset($chb) AND is_array($chb) ) {
@@ -34,15 +35,17 @@ function MoveItems($chb,$status) {
       $db->query("UPDATE item SET status_code = $status 
                    WHERE id='".q_pack_id(substr($it_id,1))."'"); 
                                          // substr removes first 'x'
+    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
   }
 }  
 
-function FeedAllItems($chb) {    // Feed all checked items
+function FeedAllItems($chb, $fields) {    // Feed all checked items
   global $db;
   if( isset($chb) AND is_array($chb) ) {
     reset( $chb );
     while( list($it_id,) = each( $chb ) )
-      FeedItem( $it_id, $db );
+      FeedItem( $it_id, $fields );
   }
 }  
 
@@ -70,11 +73,9 @@ if(isset($r_slice_id)) {
   $sess->register(r_slice_id); 
 }
 
-  # get slice info
-$SQL= " SELECT * FROM slice WHERE id='$p_slice_id'";
-$db->query($SQL);
-if ($db->next_record())
-  $slice_info = $db->Record;
+$p_slice_id = q_pack_id($slice_id);
+
+$slice_info = GetSliceInfo($p_slice_id);
 
 // $r_bin_state - controls display of editor pages. It should be:
 // app, appb, appc, hold, trash
@@ -101,6 +102,11 @@ if( !$perm_edit_all && !$perm_edit_self) {
 $p_slice_id= q_pack_id($slice_id);
 $db2 = new DB_AA; 	 // open DB	(for subqueries)
 
+if( $r_fields )
+  $fields = $r_fields;
+else
+  list($fields,) = GetSliceFields($p_slice_id);
+
 switch( $action ) {  // script post parameter 
   case "app":
     if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
@@ -108,7 +114,7 @@ switch( $action ) {  // script post parameter
       exit;
     }  
     MoveItems($chb,1);
-    FeedAllItems($chb, $db);    // Feed all checked items
+    FeedAllItems($chb, $fields);    // Feed all checked items
     break;
   case "hold":
     if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
@@ -190,7 +196,10 @@ if($Delete == "trash") {         // delete feeded items in trash bin
   }                                           # fed fields - content is copied
     # delete content of item fields
  	$db->query("DELETE FROM item 
-               WHERE status_code=3 AND slice_id = '$p_slice_id'");
+             WHERE status_code=3 AND slice_id = '$p_slice_id'");
+
+  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ); # database changed - 
+  $cache->invalidateFor("slice_id=$slice_id");  # - invalidate old cached values
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -307,12 +316,6 @@ if(is_object($st)) {
   $sess->register($st_name); 
 }
 
-$fields = ($r_fields ? 
-             $r_fields : 
-             GetTable2Array("SELECT * FROM field 
-                              WHERE slice_id='$p_slice_id'
-                              ORDER BY input_pri", $db));
-
 $st->addFilter("slice_id", "md5", $slice_id);
 
 //  where (($bin_condition) AND fulltexts.ft_id=items.master_id AND created_by='".$auth->auth[uid]."' AND (". $st->sqlCondFilter().")) ");
@@ -322,13 +325,11 @@ $conditions['slice_id........'] = $p_slice_id;
 if (! $perm_edit_all )
   $conditions['posted_by.......'] = $auth->auth[uid];
   
-$r_item_ids = GetItemAppIds($fields, $db, $p_slice_id, 
+$item_ids = GetItemAppIds($fields, $db, $p_slice_id, 
                             $conditions, "DESC", "", "",$item_cond);
 
-//p_arr_m($r_item_ids);
-
 $format_strings = array ( "grab_len"=>"",
-                          "compact_top"=>"",
+                          "compact_top"=>$slice_info[admin_format_top],
                           "category_sort"=>false,
                           "category_format"=>"",
                           "category_top"=>"",
@@ -336,25 +337,29 @@ $format_strings = array ( "grab_len"=>"",
                           "even_odd_differ"=>false,
                           "even_row_format"=>"",
                           "odd_row_format"=>$slice_info[admin_format],
-                          "compact_remove"=>"",
-                          "compact_bottom"=>"");
-
+                          "compact_remove"=>$slice_info[admin_remove],
+                          "compact_bottom"=>$slice_info[admin_format_bottom]);
 echo "<center>";
 echo "$Msg <br>";
+
+# ------- Caption -----------
+
+echo "<div class=tablename><img src='$table_icon' border=0 alt='$table_name'> $table_name </div>";
+
 echo '<form name="itemsform" enctype="multipart/form-data" method=post action="'. $sess->url($PHP_SELF) .'">';
 echo '<table width="460" border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
                          
-if( count( $r_item_ids ) > 0 ) {
+if( count( $item_ids ) > 0 ) {
   $aliases = GetAliasesFromFields($fields);
 
 //p_arr_m($aliases);
 //p_arr_m($format_strings);
 
-  $itemview = new itemview( $db, $format_strings, $fields, $aliases, $r_item_ids,
+  $itemview = new itemview( $db, $format_strings, $fields, $aliases, $item_ids,
               $st->metapage * ($st->current-1), $st->metapage, $r_slice_view_url );
   $itemview->print_view();
     
-  $st->countPages( count( $r_item_ids ) );
+  $st->countPages( count( $item_ids ) );
 
   echo '</table><br>';
   
@@ -362,7 +367,7 @@ if( count( $r_item_ids ) > 0 ) {
     $st->pnavbar();
 }  
 else 
-  echo "<tr><td><div>". L_NO_ITEM ."</div></td></td></table>'";
+  echo "<tr><td><div>". L_NO_ITEM ."</div></td></td></table>";
   
 echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
 echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
@@ -385,6 +390,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 
 /*
 $Log$
+Revision 1.13  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.12  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

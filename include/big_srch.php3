@@ -68,10 +68,7 @@ if($db->next_record()) {
 }    
 
 // lookup (languages) 
-$SQL= " SELECT * FROM constant WHERE group_id='lt_languages'";
-$db->query($SQL);
-while($db->next_record())
-  $languages[$db->f(value)]= $db->f(name);
+$languages = GetConstants("lt_languages", $db);
 
 // lookup (slices) 
 $SQL= " SELECT id, short_name FROM slices ";
@@ -98,6 +95,9 @@ while($db->next_record())
 */
 /*
 $Log$
+Revision 1.4  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.3  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

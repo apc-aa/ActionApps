@@ -254,9 +254,6 @@ define("L_NOT_PUBLISHED", "Not published, yet");
 define("L_EDIT_USER", "Edit User");
 define("L_EDITUSER_HDR", L_EDIT_USER);
 
-define("NO_PICTURE_URL", "http://web.ecn.cz/aauser/images/no_pict.gif");  // image used when 
-  // there is img_source in html format string but no img_source is stored in database 
-  // (you can use blank pixel for none picture)
 define("NO_SOURCE_URL", "javascript: window.alert('No source url specified')"); 
 define("NO_OUTER_LINK_URL", "javascript: window.alert('No outer url specified')");
 
@@ -442,11 +439,13 @@ $L_MONTH = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 define("L_NO_CATEGORY_FIELD","No category field defined in this slice.<br>Add category field to this slice first (see Field page).");
 define("L_PERMIT_ANONYMOUS_POST","Allow anonymous posting of items");
 define("L_PERMIT_OFFLINE_FILL","Allow off-line item filling");
+define("L_SOME_CATEGORY", "<some category>");
 
 // not appended to other lang files
 //define("", "");
 
 // ------------------------- New ----------------------------
+define( "L_BRACKETS_ERR", "Brackets doesn't match in query: ");
 define("L_SLICE_ADM","Administration Menu");
 // this one is not new. I moved it below L_SLICE_ADM
 define("L_A_SLICE_TIT", L_SLICE_ADM);
@@ -454,6 +453,9 @@ define("L_A_SLICE_ADD_HELP", "To create the new Slice, please choose a template.
 
 /*
 $Log$
+Revision 1.24  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.23  2001/01/13 20:21:27  madebeer
 added help prompt for adding slices.
 clarified what 'slice url' means in slicedit.php3

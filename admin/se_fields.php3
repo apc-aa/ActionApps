@@ -24,6 +24,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -42,6 +43,7 @@ $field_types = GetTable2Array("SELECT * FROM field
 
 function ShowField($id, $name, $pri, $required, $show, $type="") {
   global $sess, $field_types;
+  $name = safe($name); $pri=safe($pri);
   echo "
   <tr>
     <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>";
@@ -140,6 +142,10 @@ if( $update )
       }
       $r_filelds = "";   // unset the r_fields array to be load again
     }
+
+    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+
     if( count($err) <= 1 ) {
       $Msg = MsgOK(L_FIELDS_OK);
       if( $name["New_Field"] )
@@ -220,6 +226,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.4  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.3  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

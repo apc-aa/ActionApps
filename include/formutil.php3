@@ -45,6 +45,9 @@ function PrintMoreHelp( $txt ) {
 # for use within <form> and <table> tag
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
                       $hlp="", $morehlp="") {
+  $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
+  $morehlp=safe($morehlp);
+
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>\n";
@@ -60,6 +63,8 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
 # Prints two static text to 2-column table
 # for use within <table> tag
 function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp=""){
+  $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); $morehlp=safe($morehlp);
+  
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>";
@@ -73,8 +78,10 @@ function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp=""){
 
 # Prints html tag <input type=password .. to 2-column table
 # for use within <form> and <table> tag
-function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false)
-{ echo "<tr><td class=tabtxt><b>$txt</b>";
+function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
+  $name=safe($name); $txt=safe($txt); $val=safe($val);
+
+  echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
@@ -86,6 +93,8 @@ function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false)
 # for use within <form> and <table> tag
 function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
                       $hlp="", $morehlp="" ){
+  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>\n";
@@ -101,6 +110,9 @@ function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
 # for use within <form> and <table> tag
 function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
                      $hlp="", $morehlp="") {
+  $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
+  $morehlp=safe($morehlp);
+
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
@@ -113,11 +125,13 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
 }
 
 
-
 # Prints html tag <input type=checkbox .. to 2-column table
 # for use within <form> and <table> tag
 function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, 
                     $add="", $colspan=1, $needed=false, $hlp="", $morehlp=""){
+  $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
+  $morehlp=safe($morehlp);
+
   echo "<tr>";
   if( !$changeorder ) {
     echo "<td class=tabtxt colspan=$colspan><b>$txt</b>";
@@ -144,8 +158,10 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false,
 }
 
 # Prints html tag <input type=checkbox 
-function FrmChBoxEasy($name, $checked=true, $add="")
-{ echo "<input type=\"checkbox\" name=\"$name\" $add ";
+function FrmChBoxEasy($name, $checked=true, $add="") {
+  $name=safe($name); $add=safe($add);
+
+  echo "<input type=\"checkbox\" name=\"$name\" $add ";
   if($checked)
     echo " checked";
   echo ">";
@@ -155,6 +171,8 @@ function FrmChBoxEasy($name, $checked=true, $add="")
 # for use within <form> and <table> tag
 function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
                         $hlp="", $morehlp="") {
+  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
@@ -179,6 +197,8 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
 # for use within <form> and <table> tag
 function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
                        $hlp="", $morehlp="") {
+  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n <td>";	
@@ -198,6 +218,8 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
 
 # Prints html tag <select .. 
 function FrmSelectEasy($name, $arr, $selected="", $add="") { 
+  $name=safe($name); $add=safe($add);
+
   echo "<select name=\"$name\" $add>";	
   reset($arr);
   while(list($k, $v) = each($arr)) { 
@@ -265,14 +287,11 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
   }  
 }    
 
-# returns html safe code
-# use for preparing variable to print in form
-function safe( $var ) {
-  return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
-}  
-
 /*
 $Log$
+Revision 1.8  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.7  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
 

@@ -24,6 +24,7 @@ http://www.apc.org/
 #          $I[] with ids of imported slices
 
 require "../include/init_page.php3";
+require $GLOBALS[AA_INC_PATH]."logs.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
@@ -35,9 +36,15 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $catVS = new Cvarset();
 $expVS = new Cvarset();
 
+$p_slice_id = q_pack_id($slice_id);
+$slice_info = GetSliceInfo($p_slice_id);
+
 // update export_to_all switch
-$SQL= "UPDATE slice SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
-$db->query($SQL);
+if( ($slice_info[export_to_all] ? 1:0) != ($to_all ? 1:0) ) {
+  $SQL= "UPDATE slice SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
+  $db->query($SQL);
+  writeLog( ($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), $slice_id);
+}  
 
 // ------------------------ Export --------------------------
 // feeding lookup
@@ -62,6 +69,7 @@ do {
         $err["DB"] .= MsgErr("Can't add export to $val");
         break;    # not necessary - we have set the halt_on_error
       }
+      writeLog("FEED_ENBLE", "$slice_id,$val");
     }
   }        
   reset($feedto);
@@ -69,6 +77,7 @@ do {
     if( $val ) {
       $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id='". q_pack_id($to). "'";
       $db->query( $SQL );
+      writeLog("FEED_DSBLE", "$slice_id,$val");
     }  
   }  
 } while(false);
@@ -99,6 +108,7 @@ do {
         $err["DB"] .= MsgErr("Can't add import from $val");
         break;  # not necessary - we have set the halt_on_error
       }
+      writeLog("FEED_ADD", "$slice_id,$val");
     }
   }
   
@@ -107,6 +117,7 @@ do {
     if( $val ) {
       $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id='". q_pack_id($from). "'";
       $db->query( $SQL );
+      writeLog("FEED_DEL", "$slice_id,$val");
     }  
   }  
 } while(false);
@@ -124,6 +135,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.4  2001/01/22 17:32:48  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.3  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

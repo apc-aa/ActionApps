@@ -105,16 +105,6 @@ function con_url($Url,$Params){
  else return $Url."?".$Params;
 } 
 
-# debug function, prints hash size,  keys and values of hash  
-function p_arr($a,$name="given array") {
-  if(! DEBUG_FLAG )
-    return;
-  echo "Values of $name . Size is ".sizeof($a)."<br>";
-  while ( list( $key, $val ) = each( $a ) ) {
-    echo htmlspecialchars($key). " => ".htmlspecialchars($val)."<br>";
-  }
-}
-
 # prints content of a (multidimensional) array
 function p_arr_m ($arr, $level = 0) {
   if(! DEBUG_FLAG )
@@ -134,6 +124,11 @@ function p_arr_m ($arr, $level = 0) {
          echo htmlspecialchars($key) . " => " . htmlspecialchars($val) . "<br>";
       }
    }
+}
+
+# debug function, prints hash size,  keys and values of hash  
+function p_arr($a,$name="given array") {
+  p_arr_m($a);
 }
 
 # returns new unpacked md5 unique id, except these which can  force unexpected end of string  
@@ -270,6 +265,14 @@ function GetConstants($group, $db) {
   return $arr;
 }     
 
+# gets slice fields
+function GetSliceInfo($p_slice_id) {
+  global $db;
+  $db->query("SELECT * FROM slice WHERE id='$p_slice_id'");
+  return  ($db->next_record() ? $db->Record : false);
+}  
+    
+
 # function converts table from SQL query to array
 # $idcol specifies key column for array or "NoCoLuMn" for none
 function GetTable2Array($SQL, $db, $idcol="id") {
@@ -283,6 +286,19 @@ function GetTable2Array($SQL, $db, $idcol="id") {
   }    
   return $arr;
 }
+
+# function returns two arrays - SliceFields (key is field_id)
+#                               Priorities  (field_id sorted by priority
+function GetSliceFields($p_slice_id) {
+  global $db;
+  $SQL = "SELECT * FROM field WHERE slice_id='$p_slice_id' ORDER BY input_pri";
+  $db->query($SQL);
+  while($db->next_record()) {
+    $fields[$db->f("id")] = $db->Record;
+    $prifields[]=$db->f("id");
+  }
+  return array($fields, $prifields);
+}    
 
 # get field type from id
 function GetFieldType($id) {
@@ -327,9 +343,17 @@ function PrintAliasHelp($aliases) {
   <?php
 }  
 
+# returns html safe code (used for preparing variable to print in form)
+function safe( $var ) {
+  return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
+}  
+
 
 /*
 $Log$
+Revision 1.14  2001/01/22 17:32:49  honzam
+pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+
 Revision 1.13  2001/01/10 15:49:16  honzam
 Fixed problem with unpack_id (No content Error on index.php3)
 
