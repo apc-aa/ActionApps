@@ -348,9 +348,11 @@ class MLXView
 				break;
 		}
 	}
-	//-- type is p
-	//TODO since changing to storing packed_ids in MySQL this can be 
-	//     much optimised with a JOIN
+	// optimised postQueryZIDs -- using join and tagging minimises SQL queries
+	// 
+	// This filters a list of item_ids by checking translations
+	// and removing duplicates, only keeping either desired or
+	// prioritised translation
 	function postQueryZIDs(&$zidsObj,$ctrlSliceID,$slice_id, $conds, $sort, 
 		$group_by,$type, $slices, $neverAllItems, $restrict_zids,
 		$defaultCondsOperator,$nocache) 
@@ -378,24 +380,96 @@ class MLXView
 		
 		$arr = array();
 		foreach($zidsObj->a as $packedid) {
+			$arr[(string)$packedid] = 1; 
+		}
+		$translations = $this->getPrioTranslationFields($ctrlSliceID);
+		$db = getDB();
+		reset($arr);
+		while(list($upContId,$count) = each($arr)) {
+			if($count > 1) // already primary
+				continue;
+//			__mlx_dbg(unpack_id128($upContId),"ContentID");
+			//strangely enough this works!
+			$sql = "SELECT  c2.field_id,c2.text FROM `content` AS c1" //`field_id`,`text`
+				." LEFT JOIN `content` AS c2 ON ("
+				." c2.item_id=c1.text )"
+				." WHERE (c1.item_id='".$upContId."'"
+				." AND c1.field_id='".MLX_CTRLIDFIELD."'"
+				." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."')";
+			$db->tquery($sql);
+			unset($aMlxCtrl);
+			while( $db->next_record() ) { //get all translations
+//				__mlx_dbg(array($db->f('field_id'),unpack_id128($db->f('text'))),"JOIN");
+				$aMlxCtrl[(string)$db->Record[0]] = $db->Record[1];
+			}
+			//__mlx_dbg($aMlxCtrl,"aMlxCtrl");
+			$bFound = false;
+			foreach($translations as $tr) {
+				$fieldSearch = $aMlxCtrl[$tr];
+				if(!$fieldSearch)
+					continue;
+				if($bFound) {
+					//__mlx_dbg(unpack_id128($fieldSearch),"unset");
+					unset($arr[(string)$fieldSearch]);
+					//__mlx_dbg($arr,"arr");
+				} else {
+					$arr[(string)$fieldSearch]++; //tag as primary
+					$bFound = true;
+				}
+			}
+		}
+		//__mlx_dbg($arr,"return");
+		freeDB($db);
+		$QueryIDsCount = count($arr);
+		$zidsObj->a = array_keys($arr);
+		if( !$nocache )
+			$pagecache->store($keystr, serialize($zidsObj), $cachestr);
+		
+	}
+	/*
+	// I am still unsure if the JOIN is correct -- use this one to compare results (And nocache!)
+	function postQueryZIDsEasy(&$zidsObj,$ctrlSliceID,$slice_id, $conds, $sort, 
+		$group_by,$type, $slices, $neverAllItems, $restrict_zids,
+		$defaultCondsOperator,$nocache) 
+	{
+		global $pagecache, $QueryIDsCount, $debug;
+		
+		if($this->mode != "MLX")
+			return;
+			
+		#create keystring from values, which exactly identifies resulting content
+		$keystr = $this->mode.serialize($this->language).$ctrlSliceID.$slice_id
+			. serialize($conds). serialize($sort)
+			. $group_by. $type. serialize($slices). $neverAllItems
+			. ((isset($restrict_zids) && is_object($restrict_zids)) ? 
+				serialize($restrict_zids) : "")
+			. $defaultCondsOperator;
+		
+		$cachestr = "slice_id=$ctrlSliceID";
+		if ( $res = CachedSearch( !$nocache, $keystr, $cachestr )) {
+			if(MLX_TRACE)
+				__mlx_trace("using cache");
+			$zidsObj->refill( $res->a );
+			return;
+		}
+		
+		$arr = array();
+		foreach($zidsObj->a as $packedid) {
 			$unpackedid = unpack_id128($packedid);
-			$arr[(string)$packedid] = $packedid;
+			$arr[(string)$packedid] = $unpackedid; //TODO change this to 1
 		}
 		$translations = $this->getPrioTranslationFields($ctrlSliceID);
 		$db = getDB();
 		$db2 = getDB();
 		reset($arr);
 		while(list($upContId,$pContId) = each($arr)) {
-			//__mlx_dbg($upContId,"ite");
+			if(MLX_TRACE)
+				__mlx_dbg(unpack_id128($upContId),"ContentID");
 			$sql = "SELECT `text` FROM `content`"
-				." WHERE ( `item_id`='".$pContId."'"
+				." WHERE ( `item_id`='".$upContId."'"
 				." AND `field_id`='".MLX_CTRLIDFIELD."')";
 			$db->tquery($sql);
 			while( $db->next_record() ) {
-				//Remove
-				if($db->Record[0] == 1)
-					continue;
-				//$ctrlId = q_pack_id($db->Record[0]);
 				$ctrlId = $db->Record[0];
 				//__mlx_dbg(unpack_id128($ctrlId),"ctrlId");
 				$subsql = "SELECT `field_id`,`text` FROM `content`"
@@ -404,7 +478,8 @@ class MLXView
 				$db2->tquery($subsql);
 				unset($aMlxCtrl);
 				while($db2->next_record()) { //get all translations
-					//__mlx_dbg(unpack_id128($db2->Record[0]),"Record");
+				if(MLX_TRACE)
+						__mlx_dbg(array($db2->f('field_id'),unpack_id128($db2->f('text'))),"EASY translations");
 					$aMlxCtrl[(string)$db2->Record[0]] = $db2->Record[1];
 				}
 				//__mlx_dbg($aMlxCtrl,"aMlxCtrl");
@@ -414,7 +489,8 @@ class MLXView
 					if(!$fieldSearch)
 						continue;
 					if($bFound) {
-						//__mlx_dbg(unpack_id128($fieldSearch),"unset");
+						if(MLX_TRACE)
+							__mlx_dbg(unpack_id128($fieldSearch),"EASY unset");
 						unset($arr[(string)$fieldSearch]);
 						//__mlx_dbg($arr,"arr");
 					} else
@@ -429,11 +505,12 @@ class MLXView
 		freeDB($db2);
 		freeDB($db);
 		$QueryIDsCount = count($arr);
-		$zidsObj->a = array_values($arr);
+		$zidsObj->a = array_keys($arr);
 		if( !$nocache )
 			$pagecache->store($keystr, serialize($zidsObj), $cachestr);
 		
 	}
+	*/
 	function getPrioTranslationFields($ctrlSliceID) {
 		list($fields,) = GetSliceFields($ctrlSliceID);
 		$translations = array();
