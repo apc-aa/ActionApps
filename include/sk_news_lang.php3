@@ -802,6 +802,16 @@ define('L_RULE','Pravidlo');
 
 define('L_ID_COUNT_ALIAS','poèet nalezených èlánkù');
 define('L_V_NO_ITEM','HTML code for "No item found" message');
+define("L_NO_ITEM_FOUND", "Nenalezena žádná zpráva");
+define('L_INPUT_SHOW_HCO','Hierachie konstant');
+
+define("L_CONSTANT_HIERARCH_EDITOR","Editovat v Hierarchickém editoru (umožòuje urèit hierarchii hodnot)");
+define("L_CONSTANT_PROPAGATE","Propagovat zmìny do stávajících èlánkù");
+define("L_CONSTANT_OWNER","Vlastník skupiny - webík");
+define("L_A_CONSTANTS_HIER_EDT","Správa webíku - Hiearchické nastavení hodnot");
+define("L_CONSTANT_HIER_SORT","Zmìny nebudou uloženy do databáze, dokud nestisknete tlaèítko dole na stránce.<br>Konstanty jsou øazeny zaprvé podle Øazení a zadruhé podle Názvu.");
+define("L_CONSTANT_DESC","Popis");
+define("L_CONSTANT_HIER_SAVE","Ulož všechny zmìny do databáze");
 
 /*
 Revision 1.15  2002/02/05 21:46:04  honzam
@@ -824,6 +834,9 @@ Provides help when using the Nodes screen to configre inter-node feeding
 It informs of the correect values to tell the superadmin of the other node.
 
 $Log$
+Revision 1.17  2002/03/06 12:32:09  honzam
+preparation for hierarchical constant editor
+
 Revision 1.16  2002/02/08 10:13:35  honzam
 corrected slovak language by Norbert Brazda
 

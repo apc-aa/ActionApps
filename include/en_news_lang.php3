@@ -295,6 +295,7 @@ define("L_CATNAME", "Category Name");
 define("L_CATEGORY_ID", "Category ID");
 define("L_EDITED_BY","Edited by");
 define("L_MASTER_ID", "Master id");
+define("L_NO_ITEM_FOUND", "No item found");
 define("L_CHANGE_MARKED", "Selected items");
 define("L_MOVE_TO_ACTIVE_BIN", "Move to Active");
 define("L_MOVE_TO_HOLDING_BIN", "Move to Holding bin");
@@ -330,8 +331,8 @@ define("L_GROUP_ID", "Group Id");
 define("L_ALL_USERS", "All Users");
 define("L_GROUPS_USERS", "Group's Users");
 define("L_POST", "Update");
-define("L_POST_PREV", "Update & Preview");
-define("L_INSERT_PREV", "Insert & Preview");
+define("L_POST_PREV", "Update & View");
+define("L_INSERT_PREV", "Insert & View");
 define("L_OK", "OK");
 define("L_ACTIVE_BIN_EXPIRED", "Expired");
 define("L_ACTIVE_BIN_PENDING", "Pending");
@@ -803,13 +804,37 @@ define('L_RULE','Rule');
 
 define('L_ID_COUNT_ALIAS','number of found items');
 define('L_V_NO_ITEM','HTML code for "No item found" message');
+define('L_INPUT_SHOW_HCO','Hierachical constants');
+
+define("L_CONSTANT_HIERARCH_EDITOR","Edit in Hierarchical editor (allows to create constant hierarchy)");
+define("L_CONSTANT_PROPAGATE","Propagate changes into current items");
+define("L_CONSTANT_OWNER","Constant group owner - slice");
+define("L_A_CONSTANTS_HIER_EDT","Admin - Hierarchical Constants Setting");
+define("L_CONSTANT_HIER_SORT","Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name.");
+define("L_CONSTANT_DESC","Description");
+define("L_CONSTANT_HIER_SAVE","Save all changes to database");
+define("L_CONSTANT_CHOWN", "Change owner");
+
+define("L_ITEM_NOT_ANONYMOUS","This item isn't allowed to be changed anonymously.");
+define("L_MY_ITEM_ID_MISSING","You must supply a my_item_id to this script.");
+define("L_ITEM_NOT_EXISTS","Item with this ID does not exist.");
+
+define("L_NO_PS_FIELDS_GROUP", "You have not permissions to change fields settings for the slice owning this group");
+define("L_NO_PS_CATEGORY_GROUP", "You have not permissions to change category settings for the slice owning this group");
+
 
 // ------------------------- New ----------------------------
 // not appended to other lang files
 //define("", "");
 
+define("L_CONSTANT_HIERARCH_EDITOR","Edit in Hierarchy Editor (allows to store the values hierarchically)");
+
+
 /*
 $Log$
+Revision 1.59  2002/03/06 12:32:09  honzam
+preparation for hierarchical constant editor
+
 Revision 1.58  2002/02/05 21:46:03  honzam
 the message "no item found" can be redefined
 

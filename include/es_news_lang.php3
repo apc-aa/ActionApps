@@ -803,9 +803,22 @@ define('L_RULE','Rule');
 
 define('L_ID_COUNT_ALIAS','number of found items');
 define('L_V_NO_ITEM','HTML code for "No item found" message');
+define('L_INPUT_SHOW_HCO','Hierachical constants');
+define("L_NO_ITEM_FOUND", "No item found");
+
+define("L_CONSTANT_HIERARCH_EDITOR","Edit in Hierarchical editor (allows to create constant hierarchy)");
+define("L_CONSTANT_PROPAGATE","Propagate changes into current items");
+define("L_CONSTANT_OWNER","Constant group owner - slice");
+define("L_A_CONSTANTS_HIER_EDT","Admin - Hierarchical Constants Setting");
+define("L_CONSTANT_HIER_SORT","Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name.");
+define("L_CONSTANT_DESC","Description");
+define("L_CONSTANT_HIER_SAVE","Save all changes to database");
 
 /*
 $Log$
+Revision 1.20  2002/03/06 12:32:09  honzam
+preparation for hierarchical constant editor
+
 Revision 1.19  2002/02/05 21:46:03  honzam
 the message "no item found" can be redefined
 

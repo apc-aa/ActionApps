@@ -800,9 +800,25 @@ define('L_RULE','Pravidlo');
 
 define('L_ID_COUNT_ALIAS','poèet nalezených èlánkù');
 define('L_V_NO_ITEM','HTML kod namísto zprávy "Nenalezena žádná zpráva"');
+define("L_NO_ITEM_FOUND", "Nenalezena žádná zpráva");
+define('L_INPUT_SHOW_HCO','Hierachie konstant');
+
+define("L_CONSTANT_HIERARCH_EDITOR","Editovat v Hierarchickém editoru (umožòuje urèit hierarchii hodnot)");
+define("L_CONSTANT_PROPAGATE","Propagovat zmìny do stávajících èlánkù");
+define("L_CONSTANT_OWNER","Vlastník skupiny - webík");
+define("L_A_CONSTANTS_HIER_EDT","Správa webíku - Hiearchické nastavení hodnot");
+define("L_CONSTANT_HIER_SORT","Zmìny nebudou uloženy do databáze, dokud nestisknete tlaèítko dole na stránce.<br>Konstanty jsou øazeny zaprvé podle Øazení a zadruhé podle Názvu.");
+define("L_CONSTANT_DESC","Popis");
+define("L_CONSTANT_HIER_SAVE","Ulož všechny zmìny do databáze");
+define("L_CONSTANT_CHOWN", "Zmìnit vlastníka");
+define("L_CONSTANT_OWNER_HELP", "Vlastníkem se stane první webík, který upraví hodnoty.");
+define("L_NO_PS_FIELDS_GROUP","Nemáte administrátorská práva k webíku, který vlastní tuto skupinu hodnot");
 
 /*
 $Log$
+Revision 1.47  2002/03/06 12:32:09  honzam
+preparation for hierarchical constant editor
+
 Revision 1.46  2002/02/05 21:46:03  honzam
 the message "no item found" can be redefined
 

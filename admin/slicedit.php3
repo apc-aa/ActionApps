@@ -189,37 +189,37 @@ if( $add || $update ) {
       $db->query($SQL);
 
         # insert three default categories
-      $db->query("INSERT INTO constant 
-                  VALUES( '" . q_pack_id(new_id()) ."',
-                          '$new_group_name', 
-                          '". L_SOME_CATEGORY ."',
-                          '". L_SOME_CATEGORY ."',
-                          'AA-predefined054',
-                          '1000')" );
-      $db->query("INSERT INTO constant 
-                  VALUES( '" . q_pack_id(new_id()) ."',
-                          '$new_group_name', 
-                          '". L_SOME_CATEGORY ."',
-                          '". L_SOME_CATEGORY ."',
-                          'AA-predefined054',
-                          '1000')" );
-      $db->query("INSERT INTO constant 
-                  VALUES( '" . q_pack_id(new_id()) ."',
-                          '$new_group_name', 
-                          '". L_SOME_CATEGORY ."',
-                          '". L_SOME_CATEGORY ."',
-                          'AA-predefined054',
-                          '1000')" );
+      $db->query("INSERT INTO constant SET 
+                   id = '" . q_pack_id(new_id()) ."',
+                   group_id = '$new_group_name',
+                   name = '". L_SOME_CATEGORY ."',
+                   value = '". L_SOME_CATEGORY ."',
+                   class = 'AA-predefined054',
+                   pri = '1000'" );
+      $db->query("INSERT INTO constant SET 
+                   id = '" . q_pack_id(new_id()) ."',
+                   group_id = '$new_group_name',
+                   name = '". L_SOME_CATEGORY ."',
+                   value = '". L_SOME_CATEGORY ."',
+                   class = 'AA-predefined054',
+                   pri = '1000'" );
+      $db->query("INSERT INTO constant SET 
+                   id = '" . q_pack_id(new_id()) ."',
+                   group_id = '$new_group_name',
+                   name = '". L_SOME_CATEGORY ."',
+                   value = '". L_SOME_CATEGORY ."',
+                   class = 'AA-predefined054',
+                   pri = '1000'" );
 
          # insert constant group name
-      $db->query("INSERT INTO constant 
-                  VALUES( '" . q_pack_id(new_id()) ."',
-                          'lt_groupNames', 
-                          '". L_SOME_CATEGORY ."',
-                          '$new_group_name',
-                          '". quote(substr($name,0,50)) ."',
-                          '1000')" );
-        
+      $db->query("INSERT INTO constant SET 
+                   id = '" . q_pack_id(new_id()) ."',
+                   group_id = 'lt_groupNames',
+                   name = '". L_SOME_CATEGORY ."',
+                   value = '$new_group_name',
+                   class = '". quote(substr($name,0,50)) ."',
+                   pri = '1000'" );
+
       $r_config_file[$slice_id] = $lang_file;
       $sess->register(slice_id);
 
@@ -327,6 +327,9 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.24  2002/03/06 12:32:08  honzam
+preparation for hierarchical constant editor
+
 Revision 1.23  2001/12/18 11:37:39  honzam
 scripts are now "magic_quotes" independent - no matter how it is set
 

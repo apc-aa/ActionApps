@@ -41,6 +41,7 @@ define("L_PARAM_WIZARD_INPUT_USING_CONSTANTS","<br><br>It uses the Constants sel
 */
 
 define("L_PARAM_WIZARD_INPUT_NAME","Input Type");
+
 define("L_PARAM_WIZARD_INPUT_txt_NAME","Text Area");
 define("L_PARAM_WIZARD_INPUT_txt_DESC","Text area with 60 columns");
 define("L_PARAM_WIZARD_INPUT_txt_PAR0_NAME","row count");
@@ -217,7 +218,7 @@ define("L_PARAM_WIZARD_FUNC_F_C_EXAMPLE0_PARAMS","1:Yes<!--:-->:No");
 define("L_PARAM_WIZARD_FUNC_F_C_EXAMPLE1_DESC","When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing");
 define("L_PARAM_WIZARD_FUNC_F_C_EXAMPLE1_PARAMS","!:Email#");
 define("L_PARAM_WIZARD_FUNC_F_C_EXAMPLE2_DESC","Print image height attribute, if <i>the field</i> is filled, nothing otherwise.");
-define("L_PARAM_WIZARD_FUNC_F_C_EXAMPLE2_PARAMS",":height=");
+define("L_PARAM_WIZARD_FUNC_F_C_EXAMPLE2_PARAMS","!:height=");
 define("L_PARAM_WIZARD_FUNC_F_U_NAME","user function");
 define("L_PARAM_WIZARD_FUNC_F_U_DESC","calls a user defined function (see How to create new aliases in /doc/faq.html)");
 define("L_PARAM_WIZARD_FUNC_F_U_PAR0_NAME","function");
@@ -227,7 +228,7 @@ define("L_PARAM_WIZARD_FUNC_F_U_PAR1_NAME","parameter");
 define("L_PARAM_WIZARD_FUNC_F_U_PAR1_DESC","a parameter passed to the function");
 define("L_PARAM_WIZARD_FUNC_F_U_PAR1_EXAMPLE","1");
 define("L_PARAM_WIZARD_FUNC_F_M_NAME","e-mail or link");
-define("L_PARAM_WIZARD_FUNC_F_M_DESC","mailto link - prints: \"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\"\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>.");
+define("L_PARAM_WIZARD_FUNC_F_M_DESC","mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag adition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>.");
 define("L_PARAM_WIZARD_FUNC_F_M_PAR0_NAME","begin");
 define("L_PARAM_WIZARD_FUNC_F_M_PAR0_DESC","text before the link");
 define("L_PARAM_WIZARD_FUNC_F_M_PAR0_EXAMPLE","e-mail");
@@ -240,6 +241,9 @@ define("L_PARAM_WIZARD_FUNC_F_M_PAR2_EXAMPLE","");
 define("L_PARAM_WIZARD_FUNC_F_M_PAR3_NAME","linktype");
 define("L_PARAM_WIZARD_FUNC_F_M_PAR3_DESC","mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter");
 define("L_PARAM_WIZARD_FUNC_F_M_PAR3_EXAMPLE","href");
+define("L_PARAM_WIZARD_FUNC_F_M_PAR4_NAME","tag addition");
+define("L_PARAM_WIZARD_FUNC_F_M_PAR4_DESC","additional text to the \"\\<a\\>\" tag");
+define("L_PARAM_WIZARD_FUNC_F_M_PAR4_EXAMPLE","target=_blank");
 define("L_PARAM_WIZARD_FUNC_F_R_NAME","RSS tag");
 define("L_PARAM_WIZARD_FUNC_F_R_DESC","serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags.");
 define("L_PARAM_WIZARD_FUNC_F_V_NAME","view");
@@ -270,14 +274,32 @@ define("L_PARAM_WIZARD_FUNC_F_X_PAR1_NAME","return value");
 define("L_PARAM_WIZARD_FUNC_F_X_PAR1_DESC","string to return if previous content matches - You can use field_id too");
 define("L_PARAM_WIZARD_FUNC_F_X_PAR1_EXAMPLE","Environment");
 define("L_PARAM_WIZARD_FUNC_F_X_PAR2_NAME","default");
-define("L_PARAM_WIZARD_FUNC_F_X_PAR2_DESC","if no content mathes, use this string as return value");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR2_DESC","if no content matches, use this string as return value");
 define("L_PARAM_WIZARD_FUNC_F_X_PAR3_EXAMPLE","No such option");
 
+/* new values */
+
+define("L_PARAM_WIZARD_INPUT_hco_NAME","Hierachical Constants");
+define("L_PARAM_WIZARD_INPUT_hco_DESC",
+"Select boxes (one for each level) allowing to choose constants in a hierarchical way. 
+Under them there is another select box in which are stored the constants chosen.");
+define("L_PARAM_WIZARD_INPUT_hco_PAR0_NAME","level count");
+define("L_PARAM_WIZARD_INPUT_hco_PAR0_DESC","count of boxes shown");
+define("L_PARAM_WIZARD_INPUT_hco_PAR0_EXAMPLE","3");
+define("L_PARAM_WIZARD_INPUT_hco_PAR1_NAME","box width");
+define("L_PARAM_WIZARD_INPUT_hco_PAR1_DESC","width of boxes - count of 'm' characters (e.g. 5 = 'mmmmm')");
+define("L_PARAM_WIZARD_INPUT_hco_PAR1_EXAMPLE","40");
+define("L_PARAM_WIZARD_INPUT_hco_PAR2_NAME","target size");
+define("L_PARAM_WIZARD_INPUT_hco_PAR2_DESC","number of lines in the target box");
+define("L_PARAM_WIZARD_INPUT_hco_PAR2_EXAMPLE","5");
+define("L_PARAM_WIZARD_INPUT_hco_PAR3_NAME","horizontal levels");
+define("L_PARAM_WIZARD_INPUT_hco_PAR3_DESC","if 1, shows levels' boxes horizontally");
+define("L_PARAM_WIZARD_INPUT_hco_PAR3_EXAMPLE","0");
 
 /*
 $Log$
-Revision 1.5  2002/02/05 21:48:05  honzam
-new transformation alias function f_x, fixed blurb f_q alias function
+Revision 1.6  2002/03/06 12:32:09  honzam
+preparation for hierarchical constant editor
 
 Revision 1.4  2001/12/26 22:11:37  honzam
 Customizable 'No item found' message. Added missing language constants.
