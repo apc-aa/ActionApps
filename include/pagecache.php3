@@ -118,7 +118,7 @@ class PageCache  {
     $db = getDB();
     $SQL = "DELETE FROM pagecache WHERE str2find LIKE '%". quote($cond) ."%'";
     $db->query($SQL);
-    freeDB();
+    freeDB($db);
   }
 
   # remove cached informations for all rows
@@ -127,7 +127,7 @@ class PageCache  {
     $db = getDB();
     $SQL = "DELETE FROM pagecache";
     $db->query($SQL);
-    freeDB();
+    freeDB($db);
   }  
 }
 
