@@ -671,7 +671,7 @@ define("L_INTER_IMPORT","Inter Node Import");
 define("L_INTER_EXPORT","Inter Node Export");
 
 define("L_NODES_MANAGER","Nodes");
-define("L_NO_PS_NODES_MANAGER","You have not permissions to manage nodes");
+define("L_NO_PS_NODES_MANAGER","You do not have permissions to manage nodes");
 define("L_NODES_ADMIN_TIT","Remote node administration");
 define("L_NODES_LIST","Known remote nodes");
 define("L_NODES_ADD_NEW","Add new node");
