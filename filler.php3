@@ -27,6 +27,9 @@ http://www.apc.org/
 #   ok_url       - url where to go, if item is successfully sored in database
 #   err_url      - url where to go, if item is not sored in database (due to
 #                  validation of data, ...)
+#   force_status_code - you may add this to force to change the status code
+#                       but the new status code must always be higher than bin2fill
+#                       setting (you can't add to the Active bin, for example)
 
 # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
@@ -58,6 +61,8 @@ require $GLOBALS[AA_INC_PATH]."notify.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
+
+//echo $slice_id;
 
 function SendErrorPage($txt) {
   if( $GLOBALS["err_url"] )
@@ -157,6 +162,8 @@ $content4id = GetContentFromForm( $fields, $prifields );
 
   # put an item to the right bin
 $content4id["status_code....."][0][value] = ($bin2fill==1 ? 1 : 2);
+if ($force_status_code && $force_status_code >= $bin2fill)
+	$content4id["status_code....."][0][value] = $force_status_code;
 
 // p_arr_m( $content4id );
 
@@ -174,6 +181,15 @@ else {
 	 	# are we allowed to update this item?
 		if (!($db->f("flags") & ITEM_FLAG_ANONYMOUS_EDITABLE)) 
 			$err[] = "This item isn't allowed to be changed anonymously.";
+		# find the password.......x field to authenticate item update
+		reset ($fields);
+		while (list ($field) = each($fields))
+			if (substr ($field,0,15) == "password.......") {
+				$db->query ("SELECT * FROM content WHERE item_id='$item_pid' AND field_id='$field'");
+				if (!$db->next_record() || $db->f("text") != $content4id[$field])
+					$err[] = "You must set correct password to edit this field.";
+				break;
+			}
 		$content4id["flags..........."][0]['value'] = $db->f("flags");
 		# set to UPDATE
 		$insert_item = false;
@@ -187,13 +203,16 @@ if (count($err) == 1)
 	$added_to_db = StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert_item, 
                           true, true );     # insert, invalidatecache, feed
 
-if( count($err) > 1)
+if( count($err) > 1) 
   SendErrorPage( $err );
- else
+else
   SendOkPage( L_ANONYMOUS_FILL_OK );
 
 /*
 $Log$
+Revision 1.7  2002/03/06 13:50:56  honzam
+new variable 'force status code' to move the item to another bin
+
 Revision 1.6  2002/01/10 13:50:05  honzam
 new possibilty to anonymously edit items on public sites
 
