@@ -1,3 +1,8 @@
+05/27/01 - fixed problem with doubled item from search
+05/26/01 - fixed problem with '=' character passed by url
+         - doc/FAQ.html updated
+05/25/01 - field ID is displayed instead of type in field setting se_fields.php3
+         - new search parameters in slice.php3, which uses beter search funct.
 05/24/01 - fixed bug of item disapearing after item modify
          - fixed bug of not updated list of item in Item manager after item edit
 05/21/01 - new "field mapping" feature for feeding - se_mapping.php3

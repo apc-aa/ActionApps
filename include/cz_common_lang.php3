@@ -112,7 +112,6 @@ define( "L_SLICE_HINT", '
                   Webík zahrnete do své *.shtml stránky pøidáním následující øádky v HTML kódu:
                   ');
 
-
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
@@ -137,6 +136,10 @@ define( "L_WDDX_OK","OK - èlánek vložen do databáze");
 define( "L_CAN_DELETE_WDDX_FILE","Zdá se že <b>vše probìhlo v poøádku</b>, mùžete klidnì 
                                   smazat soubor z disku.");
 define( "L_DELETE_WDDX"," Smazat ");
+
+// copyright message for all screens
+define( "L_COPYRIGHT", 'Copyright (C) 2001 the 
+						<a href="http://www.apc.org">Association for Progressive  Communications (APC)</a>'); 
                    
 // tranformation from english style datum (3/16/1999 or 3/16/99) to timestamp
 // break year for short year description is 1970
@@ -156,6 +159,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.16  2001/05/29 21:05:07  honzam
+copyright + new logo
+
 Revision 1.15  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 

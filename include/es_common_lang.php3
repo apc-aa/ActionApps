@@ -138,7 +138,13 @@ define( "L_WDDX_BAD_PACKET","Datos errados (paquetes WDDX)");
 define( "L_WDDX_OK","Item aprobado - almacenado en la base de datos");
 define( "L_CAN_DELETE_WDDX_FILE","Ahora puede borrar el archivo local");
 define( "L_DELETE_WDDX","Borrar");
+define( "L_NO_SUCH_VIEW", "No such view (bad or missing view id or deleted slice)");
 
+// copyright message for all screens
+define( "L_COPYRIGHT", 'Copyright (C) 2001 the 
+						<a href="http://www.apc.org">Association for Progressive  Communications (APC)</a> 
+						under the 
+						<a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>'); 
 
 // transformación de estilo de fecha (3/16/1999 o 3/16/99) a formato de mySQL 
 function userdate2sec ($dttm, $time="") {
@@ -158,6 +164,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.3  2001/05/29 21:05:07  honzam
+copyright + new logo
+
 Revision 1.2  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 
