@@ -599,16 +599,16 @@ class itemview{
                         $calendar [$cell][$ievent]["start"] = 1;
                         $calendar [$cell][$ievent]["span"] = min ($calendar[$cell][$ievent]["span"],$row_len);
                     }
-            }           
+            }
             $rowview = true;
         }
         else {
             $rowview = false;
         }
-             
+
         $out = $this->unaliasWithScroller(
                $this->resolve_calendar_aliases ($this->slice_info[compact_top]), $CurItem);
-        
+
         if (!$rowview) {
             for ($cell = $min_cell; $cell <= $max_cell; ++$cell) {
                 $calendar_aliases["_#CV_NUM_D"] = $cell;
@@ -623,7 +623,7 @@ class itemview{
                 }
                 $CurItem->setformat ($this->resolve_calendar_aliases ($header,$cell));
                 $out .= $CurItem->get_item();
-                
+
                 for ($ievent = 0; $ievent < $max_events; ++$ievent) {
                     $event = $events[$ievent];
                     if ($event["iid"] && $event["start"]) {
@@ -634,22 +634,22 @@ class itemview{
                         $out .= "<td valign=top rowspan=".$event['span']." $tdattribs>"
                             .$CurItem->get_item()."</td>";
                     }
-                    else if (!$event["iid"]) 
-                        $out .= "<td></td>";
+                    else if (!$event["iid"])
+                        $out .= "<td class='empty'></td>";
                 }
-                
+
                 $CurItem->setformat ($this->resolve_calendar_aliases ($footer,$cell));
                 $out .= $CurItem->get_item();
             }
         }
 
-        if ($rowview) {    
+        if ($rowview) {
             for ($row=0; $row < $rowcount; ++$row) {
                 $outrow = "";
                 $firstcell = $row * $row_len - $firstday;
                 for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
                     $events = $calendar[$cell];
-                    if ($this->slice_info[even_odd_differ] && count($events) == 0) 
+                    if ($this->slice_info[even_odd_differ] && count($events) == 0)
                         $header = $this->slice_info['aditional'];
                     else $header = $this->slice_info[category_format];
                     $label = $cell >= $min_cell && $cell <= $max_cell ? $cell : "";
@@ -657,7 +657,7 @@ class itemview{
                     $outrow .= $CurItem->get_item();
                 }
                 if ($outrow) $out .= "<tr>$outrow</tr>";
-                
+
                 if ($this->slice_info[odd_row_format])
                 for ($ievent = 0; $ievent < $max_events; ++$ievent) {
                     $out .= "<tr>";
@@ -671,12 +671,12 @@ class itemview{
                             $out .= "<td valign=top colspan=".$event['span']." $tdattribs>"
                                 .$CurItem->get_item()."</td>";
                         }
-                        else if (!$event["iid"]) 
-                            $out .= "<td></td>";
+                        else if (!$event["iid"])
+                            $out .= "<td class='empty'></td>";
                     }
                     $out .= "</tr>";
                 }
-                           
+
                 $outrow = "";
                 for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
                     $events = $calendar[$cell];
