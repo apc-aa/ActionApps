@@ -57,7 +57,7 @@ if( $update )
     ValidateInput("noitem_msg", L_NOITEM_MSG, &$noitem_msg, &$err, false, "text");
     if( $even_odd_differ )
       ValidateInput("even_row_format", L_EVEN_ROW_FORMAT, &$even_row_format, &$err, true, "text");
-    if( $category_sort ) {
+    if( $group_by ) {
       ValidateInput("category_top", L_CATEGORY_TOP, &$category_top, &$err, false, "text");
       ValidateInput("category_format", L_CATEGORY_FORMAT, &$category_format, &$err, true, "text");
       ValidateInput("category_bottom", L_CATEGORY_BOTTOM, &$category_bottom, &$err, false, "text");
@@ -67,6 +67,9 @@ if( $update )
 
     $varset->add("odd_row_format", "quoted", $odd_row_format);
     $varset->add("even_row_format", "quoted", $even_row_format);
+    $varset->add("group_by","quoted",$group_by);
+    $varset->add("gb_direction","quoted",$gb_direction);
+    $varset->add("gb_header","number",$gb_header);
     $varset->add("category_top", "quoted", $category_top);
     $varset->add("category_format", "quoted", $category_format);
     $varset->add("category_bottom", "quoted", $category_bottom);
@@ -94,9 +97,10 @@ if( $update )
 }
 
 if( $slice_id!="" ) {  // set variables from database - allways
-  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top, 
+/*  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top, 
                  compact_bottom, compact_remove, category_sort, category_format,
-                 category_top, category_bottom, noitem_msg
+                 category_top, category_bottom, noitem_msg */
+	$SQL = " SELECT *
           FROM slice WHERE id='". q_pack_id($slice_id)."'";
   $db->query($SQL);
   if ($db->next_record()) {
@@ -109,8 +113,21 @@ if( $slice_id!="" ) {  // set variables from database - allways
     $compact_bottom = $db->f(compact_bottom);
     $compact_remove = $db->f(compact_remove);
     $even_odd_differ = $db->f(even_odd_differ);
+    $group_by = $db->f(group_by);
+    $gb_direction = $db->f(gb_direction);
+    $gb_header = $db->f(gb_header);
     $category_sort = $db->f(category_sort);
+    if ($group_by) $category_sort = 0;
     $noitem_msg = $db->f(noitem_msg);
+    if (!$group_by && $category_sort) {
+      $db->query ("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='".q_pack_id($slice_id)."'");
+      if ($db->next_record()) {
+        $group_by = $db->f("id");
+        $gb_direction  = "a";
+        $gb_header = 0;
+        $category_sort = 0;
+      }
+    }
   }  
 }
 
@@ -122,20 +139,22 @@ function Defaults()
 {
   document.f.odd_row_format.value = '<?php echo DEFAULT_ODD_HTML ?>'
   document.f.even_row_format.value = '<?php echo DEFAULT_EVEN_HTML ?> '
+  document.f.group_by.selectIndex = -1;
+  document.f.gb_direction.selectIndex = 0;
+  document.f.gb_header.selectIndex = 0;
   document.f.category_top.value = '<?php echo DEFAULT_CATEGORY_TOP ?>'
   document.f.category_format.value = '<?php echo DEFAULT_CATEGORY_HTML ?>'
   document.f.category_bottom.value = '<?php echo DEFAULT_CATEGORY_BOTTOM ?>'
   document.f.compact_top.value = '<?php echo DEFAULT_TOP_HTML ?>'
   document.f.compact_remove.value = '<?php echo DEFAULT_COMPACT_REMOVE ?>'
   document.f.even_odd_differ.checked = <?php echo (DEFAULT_EVEN_ODD_DIFFER ? "true" : "false"). "\n"; ?>
-  document.f.category_sort.checked = <?php echo (DEFAULT_CATEGORY_SORT ? "true" : "false")."\n"; ?>
   document.f.noitem_msg.value = ''
   InitPage()
 }
 
 function InitPage() {
   EnableClick('document.f.even_odd_differ','document.f.even_row_format')
-  EnableClick('document.f.category_sort','document.f.category_format')
+  //EnableClick('document.f.category_sort','document.f.category_format')
 }
 
 function EnableClick(cond,what) {
@@ -165,6 +184,13 @@ function EnableClick(cond,what) {
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
+  # lookup slice fields
+  $db->query("SELECT id, name FROM field
+               WHERE slice_id='$p_slice_id' ORDER BY name");
+  $lookup_fields[''] = " ";  # default - none
+  while($db->next_record())
+    $lookup_fields[$db->f(id)] = $db->f(name);
+
   FrmTextarea("compact_top", L_COMPACT_TOP, $compact_top, 4, 50, false,
                L_TOP_HLP, DOCUMENTATION_URL, 1);
   FrmTextarea("odd_row_format", L_ODD_ROW_FORMAT, $odd_row_format, 6, 50, false,
@@ -174,7 +200,16 @@ function EnableClick(cond,what) {
                L_EVEN_ROW_HLP, DOCUMENTATION_URL, 1); 
   FrmTextarea("compact_bottom", L_COMPACT_BOTTOM, $compact_bottom, 4, 50, false,
                L_BOTTOM_HLP, DOCUMENTATION_URL, 1); 
-  FrmInputChBox("category_sort", L_CATEGORY_SORT, $category_sort, true, "OnClick=\"EnableClick('document.f.category_sort','document.f.category_format')\"");
+  echo "<tr><td class=tabtxt><b>".L_GROUP_BY."</b></td><td>";
+  FrmSelectEasy ("group_by", $lookup_fields, $group_by);
+  echo "<br>".L_GROUP_BY_HLP;
+  echo "</td></tr>
+  <tr><td></td><td>";
+  FrmSelectEasy ("gb_header", array (L_WHOLE_TEXT,L_FIRST_LETTER,"2 ".L_LETTERS,"3 ".L_LETTERS), $gb_header);
+  FrmSelectEasy("gb_direction", array( 'a'=>L_ASCENDING, 'd' => L_DESCENDING ), 
+                $gb_direction);
+  echo "<input type=hidden name='category_sort' value='$category_sort'>";
+  echo "</td></tr>";
   FrmTextarea("category_top", L_CATEGORY_TOP, $category_top, 4, 50, false,
                L_TOP_HLP, DOCUMENTATION_URL, 1);
   FrmTextarea("category_format", L_CATEGORY_FORMAT, $category_format, 6, 50, false,
@@ -197,73 +232,6 @@ function EnableClick(cond,what) {
   echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
-/*
-$Log$
-Revision 1.17  2001/12/26 22:11:38  honzam
-Customizable 'No item found' message. Added missing language constants.
-
-Revision 1.16  2001/09/27 15:44:35  honzam
-Easiest left navigation bar editation
-
-Revision 1.15  2001/05/21 13:52:31  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.14  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.13  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.12  2001/03/30 11:52:53  honzam
-reverse displaying HTML/Plain text bug and others smalll bugs fixed
-
-Revision 1.11  2001/03/20 15:27:03  honzam
-Changes due to "slice delete" feature
-
-Revision 1.10  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.9  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-Revision 1.8  2001/01/31 02:44:29  madebeer
-added help prompt at top of page
-
-Revision 1.7  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
-
-Revision 1.5  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.4  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
-
-Revision 1.3  2000/08/03 12:49:22  kzajicek
-English editing
-
-Revision 1.2  2000/07/25 11:25:26  kzajicek
-Fixed Javascript error in Netscape.
-
-Revision 1.1.1.1  2000/06/21 18:39:58  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:48  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.13  2000/06/12 19:58:24  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.12  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.11  2000/04/24 16:45:02  honzama
-New usermanagement interface.
-
-Revision 1.10  2000/03/22 09:36:43  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
 </td></tr></table>
 </FORM>
