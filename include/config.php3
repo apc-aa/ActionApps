@@ -52,7 +52,7 @@ define("LDAP_BASEDN", "ou=AA");
 define("LDAP_PEOPLE", "ou=People,ou=AA");
 define("LDAP_GROUPS", "ou=AA");
 define("LDAP_ACLS", "ou=ACLs,ou=AA");
-define("LDAP_PORT", 3000);
+define("LDAP_PORT", 389);
 
 # e-mail for bug reporting contact
 define("ERROR_REPORTING_EMAIL", "technical@ecn.cz");
