@@ -364,7 +364,7 @@ $_m["Can't delete category which contains links"]
 
 # modules/links/catedit2.php3, row 198
 $_m["Additional information"]
-  = "";
+  = "Další informace";
 
 # modules/links/catedit2.php3, row 207
 $_m["Category data changed"]
@@ -412,11 +412,11 @@ $_m["No permissions to edit links"]
 
 # modules/links/index.php3, row 248
 $_m["HINT: \"social ecology\" AND environment"]
-  = "";
+  = "TIP: (právo AND informace) OR \"obèanská práva\"";
 
 # modules/links/index.php3, row 275
 $_m["Perform action on selected items"]
-  = "";
+  = "Vyber akci, která se provede s vybranými odkazy";
 
 # modules/links/index.php3, row 279
 $_m["Check Link"]
@@ -618,11 +618,11 @@ $_m["No permission to approve link to given category"]
 
 # modules/links/actions.php3, row 226
 $_m["Base category not found"]
-  = "";
+  = "Nenalezena primární (base) kategorie";
 
 # modules/links/actions.php3, row 230
 $_m["No permission to move link"]
-  = "";
+  = "Nemáte práva pøesunout odkaz";
 
 # modules/links/constants.php3, row 54, 157
 $_m["Name"]
@@ -746,7 +746,7 @@ $_m["Category editor's note"]
 
 # modules/links/constants.php3, row 94
 $_m["Base"]
-  = "";
+  = "Primární";
 
 # modules/links/constants.php3, row 95, 163
 $_m["State"]
@@ -914,7 +914,7 @@ $_m["Paths to the categories"]
 
 # modules/links/constants.php3, row 144
 $_m["Number of found Links"]
-  = "";
+  = "Poèet nalezených odkazù";
 
 # modules/links/constants.php3, row 145
 $_m["Link to link editing page (for admin interface only)"]
@@ -942,7 +942,7 @@ $_m["Number of links in category"]
 
 # modules/links/constants.php3, row 175
 $_m["Crossreferenced category"]
-  = "";
+  = "Krosreferencovaná kategorie";
 
 # modules/links/constants.php3, row 176
 $_m["Path to current category"]
@@ -1018,7 +1018,7 @@ $_m["My own links"]
 
 # modules/links/menu.php3, row 154
 $_m["Main settings"]
-  = "";
+  = "Hlavní nastavení";
 
 # modules/links/menu.php3, row 157
 $_m["Links"]
@@ -1081,8 +1081,21 @@ $_m["Items Page"]
   = "Stránka odkazù";
 
 # include/searchbar.class.php3, row 337, 404
+# include/tabledit.php3, row 510
 $_m["Search"]
-  = "Hledej v";
+  = "Vyhledat";
+
+# include/searchbar.class.php3, row 397
+$_m["Descending"]
+  = "Sestupnì";
+
+# include/searchbar.class.php3, row 437
+$_m["Update"]
+  = "Zmìò";
+
+# include/searchbar.class.php3, row 439
+$_m["Delete"]
+  = "Odstranit";
 
 # include/searchbar.class.php3, row 342
 $_m["And"]
@@ -1090,7 +1103,7 @@ $_m["And"]
 
 # include/searchbar.class.php3, row 351, 487, 496
 $_m["begins with"]
-  = "zaèíná na";
+  = "zaèíná";
 
 # include/searchbar.class.php3, row 352, 487, 496
 $_m["contains"]
@@ -1098,63 +1111,58 @@ $_m["contains"]
 
 # include/searchbar.class.php3, row 353, 487, 496
 $_m["is"]
-  = "pøesný výraz";
+  = "je";
 
 # include/searchbar.class.php3, row 389
 $_m["Order"]
-  = "Seøaï dle";
-
-# include/searchbar.class.php3, row 397
-$_m["Descending"]
-  = "Sestupnì";
+  = "Seøadit";
 
 # include/searchbar.class.php3, row 405
 $_m["Clear"]
-  = "";
+  = "Vyèistit";
 
 # include/searchbar.class.php3, row 408
 $_m["Stored search name"]
-  = "";
+  = "Jméno filtru";
 
 # include/searchbar.class.php3, row 409
 $_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
-  = "";
+  = "Uložit globálnì? Filtr mùžete uložit tak, že bude viditelný pro všechny uživatele tohoto webíku - tedy globálnì [ OK ], èi pouze jako váš osobní filtr [ Storno ]. Má-li být filtr globální - kliknìte na OK, má-li být váš osobní - kliknìte na Storno (popø. Cancel).";
 
 # include/searchbar.class.php3, row 409
 $_m["Store"]
-  = "";
+  = "Uložit";
 
 # include/searchbar.class.php3, row 431
 $_m["Stored searches"]
-  = "";
+  = "Uložené filtry";
 
-# include/searchbar.class.php3, row 437
-$_m["Update"]
-  = "";
+# include/searchbar.class.php3, row 434
+$_m["View"]
+  = "Zobraz";
 
 # include/searchbar.class.php3, row 438
 $_m["Enter new name"]
-  = "";
+  = "Zadej nové jméno";
 
 # include/searchbar.class.php3, row 438
 $_m["Rename"]
-  = "";
+  = "Pøejmenovat";
+
+$_m["Are you sure to refine current search?"]
+  = "Opravdu chcete pøedefinovat vybraný filtr?";
 
 # include/searchbar.class.php3, row 439
 $_m["Are you sure to delete selected search?"]
-  = "";
-
-# include/searchbar.class.php3, row 439
-$_m["Delete"]
-  = "";
+  = "Opravdu smazat vybraný filtr?";
 
 # include/searchbar.class.php3, row 496
 $_m["select ..."]
-  = "";
+  = "vyber ...";
 
 # include/searchbar.class.php3, row 676
 $_m["Select one..."]
-  = "";
+  = "vyber ...";
 
 # include/util.php3, row 722, 762
 $_m["Error: Missing Reading Password"]

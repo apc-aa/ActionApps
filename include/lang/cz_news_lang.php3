@@ -2906,7 +2906,7 @@ $_m["AA - Administration Console"]
 
 # include/searchbar.class.php3, row 342
 $_m["And"]
-  = "A";
+  = "a zároveò";
 
 # include/searchbar.class.php3, row 351, 487, 496
 $_m["begins with"]
@@ -2934,7 +2934,7 @@ $_m["Stored search name"]
 
 # include/searchbar.class.php3, row 409
 $_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
-  = "Uložit globálnì? Filtr mùžete uložit tak, že bude viditelný pro všechny uživatele tohoto webíku (globálnì), èi pouze jako váš osobní filtr.";
+  = "Uložit globálnì? Filtr mùžete uložit tak, že bude viditelný pro všechny uživatele tohoto webíku - tedy globálnì [ OK ], èi pouze jako váš osobní filtr [ Storno ]. Má-li být filtr globální - kliknìte na OK, má-li být váš osobní - kliknìte na Storno (popø. Cancel).";
 
 # include/searchbar.class.php3, row 409
 $_m["Store"]
@@ -3806,12 +3806,13 @@ $_m["All categories"]
 
 # include/loginform.inc, row 16
 $_m["Welcome!"]
-  = "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.6";
+  = "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.8";
 
 # include/loginform.inc, row 18
 $_m["Welcome! Please identify yourself with a username and a password:"]
-  = "<br><br>\n\n"
-   ."     <br>Vítejte! Pøihlašte se prosím Vaším jménem a heslem\n\n"
+  = "<br>\n\n"
+   ."     4. 3. 2004 - Vítejte v nové verzi Toolkitu, která má mnohá <a href=\"http://econnect.ecn.cz/index.stm?apc=e31x1--&x=165637\">vylepšení</a>. <br>Pøípadné objevené chyby nám prosím <a href=\"mailto:actionapps@ecn.cz\">nahlašte</a>."
+   ."     <br><br><br>Pøihlašte se prosím Vaším jménem a heslem\n\n"
    ."     <br>(Welcome! Log in by your name and password):";
 
 # include/loginform.inc, row 27
