@@ -120,7 +120,7 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
   if (!( $feed["aa_rss"] = aa_rss_parse( $xml_data ))) {
     writeLog("CSN","Feeding mode: Unable to parse XML data");
     if ($debugfeed >= 1) 
-        print("\n<br>$feed[DebugName]:unparsable: <hr>".htmlspecialchars($xml_data)."<hr>");
+        print("\n<br>$feed[DebugName]:$feed[server_url]:unparsable: <hr>".htmlspecialchars($xml_data)."<hr>");
     return false;
   }
 

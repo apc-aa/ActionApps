@@ -64,13 +64,13 @@ function decode($v) {
 }
 
 function nsName2abbrevname($name) {
-	global $module2abbrev;
+	global $module2abbrev; // Static array above
 	ereg("(.+):([^:]+)",$name,$nameparts);
 	if ($ab = $module2abbrev[$nameparts[1]]) return $ab.":".$nameparts[2];
 	return $name;
 }
 function nsAbbrev2name($abbrev) {
-	global $module2abbrev;
+	global $module2abbrev; // static array above
 	return array_search($abbrev,$module2abbrev);
 }
 
@@ -83,7 +83,6 @@ function startElement($parser, $name, $attrs) {
          $field_uri, $field_uri_slice, $category_uri,
          $content_format, $rss_version,
          $fielddata_uri, $fielddata_content_format, $fielddata, $CONTENT_FORMATS;
-
   $cur_tag .= "^".nsName2abbrevname($name);
   $RDF = nsAbbrev2name("RDF");   // For matching with NameSpace expanded attributes
   
@@ -264,9 +263,14 @@ function charD($parser, $data) {
 
 // Parse feed, return array or false on failure
 function aa_rss_parse($xml_data) {
-  global $aa_rss;
+  global $aa_rss,
+        $cur_tag, $aa_rss, $channel, $category, $field, $item,
+         $fulltext_content, $fielddata,$content_format;
   $aa_rss = array();   // Clear out, or will just append to previous parse!
   $xml_parser = xml_parser_create_ns();
+  $cur_tag = null; $channel = null; $category = null; $field = null; 
+  $item=null; $fulltext_content = null; $fielddata = null; 
+  $content_format=null;
   xml_set_element_handler($xml_parser, "startElement", "endElement");
   xml_set_character_data_handler($xml_parser,"charD");
   if (!xml_parse($xml_parser, $xml_data)) {
