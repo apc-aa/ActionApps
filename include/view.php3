@@ -393,13 +393,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
       
     case 'static':   # parameters: 0
   case 'static': 
-    // $aliases;
-    // let us see if this work!
-    GetAliasesFromUrl();
-    //echo ($aliases);       // debugging
     $format = GetViewFormat($view_info);
     // I create a CurItem object so I can use the unalias function 
-    $CurItem = new item("", "", $aliases, "", "", "");
+    $CurItem = new item("", "", $als, "", "", "");
     return $CurItem->unalias( $view_info["odd"] );
   }
 }  
