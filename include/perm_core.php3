@@ -42,7 +42,8 @@ define("PS_EDIT",                 "A");   # slice # set slice properties
 define("PS_CATEGORY",             "B");   # slice # change slice categories
 define("PS_FIELDS",               "C");   # slice # edit fields defauts
 define("PS_BOOKMARK",             "D");   # slice # change search form settings
-define("PS_USERS",                "E");   # slice # manage users
+define("PS_USERS",                "E");   # slice # manage users (change perms
+                                                  # to slice, set profile)
 define("PS_COMPACT",              "F");   # slice # change slice compact view
 define("PS_FULLTEXT",             "G");   # slice # change item fulltext view
 define("PS_FEEDING",              "H");   # slice # change properties
@@ -85,9 +86,9 @@ define("PS_LINKS_ADD_LINK",       "o");   # slice # add new link
 define("PS_LINKS_LINK2FOLDER",    "p");
 define("PS_LINKS_LINK2ACT",       "q");
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
+define("PS_LINKS_SETTINGS",       "A");
+define("PS_LINKS_EDIT_DESIGN",    "B");
 // super         - possibly letters 'QRSTUVW'
-define("PS_LINKS_SETTINGS",       "T");
-define("PS_LINKS_EDIT_DESIGN",    "U");
 
 //---------- Site -----------------
 // author        - possibly letters 'abcdefg'
@@ -265,12 +266,10 @@ function GetUserSlices( $user_id = "current") {
 }
 
 // shortcut for slice permission checking
-function IfSlPerm($perm) {
-  global $auth, $slice_id,$debugpermissions;
-if ($debugpermissions) {
-    huhl("Slice_id=",$slice_id," Perm=",$perm);
-}
-  return CheckPerms( $auth->auth["uid"], "slice", $slice_id, $perm);
+function IfSlPerm($perm, $slice=null) {
+    global $auth, $slice_id, $debugpermissions;
+    if ($debugpermissions) { huhl("Slice_id=",$slice_id," Perm=",$perm); }
+    return CheckPerms( $auth->auth["uid"], "slice", get_if($slice,$slice_id), $perm);
 }
 
 // Checks if logged user is superadmin
