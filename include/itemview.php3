@@ -139,7 +139,7 @@ class itemview {
             $keystr .= $this->zids->id($i);
         $keystr .=serialize($this->disc);
         $keystr .=serialize($this->aliases);
-            
+
         $keystr .= stringexpand_keystring();
 
         if( !$GLOBALS['nocache'] && ($res = $GLOBALS['pagecache']->get($keystr)) ) {
@@ -362,10 +362,14 @@ class itemview {
 
   function set_columns(&$CurItem, &$content, $iid)
   {
+     // hack for searching in multiple slices. This is not so nice part
+     // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
+     // used (filled) in slice.php3
      $CurItem->columns = $content[$iid];
-     $slice_id = $content[$iid]["slice_id........"][0]['value'];
-     if (is_array ($this->aliases[$slice_id]))
-        $CurItem->aliases = $this->aliases[$slice_id];
+     // slice_id... in content is packed!!!
+     $p_slice_id = addslashes($content[$iid]["slice_id........"][0]['value']);
+     if (is_array ($this->aliases[$p_slice_id]))
+        $CurItem->aliases = $this->aliases[$p_slice_id];
      else $CurItem->aliases = $this->aliases;
   }
 
@@ -384,7 +388,7 @@ class itemview {
         case 'thread' : $out = $this->get_disc_thread($CurItem); break;
         case 'fulltext' : $out = $this->get_disc_fulltext($CurItem); break;
         case 'list' : $out = $this->get_disc_list($CurItem); break;
-        case 'add_disc': 
+        case 'add_disc':
         default: $out = $this->get_disc_add($CurItem); break;
       }
       trace("-");
@@ -605,9 +609,9 @@ class itemview {
         $max_events = 0;
 
         trace("=","","pre-for");
-        for( $i=0; 
-            $i<$this->num_records 
-            && ($i+$this->from_record < $this->zids->count()); 
+        for( $i=0;
+            $i<$this->num_records
+            && ($i+$this->from_record < $this->zids->count());
             $i++ ) {
             $iid = $this->zids->short_or_longids($this->from_record+$i);
             if( !$iid )
