@@ -134,7 +134,7 @@ if( !$slice_info )
   SendErrorPage(_m("Bad slice ID"));
 
 if( $slice_info["permit_anonymous_post"] < 1 )
-  SendErrorPage(L_ANONYMOUS_POST_ADMITED);
+  SendErrorPage(_m("Anonymous posting not admitted."));
  else
   $bin2fill = $slice_info["permit_anonymous_post"]; 
 
@@ -238,6 +238,6 @@ if (count($err) == 1)
 if( count($err) > 1)
   SendErrorPage( $err );
  else
-  SendOkPage( L_ANONYMOUS_FILL_OK );
+  SendOkPage( _m("Anonymous posting filled OK."));
 
 ?>

@@ -56,8 +56,8 @@ $nb_settings = ( ( $settings_page OR !IfSlPerm(PS_MODW_SETTINGS) ) ?
   '<a href="'. $sess->url($MODULES[$g_modules[$module_id]['type']]['directory']. "slicedit.php3") .'"><span class=nbenable>'. _m("Module Settings") .'</span></a>');
 
 $nb_view = (!$r_slice_view_url ?
-  '<span class=nbenable>'. L_VIEW_SITE .'</span>' :
-  " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". L_VIEW_SITE .'</span></a>');
+  '<span class=nbenable>'. _m("View site") .'</span>' :
+  " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". _m("View site") .'</span></a>');
 
 $nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. _m("APC Action Applications") .'"></a>';
 
@@ -90,6 +90,9 @@ echo "</TD></TR></TABLE>";
 
 /*
 $Log$
+Revision 1.4  2003/01/27 14:20:22  jakubadamek
+fixed language constants
+
 Revision 1.3  2003/01/17 10:38:34  jakubadamek
 BIG CHANGES due to moving AA to use mini-gettext
 

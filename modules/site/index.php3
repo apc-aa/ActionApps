@@ -67,7 +67,7 @@ if( $site_info['structure'] != "" )
   if( $db->next_record() )
     $tree = new sitetree($db->Record);
   else {
-    MsgErr(L_ERR_BAD_START_SPOT);
+    MsgErr(_m("Starting spot not found"));
     page_close();
     exit;
   }
@@ -138,11 +138,11 @@ showMenu ($aamenus, "codemanager");
 
 echo '<br>
 <table border=0 cellspacing=0 class=login width="95%"><TR><TD width=200>
-  <a href="'. AAPage(0,"akce=s").'">'. L_ADD_SPOT .'</a> 
-  <a href="'. AAPage(0,"akce=c").'">'. L_ADD_CHOICE .'</a>
-  <a href="'. AAPage(0,"akce=r").'">'. L_DELETE_SPOT .'</a>
-  <a href="'. AAPage(0,"akce=u").'">'. L_MOVEUP_SPOT .'</a>
-  <a href="'. AAPage(0,"akce=d").'">'. L_MOVEDOWN_SPOT .'</a>
+  <a href="'. AAPage(0,"akce=s").'">'. _m("Add&nbsp;spot") .'</a> 
+  <a href="'. AAPage(0,"akce=c").'">'. _m("Add&nbsp;choice") .'</a>
+  <a href="'. AAPage(0,"akce=r").'">'. _m("Delete&nbsp;spot") .'</a>
+  <a href="'. AAPage(0,"akce=u").'">'. _m("Move&nbsp;up") .'</a>
+  <a href="'. AAPage(0,"akce=d").'">'. _m("Move&nbsp;down") .'</a>
   <br>';
 
 # show tree

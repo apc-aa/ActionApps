@@ -71,12 +71,13 @@ require $GLOBALS[AA_INC_PATH]."feeding.php3";
 function SendErrorPage($txt) {
   if( $GLOBALS["err_url"] )
     go_url($GLOBALS["err_url"]);
-  echo (L_OFFLINE_ERR_BEGIN);
+  HtmlPageBegin("");
+  echo "</head><body>";
   if( isset( $txt ) AND is_array( $txt ) )
     PrintArray($txt);    
    else 
     echo $txt;
-  echo (L_OFFLINE_ERR_END );
+  echo "</body></html>";
   exit;
 }  
 
@@ -199,10 +200,7 @@ while (list ($line_num, $line) = each ($import)) {
                               true, true );     # insert, invalidatecache, feed
     
     if( count($err) > 1)
-      SendErrorPage( $err );
-    //else
-    //  SendOkPage( L_ANONYMOUS_FILL_OK );
-    
+      SendErrorPage( $err );    
   }
   // end while
   

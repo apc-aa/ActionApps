@@ -69,7 +69,7 @@ if( $add || $update ) {
     $deleted  = ( $deleted  ? 1 : 0 );
 
     # now validate all module specific fields
-    ValidateInput("state_file", L_STATE_FILE, $state_file, $err, true, "text");
+    ValidateInput("state_file", _m("State file"), $state_file, $err, true, "text");
 
     if( count($err) > 1)
       break;
@@ -170,19 +170,19 @@ if( $template['W'] )           // set new name for new module
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_SITE_TIT;?></TITLE>
+ <TITLE><?php echo _m("Site Admin");?></TITLE>
 </HEAD>
 <?php
   require "./menu.php3";
   showMenu ($aamenus, "modadmin", "main");
 
-  echo "<H1><B>" . ( $template['W'] ? L_A_SITE_ADD : L_A_SITE_EDT) . "</B></H1>";
+  echo "<H1><B>" . ( $template['W'] ? _m("Add Site") : _m("Edit Site")) . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_SITES_HDR?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo _m("Site")?></b>
 </td>
 </tr>
 <tr><td>
@@ -190,10 +190,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
   ModW_HiddenRSpotId();
   FrmStaticText(_m("Id"), $module_id, false);
-  FrmInputText("name", L_SITE_NAME, $name, 99, 25, true);
+  FrmInputText("name", _m("Name"), $name, 99, 25, true);
   $include_cmd = "<!--#include virtual=\"${AA_INSTAL_PATH}modules/site/site.php3?site_id=$module_id\"-->";
-  FrmInputText("slice_url", L_SITE_URL, $slice_url, 254, 25, false,
-               L_SITE_URL_HLP1. "$include_cmd" );
+  FrmInputText("slice_url", _m("URL"), $slice_url, 254, 25, false,
+               _m("The file will probably contain just the following include:"). "$include_cmd" );
   FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
   if( !$owner ) {
     FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);
@@ -202,7 +202,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   if( $superadmin )
     FrmInputChBox("deleted", _m("Deleted"), $deleted);
   FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['W']['language_files'], $lang_file, false);
-  FrmInputText("state_file", L_STATE_FILE, $state_file, 99, 25, false, L_SITE_STATE_FILE_HLP);
+  FrmInputText("state_file", _m("State file"), $state_file, 99, 25, false, _m("Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."));
 ?>
 </table>
 <tr><td align="center">

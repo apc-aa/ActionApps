@@ -94,7 +94,7 @@ function ModW_PrintSpotName($spot_id, $depth) {
 
 function ModW_PrintVariables( $vars ) {
   global $sess, $PHP_SELF;
-  echo "<tr><td valign=top><b>".L_SPOT_VARIABLES."</b></td><td>";
+  echo "<tr><td valign=top><b>"._m("Spot&nbsp;variables")."</b></td><td>";
   if( isset($vars) AND is_array($vars) ){
     reset( $vars);
     while( list($k,$v) = each($vars) )
@@ -108,7 +108,7 @@ function ModW_PrintVariables( $vars ) {
 
 function ModW_PrintConditions($conds, $vars) {
   global $sess, $PHP_SELF;
-  echo "<tr><td valign=top><b>".L_SPOT_CONDITIONS."</b></td><td>";
+  echo "<tr><td valign=top><b>"._m("Spot&nbsp;conditions")."</b></td><td>";
   if( isset($vars) AND is_array($vars) ) {
     reset( $vars );
     $i=0;
@@ -144,7 +144,7 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
 
   echo "<form method='post' name=fs action=\"$PHP_SELF\">";
   ModW_HiddenRSpotId();
-  FrmInputText('name', L_SPOT_NAME, $tree->get('name', $spot_id), 50, 50, true, false, false, false);
+  FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
   echo "<tr><td align=center colspan=2><textarea name='content' rows=20 cols=80>$content</textarea><br><br>
               <input type=submit name='". _m("Submit") ."'>";
   $sess->hidden_session(); 
