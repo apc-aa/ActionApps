@@ -494,8 +494,8 @@ function show_fnc_freeze_rio($varname, $field, $value, $param, $html) {
 function show_fnc_mch($varname, $field, $value, $param, $html) {
   global $db;
 
-  if (!empty($param))     # there are no parameters now, but 1) may be in future
-    list($constgroup, ) = explode(':', $param); # 2) sometimes there is ':' at the end as parameter separation 
+  if (!empty($param))     
+    list($constgroup, $ncols, $move_right) = explode(':', $param);     
 
   if( substr($constgroup,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7), "" );
@@ -518,7 +518,8 @@ function show_fnc_mch($varname, $field, $value, $param, $html) {
     
   echo $field["input_before"];
   FrmInputMultiChBox($varname."[]", $field['name'], $arr, $selected, 
-    $field["required"], $field["input_help"], $field["input_morehlp"]);
+    $field["required"], $field["input_help"], $field["input_morehlp"],
+    $ncols, $move_right);
 }
   
 function show_fnc_freeze_mch($varname, $field, $value, $param, $html) {
@@ -913,8 +914,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     if (!is_object ($varset)) $varset = new CVarset();
     if (!is_object ($itemvarset)) $itemvarset = new CVarset();
     
-    if( !( $id AND isset($fields) AND is_array($fields)
-            AND isset($content4id) AND is_array($content4id)) )
+    if( !( $id AND is_array($fields) AND is_array($content4id)) )
         return false;
     
     // remove old content first (just in content table - item is updated)
@@ -1162,7 +1162,7 @@ echo '
       
       function SaveRichEdits () {
         for (var i = 0; i < richedits.length; i++)
-          document.inputform[richedit[i]].value = get_text("edt"+richedit[i]);
+          document.inputform[richedits[i]].value = get_text("edt"+richedits[i]);
       }
       ';
 
@@ -1314,8 +1314,12 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
         $js_proove_password_filled = $action != "edit" 
             && $f["required"] && ! $oldcontent4id[$pri_field_id][0]["value"];
         
+        $js_validate = $validate;
+        if ($js_validate == 'e-unique')
+            $js_validate = "email";
+        
         # prepare javascript function for validation of the form
-        if( $editable ) switch( $validate ) {
+        if( $editable ) switch( $js_validate ) {
             case 'text':
             case 'url':
             case 'email':
@@ -1323,7 +1327,7 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
             case 'id':
             case 'pwd':
                 $js_proove_fields .= "
-            && validate (myform, '$varname', '$validate', "
+            && validate (myform, '$varname', '$js_validate', "
                     .($f["required"] ? "1" : "0").", "
                     .($js_proove_password_filled ? "1" : "0").")";
                 break;
@@ -1366,8 +1370,9 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
             // necessary for 'unique' validation: do not validate if
             // the value did not change (otherwise would the value always
             // be found)
+            case 'e-unique':
             case 'unique':                
-                if ($oldcontent4id[$pri_field_id][0]["value"] != $$varname)                
+                if (addslashes ($oldcontent4id[$pri_field_id][0]["value"]) != $$varname)                
                     ValidateInput($varname, $f["name"], $$varname, $err,
                               $f["required"] ? 1 : 0, $f["input_validate"]);
                 break;                        
