@@ -2,6 +2,8 @@
 /**
  * Script for submitting items anonymously, without accessing the admin interface
  *
+ * See documentation in doc/anonym.html.
+ *
  * Parameters (usually from a HTML form):
  * <pre>
  *   my_item_id   - item id, used when editing (not adding a new) item in the
@@ -15,13 +17,15 @@
  *                       but the new status code must always be higher than bin2fill
  *                       setting (you can't add to the Active bin, for example)
  *   notshown[] - array (form field ID => 1) of unpacked IDs, e.g. v7075626c6973685f646174652e2e2e2e
- *                  for which you want to set the default value
- *   use_post2shtml
- *   text_password
+ *                which are shown in the control panel but not in the anonym form
+ *   bool use_post2shtml If true, use the post2shtml script to send the error
+ *          description and the values filled to fillform.php3.
+ *   bool text_password If true, the password is stored in text form (not encrypted).
  * </pre>
+ *
  * @package UserInput
  * @version $Id$
- * @author 
+ * @author Honza Malík, Jakub Adámek, Econnect
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
 */
 /* 
@@ -48,6 +52,7 @@ http://www.apc.org/
  * @param mixed $val the variable or array to quote (add slashes)
  * @return mixed the quoted variables (with added slashes)
  */
+
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -87,6 +92,8 @@ require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 /** date helper functions */
 require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
+require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
     
 /**
  * Outputs a notification page when an error occurs.
@@ -99,7 +106,7 @@ function SendErrorPage($txt) {
     if( !$GLOBALS["err_url"] ) {
         echo HtmlPageBegin("");
         echo "</head><body>";
-        if( isset( $txt ) AND is_array( $txt ) )
+        if( is_array( $txt ) )
             PrintArray($txt);    
         else echo $txt;
         echo "</body></html>";
@@ -113,7 +120,8 @@ function SendErrorPage($txt) {
         // allows to call a script showing the error results from fillform
         $GLOBALS["HTTP_POST_VARS"]["result"] = $txt;
         // allows fillform to use this data 
-        $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = $GLOBALS["content4id"];            
+        $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = 
+            StripslashesArray ($GLOBALS["content4id"]);            
         $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
         require_once "post2shtml.php3";
         exit;
@@ -133,7 +141,8 @@ function SendOkPage() {
     
     else {
         // allows fillform to use this data 
-        $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = $GLOBALS["content4id"];            
+        $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = 
+            StripslashesArray ($GLOBALS["content4id"]);            
         $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
         require_once "post2shtml.php3";
         exit;
@@ -151,7 +160,7 @@ if( !$slice_info ) SendErrorPage(array ("fatal"=>_m("Bad slice ID")));
 
 // if you want to edit an item from an anonymous form, prepare its ID into 
 // the my_item_id hidden field
-if (!isset ($my_item_id)) {
+if (!$my_item_id) {
     $my_item_id = new_id();
     $insert = true;
 }
@@ -168,7 +177,12 @@ SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
 
 if (count ($err_valid) > 1) {
     unset ($err_valid["Init"]);
-    $err["validate"] = $err_valid;
+    $zids = new zids();
+    reset ($err_valid);
+    while (list ($field_zid, $msg) = each ($err_valid)) {
+        $zids->refill ($field_zid);
+        $err["validate"][$zids->packedids (0)] = $msg;
+    }
 }
 
 // prepare content4id array before calling StoreItem 
@@ -186,48 +200,59 @@ if (! $insert && is_array ($notshown)) {
     }
 }        
 
-// put the item into the right bin
-$bin2fill = $slice_info["permit_anonymous_post"]; 
-if( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
-
-// you may force to put the item into a higher bin (active < hold < trash)
-$bin2fill = max ($bin2fill, $force_status_code);  
-$content4id["status_code....."][0][value] = $bin2fill;
-
-if ($insert) 
+if ($insert) {
     $content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
-// proove we are allowed to update this item
+
+    // put the item into the right bin
+    $bin2fill = $slice_info["permit_anonymous_post"]; 
+    if( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
+    
+    // you may force to put the item into a higher bin (active < hold < trash)
+    $bin2fill = max ($bin2fill, $force_status_code);  
+    $content4id["status_code....."][0][value] = $bin2fill;
+}    
+
 else if (!is_array ($err)) {
-    $oldflags = $oldcontent4id["flags..........."][0]['value'];
-	// are we allowed to update this item?
-	if ($oldflags & ITEM_FLAG_ANONYMOUS_EDITABLE == 0) 
-		$err["flag"] = _m("This item no. %1 isn't allowed to be changed anonymously.", array ($my_item_id));
-
-	// look for a password.......x field to authenticate item update
-	reset ($fields);
-	while (list ($fid) = each($fields))
-		if (substr ($fid,0,14) == "password......") {
-            $password = $content4id[$fid][0]['value'];
-            if (!$text_password && $password) 
-                $password = md5 ($password);
-			if ($oldcontent4id[$fid][0]['value'] != $password)
-				$err["password"] = _m("Wrong password. This is a password-protected item.");
-			break;
-		}
-    $content4id["flags..........."][0]['value'] = $oldflags;
+    // Proove we are permitted to update this item. 
+    switch ($slice_info["permit_anonymous_edit"]) {
+    case ANONYMOUS_EDIT_NOT_ALLOWED: $permok = false; break;
+    case ANONYMOUS_EDIT_ALL:         $permok = true; break;
+    case ANONYMOUS_EDIT_ONLY_ANONYMOUS:
+    case ANONYMOUS_EDIT_NOT_EDITED_IN_AA:
+        $oldflags = $oldcontent4id["flags..........."][0]['value'];
+	    // are we allowed to update this item?
+    	$permok = ($oldflags & ITEM_FLAG_ANONYMOUS_EDITABLE != 0); 
+        $content4id["flags..........."][0]['value'] = $oldflags;
+        break;
+    case ANONYMOUS_EDIT_HTTP_AUTH:
+        // For HTTP_AUTH permissions the reader is found in fillform.php3.
+        // Here we don't get the $_SERVER["REMOTE_USER"] information.
+        $permok = true;
+        break;
+    case ANONYMOUS_EDIT_PASSWORD:    
+        $permok = false;
+    	reset ($fields);    
+    	while (list ($fid) = each($fields))
+    		if (substr ($fid,0,14) == "password......") {
+                $password = $content4id[$fid][0]['value'];
+                if (!$text_password && $password) 
+                    $password = md5 ($password);
+    			$permok = ($oldcontent4id[$fid][0]['value'] == $password); 
+                break;
+    		}
+        break;
+    }
+    
+    if (! $permok)
+        $err["permissions"] = _m("You are not allowed to update this item.");
 }
 
-if ($embedded) {
-    $called_from_filler = 1;
-    require_once "fillform.php3";
-    fillFormWithContent ($content4id);
-}
-
-  # update database
+ # update database
 if (!is_array ($err)) {
 	if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, 
                           true, true, $oldcontent4id ))     # insert, invalidatecache, feed
         $err["store"] = _m("Some error in store item.");
+    else $err["success"] = $insert ? "insert" : "update";    
 }        
                           
 if( is_array ($err)) SendErrorPage( $err ); 

@@ -2,50 +2,54 @@
 /* 
  *  Uses a combination of JavaScript and PHP to fill values in anonymous posting
  *  forms and searchforms.	
- *	
- *	Params:
- *		my_item_id .. unpacked long ID of the item
- *		fillConds=1 .. generates the fillConds code (otherwise, generate fillForm code)
- *		notrun=1 .. doesn't run the JavaScript function
- *		form=formname .. look for the controls in the form formname. If not set, will use 'f'.
- *      called_from_filler=1 .. do not even show JavaScript, because filler sends
- *                              the item content to be re-displayed
- *      lookup_conds[] .. if you want to find item not by $my_item_id
- *             but by specified conditions. You must ensure the condition gives
- *             exactly 1 result.
- *      oldcontent4id
- *      show_result
- *      use_http_auth
- *	
- *	This script contains two similar functions:
- *	
- *	fillForm is used on anonymous posting forms
- *	fillConds is used on search forms 
  *
- *	<h1>Function fillForm</h1>
+ *  See documentation in doc/anonym.html.
  *	
- *   Prints a JavaScript function which refills form fields with values from database
+ *	@param bool fillConds If true, the script generates the fillConds code.
+ *        Otherwise, the fillForm code is generated.
+ *	@param string my_item_id Unpacked long ID of the item.
+ *	@param bool notrun If true, doesn't call the JavaScript function 
+ *        This is useful if you include fillform before the actual HTML form.
+ *        You must call fillForm() or fillConds() explicitly by JavaScript
+ *        later in code after the form is created.
+ *	@param string form The name of the form, if it is not "f".
+ *  @param array oldcontent4id Sent by filler to allow to show the values
+ *        entered even if some of them was wrong and thus they are not
+ *        stored in database. If fillform finds this array, it doesn't try
+ *        to load the values by GetItemContent().
+ *  @param string show_result Name of a PHP script which receives the array
+ *        result created by filler. The script than usually shows some info
+ *        about the errors occured to the user.
+ *  @param array result Array with error messages passed from filler.php3.
+ *	
+ *	 This script contains two similar functions:
+ *	
+ *	 <b>fillForm</b> is used on anonymous posting forms<br>
+ *	 <b>fillConds</b> is used on search forms 
+ *
+ *	 <h1>Function fillForm</h1>
+ *	
+ *   Prints a JavaScript function which refills form fields with values from database.
  *   
- *   you must supply the var $my_item_id with the item id, and that item must have
- *   ITEM_FLAG_ANONYMOUS_EDITABLE set
+ *   You must supply the var $my_item_id with the item id.
  *   
- *   Works well with HTML - Plain text radio buttons and with Dates represented by 3 select boxes
+ *   Works well with HTML - Plain text radio buttons and with Dates 
+ *   represented by 3 select boxes.
  *   
  *   <h1>Function fillConds</h1>
  *
  *   Prints a JavaScript function which refills form fields with name conds[][] with 
- *	 previous values
+ *	 previous values.
  *
- *   uses the array conds and function setControlOrAADate - see fillformutils to get a feel
- *   about which form control types are supported (most of them are)
+ *   Uses the array conds and function setControlOrAADate - see fillformutils to get a feel
+ *   about which form control types are supported (most of them are).
  *
- *   special feature: array dateConds may contain names of textfields which are 
- *   dates represented by 3 select boxes in the way of AA. E.g. by fillConds:
- *
- *   dateConds[3]="mydate" means:
- *   
- *   conds[3][value] is a date in some strtotime format, mydate_day is the select
- *   box cotaining day, mydate_month contains month, mydate_year contains year 
+ *   @param array dateConds Special feature: contains names of textfields which are 
+ *      dates represented by 3 select boxes in the way of AA. E.g. <br>
+ *      <tt>dateConds[3]="mydate"</tt> means:<br>
+ *      <tt>conds[3][value]</tt> is a date in some strtotime format, 
+ *      mydate_day is the select box cotaining day, mydate_month contains month, 
+ *      mydate_year contains year 
  *   
  * @package UserInput
  * @version $Id$
@@ -97,6 +101,7 @@ require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 if ($encap) require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";
 /** Main include file for using session management function on a page */
 else require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; 
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
 page_open(array("sess" => "AA_SL_Session"));
 
@@ -127,6 +132,33 @@ $jsstart = "<SCRIPT language=JavaScript>
 $jsfinish = "
 // -->
 </SCRIPT>\n";
+
+if (isset($fillConds)) 
+	fillConds();
+else fillForm ();
+
+if ($show_result) {
+    if ($result)
+        readfile (con_url ($show_result, "result=".urlencode(serialize($result))));
+    else readfile ($show_result);
+    
+} else if (is_array ($result)) { 
+    echo "<b>";
+    reset ($result);
+    while (list ($k,$v) = each ($result)) {
+        echo $k.": ";
+        if (is_array ($v)) { 
+            reset ($v);          
+            while (list ($kk,$vv) = each ($v))
+                echo "$kk - $vv ";
+        }
+        else echo $v;
+        echo "<br>\n";
+    }
+    echo "</b>";
+}
+
+// ----------------------------------------------------------------------------
 
 /* * * * * * * * * * * FILL CONDS * * * * * * * * * */
 /** gives JavaScript filling the AA date 3 selectboxes
@@ -193,69 +225,87 @@ function safeChars ($str) {
   return $retVal;
 }
 
+/** Finds the item content and calls fillFormWithContent.
+*   Prooves permissions to update an item.
+*/
+function fillForm () {
+    global $my_item_id, $slice_id, $oldcontent4id, $db;
+    
+    if (! $slice_id) { echo "fillform.php3: error: Slice ID not set."; return; }
+    $slice_info = GetSliceInfo($slice_id);
+    
+    // reader management: aw=ABCDE is sent in welcome
+    // emails to confirm the email address
+    if ($slice_info["type"] == "ReaderManagement" && $GLOBALS["aw"]) {
+        $GLOBALS["ac"] = $GLOBALS["aw"];
+        if (confirm_email ())
+            $GLOBALS["result"]["email_confirmed"] = "OK";
+    }
+    
+    if (is_array ($oldcontent4id)) {        
+        fillFormWithContent ($oldcontent4id);
+        return;
+    }
+
+    // For Reader management slices we use special ways to find the item:
+    // either HTTP auth info, or the access code. No other possibility.
+        
+    if ($slice_info["type"] == "ReaderManagement") {
+        if ($slice_info["permit_anonymous_edit"] == ANONYMOUS_EDIT_HTTP_AUTH) {
+            $db->tquery (
+                "SELECT item.id FROM content INNER JOIN item 
+                 ON content.item_id = item.id
+                 WHERE item.slice_id='".q_pack_id($slice_id)."'
+                 AND content.field_id='".FIELDID_USERNAME."'
+                 AND content.text='".addslashes($_SERVER["REMOTE_USER"])."'");
+            if ($db->num_rows() != 1) 
+            { echo "<!--HTTP AUTH USER not OK-->"; return; }
+            $db->next_record();
+            $my_item_id = unpack_id ($db->f("id"));
+        }
+        // access code
+        else if ($GLOBALS["ac"]) {
+            $db->tquery (
+                "SELECT item.id FROM content INNER JOIN item
+                 ON content.item_id = item.id
+                 WHERE item.slice_id='".q_pack_id($slice_id)."'
+                 AND content.field_id='".FIELDID_ACCESS_CODE."'
+                 AND content.text='".$GLOBALS["ac"]."'");
+            if ($db->num_rows() != 1) 
+            { echo "<!--ACCESS CODE not OK-->"; return; }
+            $db->next_record();
+            $my_item_id = unpack_id ($db->f("id"));
+        }
+    }
+        
+    $oldcontent = GetItemContent($my_item_id);
+    $oldcontent4id = $oldcontent[$my_item_id];  
+    if (!is_array ($oldcontent4id))
+    { echo "<!--fillform: no item found-->"; return; }
+    
+    $permsok = true;
+    // Do not show items which are not allowed to be updated
+    switch ($slice_info["permit_anonymous_edit"]) {
+    case ANONYMOUS_EDIT_NOT_ALLOWED: $permsok = false; break;
+    case ANONYMOUS_EDIT_ONLY_ANONYMOUS:
+    case ANONYMOUS_EDIT_NOT_EDITED_IN_AA:
+    	$permsok = ($oldcontent4id["flags..........."][0]['value'] 
+           & ITEM_FLAG_ANONYMOUS_EDITABLE != 0);
+        break;
+    }
+    if (!$permsok) { echo "<!--this item is not allowed to be update-->"; return; }
+
+    fillFormWithContent ($oldcontent4id);
+}
+
 /* Jakub: I had troubles with the packed IDs because some chars (codes > 128) 
     from them appear as
 	single quote - of course it depends on used char-encoding and therefore
 	is hard to solve. I have forbidden id and slice_id to appear and hope this
 	is enough. */
 
-function fillForm () {
-    global $my_item_id, $lookup_conds, $slice_id, $oldcontent4id, $db;
-    
-    if ($GLOBALS["use_http_auth"]) {
-        if (! $slice_id)
-            echo "Error: You must send slice ID if you want use_http_auth!";
-        $db->query (
-            "SELECT item.id FROM content INNER JOIN item 
-             ON content.item_id = item.id
-             WHERE item.slice_id='".q_pack_id($slice_id)."'
-             AND content.field_id='headline........'
-             AND content.text='".addslashes($_SERVER["REMOTE_USER"])."'");
-        if ($db->num_rows() != 1)
-            return;
-        $db->next_record();
-        $my_item_id = unpack_id128 ($db->f("id"));
-    }
-
-    else if (is_array ($lookup_conds)) {
-        list ($fields) = GetSliceFields ($slice_id);
-        $zids = QueryZIDs($fields, $slice_id, $lookup_conds, "", "", "ALL");
-        if ($zids->count() == 1) 
-            $my_item_id = $zids->longids(0);
-        else return;
-    }            
-        
-    if (!is_array ($oldcontent4id)) {        
-        $oldcontent = GetItemContent($my_item_id);
-        $oldcontent4id = $oldcontent[$my_item_id];   
-    }
-    
-    fillFormWithContent ($oldcontent4id);
-}
-
 function fillFormWithContent ($oldcontent4id) {
 	global $form, $conds, $dateConds, $my_item_id;
-
-	if (!is_array ($oldcontent4id)) {
-        echo $GLOBALS["jsstart"];
-        echo "
-        var fillform_fields = new Array ();
-        function fillForm() {} \n"; 
-        echo $GLOBALS["jsfinish"];
-        return;
-    }
-    
-	# are we allowed to update this item?
-	if ($oldcontent4id["flags..........."][0]['value'] 
-       & ITEM_FLAG_ANONYMOUS_EDITABLE == 0) {
-        echo $GLOBALS["jsstart"];    
-		echo "
-        <!-- This item isn't allowed to be changed anonymously. -->
-        var fillform_fields = new Array ();
-        function fillForm() {} \n"; 
-        echo $GLOBALS["jsfinish"];        
-		return;
-	}
 	
     $timezone = getTimeZone();
 
@@ -301,10 +351,43 @@ function fillFormWithContent ($oldcontent4id) {
     echo $GLOBALS["jsfinish"];    
 }
 
-if ($show_result)
-    @readfile (con_url ($show_result, "result=".urlencode(serialize($result))));
+/** Confirms email on Reader management slices because the parameter $aw
+*   is sent only in Welcome messages.
+*   Returns true if email exists and not yet confirmed, false otherwise. 
+*/
+function confirm_email() {
+    global $slice_id;
+    
+    require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 
-if (isset($fillConds)) 
-	fillConds();
-else fillForm ();
+    $db->query (
+        "SELECT item.id FROM content INNER JOIN item
+         ON content.item_id = item.id
+         WHERE item.slice_id='".q_pack_id($slice_id)."'
+         AND content.field_id='".FIELDID_ACCESS_CODE."'
+         AND content.text='".$GLOBALS["aw"]."'");
+    if ($db->num_rows() != 1) 
+    { echo "<!--AW not OK: ".$db->num_rows()." items-->"; return; }
+    $db->next_record();
+    $item_id = unpack_id ($db->f("id"));
+    
+    $db->query (
+        "SELECT text FROM content 
+        WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
+        AND item_id = '".q_pack_id($item_id)."'");
+        
+    if ($db->next_record()) {
+        if ($db->f("text") != "" && ! $db->f("text")) {
+            $db->query (
+                "UPDATE content SET text='1'
+                WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
+                AND item_id = '".q_pack_id($item_id)."'");
+            echo "<!--confirm_email.php3: OK: email confirmed-->";
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 ?>
