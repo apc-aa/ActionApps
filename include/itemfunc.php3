@@ -349,14 +349,15 @@ function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
 }
 
 function show_fnc_sel($varname, $field, $value, $param, $html) {
-  global $db;
+  global $db; 
+   list($constgroup,$slice_field) =explode(':', $param); 
   if( substr($param,0,7) == "#sLiCe-" ) { # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($param, 7) );
+    $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
     #add blank selection for not required field
     if( !$field[required] )          
       $arr[''] = " ";
   } else 
-    $arr = GetConstants($param, $db);
+    $arr = GetConstants($constgroup, $db);
   echo $field[input_before];
   FrmInputSelect($varname, $field['name'], $arr, $value[0]['value'],
                  $field[required], $field[input_help], $field[input_morehlp] );
@@ -408,17 +409,17 @@ function show_fnc_pre($varname, $field, $value, $param, $html) {
   global $db;
 
   if (!empty($param)) 
-    list($constgroup, $maxlength, $fieldsize) = explode(':', $param);
+    list($constgroup, $maxlength, $fieldsize,$slice_field) = explode(':', $param);
 
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
+    $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
    else 
     $arr = GetConstants($constgroup, $db);
   echo $field[input_before];
   FrmInputPreSelect($varname, $field['name'], $arr, $value[0]['value'], $maxlength, 
     $fieldsize, $field[required], $field[input_help], $field[input_morehlp] );
 }
-  
+
 function show_fnc_freeze_pre($varname, $field, $value, $param, $html) {
   echo $field[input_before];
   FrmStaticText($field['name'], $value[0]['value']);
