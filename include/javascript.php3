@@ -80,7 +80,11 @@ function getTriggers ($control, $unpacked_fieldid, $add="") {
     global $js_trig;
 
     if (!is_array ($js_trig)) return;
-    $fieldid = pack_id (substr ($unpacked_fieldid,1,32));
+    if (substr ($unpacked_fieldid, -2) == "[]")
+        $unpacked_fieldid = substr ($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 2);
+    if (substr ($unpacked_fieldid, -1) == "x")
+    	$unpacked_fieldid = substr ($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 1);
+    $fieldid = pack_id (substr ($unpacked_fieldid,1));
     
     reset ($js_triggers[$control]);
     while (list (,$ctrig) = each ($js_triggers[$control])) {

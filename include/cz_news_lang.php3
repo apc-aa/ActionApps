@@ -920,7 +920,7 @@ define("L_SORT_DIRECTION_HLP","'dle Øazení' lze použít jen pro pole používající 
 define("L_ALERTS","Zasílání zpráv");
 define("L_ALERTS_COLLECTIONS", "Kolekce");
 define("L_ALERTS_USERS","Uživatelé");
-define("L_ALERTS_UI","Uživatelské rozhraní.");
+define("L_ALERTS_UI","Uživatelské rozhraní&nbsp;");
 define("L_ITEMS_PAGE", "Stránka s èlánky");
      
 // constants used in param wizard only:
