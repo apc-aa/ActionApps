@@ -1,3 +1,5 @@
+08/24/03 - added pointers to Honza's demo slices to documentation
+(mitra)  - removed require of non existance sessionobj.php3
 08/21/03 - category tree display speedup (in links module)
 (honzam) - fixed sql_update to not add disc_count,.. fields twice to the slie
          - sql_update - refreshed to last database state
