@@ -71,16 +71,21 @@ function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname
     $db = new DB_AA;
     $varset = new CVarset();
 
-    do {
-        $confirm = gensalt(4);
-        $db->query ("SELECT * FROM alerts_user WHERE confirm='$confirm'");
-    } while ($db->num_rows());
-    
-    $varset->add("email", "quoted", $email);
-    $varset->add("confirm", "text", $confirm);
+    $db->query ("SELECT confirm FROM alerts_user WHERE email='$email'");
+    $db->next_record();
+    if (strlen ($db->f("confirm")) == 4)
+        $confirm = $db->f("confirm");
+    else {
+        do {        
+            $confirm = gensalt(4);
+            $db->query ("SELECT * FROM alerts_user WHERE confirm='$confirm'");
+        } while ($db->num_rows());
+        $varset->add("confirm", "text", $confirm);
+    }
 
     $db->query ("SELECT * FROM alerts_user WHERE email='$email'");
     if ($db->num_rows() == 0) {   
+        $varset->add("email", "quoted", $email);
         $varset->add("password", "quoted", $password ? md5 ($password) : "");
         $varset->add("firstname", "quoted", $firstname);
         $varset->add("lastname", "quoted", $lastname);
