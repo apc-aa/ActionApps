@@ -1,3 +1,4 @@
+01/22/03 - fixed typo sliceedit -> slicedit 
 01/21/03 - code rule changes
          - added global flag $errcheck like $debug but generates warnings on strangeness
          - added zids.php3 to encapsulate id management including:
