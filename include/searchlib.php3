@@ -112,10 +112,72 @@ function ProoveFieldNames ($slices, $conds)
 
 // -------------------------------------------------------------------------------------------
 
-// called by QueryIDs
-// defaults: $fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", $slices="" 
+/* parses the conds from a multiple select box: e.g.
+    conds[1][value][0] = 'apple'
+    conds[1][value][1] = 'cherry'
+    conds[1][valuejoin] = 'AND'
+    
+    => creates two conds: conds[7] and conds[8] for example,
+        fill conds[7][value] = 'apple', conds[8][value] = 'cherry'
+        
+    with conds[1][valuejoin] = 'OR' only changes conds[1][value] to '"apple" OR "cherry"'
+    (c) Jakub, May 2002
+*/
 
-function QueryIDsBase($fields, $slice_id, $conds, $sort, $group_by, $type, $slices ) {
+function ParseMultiSelectConds (&$conds) 
+{
+    if (!is_array ($conds)) return;
+    reset ($conds);
+    while (list ($icond, $cond) = each ($conds)) {
+        if (is_array ($cond['value'])) {
+            if (!$cond['valuejoin']) {
+                echo "ERROR in conds: when using [value][], you must use [valuejoin]='OR'|'AND' also!";
+                return;
+            }
+            if ($cond['valuejoin'] == 'OR') {
+                $values = "";
+                reset ($cond['value']);
+                while (list (,$val) = each ($cond['value'])) {
+                    if ($values != "") $values .= " OR ";
+                    $values .= '"'.addslashes ($val).'"';
+                }
+                unset ($conds[$icond]['valuejoin']);
+                $conds[$icond]['value'] = $values;
+            }
+            else if ($cond['valuejoin'] == 'AND') {
+                reset ($cond['value']);
+                while (list (,$val) = each ($cond['value'])) {
+                    $newcond = $cond;
+                    $newcond['value'] = $val;
+                    unset ($newcond['valuejoin']);
+                    $conds[] = $newcond;
+                }
+                unset ($conds[$icond]);
+            }
+            else echo "ERROR in conds: [valuejoin] must be set to 'OR' or 'AND'.";
+        }
+    }
+}            
+    
+// -------------------------------------------------------------------------------------------
+
+/* Function: QueryIDs
+   Purpose:  Finds item IDs for items to be shown in a slice / view
+   Params:   $conds -- search conditions (see FAQ)
+             $sort -- sort fields (see FAQ)
+             $slices -- array of slices in which to look for items
+             $slice_id -- older parameter, used only when $slices is not set, 
+                          translated to $slices = array($slice_id) 
+             $neverAllItems -- if no conds[] apply (all are wrong formatted or empty),
+                               generates an empty set
+   Globals:  $debug=1 -- many debug messages
+             $debugfields=1 -- useful mainly for multiple slices mode -- views info about field_ids 
+                used in conds[] but not existing in some of the slices
+             $QueryIDsCount -- set to the count of IDs returned 
+*/
+
+function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", 
+    $slices="", $neverAllItems=0 ) {
   # parameter format example:  
   # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
   # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
@@ -135,10 +197,9 @@ function QueryIDsBase($fields, $slice_id, $conds, $sort, $group_by, $type, $slic
 
   # select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
-  global $db, 
-    $debug,          # displays debug messages
-  	$QueryIDsCount;  # size of the result
-  global $conds_not_field_names;
+  global $debug, $QueryIDsCount;          # displays debug messages
+  global $conds_not_field_names; # list of special conds[] indexes (defined in constants.php3)
+  $db = new DB_AA;
 
     if ($GLOBALS[debugfields] || $debug) {
         if ($slices) ProoveFieldNames ($slices, $conds);        
@@ -156,13 +217,22 @@ if( $debug ) {
   p_arr_m($slices);
 }
   
+  ParseMultiSelectConds ($conds);
+  
   # parse conditions ----------------------------------
   if( isset($conds) AND is_array($conds)) {
     reset($conds); 
     $tbl_count=0;
     while( list( , $cond) = each( $conds )) {
-      if( !isset($cond) OR !is_array($cond) 
-                        OR !$cond['operator'] OR ($cond['value']==""))
+
+      if( !isset($cond['value']) && count ($cond) == 1 ) {
+        reset ($cond);
+        $cond['value'] = current($cond);
+      }
+      if( !$cond['operator'] )
+        $cond['operator'] = 'LIKE';
+        
+      if( !isset($cond) OR !is_array($cond) OR ($cond['value']==""))
         continue;             # bad condition - ignore
 
       # fill arrays according to this condition
@@ -296,17 +366,23 @@ if( $debug ) {
     $SQL .= " ". implode (" ", $select_tabs);
 
   $SQL .= " WHERE ";                                         # slice ----------
-  if( $slices ) {
-      $slicesText = "";
+  
+  if (!$slices) {
+      if (!$slice_id)
+          return array ();
+      else $slices = array ($slice_id);
+  }
+      
       reset ($slices);
+  if( count($slices) > 1 ) {
+      $slicesText = "";
       while (list (,$slice) = each ($slices)) {
           if ($slicesText != "") $slicesText .= ",";
           $slicesText .= "'".q_pack_id($slice)."'";
       }
       $SQL .= " item.slice_id IN ( $slicesText ) AND ";
   }
-  else if( $slice_id )
-    $SQL .= " item.slice_id = '". q_pack_id($slice_id) ."' AND ";
+  else $SQL .= " item.slice_id='". q_pack_id(current($slices)) ."' AND ";
 
   $now = now();                                              # select bin -----
   switch( $type ) {
@@ -340,6 +416,11 @@ if( $debug ) {
   if( isset($select_group) )                                 # group by -------
     $SQL .= " GROUP BY $select_group";
 
+  // if neverAllItems is set, return empty set if no conds[] are used
+  if (!is_array ($select_conds) && $neverAllItems) 
+    $arr = array ();
+    
+  else {
   # get result --------------------------
   if( $debug ) 
     $db->dquery($SQL);
@@ -348,6 +429,7 @@ if( $debug ) {
 
   while( $db->next_record() ) 
     $arr[] = unpack_id($db->f(id));
+  }
 
   $QueryIDsCount = count($arr);
   return $arr;           
@@ -355,99 +437,9 @@ if( $debug ) {
 
 // -------------------------------------------------------------------------------------------
 
-/* parses the conds from a multiple select box: e.g.
-    conds[1][value][0] = 'apple'
-    conds[1][value][1] = 'cherry'
-    conds[1][valuejoin] = 'AND'
-    
-    => creates two conds: conds[7] and conds[8] for example,
-        fill conds[7][value] = 'apple', conds[8][value] = 'cherry'
-        
-    with conds[1][valuejoin] = 'OR' only changes conds[1][value] to '"apple" OR "cherry"'
-    (c) Jakub, May 2002
+/* Function: QueryDiscIDs
+   Purpose:  Finds discussion items IDs to be shown by the aa/discussion.php3 script
 */
-
-function ParseMultiSelectConds (&$conds) 
-{
-    if (!is_array ($conds)) return;
-    reset ($conds);
-    while (list ($icond, $cond) = each ($conds)) {
-        if (is_array ($cond['value'])) {
-            if (!$cond['valuejoin']) {
-                echo "ERROR in conds: when using [value][], you must use [valuejoin]='OR'|'AND' also!";
-                return;
-            }
-            if ($cond['valuejoin'] == 'OR') {
-                $values = "";
-                reset ($cond['value']);
-                while (list (,$val) = each ($cond['value'])) {
-                    if ($values != "") $values .= " OR ";
-                    $values .= '"'.addslashes ($val).'"';
-                }
-                unset ($conds[$icond]['valuejoin']);
-                $conds[$icond]['value'] = $values;
-            }
-            else if ($cond['valuejoin'] == 'AND') {
-                reset ($cond['value']);
-                while (list (,$val) = each ($cond['value'])) {
-                    $newcond = $cond;
-                    $newcond['value'] = $val;
-                    unset ($newcond['valuejoin']);
-                    $conds[] = $newcond;
-                }
-                unset ($conds[$icond]);
-            }
-            else echo "ERROR in conds: [valuejoin] must be set to 'OR' or 'AND'.";
-        }
-    }
-}            
-    
-// -------------------------------------------------------------------------------------------
-  
-// maps the fields for multi-slice queries. All the rest is done by QueryIDsBase
-
-function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", 
-    $slices="", $mapslices="" )
-{
-    ParseMultiSelectConds ($conds);
-
-    // if $slices is set and no $mapslices, i.e. the query goes through several slices
-    // which have same field names, it is all done within one query:
-    if (!is_array ($mapslices) || !is_array ($slices))
-        return QueryIDsBase($fields, $slice_id, $conds, $sort, $group_by, $type, $slices );
-        
-    reset ($slices);
-    while (list ($slice, $slice_id) = each ($slices)) {
-        $maps = $mapslices [$slice];
-        if (is_array ($maps)) {
-            unset ($newconds);
-            unset ($newsort);
-            if (is_array ($conds)) {
-                reset ($conds);
-                while (list ($icond, $cond) = each ($conds)) {
-                    reset ($cond);
-                    while (list ($src, $val) = each ($cond)) 
-                        $newconds[$icond][isset($maps[$src]) ? $maps[$src] : $src] = $val;
-                }
-            }
-            if (is_array ($sort)) {
-                reset ($sort);
-                while (list ($icond, $srt) = each ($sort)) {
-                    reset ($srt);
-                    while (list ($src, $val) = each ($srt)) 
-                        $newsort[$icond][isset($maps[$src]) ? $maps[$src] : $src] = $val;
-                }
-            }
-            $arr = QueryIDsBase($fields, $slice_id, $newconds, $newsort, $group_by, $type, "");
-        }
-        else $arr = QueryIDsBase($fields, $slice_id, $conds, $sort, $group_by, $type, "");
-        array_add ($arr, $retval);
-    }
-    return $retval;
-}
-
-
-// -------------------------------------------------------------------------------------------
 
 function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
   # parameter format example:  
@@ -459,10 +451,9 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
     $fields = array ("date","subject","author","e_mail","body","state","flag","url_address",
         "url_description", "remote_addr", "free1", "free2");
   
-    global $db, 
-        $debug,          # displays debug messages
-  	    $QueryIDsCount;  # size of the result
+    global $debug;          # displays debug messages
    
+    $db = new DB_AA;
     if( $debug ) {
       echo "<br>Conds:<br>";
       p_arr_m($conds);
