@@ -50,6 +50,12 @@ echo "<HTML><BODY>";
 
 function cron ($time = 0) {
 
+    global $debug;
+    if ($debug) {
+        echo "<HTML><BODY>";
+        echo "DEBUGGING. I don't run any script!<br>";
+    }
+
 	$translate["mon"] = array ("jan"=>1,"feb"=>2,"mar"=>3,"apr"=>4,"may"=>5,"jun"=>6,"jul"=>7,"aug"=>8,"sep"=>9,"oct"=>10,"nov"=>11,"dec"=>12);
 	$translate["wday"] = array ("sun"=>0,"mon"=>1,"tue"=>2,"wed"=>3,"thu"=>4,"fri"=>5,"sat"=>6,"7"=>0);
 
@@ -58,9 +64,7 @@ function cron ($time = 0) {
 	$db = new DB_AA;
 	$db_update = new DB_AA;
 	
-	// FIXME: the month day step is not always 31
 	$parts = array ("mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60);
-
 	echo "<B>".date("m.d.y H:i",$time)."</B></BR>";
 	
 	$db->query ("SELECT * FROM cron");
@@ -76,18 +80,31 @@ function cron ($time = 0) {
 			// If an hour passed, I want to have minutes as 60+minutes etc.
 			$now = getdate ($time);
 			$now["mon"] += -12 * ($last_run["year"]-$now["year"]);
-			$now["wday"] += -28 * ($last_run["mon"]-$now["mon"]);
-			$now["mday"] += -28 * ($last_run["mon"]-$now["mon"]);
+
+            // If the month(s) changed, find how many days it had            
+            $now_tst = mktime ($last_run["hours"],$last_run["minutes"],$last_run["seconds"],
+                $now["mon"],$last_run["mday"],$now["year"]);
+            $days_in_months = ($now_tst - $db->f("last_run")) / (60 * 60 * 24);
+
+			$now["wday"] += $days_in_months;
+			$now["mday"] += $days_in_months;
 			$now["hours"] += -24 * ($last_run["mday"]-$now["mday"]);
-			$now["minutes"] += -60 * ($last_run["hours"]-$now["hours"]);
+			$now["minutes"] += -60 * ($last_run["hours"]-$now["hours"]);            
+            
+            $realnow = getdate ($time);
+            
+            if ($debug > 1) {
+                print_r ($last_run); echo "<br>";
+                print_r ($now); echo "<br>";
+            }
 			
 			reset ($parts);
-			while ((list($part,$units) = each($parts)) && $nearest_part > -1) {
+			while ((list($part) = each($parts)) && $nearest_part > -1) {
 				$now_part = $now[$part];
 				
 				$value = $db->f($part);
 				if ($value == "*") {
-					$nearest[$part] = $now_part;
+					$nearest[$part] = $realnow[$part];
 					continue;
 				}
 				$nearest_part = -1;
@@ -106,33 +123,37 @@ function cron ($time = 0) {
 							$nearest_part = $i;
 				}
 				else {
-				$ranges = split (',',$value);
-				reset ($ranges);
-				while ((list(,$range) = each ($ranges)) && !$matches) {
-					if (strstr ($range,"-")) {
-						list($from,$to) = split('-',$value);
-							for ($i = $from; $i <= $to; $i++)
-							if ($i <= $now_part && $i > $nearest_part) 
-								$nearest_part = $i;
-					}
-					else if ($range <= $now_part && $range > $nearest_part) 
-						$nearest_part = $range;
-				}
+    				$ranges = split (',',$value);
+    				reset ($ranges);
+    				while ((list(,$range) = each ($ranges)) && !$matches) {
+    					if (strstr ($range,"-")) {
+    						list($from,$to) = split('-',$value);
+    							for ($i = $from; $i <= $to; $i++)
+    							if ($i <= $now_part && $i > $nearest_part) 
+    								$nearest_part = $i;
+    					}
+    					else if ($range <= $now_part && $range > $nearest_part) 
+    						$nearest_part = $range;
+    				}
 				}
 				$nearest[$part] = $nearest_part;
 			}
 		}
+
+    	$url = AA_INSTAL_URL.$db->f("script")."?".$db->f("params");
 		
 		$nearest_time = mktime ($nearest["hours"], $nearest["minutes"],0, $nearest["mon"], $nearest["mday"], $now["year"]);
-		//echo date("m.d.y H:i",$nearest_time)."</BR>";	
-		
-		if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
-			$url = AA_INSTAL_URL.$db->f("script")."?".$db->f("params");
-			echo "$url<BR>";
+		if ($debug) {
+            echo "<b>$url</b> will be run on ".date( "d.m.y H:i",$nearest_time)."</BR>";
+            echo "Nearest time: "; print_r ($nearest);
+            echo "<hr>";
+        }
+		else if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
 			$db_update->query ("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
 			fopen ($url,"r");
 		}
 	}
+    if ($debug) echo "</BODY></HTML>";
 }
 
 // Use this to try function of script
