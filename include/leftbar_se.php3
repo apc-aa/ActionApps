@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.13  2001/09/27 16:03:44  honzam
+Cross Server Networking (RSS item exchange)
+
 Revision 1.12  2001/05/21 13:52:32  honzam
 New "Field mapping" feature for internal slice to slice feeding
 
@@ -70,7 +73,33 @@ removed whitespace from config-ecn.inc
 added $Id $Log and $Copyright to some stray files
 
 */
+$new_slice = ($slice_id == ""); //when we have a new slice, most menu items are disabled
+
+function SetShow ($baritem)
+{
+	// set true to all items which aren't set yet
+	// but if we work with a new slice, set false to all those items
+	global $show;
+	global $new_slice;
+	if (gettype($show[$baritem])=="NULL") $show[$baritem] = ! $new_slice; 
+}
+
+if (gettype($show["main"])=="NULL") $show["main"] = true;
+
+SetShow ("slicedel"); SetShow ("config"); SetShow ("category"); SetShow ("fields");
+SetShow ("search"); SetShow ("users"); SetShow ("compact"); SetShow ("fulltext"); SetShow ("views");
+SetShow ("addusers"); SetShow ("newusers"); SetShow ("import"); 
+SetShow ("filters"); SetShow ("n_import"); SetShow ("n_export"); SetShow ("nodes");
+SetShow ("mapping"); SetShow ("sliceexp"); SetShow ("sliceimp");
+
+/*
+reset ($show);
+while (list ($key, $val) = each ($show)) {
+    echo "$key => $val<br>";
+}
+*/
 ?>
+
 <table width="122" border="0" cellspacing="0" bgcolor="<?php echo COLOR_TABBG ?>" cellpadding="1" align="LEFT" class="leftmenu">
   <tr><td>&nbsp;</td></tr>
   <tr><td valign="TOP">
@@ -183,11 +212,33 @@ added $Id $Log and $Copyright to some stray files
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <tr><td valign="TOP">
   <?php
-  if( $show["import"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING) ) 
-    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_import.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_IMPORT."</a></td>"; 
-   else 
-    echo "<span class=leftmenun>&nbsp;&nbsp;". L_IMPORT ."</span></td>";?>
+  if( $show["nodes"] AND isSuperadmin() )
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_nodes.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_NODES_MANAGER."</a></td>";
+   else
+    echo "<span class=leftmenun>&nbsp;&nbsp;". L_NODES_MANAGER ."</span></td>";?>
   </tr>
+  <tr><td valign="TOP">
+  <?php
+  if( $show["import"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING) ) 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_import.php3") ."&slice_id=$slice_id\" class=leftmenuy>" ,L_INNER_IMPORT."</a></td>";
+   else 
+    echo "<span class=leftmenun>&nbsp;&nbsp;". L_INNER_IMPORT ."</span></td>";?>
+  </tr>
+  <tr><td valign="TOP">
+  <?php
+  if( $show["n_import"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING) )
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_inter_import.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_INTER_IMPORT."</a></td>";
+   else
+    echo "<span class=leftmenun>&nbsp;&nbsp;". L_INTER_IMPORT ."</span></td>";?>
+  </tr>
+ <tr><td valign="TOP">
+  <?php
+  if( $show["n_export"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING) )
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_inter_export.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_INTER_EXPORT."</a></td>";
+   else
+    echo "<span class=leftmenun>&nbsp;&nbsp;". L_INTER_EXPORT ."</span></td>";?>
+  </tr>
+
   <tr><td valign="TOP">
   <?php
   if( $show["filters"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING) ) 
@@ -195,12 +246,32 @@ added $Id $Log and $Copyright to some stray files
    else 
     echo "<span class=leftmenun>&nbsp;&nbsp;". L_FILTERS ."</span></td>";?>
   </tr>
+
   <tr><td valign="TOP">
   <?php
   if( $show["mapping"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING) ) 
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_mapping.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_MAP."</a></td>"; 
    else
     echo "<span class=leftmenun>&nbsp;&nbsp;". L_MAP ."</span></td>";?>
+  </tr>
+  <tr><td>&nbsp;</td></tr>
+
+  <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
+  <tr><td class=leftmenu><?php echo L_EXPIMP_SET ?></td></tr>
+  <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
+  <tr><td valign="TOP">
+  <?php
+  if( $show["sliceexp"] AND IfSlPerm(PS_ADD) )
+    echo   '&nbsp;&nbsp;<a href="'. $sess->url("sliceexp.php3"). '" class=leftmenuy>'. L_EXPORT_SLICE .'</a>';
+   else 
+    echo   '&nbsp;&nbsp;<span class=leftmenun>'. L_EXPORT_SLICE ."</span></td>";?>
+  </tr>
+  <tr><td valign="TOP">
+  <?php
+  if( $show["sliceimp"] AND IfSlPerm(PS_ADD) )
+    echo   '&nbsp;&nbsp;<a href="'. $sess->url("sliceimp.php3"). '" class=leftmenuy>'. L_IMPORT_SLICE .'</a>';
+   else 
+    echo   '&nbsp;&nbsp;<span class=leftmenun>'. L_IMPORT_SLICE ."</span></td>";?>
   </tr>
   <tr><td>&nbsp;</td></tr>
   <tr><td height=110>&nbsp;</td>
