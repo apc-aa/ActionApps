@@ -14,7 +14,9 @@ unset($r_msg);
 unset($r_err);
 # Function definitions --------------------------------------------------------
 
-# Checks if category has subcategories or links
+// Checks if category has subcategories or links
+// (for deletion, so it does not count links in trash and it also do not count
+//  proposals) - It is question is we haven't to count proposals
 function IsCatEmpty($category_id) {
   global $db;
 //  $path = GetCategoryPath($category_id);
@@ -22,15 +24,11 @@ function IsCatEmpty($category_id) {
 //  $hold_zids = Links_QueryZIDs($path, '', '', true, 'folder2');
 //  $cat_zids  = Links_QueryCatZIDs($path, '', '', true, 'app');
 
-
-
-
   $SQL = " SELECT links_links.id
            FROM links_link_cat, links_links
           WHERE links_link_cat.what_id = links_links.id
             AND links_link_cat.category_id = $category_id
-            AND links_links.folder < 2
-            AND links_link_cat.category_id <> 'hidden'
+            AND links_links.folder < 3
             AND NOT (links_link_cat.state = 'hidden')
             AND links_link_cat.proposal = 'n'";
 
@@ -58,7 +56,7 @@ function DeleteCatAssignment($parent, $child) {
 # Delete one category
 function DeleteCategory($catId) {
   global $db;
-  
+
   $SQL = "DELETE FROM links_link_cat
        	   WHERE category_id = $catId";
   $db->tquery( $SQL );
