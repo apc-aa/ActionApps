@@ -161,7 +161,7 @@ function ParseMultiSelectConds (&$conds)
                 reset ($cond['value']);
                 while (list (,$val) = each ($cond['value'])) {
                     $newcond = $cond;
-                    $newcond['value'] = $val;
+                    $newcond['value'] = '"'.addslashes ($val).'"'; 
                     unset ($newcond['valuejoin']);
                     $conds[] = $newcond;
                 }
