@@ -302,8 +302,8 @@ array("name"=>_m("Select Box"),
                    "Expired bin - '%3'<br>".
                    "Holding bin - '%4'<br>".
                    "Trash bin - '%5'<br>".
-                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
-                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value ".
+                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
         "type" => "INT",
         "example" => "3"),
         array("name"=>_m("Filtering conditions"),
@@ -354,8 +354,8 @@ array("name"=>_m("Text Field with Presets"),
                    "Expired bin - '%3'<br>".
                    "Holding bin - '%4'<br>".
                    "Trash bin - '%5'<br>".
-                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
-                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value ".
+                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
         "type" => "INT",
         "example" => "3"),
         array("name"=>_m("Filtering conditions"),
@@ -402,8 +402,8 @@ array("name"=>_m("Radio Button"),
                    "Expired bin - '%3'<br>".
                    "Holding bin - '%4'<br>".
                    "Trash bin - '%5'<br>".
-                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
-                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value ".
+                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
         "type" => "INT",
         "example" => "3"),
         array("name"=>_m("Filtering conditions"),
@@ -461,8 +461,8 @@ array("name"=>_m("Multiple Checkboxes"),
                "Expired bin - '%3'<br>".
                "Holding bin - '%4'<br>".
                "Trash bin - '%5'<br>".
-               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
-               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value ".
+               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
     "type" => "INT",
     "example" => "3"),
     array("name"=>_m("Filtering conditions"),
@@ -494,8 +494,8 @@ array("name"=>_m("Multiple Selectbox"),
                "Expired bin - '%3'<br>".
                "Holding bin - '%4'<br>".
                "Trash bin - '%5'<br>".
-               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
-               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value ".
+               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
     "type" => "INT",
     "example" => "3"),
     array("name"=>_m("Filtering conditions"),
@@ -554,7 +554,8 @@ array("name"=>_m("Related Item Window"),
                        <br>D - Delete relation,
                        <br>R - add Relation to existing item
                        <br>N - insert new item in related slice and make it related
-                       <br>Use 'DR' (default), 'NMDR', just 'N' or any other combination. The order of letters N,M,D,R is not important."),
+                       <br>E - Edit related item
+                       <br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."),
         "type"=>"STR",
         "example"=>"MDR"),
         array("name"=>_m("Show headlines from selected bins"),
@@ -565,8 +566,8 @@ array("name"=>_m("Related Item Window"),
                    "Expired bin - '%3'<br>".
                    "Holding bin - '%4'<br>".
                    "Trash bin - '%5'<br>".
-                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
-                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value ".
+                   "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
         "type" => "INT",
         "example" => "3"),
         array("name"=>_m("Filtering conditions - unchangeable"),
@@ -606,8 +607,8 @@ array("name"=>_m("Two Windows"),
                "Expired bin - '%3'<br>".
                "Holding bin - '%4'<br>".
                "Trash bin - '%5'<br>".
-               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
-               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;11", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value ".
+               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
     "type" => "INT",
     "example" => "3"),
     array("name"=>_m("Filtering conditions"),
