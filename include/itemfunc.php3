@@ -639,17 +639,33 @@ function show_fnc_freeze_tpr($varname, $field, $value, $param, $html) {
 # but any letters can be used, i.e. this table can be extended.
 # Next step might be to extend parameter recognition to load this table
 # Retaining backward compatability with "[AMB]+" recognition
-    global $tp;
-    $tp = array (
-      A => array ( prefix => '>> ', tag => 'x', str => _m("Add") ),
-      M => array ( prefix => '<> ', tag => 'y', str => _m("Add&nbsp;Mutual") ),
-      B => array ( prefix => '<< ', tag => 'z', str => _m("Backward") ) );
+global $tp;
+$tps = array ( 
+  AMB => array (
+    A => array ( prefix => '>> ', tag => 'x', str => _m("Add") ),
+    M => array ( prefix => '<> ', tag => 'y', str => _m("Add&nbsp;Mutual") ),
+    B => array ( prefix => '<< ', tag => 'z', str => _m("Backward") ) ),
+  GYR => array (
+    G => array ( prefix => 'Good:', tag => 'x', str => _m("Good") ),
+    Y => array ( prefix => 'OK  :', tag => 'y', str => _m("OK") ),
+    R => array ( prefix => 'Bad :', tag => 'z', str => _m("Bad") ) ) );
 
 function show_fnc_iso($varname, $field, $value, $param, $html) {
-  global $db, $debug, $tp;
+  global $db, $debug, $tps;
 
+  # if ($debug) huhl("show_fnc_iso:parm=",$param,"html=",$html);
   if (!empty($param))
-    list($constgroup, $selectsize, $mode, $design) = explode(':', $param);
+    list($constgroup, $selectsize, $mode, $design, $tp) = explode(':', $param);
+
+  if (!$tp)         # Default to use the AMP table
+    $tp = 'AMB';
+
+  if (isset($tps[$tp])) 
+    $tagprefix = $tps[$tp];
+  elseif (isset($apc_state['tps'][$tp]))
+    $tagprefix = $apc_state['tps'][$tp];
+  else    
+    print("Unable to find tagprefix table $tp");
 
   if( !$mode )     # AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
     $mode = 'AMB';
@@ -660,7 +676,7 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
     return;                              # wrong - there must be slice selected
 
 
-  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids",$tp);
+  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids",$tagprefix);
   FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid, $mode,
           $design, $field[required], $field[input_help], $field[input_morehlp]);
 }

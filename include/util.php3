@@ -319,7 +319,7 @@ function p_arr($a,$name="given array") {
 function new_id ($seed="hugo"){
   do {
    $foo=md5(uniqid($seed));
-  } while (ereg("(00|27)",$foo) or (strlen($foo) != 16));  // 00 is end of string, 27 is '
+  } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
   return $foo;
 } 
 

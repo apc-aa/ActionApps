@@ -1,3 +1,6 @@
+01/24/01 - fixed bug in code for non 128 bit ids
+         - parameterised RelatedItemsWindow, using table in itemfunc (later
+            will allow redefining that table)
 01/23/03 - doc/install Recommended php4.0.6 or later, 
          - instructions for non-shell accounts
          - added notes to install-3 that these packages are often preinstalled
