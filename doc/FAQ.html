@@ -1,148 +1,137 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-
 <HTML>
 <head>
 	<title>APC Toolkit Action Aplications - Developers FAQ</title>
   <link rel=stylesheet type="text/css" href="devnotes.css">
 </head>
 <body>
-<a href="index.html">Other documentation</a><br>
+<A href="index.html">Other documentation</a><br>
 <hr><br>
-<a href="#newaa">How to create new Action Aplication</a><br><br>
-<a href="#anonymous">How to create form for anonymous posting from public website?</a><br><br>
-<a href="#aalanguage">How to create aa in alternate language?</a><br><br>
-<a href="#aaslices">What are the 'Action Aplication Core' and 'News (EN) Template' slices?</a><br><br>
-<a href="#feeding">How works the internal feeding?</a><br><br>
-<a href="#aliases">How to create new alias function?</a><br><br>
-<a href="#parent">How to link parent item?</a><br><br>
-<a href="#constant">How the 'Display' and the 'Store in Database' parts of the category/constant is supposed to be used?</a><br><br>
-<a href="#category">What is the parent category?</a><br><br>
-<a href="#search">How to setup searchform?</a><br><br>
-<a href="#alias">What is the Prameters in Alias Function definition</a><br><br>
-<a href="#javascript">What does it means the "JavaScript item exchange" View?</a><br><br>
-<a href="#sliceparam">Which parameters can I use with slice.php3</a><br><br>
-<a href="#viewparam">Which parameters can I use with view.php3</a><br><br>
-<a href="#ids">How to make item url shorter?</a><br><br>
-<a href="#archive">How to display archive (expired items)?</a><br><br>
-<a href="#"></a><br><br>
-<a href="#"></a><br><br>
-<a href="#"></a>
+<A href="#newaa">How to create a new Action Aplication</a><br><br>
+<A href="#anonymous">How to create a form allowing anonymous posting from public website?</a><br><br>
+<A href="#aalanguage">How to create aa in an alternate language?</a><br><br>
+<A href="#aaslices">What are the 'Action Aplication Core' and 'News (EN) Template' slices?</a><br><br>
+<A href="#feeding">How does the internal feeding work?</a><br><br>
+<A href="#aliases">How to create a new alias function?</a><br><br>
+<A href="#parent">How to link a parent item?</a><br><br>
+<A href="#constant">How the 'Display' and the 'Store in Database' parts of the category/constant is supposed to be used?</a><br><br>
+<A href="#category">What is a parent category?</a><br><br>
+<A href="#search">How to setup the searchform?</a><br><br>
+<A href="#alias">What is the Parameters in Alias Function definition</a><br><br>
+<A href="#javascript">What does the "JavaScript item exchange" View mean?</a><br><br>
+<A href="#sliceparam">Which parameters I can use with slice.php3</a><br><br>
+<A href="#viewparam">Which parameters I can use with view.php3</a><br><br>
+<A href="#ids">How to make an item url shorter?</a><br><br>
+<A href="#archive">How to display the archive (expired items)?</a><br><br>
+<A href="#offline">How to set the off-line filling up?</a><br><br>
+<A href="#"></a><br><br>
+<A href="#"></a><br><br>
+<A href="#"></a>
 
 
 
 <a name="newaa"></a>
-<h3>How to create new Action Aplication</h3>
-<p>   The applications in v1.5+ should be created quite easy.<br>
+<h3>How to create a new Action Aplication</h3>
+<p>   The applications in v1.5+ can be created quite easy.<br>
 <ol>
-  <li>Chose one slice and create the set of fields you want to have in new application.<br>
+  <li>Choose a slice and create the set of fields you want to have in the new application.<br>
     <br>
-  </li>
-  <li>Change for this fields the default values, help texts, names, priorities, 
-    aliases, etc. in admin interface (<font color="#663333">"Admin" -> "Main settings 
+  <li>For these fields change the default values, help texts, names, priorities, 
+    aliases, etc. in the admin interface (<font color="#663333">"Admin" -&gt; "Main settings 
     - Fields"</font>).<br>
     <br>
-  </li>
-  <li>Change the design of fulltext view, list item view and possibly the admin 
-    view (<font color="#663333">"Admin" -> "Design - Fulltext"</font>, <font color="#663333">"Admin" 
-    -> "Design - Index"</font>, <font color="#663333">"Admin" -> "Design - Item 
+  <li>Change the design of the fulltext view, list item view and possibly the admin 
+    view (<font color="#663333">"Admin" -&gt; "Design - Fulltext"</font>, <font color="#663333">"Admin" 
+    -&gt; "Design - Index"</font>, <font color="#663333">"Admin" -&gt; "Design - Item 
     Manager"</font>)<br>
     <br>
-  </li>
-  <li>Test this new slice, if it is working well<br>
+  <li>Test the new slice, whether it is working O.K.<br>
     <br>
-  </li>
-  <li>Add new slice based on this one (not template, but slice)<br>
+  <li>Add a new slice based on this one (not a template, but a slice)<br>
     <br>
-  </li>
-  <li>Mark the new slice as Template (<font color="#663333">"Admin" -> "Main settings 
-    - Slice"</font>) - for that you must be superadministrator (four stars).<br>
-  </li>
+  <li>Mark the new slice as a Template (<font color="#663333">"Admin" -&gt; "Main settings 
+    - Slice"</font>) - to do this you must be the superadministrator (four stars).<br>
   <br>
+  </li>
 </ol>
 
 
 <a name="anonymous"></a>
-<h3>How to create form for anonymous posting from public website?</h3>
+<h3>How to create a form allowing anonymous posting from public website?</h3>
 <ol>
   <li><b>Enable anonymous posting</b><br>
     <br>
     First thing you have to do is to permit anonymous posting from web. This can 
-    be done on <font color="#663333">"Admin" -> "Main settings - Slice"</font> 
-    page where is the option <font color="#663333">"Allow anonymous posting of 
-    items"</font>. There you should select to what bin the anonymous posted items 
+    be done on <font color="#663333">"Admin" -&gt; "Main settings - Slice"</font> 
+    page by the option <font color="#663333">"Allow anonymous posting of 
+    items"</font>. There you select to what bin the anonymous posted items 
     should go ("<i>Active</i>" and "<i>Holding bin</i>" are the possibilities).<br>
     <br>
-  </li>
-  <li><b>Create form</b><br>
+  <li><b>Create the form</b><br>
     <br>
-    The easiest way how to create input form is to display standard input form 
-    from admin interface (<font color="#663333">"Add item"</font>). Then you should 
-    view source code for displayed page and copy the code, which is between &lt;form 
-    ...&gt; and &lt;/form&gt; tags inside HTML code for new public page (newitem.html 
+    The easiest way how to create an input form is to display standard input form 
+    from admin interface (<font color="#663333">"Add item"</font>). Than  
+    view the source code for the displayed page and copy the code, which is between &lt;form 
+    ...&gt; and &lt;/form&gt; tags inside the HTML code for a new public page (newitem.html 
     for example). <br>
     <br>
-    In the form you can make as many chages you want, but one change is realy 
-    needed. There should be changed the url of script, where the form is posted 
+    Make as many changes as you want in the form. One change is necessary. 
+	There should be changed the url of the script, which the form is posted to
     to <b>filler.php3</b>:<br>
     <br>
     Change it from<br>
     <br>
-    <code>&lt;form enctype='multipart/form-data' method=post action='/apc-aa/admin/itemedit.php3?AA_CP_Session=2bbb85e9205239910a222b4c59cee2fa'></code><br>
+    <code>&lt;form enctype='multipart/form-data' method= postaction='/apc-aa/admin/itemedit.php3?AA_CP_Session=2bbb85e9205239910a222b4c59cee2fa'&gt;</code><br>
     <br>
     to<br>
     <br>
-    <code>&lt;form enctype="multipart/form-data" method=post action='/apc-aa/filler.php3'></code><br>
+    <code>&lt;form enctype="multipart/form-data" method=post action='/apc-aa/filler.php3'&gt;</code><br>
     <br>
-    That is all what you need. In next paragraph are just tips and tricks for 
+    That is all what you need to do. In the next paragraph are just some tips and tricks for 
     better customization.<br>
     <br>
     <b>Tips &amp; Tricks</b><br>
     <ul>
-      <li>You can delete all the fields from form, but <b>slice_id</b>. The slice_id 
+      <li>You can delete all the fields from the form, but <b>slice_id</b>. The slice_id 
         should allways remain.<br>
         <br>
-      </li>
-      <li>The inputs are <b>validated</b> as if it was typed in standard itemedit.php3 
-        form. If there are some invalid data, whole item is admitted. It is very 
-        good idea to add your own javascript validatoin of form before it is send 
-        to filler.php3 script.<br>
+      <li>The inputs are <b>validated</b> as if they were typed in the standard itemedit.php3 
+        form. When there are some invalid data, the whole item is admitted. It is a very 
+        good idea to add your own javascript validation of the form before it is sent
+        to the filler.php3 script.<br>
         <br>
-      </li>
-      <li>You can disable the standard AA validation by adding hidden field <b>notvalidate</b> 
+      <li>You can disable the standard AA validation by adding a hidden field <b>notvalidate</b> 
         in the form:<br>
         <code>&lt;input type=hidden name='notvalidate' value='1'&gt;</code> <br>
         <br>
-      </li>
-      <li>The page, which appears if the item is correctly stored to database 
-        can be specified in <b>ok_url</b> variable:<br>
+      <li>The page which appears when the item is correctly stored in the database 
+        can be specified in the <b>ok_url</b> variable:<br>
         <br>
         <code>&lt;input type=hidden name='ok_url' value='http://www.apc.org/thanks.html'&gt;</code> 
         <br>
         <br>
-      </li>
-      <li>The page, which appears if the item is not correctly stored to database 
-        (due to validation problems, ...), can be specified in <b>err_url</b> 
+      <li>The page which appears when the item is not correctly stored in the database 
+        (due to validation problems, ...) can be specified in the <b>err_url</b> 
         variable:<br>
         <br>
         <code>&lt;input type=hidden name='err_url' value='http://www.apc.org/invalid.html'&gt;<br>
         <br>
-        </code></li>
-      <li>It is possible to set values for not displayed fields just by adding 
-        hidden field for such field:<br>
+        </code>
+      <li>It is possible to set values to a non-displayed field by just adding 
+        a hidden field for such a field:<br>
         <br>
         <code>&lt;input type=hidden name='v696d675f6865696768742e2e2e2e2e2e' value='Anonymous 
         author'&gt;</code><br>
         <br>
         Note:<br>
-        This solution is easy and good for many cases, but it is by no means secure. 
-        Any experienced user can change values of hidden fields so don't relly 
-        on such data. Better solution is to completely omit such fields from input 
+        This solution is easy and good working in many cases, but it is by no means secure. 
+        Any experienced user can change the values of the hidden fields so don't relly 
+        on such data. A better solution is to completely omit such fields from the input 
         form and set the default values for the fields in <font color="#663333">"Admin" 
-        -> "Main setting - Fields" -> "Edit" -> "Default"</font>. The values then 
-        are set dirrectly from database. This solution is a little bit more secure. 
+        -&gt; "Main setting - Fields" -&gt; "Edit" -&gt; "Default"</font>. The values than 
+        are set directly from the database. This solution is a little bit more secure. 
         <br>
         <br>
-      </li>
       <li>It is possible to send <b>images</b> and other <b>files</b> by the form 
         (unlike the anonymous posting in version prior 1.5)</li>
     </ul>
@@ -150,98 +139,106 @@
 </ol>
 
 <a name="aalanguage"></a>
-<h3>How to create aa in alternate language?</h3>
-<p> If you want to translate ActionApps to other national language, you can look 
-  at:</p>
+<h3>How to create an aa in an alternate language?</h3>
+<p> If you want to translate the ActionApps to another language, you can look at:</p>
 <ul>
   <li> <b>include/en_common_lang.php3</b><br>
     <br>
     - this is the file with language constants definions which is common to all 
-    slices in the AA instalation (you can look at cz_common_lang.php3, which is 
-    the same file for czech language) <br>
+    slices in the AA instalation (e.g cz_common_lang.php3 is 
+    the same file for the Czech language) <br>
     <br>
-  </li>
   <li> <b>include/en_news_lang.php3</b><br>
     <br>
-    - this is the file with language constants definions for specific slice. It 
-    is possible to have slices in different languages. You can choose the used 
-    language on "Admin" -> "Main settings - Slice" page. So if you want to have 
-    slice in french, you have to copy en_news_lang.php3 to new file (fr_news_lang.php3 
-    for example) and translate the texts to french to fit your needs.<br>
+    - this is the file with language constants definions for specific slices. It 
+    is possible to have slices in different languages. You can choose the  
+    language used on the "Admin" -&gt; "Main settings - Slice" page. Hence if you want to have 
+    slices in French, you have to copy en_news_lang.php3 to a new file (fr_news_lang.php3 
+    for example) and translate the texts to French to fit your needs.<br>
     <br>
-  </li>
-  <li> texts in template slice <b>News (EN) template</b> (see <a href="#aaslices">Templates</a> 
+  <li> texts in template slice <b>News (EN) template</b> (see <A href="#aaslices">Templates</a> 
     section)<br>
     <br>
-  </li>
-  <li> texts in fields templateslice <b>Action Aplication Core</b> (see <a href="#aaslices">Templates</a> 
+  <li> texts in fields templateslice <b>Action Aplication Core</b> (see <A href="#aaslices">Templates</a> 
     section)</li>
 </ul>
 <a name="aaslices"></a>
 <h3>What are the 'Action Aplication Core' and 'News (EN) Template' slices?</h3>
 <i>There are two (and should be more in the future) odd slices in slice listbox. Why?</i>
-<p>Both, the '<i>Action Aplication Core</i>' and '<i>News (EN) Template</i>' are 
-  visible only to superadmins and both should not have any items.</p>
+<p>Both - the '<i>Action Aplication Core</i>' and '<i>News (EN) Template</i>' are 
+  only visible to superadmins and both should not have any items.</p>
 
 <p><b>News (EN) Template</b><br>
   <br>
-  '<i>News (EN) Template</i>' slice is just template for creating new slices. 
-  This template is shown is option in <font color="#663333">"Admin" -> "Add Slice"</font> 
-  dialog in templates listbox. If you feel, that the setting for new created slices 
+  The '<i>News (EN) Template</i>' slice is just a template for creating new slices. 
+  This template is shown as an option in <font color="#663333">"Admin" -&gt; "Add Slice"</font> 
+  dialog in templates listbox. If you feel a setting for the new created slices 
   is not optimal you have two possibilities:<br>
 
 <ul>
-  <li>Modify the setting for '<i>News (EN) Template'</i> slice on <font color="#663333">"Admin"</font> 
-    pages. The new slices based on modified template will be set-up just like 
-    current setting in template slice.<br>
+  <li>Modify the setting for the '<i>News (EN) Template'</i> slice on <font color="#663333">"Admin"</font> 
+    pages. New slices based on the modified template will be set-up by 
+    the new setting in template slice.<br>
     <br>
-  </li>
-  <li>Create new application (= template) as described in <a href="#newaa">New 
+  <li>Create a new application (= template) as described in <A href="#newaa">New 
     Aplication section</a></li>
 </ul>
 <p></p>
 <p><b>Action Aplication Core</b><br>
   <br>
-  '<i>Action Aplication Core</i>' slice is another case. In this slice are defined 
-  default values for each <b>field type</b>. This values will be used if you will 
-  add new field to slice on <font color="#663333">"Admin" -> "Main settins - Field"</font> 
-  page. There you should fill field name, priority and field type. After you click 
-  update, new field is added o database for the slice and the values (like validate 
-  function, alias, help text, ...) is copied from the same field in '<i>Action 
-  Aplication Core</i>' slice. It is good idea to translate the help texts in the 
-  '<i>Action Aplication Core</i>' slice too, if you are translating whole ActionApps 
-  to some other national language. </p>
+  '<i>Action Aplication Core</i>' slice is something another. In this slice there are defined 
+  the default values for each <b>field type</b>. These values are used when you  
+  add some new field to a slice on the <font color="#663333">"Admin" -&gt; "Main settins - Field"</font> 
+  page. Fill the field name, priority and field type. After you have clicked on 
+  update, the new field is added to the database for the slice and the values (like validate 
+  function, alias, help text, ...) are copied from the same field in the '<i>Action 
+  Aplication Core</i>' slice. It is a good idea to translate the help texts in the 
+  '<i>Action Aplication Core</i>' slice too when you are translating the whole ActionApps 
+  to some other language. </p>
 
 <a name="feeding"></a>
-<h3>How works the internal feeding?</h3>
-<p>If you write an item which goes into <i>Active bin</i> or if you approve an 
-  item, then the feeding function is invoked. This function finds all slices, 
+<h3>How does the internal feeding wrok?</h3>
+<p>There are two feeding methods - authomatical and manual. Automatical feeding works only for 
+new/updated item. By manual feeding it is possible to feed any selected item to another slice (if you have permission to do so).</p> 
+
+<p><b>Manual feeding</b><br>
+   In Item Manager select the items you want to send to another 
+slice. Select "Export" on the toolbar just below the itemlist. After 
+clicking on "GO" a new window is shown where you can select 
+destination slices. (You must have a permission in the
+destination slice - at least Author. If you are Editor or more in the
+destination slice, you can set the "Active" checkbox, which means to
+copy the items in the destination slice into the Active Bin. If the checkbox  
+stays unchecked, the item is copied to the Holding bin).</p>
+
+<p>  The feeding is error-safe, it is impossible to feed one item to the same
+destination slice more than once.</p>
+
+
+<p><b>Automatical feeding</b><br>
+When you write an item which goes into the <i>Active bin</i> or when you approve an 
+  item, the feeding function is invoked. This function finds all slices
   where the item should be fed (depending on current feeding permissions (<font color="#663333">"Admin" 
-  -> "Content sharing - Import &amp; Export"</font>) and feeding setings (<font color="#663333">"Admin" 
-  -> "Content sharing - Filters"</font>)). The feeding goes deep and deep until 
-  cycle is detected or feeding into <i>Holding bin</i> is set. </p>
+  -&gt; "Content pooling - Import &amp; Export"</font>) and feeding setings (<font color="#663333">"Admin" 
+  -&gt; "Content pooling - Filters"</font>)). The feeding goes deeper and deeper between the slices until a cycle is detected or feeding into <i>Holding bin</i> is set. </p>
 <p>Feeding one item from one slice to another means:<br>
 <ul>
-  <li>Content of each filed is copied to to new slice (there are one excepion 
-    - see <i>STATE_UNFEEDABLE</i> flag in following text)<br>
+  <li>The content of each field is copied to the destination slice (there is one exception 
+    - see the <i>STATE_UNFEEDABLE</i> flag in following text)<br>
     <br>
-  </li>
   <li>The content is copied including the <i>HTML codded / plain text</i> flag<br>
     <br>
-  </li>
-  <li>Field is fed to field with the same field_id as default (<i>headline........</i> 
-    will go to <i>headline........</i> field). This can be changed in <i>feedmap</i> 
-    table, where you can map one field to another (this feature is currently implemented, 
-    but there are still not the admin inteface for seting the mapping - the feedmap 
-    table is currently empty and you can't change it from admin interface)<br>
+  <li>The field is fed to the destination field with the same field_id as default (<i>headline........</i> 
+    goes to <i>headline........</i> field). This can be changed in the <i>feedmap</i> 
+    table, where you can map fields to another ones (See <font color="#663333">"Admin" 
+  -&gt; "Content pooling - Mapping"</font><br>
     <br>
-  </li>
-  <li>flag <i>FLAG_FEED</i> are set for each stored value (see <i>FLAG_*</i> definitons 
+  <li>flag <i>FLAG_FEED</i> is set for each stored value (see <i>FLAG_*</i> definitons 
     in following text)</li>
 </ul>
 <p></p>
 
-<p>Let's look in constants.php3 file:<br>
+<p>Let's look in the constants.php3 file:<br>
   <br>
   <code> # content table flags<br>
   define( "FLAG_HTML", 1 );<br>
@@ -261,47 +258,63 @@
   define( "REL_FLAG_FEED", 2 ); # 2 - just to be compatible with content table<br>
   </code><br>
   <br>
-  There we see, the various flags can be set. The most important are the flags 
-  for <i>field</i> table. For each field you can set if this field is<br>
+  There you see how the various flags can be set. The most important are the flags 
+  for the <i>field</i> table. For each field you can set whether this field is<br>
 <ul>
-  <li>feedable (<i>STATE_FEEDABLE</i>) - the content for this field is copied 
-    to new slice and user in new slice can freely edit it<br>
+  <li>feedable (<i>STATE_FEEDABLE</i>) - the content of this field is copied 
+    to the new slice and user in the new slice can freely edit it<br>
     <br>
-  </li>
-  <li>unfeedable (<i>STATE_UNFEEDABLE</i>) - the content for this field is never 
+  <li>unfeedable (<i>STATE_UNFEEDABLE</i>) - the content of this field is never 
     copied to the new slice<br>
     <br>
-  </li>
-  <li>feedable, but locked (<i>STATE_FEEDNOCHANGE</i>) - field is copied to new 
-    slice, but the flag <i>FLAG_FREEZE</i> is set for the field, so user in new 
-    slice can display the content of this field, but she can't change the value</li>
-  <li>feedable with update(<i>STATE_FEEDABLE_UPDATE</i>) - the same as STATE_FEEDABLE, but if content of source field is changed, the content of destination field is updated too. Editor of destination slice can change value of such field, but after someone change the field in source slice, the value is rewritten.<br>
-  <li>feedable with update and locked (<i>STATE_FEEDABLE_UPDATE_LOCKED</i>) - the same as STATE_FEEDABLE_UPDATE, but editor of destination slice can't chahge value of such field.<br>
+  <li>feedable, but locked (<i>STATE_FEEDNOCHANGE</i>) - the field is copied to the new 
+    slice, but the flag <i>FLAG_FREEZE</i> is set for the field, so the
+  user in the new slice can display the content of this field, but she can't change 
+  the value 
+  <li>feedable with update(<i>STATE_FEEDABLE_UPDATE</i>) - the same as STATE_FEEDABLE, but if the content of source field is changed, the content of the destination field is updated too. Editor of the destination slice can change value of such a field, but when someone changes the field in the source slice, the value is rewritten.<br>
+  <li>feedable with update and locked (<i>STATE_FEEDABLE_UPDATE_LOCKED</i>) - the same as STATE_FEEDABLE_UPDATE, but the editor of the destination slice can't change the value of this  field.<br>
     <br>
   </li>
 </ul>
-These setting can be done on <font color="#663333">"Admin" -> "Main settings - 
-Fields" -> "Edit" -> "Feeding"</font> page.<br>
+These settings can be done on the <font color="#663333">"Admin" -&gt; "Main settings - 
+Fields" -&gt; "Edit" -&gt; "Feeding mode"</font> page, where you can set for each field:
+<ul>
+<li><i>Feed</i> (= STATE_FEEDABLE) - 
+  copy the content of the source field once (to the destination field) 
+  
+<li><i>Do not Feed</i> (= 
+  STATE_UNFEEDABLE) - do not copy the content of this field to the destination slice 
+
+  
+<li><i>Feed locked</i> (= 
+  STATE_FEEDNOCHANGE) - copy the content once, but forbid editors of the destination 
+  slice to change the value of this field 
+  
+<li><i>Feed &amp; update</i> (= 
+  STATE_FEEDABLE_UPDATE) - copy the content and update the content of the 
+  destination field each time the source field is changed (content sharing) 
+  
+<li><i>Feed &amp; update &amp; lock</i> (= STATE_FEEDABLE_UPDATE_LOCKED) - the same as before, but editors of the destination slice can't change the content</li>
+</ul><br>
 <br>
 Depending on <i>field</i> table flags, the flags for <i>content</i> table are set:<br>
 <ul>
-  <li><i>FLAG_HTML</i> is allways copied from source field</li>
+  <li><i>FLAG_HTML</i> is allways copied from the source field
   <br>
   <br>
-  <li><i>FLAG_FEED</i> is ollways set for fed fields (currently it have no specific 
-    use - we just marking the fed content<br>
+  <li><i>FLAG_FEED</i> is allways set for fed fields (currently it has no specific 
+    use - we just mark the fed content)<br>
     <br>
-  </li>
-  <li><i>FLAG_FREEZE</i> is set if source field has <i>STATE_FEEDNOCHANGE</i> 
-    flag set. In other cases is this flag unset. All fields with <i>FLAG_FREEZE</i> 
-    are never displayed in input form so it can't be changed by user in destination 
+  <li><i>FLAG_FREEZE</i> is set if the source field has <i>STATE_FEEDNOCHANGE</i> 
+    flag set. In other cases this flag is unset. All fields with <i>FLAG_FREEZE</i> 
+    are never displayed in the input form so they can't be changed by the user in the destination 
     slice.</li>
 </ul>
 <p></p>
 <p>After copying the contents, the relation table is updated. This table holds 
-  information about feeding tree (from which item is content fed to another). 
-  The ralation table will be used for another purposes in future too (for holding 
-  discussion threads, ...), so each record for feeding if flaged as <i>REL_FLAG_FEED</i>.<br>
+  information about the feeding tree (from which item is the content fed to another). 
+  The relation table will be used for another purposes in future too (for holding 
+  discussion threads, ...), so each record for feeding if flagged as <i>REL_FLAG_FEED</i>.<br>
   <br>
 </p>
 <br><br>
@@ -315,27 +328,45 @@ names begins with f_ and they are three letters long (just like f_a()).</p>
 <ol>
   <li>Write your own function in item.php3 (say f_9()).<br>
     <br>
-  </li>
   <li>Add this function to alias function array $ALIAS_FUNC_TYPES 
       in include/constants.php3.<br>
     <br>
-  </li>
   <li>Assign name to this function in en_news_lang.php3, cz_news_lang.php3, ...
-      (just like define(&quot;L_ALIAS_FUNC_9&quot;, &quot;my_func&quot;); )
+      (just like define("L_ALIAS_FUNC_9", "my_func"); )
 <br>
     <br>
-  </li>
   <br>
+  </li>
 </ol>
 <br>
 <p>   If you find, that the new alias function is very proprietary (it is
  unusable for other people, you can create file /include/usr_aliasfnc.php3, 
  which is automaticaly included to code (if exists). There you can define your 
- own alias functions. The example listing of /include/usr_aliasfnc.php3 
- (the file should not be committed to CVS, because it is very proprietary and 
- the content shoul not be shared between installations):</p>
-<pre>
-&lt;?php
+ own alias functions. The function have three parameters:
+ <ul><li><i>$columns</i> - array of content of each field in item (for example<br>
+  $columns[headline........][0][value] = "This is item title"<br>
+  <ul>
+   <li><i>value</i> last array dimension - select between <i>value</i> and 
+     <i>flag</i>. <i>Value</i> is field content <i>flag</i> could be FLAG_HTML | FLAG_FEED | 
+    FLAG_FREEZE | FLAG_OFFLINE | FLAG_UPDATE 
+ 
+   <li><i>0</i> - used for multivalue 
+    fields (as categories in some slices). For single values we use just 0, for 
+    multivalues we use 0, 1, ... 
+ 
+   <li><i>headline........</i> - field id<br><br></li>
+  </ul>
+  <li><i>$col</i> - field id of column for which the alias is definned<br><br>
+  <li><i>$param</i> - parameter passed to function from textfied in alias
+    definition (just like usr_cz_date:1). The name of function is in param 
+    too!!!</li>
+ </ul><br>
+ The 
+example listing of /include/usr_aliasfnc.php3 (the file should not be committed 
+to CVS, because it is very proprietary and the content should not be shared 
+between installations):
+<P></P>
+<pre>&lt;?php
 //usr_aliasfnc.php3
 
 define("USR_ALIASFNC_PHP3_INC",1);
@@ -359,7 +390,7 @@ function usr_cz_date($columns, $col, $param="") {
 ?&gt;
 </pre>
 <p>Such alias function can be called by defining new alias for some field. Just 
-define alias name (as obvious), alias function should be "<a href="#f_u">f_u - user function</a>" 
+define alias name (as obvious), alias function should be "<A href="#f_u">f_u - user function</a>" 
 and the parameter should be the name of the function ("usr_cz_date" in our
 example). It is possible to pass parameters to the function. The parameters are 
 separated by colon (usr_cz_date:parameters).</p>
@@ -372,10 +403,9 @@ separated by colon (usr_cz_date:parameters).</p>
 
 <p>Add<br>
 <br>
-<code>
-&lt;a href="/apc-aa/go.php3?sh_itm=_#ITEM_ID#&amp;type=fed"&gt;fed from&lt;/a&gt;
+<code>&lt;a href="/apc-aa/go.php3?sh_itm=_#ITEM_ID#&amp;type=fed"&gt;fed from&lt;/a&gt;
 </code><br><br>
-or such link to your index (or fulltext) design (Admin -> Design -> Index -> Odd Rows). This will point to fulltext of parent item or to the fulltext of the same item, if the item is not fed.</p>
+or such link to your index (or fulltext) design (Admin -&gt; Design -&gt; Index -&gt; Odd Rows). This will point to fulltext of parent item or to the fulltext of the same item, if the item is not fed.</p>
 <br>
 
 <a name="constant"></a>
@@ -413,6 +443,32 @@ categories.</p>
 
 <p>The Pri field is for prioritize the constants in each group (for sorting in
 select box ...)</p>
+
+<p>When to use different values in <em>name</em> and <em>value</em> field:</p>
+
+<p>For example the "State" select box (if you want to see it on input 
+form) has the names and values of:</p>
+
+<table align=center cellpadding=3 border=0>
+  <tr><td class=tabtit>Name</td><td class=tabtit>Value</td></tr>
+  <tr><td valign=top class=tabfnc>Approved bin</td><td align=center>1</td></tr>
+  <tr><td valign=top class=tabfnc>Holding bin</td><td align=center>2</td></tr>
+  <tr><td valign=top class=tabfnc nowrap>Trash bin</td><td align=center>3</td></tr>
+</table>
+
+<p>Another example, more real-life - colors select box. There can be 
+<em>names</em> of "Red", "blue", "very bright green", ... and <em>values</em> will be 
+"#FF0000", "#0000FF", "#EEFFEE". In input form you see Red... 
+and on page is then #FF0000</p>
+
+<p>The third example is kind of hint. Suppose you want to have 
+different kinds of item - for example "public", "private", "other" and you
+want to see this words on compact view. No problem, but you want to see each
+in different color. So you can define:</p>
+
+<em>name</em>: Private<br>
+<em>value</em>: &lt;font color="#FF0000"&gt;Private&lt;/font&gt;
+
 <br>
 
 <a name="category"></a>
@@ -460,10 +516,10 @@ Search in Headline and Fulltext:
 
 <p>Let's notice:
 <ul>
- <li>The <b>action</b> atribute on first row points to some file, where slice.php3 script is included (by SSI)<br><br></li>
+ <li>The <b>action</b> atribute on first row points to some file, where slice.php3 script is included (by SSI)<br><br>
  <li>There are two search fields - each of them uses a bit different syntax.<br>First field defines first search condition - conds[0]. The last index is field_id of searched field. Such syntax is easy and is good, if you want to
  <ul>
-  <li>search only in one field for that specified phrase<br></li>
+  <li>search only in one field for that specified phrase<br>
   <li>use standard searching operator, which is 'LIKE' (it means, that if the phrase is "los" the search function finds items with field content "los", "Carlos" or "lost"</li>
  </ul><br>
 Second field defines the second search condition. Between each condition is allways AND operator - selected item must allways pass each specified condition.<br>
@@ -472,7 +528,7 @@ There is used extended syntax in second condition. In extended sytnax we allways
 - <b>operator</b> atribut, where operator for that condition is specified. If <b>operator</b> is not specified, 'LIKE' is used as default. The posibilities are:
 <table align=center cellpadding=3 border=0>
 <tr><td class=tabtit>Operator</td><td class=tabtit>Description</td></tr>
-<tr><td valign=top class=tabfnc>=</td><td>equal (or 'e:=' with <a href="#opmodifiers">modifiers</a>)</td></tr>
+<tr><td valign=top class=tabfnc>=</td><td>equal (or 'e:=' with <A href="#opmodifiers">modifiers</a>)</td></tr>
 <tr><td valign=top class=tabfnc>&lt;&gt;</td><td>not equal</td></tr>
 <tr><td valign=top class=tabfnc>&lt;</td><td>less than</td></tr>
 <tr><td valign=top class=tabfnc>&gt;</td><td>more than</td></tr>
@@ -496,7 +552,7 @@ modificators are now:
 <tr><td valign=top class=tabfnc>e</td><td>e:&gt;=</td><td>Used for european style datum transformation. If used, the "value" can be in format like '24.12.2001'</td></tr>
 <tr><td valign=top class=tabfnc>m</td><td>m:&gt;=</td><td>Used for comparison with current time. If used, the "value" is substracted from current time (time()) and result value is used in comparison. The value should be in seconds. This modifier is good for displaying items newer than two days, for example.</td></tr>
 </table><br>
-- <b>&lt;field_id&gt;</b> atributes, where are specified ids of fields, where to search (note, that there can be specified more than one field. The value for those atributes are allways 1 - as shown in example)<br><br></li>
+- <b>&lt;field_id&gt;</b> atributes, where are specified ids of fields, where to search (note, that there can be specified more than one field. The value for those atributes are allways 1 - as shown in example)<br><br>
 <li>It is possible to specify search order of found items. For this purpose is there sort[] variable, where the last index specifies the id of field we wont sort listing by. The value can by either<br>
 <table align=center cellpadding=3 border=0>
 <tr><td class=tabtit>Value</td><td class=tabtit>Description</td></tr>
@@ -506,9 +562,9 @@ modificators are now:
 If no sort[] variable is defined, items are sorted by <i>Publish date</i> - descending<br>
 As we can see, there is possibilty to specify more than one sort field. In this case the items are sorted primarily by sort[0] field, secondary by sort[1] field ...</li>
 </ul>
-</p>
+<P></P>
 
-<p>Date values are passed in UNIX timestamp (no of seconds since 1.1.1970). You can use <a href="#opmodifiers">operatoer modificators</a> to convert it from human format.</p>
+<p>Date values are passed in UNIX timestamp (no of seconds since 1.1.1970). You can use <A href="#opmodifiers">operatoer modificators</a> to convert it from human format.</p>
 <p>You can see the example on <a href="http://www.apc.org/actionapps/english/demo/search.shtml">APC Demo Site</a>, where publish date field is used too.</p>
 
 <br>
@@ -520,37 +576,37 @@ In some cases we need to pass more than one parameter to alias function. In such
 </p>
 <table align=center cellpadding=3 border=0>
 <tr><td class=tabtit>Function</td><td class=tabtit>Parameter</td><td class=tabtit>Description</td></tr>
-<tr><td valign=top class=tabfnc>f_0</td><td clospan=2>null function (nothing shown)</td></tr>
+<tr><td valign=top class=tabfnc>f_0</td><td clospan="2">null function (nothing shown)</td></tr>
 <tr><td>&nbsp;</td><td> none </td><td>&nbsp;</td></tr>
 
-<tr><td valign=top class=tabfnc>f_h</td><td clospan=2>print field content due to html flag set (escape html special characters or just print)</td></tr>
+<tr><td valign=top class=tabfnc>f_h</td><td clospan="2">print field content due to html flag set (escape html special characters or just print)</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>delimeter</td><td>if <i>delimeter</i> parameter is specified, the field with multiple values are displayed as list, delited by <i>delimeter</i></td></tr>
 
-<tr><td valign=top class=tabfnc>f_d</td><td clospan=2>prints date in user defined format</td></tr>
+<tr><td valign=top class=tabfnc>f_d</td><td clospan="2">prints date in user defined format</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>format</td><td>format string just like in PHP (like "m-d-Y") - see <a href="http://php.net/date">PHP manual</a></td></tr>
 
-<tr><td valign=top class=tabfnc>f_i</td><td clospan=2>prints image scr (&lt;img src=...) - NO_PICTURE for none (the functionality of this alias function can be created as conditional f_c function as well)</td></tr>
+<tr><td valign=top class=tabfnc>f_i</td><td clospan="2">prints image scr (&lt;img src=...) - NO_PICTURE for none (the functionality of this alias function can be created as conditional f_c function as well)</td></tr>
 <tr><td valign=top class=tabfnc>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
 
-<tr><td valign=top class=tabfnc>f_n</td><td clospan=2>unpacked id</td></tr>
+<tr><td valign=top class=tabfnc>f_n</td><td clospan="2">unpacked id</td></tr>
 <tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
 
-<tr><td valign=top class=tabfnc>f_g</td><td clospan=2>prints image height atribut (img height=...) or clears it (the functionality of this alias function can be created as conditional f_c function as well)</td></tr>
+<tr><td valign=top class=tabfnc>f_g</td><td clospan="2">prints image height atribut (img height=...) or clears it (the functionality of this alias function can be created as conditional f_c function as well)</td></tr>
 <tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
 
-<tr><td valign=top class=tabfnc>f_w</td><td clospan=2>prints image width atribut (&lt;img width=...) or clears it</td></tr>
+<tr><td valign=top class=tabfnc>f_w</td><td clospan="2">prints image width atribut (&lt;img width=...) or clears it</td></tr>
 <tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
 
-<tr><td valign=top class=tabfnc>f_a</td><td clospan=2>prints abstract or grabed fulltext text field</td></tr>
+<tr><td valign=top class=tabfnc>f_a</td><td clospan="2">prints abstract or grabed fulltext text field</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>length</td><td>length - number of characters taken from field_id (like "80:full_text.......")</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>field_id</td><td>id of fulltex field</td></tr>
 
-<tr><td valign=top class=tabfnc>f_f</td><td clospan=2>prints link to fulltext (hedline url)</td></tr>
+<tr><td valign=top class=tabfnc>f_f</td><td clospan="2">prints link to fulltext (hedline url)</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>link_only</td><td>field id (like "link_only.......") where switch between external and internal item is stored</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>redirect</td><td>url of another page which shows the content of item (like "link_only.......:http#://www.ecn.cz/articles/solar.shtml") (note the #: in previous example!)<br>
 this page should contain SSI include ../slice.php3 of course</td></tr>
 
-<tr><td valign=top class=tabfnc>f_b</td><td clospan=2>prints text with link to fulltext - more general version of f_f function<br>param: link_only:url_field:redirect:txt:condition_fld (hedline url)</td></tr>
+<tr><td valign=top class=tabfnc>f_b</td><td clospan="2">prints text with link to fulltext - more general version of f_f function<br>param: link_only:url_field:redirect:txt:condition_fld (hedline url)</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>link_only</td><td>field id (like "link_only.......") where switch between external and internal item is stored</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>url_field</td><td>field id of external url for link_only<br>
 (like hl_href.........)</td></tr>
@@ -560,20 +616,20 @@ this page should contain SSI include ../slice.php3 of course</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>condition_fld</td><td>field id - if no content of this field, no link</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>addition</td><td>additional parameter to &lt;a tag (like "target=_blank")</td></tr>
 
-<tr><td valign=top class=tabfnc>f_t</td><td clospan=2>converts text to html or escape html (due to html flag)</td></tr>
+<tr><td valign=top class=tabfnc>f_t</td><td clospan="2">converts text to html or escape html (due to html flag)</td></tr>
 <tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
 
-<tr><td valign=top class=tabfnc>f_s</td><td clospan=2>print database field or default value if empty (the functionality of this alias function can be created as conditional f_c function as well)</td></tr>
+<tr><td valign=top class=tabfnc>f_s</td><td clospan="2">print database field or default value if empty (the functionality of this alias function can be created as conditional f_c function as well)</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>default</td><td>default value (like "javascript: window.alert('No source url specified')")</td></tr>
 
-<tr><td valign=top class=tabfnc>f_l</td><td clospan=2>prints field as link, if field_id in $param is defined, else prints just field</td></tr>
+<tr><td valign=top class=tabfnc>f_l</td><td clospan="2">prints field as link, if field_id in $param is defined, else prints just field</td></tr>
 <tr><td valign=top class=tabfnc>&nbsp;</td><td class=tabparam>field_id</td><td>field_id of possible link (like "source_href.....")</td></tr>
 
 
-<tr><td valign=top class=tabfnc>f_e</td><td clospan=2>_#ITEMEDIT used on admin page index.php3 for itemedit url</td></tr>
+<tr><td valign=top class=tabfnc>f_e</td><td clospan="2">_#ITEMEDIT used on admin page index.php3 for itemedit url</td></tr>
 <tr><td>&nbsp;</td><td>none</td><td>&nbsp;</td></tr>
 
-<tr><td valign=top class=tabfnc>f_c</td><td clospan=2>prints "begin".field."end" if field="condition", else prints "none"<br>
+<tr><td valign=top class=tabfnc>f_c</td><td clospan="2">prints "begin".field."end" if field="condition", else prints "none"<br>
 if no cond_col specified - this $col is used<br>
 condition can be reversed (negated) by "!" character at the begin of condition<br>
 param: condition:begin:end:none:cond_col</td></tr>
@@ -587,7 +643,7 @@ This example is usable for example for Highlight field - it shows Yes or No depe
 <tr><td>&nbsp;</td><td colspan=2><I>Example:</I> !:Email#:::<br>
 If e-mail field is filled, it shows "Email: email@apc.org" (for example), but if it is not filled, it shows nothing</td></tr>
 
-<tr><td valign=top class=tabfnc><a name="f_u">f_u</a></td><td clospan=2>calls user defined function (see <a href="#aliases">How to create new aliases</a>)</td></tr>
+<tr><td valign=top class=tabfnc><a name="f_u">f_u</a></td><td clospan="2">calls user defined function (see <A href="#aliases">How to create new aliases</a>)</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>function</td><td>name of called function in include/usr_aliasfnc.php3 file</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>parameter</td><td>parameters passed to function</td></tr>
 
@@ -599,7 +655,7 @@ If e-mail field is filled, it shows "Email: email@apc.org" (for example), but if
 <p>Javascript item echchange View is just name of type of View. It works exactly as standard view, but primary ussage for that type is to show items on any page around the Internet. On destination page should contain HTML tag like:
 </p>
 <code>
-&lt;SCRIPT LANGUAGE="JavaScript" SRC="http://aa.ecn.cz/apc-aa/view.php3?vid=1"&gt;&lt;/SCRIPT&gt;
+&lt;SCRIPT LANGUAGE= "JavaScript"SRC="http://aa.ecn.cz/apc-aa/view.php3?vid=1"&gt;&lt;/SCRIPT&gt;
 </code>
 
 <p>This tag includes the output of view to any page on Internet (there is no restriction to one serever).</p>
@@ -627,6 +683,8 @@ document.write("&lt;/TABLE&gt;")<br>
 <tr><td valign=top class=tabfnc>restrict</td><td>No</td><td>field id used with "res_val" and "exact" for restricted output (display only items with "restrict" field = "res_val"<br><i>Example:</i>restrict=category........&amp;res_val=Environment&amp;exact=1</td></tr>
 <tr><td valign=top class=tabfnc>res_val</td><td>No</td><td>see <i>restrict</i></td></tr>
 <tr><td valign=top class=tabfnc>exact</td><td>No</td><td>if set, <i>restrict</i> field must match <i>res_val</i> exactly (=) otherwise substring is sufficient (LIKE '%res_val%')</td></tr>
+<tr><td valign=top class=tabfnc>conds[]</td><td>No</td><td>very usefull for complex conditions - see <A href="#search">How to setup the searchform?</a> for <i>conds</i> parameter setting (it can be used as url parameter too - not only form Forms, as described in search section)</td></tr>
+<tr><td valign=top class=tabfnc>sort[]</td><td>No</td><td>see <i>conds[]</i> - very usefull for complex sorting</td></tr>
 <tr><td valign=top class=tabfnc>highlight</td><td>No</td><td>when true, shows only highlighted items in compact view<br><i>Example:</i> highlight=1</td></tr>
 <tr><td valign=top class=tabfnc>order</td><td>No</td><td>order field id - if other than publish date add minus sign for descending order<br><i>Example:</i> order=headline........-</td></tr>
 <tr><td valign=top class=tabfnc>timeorder</td><td>No</td><td>if <i>rev</i> - reverse publish date order (less priority than "order")<br><i>Example:</i> timeorder=rev</td></tr>
@@ -650,6 +708,7 @@ document.write("&lt;/TABLE&gt;")<br>
 <h3>Which parameters can I use with view.php3</h3>
 <p>The only required parameter to view.php3 script is number of <i>view</i> to show. This parameter is given by <i>vid</i> url variable. All remaining parameters are optional.</p>
 <p>Each optional <i>view</i> parameter begins with <i>cmd</i>[<i>x</i>], where <i>x</i> is <i>view</i> number in which the parameter should be used. This is needed because of possibility to include more than view to one shtml page. That's why we need to specify, for which view the command should work.</p>
+<p>It is impossible to specify more than one cmd for one view. If you want to use <i>cmd[]=d</i> for the view, you can't use it with combination with <i>cmd[]=c</i>, for example.</p>
 <p>After the <i>cmd</i>[<i>x</i>]= is always character, which specify which command is used - how modify the view. The <i>c</i> command modifies conditions, for example. The values after command character are user parameters and its meaning is different for each command. The parameters are separated by '<i>-</i>' character. Description of parameters is in following table of examples.</p>
 <table align=center cellpadding=3 border=0>
 <tr><td class=tabtit>Parameter example</td><td class=tabtit>Description</td></tr>
@@ -658,7 +717,7 @@ document.write("&lt;/TABLE&gt;")<br>
 <tr><td valign=top class=tabfnc nowrap>cmd[23]=i-<i>24</i>-<i>7464647</i></td><td><i>view</i> number <i>23</i> has to display item <i>7464647</i> in format defined in view <i>24</i></td></tr>
 <tr><td valign=top class=tabfnc>cmd[23]=c-<i>1</i>-<i>ICT</i></td><td>display <i>view</i> no <i>23</i> in place of view no <i>23</i> (that's normal), but change <i>value</i> for condition <i>1</i> to "<i>ICT</i>"</td></tr>
 <tr><td valign=top class=tabfnc nowrap>cmd[23]=c-<i>1</i>-<i>ICT</i>-<i>2</i>-<i>Jane</i></td><td>the same as above, but there are redefined two conditions. All three conditions could be redefined</td></tr>
-<tr><td valign=top class=tabfnc>cmd[23]=d-<i>headline........</i>-<i>LIKE</i>-<i>Profit</i>-<i>source.........1</i>-<i>=</i>-<i>Ecn</i>-<i>publish_date....</i>-<i>m:&gt;</i>-<i>86400</i></td><td>displays <i>view</i> no 23 and redefines the conditions. The conditions are in format <i>field</i>-<i>operator</i>-<i>value</i>. For list of possible <i>operators</i> see <a href="#search">search</a> caption. The <i>operators</i> could be with its <a href="#opmodifiers">modifiers</a>, too. The unlimited number of conditions should be there specified. The speciefied conditions allways replaces all conditions specified in view definition (through admin interface). There are three diferences from <i>cmd[]-c</i> command - 1)operators and fields are specified, 2) default view conditions are ingnored, 3) there can be unlimitted number of conditions. The example would show items in which the <i>headline</i> contains '<i>Profit</i>' and <i>source</i> field is '<i>Ecn</i>' and the item is newer that one day.</td></tr>
+<tr><td valign=top class=tabfnc>cmd[23]=d-<i>headline........</i>-<i>LIKE</i>-<i>Profit</i>-<i>source.........1</i>-<i>=</i>-<i>Ecn</i>-<i>publish_date....</i>-<i>m:&gt;</i>-<i>86400</i></td><td>displays <i>view</i> no 23 and redefines the conditions. The conditions are in format <i>field</i>-<i>operator</i>-<i>value</i>. For list of possible <i>operators</i> see <A href="#search">search</a> caption. The <i>operators</i> could be with its <A href="#opmodifiers">modifiers</a>, too. The unlimited number of conditions should be there specified. The speciefied conditions allways replaces all conditions specified in view definition (through admin interface). There are three diferences from <i>cmd[]-c</i> command - 1)operators and fields are specified, 2) default view conditions are ingnored, 3) there can be unlimitted number of conditions. The example would show items in which the <i>headline</i> contains '<i>Profit</i>' and <i>source</i> field is '<i>Ecn</i>' and the item is newer that one day.</td></tr>
 <tr><td valign=top class=tabfnc>als[alias]</td><td>user alias definition - you can define your own aliases in url (for both - slice.php3 and view.php3). Aliases names MUST!!! be 8 characters long. Don't forgot, that the alias value have to be urlencoded.<br><i>Example:</i> als[MY_ALIAS]=Summary%20Page (or maybe better: als%5BMY_ALIAS%5D=Summary%20Page)<br>defines alias _#MY_ALIAS. If used in formatstring ('Admin - Design Index' for example), it prints 'Summary Page'</td></tr>
 </table>
 <br><br>
@@ -701,12 +760,36 @@ article.</p>
 <p>The expired items normaly is not visible on public website. However, the possibility to show expired items is sometimes usefull - mainly for archives. On the other hand, the display of expired items could be unwanted feature for some purposes.</p>
 <p>There are two steps to do:
 <ol>
-  <li>Check, if display of expired items is permitted by setting ALLOW_DISPLAY_EXPIRED_ITEMS constant to true in config.php3</li>
-  <li>Define search condition where '<i>expiry_date.....</i>' is specified. How to define search conditionf look on <a href="#search">search</a> and <i>cmd[]-c</i> or <i>cmd[]-d</i> <a href="#viewparam">parameters to view.php3</a><br>  Example of view.php3 parameter: .../view.php3?vid=23&amp;cmd[23]=d-expiry_date.....-e:>-1.1.1998</li>
-</ol></p>
+  <li>Check, if display of expired items is permitted by 
+  setting ALLOW_DISPLAY_EXPIRED_ITEMS constant to true in config.php3 
+  <li>Define search condition where '<i>expiry_date.....</i>' is specified. How to define search conditionf look on <A href="#search">search</a> and <i>cmd[]-c</i> or <i>cmd[]-d</i> <A href="#viewparam">parameters to view.php3</a><br>  Example of view.php3 parameter:.../view.php3?vid=23&amp;cmd[23]=d-expiry_date.....-e:&gt;-1.1.1998</li>
+</ol>
+<P></P>
 
 
+<br><br>
+<a name="offline"></a>
+<h3>How to set the off-line filling up?</h3>
+<p>The offline filling currently works only in IE with Java support (there are some problems with Netscape and file manipulation permissions).</p>
+<p>All files used for off-line filling are stored in /mics/offline2slice directory. All of them should be copied to local computer, where you want to use offline filling. There are a few steps to do for sucessfull installation.</p>
 
+<ol>
+  <li>Create directory on your local computer (default is c:\java\).</li>
+  <li>Copy files from /mics/offline2slice directory of apc-aa installation to created directory.</li>
+  <li>Add row "set classpath=c:\java" to your autoexec.bat file, in order java finds the class definitions.</li>
+  <li>Restart computer in order the changes in autoexec.bat tekes efect.</li>
+  <li>Open the delete_file.html file and change the location of main filling form<br><em> row 11:  document.location='c:\\java\\fillform.html';</em><br></li>
+  <li>Change the location of the file, where form data are stored<br><em> row 19: &lt;PARAM NAME="filename" VALUE="C:\\offlinedata.txt"&gt;</em></li>
+  <li>Open the file fillform.html and modify it in order to have the same fields as your slice have. The fields are identified by its ids (like 'headline........'), known from AA.</li>
+  <li>Change the parameter to OffLine2Slice applet to point to the file, where the content of filled forms will be locally stored <br><em> row 240 		&lt;PARAM NAME="filename" VALUE="C:\\offlinedata.txt"&gt;</em></li>
+  <li>Change the URL in ACTION atribut of second form at fillform.html page to point to your server with ActionApps<br><em> row 356: &lt;FORM NAME="hidden_form" ACTION="http://aa.ecn.cz/aaa/offline.php3" METHOD="post"&gt;</em></li>
+  <li>Change slice_id in hidden form input to match your slice, where you want to store item<br><em> row 358: &lt;INPUT NAME="slice_id" TYPE="hidden" value="45636f6d6f6e69746f72427942455a4c"&gt;</em></li>
+  <li>Change the path to delete_file.html to point to your install directory, where the file is stored<br><em> row 361: &lt;INPUT NAME="del_url" TYPE="hidden" VALUE="C:/java/delete_file.html"&gt;</em></li>
+</ol>
+
+<p>The offline filling is now installed on your computer and you can try it (open your local fillform.html file in your browser). There you can fill as many items as you want and after all send it to the server.</p>
+<p>Before sending the filled forms to server make you sure, that the slice you want import to, permit this operation (see 'Admin' - 'Slice' - 'Allow off-line item filling').</p>
+<p>After the sucesfull sneding the items to server, your browser should be redirected to the page, where you can delete the file (offlinedata.txt). In this file the filled data are locally stored. The deletion is not necessary - the offline filling script offline.php3 will recignize, if the data for each item is already stored in database or not (the CRC for each item is computed). However, the better practice is to delete the file. This saves the capacity of line, because the data will not be transfered to server for second time.</p>
 
 <br><br>
 <a name=""></a>

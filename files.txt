@@ -65,7 +65,6 @@
   scroller.php3     Defines class for page scroller
   easy_scroller.php3 Defines simplified class for page scroller
   date.php3         Defines class for date manipulation
-  table.php3        Defines class for table (can display html table with specified data ...)
   item.php3         Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...)
   varset.php3       Defines class for inserting and updating database fields
   util.php3         Set of usefull functions used on most pages
