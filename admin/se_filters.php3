@@ -79,7 +79,12 @@ if( $group ) {
   $db->query("SELECT id, name FROM constant 
                WHERE group_id='$group'
                ORDER BY pri");
+  $first_time = true;               # in order to The Same to be first in array
   while($db->next_record()) {
+    if( $first_time AND !$remote_slices[$import_id]) {  # for remote categories must be set
+      $to_categories["0"] = L_THE_SAME;
+      $first_time = false;
+    } 
     $to_categories[unpack_id($db->f(id))] = $db->f(name);
   }  
 }
@@ -111,30 +116,30 @@ if ($feed_id = $remote_slices[$import_id]) {
       }
     }
   }
-} else {
-$imp_group = GetCategoryGroup($import_id);
-
-// count number of imported categories
-$SQL= "SELECT count(*) as cnt FROM constant 
-        WHERE group_id='$imp_group'";
-$db->query($SQL);
-$imp_count = ($db->next_record() ? $db->f(cnt) : 0);
-
-// preset variables due to feeds database
-$SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds 
-       WHERE from_id='$p_import_id' AND to_id='$p_slice_id'";
-$db->query($SQL);
-while($db->next_record()) {
-  if( $db->f(all_categories) ) {
-    $all_categories=true;
-    $approved_0 = $db->f(to_approved);
-    $categ_0 = unpack_id($db->f(to_category_id));  // if 0 => the same category
-  }else{
-    $chboxcat[unpack_id($db->f(category_id))] = true;
-    $selcat[unpack_id($db->f(category_id))] = unpack_id($db->f(to_category_id));
-    $chboxapp[unpack_id($db->f(category_id))] = $db->f(to_approved);
-  }
-}    
+} else {   // inner feeding
+  $imp_group = GetCategoryGroup($import_id);
+  
+  // count number of imported categories
+  $SQL= "SELECT count(*) as cnt FROM constant 
+          WHERE group_id='$imp_group'";
+  $db->query($SQL);
+  $imp_count = ($db->next_record() ? $db->f(cnt) : 0);
+  
+  // preset variables due to feeds database
+  $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds 
+         WHERE from_id='$p_import_id' AND to_id='$p_slice_id'";
+  $db->query($SQL);
+  while($db->next_record()) {
+    if( $db->f(all_categories) ) {
+      $all_categories=true;
+      $approved_0 = $db->f(to_approved);
+      $categ_0 = unpack_id($db->f(to_category_id));  // if 0 => the same category
+    }else{
+      $chboxcat[unpack_id($db->f(category_id))] = true;
+      $selcat[unpack_id($db->f(category_id))] = unpack_id($db->f(to_category_id));
+      $chboxapp[unpack_id($db->f(category_id))] = $db->f(to_approved);
+    }
+  }    
 }
 ?>
  <TITLE><?php echo L_A_FILTERS_TIT;?></TITLE>
