@@ -27,11 +27,15 @@ class DB_AA extends DB_Sql {
   var $Password = DB_PASSWORD;
   var $Auto_Free = 'yes';
   function halt($msg) {
+    if( $this->Halt_On_Error == "no" )
+      return;
     printf("</td></table><b>Database error:</b> %s<br>\n", $msg);
     printf("<b>MySQL Error</b>: %s (%s)<br>\n",
       $this->Errno, $this->Error);
     echo("Please contact ". ERROR_REPORTING_EMAIL ." and report the ");
-    printf("exact error message.<br>\n");    die("Session halted.");
+    printf("exact error message.<br>\n");    
+    if( $this->Halt_On_Error == "yes" )
+      die("Session halted.");
   }  
 }
 
@@ -192,6 +196,9 @@ class AA_SL_Session extends Session {
 
 /*
 $Log$
+Revision 1.6  2001/10/01 16:21:38  honzam
+bugs with non existant tables in sql_update fixed
+
 Revision 1.5  2001/01/08 13:31:58  honzam
 Small bugfixes
 

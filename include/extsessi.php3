@@ -25,13 +25,16 @@ class DB_AA extends DB_Sql {
   var $Database = DB_NAME;
   var $User     = DB_USER;
   var $Password = DB_PASSWORD;
-  
   function halt($msg) {
+    if( $this->Halt_On_Error == "no" )
+      return;
     printf("</td></table><b>Database error:</b> %s<br>\n", $msg);
     printf("<b>MySQL Error</b>: %s (%s)<br>\n",
       $this->Errno, $this->Error);
-    printf("Please contact ". ERROR_REPORTING_EMAIL ." and report the ");
-    printf("exact error message.<br>\n");    die("Session halted.");
+    echo("Please contact ". ERROR_REPORTING_EMAIL ." and report the ");
+    printf("exact error message.<br>\n");    
+    if( $this->Halt_On_Error == "yes" )
+      die("Session halted.");
   }  
 }
 
@@ -235,6 +238,9 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
+Revision 1.10  2001/10/01 16:21:38  honzam
+bugs with non existant tables in sql_update fixed
+
 Revision 1.9  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 

@@ -51,6 +51,7 @@ function IsPaired($field, $fld_array) {
 
 function safe_echo ($txt) {
   echo htmlspecialchars($txt);
+  echo "<br>";
 }  
 
 # --------------- create temporary tables SQLs ---
@@ -77,7 +78,7 @@ $tablelist = array("active_sessions",
                    "subscriptions", 
                    "users", 
                    "view",
-                   "discussion"
+                   "discussion",
                    "nodes",
                    "external_feeds",
                    "ef_categories",
@@ -146,7 +147,7 @@ $SQL_create_new_tables[] = "
   )";
 
 $SQL_create_new_tables[] = "
-CREATE TABLE tmp_ef_categories (
+CREATE TABLE IF NOT EXISTS tmp_ef_categories (
    category varchar(255) NOT NULL,
    category_name varchar(255) NOT NULL,
    category_id varchar(16) NOT NULL,
@@ -157,7 +158,7 @@ CREATE TABLE tmp_ef_categories (
 )";
 
 $SQL_create_new_tables[] = "
-CREATE TABLE tmp_ef_permissions (
+CREATE TABLE IF NOT EXISTS tmp_ef_permissions (
    slice_id varchar(16) NOT NULL,
    node varchar(150) NOT NULL,
    user varchar(50) NOT NULL,
@@ -165,7 +166,7 @@ CREATE TABLE tmp_ef_permissions (
 )";
 
 $SQL_create_new_tables[] = "
-CREATE TABLE tmp_nodes (
+CREATE TABLE IF NOT EXISTS tmp_nodes (
    name varchar(150) NOT NULL,
    server_url varchar(200) NOT NULL,
    password varchar(50) NOT NULL,
@@ -173,7 +174,7 @@ CREATE TABLE tmp_nodes (
 )";
 
 $SQL_create_new_tables[] = "
-CREATE TABLE tmp_external_feeds (
+CREATE TABLE IF NOT EXISTS tmp_external_feeds (
    feed_id int(11) NOT NULL auto_increment,
    slice_id varchar(16) NOT NULL,
    node_name varchar(150) NOT NULL,
@@ -185,7 +186,7 @@ CREATE TABLE tmp_external_feeds (
 )";
 
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_active_sessions (
+  CREATE TABLE IF NOT EXISTS tmp_active_sessions (
      sid varchar(32) NOT NULL,
      name varchar(32) NOT NULL,
      val text,
@@ -195,7 +196,7 @@ $SQL_create_tmp_tables[] = "
   )";
 
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_offline (
+  CREATE TABLE IF NOT EXISTS tmp_offline (
      id char(16) NOT NULL,
      digest char(32) NOT NULL,
      flag int,
@@ -204,7 +205,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_relation (
+  CREATE TABLE IF NOT EXISTS tmp_relation (
      source_id char(16) NOT NULL,
      destination_id char(32) NOT NULL,
      flag int,
@@ -213,7 +214,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_constant (
+  CREATE TABLE IF NOT EXISTS tmp_constant (
      id char(16) NOT NULL,
      group_id char(16) NOT NULL,
      name char(150) NOT NULL,
@@ -225,7 +226,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_content (
+  CREATE TABLE IF NOT EXISTS tmp_content (
      item_id varchar(16) NOT NULL,
      field_id varchar(16) NOT NULL,
      number bigint(20),
@@ -235,14 +236,14 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_db_sequence (
+  CREATE TABLE IF NOT EXISTS tmp_db_sequence (
      seq_name varchar(127) NOT NULL,
      nextid int(10) unsigned DEFAULT '0' NOT NULL,
      PRIMARY KEY (seq_name)
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_email_auto_user (
+  CREATE TABLE IF NOT EXISTS tmp_email_auto_user (
      uid char(50) NOT NULL,
      creation_time bigint(20) DEFAULT '0' NOT NULL,
      last_change bigint(20) DEFAULT '0' NOT NULL,
@@ -253,7 +254,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_email_notify (
+  CREATE TABLE IF NOT EXISTS tmp_email_notify (
      slice_id char(16) NOT NULL,
      uid char(60) NOT NULL,
      function smallint(5) DEFAULT '0' NOT NULL,
@@ -262,7 +263,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_feedmap (
+  CREATE TABLE IF NOT EXISTS tmp_feedmap (
      from_slice_id char(16) NOT NULL,
      from_field_id char(16) NOT NULL,
      to_slice_id char(16) NOT NULL,
@@ -274,14 +275,14 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_feedperms (
+  CREATE TABLE IF NOT EXISTS tmp_feedperms (
      from_id varchar(16) NOT NULL,
      to_id varchar(16) NOT NULL,
      flag int(11)
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_feeds (
+  CREATE TABLE IF NOT EXISTS tmp_feeds (
      from_id varchar(16) NOT NULL,
      to_id varchar(16) NOT NULL,
      category_id varchar(16),
@@ -292,7 +293,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_field (
+  CREATE TABLE IF NOT EXISTS tmp_field (
      id varchar(16) NOT NULL,
      type varchar(16) NOT NULL,
      slice_id varchar(16) NOT NULL,
@@ -337,14 +338,14 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_groups (
+  CREATE TABLE IF NOT EXISTS tmp_groups (
      name varchar(32) NOT NULL,
      description varchar(255) NOT NULL,
      PRIMARY KEY (name)
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_item (
+  CREATE TABLE IF NOT EXISTS tmp_item (
      id char(16) NOT NULL,
      short_id int(11) NOT NULL auto_increment,
      slice_id char(16) NOT NULL,
@@ -366,7 +367,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_log (
+  CREATE TABLE IF NOT EXISTS tmp_log (
      id int(11) DEFAULT '0' NOT NULL auto_increment,
      time bigint(20) DEFAULT '0' NOT NULL,
      user char(60) NOT NULL,
@@ -377,7 +378,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_membership (
+  CREATE TABLE IF NOT EXISTS tmp_membership (
      groupid int(11) DEFAULT '0' NOT NULL,
      memberid int(11) DEFAULT '0' NOT NULL,
      last_mod timestamp(14),
@@ -386,7 +387,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_pagecache (
+  CREATE TABLE IF NOT EXISTS tmp_pagecache (
      id varchar(32) NOT NULL,
      str2find text,
      content mediumtext,
@@ -397,7 +398,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_perms (
+  CREATE TABLE IF NOT EXISTS tmp_perms (
      object_type char(30) NOT NULL,
      objectid char(32) NOT NULL,
      userid int(11) DEFAULT '0' NOT NULL,
@@ -408,7 +409,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_slice (
+  CREATE TABLE IF NOT EXISTS tmp_slice (
      id varchar(16) NOT NULL,
      name varchar(100) NOT NULL,
      owner varchar(16),
@@ -456,7 +457,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_slice_owner (
+  CREATE TABLE IF NOT EXISTS tmp_slice_owner (
      id char(16) NOT NULL,
      name char(80) NOT NULL,
      email char(80) NOT NULL,
@@ -464,7 +465,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_subscriptions (
+  CREATE TABLE IF NOT EXISTS tmp_subscriptions (
      uid char(50) NOT NULL,
      category char(16),
      content_type char(16),
@@ -475,7 +476,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_users (
+  CREATE TABLE IF NOT EXISTS tmp_users (
      id int(11) DEFAULT '0' NOT NULL auto_increment,
      type char(10) NOT NULL,
      password char(30) NOT NULL,
@@ -494,7 +495,7 @@ $SQL_create_tmp_tables[] = "
   )";
   
 $SQL_create_tmp_tables[] = "
-  CREATE TABLE tmp_view (
+  CREATE TABLE IF NOT EXISTS tmp_view (
      id int(10) unsigned NOT NULL auto_increment,
      slice_id varchar(16) NOT NULL,
      name varchar(50),                
@@ -539,7 +540,7 @@ $SQL_create_tmp_tables[] = "
   )";
 
 $SQL_create_tmp_tables[] = "
-CREATE TABLE tmp_discussion (
+CREATE TABLE IF NOT EXISTS tmp_discussion (
    id varchar(16) NOT NULL,
    parent varchar(16) NOT NULL,
    item_id varchar(16) NOT NULL,
@@ -559,7 +560,7 @@ CREATE TABLE tmp_discussion (
 )";
 
 $SQL_create_tmp_tables[] = "
-CREATE TABLE tmp_ef_categories (
+CREATE TABLE IF NOT EXISTS tmp_ef_categories (
    category varchar(255) NOT NULL,
    category_name varchar(255) NOT NULL,
    category_id varchar(16) NOT NULL,
@@ -570,7 +571,7 @@ CREATE TABLE tmp_ef_categories (
 )";
 
 $SQL_create_tmp_tables[] = "
-CREATE TABLE tmp_ef_permissions (
+CREATE TABLE IF NOT EXISTS tmp_ef_permissions (
    slice_id varchar(16) NOT NULL,
    node varchar(150) NOT NULL,
    user varchar(50) NOT NULL,
@@ -578,7 +579,7 @@ CREATE TABLE tmp_ef_permissions (
 )";
 
 $SQL_create_tmp_tables[] = "
-CREATE TABLE tmp_nodes (
+CREATE TABLE IF NOT EXISTS tmp_nodes (
    name varchar(150) NOT NULL,
    server_url varchar(200) NOT NULL,
    password varchar(50) NOT NULL,
@@ -586,7 +587,7 @@ CREATE TABLE tmp_nodes (
 )";
 
 $SQL_create_tmp_tables[] = "
-CREATE TABLE tmp_external_feeds (
+CREATE TABLE IF NOT EXISTS tmp_external_feeds (
    feed_id int(11) NOT NULL auto_increment,
    slice_id varchar(16) NOT NULL,
    node_name varchar(150) NOT NULL,
@@ -848,7 +849,7 @@ if( !$update AND !$restore AND !$restore_now) {
      right names. Then it possibly updates common records (like default field 
      definitions, APC-wide constants and templates).</p>
   <p><font color="red">However, it is strongly recommended backup your current 
-  database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u root -p --opt linkdb &gt; ./aadb/aadb.sql</code></p>
+  database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u root -p --opt aadb &gt; ./aadb/aadb.sql</code></p>
 
   <form name=f action="' .$PHP_SELF .'">
   <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
@@ -929,15 +930,17 @@ if( $restore_now ) {
     
   echo '<h2>Replace tables with bck_* tables</h2>';
   reset( $tablelist );
+  $store_halt = $db->Halt_On_Error;
+  $db->Halt_On_Error = "report";
   while( list( ,$t) = each( $tablelist ) ) {
     $SQL = "DROP TABLE IF EXISTS $t";
     safe_echo ($SQL);
     $db->query("$SQL");
-
     $SQL = "ALTER TABLE bck_$t RENAME $t";
     safe_echo ($SQL);
     $db->query($SQL);
   }  
+  $db->Halt_On_Error = $store_halt;
 
   echo '<h2>Restore OK</h2>
         </body>
@@ -985,9 +988,15 @@ if( $dbcreate ) {
 if( $copyold ) {
   echo '<h2>Copying old values to new tables </h2>';
   reset( $tablelist );
+  $store_halt = $db->Halt_On_Error;
+
   while( list( ,$t) = each( $tablelist ) ) {   # copy all tables
+    unset($old_info);
+    unset($tmp_info);
+    $db->Halt_On_Error = "report";
     $old_info = $db->metadata( $t );
     $tmp_info = $db->metadata( "tmp_$t" );
+    $db->Halt_On_Error = $store_halt;
     
     if( isset( $old_info ) AND is_array($old_info) ) {
       $delim = "";
@@ -999,11 +1008,13 @@ if( $copyold ) {
           $field_list .= $delim .( strstr($fld[flags],"not_null") ? '" "':'""');
         $delim = ",";
       }
+      if( $field_list == "") 
+        $field_list = "*" ;
       $SQL = "INSERT INTO tmp_$t SELECT $field_list FROM $t";
       safe_echo ($SQL);
       $db->query($SQL);
     }
-}
+  }
 }
 
 if( $backup )
@@ -1013,6 +1024,9 @@ if( $backup )
 
 if( $dbcreate ) {
   reset( $tablelist );
+  $store_halt = $db->Halt_On_Error;
+  $db->Halt_On_Error = "report";
+  
   while( list( ,$t) = each( $tablelist ) ) {
     if( $backup ) {
       $SQL = "DROP TABLE IF EXISTS bck_$t";
@@ -1031,6 +1045,7 @@ if( $dbcreate ) {
     safe_echo ($SQL);
     $db->query($SQL);
   }  
+  $db->Halt_On_Error = $store_halt;
 }
 
 if( $addstatistic ) {
@@ -1104,6 +1119,9 @@ echo '<h2>Update OK</h2>
 
 /*
 $Log$
+Revision 1.9  2001/10/01 16:21:38  honzam
+bugs with non existant tables in sql_update fixed
+
 Revision 1.8  2001/09/27 16:15:17  honzam
 New discussion support
 
