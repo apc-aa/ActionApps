@@ -40,6 +40,7 @@ function AlertsUser ($session) {
     if ($db->next_record()) {
         $GLOBALS["email"] = $db->f("email");
         $GLOBALS["lang"] = $db->f("lang");
+        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$GLOBALS["lang"]."_alerts_lang.inc");
         if ($db->f("sessiontime") > time() - 600) {
             $db->query ("UPDATE alerts_user SET sessiontime=".time());
             return $db->Record;
@@ -402,7 +403,7 @@ function alerts_email_headers ($record, $default)
 
 function AlertsPageBegin() {
     // style sheet
-    global $ss;
+    global $ss, $AA_INSTAL_PATH;
     $stylesheet = $ss ? $ss : $AA_INSTAL_PATH.ADMIN_CSS;
 
     echo 

@@ -277,4 +277,6 @@ $_m["Order"]
 $_m["Add filter"]
   = "Pøidat filtr";
 
+$_m["Language"]
+  = "Jazyk";    
 ?>

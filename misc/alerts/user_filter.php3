@@ -46,12 +46,12 @@ else bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$user["lang"]."_alerts_
 function process_data ()
 {
     global $change_user, $chuser, $change_password, $Err, $howoften, $filter, $db, $user, $addpredefcol, $add,
-        $alerts_session;
+        $alerts_session, $lang;
     $howoften_options = get_howoften_options();
     
     if ($change_user) {
         $db->query ("UPDATE alerts_user 
-            SET firstname='$chuser[firstname]', lastname='$chuser[lastname]'
+            SET firstname='$chuser[firstname]', lastname='$chuser[lastname]', lang='$chuser[lang]'
             WHERE id=$user[id]");
         $user = AlertsUser ($alerts_session);
     }            
@@ -126,6 +126,10 @@ echo "
 </TD>$ac_trend
 $ac_trstart<TD>
    <table border='0' cellspacing='0' cellpadding='3' bgcolor=".COLOR_TABBG." align='center'>
+     $ac_trstart<TD class=tabtxt><B>"._m("Language").":</B></TD>
+        <TD class=tabtxt>";
+        FrmSelectEasy ("chuser[lang]", $LANGUAGE_NAMES, $lang);
+     echo "</TD>$ac_trend
      $ac_trstart<TD class=tabtxt><B>"._m("First name").":</B></TD>
         <TD class=tabtxt><INPUT TYPE=text NAME='chuser[firstname]' VALUE='$user[firstname]'></TD>$ac_trend
      $ac_trstart<TD class=tabtxt><B>"._m("Last name").":</B></TD>
