@@ -316,9 +316,17 @@ function hcAddItemTo (i,targetBox) {
 	myname = selectBox.options[selectBox.selectedIndex].text;
 	myvalue = selectBox.options[selectBox.selectedIndex].value;
     //alert ('name '+name+' value '+value);
-	opt = new Option(myname,myvalue,false,false);
 	var target = document[hcForm][targetBox];
-    opt.selected = true;
+    
+    // if an option with the same name is already selected, replace it
+    for (i = 0; i < target.length; i ++)
+        if (target.options[i].text == myname) {
+            target.options[i].value = myvalue;
+            target.options[i].selected = true;
+            return;
+        }
+            
+	opt = new Option(myname,myvalue,true,true);
 	target.options [target.length] = opt;
 }
 
