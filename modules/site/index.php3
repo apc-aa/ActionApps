@@ -18,7 +18,6 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
 # APC AA site Module main administration page
 
 # used in initpage.php3 script to include config.php3 from the right directory
@@ -41,9 +40,11 @@ $site_info = GetModuleInfo($module_id,'W');   # W is identifier of "site" module
 # r_spot_id holds current position in the tree
 if( !isset($r_spot_id) ) {
   $r_spot_id = 1;
-  $sess->register(r_spot_id); 
+#  $sess->register(r_spot_id);   # Don't use a session variable, its page dependent
 }
-                                              
+       
+if ($debug) huhl("Registered",$sess->pt);                                       
+
 if( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS);
   exit;
@@ -78,6 +79,7 @@ $tree->addChoice( 1, 'choice 1' );
 $tree->addInSequence( 0, 'third' );
 $tree->addInSequence( 2, 'quatro' );
 */
+if ($debug) print("<p>Action=$action; r_spot_id=$r_spot_id</p>");
 
 switch( $action ) {
   case 's': $tree->addInSequence( $r_spot_id, 'spot' ); break;
@@ -133,11 +135,11 @@ showMenu ($aamenus, "codemanager");
 
 echo '<br>
 <table border=0 cellspacing=0 class=login width="95%"><TR><TD width=200>
-  <a href="'. $sess->url(con_url($PHP_SELF,"action=s")).'">'. L_ADD_SPOT .'</a> 
-  <a href="'. $sess->url(con_url($PHP_SELF,"action=c")).'">'. L_ADD_CHOICE .'</a>
-  <a href="'. $sess->url(con_url($PHP_SELF,"action=r")).'">'. L_DELETE_SPOT .'</a>
-  <a href="'. $sess->url(con_url($PHP_SELF,"action=u")).'">'. L_MOVEUP_SPOT .'</a>
-  <a href="'. $sess->url(con_url($PHP_SELF,"action=d")).'">'. L_MOVEDOWN_SPOT .'</a>
+  <a href="'. $sess->url(AAPage(0,"action=s")).'">'. L_ADD_SPOT .'</a> 
+  <a href="'. $sess->url(AAPage(0,"action=c")).'">'. L_ADD_CHOICE .'</a>
+  <a href="'. $sess->url(AAPage(0,"action=r")).'">'. L_DELETE_SPOT .'</a>
+  <a href="'. $sess->url(AAPage(0,"action=u")).'">'. L_MOVEUP_SPOT .'</a>
+  <a href="'. $sess->url(AAPage(0,"action=d")).'">'. L_MOVEDOWN_SPOT .'</a>
   <br>';
 
 # show tree
@@ -147,8 +149,9 @@ echo '</td><td valign="top">';
 
 ModW_ShowSpot($tree, $module_id, $r_spot_id);
 
-echo '</td></tr></table>
-  </body>
+echo '</td></tr></table>';
+if ($debug) print("<p>Action=$action; r_spot_id=$r_spot_id</p>");
+echo ' </body>
 </html>';
 
 page_close();

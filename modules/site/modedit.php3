@@ -194,6 +194,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
+  ModW_HiddenRSpotId();
   FrmStaticText(L_ID, $module_id, false);
   FrmInputText("name", L_SITE_NAME, $name, 99, 25, true);
   $include_cmd = "<!--#include virtual=\"${AA_INSTAL_PATH}modules/site/site.php3?site_id=$module_id\"-->";

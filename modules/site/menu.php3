@@ -61,13 +61,13 @@ function get_aamenus ()
     $aamenus["codemanager"] = array (
         "label" => L_CODE_MANAGER,
         "title" => L_CODE_MANAGER,
-        "href"  => "modules/site/index.php3",
+        "href"  => "modules/site/index.php3" . ($r_slot_id ? "?r_slot_id=$r_slot_id" : ""),
         "level" => "main");
 
     $aamenus["modadmin"] = array (
         "label" => L_SITE_SETTINGS,
         "title" => L_SITE_SETTINGS,
-        "href"  => "modules/site/modedit.php3",
+        "href"  => "modules/site/modedit.php3" . ($r_slot_id ? "?r_slot_id=$r_slot_id" : ""),
         "cond"  => IfSlPerm(PS_MODW_SETTINGS),
         "level" => "main");
 

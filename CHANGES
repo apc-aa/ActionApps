@@ -1,3 +1,4 @@
+1/07/02 - move r_spot_id out of session variable and into URLs
 1/06/02 - added "All" option to the scroller in item manager (sets listlen to 99999) (mitra)
 1/06/02 - changed cases of "action" to "akce" as form component name because its a  
 	property of "form". Bug shows up in Omniweb but not in IE (fee_to.php3,index.php3 related_sel.php3) (mitra)

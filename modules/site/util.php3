@@ -22,11 +22,16 @@ http://www.apc.org/
 # Miscellaneous utility functions for "site" module
 
 function AAPage($url=0, $add=0) {
-  global $sess, $PHP_SELF;
+  global $sess, $PHP_SELF,$r_spot_id;
   if (!$url)
-    $url = $PHP_SELF;
-  return $sess->url( $add ? con_url( $url , $add ) : $url );
+    $url = con_url($PHP_SELF,"r_spot_id=$r_spot_id");
+  return $sess->url( $add ? con_url($url , $add ) : $url );
 }  
+
+function ModW_HiddenRSpotId() {
+	global $r_spot_id;
+	print("<input type='hidden' name='r_spot_id' value='$r_spot_id'>");
+}
 
 function ModW_StoreTree( &$tree, $site_id ){
   global $db;
@@ -87,8 +92,8 @@ function ModW_PrintVariables( $vars ) {
     while( list($k,$v) = each($vars) )
       echo "$v <span align=right><a href=\"". AAPage(0,"delvar=$k") ."\">".L_DELETE."</a></span><br>";
   }    
-  echo "<form name=fvar action=\"$PHP_SELF\"><input type='text' name='addvar' value='' size='20' maxlength='50'>
-    <span align=right><a href='javascript:document.fvar.submit()'>".L_ADD."</a></span>";
+  echo "<form name=fvar action=\"$PHP_SELF\"><input type='text' name='addvar' value='' size='20' maxlength='50'><span align=right><a href='javascript:document.fvar.submit()'>".L_ADD."</a></span>";
+  ModW_HiddenRSpotId();
   $sess->hidden_session();
   echo "</form></td></tr>";
 }
@@ -107,6 +112,7 @@ function ModW_PrintConditions($conds, $vars) {
                 <input type='hidden' name='addcondvar' value='$v'>
              <span align=right><a href='javascript:document.fcond$i.submit()'>".L_ADD."</a></span>";
         $sess->hidden_session();
+	ModW_HiddenRSpotId();
         echo "</form>";
       }  
       $i++;
@@ -129,6 +135,7 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
     ModW_PrintConditions($tree->get('conditions',$spot_id), $vars);
 
   echo "<form method='post' name=fs action=\"$PHP_SELF\">";
+  ModW_HiddenRSpotId();
   FrmInputText('name', L_SPOT_NAME, $tree->get('name', $spot_id), 50, 50, true, false, false, false);
   echo "<tr><td align=center colspan=2><textarea name='content' rows=20 cols=80>$content</textarea><br><br>
               <input type=submit name='". L_SUBMIT ."'>";
