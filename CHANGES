@@ -1,5 +1,6 @@
+04/15/03 - corrected text on wizard for file uploading - (mitra)
 04/15/03 - fixed bug in include/item.php3 (addslashes needed in a query) -pep
-04/15/03 - fixed require bug in util.php3 (uses writelog)
+04/15/03 - fixed require bug in util.php3 (uses writelog) (mitra)
 04/14/03 - added unsubscribe option to Alerts (_#UNSBFORM)
 (jakub)  - added "Show Not So Nice" to Anonym Wizard to be used when "Show" does not work
 04/14/03 - fixed bug in StoreItem for image fields (duplicated)
@@ -80,6 +81,8 @@
          - fixed bug with anonymous user login
          - fixed bug - not replaced lineends on Mac-type texts
 03/16/03 - fixed init_page moving to index.php3 too often (jakub)
+03/14/03 - fixed init_page so won't change page if coming in from outside. (mitra)
+         - it should better be fixed so CALLER of init_page does switch
 03/14/03 - fixed slice selector to show only permitted modules (jakub)
 03/11/03 - globalised pagecache to avoid multiple purges (mitra)
 03/11/03 - some more debugging code in image upload and manipulation (mitra)
