@@ -12,6 +12,7 @@
 <a href="#fieldmapping">How the field mappings works for new AA?</a><br><br>
 <a href="#aalanguage">How to create aa in alternate language?</a><br><br>
 <a href="#itemsmod">What procedure should be used to make modifications to the items table?</a><br><br>
+<a href="#newalias">How to create new field alias (like _#SOURCE##) for compact/fulltext view?</a><br><br>
 <h3>How to create new Action Apication</h3>
 <p>   The easiest (and prefered) way, how to create new aplication front-end
 is just to make new language file (see en_news_lang.php3 file).<br> There are two types of language file.<ul>
@@ -127,9 +128,19 @@ define("HTML_PAGE_BEGIN",
 <i>(there are a couple of major things missing for many apps, the most
 important being 'contact information')?</i>
 
-<p>May be, there are some fields, we havee to add to the items table. I think, we can call it like foo ... - the fields can be then used specificaly to each AA. When we talking about contact information, there are three fields contact1, contact2 and contact3 in items table - they are not used yet, but I think, we should remove it (or rename to foo1, foo2 ... - see above). The idea of holding it here is not good, because of limit three contacts (see <a href="AAdb_ER.html">AAdb E-R diagram</a>). I prefer to create new table contact and connect it to items table via items.id (foreign key).</p>
+<div><font color=red>This answer is not true for new data structure!!! 
+I will update it later.</font></div>
 
-<p>Here some comments I posted befor via e-mail:</p>
+<p>May be, there are some fields, we havee to add to the items table. I think,
+we can call it like foo ... - the fields can be then used specificaly to
+each AA. When we talking about contact information, there are three
+fields contact1, contact2 and contact3 in items table - they are not used 
+yet, but I think, we should remove it (or rename to foo1, foo2 ... - see above).
+The idea of holding it here is not good, because of limit three contacts 
+(see <a href="AAdb_ER.html">AAdb E-R diagram</a>). I prefer to create new table
+contact and connect it to items table via items.id (foreign key).</p>
+
+<p>Here some comments I posted before via e-mail:</p>
 
 <p>From my point of view I preffer using existing fields in item table, if it
 is possible. I know, there is no field for long binary data, so I agree
@@ -172,7 +183,30 @@ so it is not so bad.)
 <p>The reason why we use no boolean fields is database 
 independance. Jirka made an database research and his proposal 
 is to use numeric field instead of boolean.
-</p><br><br>
+</p>
+<a name="newalias">
+<h3>How to create new field alias (like _#SOURCE##) for compact/fulltext view?</h3>
+<div><font color=red>This answer is not true for new data structure (v1.5)!!!
+I will update it later.</font></div>
+
+<p>If you create new database field, you have to add new alias for that field, 
+which slice administrators will use for displaying content of the new field.</p>
+
+<p>All field aliases are defined in include/item.php3 file. For each alias is 
+there line like this:<br>
+<i>$aliases["_#SOURCE##"] = array("fce"=>"f_h", "param"=>"source", "hlp" => L_HLP_SOURCE);</i><br>
+<p>This line means that if AA parser (the routine which displays output) find the 
+_#SOURCE## alias, the <i>f_h</i>() function is called and the database field <i>source</i> is 
+its parameter (so <i>f_h</i>($db->f(<i>source</i>)) is called). The output of this function 
+susbtitute the _#SOURCE## alias.</p>
+
+<p><i>hlp</i> string is used for displaying help message to slice administrator 
+on <i>Design Compact</i> and <i>Design Fulltext</i> pages in <i>Admin</i></p>
+
+<p>So, there is only one task you have to do for creating new alias. Add new line 
+in items.php3 file and write new f_... function, if needed. That's all.</p>
+                               
+<br><br>
 <a href="index.html">Other documentation</a><br>
 
 </body>
