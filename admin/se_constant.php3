@@ -119,7 +119,8 @@ function propagateChanges ($cid, $newvalue, $short=true)
 	if (!$db->next_record()) return;
 	$oldvalue = addslashes($db->f("value"));
 	if ($oldvalue == $newvalue) return;
-	myQuery ($db, "
+    if ($oldvalue)
+    	myQuery ($db, "
 		SELECT item_id,field_id
 		FROM content, field WHERE field.id=content.field_id
 		AND (field.input_show_func LIKE '___:$group_id:%'
