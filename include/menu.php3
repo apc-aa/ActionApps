@@ -75,8 +75,8 @@ function get_aamenus ()
     $aamenus["sliceadmin"] = array (
         "label" => _m("Slice Admin"),
         "title" => _m("Slice Administration"),
-        "href"  => "admin/slicedit.php3",
-        "cond"  => IfSlPerm(PS_EDIT),
+        "href"  => "admin/se_fields.php3",
+        "cond"  => IfSlPerm(PS_FIELDS),
         "level" => "main",
         "submenu"=>"sliceadmin_submenu");
 
