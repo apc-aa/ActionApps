@@ -101,18 +101,18 @@ function proove_data_ID ($data_id)
 	global $data_newID,
 		   $sess,
 		   $data_showme,
-		   $data_resolve_conflicts,
+		   $data_resolve_conflicts, //Set from data_conflicts_list 
+           $debugimport,
 		   $data_overwrite;
-		   
 	$res = $data_resolve_conflicts[$data_id];
-
-	if (strlen($res) != 16)	{
+    if ($debugimport) huhl("proove_data_ID($data_id), drc=$res");
+	if ($res && strlen($res) != 16)	{
 		if ((strlen($res) != 16)||(strlen($res) != 32)) {
 //			echo "Warning: ". _m("Slice_data_ID (".$res.") has wrong length (".strlen($res).", should be 32)<br>\n");
 		}
 		$res = q_pack_id($res);
-		if (strlen($res) == 16)	$data_id = unpack_id($res);
 	}
+	if (strlen($res) == 16)	$data_id = unpack_id($res);
 	// Find out whether item with the same ID already exists
 //	if ((strlen($data_id) != 32)&&(strlen($data_id) != 30)) {
 //		echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", $slice["id"], strlen($slice["id"]));
@@ -183,6 +183,7 @@ function import_slice (&$slice)
 	}	
 }
 
+// returns false on failure, but ignored
 function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 {
 	global $db,
@@ -193,11 +194,19 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 		   $Cancel,
 		   $data_imported_list,
 		   $data_overwritten_list,
+           $data_import_failure,
 		   $data_overwrite,
 		   $only_data,
-		   $new_slice_ids;	
+		   $new_slice_ids,
+           $debugimport;	
+    if ($debugimport) huhl("import_slice_data:id=$id;only_data=$only_data");
 	if ($only_data) { // import slice items ?   
 		list($fields,) = GetSliceFields($slice_id);
+        if (!is_array($fields)) {
+            if ($debugimport) huhl("import_slice_data failed to get fields");
+            $data_import_failure[] = $id." No fields for slice_id=$slice_id";
+            return false;
+        }
 	   	$cont = $content4id[$id];
 		reset($fields);
 		while (list($name,) = each($fields)) {
@@ -224,12 +233,16 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 		  $id=$new_data_id;
 		}		
 
-		if ($data_overwrite)
+        if ($debugimport) huhl("Storing item: $id");
+        if ($debugimport) $GLOBALS[debugsi] = 1;
+		if ( StoreItem($id, $slice_id, $cont, $fields, $insert, true, $feed)) {
+		  if ($data_overwrite)
 			$data_overwritten_list[] = $id." (id:".$id.")";
-		else
+		  else
 			$data_imported_list[] = $id." (id:".$id.")";
-		
-		$result = StoreItem($id, $slice_id, $cont, $fields, $insert, true, $feed);
+        } else {
+            $data_import_failure[] = $id." StoreItem failed";
+        }
 		$Cancel = "OHYES";
 	}	
 }
@@ -256,9 +269,9 @@ if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
   
     list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
     if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
-        if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) 
-            if( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file")) 
-                echo _m("Can't upload Import file");
+        if (is_uploaded_file($_FILES['slice_def_file']['tmp_name']))
+            if( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file"))
+                echo _m("Can't upload Import file") . "to $dirname$dest_file";
         else if ($perms)
 	            chmod ($dirname.$dest_file, $perms);
     } 
@@ -306,7 +319,7 @@ if ($data_conflicts_list) {
 }
 
 if ($slice_def != "") {
-	$err = sliceimp_xml_parse ($slice_def,false);
+	$err = sliceimp_xml_parse ($slice_def,false,$force_this_slice);
 	if ($err != "") si_err($err);
 }
 
@@ -329,7 +342,7 @@ enctype="multipart/form-data">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit>
 <?php
-if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list):
+if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list || $data_import_failure):
 	echo "<B>".sprintf(_m("Count of imported slices: %d."),count($imported_list)+count($overwritten_list))."</p>";
 	if (is_array($imported_list)) {
 		echo "</p>"._m("Added were:")."</p>";
@@ -356,6 +369,12 @@ if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list):
 		echo "</p>"._m("Overwritten were:")."</p>";
 		reset($data_overwritten_list);
 		while(list(,$desc)=each($data_overwritten_list))
+			echo $desc."<br>";
+	}
+	if (is_array($data_import_failure)) {
+		echo "</p>"._m("Failed were:")."</p>";
+		reset($data_import_failure);
+		while(list(,$desc)=each($data_import_failure))
 			echo $desc."<br>";
 	}
 
@@ -455,6 +474,7 @@ echo HTMLEntities($slice_def_bck) ?></TEXTAREA>
 	<?php echo _m("Here specify, what do you want to import:"); ?><p>
 	<input type=checkbox name=only_slice checked><?php echo _m("Import slice definition") ?><br>
 	<input type=checkbox name=only_data checked><?php echo _m("Import slice items") ?><br><br>	
+	<input type=checkbox name=force_this_slice><?php echo _m("Import into this slice - whatever file says") ?><br><br>	
 	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Send the slice structure and data") ?>">
 	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo _m("Cancel") ?>">
 <?php } ?>	

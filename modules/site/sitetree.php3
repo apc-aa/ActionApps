@@ -370,15 +370,20 @@ class sitetree {
     return $s ? $s->conditionMatches($state) : false;
   }  
 
+  //Walk the tree, starting at $id, calling $function
   function walkTree(&$state, $id, $function, $method='cond', $depth=0) {
     $current =& $this->tree[$id];
     $positions = $current->get("positions");
+    #huhl($positions);
     if( !$positions ) {
       echo "neco je spatne - nejsou pozice u parenta";
       exit;
     }
     reset( $positions );
     while( list( , $pos) = each($positions) ) {
+     if($pos) { 
+      // There is a bug that introduced empty positions
+      // this is to skip them.
       $function($pos, $depth);
       if( $this->haveBranches($pos) AND 
          (($method == 'cond') OR !($current->get("flag") & MODW_FLAG_HIDE))) {
@@ -397,6 +402,7 @@ class sitetree {
           }
         }
       }
+     }
     }
   }    
 };    

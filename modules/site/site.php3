@@ -150,6 +150,8 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
 }                                                
   
 function ModW_StoreIDs($spot_id, $depth) {
+    if ($GLOBALS['errcheck'] && ! $spot_id)  # There is a bug causes this
+        huhl("Warning adding empty spot_id");
   $GLOBALS['show_ids'][] = $spot_id;
 }  
 /* Deprecated - uses code in stringexpand.php3}

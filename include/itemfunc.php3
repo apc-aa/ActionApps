@@ -933,11 +933,13 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
 /** Basic function for changing contents of items.
 *   Use always this function, not direct SQL queries.
 *   Updates the tables @c item and @c content.
+*   $GLOBALS[err][field_id] should be set on error in function
+*   It looks like it will return true even if inset_fnc_xxx fails
 *
 *   @param array $content4id   array (field_id => array of values
 *						      (usually just a single value, but still an array))
 *   @param array $oldcontent4id if not sent, StoreItem finds it
-*   @return true on success, false otherwise
+*   @return true on success, false otherwise 
 */
 function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true, $oldcontent4id="" )
@@ -949,10 +951,12 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     if (!is_object ($db)) $db = new DB_AA;
     if (!is_object ($varset)) $varset = new CVarset();
     if (!is_object ($itemvarset)) $itemvarset = new CVarset();
-
-    if( !( $id AND is_array($fields) AND is_array($content4id)) )
+    
+    if( !( $id AND is_array($fields) AND is_array($content4id)) ) {
+        if ($GLOBALS[errcheck]) huhl("Warning: StoreItem failed parameter check");
         return false;
-
+    }
+    
     // remove old content first (just in content table - item is updated)
     if( !$insert ) {
         if (!$oldcontent4id) {
@@ -1063,6 +1067,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     else Event_ItemAfterUpdate ($id, $slice_id, new ItemContent ($content4id),
         $oldItemContent);
 
+    if ($debugsi) huhl("StoreItem err=",$err);
     return true;
 } // end of StoreItem
 

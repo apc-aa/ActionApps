@@ -1,3 +1,6 @@
+04/13/03 - fixed import to allow for just slice data,
+         - allow import to force import to current slice
+         - workaround for empty spotid in site module (not a bug fix!)
 04/10/03 - fixed Alerts bug which ignored Selection conds[]
 (jakub)  - finished the new option for sending all items from one view at once
 04/10/03 - new CountHit function, so displaying fulltext is quicker

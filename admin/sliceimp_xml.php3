@@ -110,7 +110,8 @@ function si_err($str) {
 }
 
 // Create and parse data
-function sliceimp_xml_parse($xml_data,$dry_run=false) { 
+function sliceimp_xml_parse($xml_data,$dry_run=false,
+        $force_this_slice=false) { 
     set_time_limit(600); // This can take a while
     $xu = new xml_unserializer();
     #huhl("Importing data=",$xml_data);
@@ -127,7 +128,7 @@ function sliceimp_xml_parse($xml_data,$dry_run=false) {
             $sl = $s[SLICE][0];
 			$slice = unserialize (base64_decode($sl[DATA]));
 			if (!is_array($slice))
-                si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export."));
+                si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s[VERSION]);
 			$slice["id"] = $sl[ID];
 			$slice["name"] = $sl[NAME];
             if($dry_run) {
@@ -138,24 +139,25 @@ function sliceimp_xml_parse($xml_data,$dry_run=false) {
     else if ($s[VERSION] == "1.1") {
       foreach($s[SLICE] as $sl) {
         $sld=$sl[SLICEDATA][0];
-        if ($sld[CHARDATA]) { // Its an encoded serialized data
+        if ($sld) { // Can skip structure if just data
+          if ($sld[CHARDATA]) { // Its an encoded serialized data
     		$chardata = base64_decode($sld[CHARDATA]);
 	    	$chardata = $sld[GZIP]
                   ? gzuncompress($chardata) : $chardata;
     		$slice = unserialize ($chardata);
-        } elseif ($sld[slice]) {
+          } elseif ($sld[slice]) {
             $slice = $sld[slice];
-        }
-		if (!is_array($slice))
-            si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export."));
+          }
+		  if (!is_array($slice))
+            si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s[VERSION]);
 
-		$slice["id"] = $sl[ID];
-		$slice["name"] = $sl[NAME];
-        if($dry_run) {
+  		  $slice["id"] = $sl[ID];
+	 	  $slice["name"] = $sl[NAME];
+          if($dry_run) {
                huhl("Would import slice=",$slice);
-        } else 
+          } else 
 			   import_slice($slice);
-
+        }
         if (is_object($sl[VIEWS])) {
             import_views($sl[VIEWS]);
         } // have some views
@@ -170,12 +172,15 @@ function sliceimp_xml_parse($xml_data,$dry_run=false) {
             $content4id = $sld[item]; 
           }
           if (!is_array($content4id))
-             si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export."));
+             si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s[VERSION]);
           if($dry_run)
             huhl("Would import data to ",$sld[ITEM_ID],$content4id);
-          else 
-    		import_slice_data($sl[ID], $sld[ITEM_ID], 
+          else {
+    		import_slice_data(
+                ($force_this_slice ? $GLOBALS[slice_id] : $sl[ID]),
+                $sld[ITEM_ID], 
                 $content4id, true, true);
+          }
         } // loop over each item 
       } // loop over each slice
     } // Version 1.1
