@@ -168,7 +168,7 @@ function make_return_url($prifix,$r1="") {
   // if null, it uses "&return_url="
   if (!$prifix) $prifix = "&return_url=";
  
-  global $return_url, $REQUEST_URI;
+  global $return_url, $REQUEST_URI, $sess;
   if ($r1) 
 	return $prifix . urlencode($r1);
   elseif ($return_url)
