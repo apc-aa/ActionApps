@@ -54,6 +54,8 @@ if( $update )
     ValidateInput("fulltext_format", L_FULLTEXT_FORMAT, &$fulltext_format, &$err, true, "text");
     ValidateInput("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, &$fulltext_format_bottom, &$err, false, "text");
     ValidateInput("fulltext_remove", L_FULLTEXT_REMOVE, &$fulltext_remove, &$err, false, "text");
+    ValidateInput("discus_sel", L_DISCUS_SEL, $discus_sel, &$err, true, "text");
+
     if( count($err) > 1)
       break;
 
@@ -61,8 +63,14 @@ if( $update )
     $varset->add("fulltext_format", "quoted", $fulltext_format);
     $varset->add("fulltext_format_bottom", "quoted", $fulltext_format_bottom);
     $varset->add("fulltext_remove", "quoted", $fulltext_remove);
-    if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . 
-                     "WHERE id='".q_pack_id($slice_id)."'")) {
+    $varset->add("flag", "number", $discus_htmlf ? 1 : 0);
+    $varset->add("vid", "number", $discus_sel);
+
+
+    $SQL = "UPDATE slice SET ". $varset->makeUPDATE().
+           " WHERE id='".q_pack_id($slice_id)."'";
+           
+    if( !$db->query($SQL)) {
       $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
       break;    # not necessary - we have set the halt_on_error
     }     
@@ -80,7 +88,7 @@ if( $update )
 
 if( $slice_id!="" ) {  // set variables from database
   $SQL= " SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, 
-                 fulltext_remove 
+                 fulltext_remove, flag, vid
             FROM slice WHERE id='". q_pack_id($slice_id)."'";
   $db->query($SQL);
   if ($db->next_record()) {
@@ -88,7 +96,17 @@ if( $slice_id!="" ) {  // set variables from database
     $fulltext_format = $db->f(fulltext_format);
     $fulltext_format_bottom = $db->f(fulltext_format_bottom);
     $fulltext_remove = $db->f(fulltext_remove);
+    $discus_htmlf = ($db->f(flag) & DISCUS_HTML_FORMAT) == DISCUS_HTML_FORMAT;
+    $discus_vid = $db->f(vid);
   }  
+}
+
+# lookup discussion views
+$discus_vids[0] = L_DISCUS_EMPTY;
+$SQL = "SELECT id, name FROM view WHERE slice_id ='". $p_slice_id ."' AND type='discus'";
+$db->query($SQL);
+while ($db->next_record()) {
+  $discus_vids[$db->f(id)] = $db->f(name);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -106,9 +124,7 @@ function Defaults() {
 </HEAD>
 
 <?php
-  $xx = ($slice_id!="");
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>false, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
+  $show ["fulltext"] = false;
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . L_A_FULLTEXT . "</B></H1>&nbsp;&nbsp;" . L_A_FULLTEXT_HELP;
@@ -131,6 +147,9 @@ function Defaults() {
                L_BOTTOM_HLP, DOCUMENTATION_URL, 1); 
   FrmInputText("fulltext_remove", L_FULLTEXT_REMOVE, $fulltext_remove, 254, 50, false,
                L_REMOVE_HLP, DOCUMENTATION_URL);
+  FrmInputSelect("discus_sel", L_DISCUS_SEL, $discus_vids, $discus_vid, false);
+  FrmInputChBox("discus_htmlf", L_DISCUS_HTML_FORMAT, $discus_htmlf);
+
 ?>
 </table></td></tr>
 <?php
@@ -145,6 +164,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.15  2001/09/27 15:45:11  honzam
+Easiest left navigation bar editation, New discussion support
+
 Revision 1.14  2001/05/21 13:52:31  honzam
 New "Field mapping" feature for internal slice to slice feeding
 
