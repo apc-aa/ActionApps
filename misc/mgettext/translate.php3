@@ -63,28 +63,29 @@ function translate_files ($old_lang_file, $src_dir, $dst_dir)
             continue;
         echo $file."<br>";
         $content = file ($src_dir.$file);
-        $fd = @fopen ($dst_dir.$file, "w");
-        chmod ($dst_dir.$file, 0777);
-        
-        if (!$fd) echo " write permission denied<br>";
-        if (!is_array($content) || !$fd)
-            continue;
-            
+        $new_content = "";
+
         foreach ($content as $row) {
             for (reset ($consts); $name = key ($consts); next ($consts)) {
                 // first try the quick search
                 if (strstr ($row, $name)) {
-                    echo HTMLentities($row)." => ";
+                    //echo HTMLentities($row)." => ";
                     // now replace only when it is not a part of a longer name
                     $row = preg_replace ("'([^A-Z0-9_])".$name."([^A-Z0-9_])'si", "\\1".$consts[$name]."\\2", $row);
-                    echo HTMLentities($row)."<br>";
+                    //echo HTMLentities($row)."<br>";
                 }
             }
-                    
-            fwrite ($fd, $row);
+            $new_content[] = $row;                    
         }       
         
+        $fd = @fopen ($dst_dir.$file, "w");        
+        if (!$fd) echo " write permission denied<br>";
+        if (!is_array($new_content) || !$fd)
+            continue;
+        foreach ($new_content as $row)
+            fwrite ($fd, $row);        
         fclose ($fd);
+        chmod ($dst_dir.$file, 0777);
     }
     closedir ($dir);    
 }

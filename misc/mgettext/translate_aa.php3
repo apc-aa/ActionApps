@@ -2,17 +2,23 @@
 
 require "./xmgettext.php3";
 require "./translate.php3";
-
-//translate_aa_files ("/raid/www/htdocs/work.ecn.cz/aa_jakub/", "/raid/www/htdocs/work.ecn.cz/aa_jakub/php_rw/tr1/");
+require "../../include/config.php3";
 
 // call this script several times if it does not manage to go through all files 
 // it will continue where it stopped last time
 
-create_language_files_updates ("/raid/www/htdocs/work.ecn.cz/aa_jakub/", "/raid/www/htdocs/work.ecn.cz/aa_jakub/php_rw/lang/", 0);
+$aadir = substr ($AA_INC_PATH, 0, strlen($AA_INC_PATH)-strlen("include/"));
+$destdir = $aadir."php_rw/";
+
+if (is_array ($update)) 
+    create_language_files_updates ($aadir, $destdir."lang/", false);
+        
+//translate_aa_files ("/raid/www/htdocs/work.ecn.cz/aa_jakub/", "/raid/www/htdocs/work.ecn.cz/aa_jakub/php_rw/tr1/");
 
 function create_language_files_updates ($aadir, $destdir, $addlogs = false)
 {    
-    @mkdir ($destdir, 0777);
+    global $update;
+    //echo $aadir." ".$destdir;    @mkdir ($destdir, 0777);
     $lang_groups ["alerts"] =
         array ("misc/alerts/");
     $lang_groups ["news"] =
@@ -27,6 +33,8 @@ function create_language_files_updates ($aadir, $destdir, $addlogs = false)
             
     reset ($lang_groups);
     while (list ($langfiles, $srcfiles) = each ($lang_groups)) {
+        if (!$update[$langfiles])
+            continue;
         if ($log_group_processed == $langfiles)
             unset ($log_group_processed);
         if (!$log_group_processed) {
@@ -46,7 +54,7 @@ function create_language_files_updates ($aadir, $destdir, $addlogs = false)
 
 function translate_aa_files ($aadir, $dstdir)
 {
-    $dirlist = array ("admin","include","modules","modules/module_TEMPLATE",
+    $dirlist = array (".", "admin","include","modules","modules/module_TEMPLATE",
         "modules/jump","modules/mysql_auth");
     
     @mkdir ($dstdir,0777);
@@ -61,5 +69,16 @@ function translate_aa_files ($aadir, $dstdir)
     echo "Ready<br>";
 }
 
-
+echo "
+<HTML>
+<HEAD><TITLE>Translate AA</TITLE></HEAD>
+<BODY>
+    Which language files do you want to update?<br><br>
+    <FORM name=f METHOD=post ACTION='translate_aa.php3'>
+    <INPUT type=checkbox name='update[alerts]' checked> Alerts<br>
+    <INPUT type=checkbox name='update[news]' checked> News<br><br>
+    <INPUT type=submit name='go' value='Fire!'>
+    </FORM>
+</BODY>
+</HTML>";
 ?>
