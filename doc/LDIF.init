@@ -12,30 +12,3 @@ objectclass: person
 cn: aa
 sn: Toolkit
 description: Account used by AA to access LDAP DB
-
-dn: cn=AA Admins,dc=ecn,dc=apc,dc=org
-objectclass: top
-objectclass: groupofnames
-cn: AA Admins
-member: uid=karel,dc=ecn,dc=apc,dc=org
-description: Administrators of Action Applications
-
-dn: uid=karel,dc=ecn,dc=apc,dc=org
-objectclass: top
-objectclass: person
-objectclass: organizationalperson
-objectclass: inetorgperson
-cn: Karel Zajicek
-sn: Zajicek
-uid: karel
-mail: karel.zajicek@ecn.cz
-mail: karel@ecn.cz
-
-dn: apcobjectid=000111222333444555666777888999AA,dc=ecn,dc=apc,dc=org
-objectclass: top
-objectclass: apcacl
-apcobjecttype: aa
-apcobjectid: 000111222333444555666777888999AA
-apcaci: cn=AA Admins,dc=ecn,dc=apc,dc=org:4
-description: AA at ecn1.ecn.cz
-

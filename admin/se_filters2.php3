@@ -38,73 +38,78 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
 }  
 
 function ParseIdA($param,$app) {
-   ERegI("([0-9a-f]{1,32})-([01])", $param, $parse); 
-   $app = $parse[2];
-   return $parse[1];
+   if (ERegI("([0-9a-f]{1,32}|0)-([01])", $param, $parse)) {  // slice_id or 0 
+      $app = $parse[2];
+      return $parse[1];
+   }
 }   
 
 $p_import_id= q_pack_id($import_id);
 
-$err["Init"] = "";          // error array (Init - just for initializing variable
+$err["Init"] = "";       // error array (Init - just for initializing variable)
 $catVS = new Cvarset();
 
-do {
-  $db->query("DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id = '$p_import_id'");
+// First we DELETE current filters and then INSERT new.
+// We can't use UPDATE because the count of old and new rows can be different.
+// We could UPDATE existing rows and INSERT new, but DELETE/INSERT is simpler.
+// A transaction would be nice.
 
-  if( $all ) {  // all_categories
-    $id = ParseIdA($C, &$app);
+$db->query("DELETE FROM feeds WHERE to_id = '$p_slice_id' " .
+           "AND from_id = '$p_import_id'");
+
+if ($all) {                                         // all_categories
+  $id = ParseIdA($C, &$app);
+  $catVS->clear();
+  $catVS->add("to_id", "unpacked", $slice_id);
+  $catVS->add("from_id", "unpacked", $import_id);
+  $catVS->add("all_categories", "number", 1);
+  $catVS->add("to_approved", "number", $app);
+  $catVS->add("to_category_id", "unpacked", $id);   // zero = the same category
+  $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
+  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+    $err["DB"] .= MsgErr("Can't add import from $val");
+  }
+} else if (isset($F) AND is_array($F)) {            // insert to categories
+  reset($F);
+  while( list($index,$val) = each($F) ) {
+    $from_cat = ParseIdA($val, &$app);
+    $to_cat = $T[$index];
+    if( $to_cat == "0" )
+      $to_cat = $from_cat;
     $catVS->clear();
     $catVS->add("to_id", "unpacked", $slice_id);
     $catVS->add("from_id", "unpacked", $import_id);
-    $catVS->add("all_categories", "number", 1);
+    $catVS->add("all_categories", "number", 0);
     $catVS->add("to_approved", "number", $app);
-    $catVS->add("to_category_id", "unpacked", $id);   // zero means import to the same category
+    $catVS->add("category_id", "unpacked", $from_cat);  
+    $catVS->add("to_category_id", "unpacked", $to_cat);
     $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
-//huh($id);
-//huh($SQL."<br>");
-    $db->query($SQL);
-    if ($db->affected_rows() == 0) 
-      $err["DB"] .= "<div class=err>Can't add import from $val</div>";
-    break;
-  }  
-
-//p_arr($F, "F");
-//p_arr($T, "T");
-  
-  if( isset($F) AND is_array($F) ) {  // insert to categories
-    reset($F);
-    while( list($index,$val) = each($F) ) {
-      $from_cat = ParseIdA($val, &$app);
-      $to_cat = $T[$index];
-      if( $to_cat == "0" )
-        $to_cat = $from_cat;
-      $catVS->clear();
-      $catVS->add("to_id", "unpacked", $slice_id);
-      $catVS->add("from_id", "unpacked", $import_id);
-      $catVS->add("all_categories", "number", 0);
-      $catVS->add("to_approved", "number", $app);
-      $catVS->add("category_id", "unpacked", $from_cat);  
-      $catVS->add("to_category_id", "unpacked", $to_cat);
-      $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
-//huh($SQL."<br>");
-      $db->query($SQL);
-      if ($db->affected_rows() == 0)
-      { $err["DB"] .= "<div class=err>Can't add import from $val</div>";
-        break;
-      }
+    if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+      $err["DB"] .= MsgErr("Can't add import from $val");
+      break;
     }
-  }        
-} while(false);
+  }
+}        
+
 if( count($err) <= 1 )
-  go_url( $sess->url(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(L_IMPORT_OK));
+  go_url( $sess->url(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOK(L_IMPORT_OK)));
 else
   MsgPage($sess->url(self_base()."se_import.php3"), $err);
 
 page_close();
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:01  madebeer
-Initial revision
+Revision 1.4  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
+Revision 1.3  2000/07/17 15:20:11  kzajicek
+Replaced superfluous do..while(false) construct
+
+Revision 1.2  2000/07/14 14:09:04  kzajicek
+Fixed faulty behaviour caused by nonexistent in or out categories.
+
+Revision 1.1.1.1  2000/06/21 18:40:01  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

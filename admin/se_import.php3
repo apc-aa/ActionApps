@@ -21,7 +21,7 @@ http://www.apc.org/
 
 # se_import.php3 - feeding settings
 # expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update succesfull)
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update successful)
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -157,8 +157,11 @@ function UpdateImportExport(slice_id)
   FrmInputChBox("export_to_all", L_EXPORT_TO_ALL, $export_to_all, true, "OnClick=\"ExportAllClick()\"");
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:02  madebeer
-Initial revision
+Revision 1.2  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.1.1.1  2000/06/21 18:40:02  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

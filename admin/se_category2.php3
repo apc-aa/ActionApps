@@ -43,10 +43,9 @@ do {
       $newid=new_id();
       $catVS->add("id", "unpacked", $newid);
       $catVS->add("name", "text", $val);
-      $db->query("INSERT INTO categories" . $catVS->makeINSERT() );
-      if ($db->affected_rows() == 0)
-      { $err["DB"] .= "<div class=err>Can't add category $val</div>";
-        break;
+      if (!$db->query("INSERT INTO categories" . $catVS->makeINSERT() )) {
+        $err["DB"] .= MsgErr( "Can't add category $val" );
+        break;  # not necessary - we have set the halt_on_error
       }
       $C[]=$newid;  // add to catbinds
     }
@@ -57,16 +56,16 @@ do {
       $catVS->clear();
       $catVS->add("slice_id", "unpacked", $slice_id);
       $catVS->add("category_id", "unpacked", $val);
-      $db->query("INSERT INTO catbinds" . $catVS->makeINSERT() );
-      if ($db->affected_rows() == 0)
-      { $err["DB"] .= "<div class=err>Can't add category binding $val</div>";
-        break;
+      if(!$db->query("INSERT INTO catbinds" . $catVS->makeINSERT() )) {
+        $err["DB"] .= MsgErr("Can't add category binding $val");
+        break;     # not necessary - we have set the halt_on_error
       }
     }
   }      
 } while(false);
 if( count($err) <= 1 ) 
-  go_url( $sess->url(self_base() . "se_category.php3") ."&Msg=" . rawurlencode(L_CATBINDS_OK));
+  go_url( $sess->url(self_base() . "se_category.php3") ."&Msg=" . 
+    rawurlencode(MsgOK(L_CATBINDS_OK)));
 else
   MsgPage($sess->url(self_base()."se_category.php3"), $err);
 
