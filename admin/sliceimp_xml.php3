@@ -20,8 +20,8 @@ http://www.apc.org/
 */
 
 /*
-	Author: Mitra (based on earlier versions by Jakub Adámek, Pavel Jisl)
-	
+    Author: Mitra (based on earlier versions by Jakub Adámek, Pavel Jisl)
+
 # Slice Import - XML parsing function
 #
 # Note: This parser does not check correctness of the data. It assumes, that xml document
@@ -51,19 +51,17 @@ base 64 data from item_id (w/wo gzip)
 */
 
 
-require_once $GLOBALS[AA_INC_PATH] . "xml_serializer.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "xml_serializer.php3";
 
-$dry_run = 1;
+//$dry_run = 1;
 
 // This function should go in site-specific file, just here to make easier to debug
 // and to have an example
 function bayfm_preimport($s) {
-#huhl($s);
-    reset($s[SLICE]);
     // Create a vid_translate table, and change ids while there
-    while(list($k,) = each($s[SLICE])) {
-        $sl = &$s[SLICE][$k];
-        if ($slvs = &$sl[VIEWS]) {
+    foreach ( $s['SLICE'] as $k => $v ) {
+        $sl = &$s['SLICE'][$k];
+        if ($slvs = &$sl['VIEWS']) {
             print("<br>Processing Views, translating shortids");
 #            foreach ($slvs->a as $slv) { # $slv is a viewobj
             $a = &$slvs->a; reset($a);
@@ -80,22 +78,17 @@ function bayfm_preimport($s) {
             }
         }
     }
-                huhl("SLVD",$s);
-               exit;
     // Edit Items, translate vids in field "unspecified....1"
-    reset($s[SLICE]);
-   while(list($k,$sl) = each(&$s[SLICE])) {
-        if (is_array($sl[DATA])) {
+    reset($s['SLICE']);
+    while(list($k,$sl) = each(&$s['SLICE'])) {
+        if (is_array($sl['DATA'])) {
             print("<br>Processing Data");
-            reset($sl[DATA]);
-            foreach($sl[DATA] as $sld) {
-              foreach($sld[item] as $content4id) { // should only be one
-                // unspecified....1 contains a vid
-                print("Setting unspecified....1 from ".$content4id["unspecified....1"][0][value]." to ".$vid_translate[$content4id["unspecified....1"][0][value]]);
-                $content4id["unspecified....1"][0][value] = $vid_translate[$content4id["unspecified....1"][0][value]];
-                while(list($k,$l) = each($content4id)) { 
+            foreach($sl['DATA'] as $sld) {
+                foreach($sld['item'] as $content4id) { // should only be one
+                    // unspecified....1 contains a vid
+                    print("Setting unspecified....1 from ".$content4id["unspecified....1"][0]['value']." to ".$vid_translate[$content4id["unspecified....1"][0]['value']]);
+                    $content4id["unspecified....1"][0]['value'] = $vid_translate[$content4id["unspecified....1"][0]['value']];
                 }
-              }
             }
         }
     }
@@ -110,212 +103,222 @@ function si_err($str) {
 }
 
 // Create and parse data
-function sliceimp_xml_parse($xml_data,$dry_run=false,
-        $force_this_slice=false) { 
+function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) {
     global $debugimport;
     set_time_limit(600); // This can take a while
     $xu = new xml_unserializer();
     if ($debugimport) huhl("Importing data=",htmlentities($xml_data));
+
+    /** Create array strusture from XML data */
     $i = $xu->parse($xml_data);  // PHP data structure
     if ($debugimport) huhl("Parsed data=",$i);
+
     $s = $i["SLICEEXPORT"][0];
     if (! $s) si_err(_m("\nERROR: File doesn't contain SLICEEXPORT"));
-    if ($s[PROCESS]) {
-        $v = $s[PROCESS] . "_preimport"; 
+    if ($s['PROCESS']) {
+
+        // This is some kind of data preprocessing from Mitra
+        // Looks like slice specific - ask Mitra for more details
+        $v = $s['PROCESS'] . "_preimport";
         print("\nPre-processing with $v");
         $v($s);
     }
-    if ($s[VERSION] == "1.0") {
-            $sl = $s[SLICE][0];
-			$slice = unserialize (base64_decode($sl[DATA]));
-			if (!is_array($slice))
-                si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s[VERSION]);
-			$slice["id"] = $sl[ID];
-			$slice["name"] = $sl[NAME];
-            if($dry_run) {
-                huhl("Would import slice=",$slice);
-            } else 
-			    import_slice ($slice);
-    }
-    else if ($s[VERSION] == "1.1") {
-      foreach($s[SLICE] as $sl) {
-        $sld=$sl[SLICEDATA][0];
-        if ($sld) { // Can skip structure if just data
-          if ($sld[CHARDATA]) { // Its an encoded serialized data
-    		$chardata = base64_decode($sld[CHARDATA]);
-	    	$chardata = $sld[GZIP]
-                  ? gzuncompress($chardata) : $chardata;
-    		$slice = unserialize ($chardata);
-          } elseif ($sld[slice]) {
-            $slice = $sld[slice];
-          }
-		  if (!is_array($slice))
-            si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s[VERSION]);
 
-  		  $slice["id"] = $sl[ID];
-	 	  $slice["name"] = $sl[NAME];
-          if($dry_run) {
-               huhl("Would import slice=",$slice);
-          } else 
-			   import_slice($slice);
+    if ($s['VERSION'] == "1.0") {   // older format of XML file
+        $sl            = $s['SLICE'][0];
+        $slice         = unserialize (base64_decode($sl['DATA']));
+        if (!is_array($slice)) {
+            si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s['VERSION']);
         }
-        if (is_object($sl[VIEWS])) {
-            import_views($sl[VIEWS]);
-        } // have some views
-        if (is_array($sl[DATA])) 
-         foreach ($sl[DATA] as $sld) {
-          if (isset($sld[CHARDATA])) {
-			$chardata = base64_decode($sld[CHARDATA]);
-			$chardata = $sld[GZIP] 
-                ? gzuncompress($chardata) : $chardata;
-			$content4id = unserialize ($chardata);
-          } else { // Its in XML
-            $content4id = $sld[item]; 
-          }
-          if (!is_array($content4id))
-             si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s[VERSION]);
-          if($dry_run)
-            huhl("Would import data to ",$sld[ITEM_ID],$content4id);
-          else {
-    		import_slice_data(
-                ($force_this_slice ? $GLOBALS[slice_id] : $sl[ID]),
-                $sld[ITEM_ID], 
-                $content4id, true, true);
-          }
-        } // loop over each item 
-      } // loop over each slice
+        $slice["id"]   = $sl['ID'];
+        $slice["name"] = $sl['NAME'];
+        if($dry_run) {
+            huhl("Would import slice=",$slice);
+            $slice_id_new = '11111111111111112222222222222222';
+        } else {
+            $slice_id_new = import_slice($slice);
+        }
+    }
+    elseif ($s['VERSION'] == "1.1") {
+        foreach($s['SLICE'] as $sl) {
+            $sld = $sl['SLICEDATA'][0];
+
+            /** First we have to import slice data */
+            if ($sld) { // Can skip structure if just data
+                // slice structure defined - create slice array
+                if ($sld['CHARDATA']) { // Its an encoded serialized data
+                    $chardata = base64_decode($sld['CHARDATA']);
+                    $chardata = $sld['GZIP'] ? gzuncompress($chardata) : $chardata;
+                    $slice    = unserialize ($chardata);
+                } elseif ($sld['slice']) {
+                    $slice    = $sld['slice'];
+                }
+                if (!is_array($slice)) {
+                    si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s['VERSION']);
+                }
+
+                $slice["id"]   = $sl['ID'];
+                $slice["name"] = $sl['NAME'];
+                if($dry_run) {
+                    huhl("Would import slice=",$slice);
+                    $slice_id_new = '11111111111111112222222222222222';
+                } else {
+                    $slice_id_new = import_slice($slice);
+                }
+            }
+            /** Now we will import views. View ids are changed (it is
+              * autoincremented database velue, so it is possible that there
+              * will be the need to update some aliases. View is overwritten
+              * only if you select OVERWRITE for slice
+              */
+            if (is_array($sl['VIEWS'])) {
+                // in fact there is only [0] element of the array, where more
+                // views is defined
+                foreach ( $sl['VIEWS'] as $viewdata ) {
+                    $viewdata = base64_decode($viewdata);
+                    $viewdata = $sld['GZIP'] ? gzuncompress($viewdata) : $viewdata;
+                    $view = unserialize ($viewdata);
+                    import_views($view, $slice_id_new);
+                }
+            }
+            /** Now import items */
+            if (is_array($sl['DATA'])) {
+                foreach ($sl['DATA'] as $sld) {
+                    if (isset($sld['CHARDATA'])) {
+                        $chardata   = base64_decode($sld['CHARDATA']);
+                        $chardata   = $sld['GZIP'] ? gzuncompress($chardata) : $chardata;
+                        $content4id = unserialize ($chardata);
+                    } else { // Its in XML
+                        $content4id = $sld['item'];
+                    }
+                    if (!is_array($content4id)) {
+                        si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s['VERSION']);
+                    }
+                    if($dry_run) {
+                        huhl("Would import data to ",$sld['ITEM_ID'],$content4id);
+                    }
+                    else {
+                        import_slice_data( $force_this_slice ? $GLOBALS['slice_id'] : $sl['ID'],
+                                           $sld['ITEM_ID'], $content4id, true, true);
+                    }
+                }
+            } // loop over each item
+        } // loop over each slice
     } // Version 1.1
-    else si_err(_m("ERROR: Unsupported version for import").$s[VERSION]);
+    else si_err(_m("ERROR: Unsupported version for import").$s['VERSION']);
 }
 
-function import_views(&$slvs) {
+function import_views(&$slvs, $slice_id_new) {
     global $dry_run, $view_resolve_conflicts, $new_slice_ids,
            $view_IDconflict,$IDconflict, $view_conflicts_ID;
-    #print("<br>Checking ".count($slvs->a)." views");
-    $av = GetViewsWhere();
-    reset($slvs->a);
-    foreach ($slvs->a as $slv) { # $slv is a viewobj
-        $slvf = $slv->f();
-        $id = $slvf["id"];
-        if (isset($av[$id]) 
-                &&($GLOBALS["Submit"]!=_m("Insert with new ids"))) {
-            $view_conflicts_ID[$id] = substr($slvf["name"],10)." to ".
-                substr($av[$id]->f("id"),10);
-            $view_IDconflict = true;
-        }
-    }
-    if ($IDconflict) return;  // Don't try and add views, if Slice id conflict
-    #print("<br>Importing ".count($slvs->a)." views");
-    // Several cases here
-    // If there is a conflict, then 
-    // Overwrite => just go ahead, use changed id if available
-    // Insert with new ids => pick a new id for view
-    // Insert => skip conflicts
-    //
-    // note if no conflict then will import, which might be bad if 
-    // slice_id would have been changed.
-    // Note that difference between Overwrite & InsertNew, is in whether
-    // other views for this slice should be deleted first, they are not
-    // currently deleted, although that would be an OK change to make
-    reset($slvs->a);
-    foreach ($slvs->a as $slv) { # $slv is a viewobj
-        #huhl("Working on view",$slv);
-        $varset = new Cvarset();
-        $slvf = $slv->f();
-        $id = $slvf["id"];
 
-        #huhl("varset=",$varset);
-        if($dry_run) {
-                 print("Would import view $id: "
-                            .$slv->f("name"));
-        } else {
-            if (isset($av[$id])) {
-                if ($GLOBALS["Submit"] ==_m("Insert")) continue; // skip
-                if ($GLOBALS["Submit"] ==_m("Insert with new ids")) {
-                    unset($slvf["id"]); // Allow CREATE to create new
-                    $id = 0;  // Should never exist, so won't complain
-                }
-                elseif ($GLOBALS["Submit"] ==_m("Overwrite")) {
-                    $res = $view_resolve_conflicts[$id]; // maybe same
-                    $slvf["id"] = $res;
-                    $id = $res;
-                } else {
-                    continue;
-                }
-            }
-            // Note this mirrors what looks like bug in import_slice_data
-            // if using Overwrite and change id, won't see new slice_id (mitra)
-            if ($GLOBALS["Submit"] ==_m("Insert with new ids")) {
-	            $slvf["slice_id"] = 
-                    pack_id($new_slice_ids[$slice_id]["new_id"]);
-            }
-            while(list($k,$v) = each($slvf)) {
+    if ( $dry_run ) { huhl($slvs); }
+
+    $db = getDB();
+
+    // Get all views in current AA
+    $av = GetViewsWhere();
+
+    /** Several cases here
+      *  If there is a conflict, then
+      *  - Overwrite           => just go ahead, use changed id if available
+      *  - Insert with new ids => pick a new id for view
+      *  - Insert              => skip conflicts
+      *
+      *
+      * note if no conflict then will import, which might be bad if
+      * slice_id would have been changed.
+      * Note that difference between Overwrite & InsertNew, is in whether
+      * other views for this slice should be deleted first, they are not
+      * currently deleted, although that would be an OK change to make
+      */
+    $varset = new Cvarset();
+    foreach ($slvs as $slv) {   // $slv is a viewobj
+
+        $varset->clear();
+        $slvf = $slv->f();
+        $id   = $slvf["id"];
+
+        /** Change the slice_id for the view to the current one
+         *  (could be the same, but could be also different if we are
+         *  changing slice_id (due to conflict, ...)
+         */
+        $slvf["slice_id"] = pack_id($slice_id_new);
+
+        foreach($slvf as $k => $v) {
+            // there was a bug in viewobj - we store 'slice.deleted' field to
+            // view - we must skip it, now.
+            if ( $k != 'deleted' ) {
                 $varset->add($k,"text",$v);
             }
-            $db = getDB();
+        }
+
+        /** Now we should resolve conflict in view ids - we overwrite view
+         *  only if user selected 'Overwrite'. In other cases we change
+         *  the view id to the new one (it is autoincremented). This
+         *  behavior could lead to necessary code change for slice admins,
+         *  but it is far best solution for now.
+         */
+        if ( isset($av[$id]) AND ($GLOBALS["Submit"] == _m("Overwrite"))) {
+            // owerwrite
+            $SQL = "UPDATE view SET ".$varset->makeUPDATE()." WHERE id='$id'";
             print(_m("<br>Overwriting view %1",array($id)));
-            if (isset($av[$id])) {
-                $SQL = "UPDATE view SET ". $varset->makeUPDATE() 
-                       ." WHERE id='$id'";
-                if( !$db->query($SQL)) {
-                    $err["DB"] = MsgErr( _m("Can't change slice settings") );
-                    break;   # not necessary - halt_on_error is set
-                }
-            } else {  // no conflict (with new id if changed), or new id
-                    if( !$db->query("INSERT INTO view "
-                        . $varset->makeINSERT())) {
-                        $err["DB"] = MsgErr( _m("Can't insert into view.") );
-                         break;  # not necessary - halt_on_error is set
-                    }
-            } // existing view
-            freeDB($db);
+        } else {
+            // insert as new view
+            $varset->remove('id');  // id is autoincremented
+            $SQL = "INSERT INTO view ". $varset->makeINSERT();
+        }
+        if($dry_run) {
+            print("VIEW import: " .$SQL);
+        } elseif ( !$db->query($SQL)) {
+            $err["DB"] = MsgErr( _m("Can't insert into view.") );
         }
     } // each view
+    freeDB($db);
 }
 
 
-// creates SQL command for inserting
+/** Creates SQL command for inserting
+ *  $fields      - fields for creating query
+ *  $table       - name of table
+ *  $pack_fields - whitch fields needs to be packed (some types of ids...)
+ *  $only_fields - put in SQL command only some values from $fields
+ *  $add_values  - adds some another values, whitch aren't in $fields
+ */
 function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_fields="", $add_values="")
-
-// fields - fields for creating query
-// table - name of table
-// pack_fields - whitch fields needs to be packed (some types of ids...)
-// only_fields - put in SQL command only some values from $fields
-// add_values - adds some another values, whitch aren't in $fields
-
 {
-	$sqlfields = "";
-	$sqlvalues = "";
-	reset($fields);
-	while (list($key,$val) = each($fields)) {
-        // Only import fields with integer keys, arrays - e.g. $slice[fields] 
+    $sqlfields = "";
+    $sqlvalues = "";
+    foreach ( $fields as $key => $val) {
+        // Only import fields with integer keys, arrays - e.g. $slice['fields']
         // handled elsewhere
-		if (!is_array($val) && !is_int ($key)) {
-			if ((strstr($only_fields,";".$key.";")) || ($only_fields=="")) {
-				if ($sqlfields > "") {
-					$sqlfields .= ",\n";
-					$sqlvalues .= ",\n";
-				}
-				$sqlfields .= $key;
-		
-				if (strstr($pack_fields,";".$key.";"))
-					$val = pack_id ($val);
-				$sqlvalues .= '"'.addslashes($val).'"';
-			}	
-		}
-	}
-	
-	if ($add_fields) {
-		$add = explode(",", $add_fields);
-		for ($i=0; $i<count($add); $i++) {
-			$dummy=explode("=",$add[$i]);
-			if ($sqlfields > "") {
-				$sqlfields .= ",\n". $dummy[0];
-				$sqlvalues .= ",\n". $dummy[1];
-			}	
-		}
-	}
-	return "INSERT INTO ".$table." (".$sqlfields.") VALUES (".$sqlvalues.")";
+        if (!is_array($val) && !is_int ($key)) {
+            if ((strstr($only_fields,";".$key.";")) || ($only_fields=="")) {
+                if ($sqlfields > "") {
+                    $sqlfields .= ",\n";
+                    $sqlvalues .= ",\n";
+                }
+                $sqlfields .= $key;
+
+                if (strstr($pack_fields,";".$key.";")) {
+                    $val = pack_id($val);
+                }
+                $sqlvalues .= '"'.addslashes($val).'"';
+            }
+        }
+    }
+
+    if ($add_fields) {
+        $add = explode(",", $add_fields);
+        for ($i=0; $i<count($add); $i++) {
+            $dummy=explode("=",$add[$i]);
+            if ($sqlfields > "") {
+                $sqlfields .= ",\n". $dummy[0];
+                $sqlvalues .= ",\n". $dummy[1];
+            }
+        }
+    }
+    return "INSERT INTO ".$table." (".$sqlfields.") VALUES (".$sqlvalues.")";
 }
 
 ?>
