@@ -101,7 +101,7 @@ function TableEditView ($table, $key_value, $action, $attrs = array(), $columns=
     "td"=><TD ...>
     "url"=>"?edit=1&...") */
 
-function TableBrowseView ($table, $attrs = array(), $columns="*", $primary_key=array("id"=>"binary"), $where="") {
+function TableBrowseView ($table, $script, $attrs = array(), $columns="*", $primary_key=array("id"=>"binary"), $where="") {
     global $db;
     if (!is_array ($primary_key)) return "Primary key must be an array of field names.";
     $columns = GetColumns ($table, $columns);
@@ -143,8 +143,8 @@ function TableBrowseView ($table, $attrs = array(), $columns="*", $primary_key=a
                 }
             }
             
-            echo "<TR><TD $attrs[td]><a href='tabledit.php3?cmd[edit]=".join(":",$key)."&$attrs[url]'>".L_EDIT."</A></TD>
-            <TD $attrs[td]><a href='tabledit.php3?cmd[delete]=".join(",",$key)."&$attrs[url]'>".L_DELETE."</a></TD>";
+            echo "<TR><TD $attrs[td]><a href='$script?cmd[edit]=".join(":",$key)."&$attrs[url]'>".L_EDIT."</A></TD>
+            <TD $attrs[td]><a href='$script?cmd[delete]=".join(",",$key)."&$attrs[url]'>".L_DELETE."</a></TD>";
             reset ($columns);
             while (list ($col) = each ($columns)) {
                 $val = htmlentities($db->f($col));

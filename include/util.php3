@@ -810,12 +810,10 @@ function MsgPage($url, $msg, $mode="standalone") {
 
   switch( $mode ) {
     case "items":    // Message page on main page (index.php3) or such page
-      include $GLOBALS[AA_INC_PATH] . "navbar.php3";
-      include $GLOBALS[AA_INC_PATH] . "leftbar.php3";
+      include $GLOBALS[AA_INC_PATH] . "se_inc.php3";
       break;
     case "admin":    // Message page on admin pages (se_*.php3) or such page
-      include $GLOBALS[AA_INC_PATH] . "navbar.php3";
-      include $GLOBALS[AA_INC_PATH] . "leftbar_se.php3";
+      include $GLOBALS[AA_INC_PATH] . "aa_inc.php3";
       break;
   }    
 
@@ -977,4 +975,42 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $
     }
 	return true;
 }
+
+/* returns the suffix part of the filename (beginning with the last dot (.) in the filename) */
+
+function filesuffix ($filename) {
+    if (!strstr ($filename,".")) return "";
+    $i = strlen($filename);
+    while ($filename[$i] != ".") $i --;
+    return substr ($filename,$i+1);
+}
+
+function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE")
+{
+  if(is_array($conds)) {
+    reset($conds); 
+    while( list( $k, $cond) = each( $conds )) {
+      if( !is_array($cond) ) {
+        unset ($conds[$k]);
+        continue;             # bad condition - ignore
+      }
+      if( !isset($cond['value']) && count ($cond) == 1 ) {
+        reset ($cond);
+        $conds[$k]['value'] = current($cond);
+      }
+      if( !isset($cond['operator']) )
+        $conds[$k]['operator'] = $defaultCondsOperator;
+
+      if (! $conds[$k]['value']) 
+        unset ($conds[$k]);      
+    }    
+  }
+}
+
+function GetTimeZone () {
+    $d = getdate ();   
+    return (mktime ($d[hours],$d[minutes],$d[seconds],$d[mon],$d[mday],$d[year]) 
+    - gmmktime ($d[hours],$d[minutes],$d[seconds],$d[mon],$d[mday],$d[year])) / 3600;
+}
+
 ?>
