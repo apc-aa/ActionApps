@@ -96,6 +96,7 @@ if( $update ) {
     $varset->add("alias3_func", "quoted", "$alias3_func_f:$alias3_func");
 
     switch( $input_show_func_f ) {
+      case "fld":
       case "fil":
       case "txt":
       case "dte": $isf = "$input_show_func_f:$input_show_func";
@@ -170,6 +171,7 @@ if( !$update ) {      # load defaults
   $input_default = substr($fld[input_default],4);
   $input_show_func_f = substr($fld[input_show_func],0,3);
   if( ($input_show_func_f=="txt") 
+       OR ($input_show_func_f=="fld") 
        OR ($input_show_func_f=="dte") 
        OR ($input_show_func_f=="fil"))
     $input_show_func = substr($fld[input_show_func],4);
@@ -399,8 +401,8 @@ echo "
 
 /*
 $Log$
-Revision 1.7  2001/03/30 11:52:53  honzam
-reverse displaying HTML/Plain text bug and others smalll bugs fixed
+Revision 1.8  2001/04/09 20:43:28  honzam
+fixed bug of not stored parameter for field input type in se_inputform.php3
 
 Revision 1.6  2001/03/20 15:27:03  honzam
 Changes due to "slice delete" feature
