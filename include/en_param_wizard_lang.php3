@@ -247,9 +247,38 @@ define("L_PARAM_WIZARD_FUNC_F_V_DESC","allows to manipulate the views. This is a
 define("L_PARAM_WIZARD_FUNC_F_V_PAR0_NAME","complex parameter");
 define("L_PARAM_WIZARD_FUNC_F_V_PAR0_DESC","this parameter is the same as we use in view.php3 url parameter - see the FAQ");
 define("L_PARAM_WIZARD_FUNC_F_V_PAR0_EXAMPLE","vid=4&amp;cmd[23]=v-25");
+define("L_PARAM_WIZARD_FUNC_F_Q_NAME","text (blurb) from another slice");
+define("L_PARAM_WIZARD_FUNC_F_Q_DESC","prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specifield by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>.");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR0_NAME","stringToMatch");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR0_DESC","By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text.");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR0_EXAMPLE","category........");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR1_NAME","blurbSliceId");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR1_DESC","unpacked slice id of the slice where the blurb text is stored");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR1_EXAMPLE","41415f436f72655f4669656c64732e2e");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_NAME","fieldToMatch");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_DESC","field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR2_EXAMPLE","headline........");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR3_NAME","fieldToReturn");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR3_DESC","field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)");
+define("L_PARAM_WIZARD_FUNC_F_Q_PAR3_EXAMPLE","full_text.......");
+define("L_PARAM_WIZARD_FUNC_F_X_NAME","transformation");
+define("L_PARAM_WIZARD_FUNC_F_X_DESC","Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_1</b>:<b>return_value_1</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>.");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR0_NAME","content");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR0_DESC","string for comparison with <i>the field</i> for following return value");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR0_EXAMPLE","E");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR1_NAME","return value");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR1_DESC","string to return if previous content matches - You can use field_id too");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR1_EXAMPLE","Environment");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR2_NAME","default");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR2_DESC","if no content mathes, use this string as return value");
+define("L_PARAM_WIZARD_FUNC_F_X_PAR3_EXAMPLE","No such option");
+
 
 /*
 $Log$
+Revision 1.5  2002/02/05 21:48:05  honzam
+new transformation alias function f_x, fixed blurb f_q alias function
+
 Revision 1.4  2001/12/26 22:11:37  honzam
 Customizable 'No item found' message. Added missing language constants.
 

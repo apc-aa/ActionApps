@@ -41,7 +41,7 @@ function GetAliasesFromFields($fields, $additional="") {
     return false;
 
   #  Standard aliases
-  $aliases["_#ID_COUNT"] = array("fce" => "f_x",
+  $aliases["_#ID_COUNT"] = array("fce" => "f_e:itemcount",
                                  "param" => "id..............",
                                  "hlp" => L_ID_COUNT_ALIAS);
   $aliases["_#ITEM_ID#"] = array("fce" => "f_n:id..............",
@@ -461,13 +461,18 @@ function RSS_restrict($txt, $len) {
   # param: 0
   function f_e($col, $param="") { 
     global $sess;
-    if( $param == "disc" )
-      # _#DISCEDIT used on admin page index.php3 for edit discussion comments
-      return con_url($sess->url("discedit.php3"),
-        "item_id=".unpack_id( $this->columns["id.............."][0][value]));
-    return con_url($sess->url("itemedit.php3"),
+    switch( $param ) {
+      case "disc":
+        # _#DISCEDIT used on admin page index.php3 for edit discussion comments
+        return con_url($sess->url("discedit.php3"),
+          "item_id=".unpack_id( $this->columns["id.............."][0][value]));
+      case "itemcount":
+      	return $GLOBALS['QueryIDsCount'];
+      default:  
+        return con_url($sess->url("itemedit.php3"),
                    "encap=false&edit=1&id=".
                    unpack_id( $this->columns["id.............."][0][value]));
+    }
   }                 
 
   # prints "begin".$col."end" if $col="condition", else prints "none"
@@ -521,6 +526,8 @@ function RSS_restrict($txt, $len) {
       
       if( substr( $fid, 0, 4 ) == "this" )   # special alias _#this
         $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
+      elseif( $fid == 'unpacked_id.....' )
+        $param = str_replace( "_#$fid", $this->f_n('id..............'), $param );
       else
         $param = str_replace( "_#$fid", $this->f_h($fid, "-"), $param );
       $part = substr( $part, 6 );
@@ -552,11 +559,23 @@ function RSS_restrict($txt, $len) {
     return $p[0].$this->getahref( $linktype.$this->columns[$col][0][value], $txt, "", $flg);
   }
 
-  // returns number of IDs (set in the QueryIDs function)
-  // params: none
+  # transformation function - transforms strings to another strings
+  # Parameters: <from1>:<to1>:<from2>:<to2>:<default>
+  #   if $col==<from1> the function returns <to1> 
+  #   if $col==<from2> the function returns <to2> 
+  #   else it returns <dafault>
+  #   <to1>, <to2>, ... and <default> can be field ids
   function f_x ($col, $param="") {
-    global $QueryIDsCount;
-	return $QueryIDsCount;
+    $p = ParamExplode($param);
+    $to = (int) floor(count($p)/2);
+    for( $i=0; $i < $to; $i++ ) {
+      $first = $i*2;
+      $second = $first +1;
+      if( $this->columns[$col][0]['value'] == $p[$first] )
+        return $this->columns[$p[$second]] ? $this->columns[$p[$second]][0]['value'] : $p[$second];
+    }
+      # the last option can be definned as default
+    return $this->columns[$p[$second+1]] ? $this->columns[$p[$second+1]][0]['value'] : $p[$second+1];
   } 
   
   # ----------------- alias function definition end --------------------------
@@ -644,6 +663,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.34  2002/02/05 21:48:05  honzam
+new transformation alias function f_x, fixed blurb f_q alias function
+
 Revision 1.33  2002/01/10 13:57:49  honzam
 fixed bug in parameter to f_v alias function
 
