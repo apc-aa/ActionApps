@@ -496,9 +496,9 @@ class itemview {
         # print item
         $CurItem->setformat( $this->slice_info['fulltext_format'],
                              $this->slice_info['fulltext_remove']);
-        $out = $this->slice_info['fulltext_format_top'];
+        $out  = $this->unaliasWithScroller($this->slice_info['fulltext_format_top'], $CurItem);
         $out .= $CurItem->get_item();
-        $out .= $this->slice_info['fulltext_format_bottom'];
+        $out .= $this->unaliasWithScroller($this->slice_info['fulltext_format_bottom'], $CurItem);
         break;
 
       case "itemlist":          # multiple items as fulltext one after one
@@ -515,7 +515,7 @@ class itemview {
                                $this->slice_info['fulltext_remove']);
           $out .= $CurItem->get_item();
         }
-        $out .= $this->slice_info['fulltext_format_bottom'];
+        $out .= $this->unaliasWithScroller($this->slice_info['fulltext_format_bottom'], $CurItem);
         break;
 
       case "calendar":

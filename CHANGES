@@ -1,3 +1,5 @@
+01/18/04 - "Top HTML" and "Bottom HTML" code for fulltext slice view
+(honzam)   is unaliased, now
 01/17/04 - speed optimalization for MySQL 4.0.x
 (honzam) - used "=" operator instead of "IN ()", where possible
             - defined QUERY_DATE_STEP constants containing number of seconds
