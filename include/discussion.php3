@@ -77,9 +77,9 @@ function GetDiscussionContent($item_id, $ids="", $vid="",$state=true, $order='ti
       $col["d_date.........."][0][value] = $db->f(date);
       $col["d_remote_addr..."][0][value] = $db->f(remote_addr);
       $col["d_state........."][0][value] = $db->f(state);
-      $col["d_url_fulltext.."][0][value] = $clean_url."&sh_itm=".$item_id."&sel_ids=1&ids[x".$d_id."]=1";
-      $col["d_url_reply....."][0][value] = $clean_url."&sh_itm=".$item_id."&add_disc=1&parent_id=".$d_id;
-      $col["d_disc_url......"][0][value] = $clean_url ."&sh_itm=".$item_id;
+      $col["d_url_fulltext.."][0][value] = $clean_url."&nocache=1&sh_itm=".$item_id."&sel_ids=1&ids[x".$d_id."]=1";
+      $col["d_url_reply....."][0][value] = $clean_url."&nocache=1&sh_itm=".$item_id."&add_disc=1&parent_id=".$d_id;
+      $col["d_disc_url......"][0][value] = $clean_url ."&nocache=1&sh_itm=".$item_id;
 
       // set html flag
       if ($html_flag)
@@ -115,10 +115,10 @@ function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
 
 function GetButtons($empty, $script_loc) {
   if (!$empty) {
-    $out.= "<input type=button name=sel_ids value=\"" .L_D_SHOW_SELECTED. "\" onClick=showSelectedComments() >
-            <input type=button name=all_ids value=\"" .L_D_SHOW_ALL ."\" onClick=document.location=\"".$script_loc."&all_ids=1\" >";
+    $out.= "<input type=button name=sel_ids value=\"" .L_D_SHOW_SELECTED. "\" onClick=showSelectedComments() class=\"discbuttons\">
+            <input type=button name=all_ids value=\"" .L_D_SHOW_ALL ."\" onClick=document.location=\"".con_url($script_loc,"nocache=1&all_ids=1")."\" class=\"discbuttons\">";
   }
-    $out.= " <input type=button name=add_disc value=\"". L_D_ADD_NEW. "\" onClick=document.location=\"".$script_loc."&add_disc=1\" >";
+    $out.= " <input type=button name=add_disc value=\"". L_D_ADD_NEW. "\" onClick=document.location=\"".con_url($script_loc,"nocache=1&add_disc=1")."\" class=\"discbuttons\">";
   return $out;
 }
 
@@ -129,7 +129,7 @@ function GetAlias($fce, $param, $help) {
 }
 
 function GetDiscussionAliases() {
-  #  Standard aliases
+  #  Standard aliases 
   $aliases["_#SUBJECT#"] = GetAlias("f_h", "d_subject.......", L_D_SUBJECT_ALIAS);
   $aliases["_#BODY####"] = GetAlias("f_t", "d_body..........", L_D_BODY_ALIAS);
   $aliases["_#AUTHOR##"] = GetAlias("f_h", "d_author........", L_D_AUTHOR_ALIAS);
@@ -165,6 +165,14 @@ function GetDiscussionFormat(&$view_info) {
   $format['d_order'] = $VIEW_TYPES_INFO['discus']['modification'][$view_info['modification']];
   $format['slice_id'] = $view_info['slice_id'];
   $format['d_form'] = $view_info['remove_string'];
+  $format['d_spacer']   = ( $view_info['aditional']  ? $view_info['aditional'] :
+                                                       '<img src="'.AA_INSTAL_URL.'images/blank.gif" width=20 height=1 border="0">');
+  $format['d_sel_butt'] = ( $view_info['aditional2'] ? $view_info['aditional2'] :
+                                                       '<input type=button name=sel_ids value="' .L_D_SHOW_SELECTED. '" onClick=showSelectedComments() class="discbuttons">');
+  $format['d_all_butt'] = ( $view_info['aditional3'] ? $view_info['aditional3'] :
+                                                       '<input type=button name=all_ids value="' .L_D_SHOW_ALL. '" onClick=showAllComments() class="discbuttons">');
+  $format['d_add_butt'] = ( $view_info['aditional4'] ? $view_info['aditional4'] : 
+                                                       '<input type=button name=add_disc value="' .L_D_ADD_NEW. '" onClick=showAddComments() class="discbuttons">');
   $format['images'] = array(
                          D_VLINE_IMG => $view_info['img1'],
                          D_CORNER_IMG => $view_info['img2'],
@@ -277,13 +285,4 @@ function updateDiscussionCount($item_id) {
   $SQL= "UPDATE item SET disc_count='$all', disc_app='". ($all-$hide) ."' WHERE id='$p_item_id'";
   $db->query($SQL);
 }
-/*
-$Log$
-Revision 1.2  2001/12/12 18:39:44  honzam
-Better handling newlines (<BR>)
-
-Revision 1.1  2001/09/27 13:15:47  honzam
-New discussion support
-
-*/
 ?>
