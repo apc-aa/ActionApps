@@ -30,7 +30,7 @@ define("L_SEARCH_TIP", "Seznam je omezen na 5 uživatelù.<br>Pokud v seznamu není
 define("L_USERNAME", "Uživatelské jméno:");
 define("L_PASSWORD", "Heslo:");
 define("L_LOGINNOW", "Pøihlásit se");
-define("L_BAD_LOGIN", "Uživatelské jméno èi helso je neplatné.");
+define("L_BAD_LOGIN", "Uživatelské jméno èi heslo je neplatné.");
 define("L_TRY_AGAIN", "Zkuste to znovu!");
 define("LOGIN_PAGE_BEGIN",
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
@@ -117,8 +117,11 @@ function dateExample() {
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:23  madebeer
-Initial revision
+Revision 1.2  2000/07/01 07:03:13  kzajicek
+fixed typo
+
+Revision 1.1.1.1  2000/06/21 18:40:23  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:12  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
