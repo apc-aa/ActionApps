@@ -107,7 +107,7 @@ class Actions {
      */
      function transform(&$itemContent, $slice_fields, &$outputItemContent) {
          global $auth;
-         
+
          // id is not part of $slice_fields, unfortunatelly (should be changed)
          if ( !isset($slice_fields['id..............']) ) {
              $slice_fields['id..............'] = 'to be processed in next loop';
@@ -116,7 +116,7 @@ class Actions {
          foreach ( $slice_fields as $field_id => $foo ) {
              $action = &$this->actions[$field_id];
              unset( $fieldVal, $v);
- 
+
              // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
              if (!$action || $action['action']->getAction() == "default") {
                  switch ($field_id) {
@@ -193,7 +193,7 @@ class Action {
 
     function Action($action, $html, $params) {
         $this->action = $action;
-        $this->html = $html;
+        $this->html = ($html ? FLAG_HTML : 0);
         $this->params = $params;
     }
 
@@ -272,7 +272,7 @@ class Action {
             }
             case "string2id": {
                 // from the same string we create allways the same id. This is
-                // true in case user provide param (which is strongly 
+                // true in case user provide param (which is strongly
                 // recommended or within the same slice (because used slice_id)
                 $string = $itemContent->GetValue($from) . get_if($this->params, $GLOBALS['slice_id']);
                 $fvalues[]['value'] = string2id($string);
@@ -293,7 +293,7 @@ class Action {
         // set HTML flag and add slashes because of SQL syntax
         foreach ( $fvalues as $k => $v ) {
             if ($this->html) {
-                $v['html'] = $this->html;
+                $v['flag'] = $this->html;
             }
             $v['value'] = addslashes($v['value']);
             $fvalues[$k] = $v;
