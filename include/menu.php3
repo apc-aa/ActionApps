@@ -164,10 +164,11 @@ $aamenus["aaadmin_submenu"] = array (
 // ----------------------------------------------------------------------------------------
 //                                SHOW MENU
     
-function showMenu ($activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
+function showMenu ($smmenus,$activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
 {
-    global $aamenus, $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad;
-
+    global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad;
+    global $debug;
+    if ($debug) { echo "<p><font color=purple>showMenu:activeMain=$activeMain;activeSubmenu=$activeSubmenu;showMain=$showMain;showSub=$showSub:</font></p>";  }
     if( $useOnLoad )
         echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
     else
@@ -187,13 +188,13 @@ function showMenu ($activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1
             </TR>
             <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
                 <TD height=43 colspan=2 align=center valign=middle class=slicehead>
-                    ".$aamenus[$activeMain]["title"]."  -  $r_slice_headline</TD>
+                    ".$smmenus[$activeMain]["title"]."  -  $r_slice_headline</TD>
             </TR>
             <TR><td align=center class=navbar>";
                             
         $first = true;
-        reset ($aamenus);
-        while (list ($aamenu,$aamenuprop) = each ($aamenus)) {
+        reset ($smmenus);
+        while (list ($aamenu,$aamenuprop) = each ($smmenus)) {
             if ($aamenuprop["level"] == "main") {
                 if ($first) $first = false;
                 else echo " | ";
@@ -214,9 +215,9 @@ function showMenu ($activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1
     }
 
     if ($showSub) {
-        $submenu = $aamenus[$activeMain]["submenu"];
+        $submenu = $smmenus[$activeMain]["submenu"];
         if ($submenu)
-            showSubmenu ($aamenus[$submenu], $activeSubmenu);
+            showSubmenu ($smmenus[$submenu], $activeSubmenu);
     }
 }   
 
@@ -225,8 +226,8 @@ function showMenu ($activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1
 
 function showSubmenu (&$aamenu, $active)
 {
-    global $AA_INSTAL_PATH, $slice_id;
-
+    global $AA_INSTAL_PATH, $slice_id,$debug;
+    if ($debug) { echo "<p><font color=purple>showSubmenu:active=$active</font></p>"; }
     echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">';
 
     $aamenuitems = $aamenu["items"];
