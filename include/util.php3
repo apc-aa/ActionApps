@@ -943,7 +943,7 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $
 
 // -----------------------------------------------------------------------------
 
-function get_last_insert_id ($db, $table)
+function get_last_insert_id (&$db, $table)
 {
     $db->tquery ("SELECT LAST_INSERT_ID() AS lid FROM $table");
     $db->next_record();
@@ -1302,6 +1302,10 @@ function mail_html_text_body ($message, $charset, $use_base64) {
         .$textmessage."\n"
         ."--$boundary--\n";
 
+}
+
+function setdefault (&$var, $default) {
+    if (!isset ($var)) $var = $default;
 }
 
 ?>
