@@ -388,7 +388,7 @@ if( $r_admin_search )
 # set user defined sort order
 $sort[] = array ( $r_admin_order => $r_admin_order_dir); 
 
-$item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, $bin_condition);
+$item_ids=QueryIDs($fields, $slice_id, $conds, $sort, "", $bin_condition);
 
 $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
                           "category_sort"=>false,
@@ -526,6 +526,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.28  2001/10/05 10:51:29  honzam
+Slice import/export allows backup of more slices, bugfixes
+
 Revision 1.27  2001/09/27 15:55:21  honzam
 Fixed security hole with cached sessions, Moving between bins change last_edit and edited_by fields
 

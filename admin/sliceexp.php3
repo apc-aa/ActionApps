@@ -21,11 +21,7 @@ http://www.apc.org/
 
 /* 
 	Author: Jakub Adámek
-	This file is under construction. I am learning to work with AA,
-	and there is a lot to learn yet ...
-*/
 
-/*	
 	Exports the slice definition as a template (without the data).
 	Two kinds of export:
 		* for another AA installation - allows to change the id
@@ -99,7 +95,7 @@ if ($SHOWTEXT == ""): ?>
 			<?php echo L_E_EXPORT_LIST ?>
 			</td>
 			<tr><td class=tabtit width="100%">
-			<SELECT name="eexport" size=8 class=tabtxt>
+			<SELECT name="export[]" size=8 class=tabtxt MULTIPLE>
 			<?php
 				reset($all_slices);
 			    while(list($s_id,$name) = each($all_slices))
@@ -122,8 +118,7 @@ if ($SHOWTEXT == ""): ?>
 	</tr></td>
 <?php
 else:
-	require "./tmp.php3";
-//	require "./sliceexp_text.php3";
+	require "./sliceexp_text.php3";
 endif;
 ?>
 
@@ -133,8 +128,8 @@ endif;
 <?PHP
 /*
 $Log$
-Revision 1.1  2001/10/02 11:33:53  honzam
-new sliceexport/import feature
+Revision 1.2  2001/10/05 10:51:29  honzam
+Slice import/export allows backup of more slices, bugfixes
 
 */
 ?>

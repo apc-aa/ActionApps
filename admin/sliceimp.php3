@@ -21,11 +21,7 @@ http://www.apc.org/
 
 /* 
 	Author: Jakub Adámek
-	This file is under construction. I am learning to work with AA,
-	and there is a lot to learn yet ...
-*/
 
-/*	
 	Imports the slice definition as a template (without any data).
 */
 
@@ -82,14 +78,16 @@ if ($DefFile != "") {
 function proove_ID (&$slice) 
 {
 	global $newID,
-		   $sess;
+		   $sess,
+		   $showme,
+		   $resolve_conflicts,
+		   $overwrite;
 		   
-	if ($newID != "") {
-		if (strlen ($newID) != 32) {
-			MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_IDLENGTH.strlen($newID), "standalone");
-			exit;	
-		}
-		else $slice["id"] = $newID;
+	$res = $resolve_conflicts[$slice["id"]];
+	//$showme .= "Resolve:".$slice["id"]."=".$res." ".strlen($res)."\n";
+	if (strlen($res) == 32)	{
+		$res = pack_id($res);
+		if (strlen($res) == 16)	$slice["id"] = unpack_id($res);
 	}
 
 	// Find out whether a slice of the same ID already exists
@@ -105,9 +103,11 @@ function proove_ID (&$slice)
 		if ($GLOBALS["Submit"] == L_E_IMPORT_OVERWRITE) {
 			$SQL = "DELETE FROM slice WHERE id='$slice_id'";	$db->query($SQL);
 			$SQL = "DELETE FROM field WHERE slice_id='$slice_id'";	$db->query($SQL);
+			$overwrite = true;
 		}
 		else return false;
 	}
+	else $overwrite = false;
 	return true;
 }
 
@@ -140,11 +140,19 @@ function import_slice (&$slice)
 		   $showme,
 		   $IDconflict,
 		   $slice_id,
-		   $sess;	
+		   $sess,
+		   $conflicts_ID,
+		   $Cancel,
+		   $imported_list,
+		   $overwritten_list,
+		   $overwrite;	
 //	$GLOBALS["showme"] = serialize( $slice );
 	$IDconflict = !proove_ID($slice);
-	$slice_id = $slice["id"];
-	if ($IDconflict) return false;
+	if ($IDconflict) {
+		$conflicts_ID[$slice["id"]] = $slice["name"];
+		$Cancel = 0;
+		return false;
+	}
 
 	$sqltext = create_SQL_insert_statement ($slice, "slice", ";id;owner;")."\n";
 	//$showme = $sqltext;
@@ -157,7 +165,11 @@ function import_slice (&$slice)
 		$db->query($sqltext);
 		//$showme .= $sqltext;
 	}
-	go_url( $sess->url(self_base() . "index.php3"));	
+	if ($overwrite)
+		$overwritten_list[] = $slice["name"]." (id:".$slice["id"].")";
+	else
+		$imported_list[] = $slice["name"]." (id:".$slice["id"].")";
+	$Cancel = "OHYES";
 }
 
 if ($Cancel)
@@ -165,7 +177,18 @@ if ($Cancel)
 
 $IDconflict = false;
 $slice_def_bck = $slice_def = stripslashes($slice_def);
+$imported_count = 0;
 require "./sliceimp_xml.php3";
+if ($conflicts_list) {
+	$temp = split ("\n",$conflicts_list);
+	reset($temp);
+	while (list(,$line)=each($temp)) {
+		list(,$line) = split(":",$line);
+		list($old,$new) = split("->",$line);
+		$resolve_conflicts[trim($old)] = trim($new);
+	}
+}
+
 if ($slice_def != "") {
 	$err = sliceimp_xml_parse ($slice_def);
 	if ($err != "") {
@@ -192,6 +215,29 @@ enctype="multipart/form-data">
 
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit>
+<?php 
+if ($Cancel || $conflicts_list):
+	echo "<B>".sprintf(L_E_IMPORT_COUNT,count($imported_list)+count($overwritten_list))."</p>";
+	echo $showme;
+	if (is_array($imported_list)) {
+		echo "</p>".L_E_IMPORT_ADDED."</p>";
+		reset($imported_list);
+		while(list(,$desc)=each($imported_list))
+			echo $desc."<br>";
+	}
+	if (is_array($overwritten_list)) {
+		echo "</p>".L_E_IMPORT_OVERWRITTEN."</p>";
+		reset($overwritten_list);
+		while(list(,$desc)=each($overwritten_list))
+			echo $desc."<br>";
+	}
+	?>
+	</P>
+	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="  OK  ">
+<?php
+else:
+?>
+
 <?php echo L_E_IMPORT_MEMO ?></p>
 <?php
 /* There is some problem with open file permitions, I will use Text area instead ...
@@ -199,26 +245,41 @@ enctype="multipart/form-data">
 <input type="hidden" name="MAX_FILE_SIZE" value="100000">
 */
 ?>
+</td></tr>
 <?php 
 if ($IDconflict):?>
-	</td></tr>
 	<tr><td class=tabtxt>
 	<b><?php echo sprintf (L_E_IMPORT_IDCONFLICT,pack_id($slice_id)) ?></b></p>
 	<p align=center>
-	<INPUT TYPE=TEXT NAME=newID SIZE=40 MAXLENGTH=32 VALUE="<?php echo $slice_id ?>">
+<TEXTAREA NAME=conflicts_list ROWS=<?php echo count($conflicts_ID) ?> COLS=110>
+<?php
+	reset($conflicts_ID);
+	while (list($c_id,$name)=each($conflicts_ID))
+		echo $name.":\t".$c_id." -> ".$c_id."\n";
+?>
+</TEXTAREA>
+	</P>	
+	<p align=center>
 	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_OVERWRITE ?>">
-	</td></tr>
-	<tr><td class=tabtit>
+	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_SEND ?>">
+	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo L_CANCEL ?>">
 	</p>
+	</td></tr>
 <?php
 endif;?>
+<tr><td class=tabtit align=center>
 <TEXTAREA NAME="slice_def" ROWS = 10 COLS = 100>
 <?php if ($IDconflict) echo $slice_def_bck ?>
 <?php echo $showme ?>
 </TEXTAREA>
 </p>
-<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_SEND ?>">
-<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo L_CANCEL ?>">
+<?php 
+if (!$IDconflict): ?>
+	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_SEND ?>">
+	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo L_CANCEL ?>">
+<?php
+endif;
+endif; //if ($cancel || $coflicts_list)?>
 </form>
 </tr></td>
 </table>
@@ -229,6 +290,9 @@ endif;?>
 <?PHP
 /*
 $Log$
+Revision 1.2  2001/10/05 10:51:29  honzam
+Slice import/export allows backup of more slices, bugfixes
+
 Revision 1.1  2001/10/02 11:33:54  honzam
 new sliceexport/import feature
 

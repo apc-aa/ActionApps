@@ -753,14 +753,24 @@ define("L_E_IMPORT_MEMO", "Import struktury webíku probìhne takto:<br>"
 define("L_E_IMPORT_OPEN_ERROR","Neznámá chyba pøi otevírání souboru.");
 define("L_E_IMPORT_WRONG_FILE","CHYBA: Text není v poøádku. Zkontrolujte, že jste ho správnì zkopírovali z Exportu.");
 define("L_E_IMPORT_WRONG_ID","CHYBA: ");
-define("L_E_IMPORT_IDCONFLICT", "Webík s tímto ID již existuje (v databázi je ID ve tvaru %s). "
-			."Zmìòte ID nebo stisknìte PØEPSAT, èímž se vám "
-			."pøepíše stará šablona. Používejte pouze hexadecimální znaky 0-9,a-f.");
 define("L_E_IMPORT_OVERWRITE", "Pøepsat");
 define("L_E_IMPORT_IDLENGTH", "Délka identifikátoru musí být 32 znakù, a ne ");
 
+define("L_E_IMPORT_IDCONFLICT", "Webíky s nìkterými ID již existují. Zmìòte ID na pravé stranì šipky.<br> "
+			."Používejte pouze hexadecimální znaky 0-9,a-f. "
+			."Pokud udìláte nìco špatnì (špatný poèet znakù, špatné znaky, nebo zmìníte ID vlevo od šipky), "
+			."bude pøíslušné ID považováno za nezmìnìné.</p>"
+			."Pokud zvolíte PØEPSAT, pøepíší se všechny šablony s nezmìnìným ID a nové se pøidají. <br>"
+			."Pokud zvolíte ODESLAT, šablony s konfliktem ID se budou ignorovat a nové se pøidají.");
+define ("L_E_IMPORT_COUNT", "Poèet importovaných šablon: %d.");			
+define ("L_E_IMPORT_ADDED", "Pøidány byly:");
+define ("L_E_IMPORT_OVERWRITTEN", "Pøepsány byly:");
+
 /*
 $Log$
+Revision 1.38  2001/10/05 10:51:29  honzam
+Slice import/export allows backup of more slices, bugfixes
+
 Revision 1.37  2001/10/02 11:36:41  honzam
 bugfixes
 

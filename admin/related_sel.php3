@@ -138,7 +138,7 @@ if( $r_r_admin_search )
 # set user defined sort order
 $sort[] = array ( $r_r_admin_order => $r_r_admin_order_dir); 
 
-$item_ids=QueryIDs($fields, $r_sid, $conds, $sort, $group_by, $bin_condition);
+$item_ids=QueryIDs($fields, $r_sid, $conds, $sort, "", $bin_condition);
 
 $format_strings = array ( "compact_top"=>"",
                           "category_sort"=>false,
@@ -235,6 +235,9 @@ echo "<input type='Text' name='admin_search' size=20
 
 /*
 $Log$
+Revision 1.2  2001/10/05 10:51:29  honzam
+Slice import/export allows backup of more slices, bugfixes
+
 Revision 1.1  2001/09/27 16:06:40  honzam
 New related stories support
 

@@ -21,18 +21,8 @@ http://www.apc.org/
 
 /* 
 	Author: Jakub Adámek
-	This file is under construction. I am learning to work with AA,
-	and there is a lot to learn yet ...
-*/
 
-/*	
-	Exports the slice definition as a template (without the data).
-	Two kinds of export:
-		* for another AA installation - allows to change the id
-		* for backup reasons - allows to export more defs at once
-*/
-
-/* slices: an associative array variable of all the slices to be exported, 
+ 	slices: an associative array variable of all the slices to be exported, 
 	the index is the slice ID.
 	The value for each slice is an associative array again, 
 	it contains all the members of one slice. 
@@ -52,7 +42,7 @@ if ($b_export_type != L_E_EXPORT_SWITCH) {
 }
 
 reset($export);
-while (list($slice_id,) = each($export)) {
+while (list(,$slice_id) = each($export)) {
 	$slice_id = addslashes(pack_id($slice_id));
 	$SQL = "SELECT * FROM slice WHERE id='$slice_id'";
 	$db->query($SQL);
@@ -96,7 +86,7 @@ while (list($slice_id,) = each($export)) {
 	
 	$export_text .= "<slice id=\"".$uid."\" name=\"".$slice["name"]."\">";
 	$export_text .= HTMLEntities(base64_encode(serialize($slice)));
-	$export_text .= "</slice>\n";
+	$export_text .= "</slice>\n\n\n";
 }
 	
 $header .= "<sliceexport version=\"1.0\">\n";
@@ -119,6 +109,9 @@ $export_text = $header.$export_text."</sliceexport>";
 <?PHP
 /*
 $Log$
+Revision 1.2  2001/10/05 10:51:29  honzam
+Slice import/export allows backup of more slices, bugfixes
+
 Revision 1.1  2001/10/02 11:33:54  honzam
 new sliceexport/import feature
 

@@ -20,7 +20,9 @@ http://www.apc.org/
 */
 
 /*
-# Slice Import - parsing function
+	Author: Jakub Adámek
+	
+# Slice Import - XML parsing function
 #
 # Note: This parser does not check correctness of the data. It assumes, that xml document
 #       was exported by slice export and has the form of
@@ -98,6 +100,9 @@ function sliceimp_xml_parse($xml_data) {
 
 /*
 $Log$
+Revision 1.2  2001/10/05 10:51:29  honzam
+Slice import/export allows backup of more slices, bugfixes
+
 Revision 1.1  2001/10/02 11:33:54  honzam
 new sliceexport/import feature
 

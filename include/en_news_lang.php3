@@ -746,6 +746,7 @@ define("L_E_EXPORT_SWITCH", "Export to Backup");
 define("L_E_EXPORT_SWITCH_BACKUP", "Export to another Toolkit");
 define("L_E_EXPORT_IDLENGTH", "The identificator should be 16 characters long, not ");
 define("L_E_EXPORT_TEXT_LABEL", "Save this text. You may use it to import the slices into any Toolkit:");
+define("L_E_EXPORT_LIST", "Select slices which you WANT to export:");
 
 define("L_E_IMPORT_TITLE", "Import slice structure");
 define("L_E_IMPORT_SEND", "Send the slices structure");
@@ -755,11 +756,20 @@ define("L_E_IMPORT_MEMO", "The import of the slices structure is done this way:<
 define("L_E_IMPORT_OPEN_ERROR","Unknown failur when opening the file.");
 define("L_E_IMPORT_WRONG_FILE","ERROR: Text is not OK. Check whether you copied it well from the Export.");
 define("L_E_IMPORT_WRONG_ID","ERROR: ");
-define("L_E_IMPORT_IDCONFLICT", "A slice with this ID already exists (the database form of the ID is %s). "
-			."Change the ID or click on Overwrite and overwrite so the old slice. "
-			."Use only hexadecimal characters 0-9,a-f.");
 define("L_E_IMPORT_OVERWRITE", "Overwrite");
 define("L_E_IMPORT_IDLENGTH", "The identificator should be 32 characters long, not ");
+
+define("L_E_IMPORT_IDCONFLICT", 
+			"Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> "
+			."Use only hexadecimal characters 0-9,a-f. "
+			."If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), "
+			."that ID will be considered unchanged.</p>"
+			."If you choose OVERWRITE, the slices with unchanged ID will be overwritten and the new ones added. <br>"
+			."If you choose SEND, the slices with ID conflict will be ignored and the new ones added.");
+define ("L_E_IMPORT_COUNT", "Count of imported slices: %d.");			
+define ("L_E_IMPORT_ADDED", "Added were:");
+define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
+
 
 // ------------------------- New ----------------------------
 // not appended to other lang files
@@ -768,6 +778,9 @@ define("L_E_IMPORT_IDLENGTH", "The identificator should be 32 characters long, n
 
 /*
 $Log$
+Revision 1.50  2001/10/05 10:51:29  honzam
+Slice import/export allows backup of more slices, bugfixes
+
 Revision 1.49  2001/10/02 11:36:41  honzam
 bugfixes
 
