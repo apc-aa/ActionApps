@@ -27,6 +27,10 @@ require_once $GLOBALS["AA_INC_PATH"]. "math.php3";
 require_once $GLOBALS["AA_INC_PATH"]. "stringexpand.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/links/constants.php3";
 
+if ( !is_object($contentcache) ) {
+    $contentcache = new contentcache;
+}
+
 function txt2html($txt) {          // converts plain text to html
   return nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));
                                    // preg allows text to be pasted from Word
@@ -194,25 +198,26 @@ function GetItemFromId($id, $use_short_ids=false) {
 }
 
 class item {
-  var $item_content;   # Jakub: dummy, unused parameter??!!
-  var $columns;        # ItemContent array for this Item (like from GetItemContent)
-  var $clean_url;      #
+  var $item_content;   // Jakub: dummy, unused parameter??!!
+  var $columns;        // ItemContent array for this Item (like from GetItemContent)
+  var $clean_url;      //
   var $top;
-  var $format;         # format string with aliases
+  var $format;         // format string with aliases
   var $bottom;
-  var $remove;         # remove string
-  var $aliases;        # array of usable aliases
+  var $remove;         // remove string
+  var $aliases;        // array of usable aliases
+  var $parameters;     // optional additional parameters - copied from itemview->parameters
 
-
-  function item($ic, $cols, $ali, $c, $ff, $gl, $fr="", $top="", $bottom=""){   #constructor
+  function item($ic, $cols, $ali, $c, $ff, $gl, $fr="", $top="", $bottom="", $param=false){   #constructor
     $this->item_content = $ic;
-    $this->columns = $cols;
-    $this->aliases = $ali;
-    $this->clean_url = $c;
-    $this->format = $ff;
-    $this->remove = $fr;
-    $this->top = $top;
-    $this->bottom = $bottom;
+    $this->columns      = $cols;
+    $this->aliases      = $ali;
+    $this->clean_url    = $c;
+    $this->format       = $ff;
+    $this->remove       = $fr;
+    $this->top          = $top;
+    $this->bottom       = $bottom;
+    $this->parameters   = ( $param ? $param : array() );
   }
 
   function setformat( $format, $remove="", $top="", $bottom="") {
@@ -222,10 +227,34 @@ class item {
     $this->bottom = $bottom;
   }
 
+  /** Optional asociative array of additional parameters
+   *  Used for category_id (in Links module) ... */
+  function set_parameters($parameters) {
+      $this->parameters = $parameters;
+  }
+
+
   function getval($column, $what='value') {
       if ( is_array($this->columns[$column]) )
            return $this->columns[$column][0][$what];
       else return false;
+  }
+
+  function getbaseurl($redirect=false, $no_sess=false) {
+      # redirecting to another page
+      $url_base = ($redirect ? $redirect : $this->clean_url );
+
+      if( $no_sess ) {                     #remove session id
+          $pos = strpos($url_base, '?');
+          if($pos) {
+              $url_base = substr($url_base,0,$pos);
+          }
+      }
+      # add state variable, if defined (apc - AA Pointer Cache)
+      if( $GLOBALS['apc_state'] ) {
+          $url_base = con_url( $url_base, 'apc='.$GLOBALS['apc_state']['state'] );
+      }
+      return $url_base;
   }
 
   # get item url - take in mind: item_id, external links and redirection
@@ -239,19 +268,7 @@ class item {
             "x=".$this->getval('short_id........') :
             "sh_itm=".unpack_id128($this->getval('id..............')));
 
-       # redirecting to another page
-    $url_base = ($redirect ? $redirect : $this->clean_url );
-
-       # add state variable, if defined (apc - AA Pointer Cache)
-    if( $GLOBALS['apc_state'] )
-      $url_param .= '&apc='.$GLOBALS['apc_state']['state'];
-
-    if( $no_sess ) {                     #remove session id
-      $pos = strpos($url_base, '?');
-      if($pos)
-        $url_base = substr($url_base,0,$pos);
-    }
-    return con_url( $url_base, $url_param );
+    return con_url( $this->getbaseurl($redirect, $no_sess), $url_param );
   }
 
   # get link from url and text
@@ -700,7 +717,9 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
           $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));
         return $slice_info[$col];
       case "link_edit":
-        return get_aa_url('modules/links/linkedit.php3?lid='. $this->getval('id'));
+        return (($p[1]=='anonym') ?
+            get_aa_url('modules/links/linkedit.php3?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
+            get_aa_url('modules/links/linkedit.php3?lid='. $this->getval('id')) );
       case "link_go_categ":
         $cat_names       = $this->columns['cat_name'];
         $cat_ids         = $this->columns['cat_id'];
@@ -884,9 +903,10 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
         print_r($content4id);
         echo "</pre>";
         */
-        return $fncname($varname, "", $content4id[$col],
+        $out = $fncname($varname, "", $content4id[$col],
                  $param2, $content4id[$col][0]['flag'] & FLAG_HTML, true );
-
+        $maxlevel=0; $level=0;
+        return new_unalias_recurent($out, "", $level, $maxlevel, null, null, null);
     }
   }
 
@@ -918,6 +938,58 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
     $p = $this->subst_aliases( ParamExplode($param) );
     return ((time() - $this->getval($col)) < $p[0]*60) ? $p[1] : $p[2];  // time in minutes
   }
+
+  /** Link module (category) function - prints @ (or first parameter) when
+   *  category is crossreferenced
+   *  @param <crossreference_character> - specify if you want another, than '@'
+   */
+  function l_b($col, $param="") {
+    $p = $this->subst_aliases( ParamExplode($param) );
+    $way = explode(',', $this->getval($col)); // to get parent category
+    return ( $way[count($way)-2] == $this->parameters['category_id']) ?
+           '' : ($p[0] ? $p[0] : '@' );
+  }
+
+  /** Link module - print path
+   *  @param <start_level>:<format>:<delimeter>
+   *         <start_level> - display path from level ... (0 is root)
+   *         <format>      - category link modification (not used, yet)
+   *         <delimeter>   - delimeter character (default is ' &gt; ')
+   */
+  function l_p($col, $param="") {
+    global $contentcache;
+
+    $translate = $contentcache->get('
+        $db = getDB();
+        $db->tquery("SELECT id, name FROM links_categories WHERE deleted=\'n\'");
+        while( $db->next_record() ) {
+            $eval_ret[$db->f(\'id\')] = $db->f(\'name\');
+        }
+        freeDB($db);
+        return $eval_ret;');
+
+    list ($start, $format, $separator) = $this->subst_aliases(ParamExplode($param));
+    if ( !$separator ) {
+        $separator = ' &gt; ';
+    }
+    $url_base = $this->getbaseurl();
+
+    $way = explode(',', GetCategoryPath($this->parameters['category_id']));
+
+    if( isset($way) AND is_array($way)) {
+      $last=end($way);
+      foreach ( $way as $catid ) {
+        if($start-- > 0)  continue;
+        $cat_url = con_url( $url_base, 'cat='.$catid );
+        $ret .= ( ( $catid == $last ) ?  // do not make link for last category
+          $delimeter.$translate[$catid] :
+          $delimeter."<a href=\"$cat_url\">".$translate[$catid]."</a>" );
+        $delimeter = $separator;
+      }
+    }
+    return $ret;
+  }
+
 
   # ----------------- alias function definition end --------------------------
 
