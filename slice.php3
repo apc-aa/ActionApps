@@ -412,15 +412,7 @@ if( $scrl ) {      // comes from easy_scroller -----------
     $scr->update();
 }    
   
-if($query) {              # complex query - posted by big search form ---
-  $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","query")); # store in session
-  $item_ids = ExtSearch ($query, $p_slice_id, 0);
-  if( isset($item_ids) AND !is_array($item_ids))
-    echo "<div>$item_ids</div>";   # it must be error message
-  if( !$scrl )
-    $scr->current = 1;
-}
-elseif( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) {     # posted by query form ----------------
+if( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) {     # posted by query form ----------------
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","conds", "sort", "group_by")); # store in session
 
   if(isset($conds) AND is_array($conds)) {
@@ -567,7 +559,7 @@ $debugtimes[]=microtime();*/
 // echo "<br>new: ". (double)((double)($debugtimes[3]) - (double)($debugtimes[2]));
 
 }    
-if( !$srch AND !$encap AND !$query AND !$easy_query ) {
+if( !$srch AND !$encap AND !$easy_query ) {
   $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories 
   pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
 }
