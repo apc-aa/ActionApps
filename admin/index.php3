@@ -512,7 +512,8 @@ if ($sort_filter != "0") {
     }
     
       # filter
-    echo "<tr><td class=search>&nbsp;<b>". L_SEARCH ."</b></td><td>";
+    echo "<tr><td class=search>&nbsp;<img src='../images/search.gif' alt='".L_SEARCH."'>&nbsp;&nbsp;<b>"
+        . L_SEARCH ."</b></td><td>";
 
     FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
     echo "<input type='Text' name='admin_search' size=20
@@ -522,8 +523,8 @@ if ($sort_filter != "0") {
     echo "<input type=hidden name=action value='filter'>";
     
       #order
-    echo "<tr><td class=search>&nbsp;<b>". L_ORDER ."</b></td>
-           <td class=leftmenuy>";
+    echo "<tr><td class=search>&nbsp;<img src='../images/order.gif' alt='".L_ORDER."'>&nbsp;&nbsp;<b>"
+        . L_ORDER ."</b></td><td class=leftmenuy>";
     FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order);
     echo "<input type='checkbox' name='admin_order_dir'". 
          ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . L_DESCENDING. "</td></tr>";
@@ -564,7 +565,7 @@ $itemview->print_view("NOCACHE");   # big security hole is open if we cache it
 $st->countPages( count( $item_ids ) );
 
 if($st->pageCount() > 1 || $action_selected != "0") {
-    echo "<tr><td><table border=0 cellpadding=3><tr><td class=tabtxt>";
+    echo "<tr><td colspan=100 class=tabtxt><table border=0 cellpadding=3><tr><td class=tabtxt>";
 }
         
 if ($action_selected != "0")
