@@ -139,7 +139,7 @@ function get_aamenus ()
         "header6"=>L_ALERTS,
         "te_alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=ac", "label"=>L_ALERTS_COLLECTIONS),        
         "te_alerts_users"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=au", "label"=>L_ALERTS_USERS),      
-        "alerts_ui"=>array("cond"=>1, "exact_href"=>AA_INSTAL_URL."misc/alerts", "label"=>L_ALERTS_UI),
+        "alerts_ui"=>array("cond"=>1, "exact_href"=>AA_INSTAL_URL."misc/alerts?lang=".get_mgettext_lang(), "label"=>L_ALERTS_UI),
         
         "header5" => L_MISC,
         "field_ids" => array ("label"=>L_FIELD_IDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"admin/se_fieldid.php3?slice_id=$slice_id"),    

@@ -908,6 +908,11 @@ define('L_EDIT_JUMP','Editovat Jump');
 define('L_MODULE_ID','ID modulu');
 define('L_UPDATE','Zmìò');
 define('L_CREATE','Vytvoø');
+
+define("L_ALERTS","Zasílání zpráv");
+define("L_ALERTS_COLLECTIONS", "Kolekce");
+define("L_ALERTS_USERS","Uživatelé");
+define("L_ALERTS_UI","Uživatelské rozhraní.");
      
 // constants used in param wizard only:
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
