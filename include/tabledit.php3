@@ -649,7 +649,7 @@ class tabledit {
             $chtv["gotoview"] = $this->viewID;
             $action = $this->action . (strstr($this->action,"?") ? "&" : "?")
                       ."cmd[".$this->viewID."][edit][$key]=1";
-            $childte = new tabledit ($chview, $action, $this->all_cmd[$chview], $chtv, $this->imagepath, $this->sess, $joincols);
+            $childte = new tabledit ($chview, $action, $this->all_cmd[$chview], $this->form_vals, $chtv, $this->imagepath, $this->sess, $joincols);
             $err = $childte->view($where);
             if ($err) return $err;
         }
