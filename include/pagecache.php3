@@ -175,7 +175,11 @@ class CacheStr2find {
     }
 
     function getStr2find() {
-        return implode(',', $this->ids);
+        $out = '';
+        foreach ((array)$this->ids as $id => $v) {
+            $out .= ",$id";
+        }
+        return $out;
     }
 }
 
