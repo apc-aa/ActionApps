@@ -50,7 +50,8 @@ if( file_exists( $GLOBALS[AA_INC_PATH]."usr_validate.php3" ) ) {
 if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED - from url
 
-QuoteVars("post");  // if magicquotes are not set, quote variables
+QuoteVars("post", array('encap'=>1) );  # if magicquotes are not set, quote variables
+                                        # but skip (already edited) encap variable
 
 GetHidden();        // unpacks variables from $r_hidden session var.
 unset($r_hidden);
@@ -278,11 +279,11 @@ if( !$encap ) {
         return true;  
       }    
     
-      function OpenRelated(varname, sid) {
+      function OpenRelated(varname, sid, mode, design) {
         if ((relatedwindow != null) && (!relatedwindow.closed)) {
           relatedwindow.close()    // in order to preview go on top after open
         }
-        relatedwindow = open( "'. $sess->url("related_sel.php3") . '&sid=" + sid + "&var_id=" + varname, "relatedwindow", "scrollbars=1, resizable=1, width=500");
+        relatedwindow = open( "'. $sess->url("related_sel.php3") . '&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design, "relatedwindow", "scrollbars=1, resizable=1, width=500");
       }  
       
     // -->

@@ -658,6 +658,7 @@ define("L_TOO_MUCH_RELATED","Je vybráno pøíliš mnoho souvisejících èlánkù.");
 define("L_SELECT_RELATED","Výbìr souvisejících èlánkù");
 define("L_SELECT_RELATED_1WAY","Ano");
 define("L_SELECT_RELATED_2WAY","Vzájemnì");
+define("L_SELECT_RELATED_BACK", "Zpìtnì");
 
 // - Cross server networking --------------------------------------
 

@@ -21,6 +21,8 @@ http://www.apc.org/
 
 # sid expected - slice_id where to search
 # var_id expected - id of variable in calling form, which should be filled
+# mode expected - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
+# design expected - boolean - use standard or admin design
 
 $save_hidden = true;   # do not delete r_hidden session variable in init_page!
 
@@ -108,6 +110,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
                      '<> ' + headline, ReplaceFirstChar( item_id , 'y' ))
   }                                             // item_id begins with foo 'y'
                                                 // which flags 2way relation  
+
+  function SelectRelationBack(item_id, headline) {
+    AddSelectOption( 'window.opener.document.inputform.elements["<?php echo $var_id ?>"]', 
+                     '<< ' + headline, ReplaceFirstChar( item_id , 'z' ))
+  }                                             // item_id begins with foo 'z'
+                                                // which flags backward relation  
 // -->
 </SCRIPT>
 </head> <?php
@@ -141,6 +149,21 @@ $sort[] = array ( $r_r_admin_order => $r_r_admin_order_dir);
 
 $item_ids=QueryIDs($fields, $r_sid, $conds, $sort, "", $bin_condition);
 
+# mode - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
+if( !$mode )
+  $mode='AMB';
+for( $i=0; $i<strlen($mode); $i++) {
+  switch( substr($mode,$i,1) ) {
+    case 'A': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelation('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_1WAY ."</a>&nbsp;";
+              break;
+    case 'M': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelation2Way('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_2WAY ."</a>&nbsp;";
+              break;
+    case 'B': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelationBack('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_BACK ."</a>&nbsp;";
+              break;
+  }
+}   
+
+
 $format_strings = array ( "compact_top"=>"",
                           "category_sort"=>false,
                           "category_format"=>"",
@@ -149,12 +172,22 @@ $format_strings = array ( "compact_top"=>"",
                           "even_odd_differ"=>false,
                           "even_row_format"=>"",
                           "odd_row_format"=>"<tr><td class=tabtxt>_#HEADLINE</td>
-                                                 <td class=tabtxt><a href=\"javascript:SelectRelation('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_1WAY ."</a>&nbsp;&nbsp;</td>
-                                                 <td class=tabtxt><a href=\"javascript:SelectRelation2Way('x_#ITEM_ID_','_#HEADLINE')\">". L_SELECT_RELATED_2WAY ."</a></td>
+                                                 <td class=tabtxt>$mode_string</td>
                                              </tr>",
                           "compact_remove"=>"",
                           "compact_bottom"=>"",
                           "id"=>$slice_info['id']);
+
+# design - boolean - use standard or admin design
+if($design) {
+  $format_strings["compact_top"]    = $slice_info['admin_format_top'];
+  $format_strings["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">', 
+                                                  $mode_string, $slice_info['admin_format']);
+  $format_strings["compact_remove"] = $slice_info['admin_remove'];
+  $format_strings["compact_bottom"] = $slice_info['admin_format_bottom'];
+}  
+
+
 
 echo "<center>";
 echo "$Msg <br>";
@@ -170,15 +203,19 @@ echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
 
                          
 if( count( $item_ids ) > 0 ) {
-  $aliases["_#ITEM_ID_"] = array("fce" => "f_n:id..............",
-                                 "param" => "id..............",
-                                 "hlp" => "");
-  $aliases["_#SITEM_ID"] = array("fce" => "f_h",
-                                 "param" => "short_id........",
-                                 "hlp" => "");
-  $aliases["_#HEADLINE"] = array("fce" => "f_e:safe",
-                                 "param" => GetHeadlineFieldID($r_sid, $db),
-                                 "hlp" => "");
+  if( $design )
+    $aliases = GetAliasesFromFields($fields);
+   else {                     # define just used aliases, including HEADLINE
+    $aliases["_#ITEM_ID_"] = array("fce" => "f_n:id..............",
+                                   "param" => "id..............",
+                                   "hlp" => "");
+    $aliases["_#SITEM_ID"] = array("fce" => "f_h",
+                                   "param" => "short_id........",
+                                   "hlp" => "");
+    $aliases["_#HEADLINE"] = array("fce" => "f_e:safe",
+                                   "param" => GetHeadlineFieldID($r_sid, $db),
+                                   "hlp" => "");
+  }                                 
 
   $itemview = new itemview( $db, $format_strings, $fields, $aliases, $item_ids,
               $st->metapage * ($st->current-1), $st->metapage, "" );
