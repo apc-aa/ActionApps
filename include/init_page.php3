@@ -23,6 +23,26 @@ http://www.apc.org/
 # parameter New_slice - used in sliceadd.php3 page
 #                     - do not unset slice_id but slice_id could not be defined
 
+# handle with PHP magic quotes - quote the variables if quoting is set off
+function Myaddslashes($val, $n=1) {
+  if (!is_array($val)) {
+    return addslashes($val);
+  }  
+  for (reset($val); list($k, $v) = each($val); )
+    $ret[$k] = Myaddslashes($v, $n+1);
+  return $ret;
+}    
+
+if (!get_magic_quotes_gpc()) { 
+  // Overrides GPC variables 
+  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+  $$k = Myaddslashes($v); 
+}
+
 require "../include/config.php3";
 
 if($free)            // anonymous authentication
@@ -50,8 +70,10 @@ if($free) {           // anonymous login
 
 $auth->relogin_if($relogin); // relogin if requested
 
-if( $new_sliceid )
+if( $new_sliceid ) {
   $slice_id = $new_sliceid;
+  unset( $r_profile );
+}  
 
 if( $Add_slice )
   unset($slice_id);
@@ -76,6 +98,7 @@ $sess->register("r_slice_headline");    // stores headline of slice
 $sess->register("r_slice_view_url");    // url of slice
 $sess->register("r_stored_slice");      // id of slice which values are in r_slice_headline, r_slice_view_url
 $sess->register("r_hidden");            // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
+$sess->register("r_profile");           // stores profile for loged user and current slice
 //$sess->register("r_fields");            // array of fields for current slice
 
 if( !$save_hidden ) {      # sometimes we need to not unset hidden - popup for related stories ...
@@ -138,7 +161,9 @@ if( !$Add_slice AND !$New_slice ) {
   }  
   $p_slice_id = q_pack_id($slice_id);
   if( $slice_id != $r_stored_slice ) {                     // it is not cached - we must get it
-    $SQL= " SELECT * FROM slice WHERE id='$p_slice_id'";  // check for headline and slice type
+
+    # Get slice information and store it to session veriables
+    $SQL= " SELECT * FROM slice WHERE id='$p_slice_id'"; 
     $db->query($SQL);
     if($db->next_record()) {
       $r_slice_headline = $db->f(name);
@@ -148,6 +173,29 @@ if( !$Add_slice AND !$New_slice ) {
                                       : $db->f(slice_url));
       list($r_fields,) = GetSliceFields($slice_id);
     }
+
+    # Get user profile for the slice
+    $SQL= " SELECT * FROM profile 
+             WHERE slice_id='$p_slice_id' 
+               AND (uid='". $auth->auth["uid"] ."' OR uid='*')";
+
+    $db->query($SQL);
+    while($db->next_record()) {
+      # default setting for the slice is stored as user 'uid=*'
+      if( $db->f('uid') == '*' ) {
+        $general_profile[] = $db->Record;   # store the row for this moment
+        continue;
+      }  
+      $r_profile[$db->f('property')][$db->f('selector')] = $db->f('value');
+    }
+    if( isset($general_profile) ) {         # use general preferences if not 
+      reset( $general_profile );            # definned special   
+      while( list(,$v) = each($general_profile) ) {
+        if( !GetProfileProperty($v['property'],$v['selector']) )
+          $r_profile[$v['property']][$v['selector']] = $v['value'];
+      }
+    }      
+//print_r( $r_profile );
   }  
   
   // The config file not loaded -> the slice type was changed
@@ -171,11 +219,14 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.17  2001/12/18 12:19:14  honzam
+new user profile feature, scripts are now "magic_quotes" independent - no matter how it is set
+
 Revision 1.16  2001/09/27 15:57:59  honzam
 Starting with slice other than AA Core for admins, New related stories support
 
 Revision 1.15  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
+New View feature, new and improve d search function (QueryIDs)
 
 Revision 1.14  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
