@@ -17,32 +17,30 @@
 # and fill in the correct value between the quotes. Make sure to terminate
 # this path with a slash!
 # Example:
-# $AA_INC_PATH = "/home/httpd/html/aa/include/";
-$AA_INC_PATH = "/www/Earth/apc-aa/include/"; 
+# $AA_INC_PATH = "/home/httpd/html/apc-aa/include/";
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
-define("AA_INSTAL_URL", "http://stagingearth.path.net/apc-aa/");
+define("AA_INSTAL_URL", "http://my.domain.org/apc-aa/");
 
 # URL of index of help files for AA
 #OLD define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
 define("DOCUMENTATION_URL", "http://apc-aa.sourceforge.net/apc-aa/doc");
 
 # Your Internet Domain
-define("DEFAULT_ORG_ID", "earth.path.net");
+define("DEFAULT_ORG_ID", "my.domain.org");
 
 # DB Access Configuration
-define("DB_HOST", "xanadu.cyborganic.org");
-#define("DB_HOST", "xanatoo");
+define("DB_HOST", "my.domain.org");
+#define("DB_HOST", "localhost");
 define("DB_NAME", "aadb");
 define("DB_USER", "aadbuser");
 define("DB_PASSWORD", "test.pw");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
-define("AA_ID", "999224311780abcd420224311780abcd");
-define("ORG_NAME","Mitra Internet Consulting");
-#define("AA_ID", "000111222333444555666777888999A9");
+define("ORG_NAME","An APC Member");
+define("AA_ID", "000111222333444555666777888999A9");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
 define("PERM_LIB", "sql");
@@ -58,7 +56,7 @@ define("LDAP_ACLS", "ou=ACLs,ou=AA");
 define("LDAP_PORT", 389);            // standard LDAP port: 389
 
 # e-mail for bug reporting contact
-define("ERROR_REPORTING_EMAIL", "mitra@earth.path.net");
+define("ERROR_REPORTING_EMAIL", "webmaster@my.domain.org");
 
 # set this directive to true, if you use MySQL 
 # (uses LIMIT clause in SELECTs)
