@@ -2,7 +2,7 @@
 # $Id$
 # Language: ES
 # This file was automatically created by the Mini GetText environment
-# on 25.9.2002 12:49
+# on 30.9.2002 17:10
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -11,31 +11,52 @@
 
 $mgettext_lang = "es";
 
-# Unused messages
-# End of unused messages
-
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/alerts.php3, row 177
-$_m["AA Alerts - daily digest of "]
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 45
+$_m["Error - user was not subscribed"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/alerts.php3, row 178
-$_m["AA Alerts - weekly digest of "]
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 52
+$_m["Missing required info"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/alerts.php3, row 179
-$_m["AA Alerts - monthly digest of "]
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 66
+$_m["Howoften set wrong"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/alerts.php3, row 203
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 110
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 74
+$_m["Wrong collection ID"]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 101
+$_m["You have been successfully subscribed to AA Alerts for %1."]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 109
+$_m["You must first confirm your subscription (see confirmation e-mail) or subscribe again on %1 in order to receive e-mail Alerts."]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 112
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/alerts.php3, row 210
 $_m["You can change your subscriptions on %1."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/confirm.php3, row 38
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/alerts.php3, row 181
+$_m["AA Alerts - daily digest of "]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/alerts.php3, row 182
+$_m["AA Alerts - weekly digest of "]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/alerts.php3, row 183
+$_m["AA Alerts - monthly digest of "]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/confirm.php3, row 37
 $_m["Congratulations. Your subscription is finished."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/confirm.php3, row 43
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/confirm.php3, row 42
 $_m["Subscribe to E-mail Alerts"]
   = "";
 
@@ -47,8 +68,8 @@ $_m["Finish your subscription to AA Alerts"]
 $_m["The code given is not OK. Please try it again. Don't use any spaces."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/confirm.php3, row 55
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 56
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/confirm.php3, row 54
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 57
 $_m["Submit"]
   = "";
 
@@ -68,37 +89,37 @@ $_m["Wrong password."]
 $_m["Login to Alerts sending"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 68
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 69
 $_m["Login to Personal settings for Alerts sending"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 78
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 79
 $_m["New user? Subscribe!"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 80
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 51
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 81
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 52
 $_m["E-mail"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 82
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 53
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 83
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 54
 $_m["Password"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 85
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 86
 $_m["Login"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 86
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 87
 $_m["Login by your e-mail address. If you don't use password, leave that box empty. If you forgot your password, click here and we will send a new confirmation e-mail to you."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 86
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/index.php3, row 87
 $_m["Send password"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/user_filter.php3, row 39
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/user_filter.php3, row 38
 $_m["Your session has expired. Please login again."]
   = "";
 
@@ -143,17 +164,17 @@ $_m["Subscribed Collections"]
   = "";
 
 # /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/user_filter.php3, row 217
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 156, 226
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 154, 224
 $_m["Filter"]
   = "";
 
 # /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/user_filter.php3, row 218, 256, 285
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 216
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 214
 $_m["How often"]
   = "";
 
 # /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/user_filter.php3, row 221
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 217
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 215
 $_m["unsubscribe"]
   = "";
 
@@ -177,11 +198,11 @@ $_m["Sign out"]
 $_m["An email with subscription informations was sent to you."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 37, 42
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 37, 43
 $_m["Subscribe to AA Alerts"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 49
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/subscribe.php3, row 50
 $_m["We will send an e-mail message to the address given. Follow the instructions in it to complete your subscription."]
   = "";
 
@@ -197,84 +218,60 @@ $_m["weekly"]
 $_m["monthly"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 84
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 85
 $_m["ERROR adding user to alerts_user"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 89
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 90
 $_m["ERROR updating user in alerts_user"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 92
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 93
 $_m["Welcome to APC e-mail alerts"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 102
-$_m["<p>Hello,</p><p>please confirm your subscription on</p>%1<p>Write the code</p>%2<p>into the box so that we can see you did not subscribe by mistake and your e-mail is working.</p><p>Yours<br>&nbsp; &nbsp; &nbsp;APC Alerts moderators</p>"]
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 101
+$_m["<p>Hello,</p><p>please confirm your subscription by clicking on URL:</p>%1<p>or copy the URL to your web browser so that we can see you did not subscribe by mistake and your e-mail is working.</p><p>Yours<br>&nbsp; &nbsp; &nbsp;APC Alerts moderators</p>"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 145
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 143
 $_m["Create new collection"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 146
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 144
 $_m["New collection"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 148
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 146
 $_m["Create"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 175
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 173
 $_m["Choose a filter"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 205
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 203
 $_m["Remove filters by setting order to 0."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 209
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 207
 $_m["Update"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 210
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 208
 $_m["Delete"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 214
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 212
 $_m["Collection"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 229
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 227
 $_m["Order"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 234
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/util.php3, row 232
 $_m["Add filter"]
-  = "";
-
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 45
-$_m["Error - user was not subscribed"]
-  = "";
-
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 51
-$_m["Missing required info"]
-  = "";
-
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 65
-$_m["Howoften set wrong"]
-  = "";
-
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 73
-$_m["Wrong collection ID"]
-  = "";
-
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 99
-$_m["You have been successfully subscribed to AA Alerts for %1."]
-  = "";
-
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/misc/alerts/add_user_collection.php3, row 107
-$_m["You must first confirm your subscription (see confirmation e-mail) or subscribe again on %1 in order to receive e-mail Alerts."]
   = "";
 
 ?>

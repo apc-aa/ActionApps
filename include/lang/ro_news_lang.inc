@@ -2,7 +2,7 @@
 # $Id$
 # Language: RO
 # This file was automatically created by the Mini GetText environment
-# on 25.9.2002 12:57
+# on 30.9.2002 17:18
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -31,171 +31,187 @@ $_m["Misc"]
   = "";
 
 # /raid/www/htdocs/work.ecn.cz/aa_jakub/include/menu.php3, row 196
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 461, 462
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 475, 476
 $_m["Cron"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 371
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 268
+$_m["order ascending"]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 269
+$_m["order descending"]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 374
 $_m["Nothing to be shown."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 433
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 440
 $_m["Quick Search: "]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 447, 451
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 454, 458
 $_m["Go"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 448
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 455
 $_m["Complex Search (SQL WHERE clause): "]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 557
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 574
 $_m["edit"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 561
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 578
 $_m["delete"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 565
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 582
 $_m["update"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 566
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 583
 $_m["insert"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 832
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 860
 $_m["Wrong value: a number between %1 and %2 is expected."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 849
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 877
 $_m["This field is required."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 854
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 882
 $_m["Not a valid integer number."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 858
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 886
 $_m["Not a valid file name."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 862
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 890
 $_m["Not a valid email address."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 875
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 903
 $_m["Are you sure you want to permanently DELETE this record?"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 118
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 125
 $_m["mail body"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 120
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 127
 $_m["From: mail header"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 171, 172
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 178, 179
 $_m["Alerts Collection"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 177, 318
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 184, 331
 $_m["description"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 181, 321
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 188, 334
 $_m["standard"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 186, 324
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 193, 337, 620
 $_m["no"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 186, 324
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 193, 337, 620
 $_m["yes"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 188
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 195
 $_m["mail header"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 195
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 202
 $_m["Filters"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 199
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 206
 $_m["Users"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 205
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 212
 $_m["You don't have permissions to edit any collection or no collection exists."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 237
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 248
 $_m["Error inserting Filter. Perhaps it is already in the collection."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 240
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 251
 $_m["filter"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 249
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 261
 $_m["order"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 277
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 276
+$_m["Not yet confirmed"]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 290
 $_m["There are no users subscribed to this collection yet."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 280, 361, 390
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 293, 374, 404
 $_m["email"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 288, 441
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 301, 455
 $_m["how often"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 313
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 326
 $_m["No collection uses any filter defined in any slice you have Admin permissions to."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 351
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 364
 $_m["To add users use the standard Alerts User Interface."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 355, 356
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 368, 369
 $_m["Alerts Users"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 365, 393
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 378, 407
 $_m["first name"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 366, 394
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 379, 408
 $_m["last name"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 367, 395
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 380
+$_m["confirmed"]
+  = "";
+
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 381, 409
 $_m["language"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 371
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 385
 $_m["No user is subscribed to any collection you have permissions to."]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 384, 385
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 398, 399
 $_m["Alerts User"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 399
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 413
 $_m["Collections"]
   = "";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 456
+# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 470
 $_m["For help see FAQ: "]
   = "";
 
