@@ -96,9 +96,9 @@ function GetLinkFields() {  // function - we need trnslate _m() on use (not at i
     'cat_proposal_delete' => GetFieldDef( _m('To be deleted'),         'links_link_cat.proposal_delete','numeric', false,          0,    0),
     'cat_priority'        => GetFieldDef( _m('Priority'),              'links_link_cat.priority',       'numeric', false,          0,    0),
     'change'              => GetFieldDef( _m('Change'),                'links_changes.rejected',        'numeric', 'changes',      0,    0)
-    );    
-}                                                                                                                           
-    
+    );
+}
+
 /** Predefined aliases for links. For another aliases use 'inline' aliases. */
 function GetLinkAliases() {  // function - we need trnslate _m() on use (not at include time)
   return array(
@@ -140,7 +140,7 @@ function GetLinkAliases() {  // function - we need trnslate _m() on use (not at 
     "_#EDITLINK" => GetAliasDef( "f_e:link_edit",     "cat_id",          _m('Link to link editing page (for admin interface only)')),
     "_#CATEG_GO" => GetAliasDef( "f_e:link_go_categ", "cat_id",          _m('Category listing with links (for admin interface only)'))
     );
-}    
+}
 
 
 /** List of fields, which will be listed in searchbar in Links Manager (search)
@@ -154,8 +154,8 @@ function GetCategoryFields() {  // function - we need trnslate _m() on use (not 
      'link_count'=>      GetFieldDef( _m('Link Count'),  'links_categories.link_count',  'numeric'),
      'description'=>     GetFieldDef( _m('Description'), 'links_categories.description', 'text'),
      'note'=>            GetFieldDef( _m('Note'),        'links_categories.note',        'text'));
-}     
-     
+}
+
 /** Predefined aliases for links. For another aliases use 'inline' aliases. */
 function GetCategoryAliases() {  // function - we need trnslate _m() on use (not at include time)
     return array(
@@ -163,8 +163,10 @@ function GetCategoryAliases() {  // function - we need trnslate _m() on use (not
     "_#C_NAME__" => GetAliasDef( "f_t", "name",        _m('Category name')),
     "_#C_LCOUNT" => GetAliasDef( "f_t", "link_count",  _m('Number of links in category')),
     "_#C_DESCRI" => GetAliasDef( "f_t", "description", _m('Category description')),
-    "_#C_NOTE__" => GetAliasDef( "f_t", "note",        _m('Cetegory editor\'s note'))
+    "_#C_NOTE__" => GetAliasDef( "f_t", "note",        _m('Category editor\'s note')),
+    "_#C_CROSS_" => GetAliasDef( "l_b", "path",        _m('Crossreferenced category')),
+    "_#C_PATH__" => GetAliasDef( "l_p:1:: / :", "path",        _m('Path to current category'))
     );
-}    
-     
+}
+
 ?>
