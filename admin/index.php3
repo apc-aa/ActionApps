@@ -23,7 +23,7 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH] . "varset.php3";
 require $GLOBALS[AA_INC_PATH] . "item.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
-                     
+
 //huh("-=-$action==");
 function MoveItems($chb,$status) {
   global $db;
@@ -31,8 +31,11 @@ function MoveItems($chb,$status) {
 //huh($status);
   if( isset($chb) AND is_array($chb) ) {
     reset( $chb );
-    while( list($it_id,) = each( $chb ) )
+    while( list($it_id,) = each( $chb ) ){
+      $it_id = substr($it_id,1);    // remove added x (it is needed for ids with all numbers and no character a-h) 
+//      huh($it_id);
       $db->query("update items set status_code = $status where id='".q_pack_id($it_id)."'");
+    }
   }
 }  
 
@@ -40,9 +43,11 @@ function FeedAllItems($chb) {    // Feed all checked items
   global $db;
   if( isset($chb) AND is_array($chb) ) {
     reset( $chb );
-    while( list($it_id,) = each( $chb ) )
+    while( list($it_id,) = each( $chb ) ) {
+      $it_id = substr($it_id,1);    // remove added x (it is needed for ids with all numbers and no character a-h) 
       FeedItem( $it_id, $db );
-  }
+    }  
+  } 
 }  
 
 
@@ -128,7 +133,7 @@ switch( $action ) {  // script post parameter
   case "edit":  // edit the first one
     if( isset($chb) AND is_array($chb) ) {
       reset( $chb );
-      go_url(con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=") .key($chb) );
+      go_url(con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=") . substr(key($chb),1 ));      // remove added x (it is needed for ids with all numbers and no character a-h) 
     }  
     break;
   case "feed":  // feed selected items to selected slices
@@ -152,6 +157,7 @@ switch( $action ) {  // script post parameter
         if( isset($chb) AND is_array($chb) ) {
           reset( $chb );
           while( list($it_id,) = each( $chb ) ) {
+            $it_id = substr($it_id,1);    // remove added x (it is needed for ids with all numbers and no character a-h) 
 //          huh("Item: $it_id -> $sl_id <br>/n");
             FeedItemTo($it_id, $sl_id, $approvedfeed[$sl_id] , $db);
           }  
@@ -234,7 +240,7 @@ function OpenPreview() {
         if ((previewwindow != null) && (!previewwindow.closed)) {
           previewwindow.close()    // in order to preview go on top after open
         }
-        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(4,name.indexOf(']')),'fullwindow');
+        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(5,name.indexOf(']')),'fullwindow');
         return;
       }  
     }
@@ -313,6 +319,7 @@ if(is_object($st)) {
 }else {
   $st = new scroller($st_name, $sess->url($PHP_SELF) . "&");	
   $st->metapage=EDIT_ITEM_COUNT;
+  $st->setSort("post_date", 1);
 
   reset($af_columns);   // set filters for all possibly displayed fields
   while( list($afname, $afarr) = each($af_columns) ) {
@@ -483,8 +490,9 @@ while($db->next_record()){
         echo '<td class=icategory>'. $foo .'</td>';
         break;
       case "chbox":
-        echo '<tr><td><input type=checkbox name="chb['. $CurItem->f_n("id") .']" value='.$foo_id.'></td>';
-        break;
+        echo '<td><input type=checkbox name="chb[x'. $CurItem->f_n("id") .']" value=""'.$foo_id.'></td>';
+             // added x (it is needed for ids with all numbers and no character a-h) 
+        break; 
       case "edit":
         echo '<td><a href="'. con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=") .$CurItem->f_n("id") .'" class=iheadline>'. L_EDIT . '</a></td>';
         break;
@@ -577,6 +585,9 @@ echo '
 
 /*
 $Log$
+Revision 1.9  2000/10/10 10:01:45  honzam
+default sorting of items is the newset first
+
 Revision 1.8  2000/08/17 15:14:32  honzam
 new possibility to redirect item displaying (for database changes see CHANGES)
 
