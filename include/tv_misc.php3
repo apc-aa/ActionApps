@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -24,12 +24,14 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"]."tv_email.php3";
 
-// Settings for miscellaneous table views (see doc/tabledit.html for more info)       
-/** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
-function GetMiscTableView ($viewID, $processForm = false) {        
+// Settings for miscellaneous table views (see doc/tabledit.html for more info)
+/** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */
+function GetMiscTableView ($viewID, $processForm = false) {
     global $auth, $slice_id, $db;
     global $attrs_edit, $attrs_browse, $format, $langs;
-            
+
+    $p_slice_id = q_pack_id($slice_id);
+
     if ($viewID == "email_edit") {
         $tableview = GetEmailTableView ($viewID);
         $tableview["mainmenu"] = "sliceadmin";
@@ -41,12 +43,12 @@ function GetMiscTableView ($viewID, $processForm = false) {
         $tableview["mainmenu"] = "sliceadmin";
         $tableview["submenu"] = "te_emails";
         return $tableview;
-    }	          
-            
+    }
+
     /* ------------------------------------------------------------------------------------
        ww -- browse wizard welcomes
        ww_edit -- edit -"-
-    */         
+    */
     if ($viewID == "ww") return  array (
         "table" => "wizard_welcome",
         "type" => "browse",
@@ -63,7 +65,7 @@ function GetMiscTableView ($viewID, $processForm = false) {
             "mail_from" => array ("hint" => _m("From: mail header"), "required" => true)),
         "attrs" => $attrs_browse,
         "gotoview" => "ww_edit");
-        
+
     if ($viewID == "ww_edit") {
         $retval = GetMiscTableView ("ww");
         $retval["type"] = "edit";
@@ -73,9 +75,9 @@ function GetMiscTableView ($viewID, $processForm = false) {
         $retval["addrecord"] = false;
         return $retval;
     }
-    
+
     /* ------------------------------------------------------------------------------------
-       wt -- browse wizard templates 
+       wt -- browse wizard templates
     */
     if ($viewID == "wt") return  array (
         "table" => "wizard_template",
@@ -90,18 +92,18 @@ function GetMiscTableView ($viewID, $processForm = false) {
             "dir"=> array (
                 "view" => array ("type" => "text", "size" => array ("cols" => 10)),
                 "validate" => "filename",
-                "required" => true), 
+                "required" => true),
             "description"=> array (
                 "view" => array ("type" => "text", "size" => array ("cols" => 40)),
                 "required" => true)
             ),
-        "attrs" => $attrs_browse);    
+        "attrs" => $attrs_browse);
 
     /* ------------------------------------------------------------------------------------
-       cron 
+       cron
     */
     if ($viewID == "cron") {
-        $url = "http://apc-aa.sourceforge.net/faq/#cron";    
+        $url = "http://apc-aa.sourceforge.net/faq/#cron";
         return  array (
         "table" => "cron",
         "type" => "browse",
@@ -126,5 +128,117 @@ function GetMiscTableView ($viewID, $processForm = false) {
             "last_run" => array ("view" => array ("readonly" => true, "type" => "date", "format" => "j.n.Y G:i"))
         ));
     }
+    /* ------------------------------------------------------------------------------------
+       log
+    */
+    if ($viewID == "log") {
+        return  array (
+        "table"     => "log",
+        "type"      => "browse",
+        "mainmenu"  => "aaadmin",
+        "help"      => _m("COUNT_HIT events will be used for counting item hits. After a while it will be automaticaly deleted."),
+        "submenu"   => "te_log",
+        "readonly"  => false,
+        "addrecord" => false,
+        "orderby"   => 'time',
+        "orderdir"  => 'd',
+        "listlen"   => 100,
+        "cond"      => IsSuperadmin(),
+        "title"     => _m("Log view"),
+        "caption"   => _m("Log view"),
+        "attrs"     => $attrs_browse,
+        "fields"    => array (
+            'time'     => array ("view" => array ("type" => "date", "readonly" => true, "format" => "j.n.Y_G:i")),
+            'type'     => array ("view" => array ("type" => "text", "readonly" => true, "size" => array ("cols"=>10))),
+            'selector' => array ("view" => array ("type" => "text", "readonly" => true, "size" => array ("cols"=>10))),
+            'params'   => array ("view" => array ("type" => "text", "readonly" => true, "size" => array ("cols"=>20))),
+            'user'     => array ("view" => array ("type" => "text", "readonly" => true, "size" => array ("cols"=>10))),
+            'id'       => array ("view" => array ("type" => "text", "readonly" => true, "size" => array ("cols"=>10)))
+            ),
+        "buttons_down" => array ("delete_all"=>1)
+        );
+    }
+    /* ------------------------------------------------------------------------------------
+       searchlog
+    */
+    if ($viewID == "searchlog") {
+        $url = 'http://actionapps.org/faq/detail.shtml?x=1767';
+        return  array (
+        "table"     => "searchlog",
+        "type"      => "browse",
+        "mainmenu"  => "aaadmin",
+        "help"      => _m("See searchlog=1 parameter for slice.php3 in FAQ: ")."<a target=\"_blank\" href=\"$url\">$url</a>",
+        "submenu"   => "te_searchlog",
+        "readonly"  => false,
+        "addrecord" => false,
+        "orderby"   => 'date',
+        "orderdir"  => 'd',
+        "listlen"   => 50,
+        "cond"      => IsSuperadmin(),
+        "title"     => _m("SearchLog view"),
+        "caption"   => _m("SearchLog view"),
+        "attrs"     => $attrs_browse,
+        "fields"    => array (
+            'date'        => array ("view" => array ("type" => "date", "readonly" => true, "format" => "j.n.Y_G:i")),
+            'found_count' => array ("view" => array ("type" => "text", "readonly" => true), 'caption' => _m('items found')),
+            'search_time' => array ("view" => array ("type" => "text", "readonly" => true), 'caption' => _m('search time')),
+            'additional1' => array ("view" => array ("type" => "text", "readonly" => true), 'caption' => _m('addition')),
+            'query'       => array ("view" => array ("type" => "text", "readonly" => true)),
+            'user'        => array ("view" => array ("type" => "text", "readonly" => true)),
+            'id'          => array ("view" => array ("type" => "text", "readonly" => true))
+            ),
+        "buttons_down" => array ("delete_all"=>1)
+        );
+    }
+
+    /* ------------------------------------------------------------------------------------
+       fields
+    */
+    if ($viewID == "fields") {
+        return  array (
+        "table" => "field",
+        "type" => "browse",
+        "mainmenu" => "aaadmin",
+        "submenu" => "fields",
+        "readonly" => false,
+        "addrecord" => true,
+        "cond" => IsSuperadmin(),
+        "title" => _m ("Configure Fields"),
+        "caption" => _m("Configure Fields"),
+        "attrs" => $attrs_browse,
+        "where" => "slice_id='$p_slice_id'",
+        "primary" => array ('slice_id', 'id'),
+        "fields" => array (
+            "id"              => array (                                         "view" => array ("type" => "text", "readonly" => true)),
+            "name"            => array ("required"=>true,  "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "input_pri"       => array ("required"=>true,  "validate"=>'number', "view" => array ("type" => "text", "size" => array ("cols"=>5))),
+            "input_help"      => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "input_morehlp"   => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "input_default"   => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>12))),
+            "required"        => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "checkbox")),
+            "feed"            => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "select", "source" => inputFeedModes())),
+            "multiple"        => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "checkbox")),
+            "input_show_func" => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>30))),
+            "alias1"          => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>10))),
+            "alias1_func"     => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "alias1_help"     => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "alias2"          => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>10))),
+            "alias2_func"     => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "alias2_help"     => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "alias3"          => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>10))),
+            "alias3_func"     => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "alias3_help"     => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "input_before"    => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>20))),
+            "html_default"    => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "checkbox")),
+            "html_show"       => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "checkbox")),
+            "in_item_tbl"     => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "checkbox")),
+            "input_validate"  => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>6))),
+            "input_insert_func"=>array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "text", "size" => array ("cols"=>6))),
+            "input_show"      => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "checkbox")),
+            "text_stored"     => array ("required"=>false, "validate"=>'text',   "view" => array ("type" => "checkbox"))
+        ));
+    }
+
+
 } // end of GetTableView
 ?>
