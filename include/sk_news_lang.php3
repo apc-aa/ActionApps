@@ -752,6 +752,18 @@ require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 
 define("L_PARAM_WIZARD_LINK", "Prùvodce s nápovìdou");
 define("L_SHOW_RICH", "Zobraz toto pole v rich text editoru (použijte až po nainstalování potøebných komponent!)");
+define("L_MAP_JOIN","-- Spojení polí --");
+
+// aliases used in se_notify.php3 
+define("L_NOTIFY_SUBJECT", "Pøedmìt e-mailu (Subject)"); 
+define("L_NOTIFY_BODY", "Vlastní e-mailová zpráva"); 
+define("L_NOTIFY_EMAILS", "E-mailová adresa (jedna na øádek)");
+define("L_NOTIFY_HOLDING", "<h4>Nová zpráva v Zásobníku</h4> Kdokoliv mùže být informován o tom, že pøibyla nová zpráva do zásobníku. Adresy pøíjemcù napište níže, do následujících políèek pak vyplòte, jak má vypadat e-mail, který pak uživatelé dostanou."); 
+define("L_NOTIFY_HOLDING_EDIT", "<h4>Zpráva v Zásobníku byla zmìnìna</h4> Kdokoliv mùže být informován o tom, že byla zmìnìna zpráva v zásobníku. Adresy pøíjemcù napište níže, do následujících políèek pak vyplòte, jak má vypadat e-mail, který pak uživatelé dostanou."); 
+define("L_NOTIFY_APPROVED", "<h4>Nová zpráva mezi Aktuálními</h4> Kdokoliv mùže být informován o tom, že pøibyla nová zpráva na web. Adresy pøíjemcù napište níže, do následujících políèek pak vyplòte, jak má vypadat e-mail, který pak uživatelé dostanou."); 
+define("L_NOTIFY_APPROVED_EDIT", "<h4>Aktuální zpráva zmìnìna</h4> Kdokoliv mùže být informován o tom, že byla zmìnìna vystavená zpráva. Adresy pøíjemcù napište níže, do následujících políèek pak vyplòte, jak má vypadat e-mail, který pak uživatelé dostanou.");
+define("L_NOTIFY", "Upozornìní e-mailem"); 
+define("L_A_NOTIFY_TIT", "E-mailová upozornìní na události");
 
 define("L_NOITEM_MSG", "Hláška 'Nenalezena žádná zpráva'");
 define("L_NOITEM_MSG_HLP", "zpráva, která se objeví pøi nenalezení žádného odpovídajícího èlánku");
@@ -786,6 +798,9 @@ define('L_RULE','Pravidlo');
 
 /*
 $Log$
+Revision 1.13  2002/01/04 13:07:40  honzam
+Added language constants for profiles, notifications.
+
 Revision 1.12  2001/12/26 22:11:37  honzam
 Customizable 'No item found' message. Added missing language constants.
 

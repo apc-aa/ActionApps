@@ -832,6 +832,18 @@ require  $GLOBALS[AA_INC_PATH]."de_param_wizard_lang.php3";
 
 define("L_PARAM_WIZARD_LINK", "Feld-Assistent");
 define("L_SHOW_RICH", "Show this field as a rich text editor (use only after having installed the necessary components!)");
+define("L_MAP_JOIN","-- Joined fields --");
+
+// aliases used in se_notify.php3 
+define("L_NOTIFY_SUBJECT", "Subject of the Email message"); 
+define("L_NOTIFY_BODY", "Body of the Email message"); 
+define("L_NOTIFY_EMAILS", "Email addresses, one per line");
+define("L_NOTIFY_HOLDING", "<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."); 
+define("L_NOTIFY_HOLDING_EDIT", "<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."); 
+define("L_NOTIFY_APPROVED", "<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."); 
+define("L_NOTIFY_APPROVED_EDIT", "<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.");
+define("L_NOTIFY", "Email Notification"); 
+define("L_A_NOTIFY_TIT", "Email Notifications of Events");
 
 define("L_NOITEM_MSG", "'No item found' message");
 define("L_NOITEM_MSG_HLP", "message to show in place of slice.php3, if no item matches the query");
@@ -871,6 +883,9 @@ define('L_RULE','Rule');
 
 /*
 $Log$
+Revision 1.6  2002/01/04 13:07:40  honzam
+Added language constants for profiles, notifications.
+
 Revision 1.5  2001/12/26 22:11:37  honzam
 Customizable 'No item found' message. Added missing language constants.
 

@@ -137,19 +137,8 @@ define( "L_COPYRIGHT", 'Copyright (C) 2001 the
 
 define("DEFAULT_CODEPAGE","iso-8859-1");
 
-            
 # ------------------- New constants (not in other lang files ------------------
-// aliases used in se_notify.php3 
- 
-define("L_NOTIFY_SUBJECT", "Subject of the Email message"); 
-define("L_NOTIFY_BODY", "Body of the Email message"); 
-define("L_NOTIFY_EMAILS", "Email addresses, one per line");
-define("L_NOTIFY_HOLDING", "<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."); 
-define("L_NOTIFY_HOLDING_EDIT", "<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."); 
-define("L_NOTIFY_APPROVED", "<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."); 
-define("L_NOTIFY_APPROVED_EDIT", "<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.");
-define("L_NOTIFY", "Email Notification"); 
-define("L_A_NOTIFY_TIT", "Email Notifications of Events");
+# define( ...
 
 # -----------------------------------------------------------------------------
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
@@ -171,6 +160,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.24  2002/01/04 13:07:40  honzam
+Added language constants for profiles, notifications.
+
 Revision 1.23  2001/12/18 12:09:51  honzam
 new notification e-mail possibility (notify new item in slice, bins, ...)
 
