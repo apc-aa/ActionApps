@@ -65,7 +65,8 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "es" => "iso-8859-1",
                             "de" => "iso-8859-1",
                             "ro" => "iso-8859-2",
-                            "sk" => "windows-1250");
+                            "sk" => "windows-1250",
+                            "ja" => "ISO-2022-JP");
                          
 # MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and 
 # specifies how many items from the begining we have to search
