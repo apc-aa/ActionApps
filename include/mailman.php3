@@ -46,7 +46,7 @@ define("SC_HOLDING_BIN", 2);
 function MailmanCreateSynchroFiles ($slice_id) {
     global $db, $MAILMAN_SYNCHRO_DIR;
            
-    if (! is_dir ($MAILMAN_SYNCHRO_DIR))
+    if (! @is_dir ($MAILMAN_SYNCHRO_DIR))
         return;
 
     $slice_info = GetSliceInfo ($slice_id);

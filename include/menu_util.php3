@@ -59,34 +59,45 @@ function PrintModuleSelection() {
         var modulesOptions = ''\n";
     $db->query ("SELECT module.id, module.type, slice.type AS slice_type, module.name 
         FROM module LEFT JOIN slice ON module.id=slice.id "
-        .$slice_ids
-        ."ORDER BY module.type, slice.type, module.name");
-    $option_begin = "\t+'<option value=\"";
-    while ($db->next_record()) {
-        switch ($db->f("type")) {
-        case 'Alerts': $caption = _m("Alerts"); break;
-        case 'W': $caption = _m("Site"); break;
-        case 'A': $caption = _m("MySQL Auth (old version)"); break;
-        case 'J': $caption = _m("Jump inside control panel"); break;
-        case 'P': $caption = _m("Polls"); break;
-        case 'L': $caption = _m("Links"); break;
-        case 'S':
-            switch ($db->f("slice_type")) {
-            case 'ReaderManagement': $caption = _m("Reader Management Slice"); break;
-            default: $caption = _m("Slice"); break;
-            }
-        }
-        if ($caption != $old_caption) {
-            if ($old_caption) echo $option_begin."\">'\n";
-            echo $option_begin . "\">*** ".$caption." ***'\n";
-            $old_caption = $caption;
-        }
-
-        echo $option_begin . htmlspecialchars(unpack_id ($db->f("id")))."\"";
+        .$slice_ids);
         
-        if ($slice_id == unpack_id ($db->f("id"))) 
-            echo " selected";
-        echo ">". str_replace("'","`",safe($db->f("name"))) . "'\n";
+    $module_types = array (
+        "Alerts" => array (5, _m("Alerts")),
+        "J" => array (6, _m("Jump inside control panel")),
+        "Links" => array (7, _m("Links")),
+        "A" => array (8, _m("MySQL Auth (old version)")),
+        "P" => array (9, _m("Polls")), 
+        "W" => array (10,_m("Site")),
+        "S" => array (0, _m("Slice")),
+        "RM"=> array (1, _m("Reader Management Slice")));
+        
+    while ($db->next_record()) {
+        if ($db->f("type") == "S") 
+            $order = $db->f("slice_type") == "ReaderManagement" ? 1 : 0;
+        else $order = $module_types[$db->f("type")][0];
+        //if (! $module_types[$db->f("type")]) { echo $db->f("type")."!!"; exit; }
+        $modules[$order][$db->f("id")] = $db->f("name");
+    }
+
+    $option_begin = "\t+'<option value=\"";
+    ksort ($modules);
+    reset ($modules);
+    $first = true;
+    while (list ($order, $mods) = each ($modules)) {
+        if (!$first) echo $option_begin."\">'\n";
+        $first = false;
+        foreach ($module_types as $module_type)
+            if ($module_type[0] == $order) 
+                 echo $option_begin . "\">*** ".$module_type[1]." ***'\n";
+
+        asort ($mods);                 
+        reset ($mods);
+        while (list ($id, $name) = each ($mods)) {
+            echo $option_begin . htmlspecialchars(unpack_id ($id))."\"";        
+            if ($slice_id == unpack_id ($id)) 
+                echo " selected";
+            echo ">". str_replace("'","`",safe($name)) . "'\n";
+        }
     }
         
     if( !$slice_id )   // new slice
