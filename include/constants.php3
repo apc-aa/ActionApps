@@ -84,12 +84,16 @@ $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
 $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
                                 "fld" => L_INPUT_SHOW_FLD, 
                                 "sel" => L_INPUT_SHOW_SEL, 
+                                "pre" => L_INPUT_SHOW_PRE, 
                                 "rio" => L_INPUT_SHOW_RIO, 
                                 "dte" => L_INPUT_SHOW_DTE, 
                                 "chb" => L_INPUT_SHOW_CHB, 
                                 "mch" => L_INPUT_SHOW_MCH,
                                 "mse" => L_INPUT_SHOW_MSE,
+                                "wi2" => L_INPUT_SHOW_WI2,
                                 "fil" => L_INPUT_SHOW_FIL,
+                                "isi" => L_INPUT_SHOW_ISI,
+                                "iso" => L_INPUT_SHOW_ISO,
                                 "nul" => L_INPUT_SHOW_NUL);
                               
 $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
@@ -104,6 +108,7 @@ $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "boo" => L_INPUT_INSERT_BOO,
                              "fil" => L_INPUT_INSERT_FIL,
                              "uid" => L_INPUT_INSERT_UID, 
+                             "ids" => L_INPUT_INSERT_IDS, 
                              "now" => L_INPUT_INSERT_NOW
                            /*"dte" => L_INPUT_INSERT_DTE, 
                              "cns" => L_INPUT_INSERT_CNS, 
@@ -120,11 +125,13 @@ $ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
                             "f_h" => L_ALIAS_FUNC_H,
                             "f_i" => L_ALIAS_FUNC_I,
                             "f_l" => L_ALIAS_FUNC_L,
+                            "f_m" => L_ALIAS_FUNC_M,
                             "f_n" => L_ALIAS_FUNC_N,
 			    "f_q" => L_ALIAS_FUNC_Q,
 			    "f_r" => L_ALIAS_FUNC_R,
                             "f_s" => L_ALIAS_FUNC_S,
                             "f_t" => L_ALIAS_FUNC_T,
+                            "f_v" => L_ALIAS_FUNC_V,
                             "f_u" => L_ALIAS_FUNC_U,
                             "f_w" => L_ALIAS_FUNC_W,
                             "f_0" => L_ALIAS_FUNC_0);
@@ -140,11 +147,12 @@ $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "8"   => LOG_EVENTS_);
 
 # content table flags
-define( "FLAG_HTML", 1 );
-define( "FLAG_FEED", 2 );
-define( "FLAG_FREEZE", 4 );
-define( "FLAG_OFFLINE", 8 );
-define( "FLAG_UPDATE", 16 );
+define( "FLAG_HTML", 1 );      # content is in HTML
+define( "FLAG_FEED", 2 );      # item is fed
+define( "FLAG_FREEZE", 4 );    # content can't be changed
+define( "FLAG_OFFLINE", 8 );   # off-line filled
+define( "FLAG_UPDATE", 16 );   # content should be updated if source is changed
+                               #   (after feeding)
 
 # states of feed field of field table
 define( "STATE_FEEDABLE", 0 );
@@ -259,21 +267,22 @@ $VIEW_TYPES['digest'] = array( 'name' => L_DIGEST_VIEW,
                               "odd" => L_V_ODD ,
                               "after" => L_V_AFTER);
 
-/* TODO
+
 $VIEW_TYPES['discus'] = array( 'name' => L_DISCUSSION_VIEW,
                               "before" => L_V_BEFORE ,
-                              "odd" => L_V_ODD ,
-                              "even_odd_differ" => L_V_EVENODDDIF ,
-                              "even" => L_V_EVEN ,
+                              "odd" => L_D_COMPACT ,
                               "after" => L_V_AFTER ,
-                              "selected_item" => L_V_SELECTED ,
-                              "modification" => L_V_MODIFICATION ,
+                              "even_odd_differ" => L_D_SHOWIMGS ,
+                              "modification" => L_D_ORDER ,
                               "img1" => L_V_IMG1 ,
                               "img2" => L_V_IMG2 ,
                               "img3" => L_V_IMG3 ,
                               "img4" => L_V_IMG4 ,
-                              "o1_direction" => L_V_ORDER1DIR);
+                              "even" => L_D_FULLTEXT,
+                              "remove_string" => L_D_FORM
+                              );
 
+/*  TODO
 $VIEW_TYPES['seetoo'] = array( 'name' => L_RELATED_VIEW,
                               "before" => L_V_BEFORE ,
                               "odd" => L_V_ODD ,
@@ -287,19 +296,20 @@ $VIEW_TYPES['seetoo'] = array( 'name' => L_RELATED_VIEW,
                               "o2_direction" => L_V_ORDER2DIR ,
                               "selected_item" => L_V_SELECTED ,
                               "listlen" => L_V_LISTLEN );
-
+*/
+                              
 $VIEW_TYPES['const'] = array( 'name' => L_CONSTANT_VIEW,
                               "before" => L_V_BEFORE ,
                               "odd" => L_V_ODD ,
-                              "even" => L_V_CONSTANNT ,
+                              "even" => L_V_EVEN ,
                               "after" => L_V_AFTER ,
-                              "selected_item" => L_V_SELECTED ,
-                              "parameter" => L_V_PARAMETER ,
+#                              "selected_item" => L_V_SELECTED ,
+                              "parameter" => L_V_CONSTANT_GROUP ,
                               "order1" => L_V_ORDER1 ,
                               "listlen" => L_V_LISTLEN ,
                               "even_odd_differ" => L_V_EVENODDDIF ,
                               "o1_direction" => L_V_ORDER1DIR);
-*/
+
 
 $VIEW_TYPES['rss'] = array( 'name' => L_RSS_VIEW,
                               "before" => L_V_BEFORE ,
@@ -367,7 +377,11 @@ $VIEW_TYPES_INFO['seetoo'] = array('modification'=>array('31'=>'related',
                                                          '32'=>'keyword with OR',
                                                          '33'=>'keyword with AND' ),
                                  'aliases' => 'field');
-$VIEW_TYPES_INFO['const'] = array('aliases' => 'const');
+$VIEW_TYPES_INFO['const'] = array('aliases' => 'const',
+                                  'order' => array('name'=>'name', 
+                                                   'value'=>'value',
+                                                   'pri'=>'priority'));
+                                  
 $VIEW_TYPES_INFO['rss'] = array('aliases' => 'field');
 $VIEW_TYPES_INFO['static'] = array('aliases' => 'none');
 $VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
@@ -376,9 +390,15 @@ $VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
 define ("FEEDMAP_FLAG_MAP", 0);
 define ("FEEDMAP_FLAG_VALUE", 1);
 define ("FEEDMAP_FLAG_EMPTY", 2);
+define ("FEEDMAP_FLAG_EXTMAP", 3);
                       
+define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in slice table
+
 /*
 $Log$
+Revision 1.17  2001/09/27 15:50:57  honzam
+New related stories support, Aliases for view and mail displaying
+
 Revision 1.16  2001/09/12 06:19:00  madebeer
 Added ability to generate RSS views.
 Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
