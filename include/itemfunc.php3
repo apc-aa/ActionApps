@@ -23,6 +23,8 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."notify.php3";
 require $GLOBALS[AA_INC_PATH]."imagefunc.php3";
+require $GLOBALS[AA_INC_PATH]."javascript.php3";
+require $GLOBALS[AA_INC_PATH]."date.php3";
  
 # ----------------------- functions for default item values -------------------
 function default_fnc_now($param) {
@@ -51,6 +53,37 @@ function default_fnc_txt($param) {
   return quote($param);
 }
 
+function default_fnc_rnd($param) {
+    global $slice_id, $db;
+
+    $params = explode (":", $param);
+    list ($len, $field_id) = $params;
+    if (!$len) $len = 5;
+    if (count ($params) < 3)
+        $slice_only = true;
+    else $slice_only = $params[2];
+    
+    do {
+        srand((double) microtime() * 1000000);
+        $salt_chars = "abcdefghijklmnoprstuvwxABCDEFGHIJKLMNOPQRSTUVWX0123456789";
+        for ($i = 0; $i < $len; $i ++)
+            $salt .= $salt_chars [rand (0,strlen($salt_chars)-1)];
+        
+        if (strlen ($field_id) != 16)
+            break;
+        if ($slice_only)
+            $SQL = "SELECT * FROM content INNER JOIN item ON content.item_id = item.id
+                    WHERE item.slice_id='".q_pack_id($slice_id)."'
+                    AND field_id='".addslashes($field_id)."'
+                    AND text='$salt'";
+        else $SQL = "SELECT * FROM content WHERE field_id='".addslashes($field_id)
+                    ."' AND text='$salt'";
+        $db->query ($SQL);
+    } while ($db->next_record());
+        
+    return $salt;
+}
+        
 function default_fnc_($param) {
   global $err;
   $err[default_fnc] = "No default function defined for parameter '$param'- default_fnc_()";
@@ -337,6 +370,26 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
 
 // -----------------------------------------------------------------------------
 
+function insert_fnc_pwd($item_id, $field, $value, $param) 
+{
+    $change_varname = "v".unpack_id($field["id"])."a";
+    $retype_varname = "v".unpack_id($field["id"])."b";
+    // "c" created in ValidateContent4Id:
+    $original_varname="v".unpack_id($field["id"])."c"; 
+    $delete_varname = "v".unpack_id($field["id"])."d";
+    global $$change_varname, $$retype_varname, $$delete_varname, $$original_varname;
+    
+    if ($$change_varname && $$change_varname == $$retype_varname) 
+        $value["value"] = md5 ($$change_varname);   
+    else if ($$delete_varname) 
+        $value["value"] = "";
+    else $value["value"] = $$original_varname;
+        
+    insert_fnc_qte($item_id, $field, $value, $param);
+}
+
+// -----------------------------------------------------------------------------
+
 function insert_fnc_nul($item_id, $field, $value, $param) {
 }
 
@@ -378,10 +431,11 @@ function show_fnc_edt($varname, $field, $value, $param, $html){
   if ($cols == 0) $cols = 70;
   if ($type == "") $type = "class";
   $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
-	$list_fnc_edt [] = $field['name'];
+
   FrmRichEditTextarea($varname, $field['name'], $value[0]['value'], 
    $rows, $cols, $type, $field[required], $field[input_help], $field[input_morehlp], 
    false, $htmlstate );
+   
 	global $list_fnc_edt;
 	$list_fnc_edt[] = $varname;
 }
@@ -706,6 +760,60 @@ function show_fnc_freeze_wi2($varname, $field, $value, $param, $html) {
   FrmStaticText($field['name'], implode (", ", $value));
 }
 
+function show_fnc_pwd($varname, $field, $value, $param, $html) {
+  echo $field["input_before"];
+  list ($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label,
+    $change_pwd_help, $retype_pwd_help) = explode (":", $param);
+    
+  if (!$change_pwd_label) $change_pwd_label = _m("Change Password");
+  if (!$retype_pwd_label) $retype_pwd_label = _m("Retype New Password");
+  if (!$delete_pwd_label) $delete_pwd_label = _m("Delete Password");
+  if (!$fieldsize) $fieldsize = 60;
+               
+  $name = $field['name'];
+  if ($field['required']) $name .= " *";             
+  FrmStaticText($name, $value[0]['value'] ? "*****" : _m("not set"));
+                 
+  if (!$field["required"])               
+      FrmInputChBox($varname."d", $delete_pwd_label, 0, false, "", 1,
+                    0, $delete_pwd_help, $field[input_morehlp] );               
+  
+  FrmInputText($varname."a", $change_pwd_label, "", 255, $fieldsize, 0, 
+               $change_pwd_help, $field[input_morehlp], 0, "PASSWORD");
+
+  FrmInputText($varname."b", $retype_pwd_label, "", 255, $fieldsize, 0,
+               $retype_pwd_help, $field[input_morehlp], 0, "PASSWORD");
+}
+
+function show_fnc_pwd_anonym($varname, $field, $value, $param, $html) {
+  echo $field["input_before"];
+  list ($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label,
+    $change_pwd_help, $retype_pwd_help) = explode (":", $param);
+    
+  if (!$change_pwd_label) $change_pwd_label = _m("Change Password");
+  if (!$retype_pwd_label) $retype_pwd_label = _m("Retype New Password");
+  if (!$delete_pwd_label) $delete_pwd_label = _m("Delete Password");
+  if (!$fieldsize) $fieldsize = 60;
+               
+  FrmInputText($varname, $field['name'], "", 255, $fieldsize, $field['required'], 
+               $field['input_help'], $field[input_morehlp], 0, "PASSWORD");
+                 
+  if (!$field["required"])               
+      FrmInputChBox($varname."d", $delete_pwd_label, 0, false, "", 1,
+                    0, $delete_pwd_help, $field[input_morehlp] );               
+  
+  FrmInputText($varname."a", $change_pwd_label, "", 255, $fieldsize, 0, 
+               $change_pwd_help, $field[input_morehlp], 0, "PASSWORD");
+
+  FrmInputText($varname."b", $retype_pwd_label, "", 255, $fieldsize, 0,
+               $retype_pwd_help, $field[input_morehlp], 0, "PASSWORD");
+}
+
+function show_fnc_freeze_pwd($varname, $field, $value, $param, $html) {
+  echo $field["input_before"];
+  FrmStaticText ($field['name'], $value[0] ? "*****" : "");
+}
+
 function show_fnc_nul($varname, $field, $value, $param, $html) {
 }
 
@@ -751,22 +859,19 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
       $GLOBALS[$htmlvarname] = $x[1];
     }
     
-        if( isset($GLOBALS[$varname]) and is_array($GLOBALS[$varname]) ) {
-        # fill the multivalues    
-      reset($GLOBALS[$varname]);
-      $i=0;
-      while( list(,$v) = each($GLOBALS[$varname]) ) {
-        $content4id[$pri_field_id][$i]['value'] = $v;    # add to content array
-        $content4id[$pri_field_id][$i]['flag'] = ( $f[html_show] ? 
-                             (((string)$GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
-                             (($f[html_default]>0) ? FLAG_HTML : 0));
-        $i++;                     
-      }  
-    } else {
-      $content4id[$pri_field_id][0]['value'] = $GLOBALS[$varname];
-      $content4id[$pri_field_id][0]['flag'] = ( $f[html_show] ? 
-                             (((string)$GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
-                             (($f[html_default]>0) ? FLAG_HTML : 0));
+    global $$varname;
+    $var = $$varname;
+    if( !is_array($var) )
+        $var = array (0=>$var);
+
+    # fill the multivalues    
+    reset($var);
+    for ($i=0; list(,$v) = each($var); $i ++) {
+        $content4id[$pri_field_id][$i]['value'] = $v;    
+        $content4id[$pri_field_id][$i]['flag'] = 
+            $f["html_show"] 
+                ? ($GLOBALS[$htmlvarname] == "h" ? FLAG_HTML : 0) 
+                : ($f["html_default"] > 0 ? FLAG_HTML : 0);
     }  
   }
 
@@ -789,6 +894,7 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
 *
 *   @param array $content4id   array (field_id => array of values 
 *						      (usually just a single value, but still an array))
+*   @return true on success, false otherwise
 */
 function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true ) 
@@ -851,7 +957,9 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     if (!$stop)	  
                         $thumbnails = $fncname($id, $f, $v, $fncpar[param], $fields);
                 }
-                else
+                else  
+                    /*{ echo "<b>$fid</b>";print_r ($f);
+                    echo  "=>".$fncname."<br><br>"; }*/
                     $fncname($id, $f, $v, $fncpar[param]);
                 //    print_r($fnc);
                 // do not store multiple values if field is not marked as multiple
@@ -936,77 +1044,329 @@ function GetFromProfile($value) {
     return array();
 }
 
-function ShowForm($content4id, $fields, $prifields, $edit) {
-  if( !isset($prifields) OR !is_array($prifields) )
-    return MsgErr(_m("No fields defined for this slice"));
+// -----------------------------------------------------------------------------
+/** Shows the Add / Edit item form fields 
+*   @param $show is used by the Anonymous Form Wizard, it is an array
+*                (packed field id => 1) of fields to show
+*/
+function ShowForm($content4id, $fields, $prifields, $edit, $show="") 
+{
+    if( !isset($prifields) OR !is_array($prifields) )
+        return MsgErr(_m("No fields defined for this slice"));
 
-	global $list_fnc_edt;
-	$list_fnc_edt = array();
-		
 	reset($prifields);
 	while(list(,$pri_field_id) = each($prifields)) {
-    $f = $fields[$pri_field_id];
+        $f = $fields[$pri_field_id];
+    
+        if (is_array ($show))
+            $showme = $show [$f['id']];
+            
+        else $showme = $f[input_show]                   
+            AND ! GetProfileProperty('hide',$f['id'])
+            AND ! GetProfileProperty('hide&fill',$f['id']);
+            
+        if (!$showme)
+    	    continue;
+    
+        $fnc = ParseFnc($f[input_show_func]);   # input show function
+    	if( ! $fnc ) 
+            continue;
 
-      #get varname - name of field in inputform
-    $varname = 'v'. unpack_id($pri_field_id); # "v" prefix - database field var
-    $htmlvarname = $varname."html";
+        #get varname - name of field in inputform
+        $varname = 'v'. unpack_id($pri_field_id); # "v" prefix - database field var
+        $htmlvarname = $varname."html";
+    
+        if( !IsEditable($content4id[$pri_field_id], $f) ) # if fed as unchangeable 
+            $show_fnc_prefix = 'show_fnc_freeze_';          # display it only
+        else 
+            $show_fnc_prefix = 'show_fnc_';
+    
+	    $fncname = $show_fnc_prefix . $fnc["fnc"];
+        
+        // look for alternative function for Anonym Wizard (used for passwords)
+        if (is_array ($show) && function_exists ($fncname."_anonym"))
+            $fncname .= "_anonym";
+        
+	    # updates content table or fills $itemvarset
+        if( $edit ) {
+       	    $fncname($varname, $f, $content4id[$pri_field_id],
+                     $fnc[param], $content4id[$pri_field_id][0]['flag'] & FLAG_HTML );
+        } else {        
+            # insert or new reload of form after error in inserting    
+            # first get values from profile, if there are some predefined value
+            $foo = GetProfileProperty('predefine',$f['id']);
+            if( $foo AND !$GLOBALS[$varname]) {
+              $x = GetFromProfile($foo);
+              $GLOBALS[$varname] = $x[0];
+              $GLOBALS[$htmlvarname] = $x[1];
+            }
+    
+            # get values from form (values are filled when error on form ocures
+            if( $f[multiple] AND is_array($GLOBALS[$varname]) ) {
+                  # get the multivalues
+                reset($GLOBALS[$varname]);
+                $i=0;
+                while( list(,$v) = each($GLOBALS[$varname]) )
+                    $arr[$i++]['value'] = $v;
+            } else
+                $arr[0]['value'] = $GLOBALS[$varname];
+              
+      	    $fncname($varname, $f, $arr, $fnc[param], 
+                ((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
+        }
+	}
+}
 
-    if( !IsEditable($content4id[$pri_field_id], $f) ) # if fed as unchangeable 
-      $show_fnc_prefix = 'show_fnc_freeze_';          # display it only
-     else 
-      $show_fnc_prefix = 'show_fnc_';
+// ----------------------------------------------------------------------------
+/** Shows Javascript for Add / Edit item 
+*/
+function ShowFormJavascript ($show_func_used, $js_proove_fields) {
+echo '
+    <script language="JavaScript"><!--
+      // array of listboxes where all selection should be selected
+      var listboxes=Array(); 
+      var myform = document.inputform;
 
-	  if( !$f[input_show]                      # if set to not show - do not show
-        OR GetProfileProperty('hide',$f['id'])
-        OR GetProfileProperty('hide&fill',$f['id']) )
-	    continue;
+      function SelectAllInBox( listbox ) {
+          for (var i = 0; i < myform[listbox].length; i++) 
+              // select all rows without the wIdThTor one, which is only for <select> size setting
+             myform[listbox].options[i].selected = 
+               ( myform[listbox].options[i].value != "wIdThTor" );
+      }
 
-	  $fnc = ParseFnc($f[input_show_func]);   # input show function
-	  if( $fnc ) {                     # call function
-	    $fncname = $show_fnc_prefix . $fnc[fnc];
-	      # updates content table or fills $itemvarset
-      if( !$edit ) {
-        # insert or new reload of form after error in inserting
+      // before submit the form we need to select all selections in some
+      // listboxes (2window, relation) in order the rows are sent for processing
+      function BeforeSubmit() {';
+        if ( richEditShowable() && $show_func_used['edt']) echo '
+          SaveRichEdits();';
+        echo '
+          for(var i = 0; i < listboxes.length; i++)
+              SelectAllInBox( listboxes[i] );
+          return proove_fields ();
+      }
+      ';
+      
+      if ($show_func_used['edt']) echo '
+      var richedits = Array();
+      
+      function SaveRichEdits () {
+        for (var i = 0; i < richedits.length; i++)
+          document.inputform[richedit[i]].value = get_text("edt"+richedit[i]);
+      }
+      ';
 
-        # first get values from profile, if there are some predefined value
-        $foo = GetProfileProperty('predefine',$f['id']);
-        if( $foo AND !$GLOBALS[$varname]) {
-          $x = GetFromProfile($foo);
-          $GLOBALS[$varname] = $x[0];
-          $GLOBALS[$htmlvarname] = $x[1];
+      if ($show_func_used['iso']) echo '
+
+      var relatedwindow;  // window for related stories
+      
+      function OpenRelated(varname, sid, mode, design) {
+        if ((relatedwindow != null) && (!relatedwindow.closed)) {
+          relatedwindow.close()    // in order to preview go on top after open
+        }
+        relatedwindow = open( "'. $sess->url("related_sel.php3") . '&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design, "relatedwindow", "scrollbars=1, resizable=1, width=500");
+      }';
+
+      if ($show_func_used['wi2']) echo '
+
+      function MoveSelected(left, right) {
+        var i=eval(left).selectedIndex;
+        if( !eval(left).disabled && ( i >= 0 ) )
+        {
+          var temptxt = eval(left).options[i].text;
+          var tempval = eval(left).options[i].value;
+          var length = eval(right).length;
+          if( (length == 1) && (eval(right).options[0].value==\'wIdThTor\') ){  // blank rows are just for <select> size setting
+            eval(right).options[0].text = temptxt;
+            eval(right).options[0].value = tempval;
+          } else
+            eval(right).options[length] = new Option(temptxt, tempval);
+          eval(left).options[i] = null;
+          if( eval(left).length != 0 )
+            if( i==0 )
+              eval(left).selectedIndex=0;
+            else
+              eval(left).selectedIndex=i-1;
+        }
+      }';
+      
+      if ($show_func_used['pre'] || $show_func_used['tpr']) echo '
+
+      function add_to_line(inputbox, value) {
+        if (inputbox.value.length != 0) {
+          inputbox.value=inputbox.value+","+value;
+        } else {
+          inputbox.value=value;
+        }
+      }';
+      
+    echo $js_proove_fields;
+
+    // field javascript feature (see /include/javascript.php3)
+    $javascript = getJavascript($GLOBALS["slice_id"]);
+    if ($javascript) 
+        echo $javascript;
+
+    echo '
+    
+    // -->
+    </script>'."\n\n";
+
+    if ($javascript) echo '    
+    
+    <script language="javascript" src="'.$AA_INSTAL_PATH.'javascript/fillform.js">
+    </script>'."\n\n";    
+}
+
+// ----------------------------------------------------------------------------
+/** Validates new content, sets defaults, reads dates from the 3-selectbox-AA-format,
+*   sets global variables:
+*       $show_func_used to a list of show func used in the form. 
+*       $js_proove_fields to complete JavaScript code for form validation
+*       list ($fields, $prifields) = GetSliceFields ()
+*       $oldcontent4id
+*
+*   This function is used in itemedit.php3, filler.php3 and file_import.php3.
+*
+*   @author Jakub Adamek, Econnect, January 2003
+*           Most of the code is taken from itemedit.php3, created by Honza.
+*
+*   @param string $action should be one of:
+*                         "add" .... a "new item" page (not form-called)
+*                         "edit" ... an "edit item" page (not form-called)
+*                         "insert" . call for inserting an item
+*                         "update" . call for updating an item
+*   @param id $id is useful only for "update"
+*   @param bool $do_validate Should validate the fields?
+*   @param array $notshown is an optional array ("field_id"=>1,...) of fields
+*                          not shown in the anonymous form
+*/   
+function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true,
+    $notshown="")
+{
+    global $show_func_used, $js_proove_fields, $fields, $prifields, $oldcontent4id;
+    
+    global $db, $varset, $itemvarset;
+    if (!is_object ($db)) $db = new DB_AA;
+    if (!is_object ($varset)) $varset = new Cvarset();
+    if (!is_object ($itemvarset)) $itemvarset = new Cvarset();
+    
+    // error array (Init - just for initializing variable
+    if (!is_array ($err))
+        $err["Init"] = "";
+
+      # get slice fields and its priorities in inputform
+    list($fields, $prifields) = GetSliceFields($slice_id);
+
+    if (!is_array($prifields))
+        return;
+
+    // javascript for input validation 
+    $js_proove_fields = get_javascript_field_validation (). "
+            
+        function proove_fields () {
+            var myform = document.inputform;
+            return true";
+
+    #it is needed to call IsEditable() function and GetContentFromForm()
+    if( $action == "update" ) {
+        $oldcontent = GetItemContent($id);
+        $oldcontent4id = $oldcontent[$id];   # shortcut
+    }
+    
+	reset($prifields);
+	while(list(,$pri_field_id) = each($prifields)) {
+        $f = $fields[$pri_field_id];
+        $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
+        $htmlvarname = $varname."html";
+
+        global $$varname, $$htmlvarname;
+        
+        $setdefault = $action == "add" 
+                || !$f["input_show"] 
+                || GetProfileProperty('hide',$pri_field_id)
+                || ($action == "insert" && $notshown [$varname]);
+                
+        if ($setdefault) {
+            $$varname = GetDefault($f);
+            $$htmlvarname = GetDefaultHTML($f);            
+        }
+                
+        $editable = IsEditable ($oldcontent4id[$pri_field_id], $f)
+                    && ! $notshown [$varname];                   
+        if ($editable) {                  
+            list ($show_func) = split (":", $f["input_show_func"]);
+            $show_func_used [$show_func] = 1;         
         }
 
-        # get values from form (values are filled when error on form ocures
-        if( $f[multiple] AND isset($GLOBALS[$varname])
-                         AND is_array($GLOBALS[$varname]) ) {
-              # get the multivalues
-          reset($GLOBALS[$varname]);
-          $i=0;
-          while( list(,$v) = each($GLOBALS[$varname]) )
-            $arr[$i++]['value'] = $v;
-        } else
-          $arr[0]['value'] = $GLOBALS[$varname];
-  	    $fncname($varname, $f, $arr, $fnc[param], ((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
-      } else
-   	    $fncname($varname, $f, $content4id[$pri_field_id],
-                 $fnc[param], $content4id[$pri_field_id][0]['flag'] & FLAG_HTML );
-    }
-	}
+        list ($validate) = split (":", $f["input_validate"]);
+        
+        # prepare javascript function for validation of the form
+        if( $editable ) switch( $validate ) {
+            case 'text':
+            case 'url':
+            case 'email':
+            case 'number':
+            case 'id':
+            case 'pwd':
+                $js_proove_fields .= "
+            && validate (myform, '$varname', '$validate', "
+                    .($f[required] ? "1" : "0").", ".($action=="add" ? "1" : "0").")";
+                break;
+        }
 
-	if (richEditShowable()) {
-		echo '
-		<script language="JavaScript">
-		<!--
-			function saveRichEdits () {';
-			reset ($list_fnc_edt);
-			while (list(,$name) = each($list_fnc_edt)) {
-				echo "document.inputform.$name.value = get_text('edt$name');";
-			}
-			echo '
-			}
-		// -->
-		</script>';
-	}
+        // Run the "validation" which changes field values
+        if ($editable && ($action == "insert" || $action == "update")) {
+            switch( $validate ) {
+            case 'date':
+                $foo_datectrl_name = new datectrl($varname);
+                $foo_datectrl_name->update();                   # updates datectrl
+                if( $$varname != "")                            # loaded from defaults
+                  $foo_datectrl_name->setdate_int($$varname);
+                $foo_datectrl_name->ValidateDate($f[name], $err);
+                $$varname = $foo_datectrl_name->get_date();  # write to var
+                break;
+            case 'bool':
+                $$varname = ($$varname ? 1 : 0);
+                break;
+            case 'pwd':
+                // store the original password to use it when it in 
+                // insert_fnc_pwd when is not changed
+                if ($action == "update")
+                    $GLOBALS[$varname."c"] = $oldcontent4id [$pri_field_id][0]["value"];
+                break;                    
+            }
+        }
+        
+        // Run the validation which really only validates
+        if ($do_validate && ($action == "insert" || $action == "update")) {
+            switch( $validate ) {
+            case 'text':
+            case 'url':
+            case 'email':
+            case 'number':
+            case 'id':
+                ValidateInput($varname, $f[name], $$varname, $err,
+                          $f[required] ? 1 : 0, $f[input_validate]);
+                break;
+            // necessary for 'unique' validation: do not validate if
+            // the value did not change
+            case 'unique':                
+                if ($oldcontent4id[$pri_field_id][0]["value"] != $$varname)                
+                    ValidateInput($varname, $f[name], $$varname, $err,
+                              $f[required] ? 1 : 0, $f[input_validate]);
+                break;                        
+            case 'user':
+                // this is under development.... setu, 2002-0301
+                // value can be modified by $$varname = "new value";
+                $$varname = usr_validate($varname, $f[name], $$varname, $err, $f, $fields);
+                ##	echo "ItemEdit- user value=".$$varname."<br>";
+                break;
+            }
+        }
+    }
+
+    $js_proove_fields .= ";
+        }\n";
 }
 
 ?>

@@ -87,7 +87,7 @@ function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $
 	echo "<script language=\"javascript\" type=\"text/javascript\"><!--\n
 		hcInit();
 		hcDeleteLast ('$name');
-        listboxes[listboxes.length] = 'document.inputform[\"$name\"]';
+        listboxes[listboxes.length] = '$name';
 		// -->\n
 		</script>\n";
 	PrintMoreHelp($morehlp);
@@ -97,10 +97,14 @@ function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $
 
 /**
 * Prints html tag <input type=text .. to 2-column table
-* for use within <form> and <table> tag
+* for use within <form> and <table> tag.
+*
+* @param string $type allows to show <INPUT type=PASSWORD> field as well
+*                     (and perhaps BUTTON and SUBMIT also, but I do not see
+*                      any usage) - added by Jakub, 28.1.2003 
 */
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
-                      $hlp="", $morehlp="", $html=false) {
+                      $hlp="", $morehlp="", $html=false, $type="TEXT") {
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
   $morehlp=safe($morehlp);
   if( !$maxsize )
@@ -120,7 +124,7 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
   echo "</td>\n";
   if ( SINGLE_COLUMN_FORM )
     echo "</tr><tr align=left>";
-  echo "<td>$htmlrow<input type=\"Text\" name=\"$name\" size=$size
+  echo "<td>$htmlrow<input type=\"$type\" name=\"$name\" size=$size
           maxlength=$maxsize value=\"$val\"".getTriggers("input",$name).">";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
@@ -264,6 +268,8 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
         var richHeight = ".($rows * 22)."; 
         var richWidth = ".($cols * 8)."; 
         var imgpath = '../misc/wysiwyg/images/'; 
+
+        richedits[richedits.length] = '".$name."';
         // -->
 	</script>
     <script language=\"javascript\"  type=\"text/javascript\" src=\"../misc/wysiwyg/".$richedit.".js\">
@@ -548,7 +554,7 @@ function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_
                   }
                 }
 
-                listboxes[listboxes.length] = 'document.inputform.elements[\"".$name."[]\"]';
+                listboxes[listboxes.length] = '$name';
   //-->
   </script>\n";
 
@@ -646,7 +652,7 @@ function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
       </SELECT>";
   echo "
   <script language=\"javascript\" type=\"text/javascript\"><!--
-    listboxes[listboxes.length] = 'document.inputform.elements[\"".$name."[]\"]';
+    listboxes[listboxes.length] = '$name';
   //--></script>
   ";
 
@@ -748,7 +754,7 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
             onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
                      document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'> 
           <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
-             listboxes[listboxes.length] = 'document.inputform.elements[\"$name\"]'
+             listboxes[listboxes.length] = '$name'
             // -->
            </SCRIPT>          
           </center>";
@@ -859,21 +865,25 @@ function FrmInputButtons( $buttons, $sess=false, $slice_id=false, $valign='middl
   echo "</td></tr>";
 }
 
-
-
 /**
 * Validate users input. Error is reported in $err array
+* You can add parameters to $type divided by ":".
 */
 function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all")
 {
-  if($variable=="" OR Chop($variable)=="")
-    if( $needed ) {                     // NOT NULL
-      $err["$variableName"] = MsgErr(_m("Error in")." $inputName ("._m("it must be filled").")");
-      return false;
-    }
-    else  return true;
-  switch($type)
-  {
+    if($variable=="" OR Chop($variable)=="")
+        if( $needed ) {                     // NOT NULL
+            $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must be filled").")");
+            return false;
+        }
+        else  return true;
+    
+    if (strchr ($type, ":")) {
+        $params = substr ($type, strpos($type,":")+1);   
+        $type = substr ($type, 0, strpos ($type,":"));
+    }    
+    
+    switch($type) {
     case "id":     if((string)$variable=="0" AND !$needed)
                      return true;
                    if( !EReg("^[0-9a-f]{1,32}$",Chop($variable)))
@@ -884,22 +894,22 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
     case "alias":  if((string)$variable=="0" AND !$needed)
                      return true;
                    if( !EReg("^_#[0-9_#a-zA-Z]{8}$",Chop($variable)))
-                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
+                   { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
     case "number": if( !EReg("^[0-9]+$",Chop($variable)) )
-                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
+                   { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
     case "perms":  if( !(($Promenna=="editor") OR ($Promenna=="admin")))
-                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
+                   { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
     case "email":  if( !EReg("^.+@.+\..+",Chop($variable)))
-                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
+                   { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
@@ -907,47 +917,92 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
       $len = strlen($variable);
       if( ($len>=3) AND ($len<=32) )
       { if( !EReg("^[a-zA-Z0-9]*$",Chop($variable)))
-        { $err["$variableName"] = MsgErr(_m("Error in")." $inputName ("._m("you should use a-z, A-Z and 0-9 characters").")");
+        { $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("you should use a-z, A-Z and 0-9 characters").")");
           return false;
         }
         return true;
       }
-      $err["$variableName"] = MsgErr(_m("Error in")." $inputName ("._m("it must by 5 - 32 characters long").")");
+      $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must by 5 - 32 characters long").")");
       return false;
+      
     case "password":
       $len = strlen($variable);
       if( ($len>=5) AND ($len<=32) )
         return true;
-      $err["$variableName"] = MsgErr(_m("Error in")." $inputName ("._m("it must by 5 - 32 characters long").")");                   
+      $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must by 5 - 32 characters long").")");                   
       return false; 
+      
     case "filename": if( !EReg("^[-.0-9a-zA-Z_]+$", $variable)) {
                        $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("only 0-9 A-Z a-z . _ and - are allowed").")");
                        return false;
                      }
                      return true;
+                     
+    case "unique":
+    
+        list ($field_id, $slice_only) = split (":", $params);
+        if (!strchr ($params, ":"))
+            $slice_only = true;
+        if (strlen ($field_id) != 16) {
+            $err[$variableName] = MsgErr(_m("Error in parameters for UNIQUE validation: "
+                ."field ID is not 16 but %1 chars long: ",array(strlen($field_id))).$field_id);
+            return false;
+        } else {            
+            global $slice_id, $db;
+            if ($slice_only)
+                $SQL = "SELECT * FROM content INNER JOIN 
+                        item ON content.item_id = item.id
+                        WHERE item.slice_id='".q_pack_id($slice_id)."'
+                        AND field_id='".addslashes($field_id)."'
+                        AND text='".$variable."'";
+            else $SQL = "SELECT * FROM content WHERE field_id='".addslashes($field_id)
+                        ."' AND text='$variable'";
+            $db->query ($SQL);
+            if ($db->next_record())
+                $err[$variableName] = MsgErr(_m("Error in")." $inputName (".
+                    _m("this value is already used, choose another one").")");
+            return false;
+        }
+        return true;
+        
     case "url":
     case "all":
     default:       return true;
-  }
+    }
 }
 
 /**
 * used in tabledit.php3 and itemedit.php3
 */
 function get_javascript_field_validation () {
+    /* javascript params: 
+       myform = the form object
+       txtfield = field name in the form
+       type = validation type
+       add = is it an "add" form, i.e. showing a new item?
+    */
     return "
-        function validate (txtfield, type, required) {
+        function validate (myform, txtfield, type, required, add) {
             var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/;
             var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/;
 
-            if (txtfield == null)
+            if (type == 'pwd') {
+                myfield = myform[txtfield+'a'];
+                myfield2 = myform[txtfield+'b'];
+            } else
+                myfield = myform[txtfield];
+                
+            if (myfield == null)
                 return true;
 
-            var val = txtfield.value;
+            var val = myfield.value;
             var err = '';
-
-            if (val == '' && required)
-                err = '"._m("This field is required (marked by *).")."';
+            
+            if (val == '' && required && (type != 'pwd' || add == 1)) {
+                if (type == 'pwd')
+                     err = '"._m("This field is required.")."';
+                else err = '"._m("This field is required (marked by *).")."';
+            }
 
             else if (val == '')
                 return true;
@@ -965,11 +1020,15 @@ function get_javascript_field_validation () {
                     if (val.match(invalid_email) || !val.match(valid_email))
                         err = '"._m("Not a valid email address.")."';
                     break;
+                case 'pwd':
+                    if (val && val != myfield2.value)
+                        err = '"._m("The two password copies differ.")."';
+                    break;
             }
 
             if (err != '') {
                 alert (err);
-                txtfield.focus();
+                myfield.focus();
                 return false;
             }
             else return true;
