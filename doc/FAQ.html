@@ -20,7 +20,7 @@
 <a href="#search">How to setup searchform?</a><br><br>
 <a href="#alias">What is the Prameters in Alias Function definition</a><br><br>
 <a href="#javascript">What does it means the "JavaScript item exchange" View?</a><br><br>
-<a href="#"></a><br><br>
+<a href="#sliceparam">Which parameters can I use with slice.php3</a><br><br>
 <a href="#"></a>
 <a href="#"></a>
 <a href="#"></a>
@@ -516,14 +516,17 @@ this page should contain SSI include ../slice.php3 of course</td></tr>
 
 <tr><td valign=top class=tabfnc>f_c</td><td clospan=2>prints "begin".field."end" if field="condition", else prints "none"<br>
 if no cond_col specified - this $col is used<br>
+condition can be reversed (negated) by "!" character at the begin of condition<br>
 param: condition:begin:end:none:cond_col</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>condition</td><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>begin</td><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>end</td><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>none</td><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>cond_col</td><td>&nbsp;</td></tr>
-<tr><td>&nbsp;</td><td><I>Example:</I> 1:No&lt;!--:--&gt;:Yes<br>
-This exaple is usable for example for Highlight field - it shows Yes or No depending on highlight field</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td colspan=2><I>Example:</I> 1:Yes&lt;!--:--&gt;:No<br>
+This example is usable for example for Highlight field - it shows Yes or No depending on highlight field</td></tr>
+<tr><td>&nbsp;</td><td colspan=2><I>Example:</I> !:Email#:::<br>
+If e-mail field is filled, it shows "Email: email@apc.org" (for example), but if it is not filled, it shows nothing</td></tr>
 </table>
 <br>
 
@@ -552,8 +555,29 @@ document.write("&lt;/TABLE&gt;")<br>
 <p>You can see the example on <a href="http://www.apc.org/actionapps/english/demo/jsexchange.html">APC Demo Site</a></p>
 
 
-<a name=""></a>
-<h3></h3>
+<a name="sliceparam"></a>
+<h3>Which parameters can I use with slice.php3</h3>
+<table align=center cellpadding=3 border=0>
+<tr><td class=tabtit>Parameter</td><td class=tabtit>Reqiured</td><td class=tabtit>Description</td></tr>
+<tr><td valign=top class=tabfnc>slice_id</td><td>Yes</td><td>id of displayed slice</td></tr>
+<tr><td valign=top class=tabfnc>restrict</td><td>No</td><td>field id used with "res_val" and "exact" for restricted output (display only items with "restrict" field = "res_val"<br><i>Example:</i>restrict=category........&amp;res_val=Environment&amp;exact=1</td></tr>
+<tr><td valign=top class=tabfnc>res_val</td><td>No</td><td>see <i>restrict</i></td></tr>
+<tr><td valign=top class=tabfnc>exact</td><td>No</td><td>if set, <i>restrict</i> field must match <i>res_val</i> exactly (=) otherwise substring is sufficient (LIKE '%res_val%')</td></tr>
+<tr><td valign=top class=tabfnc>highlight</td><td>No</td><td>when true, shows only highlighted items in compact view<br><i>Example:</i> highlight=1</td></tr>
+<tr><td valign=top class=tabfnc>order</td><td>No</td><td>order field id - if other than publish date add minus sign for descending order<br><i>Example:</i> order=headline........-</td></tr>
+<tr><td valign=top class=tabfnc>timeorder</td><td>No</td><td>if <i>rev</i> - reverse publish date order (less priority than "order")<br><i>Example:</i> timeorder=rev</td></tr>
+<tr><td valign=top class=tabfnc>inc</td><td>No</td><td>for dispalying another file instead of slice data (for example some static html file)<br><i>Example:</i> inc=/contact.html</td></tr>
+<tr><td valign=top class=tabfnc>listlen</td><td>No</td><td>change number of listed items in compact view (aplicable in compact viewe only)<br><i>Example:</i> listlen=10</td></tr>
+<tr><td valign=top class=tabfnc>no_scr</td><td>No</td><td>if true, no page scroller is displayed<br><i>Example:</i> no_scr=1</td></tr>
+<tr><td valign=top class=tabfnc>scr_go</td><td>No</td><td>sets page scroller to specified page<br><i>Example:</i> scr_go=2</td></tr>
+<tr><td valign=top class=tabfnc>encap</td><td>Yes for not encapsulated</td><td>determines wheather this file is SSI included to .shtml file (&lt;--#include virtual="... ) or called directly as slice.php3<br><i>Example:</i>encap=false</td></tr>
+<tr><td valign=top class=tabfnc>sh_itm</td><td>No</td><td>id of item to show - if specified, selected item is shown in full text<br><i>Example:</i> index.shtml?sh_itm=01ac1b10fae13c0a61c5292ba72d70b1</td></tr>
+<tr><td valign=top class=tabfnc>x</td><td>No</td><td>the same as sh_itm, but short_id is used instead (implemented for shorter item url (see _#SITEM_ID alias))</td></tr>
+<tr><td valign=top class=tabfnc>srch</td><td>No</td><td>true if this script have to show search results</td></tr>
+<tr><td valign=top class=tabfnc>cat_id</td><td>No</td><td>select only items in category with id cat_id<br>Deprecated - better to use <i>restrict</i> and <i>res_val</i> parameters</td></tr>
+<tr><td valign=top class=tabfnc>cat_name</td><td>No</td><td>select only items in category with name <i>cat_name</i> as substring<br>Deprecated - better to use <i>restrict</i> and <i>res_val</i> parameters</td></tr>
+<tr><td valign=top class=tabfnc>items[id]</td><td>No</td><td>array of items to show one after one as fulltext (<i>ids</i> are the long ones - see sh_itm)</td></tr>
+</table>
 
 
 <br>

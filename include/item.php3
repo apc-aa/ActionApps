@@ -259,13 +259,19 @@ class item {
   # prints "begin".$col."end" if $col="condition", else prints "none"
   # if no cond_col specified - $col is used
   # param: condition:begin:end:none:cond_col
+  # if pararam begins with "!", condition is negated
   function f_c($col, $param="") { 
+    if( $param[0]=="!" ){
+      $param = substr($param, 1);
+      $negate=true;
+    }  
+    
     $p = ParamExplode($param);
     if( $p[4] )
       $col = $p[4];
-    if( $this->columns[$col][0][value] != $p[0] )
-      return $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2];
-    return htmlspecialchars($p[3]); 
+    if( $this->columns[$col][0][value] == $p[0] )
+      return ($negate ? htmlspecialchars($p[3]) : $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2]);
+    return  (!$negate ? htmlspecialchars($p[3]) : $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2]); 
   }
   
   # ----------------- alias function definition end --------------------------
@@ -353,6 +359,9 @@ class item {
 
 /*
 $Log$
+Revision 1.15  2001/06/13 11:31:28  honzam
+added negation in condition alias function f_c (and fixed bug of reverse meaning of condition)
+
 Revision 1.14  2001/06/03 16:00:49  honzam
 multiple categories (multiple values at all) for item now works
 
