@@ -30,7 +30,7 @@ http://www.apc.org/
     cond        if not satisfied, don't show the label linked
                 slice_id is included in the cond automatically
     href        link, relative to aa/
-    exact_href  link, absolute (use either exact_href or href, not both)    
+    exact_href  link, absolute (use either exact_href or href, not both)
 */
 
 require_once $GLOBALS["AA_INC_PATH"]."menu_util.php3";
@@ -117,7 +117,7 @@ function get_aamenus ()
         "category" => array("label"=>_m("Category"), "cond"=>IfSlPerm(PS_CATEGORY), "href"=>"admin/se_constant.php3?category=1"),
         "fields" => array ("label"=>_m("Fields"), "cond"=>IfSlPerm(PS_FIELDS), "href"=>"admin/se_fields.php3"),
         "notify" => array ("label"=>_m("Email Notification"), "cond"=>IfSlPerm(PS_EDIT), "href"=>"admin/se_notify.php3"),
-        //"te_emails" => array ("label"=>_m("Emails"), "cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=email"), 
+        //"te_emails" => array ("label"=>_m("Emails"), "cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=email"),
 
         "header2" => _m("Permissions"),
         "addusers"=> array ("label"=>_m("Assign"), "cond"=>IfSlPerm(PS_ADD_USER), "href"=>"admin/se_users.php3?adduser=1"),
@@ -142,16 +142,14 @@ function get_aamenus ()
         "field_ids" => array ("label"=>_m("Change field IDs"), "cond"=>IfSlPerm(PS_FIELDS), "href"=>"admin/se_fieldid.php3"),
         "javascript" => array ("label"=>_m("Field Triggers"), "cond"=>IfSlPerm(PS_FIELDS), "href"=>"admin/se_javascript.php3"),
         "fileman" => array ("label"=>_m("File Manager"), "cond"=>FilemanPerms ($auth, $slice_id), "href"=>"admin/fileman.php3"),
-/*
         "anonym_wizard" => array ("label"=>_m("Anonymous Form Wizard"), "cond"=>IfSlPerm(PS_FIELDS), "href"=>"admin/anonym_wizard.php3"),
 		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
 			"href" => "admin/tabledit.php3?set_tview=email", "label"=>_m("Email templates")),
-*/
     ));
-    
+
     trace("=","","Getting slice info");
     $slice_info = GetSliceInfo($slice_id);
-    if ($slice_info ["mailman_field_lists"]) 
+    if ($slice_info ["mailman_field_lists"])
         $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = array (
             "cond"=>IfSlPerm(PS_FIELDS),
             "href"=>"admin/mailman_create_list.php3",
@@ -162,35 +160,35 @@ function get_aamenus ()
         "level"=>"submenu",
         "items"=> array(
         "header1"=>_m("Folders"),
-        "app"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=app", 
+        "app"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=app",
             "label"=>"<img src='../images/ok.gif' border=0>"._m("Active")." (".($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).")"),
-        "appb"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/index.php3?Tab=appb", 
+        "appb"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/index.php3?Tab=appb",
             "label"=>_m("... pending")." ($item_bin_cnt_pend)"),
-        "appc"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/index.php3?Tab=appc", 
+        "appc"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/index.php3?Tab=appc",
             "label"=>_m("... expired")." ($item_bin_cnt_exp)"),
-        "hold"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=hold", 
+        "hold"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=hold",
             "label"=>"<img src='../images/edit.gif' border=0>"._m("Hold bin")." ($item_bin_cnt[2])"),
-        "trash"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=trash", 
+        "trash"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=trash",
             "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." ($item_bin_cnt[3])"),
         "header2" => _m("Misc"),
-        "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php3?Delete=trash", 
+        "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php3?Delete=trash",
             "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash")),
         "line" => "",
     ));
-    
+
     trace("=","","Pre PS_EDIT_ALL_ITEMS");
     if ($slice_id && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
         $db = new DB_AA;
         $items = &$aamenus["itemmanager_submenu"]["items"];
-        
-        // Add associated Alerts to Item Manager submenu 
+
+        // Add associated Alerts to Item Manager submenu
         if ($slice_info["type"] == "ReaderManagement" ) {
             $db->query ("SELECT module_id, module.name FROM alerts_collection AC
                 INNER JOIN module ON AC.module_id = module.id
                 WHERE slice_id='".q_pack_id($slice_id)."'");
             AddAlertsModules ($items, $db, _m("Alerts"),
                     _m("List of Alerts modules using this slice as Reader Management."));
-        }                
+        }
         trace("=","","module ids slice_id=".$slice_id);
         $db->query ("SELECT DISTINCT AC.module_id, module.name FROM alerts_collection AC
             INNER JOIN module ON AC.module_id = module.id
@@ -202,7 +200,7 @@ function get_aamenus ()
                 _m("List of Alerts modules sending items from this slice."));
     }
 
-    // left menu for aaadmin is common to all modules, so it is shared 
+    // left menu for aaadmin is common to all modules, so it is shared
     require_once $GLOBALS["AA_INC_PATH"]."menu_aa.php3";
     trace("-");
     return $aamenus;
@@ -216,13 +214,13 @@ function AddAlertsModules (&$submenu, &$db, $header, $help) {
         $i = 100;
         while ($db->next_record()) {
             $submenu["item".$i] = array (
-            "cond"=>CheckPerms( $auth->auth["uid"], "slice", 
+            "cond"=>CheckPerms( $auth->auth["uid"], "slice",
                 unpack_id($db->f("moduleid")), PS_FIELDS),                    "href"=>"modules/alerts/index.php3?slice_id=".unpack_id($db->f("module_id")),
             "no_slice_id"=>1,
             "label"=>$db->f("name"));
             $i ++;
         }
     }
-}                
-    
+}
+
 ?>
