@@ -152,6 +152,21 @@ function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=
 }
 
 /**
+* Prints html tag <input type=hidden .. to 2-column table
+* for use within <form> and <table> tag
+*/
+function FrmHidden($name, $val, $safing=true ) {
+  if( $safing ) {
+    $txt=safe($name); $val=safe($val);
+  }
+  
+  echo "<tr height='1'><td height='1' class=tabtxt>&nbsp;</td>";
+  if (SINGLE_COLUMN_FORM)
+    echo "</tr><tr>";
+  echo "<td height='1'><input type=\"hidden\" name=\"$name\" value=\"$val\"></td></tr>\n";
+}
+
+/**
 * Prints html tag <input type=password .. to 2-column table
 * for use within <form> and <table> tag
 */
@@ -862,9 +877,34 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
   echo "</td></tr>\n";
 }
 
+/**
+* Prints start of form table with caption
+*/
+function FrmTabCaption( $caption ) {
+    echo '
+    <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG .'" align="center">
+      <tr><td class=tabtit><b>&nbsp;'. $caption .'</b></td></tr>
+      <tr>
+        <td>
+          <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">';
+}
+    
+/**
+* Prints middle row with subtitle into form table
+*/
+function FrmTabSeparator( $subtitle ) {
+    echo '</table>
+        </td>
+      </tr>
+      <tr><td class=tabtit><b>&nbsp;'. $subtitle .'</b></td></tr>
+      <tr>
+        <td>
+          <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">';
+}
 
 /**
 * Prints buttons based on $buttons array. It also adds slice_id and session id
+* Maybe better is to use (@see FrmTabEnd())
 */
 function FrmInputButtons( $buttons, $sess=false, $slice_id=false, $valign='middle' ) {
   echo '<tr><td align="center" valign="'.$valign.'">';
@@ -885,16 +925,16 @@ function FrmInputButtons( $buttons, $sess=false, $slice_id=false, $valign='middl
         $name = $properties;
       switch($name) {
         case 'update':
-          echo '&nbsp;<input type="submit" name="update" accesskey="S" value="'. _m("Update") ."  $accesskey". '">&nbsp;';
+          echo '&nbsp;<input type="submit" name="update" accesskey="S" value=" '. _m("Update") ."  $accesskey". ' ">&nbsp;';
           break;
         case 'insert':
-          echo '&nbsp;<input type="submit" name="insert" accesskey="S" value="'. _m("Insert") ."  $accesskey". '">&nbsp;';
+          echo '&nbsp;<input type="submit" name="insert" accesskey="S" value=" '. _m("Insert") ."  $accesskey". ' ">&nbsp;';
           break;
         case 'cancel':
-          echo '&nbsp;<input type="submit" name="cancel" value="'. _m("Cancel") .'">&nbsp;';
+          echo '&nbsp;<input type="submit" name="cancel" value=" '. _m("Cancel") .' ">&nbsp;';
           break;
         case 'reset':
-          echo '&nbsp;<input type="reset" value="'. _m("Reset form") .'">&nbsp;';
+          echo '&nbsp;<input type="reset" value=" '. _m("Reset form") .' ">&nbsp;';
           break;
         default:
           echo '&nbsp;<input type="'.  $properties['type'] .
@@ -912,6 +952,20 @@ function FrmInputButtons( $buttons, $sess=false, $slice_id=false, $valign='middl
 
   echo "</td></tr>";
 }
+
+/**
+* Prints form table end with buttons (@see FrmInputButtons) 
+*/
+function FrmTabEnd( $buttons, $sess=false, $slice_id=false, $valign='middle' ) {
+    echo '    </table>
+            </td>
+          </tr>';
+    FrmInputButtons($buttons, $sess, $slice_id, $valign);
+    echo '
+        </td>
+      </tr>
+    </table>';
+}    
 
 /**
 * Validate users input. Error is reported in $err array

@@ -216,7 +216,7 @@ function inputShowFuncTypes ()
   # "isi" => array( 'name' => _m("Related Item Select Box"), #
   #                 'multiple' => true,
   #                 'paramformat' => 'fnc:const:param' ),
-    "iso" => array( 'name' => _m("Related Item Window"), #related items selectbox - outer
+    "iso" => array( 'name' => _m("Related Item Window"),   #related items selectbox - outer
                     'multiple' => true,
                     'paramformat' => 'fnc:const:param' ),
     "nul" => array( 'name' => _m("Do not show"), #
@@ -224,10 +224,13 @@ function inputShowFuncTypes ()
                     'paramformat' => 'fnc' ),
     "hco" => array( 'name' => _m("Hierachical constants"), #hierarchy constant
                     'multiple' => false,
-                    'paramformat' => 'fnc:const:param' ),
-    "pwd" => array( 'name' => _m("Password and Change password"), #hierarchy constant
+                    'paramformat' => 'fnc:const:param'),
+    "pwd" => array( 'name' => _m("Password and Change password"), #
                     'multiple' => false,
-                    'paramformat' => 'fnc:param' ));
+                    'paramformat' => 'fnc:param' ),
+    "hid" => array( 'name' => _m("Hidden field"),       # hidden field (good for  
+                    'multiple' => false,                # javascript triggers)
+                    'paramformat' => 'fnc'));
 }
                              
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
