@@ -1,47 +1,52 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
 <!-- saved from url=(0043)install-5.html -->
-<HTML><HEAD><TITLE>Installation of APC ActionApps: Customization</TITLE>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-6.html"
-rel=next><LINK href="install-4.html" rel=previous><LINK href="install.html#toc5"
-rel=contents>
+  <title>Installation of APC ActionApps: Customization</title>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=windows-1252">
+  <meta content="MSHTML 5.50.4807.2300" name="GENERATOR">
+  <link href="install-6.html" rel="next">
+  <link href="install-4.html" rel="previous">
+  <link href="install.html#toc5" rel="contents">
 <!-- $Id$ -->
-</HEAD>
-<BODY>
-<A href="install-6.html">Next</A> <A
-href="install-4.html">Previous</A> <A
-href="install.html#toc5">Contents</A>
-<H2><A name=s5>5. Customization</A></H2>
-<H2><A name=ss5.1>5.1 Language Customization</A> </H2>
-<H3><A name=cust_lang_how></A>How it works</H3>
+</head>
+<body>
+<a href="install-6.html">Next</a> <a href="install-4.html">Previous</a> <a
+ href="install.html#toc5">Contents</a>
+<h2><a name="s5">5. Customization</a></h2>
+<h2><a name="ss5.1">5.1 Language Customization</a> </h2>
+<h3><a name="cust_lang_how"></a>How it works</h3>
 <hr>
-<P><em>Updated by Jakub Adamek, Econnect, January 2003.</em>
-<P>ActionApps were designed with internationalization in mind. There
-    are currently languages shipping for Czech, English, German, Romanian, Slovak,
-    Spanish and partly Japanian.
-<P>Each language has an abbreviation used in the ActionApps configuration.
-    The abbreviation are <em>cz, en, ge, ro, sk, es</em> and <em>ja</em>. Several
-    constants related to encodings and other are defined in include/constants.php3.
-<P>The translations are split up into several parts. Since January 2003, the new
-    module mini-gettext is used. See the scripts in include/mgettext.php3, misc/mgettext
-    and the file <a href="../include/lang/readme.html">include/lang/readme.html</a>
-    about mini-gettext.
-<P>There is a variable in the file <CODE>config.php3</CODE> which sets the default
-    language for your installationpoint to other files which contain language
-    information:<CODE> </CODE>
-<BLOCKQUOTE><CODE>
-    <HR>
-    <PRE># Language: uncomment one language file
-define(&quot;DEFAULT_LANG_INCLUDE&quot;, &quot;cz_news_lang.php3&quot;);</PRE>
-    <HR>
-    </CODE></BLOCKQUOTE>
-Exactly one common language file must be uncommented here. (The <EM>#</EM> character
-at the beginning of the line makes it a comment.)
-<H3>Customizing an ActionApps to a new language</H3>
-See <a href="FAQ.html#aalanguage">How to create an aa in an alternate language</a>
-<P>
-<HR>
-<A href="install-6.html">Next</A> <A
-href="install-4.html">Previous</A> <A
-href="install.html#toc5">Contents</A>
-</BODY></HTML>
+<p><em>Updated by Jakub Adamek, Econnect, January 2003.</em> </p>
+<p>ActionApps were designed with internationalization in mind. There   
+are currently languages shipping for Czech, English, German, Romanian,
+Slovak,     Spanish and partly Japanian.&nbsp; French should be on it's
+way.<br>
+</p>
+<p>Each language has an abbreviation used in the ActionApps
+configuration.     The abbreviation are <em>cz, en, ge, ro, sk, es</em>
+and <em>ja</em>. Several     constants related to encodings and other
+are defined in include/constants.php3. </p>
+<p>The translations are split up into several parts. Since January
+2003, the new     module mini-gettext is used. See the scripts in
+include/mgettext.php3, misc/mgettext     and the file <a
+ href="http://aa.ecn.cz/aa-2.6.0/include/lang/readme.html">include/lang/readme.html</a>
+about mini-gettext. </p>
+<p>There is a variable in the file <code>config.php3</code> which sets
+the default     language for your installationpoint to other files
+which contain language     information:<code> </code> </p>
+<blockquote><code> </code>
+  <hr>
+  <pre># Language: uncomment one language file<br>define("DEFAULT_LANG_INCLUDE", "cz_news_lang.php3");</pre>
+  <hr> </blockquote>
+Exactly one common language file must be uncommented here. (The <em>#</em>
+character at the beginning of the line makes it a comment.)
+<h3>Customizing an ActionApps to a new language</h3>
+See <a href="FAQ.html#aalanguage">How to create an aa in an alternate
+language</a>
+<p> </p>
+<hr> <a href="install-6.html">Next</a> <a href="install-4.html">Previous</a> <a
+ href="install.html#toc5">Contents</a>
+</body>
+</html>

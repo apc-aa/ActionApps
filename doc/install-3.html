@@ -1,275 +1,259 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
 <!-- saved from url=(0043)install-3.html -->
-<HTML><HEAD><TITLE>Installation of APC ActionApps: Installation of Other Packages needed by ActionApps</TITLE>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-4.html"
-rel=next><LINK href="install-2.html" rel=previous><LINK href="install.html#toc3"
-rel=contents>
+  <title>Installation of APC ActionApps: Installation of Other Packages
+needed by ActionApps</title>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=windows-1252">
+  <meta content="MSHTML 5.50.4807.2300" name="GENERATOR">
+  <link href="install-4.html" rel="next">
+  <link href="install-2.html" rel="previous">
+  <link href="install.html#toc3" rel="contents">
 <!-- $Id$ -->
-</HEAD>
-<BODY><A href="install-4.html">Next</A> <A
-href="install-2.html">Previous</A> <A
-href="install.html#toc3">Contents</A>
-<HR>
-
-<H2><A name=install_other></A><A name=s3>3. Installation of Other Packages
-needed by ActionApps</A></H2>
-<P>These instructions will help you get APC-AA running on a bare-bones linux
-box, if you are running apc-aa on a system provided by an ISP then none of
-this should be needed, just check that they are running PHP 4.1.0 or later,
-and a reasonably up to date version of MySQL. </p>
-<P>A quick test is to upload the apc-aa (as described in <a href="install-4.html">install-4.html</a> and then go to http://your.host/apc-aa/test.htm, if that works ok and gives you detailed information on your PHP installation, then everything else SHOULD be fine.</P>
-<H2><A name=ss3.1>3.1 Platform</A> </H2>
-<P>The installation instructions given here are intended for use with RedHat
-Linux. We used version 7.0 and 7.3 (however we keep <a href="install-3-old.html">older docs for RH 6.2</a> ) . This specifically means that the
-<EM>rpm</EM> tool is used wherever possible.
-<P><EM>If your system does not support the rpm tool</EM>, most procedures will
-be quite different from what is shown here. You will probably have to do most
-installations by building the software itself. It is beyond the scope of this
-document to describe that although necessary configurations options will be
-mentioned.
-<P>
-<H2><A name=ss3.2>3.2 MySQL database back end</A> </H2>
-<P>Check if you have already MySQL 3.22.32 or newer installed:
-<BLOCKQUOTE><CODE>
-  <HR>
-  <PRE>% rpm -q MySQL</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-<P>If MySQL has been installed from source ,then RPM will report it is not installed,
-  try &quot;ps efax | grep mysql&quot; to see if it is running, and if it is then
-  either &quot;/usr/sbin/mysqld -V&quot; will report the version on newer versions.
-  If this doesn't exist then running the client with, &quot;mysql&quot; should
-  report the version number it is connected to.
-<P>If it is not installed or if the version used is too old, install it. The MySQL is now a part of a standard RedHat distribution, so you should be able to find necessary packages on your RedHat CD-ROM under /RedHat/RPMS, or download them via FTP from your nearest <a href="http://www.redhat.com/download/mirror.html">mirror site.</a> You can also download RPM  packages directly from <A
-href="http://www.mysql.com/downloads/mysql.html">http://www.mysql.com/downloads/mysql.html</A>, but be aware that these packages are different from the ones that ships with RedHat distributions, so you will have to keep them up to date manually (they won't update with the OS updates). Use the stable release version, you probably won't need MAX (version that supports transactions etc..).
-<p>
-The following instructions assume that you have downloaded RedHat packages:
-
-<P>As root, install the RPMs:
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>     # rpm -Uvh mysql-3.23.49-3.i386.rpm
-     # rpm -Uvh mysql-server-3.23.49-3.i386.rpm
-     # rpm -Uvh mysql-devel-3.23.49-3.i386.rpm
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>This command will install the MySQL database server, shared libraray, client program and headers, create
-some administrative tables. It also creates
-a file <CODE>/etc/rc.d/init.d/mysqld</CODE>
-<P>Use the script to start the server:
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>     # /etc/init.d/mysqld start
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-
-Since the server is now running, it can be accessed. It is a
-good idea to immediately set a password for the MySQL root user. Remind the
-password - better not use <EM>mysqlpass</EM> for obvious reasons. We will refer
-to this password as the <EM>mysql root password</EM>.
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>     # mysqladmin -u root password 'mysqlpass'
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-  You probably want the mysql server to start automatically with the system boot up. To achieve this, use chkconfig to create symbolic links and symbolic links in
-<CODE>/etc/rc.d/rc?.d/</CODE> so the server is started and stopped properly on
-system start and shutdown.
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>     # chkconfig --level 345 mysqld on
-     # chkconfig --level 0126 mysqld off
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-
-<P>&nbsp;
-<P>
-<H2><A name=ss3.3>3.3 OpenLDAP</A> </H2>
-<H3>Package Installation</H3>
-<P>Note: You only need the OpenLDAP server if you decided to use LDAP as the
-permission system. Only do this if you know what you are doing.  Generally, people use mysql as
-their permission system<P>
-
-If you want to install OpenLDAP, see the <a href="ldap.html">apc-aa LDAP page</a>
-
-<P>
-<H2><A name=ss3.4>3.4 Installing the Apache Web Server</A> </H2>
-<P>Use the RPM that comes from RedHat. We have had success with many of the the versions since
-1.3.9. You need to install the "devel" packages, too.
-<P>To find out which version of apache httpd you have, use:
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>% httpd -v
-Server version: Apache/1.3.9 (Unix)  (Red Hat/Linux)
-Server built:   Apr  7 1999 17:17:41
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-<P>To install the apache web server, use these commands. Not that in this
-example, the apache itself was already installed, but the development package
-was missing (this is the default case for RedHat Linux).
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE># rpm -Uvh /mnt/cdrom/RedHat/RPMS/apache-1.3.23-14.i386.rpm
-package apache-1.3.23-14 is already installed
-# rpm -Uvh /mnt/cdrom/RedHat/RPMS/apache-devel-1.3.23-14.i386.rpm
-apache-devel-1.3.23-14
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-<P>Configuring the web server is a task for a later point in time because RPM
-will do part of this work.
-<P>
-<H2><A name=php_install></A><A name=ss3.5>3.5 PHP</A> </H2>
-<H3>PHP installation</H3>
-<P>php runs within the apache web server as a module. We need a version of php
-  which includes support for <EM>two optional php modules</EM>, namely ldap and
-  mysql. These modules provide access to ldap and mysql databases, respectively,
-  from php programs. (If you don't use ldap with the ActionApps, you
-  will not need the ldap php support.)
-<P>There are many ways to install all this, and many can generate a lot of trouble.
-  The cleanest and easiest way is, again, to use RPMs.
-
-  <BLOCKQUOTE><CODE>
-  <HR>
-<PRE>
-# rpm -Uvh php-4.1.2-7
-# rpm -Uvh php-mysql-4.1.2-7.i386.rpm
-# rpm -Uvh php-ldap-4.1.2-7.i386.rpm
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-
-<H3>Testing php installation</H3>
-<P>First, create a test WWW page to find out the status of php support on your
-  system. This can be done easily by executing this command (assuming <CODE>/home/httpd/html</CODE>
-  is your DocumentRoot directory:
-<BLOCKQUOTE><CODE>
-  <HR>
-  <PRE>echo "&lt;?php phpinfo() ?&gt;" &gt; /home/httpd/html/test.php</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
+</head>
+<body>
+<a href="install-4.html">Next</a> <a href="install-2.html">Previous</a> <a
+ href="install.html#toc3">Contents</a>
+<hr>
+<h2><a name="install_other"></a><a name="s3">3. Installation of Other
+Packages needed by ActionApps</a></h2>
+<p>These instructions will help you get APC-AA running on a bare-bones
+linux box, if you are running apc-aa on a system provided by an ISP
+then none of this should be needed, just check that they are running
+PHP 4.1.0 or later, and a reasonably up to date version of MySQL.<br>
+Note that it's beyond the scope of this document to give you a detailed
+information about the installation of production Apache/Mysql hosting
+environment. Instead, we just want to outline the installation process
+- for further reading check installation documentation for each
+component (Apache, Mysql, PHP) . <br>
+</p>
+<p>A quick test is to upload the apc-aa (as described in <a
+ href="install-4.html">install-4.html</a> and then go to <a
+ href="http://your.host/apc-aa/test.php3">http://your.host/apc-aa/test.php3</a>,
+if that works ok and gives you detailed information on your PHP
+installation, then everything else SHOULD be fine.</p>
+<h2><a name="ss3.1">3.1 Platform</a> </h2>
+<p>The installation instructions given here are intended for use with
+RedHat Linux. We used version 7.3 in this example. This specifically
+means that the <em>rpm</em> tool is used wherever possible. </p>
+<p><em>If your system does not support the rpm tool</em>, most
+procedures will be quite different from what is shown here. You will
+probably have to do most installations by building the software itself.
+It is beyond the scope of this document to describe that although
+necessary configurations options will be mentioned. </p>
+<p> </p>
+<h2><a name="ss3.2">3.2 MySQL database back end</a> </h2>
+<p>Check if you have already MySQL 3.22.32 or newer installed: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>% rpm -q MySQL</pre>
+  <hr> </blockquote>
+<p>If MySQL has been installed from source ,then RPM will report it is
+not installed,   try "ps efax | grep mysql" to see if it is running,
+and if it is then   either "/usr/sbin/mysqld -V" will report the
+version on newer versions.   If this doesn't exist then running the
+client with, "mysql" should   report the version number it is connected
+to. </p>
+<p>If it is not installed or if the version used is too old, install
+it. The MySQL is now a part of a standard RedHat distribution, so you
+should be able to find necessary packages on your RedHat CD-ROM under
+/RedHat/RPMS, or download them via FTP from your nearest <a
+ href="http://www.redhat.com/download/mirror.html">mirror site.</a> You
+can also download RPM  packages directly from <a
+ href="http://www.mysql.com/downloads/mysql.html">http://www.mysql.com/downloads/mysql.html</a>,
+but be aware that these packages are different from the ones that ships
+with RedHat distributions, so you will have to keep them up to date
+manually (they won't update with the OS updates). Use the stable release
+version, you probably won't need MAX (version that supports
+transactions etc..). </p>
+<p> The following instructions assume that you have downloaded RedHat
+packages: </p>
+<p>As root, install the RPMs: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>     # rpm -Uvh mysql-3.23.49-3.i386.rpm<br>     # rpm -Uvh mysql-server-3.23.49-3.i386.rpm<br>     # rpm -Uvh mysql-devel-3.23.49-3.i386.rpm<br></pre>
+  <hr> </blockquote>
+This command will install the MySQL database server, shared libraray,
+client program and headers, create some administrative tables. It also
+creates a file <code>/etc/rc.d/init.d/mysqld</code>
+<p>Use the script to start the server: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>     # /etc/init.d/mysqld start<br></pre>
+  <hr> </blockquote>
+Since the server is now running, it can be accessed. It is a good idea
+to immediately set a password for the MySQL root user. Remind the
+password - better not use <em>mysqlpass</em> for obvious reasons. We
+will refer to this password as the <em>mysql root password</em>.
+<blockquote><code> </code>
+  <hr>
+  <pre>     # mysqladmin -u root password 'mysqlpass'<br></pre>
+  <hr> </blockquote>
+You probably want the mysql server to start automatically with the
+system boot up. To achieve this, use chkconfig to create symbolic links
+and symbolic links in <code>/etc/rc.d/rc?.d/</code> so the server is
+started and stopped properly on system start and shutdown.
+<blockquote><code> </code>
+  <hr>
+  <pre>     # chkconfig --level 345 mysqld on<br>     # chkconfig --level 0126 mysqld off<br></pre>
+  <hr> </blockquote>
+<p>&nbsp; </p>
+<p> </p>
+<h2><a name="ss3.3">3.3 OpenLDAP</a> </h2>
+<h3>Package Installation</h3>
+<p>Note: You only need the OpenLDAP server if you decided to use LDAP
+as the permission system. Only do this if you know what you are doing. 
+Generally, people use mysql as their permission system</p>
+<p> If you want to install OpenLDAP, see the <a href="ldap.html">apc-aa
+LDAP page</a> </p>
+<p> </p>
+<h2><a name="ss3.4">3.4 Installing the Apache Web Server</a> </h2>
+<p>Use the RPM that comes from RedHat. We have had success with many of
+the the versions since 1.3.9. You need to install the "devel" packages,
+too. </p>
+<p>To find out which version of apache httpd you have, use: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>% httpd -v<br>Server version: Apache/1.3.9 (Unix)  (Red Hat/Linux)<br>Server built:   Apr  7 1999 17:17:41<br></pre>
+  <hr> </blockquote>
+<p>To install the apache web server, use these commands. Not that in
+this example, the apache itself was already installed, but the
+development package was missing (this is the default case for RedHat
+Linux). </p>
+<blockquote><code> </code>
+  <hr>
+  <pre># rpm -Uvh /mnt/cdrom/RedHat/RPMS/apache-1.3.23-14.i386.rpm<br>package apache-1.3.23-14 is already installed<br># rpm -Uvh /mnt/cdrom/RedHat/RPMS/apache-devel-1.3.23-14.i386.rpm<br>apache-devel-1.3.23-14<br></pre>
+  <hr> </blockquote>
+<p>Configuring the web server is a task for a later point in time
+because RPM will do part of this work. </p>
+<p> </p>
+<h2><a name="php_install"></a><a name="ss3.5">3.5 PHP</a> </h2>
+<h3>PHP installation</h3>
+<p>php runs within the apache web server as a module. We need a version
+of php   which includes support for <em>two optional php modules</em>,
+namely ldap and   mysql. These modules provide access to ldap and mysql
+databases, respectively,   from php programs. (If you don't use ldap
+with the ActionApps, you   will not need the ldap php support.) </p>
+<p>There are many ways to install all this, and many can generate a lot
+of trouble.   The cleanest and easiest way is, again, to use RPMs. </p>
+<blockquote><code> </code>
+  <hr>
+  <pre># rpm -Uvh php-4.1.2-7<br># rpm -Uvh php-mysql-4.1.2-7.i386.rpm<br># rpm -Uvh php-ldap-4.1.2-7.i386.rpm<br></pre>
+  <hr> </blockquote>
+<h3>Testing php installation</h3>
+<p>First, create a test WWW page to find out the status of php support
+on your   system. This can be done easily by executing this command
+(assuming <code>/home/httpd/html</code> is your DocumentRoot directory: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>echo "&lt;?php phpinfo() ?&gt;" &gt; /home/httpd/html/test.php</pre>
+  <hr> </blockquote>
 Access the page with a web browser (http://localhost/test.php).
-<UL>
-  <LI>If you see a page beginning with <CODE>PHP Version</CODE>, you have a working
-    php. Browse through the <CODE>Configuration</CODE> section. Look for an extension
-    named <CODE>MySQL</CODE> and, if you are using the LDAP permission system,
-    for one named <CODE>LDAP</CODE>. If both are there, you are lucky because
-    the php setup is complete; otherwise, you must install the missing parts.
-  <li>If you see the string <code>php phpinfo() ?</code>, you do not have php4
-    installed or at least it is not enabled. In which case, you can try again
-    with a test file test.php3 which will work if the PHP3 is installed. APC-AA
-    should work with this.
-</UL>
-<P>
-
-<H2><A name=ss3.6>3.6 Configuring the apache web server</A> </H2>
-<P>During the PHP installation using RPMs, most of the configuration work for
-the web server is already done. If you didn't use RPM to install PHP, you might
-have to do the following steps. (It does no harm to double check if everything
-is configured correctly anyway.)
-<P>The configuration for the apache takes place in the file
-<CODE>/etc/httpd/conf/httpd.conf</CODE>.
-<P>You will need the statement <CODE>Options +Includes</CODE> there. This
-enables the so-called <EM>server side includes</EM> (SSI) which are used by the
-page the users read (which contain the actual content). <B>This can be a
-security problem</B> because whoever can edit these pages can run any command on
-your web server. (<EM>IncludesNOEXEC</EM> is not enough.) You might want to
-consider to enable this only for the directories where it is needed with
-<EM>&lt;Directory&gt;</EM> statements. See also the chapter on <A
-href="install-6.html#security">security</A> .
-<P>In <CODE>/etc/httpd/conf/httpd.conf</CODE>, make sure these lines are not
-commented out:
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>AddType application/x-httpd-php .php .php4 .php3 .phtml
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>and
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>AddType text/html .shtml
-AddHandler server-parsed .shtml
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>"Commented out" means That they are prepended by a "#".
-Remove the leading "#" from the lines if it is there.
-<P>Add <CODE>index.php3</CODE> to the DirectoryIndex line:
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>DirectoryIndex index.html index.shtml index.cgi index.php3
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-<P>Restart the web server to reread the configuration files:
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE># /etc/rc.d/init.d/httpd restart
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-<P>After these configuration steps, PHP and server side includes should work. You can test PHP by
-browsing to your test page ( <A
-href="http://localhost/test.php3">http://localhost/test.php3</A>) again.
-<P>
-<P>To test if SSI works, create sample .shtml file. This can be for example done by executing this command (assuming <CODE>/home/httpd/html</CODE>
-  is your DocumentRoot directory:
-<BLOCKQUOTE><CODE>
-  <HR>
-  <PRE>echo "&lt;!--#include virtual="test.php"--&gt;" &gt /home/httpd/html/test.shtml    </PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-<P>Now test it by browsing to your test page ( <A
-href="http://localhost/test.shtml">http://localhost/test.shtml</A>). You should see the same output as when browsing test.php3 page. If not, reffer to the SSI documentation <a href="http://httpd.apache.org/docs/howto/ssi.html">http://httpd.apache.org/docs/howto/ssi.html</a>.
-<H2><A name=ss3.7>3.7 PHP.INI and PHPLIB installation</A> </H2>
-<P>Installing PHP lib is no longer necessary, it comes with APC-AA software now.
-<P>
-However, there are still some informations about the php engine setting,
-which APC-AA software requires at the moment (will not in future releases) . First use the php test page ( <A
-href="http://localhost/test.php">http://localhost/test.php</A>) you have to check what the current values are.
-If some of the values is not in order (see below),
-you may need to edit the php.ini (or php3.ini) or httpd.conf, and change few
-  configuration lines, this file is typically <code>/etc/httpd/php.ini
-    </code>or <code>/etc/php.ini </code> or <code>/usr/local/lib/php.ini</code>
-    <P> Edit php.ini so the lines looks something like this:
-
-    <BLOCKQUOTE><CODE>
-      <HR>
-        </CODE>
-      <PRE>
-    allow_call_time_pass_reference = On
-    register_globals = On                 ; needed so that POST parameters end up in global variables
-    magic_quotes_gpc = On                 ; needed to avoid various bugs with untested code!
-    file_uploads= On
-
-      </code></PRE>
-        </BLOCKQUOTE>
-        <blockquote><code>
-          <hr>
-            </code></blockquote>
-        <p> Alternatively, you can set these up localy in the corresponding
-        section of  apache configuration, in <code> /etc/httpd/conf/httpd.conf </code>
-    <BLOCKQUOTE><CODE>
-      <HR>
-        </CODE>
-      <PRE>
-    php_flag allow_call_time_pass_reference  On
-    php_flag register_globals  On
-    php_flag magic_quotes_gpc  On
-    php_flag file_uploads On
-    </code></PRE>
-    <code></code>
-    <hr>
-    </BLOCKQUOTE>
-
-        <p> Restart the webserver to use the new settings file.</p>
-
-<HR>
-<A href="install-4.html">Next</A> <A
-href="install-2.html">Previous</A> <A
-href="install.html#toc3">Contents</A>
-</BODY></HTML>
+<ul>
+  <li>If you see a page beginning with <code>PHP Version</code>, you
+have a working     php. Browse through the <code>Configuration</code>
+section. Look for an extension     named <code>MySQL</code> and, if you
+are using the LDAP permission system,     for one named <code>LDAP</code>.
+If both are there, you are lucky because     the php setup is complete;
+otherwise, you must install the missing parts. </li>
+  <li>If you see the string <code>php phpinfo() ?</code>, you do not
+have php4     installed or at least it is not enabled. In which case,
+you can try again     with a test file test.php3 which will work if the
+PHP3 is installed. APC-AA     should work with this. </li>
+</ul>
+<p> </p>
+<h2><a name="ss3.6">3.6 Configuring the apache web server</a> </h2>
+<p>RedHat &gt;= 8.0 now comes with Apache 2 by default. There are some
+major changes in Apache 2 configuration that this guide doen't reflect.
+We have several production systems running under Apache 2, however
+there were few issues with compatibility between Apache 2 and
+PHP.&nbsp; Check out the <a href="install-7.html">Troubleshooting
+section</a> of this guide and also <a
+ href="http://sourceforge.net/mail/?group_id=6341">mailinglists on
+Sourceforge</a> for the latest information about Apache 2 issues.<br>
+During the PHP installation using RPMs, most of the configuration work
+for the web server is already done. If you didn't use RPM to install
+PHP, you might have to do the following steps. (It does no harm to
+double check if everything is configured correctly anyway.) </p>
+<p>The configuration for the apache takes place in the file <code>/etc/httpd/conf/httpd.conf</code>.</p>
+<p>You will need the statement <code>Options +Includes</code> there.
+This enables the so-called <em>server side includes</em> (SSI) which
+are used by the page the users read (which contain the actual content). <b>This
+can be a security problem</b> because whoever can edit these pages can
+run any command on your web server. (<em>IncludesNOEXEC</em> is not
+enough.) You might want to consider to enable this only for the
+directories where it is needed with <em>&lt;Directory&gt;</em>
+statements. See also the chapter on <a href="install-6.html#security">security</a>
+. </p>
+<p>In <code>/etc/httpd/conf/httpd.conf</code>, make sure these lines
+are not commented out: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>AddType application/x-httpd-php .php .php4 .php3 .phtml<br></pre>
+  <hr> </blockquote>
+and
+<blockquote><code> </code>
+  <hr>
+  <pre>AddType text/html .shtml<br>AddHandler server-parsed .shtml<br></pre>
+  <hr> </blockquote>
+"Commented out" means That they are prepended by a "#". Remove the
+leading "#" from the lines if it is there.
+<p>Add <code>index.php3</code> to the DirectoryIndex line: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>DirectoryIndex index.html index.shtml index.cgi index.php3<br></pre>
+  <hr> </blockquote>
+<p>Restart the web server to reread the configuration files: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre># /etc/rc.d/init.d/httpd restart<br></pre>
+  <hr> </blockquote>
+<p>After these configuration steps, PHP and server side includes should
+work. You can test PHP by browsing to your test page ( <a
+ href="http://localhost/test.php3">http://localhost/test.php3</a>)
+again. </p>
+<p> </p>
+<p>To test if SSI works, create sample .shtml file. This can be for
+example done by executing this command (assuming <code>/home/httpd/html</code>
+is your DocumentRoot directory: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>echo "&lt;!--#include virtual="test.php"--&gt;" &gt; /home/httpd/html/test.shtml    </pre>
+  <hr> </blockquote>
+<p>Now test it by browsing to your test page ( <a
+ href="http://localhost/test.shtml">http://localhost/test.shtml</a>).
+You should see the same output as when browsing test.php3 page. If not,
+reffer to the SSI documentation <a
+ href="http://httpd.apache.org/docs/howto/ssi.html">http://httpd.apache.org/docs/howto/ssi.html</a>.</p>
+<h2><a name="ss3.7">3.7 PHP.INI and PHPLIB installation</a> </h2>
+<p>Installing PHP lib is no longer necessary, it comes with APC-AA
+software now. </p>
+<p> However, there are still some informations about the php engine
+setting, which APC-AA software requires at the moment (will not in
+future releases) . First use the php test page ( <a
+ href="http://localhost/test.php">http://localhost/test.php</a>) you
+have to check what the current values are. If some of the values is not
+in order (see below), you may need to edit the php.ini (or php3.ini) or
+httpd.conf, and change few   configuration lines, this file is
+typically <code>/etc/httpd/php.ini </code>or <code>/etc/php.ini </code>
+or <code>/usr/local/lib/php.ini</code> </p>
+<p> Edit php.ini so the lines looks something like this: </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>    allow_call_time_pass_reference = On<br>    register_globals = On                 ; needed so that POST parameters end up in global variables<br>    magic_quotes_gpc = On                 ; needed to avoid various bugs with untested code!<br>    file_uploads= On<br><br>      </pre>
+</blockquote>
+<blockquote><code> </code>
+  <hr> </blockquote>
+<p> Alternatively, you can set these up localy in the corresponding     
+section of  apache configuration, in <code> /etc/httpd/conf/httpd.conf </code> </p>
+<blockquote><code> </code>
+  <hr>
+  <pre>    php_flag allow_call_time_pass_reference  On<br>    php_flag register_globals  On<br>    php_flag magic_quotes_gpc  On<br>    php_flag file_uploads On<br>    </pre>
+  <code></code>
+  <hr> </blockquote>
+<p> Restart the webserver to use the new settings file.</p>
+<hr> <a href="install-4.html">Next</a> <a href="install-2.html">Previous</a> <a
+ href="install.html#toc3">Contents</a>
+</body>
+</html>

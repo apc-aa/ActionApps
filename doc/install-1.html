@@ -1,76 +1,69 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<!-- saved from url=(0043)install-1.html -->
-<HTML><HEAD><TITLE>Installation of APC ActionApps: Introduction</TITLE>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-2.html"
-rel=next><LINK href="install.html#toc1" rel=contents>
-<!-- $Id$ -->
-</HEAD>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head><!-- saved from url=(0043)install-1.html --><title>Installation of APC ActionApps: Introduction</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta content="MSHTML 5.50.4807.2300" name="GENERATOR"><link href="install-2.html" rel="next"><link href="install.html#toc1" rel="contents"><!-- $Id$ --></head>
 
-<BODY><A href="install-2.html">Next</A> Previous <A
-href="install.html#toc1">Contents</A>
-<HR>
+<body><a href="install-2.html">Next</a> Previous <a href="install.html#toc1">Contents</a>
+<hr>
 
-<H2><A name=s1>1. Introduction</A></H2>
-<H2><A name=ss1.1>1.1 Overview</A> </H2>
-<P>The APC ActionApps provide easy automated publishing for non-profit
+<h2><a name="s1">1. Introduction</a></h2>
+<h2><a name="ss1.1">1.1 Overview</a> </h2>
+<p>The APC ActionApps provide easy automated publishing for non-profit
 WWW sites and 'Usenet-like' sharing of articles between sites.
-<P>ActionApps consist of
-<UL>
-  <LI>actual www pages which display the content. These pages can be designed
+</p><p>ActionApps consist of
+</p><ul>
+  <li>actual www pages which display the content. These pages can be designed
   individually. At one spot, they contain an "include" directive which is
   automatically replaced by the current content whenever a user requests this
   page, and
-  <LI>a database engine including a permission system, a storage and a content
+  </li><li>a database engine including a permission system, a storage and a content
   managing system. This system has a www interface and administrators, editors
   and authors of a certain page can do their work completely using that
-  interface. </LI></UL>
-<P>
-<H2><A name=slices></A><A name=ss1.2>1.2 Slices</A> </H2>
-<P>ActionApps provide something called <EM>slices</EM> which represent
-one <EM>application</EM> each. Each application/slice has its own content, its
+  interface. </li></ul>
+<p>
+</p><h2><a name="slices"></a><a name="ss1.2">1.2 Slices</a> </h2>
+<p>ActionApps provide something called <em>slices</em> which represent
+one <em>application</em> each. Each application/slice has its own content, its
 own configuration, permissions, and so on. If you run the ActionApps on
 a server, you can set up such slices for your users and grant individual
-<EM>slice administration rights</EM>. Users are then administering their
+<em>slice administration rights</em>. Users are then administering their
 respective slices in every way.
-<P>Slices are usually based on Templates, the most common of which is the News
+</p><p>Slices are usually based on Templates, the most common of which is the News
   template.
-<H2><A name=ss1.3>1.3 Users, Roles and Permissions</A> </H2>
-<P>ActionApps provides its own user management engine. Authentication
+</p><h2><a name="ss1.3">1.3 Users, Roles and Permissions</a> </h2>
+<p>ActionApps provides its own user management engine. Authentication
 and authorization are implemented by a permission system which supports two
 different back ends: LDAP and SQL. You are free to choose which back end you
 want to use. In either case, it is possible to create groups of users and groups
 of groups. Privileges which are granted to the group will be promoted to all its
 members.
-<P>There are five roles:
-<DL>
-  <DT><B>Reader.</B>
-  <DD>
-  <P>Readers do not need to have user accounts in the ActionApps
+</p><p>There are five roles:
+</p><dl><dt><b>Reader.</b>
+  </dt><dd>
+  <p>Readers do not need to have user accounts in the ActionApps
   permission system. Most of the times, they actually do not realize that they
   have to do with something like the ActionApps. They just view regular
   WWW pages and can read the information provided by the ActionApps
-  slice owners. </P>
-  <DT><B>Author.</B>
-  <DD>
-  <P>Authors must have user accounts in the ActionApps permission
+  slice owners. </p>
+  </dd><dt><b>Author.</b>
+  </dt><dd>
+  <p>Authors must have user accounts in the ActionApps permission
   system. The role "author" is bound to a certain slice. Any ActionApps
   user who has "author" privileges for an ActionApps slice can submit
   new information items for this slice and remove and edit her own submissions.
-  </P>
-  <DT><B>Editor.</B>
-  <DD>
-  <P>Editors must have user accounts in the ActionApps permission
+  </p>
+  </dd><dt><b>Editor.</b>
+  </dt><dd>
+  <p>Editors must have user accounts in the ActionApps permission
   system. The role "editor" is bound to a certain slice. An ActionApps
   user who has "editor" privileges for an ActionApps slice can do
   everything an author for this slice can. Additionally, she can pick items from
   other slices, and edit, approve or expire every item her slice, which includes
   other authors' items, as well. An editor has full control over items which
   were published in her slice, but cannot modify the full text of items imported
-  from other slices (the so called ?fed items?). </P>
-  <DT><B>Administrator.</B>
-  <DD>
-  <P>Administrators must have user accounts in the ActionApps
+  from other slices (the so called ?fed items?). </p>
+  </dd><dt><b>Administrator.</b>
+  </dt><dd>
+  <p>Administrators must have user accounts in the ActionApps
   permission system. The role "administrator" is bound to a certain slice. An
   ActionApps user who has "administrator" privileges for an Action
   Applications slice can do everything an editor for this slice can.
@@ -78,57 +71,55 @@ members.
   administrator can design the layout of the web site, define which categories
   are used in the slice and from and to which other slices items are shared. She
   also sets which parameters are predefined and which can be modified by the
-  authors/editors of the slice. </P>
-  <DT><B>Super Administrator.</B>
-  <DD>
-  <P>Super administrators must have user accounts in the ActionApps
-  permission system. The role "super administrator" is <EM>not</EM> bound to a
+  authors/editors of the slice. </p>
+  </dd><dt><b>Super Administrator.</b>
+  </dt><dd>
+  <p>Super administrators must have user accounts in the ActionApps
+  permission system. The role "super administrator" is <em>not</em> bound to a
   slice. Super administrators (superadmins) can do everything. This means, they
-  can do anything a slice administrator can, but for <EM>every</EM> slice;
-  additionally, they can add slices to the system. </P></DD></DL>
-<P>Permission management can generally be done by everyone for roles below their
+  can do anything a slice administrator can, but for <em>every</em> slice;
+  additionally, they can add slices to the system. </p></dd></dl>
+<p>Permission management can generally be done by everyone for roles below their
 own level.
-<P>
-<H2><A name=ss1.4>1.4 ActionApps Software Components</A> </H2>
-<P>ActionApps consist of several software components. Only one of them
+</p><p>
+</p><h2><a name="ss1.4">1.4 ActionApps Software Components</a> </h2>
+<p>ActionApps consist of several software components. Only one of them
 is provided by the APC ActionApps package:
-<UL>
-  <LI>The APC ActionApps software. These are basically a set of PHP
+</p><ul>
+  <li>The APC ActionApps software. These are basically a set of PHP
   scripts running within a web server.
-  <LI>A database server. The database server does not have to be on the same
+  </li><li>A database server. The database server does not have to be on the same
   host as the other components. It can be used for other applications as well.
-  <LI>Users and passwords in ActionApplications can be stored in a number
+  </li><li>Users and passwords in ActionApplications can be stored in a number
   of different 'back-ends' such as mysql, LDAP, and even an IMAP-server.
   The default system, and the simplest to setup, is mysql.  If you want to
   use and alternate permission-system back-end, such as LDAP, you will need to
   have these packages installed.
-  <LI>A WWW Server. The WWW Server provides the access from the network via the
+  </li><li>A WWW Server. The WWW Server provides the access from the network via the
   http protocol. It runs the ActionApps programs whenever someone
   accesses the ActionApps controlled pages.
-  <LI>PHP3. The PHP interpreter is needed to execute the ActionApps PHP
-  scripts. </LI></UL>See section <A
-href="install-2.html#requirements">Requirements /
-Preconditions / Suggested Environment</A> for details about the installation of
+  </li><li>PHP3. The PHP interpreter is needed to execute the ActionApps PHP
+  scripts. </li></ul>See section <a href="install-2.html#requirements">Requirements /
+Preconditions / Suggested Environment</a> for details about the installation of
 all the components.
-<P>
-<H2><A name=ss1.5>1.5 Conventions used in this document</A> </H2>
-<P>Command line input is shown including the command line prompt so it is clear
+<p>
+</p><h2><a name="ss1.5">1.5 Conventions used in this document</a> </h2>
+<p>Command line input is shown including the command line prompt so it is clear
 which lines should be typed in. The prompt indicates if a command should be run
-as a normal user or as root: For normal users, the prompt is <CODE>%</CODE>, and
-for root, the prompt is <CODE>#</CODE>.
-<P>An example is shown below:
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>% uptime
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>
-<P>
-<P>
-<P>
-<P>
-<P>
-<HR>
-<A href="install-2.html">Next</A> Previous <A
-href="install.html#toc1">Contents</A>
-</BODY></HTML>
+as a normal user or as root: For normal users, the prompt is <code>%</code>, and
+for root, the prompt is <code>#</code>.
+</p><p>An example is shown below:
+</p><blockquote><code>
+  </code><hr>
+<pre>% uptime
+</pre>
+  <hr>
+  </blockquote>
+<p>
+</p><p>
+</p><p>
+</p><p>
+</p><p>
+</p><hr>
+<a href="install-2.html">Next</a> Previous <a href="install.html#toc1">Contents</a>
+</body></html>

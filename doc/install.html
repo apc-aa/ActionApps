@@ -1,95 +1,100 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
 <!-- saved from url=(0041)install.html -->
-<HTML><HEAD><TITLE>Installation of APC ActionAppss</TITLE>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-1.html"
-rel=next>
+  <title>Installation of APC ActionAppss</title>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=windows-1252">
+  <meta content="MSHTML 5.50.4807.2300" name="GENERATOR">
+  <link href="install-1.html" rel="next">
 <!-- $Id$ -->
-</HEAD>
-
-<BODY><A href="install-1.html">Next</A> Previous
-Contents
-<HR>
-
-<H1>Installation of APC ActionApps</H1>
-<p>Authored by Moritz Both, mb@aldebaran.de 2000/08/01, v0.9 <br>
-  Updated by Mitra mitra@earth.path.net 2001/11/03 </p>
-<p>The full set of documentation relating to APC ActionApps can be found at <a href="http://apc-aa.sourceforge.net/apc-aa/doc">apc-aa.sourceforge.net/apc-aa/doc</a></p>
-<P>
-<HR>
-<EM>"Big picture" description of the installation process of the APC ActionApps</EM>
+</head>
+<body>
+<a href="install-1.html">Next</a> Previous Contents
 <hr>
-<P>
-<H2><A name=toc1>1.</A> <A
-href="install-1.html">Introduction</A></H2>
-<UL>
-  <LI><A href="install-1.html#ss1.1">1.1
-  Overview</A>
-  <LI><A href="install-1.html#ss1.2">1.2 Slices</A>
-
-  <LI><A href="install-1.html#ss1.3">1.3 Users,
-  Roles and Permissions</A>
-  <LI><A href="install-1.html#ss1.4">1.4 ActionApps Software Components</A>
-  <LI><A href="install-1.html#ss1.5">1.5
-  Conventions used in this document</A> </LI></UL>
-<P>
-<H2><A name=toc2>2.</A> <A
-href="install-2.html">Requirements / Preconditions
-/ Suggested Environment</A></H2>
-<UL>
-  <LI><A href="install-2.html#ss2.1">2.1 Hardware
-  Requirements</A>
-  <LI><A href="install-2.html#ss2.2">2.2 Software
-  Requirements</A>
-  <LI><A href="install-2.html#ss2.3">2.3 Know-How
-  Requirements</A> </LI></UL>
-<P>
-<H2><A name=toc3>3.</A> <A
-href="install-3.html">Installation of Other
-Packages needed by ActionApps</A></H2>
-<UL>
-  <LI><A href="install-3.html#ss3.1">3.1
-  Platform</A>
-  <LI><A href="install-3.html#ss3.2">3.2 MySQL
-  database back end</A>
-  <LI><A href="install-3.html#ss3.3">3.3
-  OpenLDAP</A>
-  <LI><A href="install-3.html#ss3.4">3.4 Installing
-  the Apache Web Server</A>
-  <LI><A href="install-3.html#ss3.5">3.5 PHP3</A>
-  <LI><A href="install-3.html#ss3.6">3.6
-  Configuring the apache web server</A>
-  <LI><A href="install-3.html#ss3.7">3.7 PHPLIB
-  installation</A> </LI></UL>
-<P>
-<H2><A name=toc4>4.</A> <A
-href="install-4.html">Installation of ActionApps</A></H2>
-<UL>
-  <LI><A href="install-4.html#ss4.1">4.1 Installation</A>
-  <LI><A href="install-4.html#ss4.2">4.2 Creating the database</A>
-  <LI><A href="install-4.html#ss4.3">4.3 Creating a superadmin account</A>
-  <LI><A href="install-4.html#ss4.4">4.4 Your first test slice</A> </LI>
-</UL>
-<P>
-<H2><A name=toc5>5.</A> <A
-href="install-5.html">Customization</A></H2>
-<UL>
-  <LI><A href="install-5.html#ss5.1">5.1 Language
-  Customization</A>
-  <LI><A href="install-5.html#ss5.2">5.2 Creating
-  new ActionApps</A> </LI></UL>
-<P>
-<H2><A name=toc6>6.</A> <A
-href="install-6.html">Security Issues</A></H2>
-<UL>
-  <LI><A href="install-6.html#ss6.1">6.1 Server
-  Side Includes</A>
-  <LI><A href="install-6.html#ss6.2">6.2
-  config.php3 permissions</A> </LI></UL>
-<P>
-There is a FAQ (Frequently Asked Questions) at <a href="http://apc-aa.sourceforge.net/faq/%20">apc-aa.sourceforge.net/faq/
-</a> which includes information on contacting the developers.
-<P>
-<HR>
-<A href="install-1.html">Next</A> Previous Contents
-</BODY></HTML>
+<h1>Installation of APC ActionApps</h1>
+<p>Authored by Moritz Both, mb@aldebaran.de 2000/08/01, v0.9 <br>
+Updated by Mitra mitra@earth.path.net 2001/11/03<br>
+Minor edits for 2.6.0 release by Marek Tichy,&nbsp; marek[at]ecn.cz
+2003/11/04<br>
+</p>
+<p>The full set of documentation relating to APC ActionApps can be
+found at <a href="http://apc-aa.sourceforge.net/apc-aa/doc">apc-aa.sourceforge.net/apc-aa/doc</a></p>
+<p> </p>
+<hr> <em>"Big picture" description of the installation process of the
+APC ActionApps</em>
+<hr>
+<p> </p>
+<h2><a name="toc1">1.</a> <a href="install-1.html">Introduction</a></h2>
+<ul>
+  <li><a href="install-1.html#ss1.1">1.1   Overview</a> </li>
+  <li><a href="install-1.html#ss1.2">1.2 Slices</a> </li>
+  <li><a href="install-1.html#ss1.3">1.3 Users,   Roles and Permissions</a> </li>
+  <li><a href="install-1.html#ss1.4">1.4 ActionApps Software Components</a> </li>
+  <li><a href="install-1.html#ss1.5">1.5   Conventions used in this
+document</a> </li>
+</ul>
+<p> </p>
+<h2><a name="toc2">2.</a> <a href="install-2.html">Requirements /
+Preconditions / Suggested Environment</a></h2>
+<ul>
+  <li><a href="install-2.html#ss2.1">2.1 Hardware   Requirements</a> </li>
+  <li><a href="install-2.html#ss2.2">2.2 Software   Requirements</a> </li>
+  <li><a href="install-2.html#ss2.3">2.3 Know-How   Requirements</a> </li>
+</ul>
+<p> </p>
+<h2><a name="toc3">3.</a> <a href="install-3.html">Installation of
+Other Packages needed by ActionApps</a></h2>
+<ul>
+  <li><a href="install-3.html#ss3.1">3.1   Platform</a> </li>
+  <li><a href="install-3.html#ss3.2">3.2 MySQL   database back end</a> </li>
+  <li><a href="install-3.html#ss3.3">3.3   OpenLDAP</a> </li>
+  <li><a href="install-3.html#ss3.4">3.4 Installing   the Apache Web
+Server</a> </li>
+  <li><a href="install-3.html#ss3.5">3.5 PHP3</a> </li>
+  <li><a href="install-3.html#ss3.6">3.6   Configuring the apache web
+server</a> </li>
+  <li><a href="install-3.html#ss3.7">3.7 PHPLIB   installation</a> </li>
+</ul>
+<p> </p>
+<h2><a name="toc4">4.</a> <a href="install-4.html">Installation of
+ActionApps</a></h2>
+<ul>
+  <li><a href="install-4.html#ss4.1">4.1 Installation</a> </li>
+  <li><a href="install-4.html#ss4.2">4.2 Creating the database</a> </li>
+  <li><a href="install-4.html#ss4.3">4.3 Creating a superadmin account</a> </li>
+  <li><a href="install-4.html#ss4.4">4.4 Your first test slice</a> </li>
+</ul>
+<p> </p>
+<h2><a name="toc5">5.</a> <a href="install-5.html">Customization</a></h2>
+<ul>
+  <li><a href="install-5.html#ss5.1">5.1 Language   Customization</a> </li>
+  <li><a href="install-5.html#ss5.2">5.2 Creating   new ActionApps</a> </li>
+</ul>
+<p> </p>
+<h2><a name="toc6">6.</a> <a href="install-6.html">Security Issues</a></h2>
+<ul>
+  <li><a href="install-6.html#ss6.1">6.1 Server   Side Includes</a> </li>
+  <li><a href="install-6.html#ss6.2">6.2   config.php3 permissions</a> </li>
+</ul>
+<p> </p>
+<p> </p>
+<h2><a name="toc6">7.</a> <a href="install-7.html">Troubleshooting and
+maintenance<br>
+</a></h2>
+<ul>
+  <li><a href="install-7.html#ss7.1">7.1 Common problems<br>
+    </a></li>
+  <li><a href="install-7.html#ss7.2">7.2 Maintenance</a></li>
+</ul>
+<h2><a name="toc6">8.</a> <a href="install-8.html">Contacting the
+developers</a></h2>
+<ul>
+</ul>
+<p>There is a FAQ (Frequently Asked Questions) at <a
+ href="http://apc-aa.sourceforge.net/faq/%20">apc-aa.sourceforge.net/faq/</a>
+which includes information on contacting the developers. </p>
+<p> </p>
+<hr> <a href="install-1.html">Next</a> Previous Contents
+</body>
+</html>

@@ -1,74 +1,74 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
 <!-- saved from url=(0043)install-6.html -->
-<HTML><HEAD><TITLE>Installation of APC ActionApps: Security Issues</TITLE>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-7.html"
-rel=next><LINK href="install-5.html" rel=previous><LINK href="install.html#toc6"
-rel=contents></HEAD>
-<BODY><A href="install-7.html">Next</A> <A
-href="install-5.html">Previous</A> <A
-href="install.html#toc6">Contents</A>
-<HR>
-
-<H2><A name=security></A><A name=s6>6. Security Issues</A></H2>
-<H2><A name=ss6.1>6.1 Server Side Includes</A> </H2>
-<P>The directories which contain the user pages must be enabled for SSI (server
-side includes). This is a major security hole if untrusted people can alter
-pages in these directories. Only enable SSI for directories where it is needed.
-You can put the statement which enables it into per directory directives in the
-apache http server configuration file, for example, like this (snipped from
-<CODE>/etc/httpd/conf/httpd.conf</CODE>:
-<BLOCKQUOTE><CODE>
-  <HR>
-<PRE>&lt;Directory /home/httpd/html/apc-aa/user-x/&gt;
-Options +Includes
-&lt;/Directory&gt;
-</PRE>
-  <HR>
-  </CODE></BLOCKQUOTE>This also suggests to put all ActionApps user pages
-into a common directory structure and not into the normal user's htdocs tree, so
+  <title>Installation of APC ActionApps: Security Issues</title>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=windows-1252">
+  <meta content="MSHTML 5.50.4807.2300" name="GENERATOR">
+  <link href="install-7.html" rel="next">
+  <link href="install-5.html" rel="previous">
+  <link href="install.html#toc6" rel="contents">
+</head>
+<body>
+<a href="install-7.html">Next</a> <a href="install-5.html">Previous</a> <a
+ href="install.html#toc6">Contents</a>
+<hr>
+<h2><a name="security"></a><a name="s6">6. Security Issues</a></h2>
+<h2><a name="ss6.1">6.1 Server Side Includes</a> </h2>
+<p>The directories which contain the user pages must be enabled for SSI
+(server side includes). This is a major security hole if untrusted
+people can alter pages in these directories. Only enable SSI for
+directories where it is needed. You can put the statement which enables
+it into per directory directives in the apache http server
+configuration file, for example, like this (snipped from <code>/etc/httpd/conf/httpd.conf</code>:</p>
+<blockquote><code> </code>
+  <hr>
+  <pre>&lt;Directory /home/httpd/html/apc-aa/user-x/&gt;<br>Options +Includes<br>&lt;/Directory&gt;<br></pre>
+  <hr> </blockquote>
+This also suggests to put all ActionApps user pages into a common
+directory structure and not into the normal user's htdocs tree, so
 control over the pages can easily be separated.
-<H2><A name=ss6.2>6.2 config.php3 permissions</A> </H2>
-<P>The http server must be able to access the <CODE>include/config.php3</CODE>
-file, but this file contains passwords, so it should not be world readable.
-<P>One possible common solution for this is that you create a unix group for
-your http server and make the <CODE>config.php3</CODE> file belong to that group
-and be group readable. The steps to do this would be:
-<UL>
-  <LI>Create unix group, for example, <EM>www</EM>. On RedHat Linux, this can be
-  done like this:
-  <BLOCKQUOTE><CODE>
-    <HR>
-<PRE># groupadd -r www
-
-</PRE>
-    <HR>
-    </CODE></BLOCKQUOTE>
-  <LI>Edit <CODE>/etc/httpd/conf/httpd.conf</CODE> and alter the line
-  <BLOCKQUOTE><CODE>
-    <HR>
-      <PRE>Group nobody</PRE>
-    <HR>
-    </CODE></BLOCKQUOTE>to
-  <BLOCKQUOTE><CODE>
-    <HR>
-      <PRE>Group www</PRE>
-      <HR>
-      </CODE></BLOCKQUOTE>
-  <LI>Change file permissions in <CODE>config.php3</CODE> and restart the
-  server.
-  <BLOCKQUOTE><CODE>
-    <HR>
-      <PRE># chown root.www /home/httpd/html/apc-aa/include/config.php3
-# chmod 640  /home/httpd/html/apc-aa/include/config.php3
-# /etc/rc.d/init.d/httpd stop
-# /etc/rc.d/init.d/httpd start
-</PRE>
-    <HR>
-    </CODE></BLOCKQUOTE></LI></UL>
-<P>
-<HR>
-Next <A
-href="install-5.html">Previous</A> <A
-href="install.html#toc6">Contents</A>
-</BODY></HTML>
+<h2><a name="ss6.2">6.2 config.php3 permissions</a> </h2>
+<p>The http server must be able to access the <code>include/config.php3</code>
+file, but this file contains passwords, so it should not be world
+readable.<br>
+</p>
+<p>Other&nbsp; possible common solution for this is that you create a
+unix group for your http server and make the <code>config.php3</code>
+file belong to that group and be group readable. Before you do this,
+make sure that it's safe to change the group apache is running under -
+there may be other programs and setups that rely on this setting&nbsp;
+!!! The steps to do this would be: </p>
+<ul>
+  <li>Create unix group, for example, <em>www</em>. On RedHat Linux,
+this can be   done like this:
+    <blockquote><code> </code>
+      <hr>
+      <pre># groupadd -r www<br><br></pre>
+      <hr> </blockquote>
+  </li>
+  <li>Edit <code>/etc/httpd/conf/httpd.conf</code> and alter the line
+    <blockquote><code> </code>
+      <hr>
+      <pre>Group nobody</pre>
+      <hr> </blockquote>
+to
+    <blockquote><code> </code>
+      <hr>
+      <pre>Group www</pre>
+      <hr> </blockquote>
+  </li>
+  <li>Change file permissions in <code>config.php3</code> and restart
+the   server.
+    <blockquote><code> </code>
+      <hr>
+      <pre># chown root.www /home/httpd/html/apc-aa/include/config.php3<br># chmod 640  /home/httpd/html/apc-aa/include/config.php3<br># /etc/rc.d/init.d/httpd stop<br># /etc/rc.d/init.d/httpd start<br></pre>
+      <hr> </blockquote>
+  </li>
+</ul>
+<p> </p>
+<hr> Next <a href="install-5.html">Previous</a> <a
+ href="install.html#toc6">Contents</a>
+</body>
+</html>

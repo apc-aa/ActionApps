@@ -1,111 +1,130 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
 <!-- saved from url=(0043)install-2.html -->
-<HTML><HEAD><TITLE>Installation of APC ActionApps: Requirements / Preconditions / Suggested Environment</TITLE>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-3.html"
-rel=next><LINK href="install-1.html" rel=previous><LINK href="install.html#toc2"
-rel=contents>
+  <title>Installation of APC ActionApps: Requirements / Preconditions /
+Suggested Environment</title>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=windows-1252">
+  <meta content="MSHTML 5.50.4807.2300" name="GENERATOR">
+  <link href="install-3.html" rel="next">
+  <link href="install-1.html" rel="previous">
+  <link href="install.html#toc2" rel="contents">
 <!-- $Id$ -->
-</HEAD>
-<BODY><A href="install-3.html">Next</A> <A
-href="install-1.html">Previous</A> <A
-href="install.html#toc2">Contents</A>
-<HR>
-
-<H2><A name=requirements></A><A name=s2>2. Requirements / Preconditions /
-Suggested Environment</A></H2>
-<H2><A name=ss2.1>2.1 Hardware Requirements</A> </H2>
-<P>The ActionApps can run on every computer which runs one of the
-supported operating systems.
-<P>There is probably a minimum requirement in terms of processor speed and
-amount of memory. If the ActionApps run on a single computer (including
-the MySQL database back end), it should be no less than a 200 MHz processor and
-64 MByte of RAM.
-<P>
-<H2><A name=ss2.2>2.2 Software Requirements</A> </H2>
-<P>Note: There are instructions for the installation of all software modules but
-  the operating system in the next chapter: <A
-href="install-3.html#install_other">Installation
-  of other packages needed by the ActionApps</A> which also contains
-  instructions on how to check the version numbers of installed packages.
-<H3> Operating System</H3>
-<P>The primary supported operating system is GNU/Linux. However, the Action
-Applications should run on any unix or unix-like operating system which can run
-all the other software components. The ActionApps were developed and
-tested on <B>Red Hat Linux</B> 6.0 and 6.2, so it is recommended to use this OS.
-This installation guide has a strong focus on Red Hat Linux.
-<P>It is known that ActionApps also run on FreeBSD 2.2.7.
-<P>
-<H3>Database Server</H3>
-<P>An SQL database server is needed by the ActionApps in order to store
-all the information. The only supported SQL server so far is the <B>MySQL</B>
-database server. The data is organized in several tables in the database. Action
-Applications need one logical database within the database server. The server
-can be used for other applications as well.
-<P>The database server does not need to be on the same machine as the other
-components are.
-<P>ActionApps need at least MySQL version 3.22.32. Older version may
-work but have not been tested, and they contain known security holes.
-<P>If you want to use a different database server than MySQL, for example, if
-you have already a database server running, you will have to do some porting
-work. ActionApps were written with database back end portability in
-mind, and as little as possible MySQL specific functions were used. It is
-important that there is PHP support for the database server you want to use.
-<P>
-<H3>Permission System</H3>
-<P>
-Most people will use their Database Server as their permission system -- storing passwords and permissions
-in mysql.
-
-<P>If you want to use LDAP as the permission system, you should
-refer to <a href="ldap.html">apc-aa ldap page</a>
-
-<P>
-<H3>WWW (http) Server</H3>
-<P>The ActionApps have been developed and tested with the <B>apache</B>
-http server. Other http servers might work, too, but there are some things to
-consider:
-<UL>
-  <LI>The ActionApps relay on a feature in the apache http server which
-    allows to pass GET parameters (query strings) to scripts which are run from
-    a SSI (server side include) command in a page. It is known that the Microsoft
-    Internet Information Server, for example, does not do that.
-  <LI>The apache http server can be configured to load PHP as a <EM>module</EM>.
-    This speeds things up a lot because the PHP interpreter does not have to be
-    loaded every time a PHP script runs. ActionApps work in CGI mode
-    as well, though. </LI>
-  <LI>Apache needs the apache-devel module as well.</LI>
-</UL>
-<P>
-<H3>PHP</H3>
-<P>ActionApps are written in PHP. The minimum version to use should be PHP 4.1.0.  Older versions of APC-AA should work on anything from PHP 3.0.7, but there are no guarrantees since we no longer test on versions pre 4.0.6.<BR>
-
-<P>PHP can be build as a <EM>module for the apache http server</EM> or as a
-<EM>standalone program</EM>. The first way is preferred for performance reasons.
-
-<P>Your PHP needs optional modules:
-<UL>
-  <LI>A module is needed to access your SQL database. For example, if you are
-  using MySQL as the database, you need the MySQL module for PHP.
-  <LI>it is recommended to install the GD module to support image manipulation</LI>
-  <LI>If you are using LDAP as the permission system, you need the LDAP module
-  for PHP. </LI></UL>
-<P>The modules can be
-<UL>
-  <LI><EM>compiled into PHP</EM> or
-  <LI><EM>loaded at run time</EM>. </LI></UL>
-<P>Both ways are described in the <A
-href="install-3.html#php_install">PHP installation
-  section</A>.
-<P>&nbsp;
-<H2><A name=ss2.3>2.3 Know-How Requirements</A> </H2>
-<P>To install the ActionApps, you will need some basic unix skills. You
-should have installed programs before and be familiar with administration of
-your system.
-<P>
-<H3>Other Preconditions</H3>
-<HR>
-<A href="install-3.html">Next</A> <A
-href="install-1.html">Previous</A> <A
-href="install.html#toc2">Contents</A>
-</BODY></HTML>
+</head>
+<body>
+<a href="install-3.html">Next</a> <a href="install-1.html">Previous</a> <a
+ href="install.html#toc2">Contents</a>
+<hr>
+<h2><a name="requirements"></a><a name="s2">2. Requirements /
+Preconditions / Suggested Environment</a></h2>
+<h2><a name="ss2.1">2.1 Hardware Requirements</a> </h2>
+<p>The ActionApps can run on every computer which runs one of the
+supported operating systems. </p>
+<p>There is probably a minimum requirement in terms of processor speed
+and amount of memory. If the ActionApps run on a single computer
+(including the MySQL database back end), it should be no less than a
+200 MHz processor and 64 MByte of RAM. </p>
+<p> </p>
+<h2><a name="ss2.2">2.2 Software Requirements</a> </h2>
+<p>Note: There are instructions for the installation of all software
+modules but   the operating system in the next chapter: <a
+ href="install-3.html#install_other">Installation   of other packages
+needed by the ActionApps</a> which also contains   instructions on how
+to check the version numbers of installed packages. </p>
+<h3> Operating System</h3>
+<p>The primary supported operating system is GNU/Linux. However, the
+Action Applications should run on any unix or unix-like operating
+system which can run all the other software components. The ActionApps
+are being developed and tested on <b>Red Hat Linux</b> from 6.0 to
+9&nbsp; (Apache v1, v2),&nbsp; so it is recommended to use this OS.
+This installation guide has a strong focus on Red Hat Linux. </p>
+<p>It is known that ActionApps also run on FreeBSD 2.2.7. Quite a few
+people are also running personal AA instalation under Windows using <a
+ href="http://sourceforge.net/projects/phpdev5">phpdev</a> environment. <br>
+</p>
+<p> </p>
+<h3>Database Server</h3>
+<p>An SQL database server is needed by the ActionApps in order to store
+all the information. The only supported SQL server so far is the <b>MySQL</b>
+database server. The data is organized in several tables in the
+database. Action Applications need one logical database within the
+database server. The server can be used for other
+applications/database&nbsp; as well. </p>
+<p>The database server does not need to be on the same machine as the
+other components are. </p>
+<p>ActionApps need at least MySQL version 3.22.32. Older version may
+work but have not been tested, and they contain known security holes. </p>
+<p>If you want to use a different database server than MySQL, for
+example, if you have already a database server running, you will have
+to do some porting work. ActionApps were written with database back end
+portability in mind, and as little as possible MySQL specific functions
+were used. It is important that there is PHP support for the database
+server you want to use. </p>
+<p> </p>
+<h3>Permission System</h3>
+<p> Most people will use their Database Server as their permission
+system -- storing passwords and permissions in mysql. </p>
+<p>If you want to use LDAP as the permission system, you should refer
+to <a href="ldap.html">apc-aa ldap page</a> </p>
+<p> </p>
+<h3>WWW (http) Server</h3>
+<p>The ActionApps have been developed and tested with the <b>apache</b>
+http server. Other http servers might work, too, but there are some
+things to consider: </p>
+<ul>
+  <li>The ActionApps relay on a feature in the apache http server which
+ allows to pass GET parameters (query strings) to scripts which are run
+from     a SSI (server side include) command in a page. It is known
+that the Microsoft     Internet Information Server prior to version 5,
+for example, does not do that. At a certain point (apc-aa ver. 2.6)
+Action Apps were ported to run under Zeus web server - but this
+compatibility probabaly not going to be maintained in the future.&nbsp;
+ </li>
+  <li>The apache http server can be configured to load PHP as a <em>module</em>.
+This speeds things up a lot because the PHP interpreter does not have
+to be     loaded every time a PHP script runs. ActionApps work in CGI
+mode     as well, though. </li>
+  <li>Apache needs the apache-devel module as well.</li>
+</ul>
+<p> </p>
+<h3>PHP</h3>
+<p>ActionApps are written in PHP. The minimum version to use should be
+PHP 4.2.0.  Older versions of APC-AA should work on anything from PHP
+3.0.7, but there are no guarrantees since we no longer test on versions
+pre 4.2.0.<br>
+</p>
+<p>PHP can be build as a <em>module for the apache http server</em> or
+as a <em>standalone program</em>. The first way is preferred for
+performance reasons. </p>
+<p>Your PHP needs optional modules: </p>
+<ul>
+  <li>A module is needed to access your SQL database. For example, if
+you are   using MySQL as the database, you need the MySQL module for
+PHP. </li>
+  <li>It is recommended to install the GD module to support image
+manipulation. PHP &gt;= 4.3.0 comes with complied-in GD support, for
+the earlier version consult&nbsp; <a
+ href="http://www.boutell.com/gd/phppatch.html">"patching PHP for gd
+2.0.8 and up"</a>.</li>
+  <li>If you are using LDAP as the permission system, you need the LDAP
+module   for PHP. </li>
+</ul>
+<p>The modules can be </p>
+<ul>
+  <li><em>compiled into PHP</em> or </li>
+  <li><em>loaded at run time</em>. </li>
+</ul>
+<p>Both ways are described in the <a href="install-3.html#php_install">PHP
+installation   section</a>. </p>
+<p>&nbsp; </p>
+<h2><a name="ss2.3">2.3 Know-How Requirements</a> </h2>
+<p>To install the ActionApps, you will need some basic unix skills. You
+should have installed programs before and be familiar with
+administration of your system. </p>
+<p> </p>
+<h3>Other Preconditions</h3>
+<hr> <a href="install-3.html">Next</a> <a href="install-1.html">Previous</a> <a
+ href="install.html#toc2">Contents</a>
+</body>
+</html>
