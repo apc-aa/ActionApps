@@ -225,7 +225,7 @@ if( !$Add_slice AND !$New_slice ) {
 
 	// The config file not loaded -> the slice type was changed
   	if( CONFIG_FILE != $r_config_file[$slice_id] ) {
-    	if (++$wrong_language_file == 3) {
+    	if (++$wrong_language_file == 10) {
 			echo "<b>WRONG LANGUAGE FILE</b>: you must have<br>
 				 define(\"CONFIG_FILE\",\"file_name.php3\") in the language file, with file_name.php3 replaced by the real file name (which seems to be ".$r_config_file[$slice_id].").";
 			page_close();
