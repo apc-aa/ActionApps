@@ -253,9 +253,9 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
         edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100); 
         var edt$name"."_content = '$val';
         function edt$name"."_inicial() { 
-            change_state ('edt$name'); 
+            //change_state ('edt$name'); 
             posa_contingut_html('edt$name',edt$name"."_content);
-            change_state ('edt$name');
+            //change_state ('edt$name');
      	    clearInterval(edt$name"."_timerID); 
             return true; 
         } 
