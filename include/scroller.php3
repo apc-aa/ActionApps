@@ -39,7 +39,11 @@ function userdate2sec ($dttm, $time="") {
     return mktime($tpart[1],$tpart[2],$tpart[3],$part[1],$part[2],$part[3]);
 }
 
-class scroller {
+
+require $GLOBALS[AA_INC_PATH] . "statestore.php3";
+
+
+class scroller extends storable_class {
 	var $classname = "scroller";
 	var $persistent_slots = Array("pgcnt", "current", "id", "visible", "sortdir", 
   		"sortcol", "filters", "itmcnt", "metapage", "urldefault");
