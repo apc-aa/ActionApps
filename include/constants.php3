@@ -172,18 +172,6 @@ $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
   "search_pri", "search_show", "search_ft_show", "search_ft_default",
   "content_edit", "html_default", "html_show", "input_show", "text_stored");
 
-/// @return array default function description
-function inputDefaultTypes ()
-{ 
-    return array ("txt" => _m("Text = text from Parameter field"),
-                  "dte" => _m("Date = current date plus <Parameter> number of days"),
-                  "uid" => _m("User ID = current user ID"),
-                  "log" => _m("Login name"),
-                  "now" => _m("Now = current date"),
-			      "variable" =>_m("Variable"),
-				 );
-}
-  
 /// @return array input show function types
 function inputShowFuncTypes ()
 {
@@ -254,21 +242,6 @@ function inputValidateTypes ()
 				   "reader" => _m("Reader Username = proove uniqueness"),
 				   "reader mail" => _m("Reader E-mail = proove uniqueness"));	//added 03/01/02,setu
 }
-
-function inputInsertTypes ()
-{
-    return array ("qte" => _m("Text = don't modify"),
-                 "boo" => _m("Boolean = store 0 or 1"),
-                 "fil" => _m("File = uploaded file"),
-                 "uid" => _m("User ID = always store current user ID"),
-                 "log" => _m("Login name"),
-                 "ids" => _m("Item IDs"), 
-                 "now" => _m("Now = always store current time")
-               /*"dte" => _m("Date"), 
-                 "cns" => _m("Constant"), 
-                 "num" => _m("Number"), 
-                 "nul" => _m("None")*/);
-}                 
                              
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "1"   => LOG_EVENTS_,
