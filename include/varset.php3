@@ -76,7 +76,12 @@ class Cvarset {
     var $vars;  // array of variables
 
     # constructor
-    function Cvarset() {
+    function Cvarset( $arr=null ) {
+        foreach ( (array)$arr as $varname => $value ) {
+            if ( $varname ) {
+                $this->add($varname, 'text', $value);
+            }
+        }
     }
 
     # clears whole varset
@@ -90,7 +95,7 @@ class Cvarset {
       return ( $cv ? $cv->getValue() : false);
     }
 
-    function getSQLvalue ($varname) {
+    function getSQLvalue($varname) {
         $cv = $this->vars[$varname];
         return ( $cv ? $cv->getSQLvalue() : false);
     }
@@ -147,7 +152,7 @@ class Cvarset {
       }
   }
 
-  /** fills varset with data grabed from database ($db->Record) */
+  /** Fills varset with data grabed from database ($db->Record) */
   function resetFromRecord($record) {
       $this->clear();
       foreach ( $record as $name => $value ) {
@@ -157,88 +162,111 @@ class Cvarset {
       }
   }
 
-    # add variable to varset
-    function addArray($text_fields, $num_fields="") {
-    if( isset($text_fields) AND is_array($text_fields)) {
-      reset( $text_fields );
-      while( list(,$name) = each($text_fields) )
-        $this->add($name, "text");
-    }
-    if( isset($num_fields) AND is_array($num_fields)) {
-      reset( $num_fields );
-      while( list(,$name) = each($num_fields) )
-        $this->add($name, "number");
-    }
-    }
+  /** Add text and number variables from arrays to varset */
+  function addArray($text_fields, $num_fields="") {
+      if( isset($text_fields) AND is_array($text_fields)) {
+          foreach ($text_fields as $name) {
+              $this->add($name, "text");
+          }
+      }
+      if( isset($num_fields) AND is_array($num_fields)) {
+          foreach ( $num_fields as $name) {
+              $this->add($name, "number");
+          }
+      }
+  }
 
-  # makes SQL INSERT clause from varset
+  /** Private function: executes qiven query) */
+  function _doQuery($SQL, $nohalt=null) {
+      $db = getDB();
+      if ( $nohalt=='nohalt' ) {
+         $retval = $db->query_nohalt($SQL);
+      } else {
+         $retval = $db->tquery($SQL);
+      }
+      freeDB($db);
+      return $retval;
+  }
+
+
+  /** Makes SQL INSERT clause from varset */
   function makeINSERT($tablename = "")
   {
-    reset($this->vars);
-    if ($tablename)
-        $foo = "INSERT INTO $tablename";
-    else $foo = "";
-    $predznak = " ( ";
-    while ( list( $varname, $variable ) = each($this->vars) )
-    {
-      $foo .= $predznak . "`$varname`";
-      $predznak = ", ";
-    }
-    reset($this->vars);
-    $predznak = " ) VALUES ( ";
-    while ( list( $varname, $variable ) = each($this->vars) )
-    {
-      $foo .= $predznak . $variable->getSQLValue();
-      $predznak = ", ";
-    }
-    return $foo . " ) " ;
-  }
-
-  # makes SQL UPDATE clause from varset
-  function makeUPDATE($tablename = "")
-  {
-    reset($this->vars);
-    while ( list( $varname, $variable ) = each($this->vars) ) {
-      //echo $varname." -> ".$variable->getSQLValue()."<br>";
-      if (!$variable->iskey)
-          $updates[] = "`$varname`" ."=". $variable->getSQLValue();
-    }
-    if ($tablename)
-        $retval = "UPDATE $tablename SET";
-    $retval .= " " . join (", ", $updates);
-    $where = $this->makeWHERE();
-    if ($where)
-        $retval .= " WHERE ".$where;
-    return $retval;
-  }
-
-  function makeSELECT ($table)
-  {
-    $where = $this->makeWHERE();
-    if (!$where)
-      return "SELECT * FROM $table";
-    else return "SELECT * FROM $table WHERE ".$where;
-  }
-
-  function makeDELETE ($table)
-  {
-    $where = $this->makeWHERE();
-    if (!$where)
-      return "Error";
-    else return "DELETE FROM $table WHERE ".$where;
-  }
-
-  function makeWHERE ($table="")
-  {
-    reset ($this->vars);
-    $where = "";
-    while (list ($varname, $variable) = each ($this->vars))
-      if ($variable->iskey) {
-        if ($where) $where .= " AND ";
-        if ($table) $varname = $table.".".$varname;
-        $where .= $varname ."=". $variable->getSQLValue();
+      $foo      = $tablename ? "INSERT INTO $tablename" : '';
+      $predznak = " ( ";
+      foreach ( $this->vars as  $varname => $variable ) {
+          $foo .= $predznak . "`$varname`";
+          $predznak = ", ";
       }
-    return $where;
+      $predznak = " ) VALUES ( ";
+      foreach ( $this->vars as  $varname => $variable ) {
+          $foo .= $predznak . $variable->getSQLValue();
+          $predznak = ", ";
+      }
+      return $foo . " ) " ;
+  }
+
+  function doInsert($tablename, $nohalt=null) {
+      return $this->_doQuery($this->makeINSERT($tablename), $nohalt);
+  }
+
+  /** Makes SQL UPDATE clause from varset */
+  function makeUPDATE($tablename = "", $keyword = 'UPDATE')
+  {
+      foreach ( $this->vars as  $varname => $variable ) {
+          if (!$variable->iskey) {
+              $updates[] = "`$varname`" ."=". $variable->getSQLValue();
+          }
+      }
+      if ($tablename) {
+          $retval = "$keyword $tablename SET";
+      }
+      $retval .= " " . join (", ", $updates);
+      $where = $this->makeWHERE();
+      if ($where) {
+          $retval .= " WHERE ".$where;
+      }
+      return $retval;
+  }
+
+  function doUpdate($tablename, $nohalt=null) {
+      return $this->_doQuery($this->makeUPDATE($tablename), $nohalt);
+  }
+
+  function doREPLACE($tablename, $nohalt=null) {
+      // TODO: REPLACE works for MySQL. For MS SQL and possibly other DB servers
+      //       we need to use another SQL (SELECT + UPDATE/INSERT)
+      return $this->_doQuery($this->makeUPDATE($tablename, 'REPLACE'), $nohalt);
+  }
+
+  function makeSELECT($table)
+  {
+      $where = $this->makeWHERE();
+      return ($where ? "SELECT * FROM $table WHERE ".$where :
+                       "SELECT * FROM $table");
+  }
+
+  function makeDELETE($table)
+  {
+      $where = $this->makeWHERE();
+      return ($where ? "DELETE FROM $table WHERE ".$where : 'Error');
+  }
+
+  function doDelete($tablename, $nohalt=null) {
+      return $this->_doQuery($this->makeDELETE($tablename), $nohalt);
+  }
+
+  function makeWHERE($table="")
+  {
+      $where = "";
+      foreach ( $this->vars as $varname => $variable) {
+          if ($variable->iskey) {
+              if ($where) { $where .= " AND "; }
+              if ($table) { $varname = $table.".".$varname; }
+              $where .= $varname ."=". $variable->getSQLValue();
+          }
+      }
+      return $where;
   }
 
   /// This function looks into the given table and if the row exists
@@ -260,10 +288,10 @@ class Cvarset {
   }
 
   function huh($txt="") {
-    echo "Varset: $txt";
-    reset( $this->vars );
-    while ( list( $varname, $variable ) = each($this->vars) )
-      $variable->huh();
+      echo "Varset: $txt";
+      foreach ( $this->vars as  $varname => $variable ) {
+          $variable->huh();
+      }
   }
 }
 ?>
