@@ -51,10 +51,9 @@ IncludeManagerJavascript();
 echo '
 </head>
 <body>
-  <center>
   <h1>'. _m("Export selected items to selected slice") .'</h1>
   <form name=incf>
-   <table border=0 cellspacing=0 cellpadding=0>     
+   <table border=0 cellspacing=0 cellpadding=0 align=center>
      <tr class="tabtit"><td align=center>'. _m("Slice") .'</td>
          <td width=100 align=center>'. _m("Holding bin")   .'</td>
          <td width=100 align=center>'. _m("Active")        .'</td>
@@ -78,7 +77,7 @@ if( is_array($g_modules) AND (count($g_modules) > 1) ) {
 if( $i==1 ) {   // can't feed to any slice
   echo '<tr><td colspan=3>'. _m("No permission to set feeding for any slice") .'</td></tr>';
 }
-?>   
+?>
    <tr><td colspan=4 class="tabtit" align=center><br /><input type=button name=sendfeeded value="<?php echo _m("Export") ?>" onclick="SendFeed();"><br />&nbsp;</td></tr>
    </table>
    <SCRIPT Language="JavaScript" type="text/javascript"><!--
@@ -106,9 +105,8 @@ if( $i==1 ) {   // can't feed to any slice
     }
     // -->
    </SCRIPT>
-   
+
   </form>
-  </center>
 </body>
 </html>
 <?php page_close(); ?>

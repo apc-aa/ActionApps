@@ -198,10 +198,10 @@ $VIEW_FIELDS = getViewFields();
 $VIEW_TYPES = getViewTypes();
 $VIEW_TYPES_INFO = getViewTypesInfo();
 
-// fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS) 
-// adds wrong $view_type variable to $_SERVER array, which then redefine 
-// the $view_type from $_POST array 
-$view_type = $HTTP_POST_VARS['view_type'] ? $HTTP_POST_VARS['view_type'] : $HTTP_GET_VARS['view_type'];   
+// fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
+// adds wrong $view_type variable to $_SERVER array, which then redefine
+// the $view_type from $_POST array
+$view_type = $HTTP_POST_VARS['view_type'] ? $HTTP_POST_VARS['view_type'] : $HTTP_GET_VARS['view_type'];
 
 if( $update )
 {
@@ -323,7 +323,7 @@ echo "<TITLE>". _m("Admin - design View") ."</TITLE>
         // property .disabled supported only in MSIE 4.0+
       }
       // -->
-F      </SCRIPT>
+      </SCRIPT>
     </HEAD>";
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
