@@ -1,14 +1,25 @@
+06/10/03 - added link and categories view type
+(honzam) - new and better event handler for new item
+         - improved link manager
+         - left menu item could be created by function
+         - added LINK_UPDATED event;
+         - fixed category assignment problems, when user is not owner of link,
+           but he wants to have the link in his/her category
+         - bugfix zids: adds ids from array even if first id is not set
+         - new set[]=slices-slice_id1-slice_id2-sli... for view.php3
+         - fix of wrong Related Item Window field setting
+         - fixed problem of wrong & behavior on hirarchical constants edit form
 05/29/03 - fixed eb_functions in expand, and added substr (mitra)
 05/28/03 - added {include:file:site} for getting files from specified directory
 (mitra)  - fixed bug in sliceobj
-05/31/03 - added special view.php3 alias _#SELECTED, which is "1" for selected 
-(honzam)   item (given by special set[] view.php3 paramater 
+05/31/03 - added special view.php3 alias _#SELECTED, which is "1" for selected
+(honzam)   item (given by special set[] view.php3 paramater
            (like: set[34]=selected-43535) - usable for displaing menu generated
            from slice items (see leftmenu (topics) on obcan.ecn.cz))
          - aliases of unused fields are grayed in help alias listing
-         - first selected menu in Slice Admin is Fields, now 
-         - fixed problem with wrong displayed items when from=1 and to=1 
-         - special "dview" slice parameter, which defines used view for 
+         - first selected menu in Slice Admin is Fields, now
+         - fixed problem with wrong displayed items when from=1 and to=1
+         - special "dview" slice parameter, which defines used view for
            discussions (just like ivew and fview parameters)' slice.php3
          - propagate changes in costantedit is default for new constants group
          - fulltext links now work also if slice.php3 is called from PHP script

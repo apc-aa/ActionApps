@@ -6,7 +6,7 @@ $directory_depth = '../';
 require_once "../../include/init_page.php3";
 require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
 require_once $GLOBALS[AA_INC_PATH]."varset.php3";
-require_once "./constants.php3"; 
+require_once "./constants.php3";
 require_once "./util.php3";           // module specific utils
 require_once "./cattree.php3";        // for event handler Event_LinkNew
 
@@ -113,8 +113,139 @@ function DeleteLinkLanguages($lid) {
     $db->query($SQL);
 }
 
-# End of function definitions -------------------------------------------------
 
+/** Assign link to categories specified in $categs it also deletes all old
+ *  category assignments or proposes changes, if you do not have enough
+ *  permissions
+ *  @param int       $lid     link id to assign
+ *  @param int/array $categs  array of category ids to assign the link to
+ *  @param array     $states  array with key=caterory_id and value=''highlight'
+ *                            hor highlighted links
+ */
+function Links_UpdateCategoryAssignments($lid, $categs, $states) {
+    global $db;
+
+    # prepare $newAssignments array
+    if ( isset($categs) AND is_array($categs) ) {
+        foreach ( $categs as $cid ) {
+            $newAssignments[] = array( "category_id" => $cid,
+                                       "path" => GetCategoryPath( $cid ),
+                                       "state" => $states[$cid]);
+        }
+    }
+
+    # old assignments lookup
+    $SQL = "SELECT category_id, path, base, state, proposal, proposal_delete
+              FROM links_link_cat, links_categories
+             WHERE links_categories.id = links_link_cat.category_id
+               AND what_id=".$lid;
+    $db->tquery($SQL);
+    while( $db->next_record() ) {
+        $oldAssignments[] = array( "category_id"     => $db->f('category_id'),
+                                   "path"            => $db->f('path'),
+                                   "base"            => $db->f('base'),
+                                   "state"           => $db->f('state'),
+                                   "proposal"        => $db->f('proposal'),
+                                   "proposal_delete" => $db->f('proposal_delete'));
+    }
+
+    # delete all links assignments
+    $db->query( "DELETE FROM links_link_cat WHERE what_id = ". $lid );
+
+    # unassign all removed assignments
+    for( $i=0; $i < count($oldAssignments); $i++) {
+        $assignAgain = false;
+        for( $j=0; $j < count($newAssignments); $j++) {
+            if( $oldAssignments[$i]['category_id'] == $newAssignments[$j]['category_id']) {
+                $assignAgain =  true;
+                break;
+            }
+        }
+        if( !$assignAgain ) {  # delete candidate
+            if( !IsCatPerm ( PS_LINKS_DELETE_LINK, $oldAssignments[$i]['path'] )) {
+                $oldAssignments[$i]['proposal_delete'] = 'y';   # we can't delete it so
+                $newAssignments[] = $oldAssignments[$i];  #   we must create it again
+            }
+        } else
+        $newAssignments[$j] = $oldAssignments[$i];
+    }
+
+    # is there still base category ?
+    for( $j=0; $j < count($newAssignments); $j++) {
+        if( $newAssignments[$j] AND $newAssignments[$j]['base'] == 'y'
+            AND $newAssignments[$j]['proposal'] == 'n' ) {
+            $baseDefined = $j;
+            break;
+        }
+    }
+
+    # modify added links
+    for( $j=0; $j < count($newAssignments); $j++) {
+        if( $newAssignments[$j]['proposal_delete'] == 'y' )
+            continue;    # skip delete candidates
+        if( IsCatPerm ( PS_LINKS_ADD_LINK, $newAssignments[$j]['path'] )) {
+            if( $baseDefined=="" ) {   # normal - not base link
+                $newAssignments[$j]['base'] = (( $baseDefined == $j ) ? 'y' : 'n');
+            } else {               # base link - first specified category
+                $newAssignments[$j]['base'] = 'y';
+                $baseDefined = $j;
+            }
+            if ($newAssignments[$j]['state']          != 'highlight')
+                $newAssignments[$j]['state']           = 'visible';
+                $newAssignments[$j]['proposal']        = 'n';
+                $newAssignments[$j]['proposal_delete'] = 'n';
+        }
+        else {
+            if($newAssignments[$j]['proposal']        != 'n')
+                $newAssignments[$j]['proposal']        = 'y';
+            switch($newAssignments[$j]['state']) {
+                case 'highlight': $newAssignments[$j]['state'] = 'highlight'; break;
+                case 'visible':   $newAssignments[$j]['state'] = 'visible'; break;
+                case 'hidden':
+                default:          $newAssignments[$j]['state'] = 'hidden'; break;
+            }
+            if($newAssignments[$j]['base']            != 'y')
+                $newAssignments[$j]['base']            = 'n';
+            if($newAssignments[$j]['proposal_delete'] != 'y')
+                $newAssignments[$j]['proposal_delete'] = 'n';
+        }
+    }
+
+    # if base category defined for this link, change all state
+    #   from hidden to visible
+    if( $baseDefined AND ($newAssignments[$baseDefined]['proposal'] == 'n')) {
+        for( $j=0; $j < count($newAssignments); $j++) {
+            if( $newAssignments[$j]['state'] == 'hidden' )
+                $newAssignments[$j]['state'] == 'visible';
+        }
+    }
+
+    # write assignments to database
+    for( $j=0; $j < count($newAssignments); $j++) {
+        $foo = $newAssignments[$j];
+        Links_AssignLink($foo['category_id'], $lid, $foo['base'],
+                   $foo['state'], $foo['proposal'], $foo['proposal_delete']);
+    }
+}
+
+
+/** Returns array of category ids which was filled in the input form */
+function GetCategoriesFromForm() {
+    global $selcatCount;   // selcatSelect* and selcatState* are global too!!!
+    for( $i=0; $i<$selcatCount; $i++) {
+        $cid = $GLOBALS["selcatSelect$i"];
+        if(  strrpos($cid, ',') ) {   // get category id if in path
+            $cid = GetCategoryFromPath( $path );
+        }
+        if( $cid ) {
+            $categs2assign[] = $cid;
+            $cat_states[$cid] = $GLOBALS["selcatSelect$i"];
+        }
+    }
+    return array($categs2assign,$cat_states);
+}
+
+# End of function definitions -------------------------------------------------
 
 $senderUrlOK  = ( Links_IsPublic() ? "/templates_new/diky.html" : $sess->url(self_base()."index.php3"));      // TODO - poradne
 $senderUrlErr = ( Links_IsPublic() ? $sess->url(self_base()."linkedit.php3") : $sess->url(self_base()."linkedit.php3"));
@@ -154,6 +285,7 @@ if( $r_state['link_id'] ) {
         #   how? - create new link and join it to existing by "changes" table
         $add_proposal_change = true;
     }
+    $oldLink = GetLinkInfo( $lid );
 }
 
 if( !$r_state['link_id'] OR $add_proposal_change ) {
@@ -193,37 +325,39 @@ if( !$r_state['link_id'] OR $add_proposal_change ) {
     }
     $inserted_id = $db->f('id');
 
-    if( $add_proposal_change ) {  # not new link, but proposal to change existing
-        $SQL = "INSERT INTO links_changes
-                   SET changed_link_id  = '". $r_state['link_id'] ."',
-                       proposal_link_id = '$inserted_id',
-                       rejected='n'";
-        $db->query( $SQL );
-    }
-
-    $r_msg[] = MsgOK(_m('Link inserted'));
     # fill region and language data from posted vars
     Regions2Db($inserted_id, $reg);
     Languages2Db($inserted_id, $lang);
     # fill assignments (anonymous => proposals)
 
     // prepare categories array to assign
-    for( $i=0; $i<$selcatCount; $i++) {
-        $var_name = "selcatSelect$i";
-        $cid = $$var_name;
-        if(  ($foo_rpos = strrpos($cid, ',')) != false )
-        $cid = substr( $cid, $foo_rpos+1  );   // get category id if in path
-        if( $cid ) {
-            $categs2assign[] = $cid;
-        }
-    }
+    list($categs2assign,$cat_states) = GetCategoriesFromForm();
 
-    // $categs2assign could be changed by handler of following event
-    // - used for 'general categories'
-    $event->comes('LINK_NEW', $r_state["module_id"], 'Links', $categs2assign,
-                  Links_IsGlobalCategory($type));
-                  
-    Links_Assign2Category($inserted_id, $categs2assign, $add_proposal_change);
+    if( $add_proposal_change ) { # not new link, but proposal to change existing
+        $SQL = "INSERT INTO links_changes
+                   SET changed_link_id  = '". $r_state['link_id'] ."',
+                       proposal_link_id = '$inserted_id',
+                       rejected='n'";
+        $db->query( $SQL );
+        $r_msg[] = MsgOK(_m('Link change proposal inserted'));
+
+        // Event handler called, but general category assignment action is not 
+        // performed - type is not changed (it is just proposal)
+        $isGlobalcat = Links_IsGlobalCategory($oldLink['type']);
+        $event->comes('LINK_UPDATED', $r_state["module_id"], 'Links', 
+                      $categs2assign, $isGlobalcat, $isGlobalcat);
+        
+        Links_UpdateCategoryAssignments($r_state['link_id'], $categs2assign, $cat_states );
+    } else {                     // new link
+        $r_msg[] = MsgOK(_m('Link inserted'));
+    
+        // $categs2assign could be changed by handler of following event
+        // - used for 'general categories'
+        $event->comes('LINK_NEW', $r_state["module_id"], 'Links', $categs2assign,
+                      Links_IsGlobalCategory($type), false);
+    
+        Links_Assign2Category($inserted_id, $categs2assign, $add_proposal_change);
+    }
 
     page_close();
     go_url( $senderUrlOK );
@@ -261,130 +395,15 @@ $r_msg[] = MsgOK(_m('Link changed'));
 $SQL = "UPDATE links_changes SET rejected='y' WHERE changed_link_id='".$r_state['link_id']."'";
 $db->query($SQL);
 
-# old assignments lookup
-$SQL = "SELECT category_id, path, base, state, proposal, proposal_delete
-          FROM links_link_cat, links_categories
-         WHERE links_categories.id = links_link_cat.category_id
-           AND what_id=".$r_state['link_id'];
-$db->query($SQL);
-while( $db->next_record() ){
-    $oldAssignments[] = array( "category_id"     => $db->f('category_id'),
-                               "path"            => $db->f('path'),
-                               "base"            => $db->f('base'),
-                               "state"           => $db->f('state'),
-                               "proposal"        => $db->f('proposal'),
-                               "proposal_delete" => $db->f('proposal_delete'));
-    if($db->f('base')=='y') {
-        $oldBaseCatPath = $db->f('path');
-        $oldBaseCatId = $db->f('category_id');
-    }
-}
+list($categs2assign,$cat_states) = GetCategoriesFromForm();
 
-//echo "-- old --<br>";
-//print_r( $oldAssignments );
+// $categs2assign could be changed by handler of following event
+// - used for 'general categories'
+$event->comes('LINK_UPDATED', $r_state["module_id"], 'Links', $categs2assign,
+        Links_IsGlobalCategory($type), Links_IsGlobalCategory($oldLink['type']));
 
-# new assignments lookup
-for( $i=0; $i < $selcatCount; $i++) {
-    $fieldCatID = "selcatSelect".$i;
-    $fieldState = "selcatState".$i;
-    if( $$fieldCatID AND $$fieldCatID > 0)
-        $newAssignments[] = array( "category_id" => $$fieldCatID,
-                                   "path" => GetCategoryPath( $$fieldCatID ),
-                                   "state" => $$fieldState);
-}
+Links_UpdateCategoryAssignments($r_state['link_id'], $categs2assign, $cat_states );
 
-//echo "-- new --<br>";
-//print_r( $newAssignments );
-
-# delete all links assignments
-$db->query( "DELETE FROM links_link_cat
-              WHERE what_id = ". $r_state['link_id'] );
-
-# unassign all removed assignments
-for( $i=0; $i < count($oldAssignments); $i++) {
-    $assignAgain = false;
-    for( $j=0; $j < count($newAssignments); $j++) {
-        if( $oldAssignments[$i]['category_id'] == $newAssignments[$j]['category_id']) {
-            $assignAgain =  true;
-            break;
-        }
-    }
-    if( !$assignAgain ) {  # delete candidate
-        if( !IsCatPerm ( PS_LINKS_DELETE_LINK, $oldAssignments[$i]['path'] )) {
-            $oldAssignments[$i]['proposal_delete'] = 'y';   # we can't delete it so
-            $newAssignments[] = $oldAssignments[$i];  #   we must create it again
-        }
-    } else
-    $newAssignments[$j] = $oldAssignments[$i];
-}
-
-//echo("After unassign old categories------------------------");
-//print_r( $newAssignments );
-
-# is there still base category ?
-for( $j=0; $j < count($newAssignments); $j++) {
-    if( $newAssignments[$j] AND $newAssignments[$j]['base'] == 'y'
-        AND $newAssignments[$j]['proposal'] == 'n' ) {
-        $baseDefined = $j;
-        break;
-    }
-}
-
-# modify added links
-for( $j=0; $j < count($newAssignments); $j++) {
-    if( $newAssignments[$j][proposal_delete] == 'y' )
-        continue;    # skip delete candidates
-    if( IsCatPerm ( PS_LINKS_ADD_LINK, $newAssignments[$j]['path'] )) {
-        if( $baseDefined=="" ) {   # normal - not base link
-            //        huh("+Base:$baseDefined");
-            $newAssignments[$j]['base'] = (( $baseDefined == $j ) ? 'y' : 'n');
-        } else {               # base link - first specified category
-            //        huh("-Base:$baseDefined");
-            $newAssignments[$j]['base'] = 'y';
-            $baseDefined = $j;
-        }
-        if ($newAssignments[$j]['state']          != 'highlight')
-            $newAssignments[$j]['state']           = 'visible';
-            $newAssignments[$j]['proposal']        = 'n';
-            $newAssignments[$j]['proposal_delete'] = 'n';
-    }
-    else {
-        if($newAssignments[$j]['proposal']        != 'n')
-        $newAssignments[$j]['proposal']            = 'y';
-        switch($newAssignments[$j]['state']) {
-            case 'highlight': $newAssignments[$j]['state'] = 'highlight'; break;
-            case 'visible':   $newAssignments[$j]['state'] = 'visible'; break;
-            case 'hidden':
-            default:          $newAssignments[$j]['state'] = 'hidden'; break;
-        }
-        if($newAssignments[$j]['base']            != 'y')
-        $newAssignments[$j]['base']                = 'n';
-        if($newAssignments[$j]['proposal_delete'] != 'y')
-        $newAssignments[$j]['proposal_delete']     = 'n';
-    }
-}
-
-# huh("After modify added links------------------------");
-# p_arr( $newAssignments );
-
-# if base category defined for this link, change all state
-#   from hidden to visible
-if( $baseDefined AND ($newAssignments[$baseDefined]['proposal'] == 'n')) {
-    for( $j=0; $j < count($newAssignments); $j++) {
-        if( $newAssignments[$j]['state'] == 'hidden' )
-            $newAssignments[$j]['state'] == 'visible';
-    }
-}
-
-# huh("After set visible for base defined------------------------");
-# p_arr( $newAssignments );
-
-# write assignments to database
-for( $j=0; $j < count($newAssignments); $j++) {
-    $foo = $newAssignments[$j];
-    Links_AssignLink($foo['category_id'], $r_state['link_id'], $foo['base'],
-               $foo['state'], $foo['proposal'], $foo['proposal_delete']);
-}
 $r_msg[] = MsgOK(_m('Link assigned to category'));
 page_close();
 go_url( $senderUrlOK );
