@@ -550,7 +550,7 @@ function FrmSelectEasy($name, $arr, $selected="", $add="") {
     echo "<option value=\"". htmlspecialchars($k)."\"";
     if ((string)$selected == (string)$k) 
       echo " selected";
-    echo "> ". htmlspecialchars($v) ." </option>";
+    echo "> ". htmlspecialchars( is_array($v) ? $v['name'] : $v ) ." </option>";
   }
   echo "</select>\n";
 }  

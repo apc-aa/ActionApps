@@ -204,10 +204,11 @@ function EnableClick(cond,what) {
   FrmSelectEasy ("group_by", $lookup_fields, $group_by);
   echo "<br>".L_GROUP_BY_HLP;
   echo "</td></tr>
-  <tr><td></td><td>";
+  <tr><td>&nbsp;</td><td>";
   FrmSelectEasy ("gb_header", array (L_WHOLE_TEXT,L_FIRST_LETTER,"2 ".L_LETTERS,"3 ".L_LETTERS), $gb_header);
-  FrmSelectEasy("gb_direction", array( 'a'=>L_ASCENDING, 'd' => L_DESCENDING ), 
+  FrmSelectEasy("gb_direction", array( 'a'=>L_ASCENDING, 'd' => L_DESCENDING, '1' => L_ASCENDING_PRI, '9' => L_DESCENDING_PRI  ), 
                 $gb_direction);
+  PrintHelp( L_SORT_DIRECTION_HLP );
   echo "<input type=hidden name='category_sort' value='$category_sort'>";
   echo "</td></tr>";
   FrmTextarea("category_top", L_CATEGORY_TOP, $category_top, 4, 50, false,

@@ -34,7 +34,7 @@ http://www.apc.org/
 // in the array MODULES "name" is a description of the module, "hide_create_module" doesn't show the module in the Create Slice / Module page
 
 $MODULES = array( 'S' => array( 'table' => 'slice',
-                                'name' => 'slice',
+                                'name' => 'Slice',
                                 'hide_create_module' => 1,
                                 'directory' => AA_INSTAL_URL ."admin/"),
                   'W' => array( 'table' => 'site',
@@ -89,24 +89,59 @@ $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
                               "uid" => L_INPUT_DEFAULT_UID,
                               "now" => L_INPUT_DEFAULT_NOW,
 			      "variable" =>L_INPUT_DEFAULT_VAR);
-  
-$INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT, #textarea
-                                "tpr" => L_INPUT_SHOW_TPR, #textarea with preset								
-                                "edt" => L_INPUT_SHOW_EDT, #rich text edit
-                                "fld" => L_INPUT_SHOW_FLD, #textfield
-                                "sel" => L_INPUT_SHOW_SEL, #selectbox
-                                "pre" => L_INPUT_SHOW_PRE, #selectbox with preset
-                                "rio" => L_INPUT_SHOW_RIO, #radio button
-                                "dte" => L_INPUT_SHOW_DTE, #date
-                                "chb" => L_INPUT_SHOW_CHB, #check box
-                                "mch" => L_INPUT_SHOW_MCH, #multiple checkbox
-                                "mse" => L_INPUT_SHOW_MSE, #multiple selectbox
-#                               "wi2" => L_INPUT_SHOW_WI2, #2 windows
-                                "fil" => L_INPUT_SHOW_FIL, #file
-#                               "isi" => L_INPUT_SHOW_ISI, #
-                                "iso" => L_INPUT_SHOW_ISO, #related items selectbox - outer
-                                "nul" => L_INPUT_SHOW_NUL, #
-                                "hco" => L_INPUT_SHOW_HCO); #hierarchy constant
+
+$INPUT_SHOW_FUNC_TYPES = array (
+    "txt" => array( 'name' => L_INPUT_SHOW_TXT, #textarea
+                    'multiple' => false,
+                    'paramformat' => 'fnc:param' ),
+    "tpr" => array( 'name' => L_INPUT_SHOW_TPR, #textarea with preset								
+                    'multiple' => false,
+                    'paramformat' => 'fnc:const:param' ),
+    "edt" => array( 'name' => L_INPUT_SHOW_EDT, #rich text edit
+                    'multiple' => false,
+                    'paramformat' => 'fnc:param' ),
+    "fld" => array( 'name' => L_INPUT_SHOW_FLD, #textfield
+                    'multiple' => false,
+                    'paramformat' => 'fnc:param' ),
+    "sel" => array( 'name' => L_INPUT_SHOW_SEL, #selectbox
+                    'multiple' => false,
+                    'paramformat' => 'fnc:const:param' ),
+    "pre" => array( 'name' => L_INPUT_SHOW_PRE, #selectbox with preset
+                    'multiple' => false,
+                    'paramformat' => 'fnc:const:param' ),
+    "rio" => array( 'name' => L_INPUT_SHOW_RIO, #radio button
+                    'multiple' => false,
+                    'paramformat' => 'fnc:const:param' ),
+    "dte" => array( 'name' => L_INPUT_SHOW_DTE, #date
+                    'multiple' => false,
+                    'paramformat' => 'fnc:param' ),
+    "chb" => array( 'name' => L_INPUT_SHOW_CHB, #check box
+                    'multiple' => false,
+                    'paramformat' => 'fnc' ),
+    "mch" => array( 'name' => L_INPUT_SHOW_MCH, #multiple checkbox
+                    'multiple' => true,
+                    'paramformat' => 'fnc:const:param' ),
+    "mse" => array( 'name' => L_INPUT_SHOW_MSE, #multiple selectbox
+                    'multiple' => true,
+                    'paramformat' => 'fnc:const:param' ),
+  # "wi2" => array( 'name' => L_INPUT_SHOW_WI2, #2 windows
+  #                 'multiple' => true,
+  #                 'paramformat' => 'fnc:const:param' ),
+    "fil" => array( 'name' => L_INPUT_SHOW_FIL, #file
+                    'multiple' => false,
+                    'paramformat' => 'fnc:param' ),
+  # "isi" => array( 'name' => L_INPUT_SHOW_ISI, #
+  #                 'multiple' => true,
+  #                 'paramformat' => 'fnc:const:param' ),
+    "iso" => array( 'name' => L_INPUT_SHOW_ISO, #related items selectbox - outer
+                    'multiple' => true,
+                    'paramformat' => 'fnc:const:param' ),
+    "nul" => array( 'name' => L_INPUT_SHOW_NUL, #
+                    'multiple' => false,
+                    'paramformat' => 'fnc' ),
+    "hco" => array( 'name' => L_INPUT_SHOW_HCO, #hierarchy constant
+                    'multiple' => false,
+                    'paramformat' => 'fnc:const:param' ));
                               
 $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
                                "url" => L_INPUT_VALIDATE_URL, 
@@ -115,7 +150,7 @@ $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
                                "id" => L_INPUT_VALIDATE_ID, 
                                "date" => L_INPUT_VALIDATE_DATE, 
                                "bool" => L_INPUT_VALIDATE_BOOL,
-			       "user" => L_INPUT_VALIDATE_USER);	//added 03/01/02,setu
+			                         "user" => L_INPUT_VALIDATE_USER);	//added 03/01/02,setu
 
 $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "boo" => L_INPUT_INSERT_BOO,

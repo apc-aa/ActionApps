@@ -83,12 +83,8 @@ if( $update ) {
     $varset->add("input_help", "quoted", $input_help);
     $varset->add("input_morehlp", "quoted", $input_morehlp);
     $varset->add("input_default", "quoted", "$input_default_f:$input_default");
-    $varset->add("multiple", "quoted", (($input_show_func_f=="mch")
-                                     OR ($input_show_func_f=="mse")
-                                     OR ($input_show_func_f=="isi")
-                                     OR ($input_show_func_f=="iso")
-                                     OR ($input_show_func_f=="wi2")) ? 1 : 0);  #mark as multiple
-
+    $varset->add("multiple", "quoted",                     # mark as multiple
+              ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0);
     $varset->add("alias1", "quoted", $alias1);
     $varset->add("alias1_help", "quoted", $alias1_help);
     $varset->add("alias1_func", "quoted", "$alias1_func_f:$alias1_func");
@@ -99,25 +95,16 @@ if( $update ) {
     $varset->add("alias3_help", "quoted", $alias3_help);
     $varset->add("alias3_func", "quoted", "$alias3_func_f:$alias3_func");
 
-    switch( $input_show_func_f ) {
-      case "fld":
-      case "fil":
-      case "txt":
-			case "edt":
-      case "dte": $isf = "$input_show_func_f:$input_show_func";
-                  break;
-      case "mch":
-      case "rio":
-      case "sel": $isf = "$input_show_func_f:$input_show_func_c:$input_show_func";
-                  break;
-      case "hco":
-      case "pre": 
-      case "iso": 
-      case "wi2": 
-      case "tpr":
-      case "mse": $isf = "$input_show_func_f:$input_show_func_c:$input_show_func";
-                  break;
-      default: $isf = "$input_show_func_f";
+    switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
+      case "fnc:param": 
+        $isf = "$input_show_func_f:$input_show_func";
+         break;
+      case "fnc:const:param": 
+        $isf = "$input_show_func_f:$input_show_func_c:$input_show_func";
+        break;
+      case "fnc": 
+      default: 
+        $isf = "$input_show_func_f";
     }  
     $varset->add("input_show_func", "quoted", "$isf");
     $varset->add("input_validate", "quoted", "$input_validate");

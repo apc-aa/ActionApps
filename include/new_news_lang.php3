@@ -236,4 +236,9 @@ define("L_USER_NOT_FOUND","User not found");
 define("L_WRONG_NUMBER_OF_ROWS","Wrong number of rows.");
 define("L_EDIT_WIZARD_WELCOME","Wizard Welcomes");
 define("L_TABLE_EMPTY","Table is empty");
+
+define("L_OBJECT","Object");
+define("L_ASCENDING_PRI","Ascending by Priority");
+define("L_DESCENDING_PRI","Descending by Priority");
+define("L_SORT_DIRECTION_HLP","'by Priority' is usable just for fields using constants (like category)");
 ?>

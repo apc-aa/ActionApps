@@ -159,6 +159,19 @@ function ParseMultiSelectConds (&$conds)
     }
 }            
     
+# function finds group_id in field.input_show_func parameter
+function GetConstantGroup( $input_show_func ) {
+  global $INPUT_SHOW_FUNC_TYPES;
+  list($fnc,$constgroup) = explode(':', $input_show_func);
+  
+  # does this field use constants?
+  if( strstr($INPUT_SHOW_FUNC_TYPES[$fnc]['paramformat'], 'const') AND
+      (substr($constgroup,0,7) != "#sLiCe-") )  # prefix indicates select from items, not constants
+    return $constgroup;          # yes
+  return false;
+}  
+
+
 // -------------------------------------------------------------------------------------------
 
 /* Function: QueryIDs
@@ -189,7 +202,8 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   # conds[1][value] = "Econnect";
   # sort[0][category........]='a';    // order items by category ascending
   # sort[1][publish_date....]='d';    // and publish_date descending (secondary)
-  # group_by[category........]=1;     // group by category
+  # sort[0][category........]='1';    // order items by category priority - ascending
+  # sort[0][category........]='9';    // order items by category priority - descending
   
   # type sets status, pub_date and expiry_date according to specified type:
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
@@ -216,7 +230,7 @@ if( $debug ) {
   echo "<br><br>Slices:<br>";
   p_arr_m($slices);
 }
-  
+
   ParseMultiSelectConds ($conds);
   
   # parse conditions ----------------------------------
@@ -296,7 +310,7 @@ if( $debug ) {
       } else {
         if( !$sortable[ $fid ] ) {           # this field is not joined, yet
           $tbl = 'c'.$tbl_count++;
-          # fill arrays to be able construce select command
+          # fill arrays to be able construct select command
           $select_tabs[] = "LEFT JOIN content as $tbl 
                                    ON ($tbl.item_id=item.id 
                                    AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
@@ -304,11 +318,31 @@ if( $debug ) {
           $sortable[$fid] = $tbl;
         }  
 
-        $store = ($fields[$fid]['text_stored'] ? "text" : "number");
-        # fill arrays according to this sort specification
-        $select_order .= $delim .$sortable[$fid]. ".$store";
-        if( stristr(current( $srt ), 'd'))
-          $select_order .= " DESC";
+        # join constant table if we want to sort by priority
+        $direction = current( $srt );
+        if( stristr($direction,'1') OR stristr($direction,'9') ) { # sort by priority
+          if ( !($constgroup = GetConstantGroup($fields[$fid]['input_show_func']) ))
+            continue;   # no constant group defined - can't assign priority
+
+          $tbl = 'o'.$tbl_count++;
+          # fill arrays to be able construct select command
+          $select_tabs[] = "LEFT JOIN constant as $tbl 
+                                   ON ($tbl.value=". $sortable[$fid] .".text 
+                                   AND ($tbl.group_id='$constgroup' 
+                                        OR $tbl.group_id is NULL))";
+                        # mark this field as sortable (store without apostrofs)
+
+          # fill arrays according to this sort specification
+          $select_order .= $delim .$tbl. ".pri";
+          if( stristr($direction,'9') )
+            $select_order .= " DESC";
+        } else {                                                   # sort by value
+          $store = ($fields[$fid]['text_stored'] ? "text" : "number");
+          # fill arrays according to this sort specification
+          $select_order .= $delim .$sortable[$fid]. ".$store";
+          if( stristr(current( $srt ), 'd'))
+            $select_order .= " DESC";
+        }    
         $delim=',';
       }  
     }
@@ -422,10 +456,10 @@ if( $debug ) {
     
   else {
   # get result --------------------------
-  if( $debug ) 
-    $db->dquery($SQL);
-  else 
-    $db->query($SQL);
+    if( $debug ) 
+      $db->dquery($SQL);
+    else 
+      $db->query($SQL);
 
   while( $db->next_record() ) 
     $arr[] = unpack_id($db->f(id));

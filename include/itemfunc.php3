@@ -81,9 +81,9 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
 
     # field in content table
   $varset->clear();
-  if( $field[text_stored] )
+  if( $field[text_stored] ) 
     $varset->add("text", "quoted", $value['value']);
-   else 
+  else 
     $varset->add("number", "quoted", $value['value']);
   $varset->add("flag", "quoted", $value['flag']);
 
