@@ -118,32 +118,31 @@ function ResolvePerms($perms) {
 
 // save all permissions for specified user to session variable
 function CachePermissions($user_id) {
-  global $permission_uid, $permission_to_slice, $permission_to_aa, $sess, 
+  global $permission_uid, $permission_to, $sess, 
          $perms_roles_id, $r_superuser;
 
   $sess->register(permission_uid);
-  $sess->register(permission_to_slice);
-  $sess->register(permission_to_aa);
+  $sess->register(permission_to);
   $sess->register(r_superuser);
 
   $permission_uid = $user_id;
-  $permission_to_slice = GetIDPerms ($permission_uid, "slice");
-  $permission_to_aa = GetIDPerms ($permission_uid, "aa");     // aa is parent of all slices
-  if( !is_array($permission_to_slice) )  //convert to arrays
-    $permission_to_slice = array();
-  if( !is_array($permission_to_aa) )
-    $permission_to_aa = array();
+  $permission_to["slice"] = GetIDPerms ($permission_uid, "slice");
+  $permission_to["aa"] = GetIDPerms ($permission_uid, "aa");     // aa is parent of all slices
+  if( !is_array($permission_to["slice"]) )  //convert to arrays
+    $permission_to["slice"] = array();
+  if( !is_array($permission_to["aa"]) )
+    $permission_to["aa"] = array();
   
   # Resolve all permission (convert roles into perms) 
-  reset($permission_to_slice); 
-  while( list($key,$val) = each($permission_to_slice) ) 
-    $permission_to_slice[$key] = ResolvePerms($val);       
+  reset($permission_to["slice"]); 
+  while( list($key,$val) = each($permission_to["slice"]) ) 
+    $permission_to["slice"][$key] = ResolvePerms($val);       
 
-  reset($permission_to_aa); 
-  while( list($key,$val) = each($permission_to_aa) ) {
+  reset($permission_to["aa"]); 
+  while( list($key,$val) = each($permission_to["aa"]) ) {
     if( IsPerm($val, $perms_roles_id[SUPER]) )
       $r_superuser[$key] = true;
-    $permission_to_aa[$key] = ResolvePerms($val);       
+    $permission_to["aa"][$key] = ResolvePerms($val);       
   }  
 }  
 
@@ -156,16 +155,16 @@ function IsPerm($perms, $perm){
 
 // Check if user has specified permissions
 function CheckPerms( $user_id, $objType, $objID, $perm) {
-  global $permission_uid, $permission_to_slice, $permission_to_aa;
+  global $permission_uid, $permission_to;
 
   if($permission_uid != $user_id) 
     CachePermissions($user_id);
     
   switch($objType) {
     case "aa":  
-      return IsPerm($permission_to_aa[$objID], $perm);
+      return IsPerm($permission_to["aa"][$objID], $perm);
     case "slice": 
-      return IsPerm(JoinAA_SlicePerm($permission_to_slice[$objID], $permission_to_aa[AA_ID]), $perm);
+      return IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
     default: return false;
   }
 }  
@@ -206,15 +205,15 @@ function JoinAA_SlicePerm($slice_perm, $aa_perm) {
 }  
 
 function GetUsersSlices( $user_id ) {
-  global $permission_uid, $permission_to_slice, $permission_to_aa;
+  global $permission_uid, $permission_to;
 
   if($permission_uid != $user_id) 
     CachePermissions($user_id);
 
-  if( IsPerm($permission_to_aa[AA_ID], PS_MANAGE_ALL_SLICES) )
+  if( IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) )
     return "all";
 
-  return  $permission_to_slice;
+  return  $permission_to["slice"];
 }  
 
 // shortcut for slice permission checking
@@ -234,6 +233,9 @@ function IsSuperadmin() {
 
 /*
 $Log$
+Revision 1.9  2001/09/27 16:05:59  honzam
+Generalized permission handling for future support for more modules
+
 Revision 1.8  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support
