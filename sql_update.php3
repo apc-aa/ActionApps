@@ -88,6 +88,14 @@ function safe_echo ($txt) {
   echo "<br>";
 }
 
+function myquery($db, $SQL) {
+    global $fire;
+    if ($fire) {
+        $db->query($SQL);
+    } else {
+    }
+}
+
 # table definitions
 $tablelist = array(   'active_sessions' => "(
                           sid varchar(32) NOT NULL default '',
@@ -407,6 +415,7 @@ $tablelist = array(   'active_sessions' => "(
                           inc_file2 varchar(255) default NULL,
                           banner_file varchar(255) default NULL,
                           description text,
+                          additional text,
                           note text,
                           PRIMARY KEY  (id),
                           KEY path (path),
@@ -456,7 +465,8 @@ $tablelist = array(   'active_sessions' => "(
                           name varchar(255) default NULL,
                           description text,
                           rate int(10) default NULL,
-                          votes int(10) default NULL,
+                          votes int(11) NOT NULL default '0',
+                          plus_votes int(11) NOT NULL default '0',
                           created_by varchar(60) default NULL,
                           edited_by varchar(60) default NULL,
                           checked_by varchar(60) default NULL,
@@ -1138,12 +1148,26 @@ $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, inpu
 $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('text...........2', '', 'ReaderManagement', 'Last name', 500, '', '${AA_DOC_URL}help.html', 'txt:', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#LASTNAME', 'f_c:!:::&nbsp;::', 'Last name', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text', 'qte:', 1, 1);";
 $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('text...........3', '', 'ReaderManagement', 'Access Code', 700, 'Access code is used to confirm email and when you do not use HTTP Authentification', '${AA_DOC_URL}help.html', 'rnd:5:text...........3:0', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#ACCECODE', 'f_h:', 'Access Code', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);";
 
-$SQL_view_templates[] = "DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND name IN ('Discussion ...','Constant view ...','Javascript ...','rss','Calendar')";
-$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Discussion ...', 'discus', '<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', '<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=20%><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', '<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=".$AA_IMG_URL."blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', 1, '</table></td></tr></table>_#BUTTONS#', '<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 23, NULL, '<img src=${AA_IMG_URL}i.gif width=9 height=21>', '<img src=${AA_IMG_URL}l.gif width=9 height=21>', '<img src=${AA_IMG_URL}t.gif width=9 height=21>', '<img src=${AA_IMG_URL}blank.gif width=12 height=21>', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
-$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Constant view ...', 'const', '<table border=0 cellpadding=0 cellspacing=0>', '', '<tr><td>_#VALUE###</td></tr>', 0, '</table>', NULL, NULL, 'value', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10, NULL, 0, NULL, 'lt_languages', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
-$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"". $AA_BASE_PATH ."view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', 0, '', 0, NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
-$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'rss', 'rss', '<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"<http://my.netscape.com/publish/formats/rss-0.91.dtd>http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>', NULL, ' <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>', NULL, '</channel></rss>>', NULL, NULL, 'publish_date....', 0, 'headline........', 0, NULL, NULL, NULL, NULL, 'source..........', '', '', '', '<', '', '', '<', '', 15, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NO ITEM FOUND', NULL, NULL, NULL, NULL, 'mon')";
-$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Calendar', 'calendar', '<table border=1>\r\n<tr><td>Mon</td><td>Tue</td><td>Wen</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr>', NULL, '_#STARTDAT-_#END_DATE <b>_#HEADLINE</b>', 1, '</table>', '', '<td><font size=+2><A href=\"calendar.shtml?vid=319&cmd[319]=c-1-_#CV_TST_2-2-_#CV_TST_1&month=_#CV_NUM_M&year=_#CV_NUM_Y&day=_#CV_NUM_D\"><B>_#CV_NUM_D</B></A></font></td>', '', 0, '', 0, NULL, NULL, NULL, NULL, 'publish_date....', '<', '', '', '<', '', '', '<', '', 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<td><font size=+2>_#CV_NUM_D</font></td>', '', 'bgcolor=\"_#COLOR___\"', NULL, NULL, NULL, 'There are no events in this month.', '', 'start_date.....1', 'end_date.......1', NULL, 'mon_table')";
+//$SQL_view_templates_delete[] = "DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND name IN ('Discussion ...','Constant view ...','Javascript ...','rss','Calendar')";
+
+//$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Discussion ...', 'discus', '<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', '<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=20%><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', '<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=".$AA_IMG_URL."blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', 1, '</table></td></tr></table>_#BUTTONS#', '<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 23, NULL, '<img src=${AA_IMG_URL}i.gif width=9 height=21>', '<img src=${AA_IMG_URL}l.gif width=9 height=21>', '<img src=${AA_IMG_URL}t.gif width=9 height=21>', '<img src=${AA_IMG_URL}blank.gif width=12 height=21>', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
+//$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Constant view ...', 'const', '<table border=0 cellpadding=0 cellspacing=0>', '', '<tr><td>_#VALUE###</td></tr>', 0, '</table>', NULL, NULL, 'value', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10, NULL, 0, NULL, 'lt_languages', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
+//$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"". $AA_BASE_PATH ."view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', 0, '', 0, NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
+//$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'rss', 'rss', '<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"<http://my.netscape.com/publish/formats/rss-0.91.dtd>http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>', NULL, ' <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>', NULL, '</channel></rss>>', NULL, NULL, 'publish_date....', 0, 'headline........', 0, NULL, NULL, NULL, NULL, 'source..........', '', '', '', '<', '', '', '<', '', 15, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NO ITEM FOUND', NULL, NULL, NULL, NULL, 'mon')";
+//$SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Calendar', 'calendar', '<table border=1>\r\n<tr><td>Mon</td><td>Tue</td><td>Wen</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr>', NULL, '_#STARTDAT-_#END_DATE <b>_#HEADLINE</b>', 1, '</table>', '', '<td><font size=+2><A href=\"calendar.shtml?vid=319&cmd[319]=c-1-_#CV_TST_2-2-_#CV_TST_1&month=_#CV_NUM_M&year=_#CV_NUM_Y&day=_#CV_NUM_D\"><B>_#CV_NUM_D</B></A></font></td>', '', 0, '', 0, NULL, NULL, NULL, NULL, 'publish_date....', '<', '', '', '<', '', '', '<', '', 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<td><font size=+2>_#CV_NUM_D</font></td>', '', 'bgcolor=\"_#COLOR___\"', NULL, NULL, NULL, 'There are no events in this month.', '', 'start_date.....1', 'end_date.......1', NULL, 'mon_table')";
+
+//
+$SQL_view_templates["discus"] = "view SET (slice_id='AA_Core_Fields..', name='Discussion ...', type='discus', before='<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', even='<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=20%><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', odd='<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=".$AA_IMG_URL."blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', even_odd_differ=1, after='</table></td></tr></table>_#BUTTONS#', remove_string='<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', group_title=NULL, order1=NULL, o1_direction=0, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=NULL, scroller=NULL, selected_item=0, modification=23, parameter=NULL, img1='<img src=${AA_IMG_URL}i.gif width=9 height=21>', img2='<img src=${AA_IMG_URL}l.gif width=9 height=21>', img3='<img src=${AA_IMG_URL}t.gif width=9 height=21>', img4='<img src=${AA_IMG_URL}blank.gif width=12 height=21>', flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon')";
+$SQL_view_templates["const"] = "view SET (slice_id='AA_Core_Fields..', name='Constant view ...', type='const', before='<table border=0 cellpadding=0 cellspacing=0>', even='', odd='<tr><td>_#VALUE###</td></tr>', even_odd_differ=0, after='</table>', remove_string=NULL, group_title=NULL, order1='value', o1_direction=0, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=10, scroller=NULL, selected_item=0, modification=NULL, parameter='lt_languages', img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon')";
+$SQL_view_templates["javascript"] = "view SET (slice_id='AA_Core_Fields..', name='Javascript ...', type='javascript', before='/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"". $AA_BASE_PATH ."view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', even=NULL, odd='document.write(\"_#HEADLINE\");', even_odd_differ=NULL, after='// script end ', remove_string=NULL, group_title=NULL, order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=8, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon')";
+$SQL_view_templates["rss"] = "view SET (slice_id='AA_Core_Fields..', name='rss', type='rss', before='<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>', even=NULL, odd= <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>', even_odd_differ=NULL, after='</channel></rss>', remove_string=NULL, group_title=NULL, order1='publish_date....', o1_direction=0, order2='headline........', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='source..........', cond1op='', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=15, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional='NULL', aditional2='NULL', aditional3='NULL', aditional4='NULL', aditional5='NULL', aditional6='NULL', noitem_msg='<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language><channel></channel></rss>', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon')";
+$SQL_view_templates["calendar"] = "view SET (slice_id='AA_Core_Fields..', name='Calendar', type='calendar', before='<table border=1>\r\n<tr><td>Mon</td><td>Tue</td><td>Wen</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr>', even=NULL, odd='_#STARTDAT-_#END_DATE <b>_#HEADLINE</b>', even_odd_differ=1, after='</table>', remove_string='', group_title='<td><font size=+2><a href=\"calendar.shtml?vid=319&cmd[319]=c-1-_#CV_TST_2-2-_#CV_TST_1&month=_#CV_NUM_M&year=_#CV_NUM_Y&day=_#CV_NUM_D\"><b>_#CV_NUM_D</b></a></font></td>', order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='publish_date....', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=5, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional='<td><font size=+2>_#CV_NUM_D</font></td>', aditional2='', aditional3='bgcolor=\"_#COLOR___\"', aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='There are no events in this month.', group_bottom='', field1='start_date.....1', field2='end_date.......1', field3=NULL, calendar_type='mon_table')";
+$SQL_view_templates['links'] = "view SET (slice_id, name='Links', type='links', before='<br>\r\n', even='', odd='<p><a href=\"_#L_URL___\" class=\"link\">_#L_NAME__ (_#L_O_NAME)</a><br>\r\n          _#L_DESCRI<br>\r\n          <a href=\"_#L_URL___\" class=\"link2\">_#L_URL___</a>\r\n     </p>\r\n', even_odd_differ=0, after='', remove_string=(), group_title='', order1='', o1_direction=0, order2=NULL, o2_direction=0, group_by1=NULL, g1_direction=0, group_by2=NULL, g2_direction=0, cond1field=NULL, cond1op='<', cond1cond=NULL, cond2field=NULL, cond2op='<', cond2cond=NULL, cond3field=NULL, cond3op='<', cond3cond=NULL, listlen=1000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<!-- no links in this category -->', group_bottom='', field1=NULL, field2=NULL, field3=NULL, calendar_type='mon')";
+$SQL_view_templates['categories'] = "view SET (slice_id='AA_Core_Fields..', name='Catategories', type='categories', before='     <br><b>_#C_PATH__</b><br><br>\r\n', even='', odd='<br>&#8226; <a href=\"?cat=_#CATEG_ID\" class=\"link\">_#C_NAME___#C_CROSS_</a>&nbsp;&nbsp;<b>(_#C_LCOUNT)</b>\r\n', even_odd_differ=0, after='', remove_string='', group_title='', order1='', o1_direction=0, order2='', o2_direction=0, group_by1='', g1_direction=0, group_by2='', g2_direction=0, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=1000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<!-- no categories in this category -->', group_bottom='', field1=NULL, field2=NULL, field3=NULL, calendar_type='mon')";
+$SQL_view_templates['urls'] = "view SET (slice_id='AA_Core_Fields..', name='URLs listing', type='urls', before='<!-- view used for listing URLs of items -->', even=NULL, odd='<a href=\"http://www.example.org/index.stm?x=_#SITEM_ID\">_#SITEM_ID</a><br>\r\n', even_odd_differ=0, after='', remove_string='', group_title='', order1='', o1_direction=0, order2='', o2_direction=0, group_by1='', g1_direction=0, group_by2='', g2_direction=0, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=100000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon')";
+$SQL_view_templates['static']="view SET (slice_id='AA_Core_Fields..', name='Static page', type='static', before=NULL, even=NULL, odd='<!-- Static page view is used for creating and viewing static pages like Contacts or About us.', even_odd_differ=NULL, after=NULL, remove_string=NULL, group_title=NULL, order1=NULL, o1_direction=NULL, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=NULL, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg=NULL, group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon')";
+$SQL_view_templates['full']="view SET (slice_id='AA_Core_Fields..', name='Fulltext view', type='full', before='<!-- Fulltext view is for viewing long items. It shows only one selected item with abstract and fulltext. -->\r\n\r\n<!-- top of the page -->\r\n<br>', even=NULL, odd='<h2><b>_#HEADLINE</b></h2>\r\n_#PUB_DATE, _#AUTHOR__\r\n<br>\r\n_#FULLTEXT<br>\r\n<div align=\"right\"><a href=\"javascript:history.go(-1)\">Back</a></div>\r\n', NULL, '<!-- bottom of the page is here -->\r\n\r\n<br>', even_odd_differ=NULL, after='', remove_string=NULL, group_title=NULL, order1=NULL, o1_direction=NULL, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=NULL, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<p>No item found.</p>', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon')";
+
 
 $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner, 0 FROM slice";
 $SQL_update_modules[] = "REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'http://example.org/index.shtml', 'en_site_lang.php3', $now, '', '', 0)";
@@ -1298,8 +1322,10 @@ if( !$update AND !$restore AND !$restore_now) {
                 "Updates field templates, which is used when you adding new field to slice","");
   FrmInputChBox("templates", "Redefine slice templates", true, false, "", 1, false,
                 "Updates only slice templates, which is in standard AA installation","");
-  FrmInputChBox("view_templates", "Add view templates", true, false, "", 1, false,
-                "Templates for javascript, constans, discussions views, ... you can see in 'Action Aplication Core' slice. If you haven't defined any view of some type, the templates are used as default values for new views","");
+  FrmInputChBox("view_templates", "Add new view templates", true, false, "", 1, false,
+                "Templates for javascript, constans, discussions views, ... you can see in 'Action Aplication Core' slice. If you haven't defined any view of some type, the templates are used as default values for new views.","");
+  FrmInputChBox("view_templates_rewrite_existing", "Overwrite existing templates", false,false, "", 1, false,
+                "Check this, if you want overwrite existing view templates with new ones. Default is not to overwrite (unchecked)");
   FrmInputChBox("addstatistic", "Add statistic fields", true, false, "", 1, false,
                 "New fields (display_count, disc_count, disc_app) in v1.8 should be added to all slice definitions","");
   FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false,
@@ -1310,6 +1336,9 @@ if( !$update AND !$restore AND !$restore_now) {
                 "These are examples of each email type.");
   FrmInputChBox("links_create", "Add Links module", true, false, "", 1, false,
                 "Before you can use Links module, you have to prepare database for it (create root category). This option create root category if it is not set already.");
+  FrmStaticText("", "<hr>", false, "", "", false );
+  FrmInputChBox("fire", "Write to database", false, false, "", 1, false,
+                "Check this for real work with writing to database","");
   FrmStaticText("", "<hr>", false, "", "", false );
   FrmStaticText("", "Before you write the data into database, please check if following data are correct. If not, please correct it in config.php3 file.<br>
                      <b>AA http domain:</b> $AA_HTTP_DOMAIN<br>
@@ -1403,10 +1432,10 @@ if( $restore_now ) {
   while( list($t) = each( $tablelist ) ) {
     $SQL = "DROP TABLE IF EXISTS $t";
     safe_echo ($SQL);
-    $db->query("$SQL");
+    myquery($db, $SQL);
     $SQL = "ALTER TABLE bck_$t RENAME $t";
     safe_echo ($SQL);
-    $db->query($SQL);
+    myquery($db, $SQL);
   }
   $db->Halt_On_Error = $store_halt;
 
@@ -1439,7 +1468,7 @@ if( $dbcreate ) {
   while( list($t) = each( $tablelist ) ) {
     $SQL = "DROP TABLE IF EXISTS tmp_$t";
     safe_echo ($SQL);
-    $db->query("$SQL");
+    myquery($db, $SQL);
   }
 
   echo '<h2>Creating temporary databases</h2>';
@@ -1447,7 +1476,7 @@ if( $dbcreate ) {
   while( list( $t, $def) = each( $tablelist ) ) {
     $SQL = "  CREATE TABLE IF NOT EXISTS tmp_$t $def";
     safe_echo ($SQL);
-    $db->query( $SQL );
+    myquery($db, $SQL );
   }
 
   echo '<h2>Creating new tables that do not exist in database</h2>';
@@ -1455,7 +1484,7 @@ if( $dbcreate ) {
   while( list( $t, $def ) = each( $tablelist ) ) {
     $SQL = "  CREATE TABLE IF NOT EXISTS $t $def";
     safe_echo ($SQL);
-    $db->query( $SQL );
+    myquery($db, $SQL );
   }
 }
 
@@ -1485,7 +1514,7 @@ if( $copyold ) {
         $field_list = "*" ;
       $SQL = "INSERT INTO tmp_$t SELECT $field_list FROM $t";
       safe_echo ($SQL);
-      $db->query($SQL);
+      myquery($db, $SQL);
     }
   }
   $db->Halt_On_Error = $store_halt;
@@ -1505,19 +1534,19 @@ if( $dbcreate ) {
     if( $backup ) {
       $SQL = "DROP TABLE IF EXISTS bck_$t";
       safe_echo ($SQL);
-      $db->query($SQL);
+      myquery($db, $SQL);
 
       $SQL = "ALTER TABLE $t RENAME bck_$t";
       safe_echo ($SQL);
-      $db->query($SQL);
+      myquery($db, $SQL);
     }
     $SQL = "DROP TABLE IF EXISTS $t";
     safe_echo ($SQL);
-    $db->query($SQL);
+    myquery($db, $SQL);
 
     $SQL = "ALTER TABLE tmp_$t RENAME $t";
     safe_echo ($SQL);
-    $db->query($SQL);
+    myquery($db, $SQL);
   }
   $db->Halt_On_Error = $store_halt;
 }
@@ -1533,13 +1562,13 @@ if( $addstatistic ) {
       continue;
     $SQL = "REPLACE INTO field VALUES( 'display_count...', '', '". quote($db->f(id)) ."', 'Displayed Times', '5050', 'Internal field - do not change', '${AA_DOC_URL}help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')";
     safe_echo ($SQL);
-    $db2->query( $SQL );
+    myquery($db2, $SQL );
     $SQL = "REPLACE INTO field VALUES( 'disc_count......', '', '". quote($db->f(id)) ."', 'Comments Count', '5060', 'Internal field - do not change', '${AA_DOC_URL}help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_ALLCNT', 'f_h', 'alias for number of all discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_count', '', 'nul', '0', '1')";
     safe_echo ($SQL);
-    $db2->query( $SQL );
+    myquery($db2, $SQL );
     $SQL = "REPLACE INTO field VALUES( 'disc_app........', '', '". quote($db->f(id)) ."', 'Approved Comments Count', '5070', 'Internal field - do not change', '${AA_DOC_URL}help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_APPCNT', 'f_h', 'alias for number of approved discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_app', '', 'nul', '0', '1')";
     safe_echo ($SQL);
-    $db2->query( $SQL );
+    myquery($db2, $SQL );
   }
 }
 
@@ -1549,7 +1578,7 @@ if( $replacecateg ) {
   reset( $SQL_apc_categ );
   while( list( ,$SQL) = each( $SQL_apc_categ ) ) {
     safe_echo ($SQL);
-    $db->query( $SQL );
+    myquery($db, $SQL );
   }
 }
 
@@ -1558,7 +1587,7 @@ if( $replaceconst ) {
   reset( $SQL_constants );
   while( list( ,$SQL) = each( $SQL_constants ) ) {
     safe_echo ($SQL);
-    $db->query( $SQL );
+    myquery($db, $SQL );
   }
 }
 
@@ -1567,7 +1596,7 @@ if( $newcore ) {
   reset( $SQL_aacore );
   while( list( ,$SQL) = each( $SQL_aacore ) ) {
     safe_echo ($SQL);
-    $db->query( $SQL );
+    myquery($db, $SQL );
   }
 }
 
@@ -1576,17 +1605,34 @@ if( $templates ) {
   reset( $SQL_templates );
   while( list( ,$SQL) = each( $SQL_templates ) ) {
     safe_echo ($SQL);
-    $db->query( $SQL );
+    myquery($db, $SQL );
   }
 }
 
 if( $view_templates ) {
-  echo '<h2>Updating View templates</h2>';
-  reset( $SQL_view_templates );
-  while( list( ,$SQL) = each( $SQL_view_templates ) ) {
-    safe_echo ($SQL);
-    $db->query( $SQL );
-  }
+    $SQL = "SELECT * FROM view WHERE slice_id='AA_Core_Fields..'";
+    $select = GetTable2Array($SQL, "type");
+    reset($select);
+    print_r($select);
+    if ($view_templates_rewrite_existing) {
+        echo '<h2>Replacing existing View templates</h2>';
+        reset( $SQL_view_templates );
+        foreach($select as $key => $val) {
+            $SQL = "UPDATE ".$SQL_view_templates[$key]." WHERE id='".$val."'";
+            safe_echo( $SQL );
+            myquery($db, $SQL );
+        }
+    }
+    echo '<h2>Adding new View templates</h2>';
+    reset($SQL_view_templates);
+    reset($select);
+    foreach ($select as $key=>$val) {
+        if ($SQL_view_templates[$select[$key]] == "") {
+            $SQL = "INSERT ".$SQL_view_templates[$key];
+            safe_echo ($SQL);
+            myquery($db, $SQL );
+        }
+    }
 }
 
 if( $update_modules ) {
@@ -1594,7 +1640,7 @@ if( $update_modules ) {
   reset( $SQL_update_modules );
   while( list( ,$SQL) = each( $SQL_update_modules ) ) {
     safe_echo ($SQL);
-    $db->query( $SQL );
+    myquery($db, $SQL );
   }
 }
 
@@ -1606,7 +1652,7 @@ if( $cron ) {
     if (! $db->next_record()) {
         foreach ($cron_entry["sql"] as $sql) {
             safe_echo( $sql );
-            $db->query( $sql );
+            myquery($db, $sql );
         }
     }
   }
@@ -1617,7 +1663,7 @@ if( $generic_emails ) {
   reset ($SQL_email_templates);
   while (list (, $SQL) = each ($SQL_email_templates)) {
     safe_echo ($SQL);
-    $db->query( $SQL );
+    myquery($db, $SQL );
   }
 }
 
@@ -1628,7 +1674,7 @@ if( $links_create ) {
     reset ($SQL_links_create);
     while (list (, $SQL) = each ($SQL_links_create)) {
       safe_echo ($SQL);
-      $db->query( $SQL );
+      myquery($db, $SQL );
     }
   }
 }
