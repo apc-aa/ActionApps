@@ -24,8 +24,8 @@ http://www.apc.org/
 #
 
 
-require_once $GLOBALS[AA_INC_PATH]."item.php3";
-require_once $GLOBALS[AA_INC_PATH]."view.php3";
+require $GLOBALS[AA_INC_PATH]."item.php3";
+require $GLOBALS[AA_INC_PATH]."view.php3";
 
 // notify users of an event
 function email_notify($slice_id, $event, $item_id, $extra = ""){
@@ -87,9 +87,11 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
 
 /*
 $Log$
+Revision 1.2  2001/12/20 00:27:18  honzam
+Fixed bugs in notify - now works with PHP3
+
 Revision 1.1  2001/12/18 12:36:03  honzam
 new notification e-mail possibility (notify new item in slice, bins, ...)
 
 */
 ?>
-

@@ -57,20 +57,20 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
 
   if( $field[in_item_tbl] ) {
     if( ($field[in_item_tbl] == 'expiry_date') && 
-        (date("Hi",$value[value]) == "0000") )
-      $value[value] += 86399;  # if time is not specified, take end of day 23:59  
+        (date("Hi",$value['value']) == "0000") )
+      $value['value'] += 86399;  # if time is not specified, take end of day 23:59  
     # field in item table
-    $itemvarset->add( $field[in_item_tbl], "quoted", $value[value]);
+    $itemvarset->add( $field[in_item_tbl], "quoted", $value['value']);
     return;
   }  
 
     # field in content table
   $varset->clear();
   if( $field[text_stored] )
-    $varset->add("text", "quoted", $value[value]);
+    $varset->add("text", "quoted", $value['value']);
    else 
-    $varset->add("number", "quoted", $value[value]);
-  $varset->add("flag", "quoted", $value[flag]);
+    $varset->add("number", "quoted", $value['value']);
+  $varset->add("flag", "quoted", $value['flag']);
 
     # insert item but new field
   $varset->add("item_id", "unpacked", $item_id);
@@ -92,32 +92,32 @@ function insert_fnc_num($item_id, $field, $value, $param) {
 }
 
 function insert_fnc_boo($item_id, $field, $value, $param) {
-  $value[value] = ( $value[value] ? 1 : 0 );
+  $value['value'] = ( $value['value'] ? 1 : 0 );
   insert_fnc_qte($item_id, $field, $value, $param);
 }
 
 function insert_fnc_ids($item_id, $field, $value, $param) {
   global $varset, $itemvarset, $db;
 
-#echo "<script> alert( 'insert_fnc_ids($item_id, $field, $value, $param), ". $value[value] ." ".substr($value[value],0,1)."');</script>";
+#echo "<script> alert( 'insert_fnc_ids($item_id, $field, $value, $param), ". $value['value'] ." ".substr($value['value'],0,1)."');</script>";
 #flush();  
-  switch( substr($value[value],0,1) ) {
+  switch( substr($value['value'],0,1) ) {
     case 'x':   // just filling character - remove it
-      $value[value] = substr($value[value],1);
+      $value['value'] = substr($value['value'],1);
       insert_fnc_qte($item_id, $field, $value, $param);
       return;
     case 'y':   // y means 2way related item id - we have to store it for both
-      $value[value] = substr($value[value],1);
+      $value['value'] = substr($value['value'],1);
       insert_fnc_qte($item_id, $field, $value, $param);
 
         # add reverse related
-      $reverse_id = $value[value];
-      $value[value] = $item_id;
+      $reverse_id = $value['value'];
+      $value['value'] = $item_id;
         # is reverse relation already set?
       $SQL = "SELECT * FROM content 
                WHERE item_id = '". q_pack_id($reverse_id) ."' 
                  AND field_id = '". $field[id] ."' 
-                 AND ". ($field[text_stored] ? "text" : "number") ."= '". $value[value] ."'";
+                 AND ". ($field[text_stored] ? "text" : "number") ."= '". $value['value'] ."'";
       $db->query( $SQL );
       if( !$db->next_record() )  # not found
         insert_fnc_qte($reverse_id, $field, $value, $param);
@@ -191,35 +191,35 @@ function insert_fnc_($item_id, $field, $value, $param) {
 
 function show_fnc_chb($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmInputChBox($varname, $field[name], $value[0][value], false, "", 1,
+  FrmInputChBox($varname, $field['name'], $value[0]['value'], false, "", 1,
                 $field[required], $field[input_help], $field[input_morehlp] );
 }
 
 function show_fnc_freeze_chb($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], $value[0][value] ? L_SET : L_UNSET );
+  FrmStaticText($field['name'], $value[0]['value'] ? L_SET : L_UNSET );
 }
 
 function show_fnc_txt($varname, $field, $value, $param, $html){
   echo $field[input_before];
   $rows      = ($param ? $param : 4);
   $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
-  FrmTextarea($varname, $field[name], $value[0][value], 
+  FrmTextarea($varname, $field['name'], $value[0]['value'], 
    $rows, 60, $field[required], $field[input_help], $field[input_morehlp], 
    false, $htmlstate );
 }
 
 function show_fnc_freeze_txt($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], $value[0][value]);
+  FrmStaticText($field['name'], $value[0]['value']);
 }
 
 function show_fnc_edt($varname, $field, $value, $param, $html){
   echo $field[input_before];
   $rows      = ($param ? $param : 4);
   $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
-	$list_fnc_edt [] = $field[name];
-  FrmRichEditTextarea($varname, $field[name], $value[0][value], 
+	$list_fnc_edt [] = $field['name'];
+  FrmRichEditTextarea($varname, $field['name'], $value[0]['value'], 
    $rows, 60, $field[required], $field[input_help], $field[input_morehlp], 
    false, $htmlstate );
 	global $list_fnc_edt;
@@ -228,7 +228,7 @@ function show_fnc_edt($varname, $field, $value, $param, $html){
 
 function show_fnc_freeze_edt($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], $value[0][value]);
+  FrmStaticText($field['name'], $value[0]['value']);
 }
 
 function show_fnc_fld($varname, $field, $value, $param, $html) {
@@ -239,14 +239,14 @@ function show_fnc_fld($varname, $field, $value, $param, $html) {
      list($maxlength, $fieldsize) = split('[ ,:]+', $param, 2);
 
    $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
-   FrmInputText($varname, $field[name], $value[0][value], $maxlength,
+   FrmInputText($varname, $field['name'], $value[0]['value'], $maxlength,
                 $fieldsize, $field[required], $field[input_help],
                 $field[input_morehlp], $htmlstate );
 }
 
 function show_fnc_freeze_fld($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], $value[0][value]);
+  FrmStaticText($field['name'], $value[0]['value']);
 }
 
 function show_fnc_rio($varname, $field, $value, $param, $html) {
@@ -258,13 +258,13 @@ function show_fnc_rio($varname, $field, $value, $param, $html) {
     $arr = GetConstants($param, $db);
   
   echo $field[input_before];
-  FrmInputRadio($varname, $field[name], $arr, $value[0][value],
+  FrmInputRadio($varname, $field['name'], $arr, $value[0]['value'],
                 $field[required], $field[input_help], $field[input_morehlp] );
 }
 
 function show_fnc_freeze_rio($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], $value[0][value]);
+  FrmStaticText($field['name'], $value[0]['value']);
 }
 
 function show_fnc_mch($varname, $field, $value, $param, $html) {
@@ -279,19 +279,19 @@ function show_fnc_mch($varname, $field, $value, $param, $html) {
   if( isset($value) AND is_array($value) ) {
     reset($value);   
     while( list( ,$x ) = each( $value )) {
-      if( $x[value] )
-        $selected[$x[value]] = true;
+      if( $x['value'] )
+        $selected[$x['value']] = true;
     }
   }  
   
   echo $field[input_before];
-  FrmInputMultiChBox($varname."[]", $field[name], $arr, $selected, 
+  FrmInputMultiChBox($varname."[]", $field['name'], $arr, $selected, 
     $field[required], $field[input_help], $field[input_morehlp]);
 }
   
 function show_fnc_freeze_mch($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], implode (", ", $value));
+  FrmStaticText($field['name'], implode (", ", $value));
 }
 
 function show_fnc_mse($varname, $field, $value, $param, $html) {
@@ -315,19 +315,19 @@ function show_fnc_mse($varname, $field, $value, $param, $html) {
   if( isset($value) AND is_array($value) ) {
     reset($value);   
     while( list( ,$x ) = each( $value )) {
-      if( $x[value] )
-        $selected[$x[value]] = true;
+      if( $x['value'] )
+        $selected[$x['value']] = true;
     }
   }  
   
   echo $field[input_before];
-  FrmInputMultiSelect($varname."[]", $field[name], $arr, $selected, $selectsize, 
+  FrmInputMultiSelect($varname."[]", $field['name'], $arr, $selected, $selectsize, 
     false, $field[required], $field[input_help], $field[input_morehlp]);
 }
   
 function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], implode (", ", $value));
+  FrmStaticText($field['name'], implode (", ", $value));
 }
 
 function show_fnc_sel($varname, $field, $value, $param, $html) {
@@ -340,20 +340,20 @@ function show_fnc_sel($varname, $field, $value, $param, $html) {
   } else 
     $arr = GetConstants($param, $db);
   echo $field[input_before];
-  FrmInputSelect($varname, $field[name], $arr, $value[0][value],
+  FrmInputSelect($varname, $field['name'], $arr, $value[0]['value'],
                  $field[required], $field[input_help], $field[input_morehlp] );
 }
 
 function show_fnc_freeze_sel($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], $value[0][value]);
+  FrmStaticText($field['name'], $value[0]['value']);
 }
 
 # $param is uploaded_file_type:field_name:help (like "image/*::Select image")
 # if no $param specified, no file upload field is displayed
 function show_fnc_fil($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmInputText($varname, $field[name], $value[0][value], 255,60, 
+  FrmInputText($varname, $field['name'], $value[0]['value'], 255,60, 
                $field[required], $field[input_help], $field[input_morehlp], 0);
   if( !$param )
     return;                       # no upload field displayed
@@ -365,7 +365,7 @@ function show_fnc_fil($varname, $field, $value, $param, $html) {
 
 function show_fnc_freeze_fil($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], $value[0][value]);
+  FrmStaticText($field['name'], $value[0]['value']);
 }
 
 function show_fnc_dte($varname, $field, $value, $param, $html) {
@@ -375,15 +375,15 @@ function show_fnc_dte($varname, $field, $value, $param, $html) {
    else 
     $arr = explode(":",$param);  // new format
   $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2], $arr[3]);
-  $datectrl->setdate_int($value[0][value]);
-  FrmStaticText($field[name], $datectrl->getselect(), $field[required], 
+  $datectrl->setdate_int($value[0]['value']);
+  FrmStaticText($field['name'], $datectrl->getselect(), $field[required], 
                 $field[input_help], $field[input_morehlp], "0" );
 }
 
 function show_fnc_freeze_dte($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  $datectrl->setdate_int($value[0][value]);
-  FrmStaticText($field[name], $datectrl->get_datestring());
+  $datectrl->setdate_int($value[0]['value']);
+  FrmStaticText($field['name'], $datectrl->get_datestring());
 }
 
 function show_fnc_pre($varname, $field, $value, $param, $html) {
@@ -397,13 +397,13 @@ function show_fnc_pre($varname, $field, $value, $param, $html) {
    else 
     $arr = GetConstants($constgroup, $db);
   echo $field[input_before];
-  FrmInputPreSelect($varname, $field[name], $arr, $value[0][value], $maxlength, 
+  FrmInputPreSelect($varname, $field['name'], $arr, $value[0]['value'], $maxlength, 
     $fieldsize, $field[required], $field[input_help], $field[input_morehlp] );
 }
   
 function show_fnc_freeze_pre($varname, $field, $value, $param, $html) {
   echo $field[input_before];
-  FrmStaticText($field[name], $value[0][value]);
+  FrmStaticText($field['name'], $value[0]['value']);
 }
 
 function show_fnc_iso($varname, $field, $value, $param, $html) {
@@ -419,7 +419,7 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
 
   $items = GetItemHeadlines($db, $sid, $value, "ids");
     
-  FrmRelated($varname."[]", $field[name], $items, $selectsize, $sid,
+  FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid,
                       $field[required], $field[input_help], $field[input_morehlp]);
 }
   
@@ -430,7 +430,7 @@ function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
    else
     return;                              # wrong - there must be slice selected
   $items = GetItemHeadlines($db, $sid, $value, "ids");
-  FrmStaticText($field[name], implode ("<br>", $items));
+  FrmStaticText($field['name'], implode ("<br>", $items));
 }
 
 function show_fnc_nul($varname, $field, $value, $param, $html) {
@@ -442,7 +442,7 @@ function show_fnc_freeze_nul($varname, $field, $value, $param, $html) {
 # -----------------------------------------------------------------------------
 
 function IsEditable($fieldcontent, $field) {
-  return (!($fieldcontent[0][flag] & FLAG_FREEZE) 
+  return (!($fieldcontent[0]['flag'] & FLAG_FREEZE) 
        AND $field[input_show] 
        AND !GetProfileProperty('hide',$field['id'])
        AND !GetProfileProperty('hide&fill',$field['id'])
@@ -481,19 +481,25 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
       reset($GLOBALS[$varname]);
       $i=0;
       while( list(,$v) = each($GLOBALS[$varname]) ) {
-        $content4id[$pri_field_id][$i][value] = $v;    # add to content array
-        $content4id[$pri_field_id][$i][flag] = ( $f[html_show] ? 
+        $content4id[$pri_field_id][$i]['value'] = $v;    # add to content array
+        $content4id[$pri_field_id][$i]['flag'] = ( $f[html_show] ? 
                              (($GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
                              (($f[html_default]>0) ? FLAG_HTML : 0));
         $i++;                     
       }  
     } else {
-      $content4id[$pri_field_id][0][value] = $GLOBALS[$varname];
-      $content4id[$pri_field_id][0][flag] = ( $f[html_show] ? 
+      $content4id[$pri_field_id][0]['value'] = $GLOBALS[$varname];
+      $content4id[$pri_field_id][0]['flag'] = ( $f[html_show] ? 
                              (($GLOBALS[$htmlvarname]=="h") ? FLAG_HTML : 0) :
                              (($f[html_default]>0) ? FLAG_HTML : 0));
     }  
   }
+
+  # the ststus_code must be set in order we can use email_notify() 
+  # in StoreItem() function.
+  if( !$insert AND !$content4id['status_code.....'][0]['value'] ); 
+    $content4id['status_code.....'][0]['value'] = $oldcontent4id['status_code.....'][0]['value'];
+
   return $content4id;
 }                                             
                                               
@@ -569,11 +575,11 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
 
   if( $feed )
     FeedItem($id, $fields);
-
+    
   // notifications 
  $status_id = 'status_code.....'; 
 
- $status_code = $content4id[$status_id][0][value]; 
+ $status_code = $content4id[$status_id][0]['value']; 
  // p_arr_m($arr,2); 
    /* echo $arr;
  reset ($arr); 
@@ -592,15 +598,11 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
       email_notify($slice_id, 3, $id);            // notify function 3) 
   	elseif($status_code == '2')                   // holding bin   
 	    email_notify($slice_id, 1, $id);            // notify function 1 
-    else 
-      die ('unknown case for status_code '. $status_code); 
   } else {                                     // changed + 
     if ($status_code == '1')                     //    active 
       email_notify($slice_id, 4, $id);           // = notify-function 4 
   	elseif ($status_code == '2')                 // hodling bin 
 	    email_notify($slice_id, 2, $id);           // =  notify-function 2 
-	  else 
-      die ('unknown case for status_code'); 
   }
   return true;
 }
@@ -676,13 +678,13 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
           reset($GLOBALS[$varname]);
           $i=0;
           while( list(,$v) = each($GLOBALS[$varname]) )
-            $arr[$i++][value] = $v;
+            $arr[$i++]['value'] = $v;
         } else
-          $arr[0][value] = $GLOBALS[$varname];
+          $arr[0]['value'] = $GLOBALS[$varname];
   	    $fncname($varname, $f, $arr, $fnc[param], $GLOBALS[$htmlvarname]==1);
       } else
    	    $fncname($varname, $f, $content4id[$pri_field_id], 
-                 $fnc[param], $content4id[$pri_field_id][0][flag] & FLAG_HTML );
+                 $fnc[param], $content4id[$pri_field_id][0]['flag'] & FLAG_HTML );
     }
 	}
 	
@@ -704,6 +706,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.19  2001/12/20 00:27:18  honzam
+Fixed bugs in notify - now works with PHP3
+
 Revision 1.18  2001/12/18 16:47:27  honzam
 fixed profile bug
 
