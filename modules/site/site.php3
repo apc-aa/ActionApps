@@ -103,10 +103,11 @@ if (is_array($slices4cache) && !$nocache) {
   $GLOBALS[pagecache]->store($key_str, $res, $clear_cache_str);
 }  
 
-if( $debug ) {
+if( $debugtime ) {
   $timeend = getmicrotime();
   $time = $timeend - $timestart;
   echo "<br><br>Page generation time: $time";
+  print_r($GLOBALS['d_times']);
 }  
 
 # ----------------- process status end ----------------------------------------
@@ -129,7 +130,7 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     exit;
 
   $in_ids = implode( $show_ids, ',' );
-  
+
   # get contents to show
   $SQL = "SELECT spot_id, content, flag from site_spot 
            WHERE site_id='$p_module_id' AND spot_id IN ($in_ids)";
@@ -242,8 +243,7 @@ function ModW_id2item($id,$use_short_ids="false") {
 # Convert a state string into an array, based on the variable names and 
 # regular expression supplied, if str is not present or doesn't match 
 # the regular expression then use $strdef
-# e.g. ModW_str2arr("tpmi",$apc,"--h-",
-	"^([-p])([-]|[0-9]+)([hbsfcCt])([-]|[0-9]+)";
+# e.g. ModW_str2arr("tpmi",$apc,"--h-",	"^([-p])([-]|[0-9]+)([hbsfcCt])([-]|[0-9]+)";
 function ModW_str2arr($varnames, $str, $strdef, $reg) {
 	if (!$str) $str = $strdef;
 	$varout = array();
