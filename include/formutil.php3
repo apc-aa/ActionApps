@@ -962,7 +962,7 @@ class aainputfield {
         }
         // now add all values, which is not in the array, but field has this value
         // (this is slice inconsistence, which could go from feeding, ...)
-        if ( isset( $this->selected ) AND is_array( $this->selected ) ) {
+        if (isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict != 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
                     $ret .= "<option value=\"". htmlspecialchars($k) ."\" selected class=\"sel_missing\">".htmlspecialchars($k)."</option>";
@@ -1679,21 +1679,22 @@ function FrmTabCaption( $caption, $outer_add='', $inner_add='', $buttons='', $se
 
 /**
 * Prints middle row with subtitle into form table
+* @param no_hidden - prints all $buttons except the hidden fields
 */
-function FrmTabSeparator( $subtitle , $buttons='', $sess='', $slice_id='', $valign='middle') {
+function FrmTabSeparator( $subtitle , $buttons='', $sess='', $slice_id='', $valign='middle', $no_hidden=false) {
     echo '</table>';
     if ($buttons) {
-       echo '<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
+        echo '<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
           <tr>";
-          FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG);
-          echo "</tr></table>";
+        FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG, $no_hidden);
+        echo "</tr></table>";
     }
-        echo '</td>
+    echo '</td>
         </tr>';
     if ($buttons) {
         echo "<tr><td bgcolor=". COLOR_TABBG." hegiht=6></td></tr>";
     }
-      echo '
+    echo '
       <tr><td class=tabtit><b>&nbsp;'. $subtitle .'</b></td>';
 
     echo '</tr>
@@ -1701,6 +1702,15 @@ function FrmTabSeparator( $subtitle , $buttons='', $sess='', $slice_id='', $vali
         <td>
           <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">';
 }
+
+
+/**
+* Prints middle row with subtitle into form table
+*/
+function FrmTabSeparatorNoHidden( $subtitle , $buttons='' ) {
+    FrmTabSeparator( $subtitle , $buttons, '', '', 'middle', true);
+}
+
 
 /**
 * Prints form table end with buttons (@see FrmInputButtons)
@@ -1718,107 +1728,113 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
 /**
 * Prints buttons based on $buttons array. It also adds slice_id and session id
 * Maybe better is to use (@see FrmTabEnd())
+* @param no_hidden - prints all $buttons except the hidden fields
 */
-function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG) {
+function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false) {
     global $BName, $BVersion, $BPlatform;
 
-  if ($tr) { echo '<tr>'; }
-  echo '<td align="center" valign="'.$valign.'" bgcolor='.$bgcolor. '>';
-  if( isset($buttons) AND is_array($buttons) ) {
-    // preparison: is the accesskey working?
-    detect_browser();
-    if ($BPlatform == "Macintosh") {
-      if ($BName == "MSIE" || ($BName == "Netscape" && $BVersion >= "6"))
-        $accesskey_pref = "CTRL";
-    } else {
-      if ($BName == "MSIE" || ($BName == "Netscape" && $BVersion > "5") || ($BName == "Mozilla"))
-        $accesskey_pref = "ALT";
-    };
+    if ($tr) { echo '<tr>'; }
+    echo '<td align="center" valign="'.$valign.'" bgcolor='.$bgcolor. '>';
+    if( isset($buttons) AND is_array($buttons) ) {
+        // preparison: is the accesskey working?
+        detect_browser();
+        if ($BPlatform == "Macintosh") {
+            if ($BName == "MSIE" || ($BName == "Netscape" && $BVersion >= "6")) {
+                $accesskey_pref = "CTRL";
+            }
+        } elseif ($BName == "MSIE" || ($BName == "Netscape" && $BVersion > "5") || ($BName == "Mozilla")) {
+            $accesskey_pref = "ALT";
+        }
 
-    reset($buttons);
-    while( list( $name, $properties ) = each($buttons) ) {
-      if( !is_array($properties) ) {
-        $name = $properties;
-        $properties = array();
-      }
-      switch($name) {
-        case 'update':
-          if ($properties['type'] == 'hidden') {
-              echo '&nbsp;<input type="hidden" name="update" value="'. get_if($properties['value'], "") .'">&nbsp;';
-          } else {
-              echo '&nbsp;<input type="submit" name="update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." ($accesskey_pref+S) " .' ">&nbsp;';
-              $noaccess = 1; // use for update of item, bug was, that both "update" and "insert"
-                             // has accesskey S
-          }
-          if ($properties['help'] != '') {
-              echo FrmMoreHelp($properties['help']);
-              echo "&nbsp;&nbsp;";
-          }
-          break;
-        case 'insert':
-          echo '&nbsp;<input type="submit" name="insert" ';
-          if (!$noaccess) { // was accesskey used ?
-              echo 'accesskey="S" ';
-          }
-          echo 'value=" '. get_if($properties['value'], _m("Insert")) ." ";
-          if (!$noaccess) {
-              echo " ($accesskey_pref+S)";
-          }
-          echo '  ">&nbsp;';
-          if ($properties['help'] != '') {
-              echo FrmMoreHelp($properties['help']);
-              echo "&nbsp;&nbsp;";
-          }
-          break;
-        case 'cancel':
-          $url = get_if($properties['url'],self_server().$_SERVER['PHP_SELF']);
-          if ($slice_id) $url = con_url($url, 'slice_id='.$slice_id);
-          if (!$properties['url']) {
-            $url = con_url($url,'cancel=1');
-          }
-          if ($sess)     $url  = $sess->url($url);
-//          echo '&nbsp;<input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' ">&nbsp;';
-          echo '&nbsp;<input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="document.location=\''.$url.'\'">&nbsp;';
-          if ($properties['help'] != '') {
-              echo FrmMoreHelp($properties['help']);
-              echo "&nbsp;&nbsp;";
-          }
-          break;
-        case 'reset':
-          echo '&nbsp;<input type="reset" value=" '. _m("Reset form") .' ">&nbsp;';
-          if ($properties['help'] != '') {
-              echo FrmMoreHelp($properties['help']);
-              echo "&nbsp;&nbsp;";
-          }
-          break;
-        case 'submit':
-          echo '&nbsp;<input type="submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  ($accesskey_pref+S) ". ' ">&nbsp;';
-          if ($properties['help'] != '') {
-              echo FrmMoreHelp($properties['help']);
-              echo "&nbsp;&nbsp;";
-          }
-          break;
-        default:
-          echo '&nbsp;<input type="'.  ($properties['type'] ? $properties['type'] : 'hidden') .
-                          '" name="'.  $name .
-                          '" value="'. $properties['value'] . ($properties['accesskey'] ? "  (".$accesskey_pref."+".$properties['accesskey'].")  " : "").
-                          '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>&nbsp;';
-          if ($properties['help'] != '') {
-              echo FrmMoreHelp($properties['help']);
-              echo "&nbsp;&nbsp;";
-          }
-      }
-      echo "\n";
+        foreach ( $buttons as  $name => $properties ) {
+            if( !is_array($properties) ) {
+                $name = $properties;
+                $properties = array();
+            }
+            switch($name) {
+                case 'update':
+                    if ($properties['type'] == 'hidden') {
+                        echo '&nbsp;<input type="hidden" name="update" value="'. get_if($properties['value'], "") .'">&nbsp;';
+                    } else {
+                        echo '&nbsp;<input type="submit" name="update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." ($accesskey_pref+S) " .' ">&nbsp;';
+                        $noaccess = 1; // use for update of item, bug was, that both "update" and "insert"
+                        // has accesskey S
+                    }
+                    if ($properties['help'] != '') {
+                        echo FrmMoreHelp($properties['help']);
+                        echo "&nbsp;&nbsp;";
+                    }
+                    break;
+                case 'insert':
+                    echo '&nbsp;<input type="submit" name="insert" ';
+                    if (!$noaccess) { // was accesskey used ?
+                        echo 'accesskey="S" ';
+                    }
+                    echo 'value=" '. get_if($properties['value'], _m("Insert")) ." ";
+                    if (!$noaccess) {
+                        echo " ($accesskey_pref+S)";
+                    }
+                    echo '  ">&nbsp;';
+                    if ($properties['help'] != '') {
+                        echo FrmMoreHelp($properties['help']);
+                        echo "&nbsp;&nbsp;";
+                    }
+                    break;
+                case 'cancel':
+                    $url = get_if($properties['url'],self_server().$_SERVER['PHP_SELF']);
+                    if ($slice_id) $url = con_url($url, 'slice_id='.$slice_id);
+                    if (!$properties['url']) {
+                        $url = con_url($url,'cancel=1');
+                    }
+                    if ($sess)     $url  = $sess->url($url);
+                    //          echo '&nbsp;<input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' ">&nbsp;';
+                    echo '&nbsp;<input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="document.location=\''.$url.'\'">&nbsp;';
+                    if ($properties['help'] != '') {
+                        echo FrmMoreHelp($properties['help']);
+                        echo "&nbsp;&nbsp;";
+                    }
+                    break;
+                case 'reset':
+                    echo '&nbsp;<input type="reset" value=" '. _m("Reset form") .' ">&nbsp;';
+                    if ($properties['help'] != '') {
+                        echo FrmMoreHelp($properties['help']);
+                        echo "&nbsp;&nbsp;";
+                    }
+                    break;
+                case 'submit':
+                    echo '&nbsp;<input type="submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  ($accesskey_pref+S) ". ' ">&nbsp;';
+                    if ($properties['help'] != '') {
+                        echo FrmMoreHelp($properties['help']);
+                        echo "&nbsp;&nbsp;";
+                    }
+                    break;
+                default:
+                    $type = ($properties['type'] ? $properties['type'] : 'hidden');
+                    if ( $no_hidden AND ($type == 'hidden') ) {
+                        // do not print hidden fields if no_hidden is true
+                        // (used for FrmTabSeparator, to not duplicate hiddens)
+                        break;
+                    }
+                    echo '&nbsp;<input type="'.  ($properties['type'] ? $properties['type'] : 'hidden') .
+                         '" name="'.  $name .
+                         '" value="'. $properties['value'] . ($properties['accesskey'] ? "  (".$accesskey_pref."+".$properties['accesskey'].")  " : "").
+                         '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>&nbsp;';
+                    if ($properties['help'] != '') {
+                        echo FrmMoreHelp($properties['help']);
+                        echo "&nbsp;&nbsp;";
+                    }
+            }
+            echo "\n";
+        }
     }
-  }
 
-  if( $sess )
+    if( $sess )
     $sess->hidden_session();
-  if( $slice_id )
+    if( $slice_id )
     echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
 
-  echo "</td>";
-  if ($tr) { echo "</tr>"; }
+    echo "</td>";
+    if ($tr) { echo "</tr>"; }
 }
 
 /** */

@@ -217,23 +217,22 @@ if( $grp_edit OR ($submit_action == "update_submit") ) {
 
 // User data ---------------------------------------------------
 
-if( $grp_new OR $add_submit ){
+if( $grp_new OR $add_submit ) {
+    // buttons for adding new group
     $form_buttons = array("add_submit" => array("type"=>"submit","value"=>_m("Add"),"accesskey"=>"S"),
-                          "grp_new" => array("value"=>"1"),
-                          "cancel" => array("url"=>"um_gedit.php3"),
-                          "selected_group"=>array("value"=>$selected_group),
-                          "posted_users"=>array("value"=>"0"),
-                          "submit_action"=>array("value"=>"0"));
+                          "grp_new" => array("value"=>"1"));
 } else {
+    // buttons for update group
     $form_buttons = array("submit_button" => array("type"=>"button","value"=>_m("Update"),"accesskey"=>"S",
                                                    "add"=>'onclick="UpdateGroup(\'update_submit\')"'),
-                          "grp_edit" => array("value"=>"1"),
-                          "cancel" => array("url"=>"um_gedit.php3"),
-                          "selected_group"=>array("value"=>$selected_group),
-                          "posted_users"=>array("value"=>"0"),
-                          "submit_action"=>array("value"=>"0"));
+                          "grp_edit" => array("value"=>"1"));
 }
 
+// common "buttons" (hidden fields)
+$form_buttons["cancel"]         = array("url"=>"um_gedit.php3");
+$form_buttons["selected_group"] = array("value"=>$selected_group);
+$form_buttons["posted_users"]   = array("value"=>"0");
+$form_buttons["submit_action"]  = array("value"=>"0");
 
   if( $grp_edit OR ($submit_action == "update_submit") )
     FrmStaticText( _m("Group Id"), $group_data[uid]);

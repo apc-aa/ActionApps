@@ -320,26 +320,29 @@ echo '<input type=hidden name=posted_groups value=0>';  // to this variable stor
 echo '<input type=hidden name=submit_action value=0>';  // to this variable store "add_submit" or "update_submit" (by javascript)
 echo '</td></tr></table></FORM>';
 */
+
+
 if ($usr_new or $add_submit) {
+    // buttons for adding new user
     $form_buttons = array("add_submit"=>array("value"=>_m("Add"),
                                               "type"=>"submit",
                                               "accesskey"=>"S"),
-                           "usr_new"=>array("value"=>"1"),
-                           "selected_user"=>array("value"=>$selected_user),
-                           "posted_groups"=>array("value"=>"0"),
-                           "submit_action"=> array("value"=>"0"),
-                           "cancel"=>array("url"=>"um_uedit.php3"));
+                           "usr_new"=>array("value"=>"1"));
 } else {
+    // buttons for update user
     $form_buttons = array("submit_button"=>array("value"=>_m("Update"),
                                                  "type"=>"button",
                                                  "add"=>'onclick="UpdateUser(\'update_submit\')"',
                                                  "accesskey"=>"S"),
-                          "usr_edit"=>array("value"=>"1"),
-                          "selected_user"=>array("value"=>$selected_user),
-                          "posted_groups"=>array("value"=>"0"),
-                          "submit_action"=> array("value"=>"0"),
-                          "cancel"=>array("url"=>"um_uedit.php3"));
+                          "usr_edit"=>array("value"=>"1"));
 }
+
+// add common fields
+$form_buttons["selected_user"] = array("value"=>$selected_user);
+$form_buttons["posted_groups"] = array("value"=>"0");
+$form_buttons["submit_action"] = array("value"=>"0");
+$form_buttons["cancel"]        = array("url"=>"um_uedit.php3");
+
 
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
