@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -44,28 +44,28 @@ class DB_AA extends DB_Sql {
 
     $SelectQuery = (strpos( " ".$SQL, "SELECT") == 1);
     // only SELECT queries can be explained
-    if ( $SelectQuery )  {   
+    if ( $SelectQuery )  {
         $this->query("explain ".$SQL);
-    
+
         echo "<table><tr><td><b>table</b></td> <td><b>type</b></td><td><b>possible_keys</b></td><td><b>key</b></td><td><b>key_len</b></td><td><b>ref</b></td><td><b>rows</b></td><td><b>Extra</b></td></tr>";
-        while( $this->next_record() ) 
-          printf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", 
+        while( $this->next_record() )
+          printf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>",
                   $this->f('table'), $this->f('type'), $this->f('possible_keys'), $this->f('key'), $this->f('key_len'), $this->f('ref'), $this->f('rows'), $this->f('Extra'));
         echo "</table>";
     }
-    
-    list($usec, $sec) = explode(" ",microtime()); 
-    $starttime = ((float)$usec + (float)$sec); 
+
+    list($usec, $sec) = explode(" ",microtime());
+    $starttime = ((float)$usec + (float)$sec);
 
     $retval = $this->query($SQL);
 
-    list($usec, $sec) = explode(" ",microtime()); 
-    $endtime = ((float)$usec + (float)$sec); 
+    list($usec, $sec) = explode(" ",microtime());
+    $endtime = ((float)$usec + (float)$sec);
     echo "<br>Query duration: ". ($endtime - $starttime);
     echo $SelectQuery ? "<br>Rows returned: ".$this->num_rows() :
                         "<br>Affected rows: ".$this->affected_rows();
     return $retval;
-  }  
+  }
 
   function halt($msg) {
     if( $this->Halt_On_Error == "no" )
@@ -74,10 +74,10 @@ class DB_AA extends DB_Sql {
     printf("<b>MySQL Error</b>: %s (%s)<br>\n",
       $this->Errno, $this->Error);
     echo("Please contact ". ERROR_REPORTING_EMAIL ." and report the ");
-    printf("exact error message.<br>\n");    
+    printf("exact error message.<br>\n");
     if( $this->Halt_On_Error == "yes" )
       die("Session halted.");
-  }  
+  }
 }
 
 class AA_CT_Sql extends CT_Sql {	## Container Type for Session is SQL DB
@@ -114,14 +114,14 @@ class AA_CT_Sql extends CT_Sql {	## Container Type for Session is SQL DB
 #  var $fallback_mode  = "get";
 #  var $lifetime       = 0;                 ## 0 = do session cookies, else #minutes
 #  var $that_class     = "AA_CT_Sql"; ## name of data storage container
-#  var $gc_probability = 5;  
+#  var $gc_probability = 5;
 #}
 
 # skips terminating backslashes
 function DeBackslash2($txt) {
 	return str_replace('\\', "", $txt);        // better for two places
 //  return EReg_Replace("[\]*$", "", $foo);
-}   
+}
 
 
 class AA_SL_Session extends Session {
@@ -133,24 +133,28 @@ class AA_SL_Session extends Session {
   var $fallback_mode  = "get";
   var $lifetime       = 0;                 ## 0 = do session cookies, else minutes
   var $that_class     = "AA_CT_Sql"; ## name of data storage container
-  var $gc_probability = 5;  
-  
-  //rewriten to return URL of shtml page that includes this script instead to return self url of this script. If noquery parameter is true, session id is not added    
+  var $gc_probability = 5;
+
+  //rewriten to return URL of shtml page that includes this script instead to return self url of this script. If noquery parameter is true, session id is not added
    function MyUrl($SliceID=0, $Encap=true, $noquery=false){  //SliceID is here just for compatibility with MyUrl function in extsess.php3
-      global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REDIRECT_DOCUMENT_URI;
+      global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REDIRECT_DOCUMENT_URI, $scr_url;
       if (isset($HTTPS) && $HTTPS == 'on') {
          ## You will need to fix suexec as well, if you use Apache and CGI PHP
          $PROTOCOL='https';
       } else {
          $PROTOCOL='http';
       }
-      if (isset($REDIRECT_DOCUMENT_URI)) {  ## CGI --enable-force-cgi-redirect
+
+      if( $scr_url ) {  // if included into php script
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$scr_url;
+      } elseif (isset($REDIRECT_DOCUMENT_URI)) {  ## CGI --enable-force-cgi-redirect
          $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_DOCUMENT_URI;
       } else {
          $foo = $PROTOCOL. "://". $HTTP_HOST.$DOCUMENT_URI;
       }
+
       switch ($this->mode) {
-         case "get":  
+         case "get":
             if (!$noquery){$foo .= "?".urlencode($this->name)."=".$this->id;}
             break;
          default:
@@ -158,18 +162,18 @@ class AA_SL_Session extends Session {
       }
       return $foo;
    }
-  
+
   # adds variables passesd by QUERY_STRING_UNESCAPED to HTTP_GET_VARS
   # SSI patch - passes variables to SSIed script
   function expand_getvars() {
-  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $HTTP_GET_VARS;   
+  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $HTTP_GET_VARS;
     if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
       $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
       # $REDIRECT_QUERY_STRING_UNESCAPED
-      #  - necessary for cgi version compiled with --enable-force-cgi-redirect      
-    } else {  
+      #  - necessary for cgi version compiled with --enable-force-cgi-redirect
+    } else {
       $varstring = $QUERY_STRING_UNESCAPED;
-    }  
+    }
 
     $a = explode("&",$varstring);
     $i = 0;
@@ -183,18 +187,18 @@ class AA_SL_Session extends Session {
     }
     return $i;
   }
-  
+
   function get_id($id = "") {
     global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $QUERY_STRING;
     $newid=true;
- 
+
 	$this->name = $this->cookiename==""?$this->classname:$this->cookiename;
- 
+
     if ( "" == $id ) {
       $newid=false;
       switch ($this->mode) {
         case "get":
-          $this->expand_getvars(); ## ssi patch   
+          $this->expand_getvars(); ## ssi patch
           $id = isset($HTTP_GET_VARS[$this->name]) ? $HTTP_GET_VARS[$this->name] : "";
         break;
         case "cookie":
@@ -205,12 +209,12 @@ class AA_SL_Session extends Session {
         break;
       }
     }
- 
+
     if ( "" == $id ) {
       $newid=true;
 	  $id = $this->that->ac_newid(md5(uniqid($this->magic)), $this->name);
     }
- 
+
     switch ($this->mode) {
       case "cookie":
         if ( $newid && ( 0 == $this->lifetime ) ) {
@@ -231,24 +235,24 @@ class AA_SL_Session extends Session {
         ;
       break;
     }
- 
+
     $this->id = $id;
   }
-  
+
   function start($sid = "") {
     global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $HTTP_HOST, $HTTPS;
-        $this->expand_getvars(); ## ssi patch   
+        $this->expand_getvars(); ## ssi patch
 	$name = $this->that_class;
 	$this->that = new $name;
 	$this->that->ac_start();
-	
+
 	$this->name = $this->cookiename==""?$this->classname:$this->cookiename;
-	
+
 	if ( isset($this->fallback_mode)
-      && ( "get" == $this->fallback_mode ) 
+      && ( "get" == $this->fallback_mode )
       && ( "cookie" == $this->mode )
       && ( ! isset($HTTP_COOKIE_VARS[$this->name]) ) ) {
- 
+
       if ( isset($HTTP_GET_VARS[$this->name]) ) {
         $this->mode = $this->fallback_mode;
       } else {
@@ -266,17 +270,17 @@ class AA_SL_Session extends Session {
       }
     }
 
-    
+
     $this->get_id($sid);
- 
+
     $this->thaw();
-    
+
     ## Garbage collect, if necessary
     srand(time());
     if ((rand()%100) < $this->gc_probability) {
       $this->gc();
     }
-  }    
+  }
 }
 
 ?>

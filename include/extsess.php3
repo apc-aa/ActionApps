@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -39,34 +39,34 @@ class DB_AA extends DB_Sql {
           return $this->dquery ($SQL);
       else return $this->query($SQL);
   }
-  
+
   function dquery($SQL) {
     echo "<br>$SQL";
 
     $SelectQuery = (strpos( " ".$SQL, "SELECT") == 1);
     // only SELECT queries can be explained
-    if ( $SelectQuery )  {   
+    if ( $SelectQuery )  {
         $this->query("explain ".$SQL);
-    
+
         echo "<table><tr><td><b>table</b></td> <td><b>type</b></td><td><b>possible_keys</b></td><td><b>key</b></td><td><b>key_len</b></td><td><b>ref</b></td><td><b>rows</b></td><td><b>Extra</b></td></tr>";
-        while( $this->next_record() ) 
-          printf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", 
+        while( $this->next_record() )
+          printf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>",
                   $this->f('table'), $this->f('type'), $this->f('possible_keys'), $this->f('key'), $this->f('key_len'), $this->f('ref'), $this->f('rows'), $this->f('Extra'));
         echo "</table>";
     }
-    
-    list($usec, $sec) = explode(" ",microtime()); 
-    $starttime = ((float)$usec + (float)$sec); 
+
+    list($usec, $sec) = explode(" ",microtime());
+    $starttime = ((float)$usec + (float)$sec);
 
     $retval = $this->query($SQL);
 
-    list($usec, $sec) = explode(" ",microtime()); 
-    $endtime = ((float)$usec + (float)$sec); 
+    list($usec, $sec) = explode(" ",microtime());
+    $endtime = ((float)$usec + (float)$sec);
     echo "<br>Query duration: ". ($endtime - $starttime);
     echo $SelectQuery ? "<br>Rows returned: ".$this->num_rows() :
                         "<br>Affected rows: ".$this->affected_rows();
     return $retval;
-  }  
+  }
 
   function halt($msg) {
     if( $this->Halt_On_Error == "no" )
@@ -75,10 +75,10 @@ class DB_AA extends DB_Sql {
     printf("<b>MySQL Error</b>: %s (%s)<br>\n",
       $this->Errno, $this->Error);
     echo("Please contact ". ERROR_REPORTING_EMAIL ." and report the ");
-    printf("exact error message.<br>\n");    
+    printf("exact error message.<br>\n");
     if( $this->Halt_On_Error == "yes" )
       die("Session halted.");
-  }  
+  }
 }
 
 class AA_CT_Sql extends CT_Sql {	## Container Type for Session is SQL DB
@@ -92,27 +92,27 @@ class AA_CP_Session extends Session {
   var $cookiename     = "";                ## defaults to classname
   var $magic          = "adwetdfgyr";      ## ID seed
   var $mode           = "get";          ## We propagate session IDs in URL
-##  var $fallback_mode  
+##  var $fallback_mode
   var $lifetime       = 0;                 ## 0 = do session cookies, else minutes
   var $that_class     = "AA_CT_Sql"; ## name of data storage container
-  var $gc_probability = 5;  
-  var $auto_init; # auto init 
-  var $allowcache     = "no"; # Control caching of session pages, if set to no (also the default), the page is not cached under HTTP/1.1 or HTTP/1.0; if set to public , the page is publically cached under HTTP/1.1 and HTTP/1.0; if set to private , the page is privately cached under HTTP/1.1 and not cached under HTTP/1.0 
-  var $allowcache_expire = 1;    # When caching is allowed, the pages can be cached for this many minutes. 
+  var $gc_probability = 5;
+  var $auto_init; # auto init
+  var $allowcache     = "no"; # Control caching of session pages, if set to no (also the default), the page is not cached under HTTP/1.1 or HTTP/1.0; if set to public , the page is publically cached under HTTP/1.1 and HTTP/1.0; if set to private , the page is privately cached under HTTP/1.1 and not cached under HTTP/1.0
+  var $allowcache_expire = 1;    # When caching is allowed, the pages can be cached for this many minutes.
 
   function start($sid = "") {
     global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $HTTP_HOST, $HTTPS;
    	$name = $this->that_class;
 	$this->that = new $name;
 	$this->that->ac_start();
-	
+
 	$this->name = $this->cookiename==""?$this->classname:$this->cookiename;
-	
+
 	if (   isset($this->fallback_mode)
-      && ( "get" == $this->fallback_mode ) 
+      && ( "get" == $this->fallback_mode )
       && ( "cookie" == $this->mode )
       && ( ! isset($HTTP_COOKIE_VARS[$this->name]) ) ) {
- 
+
       if ( isset($HTTP_GET_VARS[$this->name]) ) {
         $this->mode = $this->fallback_mode;
       } else {
@@ -134,13 +134,13 @@ class AA_CP_Session extends Session {
     # Padraic Renaghan on phplib@shonline.de.
     # Note that in HTTP/1.1 the Cache-Control headers override the Expires
     # headers and HTTP/1.0 ignores headers it does not recognize (e.g,
-    # Cache-Control). Mulitple Cache-Control directives are split into 
+    # Cache-Control). Mulitple Cache-Control directives are split into
     # mulitple headers to better support MSIE 4.x.
     switch ($this->allowcache) {
 
       case "public":
         $exp_gmt = gmdate("D, d M Y H:i:s", time() + $this->allowcache_expire * 60) . " GMT";
-        $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";				
+        $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
         header("Expires: " . $exp_gmt);
         header("Last-Modified: " . $mod_gmt);
         header("Cache-Control: public");
@@ -165,7 +165,7 @@ class AA_CP_Session extends Session {
     }
 
     $this->get_id($sid);
- 
+
     $this->thaw();
 
     ## Garbage collect, if necessary
@@ -186,10 +186,10 @@ class AA_SL_Session extends Session {
   var $fallback_mode  = "get";
   var $lifetime       = 0;                 ## 0 = do session cookies, else minutes
   var $that_class     = "AA_CT_Sql"; ## name of data storage container
-  var $gc_probability = 5;  
+  var $gc_probability = 5;
 
    function MyUrl($SliceID, $Encap=false, $noquery=false) {
-      global $HTTP_HOST, $HTTPS, $SCRIPT_NAME, $REDIRECT_SCRIPT_NAME;
+      global $HTTP_HOST, $HTTPS, $SCRIPT_NAME, $REDIRECT_SCRIPT_NAME, $scr_url;
       if (isset($HTTPS) && $HTTPS == 'on') {
          ## You will need to fix suexec as well, if you use Apache and CGI PHP
          $PROTOCOL='https';
@@ -197,11 +197,14 @@ class AA_SL_Session extends Session {
          $PROTOCOL='http';
       }
       ## PHP used in CGI mode and ./configure --enable-force-cgi-redirect
-      if (isset($REDIRECT_SCRIPT_NAME)) {
+      if( $scr_url ) {  // if included into php script
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$scr_url;
+      } elseif (isset($REDIRECT_SCRIPT_NAME)) {
          $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_SCRIPT_NAME;
       } else {
          $foo = $PROTOCOL. "://". $HTTP_HOST.$SCRIPT_NAME;
       }
+
       switch ($this->mode) {
          case "get":
            if (!$noquery) {
