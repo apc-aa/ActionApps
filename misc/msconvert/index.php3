@@ -8,21 +8,26 @@ if (!$sysenc)   $sysenc   = CONV_SYSTEMENCODING;
 
 $uploadpath = IMG_UPLOAD_PATH;
 
-?>
-<html>
-<head>
-<title>Foreign Formats Convertor</title>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $encoding?>">
-</head>
-<h2 align="center">Action Apps PDF/DOC Convertor</h2>
-<?php
-if ($submit=="Import") {
-    echo "<body onload=\"PasteHTML();\">";
-    $view=false;
-} else {
-    echo "<body>";
-    $view=true;
-}
+echo '
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+    <title>'. _m('Foreign Formats Convertor') .'</title>
+    <meta http-equiv="Content-Type" content="text/html; charset='.$encoding.'">
+  </HEAD>';
+
+  if ($submit=="Import") {
+      echo "<body onload=\"PasteHTML();\">";
+      $view=false;
+  } else {
+      echo "<body>";
+      $view=true;
+  }
+
+  echo '<h2 align="center">'._m('Action Apps PDF/DOC Convertor').'</h2>
+  <p align="center">'._m('Experimental feature').'</p><br><br>';
+
 
 if (!$userfile) {
     ?>
@@ -36,6 +41,7 @@ if (!$userfile) {
 } else {
     $file_name=gensalt (20);
     $realname=$HTTP_POST_FILES['userfile']['name'];
+    $stringoutput='';
     $error=aa_move_uploaded_file ("userfile", $uploadpath, $perms = 0, $file_name);
     if ($error) die($GLOBALS["IMG_UPLOAD_PATH"]);
     if (!$error) {
@@ -119,8 +125,13 @@ if (!$userfile) {
         echo "<form name=\"aform\">";
         echo "<input type=hidden name=content value=\"";
         while (list($linenum,$line)=each($output)){
-            echo htmlspecialchars($line);
+            $stringoutput .= $line;
         }
+        // we need to remove added background color, ...
+        $stringoutput=preg_replace("/<\/?div.*>/i","",$stringoutput); # remove all DIVs
+        $stringoutput=preg_replace("/ style=\".+\"/i","",$stringoutput); # remove all styles
+        $stringoutput=htmlspecialchars($stringoutput);
+        echo $stringoutput;
         echo "\"></form>";
         ?>
         <script>
