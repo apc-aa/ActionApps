@@ -13,18 +13,16 @@ function MoveSelectedCat(fromsbx,right)
     if( (length == 1) && (eval(right).options[0].value=='wIdThTor') ){  // blank rows are just for <select> size setting
       eval(right).options[0].text = "(-) " + a[catid];
       eval(right).options[0].value = catid;
-    } else 
+    } else
       eval(right).options[length] = new Option("(-) " + a[catid], catid);
 }
 
 // moves selected row of left listbox to the right one
 function MoveSelectedTo(fromsbx, totxt, toval)
 {
-  var tmp="";
-  var delim="";
   var idx;
   var catid;
-  
+
   idx = eval(fromsbx).selectedIndex;
   if( idx < 0 )
       catid = downcat[level];
@@ -32,11 +30,18 @@ function MoveSelectedTo(fromsbx, totxt, toval)
       catid = downcat[level];
   else
       catid = eval(fromsbx).options[idx].value;
-  
+
+  MoveCategoryTo(catid, totxt, toval)
+}
+
+function MoveCategoryTo(catid, totxt, toval)
+{
+  var tmp="";
+  var delim="";
   for( var j=1; j<=level; j++) {
     tmp += delim + a[downcat[j]];
     delim = " > ";
-  }  
+  }
   if( catid != downcat[level])
     tmp += delim + a[catid];  // highlighted option
   eval(totxt).value = tmp;
@@ -56,7 +61,7 @@ function MoveSelectedUp(listbox)
     eval(listbox).options[i-1].text = temptxt;
     eval(listbox).options[i-1].value = tempval;
     eval(listbox).selectedIndex=i-1
-  }   
+  }
 }
 
 // moves selected row of listbox down
@@ -72,7 +77,7 @@ function MoveSelectedDown(listbox)
     eval(listbox).options[i+1].text = temptxt;
     eval(listbox).options[i+1].value = tempval;
     eval(listbox).selectedIndex=i+1
-  }   
+  }
 }
 
 // Encodes all values from listbox to comma delimeted string
@@ -86,7 +91,7 @@ function CrossDelimeted(listbox,valueVar,textVar,stateVar) {
 
 	for (var i = 0; i < eval(listbox).options.length; i++) {
     	// blank rows are just for <select> size setting
-		if (eval(listbox).options[i].value != 'wIdThTor' ) {  
+		if (eval(listbox).options[i].value != 'wIdThTor' ) {
 		    if (eval(listbox).options[i].text.length >=4) {
 				switch (eval(listbox).options[i].text.substring(0,4)) {
 					case "(!) ":
@@ -104,15 +109,15 @@ function CrossDelimeted(listbox,valueVar,textVar,stateVar) {
 			}
 
     		eval(valueVar).value += delimeter2 + eval(listbox).options[i].value
-						   
+
       		delimeter='#'
           delimeter2=','
-          
-    	}  
+
+    	}
   	}
-    
-/*	prompt("textVar = '" + eval(textVar).value + "'\n" + 
-		   "statetextVar = " + eval(stateVar).value + "\n" + 
+
+/*	prompt("textVar = '" + eval(textVar).value + "'\n" +
+		   "statetextVar = " + eval(stateVar).value + "\n" +
 		   "valueVar = '" + eval(valueVar).value +"'")*/
 }
 
@@ -120,7 +125,7 @@ function DelCateg(msg) {
   var i=document.f.selcat.selectedIndex
   if( !confirm(msg) )
     return
-    
+
   if( (i>=0) && (i<document.f.selcat.length)) {
     document.f.selcat.options[i] = null
   }
@@ -143,7 +148,7 @@ function ClearListbox(sbx) {
   for (var i=0; i < len; i++) {
     sbx.options[0] = null
   }
-}  
+}
 
 // finds category ancesor
 function GetParent( catid ) {
@@ -152,15 +157,15 @@ function GetParent( catid ) {
       return s[i];
   }
   return -1
-}    
-      
+}
+
 function FindPathTo(catid) {
   var current = catid;
   var i=0;
-  
+
   path2cat   = new Array();
   path2cat[i++] = current;
-  
+
   while( current != treeStart ) {
       current = GetParent( current );
       if( current == -1 )
@@ -168,38 +173,38 @@ function FindPathTo(catid) {
       path2cat[i++] = current;
   }
   return path2cat;
-}  
-  
+}
+
 function ClearTree() {
   level=0;
   downcat = new Array()
   downcat[level] = treeStart
-}    
+}
 
 function GoToCategoryID(catid, sbx, pathid, cat_id_fld) {
   path2cat = new Array();
   if( catid == "" ) {
     if( sbx.selectedIndex < 0 ) {
       return
-    } else {  
+    } else {
       catid = sbx.options[sbx.selectedIndex].value;
     }
-  }  
-  
+  }
+
   path2cat = FindPathTo(catid);
   if( path2cat != false ) {
     ClearTree();
     for (var i=path2cat.length-1; i >= 0; i--) {  // stored in reverse order
       ChangeCategory( path2cat[i], sbx, pathid, cat_id_fld )
     }
-  }  
-}    
+  }
+}
 
 function GoCategory(sbx, pathid, cat_id_fld) {
   if( sbx.selectedIndex < 0 )
     return
   ChangeCategory( sbx.options[sbx.selectedIndex].value, sbx, pathid, cat_id_fld )
-}  
+}
 
 // Returns true, if specified category have a subcategories
 function HaveSubcategories(catid) {
@@ -207,11 +212,11 @@ function HaveSubcategories(catid) {
   for (var i=0; i < assignno; i++)   //assignno, s[] - global variables (tree)
     if (s[i] == catid)
       return true;
-  return false;    
-}    
+  return false;
+}
 
 // Changes selected category
-function ChangeSelectedCat( catid, sbx, pathid, cat_id_fld) { 
+function ChangeSelectedCat( catid, sbx, pathid, cat_id_fld) {
     var curcat;
     var cattxt="";
     if( !catid ) {  // get highlighted category (probably dblclicking tree traveling)
@@ -225,21 +230,21 @@ function ChangeSelectedCat( catid, sbx, pathid, cat_id_fld) {
         tmp='';
         // create path to the currently selected category
         for( var j=1; j<=level; j++) {
-            curcat = downcat[j]; 
+            curcat = downcat[j];
             tmp += (j==1 ? '': path_delimeter) + '<a href="javascript:GoToCategoryID(' +curcat+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[curcat] + '</a>';  // path_delimeter - global javascript variable
-        }  
-        // if the catid is not currently selected category, we have to add 
+        }
+        // if the catid is not currently selected category, we have to add
         // specified category (probably highlighted in selectbox for dblclicking
         // tree traveling)
         if( (catid != curcat) && (cattxt != '..') ) {
             tmp += (j==1 ? '': path_delimeter) + '<a href="javascript:GoToCategoryID(' +catid+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[catid] + '</a>';  // path_delimeter - global javascript variable
         }
-//        tmp += eval(from).options[i].text    
+//        tmp += eval(from).options[i].text
         SetContent(pathid,tmp);
-    }    
+    }
     if( cat_id_fld ) {       // update category path (probably hidden) field
         eval(cat_id_fld).value = catid;
-    }    
+    }
 }
 // Changes tree listbox (all categories) depending on given category
 function ChangeCategory(catid, sbx, pathid, cat_id_fld) {
@@ -256,7 +261,7 @@ function ChangeCategory(catid, sbx, pathid, cat_id_fld) {
         level++
     else // empty subcategory, where we have not to go
         do_nothing = true;
-  
+
     if (!do_nothing) {
         ClearListbox(sbx)
         downcat[level] = catid
@@ -270,7 +275,7 @@ function ChangeCategory(catid, sbx, pathid, cat_id_fld) {
             }
         }
     }
-    ChangeSelectedCat( downcat[level], sbx, pathid, cat_id_fld); 
+    ChangeSelectedCat( downcat[level], sbx, pathid, cat_id_fld);
 }
 
 // Fills hidden fields and submit
@@ -278,11 +283,11 @@ function UpdateCategory() {
   // fill subcatIds and subcatNames from selected category listbox
   CrossDelimeted( 'document.f.selcat', 'document.f.subcatIds', 'document.f.subcatNames', 'document.f.subcatStates');
   document.f.submit()
-}  
+}
 
 function ChangeStateCateg(listbox) {
 
-	// Is there at least one option? 
+	// Is there at least one option?
   	if (!eval(listbox).disabled && eval(listbox).length >= 1) {
   		var i=eval(listbox).selectedIndex
 
@@ -296,7 +301,7 @@ function ChangeStateCateg(listbox) {
 	  		if (prefix == "(-)" || prefix == "(!)") {
 	  	  		switch (temptxt.charAt(1)) {
 		  	  		case '!':
-			  	  		temptxt = "(-) " + text 
+			  	  		temptxt = "(-) " + text
 			  	  		break
 			  		case '-':
 				  		temptxt = "(!) " + text
@@ -306,7 +311,7 @@ function ChangeStateCateg(listbox) {
 	  		}
 	  		else
 	  	  		eval(listbox).options[i].text = "(-) " + text
-    	}  
+    	}
 	}
 }
 
@@ -335,7 +340,7 @@ function DeleteField(index) {
   eval(field).value = "";
   field = "document.f.selcatSelect"+index
   eval(field).value = "";
-}  
+}
 
 function CheckURL() {
 	document.f_hidden.url.value=document.f.url.value

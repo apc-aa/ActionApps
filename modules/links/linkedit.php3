@@ -356,7 +356,7 @@ if( !$r_state['link_id'] ) {  // add new link
     $url = "http://";
     // select current caterory
     $on_load = 'onLoad="GoToCategoryID('.$r_state['cat_id'].', eval(document.f.tree), \'patharea\', \'\');'.
-               'MoveSelectedTo(\'document.f.tree\', \'document.f.selcat0\', \'document.f.selcatSelect0\');"';
+               'MoveCategoryTo('.$r_state['cat_id'].', \'document.f.selcat0\', \'document.f.selcatSelect0\');"';
 }
 
 
