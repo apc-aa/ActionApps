@@ -380,11 +380,14 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
             $map = $default_rss_map;
         }
 
+        // create item from source data (in order we can unalias)
+        $item2fed = new item($item['fields_content'], array());
+
         while (list($to_field_id,$v) = each($map)) {
             switch ($v['feedmap_flag']) {
                 case FEEDMAP_FLAG_VALUE:
-                            if ($debugfeed >= 9) print("\n<br>Setting default $to_field_id to ".$v['value']);
-                            $content4id[$to_field_id][0]['value'] = quote($v['value']);
+                            // value could contain {switch()} and other {constructs}
+                            $content4id[$to_field_id][0]['value'] = quote($item2fed->unalias($v['value']));
                             break;
                 case FEEDMAP_FLAG_EXTMAP:   // Check this really works when val in from_field_id
                 case FEEDMAP_FLAG_RSS:

@@ -1,3 +1,23 @@
+05/27/04 - new /misc/charset/convert.php3 script, which allows you to encode
+(honzam)   a text to another character encoding. It is usable outside of AA.
+           The ussage on shtml page:
+           <!--#include
+             virtual="/apc-aa/misc/charset/convert.php3?from=iso-8859-1&
+             to=utf-8&source=http%3A%2F%2Fwww.apc.org%2Fpage.htm" -->
+         - bulk email sending and alerts sending now should not end after
+           timelimit. Now we have 2 minutes for each 20 e-mails.
+         - feeding mapping for external feeds could now contain expressions
+           (if "--value--" is selected) - just like in local feeding. So, you
+           can do write {switch()} expression for status code, ...
+         - if you "clear" searchbar in manager, then wrong values was filled
+           in the order bar. Now it is fixed.
+         - fixed link tag for APC AA RSS export (in order it could be used
+           for RSS1.0 readers)
+         - fixed bug on group permission page - it works again
+         - fixed l_p alias for generating path links in the links module
+         - deadlock error of MySQL database is not reported, if we delete
+           records from pagecache table, now
+         - fixed expansion of aliases, when contain colon character
 05/17/04 - anonymous form wizard works again
 (honzam) - added AA version info on title atribute of APC ActionApps logo
            in admin interface
@@ -1177,7 +1197,7 @@
          - itemview moved to separate file
          - support for on-view discussions;
          - removed logs from files
-03/12/02 - new romanian language support (Thanks to Mihály Bakó, StrawberryNet
+03/12/02 - new romanian language support (Thanks to Mihï¿½ly Bakï¿½, StrawberryNet
            Foundation),
          - new_news_lang.php3 file introduced for better support of many
            language versions
