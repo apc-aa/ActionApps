@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ if (isset($feed_id)) {
   // delete mapping from feedmap table
   $db->query("SELECT remote_slice_id FROM external_feeds WHERE feed_id='$feed_id' AND slice_id='$p_slice_id'");
   if ($db->next_record()) {
-    $remote_slice_id = $db->f(remote_slice_id);
+    $remote_slice_id = quote($db->f('remote_slice_id'));
     $db->query("DELETE FROM feedmap WHERE from_slice_id='$remote_slice_id' AND to_slice_id='$p_slice_id'");
   }
   $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");      // delete categories

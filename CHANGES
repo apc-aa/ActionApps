@@ -1,3 +1,5 @@
+08/26/03 - added "Select all" option on Filters admin page;
+(honzam) - fixed crossserver feeding and its filter setting
 08/24/03 - added pointers to Honza's demo slices to documentation
 (mitra)  - removed require of non existance sessionobj.php3
 08/21/03 - category tree display speedup (in links module)

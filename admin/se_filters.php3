@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -35,15 +35,15 @@ if($cancel)
 if(!IfSlPerm(PS_FEEDING)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "sliceadmin", "filters");
   exit;
-}  
+}
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
-// lookup (slices) 
-$SQL= "SELECT name, id FROM slice, feeds 
-        LEFT JOIN feedperms ON slice.id=feedperms.from_id 
-        WHERE slice.id=feeds.from_id 
+// lookup (slices)
+$SQL= "SELECT name, id FROM slice, feeds
+        LEFT JOIN feedperms ON slice.id=feedperms.from_id
+        WHERE slice.id=feeds.from_id
           AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
           AND feeds.to_id='$p_slice_id' ORDER BY name";
 
@@ -66,18 +66,18 @@ while($db->next_record()) {
 if( !isset($impslices) OR !is_array($impslices)){
   MsgPageMenu(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"), "sliceadmin", "filters");
   exit;
-}  
-  
+}
+
 if( $import_id == "" ) {
   reset($impslices);
   $import_id = key($impslices);
-}  
+}
 $p_import_id = q_pack_id($import_id);
 
-// lookup (to_categories) 
+// lookup (to_categories)
 $group = GetCategoryGroup($slice_id);
 if( $group ) {
-  $db->query("SELECT id, name FROM constant 
+  $db->query("SELECT id, name FROM constant
                WHERE group_id='$group'
                ORDER BY pri");
   $first_time = true;               # in order to The Same to be first in array
@@ -85,9 +85,9 @@ if( $group ) {
     if( $first_time AND !$remote_slices[$import_id]) {  # for remote categories must be set
       $to_categories["0"] = _m("-- The same --");
       $first_time = false;
-    } 
+    }
     $to_categories[unpack_id128($db->f(id))] = $db->f(name);
-  }  
+  }
 }
 
 // lookup (from_categories) and preset form values
@@ -119,15 +119,15 @@ if ($feed_id = $remote_slices[$import_id]) {
   }
 } else {   // inner feeding
   $imp_group = GetCategoryGroup($import_id);
-  
+
   // count number of imported categories
-  $SQL= "SELECT count(*) as cnt FROM constant 
+  $SQL= "SELECT count(*) as cnt FROM constant
           WHERE group_id='$imp_group'";
   $db->query($SQL);
   $imp_count = ($db->next_record() ? $db->f(cnt) : 0);
-  
+
   // preset variables due to feeds database
-  $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds 
+  $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds
          WHERE from_id='$p_import_id' AND to_id='$p_slice_id'";
   $db->query($SQL);
   while($db->next_record()) {
@@ -140,7 +140,7 @@ if ($feed_id = $remote_slices[$import_id]) {
       $selcat[unpack_id($db->f(category_id))] = unpack_id($db->f(to_category_id));
       $chboxapp[unpack_id($db->f(category_id))] = $db->f(to_approved);
     }
-  }    
+  }
 }
 ?>
  <TITLE><?php echo _m("Admin - Content Pooling - Filters");?></TITLE>
@@ -158,7 +158,7 @@ function SelectValue(sel) {
 
 function HiddenValue(sel) {
   return eval(sel).value
-}  
+}
 
 function ChangeImport()
 {
@@ -174,7 +174,7 @@ function AllCategClick() {
     if( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> )
       DisableClick('document.f.all_categories','document.f.categ_'+i)
     DisableClick('document.f.all_categories','document.f.approved_'+i)
-  }  
+  }
 }
 
 function InitPage() {
@@ -184,7 +184,7 @@ function InitPage() {
 function DisableClick(cond,what) {
      eval(what).disabled=eval(cond).checked;
      // property .disabled supported only in MSIE 4.0+
-}   
+}
 
 function UpdateFilters(slice_id, import_id) {
   var url = "<?php echo $sess->url(self_base() . "se_filters2.php3")?>"
@@ -210,17 +210,30 @@ function UpdateFilters(slice_id, import_id) {
         } else {
            url += "&T%5B%5D=0"
         }
-        url += "&F%5B%5D=" +  escape(HiddenValue('document.f.hid_'+i))         
+        url += "&F%5B%5D=" +  escape(HiddenValue('document.f.hid_'+i))
         url += "-" + (ChBoxState('document.f.approved_'+i) ? 1 : 0)
-      }  
-    }    
-  }  
+      }
+    }
+  }
   if (done == 0) {
     alert ( "<?php echo _m("No From category selected!") ?>" )
   } else {
     document.location=url
   }
-}  
+}
+
+    function SelectChboxes(chb_name) {
+      var len = document.f.elements.length;
+      var state = 2;
+      var str_len = chb_name.length;
+      for( var i=0; i<len; i++ )
+        if( document.f.elements[i].name.substring(0,str_len) == chb_name) { //items checkboxes
+          if (state == 2) {
+            state = ! document.f.elements[i].checked;
+          }
+          document.f.elements[i].checked = state;
+        }
+    }
 // -->
 </SCRIPT>
 </HEAD>
@@ -228,11 +241,11 @@ function UpdateFilters(slice_id, import_id) {
   $useOnLoad = true;
   require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "filters");
-  
+
   echo "<H1><B>" . _m("Admin - Content Pooling - Filters") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
-  
+
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
@@ -251,23 +264,23 @@ function UpdateFilters(slice_id, import_id) {
   <td width="40%" colspan=2 class=tabtxt align=center><b><?php echo _m("From") ?></b></td>
   <td width="30%" class=tabtxt align=center><b><?php echo _m("To") ?></b></td>
   <td width="30%" class=tabtxt align=center><b><?php echo _m("Active") ?></b></td>
-</tr>  
+</tr>
 
 <tr>
 <?php
 if ($imp_count) {
    echo "<td align=center>";
    FrmChBoxEasy("all_categories", $all_categories, "OnClick=\"AllCategClick()\"");
-   echo "</td>"; 
+   echo "</td>";
 }
 ?>
 <td class=tabtxt <?php if (!$imp_count) { echo "colspan=2 align=center"; } ?>><?php echo _m("All Categories") ?></td>
 </td>
 
-<TD><?php 
+<TD><?php
   if( isset($to_categories) AND is_array($to_categories) )
     FrmSelectEasy("categ_0", $to_categories, $categ_0);
-   else   
+   else
     echo "<span class=tabtxt>". _m("No category defined") ."</span>";
 ?></td>
 <td align="CENTER"><?php FrmChBoxEasy("approved_0", $approved_0); ?></td>
@@ -285,7 +298,7 @@ function PrintOneRow($id, $cat_name, $i) {
     $selectname = "categ_". $i;
     if( isset($to_categories) AND is_array($to_categories) )
      FrmSelectEasy($selectname, $to_categories, isset($selcat[$id]) ? $selcat[$id] : $id);
-     else   
+     else
        echo "<span class=tabtxt>". _m("No category defined") ."</span>";
     echo "</td>\n<TD align=CENTER>";
     $chboxname = "approved_". $i;
@@ -313,9 +326,9 @@ else {
       PrintOneRow(unpack_id128($db->f(id)),$db->f(name),$i++);
     }
   }
-} 
-?>  
-<tr><td colspan=4>&nbsp;</td></tr>
+}
+?>
+<tr><td colspan=3><a href="javascript:SelectChboxes('chbox_')"><?php echo _m('Select all');?></td><td><a href="javascript:SelectChboxes('approved_')"><?php echo _m('Select all');?></td></tr>
 </table></tr></td>
 <tr><td align="center">
 <input type=hidden name="slice_id" value="<?php echo $slice_id ?>">
