@@ -88,11 +88,8 @@ function GetAliasesFromFields($fields, $additional="") {
   }
 
   #add additional aliases
-  if( isset( $additional ) AND is_array( $additional ) ) {
-    reset( $additional );
-    while( list($k,$v) = each( $additional ) )
-      $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
-  }
+  if( isset( $additional ) AND is_array( $additional ) ) 
+    $aliases += $additional;
   
   return($aliases);
 }  
@@ -627,6 +624,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.26  2001/10/17 21:53:46  honzam
+fixed bug in url passed aliases
+
 Revision 1.25  2001/10/08 16:42:52  honzam
 f_m alias function now works with normal links too
 

@@ -25,13 +25,19 @@ define("VIEW_PHP3_INC",1);
 #                         view functions
 # ----------------------------------------------------------------------------
 
-function GetAliasesFromUrl() {
+function GetAliasesFromUrl($to_arr = false) {
   global $aliases, $als;
   if( isset( $als ) AND is_array( $als ) ) {
     reset( $als );
-    while( list($k,$v) = each( $als ) )
-      $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+    if( $to_arr ) {
+      while( list($k,$v) = each( $als ) )
+        $ret["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+    } else {    
+      while( list($k,$v) = each( $als ) )
+        $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+    }    
   }
+  return $ret;
 }  
 
 function ParseCommand($cmd) {
@@ -92,13 +98,15 @@ function ParseViewParameters($query_string="") {
                break;
   }
 
- $arr = ParseSettings($set[ $vid ]);
- $arr[vid]=$vid;
- $arr[conds]=$conds;
- $arr[param_conds] = $param_conds; 
- $arr[item_ids] = $item_ids;
- $arr[use_short_ids] = $use_short_ids;
- return $arr;
+  $arr = ParseSettings($set[ $vid ]);
+  $arr[als]=GetAliasesFromUrl(true);
+  $arr[vid]=$vid;
+  $arr[conds]=$conds;
+  $arr[param_conds] = $param_conds; 
+  $arr[item_ids] = $item_ids;
+  $arr[use_short_ids] = $use_short_ids;
+
+  return $arr;
 }
 
 
@@ -193,8 +201,7 @@ function GetView($view_param) {
         # get alias list from database and possibly from url
         list($fields,) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);
-        GetAliasesFromUrl();
-        
+       
         $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 
                                   0, 1, shtml_url(), "", $use_short_ids);
 
@@ -205,7 +212,6 @@ function GetView($view_param) {
     case 'const':
       $format = GetViewFormat($view_info);
       $aliases = GetConstantAliases($als);
-      GetAliasesFromUrl();
       $constantview = new constantview( $db, $format, $aliases, 
                             $view_info['parameter'], $view_info['order1'], 
                             ( ($view_info['o1_direction'] == 1) ? 'DESC' : ''), 
@@ -234,7 +240,6 @@ function GetView($view_param) {
       $ids_cnt = count( $item_ids );
       if( $ids_cnt > 0 ) {
         $aliases = GetAliasesFromFields($fields, $als);
-        GetAliasesFromUrl();
         $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 0,
                                   ($listlen ? $listlen : $view_info['listlen']), 
                                   shtml_url(), "", $use_short_ids );
@@ -671,6 +676,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.17  2001/10/17 21:53:46  honzam
+fixed bug in url passed aliases
+
 Revision 1.16  2001/10/04 14:39:41  honzam
 bugfix: set parameter is now parsed correctly
 

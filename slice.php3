@@ -199,6 +199,9 @@ if ($encap) add_vars("",1);        # adds values from QUERY_STRING_UNESCAPED
                                #       and REDIRECT_STRING_UNESCAPED
 
 if( $debug ) {
+  echo "<br><br>Conds by:<br>";
+  print_r($conds);
+  
   echo "<br><br>Group by:<br>";
   print_r($group_by);
 }
@@ -260,11 +263,7 @@ if( $bigsrch ) {
 
 # get alias list from database and possibly from url
 $aliases = GetAliasesFromFields($fields);
-if( isset( $als ) AND is_array( $als ) ) {
-  reset( $als );
-  while( list($k,$v) = each( $als ) )
-    $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
-}
+GetAliasesFromUrl();
 
 # fulltext view ---------------------------------------------------------------
 if( $sh_itm OR $x ) {
@@ -347,9 +346,9 @@ elseif(isset($conds) AND is_array($conds)) {     # posted by query form --------
       $conds[$k] = false;
       continue;             # bad condition - ignore
     }
-    if( !$cond['value'] )
+    if( !isset($cond['value']) )
       $conds[$k]['value'] = current($cond);
-    if( !$cond['operator'] )
+    if( !isset($cond['operator']) )
       $conds[$k]['operator'] = 'LIKE';
   }    
 
@@ -501,6 +500,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.27  2001/10/17 21:55:56  honzam
+fixed bug in url passed aliases
+
 Revision 1.26  2001/10/05 10:56:48  honzam
 slice.php3 allows grouping items
 
