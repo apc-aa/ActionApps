@@ -697,7 +697,7 @@ function RSS_restrict($txt, $len) {
       return $this->RSS_restrict(strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/'),500) ;
     }
 
-    if (strpos($p[0],"{")) // It can't be a field, must be expandable
+    if (strpos($p[0],"{") !== false) // It can't be a field, must be expandable
       return $this->RSS_restrict(strtr( $this->unalias($p[0]), '#/', ':/'),500) ;
     if ( $foo = $this->getval($col))
       return $this->RSS_restrict( $foo, $p[0]);
