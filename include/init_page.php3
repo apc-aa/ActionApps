@@ -38,11 +38,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// this allows to require_once this script any number of times - it will be read only once
-if (!defined ("INIT_PAGE_INCLUDED"))
-	define ("INIT_PAGE_INCLUDED",1);
-else return;
-
 /** Use require menu_include(); to include module-specific menu, 
 *   call showMenu() afterwards. */
 function menu_include() {
@@ -95,6 +90,7 @@ if($free)
 
 require_once $GLOBALS["AA_INC_PATH"] . "locauth.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "scroller.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "perm_core.php3";
 
 // save before getting the session stored variables
 if ($change_id)
