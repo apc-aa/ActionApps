@@ -785,6 +785,9 @@ define ("FEEDMAP_FLAG_EXTMAP", 3);
 define ("FEEDMAP_FLAG_JOIN",   4);
 define ("FEEDMAP_FLAG_RSS",    5);
 
+/** site module spot flags */
+define ("MODW_FLAG_JUST_TEXT", 1);  // do not unalias this spot
+
 define ("DISCUS_HTML_FORMAT",  1);  // discussion html format flag in slice table
 
 // don't check whether these fields exist (in the conds[] array used by searchform):
