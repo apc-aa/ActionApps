@@ -21,6 +21,7 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"]."sql_parser.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 
 
 /** Returns sort[] array used by QueryZids functions

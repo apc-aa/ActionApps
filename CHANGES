@@ -1,14 +1,19 @@
-12/14/04 - new possibility to open inputform to popup window and fill item 
+12/16/04 - new Input type: Multiple Text Field - allows to enter more than one
+(honzam)   (multiple) values into one field (just like when you select multiple
+           values from Multiple Selectbox). The new values are filled in popup
+         - new edit possibility for related items from itemedit
+         - fixed adding item to related slice
+12/14/04 - new possibility to open inputform to popup window and fill item
 (honzam)   to another slice during filling in another item in the current slice
          - prepared for improved pagecache implementation; generalized API
-         - code improvements - used OOP more (slice object, zids) 
+         - code improvements - used OOP more (slice object, zids)
                              - reduced ussage of global variables
-         - small javascript files reorganization                             
-         - discussion buttons texts are unaliased now (you can use aliases, ... 
+         - small javascript files reorganization
+         - discussion buttons texts are unaliased now (you can use aliases, ...
            there
-11/26/04 - think I fixed the _#ITEMINDX problem, that subviews would make 
-(mimo)	   it invalid for parent views - now using a stack 
-           (see item.php3 and itemview.php3) 
+11/26/04 - think I fixed the _#ITEMINDX problem, that subviews would make
+(mimo)	   it invalid for parent views - now using a stack
+           (see item.php3 and itemview.php3)
          - disabled the caching in MLX postqueryzids,see comments in MLX for why
          - added a mlx import function, in /misc/mlx/import.php
 11/23/04 - any AA format-string could be used for displaying selects from
