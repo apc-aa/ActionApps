@@ -255,7 +255,7 @@ define("L_DELETED", "Vymazán");
 define("L_SLICE_DEFAULTS", "Pøednastavené hodnoty položek");
 
 define("L_ERR_CANT_CHANGE", "Nepodaøilo se zmìnit nastavení webíku");
-define("L_KONSTANTS_HLP", "Použijte následující aliasy namísto položek databáze");
+define("L_CONSTANTS_HLP", "Použijte následující aliasy namísto položek databáze");
 
 define("L_ODD_ROW_FORMAT", "Liché øádky");
 define("L_EVEN_ROW_FORMAT", "Sudé øádky");
@@ -556,6 +556,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.11  2000/08/15 08:43:41  kzajicek
+Fixed spelling error in constant name
+
 Revision 1.10  2000/08/03 15:19:56  kzajicek
 Language changes
 

@@ -264,7 +264,7 @@ define("L_EXPORT_TO_ALL", "Enable export to any slice");
 define("L_IMP_IMPORT", "Import from slice:");
 define("L_IMP_IMPORT_Y", "Import");
 define("L_IMP_IMPORT_N", "Do not import");
-define("L_KONSTANTS_HLP", "Use these aliases for database fields");
+define("L_CONSTANTS_HLP", "Use these aliases for database fields");
 define("L_RELOGIN", "Logout and login as another user");
 define("L_ERR_IN", "Error in");
 define("L_ERR_BE_POSITIVE", "Number should be positive");
@@ -539,6 +539,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.10  2000/08/15 08:43:41  kzajicek
+Fixed spelling error in constant name
+
 Revision 1.9  2000/08/03 12:49:22  kzajicek
 English editing
 
