@@ -54,13 +54,18 @@ class PageCache  {
     }
 
     /** Returns cached informations or false */
-    function get($keyString) {
-        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->get(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString) );
-        if( ENABLE_PAGE_CACHE ) {
+    function get($keyString, $action='get') {
+        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->get(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache action:'.$action );
+        if ( ENABLE_PAGE_CACHE ) {
+            if ( $action == 'invalidate' ) {
+                $this->invalidateById( $this->getKeyId($keyString) );
+                return false;
+            } elseif (is_numeric($action) ) {  // nocache=1
+                return false;
+            }
             return $this->getById( $this->getKeyId($keyString) );
-        } else {
-            return false;
         }
+        return false;
     }
 
     /** Get cache content by ID (not keystring) */
@@ -77,7 +82,6 @@ class PageCache  {
         freeDB($db);
         return $ret;
     }
-
 
     /** Returns database identifier of the cache value (MD5 of keystring) */
     function getKeyId($keyString) {
@@ -110,16 +114,21 @@ class PageCache  {
         return $keyid;
     }
 
+    /** Remove specified ids from cache */
+    function invalidateById( $keys ) {
+        $keystring = join("','", (array)$keys);
+        if ( $keystring != '' ) {
+            $varset = new Cvarset();
+            $varset->doDeleteWhere('pagecache', "id IN ('$keystring')", true);
+            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id IN ('$keystring')", true);
+        }
+    }
+
     /** Clears all old cached data */
     function purge() {
-        $varset = new Cvarset();
         $tm   = time();
         $keys = GetTable2Array("SELECT id FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'", '', 'id');
-        if (is_array($keys) AND (count($keys)>0)) {
-            $in_where = " IN ('". join("','",$keys) ."')";
-            $varset->doDeleteWhere('pagecache', "id $in_where", true);
-            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id $in_where", true);
-        }
+        $this->invalidateById( $keys );
     }
 
     /** Remove cached informations for all rows which have the $cond in str2find
@@ -131,14 +140,9 @@ class PageCache  {
         // It is not so big problem if we do not invalidate cache - much less than
         // halting the operation.
 
-        $varset = new Cvarset();
         // writeLog('PAGECACHE', $cond, 'invalidate'); // for debug
         $keys = GetTable2Array("SELECT pagecache_id FROM pagecache_str2find WHERE str2find = '".quote($cond)."'", '', 'pagecache_id');
-        if (is_array($keys) AND (count($keys)>0)) {
-            $in_where = " IN ('". join("','",$keys) ."')";
-            $varset->doDeleteWhere('pagecache', "id $in_where", true);
-            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id $in_where", true);
-        }
+        $this->invalidateById( $keys );
     }
 
     /** Remove cached informations for all rows */

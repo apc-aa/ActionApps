@@ -53,6 +53,9 @@ function GetAliasesFromUrl($als) {
  * @return array separated cmd parameters
  */
 function ParseCommand($cmd,$als=false) {
+
+    if ( $GLOBALS['debug'] ) huhl("<br>ParseCommand - cmd:", $cmd);
+
     if ( isset($cmd) AND is_array($cmd) ) {
         // handle cmd[89][]=... parameters (for combining more commands)
         foreach( $cmd as $cmd_part ) {
@@ -113,6 +116,9 @@ function ParseViewParameters($query_string="") {
 
   # Splits on "-" and subsitutes aliases
   $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
+
+  if ( $GLOBALS['debug'] ) huhl("<br>ParseViewParameters - command:", $command);
+
 
   #  This code below do not work!! - it is not the same as the code above!!
   #  (the code above parses only the specific guerystring for this view)
@@ -344,8 +350,8 @@ function GetView($view_param) {
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param).stringexpand_keystring();
 
-  if( !$nocache && ($res = $GLOBALS['pagecache']->get($keystr)) ) {
-    return $res;
+  if ( $res = $GLOBALS['pagecache']->get($keystr, $nocache) ) {
+      return $res;
   }
 
   global $str2find_passon, $pagecache;
@@ -448,14 +454,13 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                              $slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
                                              $defaultCondsOperator,$GLOBALS['nocache'],
                          "vid=$vid t=full i=".serialize($zids3));
-          $zids->a = $zids3->a;
+          $zids->a    = $zids3->a;
           $zids->type = $zids3->type;
         }
-        $itemview = new itemview($format, $fields, $aliases, $zids,
-                                  0, 1, shtml_url(), "");
-        $ret=$itemview->get_output_cached("view");
+        $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, shtml_url(), "");
+        $ret      = $itemview->get_output_cached("view");
       } else {
-        $ret=$noitem_msg;
+        $ret      = $noitem_msg;
       }
       trace("-");
       return $ret;
