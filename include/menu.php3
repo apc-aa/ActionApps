@@ -153,13 +153,20 @@ function get_aamenus ()
         "level"=>"submenu",
         "items"=> array(
         "header1"=>L_OTHER_ARTICLES,
-        "item1"=>array ("cond"=> $r_bin_state != "app", "href"=>"admin/index.php3?Tab=app", "label"=>L_ACTIVE_BIN." (".($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).")"),
-        "item2"=>array ("show"=>!$apple_design, "cond" => $r_bin_state != "appb", "href"=>"admin/index.php3?Tab=appb", "label"=>L_ACTIVE_BIN_PENDING_MENU." ($item_bin_cnt_pend)"),
-        "item3"=>array ("show"=>!$apple_design, "cond" => $r_bin_state != "appc", "href"=>"admin/index.php3?Tab=appc", "label"=>L_ACTIVE_BIN_EXPIRED_MENU." ($item_bin_cnt_exp)"),
-        "item4"=>array ("cond"=> $r_bin_state != "hold", "href"=>"admin/index.php3?Tab=hold", "label"=>L_HOLDING_BIN." ($item_bin_cnt[2])"),
-        "item5"=>array ("cond"=> $r_bin_state != "trash", "href"=>"admin/index.php3?Tab=trash", "label"=>L_TRASH_BIN." ($item_bin_cnt[3])"),
+        "app"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=app", 
+            "label"=>"<img src='../images/ok.gif' border=0>".L_ACTIVE_BIN." (".($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).")"),
+        "appb"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/index.php3?Tab=appb", 
+            "label"=>"<img src='../images/ok.gif' border=0>".L_ACTIVE_BIN_PENDING_MENU." ($item_bin_cnt_pend)"),
+        "appc"=>array ("show"=>!$apple_design, "cond" => 1, "href"=>"admin/index.php3?Tab=appc", 
+            "label"=>"<img src='../images/ok.gif' border=0>".L_ACTIVE_BIN_EXPIRED_MENU." ($item_bin_cnt_exp)"),
+        "hold"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=hold", 
+            "label"=>"<img src='../images/edit.gif' border=0>".L_HOLDING_BIN." ($item_bin_cnt[2])"),
+        "trash"=>array ("cond"=> 1, "href"=>"admin/index.php3?Tab=trash", 
+            "label"=>"<img src='../images/delete.gif' border=0>".L_TRASH_BIN." ($item_bin_cnt[3])"),
         "header2" => L_MISC,
-        "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php3?Delete=trash", "label"=>L_DELETE_TRASH)
+        "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php3?Delete=trash", 
+            "label"=>"<img src='../images/empty_trash.gif' border=0>".L_DELETE_TRASH),
+        "line" => "",
     ));
 
     // left menu for aaadmin is common to all modules, so it is shared 
