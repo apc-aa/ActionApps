@@ -110,7 +110,7 @@ $SQL_create_tmp_tables[] = "
      id char(16) NOT NULL,
      group_id char(16) NOT NULL,
      name char(150) NOT NULL,
-     value char(150) NOT NULL,
+     value char(255) NOT NULL,
      class char(16),
      pri smallint(5) DEFAULT '100' NOT NULL,
      PRIMARY KEY (id),
@@ -763,34 +763,36 @@ if( $backup )
  else 
   echo '<h2>delete old tables and use new tables instead</h2>';
 
-reset( $tablelist );
-while( list( ,$t) = each( $tablelist ) ) {
-  if( $backup ) {
-    $SQL = "DROP TABLE IF EXISTS bck_$t";
+if( $dbcreate ) {
+  reset( $tablelist );
+  while( list( ,$t) = each( $tablelist ) ) {
+    if( $backup ) {
+      $SQL = "DROP TABLE IF EXISTS bck_$t";
+      echo $SQL."<br>";
+      $db->query($SQL);
+  
+      $SQL = "ALTER TABLE $t RENAME bck_$t";
+      echo $SQL."<br>";
+      $db->query($SQL);
+    }  
+    $SQL = "DROP TABLE IF EXISTS $t";
     echo $SQL."<br>";
     $db->query($SQL);
 
-    $SQL = "ALTER TABLE $t RENAME bck_$t";
+    $SQL = "ALTER TABLE tmp_$t RENAME $t";
     echo $SQL."<br>";
     $db->query($SQL);
   }  
-  $SQL = "DROP TABLE IF EXISTS $t";
-  echo $SQL."<br>";
-  $db->query($SQL);
-
-  $SQL = "ALTER TABLE tmp_$t RENAME $t";
-  echo $SQL."<br>";
-  $db->query($SQL);
-}  
+}
 
 if( $addstatistic ) {
   echo '<h2>Add statistic field for each slice</h2>';
   $SQL = "SELECT id FROM slice";
   $db->query( $SQL );
   while( $db->next_record() ) {
-    if( $db->f(slice_id) == 'AA_Core_Fields..' )
+    if( $db->f(id) == 'AA_Core_Fields..' )
       continue;
-    $SQL = "REPLACE INTO field VALUES( 'display_count...', '', '". quote($db->f(slice_id)) ."', 'Displayed Times', '5050', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')";
+    $SQL = "REPLACE INTO field VALUES( 'display_count...', '', '". quote($db->f(id)) ."', 'Displayed Times', '5050', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')";
     echo $SQL."<br>";
     $db2->query( $SQL );
   }  
@@ -837,8 +839,8 @@ echo '<h2>Update OK</h2>';
 
 /*
 $Log$
-Revision 1.2  2001/06/03 16:37:39  honzam
-parse error bug fixed
+Revision 1.3  2001/06/04 10:53:37  honzam
+create table bug fixed for not updating reinstallation
 
 Revision 1.1  2001/06/03 15:54:31  honzam
 new sql_update.php3 script for easy database install & reinstalation
