@@ -173,6 +173,19 @@ $tablelist = array( 'active_sessions' => "(
                         KEY item_id(item_id,field_id,text(16)),
                         KEY text(text(10))
                       )",
+                      'cron' => "(
+                        id bigint(30) NOT NULL auto_increment,
+                        minutes varchar(30) default NULL,
+                        hours varchar(30) default NULL,
+                        mday varchar(30) default NULL,
+                        mon varchar(30) default NULL,
+                        wday varchar(30) default NULL,
+                        script varchar(100) default NULL,
+                        params varchar(200) default NULL,
+                        last_run bigint(30) default NULL,
+                        PRIMARY KEY (id),
+                        UNIQUE KEY id(id)
+                      )",
                       'db_sequence' => "(
                          seq_name varchar(127) NOT NULL,
                          nextid int(10) unsigned DEFAULT '0' NOT NULL,
