@@ -30,10 +30,11 @@ define ("D_SPACE_IMG", 4);
 define ("D_T_IMG", 5);
 define ("D_ITEM", 6);
 
-function PrintImg($src, $width=0, $height=0) {
+function PrintImg($src, $width=0, $height=0, $path='rel') {
   $width = $width ? "width=$width" : "";
   $height = $height ? "height=$height" : "";
-  return "<img src=".AA_INSTAL_URL."images/$src"." $width $height border='0'></img>";
+  $img = (($path=='rel') ? "../images/$src" : AA_INSTAL_URL."images/$src");
+  return "<img src=\"$img\" $width $height border='0'></img>";
 }
 
 $imgsrc = array(
@@ -108,7 +109,7 @@ function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
     }
   }
   else {
-    $imgs = PrintImg("blank.gif",count($images)*15, 21);
+    $imgs = PrintImg("blank.gif",count($images)*15, 21, 'abs');
   }
   $content[$d_id]["d_treeimages...."][0][value] = $imgs;
 }
