@@ -1,22 +1,29 @@
-02/03/05 - added 'integer' field type so searches and sorting can be done 
+02/08/05 - updated LDAP documentation and LDAP config files for LDAP v.3
+(honzam)   (OpenLDAP v.2)
+         - fixed e-mail validation functions to accept also domains like .museum
+         - new modificator for f_t alias function - conds - allows you to call
+           view with conds, just like:
+              {view.php3?vid=9&cmd[9]=c-1-{alias::f_t:{_#VALUE___}:conds}}
+         - better pagecache handling in site module (small fix)
+02/03/05 - added 'integer' field type so searches and sorting can be done
 (mimo)     numerically
 01/29/05 - new {str_replace:search:replace:subject} aliase construct
-(honzam) - {dictionary} now creates also links for all the words with first 
+(honzam) - {dictionary} now creates also links for all the words with first
            letter in uppercase
-         - added new value for nocache slice.php3 and view.php3 url parameter - 
-           nocache=invalidate. It not only create the page without cache, 
-           it also clear the cache for all views used in generation of the page 
-         - new fix=1 parameter for alerts.php3 - if set, then send only e-mail 
+         - added new value for nocache slice.php3 and view.php3 url parameter -
+           nocache=invalidate. It not only create the page without cache,
+           it also clear the cache for all views used in generation of the page
+         - new fix=1 parameter for alerts.php3 - if set, then send only e-mail
            to not processed collections
-         - AA generates as short url as possible 
+         - AA generates as short url as possible
            (sometimes only parameters "?x=17232" - see f_b, f_f)
          - parameters for user alias functions f_u are expanded before call user
            functions
          - fixed some help texts for Parameter Wizard
-         - removed unused fields form slice table 
+         - removed unused fields form slice table
          - added some debug messages written to the AA log for alerts
          - standard QueryZids() function used for readers collection in alerts
-01/20/05 - fixed a problem in MLXGetText and added {mlx:setlang:(LANG_CODE)} 
+01/20/05 - fixed a problem in MLXGetText and added {mlx:setlang:(LANG_CODE)}
 (mimo)     macro
          - added MLX_OPTIMIZE, if >5 it should speed up MLX results
 01/13/05 - words for {dictionary} feature are not replaced, if it is just

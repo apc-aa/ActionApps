@@ -56,10 +56,10 @@ if ( !$site_info['state_file'] ) {
 }
 
 if ( substr($site_info['state_file'],0,4) == 'http' ) {
-  echo "TODO";
+    echo "TODO";
 } else {
-  // in the following file we should define apc_state variable
-  require_once "./sites/site_".$site_info['state_file'];
+    // in the following file we should define apc_state variable
+    require_once "./sites/site_".$site_info['state_file'];
 }
 
 trace("=","site.php3","precachecheck");
@@ -74,7 +74,12 @@ trace("=","site.php3","precachecheck");
 //  25Sept03 - Honza - all apc_state is serialized instead of just
 //       $apc_state['state'] (we store browser agent in state in kormidlo.cz)
 $key_str = serialize($apc_state).":".$site_id.":".$post2shtml_id;
-if( is_array($slices4cache) && !$nocache && ($res = $GLOBALS['pagecache']->get($key_str)) ) {
+
+// store nocache to the variable (since it should be set for some view and we
+// do not want to have it set for whole site.
+// temporary solution - should be solved on view level (not global nocache) - TODO
+$site_nocache = $nocache;
+if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($key_str,$nocache))) {
     echo $res;
     if( $debug ) {
         $timeend = getmicrotime();
@@ -103,12 +108,16 @@ echo $res;
 // mention the slice in this array, cache is cleared on any change of the slice
 // (item addition) - the page is regenerated, then.
 
-if (is_array($slices4cache) && !$nocache) {
+if ( $GLOBALS['debug'] ) huhl("<br>Site.php3 is_array(slices4cache):". is_array($slices4cache), '<br>Site.php3 nocache:'.$nocache);
+
+if (is_array($slices4cache) && !$site_nocache) {
     $str2find = new CacheStr2find($slices4cache, 'slice_id');
     $GLOBALS['pagecache']->store($key_str, $res, $str2find);
 }
 
-if( $debugtime ) {
+
+
+if ($debugtime) {
     $timeend = getmicrotime();
     $time    = $timeend - $timestart;
     echo "<br><br>Page generation time: $time";

@@ -93,10 +93,11 @@ class PageCache  {
      */
     function store($keyString, $content, $str2find) {
         global $cache_nostore;
+        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache str2find:'.$str2find, '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
         if( ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
             $keyid  = $this->getKeyId($keyString);
-            if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache->store(key):'.$keyid, '<br>Pagecache->store(str2find):'.$str2find, '<br>Pagecache->store(content):'.$content);
+            if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(): - storing");
             $varset = new Cvarset( array( 'content' => $content,
                                           'stored'  => time()));
             $varset->addkey('id', 'text', $keyid);
