@@ -1,116 +1,159 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>Installation of APC Action Applications: Installation of Action Applications</TITLE>
- <LINK HREF="install-5.html" REL=next>
- <LINK HREF="install-3.html" REL=previous>
- <LINK HREF="install.html#toc4" REL=contents>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0043)install-4.html -->
+<HTML><HEAD><TITLE>Installation of APC Action Applications: Installation of Action Applications</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-5.html" 
+rel=next><LINK href="install-3.html" rel=previous><LINK href="install.html#toc4" 
+rel=contents>
+<!-- $Id$ -->
 </HEAD>
-<BODY>
-<A HREF="install-5.html">Next</A>
-<A HREF="install-3.html">Previous</A>
-<A HREF="install.html#toc4">Contents</A>
+<BODY><A href="install-5.html">Next</A> <A 
+href="install-3.html">Previous</A> <A 
+href="install.html#toc4">Contents</A> 
 <HR>
-<H2><A NAME="s4">4. Installation of Action Applications</A></H2>
 
-<H2><A NAME="ss4.1">4.1 Installation</A>
-</H2>
-
-<P>Create a directory <CODE>aa</CODE> in your 
-httpdocs directory and copy most files from the Action Applications distribution there:
+<H2><A name=s4>4. Installation of Action Applications</A></H2>
+<H2><A name=ss4.1>4.1 Installation</A> </H2>
+<P>The recommended way to install the Action Apps is via CVS, making it easy to 
+  update later. The exact details will depend on whether your machine is serving 
+  multiple Virtual Domains and if so, whether Action Apps is to be made available 
+  to all the domains or not. 
+<P>Action Apps can be installed either in some common location, or inside one 
+  of the Virtual Hosts, the example below assumes that Action Apps is installed 
+  in a common location, &quot;/home/httpd/html&quot;
 <BLOCKQUOTE><CODE>
+  <HR>
+  </CODE> 
+  <PRE><code># cd /home/httpd/html
+# cvs -d:pserver:anonymous@cvs.apc-aa.sourceforge.net:/cvsroot/apc-aa login<br># press enter at the password prompt    <br># cvs -z3 -d:pserver:anonymous@cvs.apc-aa.sourceforge.net:/cvsroot/apc-aa co apc-aa</code></PRE>
+  <CODE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>
+<P>You should see a list of the files as they are installed. 
+<P>Then edit the Apache configuration file /etc/httpd/conf/httpd.conf, 
+<P>If you want Action Apps available to all domains, then add this line in the 
+  global context with the other Aliases, otherwise you can add it to each Virtual 
+  domain where you want to make Action Apps available. 
+<P>Note that you do NOT need to do this for a virtual domain IF Action Apps is 
+  installed directly in that domains site.
+<blockquote><code> 
+  <hr>
+  </code> 
+  <pre><code>Alias /apc-aa/ /home/httpd/html/apc-aa/</code></pre>
+  <code>
+  <hr>
+  </code></blockquote>
+<p>
+<p>
+<p>
+<p> 
+<p> 
+<P>Edit <CODE>/home/httpd/html/apc-aa/config.php3</CODE>.
+<P>This is the main Action Applications configuration file. It contains comments 
+  which explain everything there. Note that this file may not contain anything 
+  before the <CODE>&lt;?php</CODE> line at the top and after the <CODE>?&gt;</CODE> 
+  line at the bottom.
+<P>TODO - check on how this works with site_config
+<P><B>The file <CODE>/home/httpd/html/aa/include/config.php3</CODE> now contains 
+  passwords. It should therefore not be world readable. On the other hand, the 
+  http server must be able to read it. Read the chapter on <A 
+href="install-6.html#security">security</A> for a possible solution for this problem.</B> 
+<h2><a name=ss4.2>4.2 Creating the database</a></h2>
+<p>Then create your initial Action Applications database. To do this, you need 
+  the file <code>aadb.sql</code> from the Action Applications doc directory. It 
+  contains SQL commands which create the database. When queried for a password, 
+  use the mysql root password. 
+<blockquote> 
+  <hr>
+  <pre><code>#  mysql -u root -p
+Enter password: 
+mysql&gt; CREATE DATABASE aadb;
+Query OK, 1 row affected (0.03 sec)
+
+mysql&gt; QUIT
+Bye
+# cd /home/httpd/html/apc-aa<br># mysql -u root -p aadb &lt; doc/aadb.sql
+Enter Password:
+#
+</code></pre>
+  <hr>
+</blockquote>
+<p>Create a user in MySQL that will be able to access the new aadb database. Note 
+  that the instructions below assumed you used &quot;localhost&quot; as the MySQL 
+  server, if you set something else, then it will typically be something like 
+  &quot;aadbuser@machinename&quot;. This username and password should match that 
+  set in config.php3 above. We will refer to this password as the <em>aadbuser 
+  password</em>. 
+<blockquote> 
+  <hr>
+  <pre><code># mysql -u root -p
+mysql&gt; USE mysql;
+mysql&gt; GRANT SELECT,INSERT,UPDATE,DELETE 
+ON aadb.* 
+TO aadbuser@localhost 
+IDENTIFIED BY 'password2';
+Query OK, 0 rows affected (0.05 sec)
+
+mysql&gt; FLUSH PRIVILEGES;
+mysql&gt; quit
+</code></pre>
+  <hr>
+</blockquote>
+<P>
+<H2><A name=ss4.3>4.3 Creating a superadmin account</A> </H2>
+<P>Point your Web browser to <a 
+href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/setup.php3</a>. 
+  You should see a page with two buttons &quot;Init&quot; and &quot;Recover&quot;, 
+  click &quot;Init&quot; and you should receive a form where you can enter the 
+  information for the SuperAdmin account. 
+<P>If you don't get the form, just the same screen again, then check the php.ini 
+  file contains &quot;register_globals = On&quot; as described in <a href="install-3.html#ss3.7">3.7</a>.
+<p> 
+<P>There is just one question open: What is login name and password of the initial 
+  superadmin account (which you need to create the first slice)? The answer depends 
+  on the permission system you use. 
+<p> 
+<ul>
+  <li>If you are using the LDAP based permission system, the superadmin account 
+    is the one you created when you edited the initial LDIF data file. At that 
+    time, you have also set a password for this account. 
+  <li>If you are using the sql based permission system, there is no initial superadmin 
+    account so far. To create one, follow the instructions below. </li>
+</ul>
+<p>Action Applications users who have the superadmin privilege may create new 
+  slices in addition to the rights any slice administrator has. 
+<p>Creating a superadmin account will be necessary whenever you don't have one 
+  left. This is the case at installation time if you are using the sql based permission 
+  system, and in case you have accidently deleted the last superadmin account 
+  or accidently revoked the superadmin privilege from the last superadmin account. 
+  To create a superadmin account, follow these steps. 
+<ul>
+  <li>rename the file apc-aa/admin/setup.php.txt to apc-aa/admin/setup.php
+  <li>go to <a 
+href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/setup.php3</a> 
+    and press &quot;Recover&quot; 
+  <li>rename the file apc-aa/admin/setup.php back to apc-aa/admin/setup.php.txt 
+    for safety.
+</ul>
+<H2><A name=ss4.3>4.3 Your first test slice</A> </H2>
+<p>After creating the superadmin you will be thanked and either directed to the 
+  Slice addition page <a 
+href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/sliceadd.php3</a> 
+  or direct to the Administration front end <a 
+href="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin</a>. 
+  You should be able to log in now with the superadmin account you created above. 
+  Refer to the <a href="http://www.apc.org/actionapps/english/manual/wmguide.html">APC 
+  Action Apps User Manual Webmaster's guide</a>.
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
 <HR>
-<PRE>
-# mkdir /home/httpd/html/aa
-# cd apc-aa-1.1.0
-# cp -R *.css *.php3 admin images include /home/httpd/html/aa
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>
-<P>Edit <CODE>/home/httpd/html/aa/include/config.php3</CODE>. 
-This is the main Action Applications configuration
-file. It contains comments which explain everything there.
-Note that this file may not contain anything before the <CODE>&lt;?php</CODE> line
-at the top and after the <CODE>?&gt;</CODE> line at the bottom.
-<P><B>The file <CODE>/home/httpd/html/aa/include/config.php3</CODE> now contains
-passwords. It should therefore not be world readable. On the other hand,
-the http server must be able to read it. Read the chapter on
-<A HREF="install-6.html#security">security</A>
- for a possible solution for this problem.</B>
-<P>Point your Web browser to 
-<A HREF="http://localhost/aa/admin/setup.php3">http://localhost/aa/admin/setup.php3</A>. This page helps you to create your initial superadmin account.
-<P>
-<H2><A NAME="ss4.2">4.2 Creating a superadmin account</A>
-</H2>
-
-<P>Action Applications users who have the superadmin privilege may create new
-slices in addition to the rights any slice administrator has.
-<P>Creating a superadmin account will be necessary whenever you don't have
-one left.
-This is the case at installation time and in case you have accidently deleted
-the last superadmin account or accidently revoked the superadmin 
-privilege from the last superadmin account.
-To create a superadmin account, click on Init and fill in the form
-Superadmin account. Fields marked with an asterisk are required. Click on the 
-Create button.
-<P>Now you should see a page with a congratulation and a link <EM>Add Slice</EM>. Follow this link. You will be asked for login name and password - log in with your
-(new) superadmin account and read on in the next section to see how to
-create a slice.
-<P>
-<H2><A NAME="ss4.3">4.3 Your first test slice</A>
-</H2>
-
-<H3>Creating the first test slice</H3>
-
-<P>After a successful login on 
-<A HREF="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/sliceadd.php3</A>,
-you should see the <EM>Slice Administration - Add Slice</EM> page. Choose the
-slice type (see 
-<A HREF="install-1.html#slices">slices</A>
- for details) and say <EM>Add</EM>.
-<P>Fill in the form. The fields shown here depend on the slice type, but some
-fields are there for every slice type. Especially fill in the following 
-fields:
-<UL>
-<LI>Headline - a title for the slice</LI>
-<LI>Short name - a short description of the slices contents</LI>
-<LI>Slice URL - the URL of a WWW page where you want to display the
-actual content; this is the place readers will access. The page
-does not need to exist at this time and it does not need to be
-within the action application directory tree</LI>
-<LI>Listing length - say 10</LI>
-<LI>Fulltext info abstract grab length - say 200.</LI>
-</UL>
-
-You may fill in the other fields, too.
-After
-selecting 
-<EM>insert</EM> at the page bottom the slice will be created.
-<P>Each slice can have a set of categories. New information items can belong
-to one or more categories. Create your first category by selecting 
-<EM>New</EM>. Enter the category name and hit OK. 
-<P>At this point in time, you have created a new slice and thus, a new
-action application. 
-<P>
-<H3>Adding the first information item to the test slice</H3>
-
-<P>Select <EM>Add Article</EM>. Fill in some information. Make sure to set the
-Expire date to a day in the future and hit <EM>insert</EM>.
-<P>The page you see after that tells you the HTML code which you must place
-into the page which is meant to display the content (the slice URL).
-<P>You might have got an idea how everything works now?
-<P>
-<P>
-<P>
-<P>
-<P>
-<P>
-<P>
-<HR>
-<A HREF="install-5.html">Next</A>
-<A HREF="install-3.html">Previous</A>
-<A HREF="install.html#toc4">Contents</A>
-</BODY>
-</HTML>
+<A href="install-5.html">Next</A> <A 
+href="install-3.html">Previous</A> <A 
+href="install.html#toc4">Contents</A> 
+</BODY></HTML>

@@ -1,559 +1,256 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>Installation of APC Action Applications: Installation of Other Packages needed by Action Applications</TITLE>
- <LINK HREF="install-4.html" REL=next>
- <LINK HREF="install-2.html" REL=previous>
- <LINK HREF="install.html#toc3" REL=contents>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0043)install-3.html -->
+<HTML><HEAD><TITLE>Installation of APC Action Applications: Installation of Other Packages needed by Action Applications</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-4.html" 
+rel=next><LINK href="install-2.html" rel=previous><LINK href="install.html#toc3" 
+rel=contents>
+<!-- $Id$ -->
 </HEAD>
-<BODY>
-<A HREF="install-4.html">Next</A>
-<A HREF="install-2.html">Previous</A>
-<A HREF="install.html#toc3">Contents</A>
+<BODY><A href="install-4.html">Next</A> <A 
+href="install-2.html">Previous</A> <A 
+href="install.html#toc3">Contents</A> 
 <HR>
-<H2><A NAME="install_other"></A> <A NAME="s3">3. Installation of Other Packages needed by Action Applications</A></H2>
 
-<H2><A NAME="ss3.1">3.1 Platform</A>
-</H2>
-
-<P>The installation instructions given here are intended for use with RedHat
-Linux. We used version 6.0 and 6.2. This specifically means that the <EM>rpm</EM> 
-tool is
-used wherever possible. 
-<P><EM>If your system does not support the rpm tool</EM>,
-most procedures will be quite different from what is shown here. 
-You will probably have to do most installations by building the software
-itself. It is beyond the scope of this document to describe that although
-necessary configurations options will be mentioned.
+<H2><A name=install_other></A><A name=s3>3. Installation of Other Packages 
+needed by Action Applications</A></H2>
+<H2><A name=ss3.1>3.1 Platform</A> </H2>
+<P>The installation instructions given here are intended for use with RedHat 
+Linux. We used version 6.0 and 6.2. This specifically means that the 
+<EM>rpm</EM> tool is used wherever possible. 
+<P><EM>If your system does not support the rpm tool</EM>, most procedures will 
+be quite different from what is shown here. You will probably have to do most 
+installations by building the software itself. It is beyond the scope of this 
+document to describe that although necessary configurations options will be 
+mentioned. 
 <P>
-<H2><A NAME="ss3.2">3.2 MySQL database back end</A>
-</H2>
-
-<P>Check if you have already MySQL 3.22.32 or newer installed:
+<H2><A name=ss3.2>3.2 MySQL database back end</A> </H2>
+<P>Check if you have already MySQL 3.22.32 or newer installed: 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% rpm -q MySQL
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>If it is not installed or if the version used is too old, install
-it.
-If you don't have a CD with MySQL RPM files, download it from 
-<A HREF="http://www.mysql.com/downloads/mysql.html">http://www.mysql.com/downloads/mysql.html</A>. (MySQL is
-<EM>not</EM> included in RedHat Linux.) Use the stable
-release version. Get files from the "standard binary RPMs" part: 
-"<EM>Server for ... systems</EM>", "<EM>Client programs for ... systems</EM>"
-and "<EM>Include files and libraries for development for ... systems</EM>".
-(The latter is needed re recompile php if this has to be done, see 
-below.)
-<P>As root, install the RPMs:
+  <HR>
+  <PRE>% rpm -q MySQL</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>If MySQL has been installed from source ,then RPM will report it is not installed, 
+  try &quot;ps efax | grep mysql&quot; to see if it is running, and if it is then 
+  either &quot;/usr/sbin/mysqld -V&quot; will report the version on newer versions. 
+  If this doesn't exist then running the client with, &quot;mysql&quot; should 
+  report the version number it is connected to.
+<P>If it is not installed or if the version used is too old, install it. If you 
+  don't have a CD with MySQL RPM files, download it from <A 
+href="http://www.mysql.com/downloads/mysql.html">http://www.mysql.com/downloads/mysql.html</A>. 
+  (MySQL is <EM>not</EM> included in RedHat Linux.) Use the stable release version. 
+  Get files from the "standard binary RPMs" part: "<EM>Server for ... systems</EM>", 
+  "<EM>Client programs for ... systems</EM>" and "<EM>Include files and libraries 
+  for development for ... systems</EM>". (The latter is needed re recompile php 
+  if this has to be done, see below.) 
+<P>As root, install the RPMs: 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# rpm -Uv MySQL-3.22.32-1.i386.rpm
+  <HR>
+<PRE># rpm -Uv MySQL-3.22.32-1.i386.rpm
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-This command will install the MySQL database server, create some administrative
-tables and already start the server itself. It also creates a file in
-<CODE>/etc/rc.d/init.d/</CODE> and symbolic links in <CODE>/etc/rc.d/rc?.d/</CODE>
-so the server is started and stopped properly on system start and shutdown.
-<P>Also install the MySQL client tools and the development files:
+  <HR>
+  </CODE></BLOCKQUOTE>This command will install the MySQL database server, create 
+some administrative tables and already start the server itself. It also creates 
+a file in <CODE>/etc/rc.d/init.d/</CODE> and symbolic links in 
+<CODE>/etc/rc.d/rc?.d/</CODE> so the server is started and stopped properly on 
+system start and shutdown. 
+<P>Also install the MySQL client tools and the development files and &quot;shared&quot; 
+  : 
+<BLOCKQUOTE><CODE> 
+  <HR>
+  </CODE>
+  <PRE><code># rpm -Uv MySQL-client-3.23.43-1.i386.rpm
+# rpm -Uv MySQL-devel-3.23.43-1.i386.rpm<br>#rpm -Uv MySQL-shared-3.23.43-1.i386.rpm</code></PRE>
+  <CODE><HR>
+  </CODE></BLOCKQUOTE>
+Since the server is now running, it can be accessed. It is a 
+good idea to immediately set a password for the MySQL root user. Remind the 
+password - better not use <EM>mysqlpass</EM> for obvious reasons. We will refer 
+to this password as the <EM>mysql root password</EM>. 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# rpm -Uv MySQL-client-3.22.32-1.i386.rpm
-# rpm -Uv MySQL-devel-3.22.32-1.i386.rpm 
+  <HR>
+<PRE># mysqladmin -u root password 'mysqlpass'
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-Since the server is now running, it can be accessed. It is a good idea to
-immediately set a password for the MySQL root user.
-Remind the password - better not use <EM>mysqlpass</EM> for obvious reasons.
-We will refer to this password as the <EM>mysql root password</EM>.
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# mysqladmin -u root password 'mysqlpass'
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>Then create your initial Action Applications database. To do this, you need the file
-<CODE>aadb.sql</CODE> from the Action Applications doc directory. It contains SQL commands
-which create the database. When queried for a password, use the
-mysql root password.
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# mysql -u root -p
-Enter password: 
-mysql> CREATE DATABASE aadb;
-Query OK, 1 row affected (0.03 sec)
-
-mysql> QUIT
-Bye
-# mysql -u root -p aadb &lt; doc/aadb.sql
-Enter Password:
-#
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>Create a user in MySQL that will be able to access the new aadb database. 
-Again, you will need to provide a new password; below, it is <EM>password2</EM>.
-Use a different one and remind it. We will refer to this password as the
-<EM>aadbuser password</EM>.
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# mysql -u root -p
-mysql> USE mysql;
-mysql> GRANT SELECT,INSERT,UPDATE,DELETE 
-ON aadb.* 
-TO aadbuser@localhost 
-IDENTIFIED BY 'password2';
-Query OK, 0 rows affected (0.05 sec)
-
-mysql> FLUSH PRIVILEGES;
-mysql> quit
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>&nbsp;
 <P>
-<H2><A NAME="ss3.3">3.3 OpenLDAP</A>
-</H2>
-
+<H2><A name=ss3.3>3.3 OpenLDAP</A> </H2>
 <H3>Package Installation</H3>
+<P>Note: You only need the OpenLDAP server if you decided to use LDAP as the 
+permission system. Only do this if you know what you are doing.  Generally, people use mysql as
+their permission system<P>
 
-<P>Note: You only need the OpenLDAP server if you decided to use LDAP as
-the permission system. The OpenLDAP server does not need to be on the same
-host as the Action Applications themselves are.
-<P>Check if you have already the OpenLDAP server installed:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% man slapd
-No manual entry for slapd
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
+If you to install OpenLDAP, see the <a href="ldap.html">apc-aa LDAP page</a>
 
-If the manual page appears, it is very likely you have the OpenLDAP server on
-the machine. (This check is preferred over the rpm way because the OpenLDAP
-rpm exists only for a short time so far and many machines probably have it
-installed without the rpm.)
-<P>OpenLDAP is included in RedHat Linux 6.1; releases prior to 6.1 don't have
-it. It is possible to install the rpms on any 6.x RedHat Linux though.
-<P>If you don't have the OpenLDAP server installed, and if you don't have
-the rpm's, get the rpm's from a 
-RedHat mirror site, for example from
-<A HREF="ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-1.2.9-6.i386.rpm">ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-1.2.9-6.i386.rpm</A>
-and
-<A HREF="ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-devel-1.2.9-6.i386.rpm">ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-devel-1.2.9-6.i386.rpm</A>
-and install them:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# rpm -Uv openldap-1.2.9-6.i386.rpm
-openldap-1.2.9-6
-# rpm -Uv openldap-devel-1.2.9-6.i386.rpm                
-openldap-devel-1.2.9-6
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
 <P>
-<H3>Setup: Configuration</H3>
-
-<P>If you didn't have an OpenLDAP server running, you will need to create the
-<CODE>/etc/openldap/slapd.conf</CODE> file - this is the server configuration file.
-Use the file <CODE>doc/slapd.conf</CODE> from the Action Applications distribution to create it.
-This file is well documented and contains hints about which spots need
-to be modified. <EM>The LDAP server will not work properly if you don't edit
-this file.</EM> You will need some basic data to fill in here; see at
-<A HREF="install-2.html#ldap_thoughts">LDAP basic info</A> for details.
-<P>The root dn password in this file can be trivial for now (leave it as it is,
-"password"), we will replace it
-shortly with a secure one. We refer to this password as the 
-<EM>ldap root dn</EM> password.
-<P>Also you need to copy some other files from the Action Applications doc directory to the 
-<CODE>/etc/openldap/</CODE> directory and change the file mode of the main
-configuration file:
+<H2><A name=ss3.4>3.4 Installing the Apache Web Server</A> </H2>
+<P>Use the RPM that comes from RedHat. We have had success with the versions 
+1.3.9 and 1.3.12. You need to install the "devel" packages, too. 
+<P>To find out which version of apache httpd you have, use: 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# chmod 600 /etc/openldap/slapd.conf 
-# cp slapd.oc.netscape.conf slapd.at.netscape.conf slapd.oc.apc.conf slapd.at.apc.conf /etc/openldap/
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>Edit the file <CODE>/etc/openldap/ldap.conf</CODE>. After installation, it
-only contains comments. Put in two lines containing your base dn and
-the host where the ldap server runs:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-BASE    ou=AA
-HOST    localhost
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-(This file is used by the programs that <EM>access</EM> a ldap server, not
-by the server itself. It only affects accessing programs on the machine
-where the programs run.)
-<P>Create the directory where the LDAP database will live
-(again, replace the domain name with the one your base dn was
-derived from):
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# mkdir /var/lib/ldap/ecn.apc.org
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>
-<P>
-<H3>Start the ldap server</H3>
-
-<P>Try to start the ldap server and check messages from the messages
-logfile (normally <CODE>/var/log/messages</CODE>):
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# /etc/rc.d/init.d/ldap start
-Starting ldap:                                             [  OK  ]
-# tail /var/log/messages
-[...]
-Jul 17 11:01:28 ecn ldap: slapd startup succeeded
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>Make the ldap server start on system boots:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# chkconfig ldap on
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>
-<H3>Initial database creation</H3>
-
-<P>The OpenLDAP server needs an initial database before its first start. To
-create this database, you need a <EM>ldif</EM> format file which can be translated
-into the database by the ldapmodify command. There is an example ldif file,
-namely <CODE>LDIF.ini</CODE>, in the doc/ directory. Edit this file to suit your
-needs according to the following instructions.
-<P>The initial ldif file should contain four objects:
-<UL>
-<LI>Action Applications base object</LI>
-<LI>The Action Applications account object (used by Action Applications to access the ldap server)</LI>
-<LI>ldap tree for AA's users</LI>
-<LI>ldap tree for ACLs used by the Action Applications</LI>
-</UL>
-
-Objects are separated by blank lines. Each line consists of a keyword,
-followed by a colon, followed by a value. The first line of each object
-is the dn, thus the keyword is "dn". The other object lines are its
-attributes.
-<P>You can edit this file, but it's not necessary.
-<P>We can tell the ldap server to create the objects:
-<P>
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% ldapmodify -a -f ldiffile -D "cn=root,ou=AA" -w password
-adding new entry ou=AA
-
-adding new entry cn=aalduser,ou=AA
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>
-<P>If the server responds with an error message:
-<DL>
-<DT><B>ldap_add: Insufficient access</B><DD><P>Check the rootdn: entry in
-the slapd.conf file and what you typed after the -D switch
-to ldapmodify. They must match.
-<DT><B>ldap_add: Object class violation</B><DD><P>The objects in the ldif
-file are not consistent. Check if you accidently deleted lines
-from the file.
-</DL>
-<P>In order to check the server, search all the objects you just added. The 
-result should be similar to the ldif file you just used.
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% ldapsearch -L objectclass=\*
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-If you get an error message or nothing, check the 
-<CODE>/etc/openldap/ldap.conf</CODE> file for the BASE and HOST entries.
-<P>
-<H3>LDAP passwords</H3>
-
-<P>There are two passwords we must maintain for the ldap
-server. We refer to them as the <EM>root dn password</EM>, which is used
-to access the LDAP root account and the 
-<EM>aalduser account password</EM>, which the Action Applications use to 
-access the aalduser account and the LDAP server.
-<P>We should now set the root dn password in 
-<CODE>/etc/openldap/slapd.conf</CODE>. To do this, first set the aalduser account
-password using ldappasswd, then make a query to the ldap server so we get an 
-encrypted version of the password back, and 
-copy and paste the encrypted password into the sldap.conf file.
-When you issue the following commands, the password given after the -w 
-switches must match the <EM>old</EM> root dn password which is still defined
-in clear text in <CODE>/etc/openldap/slapd.conf</CODE>. When prompted for the
-new password, enter the new root dn password you want to set. And remind it!
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% ldappasswd -D "cn=root,ou=AA" -w password -t "cn=aalduser,ou=AA" -H ssha
-New password: 
-Re-enter new password: 
-% ldapsearch -D "cn=root,ou=AA" -w password -L cn=aa
-dn: cn=aalduser,ou=AA
-objectclass: top
-objectclass: person
-cn: aa
-sn: Toolkit
-description: Account used by AA to access LDAP DB
-userpassword: {ssha}1KoDEQd/MrY+JPnFgotki5AZrCyfGZYr
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>If everything worked right, you get the line "userpassword" as shown.
-This is the encrypted version of the new root dn password you entered.
-Paste this string (including the "{ssha}") into the rootpw: line in
-<CODE>/etc/openldap/slapd.conf</CODE>. 
-After the next server restart, the old root dn password "password" 
-will no longer work, instead, you use the password you just entered.
-<P>Try to access the ldap server using the aalduser account:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% ldapsearch -D "cn=aalduser,ou=AA" -W -L objectclass=\*
-Enter LDAP Password: 
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-You should get all the objects that are stored. In case of an error message,
-check the spelling of the command line... errors most likely have to do with
-spelling errors.
-<P><B>Now</B> you can change the password for the aalduser account 
-again so it is different from the root dn password:
-<P>
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% ldappasswd -D "cn=root,ou=AA" -t "cn=aalduser,ou=AA" -H ssha -W
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>
-<P>
-<H2><A NAME="ss3.4">3.4 Installing the Apache Web Server</A>
-</H2>
-
-<P>Use the RPM that comes from RedHat. We have had success with the versions
-1.3.9 and 1.3.12. You need to install the "devel" packages, too.
-<P>To find out which version of apache httpd you have, use:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% httpd -v
+  <HR>
+<PRE>% httpd -v
 Server version: Apache/1.3.9 (Unix)  (Red Hat/Linux)
 Server built:   Apr  7 1999 17:17:41
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
+  <HR>
+  </CODE></BLOCKQUOTE>
 <P>To install the apache web server, use these commands. Not that in this 
-example, the apache itself was already installed, but the development
-package was missing (this is the default case for RedHat Linux).
+example, the apache itself was already installed, but the development package 
+was missing (this is the default case for RedHat Linux). 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# rpm -Uv /mnt/cdrom/RedHat/RPMS/apache-1.3.9-7.i386.rpm 
+  <HR>
+<PRE># rpm -Uv /mnt/cdrom/RedHat/RPMS/apache-1.3.9-7.i386.rpm 
 package apache-1.3.9-7 is already installed
 # rpm -Uv /mnt/cdrom/RedHat/RPMS/apache-devel-1.3.9-7.i386.rpm 
 apache-devel-1.3.9-7
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>Configuring the web server is a task for a later point in time because
-RPM will do part of this work.
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>Configuring the web server is a task for a later point in time because RPM 
+will do part of this work. 
 <P>
-<H2><A NAME="php_install"></A> <A NAME="ss3.5">3.5 PHP3</A>
-</H2>
-
-<H3>PHP3 installation</H3>
-
-<P>Hint: The use of PHP4 has not yet been tested.
-<P>php3 runs within the apache web server as a module. We need a version of
-php3 which includes support for <EM>two optional php modules</EM>, namely ldap
-and mysql. These modules provide access to ldap and mysql databases,
-respectively, from php3 programs. 
-(If you don't use ldap with the Action Applications, you will not need the
-ldap php support.)
-<P>There are many ways to install all this, and many can generate a lot of
-trouble. The cleanest and easiest way is, again, to use RPMs.
-<P>
-<H3>Testing php3 installation</H3>
-
-<P>First, create a test WWW page to find out the status of php3 support on
-your system. This can be done easily by executing this command (assuming
-<CODE>/home/httpd/heml</CODE> is your DocumentRoot directory:
+<H2><A name=php_install></A><A name=ss3.5>3.5 PHP3</A> </H2>
+<H3>PHP installation</H3>
+<P>php runs within the apache web server as a module. We need a version of php 
+  which includes support for <EM>two optional php modules</EM>, namely ldap and 
+  mysql. These modules provide access to ldap and mysql databases, respectively, 
+  from php programs. (If you don't use ldap with the Action Applications, you 
+  will not need the ldap php support.) 
+<P>There are many ways to install all this, and many can generate a lot of trouble. 
+  The cleanest and easiest way is, again, to use RPMs. 
+<P><b>Note that these instructions were written for installing PHP3. PHP4 has 
+  been tested and works, but noone so-far has followed these installation instructions, 
+  which have been edited for consistency with php4. An updated version of this 
+  section for PHP4 would be welcome.</b>
+<P><b>There where problems with the RedHat RPM's for PHP4, and some other configuration 
+  problems which are detailed at the end of this section.</b>
+<P> 
+<H3>Testing php installation</H3>
+<P>First, create a test WWW page to find out the status of php support on your 
+  system. This can be done easily by executing this command (assuming <CODE>/home/httpd/html</CODE> 
+  is your DocumentRoot directory: 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-echo "&lt;?php phpinfo() ?>" > /home/httpd/html/test.php3
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-Access the page with a web browser (http://localhost/test.php3). 
+  <HR>
+  <PRE>echo "&lt;?php phpinfo() ?&gt;" &gt; /home/httpd/html/test.php</PRE>
+  <HR>
+  </CODE></BLOCKQUOTE>
+Access the page with a web browser (http://localhost/test.php). 
 <UL>
-<LI>If you see the string <CODE>php phpinfo() ?</CODE>, you do not have
-php3 installed or at least it is not enabled.</LI>
-<LI>If you see a page beginning with <CODE>PHP Version</CODE>, you have a working
-php. Browse through the <CODE>Extensions</CODE> section. Look for an extension
-named <CODE>MySQL</CODE> and, if you are using the LDAP permission system, for one
-named <CODE>LDAP</CODE>. If both are there, you are lucky because the php setup
-id complete; otherwise, you must install the missing parts.</LI>
+  <LI>If you see a page beginning with <CODE>PHP Version</CODE>, you have a working 
+    php. Browse through the <CODE>Configuration</CODE> section. Look for an extension 
+    named <CODE>MySQL</CODE> and, if you are using the LDAP permission system, 
+    for one named <CODE>LDAP</CODE>. If both are there, you are lucky because 
+    the php setup id complete; otherwise, you must install the missing parts.
+  <li>If you see the string <code>php phpinfo() ?</code>, you do not have php4 
+    installed or at least it is not enabled. In which case, you can try again 
+    with a test file test.php3 which will work if the PHP3 is installed. APC-AA 
+    should work with this. 
 </UL>
 <P>
 <H3>Installing PHP</H3>
-
-<P>Unfortunately, as of this writing, there is no mysql support for php which
-comes as an rpm made by RedHat. There are some mysql modules for php on
-the RedHat server, but they are all for older versions of php.
+<P>Unfortunately, as of this writing, there is no mysql support for php which 
+comes as an rpm made by RedHat. There are some mysql modules for php on the 
+RedHat server, but they are all for older versions of php. 
 <P>RedHat 6.1 and 6.2 above have a php rpm which is prepared for inclusion of 
-other php
-modules. The ldap module is provided. The mysql module is not provided,
-but it is possible to build the mysql module. The advantage of going this
-way is that you will have the RPMs which are easy to install on all your
-machines and that the RPM install scripts will manage necessary configuration
-file changes by themselves.  The disadvantage is that the RPM build process
-requires some more packages installed. This is described in the
-next section.
-<P>If you don't want to use RPMs, you must build PHP the traditional
-way. This is described in the sections following the next section.
+other php modules. The ldap module is provided. The mysql module is not 
+provided, but it is possible to build the mysql module. The advantage of going 
+this way is that you will have the RPMs which are easy to install on all your 
+machines and that the RPM install scripts will manage necessary configuration 
+file changes by themselves. The disadvantage is that the RPM build process 
+requires some more packages installed. This is described in the next section. 
+<P>If you don't want to use RPMs, you must build PHP the traditional way. This 
+is described in the sections following the next section. 
 <P>
 <H3>Building the PHP RPMs including mysql</H3>
-
 <P>
 <OL>
-<LI> To build the PHP RPMs including the mysql support, 
-you need the following
-packages installed which you find at www.redhat.com:
-<UL>
-<LI>apache-devel</LI>
-<LI>imap-devel</LI>
-<LI>openldap-devel</LI>
-<LI>postgresql-devel</LI>
-<LI>MySQL-devel</LI>
-<LI>apache-devel (version 1.3.9 or newer)</LI>
-<LI>and there must be a general development environment.</LI>
-</UL>
-</LI>
-<LI> In order to build RPMs, you need an RPM build environment.
-For a quick setup of this, use the following commands:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% mkdir ~/rpmbuild ~/rpmbuild/RPMS ~/rpmbuild/SRPMS ~/rpmbuild/BUILD ~/rpmbuild/SOURCES ~/rpmbuild/SPECS; echo "%_topdir ${HOME}/rpmbuild" >~/.rpmmacros
+  <LI>To build the PHP RPMs including the mysql support, you need the following 
+  packages installed which you find at www.redhat.com: 
+  <UL>
+    <LI>apache-devel 
+    <LI>imap-devel 
+    <LI>openldap-devel [ only if you are building openldap ]
+    <LI>postgresql-devel [ only if you think you may want to use postgresql with this webserver ]
+    <LI>MySQL-devel 
+    <LI>apache-devel (version 1.3.9 or newer) 
+    <LI>and there must be a general development environment. </LI></UL>
+  <LI>In order to build RPMs, you need an RPM build environment. For a quick 
+  setup of this, use the following commands: 
+  <BLOCKQUOTE><CODE>
+    <HR>
+<PRE>% mkdir ~/rpmbuild ~/rpmbuild/RPMS ~/rpmbuild/SRPMS ~/rpmbuild/BUILD ~/rpmbuild/SOURCES ~/rpmbuild/SPECS; echo "%_topdir ${HOME}/rpmbuild" &gt;~/.rpmmacros
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-</LI>
-<LI> You need the php source RPM from RedHat and install it (do not install
-it before you have the RPM build environment):
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% rpm -Uv php-3.0.15-2.src.rpm
+    <HR>
+    </CODE></BLOCKQUOTE>
+  <LI>You need the php source RPM from RedHat and install it (do not install it 
+  before you have the RPM build environment): 
+  <BLOCKQUOTE><CODE>
+    <HR>
+<PRE>% rpm -Uv php-3.0.15-2.src.rpm
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-In this example, the php source rpm version 3.0.15-2 was used.
-</LI>
-<LI>Edit the file <CODE>~/rpmbuild/SPECS/php.spec</CODE>. This file is
-the description used by rpm to build the php packages, and the mysql
-section is commented out (this is the reason for the fact that there is
-no mysql module for php on the RedHat server). You need to uncomment all
-lines which concern mysql, and you need to add a section describing the
-mysql package. There is a patch which does the right thing for the
-version 3.0.15-2; the patch can be found in the Action Applications doc directory as
-<CODE>php-spec.patch</CODE>. To apply this patch, copy it to the
-<CODE>~/rpmbuild/SPECS</CODE> directory and use this command:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% cd ~/rpmbuild/SPECS; patch &lt; php-spec.patch
+    <HR>
+    </CODE></BLOCKQUOTE>In this example, the php source rpm version 3.0.15-2 was 
+  used. 
+  <LI>Edit the file <CODE>~/rpmbuild/SPECS/php.spec</CODE>. This file is the 
+  description used by rpm to build the php packages, and the mysql section is 
+  commented out (this is the reason for the fact that there is no mysql module 
+  for php on the RedHat server). You need to uncomment all lines which concern 
+  mysql, and you need to add a section describing the mysql package. There is a 
+  patch which does the right thing for the version 3.0.15-2; the patch can be 
+  found in the Action Applications doc directory as <CODE>php-spec.patch</CODE>. 
+  To apply this patch, copy it to the <CODE>~/rpmbuild/SPECS</CODE> directory 
+  and use this command: 
+  <BLOCKQUOTE><CODE>
+    <HR>
+<PRE>% cd ~/rpmbuild/SPECS; patch &lt; php-spec.patch
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-</LI>
-<LI>Run the rpm build process:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% rpm -ba ~/rpmbuild/SPECS/php.spec
+    <HR>
+    </CODE></BLOCKQUOTE>
+  <LI>Run the rpm build process: 
+  <BLOCKQUOTE><CODE>
+    <HR>
+<PRE>% rpm -ba ~/rpmbuild/SPECS/php.spec
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-This will take some time. After everything is done, you will find all the
-RPMs in the directory <CODE>~/rpmbuild/RPMS/i386/</CODE>. 
-</LI>
-</OL>
-<P>If you had already
-php installed, better uninstall it before you install the new versions.
+    <HR>
+    </CODE></BLOCKQUOTE>This will take some time. After everything is done, you 
+  will find all the RPMs in the directory <CODE>~/rpmbuild/RPMS/i386/</CODE>. 
+  </LI></OL>
+<P>If you had already php installed, better uninstall it before you install the 
+new versions. 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# rpm --erase --nodeps php php-manual php-mysql php-ldap php-pgsql php-imap
+  <HR>
+<PRE># rpm --erase --nodeps php php-manual php-mysql php-ldap php-pgsql php-imap
 # rpm -iv php-3.0.15-2.i386.rpm php-manual-3.0.15-2.i386.rpm php-mysql-3.0.15-2.i386.rpm php-ldap-3.0.15-2.i386.rpm 
 php-3.0.15-2
 php-manual-3.0.15-2
 php-mysql-3.0.15-2
 php-ldap-3.0.15-2
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>On installation, RPM will edit the apache web server configurations file
-(<CODE>/etc/httpd/conf/httpd.conf</CODE>) and php initialization file
-(<CODE>/etc/httpd/php.ini</CODE>) automatically.
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>On installation, RPM will edit the apache web server configurations file 
+(<CODE>/etc/httpd/conf/httpd.conf</CODE>) and php initialization file 
+(<CODE>/etc/httpd/php.ini</CODE>) automatically. 
 <P>
 <H3>Building PHP3 without RPMs</H3>
-
-<P>If you don't want to use RPM for PHP3 installation, you can as well build
-it from the scratch. If you want to do this, you will need
+<P>If you don't want to use RPM for PHP3 installation, you can as well build it 
+from the scratch. If you want to do this, you will need 
 <UL>
-<LI>The PHP3 sources themselves. get them from 
-<A HREF="http://www.php.net/downloads.php">http://www.php.net/downloads.php</A>.</LI>
-<LI>The apache development files installed (apache-devel)</LI>
-<LI>The mysql development files installed (MySQL-devel)</LI>
-<LI>The openldap development files installed (openldap-devel) if you plan
-to use LDAP as the permission system.</LI>
-</UL>
-<P>Unpack the PHP3 distribution, change into that directory, configure and
-build. This example shows a build <EM>with</EM> the LDAP module; remove the
-<CODE>--with-ldap</CODE> if you don't use LDAP:
+  <LI>The PHP3 sources themselves. get them from <A 
+  href="http://www.php.net/downloads.php">http://www.php.net/downloads.php</A>. 
+  <LI>The apache development files installed (apache-devel) 
+  <LI>The mysql development files installed (MySQL-devel) 
+  <LI>The openldap development files installed (openldap-devel) if you plan to 
+  use LDAP as the permission system. </LI></UL>
+<P>Unpack the PHP3 distribution, change into that directory, configure and 
+build. This example shows a build <EM>with</EM> the LDAP module; remove the 
+<CODE>--with-ldap</CODE> if you don't use LDAP: 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% tar xvfz php-3.0.16.tar.gz
+  <HR>
+<PRE>% tar xvfz php-3.0.16.tar.gz
 % cd php-3.0.16
 % ./configure -with-mysql=yes --with-apxs=/usr/sbin/apxs --enable-track-vars --enable-safe-mode --with-xml --with-ldap --with-config-file-path=/etc/httpd
 % make
@@ -563,106 +260,98 @@ cp libphp3.so /usr/lib/apache/libphp3.so
 chmod 755 /usr/lib/apache/libphp3.so
 [activating module `php3' in /etc/httpd/conf/httpd.conf]
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
+  <HR>
+  </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss3.6">3.6 Configuring the apache web server</A>
-</H2>
-
-<P>During the PHP3 installation using RPMs, most of the configuration
-work for the web server is already done. If you didn't use RPM to install
-PHP3, you might have to do the following steps. (It does no harm to
-double check if everything is configured correctly anyway.)
-<P>The configuration for the apache takes place in the file
-<CODE>/etc/httpd/conf/httpd.conf</CODE>.
+<H2><A name=ss3.6>3.6 Configuring the apache web server</A> </H2>
+<P>During the PHP3 installation using RPMs, most of the configuration work for 
+the web server is already done. If you didn't use RPM to install PHP3, you might 
+have to do the following steps. (It does no harm to double check if everything 
+is configured correctly anyway.) 
+<P>The configuration for the apache takes place in the file 
+<CODE>/etc/httpd/conf/httpd.conf</CODE>. 
 <P>You will need the statement <CODE>Options +Includes</CODE> there. This 
-enables the so-called <EM>server side includes</EM> (SSI) which are used by the
-page the users read (which contain the actual content). <B>This can be
-a security problem</B> because whoever can edit these pages can run
-any command on your web server. 
-(<EM>IncludesNOEXEC</EM> is not enough.)
-You might want to consider to enable this only for the directories where it
-is needed with <EM>&lt;Directory&gt;</EM> statements. See also the chapter
-on 
-<A HREF="install-6.html#security">security</A>
-.
-<P>In <CODE>/etc/httpd/conf/httpd.conf</CODE>, make sure these lines
-are not commented out:
+enables the so-called <EM>server side includes</EM> (SSI) which are used by the 
+page the users read (which contain the actual content). <B>This can be a 
+security problem</B> because whoever can edit these pages can run any command on 
+your web server. (<EM>IncludesNOEXEC</EM> is not enough.) You might want to 
+consider to enable this only for the directories where it is needed with 
+<EM>&lt;Directory&gt;</EM> statements. See also the chapter on <A 
+href="install-6.html#security">security</A> . 
+<P>In <CODE>/etc/httpd/conf/httpd.conf</CODE>, make sure these lines are not 
+commented out: 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-AddType application/x-httpd-php3 .php3
+  <HR>
+<PRE>AddType application/x-httpd-php3 .php3
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-and
+  <HR>
+  </CODE></BLOCKQUOTE>and 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-AddType text/html .shtml
+  <HR>
+<PRE>AddType text/html .shtml
 AddHandler server-parsed .shtml
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-"Commented out" means That they are prepended by a "#". Remove the leading 
-"#" from the lines if it is there.
-<P>Add <CODE>index.php3</CODE> to the tt/DirectoryIndex/ line:
+  <HR>
+  </CODE></BLOCKQUOTE>"Commented out" means That they are prepended by a "#". 
+Remove the leading "#" from the lines if it is there. 
+<P>Add <CODE>index.php3</CODE> to the tt/DirectoryIndex/ line: 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-DirectoryIndex index.html index.shtml index.cgi index.php3
+  <HR>
+<PRE>DirectoryIndex index.html index.shtml index.cgi index.php3
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>Restart the web server to reread the configuration files:
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>Restart the web server to reread the configuration files: 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# /etc/rc.d/init.d/httpd restart
+  <HR>
+<PRE># /etc/rc.d/init.d/httpd restart
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>After these configuration steps, PHP should work. You can test this by
-browsing to your test page (
-<A HREF="http://localhost/test.php3">http://localhost/test.php3</A>) again.
+  <HR>
+  </CODE></BLOCKQUOTE>
+<P>After these configuration steps, PHP should work. You can test this by 
+browsing to your test page ( <A 
+href="http://localhost/test.php3">http://localhost/test.php3</A>) again. 
 <P>
-<H2><A NAME="ss3.7">3.7 PHPLIB installation</A>
-</H2>
-
-<P>Get PHPLIB from 
-<A HREF="http://phplib.netuse.de/download/index.php3">http://phplib.netuse.de/download/index.php3</A>.
-Unpack it, create a directory <CODE>/home/httpd/phplib</CODE> and extract the 
-files from phplib's php directory to the new directory:
+<H2><A name=ss3.7>3.7 PHPLIB installation</A> </H2>
+<P>Get PHPLIB from <A 
+href="http://phplib.netuse.de/download/index.php3">http://sourceforge.net/projects/phplib</A>. 
+  Unpack it, create a directory at the same level as your http conf directory 
+  and extract the files from phplib's php directory to the new directory: For 
+  example, if your configuration files are in /etc/httpd/conf then create /etc/httpd/phplib. 
+  Action Apps have been tested with version 7.2b and 7.2d of phplib. 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-% tar xvfz phplib-7.2b.tar.gz
+  <HR>
+  </CODE>
+  <PRE><code>% tar xvfz phplib-7.2d.tar.gz
 % su
 Password:
-# mkdir /home/httpd/phplib
-# cp phplib-7.2b/php/* /home/httpd/phplib/
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-<P>You must add this directory to the line <CODE>include_path</CODE> in the
-<CODE>/etc/httpd/php.ini</CODE> file. Edit that file so the line looks like
-this:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-include_path    =  /home/httpd/phplib                 ; UNIX: "/path1:/path2"  Windows: "\path1;\path2"
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
+# mkdir /etc/httpd/phplib
+# cp phplib-7.2d/php/* /etc/httpd/phplib/
+</code></PRE>
+  <CODE><HR>
+  </CODE></BLOCKQUOTE>
+<P>You need to edit the php.ini (or php3.ini) to include phplib, and check one 
+  or two configuration lines, this file is typically eithe <code>/etc/httpd/php.ini 
+  </code>or <code>/usr/local/lib/php.ini</code> 
+<P> Edit that file so the lines looks something like this: 
+<BLOCKQUOTE><CODE> 
+  <HR>
+  </CODE>
+  <PRE><code>include_path    =  /home/httpd/phplib:.:/usr/local/lib/php                 ; UNIX: "/path1:/path2"  Windows: "\path1;\path2"
 
-(The stuff beginning with the ";" is a comment.)
+allow_call_time_pass_reference = On
+
+register_globals = On                                                                    ; needed so that POST parameters end up in global variables</code></PRE>
+  <code></code></BLOCKQUOTE>
+<blockquote><code>
+  <hr>
+  </code></blockquote>
+<p>(The stuff beginning with the ";" is a comment.) </p>
+<p>Restart the webserver to use the new php.ini file.</p>
 <P>
 <P>
 <HR>
-<A HREF="install-4.html">Next</A>
-<A HREF="install-2.html">Previous</A>
-<A HREF="install.html#toc3">Contents</A>
-</BODY>
-</HTML>
+<A href="install-4.html">Next</A> <A 
+href="install-2.html">Previous</A> <A 
+href="install.html#toc3">Contents</A> 
+</BODY></HTML>

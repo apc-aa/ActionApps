@@ -1,85 +1,97 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>Installation of APC Action Applications</TITLE>
- <LINK HREF="install-1.html" REL=next>
-
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0041)install.html -->
+<HTML><HEAD><TITLE>Installation of APC Action Applications</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-1.html" 
+rel=next>
+<!-- $Id$ -->
 </HEAD>
-<BODY>
-<A HREF="install-1.html">Next</A>
-Previous
-Contents
+
+<BODY><A href="install-1.html">Next</A> Previous 
+Contents 
 <HR>
+
 <H1>Installation of APC Action Applications</H1>
-
-<H2>Moritz Both, <CODE>mb@aldebaran.de</CODE></H2>2000/09/12, v0.10
-<P><HR>
-<EM>"Big picture" description of the installation process of the APC Action
-Applications</EM>
+<p>Authored by Moritz Both, mb@aldebaran.de 2000/08/01, v0.9 <br>
+  Updated by Mitra mitra@earth.path.net 2001/11/03 </p>
+<p>The full set of documentation relating to APC Action Apps can be found at <a href="http://apc-aa.sourceforge.net/apc-aa/doc">apc-aa.sourceforge.net/apc-aa/doc</a></p>
+<P>
 <HR>
+<EM>"Big picture" description of the installation process of the APC Action Applications</EM> 
+<hr>
 <P>
-<H2><A NAME="toc1">1.</A> <A HREF="install-1.html">Introduction</A></H2>
-
+<H2><A name=toc1>1.</A> <A 
+href="install-1.html">Introduction</A></H2>
 <UL>
-<LI><A HREF="install-1.html#ss1.1">1.1 Overview</A>
-<LI><A HREF="install-1.html#ss1.2">1.2 Slices</A>
-<LI><A HREF="install-1.html#ss1.3">1.3 Users, Roles and Permissions</A>
-<LI><A HREF="install-1.html#ss1.4">1.4 Action Applications Software Components</A>
-<LI><A HREF="install-1.html#ss1.5">1.5 Conventions used in this document</A>
+  <LI><A href="install-1.html#ss1.1">1.1 
+  Overview</A> 
+  <LI><A href="install-1.html#ss1.2">1.2 Slices</A> 
+
+  <LI><A href="install-1.html#ss1.3">1.3 Users, 
+  Roles and Permissions</A> 
+  <LI><A href="install-1.html#ss1.4">1.4 Action 
+  Applications Software Components</A> 
+  <LI><A href="install-1.html#ss1.5">1.5 
+  Conventions used in this document</A> </LI></UL>
+<P>
+<H2><A name=toc2>2.</A> <A 
+href="install-2.html">Requirements / Preconditions 
+/ Suggested Environment</A></H2>
+<UL>
+  <LI><A href="install-2.html#ss2.1">2.1 Hardware 
+  Requirements</A> 
+  <LI><A href="install-2.html#ss2.2">2.2 Software 
+  Requirements</A> 
+  <LI><A href="install-2.html#ss2.3">2.3 Know-How 
+  Requirements</A> </LI></UL>
+<P>
+<H2><A name=toc3>3.</A> <A 
+href="install-3.html">Installation of Other 
+Packages needed by Action Applications</A></H2>
+<UL>
+  <LI><A href="install-3.html#ss3.1">3.1 
+  Platform</A> 
+  <LI><A href="install-3.html#ss3.2">3.2 MySQL 
+  database back end</A> 
+  <LI><A href="install-3.html#ss3.3">3.3 
+  OpenLDAP</A> 
+  <LI><A href="install-3.html#ss3.4">3.4 Installing 
+  the Apache Web Server</A> 
+  <LI><A href="install-3.html#ss3.5">3.5 PHP3</A> 
+  <LI><A href="install-3.html#ss3.6">3.6 
+  Configuring the apache web server</A> 
+  <LI><A href="install-3.html#ss3.7">3.7 PHPLIB 
+  installation</A> </LI></UL>
+<P>
+<H2><A name=toc4>4.</A> <A 
+href="install-4.html">Installation of Action 
+Applications</A></H2>
+<UL>
+  <LI><A href="install-4.html#ss4.1">4.1 Installation</A> 
+  <LI><A href="install-4.html#ss4.2">4.2 Creating the database</A>
+  <LI><A href="install-4.html#ss4.3">4.3 Creating a superadmin account</A> 
+  <LI><A href="install-4.html#ss4.4">4.4 Your first test slice</A> </LI>
 </UL>
 <P>
-<H2><A NAME="toc2">2.</A> <A HREF="install-2.html">Requirements / Preconditions / Suggested Environment</A></H2>
-
+<H2><A name=toc5>5.</A> <A 
+href="install-5.html">Customization</A></H2>
 <UL>
-<LI><A HREF="install-2.html#ss2.1">2.1 Hardware Requirements</A>
-<LI><A HREF="install-2.html#ss2.2">2.2 Software Requirements</A>
-<LI><A HREF="install-2.html#ss2.3">2.3 Know-How Requirements</A>
-</UL>
+  <LI><A href="install-5.html#ss5.1">5.1 Language 
+  Customization</A> 
+  <LI><A href="install-5.html#ss5.2">5.2 Creating 
+  new Action Applications</A> </LI></UL>
 <P>
-<H2><A NAME="toc3">3.</A> <A HREF="install-3.html">Installation of Other Packages needed by Action Applications</A></H2>
-
+<H2><A name=toc6>6.</A> <A 
+href="install-6.html">Security Issues</A></H2>
 <UL>
-<LI><A HREF="install-3.html#ss3.1">3.1 Platform</A>
-<LI><A HREF="install-3.html#ss3.2">3.2 MySQL database back end</A>
-<LI><A HREF="install-3.html#ss3.3">3.3 OpenLDAP</A>
-<LI><A HREF="install-3.html#ss3.4">3.4 Installing the Apache Web Server</A>
-<LI><A HREF="install-3.html#ss3.5">3.5 PHP3</A>
-<LI><A HREF="install-3.html#ss3.6">3.6 Configuring the apache web server</A>
-<LI><A HREF="install-3.html#ss3.7">3.7 PHPLIB installation</A>
-</UL>
+  <LI><A href="install-6.html#ss6.1">6.1 Server 
+  Side Includes</A> 
+  <LI><A href="install-6.html#ss6.2">6.2 
+  config.php3 permissions</A> </LI></UL>
 <P>
-<H2><A NAME="toc4">4.</A> <A HREF="install-4.html">Installation of Action Applications</A></H2>
-
-<UL>
-<LI><A HREF="install-4.html#ss4.1">4.1 Installation</A>
-<LI><A HREF="install-4.html#ss4.2">4.2 Creating a superadmin account</A>
-<LI><A HREF="install-4.html#ss4.3">4.3 Your first test slice</A>
-</UL>
-<P>
-<H2><A NAME="toc5">5.</A> <A HREF="install-5.html">Customization</A></H2>
-
-<UL>
-<LI><A HREF="install-5.html#ss5.1">5.1 Language Customization</A>
-<LI><A HREF="install-5.html#ss5.2">5.2 Creating new Action Applications</A>
-</UL>
-<P>
-<H2><A NAME="toc6">6.</A> <A HREF="install-6.html">Security Issues</A></H2>
-
-<UL>
-<LI><A HREF="install-6.html#ss6.1">6.1 Server Side Includes</A>
-<LI><A HREF="install-6.html#ss6.2">6.2 config.php3 permissions</A>
-</UL>
-<P>
-<H2><A NAME="toc7">7.</A> <A HREF="install-7.html">Maintenance</A></H2>
-
-<P>
-<H2><A NAME="toc8">8.</A> <A HREF="install-8.html">Contacting the Developers</A></H2>
-
+There is a FAQ (Frequently Asked Questions) at <a href="http://apc-aa.sourceforge.net/faq/%20">apc-aa.sourceforge.net/faq/ 
+</a> which includes information on contacting the developers. 
+<P> 
 <HR>
-<A HREF="install-1.html">Next</A>
-Previous
-Contents
-</BODY>
-</HTML>
+<A href="install-1.html">Next</A> Previous Contents 
+</BODY></HTML>

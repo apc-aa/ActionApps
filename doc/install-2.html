@@ -1,158 +1,117 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>Installation of APC Action Applications: Requirements / Preconditions / Suggested Environment</TITLE>
- <LINK HREF="install-3.html" REL=next>
- <LINK HREF="install-1.html" REL=previous>
- <LINK HREF="install.html#toc2" REL=contents>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0043)install-2.html -->
+<HTML><HEAD><TITLE>Installation of APC Action Applications: Requirements / Preconditions / Suggested Environment</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-3.html" 
+rel=next><LINK href="install-1.html" rel=previous><LINK href="install.html#toc2" 
+rel=contents>
+<!-- $Id$ -->
 </HEAD>
-<BODY>
-<A HREF="install-3.html">Next</A>
-<A HREF="install-1.html">Previous</A>
-<A HREF="install.html#toc2">Contents</A>
+<BODY><A href="install-3.html">Next</A> <A 
+href="install-1.html">Previous</A> <A 
+href="install.html#toc2">Contents</A> 
 <HR>
-<H2><A NAME="requirements"></A> <A NAME="s2">2. Requirements / Preconditions / Suggested Environment</A></H2>
 
-<H2><A NAME="ss2.1">2.1 Hardware Requirements</A>
-</H2>
-
-<P>The Action Applications can run on every computer which runs one of the supported operating
-systems. 
-<P>There is probably a minimum requirement in terms of processor
-speed and amount of memory. If the Action Applications run on a single computer (including
-the MySQL database back end), it should be no less than a 200 MHz 
-processor and 64 MByte of RAM.
+<H2><A name=requirements></A><A name=s2>2. Requirements / Preconditions / 
+Suggested Environment</A></H2>
+<H2><A name=ss2.1>2.1 Hardware Requirements</A> </H2>
+<P>The Action Applications can run on every computer which runs one of the 
+supported operating systems. 
+<P>There is probably a minimum requirement in terms of processor speed and 
+amount of memory. If the Action Applications run on a single computer (including 
+the MySQL database back end), it should be no less than a 200 MHz processor and 
+64 MByte of RAM. 
 <P>
-<H2><A NAME="ss2.2">2.2 Software Requirements</A>
-</H2>
-
-<P>Note: There are instructions for the installation of all software modules
-but the operating system in the next chapter: 
-<A HREF="install-3.html#install_other">Installation of other packages needed by the Action Applications</A><H3>Operating System</H3>
-
-<P>The primary supported operating system is GNU/Linux. However, the Action Applications should
-run on any unix or unix-like operating system which can run all the other
-software components. The Action Applications were developed
-and tested on <B>Red Hat Linux</B> 
-6.0 and 6.2, so it is recommended to use this OS.
-This installation guide has a strong focus on Red Hat Linux.
-<P>It is known that Action Applications also run on FreeBSD 2.2.7.
+<H2><A name=ss2.2>2.2 Software Requirements</A> </H2>
+<P>Note: There are instructions for the installation of all software modules but 
+  the operating system in the next chapter: <A 
+href="install-3.html#install_other">Installation 
+  of other packages needed by the Action Applications</A> which also contains 
+  instructions on how to check the version numbers of installed packages.
+<H3> Operating System</H3>
+<P>The primary supported operating system is GNU/Linux. However, the Action 
+Applications should run on any unix or unix-like operating system which can run 
+all the other software components. The Action Applications were developed and 
+tested on <B>Red Hat Linux</B> 6.0 and 6.2, so it is recommended to use this OS. 
+This installation guide has a strong focus on Red Hat Linux. 
+<P>It is known that Action Applications also run on FreeBSD 2.2.7. 
 <P>
 <H3>Database Server</H3>
-
-<P>An SQL database server 
-is needed by the Action Applications in order to store all the information. 
-The only supported SQL server so far is the <B>MySQL</B> database server. The data
-is organized in several tables in the database. Action Applications need one logical database
-within the database server. The server can be used for other applications
-as well.
-<P>The database server does not need to be on the same machine as the other
-components are.
-<P>Action Applications need at least MySQL version 3.22.32. Older version may work but have not
-been tested, and they contain known security holes.
-<P>If you want to use a different database server than MySQL,
-for example, if you have 
-already a database server running, you will have to do some porting work.
-Action Applications were written with database back end portability in mind, and as little
-as possible MySQL specific functions were used. It is important that there
-is PHP support for the database server you want to use.
+<P>An SQL database server is needed by the Action Applications in order to store 
+all the information. The only supported SQL server so far is the <B>MySQL</B> 
+database server. The data is organized in several tables in the database. Action 
+Applications need one logical database within the database server. The server 
+can be used for other applications as well. 
+<P>The database server does not need to be on the same machine as the other 
+components are. 
+<P>Action Applications need at least MySQL version 3.22.32. Older version may 
+work but have not been tested, and they contain known security holes. 
+<P>If you want to use a different database server than MySQL, for example, if 
+you have already a database server running, you will have to do some porting 
+work. Action Applications were written with database back end portability in 
+mind, and as little as possible MySQL specific functions were used. It is 
+important that there is PHP support for the database server you want to use. 
 <P>
 <H3>Permission System</H3>
-
-<P>If you want to use LDAP as the permission system,
-you should use the <B>OpenLDAP</B> server software. Other LDAP servers should
-work, too, but the Action Applications have been tested with OpenLDAP only.
-<P>If you have already an OpenLDAP server running, you may skip the rest of
-this section.
 <P>
-<A NAME="ldap_thoughts"></A> 
-Using LDAP, some thoughts about the LDAP database organization should be
-wasted. An LDAP database is an hierarchically 
-structured system of objects, each member of one or more certain classes.
-Every object in your database has its place in the potentially
-global LDAP hierarchy. Each object has a unique name, the so called
-<EM>distinguished name</EM>, or short <EM>dn</EM>. The dn consists of the full "path"
-from the global LDAP name space to the object, similar to names in the
-domain name system.
-<P>In order to set up the LDAP server for Action Applications, you need to figure out some
-information you want to use:
-<UL>
-<LI>Your base dn. This is the common part all your LDAP objects will have
-in their dn, describing the "path" from the global LDAP name space to your
-organization. It is recommended that you use a domain name you own for 
-that. (You could also use a geographical category, but this is not 
-described here.) A domain name can be described in a LDAP dn using the
-<EM>dc</EM> attribute. For example, the base dn for a possible domain name
-<EM>ecn.apc.org</EM> would be <CODE>dc=ecn,dc=apc,dc=org</CODE>. Or you 
-can use only simply <CODE>ou=AA</CODE> .</LI>
-<LI>Your LDAP administrative account. OpenLDAP's built-in access
-control needs a <EM>root</EM> object which has all privileges. Once it exists,
-the root object can be used to modify the data stored in the LDAP database.
-Like every object in the database, the root object needs a dn. It is 
-recommended that you use the canonical name <EM>root</EM>. Following the
-example above, this gives us a root object dn of 
-<CODE>cn=root,dc=ecn,dc=apc,dc=org</CODE>. Or simply <CODE>cn=root,ou=AA</CODE></LI>
-</UL>
-<P>Note: As with the database server,
-the OpenLDAP server does not necessarily need to be running on the same
-machine as the Action Applications.
-<P>If you are <EM>not</EM> using LDAP as the permission system basis, permission
-information will be stored within the SQL database.
+Most people will use their Database Server as their permission system -- storing passwords and permissions
+in mysql.
+
+<P>If you want to use LDAP as the permission system, you should 
+refer to <a href="ldap.html">apc-aa ldap page</a>
+
 <P>
 <H3>WWW (http) Server</H3>
-
-<P>The Action Applications have been developed and tested with the 
-<B>apache</B> http server. Other http servers might work, too, but there are some
-things to consider:
+<P>The Action Applications have been developed and tested with the <B>apache</B> 
+http server. Other http servers might work, too, but there are some things to 
+consider: 
 <UL>
-<LI>The Action Application relay on a feature in the apache http server
-which allows to pass GET parameters (query strings) to scripts which are
-run from a SSI (server side include) command in a page.
-It is known that the
-Microsoft Internet Information Server, for example, does not do that.</LI>
-<LI>The apache http server can be configured to load PHP as a 
-<EM>module</EM>. This speeds things up a lot because the PHP interpreter does
-not have to be loaded every time a PHP script runs. Action Applications
-work in CGI mode as well, though. </LI>
+  <LI>The Action Application relay on a feature in the apache http server which 
+    allows to pass GET parameters (query strings) to scripts which are run from 
+    a SSI (server side include) command in a page. It is known that the Microsoft 
+    Internet Information Server, for example, does not do that. 
+  <LI>The apache http server can be configured to load PHP as a <EM>module</EM>. 
+    This speeds things up a lot because the PHP interpreter does not have to be 
+    loaded every time a PHP script runs. Action Applications work in CGI mode 
+    as well, though. </LI>
+  <LI>Apache needs the apache-devel module as well.</LI>
 </UL>
 <P>
 <H3>PHP</H3>
+<P>Action Applications are written in PHP. The minimum version to use should be 
+PHP 3.0.7 but this has not been tested; we know they work with PHP 3.0.12 and 
+newer up to 3.0.16. PHP4 also works.<BR>
 
-<P>Action Applications are written in PHP3. The minimum version to use
-should be PHP 3.0.7 but this has not been tested; we know they work with
-PHP 3.0.12 and newer up to 3.0.16. PHP4 has not been tested, either.
-<P>PHP can be build as a <EM>module for the apache http server</EM> or as a
-<EM>standalone program</EM>. The first way is preferred for performance
-reasons.
+TODO: say which versions of PHP4 work fine, and which do not.
+
+<P>PHP can be build as a <EM>module for the apache http server</EM> or as a 
+<EM>standalone program</EM>. The first way is preferred for performance reasons. 
+
 <P>Your PHP needs optional modules: 
 <UL>
-<LI>A module is needed to access your SQL database. For example,
-if you are using 
-MySQL as the database, you need the MySQL module for PHP.</LI>
-<LI>If you are using LDAP as the permission system, you need the
-LDAP module for PHP.</LI>
-</UL>
+  <LI>A module is needed to access your SQL database. For example, if you are 
+  using MySQL as the database, you need the MySQL module for PHP. 
+  <LI>If you are using LDAP as the permission system, you need the LDAP module 
+  for PHP. </LI></UL>
 <P>The modules can be 
 <UL>
-<LI><EM>compiled into PHP</EM> or</LI>
-<LI><EM>loaded at run time</EM>.</LI>
-</UL>
-<P>Both ways are described in the 
-<A HREF="install-3.html#php_install">PHP installation section</A>.
-<P>
-<H2><A NAME="ss2.3">2.3 Know-How Requirements</A>
-</H2>
-
-<P>To install the Action Applications, you will need some basic unix skills. You should have
-installed programs before and be familiar with administration of your
-system.
+  <LI><EM>compiled into PHP</EM> or 
+  <LI><EM>loaded at run time</EM>. </LI></UL>
+<P>Both ways are described in the <A 
+href="install-3.html#php_install">PHP installation 
+  section</A>.
+<P>&nbsp;
+<h2>2.2a PHPLIB</h2>
+PHPLib - a library of tools for PHP is also needed, and is unlikely to be already 
+installed 
+<H2><A name=ss2.3>2.3 Know-How Requirements</A> </H2>
+<P>To install the Action Applications, you will need some basic unix skills. You 
+should have installed programs before and be familiar with administration of 
+your system. 
 <P>
 <H3>Other Preconditions</H3>
-
 <HR>
-<A HREF="install-3.html">Next</A>
-<A HREF="install-1.html">Previous</A>
-<A HREF="install.html#toc2">Contents</A>
-</BODY>
-</HTML>
+<A href="install-3.html">Next</A> <A 
+href="install-1.html">Previous</A> <A 
+href="install.html#toc2">Contents</A> 
+</BODY></HTML>

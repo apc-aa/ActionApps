@@ -1,101 +1,74 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
- <TITLE>Installation of APC Action Applications: Security Issues</TITLE>
- <LINK HREF="install-7.html" REL=next>
- <LINK HREF="install-5.html" REL=previous>
- <LINK HREF="install.html#toc6" REL=contents>
-</HEAD>
-<BODY>
-<A HREF="install-7.html">Next</A>
-<A HREF="install-5.html">Previous</A>
-<A HREF="install.html#toc6">Contents</A>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0043)install-6.html -->
+<HTML><HEAD><TITLE>Installation of APC Action Applications: Security Issues</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 5.50.4807.2300" name=GENERATOR><LINK href="install-7.html" 
+rel=next><LINK href="install-5.html" rel=previous><LINK href="install.html#toc6" 
+rel=contents></HEAD>
+<BODY><A href="install-7.html">Next</A> <A 
+href="install-5.html">Previous</A> <A 
+href="install.html#toc6">Contents</A> 
 <HR>
-<H2><A NAME="security"></A> <A NAME="s6">6. Security Issues</A></H2>
 
-<H2><A NAME="ss6.1">6.1 Server Side Includes</A>
-</H2>
-
-<P>The directories which contain the user pages must be enabled for
-SSI (server side includes). This is a major security hole if untrusted
-people can alter pages in these directories. Only enable SSI for 
-directories where it is needed. You can put the statement which enables
-it into per directory directives in the apache http server configuration
-file, for example, like this (snipped from <CODE>/etc/httpd/conf/httpd.conf</CODE>:
+<H2><A name=security></A><A name=s6>6. Security Issues</A></H2>
+<H2><A name=ss6.1>6.1 Server Side Includes</A> </H2>
+<P>The directories which contain the user pages must be enabled for SSI (server 
+side includes). This is a major security hole if untrusted people can alter 
+pages in these directories. Only enable SSI for directories where it is needed. 
+You can put the statement which enables it into per directory directives in the 
+apache http server configuration file, for example, like this (snipped from 
+<CODE>/etc/httpd/conf/httpd.conf</CODE>: 
 <BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-&lt;Directory /home/httpd/html/aa/user-x/&gt;
+  <HR>
+<PRE>&lt;Directory /home/httpd/html/aa/user-x/&gt;
 Options +Includes
 &lt;/Directory&gt;
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-This also suggests to put all Action Application user pages into a common
-directory structure and not into the normal user's htdocs tree, so 
-control over the pages can easily be separated.
-<H2><A NAME="ss6.2">6.2 config.php3 permissions</A>
-</H2>
-
-<P>The http server must be able to access the
-<CODE>include/config.php3</CODE> file, but this file contains passwords, so it
-should not be world readable.
-<P>One possible common solution for this is that you create a unix group 
-for your http server and make the <CODE>config.php3</CODE> file belong to that
-group and be group readable. The steps to do this would be:
+  <HR>
+  </CODE></BLOCKQUOTE>This also suggests to put all Action Application user pages 
+into a common directory structure and not into the normal user's htdocs tree, so 
+control over the pages can easily be separated. 
+<H2><A name=ss6.2>6.2 config.php3 permissions</A> </H2>
+<P>The http server must be able to access the <CODE>include/config.php3</CODE> 
+file, but this file contains passwords, so it should not be world readable. 
+<P>One possible common solution for this is that you create a unix group for 
+your http server and make the <CODE>config.php3</CODE> file belong to that group 
+and be group readable. The steps to do this would be: 
 <UL>
-<LI>Create unix group, for example, <EM>www</EM>. On RedHat Linux,
-this can be done like this:
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# groupadd -r www
+  <LI>Create unix group, for example, <EM>www</EM>. On RedHat Linux, this can be 
+  done like this: 
+  <BLOCKQUOTE><CODE>
+    <HR>
+<PRE># groupadd -r www
         
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-</LI>
-<LI>Edit <CODE>/etc/httpd/conf/httpd.conf</CODE> and alter the line
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-Group nobody
-        
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-
-to
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-Group www
-        
-</PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-</LI>
-<LI>Change file permissions in <CODE>config.php3</CODE> and restart
-the server.
-<BLOCKQUOTE><CODE>
-<HR>
-<PRE>
-# chown root.www /home/httpd/html/aa/include/config.php3 
+    <HR>
+    </CODE></BLOCKQUOTE>
+  <LI>Edit <CODE>/etc/httpd/conf/httpd.conf</CODE> and alter the line 
+  <BLOCKQUOTE><CODE>
+    <HR>
+      <PRE>Group nobody</PRE>
+    <HR>
+    </CODE></BLOCKQUOTE>to 
+  <BLOCKQUOTE><CODE>
+    <HR>
+      <PRE>Group www</PRE>
+      <HR>
+      </CODE></BLOCKQUOTE>
+  <LI>Change file permissions in <CODE>config.php3</CODE> and restart the 
+  server. 
+  <BLOCKQUOTE><CODE>
+    <HR>
+      <PRE># chown root.www /home/httpd/html/aa/include/config.php3 
 # chmod 640  /home/httpd/html/aa/include/config.php3
 # /etc/rc.d/init.d/httpd stop
 # /etc/rc.d/init.d/httpd start
-        
 </PRE>
-<HR>
-</CODE></BLOCKQUOTE>
-</LI>
-</UL>
+    <HR>
+    </CODE></BLOCKQUOTE></LI></UL>
 <P>
 <HR>
-<A HREF="install-7.html">Next</A>
-<A HREF="install-5.html">Previous</A>
-<A HREF="install.html#toc6">Contents</A>
-</BODY>
-</HTML>
+Next <A 
+href="install-5.html">Previous</A> <A 
+href="install.html#toc6">Contents</A> 
+</BODY></HTML>
