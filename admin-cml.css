@@ -297,3 +297,7 @@ TD.leftmenuy {
        font-size: 8pt;
        color: #999999;
 }
+
+.sel_on {
+       background: #DDDDDD;
+}    

@@ -276,4 +276,8 @@ TD.leftmenuy {
        font-family: Verdana, Arial, Helvetica, sans-serif;
        font-size: 8pt;
        color: white;
-}       
+}   
+
+.sel_on {
+       background: #DDDDDD;
+}        

@@ -17,6 +17,12 @@ body { margin-left: 4px;
   font-size: 10pt;
  }
 
+.tabtxt_field_alerts {
+  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  background-color : #ADD8E6;
+ } 
+ 
 TEXTAREA {  
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 8pt;
@@ -73,6 +79,14 @@ H1, .tablename {
 	color: #4A4A4A;
 }
 
+.nbactive {
+	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+  /*  background: #EBDABE;  don't change the background colour*/
+	color: black;
+    background: white;
+}
+
 .nbdisable {
 	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
 	font-size: 8pt;
@@ -119,6 +133,14 @@ TD.leftmenu {
   font-size: 8pt;
   font-weigth: normal;
   color: #000000;
+}
+
+.leftmenua  {
+  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  font-weigth: normal;
+  color: black;
+  background: white;
 }
 
 .leftmenun  {
@@ -207,3 +229,7 @@ TD.leftmenu {
        font-size: 8pt;
        color: #999999;
 }
+
+.sel_on {
+       background: #DDDDDD;
+}    
