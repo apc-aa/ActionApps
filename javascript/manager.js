@@ -1,16 +1,45 @@
+// Scripts used in manager.class.php3
+// - folloving global javascript variables should be set before calling
+//   aa_instal_path
+//   aa_live_checkbox_file
+//   aa_live_change_file
+
 //  Fills 'akce' hidden field and submits the form or opens popup window
 function MarkedActionGo() {
     var ms = document.itemsform.markedaction_select;
+    var add_items;
     if( ms.options[ms.selectedIndex].value &&  (ms.options[ms.selectedIndex].value != 'nothing') ) {
         document.itemsform.akce.value = ms.options[ms.selectedIndex].value
         // markedactionur is global variable defined in manager.class.php3
         if( markedactionurl[ms.selectedIndex] != null ) {
-            OpenWindowTop(markedactionurl[ms.selectedIndex]);
+            var iftarget = document.itemsform.target;
+            var ifaction = document.itemsform.action;
+            add_items = (markedactionurladd[ms.selectedIndex] == null) ? false :  markedactionurladd[ms.selectedIndex]
+            OpenWindowTop(markedactionurl[ms.selectedIndex], add_items);
+            document.itemsform.action = ifaction;
+            document.itemsform.target = iftarget;
         } else {
             document.itemsform.submit()
         }
     }
 }
+
+function WriteEmailGo() {
+  var iftarget = document.itemsform.target;
+  var ifaction = document.itemsform.action;
+  OpenWindowTop(markedactionurl[5], "");
+  document.itemsform.action = ifaction;
+  document.itemsform.target = iftarget;
+}
+
+function EmptyTrashQuestion(url, question) {
+    if ( question ) {
+        if (confirm(question)) {
+            open(url,"_parent");
+        }
+    }
+}
+
 
 // Selects/deselect all item chckboxes on the page
 function SelectVis() {
@@ -26,11 +55,189 @@ function SelectVis() {
     }
 }
 
+function GetItemsArrayString() {
+    var len = document.itemsform.elements.length;
+    var itemsstring='';
+    var delim='';
+    for( var i=0; i<len; i++ ) {
+        if( (document.itemsform.elements[i].name.substring(0,3) == 'chb') &&
+             document.itemsform.elements[i].checked ) { // checkboxes
+            itemsstring += delim + 'items' + document.itemsform.elements[i].name.substring(3);
+            delim = '&';
+        }
+    }
+    return itemsstring;
+}
+
+var useshowpopup;
+function OpenUsershowPopup(url) {
+    usershowpopup = open('','usershowpopup','scrollbars=1,resizable=1,width=600,height=200');
+    document.itform.target='usershowpopup';
+    document.itform.action = url;
+    document.itform.submit();
+}
+
 var popupwindow;
 
-function OpenWindowTop(url) {
-    if( popupwindow != null )
-        popupwindow.close();    // in order to popupwindow go on top after open
-    popupwindow = open(url,'popup','scrollbars')
+// if add_items == '&' or '?', items[x5443388....] array with selected items
+// is added to the url (used for preview, for example). Use false for no add.
+function OpenWindowTop(url, add_items) {
+    if (url.indexOf("rXn=1") != -1) {
+        var items;
+        if( add_items ) {    // defines items string separator ('&' or '?') in url
+            items =  GetItemsArrayString();
+            if( items ) {
+                url += add_items + items
+            }
+        }
+
+        if( popupwindow != null )
+            popupwindow.close();    // in order to popupwindow go on top after open
+        popupwindow = open(url,'popup','scrollbars')
+    } else {
+        popupwindow = open('','popup','scrollbars');
+        document.itemsform.target='popup';
+        document.itemsform.action = url;
+        document.itemsform.submit();
+    }
+}
+
+// used for returning parameters from popup window back to manager class
+function ReturnParam(param) {
+    window.opener.document.itemsform.elements['akce_param'].value = param;
+//    window.opener.document.itemsform.target='';
+//    window.opener.document.itemsform.action='';
+    window.opener.document.itemsform.submit();
+    window.close();
+}
+
+// writes searchbar action to hidden field srchbr_akce and submits
+// the searchform. srchbr_akce shouldn't be 0
+// you can supply question (for user text input) and/or confirmation question
+// result srchbr_akce then have the following format: <akce>[:<text>][:y]
+function SearchBarAction( formname, srchbr_akce, question, yes_no ) {
+    var srchform = eval( "document."+formname );
+    var answer;
+    if ( question ) {
+        answer = prompt(question);
+        srchbr_akce += ':' + answer.replace(/:/g, "#:");
+    }
+    if ( yes_no ) {
+        srchbr_akce += ( confirm(yes_no) ? ':y' : '' );
+    }
+    srchform.elements['srchbr_akce'].value = srchbr_akce;
+    srchform.submit();
+    return true;
+}
+
+// the same as above SearchBarAction(), but only ask if we have to do action
+function SearchBarActionConfirm( formname, srchbr_akce, confirmtxt ) {
+    var srchform = eval( "document."+formname );
+    if ( confirm(confirmtxt) ) {
+        srchform.elements['srchbr_akce'].value = srchbr_akce;
+        srchform.submit();
+        return true;
+    }
+}
+
+// called by the f_k alias function (see item.php3)
+// - folloving global javascript variables should be set before calling
+//   aa_instal_path, aa_live_checkbox_file, aa_live_change_file
+function CallLiveCheckbox (controlName) {
+    myimg = document.itemsform[controlName];
+    myimg.src = aa_instal_path + "images/cb_2off.gif";
+
+    imgsrc = aa_live_checkbox_file+"&"+controlName+"=1&no_cache="+Math.random();
+    setTimeout("ChangeImgSrc ('"+controlName+"','"+imgsrc+"')", 1);
+}
+
+// - folloving global javascript variables should be set before calling
+//   aa_instal_path, aa_live_checkbox_file, aa_live_change_file
+function CallLiveChange(controlName, status) {
+    switch (status) {
+      case "change" :
+            controlName = controlName + "_chb";
+            imgsrc = aa_instal_path + "images/cb_off.gif";
+            ChangeImgSrc(controlName,imgsrc);
+           break;
+      case "click" :
+            mysel = eval("document.itemsform['"+controlName+"']");
+            val = mysel.options[mysel.selectedIndex].value;
+
+            imgsrc = aa_instal_path + "images/cb_off.gif";
+            ChangeImgSrc(controlName+"_chb",imgsrc);
+
+            imgsrc = aa_live_change_file+"&"+controlName+"="+val+"&no_cache="+Math.random();
+            setTimeout("ChangeImgSrc('"+controlName+"_chb', '"+imgsrc+"')", 1);
+           break;
+    }
+}
+
+function ChangeImgSrc (imageName, newsrc) {
+    document.itemsform[imageName].src = newsrc;
+}
+
+function OpenWindowIfRequest(form_name, slice_id, bar, admin_url) {
+    var doc = eval("document."+form_name);
+    var idx=doc.elements['srchbr_field['+bar+']'].selectedIndex;
+    var idx2=doc.elements['srchbr_oper['+bar+']'].selectedIndex;
+
+    if ((field_types.charAt(idx) == 3) && (doc.elements['srchbr_oper['+bar+']'].options[idx2].value == "select")) {
+        sel_val = doc.elements['srchbr_field['+bar+']'].options[idx].value;
+        sel_name = "srchbr_value["+bar+"]";
+        sel_text = doc.elements['srchbr_value['+bar+']'].value;
+        OpenConstantsWindow(sel_name,slice_id,sel_val,1, sel_text, admin_url);
+        doc.elements['srchbr_oper['+bar+']'].selectedIndex = idx2 - 1;
+    }
+}
+function ChangeOperators(form_name, bar, selectedVal ) {
+    var doc = eval("document."+form_name);
+    var idx=doc.elements['srchbr_field['+bar+']'].selectedIndex;
+    var type = field_types.charAt(idx);
+    // clear selectbox
+    for( i=(doc.elements['srchbr_oper['+bar+']'].options.length-1); i>=0; i--){
+      doc.elements['srchbr_oper['+bar+']'].options[i] = null
+    }
+    idx = -1;         // overused variable idx
+    // fill selectbox from the right slice
+    for( i=0; i<operator_names[type].length ; i++) {
+      doc.elements['srchbr_oper['+bar+']'].options[i] = new Option(operator_names[type][i], operator_values[type][i]);
+      if( operator_values[type][i] == selectedVal )
+          idx = i;
+    }
+    if( idx != -1 )
+        doc.elements['srchbr_oper['+bar+']'].selectedIndex = idx;
+}
+var constantswindow;  // window for related stories
+
+function OpenConstantsWindow(varname, sid, field_name, design, sel_text, admin_url) {
+    if ((constantswindow != null) && (!constantswindow.closed)) {
+        constantswindow.close()    // in order to preview go on top after open
+    }
+    constantswindow = open(admin_url+"&sid=" + sid +
+        "&field_name=" + field_name + "&var_id=" + varname + "&design=" + design +
+        "&sel_text=" + sel_text.replace(/&/gi,"%26") , "popup", "scrollbars=1,resizable=1,width=640,height=200");
+}
+
+
+function ReplaceFirstChar( str, ch ) {
+    return   ch + str.substring(1,str.length);
+}
+
+function AddSelectOption( starget, stext, svalue) {
+    for( i=0; i < maxcount; i++ ) {
+        if( eval(starget).options[i].value == 'wIdThTor' ) break;
+    }
+    if( i < maxcount ) {
+        eval(starget).options[i].text = stext;
+        eval(starget).options[i].value = svalue;
+    } else {
+        alert(relmessage);
+    }
+}
+
+function SelectRelations(tag, prefix, taggedid, headline) {
+    AddSelectOption( 'window.opener.document.inputform.elements["'+var_id+'"]',
+                prefix + headline, taggedid);
 }
 

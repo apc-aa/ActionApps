@@ -36,221 +36,171 @@ require_once $GLOBALS["AA_INC_PATH"] . "itemfunc.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "notify.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "util.php3";
 
-if ( $sid ) {
-  $sess->register(r_sid);
-  $r_sid = $sid;
-  $sess->register(r_design);  // we are here for the first time
-  $r_design = $design;        // (not scroller or filters) => store $design
+require_once $GLOBALS["AA_INC_PATH"] . "manager.class.php3";
+
+/** RELATED SELECTION WINDOW - managed by MANAGER CLASS */
+
+/* use stored values from session, if we call related window
+   for secnd time (eg. after search or filtering data) */
+if ((isset($r_state)) && !($sid))  {
+//  $sid      = $r_state['related']['sid'];
+    $mode     = $r_state['related']['mode'];
+    $var_id   = $r_state['related']['var_id'];
+    $design   = $r_state['related']['design'];
+    $frombins = $r_state['related']['frombins'];
+//  $conds_ro = $r_state['related']['conds_ro'];
+//  $conds_rw = $r_state['related']['conds_rw'];
 }
 
+// id of the editted module (id in long form (32-digit hexadecimal number))
+$module_id = ( isset($sid) ? $sid : $r_state['module_id'] );
 
-$slice_info = GetSliceInfo($r_sid);
-$config_arr = unserialize($slice_info["config"] );
+// module_id is the same as slice_id (slice_id was used before AA introduced
+// modules. Now it is better to use module_id, because in other modules
+// (like Links, ...) it is not so confusing
 
-// $r_r_admin_order, $r_r_admin_order - controls article ordering
-// $r_r_admin_order contains field id
-// $r_r_admin_order_dir contains 'd' for descending order, 'a' for ascending
-if(!isset($r_r_admin_order)) {
-  $r_r_admin_order = ( $config_arr["admin_order"] ?
-                     $config_arr["admin_order"] : "publish_date...." );
-  $r_r_admin_order_dir = ( $config_arr["admin_order_dir"] ?
-                         $config_arr["admin_order_dir"] : "d" );
-  $sess->register(r_r_admin_order);
-  $sess->register(r_r_admin_order_dir);
+$p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
+$slice = new slice($module_id);
 
-  // $r_r_admin_search, $r_r_admin_search_field - controls article filter
-  // $r_r_admin_search contains search string
-  // $r_r_admin_search_field contains field id
-  $sess->register(r_r_admin_search);
-  $sess->register(r_r_admin_search_field);
-}
+/* prepare view format for manager class */
+if( !$mode ) { $mode='AMB'; }
 
-$p_sid= q_pack_id($r_sid);
-
-if( $r_fields )
-  $fields = $r_fields;
-else
-  list($fields,) = GetSliceFields($r_sid);
-
-if( $akce == "filter" ) { // edit the first one
-    $r_r_admin_order = ( $admin_order ? $admin_order : "publish_date...." );
-    $r_r_admin_order_dir = ( $admin_order_dir ? "d" : "a");
-
-    $r_r_admin_search = $admin_search;
-    $r_r_admin_search_field = $admin_search_field;
-}
-
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Editor window - item manager") ?></title>
-<SCRIPT Language="JavaScript"><!--
-  function ReplaceFirstChar( str, ch ) {
-    return   ch + str.substring(1,str.length);
-  }
-
-  function AddSelectOption( starget, stext, svalue ) {
-    for( i=0; i < <?php echo MAX_RELATED_COUNT ?>; i++ )
-      if( eval(starget).options[i].value == 'wIdThTor' )
-        break;
-    if( i < <?php echo MAX_RELATED_COUNT ?> ) {
-      eval(starget).options[i].text = stext;
-      eval(starget).options[i].value = svalue;
-    } else
-      alert( "<?php echo _m("There are too many related items. The number of related items is limited."); # the maximum number of related stories is here jut because
-                                             # we can't create new Option in to itemedit.hpp3 window
-                                             # from this window in JavaScript
-                                             ?>" );
-  }
-
-function SelectRelations(tag, prefix, taggedid, headline) {
-    AddSelectOption( 'window.opener.document.inputform.elements["<?php echo $var_id ?>"]',
-                prefix + headline, taggedid);
-  }
-
-// -->
-</SCRIPT>
-</head> <?php
-
-$de = getdate(time());
-
-  # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
-$st_name = "st_rel";    // name of scroller for related selection table
-$bin_condition = 'ACTIVE';
-$table_name = _m("Select related items");
-
-$st = $$st_name;   // use right scroller
-
-# create or update scroller for actual bin
-if(is_object($st)) {
-  $st->updateScr($sess->url($PHP_SELF) . "&var_id=$var_id&");
-}else {
-  $st = new scroller($st_name, $sess->url($PHP_SELF) . "&var_id=$var_id&");
-  $st->metapage=($listlen ? $listlen : EDIT_ITEM_COUNT);
-  $sess->register($st_name);
-}
-
-# if user sets search condition
-if( $r_r_admin_search )
-  $conds[]=array( 'operator' => 'LIKE',
-                  'value' => $r_r_admin_search,
-                  $r_r_admin_search_field => 1 );
-
-# set user defined sort order
-$sort[] = array ( $r_r_admin_order => $r_r_admin_order_dir);
-
-$zids=QueryZIDs($fields, $r_sid, $conds, $sort, "", $bin_condition);
-
-global $tps;  # Defined in itemfunc.php3
-
-# mode - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
-if( !$mode )
-  $mode='AMB';
 for( $i=0; $i<strlen($mode); $i++) {
     $m1 = substr($mode,$i,1);
     $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#JS_HEAD_')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
 }
 
+$format = $slice->get_format_strings();
+$aliases = $slice->aliases();
 
-$format_strings = array ( "compact_top"=>"",
-                          "category_sort"=>false,
-                          "category_format"=>"",
-                          "category_top"=>"",
-                          "category_bottom"=>"",
-                          "even_odd_differ"=>false,
-                          "even_row_format"=>"",
-                          "odd_row_format"=>"<tr><td class=tabtxt>_#HEADLINE</td>
-                                                 <td class=tabtxt>$mode_string</td>
-                                             </tr>",
-                          "compact_remove"=>"",
-                          "compact_bottom"=>"",
-                          "id"=>$slice_info['id']);
+// if it is not 'Admin design', we need just following aliases
+if ( !isset($aliases["_#ITEM_ID_"]) ) $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............");
+if ( !isset($aliases["_#SITEM_ID"]) ) $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........");
+if ( !isset($aliases["_#HEADLINE"]) ) $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($r_sid));
+if ( !isset($aliases["_#JS_HEAD_"]) ) $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($r_sid));
 
-# design - boolean - use standard or admin design
-if($r_design) {
-  $format_strings["compact_top"]    = $slice_info['admin_format_top'];
-  $format_strings["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">',
-                                                  $mode_string, $slice_info['admin_format']);
-  $format_strings["compact_remove"] = $slice_info['admin_remove'];
-  $format_strings["compact_bottom"] = $slice_info['admin_format_bottom'];
+if (!($design)) {
+    $format["odd_row_format"] = '<tr><td class="tabtxt">_#PUB_DATE&nbsp;</td><td class="tabtxt">_#HEADLINE</td><td class="tabtxt">'.$mode_string.'</td></tr>';
+    $format["even_row_format"] = '<tr><td class="tabtxteven">_#PUB_DATE&nbsp;</td><td class="tabtxteven">_#HEADLINE</td><td class="tabtxteven">'.$mode_string.'</td></tr>';
+    $format["even_odd_differ"] = 1;
+    $format["compact_top"] = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
+    <tr><td class="tabtitlight">'._m("Publish date").'</td><td class="tabtitlight">'._m("Headline").'</td><td class="tabtitlight">'._m("Actions").'</td></tr>';
+    $aliases["_#JS_HEAD_"] = array("fce" => "f_e:javascript",
+                                   "param" => GetHeadlineFieldID($sid),
+                                   "hlp" => "");
+} else {
+  $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">',
+                                                  $mode_string, $format['odd_row_format']);
+}
+if (isset($showcondsro)) {
+    if (isset($conds)) { unset($conds); }
+    $showcondsro = stripslashes(rawurldecode($showcondsro));
+    parse_str($showcondsro);
+    $conds_ro = $conds;
+    ParseMultiSelectConds($conds_ro);
+    ParseEasyConds($conds_ro);
+}
+if (isset($showcondsrw)) {
+    if (isset($conds)) { unset($conds); }
+    $showcondsrw = stripslashes(rawurldecode($showcondsrw));
+    parse_str($showcondsrw);
+    $conds_rw = $conds;
+    ParseMultiSelectConds($conds_rw);
+    ParseEasyConds($conds_rw);
 }
 
+$manager_settings = array(
+     'show'     =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,
+     'searchbar' => array(
+         'fields'               => $slice->fields('search'),
+         'search_row_count_min' => 1,
+         'order_row_count_min'  => 1,
+         'add_empty_search_row' => true,
+         'function'             => false  // name of function for aditional action hooked on standard filter action
+                         ),
+     'scroller'  => array(
+         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
+         'slice_id'             => $slice_id
+                         ),
+     'itemview'  => array(
+         'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
+         'format'               => $format,
+         'fields'               => $slice->fields('record'),
+         'aliases'              => $aliases,
+         'get_content_funct'    => 'GetItemContent'
+                         ),
+     'messages'  => array(
+         'title'       => _m("Editor window - item manager, related selection window")
+                         )
+         );
 
 
-echo "<center>";
-echo "$Msg <br>";
-
-# ------- Caption -----------
-
-echo "<table border=0 cellspacing=0 class=login width=460>
-       <TR><TD align=center class=tablename width=460> $table_name </TD></TR>
-      </table>";
-
-echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
-'<table width="460" border="0" cellspacing="0" cellpadding="2" bgcolor="#F5F0E7">';
-
-if( isset($zids) && ($zids->count() > 0) ) {
-  if( $r_design ) {
-    $aliases = GetAliasesFromFields($fields);
-  }  // if it is not 'Admin design', we need just following aliases
-  if ( !isset($aliases["_#ITEM_ID_"]) ) $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............");
-  if ( !isset($aliases["_#SITEM_ID"]) ) $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........");
-  if ( !isset($aliases["_#HEADLINE"]) ) $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($r_sid));
-  if ( !isset($aliases["_#JS_HEAD_"]) ) $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($r_sid));
-
-  $nocache=1;
-
-  $itemview = new itemview($format_strings, $fields, $aliases, $zids,
-              $st->metapage * ($st->current-1), $st->metapage, "" );
-  $itemview->print_view();
-
-  $st->countPages( $zids->count() );
-
-  echo '</table><br>';
-
-    if($st->pageCount() > 1)
-    $st->pnavbar();
+$manager = new manager($manager_settings);
+if ((isset($conds_ro)) && (isset($showcondsro))) {
+    $manager->searchbar->addSearch($conds_ro, true);
 }
-else
-  echo "<tr><td><div class=tabtxt>". _m("No item found") ."</div></td></td></table>";
-
-echo '<input type=hidden name=akce value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
-echo '</form>';
-
-# user defined sorting and filtering ---------------------------------------
-echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
-      <table width="460" border="0" cellspacing="0" cellpadding="0"
-      class=leftmenu bgcolor="'. COLOR_TABBG .'">';
-
-reset( $fields );
-while( list ($k, $v ) = each( $fields ) ) {
-  $lookup_fields[$k] = $v[name];
-  if( $v[text_stored] )
-    $lookup_text_fields[$k] = $v[name];
+if ((isset($conds_rw)) && (isset($showcondsrw))) {
+    $manager->searchbar->addSearch($conds_rw);
 }
 
-  #order
-echo "<tr>
-       <td class=leftmenuy><b>". _m("Order") ."</b></td>
-       <td class=leftmenuy>";
-FrmSelectEasy('admin_order', $lookup_fields, $r_r_admin_order);
-echo "<input type='checkbox' name='admin_order_dir'".
-     ( ($r_r_admin_order_dir=='d') ? " checked> " : "> " ) . _m("Descending"). "</td>
-     <td rowspan=2 align='right' valign='middle'><a
-      href=\"javascript:document.filterform.submit()\" class=leftmenuy>". _m("Go") ."</a> </td></tr>";
+// r_state array holds all configuration of Links Manager
+// the configuration then could be Bookmarked
+if ( !isset($r_state) OR $sid OR ($r_state["module_id"] != $module_id)) {
+    // we are here for the first time or we are switching to another slice
+    unset($r_state);
+    // set default admin interface settings from user's profile
+    $r_state["module_id"]       = $module_id;
+    $r_state['bin']             = 'app';
+ //   $r_state['related']['sid']  = $sid;
+    $r_state['related']['mode']  = $mode;
+    $r_state['related']['var_id']  = $var_id;
+    $r_state['related']['design']  = $design;
+    $r_state['related']['frombins']  = $frombins;
+//    $r_state['related']['conds_ro'] = $conds_ro;
+//    $r_state['related']['conds_rw'] = $conds_rw;
 
-  # filter
-echo "<tr><td class=leftmenuy><b>". _m("Search") ."</b></td>
-     <td>";
-FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_r_admin_search_field);
-echo "<input type='Text' name='admin_search' size=20
-      maxlength=254 value=\"". safe($r_r_admin_search). "\"></td></tr></table>
-      <input type=hidden name=var_id value='$var_id'><br><br>
-      <input type=hidden name=akce value='filter'><br><br>
-      <input type=button value='". _m("Back") ."' onclick='window.close()'>
-      </form></center>";
-  echo "</body></html>";
+    $sess->register('r_state');
+    $profile = new aaprofile($auth->auth["uid"], $module_id); // current user settings
+    $manager->setFromProfile($profile);
+}
 
-  $$st_name = $st;   // to save the right scroller
-  page_close();
+if( $r_state['manager_related'] )        // do not set state for the first time calling
+    $manager->setFromState($r_state['manager_related']);
+
+$manager->performActions();
+
+$manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
+
+echo "<script type=\"text/javascript\" language=\"javascript\"> <!--
+  var maxcount = ". MAX_RELATED_COUNT .";
+  var relmessage = \""._m("There are too many related items. The number of related items is limited.") ."\";
+  var var_id = \"".$var_id."\";
+  //-->
+</script>
+";
+
+$conds = $manager->getConds();
+$sort  = $manager->getSort();
+
+$zids=QueryZIDs($slice->fields('record'), $slice_id, $conds, $sort, "", $frombins);
+
+$manager->printSearchbarBegin();
+$manager->printSearchbarEnd();   // close the searchbar form
+
+$manager->printAndClearMessages();
+PrintArray($r_err);
+PrintArray($r_msg);
+unset($r_err);
+unset($r_msg);
+
+$manager->printItems($zids);   // print links and actions
+$r_state['manager_related'] = $manager->getState();
+
+echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
+<tr><td align=center><input type=button value='". _m("Back") ."' onclick='window.close()'></td></tr></table>";
+HtmlPageEnd();
+page_close();
+
 ?>
