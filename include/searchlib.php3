@@ -40,7 +40,11 @@ function GetWhereExp( $field, $operator, $querystring ) {
                       $querystring = time();
                       break;
                     }  
-                $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
+                if( ($operator == "<=") or ($operator == ">") )
+                  # end of day used for some operators
+                  $querystring = mktime(23,59,59,$part[2],$part[1],$part[3]);
+                 else 
+                  $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
                 break;
       case 'm':
       case '-': $querystring = time() - $querystring;
@@ -786,6 +790,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.18  2001/09/27 16:08:51  honzam
+Better support for dates in "<=", ">" comparison
+
 Revision 1.17  2001/08/02 20:05:30  honzam
 new possibility to display expired items (for archves, ...)
 
