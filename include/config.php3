@@ -39,7 +39,7 @@ define("DB_PASSWORD", "somepasswd");
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
 define("AA_ID", "420224311780abcd420224311780abcd");
-define("ORG_NAME","APC on Sourceforge");
+define("ORG_NAME","APC on SourceForge");
 #define("AA_ID", "000111222333444555666777888999A9");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
@@ -53,7 +53,7 @@ define("LDAP_BASEDN", "ou=AA");
 define("LDAP_PEOPLE", "ou=People,ou=AA");
 define("LDAP_GROUPS", "ou=AA");
 define("LDAP_ACLS", "ou=ACLs,ou=AA");
-define("LDAP_PORT", 389);
+define("LDAP_PORT", 389);            // standard LDAP port: 389
 
 # e-mail for bug reporting contact
 define("ERROR_REPORTING_EMAIL", "technical@ecn.cz");
@@ -105,9 +105,8 @@ if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
   echo "you must set AA_INC_PATH and other variables in config.php3 !";
 };
 
-# The folloging items have to be changed or added if you create new
-# action applications. For a first time installation, you don't need
-# to care about them.
+# Maximum number of items, which can be related to some item
+define( "MAX_RELATED_COUNT", 50 );
 
 define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
 
@@ -150,12 +149,14 @@ define("IMG_UPLOAD_DIR_MODE", 508);    # mkdir perms (508 = 0774 in octal, but
       # You can redefine the colors in styles too
     define("ADMIN_CSS","admin-ecn.css");           # style for admin interface
     define("ADM_SLICE_CSS","adm_slice.css");       # style for public view of 
+                                                   # not encapsulated slices
   */
 
 # Language: uncomment one language  file
 require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
 # require ($GLOBALS[AA_INC_PATH] . "cz_common_lang.php3");  # Czech
 # require ($GLOBALS[AA_INC_PATH] . "es_common_lang.php3");  # Spanish
+# require ($GLOBALS[AA_INC_PATH] . "sk_common_lang.php3");  # Slovak
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG
