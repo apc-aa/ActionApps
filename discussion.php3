@@ -80,6 +80,8 @@ require "./include/config.php3";
 require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 /** Set of usefull functions used on most pages */
 require $GLOBALS[AA_INC_PATH]."util.php3";
+/** Mail sending functions */
+require $GLOBALS[AA_INC_PATH]."mail.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
 require $GLOBALS[AA_INC_PATH]."item.php3";
 /** parses view settings, gets view data and other functions */
