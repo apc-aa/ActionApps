@@ -62,8 +62,10 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
 
 # Prints two static text to 2-column table
 # for use within <table> tag
-function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp=""){
-  $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); $morehlp=safe($morehlp);
+function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=1){
+  if( $safing ) {
+    $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); $morehlp=safe($morehlp);
+  }
   
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
@@ -109,16 +111,18 @@ function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
 # Prints html tag <textarea .. to 2-column table
 # for use within <form> and <table> tag
 function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
-                     $hlp="", $morehlp="") {
+                     $hlp="", $morehlp="", $single="") {
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
   $morehlp=safe($morehlp);
 
-  echo "<tr><td class=tabtxt><b>$txt</b>";
+  if( $single )
+    $colspan = "colspan=2";
+  echo "<tr><td class=tabtxt $colspan><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
-  if (SINGLE_COLUMN_FORM)
+  if (SINGLE_COLUMN_FORM OR $single)
     echo "</tr><tr>";
-  echo "<td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>";
+  echo "<td $colspan><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo "</td></tr>\n";
@@ -249,6 +253,13 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
                      return false;
                    }
                    return true;
+    case "alias":  if((string)$variable=="0" AND !$needed)
+                     return true;     
+                   if( !EReg("^_#[0-9_#a-zA-Z]{8}$",Chop($variable)))
+                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
+                     return false;
+                   }
+                   return true;
     case "number": if( !EReg("^[0-9]+$",Chop($variable)) || ($variable > 32767))
                    { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
@@ -289,6 +300,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.9  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+
 Revision 1.8  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

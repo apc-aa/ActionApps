@@ -36,7 +36,7 @@ class itemview{
     $this->db = $db;
     $this->slice_info = $slice_info;  # $slice_info is array with this fields:
                                       #      - print_view() function:
-                                      #   grab_len, compact_top, category_sort,
+                                      #   compact_top, category_sort,
                                       #   category_format, category_top,
                                       #   category_bottom, even_odd_differ,
                                       #   even_row_format, odd_row_format,
@@ -120,8 +120,7 @@ class itemview{
     }
     
 
-    $CurItem = new item("", "", $this->aliases, $this->clean_url, "",
-                        $this->slice_info[grab_len]);   # just prepare
+    $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
 
 //p_arr_m($content);
 
@@ -206,8 +205,8 @@ class itemview{
 
 /*
 $Log$
-Revision 1.5  2001/01/22 17:32:49  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.6  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.4  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2

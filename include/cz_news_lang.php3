@@ -28,7 +28,6 @@ define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploa
 define("IMG_UPLOAD_URL", "http://aa.ecn.cz/img_upload/");
 define("IMG_UPLOAD_PATH", "/raid/www/htdocs/aa.ecn.cz/img_upload/");
 define("IMG_UPLOAD_TYPE", "image/*");
-define("EDITOR_GRAB_LEN", 200);                 // not used, i think
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
 define("DEFAULT_FULLTEXT_HTML", '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR>_#FULLTEXT');
@@ -60,7 +59,6 @@ define("L_SELECT_OWNER","Vyber vlastníka");
      
 # toolkit aplication dependent labels
 define("L_CANT_UPLOAD", "Soubor (obrázek) nelze uložit");
-define("L_GRAB_LEN", "Poèet znakù textu použitých jako abstrakt");
 define("L_MSG_PAGE", "Zpráva aplikace");   // title of message page
 define("L_EDITOR_TITLE", "Správa zpráv");
 define("L_FULLTEXT_FORMAT_TOP", "Horní HTML kód");
@@ -482,11 +480,49 @@ define("L_NO_CATEGORY_FIELD","Pole kategorie není v tomto webíku definováno.<br>
 define("L_PERMIT_ANONYMOUS_POST","Povolit anonymní vkládání");
 define("L_PERMIT_OFFLINE_FILL","Povolit off-line plnìní");
 define("L_SOME_CATEGORY", "<kategorie>");
+
+define( "L_BRACKETS_ERR", "Brackets doesn't match in query: ");
+define("L_SLICE_ADM","Administration Menu");
+// this one is not new. I moved it below L_SLICE_ADM
+define("L_A_SLICE_TIT", L_SLICE_ADM);
+define("L_A_SLICE_ADD_HELP", "To create the new Slice, please choose a template.  The new slice will inherit the template's default fields.  You can also choose a non-template slice to base the new slice on, if it has the fields you want.");
+
+define("L_ALIAS_FUNC_A", "abstrakt");
+define("L_ALIAS_FUNC_D", "datum");
+define("L_ALIAS_FUNC_E", "editace èlánku");
+define("L_ALIAS_FUNC_F", "odkaz na plný text");
+define("L_ALIAS_FUNC_G", "výška obrázku");
+define("L_ALIAS_FUNC_H", "zobrazit");
+define("L_ALIAS_FUNC_I", "zdroj obrázku");
+define("L_ALIAS_FUNC_L", "pole s odkazem");
+define("L_ALIAS_FUNC_N", "id");
+define("L_ALIAS_FUNC_S", "url");
+define("L_ALIAS_FUNC_T", "plný text");
+define("L_ALIAS_FUNC_W", "šíøka obrázku");
+define("L_ALIAS_FUNC_0", "- žádná -");
+
+define("L_ALIASES", "Aliasy pro políèka v databázi");
+define("L_ALIAS1", "Alias 1"); 
+define("L_ALIAS_HLP", "Musí zaèínat znaky \"_#\".<br>Alias musí být pøesnì 10 znakù dlouhý vèetnì \"_#\".<br>Mìl by být kapitálkami."); 
+define("L_ALIAS_FUNC", "Funkce"); 
+define("L_ALIAS_FUNC_F_HLP", "Funkce, která zajistí zobrazení políèka na stránce"); 
+define("L_ALIAS_FUNC_HLP", "Doplòkový parametr pøedávaný zobrazovací funkci. Podrobnosti viz include/item.php3 file"); 
+define("L_ALIAS_HELP", "Nápovìda"); 
+define("L_ALIAS_HELP_HLP", "Nápovìdný textík pro tento alias"); 
+define("L_ALIAS2", "Alias 2"); 
+define("L_ALIAS3", "Alias 3"); 
+
+define("L_TOP_HLP", "HTML code which appears at the top of slice area");
+define("L_FORMAT_HLP", "Put here the HTML code combined with aliases form bottom of this page
+                     <br>The aliase will be substituted by real values from database when it will be posted to page");
+define("L_BOTTOM_HLP", "HTML code which appears at the bottom of slice area");
+define("L_EVEN_ROW_HLP", "You can define different code for odd and ever rows
+                         <br>first red, second black, for example");
     
 /*
 $Log$
-Revision 1.22  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.23  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.21  2001/01/08 13:31:58  honzam
 Small bugfixes

@@ -95,7 +95,7 @@ $db->query($SQL);
 while($db->next_record()) 
   $all_slices[unpack_id($db->f(id))] = $db->f(name);
 
-if( $ldap_slices="all" ) {  // super admin - permission to manage all slices (deleted too)
+if( $ldap_slices == "all" ) {  // super admin - permission to manage all slices (deleted too)
   $SQL= " SELECT id, name FROM slice ORDER BY name";
   $db->query($SQL);
   while($db->next_record()) {
@@ -103,9 +103,10 @@ if( $ldap_slices="all" ) {  // super admin - permission to manage all slices (de
     $slices[$up] = $db->f(name);
   }
 } else {
-  reset($ldap_slices);  // find names for slice ids
+  # find names for slice ids and hide the deleted ones
+  reset($ldap_slices);  
   while( list($slid,) = each($ldap_slices) ) {
-    if( $all_slices[$slid] != "" )  // do not show deleted slices
+    if( $all_slices[$slid] != "" )  
       $slices[$slid] = $all_slices[$slid];
   }  
 }  
@@ -119,6 +120,7 @@ if( !$Add_slice AND !$New_slice ) {
     reset($slices);
     $slice_id = key($slices);
   }    
+
   if( !isset($slices[$slice_id])) {   // this slice was deleted
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE);
     exit;
@@ -158,6 +160,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.12  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+
 Revision 1.11  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

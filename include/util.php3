@@ -331,7 +331,7 @@ function PrintAliasHelp($aliases) {
   ?>
   <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HLP ?></b></td></tr>
   <tr><td>
-  <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
   <?php
   $count = 0;
   while ( list( $ali,$v ) = each( $aliases ) ) 
@@ -351,6 +351,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.15  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+
 Revision 1.14  2001/01/22 17:32:49  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

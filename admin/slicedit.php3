@@ -88,7 +88,6 @@ if( $add || $update ) {
 
     ValidateInput("name", L_SLICE_NAME, &$name, &$err, true, "text");
     ValidateInput("owner", L_OWNER, &$owner, &$err, false, "id");
-    ValidateInput("grab_len", L_GRAB_LEN, $grab_len, &$err, true, "number");
     ValidateInput("slice_url", L_SLICE_URL, &$slice_url, &$err, false, "url");
     ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, &$err, true, "positivenumber");
     ValidateInput("lang_file", L_LANG_FILE, $lang_file, &$err, true, "text");
@@ -106,7 +105,6 @@ if( $add || $update ) {
     {
       $varset->add("name", "quoted", $name);
       $varset->add("owner", "unpacked", $owner);
-      $varset->add("grab_len", "number", $grab_len);
       $varset->add("slice_url", "quoted", $slice_url);
       $varset->add("d_listlen", "number", $d_listlen);
       $varset->add("deleted", "number", $deleted);
@@ -136,7 +134,6 @@ if( $add || $update ) {
       $varset->set("created_at", now(), "text");
       $varset->set("name", $name, "quoted");
       $varset->set("owner", $owner, "unpacked");
-      $varset->set("grab_len", $grab_len, "number");
       $varset->set("slice_url", $slice_url, "quoted");
       $varset->set("d_listlen", $d_listlen, "number");
       $varset->set("deleted", $deleted, "number");
@@ -304,7 +301,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     FrmInputText("new_owner_email", L_NEW_OWNER_EMAIL, $new_owner_email, 99, 25, false);
   }  
   FrmInputText("d_listlen", L_D_LISTLEN, $d_listlen, 5, 5, true);
-  FrmInputText("grab_len", L_GRAB_LEN, $grab_len, 5, 5, true);
   FrmInputChBox("template", L_TEMPLATE, $template);
   FrmInputChBox("deleted", L_DELETED, $deleted);
   FrmInputChBox("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post);
@@ -328,8 +324,8 @@ if($slice_id=="") {
 
 /*
 $Log$
-Revision 1.14  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.15  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.13  2001/01/08 13:31:58  honzam
 Small bugfixes

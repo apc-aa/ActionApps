@@ -24,11 +24,11 @@ http://www.apc.org/
 #
 
   // list of text fields in items table (used in feeding.php3 for inserting into database)
-$ITEM_FIELDS_TEXT = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height", "redirect");
+$ITEM_FIELDS_TEXT = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height");
 $ITEM_FIELDS_NUM  = array("status_code", "link_only", "html_formatted", "highlight" );
 
   // list of fields in packed array of shown fields in itemedit.php3
-$ITEMEDIT_FIELDS = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_upload=>L_IMG_UPLOAD, redirect=>L_REDIRECT );
+$ITEMEDIT_FIELDS = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_upload=>L_IMG_UPLOAD);
 
   // list of fields in packed array of shown fields in big_srch.php3
 $SHOWN_SEARCH_FIELDS = array( slice=>L_SRCH_SLICE, category=>L_SRCH_CATEGORY, author=>L_SRCH_AUTHOR, language=>L_SRCH_LANGUAGE, from=>L_SRCH_FROM, to=>L_SRCH_TO, headline=>L_SRCH_HEADLINE, abstract=>L_SRCH_ABSTRACT, full_text=>L_SRCH_FULL_TEXT, edit_note=>L_SRCH_EDIT_NOTE);
@@ -59,7 +59,7 @@ $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "notify_sh_accept", "notify_sh_remove", "notify_holding_item",
    "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove");
 
-$SLICE_FIELDS_NUM  = array( "grab_len", "deleted", "export_to_all", "template", 
+$SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template", 
    "even_odd_differ", "category_sort", "d_expiry_limit", "d_listlen",  
    "email_sub_enable", "exclude_from_dir");
 
@@ -106,6 +106,20 @@ $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "now" => L_INPUT_INSERT_NOW, 
                              "fil" => L_INPUT_INSERT_FIL,
                              "nul" => L_INPUT_INSERT_NUL);
+                             
+$ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
+                            "f_d" => L_ALIAS_FUNC_D,
+                            "f_e" => L_ALIAS_FUNC_E,
+                            "f_f" => L_ALIAS_FUNC_F,
+                            "f_g" => L_ALIAS_FUNC_G,
+                            "f_h" => L_ALIAS_FUNC_H,
+                            "f_i" => L_ALIAS_FUNC_I,
+                            "f_l" => L_ALIAS_FUNC_L,
+                            "f_n" => L_ALIAS_FUNC_N,
+                            "f_s" => L_ALIAS_FUNC_S,
+                            "f_t" => L_ALIAS_FUNC_T,
+                            "f_w" => L_ALIAS_FUNC_W,
+                            "f_0" => L_ALIAS_FUNC_0);
 
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "1"   => LOG_EVENTS_,
@@ -117,52 +131,10 @@ $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "7"   => LOG_EVENTS_,
                       "8"   => LOG_EVENTS_);
                                                    
-  // array of fields displayable in admin interface (index.php3)
-  //   field - database field
-  //   type - type of database field
-  //   title - name of column shown as header to table in admin interface (index.php3)
-  //   width - default width of column
-  //   name - optional - description of this column in slice setting - parameters page (in not specified title is used)
-$AF_COLUMNS = array ( "id" => array( "field"=>"id", "type"=>"md5", "title"=>L_ID, "width"=>70),
-                      "master_id" => array( "field"=>"master_id", "type"=>"md5", "title"=>L_MASTER_ID, "width"=>70),
-                      "category_id" => array( "field"=>"category_id", "type"=>"md5", "title"=>L_CATEGORY_ID, "width"=>70),
-                      "status_code" => array( "field"=>"status_code", "type"=>"int", "title"=>L_STATUS_CODE, "width"=>24),
-                      "language_code" => array( "field"=>"language_code", "type"=>"char", "title"=>L_LANGUAGE_CODE, "width"=>30),
-                      "cp_code" => array( "field"=>"cp_code", "type"=>"char", "title"=>L_CP_CODE, "width"=>60),
-                      "headline" => array( "field"=>"headline", "type"=>"char", "title"=>L_HEADLINE, "width"=>224, "name"=>L_HEADLINE_EDIT),
-                      "headlinepreview" => array( "field"=>"headline", "type"=>"char", "title"=>L_HEADLINE, "width"=>224, "name"=>L_HEADLINE_PREVIEW),
-                      "hl_href" => array( "field"=>"hl_href", "type"=>"char", "title"=>L_HL_HREF, "width"=>100),
-                      "link_only" => array( "field"=>"link_only", "type"=>"int", "title"=>L_LINK_ONLY, "width"=>24),
-                      "post_date" => array( "field"=>"post_date", "type"=>"date", "title"=>L_POSTDATE, "width"=>70),
-                      "publish_date" => array( "field"=>"publish_date", "type"=>"date", "title"=>L_PUBLISH_DATE, "width"=>70),
-                      "expiry_date" => array( "field"=>"expiry_date", "type"=>"date", "title"=>L_EXPIRY_DATE, "width"=>70),
-                      "abstract" => array( "field"=>"abstract", "type"=>"char", "title"=>L_ABSTRACT, "width"=>400),
-                      "img_src" => array( "field"=>"img_src", "type"=>"char", "title"=>L_IMG_SRC, "width"=>100),
-                      "img_width" => array( "field"=>"img_width", "type"=>"char", "title"=>L_IMG_WIDTH, "width"=>30),
-                      "img_height" => array( "field"=>"img_height", "type"=>"char", "title"=>L_IMG_HEIGHT, "width"=>30),
-                      "html_formatted" => array( "field"=>"html_formatted", "type"=>"int", "title"=>L_HTML_FORMATTED, "width"=>24),
-                      "source" => array( "field"=>"source", "type"=>"char", "title"=>L_SOURCE, "width"=>70),
-                      "source_href" => array( "field"=>"source_href", "type"=>"char", "title"=>L_SOURCE_HREF, "width"=>100),
-                      "redirect" => array( "field"=>"redirect", "type"=>"char", "title"=>L_REDIRECT, "width"=>100),
-                      "place" => array( "field"=>"place", "type"=>"char", "title"=>L_PLACE, "width"=>70),
-                      "highlight" => array( "field"=>"highlight", "type"=>"int", "title"=>L_HIGHLIGHTED_HEAD, "width"=>24, "name"=>L_HIGHLIGHT),
-                      "posted_by" => array( "field"=>"posted_by", "type"=>"char", "title"=>L_POSTED_BY, "width"=>70),
-                      "e_posted_by" => array( "field"=>"e_posted_by", "type"=>"char", "title"=>L_E_POSTED_BY, "width"=>70),
-                      "created_by" => array( "field"=>"created_by", "type"=>"char", "title"=>L_CREATED_BY, "width"=>70),
-                      "edited_by" => array( "field"=>"edited_by", "type"=>"char", "title"=>L_EDITED_BY, "width"=>70),
-                      "last_edit" => array( "field"=>"last_edit", "type"=>"date", "title"=>L_LASTEDIT, "width"=>70),
-                      "edit_note" => array( "field"=>"edit_note", "type"=>"char", "title"=>L_EDIT_NOTE, "width"=>70),
-                      "catname" => array( "field"=>"categories.name", "type"=>"char", "title"=>L_CATNAME, "width"=>70),
-                      "feed" => array( "field"=>false, "type"=>false, "title"=>L_FEEDED_HEAD, "width"=>24),
-                      "published" => array( "field"=>false, "type"=>false, "title"=>L_PUBLISHED_HEAD, "width"=>24, "name"=>L_PUBLISHED),
-                      "edit" => array( "field"=>false, "type"=>false, "title"=>L_EDIT_LINK, "width"=>30, "name"=>L_EDIT),
-                      "preview" => array( "field"=>false, "type"=>false, "title"=>L_PREVIEW_LINK, "width"=>40, "name"=>L_VIEW_FULLTEXT),
-                      "chbox" => array( "field"=>false, "type"=>false, "title"=>L_CHBOX_HEAD, "width"=>24, "name"=>L_CHBOX));
-
 /*
 $Log$
-Revision 1.3  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.4  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.2  2001/01/08 13:31:58  honzam
 Small bugfixes

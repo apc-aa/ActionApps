@@ -169,7 +169,7 @@ function show_fnc_dte($varname, $field, $content, $value, $param, $edit) {
   $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2]);
   $datectrl->setdate_int($edit ? $content[0] : $value);
   FrmStaticText($field[name], $datectrl->getselect(), $field[required], 
-                $field[input_help], $field[input_morehlp] );
+                $field[input_help], $field[input_morehlp], "0" );
 }
 
 function show_fnc_nul($varname, $field, $content, $value, $param, $edit) {
@@ -177,6 +177,9 @@ function show_fnc_nul($varname, $field, $content, $value, $param, $edit) {
 
 /*
 $Log$
+Revision 1.2  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+
 Revision 1.1  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

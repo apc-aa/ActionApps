@@ -1,4 +1,6 @@
-
+23/01/01 - added possibility to define Aliases in se_inputform.php3
+         - fixed bug in permission handling (no showed slices for no superusers)
+         - added help texts to design pages se_admin, se_fulltext, se_compact
 20/01/01 - final 'I hope' version of APC-wide categories implemented
          - better categy handling for new slices (predefined its own category 
            set)

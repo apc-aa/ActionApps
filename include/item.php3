@@ -22,58 +22,6 @@ http://www.apc.org/
 
 define("ITEM_PHP3_INC",1);
 
-# aliases used in fulltext and compact format in place of database fields
-# change only text after _# !!!
-# length of alias must! be!! 10 characters !!!
-# if you change it, change compact and fulltext format strings in database, too !
-# do not use _# inside alias !
-
-/*
-$aliases["_#HEADLINE"] = array("fce"=>"f_h", "param"=>"headline", "hlp" => L_HLP_HEADLINE);
-$aliases["_#CATEGORY"] = array("fce"=>"f_h", "param"=>"category", "hlp" => L_HLP_CATEGORY);
-$aliases["_#HDLN_URL"] = array("fce"=>"f_f", "param"=>"", "hlp" => L_HLP_HDLN_URL);
-$aliases["_#POSTDATE"] = array("fce"=>"f_d", "param"=>"post_date", "hlp" => L_HLP_POSTDATE);
-$aliases["_#PUB_DATE"] = array("fce"=>"f_d", "param"=>"publish_date", "hlp" => L_HLP_PUB_DATE);
-$aliases["_#EXP_DATE"] = array("fce"=>"f_d", "param"=>"expiry_date", "hlp" => L_HLP_EXP_DATE);
-$aliases["_#ABSTRACT"] = array("fce"=>"f_a", "param"=>"", "hlp" => L_HLP_ABSTRACT);
-$aliases["_#FULLTEXT"] = array("fce"=>"f_t", "param"=>"", "hlp" => L_HLP_FULLTEXT);
-$aliases["_#IMAGESRC"] = array("fce"=>"f_i", "param"=>"", "hlp" => L_HLP_IMAGESRC);
-$aliases["_#SOURCE##"] = array("fce"=>"f_h", "param"=>"source", "hlp" => L_HLP_SOURCE);
-$aliases["_#SRC_URL#"] = array("fce"=>"f_s", "param"=>"", "hlp" => L_HLP_SRC_URL);
-$aliases["_#LINK_SRC"] = array("fce"=>"f_l", "param"=>"", "hlp" => L_HLP_LINK_SRC);
-aliases["_#PLACE###"] = array("fce"=>"f_h", "param"=>"place", "hlp" => L_HLP_PLACE);
-$aliases["_#POSTEDBY"] = array("fce"=>"f_h", "param"=>"posted_by", "hlp" => L_HLP_POSTEDBY);
-$aliases["_#E_POSTED"] = array("fce"=>"f_h", "param"=>"e_posted_by", "hlp" => L_HLP_E_POSTED);
-$aliases["_#CREATED#"] = array("fce"=>"f_h", "param"=>"created_by", "hlp" => L_HLP_CREATED);
-$aliases["_#EDITEDBY"] = array("fce"=>"f_h", "param"=>"edited_by", "hlp" => L_HLP_EDITEDBY);
-$aliases["_#LASTEDIT"] = array("fce"=>"f_d", "param"=>"last_edit", "hlp" => L_HLP_LASTEDIT);
-$aliases["_#EDITNOTE"] = array("fce"=>"f_h", "param"=>"edit_note", "hlp" => L_HLP_EDITNOTE);
-$aliases["_#IMGWIDTH"] = array("fce"=>"f_w", "param"=>"", "hlp" => L_HLP_IMGWIDTH);
-$aliases["_#IMG_HGHT"] = array("fce"=>"f_g", "param"=>"", "hlp" => L_HLP_IMG_HGHT);
-$aliases["_#ITEM_ID#"] = array("fce"=>"f_n", "param"=>"id", "hlp" => L_HLP_ITEM_ID);
-$aliases["_#CATEG_ID"] = array("fce"=>"f_n", "param"=>"category_id", "hlp" => L_HLP_CATEGORY_ID);
-
-if( defined("EXTENDED_ITEM_TABLE") ) {
-  $aliases["_#SRC_DEST"] = array("fce"=>"f_h", "param"=>"source_desc", "hlp" => L_HLP_SOURCE_DESC);
-  $aliases["_#SRC_ADDR"] = array("fce"=>"f_h", "param"=>"source_address", "hlp" => L_HLP_SOURCE_ADDRESS);
-  $aliases["_#SRC_CITY"] = array("fce"=>"f_h", "param"=>"source_city", "hlp" => L_HLP_SOURCE_CITY);
-  $aliases["_#SRC_PROV"] = array("fce"=>"f_h", "param"=>"source_prov", "hlp" => L_HLP_SOURCE_PROV);
-  $aliases["_#SRC_CNTR"] = array("fce"=>"f_h", "param"=>"source_country", "hlp" => L_HLP_SOURCE_COUNTRY);
-  $aliases["_#STR_DATE"] = array("fce"=>"f_h", "param"=>"start_date", "hlp" => L_HLP_START_DATE);
-  $aliases["_#END_DATE"] = array("fce"=>"f_h", "param"=>"end_date", "hlp" => L_HLP_END_DATE);
-  $aliases["_#TIME####"] = array("fce"=>"f_h", "param"=>"time", "hlp" => L_HLP_TIME);
-  $aliases["_#CON_NAME"] = array("fce"=>"f_h", "param"=>"con_name", "hlp" => L_HLP_CON_NAME);
-  $aliases["_#CON_MAIL"] = array("fce"=>"f_h", "param"=>"con_email", "hlp" => L_HLP_CON_EMAIL);
-  $aliases["_#CON_TEL#"] = array("fce"=>"f_h", "param"=>"con_phone", "hlp" => L_HLP_CON_PHONE);
-  $aliases["_#CON_FAX#"] = array("fce"=>"f_h", "param"=>"con_fax", "hlp" => L_HLP_CON_FAX);
-  $aliases["_#LOC_NAME"] = array("fce"=>"f_h", "param"=>"loc_name", "hlp" => L_HLP_LOC_NAME);
-  $aliases["_#LOC_ADDR"] = array("fce"=>"f_h", "param"=>"loc_address", "hlp" => L_HLP_LOC_ADDRESS);
-  $aliases["_#LOC_CITY"] = array("fce"=>"f_h", "param"=>"loc_city", "hlp" => L_HLP_LOC_CITY);
-  $aliases["_#LOC_PROV"] = array("fce"=>"f_h", "param"=>"loc_prov", "hlp" => L_HLP_LOC_PROV);
-  $aliases["_#LOC_CNTR"] = array("fce"=>"f_h", "param"=>"loc_country", "hlp" => L_HLP_LOC_COUNTRY);
-}
-*/
-
 function txt2html($txt) {          #converts plain text to html
   $txt = nl2br(htmlspecialchars($txt));
 //  $txt = ERegI_Replace('  ', ' &nbsp;', $txt);
@@ -124,7 +72,6 @@ class item {
   var $top;
   var $format;         # format string with aliases 
   var $bottom;
-  var $grab_len;              
   var $remove;         # remove string
   var $aliases;        # array of usable aliases              
   
@@ -135,7 +82,6 @@ class item {
     $this->aliases = $ali;
     $this->clean_url = $c;
     $this->format = $ff;
-    $this->grab_len = $gl;
     $this->remove = $fr;
     $this->top = $top;
     $this->bottom = $bottom;
@@ -148,60 +94,126 @@ class item {
     $this->bottom = $bottom;
   }
   
-  // functions called for alias substitution
-  function f_h($col) { return htmlspecialchars($this->columns[$col][0][value]); }
-  function f_x($col) { return $this->columns[$col][0][value]; }
-  function f_d($col) { return sec2userdate($this->columns[$col][0][value]); }  #can be used use $format in sec2userdate
-  function f_i($col) { return ( $this->columns["img_src........."][0][value] ? $this->columns["img_src........."][0][value] : NO_PICTURE_URL); }
-  function f_n($col) { return unpack_id( $this->columns[$col][0][value] ); }
-  function f_g($col) { 
+  # --------------- functions called for alias substitution -------------------
+
+  # null function
+  # param: 0
+  function f_0($col, $param="") { return ""; }
+
+  # print due to html flag set (escape html special characters or just print)
+  # param: 0
+  function f_h($col, $param="") { 
+    return ( ($this->columns[$col][0][flag] & 2) ? 
+      $this->columns[$col][0][value] : 
+      htmlspecialchars( $this->columns[$col][0][value] ) );
+  }    
+
+  # prints date in user defined format
+  # param: date format like in PHP (like "m-d-Y")
+  function f_d($col, $param="") {
+    if( $param=="" )
+      $param = "m/d/Y";
+  	return date($param, $this->columns[$col][0][value]);
+  }
+
+  # prints image scr (<img src=...) - NO_PICTURE for none
+  # param: 0
+  function f_i($col, $param="") { 
+    return ( $this->columns[$col][0][value] ?
+      $this->columns[$col][0][value] : 
+      NO_PICTURE_URL);
+  }
+
+  # prints unpacked id
+  # param: 0
+  function f_n($col, $param="") {
+    return unpack_id( $this->columns[$col][0][value] ); 
+  }
+
+  # prints image height atribut (<img height=...) or clears it
+  # param: 0
+  function f_g($col, $param="") {    # image height
     global $out;
-    if( !$this->columns["img_height......"][0][value] ) {
+    if( !$this->columns[$col][0][value] ) {
       $out = ERegI_Replace( "height[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete height = x
       return false;
     }
-    return htmlspecialchars($this->columns["img_height......"][0][value]);
+    return htmlspecialchars($this->columns[$col][0][value]);
   }
-  function f_w($col) { 
+
+  # prints image width atribut (<img width=...) or clears it
+  # param: 0
+  function f_w($col, $param="") {    # image width
     global $out;
-    if( !$this->columns["img_width......."][0][value] ) {
+    if( !$this->columns[$col][0][value] ) {
       $out = ERegI_Replace( "width[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete width = x
       return false;
     }
-    return htmlspecialchars($this->columns["img_width......."][0][value]);
+    return htmlspecialchars($this->columns[$col][0][value]);
   }
-  function f_a($col)     {            // returns abstract or grabed fulltext
-    if ($this->columns["abstract........"][0][value])
-      return htmlspecialchars($this->columns["abstract........"][0][value]);
-    return htmlspecialchars(substr($this->columns["full_text......."][0][value],0,$this->grab_len));
+
+  # prints abstract or grabed fulltext text field
+  # param: length:field_id
+  #    length - number of characters taken from field_id (like "80:full_text.......")
+  function f_a($col, $param="") {
+    $p = explode(":",$param);
+    if ($this->columns[$col][0][value])
+      return htmlspecialchars($this->columns[$col][0][value]);
+    return htmlspecialchars(substr($this->columns[ $p[1] ][0][value], 0, $p[0] ) );
   }
-  function f_f($col) { 
-    if( $this->columns["link_only......."][0][value] )
-      return ($this->columns["hl_href........."][0][value] ? 
-                $this->columns["hl_href........."][0][value] :
+
+  # prints link to fulltext (hedline url)
+  # col: hl_href.........
+  # param: link_only:redirect
+  #    link_only field id (like "link_only.......")
+  #    redirect - url of another page which shows the content of item 
+  #             - this page should contain SSI include ../slice.php3 too
+  function f_f($col, $param="") { 
+    $p = explode(":",$param);
+    if( $this->columns[ $p[0]][0][value] )       # link_only
+      return ($this->columns[$col][0][value] ? 
+                $this->columns[$col][0][value] :
                 NO_OUTER_LINK_URL);
-    if( $this->columns["redirect........"][0][value] )  // redirecting to another page (should contain SSI include ../slice.php3 too)
-      return con_url($this->columns["redirect........"][0][value],"sh_itm=".unpack_id($this->columns["id"][0][value]));
+    if( $this->columns[ $p[1] ][0][value] )      # redirecting to another page 
+      return con_url( $this->columns[ $p[1] ][0][value],
+                      "sh_itm=".unpack_id($this->columns["id"][0][value]));
      else 
-      return con_url($this->clean_url,"sh_itm=".unpack_id($this->columns["id"][0][value]));
+      return con_url( $this->clean_url,          # show on this page
+                      "sh_itm=".unpack_id($this->columns["id"][0][value]));
   }    
-  function f_t($col) { 
-    return ( ($this->columns["full_text......."][0][flag] & 2) ? 
-      $this->columns["full_text......."][0][value] : txt2html($this->columns["full_text......."][0][value]) );
+
+  # converts text to html or escape html (due to html flag)
+  # param: 0
+  function f_t($col, $param="") { 
+    return ( ($this->columns[$col][0][flag] & 2) ? 
+      $this->columns[$col][0][value] : txt2html($this->columns[$col][0][value]) );
   }
-  function f_s($col) { return ( $this->columns["source_href....."][0][value] ? $this->columns["source_href....."][0][value] : NO_SOURCE_URL); }
-  function f_l($col) { 
-    if( $this->columns["source_href....."][0][value] AND $this->columns["source.........."][0][value] )
-      return '<a href="'. htmlspecialchars($this->columns["source_href....."][0][value]) .'">'.
-              htmlspecialchars($this->columns["source.........."][0][value]).'</a>';
-    return htmlspecialchars($this->columns["source.........."][0][value]); 
+
+  # print database field or default value if empty
+  # param: default (like "javascript: window.alert('No source url specified')")
+  function f_s($col, $param="") { 
+    return ( $this->columns[$col][0][value] ? 
+             $this->columns[$col][0][value] : $param); }
+
+  # prints $col as link, if field_id in $param is defined, else prints just $col
+  # param: field_id of possible link (like "source_href.....")
+  function f_l($col, $param="") { 
+    if( $this->columns[$param][0][value] AND $this->columns[$col][0][value] )
+      return '<a href="'. htmlspecialchars($this->columns[$param][0][value]) .'">'.
+              htmlspecialchars($this->columns[$col][0][value]).'</a>';
+    return htmlspecialchars($this->columns[$col][0][value]); 
   }
-  function f_e($col) { // _#ITEMEDIT used on admin page index.php3 for itemedit url
+
+  # _#ITEMEDIT used on admin page index.php3 for itemedit url
+  # param: 0
+  function f_e($col, $param="") { 
     global $sess;
     return con_url($sess->url("itemedit.php3"),
                    "encap=false&edit=1&id=".
                    unpack_id( $this->columns["id"][0][value]));
   }                 
+
+  # ----------------- alias function definition end --------------------------
   
   // function shows full text navigation (back, home)
   function show_navigation($home_url) {
@@ -230,11 +242,19 @@ class item {
       next($piece);
     }
     while(current($piece)) {
+        #search for alias definition (fce,param,hlp)
       $ali_arr = $this->aliases["_#".($als_name=substr(current($piece),0,8))];
+
+        #is this realy alias?
       if( is_array($ali_arr)) {
-        $function = ParseFnc($ali_arr[fce]);   // fce as parameter (pointer to function)
+          # get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
+        $function = ParseFnc($ali_arr[fce]);
         $fce = $function[fnc];
-        $contents[$als_name] = $this->$fce($ali_arr[param]);
+
+          # call function (called by function reference (pointer))
+          # like f_d("start_date......", "mm-dd")
+        $contents[$als_name] = $this->$fce($ali_arr[param], $function[param]);
+
         if( $contents[$als_name] != "")  // remove empty aliases
           $out .= "_#".current($piece);
         else 
@@ -279,8 +299,8 @@ class item {
 
 /*
 $Log$
-Revision 1.7  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.8  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.6  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2

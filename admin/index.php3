@@ -304,6 +304,7 @@ if(is_object($st)) {
   $st = new scroller($st_name, $sess->url($PHP_SELF) . "&");	
   $st->metapage=EDIT_ITEM_COUNT;
 
+/*
   reset($AF_COLUMNS);   // set filters for all possibly displayed fields
   while( list($afname, $afarr) = each($AF_COLUMNS) ) {
     if( $afarr["field"] ) {
@@ -313,6 +314,8 @@ if(is_object($st)) {
        	$st->addFilter($afname, $afarr["type"]);
     }  
   }    
+*/
+  
   $sess->register($st_name); 
 }
 
@@ -328,8 +331,7 @@ if (! $perm_edit_all )
 $item_ids = GetItemAppIds($fields, $db, $p_slice_id, 
                             $conditions, "DESC", "", "",$item_cond);
 
-$format_strings = array ( "grab_len"=>"",
-                          "compact_top"=>$slice_info[admin_format_top],
+$format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
                           "category_sort"=>false,
                           "category_format"=>"",
                           "category_top"=>"",
@@ -390,8 +392,8 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 
 /*
 $Log$
-Revision 1.13  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.14  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.12  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x

@@ -126,12 +126,6 @@ define( "L_SLICE_HINT", '
                   Webík zahrnete do své *.shtml stránky pøidáním následující øádky v HTML kódu:
                   ');
                    
-function sec2userdate($timestamp, $format="") {
-  if( !$format )
-    $format = "m/d/Y";
-	return date($format, $timestamp);
-}
-
 // tranformation from english style datum (3/16/1999 or 3/16/99) to timestamp
 // break year for short year description is 1970
 function userdate2sec ($dttm, $time="") {
@@ -150,8 +144,8 @@ function dateExample() {
 
 /*
 $Log$
-Revision 1.12  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.13  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.11  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x

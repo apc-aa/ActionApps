@@ -22,8 +22,7 @@ http://www.apc.org/
 #expected  slice_id 
 #expected  encap     // determines wheather this file is ssi included or called directly  
 #optionaly sh_itm    // if specified - selected item is shown in full text
-#optionaly query     // query string sended by custom search form for extended
-                     // search
+#optionaly srch      // true if this script have to show search results
 #optionaly highlight // when true, shows only highlighted items in compact view
 #optionaly bigsrch   // true, if this script have to show big search form
 #optionaly cat_id    // select only items in category with id cat_id
@@ -34,12 +33,10 @@ http://www.apc.org/
                      // (aplicable in compact viewe only) 
 #optionaly items[x]  // array of items to show one after one as fulltext 
                      // the array format is 
-                     
 
 $encap = ( ($encap=="false") ? false : true );
 
 require "./include/config.php3";
-//require $GLOBALS[AA_INC_PATH]."en_common_lang.php3";  // we need sec2userdate function
 require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";
@@ -201,12 +198,12 @@ else {               //compact view -------------------------------------------
   if( $listlen )    // change number of listed items
     $scr->metapage = $listlen;
   
-  if($query) {
+  if($srch) {
     $r_category_id = "";
     $r_highlight = "";
-    $item_ids = ExtSearch($query,$p_slice_id,0);
-    if( !isset($item_ids) OR !is_array($item_ids))
-      echo "<div>$item_ids</div>";  // display possible error msg
+    if( !$big )      // posted by bigsrch form -------------------
+      $search[slice] = $slice_id;
+    $item_ids = SearchWhere($search, $s_col);
     $scr->current = 1;
   }
   else {
@@ -288,8 +285,8 @@ page_close();
 #    p_arr_m( $debugtimes);
 /*
 $Log$
-Revision 1.11  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.12  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.10  2000/12/23 19:56:02  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2

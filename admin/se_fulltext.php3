@@ -116,16 +116,19 @@ function Defaults() {
   echo $Msg;
 ?>
 <form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_FULLTEXT_HDR?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
-  FrmTextarea("fulltext_format_top", L_FULLTEXT_FORMAT_TOP, $fulltext_format_top, 4, 60, false);
-  FrmTextarea("fulltext_format", L_FULLTEXT_FORMAT, $fulltext_format, 8, 60, true);
-  FrmTextarea("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, $fulltext_format_bottom, 4, 60, false);
+  FrmTextarea("fulltext_format_top", L_FULLTEXT_FORMAT_TOP, $fulltext_format_top, 4, 60, false,
+               L_TOP_HLP, "", DOCUMENTATION_URL, 1); 
+  FrmTextarea("fulltext_format", L_FULLTEXT_FORMAT, $fulltext_format, 8, 60, true,
+               L_FORMAT_HLP, "", DOCUMENTATION_URL, 1); 
+  FrmTextarea("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, $fulltext_format_bottom, 4, 60, false,
+               L_BOTTOM_HLP, "", DOCUMENTATION_URL, 1); 
   FrmInputText("fulltext_remove", L_FULLTEXT_REMOVE, $fulltext_remove, 254, 50, false);
 ?>
 </table></td></tr>
@@ -141,8 +144,8 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
-Revision 1.5  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.6  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.4  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x

@@ -65,6 +65,16 @@ if( $update ) {
     ValidateInput("input_morehlp", L_INPUT_MOREHLP, $input_morehlp, &$err, false, "text");
     ValidateInput("input_default", L_INPUT_DEFAULT, $input_default, &$err, false, "text");
     ValidateInput("input_show_func", L_INPUT_SHOW_FUNC, $input_show_func, &$err, false, "text");
+
+    ValidateInput("alias1", L_ALIAS1, $alias1, &$err, false, "alias");
+    ValidateInput("alias1_help", L_ALIAS1_HELP, $alias1_help, &$err, false, "text");
+    ValidateInput("alias1_func", L_ALIAS1_FUNC, $alias1_func, &$err, false, "text");
+    ValidateInput("alias2", L_ALIAS1, $alias2, &$err, false, "alias");
+    ValidateInput("alias2_help", L_ALIAS1_HELP, $alias2_help, &$err, false, "text");
+    ValidateInput("alias2_func", L_ALIAS1_FUNC, $alias2_func, &$err, false, "text");
+    ValidateInput("alias3", L_ALIAS1, $alias3, &$err, false, "alias");
+    ValidateInput("alias3_help", L_ALIAS1_HELP, $alias3_help, &$err, false, "text");
+    ValidateInput("alias3_func", L_ALIAS1_FUNC, $alias3_func, &$err, false, "text");
       
     if( count($err) > 1)
       break;
@@ -73,6 +83,17 @@ if( $update ) {
     $varset->add("input_help", "quoted", $input_help);
     $varset->add("input_morehlp", "quoted", $input_morehlp);
     $varset->add("input_default", "quoted", "$input_default_f:$input_default");
+
+    $varset->add("alias1", "quoted", $alias1);
+    $varset->add("alias1_help", "quoted", $alias1_help);
+    $varset->add("alias1_func", "quoted", "$alias1_func_f:$alias1_func");
+    $varset->add("alias2", "quoted", $alias2);
+    $varset->add("alias2_help", "quoted", $alias2_help);
+    $varset->add("alias2_func", "quoted", "$alias2_func_f:$alias2_func");
+    $varset->add("alias3", "quoted", $alias3);
+    $varset->add("alias3_help", "quoted", $alias3_help);
+    $varset->add("alias3_func", "quoted", "$alias3_func_f:$alias3_func");
+
     switch( $input_show_func_f ) {
       case "txt":
       case "dte": $isf = "$input_show_func_f:$input_show_func";
@@ -124,6 +145,22 @@ if( !$update ) {      # load defaults
   $input_before = $fld[input_before];
   $input_help = $fld[input_help];
   $input_morehlp = $fld[input_morehlp];
+
+  $alias1 = $fld[alias1];
+  $alias1_help = $fld[alias1_help];
+  $alias1_func_f = substr($fld[alias1_func],0,3);
+  $alias1_func = substr($fld[alias1_func],4);
+
+  $alias2 = $fld[alias2];
+  $alias2_help = $fld[alias2_help];
+  $alias2_func_f = substr($fld[alias2_func],0,3);
+  $alias2_func = substr($fld[alias2_func],4);
+
+  $alias3 = $fld[alias3];
+  $alias3_help = $fld[alias3_help];
+  $alias3_func_f = substr($fld[alias3_func],0,3);
+  $alias3_func = substr($fld[alias3_func],4);
+  
   $input_default_f = substr($fld[input_default],0,3);
   $input_default = substr($fld[input_default],4);
   $input_show_func_f = substr($fld[input_show_func],0,3);
@@ -194,9 +231,9 @@ echo "
             </div> 
             <div class=tabhlp>". L_INPUT_SHOW_FUNC_HLP ."</div>
       </td>
-    </tr>  
-    <tr><td colspan=4><hr></td></tr>
-    <tr>
+     </tr>  
+     <tr><td colspan=4><hr></td></tr>
+     <tr>
       <td class=tabtxt><b>". L_DEFAULT ."</b></td>
       <td class=tabtxt colspan=3>";
         FrmSelectEasy("input_default_f", $INPUT_DEFAULT_TYPES, $input_default_f);
@@ -206,47 +243,133 @@ echo "
             </div> 
             <div class=tabhlp>". L_INPUT_DEFAULT_HLP ."</div>
       </td>
-    </tr>  
-    <tr><td colspan=4><hr></td></tr>
-    <tr>
+     </tr>  
+     <tr><td colspan=4><hr></td></tr>
+     <tr>
       <td class=tabtxt><b>". L_VALIDATE ."</b></td>
       <td class=tabtxt colspan=3>";
         FrmSelectEasy("input_validate", $INPUT_VALIDATE_TYPES, $input_validate);
       echo "<div class=tabhlp>". L_INPUT_VALIDATE_HLP ."</div>
       </td>
-    </tr>  
-    <tr>
+     </tr>  
+     <tr>
       <td class=tabtxt><b>". L_INSERT ."</b></td>
       <td class=tabtxt colspan=3>";
         FrmSelectEasy("input_insert_func", $INPUT_INSERT_TYPES, $input_insert_func);
       echo "<div class=tabhlp>". L_INPUT_INSERT_HLP ."</div>
       </td>
-    </tr>  
-    <tr>
+     </tr>  
+     <tr>
       <td class=tabtxt><b>". L_HTML_SHOW ."</b></td>
       <td class=tabtxt><input type=\"checkbox\" name=\"html_show\"". ($html_show ? " checked" : "") ."></td>
       <td class=tabtxt><b>". L_HTML_DEFAULT ."</b></td>
       <td class=tabtxt><input type=\"checkbox\" name=\"html_default\"". ($html_default ? " checked" : "") ."></td>
-    </tr>  
-    <tr>
+     </tr>  
+     <tr>
       <td class=tabtxt><b>". L_INPUT_HELP ."</b></td>
       <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_help\" size=50 maxlength=254 value=\"$input_help\">
       <div class=tabhlp>". L_INPUT_HELP_HLP ."</div>
       </td>
-    </tr>  
-    <tr>
+     </tr>  
+     <tr>
       <td class=tabtxt><b>". L_INPUT_MOREHLP ."</b></td>
       <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_morehlp\" size=50 maxlength=254 value=\"$input_morehlp\">
       <div class=tabhlp>". L_INPUT_MOREHLP_HLP ."</div>
       </td>
-    </tr>
-    <tr>
+     </tr>
+     <tr>
       <td class=tabtxt><b>". L_INPUT_BEFORE ."</b></td>
       <td class=tabtxt colspan=3><textarea name=\"input_before\" rows=4 cols=50 wrap=virtual>$input_before</textarea>
       <div class=tabhlp>". L_INPUT_BEFORE_HLP ."</div>
       </td>
-    </tr>
-   </table>
+     </tr>
+    </table>
+   </td>
+  </tr>  
+  <tr>
+   <td class=tabtit><b>&nbsp;". L_ALIASES ."</b></td>
+  </tr>
+  <tr>
+   <td>
+    <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"#EBDABE\">
+     <tr>
+      <td class=tabtxt><b>". L_ALIAS1 ."</b></td>
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias1\" size=20 maxlength=10 value=\"$alias1\">
+      <div class=tabhlp>". L_ALIAS_HLP ."</div>
+      </td>
+     </tr>  
+     <tr>
+      <td class=tabtxt><b>". L_ALIAS_FUNC ."</b></td>
+      <td class=tabtxt colspan=3>";
+        FrmSelectEasy("alias1_func_f", $ALIAS_FUNC_TYPES, $alias1_func_f);
+      echo "<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
+            <div class=tabtxt><b>". L_PARAMETERS ."</b>
+              <input type=\"Text\" name=\"alias1_func\" size=25 maxlength=250 value=\"$alias1_func\">
+            </div> 
+            <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
+      </td>
+     </tr>  
+     <tr>
+      <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias1_help\" size=50 maxlength=254 value=\"$alias1_help\">
+      <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
+      </td>
+     </tr>
+     <tr><td colspan=4><hr></td></tr>
+  
+     <tr>
+      <td class=tabtxt><b>". L_ALIAS2 ."</b></td>
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias2\" size=20 maxlength=10 value=\"$alias2\">
+      <div class=tabhlp>". L_ALIAS_HLP ."</div>
+      </td>
+     </tr>  
+     <tr>
+      <td class=tabtxt><b>". L_ALIAS_FUNC ."</b></td>
+      <td class=tabtxt colspan=3>";
+        FrmSelectEasy("alias2_func_f", $ALIAS_FUNC_TYPES, $alias2_func_f);
+      echo "<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
+            <div class=tabtxt><b>". L_PARAMETERS ."</b>
+              <input type=\"Text\" name=\"alias2_func\" size=25 maxlength=250 value=\"$alias2_func\">
+            </div> 
+            <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
+      </td>
+     </tr>  
+     <tr>
+      <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias2_help\" size=50 maxlength=254 value=\"$alias2_help\">
+      <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
+      </td>
+     </tr>
+     <tr><td colspan=4><hr></td></tr>
+
+     <tr>
+      <td class=tabtxt><b>". L_ALIAS3 ."</b></td>
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias3\" size=20 maxlength=10 value=\"$alias3\">
+      <div class=tabhlp>". L_ALIAS_HLP ."</div>
+      </td>
+     </tr>  
+     <tr>
+      <td class=tabtxt><b>". L_ALIAS_FUNC ."</b></td>
+      <td class=tabtxt colspan=3>";
+        FrmSelectEasy("alias3_func_f", $ALIAS_FUNC_TYPES, $alias3_func_f);
+      echo "<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
+            <div class=tabtxt><b>". L_PARAMETERS ."</b>
+              <input type=\"Text\" name=\"alias3_func\" size=25 maxlength=250 value=\"$alias3_func\">
+            </div> 
+            <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
+      </td>
+     </tr>  
+     <tr>
+      <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias3_help\" size=50 maxlength=254 value=\"$alias3_help\">
+      <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
+      </td>
+     </tr>
+     <tr><td colspan=4><hr></td></tr>
+    </table>
+   </td>
+  </tr>
+  
   <tr>
    <td align=\"center\">
     <input type=hidden name=\"update\" value=1>
@@ -260,8 +383,8 @@ echo "
 
 /*
 $Log$
-Revision 1.3  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.4  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.2  2001/01/08 13:31:58  honzam
 Small bugfixes

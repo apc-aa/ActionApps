@@ -116,16 +116,19 @@ function Defaults() {
   echo $Msg;
 ?>
 <form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_ADMIN_HDR?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
-  FrmTextarea("admin_format_top", L_ADMIN_FORMAT_TOP, $admin_format_top, 4, 60, false);
-  FrmTextarea("admin_format", L_ADMIN_FORMAT, $admin_format, 8, 60, true);
-  FrmTextarea("admin_format_bottom", L_ADMIN_FORMAT_BOTTOM, $admin_format_bottom, 4, 60, false);
+  FrmTextarea("admin_format_top", L_ADMIN_FORMAT_TOP, $admin_format_top, 4, 60,
+              false, L_TOP_HLP, "", DOCUMENTATION_URL, 1); 
+  FrmTextarea("admin_format", L_ADMIN_FORMAT, $admin_format, 8, 60, true,
+                     L_FORMAT_HLP, "", DOCUMENTATION_URL, 1);
+  FrmTextarea("admin_format_bottom", L_ADMIN_FORMAT_BOTTOM, $admin_format_bottom,
+              4, 60, false, L_BOTTOM_HLP, "", DOCUMENTATION_URL, 1);
   FrmInputText("admin_remove", L_ADMIN_REMOVE, $admin_remove, 254, 50, false);
 ?>
 </table></td></tr>
@@ -140,8 +143,8 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
-Revision 1.3  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.4  2001/01/23 23:58:03  honzam
+Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
 Revision 1.2  2001/01/08 13:31:57  honzam
 Small bugfixes

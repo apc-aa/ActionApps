@@ -24,6 +24,9 @@ $AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa2/include/";
 # (there must be the slash at the end of string)
 define("AA_INSTAL_URL", "http://aa.ecn.cz/aa/");
 
+# URL of index of help files for AA
+define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
+
 # Your Internet Domain
 define("DEFAULT_ORG_ID", "ecn.cz");
 
