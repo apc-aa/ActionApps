@@ -38,264 +38,67 @@ function PrintSlice($id, $name) {
 
   $name=safe($name); $id=safe($id);     
   echo "<tr class=tabtxt><td>$name</td>
-          <td><a href=\"". con_url($sess->url("slicedel2.php3"),"delslice=$id"). "\">".
-            L_DELETE . "</a></td></tr>";
+          <td class=tabtxt><a href=\"javascript:DeleteSlice('$id')\">". L_DELETE ."</a></td></tr>";
 }
 
-$xx = ($slice_id!="");
-$useOnLoad = ($new_compact ? true : false);
-$show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-              "views"=>false, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
-require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
-
-echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
-PrintArray($err);
-echo $Msg;
-?>
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR>
-</td></tr>
-<tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?php
-  
-# -- get views for current slice --
-$SQL = "SELECT * FROM view WHERE slice_id='$p_slice_id'";
-$db->query($SQL);
-while( $db->next_record() )
-  PrintView($db->f(id), $db->f(name), $db->f(type));
-
-  # row for new view
-echo "<tr class=tabtit><td align=center colspan=2>
-        <a href=\"". con_url($sess->url($PHP_SELF),"new_compact=1"). "\">".
-            L_NEW_COMPACT . "</a></td>
-          <td align=center colspan=2>
-        <a href=\"". con_url($sess->url($PHP_SELF),"new_full=1"). "\">".
-            L_NEW_FULLTEXT . "</a></td></tr>
-  </table></td></tr></table><br>";
-
-
-$err["Init"] = "";          // error array (Init - just for initializing variable
-$varset = new Cvarset();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# lookup - APC wide possible field types are defined as special slice AA_Core_Fields..
-$field_types = GetTable2Array("SELECT * FROM field 
-                                WHERE slice_id='AA_Core_Fields..'", $db);
-
-function ShowField($id, $name, $pri, $required, $show, $type="") {
-  global $sess, $field_types;
-  $name = safe($name); $pri=safe($pri);
-  echo "
-  <tr>
-    <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>";
-    if( $type=="new" ){
-      echo '<td class=tabtxt>
-             <select name="ftype">';	
-	  reset($field_types);
-	  while(list($k, $v) = each($field_types)) { 
-	    echo '<option value="'. htmlspecialchars($k).'"> '. 
-		                        htmlspecialchars($v[name]) ." </option>";
-	  }
-	  echo "</select>\n
-          </td>";
-    } else {
-      $ft = GetFieldType($id);
-      echo "<td class=tabtxt>". 
-        ($field_types[$ft][name] =="" ? $ft : $field_types[$ft][name]) ."</td>";
-    }  
-    echo "  
-    <td class=tabtxt><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>
-    <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
-    <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
-    if( $type=="new")
-      echo "<td class=tabtxt>&nbsp;</td><td class=tabtxt>&nbsp;</td>";
-     else { 
-      echo "<td class=tabtxt><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". L_EDIT ."</a></td>";
-      if( $type=="in_item_tbl" )
-        echo "<td class=tabtxt>". L_DELETE ."</td>";
-       else 
-        echo "<td class=tabtxt><a href=\"javascript:DeleteField('$id')\">". L_DELETE ."</a></td>";
-      echo "</tr>\n";
-    }  
-}
-
-if( $update )
-{
-  do {
-    if( !(isset($name) AND is_array($name) ))
-      break;
-    reset($name);
-    while( list($key,$val) = each($name) ) {
-      if( $key == "New_Field" )
-        continue;
-      $prior = $pri[$key];
-      ValidateInput("val", L_FIELD, $val, &$err, true, "text");
-      ValidateInput("prior", L_FIELD_PRIORITY, $prior, &$err, true, "number");
-    }
-      
-    if( count($err) > 1)
-      break;
-
-    reset($name);
-    while( list($key,$val) = each($name) ) {
-      if( $key == "New_Field" ){   # add new field
-        if( $val == "" )           # if not filled - don't add the field
-          continue;
-
-          # copy fields
-          # use the same setting for new field as template in AA_Core_Fields..
-        $varset->clear();
-        $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
-        $varset->setFromArray($field_types[$ftype]);   # from template for this field
-
-          # get new field id
-        $SQL = "SELECT id FROM field 
-                 WHERE slice_id='$p_slice_id' AND id like '". $ftype ."%'";
-        $db->query($SQL);   # get all fields with the same type in this slice
-        $max=0; 
-        while( $db->next_record() ) 
-          $max = max( $max, substr (strrchr ($db->f(id), "."), 1 ));
-        $max++;
-           #create name like "time...........2"
-        $fieldid = $ftype. substr("................$max", -(16-strlen($ftype)));
-        
-        $varset->set("slice_id", $slice_id, "unpacked" );
-        $varset->set("id", $fieldid, "quoted" );
-        $varset->set("name",  $val, "quoted");
-        $varset->set("input_pri", $pri[$key], "number");
-        $varset->set("required", ($req[$key] ? 1 : 0), "number");
-        $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
-        if( !$db->query("INSERT INTO field " . $varset->makeINSERT() )) {
-          $err["DB"] .= MsgErr("Can't copy field");
-          break;
-        }
-      } else { # current field
-        $varset->clear();
-        $varset->add("name", "quoted", $val);
-        $varset->add("input_pri", "number", $pri[$key]);
-        $varset->add("required", "number", ($req[$key] ? 1 : 0));
-        $varset->add("input_show", "number", ($shw[$key] ? 1 : 0));
-        $SQL = "UPDATE field SET ". $varset->makeUPDATE() . 
-               " WHERE id='$key' AND slice_id='$p_slice_id'";
-        if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
-          $err["DB"] = MsgErr("Can't change field");
-          break;
-        }
-      }
-      $r_filelds = "";   // unset the r_fields array to be load again
-    }
-
-    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-
-    if( count($err) <= 1 ) {
-      $Msg = MsgOK(L_FIELDS_OK);
-      if( $name["New_Field"] )
-        go_url( $sess->url($PHP_SELF) );  # reload to incorporate new field
-    }    
-  } while( 0 );           #in order we can use "break;" statement
-}    
-
-  # lookup fields
-$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
-          FROM field
-         WHERE slice_id='$p_slice_id' ORDER BY input_pri";
-$s_fields = GetTable2Array($SQL, $db);
-         
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo L_A_FIELDS_TIT;?></TITLE>
+ <TITLE><?php echo L_DELSLICE_TIT;?></TITLE>
  <SCRIPT Language="JavaScript"><!--
-   function DeleteField(id) {
-     if( !confirm("<?php echo L_DELETE_FIELD; ?>"))
+   function DeleteSlice(id) {
+     if( !confirm("<?php echo L_DELETE_SLICE; ?>"))
        return
-     var url="<?php echo $sess->url(con_url("./se_inputform.php3", "del=1")); ?>"
-     document.location=url + "&fid=" + escape(id);
+     var url="<?php echo con_url($sess->url("./slicedel2.php3"),"delslice="); ?>"
+     document.location=url+id;
    }
 // -->
 </SCRIPT>
-
 </HEAD>
-<?php 
-  $xx = ($slice_id!="");
-  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>false, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
-  
-  echo "<H1><B>" . L_A_FIELDS_EDT . "</B></H1>";
-  PrintArray($err);
-  echo $Msg;  
-?>
-<form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_FIELDS_HDR?></b>
-</td>
-</tr>
-<tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
-<tr>
- <td class=tabtxt align=center><b><?php echo L_FIELD ?></b></td>
- <td class=tabtxt align=center><b><?php echo L_FIELD_TYPE ?></b></td>
- <td class=tabtxt align=center><b><?php echo L_FIELD_PRIORITY ?></b></td>
- <td class=tabtxt align=center><b><?php echo L_NEEDED_FIELD ?></b></td>
- <td class=tabtxt align=center><b><?php echo L_FIELD_IN_EDIT ?></b></td>
- <td class=tabtxt colspan=2>&nbsp;</td>
-</tr>
-<tr><td colspan=7><hr></td></tr>
 <?php
-  reset($s_fields);
-  while( list(, $v) = each($s_fields)) {
-    $type = ( $v[in_item_tbl] ? "in_item_tbl" : "" );
-    if( $update ) # get values from form
-      ShowField($v[id], $name[$v[id]], $pri[$v[id]], $req[$v[id]], $shw[$v[id]], $type);
-    else  
-      ShowField($v[id], $v[name], $v[input_pri], $v[required], $v[input_show], $type);
-  }
-    # one row for possible new field
-  ShowField("New_Field", "", "1000", false, true, "new");
+
+$xx = ($slice_id!="");
+$useOnLoad = ($new_compact ? true : false);
+$show = Array("main"=>true, "slicedel"=>false, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+              "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+
+echo "<H1><B>" . L_A_DELSLICE . "</B></H1>";
+echo $Msg;
+echo L_DEL_SLICE_HLP;
+
+?>
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+ <tr><td class=tabtit><b>&nbsp;<?php echo L_DELSLICE_HDR?></b><BR>
+  </td></tr>
+ <tr><td>
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<?php
   
-?>  
-</table>
-<tr><td align="center">
-<?php 
-  echo "<input type=hidden name=\"update\" value=1>";
-  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;
-</td></tr></table>
+# -- get views for current slice --
+$SQL = "SELECT * FROM slice WHERE deleted>0";
+$db->query($SQL);
+while( $db->next_record() ) {
+  PrintSlice(unpack_id($db->f(id)), $db->f(name));
+  $slice_to_delete = true;
+}  
+if( !$slice_to_delete )
+  echo "<tr class=tabtxt><td>". L_NO_SLICE_TO_DELETE ."</td></tr>";
+
+echo '
+  </table>
+ <tr><td align="center">
+  <input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;
+ </td></tr></table>
 </FORM>
 </BODY>
 </HTML>';
 
+page_close();
 /*
 $Log$
+Revision 1.3  2001/03/20 15:24:05  honzam
+working version of slice deletion
+
 Revision 1.2  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 
@@ -331,4 +134,4 @@ also added Id and Log keywords to all .php3 and .inc files
 *.php3 makes use of new variables in config.inc
 
 */
-page_close()?>
+?>
