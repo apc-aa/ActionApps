@@ -39,8 +39,10 @@ define("EDIT_ITEM_COUNT", 10);
 define('CATEGORIES_COUNT_TO_MANAGE', 12);
 
 /** Category group used for special link field 'type' */
-define('LINK_TYPE_CONSTANTS', 'Ekolink_obecne_k');
+$LINK_TYPE_CONSTANTS = 'Ekolink_obecne_k';
 
+define('LINKS_BASE_CAT','y');
+define('LINKS_NOT_BASE_CAT','n');
 
 /**
  * List of fields, which will be listed in searchbar in Links Manager (search)

@@ -6,10 +6,8 @@ $directory_depth = '../';
 require_once "../../include/init_page.php3";
 require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
 require_once $GLOBALS[AA_INC_PATH]."varset.php3";
-require_once "./util.php3";      // module specific utils
-
-define('BASE','y');
-define('NOT_BASE','n');
+require_once "./constants.php3"; 
+require_once "./util.php3";           // module specific utils
 
 $r_state['linkedit']['old'] = $HTTP_POST_VARS;  // in case of bad input
 unset($r_msg);
@@ -81,41 +79,6 @@ function UpdateCatProperties($cat_id, $name, $template, $infodoc) {
 	}
 }
 
-function AssignCategory($category_id, $insertedId, $base, $pri, $state) {
-	global $db;
-
-	$SQL = "INSERT INTO links_cat_cat
-           (category_id, what_id, base, state, priority, proposal, proposal_delete)
-   	VALUES ($category_id, $insertedId, '$base', '$state',  $pri, 'n', 'n')";
-
-	$db->query( $SQL );
-}
-
-# Add new category, copies parents permissions
-# returns id of new category
-
-function AddCategory($name, $parent, $parentpath, $template="") {  // adds perms too
-	global $db;
-  	$SQL = "INSERT INTO links_categories  ( name, html_template )
-	                         VALUES ('$name', '$template')";
-
-	$db->query( $SQL );
-  	$db->query( "select LAST_INSERT_ID() as id" );
-
-  	if(!$db->next_record()) {
-    	huh("Error - Last inserted ID is lost");
-	    exit;
-  	}
-
-  	$res = $db->f('id');
-
-    // correct path
-	$SQL = "UPDATE links_categories set path='$parentpath,$res' WHERE id=$res";
-  	$db->query( $SQL );
-
-  	ChangeCatPermAsIn($res, $parent);
-  	return $res;
-}
 
 # Moves this category to another subtree or delete (if clear and no link to it)
 function UnassignBaseCategory($parent, $child) {
@@ -302,16 +265,16 @@ if (isset($ids) && is_array($ids) && $subcatIds!="") {
 
         // new subcategory
         if ( $insertedId == 0 ) {
-            $foo_id = AddCategory($names[$key], $cid, $cpath, $html_template);
+            $foo_id = Links_AddCategory($names[$key], $cid, $cpath, $html_template);
 
             // adds perms too
-            AssignCategory($cid, $foo_id, BASE, $pri, $states[$key]);
+            Links_AssignCategory($cid, $foo_id, $pri, LINKS_BASE_CAT, $states[$key]);
             $r_msg[] = MsgOK( _m('New category created') );
         }
 
         // existing but not base in here
         elseif ($newNotBaseSubcat[$insertedId]) {
-            AssignCategory($cid, $insertedId, NOT_BASE, $pri, $states[$key]);
+            Links_AssignCategory($cid, $insertedId, $pri, LINKS_NOT_BASE_CAT, $states[$key]);
             $r_msg[] = MsgOK( _m('Foreign category assigned') );
         }
 

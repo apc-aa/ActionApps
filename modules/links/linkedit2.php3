@@ -6,7 +6,9 @@ $directory_depth = '../';
 require_once "../../include/init_page.php3";
 require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
 require_once $GLOBALS[AA_INC_PATH]."varset.php3";
-require_once "./util.php3";      // module specific utils
+require_once "./constants.php3"; 
+require_once "./util.php3";           // module specific utils
+require_once "./cattree.php3";        // for event handler Event_LinkNew
 
 $r_state['linkedit']['old'] = $HTTP_POST_VARS;  // in case of bad input
 unset($r_msg);
@@ -216,6 +218,11 @@ if( !$r_state['link_id'] OR $add_proposal_change ) {
         }
     }
 
+    // $categs2assign could be changed by handler of following event
+    // - used for 'general categories'
+    $event->comes('LINK_NEW', $r_state["module_id"], 'Links', $categs2assign,
+                  Links_IsGlobalCategory($type));
+                  
     Links_Assign2Category($inserted_id, $categs2assign, $add_proposal_change);
 
     page_close();

@@ -10,6 +10,7 @@ $directory_depth = '../';
 require_once "../../include/init_page.php3";
 require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
 require_once "./cattree.php3";
+require_once "./constants.php3"; 
 require_once "./util.php3";
 
 // id of the editted module (id in long form (32-digit hexadecimal number))

@@ -81,6 +81,21 @@ class cattree {
           $this->stateList[] = $this->STATES_CODING[$db->f('state')];
       }
   }
+  
+  /** Search category $parenid, if there exist subcategory of name $name 
+   *  @returns id of found category or false
+   */
+  function subcatExist($parentid, $name) {
+      if ( !isset($this->catnames) OR !is_array($this->catnames) )
+          $this->update();
+      if ( isset($this->fromList) AND is_array($this->fromList) ) {
+          foreach( $this->fromList as $i => $cid ) {
+              if ( ($parentid == $cid) AND ($this->catnames[$this->toList[$i]]==$name) )
+                  return $this->toList[$i];
+          }
+      }
+      return false;
+  }    
 
   /**
    * Prints javascript which defines necessary javascript variables for category

@@ -1177,7 +1177,7 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = "", $id_co
 
     if ($GLOBALS[debug]) { echo "data: "; print_r ($data); echo "<br>"; }
 
-    if (!is_array ($data)) {    
+    if (!is_array ($data)) {
         return true;
     }
 

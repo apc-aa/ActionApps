@@ -65,6 +65,42 @@ function GetCategoryFromPath( $path ) {
   return $path;
 }
 
+/** Assign category to given parent category */
+function Links_AssignCategory($category_id, $insertedId, $pri=10, $base='y', $state='visible') {
+	global $db;
+
+	$SQL = "INSERT INTO links_cat_cat
+           (category_id, what_id, base, state, priority, proposal, proposal_delete)
+   	VALUES ($category_id, $insertedId, '$base', '$state',  $pri, 'n', 'n')";
+
+	$db->query( $SQL );
+}
+
+/** Add new category, copies parents permissions
+ *  @returns id of new category
+ */
+function Links_AddCategory($name, $parent, $parentpath, $template="") {
+	global $db;
+  	$SQL = "INSERT INTO links_categories  ( name, html_template )
+	                         VALUES ('$name', '$template')";
+	$db->query( $SQL );
+  	$db->query( "select LAST_INSERT_ID() as id" );
+
+  	if(!$db->next_record()) {
+    	huh("Error - Last inserted ID is lost");
+	    exit;
+  	}
+
+  	$res = $db->f('id');
+
+    // correct path
+	$SQL = "UPDATE links_categories set path='$parentpath,$res' WHERE id=$res";
+  	$db->query( $SQL );
+
+  	ChangeCatPermAsIn($res, $parent);
+  	return $res;
+}
+
 # Get specified column for base category of specified link
 function Links_GetBaseCategoryColumn( $lid, $col ) {
   global $db;
@@ -411,6 +447,19 @@ function Links_Assign2Category($lid, $categs, $proposal=false) {
                 break;
         }
     }
+}
+
+/**
+ *  Returns $type, if the category type belongs to 'General categories'
+ *  @param string $type      - category type
+ */
+function Links_IsGlobalCategory($type) {
+    global $LINK_TYPE_CONSTANTS, $LINK_TYPE_CONSTANTS_ARR;
+    if ( !$LINK_TYPE_CONSTANTS )
+        return false;
+    if ( !$LINK_TYPE_CONSTANTS_ARR )   // array is cached (=stored to globals)
+        $LINK_TYPE_CONSTANTS_ARR = GetConstants($LINK_TYPE_CONSTANTS);
+    return $LINK_TYPE_CONSTANTS_ARR[$type] ? $type : false;
 }
 
 ?>
