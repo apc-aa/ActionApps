@@ -23,8 +23,8 @@ Query is fully upward compatible with DB_Sql. Example:
 
 OLD:                                NEW:
 
-require("db_mysql.inc");            require("db_mysql.inc");
-class hugobla extends DB_sql {}     require("query_sql.inc");
+require_once("db_mysql.inc");            require_once("db_mysql.inc");
+class hugobla extends DB_sql {}     require_once("query_sql.inc");
 $db = new hugobla;                  class hugobla extends Query {}
                                     $db = new hugobla;
 
@@ -43,7 +43,7 @@ file: insert.php3
 <?php
 ## gets data from my form and inserts it into db
 
-require("prepend.inc"); ## here the classes are loaded and configured
+require_once("prepend.inc"); ## here the classes are loaded and configured
 $db = new hugobla;
 $db->query($db->insert_plain_Clause("mytable",$db->capture_vars("mytable"),ARRAY()));
 echo "Values inserted";
@@ -58,7 +58,7 @@ file: insert2.php3
 ## (this is mysql, in oracle you have to define a trigger)
 ## mytime is defined as DATETIME (DATE in oracle)
 
-require("prepend.inc"); ## here the classes are loaded and configured
+require_once("prepend.inc"); ## here the classes are loaded and configured
 $db = new hugobla;
 $mytime="SYSDATE()";
 $db->query($db->insert_plain_Clause("mytable",$db->capture_vars("mytable"),

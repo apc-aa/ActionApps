@@ -22,12 +22,12 @@ http://www.apc.org/
 */
 
 
-require($GLOBALS["AA_INC_PATH"] . "perm_core.php3"); // allways included!
+require_once($GLOBALS["AA_INC_PATH"] . "perm_core.php3"); // allways included!
 
 // choice of the permission system library
 // PERM_LIB is defined in config.php3
 
-require($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
+require_once($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
 
 // Required, contains your local session management extension
 

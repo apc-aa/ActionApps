@@ -182,7 +182,7 @@ class Sql_Query {
          // TODO: we need to query metadata for all tables
        }
        // output the relevant JavaScript stuff
-       require("table_select_js.php3");
+       require_once("table_select_js.php3");
     }
 
 

@@ -256,7 +256,7 @@ class Example_Perm extends Perm {
 ## rename its constructor function - this is a PHP language 
 ## design stupidity.
 ##
-## To use this, you must enable the require statement for
+## To use this, you must enable the require_once statement for
 ## menu.inc in prepend.php3.
 ##
 

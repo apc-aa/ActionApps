@@ -25,24 +25,24 @@ if (!is_array($_PHPLIB)) {
 
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
   /* Change this to match your database. */
-  require($_PHPLIB["libdir"] . "db_mysql.inc");  
+  require_once($_PHPLIB["libdir"] . "db_mysql.inc");  
 
   /* Change this to match your data storage container */
-  require($_PHPLIB["libdir"] . "ct_sql.inc");    
+  require_once($_PHPLIB["libdir"] . "ct_sql.inc");    
 
   /* Required for everything below.      */
-  require($_PHPLIB["libdir"] . "session.inc");   
+  require_once($_PHPLIB["libdir"] . "session.inc");   
 
   /* Disable this, if you are not using authentication. */
-  require($_PHPLIB["libdir"] . "auth.inc");      
+  require_once($_PHPLIB["libdir"] . "auth.inc");      
 }
 
 /* Required, contains your local session management extension */
-require($GLOBALS["AA_INC_PATH"] . "extsessi.php3");     
+require_once($GLOBALS["AA_INC_PATH"] . "extsessi.php3");     
 
 /* Required, contains the page management functions. */
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
-   require($_PHPLIB["libdir"] . "page.inc");
+   require_once($_PHPLIB["libdir"] . "page.inc");
 };
 
 define ("PHPLIB_AA_LOADED", 1);

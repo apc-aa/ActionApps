@@ -19,12 +19,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require($GLOBALS["AA_INC_PATH"] . "perm_core.php3"); // allways included!
+require_once($GLOBALS["AA_INC_PATH"] . "perm_core.php3"); // allways included!
 
 // choice of the permission system library
 // PERM_LIB is defined in config.php3
 
-require($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
+require_once($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
 
 // Required, contains your local session management extension
 
