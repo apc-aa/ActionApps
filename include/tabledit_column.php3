@@ -27,7 +27,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="")
             $val = unpack_id ($val);
             break;
         case 'form':
-            $val = pack_id ($val);
+            $val = q_pack_id ($val);
         }
         
     }
@@ -45,7 +45,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="")
         switch ($function) {
         case 'show':
         case 'show_ro':
-            echo "<INPUT type=\"hidden\" name=\"val[$key][$colname]\" value=\"".$val."\">\n";
+            echo "<INPUT type=\"hidden\" name=\"$name\" value=\"".$val."\">\n";
             break;
         }
         return;
@@ -63,7 +63,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="")
                 .$val."</textarea>"; 
             break;
         case 'show_ro':
-            ShowColumnValueReadOnly ($cview, $val);
+            ShowColumnValueReadOnly ($cview, $val, $name);
             break;
         }
         return;
@@ -76,7 +76,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="")
             FrmSelectEasy($name, $cview["source"], $val); 
             break;
         case 'show_ro':           
-            ShowColumnValueReadOnly ($cview, $cview["source"][$val]);
+            ShowColumnValueReadOnly ($cview, $cview["source"][$val], $name);
             break;
         }
         return;
@@ -94,7 +94,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="")
             break;
         case 'show_ro':
             if ($val) $val = date($cview["format"], $val); 
-            ShowColumnValueReadOnly ($cview, $val);
+            ShowColumnValueReadOnly ($cview, $val, $name);
             break;
         case 'form':                        
             $val = get_formatted_date ($val, $cview["format"]);
@@ -145,7 +145,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="")
                 value=\"".$val."\">"; 
             break;            
         case 'show_ro':
-            ShowColumnValueReadOnly ($cview, $val);
+            ShowColumnValueReadOnly ($cview, $val, $name);
             break;
         }
         return;
@@ -155,8 +155,12 @@ function ColumnFunctions ($cview, &$val, $function, $name="")
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 * Shows a column value for a read-only column.
+*
+* @param $name if given, a hidden box with the field value will be added
 */
-function ShowColumnValueReadOnly ($cview, $val) {
+function ShowColumnValueReadOnly ($cview, $val, $name="") {
+    if ($name)
+        echo "<INPUT type=\"hidden\" name=\"$name\" value=\"".$val."\">\n";       
     if ($val) {
         if (!$cview["html"]) $val = htmlentities ($val);
     }

@@ -56,6 +56,14 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => 'Jump inside AA control panel',
                                 'directory' => $AA_INSTAL_PATH ."modules/jump/",
                                 'menu' => $AA_INC_PATH ."menu.php3"));
+/*$MODULES ['Auth'] = array ('table' => 'module',
+                           'name' => 'Auth',
+                           'directory' => $AA_INSTAL_PATH ."modules/auth/",
+                           'menu' => $AA_BASE_PATH ."modules/auth/menu.php3");*/
+$MODULES ['Alerts'] = array ('table' => 'module',
+                             'name' => 'Alerts',
+                             'directory' => $AA_INSTAL_PATH ."modules/alerts/",
+                             'menu' => $AA_BASE_PATH ."modules/alerts/menu.php3");
 
 # language files for slices (not for some modules, e.g. site)
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",

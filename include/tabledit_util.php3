@@ -6,128 +6,158 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 *    appends ["type"] to each column, with column type
 *    appends ["primary"] to primary columns, if not exist, adds them with ["view"]["type"]=hide 
 *    <br>
-*    if table has more than 1 primary key, send the chosen one in $primary
+*
+*    @param $primary is an input array ("tablename" => array ("primary_field1", "primary_field2", ...)).
+*                    Send only info for tables with more than 1 primary key.                        
+*    @param $primary_aliases is an output array with a complete list of field aliases of primary fields 
+*                       in all tables
 */
 
-function GetColumnTypes ($table, $columns, $primary="") {
+function SetColumnTypes (&$columns, &$primary_aliases, $default_table, $default_readonly=false, $primary="") {
     global $db;
-    //echo "TABLE $table";
-    if (!$table) {
-        echo "Error in GetColumnTypes";
-        return $columns;
-    }
-    $cols = $db->metadata ($table);
-    reset ($cols);
-    while (list (,$col) = each ($cols)) {
-        $cname = $col["name"];
-        if (!isset ($columns[$cname])) 
-            $columns[$cname]["view"]["type"] = "ignore";
-        $columns[$cname]["type"] = $col["type"];
-        $columns[$cname]["view"]["dbtype"] = $col["type"];
-        if (is_array ($primary))
-             $is_primary = my_in_array ($cname, $primary);
-        else $is_primary = strstr ($col["flags"], "primary_key");
-        if ($is_primary) {
-            if (!$columns[$cname])
-                $columns[$cname]["view"]["type"] = "hide";                              
-            $type = is_field_type_numerical ($col["type"]) ? "number" : "text";
-            $columns[$cname]["primary"] = $type;
-        }
-        if (strstr ($col["flags"], "auto_increment"))
-            $columns[$cname]["auto_increment"] = 1;
-        if (strstr ($col["flags"], "not_null"))
-            $columns[$cname]["not_null"] = 1;
-		if ($col["len"])
-			$columns[$cname]["len"] = $col["len"];
-    }
+    $primary_aliases = array ();
     
-    // fill the values for columns from joined tables
+    // set column defaults and find all tables used in $columns
     reset ($columns);
-    $metadata = array ();
-    while (list ($cname, $cprop) = each ($columns)) {
-        if (!isset ($cprop["table"]) || $cprop["table"] == $table) 
-            continue;
-        if (!isset ($metadata[$cprop["table"]]))
-            $metadata[$cprop["table"]] = $db->metadata ($cprop["table"]);
-        $cols = $metadata[$cprop["table"]];
-        reset ($cols);
-        while (list (,$col) = each ($cols)) 
-            if ($col["name"] == $cname) 
-                break;
-        $columns[$cname]["type"] = $col["type"];
-        $columns[$cname]["view"]["dbtype"] = $col["type"];
-        if (strstr ($col["flags"], "auto_increment"))
-            $columns[$cname]["auto_increment"] = 1;
-        if (strstr ($col["flags"], "not_null"))
-            $columns[$cname]["not_null"] = 1;
-		if ($col["len"])
-			$columns[$cname]["len"] = $col["len"];
+    while (list ($colname) = each ($columns)) {
+        $column = &$columns[$colname];
+        setDefault ($column["table"], $default_table);
+        setDefault ($column["field"], $colname);
+        setDefault ($column["caption"], $colname);
+        setDefault ($column["view"]["readonly"], 
+            $default_readonly || $column["view"]["type"] == "userdef");
+        if ($column["view"]["type"] == "date") 
+            $cols = strlen (date ($column["view"]["format"], "31.12.1970"));
+        setDefault ($column["view"]["size"]["rows"], 4);
+        setDefault ($column["view"]["html"], false);
+        setDefault ($column["view"]["type"], $column["type"]);
+        if ($column["view"]["type"] == "hidden")
+            $column["view"]["type"] = "hide";
+        
+        $tables [$column["table"]] = 1;
     }
     
-    return $columns;
+    reset ($tables);
+    while (list ($table) = each ($tables)) {
+        $cols = $db->metadata ($table);
+        reset ($cols);
+        while (list (,$col) = each ($cols)) {
+            // find the column
+            reset ($columns);
+            unset ($cprop);
+            while (list ($alias) = each ($columns)) 
+                if ($columns[$alias]["field"] == $col["name"] 
+                    && $columns[$alias]["table"] == $table) {
+                    $cprop = &$columns[$alias];
+                    break;
+                }
+            // is it a part of the primary key?
+            if ($primary && $primary[$table])
+                 $is_primary = my_in_array ($col["name"], $primary[$table]);
+            else $is_primary = strstr ($col["flags"], "primary_key");
+            if ($is_primary) {
+                // create the column if not exists
+                if (!$cprop) {
+                    $alias = "_".$table."_".$col["name"]."_";
+                    $cprop = &$columns[$alias];
+                    $cprop["table"] = $table;
+                    $cprop["field"] = $col["name"];
+                    $cprop["view"]["type"] = "hide";                              
+                }
+                else if ($cprop["view"]["type"] == "ignore")
+                    echo "<h2>Column type for a primary key part must not be IGNORE.</h2>";
+                //echo "primary $table . $alias";
+                $cprop["primary"] = true;
+                $primary_aliases[$table][$alias] = 1;
+            }
+            if ($cprop) {
+                $cprop["type"] = $col["type"];
+                $cprop["view"]["dbtype"] = $col["type"];
+            }
+            if (strstr ($col["flags"], "auto_increment"))
+                $cprop["auto_increment"] = 1;
+            if (strstr ($col["flags"], "not_null"))
+                $cprop["not_null"] = 1;
+
+            $_cols = $col["len"] ? min (80, $col["len"]) : 40;
+            setDefault ($cprop["view"]["size"]["cols"], $_cols);                
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------------
 
 /** deletes one record identified by key values from given table
 */
-function TableDelete ($table, $key_value, $columns, $error_msg="", $be_cautious=1) {
+function TableDelete ($table, $val, $columns, $error_msg="", $be_cautious=1) {
     global $db, $err;
-    $columns = GetColumnTypes ($table, $columns);
-    $where = CreateWhereCondition ($key_value, $columns);
+    SetColumnTypes ($columns, $primary_aliases, $table);
+    $varset = new CVarset;
+    AddKeyValues ($varset, $val, $primary_aliases[$table], $columns);
     if ($be_cautious) {
-        $db->query ("SELECT * FROM $table WHERE $where");
+        $db->query ($varset->makeSELECT ($table));
         if ($db->num_rows() != 1) {
 			$err[] = $error_msg ? $error_msg : "Error deleting from $table. ".$db->num_rows()." rows instead of 1.";
 			return false;
 		}
     }
-    return $db->query ("DELETE FROM $table WHERE $where");
+    return $db->query ($varset->makeDELETE ($table));
 }
 
 // -----------------------------------------------------------------------------------
-   
-/** updates one record identified by key values in given table    
+
+/** inserts or updates a record
+*
+* @param  $action = "insert" | "update"
+* @param  $primary see SetColumnTypes
+* @param
+* @return for "update" returns the key or "" if not successfull
+*         for "insert" returns true if successfull, false if not
 */
-function TableUpdate ($table, $join, $key_value, $val, $columns, $error_msg="",  $be_cautious=1) {
-    global $db;
-    $columns = GetColumnTypes ($table, $columns);
-    if (!ProoveVals ($table, $val, $columns))
-        return $error_msg ? $error_msg : join ("\n", $GLOBALS["err"]);
-    $varsets = array (); 
+function TableUpdate ($default_table, $val, $columns, $primary="", $error_msg="", $be_cautious=1) {
+    global $db, $err;    
+    SetColumnTypes ($columns, $primary_aliases, $default_table, false, $primary);
+
+    if (!ProoveVals ($val, $columns))
+        return $error_msg ? $error_msg : join ("\n", $GLOBALS["err"]);        
+        
+    // prepare varsets with primary key values
+    reset ($primary_aliases);
+    while (list ($table, $primary) = each ($primary_aliases)) {
+        $varset = new CVarset;
+        AddKeyValues ($varset, $val, $primary, $columns);
+        $varsets [$table] = $varset;
+    }
+    
+    // add non-key values
     reset ($columns);
-    while (list ($colname, $col) = each ($columns)) {
-        if (isset ($val[$colname])) {        	
-        	setdefault ($col["table"], $table);
-            if (!isset ($varsets[$col["table"]]))
-                $varsets[$col["table"]] = new CVarset();
+    while (list ($alias, $col) = each ($columns)) {
+        if (isset ($val[$alias])) {        	
             $varset = &$varsets[$col["table"]];
-            $value = $val[$colname];
-            if (get_magic_quotes_gpc()) 
-                $value = stripslashes ($value);
-            if (is_field_type_numerical ($col["type"])) {
-				if ($value == "" && !$col["not_null"])
-					$value = "NULL";
-                 $varset->set($colname,$value,"number");
-			}
-            else $varset->set($colname,$value,"text");         
+            $value = $val[$alias];
+            if (!$col["primary"]) {
+                if (is_field_type_numerical ($col["type"])) {
+    				if ($value == "" && !$col["not_null"])
+    					$value = "NULL";
+                    $varset->add($alias,"number",$value);
+    			}
+                else $varset->add($alias,"quoted",$value);         
+            }
         }
     }
-
     
-    unset ($varset);
+    // run varsets
     reset ($varsets);
-    while (list ($tab, $varset) = each ($varsets)) {        
-        $where = CreateWhereCondition ($key_value, $columns, $tab, $join);
+    while (list ($table) = each ($varsets)) {        
+        $varset = &$varsets[$table];
         if ($be_cautious) {
-            $db->query ("SELECT * FROM $tab WHERE $where");
+            $db->query ($varset->makeSELECT ($table));
             if ($db->num_rows() != 1) {
-                global $err;
-                $err[] = "Error in TableUpdate SELECT * FROM $tab WHERE $where, row count is ".$db->num_rows()." instead of 1.";
+                $err[] = "Error in TableUpdate ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 1.";
                 return false;
             }
         }
-        $db->query ("UPDATE $tab SET ".$varset->makeUPDATE()." WHERE $where");
+        $db->query ($varset->makeUPDATE ($table));
     }
     
     return true;
@@ -135,54 +165,61 @@ function TableUpdate ($table, $join, $key_value, $val, $columns, $error_msg="", 
 
 // -----------------------------------------------------------------------------------
 
-/** inserts a record and returns the key or "" if not successfull
-*
-* @param  $primary = array (field1,field2,...) - if the table has more than 1 primary key, you   
-*                 must send the correct one
-*/
-function TableInsert ($table, $val, $columns, $primary="", $error_msg="", $be_cautious=1) {
+function TableInsert (&$newkey, &$where, $table, $val, $columns, $primary="", $error_msg="", $be_cautious=1) {
     global $db, $err;
-    $columns = GetColumnTypes ($table, $columns, $primary);
-    if (!ProoveVals ($table, $val, $columns)) { return ""; }
-    $varset = new CVarset();
+
+    SetColumnTypes ($columns, $primary_aliases, $table, false, $primary);
+    if (!ProoveVals ($val, $columns))
+        return $error_msg ? $error_msg : join ("\n", $GLOBALS["err"]);
+
+    // prepare varsets with primary key values
+    $primary = $primary_aliases [$table];
+    $varset = new CVarset;
+    AddKeyValues ($varset, $val, $primary, $columns, false);
+    $varsets [$table] = $varset;
+        
+    // add non-key values
     reset ($columns);
-    while (list ($colname, $col) = each ($columns)) {
-        $is_key = false;
-        if ($col["primary"]) {
-            if ($col["auto_increment"])
-                $auto_inc = true;
-            else if (!$val[$colname]) 
-                { $err[] = $error_msg ? $error_msg : "Error: Primary column $colname not set."; return ""; }
-            else $key[] = $val[$colname];
+    while (list ($alias, $col) = each ($columns)) {
+        if ($col["table"] != $table)
+            continue;
+        if (isset ($val[$alias])) {        	
+            $varset = &$varsets[$col["table"]];
+            $value = $val[$alias];
+            if (!$col["primary"]) {
+                if (is_field_type_numerical ($col["type"])) {
+    				if ($value == "" && !$col["not_null"])
+    					$value = "NULL";
+                    $varset->set($alias,$value,"number");
+    			}
+                else $varset->set($alias,$value,"quoted");         
+            }
         }
-        if (isset ($val[$colname])) {
-            $value = $val[$colname];
-            if (get_magic_quotes_gpc()) 
-                $value = stripslashes ($value);
-            if (is_field_type_numerical ($col["type"]))
-                 $varset->set($colname,$value,"number");
-            else $varset->set($colname,$value,"text");         
-        }
-    }
-   
-    if ($be_cautious && !$auto_inc) {
-        $key = join_escaped (":", $key, "#:");
-        $where = CreateWhereCondition ($key, $columns);
-        $db->query ("SELECT COUNT(*) AS key_already_used FROM $table WHERE $where");
-        $db->next_record();
-        if ($db->f("key_already_used") > 0)
-            { $err[] = $error_msg ? $error_msg : "Error inserting to $table: A row with the same primary key ($key) already exists."; return ""; }
     }
     
-    $ok = $db->query ("INSERT INTO $table ".$varset->makeINSERT());
-    if (!$ok) { $err[] = $error_msg ? $error_msg : "DB error on inserting record to $table"; return ""; }
-    if ($auto_inc) return get_last_insert_id ($db, $table);
-    else return join_escaped (":", $key, "#:");
+    // run varsets
+    $varset = &$varsets[$table];
+    $auto_inc = false;
+    reset ($primary);
+    while (list ($alias) = each ($primary)) 
+        if ($columns[$alias]["auto_increment"])
+            $auto_inc = true;
+    if (!$auto_inc && $be_cautious) {
+        $db->query ($varset->makeSELECT ($table));
+        if ($db->num_rows() > 0) { 
+            $err[] = "Error in TableInsert ".$varset->makeSELECT($tab).", row count is ".$db->num_rows()." instead of 0.";
+            return "";
+        }
+    }
+    $db->query ($varset->makeINSERT ($table)); 
+    if ($auto_inc) $newkey = get_last_insert_id ($db, $table);
+    else $newkey = GetKey ($table, $columns, $val);
+    $where = $varset->makeWHERE ();
 }
 
 // -----------------------------------------------------------------------------------
 
-function ProoveVals ($table, $val, $columns) {
+function ProoveVals ($val, $columns) {
     global $err;
     while (list ($colname, $column) = each ($columns)) {
         if ($column["validate"] || $column["required"]) {
@@ -203,12 +240,12 @@ function ProoveVals ($table, $val, $columns) {
 
 /** creates key string with values from key fields separated by :
 */
-function GetKey ($columns, $record)
+function GetKey ($table, $columns, $record)
 {
     reset ($columns);
     unset ($key);
     while (list ($colname,$column) = each ($columns)) 
-        if ($column["primary"]) {
+        if ($column["table"] == $table && $column["primary"]) {
             if ($column["view"]["unpacked"])
                 $key[] = unpack_id ($record[$colname]);
             else $key[] = htmlentities ($record[$colname]); 
@@ -220,33 +257,53 @@ function GetKey ($columns, $record)
 
 /** creates where condition from key fields values separated by :
 * Warning: send $columns processed with GetColumnTypes
+*
+* @param $auto_increment ... include auto increment fields
 */
-function CreateWhereCondition ($key_value, $columns, $table="", $join="") {
-    $key_values = split_escaped (":", $key_value, "#:");
-    if (!is_array ($key_values))
-        return " 0 ";
-    reset ($key_values);
-    reset ($columns);
-    $where = array();
-    while (list ($colname,$column) = each ($columns)) {
-        if (!$column["primary"])        
-            continue;
-        list (,$val) = each ($key_values);
-        if ($join[$table]) {
-            $colname = $join[$table]["joinfields"][$colname];
-            if (!$colname) 
-                continue;
-        }        
-        if ($column["primary"]) {
-            if ($column["view"]["unpacked"])
-                $val = pack_id ($val);
-            $where[] = ($table ? $table."." : "")
-                .$colname."='".addslashes ($val)."'";
-        }
+function AddKeyValues (&$varset, $val, $primary, $columns, $auto_increment = true) 
+{
+    if (!is_array ($primary)) { echo "error in AddKeyValues"; exit; }
+
+    reset ($primary);
+    while (list ($alias) = each ($primary)) {
+        $colname = $columns[$alias]["field"];
+        $value = $val[$alias];
+        if ($auto_increment || !$columns[$alias]["auto_increment"])
+            $varset->addkey ($colname, "text", $value);
     }
-    return join (" AND ",$where);
 }
 
+// -----------------------------------------------------------------------------------    
+
+function GetKeyValues ($key_val, $primary, $columns)
+{
+    $keys = split_escaped (":", $key_val, "#:");
+    reset ($keys);
+
+    reset ($primary);
+    while (list ($alias) = each ($primary)) {
+        list (,$value) = each ($keys);
+        $colname = $columns[$alias]["field"];
+        if ($columns[$alias]["view"]["unpacked"])
+            $value = pack_id ($value);
+        $retval[$colname] = $value;
+    }
+    return $retval;
+}
+
+// -----------------------------------------------------------------------------------    
+
+function CreateWhereCondition ($key_val, $primary, $columns, $table)
+{
+    $varset = new CVarset;
+
+    $keys = GetKeyValues ($key_val, $primary, $columns);
+    reset ($keys);
+    while (list ($colname, $value) = each ($keys)) 
+        $varset->addkey ($colname, "text", $value);
+    return $varset->makeWHERE($table);
+}
+    
 // -----------------------------------------------------------------------------------    
 
 function PrintJavaScript_Validate () {
@@ -289,6 +346,18 @@ function PrintJavaScript_Validate () {
         }
     // -->
     </script>";   
+}
+
+function GetEditedKey ($tview) {
+    global $cmd;
+    $edit = $cmd[$tview]["edit"];
+    if (!is_array ($edit)) {
+        global $tabledit_cmd;
+        $edit = $tabledit_cmd[$tview]["edit"];
+        if (!is_array ($edit)) { echo "Error calling GetEditKey ($tview)"; exit; }
+    }        
+    reset ($edit);
+    return key($edit);
 }
 
 ?>
