@@ -1245,7 +1245,7 @@ $SQL_cron[] = array (
     "script" => 'modules/alerts/alerts.php3',
     "sql" => array (
         "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run)
-         VALUES ('0-60/5', '*', '*', '*', '*', 'modules/alerts/alerts.php3', 'howoften=instant', NULL)",
+         VALUES ('0-60/5', '*', '*', '*', '*', 'modules/alerts/alerts.php3', 'howoften=instant', NULL)"),
     "script" => 'modules/alerts/alerts.php3');
 $SQL_cron[] = array (
     "sql" => array (

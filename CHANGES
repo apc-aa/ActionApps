@@ -1,3 +1,13 @@
+01/13/05 - words for {dictionary} feature are not replaced, if it is just
+(honzam)   substrings of another (bigger) words (thanks to Hana Havelkova)
+         - added favicon for AA (thanks to Sarka Vasku)
+         - new aliases for slice.php3:
+             _#SESSION_ - session id
+             _#PAGE_NO_ - number of current page (on pagescroller)
+             _#PAGE_LEN - page length (number of items)
+         - added loging to alerts sending (how many mails sent, begin and end)
+         - fixed HTMLArea for en-utf8 (english UTF8) language
+         - fixed typo in sql_update.php3
 01/06/05 - discussions are not cached now, so there will not be problem
 (honzam)   with unupdated list of comments
          - pagecache fixes
