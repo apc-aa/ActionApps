@@ -353,4 +353,5 @@ define("L_RSSFEEDS_CONFIRM_DELETE","Are you sure you want to delete the rssfeed?
 define("L_RSSFEEDS_RSSFEED_EMPTY","RSS Feed name must be filled");
 
 define ("L_EMAILS","Emails");
+define ("L_ERR_FILENAME","only 0-9 A-Z a-z . _ and - are allowed");
 ?>
