@@ -87,5 +87,5 @@ if( $i==1 )    // can't feed to any slice
       </center>
     </form>
 <?php 
-HtmlPageEnd();
+"</body></html>";
 page_close();?>
