@@ -199,6 +199,25 @@ function Links_admin_url($script, $add) {
     return $sess->url($AA_INSTAL_EDIT_PATH. "modules/link/$script?$add");
 }
 
+/** helper function which create link to inputform from item manager
+  * (_#EDITITEM, f_e:add, ...)  */
+function Inputform_url($add, $iid, $sid, $ret_url, $vid='') {
+    global $sess, $AA_INSTAL_EDIT_PATH, $AA_CP_Session;
+    // code to keep compatibility with older version
+    // which was working without $AA_INSTAL_EDIT_PATH
+    $admin_path = ($AA_INSTAL_EDIT_PATH ? $AA_INSTAL_EDIT_PATH . "admin/itemedit.php3" : "itemedit.php3");
+    // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
+    $url2go = isset($sess) ?
+                     $sess->url($admin_path)	:
+                     ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
+    $param = get_if($add, "edit=1").
+             ($vid ? "&vid=$vid" : "edit=1").
+             "&encap=false&id=$iid".
+             (isset($sess) ? "" : "&change_id=$sid").
+             make_return_url("&return_url=",$ret_url);	// it return "" if return_url is not defined.
+    return con_url($url2go,$param);
+}
+
 /** Creates item object just from item id and fills all necessary structures
  * @param         id        - an item id, unpacked or short
  * @param boolean short_ids - indicating type of $ids (default is false => unpacked)
@@ -209,39 +228,34 @@ function GetItemFromId($id, $use_short_ids=false) {
         $slice_id = unpack_id128($content[$id]["slice_id........"][0]['value']);
         list($fields,) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields);
-        return new item("",$content[$id],$aliases,"","","");
+        return new item($content[$id],$aliases);
     }
     return false;
 }
 
 class item {
-  var $item_content;   // Jakub: dummy, unused parameter??!!
   var $columns;        // ItemContent array for this Item (like from GetItemContent)
   var $clean_url;      //
-  var $top;
   var $format;         // format string with aliases
-  var $bottom;
   var $remove;         // remove string
   var $aliases;        // array of usable aliases
   var $parameters;     // optional additional parameters - copied from itemview->parameters
 
-  function item($ic, $cols, $ali, $c='', $ff='', $gl='', $fr="", $top="", $bottom="", $param=false){   #constructor
-    $this->item_content = $ic;
-    $this->columns      = $cols;
-    $this->aliases      = $ali;
-    $this->clean_url    = $c;
-    $this->format       = $ff;
-    $this->remove       = $fr;
-    $this->top          = $top;
-    $this->bottom       = $bottom;
+   // constructor
+  function item($content4id='', $aliases='', $clean_url='', $format='', $remove='', $param=false){
+    // there was three other options, but now it was never used so I it was
+    // removed: $item_content, $top and $bottom (honzam 2003-08-19)
+    $this->columns      = $content4id;
+    $this->aliases      = $aliases;
+    $this->clean_url    = $clean_url;
+    $this->format       = $format;
+    $this->remove       = $remove;
     $this->parameters   = ( $param ? $param : array() );
   }
 
-  function setformat( $format, $remove="", $top="", $bottom="") {
+  function setformat( $format, $remove="") {
     $this->format = $format;
     $this->remove = $remove;
-    $this->top = $top;
-    $this->bottom = $bottom;
   }
 
   /** Optional asociative array of additional parameters
@@ -316,7 +330,8 @@ class item {
     return DeHtml($txt,$html);
   }
 
-  function get_alias_subst( $alias ) {
+  function get_alias_subst( $alias, $use_field="" ) {
+      // use_field is for expanding aliases with loop - prefix {@
     $ali_arr = $this->aliases[$alias];
       # is this realy alias?
 
@@ -333,7 +348,7 @@ class item {
 
     # call function (called by function reference (pointer))
     # like f_d("start_date......", "mm-dd")
-    return $this->$fce($ali_arr['param'], $function['param']);
+    return $this->$fce(get_if($use_field, $ali_arr['param']), $function['param']);
   }
 
   function remove_strings( $text, $remove_arr ) {
@@ -410,11 +425,8 @@ class item {
   function f_h($col, $param="") {
     if( $param AND is_array($this->columns[$col])) {  # create list of values for multivalue fields
       $param = $this->subst_alias( $param );
-      reset( $this->columns[$col] );
-      while( list( ,$v) = each( $this->columns[$col] ) ) {
-        $res .= $delim . DeHtml($v[value], $v[flag]);
-        if( $res )
-          $delim = $param;        # add value separator just if field is filled
+      foreach( $this->columns[$col] as $v ) {
+        $res .= ($res ? $param : ''). DeHtml($v[value], $v[flag]); # add value separator just if field is filled
       }
       return $res;
     }
@@ -711,9 +723,22 @@ function RSS_restrict($txt, $len) {
   # If there is no param, then it converts the field to HTML (if text)
   # param: string to be printed (like <img src="{img_src........1}"></img>
   function f_t($col, $param="") {
-    if($param)
-      return $this->subst_alias( $param );
-    return DeHtml($this->getval($col), $this->getval($col,'flag'));
+      $p = ParamExplode($param);
+      if ( isset($p[1]) ) {
+          $text = get_if( $p[0], $this->getval($col) );
+          switch ( $p[1] ) {
+              case 'csv':         return !ereg("[,\"\n\r]", $text) ? $text :
+                                         '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
+              case 'safe':        return htmlspecialchars($text);
+                                  // In javascript we need escape apostroph
+              case 'javascript':  return str_replace("'", "\'", safe($text));
+              case 'urlencode':   return urlencode($text);
+              case 'striptags':   return strip_tags($text);
+              case '':            $param = $p[0];  // case 'some text:'
+          }
+      }
+      return $param ? $this->subst_alias( $param ):
+                      DeHtml($this->getval($col), $this->getval($col,'flag'));
   }
 
   # print database field or default value if empty
@@ -737,13 +762,8 @@ function RSS_restrict($txt, $len) {
   # param: 0
   function f_e($col, $param="") {
     global $sess, $slice_info;
-    global $AA_INSTAL_EDIT_PATH,$AA_CP_Session;
 
     $p = ParamExplode($param);  # 0 = disc|itemcount|safe|slice_info  #2 = return_url
-    // code to keep compatibility with older version
-    // which was working without $AA_INSTAL_EDIT_PATH
-    $admin_path = ($AA_INSTAL_EDIT_PATH ? $AA_INSTAL_EDIT_PATH . "admin/" : "");
-
     switch( $p[0]) {
       case "disc":
         # _#DISCEDIT used on admin page index.php3 for edit discussion comments
@@ -755,12 +775,11 @@ function RSS_restrict($txt, $len) {
         return $GLOBALS['QueryIDsCount'];
       case "itemindex";
         return "".$GLOBALS['QueryIDsIndex'];   # Need to append to "" so doesn't return "false" on 0th item
-      case "safe":
-        return safe($this->getval($col));
-      case "javascript":                       # In javascript we need escape apostroph
-        return str_replace( "'", "\'", safe($this->getval($col)) );
+      case "safe":         // safe, javascript, urlencode, csv - for backward
+      case "javascript":   // compatibility
       case "urlencode":
-        return urlencode($this->getval($col));
+      case "csv":
+        return $this->f_t($col,":".$p[0]);
       case "slice_info":
         if( !is_array( $slice_info ) )
           $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));
@@ -791,23 +810,18 @@ function RSS_restrict($txt, $len) {
         return (( (integer)$p[1] == (integer)($this->getval('short_id........')) ) ? '1' : '0');
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
+      case 'addform':   // show link to inputform with special design defined in view (id in p[1])
+        $add = "add=1";
+      // drop through to default
+      case 'editform':
+        return Inputform_url($add, unpack_id128($this->getval('id..............')),
+                                   unpack_id128($this->getval('slice_id........')), $p[2], $p[1]);
       case "add":
         $add="add=1";
-    // drop through to default
-      default:  {
-    // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
-          return con_url(
-                   isset($sess) ?
-                     $sess->url($admin_path ."itemedit.php3")	:
-                     ($admin_path . "itemedit.php3" .
-                         ((isset($AA_CP_Session)) ?
-                             ("?AA_CP_Session=" . $AA_CP_Session) : "" )),
-                   (isset($add) ? $add : "edit=1").
-                   "&encap=false&id=". unpack_id128($this->getval('id..............')).
-                   (isset($sess) ?
-                       "" : ("&change_id=". unpack_id128($this->getval('slice_id........')))).
-                   make_return_url("&return_url=",$p[1]) );	// it return "" if return_url is not defined.
-                }
+      // drop through to default
+      default:
+          return Inputform_url($add, unpack_id128($this->getval('id..............')),
+                                     unpack_id128($this->getval('slice_id........')), $p[1]);
     }
   }
 
@@ -963,10 +977,10 @@ function RSS_restrict($txt, $len) {
         print_r($content4id);
         echo "</pre>";
         */
-        $out = $fncname($varname, "", $content4id[$col],
+/*        $out = $fncname($varname, "", $content4id[$col],
                  $param2, $content4id[$col][0]['flag'] & FLAG_HTML, true );
         $maxlevel=0; $level=0;
-        return new_unalias_recurent($out, "", $level, $maxlevel, null, null, null);
+        return new_unalias_recurent($out, "", $level, $maxlevel, null, null, null);*/
     }
   }
 
