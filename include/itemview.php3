@@ -183,20 +183,19 @@ class itemview {
   function get_disc_list(&$CurItem) {
     $CurItem->setformat($this->slice_info['d_top']);
     $out = $CurItem->get_item();
-    if (is_array ($this->disc['disc_ids'])) {
+    if (is_array($this->disc['disc_ids'])) {
         $ids = $this->disc['disc_ids'];
         $ids_sql = "";
-        reset ($ids);
-        while (list (,$id) = each ($ids)) {
-            if ($ids_sql != "") $ids_sql .= ",";
+        foreach ( $ids as $id) {
+            if ($ids_sql != "") {
+                $ids_sql .= ",";
+            }
             $ids_sql .= '"'.addslashes(q_pack_id($id)).'"';
         }
         $SQL = "SELECT * FROM discussion WHERE id IN ($ids_sql)";
-        if ($debug) echo $SQL;
-        $d_content = GetDiscussionContentSQL ($SQL, "", "",$this->disc['vid'],true,$this->disc['html_format'],$this->clean_url);
+        $d_content = GetDiscussionContentSQL($SQL, "", "",$this->disc['vid'],true,$this->disc['html_format'],$this->clean_url);
         if (is_array ($d_content)) {
-            reset ($d_content);
-            while (list ($id,$disc) = each ($d_content)) {
+            foreach ( $d_content as $id => $disc) {
                 $CurItem->set_data($disc);
                 $CurItem->setformat ($this->slice_info['d_compact']);
                 $out .= $CurItem->get_item();
@@ -396,11 +395,11 @@ class itemview {
       $CurItem = new item("", $this->aliases, $this->clean_url);   # just prepare
       $CurItem->set_parameters($this->parameters);
       switch ($this->disc['type']) {
-        case 'thread' : $out = $this->get_disc_thread($CurItem); break;
-        case 'fulltext' : $out = $this->get_disc_fulltext($CurItem); break;
-        case 'list' : $out = $this->get_disc_list($CurItem); break;
+        case 'thread':   $out = $this->get_disc_thread($CurItem); break;
+        case 'fulltext': $out = $this->get_disc_fulltext($CurItem); break;
+        case 'list':     $out = $this->get_disc_list($CurItem); break;
         case 'add_disc':
-        default: $out = $this->get_disc_add($CurItem); break;
+        default:         $out = $this->get_disc_add($CurItem); break;
       }
       trace("-");
       return $out;

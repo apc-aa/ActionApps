@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -53,11 +53,17 @@ if ($update) {
     ValidateInput("url_description", _m("Authors's WWW - description"), $url_description, $err, false, "text");
     ValidateInput("remote_addr", _m("Remote address"), $remote_addr, $err, true, "text");
 
+    $datectrl = new datectrl('date');
+    $datectrl->update();                   // updates datectrl
+    $date     = $datectrl->get_date();
+
+
     if (count($err)<=1) {
       $varset->add("subject", "quoted", $subject);
       $varset->add("author", "quoted", $author);
       $varset->add("e_mail", "quoted", $e_mail);
       $varset->add("body", "quoted", $body);
+      $varset->add("date", "quoted", $date);
       $varset->add("url_address", "quoted", $url_address);
       $varset->add("url_description", "quoted", $url_description);
       $varset->add("remote_addr", "quoted", $remote_addr);
@@ -108,6 +114,7 @@ function InitPage() {}
   FrmInputText("author",_m("Author"), $author, 60, 25, true);
   FrmInputText("e_mail",_m("E-mail"), $e_mail, 60, 25, false);
   FrmTextArea("body", _m("Text of discussion comment"), $body, 10, 40, false);
+  FrmDate("date", _m('Date'), $date, false, '', '', true);
   FrmInputText("url_address",_m("Authors's WWW  - URL"), $url_address, 99, 50, false);
   FrmInputText("url_description", _m("Authors's WWW - description"), $url_description, 60, 25, false);
   FrmInputText("remote_addr",_m("Remote address"), $remote_addr, 60, 25, false);

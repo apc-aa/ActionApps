@@ -55,53 +55,55 @@ function GetImageSrc($img) {
 
 # get discussion content from database belong to item_id
 function GetDiscussionContent($item_id, $ids="", $vid="",$state=true, $order='timeorder', $html_flag=true, $clean_url="") {
-  $p_item_id = q_pack_id($item_id);
-  $SQL= "SELECT *
-           FROM discussion
-           WHERE item_id='$p_item_id'";
-   $SQL.=" ORDER BY date";
-  if ($order == 'reverse timeorder')
-    $SQL .=" DESC";
-  return GetDiscussionContentSQL ($SQL, $item_id, $ids, $vid, $state, $html_flag, $clean_url);
+    if ( !$item_id ) {
+        return false;
+    }
+    $p_item_id = q_pack_id($item_id);
+    $SQL = "SELECT * FROM discussion WHERE item_id='$p_item_id' ORDER BY date";
+    if ($order == 'reverse timeorder') {
+        $SQL .=" DESC";
+    }
+    return GetDiscussionContentSQL($SQL, $item_id, $ids, $vid, $state, $html_flag, $clean_url);
 }
 
-function GetDiscussionContentSQL ($SQL, $item_id, $ids, $vid, $state, $html_flag, $clean_url) {
-  global $db;
-  $db->query($SQL);
-  while($db->next_record()) {
-    $d_id = unpack_id128($db->f(id));
-    if (!$ids || $ids["x".$d_id]) {
-      $col["d_id............"][0][value] = $d_id;
-      $col["d_parent........"][0][value] = $db->f(parent) ? unpack_id($db->f(parent)) : "0";
-      $col["d_item_id......."][0][value] = unpack_id128($db->f(item_id));
-      $col["d_subject......."][0][value] = $db->f(subject);
-      $col["d_body.........."][0][value] = $db->f(body);
-      $col["d_author........"][0][value] = $db->f(author);
-      $col["d_e_mail........"][0][value] = $db->f(e_mail);
-      $col["d_url_address..."][0][value] = $db->f(url_address);
-      $col["d_url_descript.."][0][value] = $db->f(url_description);
-      $col["d_date.........."][0][value] = $db->f(date);
-      $col["d_remote_addr..."][0][value] = $db->f(remote_addr);
-      $col["d_state........."][0][value] = $db->f(state);
-      $tmp_disc_url = con_url($clean_url,"nocache=1&sh_itm=".unpack_id128($db->f('item_id')));
-      $col["d_url_fulltext.."][0][value] = $tmp_disc_url."&sel_ids=1&ids[x".$d_id."]=1#disc";
-      $col["d_url_reply....."][0][value] = $tmp_disc_url."&add_disc=1&parent_id=".$d_id."#disc";
-      $col["d_disc_url......"][0][value] = $tmp_disc_url."#disc";
+function GetDiscussionContentSQL($SQL, $item_id, $ids, $vid, $state, $html_flag, $clean_url) {
+    global $db;
+    $db->tquery($SQL);
+    while($db->next_record()) {
+        $d_id = unpack_id128($db->f('id'));
+        if (!$ids || $ids["x".$d_id]) {
+            $col["d_id............"][0]['value'] = $d_id;
+            $col["d_parent........"][0]['value'] = $db->f('parent') ? unpack_id($db->f('parent')) : "0";
+            $col["d_item_id......."][0]['value'] = unpack_id128($db->f('item_id'));
+            $col["d_subject......."][0]['value'] = $db->f('subject');
+            $col["d_body.........."][0]['value'] = $db->f('body');
+            $col["d_author........"][0]['value'] = $db->f('author');
+            $col["d_e_mail........"][0]['value'] = $db->f('e_mail');
+            $col["d_url_address..."][0]['value'] = $db->f('url_address');
+            $col["d_url_descript.."][0]['value'] = $db->f('url_description');
+            $col["d_date.........."][0]['value'] = $db->f('date');
+            $col["d_remote_addr..."][0]['value'] = $db->f('remote_addr');
+            $col["d_state........."][0]['value'] = $db->f('state');
+            $tmp_disc_url = con_url($clean_url,"nocache=1&sh_itm=".unpack_id128($db->f('item_id')));
+            $col["d_url_fulltext.."][0]['value'] = $tmp_disc_url."&sel_ids=1&ids[x".$d_id."]=1#disc";
+            $col["d_url_reply....."][0]['value'] = $tmp_disc_url."&add_disc=1&parent_id=".$d_id."#disc";
+            $col["d_disc_url......"][0]['value'] = $tmp_disc_url."#disc";
 
-      // set html flag
-      if ($html_flag)
-        $col["d_body.........."][0][flag] = FLAG_HTML;
-      $col["d_checkbox......"][0][flag] = FLAG_HTML;
-      $col["d_treeimages...."][0][flag] = FLAG_HTML;
-      $col["d_url_fulltext.."][0][flag] = FLAG_HTML;   // we do not need to
-      $col["d_url_reply....."][0][flag] = FLAG_HTML;   // replace & by &amp;
-      $col["d_disc_url......"][0][flag] = FLAG_HTML;   // in urls
+            // set html flag
+            if ($html_flag) {
+                $col["d_body.........."][0]['flag'] = FLAG_HTML;
+            }
+            $col["d_checkbox......"][0]['flag'] = FLAG_HTML;
+            $col["d_treeimages...."][0]['flag'] = FLAG_HTML;
+            $col["d_url_fulltext.."][0]['flag'] = FLAG_HTML;   // we do not need to
+            $col["d_url_reply....."][0]['flag'] = FLAG_HTML;   // replace & by &amp;
+            $col["d_disc_url......"][0]['flag'] = FLAG_HTML;   // in urls
 
-      $col["hide"] = ($db->f(state) == '1' && $state);     //mark hidden comment.
-      $d_content[$d_id] = $col;
+            $col["hide"] = ($db->f('state') == '1' && $state);     //mark hidden comment.
+            $d_content[$d_id] = $col;
+        }
     }
-  }
-  return $d_content;
+    return $d_content;
 }
 
 // set the right content for a checkbox
@@ -140,7 +142,7 @@ function GetDiscussionAliases() {
   $aliases["_#EMAIL##_"] = GetAliasDef("f_h",          "d_e_mail........", _m("Alias for author's e-mail"));
   $aliases["_#WWW_URL_"] = GetAliasDef("f_h",          "d_url_address...", _m("Alias for url address of author's www site"));
   $aliases["_#WWW_DESC"] = GetAliasDef("f_h",          "d_url_descript..", _m("Alias for description of author's www site"));
-  $aliases["_#DATE###_"] = GetAliasDef("f_d:d M Y H:i", "d_date..........", _m("Alias for publish date"));
+  $aliases["_#DATE###_"] = GetAliasDef("f_d:d M Y H:i","d_date..........", _m("Alias for publish date"));
   $aliases["_#IP_ADDR_"] = GetAliasDef("f_h",          "d_remote_addr...", _m("Alias for IP address of author's computer"));
   $aliases["_#CHECKBOX"] = GetAliasDef("f_h",          "d_checkbox......", _m("Alias for checkbox used for choosing discussion comment"));
   $aliases["_#TREEIMGS"] = GetAliasDef("f_h",          "d_treeimages....", _m("Alias for images"));
@@ -236,7 +238,7 @@ function DeleteTree(&$tree, $d_id) {
   global $db;
 
   $p_d_id = q_pack_id($d_id);
-  $db->query("DELETE FROM discussion WHERE id='$p_d_id'");
+  $db->tquery("DELETE FROM discussion WHERE id='$p_d_id'");
   if (!($nodes = $tree[$d_id]))
     return;
   while (list($dest_id,) = each($nodes))
@@ -259,14 +261,14 @@ function GetParent(&$tree, $d_id) {
 // delete one comment
 function DeleteNode(&$tree, &$d_content, $d_id) {
   global $db;
-  $db->query("DELETE FROM discussion WHERE id='".q_pack_id($d_id)."'");
+  $db->tquery("DELETE FROM discussion WHERE id='".q_pack_id($d_id)."'");
 
   if (!$tree[$d_id])
     return;
   $parent = $d_content[$d_id]["d_parent........"][0][value];
 
   while (list ($child, ) = each($tree[$d_id])) {
-    $db->query("UPDATE discussion SET parent='".($parent == "0" ? "" : q_pack_id($parent))."' WHERE id='".q_pack_id($child)."'");
+    $db->tquery("UPDATE discussion SET parent='".($parent == "0" ? "" : q_pack_id($parent))."' WHERE id='".q_pack_id($child)."'");
   }
 }
 
@@ -277,7 +279,7 @@ function updateDiscussionCount($item_id) {
   $all = $hide = 0;
   $p_item_id = q_pack_id($item_id);
   $SQL= "SELECT * FROM discussion WHERE item_id='$p_item_id'";
-  $db->query($SQL);
+  $db->tquery($SQL);
   while($db->next_record()) {
     $all++;
     if ($db->f(state) == '1')    // hidden comment
@@ -285,7 +287,7 @@ function updateDiscussionCount($item_id) {
   }
 
   $SQL= "UPDATE item SET disc_count='$all', disc_app='". ($all-$hide) ."' WHERE id='$p_item_id'";
-  $db->query($SQL);
+  $db->tquery($SQL);
 }
 
 // -----------------------------------------------------------------------------------------
@@ -308,7 +310,7 @@ function GetDiscussion2MailAliases() {
 
 function send2mailList ($d_item_id, $new_id) {
     global $db;
-    $db->query("SELECT content.text FROM
+    $db->tquery("SELECT content.text FROM
                  content INNER JOIN item ON item.id = content.item_id INNER JOIN
                  field ON content.field_id = field.id
                  AND field.slice_id = item.slice_id
@@ -339,7 +341,7 @@ function send2mailList ($d_item_id, $new_id) {
             send_mail_from_table_inner ($mail_id, $maillist, $CurItem);
             return;
         }
-        $db->query("SELECT * FROM view WHERE id=$vid");
+        $db->tquery("SELECT * FROM view WHERE id=$vid");
         if ($db->next_record()) {
             $view_info = $db->Record;
 
@@ -356,7 +358,7 @@ function send2mailList ($d_item_id, $new_id) {
 
             reset ($mail_parts);
             $mail = "";
-            while (list ($part, $field) = each ($mail_parts)) {
+            while (list($part, $field) = each ($mail_parts)) {
                 $s = $view_info [$field];
                 for ($i=2; $i < 9; $i ++) {
                     $s = str_replace ("_#ITEMPAR".($i+1), $item_params [$i], $s);
@@ -366,18 +368,18 @@ function send2mailList ($d_item_id, $new_id) {
             }
 
             $mail = new HtmlMail;
-            $mail->setSubject ($mail["subject"]);
-            $mail->setHtml ($mail["body"], html2text ($mail["body"]));
-            if ($mail["from"])      $mail->setHeader ("From", $mail["from"]);
-            if ($mail["reply_to"])  $mail->setHeader ("Reply-To", $mail["reply_to"]);
-            if ($mail["errors_to"]) $mail->setHeader ("Errors-To", $mail["errors_to"]);
-            if ($mail["sender"])    $mail->setHeader ("Sender", $mail["sender"]);
+            $mail->setSubject($mail["subject"]);
+            $mail->setHtml($mail["body"], html2text ($mail["body"]));
+            if ($mail["from"])      $mail->setHeader("From", $mail["from"]);
+            if ($mail["reply_to"])  $mail->setHeader("Reply-To", $mail["reply_to"]);
+            if ($mail["errors_to"]) $mail->setHeader("Errors-To", $mail["errors_to"]);
+            if ($mail["sender"])    $mail->setHeader("Sender", $mail["sender"]);
 
-            $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
+            $db->tquery("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
                          WHERE item.id='".q_pack_id($d_item_id)."'");
             $db->next_record();
-            $mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
-            $mail->send (array ($maillist));
+            $mail->setCharset($GLOBALS["LANGUAGE_CHARSETS"][substr($db->f("lang_file"),0,2)]);
+            $mail->send(array($maillist));
         } #view found
       } # vid present
     } # DiscussionMailList Field present

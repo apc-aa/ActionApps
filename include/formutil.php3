@@ -75,7 +75,8 @@ function GetInputFormTemplate() {
      $slice = new slice($slice_id);
      list($fields, $prifields) = $slice->fields();
      $form = new inputform($inputform_settings);
-     return $form->getForm('', $fields, $prifields, false, $slice_id);
+     $content4id = null;  // in getForm we have to pass it by reference
+     return $form->getForm($content4id, $slice, false, $slice_id);
 }
 
 /**
@@ -1117,15 +1118,16 @@ class aainputfield {
         if (strpos($actions,'E') !== false) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Edit") ."' onclick=\"EditItemInPopup('". Inputform_url(false, null, $sid, 'close_dialog', null, $name) .  "', document.inputform['".$name."']);\">\n");
         }
-        if (strpos($actions,'D') !== false) {
-            $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
-        }
         // used mainly by mft
         if (strpos($actions,'A') !== false) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"sb_AddValue(document.inputform['".$name."'], '"._m('Enter the value')."');\">\n");
         }
+        // used mainly by mft
         if (strpos($actions,'C') !== false) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Change") ."' onclick=\"sb_EditValue(document.inputform['".$name."'], '"._m('Enter the value')."');\">\n");
+        }
+        if (strpos($actions,'D') !== false) {
+            $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
         }
         $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
         $this->echoo("</td></tr></table>\n");
@@ -1506,6 +1508,17 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class
     $input->richEditTextarea($rows, $cols, $type, $single);
     $input->print_result();
 }
+
+/** On browsers which do support it, loads a special rich text editor with many
+ *  advanced features based on triedit.dll
+ *  On the other browsers, loads a normal text area
+*/
+function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $display_time=false) {
+    $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    $input->dateSelect(7, 1, true, $display_time);
+    $input->print_result();
+}
+
 
 /** Prints a radio group, html tags <input type="radio" .. to 2-column table
  *  for use within <form> and <table> tag
