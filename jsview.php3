@@ -94,6 +94,7 @@ $html_code = GetView(ParseViewParameters());          # get view content
 $html_code = str_replace( '"', '\"', $html_code );    # backslash quotes
 $html_code = str_replace( "\r\n", '\n', $html_code ); # remove newlines
 $html_code = str_replace( "\n", '\n', $html_code );   # remove newlines
+$html_code = str_replace( "\r", '\n', $html_code );   # remove newlines
 echo 'document.write("'. $html_code .'");';           # print it as javascript
 exit;
 
