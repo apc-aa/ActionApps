@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# common language file - comm
+# common language file
 
 // setup constats
 define("L_SETUP_PAGE_BEGIN", 
@@ -136,6 +136,8 @@ define( "L_WDDX_OK","Item OK - stored in database");
 define( "L_CAN_DELETE_WDDX_FILE","Now you can dalete local file. ");
 define( "L_DELETE_WDDX"," Delete ");
 
+# ------------------- New constants (not in other lang files ------------------
+define( "L_NO_SUCH_VIEW", "No such view (bad or missing view id or deleted slice)");
 
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
 // break year for short year description is 1950
@@ -156,6 +158,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.16  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.15  2001/01/26 15:06:50  honzam
 Off-line filling - first version with WDDX (then we switch to APC RSS+)
 

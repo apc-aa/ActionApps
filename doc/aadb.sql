@@ -1,27 +1,33 @@
--- DROP TABLE active_sessions;
--- DROP TABLE constant       ;
--- DROP TABLE content        ;
--- DROP TABLE db_sequence    ;
--- DROP TABLE email_auto_user;
--- DROP TABLE email_notify   ;
--- DROP TABLE feedperms      ;
--- DROP TABLE feeds          ;
--- DROP TABLE field          ;
--- DROP TABLE groups         ;
--- DROP TABLE item           ;
--- DROP TABLE log            ;
--- DROP TABLE membership     ;
--- DROP TABLE perms          ;
--- DROP TABLE slice          ;
--- DROP TABLE slice_owner    ;
--- DROP TABLE subscriptions  ;
--- DROP TABLE users          ;
+DROP TABLE IF EXISTS active_sessions;
+DROP TABLE IF EXISTS constant       ;
+DROP TABLE IF EXISTS content        ;
+DROP TABLE IF EXISTS db_sequence    ;
+DROP TABLE IF EXISTS email_auto_user;
+DROP TABLE IF EXISTS email_notify   ;
+DROP TABLE IF EXISTS feedperms      ;
+DROP TABLE IF EXISTS feeds          ;
+DROP TABLE IF EXISTS field          ;
+DROP TABLE IF EXISTS groups         ;
+DROP TABLE IF EXISTS item           ;
+DROP TABLE IF EXISTS log            ;
+DROP TABLE IF EXISTS membership     ;
+DROP TABLE IF EXISTS perms          ;
+DROP TABLE IF EXISTS slice          ;
+DROP TABLE IF EXISTS slice_owner    ;
+DROP TABLE IF EXISTS subscriptions  ;
+DROP TABLE IF EXISTS users          ;
+DROP TABLE IF EXISTS offline        ;
+DROP TABLE IF EXISTS feedmap        ;
+DROP TABLE IF EXISTS relation       ;
+DROP TABLE IF EXISTS pagecache      ;
+DROP TABLE IF EXISTS view           ;
 
-# add feedmap table
-# add relation table
-# add flag in feedperms
-# add offline table, relation table, aditional and flag field in slice table
-# grab_len and redirect removed
+# 05/13/01 - added view table
+# 0x/0x/01 - add feedmap table
+#          - add relation table
+#          - add flag in feedperms
+#          - add offline table, relation table, aditional and flag field in slice table
+#          - grab_len and redirect removed
 
 # --------------------------------------------------------
 # Table structure for table 'active_sessions'
@@ -384,6 +390,53 @@ CREATE TABLE users (
    KEY mail (mail),
    KEY name (name),
    KEY sn (sn)
+);
+
+# --------------------------------------------------------
+# Table structure for table 'users'
+
+CREATE TABLE view (
+   id int(10) unsigned NOT NULL auto_increment,
+   slice_id varchar(16) NOT NULL,
+   name varchar(50),                # name of view
+   type varchar(10),                # type of view (fulltext, digest, rss, ...)
+   before text,
+   even text,
+   odd text,
+   even_odd_differ tinyint unsigned,
+   after text,
+   remove_string text,
+   group_title text,
+   order1 varchar(16),
+   o1_direction tinyint unsigned,
+   order2 varchar(16),
+   o2_direction tinyint unsigned,
+   group_by1 varchar(16),
+   g1_direction tinyint unsigned,
+   group_by2 varchar(16),
+   g2_direction tinyint unsigned,
+   cond1field varchar(16),
+   cond1op varchar(10),
+   cond1cond varchar(255),
+   cond2field varchar(16),
+   cond2op varchar(10),
+   cond2cond varchar(255),
+   cond3field varchar(16),
+   cond3op varchar(10),
+   cond3cond varchar(255),
+   listlen int(10) unsigned,
+   scroller tinyint unsigned,
+   selected_item tinyint unsigned,
+   modification int(10) unsigned,
+   parameter varchar(255),
+   img1 varchar(255),
+   img2 varchar(255),
+   img3 varchar(255),
+   img4 varchar(255),
+   flag int(10) unsigned,
+   aditional text,
+   PRIMARY KEY (id),
+   KEY slice_id (slice_id)
 );
 
 # Dumping data for table 'constant'

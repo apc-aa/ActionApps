@@ -95,6 +95,9 @@ while($db->next_record())
 */
 /*
 $Log$
+Revision 1.6  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.5  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 
@@ -146,7 +149,7 @@ config.inc
         <OPTION value="OR"><?php echo L_OR ?></OPTION>
         <OPTION value="AND"><?php echo L_AND ?></OPTION>
        </SELECT> 
-       <A href="<? echo HELPPAGE?>#search"><IMG src="images/help.gif" width=23 height=20 border=0 valign="right" alt=""></A>
+       <A href="<?php echo HELPPAGE?>#search"><IMG src="images/help.gif" width=23 height=20 border=0 valign="right" alt=""></A>
       </TD>
      </TR>
      <TR class=srchinnertr>

@@ -24,9 +24,6 @@ http://www.apc.org/
 # debe corresponder con el nombre de este archivo.
 define("CONFIG_FILE", "es_news_lang.php3");
 
-define("IMG_UPLOAD_MAX_SIZE", "400000");    // máximo tamaño de un archivo que puede ser aceptado.
-define("IMG_UPLOAD_URL", "http://www.colnodo.apc.org/aa/img_upload/");
-define("IMG_UPLOAD_PATH", "/usr/local/etc/httpd/htdocs/nuevo/aa/img_upload/");
 define("EDIT_ITEM_COUNT", 20);                  // número de ítems en la ventana del editor.
 
 define("DEFAULT_FULLTEXT_HTML", '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR>_#FULLTEXT');
@@ -43,7 +40,6 @@ define("DEFAULT_FULLTEXT_REMOVE", "()");
 
 # HTML al comienzo de la página de administración
 # Usted debe definir el lenguaje de las páginas de administración y posiblemente algunos meta-tags
-
 define("HTML_PAGE_BEGIN",
  '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/SP">
   <HTML>
@@ -54,12 +50,10 @@ define("HTML_PAGE_BEGIN",
 # etiquetas específicas de las aa 
 define("L_ITEM_ID_ALIAS",'alias para el Id del ítem');
 define("L_EDITITEM_ALIAS",'alias usado en la página de administración index.php3 para el url de edición del ítem'); 
-
 define("L_LANG_FILE","Archivo de idioma utilizado");
 define("L_PARAMETERS","Parámetros");
 define("L_SELECT_APP","Seleccione aplicación");
 define("L_SELECT_OWNER","Seleccione propietario");
-
 
 define("L_CANT_UPLOAD","No se pudó copiar la imagen"); 
 define("L_MSG_PAGE", "Mensaje de las aa");   // título de la página de mensajes
@@ -267,6 +261,7 @@ define("L_UNSELECT_ALL", "Desmarcar todos");
 define("L_SELECT_VISIBLE", "Marcar visibles");
 define("L_UNSELECT_VISIBLE", "Desmarcar visibles");
 
+define("L_SLICE_ADM", "Canal administración ");
 define("L_A_FILTERS_FLT", L_A_FILTERS_TIT);
 define("L_A_COMPACT", L_A_COMPACT_TIT);
 define("L_A_FULLTEXT", L_A_FULLTEXT_TIT);
@@ -285,8 +280,6 @@ define("L_A_SLICE_TIT", L_SLICE_ADM);
 define("L_A_FIELDS_TIT", L_A_FIELDS_EDT);
 define("L_SLICE_SET", L_SLICE);
 define("L_FULLTEXT_REMOVE", L_COMPACT_REMOVE);
-
-//define("", "");   // preparado para nuevas constantes.
 
 define("L_FEED", "Exportar");
 define("L_FEEDTO_TITLE", "Exportar ítem al canal seleccionado");
@@ -314,7 +307,6 @@ define("L_ARTICLE_MANAGER", "Administrador de ítems");
 define("L_SWITCH_TO", "Cambiar a canal");
 define("L_ADMIN", "Administración");
 
-//nuevas constantes
 define("L_NO_PS_NEW_USER", "No tiene permisos para crear un nuevo usuario");
 define("L_ALL_GROUPS", "Todos los grupos");
 define("L_USERS_GROUPS", "Grupos de usuarios");
@@ -351,29 +343,6 @@ define("L_DELETE_FIELD", "Está seguro de borrar este campo del canal?");
 define("L_FEEDED", "Importado");
 define("L_HTML_DEFAULT", "HTML codificado como predeterminado");
 define("L_HTML_SHOW", "Mostrar 'HTML' / 'texto plano'");
-
-// ULTIMAS
-define("L_HTML", "HTML");
-define("L_PLAIN_TEXT", "Texto plano");
-
-define("L_A_DELSLICE", "Administración - Borrar Canal");
-define("L_DELSLICE_TIT", L_A_DELSLICE);
-define("L_DELSLICE_HDR", "Seleccione el canal a borrar");
-define("L_DEL_SLICE_HLP","<p>Usted solamente puede borrar canales que estén marcados como &quot;<b>borrados</b>&quot; en la página &quot;<b>". L_SLICE_SET ."</b>&quot;.</p>");
-define("L_A_DELSLICE", L_DELSLICE_TIT);
-define("L_DELETE_SLICE", "Está seguro que desea borrar este canal con todos sus campos y todos sus ítems?");
-define("L_NO_SLICE_TO_DELETE", "No hay canales marcados para borrado");
-define("L_NO_SUCH_SLICE", "Identificación del canal errada");
-define("L_NO_DELETED_SLICE", "El canal no está marcado para borrado");
-define("L_DELSLICE_OK", "Canal borrado con éxito y las tablas han sido optimizadas");
-define("L_DEL_SLICE", "Borrar canal");
-define("L_FEED_STATE", "Modo de alimentación");
-define("L_STATE_FEEDABLE", "Alimentar" );
-define("L_STATE_UNFEEDABLE", "No alimentar" );
-define("L_STATE_FEEDNOCHANGE", "Alimentación bloqueada" );
-define("L_INPUT_FEED_MODES_HLP", "Debe el contenido de este campo ser copiado a otro canal si es alimentado?");
-define("L_CANT_CREATE_IMG_DIR","No se puede crear el directorio para copiado de imágenes");
-
 define("L_NEW_OWNER", "Nuevo dueño");
 define("L_NEW_OWNER_EMAIL", "Correo nuevo dueño");
 define("L_NO_FIELDS", "No hay campos definidos para este canal");
@@ -385,8 +354,6 @@ define("L_OWNER", "Dueño");
 define("L_SLICES", "Canaless");
 define("L_TEMPLATE", "Plantilla");
 define("L_VALIDATE", "Validar");
-define("", "");
-define("", "");
 
 define("L_FIELD_DELETE_OK", "Campo borrado con éxito");
 
@@ -466,20 +433,21 @@ define("L_PERMIT_ANONYMOUS_POST","Permitir publicación anónima de ítems");
 define("L_PERMIT_OFFLINE_FILL","Permitir alimentación de ítems fuera de línea");
 define("L_SOME_CATEGORY", "<misma categoría>");
 
-define("L_ALIAS_FUNC_A", "Resumen");
-define("L_ALIAS_FUNC_C", "condición");
-define("L_ALIAS_FUNC_D", "Fecha");
-define("L_ALIAS_FUNC_E", "Editar ítem");
-define("L_ALIAS_FUNC_F", "Enlace texto-completo");
-define("L_ALIAS_FUNC_G", "Altura imagen");
-define("L_ALIAS_FUNC_H", "Imprimir");
-define("L_ALIAS_FUNC_I", "Fuente imagen");
-define("L_ALIAS_FUNC_L", "Campo enlazado");
-define("L_ALIAS_FUNC_N", "Id");
-define("L_ALIAS_FUNC_S", "Url");
-define("L_ALIAS_FUNC_T", "Texto completo");
-define("L_ALIAS_FUNC_W", "Ancho imagen");
-define("L_ALIAS_FUNC_0", "Ninguno");
+define("L_ALIAS_FUNC_A", "f_a - Resumen");
+define("L_ALIAS_FUNC_B", "f_b - Enlace texto-completo");
+define("L_ALIAS_FUNC_C", "f_c - condición");
+define("L_ALIAS_FUNC_D", "f_d - Fecha");
+define("L_ALIAS_FUNC_E", "f_e - Editar ítem");
+define("L_ALIAS_FUNC_F", "f_f - Enlace texto-completo");
+define("L_ALIAS_FUNC_G", "f_g - Altura imagen");
+define("L_ALIAS_FUNC_H", "f_h - Imprimir");
+define("L_ALIAS_FUNC_I", "f_i - Fuente imagen");
+define("L_ALIAS_FUNC_L", "f_l - Campo enlazado");
+define("L_ALIAS_FUNC_N", "f_n - Id");
+define("L_ALIAS_FUNC_S", "f_s - Url");
+define("L_ALIAS_FUNC_T", "f_t - Texto completo");
+define("L_ALIAS_FUNC_W", "f_w - Ancho imagen");
+define("L_ALIAS_FUNC_0", "f_0 - Ninguno");
 
 define("L_ALIASES", "Cuando Usted accede a la administración de diseño, Usted utiliza el alias mostrado en este campo");
 define("L_ALIAS1", "Alias 1"); 
@@ -505,16 +473,92 @@ define("L_A_SLICE_ADD_HELP", "Para crear una nuevo canal, seleccione la plantill
         Usted puede también seleccionar un canal existente como plantilla para su nuevo canal."); 
 define("L_REMOVE_HLP", "Remueve brackets vacios etc. Utilice ## como delimitador.");
 
-// no se añade a otros archivos de idioma
 define("L_COMPACT_HELP", "Utilice estas casillas ( y los tags listados abajo ) para controlar lo que aparece en la página de sumario");
 define("L_A_FULLTEXT_HELP", "Utilice estas casillas ( con los tags listados abajo ) para controlar lo que aparece en la vista de texto completo para cada ítem");
 define("L_PROHIBITED", "No permitido");
-//define("", "");
+define("L_HTML", "HTML");
+define("L_PLAIN_TEXT", "Texto plano");
+define("L_A_DELSLICE", "Administración - Borrar Canal");
+define("L_DELSLICE_TIT", L_A_DELSLICE);
+define("L_DELSLICE_HDR", "Seleccione el canal a borrar");
+define("L_DEL_SLICE_HLP","<p>Usted solamente puede borrar canales que estén marcados como &quot;<b>borrados</b>&quot; en la página &quot;<b>". L_SLICE_SET ."</b>&quot;.</p>");
+define("L_A_DELSLICE", L_DELSLICE_TIT);
+define("L_DELETE_SLICE", "Está seguro que desea borrar este canal con todos sus campos y todos sus ítems?");
+define("L_NO_SLICE_TO_DELETE", "No hay canales marcados para borrado");
+define("L_NO_SUCH_SLICE", "Identificación del canal errada");
+define("L_NO_DELETED_SLICE", "El canal no está marcado para borrado");
+define("L_DELSLICE_OK", "Canal borrado con éxito y las tablas han sido optimizadas");
+define("L_DEL_SLICE", "Borrar canal");
+define("L_FEED_STATE", "Modo de alimentación");
+define("L_STATE_FEEDABLE", "Alimentar" );
+define("L_STATE_UNFEEDABLE", "No alimentar" );
+define("L_STATE_FEEDNOCHANGE", "Alimentación bloqueada" );
+define("L_INPUT_FEED_MODES_HLP", "Debe el contenido de este campo ser copiado a otro canal si es alimentado?");
+define("L_CANT_CREATE_IMG_DIR","No se puede crear el directorio para copiado de imágenes");
 
-// ------------------------- New ----------------------------
+// ------------------------- New - not translated ----------------------------
+
+  # constants for View setting 
+define('L_VIEWS','Views');
+define('L_ASCENDING','Ascending');
+define('L_DESCENDING','Descending');
+define('L_NO_PS_VIEWS','You do not have permission to change views');
+define('L_VIEW_OK','View successfully changed');
+define('L_A_VIEW_TIT','Admin - design View');
+define('L_A_VIEWS','Admin - design View');
+define('L_VIEWS_HDR','Defined Views');
+define('L_VIEW_DELETE_OK','View successfully deleted');
+define('L_DELETE_VIEW','Are you sure you want to delete selected view?');
+define('L_V_BEFORE',L_COMPACT_TOP);
+define('L_V_ODD',L_ODD_ROW_FORMAT);
+define('L_V_EVENODDDIF',L_EVEN_ODD_DIFFER);
+define('L_V_EVEN',L_EVEN_ROW_FORMAT);
+define('L_V_AFTER',L_COMPACT_BOTTOM);
+define('L_V_GROUP_BY1','Group by');
+define('L_V_GROUP1DIR','');
+define('L_V_GROUP_BY2',L_V_GROUP_BY1);
+define('L_V_GROUP2DIR','');
+define('L_V_GROUP','Group title format');
+define('L_V_REMOVE_STRING',L_COMPACT_REMOVE);
+define('L_V_MODIFICATION','Type');
+define('L_V_PARAMETER','Parameter');
+define('L_V_IMG1','View image 1');
+define('L_V_IMG2','View image 2');
+define('L_V_IMG3','View image 3');
+define('L_V_IMG4','View image 4');
+define('L_V_ORDER1','Sort primary');
+define('L_V_ORDER1DIR','');
+define('L_V_ORDER2','Sort secondary');
+define('L_V_ORDER2DIR','');
+define('L_V_SELECTED','Use selected item');
+define('L_V_COND1FLD','Condition 1');
+define('L_V_COND1OP','');
+define('L_V_COND1COND','');
+define('L_V_COND2FLD','Condition 2');
+define('L_V_COND2OP','');
+define('L_V_COND2COND','');
+define('L_V_COND3FLD','Condition 3');
+define('L_V_COND3OP','');
+define('L_V_COND3COND','');
+define('L_V_LISTLEN',L_D_LISTLEN);
+define('L_V_FLAG','Flag');
+define('L_V_SCROLLER','Display page scroller');
+define('L_V_ADITIONAL','Aditional');
+define('L_COMPACT_VIEW','Item listing');
+define('L_FULLTEXT_VIEW','Fulltext view');
+define('L_DIGEST_VIEW','Item digest');
+define('L_DISCUSSION_VIEW','Discussion');
+define('L_RELATED_VIEW','Related item');
+define('L_CONSTANT_VIEW','View of Constants');
+define('L_RSS_VIEW','RSS exchange');
+define('L_STATIC_VIEW','Static page');
+define('L_SCRIPT_VIEW','Javscript item exchange');
 
 /*
 $Log$
+Revision 1.2  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.1  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

@@ -1,5 +1,4 @@
 <?php
-
 define("SEARCHLIB_PHP3_INC",1);
 
 //$Id$
@@ -22,6 +21,204 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+function GetWhereExp( $field, $operator, $querystring ) {
+  switch( $operator ) {
+    case 'LIKE':  return "$field LIKE '%$querystring%'";
+    case 'RLIKE': return "$field LIKE '%$querystring'";
+    case 'LLIKE': return "$field LIKE '$querystring%'";
+    case 'XLIKE': return "$field LIKE '$querystring'";
+    default:      return "$field $operator '$querystring'";
+  }  
+}  
+
+function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE" ) {
+  # parameter format example:  
+  # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
+  # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
+  # conds[0][keywords........] = 1;          
+  # conds[0][operator] = "=";
+  # conds[0][value] = "Prague";
+  # conds[1][source..........] = 1;   // and source field of that item is 
+  # conds[1][operator] = "=";         // 'Econnect' 
+  # conds[1][value] = "Econnect";
+  # sort[0][category........]='a';    // order items by category ascending
+  # sort[1][publish_date....]='d';    // and publish_date descending (secondary)
+  # group_by[category........]=1;     // group by category
+  
+  # type sets status, pub_date and expiry_date according to specified type:
+  # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
+  # if you want specify it yourselves in conds, set type to ALL
+
+  # select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
+
+  global $db;
+
+//p_arr_m($conds);p_arr_m($sort);p_arr_m($group_by);
+
+  
+  # parse conditions ----------------------------------
+  if( isset($conds) AND is_array($conds)) {
+    reset($conds); 
+    $tbl_count=0;
+    while( list( , $cond) = each( $conds )) {
+      if( !isset($cond) OR !is_array($cond) 
+                        OR !$cond['operator'] OR !$cond['value'])
+        continue;             # bad condition - ignore
+
+      # fill arrays according to this condition
+      reset($cond); 
+      $field_count = 0;
+      $cond_flds   = '';
+      while( list( $fid, $v) = each( $cond )) {
+        if( ($fid=='operator') OR ($fid=='value') )
+          continue;           # it is not field_id parameters - skip it for now
+          
+        if( !$fields[$fid] )  # bad field_id - skip
+          continue;
+          
+        if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
+          $select_conds[] = GetWhereExp( 'item.'.$fields[$fid]['in_item_tbl'],
+                                          $cond['operator'], $cond['value'] );
+        } else {
+          $cond_flds .= ( ($field_count++>0) ? ',' : "" ). "'$fid'";
+          $store = ($fields[$fid]['text_stored'] ? "text" : "number");
+        }  
+      }    
+      if( $cond_flds != '' ) {
+        $tbl = 'c'.$tbl_count++;
+        # fill arrays to be able construce select command
+        $select_tables[] = "content as $tbl";          
+        $select_conds[] = GetWhereExp( "$tbl.$store",
+                                          $cond['operator'], $cond['value'] );
+        if ($field_count>1) 
+          $select_join[] = "$tbl.item_id=item.id AND $tbl.field_id IN ($cond_flds)";
+         else {
+          $select_join[] = "$tbl.item_id=item.id AND $tbl.field_id=$cond_flds";
+                      # mark this field as sortable (store without apostrofs)
+          $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  
+        }  
+      }
+    }
+  }  
+
+  # parse sort order ----------------------------
+  if( !(isset($sort) AND is_array($sort)))
+    $select_order = 'item.publish_date DESC';   # default item order
+  else {
+    reset($sort);
+    $delim='';
+    while( list( , $srt) = each( $sort )) {
+      $fid = key($srt);
+      if( !$fields[$fid] )  # bad field_id - skip
+        continue;
+        
+      if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
+        $select_order .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
+        if( stristr(current( $srt ), 'd'))
+          $select_order .= " DESC";
+        $delim=',';
+      } else {
+        if( !$sortable[ $fid ] ) {           # this field is not joined, yet
+          $tbl = 'c'.$tbl_count++;
+          # fill arrays to be able construce select command
+          $select_tables[] = "content as $tbl";          
+          $select_join[] = "$tbl.item_id=item.id AND $tbl.field_id='$fid'";
+                        # mark this field as sortable (store without apostrofs)
+          $sortable[$fid] = $tbl;
+        }  
+
+        $store = ($fields[$fid]['text_stored'] ? "text" : "number");
+        # fill arrays according to this sort specification
+        $select_order .= $delim .$sortable[$fid]. ".$store";
+        if( stristr(current( $srt ), 'd'))
+          $select_order .= " DESC";
+        $delim=',';
+      }  
+    }
+  }      
+
+  # parse group by parameter ----------------------------
+  if( isset($group_by) AND is_array($group_by)) {
+    reset ($group_by);
+    $delim='';
+    while( list( ,$fid ) = each( $group_by )) {
+      if( !$fields[$fid] )  # bad field_id - skip
+        continue;
+
+      if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
+        $select_group .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
+        $delim=',';
+      } else {
+        if( !$sortable[ $fid ] ) {           # this field is not joined, yet
+          $tbl = 'c'.$tbl_count++;
+          # fill arrays to be able construce select command
+          $select_tables[] = "content as $tbl";          
+          $select_join[] = "$tbl.item_id=item.id AND $tbl.field_id='$fid'";
+                        # mark this field as sortable (store without apostrofs)
+          $sortable[$fid] = $tbl;
+        }  
+
+        $store = ($fields[$fid]['text_stored'] ? "text" : "number");
+        # fill arrays according to this sort specification
+        $select_group .= $delim .$sortable[$fid]. ".$store";
+        $delim=',';
+      }  
+    }
+  }      
+
+  # construct query --------------------------
+  $SQL = "SELECT item.id FROM item ";
+  if( isset($select_tables) AND is_array($select_tables))
+    $SQL .= ", ". implode (", ", $select_tables);
+
+  $SQL .= " WHERE ";                                         # slice ----------
+  if( $slice_id )
+    $SQL .= " item.slice_id = '". q_pack_id($slice_id) ."' AND ";
+
+  $now = now();                                              # select bin -----
+  switch( $type ) {
+    case 'ACTIVE':  $SQL .= " item.status_code=1 AND 
+                              item.publish_date <= '$now' AND
+                              item.expiry_date > '$now' ";
+                              break;
+    case 'EXPIRED': $SQL .= " item.status_code=1 AND 
+                              item.expiry_date <= '$now' ";
+                              break;
+    case 'PENDING': $SQL .= " item.status_code=1 AND 
+                              item.publish_date > '$now' ";
+                              break;
+    case 'HOLDING': $SQL .= " item.status_code=2 ";
+                              break;
+    case 'TRASH':   $SQL .= " item.status_code=3 ";
+                              break;
+    default:        $SQL .= ' 1=1 ';    # default = ALL - no specific condition
+  }  
+  
+  if( isset($select_join) AND is_array($select_join))        # join -----------
+    $SQL .= " AND ". implode (" AND ", $select_join);
+    
+  if( isset($select_conds) AND is_array($select_conds))      # conditions -----
+    $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
+
+  if( isset($select_order) )                                 # order ----------
+    $SQL .= " ORDER BY $select_order";
+
+  if( isset($select_group) )                                 # group by -------
+    $SQL .= " GROUP BY $select_group";
+
+
+// huh($SQL);
+
+  # get result --------------------------
+  $db->query($SQL);
+
+  while( $db->next_record() ) 
+    $arr[] = unpack_id($db->f(id));
+  
+//p_arr_m($arr);
+  return $arr;           
+}  
+  
 
 // returns array of item ids matching the conditions in right order
   # items_cond - SQL string added to WHERE clause to item table query
@@ -548,6 +745,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.12  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.11  2001/05/10 09:44:35  honzam
 Extended search end date problem fixed (now it searches whole end date)
 

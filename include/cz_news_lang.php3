@@ -24,11 +24,6 @@ http://www.apc.org/
 # must correspond with this file name
 define("CONFIG_FILE", "cz_news_lang.php3");
 
-define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
-define("IMG_UPLOAD_URL", "http://aa.ecn.cz/img_upload/");
-define("IMG_UPLOAD_PATH", "/data/www/htdocs/aa.ecn.cz/img_upload/");
-define("IMG_UPLOAD_DIR_MODE", 0774);
-define("IMG_UPLOAD_TYPE", "image/*");
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
 define("DEFAULT_FULLTEXT_HTML", '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR>_#FULLTEXT');
@@ -42,6 +37,9 @@ define("DEFAULT_CATEGORY_SORT", true);
 define("DEFAULT_COMPACT_REMOVE", "()");
 define("DEFAULT_FULLTEXT_REMOVE", "()");
 
+
+# HTML begin of admin page
+# You should set language of admin pages and possibly any meta tags
 define("HTML_PAGE_BEGIN", 
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML>
@@ -58,7 +56,6 @@ define("L_PARAMETERS","Parametry");
 define("L_SELECT_APP","Vyber aplikaci");
 define("L_SELECT_OWNER","Vyber vlastníka");
      
-# toolkit aplication dependent labels
 define("L_CANT_UPLOAD", "Soubor (obrázek) nelze uložit");
 define("L_MSG_PAGE", "Zpráva aplikace");   // title of message page
 define("L_EDITOR_TITLE", "Správa zpráv");
@@ -82,11 +79,8 @@ define("L_FIELDS_HDR", "Pole zpráv");
 define("L_NO_PS_EDIT_ITEMS", "Nemáte právo upravovat zprávy v tomto webíku");
 define("L_NO_DELETE_ITEMS", "Nemáte právo mazat zprávy");
 define("L_NO_PS_MOVE_ITEMS", "Nemáte právo pøesouvat zprávy");
-define("L_NO_PS_COPMPACT", "Nemáte právo upravovat vzhled pøehledu zpráv");
 define("L_FULLTEXT_OK", "Vzhled textu zprávy byl úspìšnì zmìnìn");
 define("L_NO_ITEM", "Žádná zpráva nevyhovuje vašemu dotazu.");
-
-
 
 # aa toolkit common labels
 # can be the same for all toolkit aplications
@@ -152,7 +146,6 @@ define("L_SEARCH", "Hledání");
 define("L_DEFAULTS", "Default");
 define("L_SLICE", "Webík");
 define("L_DELETED_SLICE", "Nebyl nalezen žádný webík, ke kterému máte pøístup");
-define("L_SLICE_URL", "URL webíku");
 define("L_A_NEWUSER", "Nový uživatel v systému");
 define("L_NEWUSER_HDR", "Nový uživatel");
 define("L_USER_LOGIN", "Uživatelské jméno");
@@ -214,7 +207,7 @@ define("L_SRCH_TO", "To");
 define("L_SRCH_SUBMIT", "Search");
 define("L_NO_PS_EDIT", "Nemáte právo upravovat tento webík");
 define("L_NO_PS_ADD", "Nemáte právo pøidávat webík");
-define("L_NO_PS_COPMPACT", "Nemáte právo mìnit vzhled pøehledu zpráv");
+define("L_NO_PS_COMPACT", "Nemáte právo mìnit vzhled pøehledu zpráv");
 define("L_NO_PS_FULLTEXT", "Nemáte právo mìnit vzhled výpisu zprávy");
 define("L_NO_PS_CATEGORY", "Nemáte právo mìnit nastavení kategorií");
 define("L_NO_PS_FEEDING", "Nemáte právo mìnit nastavení výmìny zpráv");
@@ -244,7 +237,6 @@ define("L_TOO_MUCH_USERS", "Nalezeno pøíliš mnoho uživatelù èi skupin.");
 define("L_MORE_SPECIFIC", "Zkuste zadat pøesnìjší údaje.");
 define("L_REMOVE", "Odstranit");
 define("L_ID", "Id");
-define("L_TYPE", "Typ");
 define("L_SETTINGS", "Nastavení");
 define("L_LOGO", "APC toolkit");
 define("L_USER_MANAGEMENT", "Uživatelé");
@@ -256,6 +248,7 @@ define("L_EXPIRED", "Vypršeno");
 define("L_NOT_PUBLISHED", "Dosud nepublikováno");
 define("L_EDIT_USER", "Editace uživatele");
 define("L_EDITUSER_HDR", L_EDIT_USER);
+
 define("NO_SOURCE_URL", "javascript: window.alert('Nebylo zadáno url zdroje')"); 
 define("NO_OUTER_LINK_URL", "javascript: window.alert('Nebylo zadáno url odkazu ven')");
 
@@ -269,6 +262,7 @@ define("L_UNSELECT_ALL", "Zrušit výbìr");
 define("L_SELECT_VISIBLE", "Vybrat zobrazené");
 define("L_UNSELECT_VISIBLE", "Zrušit výbìr");
 
+define("L_SLICE_ADM","Administrace webíku - Menu");
 define("L_A_FILTERS_FLT", L_A_FILTERS_TIT);
 define("L_A_COMPACT", L_A_COMPACT_TIT);
 define("L_A_FULLTEXT", L_A_FULLTEXT_TIT);
@@ -283,11 +277,11 @@ define("L_SRCH_FULL_TEXT", L_FULL_TEXT);
 define("L_SRCH_EDIT_NOTE", L_EDIT_NOTE);
 define("L_SLICES_HDR", L_SLICE);
 define("L_A_SEARCH_EDT", L_A_SEARCH_TIT);
+define("L_A_SLICE_TIT", L_SLICE_ADM);
 define("L_A_FIELDS_TIT", L_A_FIELDS_EDT);
 define("L_SLICE_SET", L_SLICE);
 define("L_FULLTEXT_REMOVE", L_COMPACT_REMOVE);
 
-//new_constants
 define("L_FEED", "Výmìna zpráv");
 define("L_FEEDTO_TITLE", "Pøedat zprávu do webíku");
 define("L_FEED_TO", "Pøedat vybrné zprávy do zvolených webíku");
@@ -314,13 +308,12 @@ define("L_ARTICLE_MANAGER", "Správa zpráv");
 define("L_SWITCH_TO", "Webík:");
 define("L_ADMIN", "Administrace");
 
-//new_constants
 define("L_NO_PS_NEW_USER", "Nemáte právo vytvoøit uživatele");
 define("L_ALL_GROUPS", "Všechny skupiny");
 define("L_USERS_GROUPS", "Uživatelovy skupiny");
 define("L_REALY_DELETE_USER", "Opravdu chcete vymazat daného uživatele ze systému?");
 define("L_REALY_DELETE_GROUP", "Opravdu chcete vymazat danou skupinu ze systému?");
-define("L_ITEM_NOT_CHANGED", "Zpráva nezmìnìna");
+define("L_TOO_MUCH_GROUPS", "Too much groups found.");
 define("L_NO_GROUPS", "Skupina nenalezena");
 define("L_GROUP_NAME", "Jméno");
 define("L_GROUP_DESCRIPTION", "Popis");
@@ -342,46 +335,6 @@ define("L_ACTIVE_BIN_EXPIRED", "Aktuální - Expirované");
 define("L_ACTIVE_BIN_PENDING", "Aktuální - Pøipravené");
 define("L_ACTIVE_BIN_EXPIRED_MENU", "... expirované");
 define("L_ACTIVE_BIN_PENDING_MENU", "... pøipravené");
-
-define("L_SOURCE_DESC", "Org Description");
-define("L_SOURCE_ADDRESS", "Street Adress");
-define("L_SOURCE_CITY", "City");
-define("L_SOURCE_PROV", "Province/State");
-define("L_SOURCE_COUNTRY", "Country");
-define("L_TIME", "Time");
-define("L_CON_NAME", "Contact Name");
-define("L_CON_EMAIL", "Contact E-mail");
-define("L_CON_PHONE", "Contact phone");
-define("L_CON_FAX", "Contact FAX");
-define("L_LOC_NAME", "Location Name");
-define("L_LOC_ADDRESS", "Location Street Address");
-define("L_LOC_CITY", "Location City");
-define("L_LOC_PROV", "Location Province/State");
-define("L_LOC_COUNTRY", "Location Country");
-define("L_START_DATE", "Start Date");
-define("L_END_DATE", "End Date");
-
-define("L_HLP_SOURCE_DESC", "Alias for Org Description");
-define("L_HLP_SOURCE_ADDRESS", "Alias for Street Adress");
-define("L_HLP_SOURCE_CITY", "Alias for City");
-define("L_HLP_SOURCE_PROV", "Alias for Province/State");
-define("L_HLP_SOURCE_COUNTRY", "Alias for Country");
-define("L_HLP_TIME", "Alias for Time");
-define("L_HLP_CON_NAME", "Alias for Contact Name");
-define("L_HLP_CON_EMAIL", "Alias for Contact E-mail");
-define("L_HLP_CON_PHONE", "Alias for Contact phone");
-define("L_HLP_CON_FAX", "Alias for Contact FAX");
-define("L_HLP_LOC_NAME", "Alias for Location Name");
-define("L_HLP_LOC_ADDRESS", "Alias for Location Street Address");
-define("L_HLP_LOC_CITY", "Alias for Location City");
-define("L_HLP_LOC_PROV", "Alias for Location Province/State");
-define("L_HLP_LOC_COUNTRY", "Alias for Location Country");
-define("L_HLP_START_DATE", "Alias for Start Date");
-define("L_HLP_END_DATE", "Alias for End Date");
-
-//----------------------------
-//define("", "");   
-//prepared for new constants
  
 define("L_FIELD_PRIORITY", "Priorita");
 define("L_FIELD_TYPE", "Typ");
@@ -402,7 +355,6 @@ define("L_OWNER", "Vlastník");
 define("L_SLICES", "Webíky");
 define("L_TEMPLATE", "Šablona");
 define("L_VALIDATE", "Zkontrolovat");
-define("", "");
 
 define("L_FIELD_DELETE_OK", "Pole odstranìno");
 
@@ -482,26 +434,21 @@ define("L_PERMIT_ANONYMOUS_POST","Anonymní vkládání");
 define("L_PERMIT_OFFLINE_FILL","Off-line plnìní");
 define("L_SOME_CATEGORY", "<kategorie>");
 
-define( "L_BRACKETS_ERR", "Brackets doesn't match in query: ");
-define("L_SLICE_ADM","Administrace webíku - Menu");
-define("L_A_SLICE_TIT", L_SLICE_ADM);
-define("L_A_SLICE_ADD_HELP", "Nový webík mùžete vytvoøit na základì šablony, nebo zkopírovat nastavení z již existujícího webíku (vytvoøí se pøesná kopie vèetnì nastavení .");
-
-define("L_ALIAS_FUNC_A", "abstrakt");
-define("L_ALIAS_FUNC_B", "fulltext odkaz");
-define("L_ALIAS_FUNC_C", "podmínka");
-define("L_ALIAS_FUNC_D", "datum");
-define("L_ALIAS_FUNC_E", "editace èlánku");
-define("L_ALIAS_FUNC_F", "odkaz na plný text");
-define("L_ALIAS_FUNC_G", "výška obrázku");
-define("L_ALIAS_FUNC_H", "zobrazit");
-define("L_ALIAS_FUNC_I", "zdroj obrázku");
-define("L_ALIAS_FUNC_L", "pole s odkazem");
-define("L_ALIAS_FUNC_N", "id");
-define("L_ALIAS_FUNC_S", "url");
-define("L_ALIAS_FUNC_T", "plný text");
-define("L_ALIAS_FUNC_W", "šíøka obrázku");
-define("L_ALIAS_FUNC_0", "- žádná -");
+define("L_ALIAS_FUNC_A", "f_a - abstrakt");
+define("L_ALIAS_FUNC_B", "f_b - fulltext odkaz");
+define("L_ALIAS_FUNC_C", "f_c - podmínka");
+define("L_ALIAS_FUNC_D", "f_d - datum");
+define("L_ALIAS_FUNC_E", "f_e - editace èlánku");
+define("L_ALIAS_FUNC_F", "f_f - odkaz na plný text");
+define("L_ALIAS_FUNC_G", "f_g - výška obrázku");
+define("L_ALIAS_FUNC_H", "f_h - zobrazit");
+define("L_ALIAS_FUNC_I", "f_i - zdroj obrázku");
+define("L_ALIAS_FUNC_L", "f_l - pole s odkazem");
+define("L_ALIAS_FUNC_N", "f_n - id");
+define("L_ALIAS_FUNC_S", "f_s - url");
+define("L_ALIAS_FUNC_T", "f_t - plný text");
+define("L_ALIAS_FUNC_W", "f_w - šíøka obrázku");
+define("L_ALIAS_FUNC_0", "f_0 - žádná");
 
 define("L_ALIASES", "Aliasy pro políèka v databázi");
 define("L_ALIAS1", "Alias 1"); 
@@ -521,6 +468,9 @@ define("L_BOTTOM_HLP", "HTML kód, který se zobrazí za vlasním kódem webíku");
 define("L_EVEN_ROW_HLP", "TIP: Rozlišením sudých a lichých záznamù lze docílit napøíklad odlièení øádkù jinými barvami pozadí
                          <br>první tøeba zelený, druhý žlutý, atd.");
 
+define("L_SLICE_URL", "URL webíku");
+define( "L_BRACKETS_ERR", "Brackets doesn't match in query: ");
+define("L_A_SLICE_ADD_HELP", "Nový webík mùžete vytvoøit na základì šablony, nebo zkopírovat nastavení z již existujícího webíku (vytvoøí se pøesná kopie vèetnì nastavení .");
 define("L_REMOVE_HLP", "Odstraní prázdné závorky atd. Použijte ## jako oddìlovaè.");
 
 define("L_COMPACT_HELP", "Na této stránce lze nastavit, co se objeví na stránce pøehledu zpráv");
@@ -540,14 +490,73 @@ define("L_NO_DELETED_SLICE", "Webík není oznaèen za vymazaný");
 define("L_DELSLICE_OK", "Webík byl vymazán, tabulky byly optimalizovány");
 define("L_DEL_SLICE", "Smazat Webík");
 define("L_FEED_STATE", "Sdílení tohoto pole");
-define( "L_STATE_FEEDABLE", "Kopírovat obsah" );
-define( "L_STATE_UNFEEDABLE", "Nekopirovat" );
-define( "L_STATE_FEEDNOCHANGE", "Kopírovat nemìnitelnì" );
-define( "L_INPUT_FEED_MODES_HLP", "Má se kopírovat obsah tohoto políèka do dalších webíkù pøi výmìnì zpráv mezi webíky?");
+define("L_STATE_FEEDABLE", "Kopírovat obsah" );
+define("L_STATE_UNFEEDABLE", "Nekopirovat" );
+define("L_STATE_FEEDNOCHANGE", "Kopírovat nemìnitelnì" );
+define("L_INPUT_FEED_MODES_HLP", "Má se kopírovat obsah tohoto políèka do dalších webíkù pøi výmìnì zpráv mezi webíky?");
 define("L_CANT_CREATE_IMG_DIR","Nelze vytvoøit adresáø pro obrázky");
+
+  # constants for View setting 
+define('L_VIEWS','Pohledy');
+define('L_ASCENDING','Vzestupnì');
+define('L_DESCENDING','Sestupnì');
+define('L_NO_PS_VIEWS','Nemáte právo mìnit pohledy');
+define('L_VIEW_OK','Pohled byl úspìšnì zmìnìn');
+define('L_A_VIEW_TIT','Správa webíku - definice Pohledu');
+define('L_A_VIEWS','Správa webíku - definice Pohledu');
+define('L_VIEWS_HDR','Definované pohledy');
+define('L_VIEW_DELETE_OK','Pohled by úspìšnì smazán');
+define('L_DELETE_VIEW','Opravdu chcete smazat vybraný pohled?');
+define('L_V_BEFORE',L_COMPACT_TOP);
+define('L_V_ODD',L_ODD_ROW_FORMAT);
+define('L_V_EVENODDDIF',L_EVEN_ODD_DIFFER);
+define('L_V_EVEN',L_EVEN_ROW_FORMAT);
+define('L_V_AFTER',L_COMPACT_BOTTOM);
+define('L_V_GROUP_BY1','Seskupit dle');
+define('L_V_GROUP1DIR','');
+define('L_V_GROUP_BY2',L_V_GROUP_BY1);
+define('L_V_GROUP2DIR','');
+define('L_V_GROUP','Nadpis skupiny');
+define('L_V_REMOVE_STRING',L_COMPACT_REMOVE);
+define('L_V_MODIFICATION','Typ');
+define('L_V_PARAMETER','Parametr');
+define('L_V_IMG1','Obrázek 1');
+define('L_V_IMG2','Obrázek 2');
+define('L_V_IMG3','Obrázek 3');
+define('L_V_IMG4','Obrázek 4');
+define('L_V_ORDER1','Seøadit');
+define('L_V_ORDER1DIR','');
+define('L_V_ORDER2','Seøadit druhotnì');
+define('L_V_ORDER2DIR','');
+define('L_V_SELECTED','Použít vybraný èlánek');
+define('L_V_COND1FLD','Podmínka 1');
+define('L_V_COND1OP','');
+define('L_V_COND1COND','');
+define('L_V_COND2FLD','Podmínka 2');
+define('L_V_COND2OP','');
+define('L_V_COND2COND','');
+define('L_V_COND3FLD','Podmínka 3');
+define('L_V_COND3OP','');
+define('L_V_COND3COND','');
+define('L_V_LISTLEN',L_D_LISTLEN);
+define('L_V_FLAG','Flag');
+define('L_V_SCROLLER','Zobrazit rolování stránek');
+define('L_V_ADITIONAL','Další');
+define('L_COMPACT_VIEW','Pøehled');
+define('L_FULLTEXT_VIEW','Èlánek');
+define('L_DIGEST_VIEW','Obsah - souhrn');
+define('L_DISCUSSION_VIEW','Diskuse');
+define('L_RELATED_VIEW','Související zprávy');
+define('L_CONSTANT_VIEW','Zobrazení konstant');
+define('L_RSS_VIEW','Výmìna zpráv RSS');
+define('L_STATIC_VIEW','Statická stránka');
+define('L_SCRIPT_VIEW','Javscript');
     
 /*
 $Log$
+Revision 1.29  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.28  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

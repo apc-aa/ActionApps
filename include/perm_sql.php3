@@ -71,7 +71,7 @@ function AuthenticateUsername($username, $password, $flags = 0) {
      $slength = 2;                                       // Standard DES
   }
   
-  // if( ALL_PERMS AND DEBUG_FLAG) // just for testnig on windows with no crypt
+  // if( ALL_PERMS AND DEBUG_FLAG) // just for testing on windows with no crypt
   //   return $id;                 // remove it !!!
 
 
@@ -625,6 +625,9 @@ function A2sql_update ($table, $keyField, $aData) {
 
 /*
 $Log$
+Revision 1.15  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.14  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

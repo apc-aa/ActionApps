@@ -23,7 +23,6 @@ define("VIEW_PHP3_INC",1);
 
 class itemview{
   var $db;
-  var $sort_order;
   var $ids;                      # ids to show
   var $from_record;              # from which index begin showing items
   var $num_records;              # number of shown records 
@@ -31,7 +30,8 @@ class itemview{
   var $fields;                   # array of fields used in this slice
   var $aliases;                  # array of alias definitions
   var $clean_url;                # url of slice page with session id and encap..
-
+  var $group_fld;                # id of field for grouping
+  
   function itemview( $db, $slice_info, $fields, $aliases, $ids, $from, $number, $clean_url){                   #constructor 
     $this->db = $db;
     $this->slice_info = $slice_info;  # $slice_info is array with this fields:
@@ -45,6 +45,9 @@ class itemview{
                                       #   fulltext_format, fulltext_remove,
                                       #   fulltext_format_top, 
                                       #   fulltext_format_bottom, 
+    $this->group_fld = ($slice_info[category_sort] ?
+                        GetCategoryFieldId($fields) : $slice_info[group_by]);
+
     $this->aliases = $aliases;
     $this->fields = $fields;
     $this->ids = $ids;
@@ -130,12 +133,12 @@ class itemview{
           $iid = $this->ids[$this->from_record+$i];
           if( !$iid )
             continue;                                     # iid = unpacked item id 
-          $catname = $content[$iid][$group_by_field][0][value];
+          $catname = $content[$iid][$this->group_fld][0][value];
               
           $CurItem->columns = $content[$iid];   # set right content for aliases
           
             # print category name if needed
-          if($this->slice_info[category_sort] AND ($catname != $oldcat)) {
+          if($this->group_fld AND ($catname != $oldcat)) {
             $oldcat = $catname;
             $CurItem->setformat( $this->slice_info[category_format], "",
                                  $this->slice_info[category_top],
@@ -176,6 +179,9 @@ class itemview{
 
 /*
 $Log$
+Revision 1.10  2001/05/18 13:54:36  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.9  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

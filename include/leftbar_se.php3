@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.11  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.10  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support
@@ -151,13 +154,13 @@ added $Id $Log and $Copyright to some stray files
     echo "<span class=leftmenun>&nbsp;&nbsp;". L_FULLTEXT ."</span></td>";?>
   </tr>
   <tr><td valign="TOP">
-  <?php/*
+  <?php
   if( $show["views"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT) ) 
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_views.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_VIEWS."</a></td>"; 
    else 
-    echo "&nbsp;&nbsp;<span class=leftmenun>". L_VIEWS ."</span></td>"; */?>
-<!--   </tr>
-  <tr><td valign="TOP"> -->
+    echo "&nbsp;&nbsp;<span class=leftmenun>". L_VIEWS ."</span></td>"; ?>
+  </tr>
+  <tr><td valign="TOP"> 
   <?php /*
   if( $show["search"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_SEARCH) ) 
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_search.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_SEARCH_SET."</a></td>"; 

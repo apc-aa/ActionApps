@@ -28,8 +28,6 @@ define("L_SETUP_PAGE_BEGIN",
   <HEAD>
   <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">');
-
-
 define("L_SETUP_TITLE", "Instalación de las AA");
 define("L_SETUP_H1", "Instalación de las AA");
 define("L_SETUP_NO_ACTION", "Este programa no puede ser utilizado en sistemas ya configurados.");
@@ -58,7 +56,6 @@ define("L_SETUP_NEXT", "Utilice esta cuenta para entrar al sistema y añadir su p
 define("L_SETUP_SLICE", "Añadir Canal");
 
 // constantes para entrada al sistema 
-
 define("L_LOGIN", "¡Bienvenido!");
 define("L_LOGIN_TXT", "¡Bienvenido! Por favor, identifíquese con su nombre de usuario y clave:");
 define("L_LOGINNAME_TIP", "Escriba su nombre de usuario o correo electrónico");
@@ -161,6 +158,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.2  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.1  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

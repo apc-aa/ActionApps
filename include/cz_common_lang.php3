@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# common lanmguage file - comm
+# common language file
 
 // setup constats
 define("L_SETUP_PAGE_BEGIN", 
@@ -59,7 +59,6 @@ define("L_SETUP_SLICE", "Pøidat webík");
 define("L_LOGIN", "Pøihlášení");
 define("L_LOGIN_TXT", "Vítejte! Pøihlašte se prosím Vaším jménem a heslem:");
 define("L_LOGINNAME_TIP", "Uživatelské jméno èi e-mail");
-define("L_LOGINORG_TIP", "napø. ecn.cz (prázdné pro pøihlášení uživatelským jménem)");
 define("L_SEARCH_TIP", "Seznam je omezen na 5 uživatelù.<br>Pokud v seznamu není požadovaný uživatel, upøesnìte svùj dotaz");
 define("L_USERNAME", "Uživatelské jméno:");
 define("L_PASSWORD", "Heslo:");
@@ -94,6 +93,7 @@ define("L_EDIT_GROUP", "Editace Skupiny");
 define("NO_PICTURE_URL", AA_INSTAL_URL ."images/pixel_blank.gif");  // image used when 
   // there is img_source in html format string but no img_source is stored in database 
   // (you can use blank pixel for none picture)
+
 define("L_ALLCTGS", "Všechny kategorie");
 define("L_BAD_INC", "Špatný parametr inc - soubor mùže být v tomtéž adresáøi, kde je .shtml soubor - smi obsahovat jen znaky a cisla");
 define("L_NO_SUCH_FILE", "Soubor nenalezen");
@@ -111,6 +111,10 @@ define( "L_SLICE_HINT", '
                   <br>
                   Webík zahrnete do své *.shtml stránky pøidáním následující øádky v HTML kódu:
                   ');
+
+
+// log texts
+define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
 // offline filling --------------
 define( "L_OFFLINE_ERR_BEGIN",
@@ -152,6 +156,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.15  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.14  2001/01/26 15:06:50  honzam
 Off-line filling - first version with WDDX (then we switch to APC RSS+)
 

@@ -41,19 +41,24 @@ function GetAliasesFromFields($fields) {
                                  "hlp" => L_EDITITEM_ALIAS);
 
   # database stored aliases
-  while( list( ,$val) = each($fields) ) {
+  while( list($k,$val) = each($fields) ) {
     if( $val[alias1] )
       $aliases[$val[alias1]] = array("fce" => $val[alias1_func],
                                      "param" => ( $val[id] ),
-                                     "hlp" => $val[alias1_help]);
+                                     "hlp" => $val[alias1_help],
+                                     "fld" => $k);                 # fld used
+                           # in PrintAliasHelp to point to alias editing page
+
     if( $val[alias2] )
       $aliases[$val[alias2]] = array("fce" => $val[alias2_func],
                                      "param" => ( $val[id] ),
-                                     "hlp" => $val[alias2_help]);
+                                     "hlp" => $val[alias2_help],
+                                     "fld" => $k);
     if( $val[alias3] )
       $aliases[$val[alias3]] = array("fce" => $val[alias3_func],
                                      "param" => ( $val[id] ),
-                                     "hlp" => $val[alias3_help]);
+                                     "hlp" => $val[alias3_help],
+                                     "fld" => $k);
   }                                   
   return($aliases);
 }  
@@ -342,6 +347,9 @@ class item {
 
 /*
 $Log$
+Revision 1.13  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.12  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

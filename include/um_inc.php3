@@ -20,15 +20,18 @@ http://www.apc.org/
 */
 
  if( $useOnLoad )
-   echo '<body OnLoad="InitPage()" background="../images/backgr.gif" link="#D20000" vlink="#D20000">';
+   echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'" link="#D20000" vlink="#D20000">';
   else
-   echo '<body background="../images/backgr.gif" link="#D20000" vlink="#D20000">';
+   echo '<body background="'. COLOR_BACKGROUND .'" link="#D20000" vlink="#D20000">';
 
 $usermng_page = true;
 require $GLOBALS[AA_INC_PATH] . "navbar.php3";
 
 /*
 $Log$
+Revision 1.3  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.2  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 
@@ -56,7 +59,7 @@ config.inc
 */
 ?>
 <!-- left navigate column    -->
-<table width="150" bgcolor="<?php echo COLOR_TABBG ?>" border="0" cellspacing="0" cellpadding="1" align="LEFT">
+<table width="122" bgcolor="<?php echo COLOR_TABBG ?>" border="0" cellspacing="0" cellpadding="1" align="LEFT">
   <tr><td>&nbsp;</td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <tr><td class=leftmenu><?php echo L_USERS ?></td></tr>
@@ -68,7 +71,7 @@ config.inc
    else 
     echo "&nbsp;&nbsp;<span class=leftmenuy>". L_EDIT_USER ."</span></td>"; ?>
   </tr>
- <tr><td width="150" valign="TOP">
+ <tr><td width="122" valign="TOP">
   <?php
   if( $show["u_new"] ) 
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("um_uedit.php3") ."&usr_new=1\" class=leftmenun>".L_NEW_USER."</a></td>"; 

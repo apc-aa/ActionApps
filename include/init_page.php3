@@ -87,7 +87,7 @@ if( $unset_r_hidden OR
 $ldap_slices = GetUsersSlices( $auth->auth[uid] );
 
 if( !$New_slice AND !$Add_slice AND is_array($ldap_slices) AND (reset($ldap_slices)=="") ) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS);
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS, "standalone");
   exit;
 }  
 
@@ -117,7 +117,7 @@ if( $ldap_slices == "all" ) {  // super admin - permission to manage all slices 
 
 if( !$Add_slice AND !$New_slice ) {
   if( !is_array($slices)) {   // this slice was deleted
-    MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE);
+    MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
   }  
   if(!$slice_id) {       // user is here for the first time -  find any slice for him
@@ -127,7 +127,7 @@ if( !$Add_slice AND !$New_slice ) {
   }    
 
   if( !isset($slices[$slice_id])) {   // this slice was deleted
-    MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE);
+    MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
   }  
   $p_slice_id = q_pack_id($slice_id);
@@ -165,6 +165,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.15  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.14  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

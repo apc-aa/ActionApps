@@ -24,11 +24,6 @@ http://www.apc.org/
 # must correspond with this file name
 define("CONFIG_FILE", "en_news_lang.php3");
 
-define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
-define("IMG_UPLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
-define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
-define("IMG_UPLOAD_DIR_MODE","0664");
-define("IMG_UPLOAD_TYPE", "image/*");
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
 define("DEFAULT_FULLTEXT_HTML", '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR>_#FULLTEXT');
@@ -106,7 +101,7 @@ define("L_CATEGORY_BOTTOM", "Category bottom HTML");
 define("L_CATEGORY_SORT", "Sort items by category");
 define("L_COMPACT_TOP", "Top HTML");
 define("L_COMPACT_BOTTOM", "Bottom HTML");
-define("L_A_COMPACT_TIT", "Admin - Design Index View");
+define("L_A_COMPACT_TIT", "Admin - design Index view");
 define("L_A_FILTERS_TIT", "Admin - Content Pooling - Filters");
 define("L_FLT_SETTING", "Content Pooling - Configure Filters");
 define("L_FLT_FROM_SL", "Filter for imported slice");
@@ -211,7 +206,7 @@ define("L_SRCH_TO", "To");
 define("L_SRCH_SUBMIT", "Search");
 define("L_NO_PS_EDIT", "You have not permissions to edit this slice");
 define("L_NO_PS_ADD", "You have not permissions to add slice");
-define("L_NO_PS_COPMPACT", "You have not permissions to change compact view formatting");
+define("L_NO_PS_COMPACT", "You have not permissions to change compact view formatting");
 define("L_NO_PS_FULLTEXT", "You have not permissions to change fulltext formatting");
 define("L_NO_PS_CATEGORY", "You have not permissions to change category settings");
 define("L_NO_PS_FEEDING", "You have not permissions to change feeding setting");
@@ -286,8 +281,6 @@ define("L_A_FIELDS_TIT", L_A_FIELDS_EDT);
 define("L_SLICE_SET", L_SLICE);
 define("L_FULLTEXT_REMOVE", L_COMPACT_REMOVE);
 
-//define("", "");   //prepared for new constants
-
 define("L_FEED", "Export");
 define("L_FEEDTO_TITLE", "Export Item to Selected Slice");
 define("L_FEED_TO", "Export selected items to selected slice");
@@ -314,7 +307,6 @@ define("L_ARTICLE_MANAGER", "Item Manager");
 define("L_SWITCH_TO", "Switch to:");
 define("L_ADMIN", "Admin");
 
-//new_constants
 define("L_NO_PS_NEW_USER", "No permission to create new user");
 define("L_ALL_GROUPS", "All Groups");
 define("L_USERS_GROUPS", "User's Groups");
@@ -441,21 +433,21 @@ define("L_PERMIT_ANONYMOUS_POST","Allow anonymous posting of items");
 define("L_PERMIT_OFFLINE_FILL","Allow off-line item filling");
 define("L_SOME_CATEGORY", "<some category>");
 
-define("L_ALIAS_FUNC_A", "abstract");
-define("L_ALIAS_FUNC_B", "fulltext link");
-define("L_ALIAS_FUNC_C", "condition");
-define("L_ALIAS_FUNC_D", "date");
-define("L_ALIAS_FUNC_E", "edit item");
-define("L_ALIAS_FUNC_F", "fulltext link");
-define("L_ALIAS_FUNC_G", "image height");
-define("L_ALIAS_FUNC_H", "print");
-define("L_ALIAS_FUNC_I", "image src");
-define("L_ALIAS_FUNC_L", "linked field");
-define("L_ALIAS_FUNC_N", "id");
-define("L_ALIAS_FUNC_S", "url");
-define("L_ALIAS_FUNC_T", "fulltext");
-define("L_ALIAS_FUNC_W", "image width");
-define("L_ALIAS_FUNC_0", "none");
+define("L_ALIAS_FUNC_A", "f_a - abstract");
+define("L_ALIAS_FUNC_B", "f_b - fulltext link");
+define("L_ALIAS_FUNC_C", "f_c - condition");
+define("L_ALIAS_FUNC_D", "f_d - date");
+define("L_ALIAS_FUNC_E", "f_e - edit item");
+define("L_ALIAS_FUNC_F", "f_f - fulltext link");
+define("L_ALIAS_FUNC_G", "f_g - image height");
+define("L_ALIAS_FUNC_H", "f_h - print");
+define("L_ALIAS_FUNC_I", "f_i - image src");
+define("L_ALIAS_FUNC_L", "f_l - linked field");
+define("L_ALIAS_FUNC_N", "f_n - id");
+define("L_ALIAS_FUNC_S", "f_s - url");
+define("L_ALIAS_FUNC_T", "f_t - fulltext");
+define("L_ALIAS_FUNC_W", "f_w - image width");
+define("L_ALIAS_FUNC_0", "f_0 - none");
 
 define("L_ALIASES", "When you go to Admin-Design, you use an Alias to show this field");
 define("L_ALIAS1", "Alias 1"); 
@@ -506,13 +498,73 @@ define("L_STATE_FEEDNOCHANGE", "Feed locked" );
 define("L_INPUT_FEED_MODES_HLP", "Should the content of this field be copied to another slice if it is fed?");
 define("L_CANT_CREATE_IMG_DIR","Can't create directory for image uploads");
 
+  # constants for View setting 
+define('L_VIEWS','Views');
+define('L_ASCENDING','Ascending');
+define('L_DESCENDING','Descending');
+define('L_NO_PS_VIEWS','You do not have permission to change views');
+define('L_VIEW_OK','View successfully changed');
+define('L_A_VIEW_TIT','Admin - design View');
+define('L_A_VIEWS','Admin - design View');
+define('L_VIEWS_HDR','Defined Views');
+define('L_VIEW_DELETE_OK','View successfully deleted');
+define('L_DELETE_VIEW','Are you sure you want to delete selected view?');
+define('L_V_BEFORE',L_COMPACT_TOP);
+define('L_V_ODD',L_ODD_ROW_FORMAT);
+define('L_V_EVENODDDIF',L_EVEN_ODD_DIFFER);
+define('L_V_EVEN',L_EVEN_ROW_FORMAT);
+define('L_V_AFTER',L_COMPACT_BOTTOM);
+define('L_V_GROUP_BY1','Group by');
+define('L_V_GROUP1DIR','');
+define('L_V_GROUP_BY2',L_V_GROUP_BY1);
+define('L_V_GROUP2DIR','');
+define('L_V_GROUP','Group title format');
+define('L_V_REMOVE_STRING',L_COMPACT_REMOVE);
+define('L_V_MODIFICATION','Type');
+define('L_V_PARAMETER','Parameter');
+define('L_V_IMG1','View image 1');
+define('L_V_IMG2','View image 2');
+define('L_V_IMG3','View image 3');
+define('L_V_IMG4','View image 4');
+define('L_V_ORDER1','Sort primary');
+define('L_V_ORDER1DIR','');
+define('L_V_ORDER2','Sort secondary');
+define('L_V_ORDER2DIR','');
+define('L_V_SELECTED','Use selected item');
+define('L_V_COND1FLD','Condition 1');
+define('L_V_COND1OP','');
+define('L_V_COND1COND','');
+define('L_V_COND2FLD','Condition 2');
+define('L_V_COND2OP','');
+define('L_V_COND2COND','');
+define('L_V_COND3FLD','Condition 3');
+define('L_V_COND3OP','');
+define('L_V_COND3COND','');
+define('L_V_LISTLEN',L_D_LISTLEN);
+define('L_V_FLAG','Flag');
+define('L_V_SCROLLER','Display page scroller');
+define('L_V_ADITIONAL','Aditional');
+define('L_COMPACT_VIEW','Item listing');
+define('L_FULLTEXT_VIEW','Fulltext view');
+define('L_DIGEST_VIEW','Item digest');
+define('L_DISCUSSION_VIEW','Discussion');
+define('L_RELATED_VIEW','Related item');
+define('L_CONSTANT_VIEW','View of Constants');
+define('L_RSS_VIEW','RSS exchange');
+define('L_STATIC_VIEW','Static page');
+define('L_SCRIPT_VIEW','Javscript item exchange');
+
+// ------------------------- New ----------------------------
 // not appended to other lang files
 //define("", "");
 
-// ------------------------- New ----------------------------
+
 
 /*
 $Log$
+Revision 1.39  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.38  2001/05/10 10:01:43  honzam
 New spanish language files, removed <form enctype parameter where not needed, better number validation
 

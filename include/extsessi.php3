@@ -73,10 +73,11 @@ class AA_CT_Sql extends CT_Sql {	## Container Type for Session is SQL DB
 #}
 
 # skips terminating backslashes
-function DeBackslash($txt) {
+function DeBackslash2($txt) {
 	return str_replace('\\', "", $txt);        // better for two places
 //  return EReg_Replace("[\]*$", "", $foo);
 }   
+
 
 class AA_SL_Session extends Session {
   var $classname = "AA_SL_Session";
@@ -113,42 +114,6 @@ class AA_SL_Session extends Session {
       return $foo;
    }
   
- 
- // adds variables passesd by QUERY_STRING_UNESCAPED to GLOBALS 
-  function add_vars($debug="") {
-    global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
-    if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
-      $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
-    } else {  
-      $varstring = $QUERY_STRING_UNESCAPED;
-    }  
-
-    $a = explode("&",$varstring);
-    $i = 0;
-
-    while ($i < count ($a)) {
-      $b = explode ('=', $a [$i]);
-      if (ERegI("^(.+)\[(.*)\]", $b[0], $c)) {  // for array variable
-             // I do not know exactly, why there is
-                   // so much '\' but '\\\\\\[' means '\['
-        $c[1] = DeBackslash($c[1]);
-        $c[2] = DeBackslash($c[2]);
-        $b[1] = DeBackslash($b[1]);
-        $GLOBALS[urldecode ($c[1])][urldecode ($c[2])] = urldecode ($b[1]);
-      } else {
-        $b[0] = DeBackslash($b[0]);
-        $b[1] = DeBackslash($b[1]);
-        if($b[2])
-          $b[2] = "=". DeBackslash($b[2]);       // for cases variable contains "="
-        if($b[3])
-          $b[3] = "=". DeBackslash($b[3]);       // for cases variable contains "="
-        $GLOBALS[urldecode ($b [0])]= urldecode ($b [1].$b[2].$b[3]);
-      }
-      $i++;
-    }
-    return $i;
-  }
-  
   # adds variables passesd by QUERY_STRING_UNESCAPED to HTTP_GET_VARS
   # SSI patch - passes variables to SSIed script
   function expand_getvars() {
@@ -166,8 +131,8 @@ class AA_SL_Session extends Session {
 
     while ($i < count ($a)) {
       $b = explode ('=', $a [$i]);
-      $b[0] = DeBackslash($b[0]);
-      $b[1] = DeBackslash($b[1]);
+      $b[0] = DeBackslash2($b[0]);
+      $b[1] = DeBackslash2($b[1]);
       $HTTP_GET_VARS[urldecode ($b [0])]= urldecode ($b [1]);
       $i++;
     }
@@ -270,6 +235,9 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
+Revision 1.9  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.8  2001/01/26 15:06:50  honzam
 Off-line filling - first version with WDDX (then we switch to APC RSS+)
 

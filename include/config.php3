@@ -18,11 +18,11 @@
 # this path with a slash!
 # Example:
 # $AA_INC_PATH = "/home/httpd/html/aa/include/";
-$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa2/include/"; 
+$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa/include/"; 
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
-define("AA_INSTAL_URL", "http://aa.ecn.cz/aa/");
+define("AA_INSTAL_URL", "http://aa.ecn.cz/apc-aa/");
 
 # URL of index of help files for AA
 define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
@@ -103,6 +103,14 @@ if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
 
 define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
 
+# settings for file uploads
+define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
+define("IMG_UPLOAD_URL", "http://aa.ecn.cz/img_upload/");
+define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/img_upload/");
+define("IMG_UPLOAD_TYPE", "image/*");
+define("IMG_UPLOAD_DIR_MODE", 508);    # mkdir perms (508 = 0774 in octal, but
+                                       # octal value in constant don't work)
+
 # Select color profile for administation pages
 
   # -- WebNetworks profile
@@ -139,6 +147,7 @@ define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
 # Language: uncomment one language  file
 require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
 # require ($GLOBALS[AA_INC_PATH] . "cz_common_lang.php3");  # Czech
+# require ($GLOBALS[AA_INC_PATH] . "es_common_lang.php3");  # Spanish
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG

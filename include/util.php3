@@ -62,6 +62,53 @@ function shtml_base() {
   return (self_server(). ereg_replace("/[^/]*$", "", $DOCUMENT_URI) . "/");
 }
 
+# returns url of current shtml file
+function shtml_url() {
+  global $DOCUMENT_URI;
+  return (self_server(). $DOCUMENT_URI);
+}
+
+# skips terminating backslashes
+function DeBackslash($txt) {
+	return str_replace('\\', "", $txt);        // better for two places
+}   
+ 
+// adds variables passesd by QUERY_STRING_UNESCAPED to GLOBALS 
+function add_vars($debug="") {
+  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
+  if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
+    $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
+  } else {  
+    $varstring = $QUERY_STRING_UNESCAPED;
+  }  
+
+  $a = explode("&",$varstring);
+  $i = 0;
+
+  while ($i < count ($a)) {
+    $b = explode ('=', $a [$i]);
+    if (ERegI("^(.+)\[(.*)\]", $b[0], $c)) {  // for array variable
+           // I do not know exactly, why there is
+                 // so much '\' but '\\\\\\[' means '\['
+      $c[1] = DeBackslash($c[1]);
+      $c[2] = DeBackslash($c[2]);
+      $b[1] = DeBackslash($b[1]);
+      $GLOBALS[urldecode ($c[1])][urldecode ($c[2])] = urldecode ($b[1]);
+    } else {
+      $b[0] = DeBackslash($b[0]);
+      $b[1] = DeBackslash($b[1]);
+      if($b[2])
+        $b[2] = "=". DeBackslash($b[2]);       // for cases variable contains "="
+      if($b[3])
+        $b[3] = "=". DeBackslash($b[3]);       // for cases variable contains "="
+      $GLOBALS[urldecode ($b [0])]= urldecode ($b [1].$b[2].$b[3]);
+    }
+    $i++;
+  }
+  return $i;
+}
+
+
 # function to double backslashes and apostrofs 
 function quote($str) {
   return addslashes($str);  
@@ -109,9 +156,9 @@ function con_url($Url,$Params){
 function p_arr_m ($arr, $level = 0) {
   if(! DEBUG_FLAG )
     return;
-   if (sizeof($arr) == 0) { 
+   if ( !isset($arr) OR !is_array($arr)) { 
      for ($i = 0; $i < $level; $i++) { echo "&nbsp;&nbsp;&nbsp;"; };
-         echo htmlspecialchars($key) . " (Empty Array) <br>";
+         echo ( isset($arr) ? " Not array: $arr <br>" : " (Empty Array) <br>");
      return;
    };
    while (list($key, $val) = each($arr)) {
@@ -209,8 +256,8 @@ function HtmlPageBegin() {
 #   url - where to go if user clicks on Back link on this message page
 #   msg - displayed message
 #   mode - items/admin/standalone for surrounding of message
-function MsgPage($url, $msg, $mode="items") {
-  global $sess, $auth;
+function MsgPage($url, $msg, $mode="standalone") {
+  global $sess, $auth, $slice_id;
 
   if( !isset($sess) AND ($mode!="standalone")) {
     require $GLOBALS[AA_INC_PATH] . "locauth.php3";
@@ -272,7 +319,6 @@ function GetSliceInfo($slice_id) {
   $db->query("SELECT * FROM slice WHERE id='$p_slice_id'");
   return  ($db->next_record() ? $db->Record : false);
 }  
-    
 
 # function converts table from SQL query to array
 # $idcol specifies key column for array or "NoCoLuMn" for none
@@ -421,15 +467,20 @@ function ParseFnc($s) {
 
 # Prints alias names as help for fulltext and compact format page
 function PrintAliasHelp($aliases) {
+  global $sess;
   ?>
   <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HLP ?></b></td></tr>
   <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
   <?php
   $count = 0;
-  while ( list( $ali,$v ) = each( $aliases ) ) 
-    echo "<tr><td nowrap>$ali</td><td>". $v[hlp] ."</td></tr>";
-//    echo "<tr><td nowrap>ali</td><td>"."v[hlp]"."</td></tr>";
+  while ( list( $ali,$v ) = each( $aliases ) ) {
+    # if it is possible point to alias editing page
+    $aliasedit = ( !$v["fld"] ? L_EDIT :
+      "<a href=\"". $sess->url(con_url("./se_inputform.php3", 
+                    "fid=".urlencode($v["fld"]))) ."\">". L_EDIT . "</a>");
+    echo "<tr><td nowrap>$ali</td><td>". $v[hlp] ."</td><td>$aliasedit</td></tr>";
+  }  
   ?>  
   </table>
   </td></tr>
@@ -444,6 +495,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.20  2001/05/18 13:55:04  honzam
+New View feature, new and improved search function (QueryIDs)
+
 Revision 1.19  2001/03/30 11:54:35  honzam
 offline filling bug and others small bugs fixed
 

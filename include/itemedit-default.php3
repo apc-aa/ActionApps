@@ -11,7 +11,7 @@
 </tr>
 <tr><td>
 <table class=ininner width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?
+<?php
 
   FrmInputText("headline", L_HEADLINE, safe($headline), 254, 60, true);
   if($show[abstract])
@@ -224,6 +224,9 @@ if($edit || $update || ($insert && $added_to_db)) { ?>
 
 <?php
 // $Log$
+// Revision 1.5  2001/05/18 13:55:04  honzam
+// New View feature, new and improved search function (QueryIDs)
+//
 // Revision 1.4  2001/02/26 17:22:30  honzam
 // color profiles, itemmanager interface changes
 //
