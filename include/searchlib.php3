@@ -167,7 +167,7 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   }      
 
   # construct query --------------------------
-  $SQL = "SELECT item.id FROM item ";
+  $SQL = "SELECT DISTINCT item.id FROM item ";
   if( isset($select_tables) AND is_array($select_tables))
     $SQL .= ", ". implode (", ", $select_tables);
 
@@ -745,6 +745,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.13  2001/05/27 20:59:30  honzam
+fixed problem with doubled item from search
+
 Revision 1.12  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 
