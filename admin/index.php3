@@ -352,7 +352,7 @@ if(is_object($st)) {
   $st->updateScr($sess->url($PHP_SELF) . "&");
 }else {
   $st = new scroller($st_name, $sess->url($PHP_SELF) . "&");	
-  $st->metapage=EDIT_ITEM_COUNT;
+  $st->metapage=($listlen ? $listlen : EDIT_ITEM_COUNT);
 
 /*
   reset($AF_COLUMNS);   // set filters for all possibly displayed fields
@@ -525,6 +525,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.26  2001/07/09 17:45:32  honzam
+Listing length defined by listlen parameter
+
 Revision 1.25  2001/06/24 16:46:22  honzam
 new sort and search possibility in admin interface
 
