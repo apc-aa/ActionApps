@@ -1,3 +1,5 @@
+01/25/01 - restored en_news_lang.php3  (mitra)
+01/25/01 - restored en_site_lang.php3 since _m conversion not done completely
 01/24/01 - bug fix in slicedit.php3, mistyped URL sliceEdit.php3 (Jakub)
 01/24/01 - changed design of se_fields.php3 (Jakub)
 01/24/01 - added H2 to admin.css (Jakub)
