@@ -224,7 +224,7 @@ if( $add || $update ) {
 
     if( count($err) <= 1 )
     {
-    	go_return_or_url($sess->url(self_base() . "sliceedit.php3"),0,0);
+    	go_return_or_url($sess->url(self_base() . "slicedit.php3"),0,0);
     }
 }
 
