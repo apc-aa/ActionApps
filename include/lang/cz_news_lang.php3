@@ -3956,7 +3956,147 @@ $_m["Alias for publish date"]
 $_m["Alias for IP address of author's computer"]
   = "";
 
-# include/discussion.php3, row 145
+# include/item.php3, row 69
+$_m["Short description (owner and name) of slice for RSS"]
+  = "Krátkı popisek (vlastník a jméno) webíku pro RSS";
+
+# include/item.php3, row 70
+$_m["Date RSS information is generated, in RSS date format"]
+  = "Datum v RSS pøehledu je generováno v datovém formátu RSS";
+
+# include/item.php3, row 71
+# include/tv_email.php3, row 49
+$_m["Slice name"]
+  = "Název webíku";
+
+# include/item.php3, row 104
+$_m["Constant name"]
+  = "Jméno";
+
+# include/item.php3, row 105
+$_m["Constant value"]
+  = "Hodnota";
+
+# include/item.php3, row 106
+$_m["Constant priority"]
+  = "Øazení";
+
+# include/item.php3, row 107
+$_m["Constant group id"]
+  = "Skupina hodnot";
+
+# include/item.php3, row 108
+$_m["Category class (for categories only)"]
+  = "Nadkategorie (pouitelné jen pro kategorie)";
+
+# include/item.php3, row 109
+$_m["Constant number"]
+  = "Poøadové èíslo hodnoty";
+
+# include/item.php3, row 110
+$_m["Constant unique id (32-haxadecimal characters)"]
+  = "Jedineèné ID (32 hexa znakù)";
+
+# include/item.php3, row 111
+$_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
+  = "Krátké jedineèné ID (poèítadlo od '1' pro všechny konstanty)";
+
+# include/item.php3, row 112
+$_m["Constant description"]
+  = "Popis konstanty";
+
+# include/item.php3, row 113
+$_m["Constant level (used for hierachical constants)"]
+  = "Úroveò konstanty (pouito v hierarchickıch)";
+
+# include/item.php3, row 863
+$_m["on"]
+  = "zap";
+
+# include/item.php3, row 863
+$_m["off"]
+  = "vyp";
+
+# include/item.php3, row 917
+$_m["Home"]
+  = "Domù";
+
+# include/date.php3, row 116
+# include/formutil.php3, row 1069, 1083, 1090, 1095, 1100, 1105, 1113, 1118, 1125, 1129, 1136, 1176
+$_m["Error in"]
+  = "Chyba v";
+
+# include/loginform.inc, row 16
+$_m["Welcome!"]
+  = "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.6";
+
+# include/loginform.inc, row 18
+$_m["Welcome! Please identify yourself with a username and a password:"]
+  = "<br><br>\n\n"
+   ."     <br>Vítejte! Pøihlašte se prosím Vaším jménem a heslem\n\n"
+   ."     <br>(Welcome! Log in by your name and password):";
+
+# include/loginform.inc, row 27
+$_m["Username:"]
+  = "Uivatelské jméno<br>(User name):  ";
+
+# include/loginform.inc, row 31
+$_m["Type your username or mail"]
+  = " ";
+
+# include/loginform.inc, row 34
+$_m["Password:"]
+  = "Heslo<br>(Password):";
+
+# include/loginform.inc, row 48
+# include/init_page.php3, row 113
+$_m["Either your username or your password is not valid."]
+  = "Buï jméno nebo heslo nejsou v poøádku.";
+
+# include/loginform.inc, row 51
+$_m["Please try again!"]
+  = "Zkuste to znovu, prosím!<br>Please try again!";
+
+# include/loginform.inc, row 54
+$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>."]
+  = "Pokud jste si jisti, e zadáváte správné jméno a heslo, obrate se prosím \n\n"
+   ."     na <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.\n\n"
+   ."     <br>If you are sure you have typed the correct password, please e-mail \n\n"
+   ."     <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.";
+
+# include/discussion.php3, row 136
+$_m["Alias for subject of the discussion comment"]
+  = "Alias pro pøedmìt pøíspìvku";
+
+# include/discussion.php3, row 137
+$_m["Alias for text of the discussion comment"]
+  = "";
+
+# include/discussion.php3, row 138
+$_m["Alias for written by"]
+  = "";
+
+# include/discussion.php3, row 139
+$_m["Alias for author's e-mail"]
+  = "Alias pro e-mail autora";
+
+# include/discussion.php3, row 140
+$_m["Alias for url address of author's www site"]
+  = "Alias pro adresu WWW stránek autora ";
+
+# include/discussion.php3, row 141
+$_m["Alias for description of author's www site"]
+  = "Alias for popis WWW stránek autora";
+
+# include/discussion.php3, row 142
+$_m["Alias for publish date"]
+  = "Alias pro datum a èas poslání pøíspìvku";
+
+# include/discussion.php3, row 143
+$_m["Alias pro IP address of author's computer"]
+  = "Alias pro IP adresu autorova poèítaèe";
+
+# include/discussion.php3, row 144
 $_m["Alias for checkbox used for choosing discussion comment"]
   = "Alias pro checkbox pro vybrání pøíspìvku";
 
