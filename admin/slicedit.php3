@@ -18,7 +18,7 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-# expected $slice_id for edit slice, Add_slice=1 for adding slice
+# expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
 // set template id (changes language file => must be here):
 require "../include/slicedit2.php3";
@@ -35,7 +35,7 @@ if($cancel)
 reset ($MODULES);
 while (list ($type,$module) = each ($MODULES)) {
     if ($create[$type]) {
-        $url = $sess->url($module["directory"] . "modedit.php3");
+        $url = $sess->url($module["directory"] . "modedit.php3?no_slice_id=1");
         if( $template[$type] )
             $url = con_url( $url, "template%5B$type%5D=". $template[$type]);
         go_url( $url );
@@ -74,10 +74,13 @@ $db->query($SQL);
 while ($db->next_record()) {
   $slice_owners[unpack_id128($db->f(id))] = $db->f(name);
 }
-
 $PERMS_STATE = array( "0" => _m("Not allowed"),
                       "1" => _m("Active"),
                       "2" => _m("Hold bin") );
+
+reset ($LANGUAGE_NAMES);
+while (list ($l, $langname) = each ($LANGUAGE_NAMES)) 
+    $biglangs[$l."_news_lang.php3"] = $langname;
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -101,6 +104,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
   FrmStaticText(_m("Id"), $slice_id);
   FrmInputText("name", _m("Title"), $name, 99, 25, true);
+//echo "****************************************";
   FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, 254, 25, false);
   $ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
   echo "<TR><TD colspan=2>" . _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") . "<BR><pre>" . 
@@ -119,7 +123,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   }  
   FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), $PERMS_STATE, $permit_anonymous_post, false);
   FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"), $PERMS_STATE, $permit_offline_fill, false);
-  FrmInputSelect("lang_file", _m("Used Language File"), $LANGUAGE_FILES, $lang_file, false);
+  FrmInputSelect("lang_file", _m("Language"), $biglangs, $lang_file, false);
   if ($superadmin) {
       FrmInputSelect("fileman_access", _m("File Manager Access"), getFilemanAccesses(), $fileman_access, false);
       FrmInputText("fileman_dir", _m("File Manager Directory"), $fileman_dir, 99, 25, false);
@@ -130,7 +134,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
 if($slice_id=="") {
   echo "<input type=hidden name=\"add\" value=1>";        // action
-  echo "<input type=hidden name=\"Add_slice\" value=1>";  // detects new slice
+  echo "<input type=hidden name=\"no_slice_id\" value=1>";  // detects new slice
   echo "<input type=hidden name=template_id value=\"". $set_template_id .'">';
   
   // fields storing values from wizard

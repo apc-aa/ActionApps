@@ -19,8 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-$New_slice = true;  // variable tells to init_page, there should not be defined slices, here
-$require_default_lang = true;      // do not use module specific language file
+// messages for init_page:
+$no_slice_id = true;  
+$require_default_lang = true;
 
 require "../include/init_page.php3";
 

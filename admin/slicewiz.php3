@@ -22,8 +22,9 @@ http://www.apc.org/
 // set template id (changes language file => must be here):
 require "../include/slicedit2.php3";
 
-$New_slice = true;  // variable tells to init_page, there should not be defined slices, here
-$require_default_lang = true;      // do not use module specific language file
+// messages for init_page:
+$no_slice_id = true;  
+$require_default_lang = true;
 
 require "../include/init_page.php3";
 // the parts used by the slice wizard are in the included file
@@ -98,7 +99,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td align="center">
 <?php 
-  echo '<input type=submit name=Add_slice value="'._m("Add Slice").'">&nbsp;&nbsp;';
+  echo '<input type=submit name=no_slice_id value="'._m("Go: Add Slice").'">&nbsp;&nbsp;';
   echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
 ?>   
 </td></tr>
