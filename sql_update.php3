@@ -97,58 +97,34 @@ $tablelist = array( 'active_sessions' => "(
                          PRIMARY KEY  (id)
                       )",
                       'alerts_collection' => "(
-                         id int(11) NOT NULL auto_increment,
-                         description text NOT NULL,
-                         showme tinyint(1) NOT NULL default '1',
-                         mail_from varchar(255) NOT NULL default '',
-                         mail_sender varchar(255) NOT NULL default '',
-                         mail_errors_to varchar(255) NOT NULL default '',
-                         mail_reply_to varchar(255) NOT NULL default '',
-                         editorial text NOT NULL,
-                         PRIMARY KEY  (id)
+                          id char(6) NOT NULL,
+                          moduleid char(16) NOT NULL,
+                          emailid_welcome int(11) default NULL,
+                          emailid_alert int(11) default NULL,
+                          emailid_access int(11) default NULL,
+                          sliceid char(16) default NULL,
+                          PRIMARY KEY  (id)
                       )",
                       'alerts_collection_filter' => "(
-                         collectionid int(11) NOT NULL default '0',
-                         filterid int(11) NOT NULL default '0',
-                         myindex tinyint(4) NOT NULL default '0',
-                         PRIMARY KEY  (collectionid,filterid)
+                          collectionid char(6) NOT NULL,
+                          filterid int(11) NOT NULL,
+                          myindex tinyint(4) NOT NULL,
+                          PRIMARY KEY  (collectionid,filterid)
                       )",
-                      'alerts_digest_filter' => "(
-                         id int(11) NOT NULL auto_increment,
-                         vid int(11) NOT NULL default '0',
-                         conds text NOT NULL,
-                         showme tinyint(1) NOT NULL default '1',
-                         description text NOT NULL,
-                         last_daily int(11) NOT NULL default '0',
-                         last_weekly int(11) NOT NULL default '0',
-                         last_monthly int(11) NOT NULL default '0',
-                         text_daily text NOT NULL,
-                         text_weekly text NOT NULL,
-                         text_monthly text NOT NULL,
-                         PRIMARY KEY  (id)
+                      'alerts_filter' => "(
+                          id int(11) NOT NULL auto_increment,
+                          vid int(11) NOT NULL,
+                          conds text NOT NULL,
+                          description text NOT NULL,
+                          PRIMARY KEY  (id)
                       )",
-                      'alerts_user' => "(
-                         id int(10) NOT NULL auto_increment,
-                         email varchar(255) NOT NULL default '',
-                         password varchar(255) NOT NULL default '',
-                         firstname varchar(100) NOT NULL default '',
-                         lastname varchar(100) NOT NULL default '',
-                         session varchar(32) NOT NULL default '',
-                         sessiontime int(10) NOT NULL default '0',
-                         confirm varchar(20) NOT NULL default '',
-                         lang char(2) NOT NULL default 'en',
-                         PRIMARY KEY  (id)
+                      'alerts_filter_howoften' => "(
+                          filterid int(10) NOT NULL,
+                          howoften varchar(20) NOT NULL,
+                          last int(10) NOT NULL default '0',
+                          text text NOT NULL,
+                          PRIMARY KEY  (filterid,howoften)
                       )",
-                      'alerts_user_filter' => "(
-                         id int(10) NOT NULL auto_increment,
-                         userid int(11) default NULL,
-                         filterid int(11) default NULL,
-                         howoften varchar(10) NOT NULL default 'daily',
-                         collectionid int(11) default NULL,
-                         PRIMARY KEY  (id),
-                         UNIQUE KEY alerts_collection(userid,collectionid),
-                         UNIQUE KEY user_filter(userid,filterid)
-                      )", 
                       'constant' => "(
                          id char(16) NOT NULL default '',
                          group_id char(16) NOT NULL default '',
@@ -232,6 +208,21 @@ $tablelist = array( 'active_sessions' => "(
                          user varchar(50) NOT NULL default '',
                          PRIMARY KEY (slice_id, node, user)
                       )",
+                      'email' => "(
+                          id int(11) NOT NULL auto_increment,
+                          description varchar(255) NOT NULL,
+                          subject text NOT NULL,
+                          body text NOT NULL,
+                          header_from text NOT NULL,
+                          reply_to text NOT NULL,
+                          errors_to text NOT NULL,
+                          sender text NOT NULL,
+                          lang char(2) NOT NULL default 'en',
+                          owner_module_id varchar(16) NOT NULL,
+                          html smallint(1) NOT NULL default '1',
+                          type varchar(20) NOT NULL default '',
+                          PRIMARY KEY (id)
+                        )",                       
                       'email_auto_user' => "(
                          uid char(50) NOT NULL default '',
                          creation_time bigint(20) NOT NULL default '0',
@@ -319,7 +310,7 @@ $tablelist = array( 'active_sessions' => "(
                          html_default smallint(5) default NULL,
                          html_show smallint(5) default NULL,
                          in_item_tbl varchar(16) default NULL,
-                         input_validate varchar(16) NOT NULL default '',
+                         input_validate varchar(255) NOT NULL default '',
                          input_insert_func varchar(255) NOT NULL default '',
                          input_show smallint(5) default NULL,
                          text_stored smallint(5) default '1',
@@ -949,6 +940,31 @@ $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, inpu
 $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_count......', '', 'News_EN_tmpl....', 'Comments Count', '5060', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_ALLCNT', 'f_h', 'alias for number of all discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_count', '', 'nul', '0', '1')";
 $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_app........', '', 'News_EN_tmpl....', 'Approved Comments Count', '5070', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_APPCNT', 'f_h', 'alias for number of approved discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_app', '', 'nul', '0', '1')";
 
+$SQL_templates[] = "DELETE FROM field WHERE slice_id='ReaderManagement'";
+$SQL_templates[] = "REPLACE INTO slice (id, name, owner, deleted, created_by, created_at, export_to_all, type, template, fulltext_format_top, fulltext_format, fulltext_format_bottom, odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, category_top, category_format, category_bottom, category_sort, config, slice_url, d_expiry_limit, d_listlen, lang_file, fulltext_remove, compact_remove, email_sub_enable, exclude_from_dir, notify_sh_offer, notify_sh_accept, notify_sh_remove, notify_holding_item_s, notify_holding_item_b, notify_holding_item_edit_s, notify_holding_item_edit_b, notify_active_item_edit_s, notify_active_item_edit_b, notify_active_item_s, notify_active_item_b, noitem_msg, admin_format_top, admin_format, admin_format_bottom, admin_remove, permit_anonymous_post, permit_offline_fill, aditional, flag, vid, gb_direction, group_by, gb_header, gb_case, javascript, fileman_access, fileman_dir) VALUES ('ReaderManagement', 'Reader Management Minimal', 'AA_Core.........', 0, '1', 1043151515, 1, 'Alerts..........', 1, '', '&nbsp;', '', '&nbsp;', '', 0, '', '', '', '', '', 0, '', '', 5000, 15, 'cz_news_lang.php3', '', '', 1, 0, '', '', '', '', '', '', '', '', '', '', '', ' ', '<table border=\"1\" bordercolor=\"white\" cellpadding=\"2\" cellspacing=\"0\">\r\n<tr align=\"center\">\r\n<td class=\"tabtit\">&nbsp;</td>\r\n<td class=\"tabtit\"><b>Username</b></td>\r\n<td class=\"tabtit\"><b>Email</b></td>\r\n<td class=\"tabtit\"><b>First</b></td>\r\n<td class=\"tabtit\"><b>Last</b></td>\r\n<td class=\"tabtit\"><b>Has Password</b></td>\r\n</tr>', '<tr>\r\n<td><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"\"></td>\r\n<td class=\"tabtxt\">_#USERNAME</td>\r\n<td class=\"tabtxt\">_#EMAIL___</td>\r\n<td class=\"tabtxt\">_#FIRSTNAM</td>\r\n<td class=\"tabtxt\">_#LASTNAME</td>\r\n<td class=\"tabtxt\">_#PASSWORD</td>\r\n</tr>', '</table>', '', 2, 0, '', 0, 0, 2, '', 0, NULL, '', '0', '');";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('disc_app........', '', 'ReaderManagement', 'Approved Comments Count', 5070, 'Internal field - do not change', '', 'qte:0', 1, 1, 0, 'fld', '', 100, '', '', '', '', 0, 0, 0, '_#D_APPCNT', 'f_h', 'alias for number of approved discussion comments for this item', '', '', '', '', '', '', '', '', 0, 0, 0, 'disc_app', '', 'nul', 0, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('con_email.......', '', 'ReaderManagement', 'Email', 200, 'Reader\'s e-mail, unique in the scope of this slice', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#EMAIL___', 'f_c:!:<a href=\"_#EDITITEM\" class=iheadline>:</a>:&nbsp;::', 'Email', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'unique:con_email.......:1', 'qte:', 1, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('disc_count......', '', 'ReaderManagement', 'Comments Count', 5060, 'Internal field - do not change', '', 'txt:0', 1, 1, 0, 'fld:', '', 100, '', '', '', '', 0, 0, 0, '_#D_ALLCNT', 'f_h:', 'alias for number of all discussion comments for this item', '_#VIEW_165', 'f_v:vid=165&cmd[165]=x-165-_#short_id........', 'Zkraceny fulltex pohled pro diskuse', '', 'f_0:', '', '', '', 0, 0, 0, 'disc_count', 'text', 'qte', 0, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('display_count...', '', 'ReaderManagement', 'Displayed Times', 5050, 'Internal field - do not change', '', 'qte:0', 1, 1, 0, 'fld', '', 100, '', '', '', '', 0, 0, 0, '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', 0, 0, 0, 'display_count', '', 'nul', 0, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('display_count...', '', 'ReaderManagement', 'Displayed Times', 5050, 'Internal field - do not change', '', 'qte:0', 1, 1, 0, 'fld', '', 100, '', '', '', '', 0, 0, 0, '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', 0, 0, 0, 'display_count', '', 'nul', 0, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('edited_by.......', '', 'ReaderManagement', 'Edited by', 5030, 'Identification of last editor', '', 'qte', 0, 0, 0, 'nul', '', 100, '', '', '', '', 0, 0, 0, '_#EDITEDBY', 'f_h', 'alias for Last edited By', '', '', '', '', '', '', '', '', 0, 0, 0, 'edited_by', 'text', 'uid', 0, 0);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('edit_note.......', '', 'ReaderManagement', 'Remark', 1000, '', '', 'txt:', 0, 0, 0, 'txt:4', '', 100, '', '', '', '', 0, 0, 0, '_#REMARK__', 'f_c:!:::&nbsp;::', 'Remark', '', 'f_a:', '', '', 'f_a:', '', '', '', 0, 0, 0, '', 'text', 'qte:', 1, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('expiry_date.....', '', 'ReaderManagement', 'Expiry date', 3100, 'Membership expiration', '', 'dte:2000', 0, 0, 0, 'dte:1\'10\'1', '', 100, '', '', '', '', 0, 0, 0, '_#EXP_DATE', 'f_d:j. n. Y', 'alias pro Datum Expirace', '', 'f_a:', '', '', 'f_a:', '', '', '', 0, 0, 0, 'expiry_date', 'date:', 'qte:', 1, 0);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('flags...........', '', 'ReaderManagement', 'Flags', 5075, 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', 0, 0, 0, 'fld', '', 100, '', '', '', '', 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 'flags', 'number', 'qte', 0, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('headline........', '', 'ReaderManagement', 'Username', 100, 'Reader\'s User Name, unique in the scope of the complete AA installation', '', 'txt:', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#USERNAME', 'f_c:!:<a href=\"_#EDITITEM\" class=iheadline>:</a>:&nbsp;::', 'Username', '', 'f_a:', '', '', 'f_a:', '', '', '', 0, 0, 0, '', 'unique:headline........:0', 'qte:', 1, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('highlight.......', '', 'ReaderManagement', 'Highlight', 5025, 'Interesting news - shown on homepage', '', 'qte', 0, 0, 0, 'chb', '', 100, '', '', '', '', 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 'highlight', 'bool', 'boo', 0, 0);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('last_edit.......', '', 'ReaderManagement', 'Last Edit', 5040, 'Date of last edit', '', 'now:', 0, 0, 0, 'dte:1\'10\'1', '', 100, '', '', '', '', 0, 0, 0, '_#LASTEDIT', 'f_d:m/d/Y', 'alias for Last Edit', '', '', '', '', '', '', '', '', 0, 0, 0, 'last_edit', 'date', 'now', 0, 0);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('password........', '', 'ReaderManagement', 'Password', 300, 'Your password. You must send it every time to confirm your changes.', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:', 1, 0, 0, 'pwd:', '', 100, '', '', '', '', 0, 0, 0, '_#PASSWORD', 'f_c:!:*::&nbsp;::1', 'Password: Show * when set, nothing when not set', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'pwd:', 'pwd:', 1, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('posted_by.......', '', 'ReaderManagement', 'Posted by', 5000, 'Identification of author', '', 'qte', 0, 0, 0, 'fld', '', 100, '', '', '', '', 0, 0, 0, '_#POSTEDBY', 'f_h', 'alias for Author', '', '', '', '', '', '', '', '', 0, 0, 0, 'posted_by', 'text', 'uid', 0, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('post_date.......', '', 'ReaderManagement', 'Post Date', 5005, 'Date of posting this news', '', 'now:', 1, 0, 0, 'nul', '', 100, '', '', '', '', 0, 0, 0, '_#POSTDATE', 'f_d:m/d/Y', 'alias for Post Date', '', '', '', '', '', '', '', '', 0, 0, 0, 'post_date', 'date', 'now', 0, 0);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('publish_date....', '', 'ReaderManagement', 'Start date', 3000, 'Membership start', '', 'now:', 0, 0, 0, 'dte:1:10:1', '', 100, '', '', '', '', 0, 0, 0, '_#PUB_DATE', 'f_d:j. n. Y', 'alias pro Datum Vystavení', '_#PUB_DAT#', 'f_d:j.n.y', 'alias pro Datum Vystavení pro admin stranky', '', 'f_a:', '', '', '', 0, 0, 0, 'publish_date', 'date:', 'qte:', 1, 0);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('slice_id........', '', 'ReaderManagement', 'Slice', 5000, 'Internal field - do not change', '', 'qte:1', 1, 0, 0, 'fld', '', 100, '', '', '', '', 0, 0, 0, '_#SLICE_ID', 'f_n:slice_id', 'alias for id of slice', '', '', '', '', '', '', '', '', 0, 0, 0, 'slice_id', '', 'nul', 0, 0);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('status_code.....', '', 'ReaderManagement', 'Status Code', 5020, 'Select in which bin should the news appear', '', 'qte:1', 1, 0, 0, 'sel:AA_Core_Bins....', '', 100, '', '', '', '', 0, 0, 0, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 'status_code', 'number', 'num', 0, 0);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('switch..........', '', 'ReaderManagement', 'Email Confirmed', 600, 'Email is confirmed when the user clicks on the URL received in email', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:', 0, 0, 0, 'chb', '', 100, '', '', '', '', 0, 0, 0, '_#MAILCONF', 'f_c:1:Yes::No::1', 'Email Confirmed', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text', 'boo:', 1, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('text...........1', '', 'ReaderManagement', 'First name', 400, '', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#FIRSTNAM', 'f_c:!:::&nbsp;::', 'First name', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text', 'qte:', 1, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('text...........2', '', 'ReaderManagement', 'Last name', 500, '', 'http://aa.ecn.cz/aa/doc/help.html', 'txt:', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#LASTNAME', 'f_c:!:::&nbsp;::', 'Last name', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text', 'qte:', 1, 1);";
+$SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('text...........3', '', 'ReaderManagement', 'Access Code', 700, 'Access code is useful only when you do not use HTTP Authentification', 'http://aa.ecn.cz/aa/doc/help.html', 'rnd:5:text...........3:0', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#ACCECODE', 'f_h:', 'Access Code', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text', 'qte:', 1, 1);";
+
 $SQL_view_templates[] = "DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND name IN ('Discussion ...','Constant view ...','Javascript ...','rss','Calendar')";
 $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Discussion ...', 'discus', '<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', '<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=20%><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', '<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=http://work.ecn.cz/apc-aa/images/blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', 1, '</table></td></tr></table>_#BUTTONS#', '<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 23, NULL, '<img src=http://work.ecn.cz/apc-aa/images/i.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/l.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/t.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/blank.gif width=12 height=21>', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
 $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Constant view ...', 'const', '<table border=0 cellpadding=0 cellspacing=0>', '', '<tr><td>_#VALUE###</td></tr>', 0, '</table>', NULL, NULL, 'value', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10, NULL, 0, NULL, 'lt_languages', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
@@ -1014,8 +1030,8 @@ if( !$update AND !$restore AND !$restore_now) {
                 "New fields (display_count, disc_count, disc_app) in v1.8 should be added to all slice definitions","");
   FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false,
                 "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice). The default site and poll module is also created/renewed with this option.","");
-  FrmInputChBox("alerts", "Add Alerts defaults", true, false, "", 1, false,
-                "Alerts are run by cron.php3, 5 entries to table cron are added/renewed (4 for alerts, 1 for cross server networking). Also two defaults to table alerts_collection are added.");
+  FrmInputChBox("alerts", "Add Alerts entries to Cron", true, false, "", 1, false,
+                "Alerts are run by cron.php3, 5 entries to table cron are added/renewed (4 for alerts, 1 for cross server networking).");
   FrmStaticText("", "<hr>", false, "", "", false );
   FrmInputText("dbpw5", "5 characters of database password", "", 5, 5, false,
                 "Fill in first five characters of the database password (see DB_PASSWORD in config.php3 file) - it is from security reasons");
@@ -1298,7 +1314,7 @@ if( $update_modules ) {
 }
 
 if( $alerts ) {
-  echo '<h2>Adding to Alerts Collection table and Cron table</h2>';
+  echo '<h2>Adding to Cron table</h2>';
   $db->query("SELECT * FROM cron WHERE script='misc/alerts/alerts.php3'");
   if ($db->num_rows())
     echo "Some rows with script = misc/alerts/alerts.php3 exist already in table cron, not added.<br>";
@@ -1309,14 +1325,6 @@ if( $alerts ) {
         $db->query( $SQL );
       }  
   }
-  
-  for ($i=0; $i < 2; $i ++) {
-    $desc = $i ? $ALERTS_DEFAULT_COLLECTION : $ALERTS_SUBSCRIPTION_COLLECTION;
-    $db->query("SELECT * FROM alerts_collection WHERE description = '$desc'");
-    if ($db->num_rows())
-        echo "Collection $desc already defined, not added.<br>";
-    else $db->query("INSERT INTO alerts_collection (description, showme) VALUES ('$desc',0);");
-  }  
 }
 
 echo '<h2>Update OK</h2>
