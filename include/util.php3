@@ -874,7 +874,7 @@ function PrintModuleSelection() {
       echo "\t+'<option value=\"". htmlspecialchars($k)."\"";
       if ( ($slice_id AND (string)$slice_id == (string)$k)) 
         echo " selected";
-      echo ">". htmlspecialchars($v['name']) . "'\n";
+      echo ">". str_replace("'","`",safe($v['name'])) . "'\n";
     }
     if( !$slice_id )   // new slice
       echo "\t+'<option value=\"new\" selected>". L_NEW_SLICE_HEAD + "'";
