@@ -175,12 +175,13 @@ $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
 /// @return array default function description
 function inputDefaultTypes ()
 { 
-    return array ("txt" => _m("Text"),
-                  "dte" => _m("Date"),
-                  "uid" => _m("User ID"),
+    return array ("txt" => _m("Text = text from Parameter field"),
+                  "dte" => _m("Date = current date plus <Parameter> number of days"),
+                  "uid" => _m("User ID = current user ID"),
                   "log" => _m("Login name"),
-                  "now" => _m("Now"),
-			      "variable" =>_m("Variable"));
+                  "now" => _m("Now = current date"),
+			      "variable" =>_m("Variable"),
+				 );
 }
   
 /// @return array input show function types
@@ -249,18 +250,20 @@ function inputValidateTypes ()
                    "id" => _m("Id"),
                    "date" => _m("Date"),
                    "bool" => _m("Boolean"),
-                   "user" => _m("User"));	//added 03/01/02,setu
+                   "user" => _m("User"),
+				   "reader" => _m("Reader Username = proove uniqueness"),
+				   "reader mail" => _m("Reader E-mail = proove uniqueness"));	//added 03/01/02,setu
 }
 
 function inputInsertTypes ()
 {
-    return array ("qte" => _m("Text"),
-                 "boo" => _m("Boolean"),
-                 "fil" => _m("File"),
-                 "uid" => _m("User ID"),
+    return array ("qte" => _m("Text = don't modify"),
+                 "boo" => _m("Boolean = store 0 or 1"),
+                 "fil" => _m("File = uploaded file"),
+                 "uid" => _m("User ID = always store current user ID"),
                  "log" => _m("Login name"),
                  "ids" => _m("Item IDs"), 
-                 "now" => _m("Now")
+                 "now" => _m("Now = always store current time")
                /*"dte" => _m("Date"), 
                  "cns" => _m("Constant"), 
                  "num" => _m("Number"), 
