@@ -24,20 +24,10 @@ http://www.apc.org/
 # this script updates the database to last structure, create all tables, ...
 # can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
-/*
-# commented out DB Access Configuration, as this is set in config.php3
-
-# DB Access Configuration
-define("DB_HOST", "localhost");
-define("DB_NAME", "aa-db");
-define("DB_USER", "aa-user");          # user have to have MySQL permission to 
-define("DB_PASSWORD", "somepasswd");   # CREATE ana DROP tables
-*/
 
 # need config.php3 to set db access, and phplib, and probably other stuff
 $AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa/include/"; 
 #$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/"; 
-
 
 require $GLOBALS[AA_INC_PATH]."config.php3";
 
@@ -917,6 +907,9 @@ echo '<h2>Update OK</h2>';
 
 /*
 $Log$
+Revision 1.6  2001/07/09 18:02:57  honzam
+removed not used database credentials
+
 Revision 1.5  2001/06/21 14:15:45  honzam
 feeding improved - field value redefine possibility in se_mapping.php3
 
