@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ while (list($to_field_id,$val) = each($fmap)) {
   $catVS->add("from_slice_id", "unpacked", $from_slice_id);
   $catVS->add("to_slice_id", "unpacked", $slice_id);
   $catVS->add("to_field_id", "quoted",$to_field_id);
-  $catVS->add("from_field_name", "quoted", $map_to[$val]);
+  $catVS->add("from_field_name", "text", $map_to[$val]);
 
   switch ($val) {
     case _m("-- Not map --") :
@@ -63,13 +63,13 @@ while (list($to_field_id,$val) = each($fmap)) {
     case _m("-- Value --"):
       $flag = FEEDMAP_FLAG_VALUE ;
       $catVS->add("value", "quoted", $fval[$to_field_id]); break;
-	case _m("-- Joined fields --"):
-	  $flag = FEEDMAP_FLAG_JOIN;
-      $catVS->add("value", "quoted", $fval[$to_field_id]); break;  
-	case _m("-- RSS field or expr --"):
-	  $flag = FEEDMAP_FLAG_RSS;
-      $catVS->add("value", "quoted", $fval[$to_field_id]); 
-      if (! $map_to[$val]) $catVS->add("from_field_name",$fval[$to_field_id]);
+    case _m("-- Joined fields --"):
+      $flag = FEEDMAP_FLAG_JOIN;
+      $catVS->add("value", "quoted", $fval[$to_field_id]); break;
+    case _m("-- RSS field or expr --"):
+      $flag = FEEDMAP_FLAG_RSS;
+      $catVS->add("value", "quoted", $fval[$to_field_id]);
+      if (! $map_to[$val]) $catVS->add("from_field_name", "text", $fval[$to_field_id]);
       unset($map_to[$val]);
       break;
     case  FEEDMAP_FLAG_EXTMAP :
@@ -94,7 +94,7 @@ if ($map_to && is_array($map_to)) {
     $catVS->add("from_slice_id", "unpacked", $from_slice_id);
     $catVS->add("to_slice_id", "unpacked", $slice_id);
     $catVS->add("from_field_id", "quoted", $from_field_id );
-    $catVS->add("from_field_name", "quoted", $map_to[$from_field_id] );
+    $catVS->add("from_field_name", "text", $map_to[$from_field_id] );
 
     $catVS->add("flag", "quoted",FEEDMAP_FLAG_EXTMAP);
     $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
