@@ -26,10 +26,10 @@
  * @package UserInput
  * @version $Id$
  * @author Honza Malík, Jakub Adámek, Econnect
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -47,8 +47,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/** 
- * Handle with PHP magic quotes - quote the variables if quoting is set off 
+/**
+ * Handle with PHP magic quotes - quote the variables if quoting is set off
  * @param mixed $val the variable or array to quote (add slashes)
  * @return mixed the quoted variables (with added slashes)
  */
@@ -59,23 +59,23 @@ $debugfill=$GLOBALS[debugfill];
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
-  }  
+  }
   for (reset($val); list($k, $v) = each($val); )
     $ret[$k] = Myaddslashes($v, $n+1);
   return $ret;
-}    
- 
-if (!get_magic_quotes_gpc()) { 
-  // Overrides GPC variables 
+}
+
+if (!get_magic_quotes_gpc()) {
+  // Overrides GPC variables
   if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
+      $$k = Myaddslashes($v);
 }
 
 /** APC-AA configuration file */
@@ -97,13 +97,13 @@ require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
-    
+
 function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
     $GLOBALS["HTTP_POST_VARS"]["result"] = $txt;
-    // allows fillform to use this data 
-    $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = 
-        StripslashesArray ($GLOBALS["content4id"]);            
+    // allows fillform to use this data
+    $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] =
+        StripslashesArray ($GLOBALS["content4id"]);
     if (!$url) huhe("Warning: no Url on anonymous form (could be  ok_url or err_url missing");
     $GLOBALS["shtml_page"] = $url;
     if ($GLOBALS[debugfill]) huhl("Filler:UseShowResult");
@@ -123,45 +123,45 @@ function SendErrorPage($txt) {
         echo HtmlPageBegin("");
         echo "</head><body>";
         if( is_array( $txt ) ) {
-            PrintArray($txt);   
+            PrintArray($txt);
         } else echo $txt;
         echo "</body></html>";
         exit;
     }
-    
-    else if (! $GLOBALS["use_post2shtml"]) 
+
+    else if (! $GLOBALS["use_post2shtml"])
        go_url( con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000)));
-    
+
     else UseShowResult ($txt,$GLOBALS["err_url"]);
-}  
+}
 
 /**
- * Loads a page if posting is successful. If the ok_url parameter is passed,  
+ * Loads a page if posting is successful. If the ok_url parameter is passed,
  * redirects to the specified URL, else returns to the calling page.
  */
 function SendOkPage($txt) {
     global $debugfill;
     if ($debugfill) huhl("Filler:SendOkPage:",$txt);
     if( ! $GLOBALS["ok_url"] )
-        go_url($GLOBALS[HTTP_REFERER]);    
-        
-    else if (! $GLOBALS["use_post2shtml"]) 
+        go_url($GLOBALS[HTTP_REFERER]);
+
+    else if (! $GLOBALS["use_post2shtml"])
         go_url($GLOBALS["ok_url"]);
-    
+
     else UseShowResult($txt,$GLOBALS["ok_url"]);
-}  
+}
 
 
 # init used objects
 #if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
-if( !$slice_id ) SendErrorPage(array ("fatal"=>_m("Slice ID not defined"))); 
+if( !$slice_id ) SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
 
 $p_slice_id = q_pack_id($slice_id);
 $slice_info = GetSliceInfo($slice_id);
 
 if( !$slice_info ) SendErrorPage(array ("fatal"=>_m("Bad slice ID")));
 
-// if you want to edit an item from an anonymous form, prepare its ID into 
+// if you want to edit an item from an anonymous form, prepare its ID into
 // the my_item_id hidden field
 if (!$my_item_id) {
     $my_item_id = new_id();
@@ -172,9 +172,9 @@ else {
     $insert = ! $db->next_record();
 }
 
-ValidateContent4Id ($err_valid, $slice_id, $insert ? "insert" : "update", $my_item_id, 
+ValidateContent4Id ($err_valid, $slice_id, $insert ? "insert" : "update", $my_item_id,
     ! $notvalidate, $notshown);
-    
+
 if( !(isset($prifields) AND is_array($prifields)) )
 SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
 
@@ -188,35 +188,35 @@ if (count($err_valid) > 1) {
     }
 }
 
-// prepare content4id array before calling StoreItem 
+// prepare content4id array before calling StoreItem
 $content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
 
 // copy old values for fields not shown in the form
 if (! $insert && is_array ($notshown)) {
     reset ($notshown);
-    while (list ($vfield_id) = each ($notshown)) 
+    while (list ($vfield_id) = each ($notshown))
         $field_ids[] = $vfield_id;
     $zids = new zids($field_ids);
     for ($i = 0; $i < $zids->count(); $i ++) {
         $field_id = $zids->packedids ($i);
         $content4id [$field_id] = $oldcontent4id [$field_id];
     }
-}        
+}
 
 if ($insert) {
     $content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
 
     // put the item into the right bin
-    $bin2fill = $slice_info["permit_anonymous_post"]; 
+    $bin2fill = $slice_info["permit_anonymous_post"];
     if( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
-    
+
     // you may force to put the item into a higher bin (active < hold < trash)
-    $bin2fill = max ($bin2fill, $force_status_code);  
+    $bin2fill = max ($bin2fill, $force_status_code);
     $content4id["status_code....."][0][value] = $bin2fill;
-}    
+}
 
 else if (!is_array ($result)) {
-    // Proove we are permitted to update this item. 
+    // Proove we are permitted to update this item.
     switch ($slice_info["permit_anonymous_edit"]) {
     case ANONYMOUS_EDIT_NOT_ALLOWED: $permok = false; break;
     case ANONYMOUS_EDIT_ALL:         $permok = true; break;
@@ -224,7 +224,7 @@ else if (!is_array ($result)) {
     case ANONYMOUS_EDIT_NOT_EDITED_IN_AA:
         $oldflags = $oldcontent4id["flags..........."][0]['value'];
 	    // are we allowed to update this item?
-    	$permok = ($oldflags & ITEM_FLAG_ANONYMOUS_EDITABLE != 0); 
+    	$permok = ($oldflags & ITEM_FLAG_ANONYMOUS_EDITABLE != 0);
         $content4id["flags..........."][0]['value'] = $oldflags;
         break;
     case ANONYMOUS_EDIT_HTTP_AUTH:
@@ -232,43 +232,43 @@ else if (!is_array ($result)) {
         // Here we don't get the $_SERVER["REMOTE_USER"] information.
         $permok = true;
         break;
-    case ANONYMOUS_EDIT_PASSWORD:    
+    case ANONYMOUS_EDIT_PASSWORD:
         $permok = false;
-    	reset ($fields);    
+    	reset ($fields);
     	while (list ($fid) = each($fields))
     		if (substr ($fid,0,14) == "password......") {
                 $password = $content4id[$fid][0]['value'];
-                if (!$text_password && $password) 
+                if (!$text_password && $password)
                     $password = md5 ($password);
-    			$permok = ($oldcontent4id[$fid][0]['value'] == $password); 
+    			$permok = ($oldcontent4id[$fid][0]['value'] == $password);
                 break;
     		}
         break;
     }
-    
+
     if (! $permok)
         $result["permissions"] = _m("You are not allowed to update this item.");
 }
 
 if ($debugfill) huhl("result=",$result);
 
-// See doc/anonym.html for structure of $result, which is intended 
+// See doc/anonym.html for structure of $result, which is intended
 // for fillform.php3 to interpret and display
 
 
 #if ($debugfill) huhl("content4id=",$content4id);
 if ($debugfill) huhl("Going to Store Item");
-if( is_array ($result)) 
-    SendErrorPage( $result ); 
+if( is_array ($result))
+    SendErrorPage( $result );
  # update database
-else if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, 
+else if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert,
           true, true, $oldcontent4id )) { # insert, invalidatecache, feed
     if ($debugfill) huhl("Filler: sending error");
     SendErrorPage ( array ("store" => _m("Some error in store item.")));
   }
   else {
     if ($debugfill) huhl("Filler: Sending ok");
-    SendOkPage ( array ("success" => $insert ? "insert" : "update" ));    
+    SendOkPage ( array ("success" => $insert ? "insert" : "update" ));
   }
 
 ?>

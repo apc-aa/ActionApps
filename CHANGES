@@ -1,3 +1,9 @@
+04/10/03 - new CountHit function, so displaying fulltext is quicker
+         - improved slice selectbox - better titles for different slice types
+         - fixed triggers problem - it did not work properly
+         - redesigned permission definition in perm_core to be more clear
+           for modules other than slice (mainly optical change)
+         - Links module much improved
 04/08/03 - fixed layout bugs in menu_util (showed up in mac ie, included
            colspan=2 applied to an IMG
 04/05/03 - enhanced the view types definitions in constant.php3 so that
@@ -7,53 +13,54 @@
          - added a new setting to Alerts Selection Set view, to choose
            whether the corresponding filters should be grouped by selections
            (see doc/reader.html for a description)
-         - fixed Alerts manual sending: all collections were sent instead of 
+         - fixed Alerts manual sending: all collections were sent instead of
            only the current one
-         - added mutual exclusion to reader management usernames and AA 
+         - added mutual exclusion to reader management usernames and AA
            permissions usernames (the same username can't be used in both)
          - separated Alerts doc to doc/alerts.xml and enhanced it
 03/31/03 - updated all language files with xmgettext
-(jakub)    and added some Czech translations 
+(jakub)    and added some Czech translations
          - changed sql_update to work better with cron entries and updated
            the alerts cron entries
-03/29/03 - improved the Anonym Form Wizard 
-(jakub)  - improved the Send Email Wizard, now it allows using field aliases             
+03/29/03 - improved the Anonym Form Wizard
+(jakub)  - improved the Send Email Wizard, now it allows using field aliases
          - added links to reader.html and anonym.html to doc/index.html
 03/28/03 - fixed bug with sliceobj that broke RSS
 (mitra)  - changed debugging in itemfunc
          - fixed bug searchlib not showing items with no exp or publish date
-03/24/03 - fixed "Bad Table view ID: modedit" bug when switching from one module 
+03/25/03 - fixed problem with "&" character in parameter to shtml page (honzam)
+03/24/03 - fixed "Bad Table view ID: modedit" bug when switching from one module
 (honzam)   type to another
-         - fixed: design setting is not lost when you scroll to another page 
+         - fixed: design setting is not lost when you scroll to another page
            in Related Item window
-         - Fixed problem of duplicitly fed items when source item is edited 
+         - Fixed problem of duplicitly fed items when source item is edited
            again
 03/24/03 - removed the old Alerts scripts from misc/alerts (jakub)
 03/24/03 - fixed several things in Alerts (jakub)
 03/24/03 - fixed bug of empty row appearing in "Two boxes" input type
-(honzam) - new keyword "<!--Vacuum-->" can be used in "No item message" 
+(honzam) - new keyword "<!--Vacuum-->" can be used in "No item message"
            parameter in view or slice setup, which will display nothing
-         - new view.php3 command 'o', which behaves exactly like 'x' but item 
+         - new view.php3 command 'o', which behaves exactly like 'x' but item
            hit-count is not increased
          - old selected values are highlighted ("sel_on" style) in SELECT-boxes
          - AA finder search now searches also in view ids, slice names and ids
          - fixed problem, when no file is specified in {include()} inline alias
-         - fixed problem with language support in loginform (with new mgettext 
+         - fixed problem with language support in loginform (with new mgettext
            language environment)
-         - fixed bug in random message view (random view parameter) 
+         - fixed bug in random message view (random view parameter)
            (it did not work after zids update)
          - fixed problem with default date, setting from anonymous input forms
-         - fixed problem with status_code, edited_by and posted_by field 
-           in anonymous input forms - it is not required even if marked 
+         - fixed problem with status_code, edited_by and posted_by field
+           in anonymous input forms - it is not required even if marked
            as required in fields setting
-         - fixed bug in "Two boxes" input type - it works again. Fixed warnings 
+         - fixed bug in "Two boxes" input type - it works again. Fixed warnings
            messages appering when array is empty in "Two boxes" input type.
          - fixed "Bad include file" problem in 'AA finder', 'Delete slice', ...
          - better debugtimes support in site module
          - added functions for clearing zids and adding new elements to zids
-03/20/03 - constants view - added new aliases for description, level, short_id 
-(honzam) - added "url" view for list of urls (good for search engines) 
-         - permission to empty trash is asigned also to Editors (not only to 
+03/20/03 - constants view - added new aliases for description, level, short_id
+(honzam) - added "url" view for list of urls (good for search engines)
+         - permission to empty trash is asigned also to Editors (not only to
            administrators)
          - fixed bug with anonymous user login
          - fixed bug - not replaced lineends on Mac-type texts
@@ -61,28 +68,28 @@
 03/14/03 - fixed slice selector to show only permitted modules (jakub)
 03/11/03 - globalised pagecache to avoid multiple purges (mitra)
 03/11/03 - some more debugging code in image upload and manipulation (mitra)
-03/10/03 - addedparamater to UseShowResult (was assuming err_url even on OK) 
+03/10/03 - addedparamater to UseShowResult (was assuming err_url even on OK)
            (mitra)
 03/10/03 - changed $db3 to getDB/freeDB to fix bug in item.php3 (mitra)
 03/10/03 - insert_fnc_fil now preserves previously uploaded file or URL (mitra)
-03/08/03 - removed duplicate new_id() from post2shtml and required util.php3 
+03/08/03 - removed duplicate new_id() from post2shtml and required util.php3
            (mitra)
 03/08/03 - added links to Alerts modules to Item Manager submenu (jakub)
 03/08/03 - added some ? help icons to slice settings (jakub)
 03/08/03 - added the Reading Password slice setting, see FAQ (jakub)
 03/08/03 - added Alerts section to Item Manager submenu (jakub)
-03/08/03 - created the file-lock synchronization mechanism, 
+03/08/03 - created the file-lock synchronization mechanism,
            see include/file_lock.php3 (jakub)
-03/08/03 - added a new feature "Mailman: create list", see doc/reader.html 
+03/08/03 - added a new feature "Mailman: create list", see doc/reader.html
            (jakub)
-03/07/03 - joined the Slice Wizard Welcome emails with other emails, added 
+03/07/03 - joined the Slice Wizard Welcome emails with other emails, added
            "email templates" to menu (jakub)
-03/06/03 - fixed (?) design of index.php3 with <tr><td> around item manager view 
+03/06/03 - fixed (?) design of index.php3 with <tr><td> around item manager view
            (jakub)
 03/06/03 - changed some labels in Alerts (jakub)
-03/06/03 - fixed filler.php3 so that it does not call ErrPage when everything OK 
+03/06/03 - fixed filler.php3 so that it does not call ErrPage when everything OK
            (jakub)
-03/06/03 - reorganized the module select box to groups by module / slice type 
+03/06/03 - reorganized the module select box to groups by module / slice type
            (jakub)
 03/06/03 - added an image to the title of Reader Management slices and to the
            title of Alerts (jakub)
@@ -93,9 +100,9 @@
          -    uses ImageTrueColor on GD2 for Jpeg old version goes mono on GD2
          -    Added PrintSupportedTypes for test.php3
          - itemfunc.php3 - added debugging $debugupload=1
-         -   commented out Event_ItemAfterInsert etc since crashes         
-03/04/03 - new parameters columns and move_right for Radio Button input type, 
-(honzam)   which allows you to put radiobuttons in the grid (just like for 
+         -   commented out Event_ItemAfterInsert etc since crashes
+03/04/03 - new parameters columns and move_right for Radio Button input type,
+(honzam)   which allows you to put radiobuttons in the grid (just like for
            Multiple Checkboxes)
          - fixed problem with language files in links module
 03/04/03 - added display of GD types in test.php3
@@ -103,53 +110,53 @@
          - Added some debugging to PageCache
          - Added stack of values for properly invalidating nested views
 02/27/03 - fixed bug of not storing related items
-(honzam) - fixed bug with wrong display multiple checkboxes input 
+(honzam) - fixed bug with wrong display multiple checkboxes input
            when "move down" is ON
          - fixed bug of not showing cron admin pages
-02/25/03 - fixed bug of not showing buttons in related item select window 
+02/25/03 - fixed bug of not showing buttons in related item select window
            (honzam)
-02/20/03 - added the mailman feature, which creates files with lists of 
+02/20/03 - added the mailman feature, which creates files with lists of
            email addresses (jakub)
 02/20/03 - added new input type field for itemedit - Hidden
 (honzam) - added new alias function f_o which displaye "New" or "Old"
            or such text for the item
-         - added banner parameter to slice.php3 
+         - added banner parameter to slice.php3
            (see http://apc-aa.sourceforge.net/faq/#sliceparam)
          - added database optimize script - called from AA cron.php3
          - new Links module (not complete, yet)
          - fixed wrong order of odd/even rows in itemview (Index)
          - do not load already loaded language file in mgettext environment
-         - new manager class for administration of items (still in Links module 
+         - new manager class for administration of items (still in Links module
            only)
          - removed old, unused functions in searchlib
          - it is impossible to use "AA Core slice" as template, now
          - fixed problem of not showing roles for slices in user management
          - fixed bug with call nonmember function in itemfunct.php3
-         - constants in selectbox is shown even if they have the same value 
+         - constants in selectbox is shown even if they have the same value
            (space added)
-         - added new paramewter for Selectbox input field - "show all" which 
+         - added new paramewter for Selectbox input field - "show all" which
            displays all items including expited ones for slice
 02/20/03 - added parameter wizzard for uploaded file (mitra)
-         - fixed warning about missing field in fpr example {alias::f_e:add} 
+         - fixed warning about missing field in fpr example {alias::f_e:add}
          - more functionality in sliceobj
          - another check in stringexpand
-         - fixed permissions to allow adding AUTHOR EDITOR ADMINISTRATOR 
+         - fixed permissions to allow adding AUTHOR EDITOR ADMINISTRATOR
            (may not be ok)
 02/18/03 - added slice_id=$slice_id automatically to the menu_util and removed
            from the items in menu.php3 (jakub)
 02/17/03 - updated sql_update to match the current changes
 02/17/03 - fixed the bug in TableEdit with not deleting items
-02/17/03 - fixed the bug in Item Manager with ignoring 0 in the Search box 
+02/17/03 - fixed the bug in Item Manager with ignoring 0 in the Search box
            (jakub)
 02/17/03 - fixed the bug in se_profile and profile with non-existing func
            inputDefaultTypes() (jakub)
-02/17/03 - added "if (class_exists(DB_AA)) return" to extsess and extsessi 
+02/17/03 - added "if (class_exists(DB_AA)) return" to extsess and extsessi
            (jakub)
 02/17/03 - added zids::refill() function (jakub)
 02/17/03 - improved the Anonymous Wizard to match the other changes (jakub)
 02/17/03 - added a new field to slice settings, "Allow anonymous editing",
            with several options, described in doc/anonym.html (jakub)
-02/17/03 - fixed several bugs in filler and fillform, improved their 
+02/17/03 - fixed several bugs in filler and fillform, improved their
            documentation, additional features (jakub)
 02/17/03 - added a new Field validation function, "Unique e-mail", which
            combines the "Unique" and "e-mail" validations (jakub)
@@ -166,11 +173,11 @@
          - added some reset's in getxml
          - admin/index will now tell you WHICH slice you can't edit
          - added test option to RSS feed adder
-         - added views to import and export - still not working properly! 
-         - added flag EXTSESSEITHER_INCLUDED to get around bugs with 
+         - added views to import and export - still not working properly!
+         - added flag EXTSESSEITHER_INCLUDED to get around bugs with
             multiple includes until these get fixed
          - commented out security risk default_fnc_variable (mitra)
-         - created include/viewobj.php3 
+         - created include/viewobj.php3
          - added mroe functionality to sliceobj, especially slice2
          - added getDB and freeDB to remove guessing about which AA_DB to use
          - created xml_serializer.php3 for object <-> xml
@@ -186,16 +193,16 @@
            Auth handlers set. (jakub)
 02/11/03 - created the Auth feature which updates the auth_user and auth_group
            tables so allowing to use the mysql_auth Apache module (jakub)
-02/05/03 - changed almost all files by changing require to require_once, 
+02/05/03 - changed almost all files by changing require to require_once,
            deleting the "if (defined) return" constructs and changing
            GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"] (jakub)
 02/04/03 - fixed bug in sliceimp.xml (tested $add instead of $add_fields)
          - fixed so displays Headlines of conflicting items
          - added functionality to import and export XML
-02/05/03 - changed almost all files by changing require to require_once, 
+02/05/03 - changed almost all files by changing require to require_once,
            deleting the "if (defined) return" constructs and changing
            GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"] (jakub)
-         - fixed so conflict screen will still import from file, (textarea 
+         - fixed so conflict screen will still import from file, (textarea
            truncates)
 02/04/03 - sql_update.php3: Changed the Alerts tables, added the Email table
 02/04/03 - big changes in init_page. The script was a mess. With mgettext
@@ -207,56 +214,56 @@
            the code with them. (jakub)
 02/04/03 - added the Anonymous Form Wizard (jakub)
 02/04/03 - slightly changed the "Language" field in Slice Settings (jakub)
-02/04/03 - fixed Slice Deleting (was in a bad state, deleted almost nothing) 
+02/04/03 - fixed Slice Deleting (was in a bad state, deleted almost nothing)
            (jakub)
-02/04/03 - added the Reader Management Minimal template to sql_update.php3 
+02/04/03 - added the Reader Management Minimal template to sql_update.php3
            (jakub)
 02/04/03 - added Hex checkbox to Slice Export (default), uncheck to get XML
 02/04/03 - fixed bug in discussion views (mitra)
 02/04/03 - fixed new_id to skip ids ending in space (honza, via mitra)
-02/04/03 - added sliceobj.php3 to start encapsulating slice db manipulation 
+02/04/03 - added sliceobj.php3 to start encapsulating slice db manipulation
            (mitra)
          - fixed bug with error handling in xmlclient.php3
          - updated install-4.html to show no more aadb.sql
          - added % operator to math
          - support empty format string to math
 02/01/03 - removed "Edit" from uneditable aliases in se_view (mitra)
-         - added _#ITEMINDX and f_e:itemindex  for item number within a view 
-         - added _#ADD_ITEM standard alias, for putting on views to jump to add 
+         - added _#ITEMINDX and f_e:itemindex  for item number within a view
+         - added _#ADD_ITEM standard alias, for putting on views to jump to add
            item (uses f_e)
-         - added {dequote:....} to stringexpand to allow { } in fields where 
+         - added {dequote:....} to stringexpand to allow { } in fields where
            needed
-         - added a generic extensions syntax to stringexpand via an array 
+         - added a generic extensions syntax to stringexpand via an array
            of functions
-         - made huhl smarter, can print object via its printobj() method, 
+         - made huhl smarter, can print object via its printobj() method,
            implemented for zids.
 02/01/03 - fixed bug with empty cmd[20]=x-20-   so returns empty set
-01/30/03 - added support for match field "short_id" to f_q (could still use 
+01/30/03 - added support for match field "short_id" to f_q (could still use
            return field) (mitra)
 01/30/03 - fixed bug in itemfunc where file not uploaded (mitra)
 01/30/03 - fixed bug in {math where parameters contain aliases (mitra)
 01/30/03 - allow time_limit parameter to extend PHP timeout on view.php3 (mitra)
          - switched ereg for preg in stringexpand 10000* speedup! (mitra)
          - added debug_times parameter to print timestamps (mitra)
-01/28/03 - added new Password and Change Password field type and insert function 
+01/28/03 - added new Password and Change Password field type and insert function
            (jakub)
 01/28/03 - added new Random function into Field Default (jakub)
-01/28/03 - added parameters for Field Validation, Param Wizard for Field 
+01/28/03 - added parameters for Field Validation, Param Wizard for Field
            Validation and new Unique validation (jakub)
 01/28/03 - added paramater wizzard for i_s (mitra)
          - added some more warnings: in i_s, and stringexpand/alias
          - fixed title on site admin window
          - added test for GD into admin/test.php3
-01/27/03 - fixed language constants in so many files, hopefully completely 
+01/27/03 - fixed language constants in so many files, hopefully completely
            (jakub)
 01/27/03 - changed design of se_inputform.php3: added 2 new param wizards (jakub)
 01/27/03 - improved param wizard design with buttons (jakub)
 01/27/03 - fixed bug: slice was not deleted from module table (jakub)
-01/26/03 - added i_s as in {alias:{img_src.........}:i_s:} to generate height 
+01/26/03 - added i_s as in {alias:{img_src.........}:i_s:} to generate height
            and width (mitra)
-01/26/03 - fixed bad url from slicedel2 to slicedel 
+01/26/03 - fixed bad url from slicedel2 to slicedel
 01/25/03 - added warnings to GD tests (controlled by errcheck=1) (mitra)
-01/25/03 - restored en_site_lang.php3 since _m conversion not done completely 
+01/25/03 - restored en_site_lang.php3 since _m conversion not done completely
            (mitra)
 01/24/03 - bug fix in slicedit.php3, mistyped URL sliceEdit.php3 (Jakub)
 01/24/03 - changed design of se_inputform.php3 (Jakub)
@@ -270,33 +277,33 @@
          - added admin/test.php3 to CVS to enable checking options
 01/23/03 - stringexpand - fixed bug in math (mitra)
 01/23/03 - commented out insecure default_fnc_variable (mitra)
-         - fixed zids.guesstype to allow for buggy shorter ids (14 or 15 char) 
+         - fixed zids.guesstype to allow for buggy shorter ids (14 or 15 char)
          - fixed new_id to only return 16 char ids in future
 01/22/03 - fixed buggy shortids() function in zids.php3 (honzam)
 01/22/03 - fixed typo sliceedit -> slicedit (mitra)
 01/21/03 - code rule changes (mitra)
-         - added global flag $errcheck like $debug but generates warnings 
+         - added global flag $errcheck like $debug but generates warnings
            on strangeness
          - added zids.php3 to encapsulate id management including:
            * adds support for tagged ids in many places (not all yet)
-           ** If related item window field set to store text, it will cleanly 
+           ** If related item window field set to store text, it will cleanly
               edit these
            *** More changes to related item window coming
-           * duplicates pack_id and unpack_id to pack_id128 and unpack_id128 
+           * duplicates pack_id and unpack_id to pack_id128 and unpack_id128
              which check type
          - commented out require of  _lang.php3 files from config.php3
-01/21/03 - changed {....} expansion to use f_h for fields, allowing multi-value 
+01/21/03 - changed {....} expansion to use f_h for fields, allowing multi-value
            fields
          - fixed bug in stringexpand for scroller (mitra)
-01/20/03 - modified mgettext language files extension from .inc to .php3 
+01/20/03 - modified mgettext language files extension from .inc to .php3
            (mainly for backward compatibility) (jakub)
 01/17/03 - changed all January dates here from /02 to /03 :-)) (jakub)
-01/17/03 - changed name loginform.html to loginform.inc, the name was nonsense 
+01/17/03 - changed name loginform.html to loginform.inc, the name was nonsense
            (jakub)
 01/17/03 - BIG CHANGE: moved the complete AA to mgettext (jakub)
             * see documentation in include/lang/readme.html and misc/mgettext/*
             * Finished the scripts in misc/mgettext and include/mgettext.php3
-            * In almost every script: All language constants replaced by _m() 
+            * In almost every script: All language constants replaced by _m()
               calls
             * All language files include/??_????_lang.php3 removed.
             * Updated language files in include/lang.
@@ -306,8 +313,8 @@
             * changed global variables in constants.php3 to function calls
             * changed include/init_page.php3 to use mini-gettext
             * changed slice.php3 to use the ??_output_lang.inc language file
-            * changed admin/param_wizard.php3 to use the ??_param_wizard.inc 
-              language file            
+            * changed admin/param_wizard.php3 to use the ??_param_wizard.inc
+              language file
 01/17/03 - Documentation - ref to GD (but no instructions) (mitra)
             -- and ref FAQ for developer CVS install
          - stringexpand: do unalias on results of expanding apc_state or als
@@ -315,7 +322,7 @@
            -- ModW_id2item - convert id to item enabling aliases etc
            -- ModW_arr2str - convert array back to string
            -- ModW_str2arr - convert apc= parameter string to array
-           -- pass apc_state[item] on to unaliasing 
+           -- pass apc_state[item] on to unaliasing
 01/15/03 - fixed bugs in imagefunc.php3 (check for GD, removed debug messages)
          - fixed problem in Item Manager (search field works again)
 01/14/03 - hiding the slice select box for users with access to only one module
@@ -324,87 +331,87 @@
 01/14/03 - new language file selectbox for site module (Site Admin - modedit)
 01/13/03 - added "add" as option to f_e for adding an item;  (mitra)
            created parameter wizard for f_e
-01/12/03 - changed site module to go to prior sibling when deleting rather than 
+01/12/03 - changed site module to go to prior sibling when deleting rather than
            parent (mitra)
-01/12/03 - added default $item=null to new_unalias_recurent to allow calling 
+01/12/03 - added default $item=null to new_unalias_recurent to allow calling
            from site module without warnings (mitra)
-01/12/03 - fixed adding AA_CP_Session to url in site module AAPage where it is 
+01/12/03 - fixed adding AA_CP_Session to url in site module AAPage where it is
            already there.
 01/12/03 - changes to allow _#EDITITEM to be used outside of admin interface
-01/12/03 - combined several ways of redirecting to a URL into common function 
+01/12/03 - combined several ways of redirecting to a URL into common function
            go_return_or_url
-01/11/03 - Fixed item.php3:subst_alias, it relied on old bug of expanding bare 
+01/11/03 - Fixed item.php3:subst_alias, it relied on old bug of expanding bare
            field name without { }
 01/11/03 - Changed typos of _#ITEMEDIT to _#EDITITEM
 01/11/03 - Changed a type $New_silce to $New_slice in init_page.php3
-01/11/03 - Added alias checking so {xx} will also check als[xx] 
+01/11/03 - Added alias checking so {xx} will also check als[xx]
            (it will default to returning "{xx}" if not set)
-01/11/03 - Changed f_e to work in views outside of admin (appends slice_id 
-           instead of session_id if no session id), takes a second parameter - 
-           return url (not currently specifieable with wizzard), and defaults 
+01/11/03 - Changed f_e to work in views outside of admin (appends slice_id
+           instead of session_id if no session id), takes a second parameter -
+           return url (not currently specifieable with wizzard), and defaults
            to $PHP_SELF if running with no $sess.
-01/10/03 - fixed bad display of selected related items, when "Two Boxes" input 
+01/10/03 - fixed bad display of selected related items, when "Two Boxes" input
            type is used (honzam)
          - {influde()} inline construct accepts "http://" includes, now (honzam)
          - fixed bug of bad number of parameters to new_unalias_recurent()
            (honzam)
-         - fixed problem with modification of bad spot when clicked "Back" 
+         - fixed problem with modification of bad spot when clicked "Back"
            in browser for 'site module' (r_spot_id changed to spot_id) (honzam)
          - forbiden "action" field name renamed to "akce" in 'site module' admin
            (honzam)
-         - added missing "util.php3" include in "Module Settings" page 
+         - added missing "util.php3" include in "Module Settings" page
            for 'site module' (modedit.php3) (honzam)
          - fixed bug of not displaying UserManagement pages in NN4.7 (honzam)
-01/10/03 - fixed javascript bugs preventing for example deletion of RSS feeds 
+01/10/03 - fixed javascript bugs preventing for example deletion of RSS feeds
            on Mac IE, two bugs (mitra)
-           -- if the index of a selection is -1 (not selected) you can't 
+           -- if the index of a selection is -1 (not selected) you can't
               retrieve a value
            -- you can't test against undefined, have to test against null.
 01/07/03 - move r_spot_id out of session variable and into URLs (mitra)
-01/06/03 - added "All" option to the scroller in item manager 
+01/06/03 - added "All" option to the scroller in item manager
            (sets listlen to 99999) (mitra)
-01/06/03 - changed cases of "action" to "akce" as form component name because 
-           its a  property of "form". Bug shows up in Omniweb but not in IE 
+01/06/03 - changed cases of "action" to "akce" as form component name because
+           its a  property of "form". Bug shows up in Omniweb but not in IE
            (fee_to.php3,index.php3 related_sel.php3) (mitra)
 01/05/03 - added utils.php3:huhl function for wrapping print_r (mitra)
-         - changed richEditShowable to return false for macintosh (Mac IE 5.2 
+         - changed richEditShowable to return false for macintosh (Mac IE 5.2
            does not support either class or iframe versions of RichTextEdit)
-01/03/03	 - merged string expansion into include/stringexpand.php3 including 
+01/03/03	 - merged string expansion into include/stringexpand.php3 including
            (mitra)
-           -- REMOVE strings from views are now applied to the RESULT, not 
+           -- REMOVE strings from views are now applied to the RESULT, not
               the first parse, this might be significant/bad idea
-           -- Behavior for extra { and } in the strings MIGHT be different 
+           -- Behavior for extra { and } in the strings MIGHT be different
               before, the previous behavior looked inconsistent
            -- removed fake item kludge from include/mail.php3
-           -- item.php3 (i.e. expansion in views) now supports "view.php3" 
+           -- item.php3 (i.e. expansion in views) now supports "view.php3"
               syntax and expansion of apc_state
-           -- QuoteColons now handles { and } as well, this might not always 
+           -- QuoteColons now handles { and } as well, this might not always
               be a good idea
            -- modules/site/site.php3 uses new unalias which means
               ---  it requires switch({m}) instead of switch(m)
               ---  it supports the {math ...} and {include...} syntax
-01/02/03 - fixed bug in site/index.php3 where cache not invalidated when site 
+01/02/03 - fixed bug in site/index.php3 where cache not invalidated when site
            updated
-12/30/02 - spelling correction in _m("There are too many related items. 
-           The number of related items is limited.") all *news_lang.php3 still 
+12/30/02 - spelling correction in _m("There are too many related items.
+           The number of related items is limited.") all *news_lang.php3 still
            in english (mitra)
 12/30/02 - warning comment on slice special case in item.php3 (mitra)
-12/29/02 - Added some comments in site/site and added simple example from sf.net 
+12/29/02 - Added some comments in site/site and added simple example from sf.net
            (mitra)
 12/20/02 - fixed problem with LiveCheckbox (image path/mozilla refresh) (honzam)
          - fixed bug of ignored conditions, when conds[x][value] was 0 (honzam)
-12/17/02 - input type "selectbox with presets" with the "adding" parameter ads 
-           new constant into constants group WITH PRIORITY NUMBER SET TO 
+12/17/02 - input type "selectbox with presets" with the "adding" parameter ads
+           new constant into constants group WITH PRIORITY NUMBER SET TO
            MAX(pri)+10  (honzam)
-12/15/02 - date fields posted from anonymous form takes date from Defaults, if 
+12/15/02 - date fields posted from anonymous form takes date from Defaults, if
            it is send as empty and the field is not marked as REQUIRED (honzam)
 12/13/02 - Removed output from cron (mitra)
-12/11/02 - Allowed - and . in filemanager names in formutils and added err msg 
+12/11/02 - Allowed - and . in filemanager names in formutils and added err msg
            (mitra)
-12/11/02 - fixed bug so Slice Admins can add/edit RSS feeds, not just superadmin 
+12/11/02 - fixed bug so Slice Admins can add/edit RSS feeds, not just superadmin
            (mitra)
-11/21/02 - fixed problem, where slice admin can't edit slice settings 
-           (only superadmins can) 
+11/21/02 - fixed problem, where slice admin can't edit slice settings
+           (only superadmins can)
          - fixed bug of ocasional warning of empty array in sql_parse.php3
          - fixed typo in slice4cache variable name in modules/site/site.php3
 
@@ -422,7 +429,7 @@
          - fixed problem of IsSuperuser() function - it didn't use cached values
          - javascripts moved to new directory - it allows better security
            settings for include directory
-         - fixed {switch()..} bug - default option works, 
+         - fixed {switch()..} bug - default option works,
                                   - empty variable condition works
          - added "empty" class for empty cells in calendar view
          - better handling of Word pasted text
@@ -435,29 +442,29 @@
          - fixed problem with html/plaintext setting on returned itemedit page
 11/07/02 - added doc/param_wizar_list.php3 to provide a complete list of
            field types and alias functions
-11/07/02 - sql_parser updated so that in a search form spaces, hyphens and 
+11/07/02 - sql_parser updated so that in a search form spaces, hyphens and
            apostrophes between two letters don't get special meaning.
            I.e. "south-west" remains "south-west", but "south -west" becomes
            "south AND NOT west"
-11/02/02 - constants could be sorted by click on column name on constants admin 
+11/02/02 - constants could be sorted by click on column name on constants admin
            page
          - cosmetic changes in design
 11/03/02 - new 'site' module
-         - more customization of window for related item selection (Backward 
+         - more customization of window for related item selection (Backward
            link, optional buttons and design based on Item Manager interface)
          - new _#SLI_NAME alias introduced
-         - new utility to import constants to database directly from an array 
+         - new utility to import constants to database directly from an array
            (misc/file2slice/array2constants.php3)
-         - fixed bug in f_d alias function - absolute date range now works as 
+         - fixed bug in f_d alias function - absolute date range now works as
            expected
 10/25/02 - new possibility for selectbox with presets - newly written constant
            can be added automaticaly into 'preset' constants group
-         - first version of Live checkbox - checbox changing database directly 
+         - first version of Live checkbox - checbox changing database directly
            from Item Manager
          - new possibility to use 'login' as default or inserted value for field
          - related item view accepts view conditions now
          - related item view also do not display expired items
-         - rows returned/afected is displayed on debug output (&debug=1 in url) 
+         - rows returned/afected is displayed on debug output (&debug=1 in url)
 10/24/02 - new AA Finder admin page - finds views and slices
 10/18/02 - added mathematical functions for aliases (thanks to Stano and Jakub)
 10/14/02 - new possibility to send emails from discussion (discusion2mail view)
@@ -473,17 +480,17 @@
            old aliases works, so all code is backward compatible
 09/12/02 - added Editorial to Alerts Collection
 09/11/02 - fixed problems with related items view
-         - new possibility to log user searches (queries) (see searchlog 
+         - new possibility to log user searches (queries) (see searchlog
            parameter to slice.php3)
 08/20/02 - first parts of new language environment mini gettext
-08/20/02 - new AA Alerts introduced, allowing to send new items to users by 
+08/20/02 - new AA Alerts introduced, allowing to send new items to users by
            e-mail
-08/20/02 - because MsgPage is sometimes called with menu which again uses some 
-           permissions functions, these occurences were changed to MsgPageMenu 
+08/20/02 - because MsgPage is sometimes called with menu which again uses some
+           permissions functions, these occurences were changed to MsgPageMenu
            in include/msgpage.php3
-08/02/02 - files uploaded to a slice with file manager set on, are uploaded to 
+08/02/02 - files uploaded to a slice with file manager set on, are uploaded to
            directory "items" in File Manager
-07/25/02 - hierarchical constants: added check not to allow users to select one 
+07/25/02 - hierarchical constants: added check not to allow users to select one
            constant twice
 07/23/02 - fixed minor bug, added als[] to scroller sessions
          - added 5th param to hier const field type, Level Names
@@ -491,20 +498,20 @@
 07/21/02 - better names for uploaded files
 07/18/02 - bug fix: sort didn't work with scroller
 07/16/02 - fully functional File Manager with Copy Template feature
-07/12/02 - added a new defaultCondsOperator URL parameter which changes the 
+07/12/02 - added a new defaultCondsOperator URL parameter which changes the
            default operator LIKE to another one
 07/12/02 - changed slice.php3 - it didn't combine correctly URL defined group_by
            etc. with the slice defined parameters.
 07/11/02 - fixed itemview - group by ignores upper/lower case now
-07/08/02 - new 'group_n' parameter for slice.php3 allowing display of first 
-           (second, ...) category only 
+07/08/02 - new 'group_n' parameter for slice.php3 allowing display of first
+           (second, ...) category only
            (good for display of last issue of magazine, for example)
-07/03/02 - new possibility to use data (aliases) from the first item in listing 
+07/03/02 - new possibility to use data (aliases) from the first item in listing
            for the 'top HTML code'
-07/02/02 - new possibility to change all user permissions on one page 
+07/02/02 - new possibility to change all user permissions on one page
            (in user management)
-         - new possibility to sort and mainly group items in 'priority' order 
-           (usable for all fields defined by 'constants' - like categories)  
+         - new possibility to sort and mainly group items in 'priority' order
+           (usable for all fields defined by 'constants' - like categories)
 06/30/02 - added Slice Wizard
 06/26/02 - bugfix - bad parsing of parameters of Input type function (el:.. bug)
          - bugfix - RSS view works again
@@ -527,38 +534,38 @@
          - fixed bug with empty braces for cmd[] and set[] for view
          - removed dependance on 'conds' url parameter for view
          - fixed f_h function (no delimeter if empty value)
-         - fixed problem with AA_INCLUDE_URL on http/https servers - can't load 
-           css file... 
+         - fixed problem with AA_INCLUDE_URL on http/https servers - can't load
+           css file...
          - new operator 'is set'-NOTNULL for conditions
 06/03/02 - added possibility to create view from template (any other view)
 06/01/02 - http/https problem fixed for admin images
          - fixed parsing arrays from .shtml URL parameters (unlimited depth)
          - added possibility to define field mapping for manualy fed slices
-         - the possibility to filter 'to the same' category on Filters page is 
+         - the possibility to filter 'to the same' category on Filters page is
            back (for inner feeding)
 05/31/02 - changes in navigation - new AA menu introduced instead of users menu
          - multiple selects now works well in fillform
          - interface for new module adition
          - include path generalization for richedit
          - fixed bug in jump module - jump between two slices
-         - hierarchical constant editor - support for default value selection, 
+         - hierarchical constant editor - support for default value selection,
            support for addidion to public pages
          - new field_id change utility (good for multiple slice searching)
          - new alias listing column in Admin -> Fields
-         - slice export/import now allows gzipping of data; storing the data to 
-           the file; storing not only slice setting, but the item's data too  
+         - slice export/import now allows gzipping of data; storing the data to
+           the file; storing not only slice setting, but the item's data too
 05/24/02 - added 'number of item viewed counting' to view.php3, too
            (when cmd[]=x-.. used)
          - added information, where constants are used - on constant admin page
          - fixed bug in constant group deletion (all tracks removed, now)
-         - newly created slices uses the same categories as template (no new 
+         - newly created slices uses the same categories as template (no new
            constant group is created, now (BTW - it was buggy, so long))
-         - fixed bug in 'Related item' input type (you can switch from page to 
+         - fixed bug in 'Related item' input type (you can switch from page to
            page and it works, now)
 05/17/02 - new 'textarea with presets' input type
-         - added new possibility to "selectbox with presets" - two field could 
+         - added new possibility to "selectbox with presets" - two field could
            be filled by single selection (source and source_href, for example)
-         - new possibility to concaternate texts filled by presets (field or 
+         - new possibility to concaternate texts filled by presets (field or
            textarea
          - added RLIKE possibility in operator list for views
          - fixed bug of not working url aliases in static view
@@ -567,21 +574,21 @@
          - removed old and unused parameter "query" and all related functions
          - added accesskey "s" for form submit
          - slice owners are ordered by name, now
-         - fixed problem with displayed warning on discussion administration 
+         - fixed problem with displayed warning on discussion administration
            page, when accessed through https
          - fixed bug of ocassional warning of redeclare userdate2sec() function
          - fixed bug of ocassional warning of wrong language file include
 05/15/02 - added 'storemultiasone' option in /misc/file2slice/importer.php3
 05/14/02 - fixed bug in edit constant - se_constedit (udated to modules version)
          - removed debug messages from hierarchy constant editor
-04/25/02 - module interface introduced (not only slices, but other modules are 
+04/25/02 - module interface introduced (not only slices, but other modules are
            now possible to do. see /modules directory for module listing)
          - new 'inline' aliases definition (in {} brckets)
          - new 'propagate changes' possibility for constants
          - new hierarchy constant editor
          - new calendar view
          - new possibility to search across more slices
-         - support for 'group by' setting in admin interface (not only 
+         - support for 'group by' setting in admin interface (not only
            categories) for slice.php3  (Admin -> Design -> Index)
          - more configurable discussions - button definition, separator
          - added css class to scroller
@@ -589,13 +596,13 @@
          - better newlines handling in joining feeds FEED_MAP_JOIN
          - better handling of urls (optional 'http://') in url fields
          - new f_j alias function for lowercase/upercase conversion
-         - possibility to redefine author (created_by........) from anonymous 
+         - possibility to redefine author (created_by........) from anonymous
            postig form
          - new possibility to display random item in view
          - possibility to use shorted set[] and cmd[] parameters in view
          - banner display support in middle of shown items (banner parameter for
            view.php3)
-         - possibility to redefine 'no item found' message by set[] url 
+         - possibility to redefine 'no item found' message by set[] url
            parameter in view.php3
          - anonymous posting timezone correction bugfix, checbox now works, ...
          - new scr_url parameter good for php included slice.php;
@@ -606,9 +613,9 @@
          - itemview moved to separate file
          - support for on-view discussions;
          - removed logs from files
-03/12/02 - new romanian language support (Thanks to Mihály Bakó, StrawberryNet 
-           Foundation), 
-         - new_news_lang.php3 file introduced for better support of many 
+03/12/02 - new romanian language support (Thanks to Mihály Bakó, StrawberryNet
+           Foundation),
+         - new_news_lang.php3 file introduced for better support of many
            language versions
          - fixed bug with file-upload in php 4.1.2
          - aliases added to pagecache lookup for views - bugfix
@@ -623,7 +630,7 @@
          - fixed bug in blurb f_q alias function
 01/12/02 - fixed path in sql_update.php3 and changed docs in install-4.html
 01/09/02 - new possibilty to anonymously edit items on public sites
-         - new possibility to redefine the design of output by fview and iview 
+         - new possibility to redefine the design of output by fview and iview
            url parameter
          - sorting and querying blank fields now fixed (bug 492331)
          - better database indexes
@@ -647,11 +654,11 @@
          - new notification e-mail possibility (notify new item in slice, bins)
          - fixed bug of not displayed items in admin interface (bug in scroller)
          - database conversion script (v1.2.x -- 1.5+) /misc/oldDb2Db
-         - added possibility to fill multiple values to one field by offline 
+         - added possibility to fill multiple values to one field by offline
            filling
-         - added empty row to selectbox for selectin no related item, if the 
+         - added empty row to selectbox for selectin no related item, if the
            field is not required (in inputform)
-         - fixed file upload problem in PHP >= 4.0.3  
+         - fixed file upload problem in PHP >= 4.0.3
          - new import functions for importing CSV files (/misc/file2slice/)
 12/12/01 - better item table flags setting
          - better handling newlines in discussion.php3 and f_h alias function
@@ -668,14 +675,14 @@
          - sort slice/constant in listbox by name
 10/26/01 - new tab2slice_php scripts for data import (thanks to Udo)
 10/24/01 - new parameter wizard for function aliases and input type parameters
-         - fixed bug of two listed slices in slice export 
+         - fixed bug of two listed slices in slice export
          - search expressions with AND, OR, NOT, (, ) allowed in conditions
-         - fixed bug in search (INNER JOIN replaced by LEFT JOIN to content 
+         - fixed bug in search (INNER JOIN replaced by LEFT JOIN to content
            table)
-         - group_by parametr extension for direction specification (+/-) 
+         - group_by parametr extension for direction specification (+/-)
            in slice.php3
          - fixed bug with fourth parameter to f_c
-         - fixed bug with unspecified maxlength parameter in text input field  
+         - fixed bug with unspecified maxlength parameter in text input field
 --------------------
 10/08/01 - v2.0.0
 --------------------
@@ -691,7 +698,7 @@
          - new backup & restore possibility with sql_update.php3 script
          - new e-mail alias function f_m
          - new input type - preselect
-         - generalized permissions functions to be able to store permissions 
+         - generalized permissions functions to be able to store permissions
            for more modules and more AA installations
          - starting with alias different from AA Core (for superadmins)
          - moving item between bins updates "last_edit" and "edited_by" fields
@@ -703,30 +710,30 @@
 08/03/01 - if no time in expiry date is specified, the end of day is stored
 08/02/01 - new cmd[]-d parameter to view.php3 which is much stronger condition
            defining parameter than cmd[]-c
-         - possibility to display expired items (for archves, ...)  
+         - possibility to display expired items (for archves, ...)
 07/31/01 - new - display condition redefining parameter to view.php3 (cmd[]=c)
          - added LIKE operator for view conditions
-         - added '-' operator modifier for relative time conditions. 
+         - added '-' operator modifier for relative time conditions.
            The operator was implemented to view definition too (se_view.php3)
-07/04/01 - new support for custom alias function definitions 
+07/04/01 - new support for custom alias function definitions
            (include/usr_aliasfnc.php3 - not in CVS! - you can create it)
-         - new user defined aliases (see url parameter 'als' to slice.php3)  
-         - new possibility to create item by copying old one 
+         - new user defined aliases (see url parameter 'als' to slice.php3)
+         - new possibility to create item by copying old one
            ('Insert as new' in itemedit.php3 file)
 06/24/01 - new sort and search possibility in admin interface
 06/21/01 - fixed bug of constant assigning to field with multiple selectbox
-         - feeding improved - field value redefine possibility 
+         - feeding improved - field value redefine possibility
            in se_mapping.php3
          - added item ids description, ... to /doc/FAQ.html
-         - enhanced cp command in install.txt 
+         - enhanced cp command in install.txt
 06/15/01 - improved f_h alias function for displaying multiple values
-06/13/01 - added negation in condition alias function f_c 
+06/13/01 - added negation in condition alias function f_c
          - fixed bug of reverse meaning of condition
          - FAQ updated - slice.php3 parameters covered
 06/12/01 - date inputs support time, now
          - new multivalue input possibility - <select multiple>
          - fixed bug in LDAP install documentation
-06/11/01 - feeding improved - new feeding mode "Feed & update" and 
+06/11/01 - feeding improved - new feeding mode "Feed & update" and
            "Feed & update & lock"
 06/08/01 - new slovak language support sk_*_lang.php3 (by Norbert Brazda)
 06/07/01 - fixed bug of not displayed top and bottom html code for fulltext
@@ -737,13 +744,13 @@
 06/04/01 - v1.8.0
 --------------------
 06/01/01 - multiple categories (multiple values at all) for item now works
-         - new item view statistics field (displayed_count) in item table 
+         - new item view statistics field (displayed_count) in item table
            (normal field, so you can view it, sort by it, make conditions ...)
          - new sql_update.php3 script for easy database install & reinstalation
          - new short_id for item (and new x parameter to slice.php3 script) for
            shorter item urls
-         - little changes in view setting - better user interface  
-05/29/01 - shared field displayed in itemedit form, even they are locked for 
+         - little changes in view setting - better user interface
+05/29/01 - shared field displayed in itemedit form, even they are locked for
            update
 05/27/01 - fixed problem with doubled item from search
 05/26/01 - fixed problem with '=' character passed by url
@@ -752,7 +759,7 @@
          - new search parameters in slice.php3, which uses beter search funct.
 05/24/01 - fixed bug of item disapearing after item modify
          - fixed bug of not updated list of item in Item manager after item edit
-05/21/01 - new "field mapping" feature for feeding - se_mapping.php3 
+05/21/01 - new "field mapping" feature for feeding - se_mapping.php3
            (by Ondra Mazanec)
 05/18/01 - new View feature, new and improved search function (QueryIDs)
          - better Message Page handling (not so much)
@@ -763,13 +770,13 @@
          - spanish language added (es_news.lang.php3 and es_common_lang.php3)
 04/17/01 - new script go.php3 for finding links to asiciated items (fed from...)
          - corrected LDIF.init and slapd.conf for LDAP permissions system
-         - fixed bug of not displayed top/bottom HTML code in fulltext 
+         - fixed bug of not displayed top/bottom HTML code in fulltext
            and category
-         - new conditional alias  
+         - new conditional alias
 04/09/01 - order parameter works with '+' sign too in slice.php3
          - new timeorder parameter in slice.php3
          - fixed bug in selecting bin, where to put item in filler.php3
-         - fixed bug of not stored parameter for field input type in 
+         - fixed bug of not stored parameter for field input type in
            se_inputform.php3
          - added size and maxlength parameters to field input type
 03/30/01 - uploaded images goes to sepatrate directories (separated by slice)
@@ -779,7 +786,7 @@
 03/23/01 - fixed problem with displaying quotes (["'\<>]) in se_input_form.php3
          - multiple image (file) uploading into slice now works
 03/19/01 - updated FAQ.html to reflect v1.6
-03/17/01 - feeding now respects current setting of feeding permission (fixed 
+03/17/01 - feeding now respects current setting of feeding permission (fixed
            the "disable feeding doesn't terminate feeding" bug)
          - new "Delete slice" admin page for superusers
          - better anonymous posting support (new filler.php3 script introduced
@@ -801,11 +808,11 @@
          - fixed bug in permission handling (no showed slices for no superusers)
          - added help texts to design pages se_admin, se_fulltext, se_compact
 01/20/01 - final 'I hope' version of APC-wide categories implemented
-         - better categy handling for new slices (predefined its own category 
+         - better categy handling for new slices (predefined its own category
            set)
          - fixed problem with storing item ids to session in too big slices
          - implemented posibility to view multiple fulltext items on one page
-           (see item parameter in slice.php3)         
+           (see item parameter in slice.php3)
 01/19/01 - removed absolute paths to some pictures
          - fixed bug in displaying admin pages (table caption not displayed)
 01/14/01 - modified db table constant (added id column - used with categories)
@@ -815,7 +822,7 @@
          - new include/logs.php3 with utilities for logging (log table modified)
 01/09/01 - located and fixed bug in in PHPLib. Fixed by patching ac_store()\
            function in PHPLib :-(.
-01/08/01 - fixed problem with unpack_id() in some PHP versions (4.0.3) 
+01/08/01 - fixed problem with unpack_id() in some PHP versions (4.0.3)
            (Documents contain no data problem)
 01/04/01 - fixed "cannot redeclare sec2userdate() problem"
          - fixed problem with wrong .htaccess file ("Internal Server Error"
@@ -824,7 +831,7 @@
 25/12/00 - v1.5.2
 --------------------
 The new structure allows
-  - more powerfull customisation of each slice (you can easy add the new 
+  - more powerfull customisation of each slice (you can easy add the new
     field to your slice)
   - new aplications (as joblist, resources, ...) can be done via admin
     interface - not by editing language files.
@@ -832,7 +839,7 @@ The new structure allows
     welcommed)
   - allows threading and grouping of items in future - allows multiple
     selection for the same field in future
-  - ... 
+  - ...
 --------------------
 18/12/00 - v1.2.3
 --------------------
@@ -840,19 +847,19 @@ The new structure allows
 11/16/00 - changed admin leftbar menu order and labels
          - changed default article editor field order & fields
          - improved some of the english labels
-11/15/00 - fixed problem with required Start date and End date 
+11/15/00 - fixed problem with required Start date and End date
          - fixed bug of bad viewed item in itemedit
          - fixed problem with annonymous posted item on encapsulated (SSI) page
 11/13/00 - fixed bad order for default setting of show fields and needed fields
          - fixed problem with bad minutes in date() function
          - list of items in admin interface is not centered
-11/08/00 - fixed problem with bad AA_SL_Sess id - bad copy QUERY_STRING to 
+11/08/00 - fixed problem with bad AA_SL_Sess id - bad copy QUERY_STRING to
            HTTP_GET_VARS
 10/16/00 - big search form can be customized via style sheets
 --------------------
 09/14/00 - v1.2.2
 --------------------
-10/10/00 - new application "Who's who", "Joblist", "Resource" 
+10/10/00 - new application "Who's who", "Joblist", "Resource"
            (support for Web.net's extended item table)
          - better backslashes handling for Query string parsing
          - better database operations result checking
@@ -863,14 +870,14 @@ The new structure allows
 --------------------
 08/29/00 - better validation of id (1-32 chars) and password (any character)
 08/23/00 - fixed security problem with inc parameter to slice.php3
-08/22/00 - fixed problem with lost session id AA_SL_Session in cgi (PHP4) 
+08/22/00 - fixed problem with lost session id AA_SL_Session in cgi (PHP4)
            instalation
 08/18/00 - new installation documentation
 08/17/00 - New possibility of redirected view of item. Alias _#HDLN_URL now
-           points to External link (if link_only=true) or on redirect url 
+           points to External link (if link_only=true) or on redirect url
            (if specified) or on the same page. The redirected url should
            contain <!-- #include ...slice.php3 --> again, but with other look.
-           database modifications necessary: 
+           database modifications necessary:
               ALTER TABLE items ADD redirect VARCHAR (255);
               ALTER TABLE slices ADD d_redirect VARCHAR (255) ;
          - new parameter inc for slice.php3 script (used for displaying static
@@ -880,27 +887,27 @@ The new structure allows
 08/14/00 - fixed "membership of zeros" problem visible in SQL permissions
          - fixed incorrect default for in DelGroup
          - added checking for empty groups with superadmin access in setup.php3
-08/11/00 - added setup script setup.php3 
+08/11/00 - added setup script setup.php3
          - E-mail is not required for user in permission system
 08/07/00 - fixed a few compatibility problems with PHP4
            (in_array defined optionaly, added semicolon to global declarations)
 08/03/00 - fixed bug in sort order in view.php3
          - "No WDDX warning" removed as confusing
-         - session variable r_hidden used instead of HIDDEN html tag 
+         - session variable r_hidden used instead of HIDDEN html tag
            for security lacking data.
          - magic quoting of posted variables if magic_quotes_gpc is off.
 08/02/00 - fixed problem with zero scroller length error message
-         - partialy fixed problem with quoting values on machinech with no 
+         - partialy fixed problem with quoting values on machinech with no
            magic_quotes_gpc = on
          - default variables for new slices defined
-         - new images for "HTML formated" column in admin interface index.php3 
+         - new images for "HTML formated" column in admin interface index.php3
          - some language corrections
 08/01/00 - fixed problem with OpenLDAP and ldap_mod_del (apcaci changes)
          - global SuperAdmin access rights take precedence over slice-specific
          - membership in groups now queried in SQL version of GetIDPerms()
 07/28/00 - deletion of groups now works
          - resolved some differencies in behaviour of perm_sql and perm_ldap
-07/27/00 - to change privileges of other accounts, equality of permissions 
+07/27/00 - to change privileges of other accounts, equality of permissions
            is no longer adequate (higher role is required)
          - superadmin privilege settings in User / Group management
 07/26/00 - added default WDDX value for new slices
@@ -930,7 +937,7 @@ The new structure allows
 06/14/00 - v1.0.1
 --------------------
 06/12/00 - fixed bug of add new slice (it was caused by expiry date
-           removing 6/5/00)         
+           removing 6/5/00)
 06/07/00 - new configurable admin interface (user can select columns
            in admin interface)
 06/05/00 - removed expiry date default setting for slice (so now there
@@ -974,8 +981,8 @@ The new structure allows
 03/09/00 - SGML version of INSTALL
          - all configuration options moved to config.php3
 03/08/00 - new directive OPTIMIZE_FOR_MYSQL which optimizes SQL queries
-           for MySQL database 
-         - new aliases and alises help 
+           for MySQL database
+         - new aliases and alises help
 03/07/00 - alias substitution optimized for speed
 03/02/00 - bug fixed in slice URL setting (slice_url in form colided with
            slice_url in navigation bar)
@@ -993,11 +1000,11 @@ The new structure allows
          - when you insert new user you will go directly to add slice user
            page
 02/21/00 - add user search return all matched users (not only addable one)
-02/17/00 - simplified AuthenticateUsername(), changed declaration of 
+02/17/00 - simplified AuthenticateUsername(), changed declaration of
            AddPermissionPerson() - now requires an array
 02/16/00 - fixed bug in Delete of last assigned permission; changes now at
            attribute level
-02/14/00 - fixed URL generation in Permissions pages           
+02/14/00 - fixed URL generation in Permissions pages
 02/10/00 - speed up page view by spliting util.php3 into util.php3 and
            formutil.php3 (and selective incuding of these files)
 02/08/00 - safer html headers within pages (charset specified)
@@ -1007,8 +1014,8 @@ The new structure allows
 02/03/00 - feeding export enabling/disabling now works
 02/02/00 - new design of editor page index.php3
 01/31/00 - updated perm_all.php3 - pure permission function file - all
-           users have all permissions  
-01/21/00 - Improved speed of compact and fulltext view displaying. 
+           users have all permissions
+01/21/00 - Improved speed of compact and fulltext view displaying.
            (Names os aliases changed to equal lenth one)
          - new: grabing fulltext into abstract, when abstract is empty.
            Length is controlled on slicedit.php3 page.
@@ -1016,9 +1023,9 @@ The new structure allows
            slicedit.php3 - recrement information
          - New "Remove strings" in compact and fulltext view (in order
            to remove empty braces and other things from display)
-01/20/00 - fixed bugs on category sorting (1. database error ocurred, 
+01/20/00 - fixed bugs on category sorting (1. database error ocurred,
            2. skipped to another slice)
-         - Deleted slices are not accessible for authors-administrators from 
+         - Deleted slices are not accessible for authors-administrators from
            editor page index.php3 (super user (as toolkit one) see all
            slices)
          - Deleted slices are not accessible for view, too (in slice.php3)
@@ -1030,13 +1037,13 @@ The new structure allows
 01/14/00 - editor.php3 ranamed to index.php3, index.php3 removed
 01/13/00 - new: item fulltext preview button in editor.php3
          - new: slice management strip in editor.php3
-01/12/00 - new LDAP permission system (user management with roles, add user 
+01/12/00 - new LDAP permission system (user management with roles, add user
            from ldap directory, not new LDAP users interface)
          - all known pages (without index.php3) support LDAP permission
            system
 01/11/00 - max nesting of groups of users is checked (it avoids cycle
            in group definition)
-01/06/00 - if you add slice, new ldap entry for this object is created 
+01/06/00 - if you add slice, new ldap entry for this object is created
 01/05/00 - new file perm_all.php3 which is modified permission library
            perm_ldap.php3. perm_all.php3 gives any permisiion to any user
          - simple user management works
@@ -1048,7 +1055,7 @@ The new structure allows
            on se_search.php3 page
 12/16/99 - new example slice with examples of category links, homepage
            (highlight) links, small search field and full search form link
-         - improved managing of spdecial characters in forms (like ', ", \)  
+         - improved managing of spdecial characters in forms (like ', ", \)
 12/15/99 - new slice administration page se_search.php3 for big search form
            setting
 12/14/99 - fixed bug in deleting items (bug due to move full_text to new
@@ -1060,7 +1067,7 @@ The new structure allows
 12/10/99 - table items divided to items and fulltexts, where fulltexts of
            items are stored (its very useful for searching, expecialy when
            you want to search feeded items)
-         - new parameter bigsearch to slice.php3 - shows big search form 
+         - new parameter bigsearch to slice.php3 - shows big search form
            (the searching is not 100%, yet - not search in feeded item
            and maybe other bugs)
 12/09/99 - slice url field added to slices database and related scripts,
@@ -1105,7 +1112,7 @@ The new structure allows
            today(getdatetime() in date.php3
          - expiry date is shown correctly in add item (itemedit.php3) now
          - date ranges are changed for expiry and publish date in
-           itemedit.php3 and sliedit.php3 
+           itemedit.php3 and sliedit.php3
            (extended date.php3 to accept "year plus range" and "year minus
            range")
          - there are no longer shown expired items in compact view
@@ -1115,7 +1122,7 @@ The new structure allows
          - new parameter highlight to slice.php3 which selected just
            highlighted items (if true)
 11/24/99 - feeding filtering background (se_filters2.php3) - writing to
-           database         
+           database
          - new user slices examples (Altavista like slice, Press.cz like
            slice)
 11/23/99 - removed bug in se_import.php3 - list of not imported slices is
@@ -1128,7 +1135,7 @@ The new structure allows
            export part does not (due to permission system)
 11/16/99 - category sorting posibility in compact view (you can set it on
            se_compact.php3 page)
-         - category headline is showed in category sorted compact view  
+         - category headline is showed in category sorted compact view
          - category headline format can be set on se_compact.php3 page
          - you can use top/bottom HTML code which is added before/after
            compact view (se_compact.php3)
@@ -1147,7 +1154,7 @@ The new structure allows
 11/10/99 - fixed bug in add_vars() function (extsessi.php3) which did not
            work with arrays
          - small search window installed to slice.shtml and search
-           backgroundchanged to work with 
+           backgroundchanged to work with
            scroller and rewrited from search.php3 to slice.php3
 11/09/99 - user view in compact form works well with categories now
          - better navigation bar behavior in compact item view
