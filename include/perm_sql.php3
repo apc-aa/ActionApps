@@ -133,6 +133,15 @@ function FindGroups ($pattern, $flags = 0) {
   return $by_id;
 }
 
+function find_user_by_login ($login) {
+	$db = new DB_AA;
+	$db->query ("SELECT * FROM users WHERE uid='$login'");
+    while ($db->next_record())
+        $by_id[$db->f("id")] = array("name"=>($db->f("givenname")." ".$db->f("sn")),
+                                     "mail"=>$db->f("mail"));
+    return $by_id;
+}
+
 // function returns list of users which corresponds to mask $pattern
 function FindUsers ($pattern, $flags = 0) {
 
@@ -148,7 +157,7 @@ function FindUsers ($pattern, $flags = 0) {
 
   # TODO: something about a sizelimit??
 
-  $db->query($SQL);
+  $db->query($sql);
   while ($db->next_record())
     $by_id[$db->f("id")] = array("name"=>($db->f("givenname")." ".$db->f("sn")),
                                  "mail"=>$db->f("mail"));

@@ -351,6 +351,20 @@ function FindGroups ($pattern, $flags = 0) {
   return $result;
 }
 
+function find_user_by_login ($login) {
+    $users = FindUsers ($login);
+    if (is_array ($users)) {
+        reset ($users);
+        while (list ($userid,$user) = each ($users)) {
+            list ($user_login) = split (",", $userid);
+            list (,$user_login) = split ("=", $user_login);
+            if ($user_login == $login)
+                return array ($userid=>$user);
+        }
+    }
+    return false;
+}
+
 // function returns list of users which corresponds to mask $pattern
 function FindUsers ($pattern, $flags = 0) {
   global $aa_default_ldap;

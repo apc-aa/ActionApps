@@ -8,20 +8,6 @@ function resolve_email_aliases ($aliases, $text) {
     return $retval;
 }
 
-function find_user_by_login ($login) {
-    $users = FindUsers ($login);
-    if (is_array ($users)) {
-        reset ($users);
-        while (list ($userid,$user) = each ($users)) {
-            list ($user_login) = split (",", $userid);
-            list (,$user_login) = split ("=", $user_login);
-            if ($user_login == $login)
-                return array ($userid=>$user);
-        }
-    }
-    return false;
-}
-
 /*  Assigns user privileges and sends a welcome email, if the email address is filled.
     Returns error description or empty string. */
 
@@ -57,7 +43,7 @@ function add_user_and_welcome ($welcome_id, $user_login, $slice_id, $role) {
         "_#ME_MAIL_" => $me["mail"][0],
         "_#ME_NAME_" => $me["cn"]);
 
-    $db->dquery ("SELECT * FROM wizard_welcome WHERE id=$welcome_id");
+    $db->tquery ("SELECT * FROM wizard_welcome WHERE id=$welcome_id");
     if (!$db->next_record()) return L_INTERNAL_ERROR;
     $mail_subject = resolve_email_aliases($aliases, $db->f("subject"));
     $mail_body = resolve_email_aliases($aliases, $db->f("email"));
