@@ -222,18 +222,29 @@ function GetXMLFieldData($slice_id,&$slice_fields, $field_id, &$content4id) {
 function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
     global $FORMATS, $MAP_DC2AA;
     static $value2const_id;
-
+    static $slice_url;
 
     // create RSS elements
     $title       = GetBaseFieldContent($slice_fields,"headline", $content4id);
     $description = GetBaseFieldContent($slice_fields,"abstract", $content4id);
-    $link_only   = GetBaseFieldContent($slice_fields,"link_only",$content4id);
     $hl_href     = GetBaseFieldContent($slice_fields,"hl_href",  $content4id);
+    $link_only   = $hl_href;
+    // older approach is to use link_only field. We do not use this approach for
+    // for newer slices - link is extenal if hl_href is filled. Dot.
+    // $link_only   = GetBaseFieldContent($slice_fields,"link_only",$content4id);
 
-    $xml_items .= "<item rdf:about=\"".AA_INSTAL_URL."items/$item_id\">\n".
-                  "\t<title>".code($title)."</title>\n".
-                  "\t<description>".code($description)."</description>\n".
-                  "\t<link>".($link_only ? code($hl_href) : "")."</link>\n".
+    // get slice url for current slice
+    if ( !isset($slice_url[$slice_id]) ) {
+        $sli = GetSliceInfo($slice_id);
+        $slice_url[$slice_id] = $sli['slice_url'];
+    }
+
+    $item_link = ($link_only ? $hl_href : con_url($slice_url[$slice_id],"x=".$content4id['short_id........'][0]['value']) );
+
+    $xml_items .= "<item rdf:about=\"".AA_INSTAL_URL     ."items/$item_id\">\n".
+                  "\t<title>"         .code($title)      ."</title>\n".
+                  "\t<description>"   .code($description)."</description>\n".
+                  "\t<link>"          .code($item_link)  ."</link>\n".
                   "\t<dc:identifier>$item_id</dc:identifier>\n";
 
     // create fulltext in the element <content:items>
