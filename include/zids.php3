@@ -22,6 +22,8 @@ http://www.apc.org/
 #
 # Functions for manipulating ids.
 #
+# Author and Maintainer: Mitra mitra@mitra.biz
+#
 # This is developed from functions originally in util.php3, where many
 # still exist. They can gradually be included here
 #

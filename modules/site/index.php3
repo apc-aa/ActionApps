@@ -129,7 +129,7 @@ ModW_StoreTree( $tree, $module_id );
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<title><?php echo _m("Editor window - item manager") ?></title>
+<title><?php echo _m("Editor window - site code manager") ?></title>
 </head> <?php
 
 # module specific navigation bar

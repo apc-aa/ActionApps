@@ -372,11 +372,15 @@ class item {
   # prints height and width of image file or URL referenced in field
   # Could be special case if in uploads directory, so can read directly
   function i_s($col, $param="") {
+    if (! isField($col)) 
+        huhe("Warning: i_s: $col is not a field, don't wrap it in { } ");
     $f = $this->columns[$col][0][value];
-    if (! $f) return "";  # No picture
+    if (! $f) { huhe("Warning: i_s: no file"); return ""; }  # No picture
     # Could speed up a little with a test for URLs in uploads directory here
 #PHP>4.0.5 supports URLs so no need to skip URLs
     $a = getimagesize($f);
+    if (! $a)
+        huhe("Warning: getimagesize couldn't get width from '$f'");
     return($a[3]);  #height="xxx" width="yyy"
   }
 
