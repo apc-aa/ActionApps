@@ -1,3 +1,7 @@
+07/16/02 - fully functional File Manager with Copy Template feature
+07/12/02 - added a new defaultCondsOperator URL parameter which changes the default operator LIKE to another one
+07/12/02 - changed slice.php3 - it didn't combine correctly URL defined group_by etc. with the slice defined parameters.
+07/11/02 - fixed itemview - group by ignores upper/lower case now
 07/08/02 - new 'group_n' parameter for slice.php3 allowing display of first 
            (second, ...) category only 
            (good for display of last issue of magazine, for example)
