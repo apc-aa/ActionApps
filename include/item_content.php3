@@ -5,10 +5,10 @@
  * @package UserInput
  * @version $Id$
  * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications 
+ * @copyright (c) 2002-3 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2003 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2003 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -27,25 +27,25 @@ http://www.apc.org/
 */
 
 /** Stores all info about an item. Uses both info from the <em>item</em> and
-*   <em>content</em> tables. 
+*   <em>content</em> tables.
 *
 *   Gives convenient access to the things previously stored in the
 *   array $content4id.
 */
 class ItemContent {
-    var $classname = "ItemContent"; 
-    
+    var $classname = "ItemContent";
+
     // PUBLIC:
-    
-    
+
+
     // PRIVATE:
-    var $content;    
+    var $content;
 
     /// Constructor which takes content for ID.
     function ItemContent ($content4id = "") {
         $this->setFromArray ($content4id);
     }
-    
+
     function setFromArray (&$content4id) {
         $this->content = $content4id;
     }
@@ -55,47 +55,47 @@ class ItemContent {
         $this->content = GetItemContent ($item_id, false, $ignore_reading_password);
         $this->content = $this->content [$item_id];
     }
-    
+
     function getContent() {
         return $this->content;
     }
-    
+
     /** Returns the value for a field. If it is a multi-value
     *   field, this is the first value. */
     function getValue ($field_id) {
         return $this->content[$field_id][0]["value"];
     }
-    
+
     function getValues ($field_id) {
         return $this->content[$field_id];
     }
-    
+
     /** Fills the name with dots to the standard 16 characters,
     *   returns the value for the field. You can use field names
     *   from the <i>item</i> table with this function. */
     function getItemValue ($field_name) {
         return $this->getValue (substr($field_name."................",0,16));
     }
-    
+
     function getQuotedValue ($field_id) {
         return addslashes ($this->getValue ($field_id));
     }
-    
-    function getItemID()     { return unpack_id($this->getItemValue ("id")); }    
+
+    function getItemID()     { return unpack_id($this->getItemValue ("id")); }
     function getSliceID()    { return unpack_id($this->getItemValue ("slice_id")); }
     function getPSliceID()   { return addslashes ($this->getItemValue ("slice_id")); }
     function getStatusCode() { return $this->getItemValue ("status_code"); }
     function getPublishDate(){ return $this->getItemValue ("publish_date"); }
     function getExpiryDate() { return $this->getItemValue ("expiry_date"); }
-    
+
     function setItemValue ($field_name, $value) {
         $this->content[substr($field_name."...................",0,16)] =
             array (0 => array ("value" => $value));
     }
-    
+
     function setItemID($value)     { $this->setItemValue ("id", pack_id ($value)); }
     function setSliceID($value)    { $this->setItemValue ("slice_id", pack_id ($value)); }
-    function setStatusCode()        { return $this->setItemValue ("status_code"); }
-    function setPublishDate()       { return $this->setItemValue ("publish_date"); }
-    function setExpiryDate()         { return $this->setItemValue ("expiry_date"); }
+    function setStatusCode($value) { $this->setItemValue ("status_code", $value); }
+    function setPublishDate($value){ $this->setItemValue ("publish_date", $value); }
+    function setExpiryDate($value) { $this->setItemValue ("expiry_date", $value); }
 }
