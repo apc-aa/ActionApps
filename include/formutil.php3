@@ -23,7 +23,7 @@ http://www.apc.org/
 # Form utility functions
 #
 
-require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
+#require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
 
 # if $condition, shows star
 function Needed( $condition=true ) {
@@ -590,6 +590,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.22  2002/03/14 22:25:57  mitraearth
+Commented out include of constedit_util until find what it should be.
+
 Revision 1.21  2002/03/06 12:35:22  honzam
 fixed bug in Richedit
 
