@@ -306,6 +306,8 @@ function string2id ($str) {
 
 # returns packed md5 id, not quoted !!!
 function pack_id ($unpacked_id){
+  //if (!preg_match ("/^[0-9a-f]+$/", $unpacked_id))
+    // echo "\nWarning: trying to pack $unpacked_id.<br>\n";
   return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
 }
 
@@ -1209,112 +1211,6 @@ function get_formatted_date ($datestring, $format) {
     else return mktime ( $hour, $minute, $second, $month, $day, $year);
 }
 
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-#                    M A I L   handling utility functions 
-#
-
-/*  Function: html2text
-    Purpose:  strips the HTML tags and lot more to get a plain text version
-*/
-function html2text ($html) {
-    
-    // reverse to htmlentities
-    if (function_exists ("get_html_translation_table")) {
-        $trans_tbl = get_html_translation_table (HTML_ENTITIES);
-	    $trans_tbl = array_flip ($trans_tbl);
-        $html = strtr ($html, $trans_tbl);
-    }
-
-    // strip HTML tags
-    $search = array (
-                 "'<br>'si",
-                 "'</p>'si",
-                 "'<script[^>]*?>.*?</script>'si",  // Strip out javascript
-                 "'<[\/\!]*?[^<>]*?>'si",           // Strip out html tags
-                 "'([\r\n])[ \t]+'",                // Strip out leading white space
-                 "'&(quot|#34);'i",                 // Replace html entities
-                 "'&(amp|#38);'i",
-                 "'&(lt|#60);'i",
-                 "'&(gt|#62);'i",
-                 "'&(nbsp|#160);'i",
-                 "'&#(\d+);'e");                    // evaluate as php
-
-    $replace = array (
-                  "\n",
-                  "\n",
-                  "",
-                  "",
-                  "\\1",
-                  "\"",
-                  "&",
-                  "<",
-                  ">",
-                  " ",
-                  "chr(\\1)");
-
-    return preg_replace ($search, $replace, $html);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/*  Function:    mail_html_text
-    Author:      Jakub Adámek
-    Purpose:     sends safely HTML messages
-    Parameters:  same as PHP imap_mail() plus:
-                 $additional_headers - use \r\n at the end of each row!
-                 $charset - e.g. iso-8859-1, iso-8859-2, windows-1250
-                 $use_base64 - set to 0 if you want to pass the message 8 bit encoded
-    Description: some e-mail clients don't understand HTML. This function creates a multipart message containing both the HTML and the plain-text version of the message (by leaving out the HTML tags). Each e-mail client displays what it understands better (and hides all the rest of the message). */
-
-function mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1) 
-{
-    $body = mail_html_text_body ($message, $charset, $use_base64);
-    mail ($to, $subject, "", $additional_headers.$body);
-}
-
-function imap_mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1, 
-                              $cc = "", $bcc = "", $rpath = "") 
-{
-    $body = mail_html_text_body ($message, $charset, $use_base64);
-    imap_mail ($to, $subject, "", $additional_headers.$body, $cc, $bcc, $rpath);
-}
-
-function mail_html_text_body ($message, $charset, $use_base64) {
-    $boundary = "-------AA-MULTI-".gensalt (20)."------";
-    $encoding = $use_base64 ? "base64" : "8bit";
-    $textmessage = html2text ($message);
-        
-    if ($use_base64) {
-        $textmessage = base64_encode ($textmessage);
-        $message = base64_encode ($message);
-    }
-       
-    // All MIME headers should be terminated by CR+LF (\r\n)
-    // but the headers in the individual parts should only be delimited by LF (\n)
-       
-    return
-        "MIME-Version: 1.0\r\n"
-        ."Content-Type: multipart/alternative;\r\n"
-        ." boundary=\"$boundary\"\r\n"
-        ."Content-Transfer-Encoding: $encoding\r\n"
-        ."\r\n"
-        ."--$boundary\n"
-
-        ."Content-Type: text/html; charset=\"$charset\"\n"
-        ."Content-Transfer-Encoding: $encoding\n"
-        ."\n"
-        .$message."\n"
-        ."--$boundary\n"
-
-        ."Content-Type: text/plain; charset=\"$charset\"\n"
-        ."Content-Transfer-Encoding: $encoding\n"
-        ."\r\n"
-        .$textmessage."\n"
-        ."--$boundary--\n";
-
-}
-
 function setdefault (&$var, $default) {
     if (!isset ($var)) $var = $default;
 }
@@ -1343,6 +1239,11 @@ function add_post2shtml_vars () {
             }
         }
     }
+}
+
+function delete_post2shtml_vars ($post2sthml_id) {
+    global $db;
+    $db->query ("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
 }
 
 ?>

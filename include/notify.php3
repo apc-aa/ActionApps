@@ -29,6 +29,7 @@ else return;
 
 require $GLOBALS[AA_INC_PATH]."item.php3";
 require $GLOBALS[AA_INC_PATH]."view.php3"; 
+require $GLOBALS[AA_INC_PATH]."mail.php3"; 
 
 // notify users of an event
 function email_notify($slice_id, $event, $item_id, $extra = ""){
@@ -85,7 +86,7 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
   $SQL = "SELECT uid from email_notify where slice_id = '$p_slice_id' AND function = '$event'";
   $db->query($SQL);
 
-/* Jakub replaced by mail_html_text (see util.php3)
+/* Jakub replaced by mail_html_text (see mail.php3)
   $headers = "";
   // Comment this out to send text mail
   $headers = "Content-Type: text/html; charset=iso-8859-1\n";
