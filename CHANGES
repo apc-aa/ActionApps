@@ -1,8 +1,26 @@
-10/19/03 - Added mapping to RSS, 
-(mitra)    Added debugpermissions and associatioed reporting
-           Fixed bug with http fetching in php>4.3.0
-10/16/03 - 'Fixed bug in searchlib.php3 - multiple values joined by AND operator
+10/22/03 - added CSV import interface
+(honzam) - new "add string" parameter to f_j - string is added, if the output
+           is shorted (good for comething like "...")
+         - f_a alias strips html tags, if abctract is grabed from fulltext
+         - table of items in Item Manager have bigger cellpadding
+         - and class="mgr_table", so user can customize it in css styles
+         - fixed RSS output (id didn't work with some owners)
+         - fixed not working includes in doc/param_wizard_list.php3
+         - two new aliases for Links module - for General Categories
+10/21/03 - fixed bug in AA Cross Server Feeding - Spanish and Czech characters
+(honzam)   was corrupted for HTML flaged fields
+10/20/03 - fixed {@field_id} alias - removed wrong comma in some cases
+(honzam) - fixed initial rate setting for links to be neutral
+         - queryZids() is stable - it do not change order of ids if we query
+           just restricted set of ids and do not specify sort[]
+10/19/03 - added mapping to RSS,
+(mitra)  - added debugpermissions and associatioed reporting
+         - fixed bug with http fetching in php>4.3.0
+10/16/03 - fixed bug in searchlib.php3 - multiple values joined by AND operator
 (marek)    were not enclosed in speech marks.
+10/02/03 - fixed Up and Down arrows for Related items selection - now works also
+(honzam)   in IE6 and Opera browsers
+         - better implementation of {user:role} alias
 09/30/03 - loop through multivalues in stringexpand:
 (honzam)   {@category.......1},
            {@category.......1(const_name,const_value,_#MY_ALIAS):,:_#1 _#2 _#3}

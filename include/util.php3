@@ -224,16 +224,18 @@ function add_vars($query_string="", $debug="", $restrict_vars="") {
                 $indexes[] = substr( $arrindex, 1, $end-1 );  # extract just index
                 $arrindex = substr( $arrindex, $end+1 );      # next index
             }
-            reset($indexes);
-            while( list(,$v) = each($indexes) ) {
-                # add apostrophs for textual indexed
-                $first = substr($v,0,1);                      # first letter
-                if( $first!='"' AND
-                    $first!="'" AND
-                    strlen($v) != strspn($v,'0123456789') )   # [] and [12] allowed
-                    $lindex .= "['$v']";
-                 else
-                    $lindex .= "[$v]";
+            if( isset($indexes) AND is_array($indexes) ) {
+                reset($indexes);
+                while( list(,$v) = each($indexes) ) {
+                    # add apostrophs for textual indexed
+                    $first = substr($v,0,1);                      # first letter
+                    if( $first!='"' AND
+                        $first!="'" AND
+                        strlen($v) != strspn($v,'0123456789') )   # [] and [12] allowed
+                        $lindex .= "['$v']";
+                     else
+                        $lindex .= "[$v]";
+                }
             }
             if (! is_array ($restrict_vars) || $restrict_vars [$lvalue]) {
                 $evalcode = '$'.$lvalue.$lindex."=\$value;";
