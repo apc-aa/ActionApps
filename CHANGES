@@ -1,3 +1,4 @@
+11/12/04 - fixed HTMLArea 3.0rc1 support (honzam)
 11/11/04 - Two Boxes input type (as well as some others types) now are able to
 (honzam)   display not only name of the constant, but any other field from
            constant table (like value, priority, short id, ...).

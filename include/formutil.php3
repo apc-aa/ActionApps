@@ -717,7 +717,7 @@ class aainputfield {
             if( $convert AND ($convertor = $this->get_convertors())) {
                 $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="'. COLOR_TABBG ."\">\n   <tr><td>");
                 if ($show_rp_butt) {
-                    $this->echoo('<!-- used for hiding html/plain radio buttons, dont remove !!! --><span id="htmlplainspan">');
+                    $this->echoo('<!-- used for hiding html/plain radio buttons, dont remove !!! --><span id="htmlplainspan'.$this->varname.'">');
                     $this->echovar($radio_html,  'html_rb');
                     $this->echoo(_m("HTML"));
                     $this->echovar($radio_plain, 'plain_rb');
@@ -734,7 +734,7 @@ class aainputfield {
                 $this->echoo("</td></tr>\n  </table>");
             } else {
                 if ($show_rp_butt) {
-                    $this->echoo('<!-- used for hiding html/plain radio buttons, dont remove !!! --><span id="htmlplainspan">');
+                    $this->echoo('<!-- used for hiding html/plain radio buttons, dont remove !!! --><span id="htmlplainspan'.$this->varname.'">');
                     $this->echovar($radio_html,  'html_rb');
                     $this->echoo(_m("HTML"));
                     $this->echovar($radio_plain, 'plain_rb');
@@ -2007,15 +2007,15 @@ function GetFormJavascript($show_func_used, $js_proove_fields) {
 
     if ($show_func_used['txt'] || $show_func_used['edt']) {
         $retval .= getFrmJavascript('
-                    HTMLArea.loadPlugin("FullPage");
+                 // HTMLArea.loadPlugin("FullPage");
                     HTMLArea.loadPlugin("TableOperations");
-                    HTMLArea.loadPlugin("CSS");
-                    HTMLArea.loadPlugin("ContextMenu");
-                    HTMLArea.loadPlugin("HtmlTidy");
-                    HTMLArea.loadPlugin("ListType");
+                 // HTMLArea.loadPlugin("CSS");
+                 // HTMLArea.loadPlugin("ContextMenu");
+                 // HTMLArea.loadPlugin("HtmlTidy");
+                 // HTMLArea.loadPlugin("ListType");
                  // HTMLArea.loadPlugin("ImageManager");
-                    HTMLArea.loadPlugin("SpellChecker");
-                    HTMLArea.loadPlugin("InsertFile");
+                 // HTMLArea.loadPlugin("SpellChecker");
+                 // HTMLArea.loadPlugin("InsertFile");
 
                     function initDocument() {
                         for(var i = 0; i < htmlareas.length; i++) {
