@@ -205,6 +205,7 @@ if (count($r_err) <= 1) {
     $varset->add("description", "quoted", $description);
     $varset->add("additional",  "quoted", $additional);
     $varset->add("note",        "quoted", $note);
+    $varset->add("nolinks",     "quoted", $nolinks ? 1 : 0);
     $db->query("UPDATE links_categories SET ". $varset->makeUPDATE() . " WHERE id=$cid");
     $r_msg[] = MsgOK(_m('Category data changed'));
 } else {

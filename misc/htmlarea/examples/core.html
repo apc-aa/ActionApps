@@ -9,14 +9,11 @@
     have it an absolute path, such as '/htmlarea/'. -->
 <script type="text/javascript">
   _editor_url = "../";
+  _editor_lang = "en";
 </script>
 <script type="text/javascript" src="../htmlarea.js"></script>
-<script type="text/javascript" src="../lang/en.js"></script>
-<script type="text/javascript" src="../dialog.js"></script>
 
 <style type="text/css">
-@import url(../htmlarea.css);
-
 html, body {
   font-family: Verdana,sans-serif;
   background-color: #fea;
@@ -141,12 +138,12 @@ function highlight() {
 
 <!-- use <body onload="HTMLArea.replaceAll()" if you don't care about
      customizing the editor.  It's the easiest way! :) -->
-<body onload="initEditor()">
+<body onload="HTMLArea.init()">
 
 <h1>HTMLArea 3.0</h1>
 
 <p>A replacement for <code>TEXTAREA</code> elements.  &copy; <a
-href="http://interactivetools.com">InteractiveTools.com</a>, 2003.</p>
+href="http://interactivetools.com">InteractiveTools.com</a>, 2003-2004.</p>
 
 <form action="test.cgi" method="post" id="edit" name="edit">
 

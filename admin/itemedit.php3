@@ -28,8 +28,9 @@ http://www.apc.org/
 
 $encap = ( ($encap=="false") ? false : true );
 
-if( $edit OR $add )         # parameter for init_page - we edited new item so
-  $unset_r_hidden = true;   # clear stored content
+if ($edit OR $add) {         // parameter for init_page - we edited new item so
+    $unset_r_hidden = true;  // clear stored content
+}
 
 require_once "../include/init_page.php3";     # This pays attention to $change_id
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
@@ -42,12 +43,16 @@ require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
 //mimo include mlx functions
 require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
 
-//require_once $GLOBALS["AA_INC_PATH"]."inputform.class.php3";
+if ( file_exists( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" ) ) {
+    include( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" );
+}
 
-// needed for field JavaScript to work
-
-if( file_exists( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" ) ) {
-  include( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" );
+function CloseDialog($id='') {
+    // Used for adding item to another slice from itemedit's popup.
+    // __dlg_close is function borrowed from HtmlArea
+    $body =  GetFormJavascript(null, null)
+            .getFrmJavascript( "__dlg_close( '$id' );" );
+    FrmHtmlPage( array('body'=> $body) );
 }
 
 FetchSliceReadingPassword();
@@ -64,36 +69,30 @@ $r_hidden["hidden_acceptor"] = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SEL
                     // only this script accepts r_hidden variable
                     // - if it don't match - unset($r_hidden) (see init_page.pgp3)
 
-if( $ins_preview )
-  $insert = true;
-if( $upd_preview )
-  $update = true;
+if ( $ins_preview ) { $insert = true; }
+if ( $upd_preview ) { $update = true; }
 
 $add = !( $update OR $cancel OR $insert OR $edit );
 
-if($cancel) {
-  if( $anonymous ) { // anonymous login
-    if( $encap ) {
-      echo '<SCRIPT Language="JavaScript"><!--
-              document.location = "'. $r_slice_view_url .'";
-            // -->
-           </SCRIPT>';
-    } else
-      go_url( $r_slice_view_url );
-  }
-  else
-    go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
+if ($cancel) {
+    if ( $anonymous ) { // anonymous login
+        go_url( $r_slice_view_url, '', $encap );
+    } elseif ($return_url=='close_dialog') {
+        // Used for adding item to another slice from itemedit's popup.
+        // __dlg_close is function borrowed from HtmlArea
+        CloseDialog();
+    } else {
+        go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
+    }
 }
 
-#$db = new DB_AA;
-
-$varset = new Cvarset();
+$varset     = new Cvarset();
 $itemvarset = new Cvarset();
 
-if ($add) $action = "add";
-else if ($insert) $action = "insert";
-else if ($update) $action = "update";
-else $action = "edit";
+if ($add)        { $action = "add";    }
+elseif ($insert) { $action = "insert"; }
+elseif ($update) { $action = "update"; }
+else             { $action = "edit"; }
 
 // ValidateContent4Id() sets GLOBAL!! variables:
 //   $show_func_used   - list of show func used in the form
@@ -101,56 +100,52 @@ else $action = "edit";
 //   list ($fields, $prifields) = GetSliceFields ()
 //   $oldcontent4id
 
-ValidateContent4Id ($err, $slice_id, $action, $id);
+ValidateContent4Id($err, $slice_id, $action, $id);
 
 $slice = new slice($slice_id);
-
 //mimo changes
 $lang_control = IsMLXSlice($slice);
-//
 
-  # update database
-if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
+//  update database
+if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
 
-  # prepare content4id array before call StoreItem function
-  $content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
+    // prepare content4id array before call StoreItem function
+    $content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
 
-  if ($slice->getfield('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_EDITED_IN_AA
-   && ($content4id["flags..........."][0]['value'] & ITEM_FLAG_ANONYMOUS_EDITABLE))
-    $content4id["flags..........."][0]['value'] -= ITEM_FLAG_ANONYMOUS_EDITABLE;
-
-  if( $insert )
-    $id = new_id();
-
-// mimo change
-  if($lang_control) {
-    //print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
-    $mlx = new MLX($slice);
-    $mlx->update($content4id,$id,$action,$mlxl,$mlxid);
-    //mlx_update($slice,$content4id,$id);
-    //echo "<pre>"; print_r($content4id); echo "</pre>";
-  }
-// end
-
-  $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert,
-                            true, true, $oldcontent4id );     # invalidatecache, feed
-//echo "</pre>"; exit;
-  if( count($err) <= 1) {
-    page_close();
-    if( $anonymous )  // anonymous login
-      if( $encap ) {
-        echo '<SCRIPT Language="JavaScript"><!--
-                document.location = "'. $r_slice_view_url .'";
-              // -->
-             </SCRIPT>';
-      } else
-        go_url( $r_slice_view_url );
-    elseif( $ins_preview OR $upd_preview )
-      go_url( con_url($sess->url(self_base() .  "preview.php3"), "slice_id=$slice_id&sh_itm=$id"));
-    else  {
-      go_return_or_url(self_base() . "index.php3",1,1);
+    if ($slice->getfield('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_EDITED_IN_AA
+            AND ($content4id["flags..........."][0]['value'] & ITEM_FLAG_ANONYMOUS_EDITABLE)) {
+        $content4id["flags..........."][0]['value'] -= ITEM_FLAG_ANONYMOUS_EDITABLE;
     }
-  }
+
+    if ( $insert ) { $id = new_id(); }
+
+    // mimo change
+    if($lang_control) {
+        //print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
+        $mlx = new MLX($slice);
+        $mlx->update($content4id,$id,$action,$mlxl,$mlxid);
+        //mlx_update($slice,$content4id,$id);
+        //echo "<pre>"; print_r($content4id); echo "</pre>";
+    }
+    // end
+
+    $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert,
+                              true, true, $oldcontent4id );     // invalidatecache, feed
+
+    if (count($err) <= 1) {
+        page_close();
+        if ($anonymous) { // anonymous login
+            go_url( $r_slice_view_url, '', $encap );
+        } elseif ($ins_preview OR $upd_preview) {
+            go_url( con_url($sess->url(self_base() .  "preview.php3"), "slice_id=$slice_id&sh_itm=$id"));
+        } elseif ($return_url=='close_dialog') {
+            // Used for adding item to another slice from itemedit's popup.
+            // __dlg_close is function borrowed from HtmlArea
+            CloseDialog($id);
+        } else {
+            go_return_or_url(self_base() . "index.php3",1,1);
+        }
+    }
 }
 
 # -----------------------------------------------------------------------------
@@ -183,13 +178,13 @@ if($edit) {
 
 //mimo changes
 if($lang_control ) {
-	if(MLX_TRACE)
-		print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
-	if(empty($mlx)) 
-		$mlx = new MLX($slice);
-	$mlx_formheading = $mlx->itemform($lang_control,
-		array('AA_CP_Session'=>$AA_CP_Session,'slice_id'=>$slice_id,'encap'=>$encap),
-		$content4id,$action,$mlxl,$mlxid);
+    if(MLX_TRACE)
+        print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
+    if(empty($mlx))
+        $mlx = new MLX($slice);
+    $mlx_formheading = $mlx->itemform($lang_control,
+        array('AA_CP_Session'=>$AA_CP_Session,'slice_id'=>$slice_id,'encap'=>$encap),
+        $content4id,$action,$mlxl,$mlxid);
 }
 
 // end mimo changes
@@ -207,7 +202,7 @@ if( !$encap ) {
         // validation when display_aa_begin_end is true
         'show_func_used'       => $show_func_used,
         'js_proove_fields'     => $js_proove_fields,
-	'formheading'          => $mlx_formheading ); //added MLX
+    'formheading'          => $mlx_formheading ); //added MLX
 }
 $inputform_settings['messages']            = array('err' => $err);
 $inputform_settings['form_action']         = ($DOCUMENT_URI != "" ? $DOCUMENT_URI :
@@ -217,8 +212,9 @@ $inputform_settings['form4update']         = $edit || $update || ($insert && $ad
 $inputform_settings['show_preview_button'] = (($post_preview!=0) OR !isset($post_preview));
 
 $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
+                                              ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?slice_id=$slice_id&cancel=1&return_url=close_dialog") :
                                               ($return_url ? expand_return_url(1) :
-                                              get_admin_url("index.php3?slice_id=$slice_id")));
+                                              get_admin_url("index.php3?cancel=1&slice_id=$slice_id"))));
 
 if( $inputform_settings['form4update'] )  $r_hidden["id"] = $id;
 

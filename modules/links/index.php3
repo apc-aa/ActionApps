@@ -264,7 +264,7 @@ $manager_settings = array(
              'category_bottom'  => "",
              'even_odd_differ'  => false,
              'even_row_format'  => "",
-             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td class=tabtxt><a href="_#EDITLINK">_#L_NAME__</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td class=tabtxt><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
              ',
              'compact_remove'   => "()",
              'compact_bottom'   => "</table>",
@@ -302,11 +302,11 @@ $manager_settings = array(
                                 'type'       => 'one_by_one' ),
          'Add2Cat'     => array('function'   => 'Links_Add2CatLink',
                                 'name'       => _m('Add to category'),
-                                'open_url'   => $sess->url("getcat.php3?start=".GetCategoryFromPath($GLOBALS['r_state']['tree_start_path'])),
+                                'open_url'   => $sess->url("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start'])),
                                 'type'       => 'one_by_one' ),
          'Move2Cat'    => array('function'   => 'Links_Move2CatLink',
                                 'name'       => _m('Move to category'),
-                                'open_url'   => $sess->url("getcat.php3?start=".GetCategoryFromPath($GLOBALS['r_state']['tree_start_path'])),
+                                'open_url'   => $sess->url("getcat.php3?start=".GetCategoryFromPath($links_info['tree_start'])),
                                 'type'       => 'one_by_one' ),
 /*       'Refuse'      => array('function'   => 'Links_RefuseLink',
                                 'name'       => _m('Refuse Link'),
@@ -336,8 +336,6 @@ $manager_settings = array(
      'messages'  => array(
          'title'            => _m('APC ActionApps - Links Manager'))
                          );
-
-
 
 // r_state array holds all configuration of Links Manager
 // the configuration then could be Bookmarked
@@ -371,9 +369,9 @@ $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 $tree = new cattree( $db, $links_info['start_id'], true, '<br> - ');
 echo '<script language="JavaScript" type="text/javascript"
       src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/js_lib_links.js"></script>';
-$tree->printTreeData($links_info['start_id']);        // special javascript for category selection
+$tree->printTreeData($links_info['start_id'],1,true);        // special javascript for category selection
 $cat_tree = $tree->getFrmTree(false, 'change', $links_info['start_id'],
-                   'patharea', 'document.filterform.cat_id', false, 250);
+                   'patharea', 'document.filterform.cat_id', false, 250, 8, 'filterform');
 
 $r_state['bin_cnt'] = Links_CountLinkInBins($r_state['start_path']);
 
@@ -412,8 +410,12 @@ $manager->printSearchbarBegin();
 // special code extending searchbar - category selection
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="3"
               class=leftmenu bgcolor="'. COLOR_TABBG .'">';
-echo "<tr><td class=search width='255' align='center'> $cat_tree </td>
-          <td width='99%'>";
+echo '<tr>
+       <td class="search" width="255" align="center">
+         <input type="hidden" name="cat_id" value="'.$r_state['cat_id']."\">
+         $cat_tree
+       </td>
+       <td width='99%'>";
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="3"
               class=leftmenu bgcolor="'. COLOR_TABBG .'">';
 echo '<tr><td><div id="patharea">'. ' '. '</div> </td></tr>';
@@ -431,7 +433,6 @@ FrmInputButtons( array( 'gocat'    => array('type'=>'button',
 
 echo '<tr><td class=tabtxt>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);
-echo '<input type="hidden" name="cat_id" value="'.$r_state['cat_id'].'">';
 echo _m('Show subtree links');
 echo FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")). ' </td></tr>';
 
@@ -442,8 +443,7 @@ echo "</table>";
 $manager->printSearchbarEnd();   // close the searchbar form
 
 // prints JavaScript which changes tree to current cat.
-$tree->goCategory($r_state['cat_path'], 'patharea',
-                                    'document.filterform.cat_id', 'filterform');
+echo $tree->goCategory($r_state['cat_id'], 'patharea', 'document.filterform.cat_id', 'filterform');
 
 PrintArray($r_err);
 PrintArray($r_msg);

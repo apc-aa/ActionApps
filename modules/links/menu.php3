@@ -127,14 +127,15 @@ function get_aamenus_links()
             "unasigned"=>array ("cond"=> $r_state['bin'] != "unasigned",
                             "href"=>$module_location."index.php3?Tab=unasigned",
                             "label"=>_m('Unasigned')." (".$r_state['bin_cnt']['unasigned'].")"),
+            "debug"=>array ("cond"=>IsSuperadmin(),
+                            "hide"=>!IsSuperadmin(),
+                            "js"=>"ToggleCookie('aa_debug','1')",
+                            "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))),
             "header2" => _m('Bookmarks').FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zalozky-odkazu"),"",_m("My own links"), true)));
-    if( isset($bookmarks) AND is_array($bookmarks) ) {
-        reset( $bookmarks );
-        while( list( $bookid, $bookname ) = each( $bookmarks ) ) {
-            $aamenus['linkmanager_submenu']['items']['bookmark'.$bookid] =
-                array( "href"=>$module_location."index.php3?GoBookmark=$bookid",
-                       "label"=>$bookname);
-        }
+    foreach ( (array) $bookmarks as $bookid => $bookname ) {
+        $aamenus['linkmanager_submenu']['items']['bookmark'.$bookid] =
+            array( "href"=>$module_location."index.php3?GoBookmark=$bookid",
+                   "label"=>$bookname);
     }
 /*    $aamenus['linkmanager_submenu']['items']['header3'] = _m('Misc');
     $aamenus['linkmanager_submenu']['items']['item6'] =  array (

@@ -25,14 +25,18 @@ require_once "./constants.php3";
 require_once "./cattree.php3";
 require_once "./util.php3";
 
-function printChange($change_arr, $original_value="") {
-    if( isset($change_arr) AND is_array($change_arr) ) {
-        reset($change_arr);
-        while( list( ,$val) = each($change_arr) ) {
-            if( trim($original_value) != trim($val) ) {
-                FrmStaticText( MarkChanged( _m('Change') ), MarkChanged( $val ),
-                               false, "", "", false);
-            }
+function printChange($field, $change_arr, $original_value="") {
+    global $created_by_change; // used for display of initiator of the change
+    $i=0;
+    foreach ( (array)$change_arr as $key => $val) {
+        if( trim($original_value) != trim($val) ) {
+            $hidden_field = $field .'_hid'. $i++;
+            FrmHidden($hidden_field, $val);
+            $accept     = " <a href=\"javascript:AcceptChange('$field','$hidden_field')\">"._m('Accept').'</a>';
+            $changed_by = $created_by_change[$key] ? ' ('.$created_by_change[$key].')' : '';
+            $new_val    = get_if( trim($val), '-- '. _m('unfilled'). ' --');
+            FrmStaticText( MarkChanged( _m('Change') ), MarkChanged( $new_val ) .$changed_by .$accept,
+                           false, "", "", false);
         }
     }
 }
@@ -42,11 +46,11 @@ function MarkChanged($txt) {
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id   = get_if($slice_id,$sid);
-$p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
-$links_info  = GetModuleInfo($module_id,'Links');
-// count tree start category depth
-$links_info['tree_depth'] = substr_count (Links_GetCategoryColumn( $links_info['tree_start'], 'path' ), ',') + 1;
+$module_id    = get_if($slice_id,$sid);
+$p_module_id  = q_pack_id($module_id); # packed to 16-digit as stored in database
+$links_info   = GetModuleInfo($module_id,'Links');
+$select_start = get_if( $_GET['select_start'], $links_info['select_start'], 2);   // used for anonymous forms
+$select_depth = substr_count(Links_GetCategoryColumn( $select_start, 'path' ), ',');  // count tree start category depth
 
 // load right langfile, if it is not loaded
 bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$r_lang_file);
@@ -104,7 +108,8 @@ while ($db->next_record()) {
 # This link specific data -----------------------------------------------------
 
 if( $getOldV ){  // error message - fill old values
-    $linkname      = $r_state['linkedit']['old']['linkname'];
+    $url           = $r_state['linkedit']['old']['url'];
+    $aa_name       = $r_state['linkedit']['old']['aa_name'];
     $original_name = $r_state['linkedit']['old']['original_name'];
     $description   = $r_state['linkedit']['old']['description'];
     $initiator     = $r_state['linkedit']['old']['initiator'];
@@ -139,7 +144,7 @@ if( $getOldV ){  // error message - fill old values
 // get edited link data
 if( !$getOldV AND $r_state['link_id'] ) {
     $id            = $db_link['id'];
-    $linkname      = $db_link['name'];
+    $aa_name       = $db_link['name'];
     $original_name = $db_link['original_name'];
     $description   = $db_link['description'];
     $initiator     = $db_link['initiator'];
@@ -190,7 +195,8 @@ if( $r_state['link_id'] ) {                  // not new link
     $delimeter = "";
     $change_no = 0;          // number of changes
     while ($db->next_record()) {
-        $name_change[]          = htmlspecialchars($db->f('name'));
+debug('changes Record',$db->Record);
+        $aa_name_change[]       = htmlspecialchars($db->f('name'));
         $original_name_change[] = htmlspecialchars($db->f('original_name'));
         $description_change[]   = htmlspecialchars($db->f('description'));
         $type_change[]          = htmlspecialchars($db->f('type'));
@@ -203,6 +209,8 @@ if( $r_state['link_id'] ) {                  // not new link
         $org_fax_change[]       = htmlspecialchars($db->f('org_fax'));
         $org_email_change[]     = htmlspecialchars($db->f('org_email'));
         $note_change[]          = htmlspecialchars($db->f('note'));
+
+        $created_by_change[]    = perm_username($db->f('created_by'));  // used for display of initiator of the change
 
         $changeIds .= $delimeter.$db->f('id');   // set of link id's which holds requested changes
         $delimeter = ',';
@@ -278,7 +286,7 @@ if( $r_state['link_id'] ) {                  // not new link
     $db->query($SQL);
     while ($db->next_record()) {
         $i = (( $db->f('base') == 'y' ) ? 0 : ++$idx);
-        $selcatValue[$i]             = NamePath($links_info['tree_depth'],$db->f('path'), $tmp_translate);
+        $selcatValue[$i]             = NamePath($select_depth,$db->f('path'), $tmp_translate);
         $selcatSelectValue[$i]       = $db->f('id');
         $getPathFromID[$db->f('id')] = $db->f('path');
         $selcatState[$i]             = $db->f('state');
@@ -346,7 +354,6 @@ if (isset($checked_url))
 // AND now display the form --------------------------------------------------
 
 $r_state['cat_id'] = get_if( $r_state['cat_id'], $_GET['cid'] );   // used for anonymous forms
-$select_start      = get_if( $_GET['select_start'], $links_info['select_start'], 2);   // used for anonymous forms
 
 //huhl($links_info['select_start'],"----",$select_start );
 
@@ -356,8 +363,8 @@ echo '<title>'. _m('APC ActionApps') ." - $pagename</title>";
 
 $tree = new cattree( $db, $select_start, false, ' > ');
 // special javascript for category selection
-echo '<script language="JavaScript" type="text/javascript"
-      src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/js_lib_links.js"></script>';
+
+FrmJavascriptFile('javascript/js_lib_links.js');
 $tree->printTreeData($links_info['tree_start']);
 
 if( !$r_state['link_id'] ) {  // add new link
@@ -383,10 +390,17 @@ PrintArray($r_msg);
 unset($r_err);
 unset($r_msg);
 
+
+$form_buttons = array ( "submit",
+                        "cancel",
+                        "senderUrl" => array('value' => "linkedit.php3"),
+                        "lid"       => array('value' => $r_state['link_id']) );
+
 echo '
 <form name="f" method=post action="'. $sess->url("linkedit2.php3") .'">';
-FrmTabCaption( _m('Link').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-odkaz"),
-                                      array("before"=>"(", "text"=>"?", "after"=>")")) );
+$caption = _m('Link').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-odkaz"),
+                                      array("before"=>"(", "text"=>"?", "after"=>")"));
+FrmTabCaption($caption, '','', $form_buttons, $sess, $slice_id);
 
 $bin_names = get_bin_names();
 if ( $id ) {
@@ -403,39 +417,44 @@ echo '
         <div class="tabhlp">'. _m('You can check, if the page is not in database already') .'</div>
           </td>
       </tr>';
-    printChange($url_change, $url);
-    FrmInputText( 'linkname', _m('Page name'),           $linkname,  250, 50, true,
+    printChange('url', $url_change, $url);
+    FrmInputText( 'aa_name', _m('Page name'),           $aa_name,  250, 50, true,
                    _m('English name of the page'), get_help_url(AA_LINKS_HELP_LINK,"nazev-odkazu"));
-    printChange($name_change, $linkname);
+    printChange('aa_name', $aa_name_change, $aa_name);
     FrmInputText( 'original_name', _m('Original page name'), $original_name,  250, 50, false,
                    _m('Name of the page in original language'), get_help_url(AA_LINKS_HELP_LINK,"preklad-nazvu"));
-    printChange($original_name_change, $original_name);
+    printChange('original_name', $original_name_change, $original_name);
     FrmTextarea(  'description',  _m('Description'),    $description, 5, 60, false,
                   _m('Do not use HTML tags and do not write words like "best page", ... The maximum length of the description should be about 250 characters.'),
                   get_help_url(AA_LINKS_HELP_LINK,"popis-odkazu"));
-    printChange($description_change, $description);
+    printChange('description', $description_change, $description);
 
     // do not show general categories to public (anonymous) users
     if( !Links_IsPublic() ) {
         FrmInputSelect( 'type', _m('Link type'), $link_types, $type, false,
                        _m('Select the type, if the link belongs to some special category'),
                        get_help_url(AA_LINKS_HELP_LINK,"obecna-kategorie"));
-        printChange($type_change, $type);
+        printChange('type', $type_change, $type);
     }
 //    FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
     FrmInputText( 'initiator', _m('Author\'s e-mail'),           $initiator,  250, 50, false,
                   "", get_help_url(AA_LINKS_HELP_LINK,"e-mail"));
-    printChange($initiator_change, $initiator);
+    printChange('initiator', $initiator_change, $initiator);
     FrmTextarea(  'note',  _m('Editor\'s note'),    $note, 3, 60, false,
                   _m('You can type any message here - it is never shown on the website'),
                   get_help_url(AA_LINKS_HELP_LINK,"poznamka-odkaz"));
-    printChange($note_change, $note);
+    printChange('note', $note_change, $note);
 
 if( $r_state['link_id'] ) {        // 'edit link', not 'add link'
     FrmStaticText( _m('Last checked'), date(_m('n/j/Y'), $checked). ', '. perm_username($checked_by),  false, "", "", false);
     FrmStaticText( _m('Last changed'), date(_m('n/j/Y'), $last_edit). ', '.  perm_username($edited_by), false, "", "", false);
     FrmStaticText( _m('Inserted'),     date(_m('n/j/Y'), $created). ', '. perm_username($created_by),  false, "", "", false);
 }
+if( !Links_IsPublic() ) {
+    FrmInputSelect('folder', _m('Folder'), $bin_names, $folder, true);
+}
+
+
     FrmTabSeparator( _m('Show in category').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"odkaz-dokategorii"),
                                                         array("before"=>"(", "text"=>"?", "after"=>")")) );
 echo '
@@ -453,10 +472,9 @@ echo '
           </tr>
           <tr>
            <td align="CENTER" valign="TOP">'.
-           $tree->getFrmTree(false, 'dblclick', $select_start,
-                                  'patharea', '', false, '', 15, 'f');
+           $tree->getFrmTree(false, 'dblclick', $select_start, 'patharea', '', false, '', 15, 'f');
            if( $r_state['cat_id'] ) {
-                $tree->goCategory(GetCategoryPath( $r_state['cat_id'] ), 'patharea', '', 'f' );
+                echo $tree->goCategory( $r_state['cat_id'], 'patharea', '', 'f' );
            }
 echo      '</td>
            <td  align="LEFT" valign="TOP" colspan=2>
@@ -486,18 +504,19 @@ if( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
        FrmTabSeparator( _m('Organization') .FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"kontakt"),
                                                         array("before"=>"(", "text"=>"?", "after"=>")")) );
        FrmInputText( 'org_city', _m('City'), $org_city,  250, 50, false);
-       printChange( $org_city_change, $org_city );
+       printChange( 'org_city', $org_city_change, $org_city );
        FrmInputText( 'org_street', _m('Street'), $org_street,  250, 50, false);
-       printChange( $org_street_change, $org_street );
+       printChange( 'org_street', $org_street_change, $org_street );
        FrmInputText( 'org_post_code', _m('Post code'), $org_post_code,  250, 50, false);
-       printChange( $org_post_code_change, $org_post_code );
+       printChange( 'org_post_code', $org_post_code_change, $org_post_code );
        FrmInputText( 'org_phone', _m('Phone'), $org_phone,  250, 50, false);
-       printChange( $org_phone_change, $org_phone );
+       printChange( 'org_phone', $org_phone_change, $org_phone );
        FrmInputText( 'org_fax', _m('Fax'), $org_fax,  250, 50, false);
-       printChange( $org_fax_change, $org_fax );
+       printChange( 'org_fax', $org_fax_change, $org_fax );
        FrmInputText( 'org_email', _m('E-mail'), $org_email,  250, 50, false);
-       printChange( $org_email_change, $org_email );
+       printChange( 'org_email', $org_email_change, $org_email );
 }
+
 
        FrmTabSeparator( _m('Regions and languages').
            FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"region-jazyk"), array("before"=>"(", "text"=>"?", "after"=>")")) );
@@ -508,21 +527,15 @@ if( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
         if( isset($regId) AND is_array($regId) )
             for( $i=0; $i<count($regId); $i++ )
                 echo '<input type="checkbox" name="reg[]" value="'.$regId[$i].'" '.$regChecked[$i].'>'.$regName[$i].' '.$reg_changes[$i].'<br>';
-echo '</td>
-       <td valign="top">';
-        if( isset($langId) AND is_array($langId) )
-            for( $i=0; $i<count($langId); $i++ )
-                echo '<input type="checkbox" name="lang[]" value="'.$langId[$i].'" '.$langChecked[$i].'>'.$langName[$i].' '.$lang_changes[$i].'<br>';
+    echo '</td>
+           <td valign="top">';
+            if( isset($langId) AND is_array($langId) )
+                for( $i=0; $i<count($langId); $i++ )
+                    echo '<input type="checkbox" name="lang[]" value="'.$langId[$i].'" '.$langChecked[$i].'>'.$langName[$i].' '.$lang_changes[$i].'<br>';
 
-echo '</td></tr>
-  </table></td></tr>
-   <tr><td align="center">
-     <input type=button name=submit_button value=" '. _m('OK') .' " onClick="document.f.submit()">&nbsp;&nbsp;
-     <input type=submit name=cancel value=" '. _m('Back') .' ">&nbsp;&nbsp;
-     <input type=hidden name=senderUrl value="linkedit.php3">
-     <input type=hidden name=lid value="'.$r_state['link_id'].'">
-     <input type=hidden name=slice_id value="'.$slice_id.'">
-   </td></tr></table>
+    echo '</td></tr>';
+    FrmTabEnd( $form_buttons, $sess, $slice_id);
+    echo '
  </form>
     <form name="f_hidden" method="get" action="check_url.php3" target="message">
         <input type="hidden" name="url" value="">

@@ -10,9 +10,7 @@
         }
         if (HTMLArea.checkSupportedBrowser) {
             elem = document.getElementById("htmlplainspan");
-            if ( elem != null ) {
-                 elem.style.display = "none";
-            }
+            elem.style.display = "none";
         }
     }
 
@@ -33,6 +31,7 @@
         config.width = eval(cols*12)+"px";
         if (tableop == true) area.registerPlugin("TableOperations");
         if (spell == true) area.registerPlugin("SpellChecker");
+        area.registerPlugin("InsertFile");
         area.generate();
         switchHTML(name);
         return false;

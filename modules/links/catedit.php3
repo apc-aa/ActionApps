@@ -50,6 +50,7 @@ if( !$updated ) {
         $description    = $db->f('description');
         $additional     = $db->f('additional');
         $note           = $db->f('note');
+        $nolinks        = ($db->f('nolinks')==1);
     }
 }
 $id = $r_state['cat_id'];
@@ -87,6 +88,7 @@ echo '<form name=f method=post action="catedit2.php3">';
     FrmStaticText(                _m('Id'),             $id. '&nbsp; &nbsp; &nbsp;('. _m('Links in subtree').': '.$links_count.')', false, "", "", false);
     FrmInputText( 'cat_name',     _m('Category name'),           $cat_name,  250, 50, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"nazev-kategorie") );
     FrmTextarea(  'description',  _m('Category description'),    $description, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"popis-kategorie"));
+    FrmInputChBox('nolinks',      _m('No links'), $nolinks, false, '', 1, false, _m('Disalow storing of the links to this category?'));
     FrmTextarea(  'note',         _m('Editor\'s note'),    $note, 3, 60, false, "", get_help_url(AA_LINKS_HELP_CATEGORY,"poznamka-kategorie"));
     FrmHidden(    'additional',   $additional);
     FrmTabSeparator( _m('Subcategories').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"podkategorie"),

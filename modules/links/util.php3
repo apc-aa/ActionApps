@@ -340,7 +340,7 @@ function Links_GetLinkContent($zids) {
     // get categories data for links
     $SQL = "SELECT * FROM links_link_cat, links_categories
              WHERE links_categories.id = links_link_cat.category_id
-               AND links_link_cat.what_id $sel_in";
+               AND links_link_cat.what_id $sel_in ORDER BY base DESC";
     StoreTable2Content($db, $content, $SQL, 'cat_', 'what_id');
     return $content;
 }
@@ -466,6 +466,39 @@ function Links_Assign2Category($lid, $categs, $proposal=false) {
     }
 }
 
+$GENERAL_CATS['Neziskové organizace']                       = array( 'pri' => 1010, 'super' => 'Organizace' );
+$GENERAL_CATS['Nadace a nadaèní fondy']                     = array( 'pri' => 1020, 'super' => 'Organizace' );
+$GENERAL_CATS['Státní správa a samospráva']                 = array( 'pri' => 1030, 'super' => 'Organizace' );
+$GENERAL_CATS['Firmy']                                      = array( 'pri' => 1100, 'super' => 'Organizace' );
+$GENERAL_CATS['Politické strany a hnutí']                   = array( 'pri' => 1110, 'super' => 'Organizace' );
+$GENERAL_CATS['Mezistátní organizace']                      = array( 'pri' => 1120, 'super' => 'Organizace' );
+$GENERAL_CATS['Profesní sdružení']                          = array( 'pri' => 1130, 'super' => 'Organizace' );
+$GENERAL_CATS['Vìdecké a výzkumné organizace']              = array( 'pri' => 1140, 'super' => 'Organizace' );
+$GENERAL_CATS['Vzdìlávací a výchovné organizace']           = array( 'pri' => 1150, 'super' => 'Organizace' );
+$GENERAL_CATS['Církve a náboženské spoleènosti']            = array( 'pri' => 1160, 'super' => 'Organizace' );
+$GENERAL_CATS['Zdravotnické organizace']                    = array( 'pri' => 1170, 'super' => 'Organizace' );
+$GENERAL_CATS['Kulturní organizace']                        = array( 'pri' => 1180, 'super' => 'Organizace' );
+
+$GENERAL_CATS['Zpravodajské weby, noviny a èasopisy']       = array( 'pri' => 2001, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Rozhlas a televize']                         = array( 'pri' => 2010, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['E-mailové konference a diskusní skupiny']    = array( 'pri' => 2020, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Názory a komentáøe']                         = array( 'pri' => 2030, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Knihovny, knihkupectví, literatura']         = array( 'pri' => 2040, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Adresáøe, databáze']                         = array( 'pri' => 2050, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Katalogy odkaz?, rozcestníky, vyhledavaèe']  = array( 'pri' => 2060, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Právní pøedpisy']                            = array( 'pri' => 2070, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Studie, statistiky, hodnotící zprávy']       = array( 'pri' => 2080, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Dokumenty, publikace, studijní texty']       = array( 'pri' => 2090, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+
+$GENERAL_CATS['Odborné konference, semináøe, kurzy']        = array( 'pri' => 3001, 'super' => 'Akce' );
+$GENERAL_CATS['Politická jednání a konference']             = array( 'pri' => 3010, 'super' => 'Akce' );
+$GENERAL_CATS['Výstavy a veletrhy']                         = array( 'pri' => 3020, 'super' => 'Akce' );
+$GENERAL_CATS['Tábory a víkendovky']                        = array( 'pri' => 3030, 'super' => 'Akce' );
+$GENERAL_CATS['Festivaly']                                  = array( 'pri' => 3040, 'super' => 'Akce' );
+$GENERAL_CATS['Kalendáøe akcí']                             = array( 'pri' => 3050, 'super' => 'Akce' );
+$GENERAL_CATS['Ostatní akce']                               = array( 'pri' => 3060, 'super' => 'Akce' );
+
+
 /** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
 function  Links_LoadGlobalCategories() {
     global $LINK_TYPE_CONSTANTS, $LINK_TYPE_CONSTANTS_ARR;
@@ -508,4 +541,43 @@ function  Links_GlobalCatPriority($type) {
     }
     return $LINK_TYPE_CONSTANTS_ARR[$type];
 }
+
+/** Returns priority of general category (for sorting) */
+function Links_GlobalCatSuper($type) {
+    return $GLOBALS['GENERAL_CATS'][$type]['super'];
+}
+
+/** Returns listing of links with the same URL */
+function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=false) {
+    if( substr( $url, -1 ) == '/' ) {
+        $url = substr( $url, 0, strlen($url)-1 );  // remove last '/'
+    }
+
+    $url   = addslashes($url);
+    $conds = array( array( 'value'    => "$url OR ${url}_",
+                           'operator' => 'XLIKE',
+                           'url'      => 1 ),
+                    array( 'value'    => $checked_id,  // we do not want to find
+                           'operator' => '<>',         // the link we are asking to
+                           'id'       => 1 ));
+    $sort  = '';
+    // 1 - base category - look for all links in the database (no matter in which subtree)
+    $start_cat_path = ($tree_start ? GetCategoryPath( $tree_start ) : 1);
+
+    // we have to look for unassigned links (not assigned to some category),
+    // as well as for assinged ones
+    $links_zids    = Links_QueryZIDs($start_cat_path, $conds, $sort, true, 'all');
+    $links_zids->add(Links_QueryZIDs($start_cat_path, $conds, $sort, true, 'unasigned'));
+
+    // url nahore
+    // zarazeno v kategorii
+    $out = "";
+    if( $links_zids->count() != 0 ) {
+        $itemview = new itemview($format_strings, '', GetLinkAliases(),
+                              $links_zids, 0, 100, '', '', 'Links_GetLinkContent' );
+        $out = $itemview->get_output("view");
+    }
+    return $out;
+}
+
 ?>

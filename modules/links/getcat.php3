@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
+require_once "../../include/formutil.php3";
 require_once "./constants.php3";
 require_once "./cattree.php3";
 require_once "./util.php3";      // module specific utils
