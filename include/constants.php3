@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -32,10 +32,10 @@ require_once "mgettext.php3";
   # The types are defined APC wide for easy item interchanging between APC nodes
   # (on the other hand, new type can be added just by placing new fileld
   # in database table fields as for 'AA_Core_Fields..' slice).
-  
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-* @global array $MODULES 
-*     "name" is a description of the module, 
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* @global array $MODULES
+*     "name" is a description of the module,
 *     "hide_create_module" doesn't show the module in the Create Slice / Module page
 */
 $MODULES = array( 'S' => array( 'table' => 'slice',
@@ -48,7 +48,7 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'show_templates' => 1,  # show list of sites on 'create new' - used as templates
                                 'directory' => "modules/site/",
                                 'menu' => "modules/site/menu.php3",
-                                'language_files' => array( 
+                                'language_files' => array(
                                     'en_site_lang.php3' => 'en_site_lang.php3',
                                     'cz_site_lang.php3' => 'cz_site_lang.php3')),
                   'A' => array( 'table' => 'module', # this module doesn't have any special info yet
@@ -69,10 +69,10 @@ $MODULES['Alerts'] = array ('table' => 'module',
                             'name' => _m('Alerts'),
                             'directory' => "modules/alerts/",
                             'menu' => "modules/alerts/menu.php3",
-                            'letter' => 'A');  // letter is used for the modules 
-                                               // which indentificator is not 1 
+                            'letter' => 'A');  // letter is used for the modules
+                                               // which indentificator is not 1
                                                // letter long (we need 1-letter
-                                               // identification for some 
+                                               // identification for some
                                                // javascripts in um_util.php3
 $MODULES['Links'] =  array ('table' => 'links',
                             'name' => _m('Links'),
@@ -81,7 +81,7 @@ $MODULES['Links'] =  array ('table' => 'links',
                             'menu' => "modules/links/menu.php3",
                             'letter' => 'L');
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * @global array $LANGUAGE_FILES language files for slices (not for some modules, e.g. site)
 */
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
@@ -92,9 +92,9 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "ro_news_lang.php3" => "ro_news_lang.php3",
                          "ja_news_lang.php3" => "ja_news_lang.php3");
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * @global array $LANGUAGE_CHARSETS charsets to be used in HTML HEAD and otherwere
-*/                         
+*/
 $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "en" => "iso-8859-1",
                             "es" => "iso-8859-1",
@@ -103,9 +103,9 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "sk" => "windows-1250",
                             "ja" => "EUC-JP");
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-* @global array $LANGUAGE_NAMES 
-*/                         
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* @global array $LANGUAGE_NAMES
+*/
 $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "en" => "English",
                          "es" => "Espanol",
@@ -115,11 +115,11 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "ja" => "Japanian");
 
 /// number of items in editor window
-define("EDIT_ITEM_COUNT", 20);                 
-  
+define("EDIT_ITEM_COUNT", 20);
+
 define("DEFAULT_FULLTEXT_HTML", '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT>'
                                .'<BR><B>_#PUB_DATE</B> <BR>_#FULLTEXT');
-define("DEFAULT_ODD_HTML", 
+define("DEFAULT_ODD_HTML",
      '<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font>'
     .'<font color=red><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font>'
     .'<font color=#808080 size=-1><br>_#PLACE###(<a href="_#SRC_URL#">_#SOURCE##</a>) - </font>'
@@ -139,7 +139,7 @@ define("ANONYMOUS_EDIT_ONLY_ANONYMOUS", 2);
 define("ANONYMOUS_EDIT_NOT_EDITED_IN_AA", 3);
 define("ANONYMOUS_EDIT_PASSWORD", 4);
 define("ANONYMOUS_EDIT_HTTP_AUTH", 5);
-                                                   
+
 # MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and
 # specifies how many items from the begining we have to search
 define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
@@ -232,11 +232,11 @@ function inputShowFuncTypes ()
     "pwd" => array( 'name' => _m("Password and Change password"), #
                     'multiple' => false,
                     'paramformat' => 'fnc:param' ),
-    "hid" => array( 'name' => _m("Hidden field"),       # hidden field (good for  
+    "hid" => array( 'name' => _m("Hidden field"),       # hidden field (good for
                     'multiple' => false,                # javascript triggers)
                     'paramformat' => 'fnc'));
 }
-                             
+
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "1"   => LOG_EVENTS_,
                       "2"   => LOG_EVENTS_,
@@ -254,7 +254,7 @@ define( "FLAG_FREEZE", 4 );    # content can't be changed
 define( "FLAG_OFFLINE", 8 );   # off-line filled
 define( "FLAG_UPDATE", 16 );   # content should be updated if source is changed
                                #   (after feeding)
-                               
+
 # item table flags (numbers - just to be compatible with content table)
 define( "ITEM_FLAG_FEED", 2 );      # item is fed
 define( "ITEM_FLAG_OFFLINE", 8 );   # off-line filled or imported from file
@@ -278,13 +278,13 @@ function inputFeedModes ()
                 STATE_FEEDABLE_UPDATE => _m("Feed & update"),
                 STATE_FEEDABLE_UPDATE_LOCKED => _m("Feed & update & lock")
               );
-}              
+}
 
 function getViewFields ()
-{    
+{
     # se_views.php3 - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
-    
+
     $VIEW_FIELDS["name"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
     $VIEW_FIELDS["before"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
     $VIEW_FIELDS["even"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"area" );
@@ -331,12 +331,12 @@ function getViewFields ()
     $VIEW_FIELDS["field1"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
     $VIEW_FIELDS["field2"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
     $VIEW_FIELDS["field3"]          = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"selfld" );
-    $VIEW_FIELDS["calendar_type"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"select", 
+    $VIEW_FIELDS["calendar_type"]   = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"select",
                                              "values"=>array ("mon"=>_m("Month List"),"mon_table"=>_m("Month Table")));
     return $VIEW_FIELDS;
-}                                         
+}
 
-/** View types is an array. The basic format is 
+/** View types is an array. The basic format is
 *       view_type => array (
 *           "view_field (one from $VIEW_FIELDS, see above)" => "label", ...)
 *
@@ -388,7 +388,7 @@ function getViewTypes ()
     #                              "flag" => _m("Flag") ,
     // TODO                              "scroller" => _m("Display page scroller") ,
     #                              "aditional" => _m("Additional") );
-    
+
     $VIEW_TYPES['full'] = array( 'name' => _m("Fulltext view"),
                                   "before" => _m("Top HTML") ,
                                   "odd" => _m("Odd Rows") ,
@@ -405,7 +405,7 @@ function getViewTypes ()
                                   "cond3op" => " " ,
                                   "cond3cond" => " " ,
                                   "noitem_msg" => _m("HTML code for \"No item found\" message") );
-    
+
     $VIEW_TYPES['discus'] = array( 'name' => _m("Discussion"),
                                   "before" => _m("Top HTML") ,
                                   "odd" => _m("HTML code for index view of the comment") ,
@@ -423,7 +423,7 @@ function getViewTypes ()
                                   "aditional" => _m("HTML code for space before comment") ,
                                   "remove_string" => _m("HTML code of the form for posting comment")
                                   );
-    
+
     // discussion to mail
     $VIEW_TYPES['disc2mail'] = array( 'name' => _m("Discussion To Mail"),
                                   "aditional" => _m("From: (email header)"),
@@ -433,7 +433,7 @@ function getViewTypes ()
                                   "aditional5" => _m("Mail Subject:"),
                                   "even" => _m("Mail Body:")
                                   );
-    
+
     /*  TODO
     $VIEW_TYPES['seetoo'] = array( 'name' => _m("Related item"),
                                   "before" => _m("Top HTML") ,
@@ -449,7 +449,7 @@ function getViewTypes ()
                                   "selected_item" => _m("HTML for Selected") ,
                                   "listlen" => _m("Listing length") );
     */
-                                  
+
     $VIEW_TYPES['const'] = array( 'name' => _m("View of Constants"),
                                   "before" => _m("Top HTML") ,
                                   "odd" => _m("Odd Rows") ,
@@ -461,8 +461,8 @@ function getViewTypes ()
                                   "listlen" => _m("Listing length") ,
                                   "even_odd_differ" => _m("Use different HTML code for even rows") ,
                                   "o1_direction" => " ");
-    
-    
+
+
     $VIEW_TYPES['rss'] = array( 'name' => _m("RSS exchange"),
                                   "before" => _m("Top HTML") ,
                                   "odd" => _m("Odd Rows") ,
@@ -482,13 +482,13 @@ function getViewTypes ()
                                   "cond3cond" => " " ,
                                   "listlen" => _m("Listing length") ,
                                   "noitem_msg" => _m("HTML code for \"No item found\" message") );
-    
-    $VIEW_TYPES['static'] = array( 'name' => _m("Static page"), 
+
+    $VIEW_TYPES['static'] = array( 'name' => _m("Static page"),
                                    "odd" => _m("HTML code") );
-                                  
-    
-    # for javascript list of items 
-    $VIEW_TYPES['script'] = array( 'name' => _m("Javascript item exchange"),  
+
+
+    # for javascript list of items
+    $VIEW_TYPES['script'] = array( 'name' => _m("Javascript item exchange"),
                                   "before" => _m("Top HTML") ,
                                   "odd" => _m("Odd Rows") ,
                                   "after" => _m("Bottom HTML") ,
@@ -507,7 +507,7 @@ function getViewTypes ()
                                   "cond3cond" => " " ,
                                   "listlen" => _m("Listing length") ,
                                   "noitem_msg" => _m("HTML code for \"No item found\" message") );
-                                  
+
     $VIEW_TYPES['calendar'] = array ('name' => _m("Calendar"),
                                   "calendar_type" => _m("Calendar Type"),
                                   "before" => _m("Top HTML") ,
@@ -541,12 +541,12 @@ function getViewTypes ()
     #                              "flag" => _m("Flag") ,
     // TODO                              "scroller" => _m("Display page scroller") ,
     #                              "aditional" => _m("Additional") );
-    
+
     $VIEW_TYPES['digest']  = array( "name" => _m("Alerts Selection Set"),
                                   "aditional" => array (
-                                      "label" => _m("Group by selections (some items 
-                                         may be shown several times)"),    
-                                      "input" => "chbox"),                            
+                                      "label" => _m("Group by selections (some items
+                                         may be shown several times)"),
+                                      "input" => "chbox"),
                                   "function:digest_filters" => "",
                                   "aditional2" => array (
                                       "label" => _m("Fulltext URL"),
@@ -570,7 +570,7 @@ function getViewTypes ()
                                   "listlen" => _m("Max number of items"),
                                   "noitem_msg" => _m("HTML code for \"No item found\" message"));
 
-    // View used for listing of ursl - mainly for listing items for index 
+    // View used for listing of ursl - mainly for listing items for index
     // servers (HtDig, MnogoSearch, ...)
     // The main difference from 'list' view is that the aliases are created just
     // from item table, so the memory usage is much smaller - you can list all
@@ -595,9 +595,9 @@ function getViewTypes ()
                                   "cond3cond" => " " ,
                                   "listlen" => _m("Listing length") ,
                                   "noitem_msg" => _m("HTML code for \"No item found\" message") );
-                                  
+
     return $VIEW_TYPES;
-}                                  
+}
 
 function getViewTypesInfo() {
     # modification - options for modification field of views
@@ -615,26 +615,26 @@ function getViewTypesInfo() {
                                                             '14'=>'id', '15'=>'parameter'),
                                      'aliases' => 'field');
     $VIEW_TYPES_INFO['digest'] = array('aliases' => 'field');
-    $VIEW_TYPES_INFO['discus'] = array('modification'=>array('21'=>'timeorder', 
-                                                             '22'=>'reverse timeorder', 
+    $VIEW_TYPES_INFO['discus'] = array('modification'=>array('21'=>'timeorder',
+                                                             '22'=>'reverse timeorder',
                                                              '23'=>'thread' ),
                                        'aditional' =>array('default'=>'<img src="'.$AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">'),
                                        'aditional2'=>array('default'=>'<input type=button name=sel_ids value="' ._m("Show selected"). '" onClick=showSelectedComments() class="discbuttons">'),
                                        'aditional3'=>array('default'=>'<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">'),
                                        'aditional4'=>array('default'=>'<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">'),
                                        'aliases' => 'discus');
-    $VIEW_TYPES_INFO['discus2mail'] = array ('aliases' => 'discus2mail');                                   
-    $VIEW_TYPES_INFO['seetoo'] = array('modification'=>array('31'=>'related', 
+    $VIEW_TYPES_INFO['discus2mail'] = array ('aliases' => 'discus2mail');
+    $VIEW_TYPES_INFO['seetoo'] = array('modification'=>array('31'=>'related',
                                                              '32'=>'keyword with OR',
                                                              '33'=>'keyword with AND' ),
                                      'aliases' => 'field');
     $VIEW_TYPES_INFO['const'] = array('aliases' => 'const',
-                                      'order' => array('name'=>'name', 
+                                      'order' => array('name'=>'name',
                                                        'value'=>'value',
                                                        'pri'=>'priority'));
 
     $VIEW_TYPES_INFO['urls'] = array('aliases' => 'justids');
-                                      
+
     $VIEW_TYPES_INFO['rss'] = array('aliases' => 'field');
     $VIEW_TYPES_INFO['calendar'] = array('aliases' => 'field',
         'aliases_additional' => array (
@@ -643,13 +643,13 @@ function getViewTypesInfo() {
             '_#CV_NUM_D' => array ('hlp'=>_m("Calendar: Day in month of processed cell")),
             '_#CV_NUM_M' => array ('hlp'=>_m("Calendar: Month number of processed cell")),
             '_#CV_NUM_Y' => array ('hlp'=>_m("Calendar: Year number of processed cell"))));
-            
+
     $VIEW_TYPES_INFO['static'] = array('aliases' => 'none');
     $VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
     return $VIEW_TYPES_INFO;
 }
 
-# flag in the feedmap table 
+# flag in the feedmap table
 define ("FEEDMAP_FLAG_MAP", 0);
 define ("FEEDMAP_FLAG_VALUE", 1);
 define ("FEEDMAP_FLAG_EMPTY", 2);
@@ -662,6 +662,8 @@ define ("DISCUS_HTML_FORMAT", 1);              # discussion html format flag in 
 $conds_not_field_names = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuejoin"=>1);
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);
+// CountHit probability - how offen write logged hits to item table
+define ("COUNTHIT_PROBABILITY", 100);
 
 function getFilemanAccesses ()
 { return array (
