@@ -53,8 +53,8 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
 
   echo "
   <tr>
-    <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=49 value=\"$name\"></td>
-    <td><input type=\"Text\" name=\"value[$id]\" size=25 maxlength=49 value=\"$value\">
+    <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=149 value=\"$name\"></td>
+    <td><input type=\"Text\" name=\"value[$id]\" size=25 maxlength=149 value=\"$value\">
       <input type=\"Hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
     <td class=tabtxt><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>";
   if( $categ ){   # it is categories - show APC wide categories for parent category select
@@ -244,6 +244,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.9  2001/04/04 18:27:44  honzam
+Morehelp question mart in itemedit opens new window.
+
 Revision 1.8  2001/03/20 15:27:03  honzam
 Changes due to "slice delete" feature
 

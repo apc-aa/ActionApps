@@ -53,7 +53,7 @@ function SendErrorPage($txt) {
 function SendOkPage($txt) {
   if( $GLOBALS["ok_url"] )
     go_url($GLOBALS["ok_url"]);
-  echo (L_OFFLINE_OK_BEGIN . $txt . L_OFFLINE_OK_END );
+  go_url($GLOBALS[HTTP_REFERER]);
   exit;
 }  
 
@@ -147,6 +147,9 @@ if( count($err) > 1)
 
 /*
 $Log$
+Revision 1.2  2001/04/04 18:27:43  honzam
+Morehelp question mart in itemedit opens new window.
+
 Revision 1.1  2001/03/20 15:23:09  honzam
 standardized content management for items - filler, itemedit, offline, feeding
 

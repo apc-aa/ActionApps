@@ -38,7 +38,7 @@ function PrintHelp( $txt ) {
 # if $txt, shows link to more help
 function PrintMoreHelp( $txt ) {
   if( $txt )
-    echo "&nbsp;<a href='$txt'>?</a>";
+    echo "&nbsp;<a href='$txt' target='_blank'>?</a>";
 }    
 
 # Prints html tag <input type=text .. to 2-column table
@@ -338,6 +338,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.13  2001/04/04 18:27:44  honzam
+Morehelp question mart in itemedit opens new window.
+
 Revision 1.12  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support
