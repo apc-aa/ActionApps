@@ -42,6 +42,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
                     }  
                 $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
                 break;
+      case 'm':
       case '-': $querystring = time() - $querystring;
                 break;
     }
@@ -114,6 +115,8 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
         if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
           $select_conds[] = GetWhereExp( 'item.'.$fields[$fid]['in_item_tbl'],
                                           $cond['operator'], $cond['value'] );
+          if( $fid == 'expiry_date.....' )
+            $ignore_expiry_date = true;
         } else {
           $cond_flds .= ( ($field_count++>0) ? ',' : "" ). "'$fid'";
           $store = ($fields[$fid]['text_stored'] ? "text" : "number");
@@ -213,9 +216,13 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   $now = now();                                              # select bin -----
   switch( $type ) {
     case 'ACTIVE':  $SQL .= " item.status_code=1 AND 
-                              item.publish_date <= '$now' AND
-                              item.expiry_date > '$now' ";
-                              break;
+                              item.publish_date <= '$now' ";
+                    # condition can specify expiry date (good for archives)
+                    if( !( $ignore_expiry_date && 
+                           defined("ALLOW_DISPLAY_EXPIRED_ITEMS") &&
+                           ALLOW_DISPLAY_EXPIRED_ITEMS) )
+                      $SQL .= " AND item.expiry_date > '$now' ";
+                    break;
     case 'EXPIRED': $SQL .= " item.status_code=1 AND 
                               item.expiry_date <= '$now' ";
                               break;
@@ -240,7 +247,6 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
 
   if( isset($select_group) )                                 # group by -------
     $SQL .= " GROUP BY $select_group";
-
 
 // huh($SQL);
 
@@ -780,6 +786,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.17  2001/08/02 20:05:30  honzam
+new possibility to display expired items (for archves, ...)
+
 Revision 1.16  2001/07/31 16:32:51  honzam
 Added '-' operator modifier for relative time conditions. The operator was implemented to view definition too (se_view.php3)
 

@@ -93,6 +93,10 @@ define("CACHE_TTL", 600 );
 # The frequency in which the cache is checked for old values (in seconds)
 define("CACHE_PURGE_FREQ", 1000);
 
+# If true, the expired items could be displayed by in specific query (good 
+# for archive display). If false, expired items are never shown 
+define("ALLOW_DISPLAY_EXPIRED_ITEMS", true);
+
 # If you use Web.net's extended items table, uncomment this definition
 define("EXTENDED_ITEM_TABLE", "1");
 
