@@ -195,7 +195,7 @@ function get_aamenus ()
  
         "header8"=>_m("Misc"),
         "te_cron" => array ("label"=>_m("Cron"), "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set_tview=cron"),
-        "aafinder" => array ("label"=>_m("AA finder"), "cond"=>IsSuperadmin(), "href"=>"admin/se_finder.php3")
+        "aafinder" => array ("label"=>_m("AA finder"), "cond"=>IsSuperadmin(), "href"=>"admin/aafinder.php3")
     ));
     
     return $aamenus;
