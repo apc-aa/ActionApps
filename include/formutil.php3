@@ -823,7 +823,7 @@ function printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp,
 * for use within <form> and <table> tag
 */
 function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
-          $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false, $movebuttons=true) {
+          $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false, $movebuttons=false) {
   $name=safe($name); $size=safe($size); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
