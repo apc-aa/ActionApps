@@ -423,10 +423,11 @@ class aainputfield {
       * @returns unpacked slice_id if array is filled from slice
       * (not so important value, isn't?)
       */
-    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $zids=false, $tagprefix=null) {
+    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=false, $tagprefix=null) {
         if ( isset($this->const_arr) and is_array($this->const_arr) ) {  // already filled
             return;
         }
+        $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
         if ( !($constgroup=$this->param[0]) ) {  // assignment
             $this->const_arr = array();
         } elseif ( substr($constgroup,0,7) == "#sLiCe-" ) { # prefix indicates select from items
