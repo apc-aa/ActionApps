@@ -1,3 +1,24 @@
+03/24/03 - fixed bug of empty row appearing in "Two boxes" input type
+(honzam) - new keyword "<!--Vacuum-->" can be used in "No item message" 
+           parameter in view or slice setup, which will display nothing
+         - new view.php3 command 'o', which behaves exactly like 'x' but item 
+           hit-count is not increased
+         - old selected values are highlighted ("sel_on" style) in SELECT-boxes
+         - AA finder search now searches also in view ids, slice names and ids
+         - fixed problem, when no file is specified in {include()} inline alias
+         - fixed problem with language support in loginform (with new mgettext 
+           language environment)
+         - fixed bug in random message view (random view parameter) 
+           (it did not work after zids update)
+         - fixed problem with default date, setting from anonymous input forms
+         - fixed problem with status_code, edited_by and posted_by field 
+           in anonymous input forms - it is not required even if marked 
+           as required in fields setting
+         - fixed bug in "Two boxes" input type - it works again. Fixed warnings 
+           messages appering when array is empty in "Two boxes" input type.
+         - fixed "Bad include file" problem in 'AA finder', 'Delete slice', ...
+         - better debugtimes support in site module
+         - added functions for clearing zids and adding new elements to zids
 03/20/03 - constants view - added new aliases for description, level, short_id 
 (honzam) - added "url" view for list of urls (good for search engines) 
          - permission to empty trash is asigned also to Editors (not only to 
