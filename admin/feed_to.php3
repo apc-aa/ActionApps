@@ -1,7 +1,13 @@
-<?php  #form for feeding selected items
-//$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+<?php
+/**
+ * Form displayed in popup window used for feeding selected items
+ *
+ * @version $Id$
+ * @author Honza Malik <honza.malik@ecn.cz>
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+*/
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -22,70 +28,87 @@ http://www.apc.org/
 require_once "../include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Export Item to Selected Slice") ?></title>
-</head><?php
+/** Print one row with one 'sliceexport' radiobuttons */
+function PrintExportRow( $sname, $sid, $odd) {
+    global $auth;
+    echo '
+    <tr>
+      <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . '>'. safe($sname). '</td>
+      <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . ' align=center><input type=radio name=x'. $sid .' value="2"></td>
+      <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . ' align=center>'.
+      ( CheckPerms( $auth->auth["uid"], "slice", $sid, PS_ITEMS2ACT) ?
+        '<input type=radio name=x'. $sid .' value="1">' : '&nbsp;') .'</td>
+      <td'. ($odd ? ' bgcolor="#EBDABE"' : '') . ' align=center><input type=radio name=x'. $sid .' value="0" checked></td>
+    </tr>';
+}
 
-echo '<body>
-      <center>
-      <h1>'. _m("Export selected items to selected slice") .'</h1>
-      <form name=incf>
-       <table border=0 cellspacing=0 cellpadding=0>
-         <tr><td align=center>'. _m("Slice") .'</td>
-             <td width=60 align=center>'. _m("Export") .'</td>
-             <td width=60 align=center>'. _m("Active") .'</td></tr>'; 
+
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+echo '
+  <title>'.  _m("Export Item to Selected Slice") .'</title>';
+IncludeManagerJavascript();
+echo '
+</head>
+<body>
+  <center>
+  <h1>'. _m("Export selected items to selected slice") .'</h1>
+  <form name=incf>
+   <table border=0 cellspacing=0 cellpadding=0>     
+     <tr class="tabtit"><td align=center>'. _m("Slice") .'</td>
+         <td width=100 align=center>'. _m("Holding bin")   .'</td>
+         <td width=100 align=center>'. _m("Active")        .'</td>
+         <td width=100 align=center>'. _m("Do not export to this slice") .'</td></tr>';
 
 $i=1;     // slice checkbox counter
-$app=1;   // approved checkbox conter
 if( is_array($g_modules) AND (count($g_modules) > 1) ) {
-  reset($g_modules);
-  while(list($k, $v) = each($g_modules)) { # you can feed only if you have autor or editor perms in destination slices
-    if( $v['type'] != 'S' )                
-      continue;                            # we can feed just between slices ('S')
-    if( ((string)$slice_id != (string)$k) AND    
-          CheckPerms( $auth->auth["uid"], "slice", $k, PS_EDIT_SELF_ITEMS) ) {
-      echo '<tr><td>'. safe($v['name']). '</td>
-            <td align=center><input type=checkbox name=s'. $i++ .' value="'. $k .'"></td>';
-      if( CheckPerms( $auth->auth["uid"], "slice", $k, PS_ITEMS2ACT) )
-        echo '<td align=center><input type=checkbox name=a'. $app++ .' value="'. $k .'"></td>';
-       else 
-        echo '<td align=center>'. _m("No permission") .'</td></tr>';
+    foreach ( $g_modules as $sid => $v) {
+        if( ($v['type'] == 'S') AND    //  we can feed just between slices ('S')
+            ((string)$slice_id != (string)$sid) AND
+            // we must have autor or editor perms in destination slices
+            CheckPerms( $auth->auth["uid"], "slice", $sid, PS_EDIT_SELF_ITEMS) ) {
+            if (gettype($i/2) == "integer") {
+                $odd = true;
+            } else {$odd=false;}
+            PrintExportRow($v['name'], $sid, $odd);
+            $i++;
+        }
     }
-  }
 }
-if( $i==1 )    // can't feed to any slice  
-  echo '<tr><td colspan=3>'. _m("No permission to set feeding for any slice") .'</td></tr>'; ?>
+if( $i==1 ) {   // can't feed to any slice
+  echo '<tr><td colspan=3>'. _m("No permission to set feeding for any slice") .'</td></tr>';
+}
+?>   
+   <tr><td colspan=4 class="tabtit" align=center><br /><input type=button name=sendfeeded value="<?php echo _m("Export") ?>" onclick="SendFeed();"><br />&nbsp;</td></tr>
+   </table>
+   <SCRIPT Language="JavaScript" type="text/javascript"><!--
+      // do not move this script up - it uses php3 variables
+    function SendFeed() {
+        var len = document.incf.elements.length;
+        var retval='';
+        var inputname;
+        var radiovalue = '';
+        var delimeter = '';
 
-      </table>
-      <SCRIPT Language="JavaScript"><!--  // do not move this script up - it uses php3 variables
-      function SendFeed(){
-        var chboxname;
-        var delimeter='';
-        for( var i=1; i< <?php echo $i?>; i++ ) {
-          chboxname = 'document.incf.s' + i;
-          if( eval(chboxname).checked ) {
-            window.opener.document.itemsform.feed2slice.value += delimeter + eval(chboxname).value;
-            delimeter=',';
-          }  
+        // prepare returnvalue
+        for ( var i=0; i<len; i++ ) {
+            inputname = document.incf.elements[i].name;
+            if ( inputname.substring(0,1) == 'x') {     // slices radiobuttons
+                radiovalue = document.incf.elements[i].value;
+                if ( (radiovalue > 0) && (document.incf.elements[i].checked)) {
+                    retval += delimeter + radiovalue + '-' + inputname.substring(1);
+                    delimeter=',';
+                }
+            }
         }
-        delimeter='';
-        for( var j=1; j< <?php echo $app?>; j++ ) {
-          chboxname = 'document.incf.a' + j;
-          if( eval(chboxname).checked ) {
-            window.opener.document.itemsform.feed2app.value += delimeter + eval(chboxname).value;
-            delimeter=',';
-          }  
-        }
-        window.opener.document.itemsform.akce.value = 'feed';
-        window.opener.document.itemsform.submit();                                     
-        close();
-      }
-      // -->
-      </SCRIPT>
-      <input type=button name=sendfeeded value="<?php echo _m("Export") ?>" onclick="SendFeed()">
-      </center>
-    </form>
-<?php 
-"</body></html>";
-page_close();?>
+        // fill return field and submit itemform
+        ReturnParam(retval);
+    }
+    // -->
+   </SCRIPT>
+   
+  </form>
+  </center>
+</body>
+</html>
+<?php page_close(); ?>
