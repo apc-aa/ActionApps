@@ -83,6 +83,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad, $sess;
     global $debug;
     
+    #huhsess("Session Variables");
     // load the main AA menu (see menu.php3)
     if ($smmenus == "aamenus")
         $smmenus = get_aamenus();

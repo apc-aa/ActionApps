@@ -43,8 +43,6 @@ if( !isset($r_spot_id) ) {
 #  $sess->register(r_spot_id);   # Don't use a session variable, its page dependent
 }
        
-if ($debug) huhl("Registered",$sess->pt);                                       
-
 if( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS);
   exit;
@@ -83,6 +81,7 @@ $tree->addChoice( 1, 'choice 1' );
 $tree->addInSequence( 0, 'third' );
 $tree->addInSequence( 2, 'quatro' );
 */
+
 if ($debug) print("<p>Action=$akce; r_spot_id=$r_spot_id</p>");
 
 switch( $akce ) {

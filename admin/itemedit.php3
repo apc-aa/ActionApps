@@ -29,8 +29,9 @@ $encap = ( ($encap=="false") ? false : true );
 
 if( $edit OR $add )         # parameter for init_page - we edited new item so 
   $unset_r_hidden = true;   # clear stored content
-  
-require "../include/init_page.php3";
+
+
+require "../include/init_page.php3";     # This pays attention to $change_id
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";

@@ -31,7 +31,7 @@ function myQuery (&$db, $SQL, $fire) {
 // ---------------------- 2 import -------------------------------------------
 
 
-// There you can write your own constants, which will be loaded into database
+// Here you can write your own constants, which will be loaded into database
 // as $group_id group
 
 $constants2import = array (

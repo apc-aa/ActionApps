@@ -23,7 +23,6 @@ http://www.apc.org/
 if (!defined ("INIT_PAGE_INCLUDED"))
 	define ("INIT_PAGE_INCLUDED",1);
 else return;
-
 # parameter Add_slice - lost slice_id (so no slice context)
 # parameter New_slice - used in sliceadd.php3 page
 #                     - do not unset slice_id but slice_id could not be defined
@@ -135,7 +134,7 @@ if( !$save_hidden ) {      # sometimes we need to not unset hidden - popup for r
   }
 }
 
-if (!$New_silce AND !$Add_slice AND !$slice_id)
+if (!$New_slice AND !$Add_slice AND !$slice_id)
     $after_login = true;
 
 $perm_slices = GetUsersSlices( $auth->auth[uid] );
@@ -150,6 +149,7 @@ $db  = new DB_AA;
 # if we want to use random number generator, we have to use srand just once per
 # script. That's why we called it here. Do not use it on other places in scripts
 srand((double)microtime()*1000000);
+
 
 # get all modules
 $SQL= "SELECT id, name, type, deleted FROM module ORDER BY name";
@@ -171,6 +171,7 @@ if( !$Add_slice AND !$New_slice ) {
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
   }
+
   if(!$slice_id) {       // user is here for the first time -  find any slice for him
     reset($g_modules);
     $slice_id = key($g_modules);   # the variable slice_id (p_slice_id respectively)
@@ -187,10 +188,12 @@ if( !$Add_slice AND !$New_slice ) {
     $after_login = true;
   }
 
+
   if( !isset($g_modules[$slice_id])) {   # this module was deleted
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
   }
+
   $p_slice_id = q_pack_id($slice_id);
   if( $slice_id != $r_stored_module ) {  # it is not cached - we must get it
 
@@ -211,6 +214,7 @@ if( !$Add_slice AND !$New_slice ) {
       $r_slice_view_url = ($db->f('slice_url')=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                       : $db->f('slice_url'));
     }
+
 
     # Get user profile for the slice
     unset( $r_profile );
@@ -237,13 +241,16 @@ if( !$Add_slice AND !$New_slice ) {
 //print_r( $r_profile );
   }
 
+
   # if we switch to another module type, we should go to module main page
   # but not if we are jumping with the Jump module
   if( $module_change && !$jumping) {
+    if ($debug) print("Redirecting to module main entry");
     page_close();
     go_other_module_entry_page ();
     exit;
   }
+
 
 	if( (LANG_FILE != $r_lang_file[$slice_id]) AND !$require_default_lang ) {
   	if (++$wrong_language_file == 10) {
@@ -267,6 +274,7 @@ if( !$Add_slice AND !$New_slice ) {
   }
 }
 
+
 # if we switch to another module type, we should go to module main page
 # but not if we are jumping with the Jump module
 if( $after_login || ($module_change && !$jumping)) {
@@ -274,6 +282,7 @@ if( $after_login || ($module_change && !$jumping)) {
   go_other_module_entry_page ();
   exit;
 }
+
 
 function go_other_module_entry_page ()
 {

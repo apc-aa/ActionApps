@@ -181,7 +181,7 @@ define("L_PARAM_WIZARD_FUNC_F_L_PAR0_NAME","link URL");
 define("L_PARAM_WIZARD_FUNC_F_L_PAR0_DESC","");
 define("L_PARAM_WIZARD_FUNC_F_L_PAR0_EXAMPLE","source_href.....");
 define("L_PARAM_WIZARD_FUNC_F_E_NAME","edit item");
-define("L_PARAM_WIZARD_FUNC_F_E_DESC","_#ITEMEDIT used on admin page index.php3 for itemedit url");
+define("L_PARAM_WIZARD_FUNC_F_E_DESC","_#EDITITEM used on admin page index.php3 for itemedit url");
 define("L_PARAM_WIZARD_FUNC_F_C_NAME","condition");
 define("L_PARAM_WIZARD_FUNC_F_C_DESC","This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it.");
 define("L_PARAM_WIZARD_FUNC_F_C_PAR0_NAME","condition");

@@ -120,6 +120,7 @@ function DeQuoteColons($text) {
 # Expand a single, syntax element.
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
+    global $als;
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
     # bracket could look like:
@@ -128,7 +129,6 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     #   {any text}                                       - return "any text"
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which is processed first (see above)
-
     if( isset($item) && ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
@@ -180,11 +180,13 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       # remove comments
       return "";
     elseif( substr($out, 0,5) == "debug" ) {
+	# Note don't rely on the behavior of {debug} its changed by programmers for testing!
 	print("<listing>");
-        if (isset($item)) { print("item="); print_r($item); }
-	if (isset($GLOBALS["apc_state"])) { print("apc_state="); print_r($GLOBALS["apc_state"]); }
-	if (isset($itemview)) { print("itemview="); print_r($itemview); }
-	if (isset($aliases)) { print("aliases="); print_r($aliases); }
+        if (isset($item)) huhl("item=",$item);
+	if (isset($GLOBALS["apc_state"])) huhl("apc_state=",$GLOBALS["apc_state"]);
+	if (isset($itemview)) huhl("itemview=",$itemview);
+	if (isset($aliases)) huhl("aliases=",$aliases);
+	#huhl("globals=",$GLOBALS);
 	print("</listing><br>"); 
     }
     elseif ( substr($out, 0,10) == "view.php3?" )
@@ -200,7 +202,12 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     elseif (isset($GLOBALS['apc_state'][$out])) {
 	return QuoteColons($level, $maxlevel, $GLOBALS['apc_state'][$out]);
     }
-    elseif (isset($aliases[$out])) {   # look for an alias 
+    # Pass these in URLs like als[foo]=bar, 
+    # Note that 8 char aliases like als[foo12345] will expand with _#foo12345
+    elseif (isset($als[$out])) {
+	return QuoteColons($level, $maxlevel, $als[$out]);
+    }
+    elseif (isset($aliases[$out])) {   # look for an alias (this is used by mail)
 	return QuoteColons($level, $maxlevel, $aliases[$out]);
     }  // Put the braces back around the text and quote them if we can't match it
     else {

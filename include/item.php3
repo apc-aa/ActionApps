@@ -163,22 +163,21 @@ function sess_return_url($url) {
 //
 // make_return_url
 //function make_return_url($prifix="&return_url=")
-function make_return_url($prifix) {
+function make_return_url($prifix,$r1) {
   // prifix will be "&return_url=" or "?return_url=",
   // if null, it uses "&return_url="
   if (!$prifix) $prifix = "&return_url=";
  
   // global $PHP_SELF;
   global $return_url;
-  if ($return_url)
-    return $prifix . urlencode($return_url);
-   else {
-    // code changed to keep program works with original APC-AA behavior
-    // this got problem, when we used this in "ItemManager design"
-    // return $PHP_SELF; -- this was original code by ram.
-    // chage by setu@gwtech.org.
-    return "";
-  }
+  if ($r1) 
+	return $prifix . urlencode($return_url);
+  elseif ($return_url)
+	return $prifix . urlencode($return_url);
+  elseif (!$sess)    # If there is no $sess, then we need a return url, default to self
+	return $PHP_SELF;
+  else 
+	return "";
 }
 
 class item {    
@@ -698,17 +697,20 @@ class item {
                            $padditional,$this->getval($col,'flag'));
   }
 
-  # _#ITEMEDIT used on admin page index.php3 for itemedit url
+  # If someone understands the parameter wizzard, it would be good to expand this to take a second parameter
+  # i.e. return url.
+  # _#EDITITEM used on admin page index.php3 for itemedit url
   # param: 0
   function f_e($col, $param="") { 
     global $sess, $slice_info;
     global $AA_INSTAL_EDIT_PATH;
  
+    $p = ParamExplode($param);  # 0 = disc|itemcount|safe|slice_info  #2 = return_url
     // code to keep compatibility with older version
     // which was working without $AA_INSTALL_EDIT_PATH
     $admin_path = ($AA_INSTAL_EDIT_PATH ? $AA_INSTAL_EDIT_PATH . "admin/" : "");
  
-    switch( $param ) {
+    switch( $p[0]) {
       case "disc":
         # _#DISCEDIT used on admin page index.php3 for edit discussion comments
         return con_url($sess->url("discedit.php3"),
@@ -722,10 +724,12 @@ class item {
           $slice_info = GetSliceInfo(unpack_id( $this->getval('slice_id........')));
         return $slice_info[$col]; 
       default:  
-        return con_url($sess->url($admin_path."itemedit.php3"),
-                   "encap=false&edit=1&id=".
-                   unpack_id( $this->getval('id..............') ).
-             		   make_return_url("&return_url=") );	// it return "" if return_url is not defined.
+	// If Session is set, then append session id, otherwise append slice_id and it will prompt userid
+          return con_url(
+		isset($sess) ? $sess->url($admin_path ."itemedit.php3") : ($admin_path . "itemedit.php3"),
+		"encap=false&edit=1&id=". unpack_id( $this->getval('id..............') ).
+		  (isset($sess) ? "" : ("&change_id=". unpack_id($this->getval('slice_id........')))).
+             		   make_return_url("&return_url=",$p[1]) );	// it return "" if return_url is not defined.
     }
   }                 
 

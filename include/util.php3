@@ -424,7 +424,13 @@ function huhl ($before, $array="", $after="") {
 	}
 }
 
-
+function huhsess($msg="") {
+	global $sess;
+	foreach (array_keys($sess->pt) as $i) {
+		$sessvars[$i]=$GLOBALS[$i];
+	}
+	huhl($msg,$sessvars);
+}
 #Prints all values from array
 function PrintArray($a){
  if (is_array ($a))
