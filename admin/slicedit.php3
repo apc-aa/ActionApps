@@ -21,7 +21,7 @@ http://www.apc.org/
 # expected $slice_id for edit slice, Add_slice=1 for adding slice
 
 # new slice - template as slice 
-$set_template_id = (($template_slice_sel=="slice") ? $template_id2 : $template_id);
+$set_template_id = $template_slice_sel["slice"] ? $template_id2 : $template_id;
   
 if( $set_template_id ) {
   $foo = explode("{", $set_template_id);
@@ -37,6 +37,12 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
+
+reset ($MODULES);
+while (list ($letter,$module) = each ($MODULES)) {
+    if ($create[$letter]) 
+        go_url($sess->url($module["directory"] . "modedit.php3"));
+}
 
 if($slice_id) {  // edit slice
   if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT)) {
@@ -120,7 +126,7 @@ if( $add || $update ) {
         break;
       }
       $r_slice_headline = stripslashes($name);
-      $r_config_file[$slice_id] = stripslashes($lang_file);
+      $r_lang_file[$slice_id] = stripslashes($lang_file);
       $r_slice_view_url = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                       : stripslashes($slice_url));
     }
@@ -188,7 +194,7 @@ if( $add || $update ) {
         }
       }  
 
-      $r_config_file[$slice_id] = $lang_file;
+      $r_lang_file[$slice_id] = $lang_file;
       $sess->register(slice_id);
 
       AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access

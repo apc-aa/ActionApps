@@ -53,7 +53,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo L_A_SLICE_TIT;?></TITLE>
 </HEAD>
 <?php 
-  echo "<H1><B>" . L_A_SLICE_ADD ."</B></H1>";
+  echo "<H1><B>" . L_A_MODULE_ADD ."</B></H1>";
   PrintArray($err);
   echo $Msg;  
 ?>
@@ -61,7 +61,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <center>
 <form method=post action="<?php echo $sess->url("slicedit.php3") ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_SELECT_APP?></b>
+<tr><td class=tabtit><b>&nbsp;<?php echo L_A_SLICE?></b>
 </td>
 </tr>
 <tr><td>
@@ -84,7 +84,7 @@ if( isset( $templates ) AND is_array( $templates ) AND
       echo "> ". htmlspecialchars($v[name]) ." </option>";
     }
     echo '</select></td><td>
-          <input type="radio" name="template_slice_sel" value="template" checked>
+          <input type="SUBMIT" name="template_slice_sel[template]" value="'.L_ADD.'">
         </td></tr>';
   } else
     echo "<tr><td class=tabtxt colspan=2>". L_NO_TEMPLATES ."</td></tr>";
@@ -100,19 +100,40 @@ if( isset( $templates ) AND is_array( $templates ) AND
       echo "> ". htmlspecialchars($v[name]) ." </option>";
     }
     echo '</select></td><td>
-          <input type="radio" name="template_slice_sel" value="slice">
+          <input type="SUBMIT" name="template_slice_sel[slice]" value="'.L_ADD.'">
+          <input type="hidden" name="Add_slice" value="1">
         </td></tr>';
   } else
     echo "<tr><td class=tabtxt colspan=2>". L_NO_SLICES ."</td></tr>";
  ?>
 
 </table>
+</table>
+
+<br><br>
+
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+<tr><td class=tabtit><b>&nbsp;<?php echo L_A_MODULE?></b>
+<tr><td><table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<?  reset ($MODULES);
+    while (list ($letter,$module) = each ($MODULES)) {
+        if ($module["hide_create_module"]) continue;
+        echo "<TR><TD class=tabtxt><B>".$module['name']."</B></TD><TD>
+            <INPUT TYPE=SUBMIT NAME='create[$letter]' value='".L_ADD."'></TD></TR>";
+    }
+?>
+</table></td></tr>
+</table>
+
+<br><br>
+
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td align="center">
 <?php 
-  echo '<input type=submit name=Add_slice value="'. L_ADD .'">&nbsp;&nbsp;';
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
 ?>   
-</td></tr></table>
+</td></tr>
+</table>
 </FORM>
 </center>
 <?php echo L_APP_TYPE_HELP ?>
