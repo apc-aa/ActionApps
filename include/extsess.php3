@@ -29,14 +29,18 @@ class DB_AA extends DB_Sql {
 
   function dquery($SQL) {
     echo "<br>$SQL";
-
-    $this->query("explain ".$SQL);
-
-    echo "<table><tr><td><b>table</b></td> <td><b>type</b></td><td><b>possible_keys</b></td><td><b>key</b></td><td><b>key_len</b></td><td><b>ref</b></td><td><b>rows</b></td><td><b>Extra</b></td></tr>";
-    while( $this->next_record() ) 
-      printf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", 
-              $this->f('table'), $this->f('type'), $this->f('possible_keys'), $this->f('key'), $this->f('key_len'), $this->f('ref'), $this->f('rows'), $this->f('Extra'));
-    echo "</table>";
+    
+    // only SELECT queries can be explained
+    if (stristr ($SQL, "SELECT")) {   
+        $this->query("explain ".$SQL);
+    
+        echo "<table><tr><td><b>table</b></td> <td><b>type</b></td><td><b>possible_keys</b></td><td><b>key</b></td><td><b>key_len</b></td><td><b>ref</b></td><td><b>rows</b></td><td><b>Extra</b></td></tr>";
+        while( $this->next_record() ) 
+          printf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", 
+                  $this->f('table'), $this->f('type'), $this->f('possible_keys'), $this->f('key'), $this->f('key_len'), $this->f('ref'), $this->f('rows'), $this->f('Extra'));
+        echo "</table>";
+    }
+    
     list($usec, $sec) = explode(" ",microtime()); 
     $starttime = ((float)$usec + (float)$sec); 
 
