@@ -1,0 +1,189 @@
+<?php  
+//$Id$
+/* 
+Copyright (C) 1999, 2000 Association for Progressive Communications 
+http://www.apc.org/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+# se_compact.php3 - assigns html format for compact view
+# expected $slice_id for edit slice
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update succesfull)
+
+require "../include/init_page.php3";
+require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."item.php3";  // just for $alias array and PrintAliasHelp
+
+if($cancel)
+  go_url( $sess->url(self_base() . "index.php3"));
+
+if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_COMPACT)) {
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_COPMPACT);
+  exit;
+}  
+
+$err["Init"] = "";          // error array (Init - just for initializing variable
+$varset = new Cvarset();
+
+if( $update )
+{
+  do
+  {
+    ValidateInput("odd_row_format", L_ODD_ROW_FORMAT, &$odd_row_format, &$err, true, "text");
+    ValidateInput("compact_top", L_COMPACT_TOP, &$compact_top, &$err, false, "text");
+    ValidateInput("compact_bottom", L_COMPACT_BOTTOM, &$compact_bottom, &$err, false, "text");
+    ValidateInput("compact_remove", L_COMPACT_REMOVE, &$compact_remove, &$err, false, "text");
+    if( $even_odd_differ )
+      ValidateInput("even_row_format", L_EVEN_ROW_FORMAT, &$even_row_format, &$err, true, "text");
+    if( $category_sort )
+      ValidateInput("category_format", L_CATEGORY_FORMAT, &$category_format, &$err, true, "text");
+    if( count($err) > 1)
+      break;
+
+    $varset->add("odd_row_format", "quoted", $odd_row_format);
+    $varset->add("even_row_format", "quoted", $even_row_format);
+    $varset->add("category_format", "quoted", $category_format);
+    $varset->add("compact_top", "quoted", $compact_top);
+    $varset->add("compact_bottom", "quoted", $compact_bottom);
+    $varset->add("compact_remove", "quoted", $compact_remove);
+    $varset->add("even_odd_differ", "number", $even_odd_differ ? 1 : 0);
+    $varset->add("category_sort", "number", $category_sort ? 1 : 0);
+
+    $db->query("UPDATE slices SET ". $varset->makeUPDATE() . " WHERE id='".q_pack_id($slice_id)."'");
+
+    if ($db->affected_rows() == 0) {
+     $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
+      break;
+    }     
+  }while(false);
+  if( count($err) <= 1 )
+    $Msg = MsgOK(L_COMPACT_OK);
+}
+
+if( $slice_id!="" ) {  // set variables from database - allways
+  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, compact_remove,
+                 category_sort, category_format
+          FROM slices WHERE id='". q_pack_id($slice_id)."'";
+  $db->query($SQL);
+  if ($db->next_record()) {
+    $odd_row_format = $db->f(odd_row_format);
+    $even_row_format = $db->f(even_row_format);
+    $category_format = $db->f(category_format);
+    $compact_top = $db->f(compact_top);
+    $compact_bottom = $db->f(compact_bottom);
+    $compact_remove = $db->f(compact_remove);
+    $even_odd_differ = $db->f(even_odd_differ);
+    $category_sort = $db->f(category_sort);
+  }  
+}
+
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+?>
+ <TITLE><?php echo L_A_COMPACT_TIT;?></TITLE>
+<SCRIPT Language="JavaScript"><!--
+function Defaults()
+{
+  document.f.odd_row_format.value = '<?php echo DEFAULT_ODD_HTML ?>'
+  document.f.even_row_format.value = '<?php echo DEFAULT_EVEN_HTML ?> '
+  document.f.category_format.value = '<?php echo DEFAULT_CATEGORY_HTML ?>'
+  document.f.compact_top.value = '<?php echo DEFAULT_TOP_HTML ?>'
+  document.f.compact_remove.value = '<?php echo DEFAULT_COMPACT_REMOVE ?>'
+  document.f.even_odd_differ.checked = <?php echo (DEFAULT_EVEN_ODD_DIFFER ? "true" : "false"). "\n"; ?>
+  document.f.category_sort.checked = <?php echo (DEFAULT_CATEGORY_SORT ? "true" : "false")."\n"; ?>
+  InitPage()
+}
+
+function InitPage() {
+  EnablerClick('even_odd_differ','even_row_format')
+  EnablerClick('category_sort','category_format')
+}
+function EnablerClick(enablername,enablewhat) {
+  document.all[enablewhat].disabled=!(document.all[enablername].checked);
+}   
+
+// -->
+</SCRIPT>
+</HEAD>
+
+<?php
+  $xx = ($slice_id!="");
+  $useOnLoad = true;
+  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>false, "fulltext"=>$xx, 
+                "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+
+  echo "<H1><B>" . L_A_COMPACT . "</B></H1>";
+  PrintArray($err);
+  echo $Msg;
+?>
+<form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<tr><td class=tabtit><b>&nbsp;<?php echo L_COMPACT_HDR?></b>
+</td>
+</tr>
+<tr><td>
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<?php
+  FrmInputText("compact_top", L_COMPACT_TOP, $compact_top, 254, 50, false);
+  FrmTextarea("odd_row_format", L_ODD_ROW_FORMAT, $odd_row_format, 6, 50, false);
+  FrmInputChBox("even_odd_differ", L_EVEN_ODD_DIFFER, $even_odd_differ, true, "OnClick=\"EnablerClick('even_odd_differ','even_row_format')\"");
+  FrmTextarea("even_row_format", L_EVEN_ROW_FORMAT, $even_row_format, 6, 50, false);
+  FrmInputText("compact_bottom", L_COMPACT_BOTTOM, $compact_bottom, 254, 50, false);
+  FrmInputChBox("category_sort", L_CATEGORY_SORT, $category_sort, true, "OnClick=\"EnablerClick('category_sort','category_format')\"");
+  FrmTextarea("category_format", L_CATEGORY_FORMAT, $category_format, 6, 50, false);
+  FrmInputText("compact_remove", L_COMPACT_REMOVE, $compact_remove, 254, 50, false);
+?>
+</table></td></tr>
+<?php
+  PrintAliasHelp();
+?>
+<tr><td align="center">
+<?php 
+  echo "<input type=hidden name=\"update\" value=1>";
+  echo "<input type=hidden name=\"slice_id\" value=$slice_id>";
+  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
+  echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
+/*
+$Log$
+Revision 1.1  2000/06/21 18:39:58  madebeer
+Initial revision
+
+Revision 1.1.1.1  2000/06/12 21:49:48  madebeer
+Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
+
+Revision 1.13  2000/06/12 19:58:24  madebeer
+Added copyright (APC) notice to all .inc and .php3 files that have an $Id
+
+Revision 1.12  2000/06/09 15:14:10  honzama
+New configurable admin interface
+
+Revision 1.11  2000/04/24 16:45:02  honzama
+New usermanagement interface.
+
+Revision 1.10  2000/03/22 09:36:43  madebeer
+also added Id and Log keywords to all .php3 and .inc files
+*.php3 makes use of new variables in config.inc
+
+*/
+?>
+</td></tr></table>
+</FORM>
+</BODY>
+</HTML>
+<?php page_close()?>
+

@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<title>APC Toolkit Action Aplications - Developers FAQ</title>
+  <link rel=stylesheet type="text/css" href="devnotes.css">
+</head>
+<body>
+<a href="index.html">Other documentation</a><br>
+<a name="newaa"></a><hr><br>
+<a href="#newaa">How to create new Action Apication</a><br><br>
+<a href="#fieldmapping">How the field mappings works for new AA?</a><br><br>
+<a href="#aalanguage">How to create aa in alternate language?</a><br><br>
+<a href="#itemsmod">What procedure should be used to make modifications to the items table?</a><br><br>
+<h3>How to create new Action Apication</h3>
+<p>   The easiest (and prefered) way, how to create new aplication front-end
+is just to make new language file (see en_news_lang.php3 file).<br> There are two types of language file.<ul>
+	<li>*_common_lang.php3 file - used only one for whole instalation. Constants in this file are used for each AA. There are constants for "Login form" etc. It is imposible to have more than one language mutation of this file in one instalation of AA - fogin form (for example) is used the same for all AA, so the program couldn't know which slice or aa you want to use - it must be used the standard file.</li>
+	<li>*_*_lang.php3 - files, that defines other action aplication. Whole new aa can be set in by this file (as is english version of news in en_news_lang.php3).</li>
+</ul>
+
+ There are
+two steps you should do: 
+</p>
+1) create new application language file (such as en_press_lang.php3) <br><br>
+
+2) edit config.php3 and add new app type like:<br><br>
+
+       $ActionAppConfig[en_press][name] = "Press releases";<br><br>
+
+       $ActionAppConfig[en_press][file] = "en_press_lang.php3"; <br><br>
+
+<p>There are some instructions just inside the file. By this file you can set
+not only titles of fields and displayed text, but default setting of html
+code for compact view, default setting for html code of fulltext view,
+which fields are displayed to author if (s)he wants to write new item and
+so on. 
+</p>
+<p>After changes in config.php3 you can try add new slice. You will see
+pulldown menu where new type of aplication is displayed (Press releases
+for example).  After you create such slice - it uses your defaults and
+your titles for fields which you set in your language file. 
+</p>
+<p>I recomended you to experiment with compact view and fulltext view design
+on Slice settings page. You will see what you can do with this tool and
+what not. I think it is quite powerfull tool and most of other front-end
+can be set this way (see Slice 1, Press.cz, example, GN slices). 
+</p>
+<p>Of course, there are some front-ends which are not able to display by
+slice.php3 script (the one we use for web dislay of all items) - I think
+calendar .... There i prefer standalone script - modified version of
+slice.php3 or - in best case - split the slice.php3 script. Split to
+front-end independed part and front- end dependat part. Then you should
+include appropriate part according to "type" field in "slices" database
+table. 
+</p>
+
+
+<a name="fieldmapping">
+<h3>How the field mappings works for new AA?</h3><i>Which table(s) do you use to do the field mappings (ie. the ways that
+a particular application or language uses the fields in the item table)?
+How does this work?</i>
+<p>All field mapping is specified in language files (so there is no table in database for that). Lets look in en_news_lang.php3 file, where english version of News AA is defined. There is "Input form field names" section:</p>
+<code>
+# Input form field names<br>
+define("L_HEADLINE", "Headline");<br>
+define("L_ABSTRACT", "Summary");<br>
+define("L_FULL_TEXT", "News");<br>
+define("L_FT_FORMATTING", "Formatting");<br>
+define("L_FT_FORMATTING_HTML", "HTML code");<br>
+define("L_FT_FORMATTING_PLAIN", "Plain text"); <br>
+define("L_POSTDATE", "Post date");<br>
+define("L_POSTED_BY", "Author");<br>
+define("L_E_POSTED_BY","Author's e-mail"); <br>
+define("L_PUBLISH_DATE", "Publish date");<br>
+define("L_EXPIRY_DATE", "Expiry date");<br>
+define("L_CATEGORY", "Category");<br>
+define("L_STATUS_CODE", "News status");<br>
+define("L_LANGUAGE_CODE", "Language");<br>
+define("L_CP_CODE", "Encoding");<br>
+define("L_LINK_ONLY", "External news");<br>
+define("L_HL_HREF", "External news URL");<br>
+define("L_HTML_FORMATTED", "HTML formatted");<br>
+define("L_HIGHLIGHT", "Highlight");<br>
+define("L_IMG_SRC","Image URL"); <br>
+define("L_IMG_WIDTH","Image width"); <br>
+define("L_IMG_HEIGHT","Image height");<br>
+define("L_PLACE","Locality");<br>
+define("L_SOURCE","Source ");<br>
+define("L_SOURCE_HREF","Source URL");<br>
+define("L_CREATED_BY","Written by");<br>
+define("L_LASTEDIT","Last edited by");<br>
+define("L_AT","at");   <br>
+define("L_EDIT_NOTE","Editor's note"); <br>
+define("L_IMG_DOWNLOAD","Image upload"); <br>
+</code>
+<p>In this section you can set how the names of fields in item table are displayed to the user (in this aa). In fact - you can't set the names in table, you can only set how it looks like to the user, but I think, it's enough.</p>
+<p>For more information you can make diff of en_news_lang.php3 and en_press_lang.php3 for example.</p>
+
+<a name="aalanguage">
+<h3>How to create aa in alternate language?</h3><i>Is there any diagram or documentation that shows how to add a simple app / create an alternate language? If not, can you send us a fast step
+by step listing of the PHP files and DB tables that we need to modify to
+create a new app?</i>
+
+<p>The answer is again the language file (see <a href="#newaa"></a>). You have just to rewrite (translate) the phrases in *_*_lang.php3 file - follow the instruction as if you create new aa (see <a href="#newaa"></a> and the instruction just inside the language file). If you need to use another charset for this AA, redefine the HTML_PAGE_BEGIN constant.</p>
+
+<code>
+define("HTML_PAGE_BEGIN",
+ '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+  <HTML>
+  <HEAD>
+  <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">');
+</code>  
+
+<p> The best example of another language mutation of AA is english and czech version of News (see and diff en_news_lang.php3 cz_news_lang.php3). There is no need to change any field in database.</p>
+
+<p>How it works? If user switches from one slice to another one, program checks slices.type field. According to the type then loads the appropriate language file for the slice.</p>
+<p> If you want to have all AA instalation in other than english language mutation, you have to translate *_common_lang.php3. Again, you can set charset in here (used on admin pages). The second thing you have to do is to set <code>require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English</code> to match your new file - in config.php3 file.</p>
+
+<p>For example of modified file you can see en_common_lang.php3 and cz_common_lang.php3 files. We have czech version of aa already installed and I have to say, it works.</p>
+
+
+<a name="itemsmod">
+<h3>What procedure should be used to make modifications to the items table?</h3>
+<i>(there are a couple of major things missing for many apps, the most
+important being 'contact information')?</i>
+
+<p>May be, there are some fields, we havee to add to the items table. I think, we can call it like foo ... - the fields can be then used specificaly to each AA. When we talking about contact information, there are three fields contact1, contact2 and contact3 in items table - they are not used yet, but I think, we should remove it (or rename to foo1, foo2 ... - see above). The idea of holding it here is not good, because of limit three contacts (see <a href="AAdb_ER.html">AAdb E-R diagram</a>). I prefer to create new table contact and connect it to items table via items.id (foreign key).</p>
+
+<p>Here some comments I posted befor via e-mail:</p>
+
+<p>From my point of view I preffer using existing fields in item table, if it
+is possible. I know, there is no field for long binary data, so I agree
+with creating of new such field in item table. It will be usefull to add
+Long_binary_type column, which keep the type of data are there stored. On
+the other hand, if there are more than these columns, which you want to
+add to item table, I prefer to create the new table with additional
+informations for your action aplication and link it in optional 1:1
+relation to item table. I don't want to expand item table to infinity as
+far as the number of new aplications will increase.
+</p>
+<p>The possible solution can be to create new constant (in language 
+file - see below) which then will be added to SQL commands used 
+in toolkit script. Example: 
+define(AA_SPECIFIC_ITEM_TABLE_JOIN, ",radio LEFT JOIN ON 
+items.id = radio.item_id")
+and then use:
+   $SQL= "SELECT FROM items ". 
+AA_SPECIFIC_ITEM_TABLE_JOIN ." WHERE ....";
+</p>
+<p>If you find better solution, you are welcome, of course.
+</p>
+
+<p>I know, it's look funny to have one table for all aplication, but there
+are two reasons for that: 1) You can exchange (feed) items from one
+aplication to another one (the new aplication can be done very easy - by
+modifiing language file - so I think, there could be quite a lot of very
+similar aplications - the data exchange between them make sense). 2) You
+can very easy search in database for some keyword and you find it in all
+aplications.
+</p>
+<p>I think, the current set of fields is sufficient for most aplications -
+joblisting, grant database, news, action alerts, press release ... All
+these aplications use title, summary, fultext, some kind of source ...
+Maybe it is not enough for Amarc, but if you will not use images in Amarc,
+you can use image fields for that (source, width, height). (It looks like
+mixing apples with plums, but all this fields belongs to multimedia data
+so it is not so bad.)
+</p>
+<p>The reason why we use no boolean fields is database 
+independance. Jirka made an database research and his proposal 
+is to use numeric field instead of boolean.
+</p><br><br>
+<a href="index.html">Other documentation</a><br>
+
+</body>
+</html>

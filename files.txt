@@ -1,0 +1,94 @@
+/aa
+  admin.css          Style sheet file for administative interface
+  changes.txt        File for notices about chenges done in toolkit project
+  slice.php3         Main file, which make all work for view of live page - public slice view. Obviosly called from user's shtml file (slice.shtml for example). This script shows just one category or all items or only highlighted ones or search form or ... if you set appropriate parameters.
+
+/aa/images
+  *.gif         Pictures used in administration interface.
+  
+/aa/admin       (Admin inreface files)
+  feed_to.php3       Form for feeding selected items (called from inddex.php3)
+  index.php3         Main administration interface file. Shows Approved holding or trash bin tables in more or less detail and responses to required actions with selected items.  
+  itemedit.php3      File called for displaing Item Form - form for editing/adding items.
+  make_rss.php3      Returns Rich Site Summary RDF file from slice (may be used for node to node exchanging items)
+  se_*.php3          Slice edit files - all called form Slice Edit page
+  slicedit.php3      The main (first) slice edit page for setting main and default values for selected slice
+  se_category.php3   Slice edit file - category management
+  se_category2.php3  Slice edit file - processes results from category setting in se_category.php3
+  se_compact.php3    Slice edit file - compact view (list of items) design setting
+  se_fields.php3     Slice edit file - setting of fields - which should apear in input form (itemedit.php3) and if they are required
+  se_filters.php3    Slice edit file - setting of automatical feeding - which categories to import and into which.
+  se_filters2.php3   Slice edit file - processes results from filters setting (se_filters.php3)
+  se_fulltext.php3   Slice edit file - fulltext view design setting
+  se_import.php3     Slice edit file - feeding setting - which slice import, to which slices enable export
+  se_import2.php3    Slice edit file - processes results from feeding setting (se_import.php3)
+  se_newuser.php3    Slice edit file - actualy not used - replaced by user management pages (um_*.php3) - create new user form
+  se_search.php3     Slice edit file - big search form setting - which fields are shown ...
+  se_users.php3      Slice edit file - setting permissions for users (roles author, editor, admin, superuser)
+  se_users_add.php3  Slice edit file - add new slice user - (s)he must already been created - by usermanagement functions)
+  sliceadd.php3      Allows selecting type of slice when new slice is created
+  um_*.php3          User management functions
+  um_gedit.php3      User management - edit/create user (new user in whole permission system - not related to any slice of aplication)
+  um_uedit.php3      User management - edit/cerate group - add/delete member ...
+  
+/aa/include
+  *_lang.php3        Language files - there are two types language files - common and others
+                        common - there are stored all language constants common to all action aplications
+                               - there is only one *_common_lang.php3 file per AA instalation
+                        others - each file defines one action aplication (or its language mutation)
+  cz_common_lang.php3 Common language file - Czech - used by all aplications in czech version
+  en_common_lang.php3 Common language file - English - used by all aplications in english version
+  cz_news_lang.php3   News listing language file - Czech - defines news listing action aplication
+  en_news_lang.php3   News listing language file - English - defines news listing action aplication
+  en_press_lang.php3  Press releases publisher language file - English - defines press releases publisher action aplication
+  en_all_lang.php3    Maximalistic language fiel - English - used as base file to create new action aplication
+
+  perm_*.php3        Permission system files - there is two parts of permission system:
+                       1) Action aplication independent Perm API (based on LDAP, SQL or none permission)
+   perm_ldap.php3            Permission API based on LDAP (default)
+   perm_sql.php3             Permission API based on SQL
+   perm_dummy.php3           Permission API dummy - no permission defined - all can do all
+                             (switch permission system in config.php3)
+                       2) Action aplication specific perm functions 
+   perm_core.php3            Calls only functions from Perm API (resolves semantics of perm strings, makes object hierarchy (aa->slice) ...)
+   
+  init_page.php3    File included on the bgegin of each admin page - selects slice, language file, sets variables
+  navbar.php3       Shows top navigation bar
+  leftbar_se.php3   Shows left menu on slice edit pages (se_*.php3)
+  se_inc.php3       Common include file for slice edit pages (se_*.php3)
+  um_inc.php3       Common include file for user management pages (um_*.php3) includinf left menu
+  leftbar.php3      Shows left menu on main page (index.php3)
+  big_srch.php3     Displays search form on public web page (slice.php3)
+  loginform.html    Displays login form
+
+  scroller.php3     Defines class for page scroller
+  easy_scroller.php3 Defines simplified class for page scroller
+  date.php3         Defines class for date manipulation
+  table.php3        Defines class for table (can display html table with specified data ...)
+  item.php3         Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...)
+  varset.php3       Defines class for inserting and updating database fields
+  util.php3         Set of usefull functions used on most pages
+  formutil.php3     Set of usefull functions for work with forms
+  feeding.php3      Functions for feeding items
+  searchlib.php3    Set of usefull functions related to search database
+  js_lib.js         Set of usefull JavaScript scripts
+  
+  config.php3       Main configuration file - mostly all AA parameters can be set there.
+
+  ext*.php3, loc*.php3  Configuration files for Phplib's session management and authentication.
+                        No changes are made in phplib itself.
+  extsess.php3      Extends PHPLIB's session class
+  extsessi.php3     Extends PHPLIB's session class for encapsulated pages (slice.php3 called inside slice.shtml)
+  extauth.php3      Extends PHPLIB's authentication class
+  extauthnobody.php3 Extends PHPLIB's authentication class for anonymous user
+  locauth.php3      Main include file for using authentication feature on page
+  locsess.php3      Main include file for using session management function on page
+  locsessi.php3     Main include file for using session management function on encapsulated page
+
+  doit_*.*          Usefull scripts for administration - not used in any aplication
+  doit_perm_admin_user.inc          
+  doit_perm_admin_user.php3              
+  doit_perm_clean.inc                    
+  doit_perm_first_users.inc              
+  doit_perm_test.inc                  
+  doit_test_utils.php3                        

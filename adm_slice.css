@@ -1,0 +1,188 @@
+.srchtit {
+  font-family: Verdana CE, Arial CE, Helvetica CE, sans-serif;
+  font-size: x-small;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.srchtxt {
+  font-family: Verdana CE, Arial CE, Helvetica CE, sans-serif;
+  font-size: x-small;
+  font-weight: bold;
+}
+
+.srchhlp {
+  font-family: Verdana CE, Arial CE, Helvetica CE, sans-serif;
+  font-size: xx-small;
+}
+
+
+    .aaTableO  {    	/* Main table style for compact view, odd */
+    	background : #404040;
+    	color : #ffc97b;
+    	font-size : medium;
+    	font-family : Arial CE, sans-serif;
+    	font-stretch : extra-expanded;
+    }
+    
+    .aaTableE  {
+    	/* which ontains date and post information, even */
+    	background : #656565;
+    	color : blue;
+    	font-size : medium;
+    	font-family : Arial CE, sans-serif;
+    	font-stretch : extra-expanded;
+    }
+    
+    .aaImgTableO  {
+    	/* which encapsulates image */
+    	background : #ffffcc;
+    	color : blue;
+    	font-size : medium;
+    }
+    
+    .aaImgTableE  {
+    	/* which encapsulates image */
+    	background : #ffffcc;
+    	color : blue;
+    	font-size : medium;
+    }
+    
+    .aaInfoTableO  {
+    	/* which encapsulates source and place info */
+    	color : black;
+    	font-size : xx-small;
+    	font-weight : bold;
+    	font-family : Zurich BlkEx BT, Arial;
+    }
+    
+    .aaInfoTableE  {
+    	/* which encapsulates source and place info */
+    	color : red;
+    	font-size : x-small;
+    	font-weight : bold;
+    }
+    
+    .aaSource  {
+    	/* which encapsulates source and place info */
+    	color : #FFCC33;
+    	font-size :x-small;
+    	font-family : Zurich BdXCn BT, Arial;
+    	font-weight : normal;
+    	font-style : normal;
+    }
+    
+    .aaPlace  {
+    	/* which encapsulates source and place info */
+    	color : black;
+    	font-size : xx-small;
+    	font-weight : normal;
+    	font-family : Zurich BlkEx BT, Arial;
+        font-style : normal;
+    }
+    
+    .aaTitleC  {
+    	/* Title style for compact view */
+    	color : #4b93ca;
+    	font-size : medium;
+    	font-family : Zurich XBlk BT, Arial;
+    	font-weight : bold;
+    	font-style : normal;
+    }
+    
+    .aaTitleF  {
+    	/* Title style for compact view */
+    	color : #ffc97b;
+    	font-size : medium;
+    	font-family : Zurich XBlk BT, Arial;
+    	font-weight : bold;
+    	font-style : normal;
+    }
+    
+    .aaTableHeadO  {
+    	background : #023546;
+    	color : #AAAAAA;
+    	font-style : italic;
+    	font-size : x-small;
+    	font-family : Zurich Ex BT, Arial;
+    	font-weight : normal;
+    }
+    
+    .aaTableHeadE  {
+    	background : #023546;
+    	color : #FFCC33;
+    	font-style : italic;
+    	font-size : x-small;
+    	font-family : Zurich Ex BT, Arial;
+    	font-weight : normal;
+    }
+    
+    .aaEmailC  {
+    	color : gray;
+    	font-style : italic;
+    	font-size : x-small;
+    }
+    
+    .aaEmailF  {
+    	color : gray;
+    	font-style : italic;
+    	font-size : x-small;
+    }
+    
+    .aaPostDateF  {
+    	color : #AAAAAA;
+    	font-style : italic;
+    	font-size : x-small;
+    }
+    
+    .aaPostbyF  {
+    	color : #AAAAAA;
+    	font-style : Arial,Helvetica,Univers,Zurich BT;
+    	font-size : x-small;
+    }
+    
+    .aaPostDateC  {
+    	color : #FFCC33;
+    	font-style : italic;
+    	font-size : x-small;
+    }
+    
+    .aaPostbyC  {
+    	color : #FFCC33;
+    	font-style : Arial,Helvetica,Univers,Zurich BT;
+    	font-size : x-small;
+    }
+    
+    .aaAbstractO  {
+    	/* Abstract span */
+    	color : #4b93ca;
+    	font-size : x-small;
+    	font-family : Zurich Lt BT, Arial;
+    	font-weight : normal;
+    	font-style : normal;
+    }
+    
+    .aaAbstractE  {
+    	/* Abstract span */
+    	color : #ffc97b;
+    	font-size : x-small;
+    	font-family : Zurich Lt BT, Arial;
+    	font-weight : normal;
+    	font-style : normal;
+    }
+    
+    .aaMoreO  {
+    	color : #0B1D53;
+    	font-size : small;
+    	font-family : Zurich XBlk BT, Arial;
+    	font-weight : bold;
+    	font-style : normal;
+    }
+    
+    .aaMoreC  {
+    	color : #793D00;
+    	font-size : small;
+    	font-family : Zurich XBlk BT, Arial;
+    	font-weight : bold;
+    	font-style : normal;
+    }
