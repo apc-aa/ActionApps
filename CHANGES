@@ -1,7 +1,26 @@
+01/17/04 - speed optimalization for MySQL 4.0.x
+(honzam) - used "=" operator instead of "IN ()", where possible
+            - defined QUERY_DATE_STEP constants containing number of seconds
+              after which is index listing regenerated (this means that
+              SQL query for the same page is the same during the QUERY_DATE_STEP
+              time - it helps MySQL to cache results
+              (see constants.php3 - default is 1000))
+         - added "o" paremeter to slice.php3 - the behavior is exactly the same
+           as "x" parameter, but the "hit" is not counted for this item
+         - new transformation parameters to f_t alias function:
+           csv, urlencode, safe, javascript (see parameter wizard for more info)
+         - added start_cat parameter to view.php3 used with Links module
+           for "path" display
+         - fixed CSV import data parsing preview
+         - fixed bug in link addition (Links module)
 12/25/03 - allow setting status_code in filler.php3
 (mitra)  - safer password checking in filler without text_password
          - more improvements to summarize copy field etc
          - created admin/console.php3 (commented in include/menu_aa.php3)
+12/19/03 - fixed Email notifying for anonymous posted items into
+(honzam)   reading_password protected slices (honzam)
+         - related items with "admin design"=1 now displays headline correctly
+           even if _#JS_HEAD_ alias is not defined in the slice
 12/05/03 - allowed for contenttype parameter to set text/xml (mitra)
 12/04/03 - fixed mime type of RSS view (mitra)
 12/03/03 - fixed bug in filler.php3 - not shown fields with apostrph now works

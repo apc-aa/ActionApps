@@ -43,7 +43,7 @@ http://www.apc.org/
  *  $dataType - source of data: should contain: "file", "url" or "text"
  *              (default "file")
  *  $url      - url of csv data applied when $dataType == "url"
- *  $file     - applied when $dataType == "file"
+ *  $upfile   - applied when $dataType == "file"
  *  $text     - applied when $dataType == "text"
  */
 
@@ -53,7 +53,7 @@ require_once "../include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]. 'import_util.php3';
 
 $text      = stripslashes($text);
-$file      = stripslashes($file);
+$upfile    = stripslashes($upfile);
 $url       = stripslashes($url);
 $enclosure = stripslashes($enclosure);
 
@@ -100,7 +100,7 @@ function createFile($dataType,$uploadpath,$file_name, $url,$text) {
 // by unique id function. The path is upload_directory/csv_data.
 // Delete old csv data in the upload_directory/csv_data.
 
-if ($upload) {
+if ($upload OR $preview) {
     // create unique file name
     unset($err);
     $file_name  = GetUploadFileName(FILE_PREFIX);
@@ -112,9 +112,13 @@ if ($upload) {
             $err = _m("Can't create directory for image uploads");
         }
     } else {
-        if ($dataType == "file") {
-            // upload file - todo: error is not returned, if not exist
-            $err=aa_move_uploaded_file ("file", $uploadpath, 0, $file_name);
+        if ( $dataType == "file") {
+            if ( $_FILES['upfile']['name'] != '' ) {
+                // upload file - todo: error is not returned, if not exist
+                $err=aa_move_uploaded_file ("upfile", $uploadpath, 0, $file_name);
+            } else {
+                $file_name = $previous_upload;
+            }
         } else {
             $err = createFile($dataType,$uploadpath,$file_name, $url,$text);
         }
@@ -122,7 +126,9 @@ if ($upload) {
     if ($err != "") {
          MsgPage($sess->url(self_base()."se_csv_import.php3"), $err);
     }
+}
 
+if ( $upload ) {
     // delete files older than one week in the img_upload directory
     DeleteOldFiles(FILE_PREFIX,$uploadpath);
 
@@ -155,55 +161,33 @@ function InitPage() {}
   unset($err);
 
   if ($preview) { // file preview
-      switch ($dataType) {
-          case "text": {	// create temporary file
-              $filename = IMG_UPLOAD_PATH .  "preview";
-              if (!($handle = fopen ($filename, "w"))) {
-                  $err = _m("Cannot create a temporary file");
-              } else {
-                  if (!fwrite($handle, $text))
-                      $err = _m("Cannot write to file");
-                  fclose($handle);
-                  break;
-              }
-          }
-          case "file": $filename = $file; break;
-          case "url":  $filename = $url;  break;
-      }
+      if (!($handle = fopen($uploadpath.$file_name, "r"))) {
+          $err = _m("Cannot open a file for preview");
+      } else {
+          FrmTabCaption(_m("File preview"));
 
-      if (!$err) {
-          if (!($handle = fopen ($filename, "r"))) {
-              $err = _m("Cannot open a file for preview");
+          $numRows = IMPORTFILE_PREVIEW_ROWS; // number of showed items(rows)
+          $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
+          if (!$caption) {
+              for ($i=0;$i<count($csvRec);$i++) {
+                  $caption[] = "Field ".($i+1);
+              }
+              FrmTabRow($caption,true);
+              FrmTabRow($csvRec);
+              $numRows--;
           } else {
-              FrmTabCaption(_m("File preview"));
-
-              $numRows = IMPORTFILE_PREVIEW_ROWS; // number of showed items(rows)
-              $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
-              if (!$caption) {
-                  for ($i=0;$i<count($csvRec);$i++) {
-                      $caption[] = "Field ".($i+1);
-                  }
-                  FrmTabRow($caption,true);
-                  FrmTabRow($csvRec);
-                  $numRows--;
-              } else {
-                  FrmTabRow($csvRec,true);
-              }
-              while ($numRows-- > 0) {
-                  $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
-                  if (!$csvRec)
-                      break;
-                  FrmTabRow($csvRec);
-              }
-              FrmTabEnd("");
-              fclose($handle);
+              FrmTabRow($csvRec,true);
           }
+          while ($numRows-- > 0) {
+              $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
+              if (!$csvRec)
+                  break;
+              FrmTabRow($csvRec);
+          }
+          FrmTabEnd("");
+          fclose($handle);
       }
       if ($err) huhl($err);
-
-      if ($dataType == "text") {
-          unlink($filename);
-      }
   }
 ?>
 <form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_csv_import.php3")?>">
@@ -240,7 +224,7 @@ function InitPage() {}
         <tr>
         <td class=tabtxt align=center><input type="radio" <?php if ($dataType == "file") echo "CHECKED"; ?> NAME="dataType" value="file"></td>
         <td class=tabtxt >file</td>
-        <td class=tabtxt ><input type="file" NAME="file" value="<?php echo $file ?>"  > Max upload size: <?php echo IMG_UPLOAD_MAX_SIZE; ?> B </td>
+        <td class=tabtxt ><input type="file" NAME="upfile" value="<?php echo $upfile_name ?>"> Max upload size: <?php echo IMG_UPLOAD_MAX_SIZE; ?> B </td>
     </tr>
     <tr>
         <td class=tabtxt align=center><input type="radio" <?php if ($dataType == "url") echo "CHECKED"; ?> NAME="dataType" value="url"></td>
@@ -255,6 +239,7 @@ function InitPage() {}
         </table>
     </td></tr>
     <tr><td align="center">
+        <input type=hidden name=previous_upload value="<?php echo $file_name ?>">
         <input type=submit name=preview value="<?php echo _m("Preview")?>">
         <input type=submit name=upload value="<?php echo _m("Next") ?>" align=center>&nbsp;&nbsp;
     </td></tr>
