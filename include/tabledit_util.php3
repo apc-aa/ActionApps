@@ -80,9 +80,9 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
             case "delete_all":
                 if ($com["run_delete_all"]) {
                     reset ($par);
-                    while (list ($key, $vals) = each ($par)) {
-                        RunColumnFunctions ($vals, $myview["fields"], $myview["table"], $myview["join"]);                        
-                        TableDelete ($myview["table"], $vals,
+                    while (list ($key, $checked) = each ($par)) {
+                        RunColumnFunctions ($val[$key], $myview["fields"], $myview["table"], $myview["join"]);                        
+                        TableDelete ($myview["table"], $val[$key],
                                      $myview["fields"], $primary_aliases,
                                      $myview["messages"]["error_delete"], $myview["triggers"]);
                     }
