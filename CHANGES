@@ -1,3 +1,7 @@
+11/26/04 - think I fixed the _#ITEMINDX problem, that subviews would make it invalid for parent views
+(mimo)	   now using a stack, see item.php3 and itemview.php3 
+         - disabled the caching in MLX postqueryzids, see commentns in MLX for why
+         - added a mlx import function, in /misc/mlx/import.php
 11/23/04 - any AA format-string could be used for displaying selects from
 (honzam)   related slice (not only 1 field like headline........). You can place
            the format-string in "slice field" parameter for the Input Type.
@@ -32,6 +36,9 @@
            languages as is Czech with different kinds of words.
            Note: Use this feature mainly for fulltexts of item and not in
                  item-listing, since it is not so quick, at this moment.
+11/18/04 - fixed a caching bug in include/view.php3 when using mlx
+(mimo)   - fixed duplicated code in include/view.php3
+
 11/18/04 - added "id" and "short_id" definitions to fields table for each slice,
 (honzam)   where the definition is missing. It allows searchbar in Item Manager
            to create filter also on Short id field, ...

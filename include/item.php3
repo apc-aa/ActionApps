@@ -869,10 +869,10 @@ function RSS_restrict($txt, $len) {
       # otherwise won't work if there are nested views.
       case "itemcount":
         return $GLOBALS['QueryIDsCount'];
-      case "itemindex";
-        return "".$GLOBALS['QueryIDsIndex'];   # Need to append to "" so doesn't return "false" on 0th item
-      case "pageindex";
-        return "".$GLOBALS['QueryIDsPageIndex'];   # Need to append to "" so doesn't return "false" on 0th item
+      case "itemindex": /*mimo hack, this is now a stack*/
+        return "".end($GLOBALS['QueryIDsIndex']);   # Need to append to "" so doesn't return "false" on 0th item
+      case "pageindex": /*mimo hack, this is now a stack*/
+        return "".end($GLOBALS['QueryIDsPageIndex']);   # Need to append to "" so doesn't return "false" on 0th item
       case "safe":         // safe, javascript, urlencode, csv - for backward
       case "javascript":   // compatibility
       case "urlencode":
@@ -919,13 +919,13 @@ function RSS_restrict($txt, $len) {
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
       case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
-        if(!$GLOBALS[mlxView])
-      return "MLX no global mlxView set: this shouldnt happen in:".__FILE__.",".__LINE__;
+        if(!$GLOBALS[mlxView]) 
+	  return "MLX no global mlxView set: this shouldnt happen in:".__FILE__.",".__LINE__;
         return $GLOBALS[mlxView]->getCurrentLang();
         break;
-      case 'mlx_dir':    // print the current mlx language html markup dir tag
-                 //(the article's 'real' one!)
-    $mlx_dir = $GLOBALS[mlxScriptsTable][$this->getval('lang_code.......')];
+      case 'mlx_dir':    // print the current mlx language html markup dir tag 
+      			 //(the article's 'real' one!)
+	$mlx_dir = $GLOBALS[mlxScriptsTable][$this->getval('lang_code.......')];
         return ($mlx_dir?" DIR=".$mlx_dir['DIR']." ":"");
         break;
       case 'addform':   // show link to inputform with special design defined in view (id in p[1])

@@ -532,8 +532,13 @@ class itemview {
 
             $zidx = $this->from_record+$i;
             if ($zidx >= $this->zids->count()) continue;
-            $GLOBALS['QueryIDsIndex']     = $zidx;  // So that _#ITEMINDX = f_e:itemindex can find it
-            $GLOBALS['QueryIDsPageIndex'] = $i;     // So that _#PAGEINDX = f_e:pageindex can find it
+	    /* mimo hack -- put this on a stack **/
+	    if(!$GLOBALS['QueryIDsIndex'])
+	    	$GLOBALS['QueryIDsIndex'] = array();
+	    if(!$GLOBALS['QueryIDsPageIndex'])
+	    	$GLOBALS['QueryIDsPageIndex'] = array();
+            array_push($GLOBALS['QueryIDsIndex'],$zidx);  // So that _#ITEMINDX = f_e:itemindex can find it
+            array_push($GLOBALS['QueryIDsPageIndex'],$i);     // So that _#PAGEINDX = f_e:pageindex can find it
 
             $iid = $this->zids->short_or_longids($zidx);
             if( !$iid ) { huhe("Warning: itemview: got a null id"); continue; }
@@ -586,8 +591,12 @@ class itemview {
 
             // return to QueryIDs* right values (could be changed by get_item(), if we use inner view
             // TODO - do QueryIDs* better - not as global variables with such hacks
-            $GLOBALS['QueryIDsIndex']     = $zidx;  // So that _#ITEMINDX = f_e:itemindex can find it
+            /*$GLOBALS['QueryIDsIndex']     = $zidx;  // So that _#ITEMINDX = f_e:itemindex can find it
             $GLOBALS['QueryIDsPageIndex'] = $i;     // So that _#PAGEINDX = f_e:pageindex can find it
+	    */
+	    /*mimo hack, clear the end of the stack **/
+	    array_pop($GLOBALS['QueryIDsIndex']); 
+	    array_pop($GLOBALS['QueryIDsPageIndex']); 
         }
         if ($category_top_html_printed) {
             $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $CurItem);

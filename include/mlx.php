@@ -1,17 +1,20 @@
 <?
-// MLX MultiLingual eXtension for APC ActionApps
-// ver.: 0.3
-// http://mimo.gn.apc.org/mlx
-// mimo/at/gn.apc.org
+/// MLX MultiLingual eXtension for APC ActionApps
+//$Id$
+/// @brief MLX MultiLingual eXtension for APC ActionApps http://mimo.gn.apc.org/mlx
+/// @author mimo/at/gn.apc.org for GreenNet
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * @global array $mlxScriptsTable
 * this maps names to scripts and the script direction
+* extend at your will, stick to this table http://www.allegro-c.de/formate/sprachen.htm
 * @note the names dont follow any standard (but are based on DIN) and can be extended
+* the font face and align info should be in the stylesheet
 */
 $mlxScriptsTable = array( 
-	"DR" => array("name"=>"Dari", "DIR"=>"RTL"),
-	"AR" => array("name"=>"Arabic","DIR"=>"RTL"),
-	"PS" => array("name"=>"Pashtoo","DIR"=>"RTL")
+	"DR" => array("name"=>"Dari", "DIR"=>"RTL","FONT"=>"FACE=\"Pashto Kror Asiatype\"","ALIGN"=>"JUSTIFY"),
+	"AR" => array("name"=>"Arabic","DIR"=>"RTL","ALIGN"=>"JUSTIFY"),
+	"PS" => array("name"=>"Pashtoo","DIR"=>"RTL","FONT"=>"FACE=\"Pashto Kror Asiatype\"","ALIGN"=>"JUSTFIY"),
+	"KU" => array("name"=>"Kurdish","DIR"=>"RTL","FONT"=>"FACE=\"Ali_Web_Samik\"")
 );
 
 /** name of column in table slice **/
@@ -28,8 +31,20 @@ define ('MLX_CTRLIDFIELD','mlxctrl.........');
    ('text' means anything beginning with 'mlxctrl' **/
 define ('MLX_LANG2ID_TYPE','mlxctrl');
 
+/** the following settings are for debugging, performance 
+    you can overwrite them in your config.php3 
+**/
+
 /** set to 1 to display trace info **/
-define ('MLX_TRACE',0);
+if(!defined('MLX_TRACE'))
+	define ('MLX_TRACE',0);
+
+/** there is a problem with views and caching mlx-ed results
+    at least in combination with site module, disable at own
+    risk (btw, I dont think this caching brings alot better 
+    performance) **/
+if(!defined('MLX_NOVIEWCACHE'))
+	define ('MLX_NOVIEWCACHE',1);
 
 /** HTML defines **/
 define ('MLX_HTML_TABHD',"\n"
@@ -180,6 +195,9 @@ class MLX
 		//$this->dbg($content4mlxid);
 		//$GLOBALS[errcheck] = 1;
 		//$GLOBALS[debugsi] = 5;
+		$content4mlxid["publish_date...."][0][value] = time();
+		$content4mlxid["expiry_date....."][0][value] = time() + 200*365*24*60*60;
+		$content4mlxid["status_code....."][0][value] = 1;
 		StoreItem($id,$this->langSlice,$content4mlxid,
 			$this->ctrlFields,$insert,true,true);
 		$content4id[MLX_CTRLIDFIELD][0][value] = q_pack_id($id);
@@ -395,21 +413,25 @@ class MLXView
 			return;
 		if($zidsObj->count() == 0)
 			return;
+			
+		$nocache = $nocache || MLX_NOVIEWCACHE || $GLOBALS['nocache'] || $GLOBALS['mlxnoviewcache'];
 		
-		#create keystring from values, which exactly identifies resulting content
-		$keystr = $this->mode.serialize($this->language).$ctrlSliceID.$slice_id
-			. serialize($conds). serialize($sort)
-			. $group_by. $type. serialize($slices). $neverAllItems
-			. ((isset($restrict_zids) && is_object($restrict_zids)) ? 
-				serialize($restrict_zids) : "")
-			. $defaultCondsOperator . $cachekeyextra;
+		if(!$nocache) {
+			#create keystring from values, which exactly identifies resulting content
+			$keystr = $this->mode.serialize($this->language).$ctrlSliceID.$slice_id
+				. serialize($conds). serialize($sort)
+				. $group_by. $type. serialize($slices). $neverAllItems
+				. ((isset($restrict_zids) && is_object($restrict_zids)) ? 
+					serialize($restrict_zids) : "")
+				. $defaultCondsOperator . $cachekeyextra;
 		
-		$cachestr = "slice_id=$ctrlSliceID";
-		if ( $res = CachedSearch( !$nocache, $keystr, $cachestr )) {
-			if(MLX_TRACE)
-				__mlx_trace("using cache for $keystr");
-			$zidsObj->refill( $res->a );
-			return;
+			$cachestr = "slice_id=$ctrlSliceID";
+			if ( $res = CachedSearch( !$nocache, $keystr, $cachestr )) {
+				if(MLX_TRACE)
+					__mlx_trace("using cache for $keystr");
+				$zidsObj->refill( $res->a );
+				return;
+			}
 		}
 		$translations = $this->getPrioTranslationFields($ctrlSliceID);
 		$arr = array();
