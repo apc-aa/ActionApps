@@ -564,7 +564,7 @@ $itemview->print_view("NOCACHE");   # big security hole is open if we cache it
 $st->countPages( count( $item_ids ) );
 
 if($st->pageCount() > 1 || $action_selected != "0") {
-    echo "<tr><td class=tabtxt>";
+    echo "<tr><td><table border=0 cellpadding=3><tr><td class=tabtxt>";
 }
         
 if ($action_selected != "0")
@@ -611,11 +611,11 @@ if ($action_selected != "0")
 
 if($st->pageCount() > 1 || $action_selected != "0") {
     if ($st->pageCount() > 1) {
-        echo "<p align='center'>";
+        echo "</td></tr><tr height=3><td></td></tr>
+            <tr><td align=center class=tabtxt>";
         $st->pnavbar();
-        echo "</p>";
     }
-    echo "</td></tr>";
+    echo "</td></tr></table></td></tr>";
 }
     
 echo '</table></form><br>';
