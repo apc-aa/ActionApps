@@ -88,6 +88,14 @@ $tablelist = array( 'active_sessions' => "(
                          PRIMARY KEY (name, sid),
                          KEY changed (changed)
                       )",
+                      'alerts_admin' => "(
+                         id int(10) NOT NULL auto_increment,
+                         last_mail_confirm int(10) NOT NULL default '0',
+                         mail_confirm int(4) NOT NULL default '0',
+                         delete_not_confirmed int(4) NOT NULL default '0',
+                         last_delete int(10) NOT NULL default '0',
+                         PRIMARY KEY  (id)
+                      )",
                       'alerts_collection' => "(
                          id int(11) NOT NULL auto_increment,
                          description text NOT NULL,
@@ -897,6 +905,7 @@ $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url
 $SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '*', '*', '*', 'misc/alerts/alerts.php3', 'lang=en&howoften=daily');";
 $SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '*', '*', '1', 'misc/alerts/alerts.php3', 'lang=en&howoften=weekly');";
 $SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '1', '*', '*', 'misc/alerts/alerts.php3', 'lang=en&howoften=monthly');";
+$SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '*', '*', '*', 'misc/alerts/admin_mails.php3', '');";
 
 # -------------------------------- Executive part -----------------------------
 
@@ -947,7 +956,7 @@ if( !$update AND !$restore AND !$restore_now) {
   FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false, 
                 "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice).","");
   FrmInputChBox("alerts", "Add Alerts defaults", true, false, "", 1, false,
-                "Alerts are run by cron.php3, 3 entries to table cron are added. Also two defaults to table alerts_collection are added.");
+                "Alerts are run by cron.php3, 4 entries to table cron are added. Also two defaults to table alerts_collection are added.");
   echo '
   </table></td></tr>
   <tr><td align="center">
