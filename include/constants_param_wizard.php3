@@ -752,8 +752,9 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
                    &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>
                    &nbsp; - <i>urlencode</i> - URL-encodes string (see <a href=\"http://php.net/urlencode\">urlencode<a> PHP function)<br>
                    &nbsp; - <i>safe</i> - converts special characters to HTML entities (see <a href=\"http://php.net/htmlspecialchars\">htmlspecialchars<a> PHP function)<br>
-                   &nbsp; - <i>javascript</i> - escape ' (replace ' with \\')
-                   &nbsp; - <i>striptags</i>  - strip HTML and PHP tags from the string
+                   &nbsp; - <i>javascript</i> - escape ' (replace ' with \\')<br>
+                   &nbsp; - <i>striptags</i>  - strip HTML and PHP tags from the string<br>
+                   &nbsp; - <i>asis</i>  - prints field content 'as is' - it do not add &lt;br&gt; at line ends even if field is marked as 'Plain text'. 'asis' parameter is good for Item Manager's 'Modify content...' feature, for example<br>
                    "),
         "type"=>"STR",
         "example"=>_m("")))),
