@@ -39,6 +39,7 @@ define("DB_PASSWORD", "somepasswd");
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
 define("AA_ID", "420224311780abcd420224311780abcd");
+define("ORG_NAME","APC on Sourceforge");
 #define("AA_ID", "000111222333444555666777888999A9");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
