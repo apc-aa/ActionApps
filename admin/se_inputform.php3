@@ -67,14 +67,14 @@ if( $update ) {
     ValidateInput("input_show_func", L_INPUT_SHOW_FUNC, $input_show_func_f, &$err, false, "text");
 
     ValidateInput("alias1", L_ALIAS1, $alias1, &$err, false, "alias");
-    ValidateInput("alias1_help", L_ALIAS1_HELP, $alias1_help, &$err, false, "text");
-    ValidateInput("alias1_func", L_ALIAS1_FUNC, $alias1_func, &$err, false, "text");
-    ValidateInput("alias2", L_ALIAS1, $alias2, &$err, false, "alias");
-    ValidateInput("alias2_help", L_ALIAS1_HELP, $alias2_help, &$err, false, "text");
-    ValidateInput("alias2_func", L_ALIAS1_FUNC, $alias2_func, &$err, false, "text");
-    ValidateInput("alias3", L_ALIAS1, $alias3, &$err, false, "alias");
-    ValidateInput("alias3_help", L_ALIAS1_HELP, $alias3_help, &$err, false, "text");
-    ValidateInput("alias3_func", L_ALIAS1_FUNC, $alias3_func, &$err, false, "text");
+    ValidateInput("alias1_help", L_ALIAS_HLP ."1", $alias1_help, &$err, false, "text");
+    ValidateInput("alias1_func", L_ALIAS_FUNC ."1", $alias1_func, &$err, false, "text");
+    ValidateInput("alias2", L_ALIAS2, $alias2, &$err, false, "alias");
+    ValidateInput("alias2_help", L_ALIAS_HLP ."2", $alias2_help, &$err, false, "text");
+    ValidateInput("alias2_func", L_ALIAS_FUNC ."2", $alias2_func, &$err, false, "text");
+    ValidateInput("alias3", L_ALIAS3, $alias3, &$err, false, "alias");
+    ValidateInput("alias3_help", L_ALIAS_HLP ."3", $alias3_help, &$err, false, "text");
+    ValidateInput("alias3_func", L_ALIAS_FUNC ."3", $alias3_func, &$err, false, "text");
       
     if( count($err) > 1)
       break;
@@ -84,7 +84,10 @@ if( $update ) {
     $varset->add("input_morehlp", "quoted", $input_morehlp);
     $varset->add("input_default", "quoted", "$input_default_f:$input_default");
     $varset->add("multiple", "quoted", (($input_show_func_f=="mch")
-                                     OR ($input_show_func_f=="mse")) ? 1 : 0);  #mark as multiple
+                                     OR ($input_show_func_f=="mse")
+                                     OR ($input_show_func_f=="isi")
+                                     OR ($input_show_func_f=="iso")
+                                     OR ($input_show_func_f=="wi2")) ? 1 : 0);  #mark as multiple
 
     $varset->add("alias1", "quoted", $alias1);
     $varset->add("alias1_help", "quoted", $alias1_help);
@@ -106,6 +109,9 @@ if( $update ) {
       case "rio":
       case "sel": $isf = "$input_show_func_f:$input_show_func_c";
                   break;
+      case "pre": 
+      case "iso": 
+      case "wi2": 
       case "mse": $isf = "$input_show_func_f:$input_show_func_c:$input_show_func";
                   break;
       default: $isf = "$input_show_func_f";
@@ -137,7 +143,13 @@ if( $update ) {
 } 
 
   # lookup constants
-$constants = GetConstants('lt_groupNames', $db);
+$constants[] = "";   # add blank constant as the first option
+$constants += GetConstants('lt_groupNames', $db);
+
+  # add slices to constant array (good for related stories, link to authors ...)
+reset($g_slices);
+while(list($k, $v) = each($g_slices))
+  $constants["#sLiCe-".$k] =  $v;
 
   # lookup fields
 $SQL = "SELECT * FROM field
@@ -180,12 +192,16 @@ if( !$update ) {      # load defaults
     case "dte":
     case "fil": $input_show_func = substr($fld[input_show_func],4);
                 break;
+    case "pre":
+    case "wi2":
+    case "iso":
     case "mse": $pos = strpos($fld[input_show_func], ":", 4);
                 $input_show_func_c = substr($fld[input_show_func],4,$pos-4);
                 $input_show_func = substr($fld[input_show_func],$pos+1);
                 break;
     default:    $input_show_func_c = substr($fld[input_show_func],4);
   }  
+  
   $input_insert_func = $fld[input_insert_func];
   $html_default = $fld[html_default];
   $html_show = $fld[html_show];
@@ -208,9 +224,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </script>
 </HEAD>
 <?php 
-  $xx = ($slice_id!="");
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx,"mapping"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
   echo "<H1><B>" . L_A_FIELDS_EDT . "</B></H1>";
@@ -410,6 +423,9 @@ echo "
 
 /*
 $Log$
+Revision 1.15  2001/09/27 16:07:39  honzam
+New related stories support, New constant view
+
 Revision 1.14  2001/08/03 10:09:30  honzam
 if no time in expiry date is specified, the end of day is stored
 
