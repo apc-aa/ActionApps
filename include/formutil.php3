@@ -55,7 +55,7 @@ function PrintMoreHelp( $txt ) {
 }    
 
 /**
-*hows boxes allowing to choose constant in a hiearchical way
+*  shows boxes allowing to choose constant in a hiearchical way
 */
 function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $boxWidth, 
 	$size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") 
@@ -699,9 +699,9 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
         reset($arr);
         while(list($k, $v) = each($arr)) {
             echo "<nobr><input type='checkbox' name='$name'
-            value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
+                 value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
             if ($selected[$k])
-            echo " checked";
+                echo " checked";
             echo ">".htmlspecialchars($v)."</nobr>";
         }
     }
