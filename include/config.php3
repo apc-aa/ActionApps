@@ -120,6 +120,12 @@ $ActionAppConfig[en_jobs_rel][file] = "en_jobs_lang.php3";
 $ActionAppConfig[en_events_rel][name] = "Events (En)";
 $ActionAppConfig[en_events_rel][file] = "en_events_lang.php3";
 
+$ActionAppConfig[en_whos_rel][name] = "Who`s who (En)";
+$ActionAppConfig[en_whos_rel][file] = "en_whos_lang.php3";
+
+$ActionAppConfig[en_rsrcs_rel][name] = "Resources (En)";
+$ActionAppConfig[en_rsrcs_rel][file] = "en_rsrcs_lang.php3";
+
 // ------------------------------------------------------------------
 // developer SITE_CONFIG
 

@@ -178,6 +178,24 @@ define("L_AT","at");
 define("L_EDIT_NOTE","Editor's note"); 
 define("L_IMG_UPLOAD","Picture upload"); 
 
+define("L_SOURCE_DESC", "Org Description");
+define("L_SOURCE_ADDRESS", "Street Adress");
+define("L_SOURCE_CITY", "City");
+define("L_SOURCE_PROV", "Province/State");
+define("L_SOURCE_COUNTRY", "Country");
+define("L_TIME", "Time");
+define("L_CON_NAME", "Contact Name");
+define("L_CON_EMAIL", "Contact E-mail");
+define("L_CON_PHONE", "Contact phone");
+define("L_CON_FAX", "Contact FAX");
+define("L_LOC_NAME", "Location Name");
+define("L_LOC_ADDRESS", "Location Street Address");
+define("L_LOC_CITY", "Location City");
+define("L_LOC_PROV", "Location Province/State");
+define("L_LOC_COUNTRY", "Location Country");
+define("L_START_DATE", "Start Date");
+define("L_END_DATE", "End Date");
+
 # aa toolkit specific labels
 define("L_HLP_HEADLINE",'alias for Title');
 define("L_HLP_CATEGORY",'alias for Category Name');
@@ -202,6 +220,24 @@ define("L_HLP_IMGWIDTH",'alias for Picture Width<br>(if no width defined, progra
 define("L_HLP_IMG_HGHT",'alias for Picture Height<br>(if no height defined, program tries to remove <em>height=</em> atribute from format string<div class=example><em>Example: </em>&lt;img src="_#IMAGESRC" width=_#IMGWIDTH height=_#IMG_HGHT&gt;</div>');
 define("L_HLP_ITEM_ID",'alias for Press release ID<br>(can be used as parameter sh_itm= given to slice.php3 (or to any .shtml file, which this script includes))');
 define("L_HLP_CATEGORY_ID",'alias for Category ID<br>(can be used with HTML tag &lt;A NAME="_#CATEG_ID"&gt; in Category headline field)');
+
+define("L_HLP_SOURCE_DESC", "Alias for Org Description");
+define("L_HLP_SOURCE_ADDRESS", "Alias for Street Adress");
+define("L_HLP_SOURCE_CITY", "Alias for City");
+define("L_HLP_SOURCE_PROV", "Alias for Province/State");
+define("L_HLP_SOURCE_COUNTRY", "Alias for Country");
+define("L_HLP_TIME", "Alias for Time");
+define("L_HLP_CON_NAME", "Alias for Contact Name");
+define("L_HLP_CON_EMAIL", "Alias for Contact E-mail");
+define("L_HLP_CON_PHONE", "Alias for Contact phone");
+define("L_HLP_CON_FAX", "Alias for Contact FAX");
+define("L_HLP_LOC_NAME", "Alias for Location Name");
+define("L_HLP_LOC_ADDRESS", "Alias for Location Street Address");
+define("L_HLP_LOC_CITY", "Alias for Location City");
+define("L_HLP_LOC_PROV", "Alias for Location Province/State");
+define("L_HLP_LOC_COUNTRY", "Alias for Location Country");
+define("L_HLP_START_DATE", "Alias for Start Date");
+define("L_HLP_END_DATE", "Alias for End Date");
 
 define("L_CANT_UPLOAD","Can't upload picture"); 
 define("L_GRAB_LEN", "Fulltext into abstract grab length [characters]");
@@ -537,42 +573,6 @@ define("L_ACTIVE_BIN_PENDING", "Approved - Pending");
 define("L_ACTIVE_BIN_EXPIRED_MENU", "... expired");
 define("L_ACTIVE_BIN_PENDING_MENU", "... pending");
 
-define("L_SOURCE_DESC", "Org Description");
-define("L_SOURCE_ADDRESS", "Street Adress");
-define("L_SOURCE_CITY", "City");
-define("L_SOURCE_PROV", "Province/State");
-define("L_SOURCE_COUNTRY", "Country");
-define("L_TIME", "Time");
-define("L_CON_NAME", "Contact Name");
-define("L_CON_EMAIL", "Contact E-mail");
-define("L_CON_PHONE", "Contact phone");
-define("L_CON_FAX", "Contact FAX");
-define("L_LOC_NAME", "Location Name");
-define("L_LOC_ADDRESS", "Location Street Address");
-define("L_LOC_CITY", "Location City");
-define("L_LOC_PROV", "Location Province/State");
-define("L_LOC_COUNTRY", "Location Country");
-define("L_START_DATE", "Start Date");
-define("L_END_DATE", "End Date");
-
-define("L_HLP_SOURCE_DESC", "Alias for Org Description");
-define("L_HLP_SOURCE_ADDRESS", "Alias for Street Adress");
-define("L_HLP_SOURCE_CITY", "Alias for City");
-define("L_HLP_SOURCE_PROV", "Alias for Province/State");
-define("L_HLP_SOURCE_COUNTRY", "Alias for Country");
-define("L_HLP_TIME", "Alias for Time");
-define("L_HLP_CON_NAME", "Alias for Contact Name");
-define("L_HLP_CON_EMAIL", "Alias for Contact E-mail");
-define("L_HLP_CON_PHONE", "Alias for Contact phone");
-define("L_HLP_CON_FAX", "Alias for Contact FAX");
-define("L_HLP_LOC_NAME", "Alias for Location Name");
-define("L_HLP_LOC_ADDRESS", "Alias for Location Street Address");
-define("L_HLP_LOC_CITY", "Alias for Location City");
-define("L_HLP_LOC_PROV", "Alias for Location Province/State");
-define("L_HLP_LOC_COUNTRY", "Alias for Location Country");
-define("L_HLP_START_DATE", "Alias for Start Date");
-define("L_HLP_END_DATE", "Alias for End Date");
-
 //----------------------------
 //define("", "");
 //prepared for new constants
@@ -582,6 +582,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.16  2000/10/11 20:18:29  honzam
+Upadted database structure and language files for web.net's extended item table
+
 Revision 1.15  2000/10/10 18:28:00  honzam
 Support for Web.net's extended item table
 

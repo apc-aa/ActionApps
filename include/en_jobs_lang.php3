@@ -146,8 +146,8 @@ define("HTML_PAGE_BEGIN",
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">');
     
 # Input form field names
-define("L_HEADLINE", "Headline");
-define("L_ABSTRACT", "Summary");
+define("L_HEADLINE", "Job title");
+define("L_ABSTRACT", "Short job description");
 define("L_FULL_TEXT", "News");
 define("L_FT_FORMATTING", "Formatting");
 define("L_FT_FORMATTING_HTML", "HTML code");
@@ -157,26 +157,44 @@ define("L_POSTED_BY", "Author");
 define("L_E_POSTED_BY","Author's e-mail"); 
 define("L_PUBLISH_DATE", "Publish date");
 define("L_EXPIRY_DATE", "Expiry date");
-define("L_CATEGORY", "Category");
+define("L_CATEGORY", "Area of Focus");
 define("L_STATUS_CODE", "News status");
-define("L_LANGUAGE_CODE", "Language");
+define("L_LANGUAGE_CODE", "Language required");
 define("L_CP_CODE", "Encoding");
-define("L_LINK_ONLY", "External news");
-define("L_HL_HREF", "External news URL");
+define("L_LINK_ONLY", "Online job");
+define("L_HL_HREF", "Online job description");
 define("L_HTML_FORMATTED", "HTML formatted");
 define("L_HIGHLIGHT", "Highlight");
 define("L_IMG_SRC","Image URL"); 
 define("L_IMG_WIDTH","Image width"); 
 define("L_IMG_HEIGHT","Image height");
 define("L_PLACE","Location");
-define("L_SOURCE","Source ");
-define("L_SOURCE_HREF","Source URL");
+define("L_SOURCE","Org Name");
+define("L_SOURCE_HREF","Org Web Site");
 define("L_REDIRECT","Show on URL");
 define("L_CREATED_BY","Written by");
 define("L_LASTEDIT","Last edited by");
 define("L_AT","at");   
 define("L_EDIT_NOTE","Editor's note"); 
 define("L_IMG_UPLOAD","Image upload"); 
+
+define("L_SOURCE_DESC", "Org Description");
+define("L_SOURCE_ADDRESS", "Street Adress");
+define("L_SOURCE_CITY", "City");
+define("L_SOURCE_PROV", "Province/State");
+define("L_SOURCE_COUNTRY", "Country");
+define("L_TIME", "Time");
+define("L_CON_NAME", "Contact Name");
+define("L_CON_EMAIL", "Contact E-mail");
+define("L_CON_PHONE", "Contact phone");
+define("L_CON_FAX", "Contact FAX");
+define("L_LOC_NAME", "Location Name");
+define("L_LOC_ADDRESS", "Location Street Address");
+define("L_LOC_CITY", "Location City");
+define("L_LOC_PROV", "Location Province/State");
+define("L_LOC_COUNTRY", "Location Country");
+define("L_START_DATE", "Start Date");
+define("L_END_DATE", "Application Closing Date");
 
 # aa toolkit specific labels
 define("L_HLP_HEADLINE",'alias for Item Headline');
@@ -202,6 +220,24 @@ define("L_HLP_IMGWIDTH",'alias for Image Width<br>(if no width defined, program 
 define("L_HLP_IMG_HGHT",'alias for Image Height<br>(if no height defined, program tries to remove <em>height=</em> atribute from format string<div class=example><em>Example: </em>&lt;img src="_#IMAGESRC" width=_#IMGWIDTH height=_#IMG_HGHT&gt;</div>');
 define("L_HLP_ITEM_ID",'alias for News ID<br>(can be used as parameter sh_itm= given to slice.php3 (or to any .shtml file, which this script includes))');
 define("L_HLP_CATEGORY_ID",'alias for Category ID<br>(can be used with HTML tag &lt;A NAME="_#CATEG_ID"&gt; in Category headline field)');
+
+define("L_HLP_SOURCE_DESC", "Alias for Org Description");
+define("L_HLP_SOURCE_ADDRESS", "Alias for Street Adress");
+define("L_HLP_SOURCE_CITY", "Alias for City");
+define("L_HLP_SOURCE_PROV", "Alias for Province/State");
+define("L_HLP_SOURCE_COUNTRY", "Alias for Country");
+define("L_HLP_TIME", "Alias for Time");
+define("L_HLP_CON_NAME", "Alias for Contact Name");
+define("L_HLP_CON_EMAIL", "Alias for Contact E-mail");
+define("L_HLP_CON_PHONE", "Alias for Contact phone");
+define("L_HLP_CON_FAX", "Alias for Contact FAX");
+define("L_HLP_LOC_NAME", "Alias for Location Name");
+define("L_HLP_LOC_ADDRESS", "Alias for Location Street Address");
+define("L_HLP_LOC_CITY", "Alias for Location City");
+define("L_HLP_LOC_PROV", "Alias for Location Province/State");
+define("L_HLP_LOC_COUNTRY", "Alias for Location Country");
+define("L_HLP_START_DATE", "Alias for Start Date");
+define("L_HLP_END_DATE", "Alias for End Date");
 
 define("L_CANT_UPLOAD","Can't upload Image"); 
 define("L_GRAB_LEN", "Fulltext into abstract grab length [characters]");
@@ -534,41 +570,6 @@ define("L_ACTIVE_BIN_PENDING", "Approved - Pending");
 define("L_ACTIVE_BIN_EXPIRED_MENU", "... expired");
 define("L_ACTIVE_BIN_PENDING_MENU", "... pending");
 
-define("L_SOURCE_DESC", "Org Description");
-define("L_SOURCE_ADDRESS", "Street Adress");
-define("L_SOURCE_CITY", "City");
-define("L_SOURCE_PROV", "Province/State");
-define("L_SOURCE_COUNTRY", "Country");
-define("L_TIME", "Time");
-define("L_CON_NAME", "Contact Name");
-define("L_CON_EMAIL", "Contact E-mail");
-define("L_CON_PHONE", "Contact phone");
-define("L_CON_FAX", "Contact FAX");
-define("L_LOC_NAME", "Location Name");
-define("L_LOC_ADDRESS", "Location Street Address");
-define("L_LOC_CITY", "Location City");
-define("L_LOC_PROV", "Location Province/State");
-define("L_LOC_COUNTRY", "Location Country");
-define("L_START_DATE", "Start Date");
-define("L_END_DATE", "End Date");
-
-define("L_HLP_SOURCE_DESC", "Alias for Org Description");
-define("L_HLP_SOURCE_ADDRESS", "Alias for Street Adress");
-define("L_HLP_SOURCE_CITY", "Alias for City");
-define("L_HLP_SOURCE_PROV", "Alias for Province/State");
-define("L_HLP_SOURCE_COUNTRY", "Alias for Country");
-define("L_HLP_TIME", "Alias for Time");
-define("L_HLP_CON_NAME", "Alias for Contact Name");
-define("L_HLP_CON_EMAIL", "Alias for Contact E-mail");
-define("L_HLP_CON_PHONE", "Alias for Contact phone");
-define("L_HLP_CON_FAX", "Alias for Contact FAX");
-define("L_HLP_LOC_NAME", "Alias for Location Name");
-define("L_HLP_LOC_ADDRESS", "Alias for Location Street Address");
-define("L_HLP_LOC_CITY", "Alias for Location City");
-define("L_HLP_LOC_PROV", "Alias for Location Province/State");
-define("L_HLP_LOC_COUNTRY", "Alias for Location Country");
-define("L_HLP_START_DATE", "Alias for Start Date");
-define("L_HLP_END_DATE", "Alias for End Date");
 
 // not appended to other lang files
 //define("", "");
@@ -579,6 +580,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.2  2000/10/11 20:18:28  honzam
+Upadted database structure and language files for web.net's extended item table
+
 Revision 1.1  2000/10/10 18:28:00  honzam
 Support for Web.net's extended item table
 
