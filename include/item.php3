@@ -525,16 +525,20 @@ function RSS_restrict($txt, $len) {
   # prints: "begin<a href="mailto:$col">field/text</a>"
   # if no $col is filled, prints "else_fileld/text"
   # param: begin:field/text:else_fileld/text
+  # linktype: mailto/href (default is mailto)
   function f_m($col, $param="") { 
     $p = ParamExplode($param);
-    if( !$this->columns[$col][0][value] )
-      return ($this->columns[$p[2]] ? $this->columns[$p[2]][0][value] : $p[2]);
+    if( !$this->columns[$col][0][value] ) {
+      $txt = ($this->columns[$p[2]] ? $this->columns[$p[2]][0][value] : $p[2]);
+      return ( $txt ? $p[0].$txt : "" );
+    }  
     if( $this->columns[$p[1]] )
       $txt = ($this->columns[$p[1]][0][value] ? 
              $this->columns[$p[1]][0][value] : $this->columns[$col][0][value]);
      else 
-      $txt = ( $p[1] ? $p[1] : $this->columns[$col][0][value]);        
-    return getahref( "mailto:".$this->columns[$col][0][value], $txt);
+      $txt = ( $p[1] ? $p[1] : $this->columns[$col][0][value]);
+    $linktype =  ($p[3] ? "" : "mailto:");
+    return $p[0].$this->getahref( $linktype.$this->columns[$col][0][value], $txt);
   }
 
   
@@ -623,6 +627,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.25  2001/10/08 16:42:52  honzam
+f_m alias function now works with normal links too
+
 Revision 1.24  2001/09/27 15:59:33  honzam
 New discussion support, New constant view, Aliases for view and mail
 
