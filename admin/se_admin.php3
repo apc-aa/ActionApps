@@ -129,7 +129,8 @@ function Defaults() {
                      L_FORMAT_HLP, "", DOCUMENTATION_URL, 1);
   FrmTextarea("admin_format_bottom", L_ADMIN_FORMAT_BOTTOM, $admin_format_bottom,
               4, 60, false, L_BOTTOM_HLP, "", DOCUMENTATION_URL, 1);
-  FrmInputText("admin_remove", L_ADMIN_REMOVE, $admin_remove, 254, 50, false);
+  FrmInputText("admin_remove", L_ADMIN_REMOVE, $admin_remove, 254, 50, false,
+               L_REMOVE_HLP, DOCUMENTATION_URL);
 ?>
 </table></td></tr>
 <?php
@@ -143,8 +144,8 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
-Revision 1.4  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+Revision 1.5  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 Revision 1.2  2001/01/08 13:31:57  honzam
 Small bugfixes

@@ -66,7 +66,11 @@ if( isset($slice_lang_file) ) {                             // used if new slice
 
 require $GLOBALS[AA_INC_PATH] . "util.php3"; // must be after language include because of lang constants in util.php3
 
+if( $slice_id )
+  $p_slice_id = q_pack_id($slice_id);
+  
 $sess->register("slice_id");
+$sess->register("p_slice_id");
 $sess->register("r_config_file");
 $sess->register("r_slice_headline");    // stores headline of slice
 $sess->register("r_slice_view_url");    // url of slice
@@ -119,6 +123,7 @@ if( !$Add_slice AND !$New_slice ) {
   if(!$slice_id) {       // user is here for the first time -  find any slice for him
     reset($slices);
     $slice_id = key($slices);
+    $p_slice_id = q_pack_id($slice_id);
   }    
 
   if( !isset($slices[$slice_id])) {   // this slice was deleted
@@ -160,8 +165,8 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
-Revision 1.12  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+Revision 1.13  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 Revision 1.11  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)

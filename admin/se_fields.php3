@@ -134,7 +134,8 @@ if( $update )
         $varset->add("input_pri", "number", $pri[$key]);
         $varset->add("required", "number", ($req[$key] ? 1 : 0));
         $varset->add("input_show", "number", ($shw[$key] ? 1 : 0));
-        $SQL = "UPDATE field SET ". $varset->makeUPDATE() . " WHERE id='$key'";
+        $SQL = "UPDATE field SET ". $varset->makeUPDATE() . 
+               " WHERE id='$key' AND slice_id='$p_slice_id'";
         if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
           $err["DB"] = MsgErr("Can't change field");
           break;
@@ -226,8 +227,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
-Revision 1.4  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.5  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 Revision 1.3  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x

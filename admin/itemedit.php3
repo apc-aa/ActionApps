@@ -24,6 +24,7 @@ http://www.apc.org/
 # optionaly encap="false" if this form is not encapsulated into *.shtml file
 # optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
+
 $encap = ( ($encap=="false") ? false : true );
 
 if( $edit OR $add )         # parameter for init_page - we edited new item so 
@@ -154,8 +155,7 @@ if( ($insert || $update) AND (count($err)<=1)
       $fncname($id, $f, $$varname, $fnc[param], $insert); # add to content table
     }                                                     # or to itemvarset
   }
-
-  
+ 
     # update item table
   if( $update )
     $SQL = "UPDATE item SET ". $itemvarset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
@@ -169,7 +169,7 @@ if( ($insert || $update) AND (count($err)<=1)
 
   $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
   $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-  
+
 //  FeedItem($id, $fields);
 
   if( count($err) <= 1) {
@@ -242,8 +242,8 @@ if($edit) {
 # print begin ---------------------------------------------------------------
 
 if( !$encap ) {
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo '<title>'.( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT). '</title>
+  HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+  echo '<title>'.( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT). '</title>
     </head>
     <body>
      <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
@@ -326,8 +326,8 @@ page_close();
 
 /*
 $Log$
-Revision 1.15  2001/01/22 17:32:48  honzam
-pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
+Revision 1.16  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 Revision 1.14  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x

@@ -61,6 +61,7 @@ $p_slice_id = q_pack_id($slice_id);
 $slice_info = GetSliceInfo($p_slice_id);
 
 $offline_data = stripslashes($offline_data);
+$offline_data = str_replace(chr(14),' ',$offline_data);  // remove wrong chars
 
 if( !$slice_info )
   SendErrorPage(L_NO_SUCH_SLICE);
@@ -100,8 +101,8 @@ if( $error )
    
 /*
 $Log$
-Revision 1.1  2001/01/26 15:06:50  honzam
-Off-line filling - first version with WDDX (then we switch to APC RSS+)
+Revision 1.2  2001/02/20 13:25:15  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 */
 ?>

@@ -476,17 +476,20 @@ define("L_A_SLICE_ADD_HELP", "To create the new Slice, please choose a template.
         The new slice will inherit the template's default fields.  
         You can also choose a non-template slice to base the new slice on, 
         if it has the fields you want."); 
+define("L_REMOVE_HLP", "Removes epmty brackets etc. Use ## as delimeter.");
 
 // not appended to other lang files
 define("L_COMPACT_HELP", "Use these boxes ( and the tags listed below ) to control what appears on summary page");
 define("L_A_FULLTEXT_HELP", "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item");
-
 //define("", "");
 
 // ------------------------- New ----------------------------
 
 /*
 $Log$
+Revision 1.28  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
+
 Revision 1.27  2001/01/31 02:46:03  madebeer
 moved Fields leftbar section back up to Slice main settings section.
 updated some english language titles

@@ -518,11 +518,14 @@ define("L_FORMAT_HLP", "Put here the HTML code combined with aliases form bottom
 define("L_BOTTOM_HLP", "HTML code which appears at the bottom of slice area");
 define("L_EVEN_ROW_HLP", "You can define different code for odd and ever rows
                          <br>first red, second black, for example");
+
+define("L_REMOVE_HLP", "Odstraní prázdné závorky atd. Použijte ## jako oddelovac.");
+
     
 /*
 $Log$
-Revision 1.23  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+Revision 1.24  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 Revision 1.21  2001/01/08 13:31:58  honzam
 Small bugfixes

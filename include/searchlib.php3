@@ -22,126 +22,13 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-function SearchWhere ($search, $srchflds) {
-   // $search[keyword]  .. searched string
-   // $search[type]     .. AND | OR
-   // $search[slice]    .. search in slice id (0 => all)
-   // $search[category] .. search in category id 
-   // $search[author]   .. search for author id
-   // $search[lang]     .. search in language (language_code)
-   // $search[from]     .. search items from this time was published
-   // $search[to]       .. search items to this time was published
-   // $srchflds         .. array of columns to include in search (headline, abstract, full_text, edit_note)
-
-   // Select the search type (True Boolean search comes later)
-
-   $boo = (eregi("^and$", $search[type]) ? "AND" : "OR");
-      
-   // Escape '%' and '_' (and \n and \?), replace '*' by '%'
-   // Probably MySQL specific
-   // And - shouldn't be ESCAPE char defined in SQLquery?
-   
-   
-   $search[keyword] = str_replace("%", "\%", $search[keyword]);
-   $search[keyword] = str_replace("_", "\_", $search[keyword]);
-   $search[keyword] = str_replace("*", "%", $search[keyword]);
-   
-   // Create the keywords array, words can be grouped by double quotes
-   // PHP auto escapes double quotes
-   
-   // echo ("k: $search[keyword]<br>");
-   
-   while (preg_match('/^\s*(\\\"[^\\\"]*\\\"|\S+)(.*)/', $search[keyword], $parts)) {
-        $keywords[] = str_replace('\"', '', $parts[1]);
-        $search[keyword] = $parts[2];
-        // echo ("p: $parts[1]<br>");
-   }
-   
-   // Check the rows, that should be searched?
-   // Here or outside the function?
-   
-   // Get counts of array elements
- 
-   $count["keywords"] = count($keywords);
-   $count["srchflds"] = count($srchflds);
-   
-   if ($count["keywords"] AND !$count["srchflds"]) {
-      echo L_ERR_NO_SRCHFLDS."<br>";
-      return 0;
-   }
-
-   // Build the WHERE parameters for SQL
-   if ($count["keywords"] AND $count["srchflds"]) {
-     $where = "((status_code=1) AND ((";
-     $oprator = "";
-     reset($srchflds);
-     while( list(,$field) = each($srchflds)) {
-       $where .= $operator;
-       for ($j = 0; $j < $count["keywords"]; $j++) {
-         $where .= $field . " LIKE '%" . $keywords[$j] . "%' ";
-         if ($count["keywords"] - $j > 1) {
-            $where .= $boo . " ";
-         }
-       }
-       $operator = ") OR (";
-     }
-     $where .="))) ";
-   }  
-   else
-     $where ="(status_code=1)";
-
-   if($search[category] == "0") $search[category]="";
-   if($search[slice] == "0") $search[slice]="";
-   if($search[author] == "0") $search[author]="";
-   if($search[lang] == "0") $search[lang]="";
-
-   if( eregi("^[0-9a-f]{1,32}$", $search[slice]) AND $search[slice] != "" )
-     $where .= " AND slice_id = '". q_pack_id($search[slice]) ."'";
-   if( eregi("^[0-9a-f]{1,32}$", $search[category]) AND $search[category] != "" )
-     $where .= " AND category_id = '". q_pack_id($search[category]) ."'";
-   if( $search[author] != "" )
-     $where .= " AND created_by = '". $search[author] ."'";
-   if( $search[lang] != "" )
-     $where .= " AND language_code = '". $search[lang] ."'";
-   if( ($foo=userdate2sec($search[from])) != "" )
-     $where .= " AND publish_date >= '$foo'";
-   if( ($foo=userdate2sec($search[to],"23:59:59")) != "" )
-     $where .= " AND publish_date <= '$foo'";
-   return $where;
-}
-
-
-// function called from slice.php3 and make_rss.php3
-// makes where clause for compact view of items
-function MakeWhere($p_slice_id, $cat, $high) {
-  $de = getdate(time());
-  $where = "(slice_id='$p_slice_id' AND ".  
-           "publish_date <= '". mktime(23,59,59,$de[mon],$de[mday],$de[year]). "' AND ".  //if you change bounds, change it in table.php3 too
-           "expiry_date > '". mktime(0,0,0,$de[mon],$de[mday],$de[year]). "' AND ".             //if you change bounds, change it in table.php3 too
-           "status_code=1)"; // construct SQL query
-  if($high)
-    $where .= " AND (highlight=1) ";
-  if($cat)
-    $where .= " AND (category_id='". q_pack_id($cat) ."') ";
-  return $where;  
-}
-
-/*function aa_search_db ($where, $retflds) {
-  if( !isset($retflds) OR !is_array($retflds))
-    echo "No fields in SQL query (searchlib.php3)"; 
-  $sql = Join($retflds, ", ");
-  $sql = "SELECT " . $sql . " FROM items, fulltexts WHERE fultexts.id = items.master_id AND " . $where;
-  return $sql;
-}
-*/
-
-# -------------------- new functions 1.5.x -------------------------
 
 // returns array of item ids matching the conditions in right order
   # items_cond - SQL string added to WHERE clause to item table query
 function GetItemAppIds($fields, $db, $p_slice_id, $conditions, 
-                       $pubdate_order="DESC", $odrer_fld="", $order_dir="", 
+                       $pubdate_order="DESC", $order_fld="", $order_dir="", 
                        $items_cond="" ) {
+
   if( isset($conditions) AND is_array($conditions)) {
     $set=0;
     $where = "";
@@ -172,7 +59,7 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
   }    
       
   $de = getdate(time());
-  $item_SQL = "SELECT id FROM item ";
+  $item_SQL = "SELECT item.id FROM item ";
   if( $order_fld AND !$fields[$order_fld][in_item_tbl] ) {
     $order_content_fld = ($fields[$order_fld][text_stored] ? "text" : "number");
     $item_SQL .= " LEFT JOIN content ON item.id=content.item_id
@@ -208,20 +95,169 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
   return $arr;           
 }
 
-# ----------- Easy query
+# ----------- Easy query -------- parse query functions first
+
+# test for closed parenthes
+function test_for_closed($search) {
+  $zavorky=0;
+  $uvozovky=0;
+  for ($i=0; $i< strlen($search); $i++){
+    switch ($search[$i]) {
+      case "(" : $zavorky++;
+                 break;
+      case ")" : $zavorky--;
+            		 break;
+      case "\"" : 
+                  if ($uvozovky==1)
+                    $uvozovky--;
+     		          else
+                    $uvozovky++;
+      		        break;	
+    }
+  }
+  $retval = $zavorky+$uvozovky;
+  return $retval;
+}
+
+# Prepares query
+#   - replaces + and - sing with AND and NOT
+#   - replaces wildcards * and ?
+function arrange_query($search) {
+  # make case insenzitive
+  $search = eregi_replace(" AND "," and ", $search);
+  $search = eregi_replace(" OR "," or ", $search);
+  $search = eregi_replace(" NOT "," not ",$search);
+  $retstr = "";
+  for ($i=0; $i<strlen($search); $i++) {
+    switch($search[$i]) {
+      case "\"" : if ($uvozovky == 1) { $uvozovky--; }
+                  else { $uvozovky++; }
+                  $retstr = $retstr . $search[$i]; 
+                  break;  
+      case "+" : if ($uvozovky == 0) { $retstr = $retstr . " and "; }
+                  else { $retstr = $retstr . $search[$i]; }
+                  break;
+      case "-" : if ($uvozovky == 0) 
+                    { $retstr = $retstr . " not "; }
+                  else { $retstr = $retstr . $search[$i]; }
+                  break;                                    
+      case "(" : break;
+      case ")" : break;
+      case "*" : if ($uvozovky == 0) { $retstr = $retstr . "%"; }
+                 else { $retstr = $retstr . "*"; }
+                 break;
+      case "?" : if ($uvozovky == 0) { $retstr = $retstr . "_"; }
+                 else { $retstr = $retstr . "?"; }
+                 break;
+      default : $retstr = $retstr . $search[$i];
+    }
+  }
+  $retstr = ereg_replace("([[:blank:]]+)"," ", $retstr);
+  return $retstr;
+}
+
+function parse_query($search, $default_op="and") {
+  $terms=array();
+  $dummy=$search;
+  $strtype=1; 
+
+  do {
+    if ($dummy[0]=="\"") {
+      $strtype=0;
+      $dummy=substr($dummy, 1, strlen($dummy));
+      $dummy2=substr($dummy, 0, strpos($dummy, "\"")+1);
+      $dummy2="\"".$dummy2;
+      if (strpos($dummy, "\"")+1 == strlen($dummy)) {
+        $dummy2 = "\"". $dummy; $dummy = ""; 
+      } else {
+        $dummy=substr($dummy, strpos($dummy,  "\" ")+2, strlen($dummy));   
+      }
+      $dummy2 = ereg_replace("\"","",$dummy2);
+# tady to ma nejaky problemy, s tema zavorkama to beha neunosne pomalu
+//    } elseif ($dummy[0]=="(") {
+//      $dummy=substr($dummy, 1, strlen($dummy));
+//      $dummy2="(";
+//    } elseif ($dummy[0]==")") {
+//      $dummy=substr($dummy, 1, strlen($dummy));
+//      $dummy2=")";
+    } else {
+      $dummy2=substr($dummy, 0, strpos($dummy, " "));
+      switch ($dummy2) {
+        case "and" :
+        case "not" :
+        case "or" : $strtype=1;
+                      break;
+        default : if ($strtype != 1) { $terms[]=$default_op; } else { $strtype = 0; } 
+      }   
+      if (strpos($dummy, " ") != false) {
+        $dummy=substr($dummy, strpos($dummy, " ")+1, strlen($dummy));
+      } else { $dummy2=$dummy; $dummy=""; }      
+    }
+    $terms[]=$dummy2;
+  }
+  while (strlen($dummy)!=0);
+  return $terms;
+}
+
+# creates SQL query
+function build_sql_query($searchterms, $field) {
+  reset($searchterms);
+  $retstr = "";
+  $notcls = 0; $typecls=0;
+  while (current($searchterms)) {
+    switch (current($searchterms)) {
+      case "and" : if ($typecls==0) { $retstr = $retstr . " AND "; $typecls=1; }
+                 next($searchterms);
+                 break;
+      case "or" : if ($typecls==0) { $retstr = $retstr . " OR "; $typecls=1; }
+                    next($searchterms);
+                    break;
+      case "not" : if ($typecls==0) { 
+                    $retstr = $retstr . " AND "; $typecls=1;
+                    $notcls = 1;
+                  }
+                  next($searchterms);
+                  break;
+      case "(" : $retstr = $retstr . "(";
+                 break;
+      case ")" : $retstr = $retstr . ")";
+                 break; 
+      default : if ($notcls==1) { $retstr = $retstr . "(". $field . " NOT LIKE '%" . current($searchterms) . "%')"; }
+                else { $retstr = $retstr . "(". $field . " LIKE '%" . current($searchterms) . "%')"; }
+                $notcls = 0; $typecls=0;
+                next($searchterms); 
+    }
+  }
+  if ($typecls != 0) { $retstr=""; }
+  return  $retstr;
+}
+
 
 function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
                           $query, $relevance=false) {
   $in = "";
   $delim = "";
   $field_no = 0;
-  
-  if( !isset($srch_fld) OR !is_array($srch_fld) OR !$query )
-    return false;                          # no fields to search - no results
 
+  # prepare query
+  $search=trim(stripslashes(rawurldecode($query)));
 	$query = str_replace("\\", "\\\\", $query);
 	$query = str_replace("%", "\%", $query);
+	$query = str_replace("_", "\_", $query);
 	$query = str_replace("'", "\'", $query);
+  
+  if (test_for_closed($search) != 0) 
+   return false;
+  $search = arrange_query($search);
+  $myqueryterms = parse_query($search);
+
+  $sqlstring=build_sql_query($myqueryterms, "text"); // "concat(' ',text)"); // add space to begining for better word matching
+
+  if( trim($sqlstring) == "" )
+    $sqlstring = "1=1";
+    
+  if( !isset($srch_fld) OR !is_array($srch_fld) OR !$query )
+    return false;                          # no fields to search - no results
 
   reset($srch_fld);
   while( list( $fid, $val ) = each($srch_fld) ) {
@@ -252,7 +288,7 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
   $SQL = "SELECT $distinct id from item, content WHERE item.id=content.item_id
             AND slice_id='$p_slice_id'
             AND (field_id IN ( $in )) 
-            AND text like '%$query%'
+            AND ($sqlstring)
             AND status_code='1'
             AND expiry_date > '". time() ."'
             $cond 
@@ -293,8 +329,6 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
   return $ret;  
     
 }
-
-  
 
 
 # ----------- Massive query string function
@@ -487,8 +521,8 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
-Revision 1.6  2001/01/26 15:06:50  honzam
-Off-line filling - first version with WDDX (then we switch to APC RSS+)
+Revision 1.7  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 Revision 1.5  2001/01/22 17:32:49  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)

@@ -67,7 +67,7 @@ function StoreWDDX2DB( $packet, $slice_id, $fields ) {
       $value = $val;        # if not array - just store content 
 
     # add to content table or prepare itemvarset for addition in item table
-    insert_fnc_qte($id, $fields[$key], $value, "", true); 
+    insert_fnc_qte($id, $fields[$key], quote($value), "", true); 
   }                                                          
   
   # store prepared data to item table 
@@ -97,8 +97,8 @@ function StoreWDDX2DB( $packet, $slice_id, $fields ) {
 
 /*
 $Log$
-Revision 1.1  2001/01/26 15:06:50  honzam
-Off-line filling - first version with WDDX (then we switch to APC RSS+)
+Revision 1.2  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 */
 ?>

@@ -129,7 +129,8 @@ function Defaults() {
                L_FORMAT_HLP, "", DOCUMENTATION_URL, 1); 
   FrmTextarea("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, $fulltext_format_bottom, 4, 60, false,
                L_BOTTOM_HLP, "", DOCUMENTATION_URL, 1); 
-  FrmInputText("fulltext_remove", L_FULLTEXT_REMOVE, $fulltext_remove, 254, 50, false);
+  FrmInputText("fulltext_remove", L_FULLTEXT_REMOVE, $fulltext_remove, 254, 50, false,
+               L_REMOVE_HLP, DOCUMENTATION_URL);
 ?>
 </table></td></tr>
 <?php
@@ -144,6 +145,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.8  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
+
 Revision 1.7  2001/01/31 02:44:29  madebeer
 added help prompt at top of page
 

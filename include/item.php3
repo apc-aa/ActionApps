@@ -170,13 +170,12 @@ class item {
   #             - this page should contain SSI include ../slice.php3 too
   function f_f($col, $param="") { 
     $p = explode(":",$param);
-    if( $this->columns[ $p[0]][0][value] )       # link_only
+    if( $p[0] AND $this->columns[ $p[0]][0][value] )       # link_only
       return ($this->columns[$col][0][value] ? 
                 $this->columns[$col][0][value] :
                 NO_OUTER_LINK_URL);
-    if( $this->columns[ $p[1] ][0][value] )      # redirecting to another page 
-      return con_url( $this->columns[ $p[1] ][0][value],
-                      "sh_itm=".unpack_id($this->columns["id"][0][value]));
+    if( $p[1] )      # redirecting to another page 
+      return con_url( $p[1], "sh_itm=".unpack_id($this->columns["id"][0][value]));
      else 
       return con_url( $this->clean_url,          # show on this page
                       "sh_itm=".unpack_id($this->columns["id"][0][value]));
@@ -299,8 +298,8 @@ class item {
 
 /*
 $Log$
-Revision 1.8  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+Revision 1.9  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 Revision 1.6  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2

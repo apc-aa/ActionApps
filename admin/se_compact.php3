@@ -177,7 +177,8 @@ function EnableClick(cond,what) {
                L_FORMAT_HLP, "", DOCUMENTATION_URL, 1); 
   FrmTextarea("category_bottom", L_CATEGORY_BOTTOM, $category_bottom, 4, 50, false,
                L_BOTTOM_HLP, "", DOCUMENTATION_URL, 1); 
-  FrmInputText("compact_remove", L_COMPACT_REMOVE, $compact_remove, 254, 50, false);
+  FrmInputText("compact_remove", L_COMPACT_REMOVE, $compact_remove, 254, 50, false,
+               L_REMOVE_HLP, DOCUMENTATION_URL);
 ?>
 </table></td></tr>
 <?php
@@ -192,6 +193,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.9  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
+
 Revision 1.8  2001/01/31 02:44:29  madebeer
 added help prompt at top of page
 

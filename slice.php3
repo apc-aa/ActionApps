@@ -33,7 +33,10 @@ http://www.apc.org/
                      // (aplicable in compact viewe only) 
 #optionaly items[x]  // array of items to show one after one as fulltext 
                      // the array format is 
-
+#easy_query          // for easiest form of query
+#order               // order field id - if other than publish date
+                     // add minus sign for descending order (like "headline.......1-"); 
+//phpinfo();                     
 $encap = ( ($encap=="false") ? false : true );
 
 require "./include/config.php3";
@@ -51,7 +54,6 @@ else {require $GLOBALS[AA_INC_PATH]."locsess.php3";}
 page_open(array("sess" => "AA_SL_Session"));
 $sess->register(r_highlight); 
 $sess->register(r_category); 
-
 # there was problems with storing too much ids in session veriable, 
 # so I commented it out. It is not necessary to have it in session. The only
 # reason to have it there is the display speed, but because of impementing
@@ -138,6 +140,14 @@ if( $inc ) {                   # this section must be after $sess->add_vars()
   }  
 }  
 
+# order the fields in compact view - how?
+if( $order ) {
+  if( substr($order,-1) == '-' ) {
+    $orderdirection = "DESC";
+    $order = substr($order,0,-1);
+  }
+}    
+
 $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 		 // open BD	
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
@@ -197,8 +207,24 @@ else {               //compact view -------------------------------------------
   }
   if( $listlen )    // change number of listed items
     $scr->metapage = $listlen;
-  
-  if($srch) {
+ 
+  if($query) {
+    $r_category_id = "";
+    $r_highlight = "";
+    $item_ids = ExtSearch ($query, $p_slice_id, 0);
+    if( isset($item_ids) AND !is_array($item_ids))
+      echo "<div>$item_ids</div>";
+    $scr->current = 1;
+  }
+  elseif($easy_query) {
+# $debugtimes[]=microtime();
+    $item_ids = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, 
+                                 $srch_from, $srch_to, $easy_query, $srch_relev);
+    if( isset($item_ids) AND !is_array($item_ids))
+      echo "<div>$item_ids</div>";
+    $scr->current = 1;
+  }
+  elseif($srch) {
     $r_category_id = "";
     $r_highlight = "";
     if( !$big )      // posted by bigsrch form -------------------
@@ -238,11 +264,10 @@ else {               //compact view -------------------------------------------
 # $debugtimes[]=microtime();
 
     $item_ids = GetItemAppIds($fields, $db, $p_slice_id, $conditions, 
-                   "DESC", $slice_info[category_sort] ? "category........" : "", "" );
+                   "DESC", ($slice_info[category_sort] ? "category........" : $order), $orderdirection );
 
 # $debugtimes[]=microtime();
   }    
-
   if(!$encap) 
     echo '<a href="'. $sess->MyUrl($slice_id, $encap). '&bigsrch=1">Search form</a><br>';
   if( !$srch AND !$encap )
@@ -266,7 +291,7 @@ else {               //compact view -------------------------------------------
 # $debugtimes[]=microtime();
 
     $scr->countPages( count( $item_ids ) );
-  	if($scr->pageCount() > 1)
+  	if( ($scr->pageCount() > 1) AND !$easy_query AND !$query)  # $easy_query and $query conditions shoul be removed
       $scr->pnavbar();
   }  
   else 
@@ -285,8 +310,8 @@ page_close();
 #    p_arr_m( $debugtimes);
 /*
 $Log$
-Revision 1.12  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+Revision 1.13  2001/02/20 13:25:15  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 Revision 1.10  2000/12/23 19:56:02  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2

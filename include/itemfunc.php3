@@ -65,9 +65,15 @@ function insert_fnc_qte($item_id, $field, $value, $param, $insert=true) {
     $SQL =  "INSERT INTO content" . $varset->makeINSERT();
     $db->query( $SQL );
   } else {
-    $db->query("UPDATE content SET ". $varset->makeUPDATE() . " 
-                 WHERE item_id='". q_pack_id($item_id). "' 
-                   AND field_id='". $field[id] . "'");
+    $where = " item_id='". q_pack_id($item_id). "'
+                   AND field_id='". $field[id] . "'";
+       # if updating database with changed structure (new field added),
+       # the UPDATE is not enough - we must INSERT
+    $db->query("SELECT item_id FROM content WHERE $where");
+    if( $db->next_record() )
+      $db->query("UPDATE content SET ". $varset->makeUPDATE() ." WHERE $where");
+     else 
+      $db->query("INSERT INTO content" . $varset->makeINSERT());
   }           
 }
 
@@ -166,7 +172,10 @@ function show_fnc_fil($varname, $field, $content, $value, $param, $edit) {
 
 function show_fnc_dte($varname, $field, $content, $value, $param, $edit) {
   echo $field[input_before];
-  $arr = explode("'",$param);
+  if( strstr($param, "'"))
+    explode("'",$param);  // old format
+   else 
+    explode(":",$param);  // new format
   $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2]);
   $datectrl->setdate_int($edit ? $content[0] : $value);
   FrmStaticText($field[name], $datectrl->getselect(), $field[required], 
@@ -178,8 +187,8 @@ function show_fnc_nul($varname, $field, $content, $value, $param, $edit) {
 
 /*
 $Log$
-Revision 1.3  2001/01/26 15:06:50  honzam
-Off-line filling - first version with WDDX (then we switch to APC RSS+)
+Revision 1.4  2001/02/20 13:25:16  honzam
+Better search functions, bugfix on show on alias, constant definitions ...
 
 Revision 1.1  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
