@@ -410,7 +410,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $format = GetDiscussionFormat($view_info);
       $format['id'] = $p_slice_id;                  // set slice_id because of caching
 
-      $durl = shtml_url();
+      // special url parameter disc_url - tell us, where we have to show
+      // discussion fulltext (good for discussion search)
+      $durl = ( $view_param["disc_url"] ? $view_param["disc_url"] : shtml_url());
        # add state variable, if defined (apc - AA Pointer Cache)
       if( $GLOBALS['apc_state'] )
         $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
