@@ -188,54 +188,6 @@ if( $add || $update ) {
         }
       }  
 
-        # create categories
-
-        # find name for category group_id
-      $SQL = "SELECT input_show_func FROM field 
-               WHERE slice_id='". q_pack_id($set_template_id) ."' 
-                 AND input_show_func LIKE '%SliceCateg-%'";
-      $db->query($SQL);
-      $max=0;
-      while( $db->next_record() ) {
-        $foo = $db->f(input_show_func);    
-          # get 15 from sel:SliceCateg-00015 
-        $num = (int) substr($foo, strpos($foo, ":") + 12, 5);
-        $max = max($max,$num);
-      }  
-      
-      $max++;
-      $new_group_name = "SliceCateg-". substr("00000$max", -5);
-
-        
-        # create new constant group and assign
-      $SQL = "UPDATE field SET input_show_func='sel:$new_group_name'
-               WHERE slice_id='". q_pack_id($slice_id) ."' 
-                 AND id LIKE 'category%'";
-      $db->query($SQL);
-
-      # insert three default categories
-      $varset->clear();
-      $varset->set("id", new_id(), "unpacked");
-      $varset->set("group_id", $new_group_name, "quoted");
-      $varset->set("value",L_SOME_CATEGORY,"quoted");
-      $varset->set("name",L_SOME_CATEGORY,"quoted");
-      $varset->set("class",'AA-predefined054',"quoted");
-      $varset->set("pri","1000","number");
-      $db->query("INSERT INTO constant ".$varset->makeINSERT());
-      $varset->set("id", new_id(), "unpacked");
-      $db->query("INSERT INTO constant ".$varset->makeINSERT());
-      $varset->set("id", new_id(), "unpacked");
-      $db->query("INSERT INTO constant ".$varset->makeINSERT());
-
-      # insert constant group name
-      $varset->set("id", new_id(), "unpacked");
-      $varset->set("group_id","lt_groupName","quoted");
-      $varset->set("value",$new_group_name,"quoted");
-      $varset->set("name",L_SOME_CATEGORY,"quoted");
-      $varset->set("class",quote(substr($name,0,50)),"quoted");
-      $varset->set("pri","1000","number");
-      $db->query("INSERT INTO constant ".$varset->makeINSERT());
-        
       $r_config_file[$slice_id] = $lang_file;
       $sess->register(slice_id);
 
