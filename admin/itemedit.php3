@@ -286,6 +286,9 @@ echo $Msg;
 
 /*
 $Log$
+Revision 1.6  2000/07/17 15:50:08  kzajicek
+Do not print empty info for new articles
+
 Revision 1.5  2000/07/13 14:12:58  kzajicek
 SQL keywords to uppercase
 
@@ -431,7 +434,7 @@ also added Id and Log keywords to all .php3 and .inc files
 <tr>
   <td colspan=2>
   <?php 
-  if(DEBUG_FLAG) {
+  if(DEBUG_FLAG && $id) {       //  do not print empty info for new articles
     echo '<I>';
     echo L_POSTDATE.": ".(datetime2date(dequote($post_date)));
     $userinfo = GetUser($created_by);
