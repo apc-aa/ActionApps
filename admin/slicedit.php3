@@ -106,9 +106,6 @@ if( $add || $update ) {
     
     if( $update )
     {
-//      $varset->add("id", "unpacked", $slice_id);  //  not need
-      $varset->add("created_by", "quoted", $created_by);
-      $varset->add("created_at", "quoted", $created_at);
       $varset->add("res_persID", "unpacked", $res_persID);
 
       $SQL = "UPDATE slices SET ". $varset->makeUPDATE() . "WHERE id='$p_slice_id'";
@@ -289,6 +286,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.4  2000/07/13 09:19:01  kzajicek
+Variables $created_by and $created_at are initialized later, so
+the actual effect was that Updates zeroized the database values! In fact
+the database fields created_by and created_at should remain constant.
+Do we need changed_by and changed_at?
+
 Revision 1.3  2000/07/07 21:37:45  honzam
 Slice ID is displayed
 
