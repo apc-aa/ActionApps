@@ -274,13 +274,14 @@ function IfSlPerm($perm, $slice=null) {
 
 // Checks if logged user is superadmin
 function IsSuperadmin() {
-  global $auth, $r_superuser, $permission_uid;
+    global $auth, $r_superuser, $permission_uid;
     trace("+","isSuperadmin");
     # check all superadmin's global permissions
-  if($permission_uid != $auth->auth["uid"])
-    CachePermissions($auth->auth["uid"]);
-  trace("-","isSuperadmin");
-  return $r_superuser[AA_ID];
+    if ($permission_uid != $auth->auth["uid"]) {
+        CachePermissions($auth->auth["uid"]);
+    }
+    trace("-","isSuperadmin");
+    return $r_superuser[AA_ID];
 }
 
 /** Check if authenticed user has specified permissions to category
@@ -292,39 +293,44 @@ function IsSuperadmin() {
 * @return bool true if the user has specific $perm for $category
 */
 function IsCatPerm($perm, $cat_path) {
-    global $permission_uid, $permission_to;
-    global $auth;
+    global $permission_uid, $permission_to, $auth;
 
-//    if (IsPerm( PS_LINKS_COMMON_PERMS, $perm )) // check perms granted to anybody
-//        return true;
+    //    if (IsPerm( PS_LINKS_COMMON_PERMS, $perm )) // check perms granted to anybody
+    //        return true;
+    if ( !$cat_path OR !$perm ) {
+        return false;
+    }
 
-    if($permission_uid != $auth->auth["uid"])
+    if ($permission_uid != $auth->auth["uid"]) {
         CachePermissions($auth->auth["uid"]);
+    }
 
     // check for current category permissions
-    $parents = explode(",",$cat_path);
-    $myIndex = count($parents)-1;  // index of this category
+    $parents  = explode(",",$cat_path);
+    $myIndex  = count($parents)-1;  // index of this category
 
     $perm2cat = $permission_to["slice"][Links_Category2SliceID($parents[$myIndex])];
     $perm2aa  = $permission_to["aa"][AA_ID];
 
-    if( $perm2cat )               // specific perms are set
+    if ( $perm2cat ) {              // specific perms are set
         return IsPerm(JoinAA_SlicePerm($perm2cat,$perm2aa), $perm);
+    }
 
     // check for inherited permissions
 
     // go from leaves to root and check, if some permisions are defined
     // if defined on some level - stop and check
-    for( $i=$myIndex-1; $i>=0; $i--) {
+    for ( $i=$myIndex-1; $i>=0; $i--) {
         $perm2cat = $permission_to["slice"][Links_Category2SliceID($parents[$i])];
 
-        if( $perm2cat ) {      // specific perms are set
-            if( strrchr($perm2cat, PS_LINKS_INHERIT) )  // inherited
+        if ( $perm2cat ) {      // specific perms are set
+            if ( strrchr($perm2cat, PS_LINKS_INHERIT) ) { // inherited
                 return IsPerm(JoinAA_SlicePerm($perm2cat,$perm2aa),$perm);
+            }
             break; // first upper category with permissions found - stop travelling
         }
     }
-    return IsPerm( $perm2aa, $perm);
+    return IsPerm($perm2aa, $perm);
 }
 
 /** Change category permission as in template category
