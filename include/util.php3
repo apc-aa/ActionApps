@@ -533,10 +533,11 @@ function UnpackFieldsToArray($packed, $fields) {
 }
 
 # function fills the array from constants table
-function GetConstants($group, $db, $order='pri', $column='name') {
+function GetConstants($group, $order='pri', $column='name') {
   if( $order )
     $order_by = "ORDER BY $order";
-  $db->query("SELECT name, value FROM constant
+  $db = getDB();
+  $db->query("SELECT name, value FROM constant 
                WHERE group_id='$group' $order_by");
   while($db->next_record()) {
     $key = $db->f('value');
@@ -546,7 +547,8 @@ function GetConstants($group, $db, $order='pri', $column='name') {
     }
     $already_key[$key] = true;       // mark the $key
     $arr[$key] = $db->f($column);
-  }
+  }  
+  freeDB($db);
   return $arr;
 }
 
@@ -791,21 +793,24 @@ function GetItemContentMinimal($zids) {
 
 // -------------------------------------------------------------------------------
 
-function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
-  # get id of headline field
-  $SQL = "SELECT id FROM field
+function GetHeadlineFieldID($sid, $slice_field="headline.") {
+  # get id of headline field  
+  $SQL = "SELECT id FROM field 
            WHERE slice_id = '". q_pack_id( $sid ) ."'
              AND id LIKE '$slice_field%'
         ORDER BY id";
+  $db = getDB();
   $db->query( $SQL );
-  return ( $db->next_record() ? $db->f(id) : false );
+  $res = ( $db->next_record() ? $db->f(id) : false );
+  freeDB($db); 
+  return $res;
 }
 
 // -------------------------------------------------------------------------------
 
 # fills array by headlines of items in specified slice (unpacked_id => headline)
 # $tagprefix is array as defined in itemfunc.php3
-function GetItemHeadlines( $db, $sid="", $slice_field="headline........",
+function GetItemHeadlines($sid="", $slice_field="headline........", 
     $zids="", $type="all", $tagprefix=null, $timecond="normal") {
     global $debug;
   $psid = q_pack_id( $sid );
@@ -813,7 +818,7 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........",
   if ($slice_field=="") $slice_field="headline.";
 
   if ( $sid ) {
-    if ( !($headline_fld = GetHeadlineFieldID($sid, $db,$slice_field)) )
+    if ( !($headline_fld = GetHeadlineFieldID($sid, $slice_field)) )
       return false;
   } else {
     $headline_fld = 'headline........';
@@ -845,7 +850,7 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........",
         GROUP BY text
         ORDER BY text";
 
-  $db->tquery($SQL);
+  $db = getDB(); $db->tquery($SQL);
 
   # See if need to Put the tags back on the ids
   if (isset($zids) && is_object($zids) && ($zids->onetype() == 't') && isset($tagprefix)) {
@@ -861,6 +866,7 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........",
         = ((isset($tags) ? ($t2p[$tags[$i]]) : "")
             . substr($db->f(text), 0, 50));  #truncate long headlines
   }
+  freeDB($db);
   if ($debug)  huhl("GetItemHeadlines found ",$arr);
   return $arr;
 }

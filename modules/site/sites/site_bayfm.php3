@@ -96,7 +96,7 @@ function myfillform($txt) {
 $GLOBALS[eb_functions][myfillform] = "myfillform";
 
 if ($GLOBALS[REMOTE_ADDR] == "203.43.239.48") {
-#    print("HI MITRA");
+    print("HI MITRA");
     $errcheck = 1;
 #    $debugcache = 1;
     #$debugupload = 1;
@@ -106,5 +106,3 @@ if ($GLOBALS[REMOTE_ADDR] == "203.43.239.48") {
 }
 
 ?>
-
-

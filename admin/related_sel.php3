@@ -200,10 +200,10 @@ if( isset($zids) && ($zids->count() > 0) ) {
                                    "param" => "short_id........",
                                    "hlp" => "");
     $aliases["_#HEADLINE"] = array("fce" => "f_e:safe",
-                                   "param" => GetHeadlineFieldID($r_sid, $db),
+                                   "param" => GetHeadlineFieldID($r_sid),
                                    "hlp" => "");
     $aliases["_#JS_HEAD_"] = array("fce" => "f_e:javascript",
-                                   "param" => GetHeadlineFieldID($r_sid, $db),
+                                   "param" => GetHeadlineFieldID($r_sid),
                                    "hlp" => "");
   }                                 
 

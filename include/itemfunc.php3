@@ -56,7 +56,7 @@ function default_fnc_txt($param) {
 }
 
 function default_fnc_rnd($param) {
-    global $slice_id, $db;
+    global $slice_id;
 
     $params = explode (":", $param);
     list ($len, $field_id) = $params;
@@ -65,6 +65,7 @@ function default_fnc_rnd($param) {
         $slice_only = true;
     else $slice_only = $params[2];
 
+    $db = getDB();
     do {
         srand((double) microtime() * 1000000);
         $salt_chars = "abcdefghijklmnoprstuvwxABCDEFGHIJKLMNOPQRSTUVWX0123456789";
@@ -82,7 +83,8 @@ function default_fnc_rnd($param) {
                     ."' AND text='$salt'";
         $db->query ($SQL);
     } while ($db->next_record());
-
+    freeDB($db);
+        
     return $salt;
 }
 
@@ -105,7 +107,7 @@ function default_fnc_variable($param) {
 
 // What are the parameters to this function - $field must be an array with values [input_show_func] etc
 function insert_fnc_qte($item_id, $field, $value, $param) {
-    global $varset, $itemvarset, $db, $slice_id ;
+    global $varset, $itemvarset, $slice_id ;
 
     // if input function is 'selectbox with presets' and add2connstant flag is set,
     // store filled value to constants
@@ -116,7 +118,7 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
              $secondfield, $add2constant) = explode(':', $fnc['param']);
         // add2constant is used in insert_fnc_qte - adds new value to constant table
         if( $add2constant AND $constgroup AND (substr($constgroup,0,7) != "#sLiCe-") ) {
-
+            $db = getDB();
             // does this constant already exist?
             $constgroup=quote($constgroup);
             $SQL = "SELECT * FROM constant
@@ -142,6 +144,7 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
                 $varset->set("group_id", $constgroup, "quoted" );
                 $db->query("INSERT INTO constant " . $varset->makeINSERT() );
             }
+            freeDB($db);
         }
     }
 
@@ -174,7 +177,9 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
     $varset->add("item_id", "unpacked", $item_id);
     $varset->add("field_id", "quoted", $field["id"]);
     $SQL =  "INSERT INTO content" . $varset->makeINSERT();
+    $db = getDB();
     $db->query( $SQL );
+    freeDB($db);
 }
 
 function insert_fnc_dte($item_id, $field, $value, $param) {
@@ -195,7 +200,7 @@ function insert_fnc_boo($item_id, $field, $value, $param) {
 }
 
 function insert_fnc_ids($item_id, $field, $value, $param) {
-  global $varset, $itemvarset, $db;
+  global $varset, $itemvarset;
 
 //echo "<script> alert( 'insert_fnc_ids($item_id, $field, $value, $param), ". $value['value'] ." ".substr($value['value'],0,1)."');</script>";
 #flush();
@@ -219,9 +224,11 @@ function insert_fnc_ids($item_id, $field, $value, $param) {
                WHERE item_id = '". q_pack_id($reverse_id) ."'
                  AND field_id = '". $field["id"] ."'
                  AND ". ($field["text_stored"] ? "text" : "number") ."= '". $value['value'] ."'";
+      $db = getDB();
       $db->query( $SQL );
       if( !$db->next_record() )  # not found
         insert_fnc_qte($reverse_id, $field, $value, $param);
+      freeDB($db);
       return;
     default:
       insert_fnc_qte($item_id, $field, $value, $param);
@@ -271,9 +278,10 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
 {
     global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR, $debugupload;
 #$debugupload=1;
-if ($debugupload) huhl("field=",$field,"value=",$value,"param=",$param,"Globals=",$GLOBALS);
-  $filevarname = "v".unpack_id($field["id"])."x";
-  if ($debugupload) huhl("filevarname=",$filevarname);
+    if ($debugupload) huhl("insert_fnc_fil:field=",$field,"value=",$value,"param=",$param);
+    if ($debugupload >= 5) huhl("Globals=",$GLOBALS);
+    $filevarname = "v".unpack_id($field["id"])."x";
+    if ($debugupload) huhl("filevarname=",$filevarname);
 #    if ($debugupload) huhl("fields=",$fields);
 
   // look if the uploaded picture existsnn
@@ -297,8 +305,8 @@ if ($debugupload) huhl("field=",$field,"value=",$value,"param=",$param,"Globals=
 
     // new behavior, added by Jakub on 2.8.2002 -- related to File Manager
     // fill $dirname with the destination directory for storing uploaded files
-    $db = new DB_AA;
-    $db->query("SELECT fileman_dir FROM slice WHERE id='".q_pack_id($GLOBALS["slice_id"])."'");
+    $db = getDB();
+    $db->tquery("SELECT fileman_dir FROM slice WHERE id='".q_pack_id($GLOBALS["slice_id"])."'");
 
     if ($db->num_rows() == 1) {
         $db->next_record();
@@ -311,6 +319,7 @@ if ($debugupload) huhl("field=",$field,"value=",$value,"param=",$param,"Globals=
             $fileman_used = true;
         }
     }
+    freeDB($db);
     // end of new behavior
     if (!$dirname) {
         // images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
@@ -373,11 +382,12 @@ if ($debugupload) huhl("field=",$field,"value=",$value,"param=",$param,"Globals=
             // delete content just for displayed fields
             $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($item_id). "'
                             AND field_id = '".$f[id]."'";
-            $db = getDB(); $db->query($SQL); freeDB($db);
+            if ($debugupload) huhl("insert_fnc_fil:$SQL");
+            $db = getDB(); $db->tquery($SQL); freeDB($db);
 
                 // store link to thumbnail
                 $val["value"] = "$dirurl/$dest_file_tmb";
-                if($debugupload) huhl("Setting field ", $f[id], " to ", $val[value]);
+                if($debugupload) huhl("insert_fnc_fil:Setting thumbnail field ", $f[id], " to ", $val[value]);
                 insert_fnc_qte( $item_id, $f, $val, "");
             }
     } // params[3]
@@ -385,10 +395,11 @@ if ($debugupload) huhl("field=",$field,"value=",$value,"param=",$param,"Globals=
     $value["value"] = "$dirurl/$dest_file";
   } // File uploaded
   // store link to uploaded file or specified file URL if nothing was uploaded
-  if($debugupload) huhl("Setting field ", $field[id], " to ", $value[value]);
+  if($debugupload) huhl("insert_fnc_fil:Setting field ", $field[id], " to ", $value[value]);
   insert_fnc_qte( $item_id, $field, $value, "");
 
   // return array with fields that were filled with thumbnails  (why?)
+  if ($debugupload) huhl("insert_fnc_fil: returning thumb_arr=",$thumb_arr);
   return $thumb_arr;
 } // end of insert_fnc_fil
 
@@ -488,16 +499,15 @@ function show_fnc_freeze_fld($varname, $field, $value, $param, $html) {
 }
 
 function show_fnc_rio($varname, $field, $value, $param, $html) {
-  global $db;
 
   if (!empty($param))
     list($constgroup, $ncols, $move_right) = explode(':', $param);
 
   if( substr($constgroup,0,7) == "#sLiCe-" )  # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($constgroup, 7), "" );
-   else
-    $arr = GetConstants($constgroup, $db);
-
+    $arr = GetItemHeadlines( substr($constgroup, 7), "" );
+   else 
+    $arr = GetConstants($constgroup);
+  
   echo $field["input_before"];
   FrmInputRadio($varname, $field['name'], $arr, $value[0]['value'],
                 $field["required"], $field["input_help"], $field["input_morehlp"],
@@ -510,15 +520,14 @@ function show_fnc_freeze_rio($varname, $field, $value, $param, $html) {
 }
 
 function show_fnc_mch($varname, $field, $value, $param, $html) {
-  global $db;
 
   if (!empty($param))
     list($constgroup, $ncols, $move_right) = explode(':', $param);
 
   if( substr($constgroup,0,7) == "#sLiCe-" )  # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($constgroup, 7), "" );
-   else
-    $arr = GetConstants($constgroup, $db);
+    $arr = GetItemHeadlines( substr($constgroup, 7), "" );
+   else 
+    $arr = GetConstants($constgroup);
 
   # fill selected array from value
   if( isset($value) AND is_array($value) ) {
@@ -546,7 +555,6 @@ function show_fnc_freeze_mch($varname, $field, $value, $param, $html) {
 }
 
 function show_fnc_mse($varname, $field, $value, $param, $html) {
-  global $db;
 
   if (!empty($param))
     list($constgroup, $selectsize) = explode(':', $param);
@@ -555,12 +563,12 @@ function show_fnc_mse($varname, $field, $value, $param, $html) {
     $selectsize = 5;
 
   if( substr($param,0,7) == "#sLiCe-" ) {  # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($constgroup, 7), "" );
+    $arr = GetItemHeadlines( substr($constgroup, 7), "" );
     #add blank selection for not required field
     if( !$field["required"] )
       $arr[''] = " ";
-   } else
-    $arr = GetConstants($constgroup, $db);
+   } else 
+    $arr = GetConstants($constgroup);
 
   # fill selected array from value
   if( isset($value) AND is_array($value) ) {
@@ -582,16 +590,15 @@ function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
 }
 
 function show_fnc_sel($varname, $field, $value, $param, $html) {
-  global $db;
    list($constgroup,$slice_field, $usevalue, $allitems) =explode(':', $param);
   if( substr($param,0,7) == "#sLiCe-" ) { # prefix indicates select from items
-    $arr = GetItemHeadlines( $db,substr($constgroup, 7),$slice_field,'','all',
+    $arr = GetItemHeadlines( substr($constgroup, 7),$slice_field,'','all',
                              null, ($allitems==1) ? 'all':'normal' );
     #add blank selection for not required field
     if( !$field["required"] )
       $arr[''] = " ";
   } else
-    $arr = GetConstants($constgroup, $db);
+    $arr = GetConstants($constgroup);
   echo $field["input_before"];
   FrmInputSelect($varname, $field['name'], $arr, $value[0]['value'],
                  $field["required"], $field["input_help"], $field["input_morehlp"], $usevalue );
@@ -640,7 +647,6 @@ function show_fnc_freeze_dte($varname, $field, $value, $param, $html) {
 }
 
 function show_fnc_pre($varname, $field, $value, $param, $html) {
-  global $db;
 
   if (!empty($param))
     list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding,
@@ -648,9 +654,9 @@ function show_fnc_pre($varname, $field, $value, $param, $html) {
     # add2constant is used in insert_fnc_qte - adds new value to constant table
 
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
+    $arr = GetItemHeadlines( substr($constgroup, 7),$slice_field);
    else
-    $arr = GetConstants($constgroup, $db);
+    $arr = GetConstants($constgroup);
   echo $field["input_before"];
   FrmInputPreSelect($varname, $field['name'], $arr, $value[0]['value'], $maxlength,
     $fieldsize, $field["required"], $field["input_help"], $field["input_morehlp"], $adding,
@@ -663,7 +669,6 @@ function show_fnc_freeze_pre($varname, $field, $value, $param, $html) {
 }
 
 function show_fnc_tpr($varname, $field, $value, $param, $html) {
-  global $db;
 
   if (!empty($param))
     list($constgroup, $rows, $cols) = explode(':', $param);
@@ -671,9 +676,9 @@ function show_fnc_tpr($varname, $field, $value, $param, $html) {
   $cols = ($cols ? $cols : 60);
 
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($constgroup, 7), "" );
+    $arr = GetItemHeadlines( substr($constgroup, 7), "" );
    else
-    $arr = GetConstants($constgroup, $db);
+    $arr = GetConstants($constgroup);
   echo $field["input_before"];
   FrmTextareaPreSelect($varname, $field['name'], $arr, $value[0]['value'],
     $field["required"], $field["input_help"], $field["input_morehlp"], $rows, $cols);
@@ -704,7 +709,7 @@ $tps = array (
     R => array ( prefix => 'Bad :', tag => 'z', str => _m("Bad") ) ) );
 
 function show_fnc_iso($varname, $field, $value, $param, $html) {
-  global $db, $debug, $tps;
+  global $debug, $tps;
 
   # if ($debug) huhl("show_fnc_iso:parm=",$param,"html=",$html);
   if (!empty($param))
@@ -729,7 +734,7 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
     return;                              # wrong - there must be slice selected
 
 
-  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids",$tagprefix);
+  $items = GetItemHeadlines($sid, "headline.", $value, "ids",$tagprefix);
   FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid, $mode,
           $design, $field["required"], $field["input_help"], $field["input_morehlp"]);
 }
@@ -740,12 +745,11 @@ function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
     $sid = substr($constgroup, 7);
    else
     return;                              # wrong - there must be slice selected
-  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids");
+  $items = GetItemHeadlines($sid, "headline.", $value, "ids");
   FrmStaticText($field['name'], implode ("<br>", $items));
 }
 
 function show_fnc_hco($varname, $field, $value, $param, $html) {
-  global $db;
   if (!empty($param))
     list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, $levelNames) = explode(':', $param);
 
@@ -754,7 +758,6 @@ function show_fnc_hco($varname, $field, $value, $param, $html) {
 }
 
 function show_fnc_wi2($varname, $field, $value, $param, $html) {
-  global $db;
 
   if (!empty($param))
     list($constgroup, $size, $wi2_offer, $wi2_selected) = explode(':', $param);
@@ -765,12 +768,12 @@ function show_fnc_wi2($varname, $field, $value, $param, $html) {
   }
 
   if( substr($param,0,7) == "#sLiCe-" ) {  # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
+    $arr = GetItemHeadlines( substr($constgroup, 7) );
      #add blank selection for not required field
      #    if( !$field["required"] )
      #      $arr[''] = " ";
    } else {
-    $arr = GetConstants($constgroup, $db); }
+    $arr = GetConstants($constgroup); }
 
   # fill selected array from value
   if( isset($value) AND is_array($value) ) {
@@ -944,11 +947,10 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
 function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true, $oldcontent4id="" )
 {
-    global $db, $varset, $itemvarset;
-    $debugsi=$GLOBALS[debugsi];
-
-    if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id, fields=",$fields);
-    if (!is_object ($db)) $db = new DB_AA;
+    global $varset, $itemvarset;
+    $debugsi=$GLOBALS[debugsi]; 
+#$GLOBALS[debug] = 1;
+    if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id, fields size=",count($fields)); 
     if (!is_object ($varset)) $varset = new CVarset();
     if (!is_object ($itemvarset)) $itemvarset = new CVarset();
     
@@ -956,9 +958,10 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         if ($GLOBALS[errcheck]) huhl("Warning: StoreItem failed parameter check");
         return false;
     }
-    
+
     // remove old content first (just in content table - item is updated)
     if( !$insert ) {
+        if ($debugsi) huhl("StoreItem: overwriting");
         if (!$oldcontent4id) {
             $oldcontent4id = GetItemContent ($id);
             $oldcontent4id = $oldcontent4id[$id];
@@ -974,17 +977,24 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                 $delim = ",";
             }
         }
+        if ($debugsi) huhl("StoreItem: in = $in");
         if ( $in ) {
             // delete content just for displayed fields
             $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($id). "'
                             AND field_id IN ($in)";
+            $db = getDB();
+            if ($debugsi) huhl("StoreItem:$SQL");
             $db->tquery($SQL);
+            freeDB($db);
             // note extra images deleted in insert_fnc_fil if needed
         }
     }
-    else if (!Event_ItemBeforeInsert ($id, $slice_id, new ItemContent ($content4id)))
+    else if (!Event_ItemBeforeInsert ($id, $slice_id, new ItemContent ($content4id))) {
+        if ($debugsi) huhl("StoreItem: failed Event_ItemBeforeInsert");
         return false;
+    }
 
+    if ($debugsi >=6) huhl("StoreItem:Adding",$content4id);
     reset($content4id);
     while(list($fid,$cont) = each($content4id)) {
         if ($debugsi >= 5) huhl("StoreItem:fid=",$fid);
@@ -999,13 +1009,18 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
             // update content table or fill $itemvarset
             if( !is_array($cont))
                 continue;
+            if ($debugsi >= 5 && (count($cont) > 1))
+                huhl("StoreItem:count values=".count($cont));
             // serve multiple values for one field
             reset($cont);
             while(list(,$v) = each($cont)) {
+huhl("SI:XYZZY:1017");
                 // file upload needs the $fields array, because it stores
                 // some other fields as thumbnails
                 if ($fnc["fnc"]=="fil")
                 {
+                    if ($debugsi >= 5) huhl("StoreItem: fil");
+                    if ($debugsi >= 5) $GLOBALS[debug] = 1; $GLOBALS[debugupload] = 1;
                     //Note $thumbnails is undefined the first time in this loop
                     //print_r($arr_stop);
                     if (is_array($thumbnails)){
@@ -1014,12 +1029,15 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                             if ($v_stop==$fid) $stop=true;
                     };
 
-                    if (!$stop)
+                    if (!$stop) {
+                        if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fncpar["param"],")");
                         $thumbnails = $fncname($id, $f, $v, $fncpar["param"], $fields);
+                    }
                 }
-                else
+                else {
                     if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fncpar["param"],")");
                     $fncname($id, $f, $v, $fncpar["param"]);
+                }
                 // do not store multiple values if field is not marked as multiple
                 // ERRORNOUS
                 //if( !$f["multiple"]!=1 )
@@ -1054,8 +1072,10 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         $itemvarset->add("display_count", "quoted", "0");
 
         $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
-    }
+    }  
+    $db = getDB();
     $db->tquery($SQL);
+    freeDB($db);
     if( $invalidatecache ) {
         $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     }
@@ -1301,9 +1321,8 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
     $notshown="")
 {
     global $show_func_used, $js_proove_fields, $fields, $prifields, $oldcontent4id;
-
-    global $db, $varset, $itemvarset;
-    if (!is_object ($db)) $db = new DB_AA;
+    
+    global $varset, $itemvarset;
     if (!is_object ($varset)) $varset = new Cvarset();
     if (!is_object ($itemvarset)) $itemvarset = new Cvarset();
 

@@ -260,7 +260,7 @@ while ($db->next_record()) {
 }
 
 # lookup - link types
-$link_types = GetConstants(LINK_TYPE_CONSTANTS, $db);
+$link_types = GetConstants(LINK_TYPE_CONSTANTS);
 
 # fill assignments fields -----------------------------------------------------
 

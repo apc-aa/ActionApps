@@ -280,7 +280,7 @@ $lookup_op = array( "<"  => "<",
                     "m:>" => "> now() - x [in seconds]");
 
 # lookup group of constatnts
-$lookup_groups = GetConstants('lt_groupNames', $db, 'name');
+$lookup_groups = GetConstants('lt_groupNames', 'name');
 
 # lookup slice fields
 $db->query("SELECT id, name FROM field

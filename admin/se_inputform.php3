@@ -140,7 +140,7 @@ if( $update ) {
 
   # lookup constants
 $constants[] = "";   # add blank constant as the first option
-$constants += GetConstants('lt_groupNames', $db, 'name');
+$constants += GetConstants('lt_groupNames', 'name');
 
 $constants[] = "";
 $constants[] = "*** SLICES: ***";

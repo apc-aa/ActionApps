@@ -29,6 +29,7 @@ require_once $GLOBALS["AA_INC_PATH"] . "itemfunc.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "notify.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "sliceobj.php3";
 require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 FetchSliceReadingPassword();

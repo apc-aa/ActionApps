@@ -1,3 +1,5 @@
+04/14/03 - fixed bug in StoreItem for image fields (duplicated)
+(mitra)  - removed some global $db, involved changing args to some fnctns
 04/13/03 - fixed import to allow for just slice data,
          - allow import to force import to current slice
          - workaround for empty spotid in site module (not a bug fix!)
