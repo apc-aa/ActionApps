@@ -126,8 +126,9 @@ function GetAliasesFromUrl() {
   global $aliases, $als;
   if( isset( $als ) AND is_array( $als ) ) {
     reset( $als );
-    while( list($k,$v) = each( $als ) )
+    while( list($k,$v) = each( $als ) ) {
       $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+    }
   }
 }  
 
@@ -229,12 +230,24 @@ switch( $view_info['type'] ) {
     } else 
       echo "<div>". L_NO_ITEM ."</div>";
     exit;
-  case 'static': echo $view_info["odd"];
-                 exit;
+  case 'static': 
+    // $aliases;
+    // let us see if this work!
+    GetAliasesFromUrl();
+    //echo ($aliases);       // debugging
+    $format = GetViewFormat($view_info);
+    // I create a CurItem object so I can use the unalias function 
+    $CurItem = new item("", "", $aliases, "", "", "");
+    echo $CurItem->unalias( $view_info["odd"] );
+    exit;
 }                 
 
 /*
 $Log$
+Revision 1.9  2001/09/14 19:02:45  madebeer
+view static - now allows aliases from URL
+checkin of sql statements to use RSS
+
 Revision 1.8  2001/09/12 06:19:01  madebeer
 Added ability to generate RSS views.
 Added f_q to item.php3, to grab 'blurbs' from another slice using aliases

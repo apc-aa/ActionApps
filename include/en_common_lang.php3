@@ -147,6 +147,8 @@ define("DEFAULT_CODEPAGE","iso-8859-1");
             
 # ------------------- New constants (not in other lang files ------------------
 
+				     define("L_ALIAS_FUNC_Q", "f_q - text (blurb) from another slice");
+
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
 // break year for short year description is 1950
 function userdate2sec ($dttm, $time="") {
@@ -166,6 +168,10 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.20  2001/09/14 19:02:45  madebeer
+view static - now allows aliases from URL
+checkin of sql statements to use RSS
+
 Revision 1.19  2001/06/05 08:58:02  honzam
 default codepage for slice not hard-coded now - moved to *_common_lang
 
