@@ -55,7 +55,7 @@ H1 {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	font-weight : bold;
-  background: #FFCC66;
+  background: #FFFFFF;
 	color: #FFFFFF;
   text-decoration: none;
 }
@@ -208,7 +208,7 @@ H1 {
 
 
 .copymsg {
-       background: #000000;
+       background: #213F21;
        font-family: Verdana, Arial, Helvetica, sans-serif;
        font-size: 8pt;
        color: #999999;
