@@ -407,7 +407,8 @@ class item {
       reset( $this->columns[$col] );
       while( list( ,$v) = each( $this->columns[$col] ) ) {
         $res .= $delim . DeHtml($v[value], $v[flag]);
-        $delim = $param;
+        if( $res )
+          $delim = $param;        # add value separator just if field is filled
       }  
       return $res;
     }    
