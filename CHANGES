@@ -1,3 +1,6 @@
+1/10/02 - fixed javascript bugs preventing for example deletion of RSS feeds on Mac IE, two bugs (mitra)
+	-- if the index of a selection is -1 (not selected) you can't retrieve a value
+	-- you can't test against undefined, have to test against null.
 1/07/02 - move r_spot_id out of session variable and into URLs
 1/06/02 - added "All" option to the scroller in item manager (sets listlen to 99999) (mitra)
 1/06/02 - changed cases of "action" to "akce" as form component name because its a  

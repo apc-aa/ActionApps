@@ -74,7 +74,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 function InitPage() {}
 
 function SelectValue(sel) {
-  return eval(sel).options[eval(sel).selectedIndex].value
+  svindex = eval(sel).selectedIndex;
+  if (svindex != -1) { return eval(sel).options[svindex].value; }
+  return null;
 }
 
 function Cancel() {

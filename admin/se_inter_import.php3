@@ -72,12 +72,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 function InitPage() {}
 
 function SelectValue(sel) {
-  return eval(sel).options[eval(sel).selectedIndex].value
+  svindex = eval(sel).selectedIndex;
+  if (svindex != -1) { return eval(sel).options[svindex].value; }
+  return null;
 }
 
 function Delete() {
   sel = SelectValue('document.f.feed_id')
-  if (sel == undefined) {
+  if (sel == null) {
     alert('<?php echo L_IMPORT_SEL_NONE; ?>')
     return
   }
@@ -90,7 +92,7 @@ function Delete() {
 }
 
 function Submit() {
-  if (SelectValue(document.f.rem_nodes)==undefined) {
+  if (SelectValue(document.f.rem_nodes) == null) {
      alert('<?php echo L_IMPORT_NODE_SEL; ?>')
      return false
   }
