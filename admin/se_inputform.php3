@@ -97,21 +97,26 @@ if( $update ) {
     $varset->add("alias3_help", "quoted", $alias3_help);
     $varset->add("alias3_func", "quoted", "$alias3_func_f:$alias3_func");
 
+    # setting input show function 
     switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
       case "fnc:param": 
-        $isf = "$input_show_func_f:$input_show_func";
+        $isf = "$input_show_func_f:$input_show_func_p";
          break;
       case "fnc:const:param": 
-        $isf = "$input_show_func_f:$input_show_func_c:$input_show_func";
+        $isf = "$input_show_func_f:$input_show_func_c:$input_show_func_p";
         break;
       case "fnc": 
       default: 
         $isf = "$input_show_func_f";
     }  
+    
+    # setting input insert function
+    $iif="$input_insert_func_f:$input_insert_func_p";
+    
     $varset->add("input_show_func", "quoted", "$isf");
     $varset->add("input_validate", "quoted", "$input_validate");
     $varset->add("feed", "quoted", "$feed");
-    $varset->add("input_insert_func", "quoted", $input_insert_func);
+    $varset->add("input_insert_func", "quoted","$iif" );
     $varset->add("html_default", "number", ($html_default ? 1 : 0));
     $varset->add("html_show", "number", ($html_show ? 1 : 0));
     $varset->add("text_stored", "number", ((($input_validate=="number") 
@@ -180,23 +185,29 @@ if( !$update ) {      # load defaults
   $input_default = substr($fld[input_default],4);
   $input_show_func_f = substr($fld[input_show_func],0,3);
 
+
+  # type of insert is fnc:param
+  $input_insert_func_f=substr($fld[input_insert_func],0,3);
+  $input_insert_func_p=substr($fld[input_insert_func],4);
+  
+  # switching type of show
   switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
     case "fnc:param": 
-      $input_show_func = substr($fld[input_show_func],4);
+      $input_show_func_p = substr($fld[input_show_func],4);
                 break;
     case "fnc:const:param": 
       $pos = strpos($fld[input_show_func], ":", 4);
                 if( !$pos ) {     #there is no third parameter (= Parameters)  
                   $input_show_func_c = substr($fld[input_show_func],4);
-                  $input_show_func = '';
+                  $input_show_func_p = '';
                 } else {
                   $input_show_func_c = substr($fld[input_show_func],4,$pos-4);
-                  $input_show_func = substr($fld[input_show_func],$pos+1);
+                  $input_show_func_p = substr($fld[input_show_func],$pos+1);
                 }  
                 break;
     case "fnc": 
     default: 
-      $input_show_func_c = substr($fld[input_show_func],4);
+      $input_show_func_p = substr($fld[input_show_func],4);
   }  
   
   $input_insert_func = $fld[input_insert_func];
@@ -269,7 +280,7 @@ echo "
       <td class=tabtxt colspan=3>";
        FrmSelectEasy("input_show_func_f", $INPUT_SHOW_FUNC_TYPES, $input_show_func_f);
 	   ?>
-	   <a href='javascript:CallParamWizard ("INPUT_TYPES","input_show_func_f","input_show_func")'>
+	   <a href='javascript:CallParamWizard ("INPUT_TYPES","input_show_func_f","input_show_func_p")'>
 		<?php echo L_PARAM_WIZARD_LINK."</a>";
 
       echo "<div class=tabhlp>". L_INPUT_SHOW_FUNC_F_HLP ."</div>
@@ -286,7 +297,7 @@ echo "
              </tr>
             </table>
             <div class=tabtxt><b>". L_PARAMETERS ."</b>
-              <input type=\"Text\" name=\"input_show_func\" size=25 maxlength=240 value=\"". safe($input_show_func) ."\">
+              <input type=\"Text\" name=\"input_show_func_p\" size=25 maxlength=240 value=\"". safe($input_show_func_p) ."\">
             </div> 
             <div class=tabhlp>". L_INPUT_SHOW_FUNC_HLP ."</div>
       </td>
@@ -309,13 +320,17 @@ echo "
       <td class=tabtxt colspan=3>";
         FrmSelectEasy("input_validate", $INPUT_VALIDATE_TYPES, $input_validate);
       echo "<div class=tabhlp>". L_INPUT_VALIDATE_HLP ."</div>
+
       </td>
      </tr>  
      <tr>
       <td class=tabtxt><b>". L_INSERT ."</b></td>
       <td class=tabtxt colspan=3>";
-        FrmSelectEasy("input_insert_func", $INPUT_INSERT_TYPES, $input_insert_func);
+        FrmSelectEasy("input_insert_func_f", $INPUT_INSERT_TYPES, $input_insert_func_f);
       echo "<div class=tabhlp>". L_INPUT_INSERT_HLP ."</div>
+            <div class=tabtxt><b>". L_PARAMETERS ."</b>
+              <input type=\"Text\" name=\"input_insert_func_p\" size=25 maxlength=240 value=\"". safe($input_insert_func_p) ."\">
+            </div> 
       </td>
      </tr>  
      <tr>
