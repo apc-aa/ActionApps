@@ -27,7 +27,8 @@ $aa_default_ldap = array("host"=>LDAP_HOST,
                          "basedn"=>LDAP_BASEDN,
                          "people"=>LDAP_PEOPLE,
                          "groups"=>LDAP_GROUPS,
-                         "acls"=>LDAP_ACLS);
+                         "acls"=>LDAP_ACLS,
+                         "port"=>LDAP_PORT);
 
 // define special ldap servers for another-node authentification
 // if not found - use $aa_default_ldap
@@ -65,7 +66,7 @@ function AuthenticateUsername($username, $password, $flags = 0) {
    else 
     $LDAPserver = $aa_default_ldap;
 
-  $ds = LDAP_Connect($LDAPserver[host]);	// connect LDAP server
+  $ds = LDAP_Connect($LDAPserver[host], $LDAPserver[port]);	// connect LDAP server
   if (!$ds)                  			// not connected
     return false;	
 
@@ -629,7 +630,7 @@ function WhereToSearch($org) {
 function InitLDAP() {
   global $aa_default_ldap;
   
-  $ds = LDAP_Connect($aa_default_ldap[host]);	// connect LDAP server
+  $ds = LDAP_Connect($aa_default_ldap[host], $aa_default_ldap[port]);	// connect LDAP server
   if (!$ds)   				// not connect
     return false;
     
@@ -689,6 +690,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.14  2001/02/26 14:41:27  honzam
+added port specification for LDAP server
+
 Revision 1.13  2001/01/22 17:32:49  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 
