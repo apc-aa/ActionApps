@@ -86,11 +86,13 @@ class PageCache  {
   
   # cache informations based on $keyString
   function store($keyString, $content, $str2find="") {
+    global $debugcache, $cache_nostore;
     if ($GLOBALS[debugcache]) { 
         huhl("Cache:store:keystring:",htmlentities($keyString));
-        huhl("$str2find:",$this->caller,htmlentities($content)); trace("p"); }
-    if( ENABLE_PAGE_CACHE ) {
-      $db = getDB();
+        huhl("$str2find:",$this->caller,htmlentities($content)); trace("p");
+    }
+    if( ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when 
+      $db = getDB();                              // {user:xxxx} alias is used  
       $tm = time();
       $SQL = "REPLACE pagecache SET id='".md5($keyString)."', 
                                  str2find='". quote($str2find). "',

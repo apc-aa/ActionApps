@@ -100,7 +100,11 @@ function GetAuthData() {
 *                   'password' for plain text password of current user
 */
 function parseUser($field) {
-    global $auth_user_info;
+    global $auth_user_info, $cache_nostore;
+    // this GLOBAL :-( variable is message for pagecache to NOT store views (or
+    // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
+    // cache's keyString.
+    $cache_nostore = true;             // GLOBAL!!!     
     switch ($field = trim($field)) {
         case '':         return $_SERVER['PHP_AUTH_USER'];
         case 'password': return $_SERVER['PHP_AUTH_PW'];
