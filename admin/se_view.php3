@@ -162,7 +162,7 @@ $lookup_op = array( "<"  => "<",
                     "m:>" => "> now() - x [in seconds]");
 
 # lookup group of constatnts
-$lookup_groups = GetConstants('lt_groupNames', $db);
+$lookup_groups = GetConstants('lt_groupNames', $db, 'name');
 
 # lookup slice fields
 $db->query("SELECT id, name FROM field
@@ -256,6 +256,9 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.9  2001/11/26 11:03:43  honzam
+sort slice/constant in listbox by name
+
 Revision 1.8  2001/11/05 13:44:18  honzam
 fixed bug after switching to another slice
 

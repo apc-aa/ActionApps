@@ -19,6 +19,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+function cmp ($a, $b) {
+  return strcmp($a["name"], $b["name"]);
+} 
+
 $New_slice = true;  // variable tells to init_page, there should not be defined slices, here
 require "../include/init_page.php3";
 
@@ -71,6 +75,7 @@ if( isset( $templates ) AND is_array( $templates ) AND
     }
 
   if( isset( $templates ) AND is_array( $templates )) {
+    usort($templates, "cmp"); 
     echo "<tr><td class=tabtxt colspan=2><b>". L_TEMPLATE ."</b>";
     echo "</td>\n <td><select name=\"template_id\">";	
     reset($templates);
@@ -86,6 +91,7 @@ if( isset( $templates ) AND is_array( $templates ) AND
         
 
   if( isset( $temp_slices ) AND is_array( $temp_slices )) {
+    usort($temp_slices, "cmp"); 
     echo "<tr><td class=tabtxt colspan=2><b>". L_SLICE ."</b>";
     echo "</td>\n <td><select name=\"template_id2\">";	
     reset($temp_slices);
@@ -117,6 +123,9 @@ if( isset( $templates ) AND is_array( $templates ) AND
 <?php
 /*
 $Log$
+Revision 1.8  2001/11/26 11:03:43  honzam
+sort slice/constant in listbox by name
+
 Revision 1.7  2001/10/02 11:36:41  honzam
 bugfixes
 

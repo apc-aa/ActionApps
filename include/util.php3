@@ -86,6 +86,10 @@ function add_vars($query_string="", $debug="") {
     $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
   else
     $varstring = $QUERY_STRING_UNESCAPED;
+
+if( $GLOBALS['debug'] )
+  echo "<br>varstring: $varstring";
+  
   $a = explode("&",$varstring);
   $i = 0;
 
@@ -310,10 +314,10 @@ function UnpackFieldsToArray($packed, $fields) {
 }  
 
 # function fills the array from constants table
-function GetConstants($group, $db) {
+function GetConstants($group, $db, $order='pri') {
   $db->query("SELECT name, value FROM constant 
                WHERE group_id='$group'
-               ORDER BY pri");
+               ORDER BY $order");
   while($db->next_record())
     $arr[$db->f(value)] = $db->f(name);
   return $arr;
@@ -438,6 +442,10 @@ function GetItemContent($ids, $use_short_ids=false) {
 
   $db->query("SELECT * FROM content 
                WHERE item_id $sel_in");  # usable just for constants
+               
+  if( $GLOBALS['debug'] )
+     echo "<br>Sel_in: $sel_in";
+
   while( $db->next_record() ) {
     $fooid = ( $use_short_ids ? $translate[unpack_id($db->f(item_id))] : 
                                unpack_id($db->f(item_id)));
@@ -644,6 +652,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.27  2001/11/26 11:03:43  honzam
+sort slice/constant in listbox by name
+
 Revision 1.26  2001/11/05 13:33:06  honzam
 fixed bug of unsuccessfull switching slice on some pages
 

@@ -144,7 +144,7 @@ if( $update ) {
 
   # lookup constants
 $constants[] = "";   # add blank constant as the first option
-$constants += GetConstants('lt_groupNames', $db);
+$constants += GetConstants('lt_groupNames', $db, 'name');
 
   # add slices to constant array (good for related stories, link to authors ...)
 reset($g_slices);
@@ -413,6 +413,9 @@ endfor;
 
 /*
 $Log$
+Revision 1.17  2001/11/26 11:03:43  honzam
+sort slice/constant in listbox by name
+
 Revision 1.16  2001/10/24 18:44:11  honzam
 new parameter wizard for function aliases and input type parameters
 

@@ -148,8 +148,8 @@ $format_strings = array ( "compact_top"=>"",
                           "even_odd_differ"=>false,
                           "even_row_format"=>"",
                           "odd_row_format"=>"<tr><td class=tabtxt>_#HEADLINE</td>
-                                                 <td class=tabtxt><a href='javascript:SelectRelation(\"x_#ITEM_ID#\",\"_#HEADLINE\")'>". L_SELECT_RELATED_1WAY ."</a>&nbsp;&nbsp;</td>
-                                                 <td class=tabtxt><a href='javascript:SelectRelation2Way(\"x_#ITEM_ID#\",\"_#HEADLINE\")'>". L_SELECT_RELATED_2WAY ."</a></td>
+                                                 <td class=tabtxt><a href=\"javascript:SelectRelation('x_#ITEM_ID#','_#HEADLINE')\">". L_SELECT_RELATED_1WAY ."</a>&nbsp;&nbsp;</td>
+                                                 <td class=tabtxt><a href=\"javascript:SelectRelation2Way('x_#ITEM_ID#','_#HEADLINE')\">". L_SELECT_RELATED_2WAY ."</a></td>
                                              </tr>",
                           "compact_remove"=>"",
                           "compact_bottom"=>"",
@@ -235,6 +235,9 @@ echo "<input type='Text' name='admin_search' size=20
 
 /*
 $Log$
+Revision 1.3  2001/11/26 11:03:43  honzam
+sort slice/constant in listbox by name
+
 Revision 1.2  2001/10/05 10:51:29  honzam
 Slice import/export allows backup of more slices, bugfixes
 
