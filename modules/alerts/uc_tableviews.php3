@@ -39,6 +39,7 @@ function GetAlertsUCTableView ($viewID, $processForm = false) {
         "type" => "edit",
         "readonly" => false,
         "addrecord" => false,
+        "mainmenu" => "user",
         "cond" => 1,
         "title" => _m("Alerts User Settings"), 
         "caption" => _m("Alerts User Settings"),
@@ -67,12 +68,12 @@ function GetAlertsUCTableView ($viewID, $processForm = false) {
         "attrs" => $attrs_edit,
 		"messages" => array (
 	        "no_item" => _m("No user in this bin.")),
-        "children" => array (
+/*        "children" => array (
             "auc" => array (
                  "header" => _m ("Subscribed Collections"),
                  "join" => array ("id" => "userid")
-             )
-         ));
+             )*/
+         );
     }
     
     if ($viewID == "auc") {
@@ -90,13 +91,17 @@ function GetAlertsUCTableView ($viewID, $processForm = false) {
         "type" => "browse",
         "readonly" => true,
         "addrecord" => false,
-        "gotoview" => "au_edit",
+       // "gotoview" => "au_edit",
+        "mainmenu" => "subscribed",
         "attrs" => $attrs_browse,
         "buttons_left" => array ("delete" => 1),
         "listlen" => 1000,
         "search" => false,
         "help" => _m("To edit your settings, click on the collection name. <br>
-            To unsubscribe from a collection, use the \"delete\" button."),
+            To unsubscribe from a collection, use the \"delete\" button. <br>
+            You will <b>receive email alerts</b> only from collections where your <b>status</b> is
+            'Active bin', you are not expired, your subscription has already started and you
+            have <b>confirmed</b> it by the link sent in an email."),
 		"messages" => array (
 	        "no_item" => _m("You are not subscribed to any Collection.")),
         "fields" => array (
@@ -106,18 +111,38 @@ function GetAlertsUCTableView ($viewID, $processForm = false) {
             "howoften" => array (
                 "caption" => _m("how often"),
                 "view" => array ("type"=>"select","source"=>get_howoften_options())),
+            "receive_alerts" => array (
+                "caption" => _m("receive alerts"),
+                "field" => "confirm",
+                "view"=>array ("type"=>"calculated", "function"=>"showReceiveAlerts")),
             "status_code"=>array (
                 "caption" => _m("status"),
                 "view"=>array ("type"=>"select","source"=>get_bin_names())),
+            "start_date" => array (
+                "caption" => _m("start date"),
+                "view"=>array ("type"=>"date","format"=>"j.m.Y")),                
             "expiry_date" => array (
                 "caption" => _m("expiration date"),
-                "view"=>array ("type"=>"date","format"=>"d.j.Y")),
+                "view"=>array ("type"=>"date","format"=>"j.m.Y")),                
             "confirm" => array (
                 "caption" => _m("confirmed"),
-                "view"=>array ("type"=>"checkbox"))
+                "view"=>array ("type"=>"userdef", "function"=>"showConfirm")),
          ));
      }
          
 } // end of GetTableView
             
 // ----------------------------------------------------------------------------------        
+
+function showConfirm ($val) {
+    return $val ? _m("no") : _m("yes");
+}
+
+function showReceiveAlerts ($record) {
+    if ($record["confirm"] == ""
+        && $record["status_code"] == 1
+        && $record["start_date"] <= time()
+        && $record["expiry_date"] >= time())
+        return _m("yes");
+    else return _m("no");
+} 

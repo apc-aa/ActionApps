@@ -67,31 +67,21 @@ if ($userid)
         { my_die (_m("Wrong password.")); return; }
 
 // change password        
-$user_varset = new CVarset();
 if ($alerts["chpwd"]) {
     if ($alerts["chpwd"] != $alerts["chpwd2"]) my_die ("Passwords differ.");
-    else $user_varset->add ("password", "text", $alerts["chpwd"]);
+    else $alerts["password"] = $alerts["chpwd"];
 }
+
+$alerts["uid"] = $userid;
+insert_or_update_user ($alerts, $userid != 0);
     
-reset ($cf_fields);
-while (list ($fname, $fprop) = each ($cf_fields)) 
-    if ($fprop["userinfo"] && isset ($alerts[$fname]))
-        $user_varset->add ($fname, "quoted", $alerts[$fname]);
-
-if ($alerts["userid"])
-     $db->query ("UPDATE alerts_user SET ".$user_varset->makeUPDATE()." WHERE id=$userid");
-else {
-    $db->query ("INSERT INTO alerts_user ".$user_varset->makeINSERT());
-    $userid = get_last_insert_id ($db, "alerts_user");
-}
-
 // change collection settings
 if ($alerts["collectionid"]) {
     $db->query ("DELETE FROM alerts_user_collection_filter
                  WHERE userid=$userid AND collectionid=$collid");
 
-    // filters were chosen by checkboxes
     switch ($alerts["choose_filters"]) {
+    // filters were chosen by checkboxes
     case "checkbox":
         $db->query ("SELECT * FROM alerts_collection_filter WHERE collectionid=$collid");
         if (!is_array ($alerts["filters"]))
@@ -112,6 +102,7 @@ if ($alerts["collectionid"]) {
                         VALUES ($userid, $collid, $filterid, $myindex)");
         }
         break;
+    // filters were not chosen, all will be used 
     case "no":
         $allfilters = true;
         break;
@@ -120,17 +111,15 @@ if ($alerts["collectionid"]) {
         $allfilters = true;
         break;
     }
+
+    $info["userid"] = $userid;
+    $info["allfilters"] = $allfilters;
+    $info["howoften"] = $alerts["howoften"];
+    $info["email"] = $alerts["email"];
+    $db->query ("SELECT * FROM alerts_collection WHERE id=$collid");
+    $db->next_record();
     
-    // was a valid howoften sent?
-    if (get_howoften_options ($alerts["howoften"])) {
-        $uc_varset = new CVarset();
-        $uc_varset->add ("howoften", "quoted", $alerts["howoften"]);
-        $uc_varset->add ("allfilters", "number", $allfilters);
-        $uc_varset->addkey ("userid", "number", $userid);
-        $uc_varset->addkey ("collectionid", "number", $collid);
-        
-        $db->query ($uc_varset->makeINSERTorUPDATE("alerts_user_collection"));
-    }    
+    insert_or_update_user_collection ($info, $db->Record, false, true);
 }        
 
 function my_die ($err) {

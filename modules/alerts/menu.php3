@@ -102,7 +102,7 @@ function get_aamenus ()
             "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
                 .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")),
         "usercenter" => array ("cond"=>1, "label" => _m("User Center"),
-            "href" => "modules/alerts/uc_settings.php3"),
+            "href" => "modules/alerts/uc_tabledit.php3"),
         "header2" => _m("Common"),
 		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
 			"href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Emails"))

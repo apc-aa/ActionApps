@@ -145,7 +145,7 @@ function add_email ($email, $firstname, $lastname)
         $new_user_count ++;
     }
 
-    $ok = add_user_collection (array (
+    $ok = insert_or_update_user_collection (array (
         "email" => $email,
         "userid" => $userid,
         "allfilters" => 1,

@@ -30,50 +30,28 @@ http://www.apc.org/
 */
 
 require "./lang.php3";
+require $GLOBALS["AA_INC_PATH"]."formutil.php3";
+
+global $db, $Msg, $Err, $email;
 
 if (!is_object ($db)) $db = new DB_AA;
-/*
-if ($email && !$uid) {
-    $db->query ("SELECT id FROM alerts_user WHERE email='".addslashes($email)."'");
-    if (!$db->next_record()) $Err[] = _m("Wrong email address.");
-    $uid = $db->f("id");
+
+// ---------------------------------------------------------------------
+// Process: New user? Subscribe to ...
+
+global $go_subscribe_to, $subscribe_to;
+
+if ($go_subscribe_to) {
+    $db->query ("SELECT * FROM alerts_collection AC
+        INNER JOIN module ON AC.moduleid = module.id
+        WHERE AC.id = ".$subscribe_to);
+    if ($db->next_record())
+        go_url ($db->f("slice_url"));
 }
 
-if ($send_passwd && $uid) {
-    $db->query ("SELECT * FROM alerts_user WHERE id='$uid'");
-    if (!$db->next_record()) $Err[] = _m("This email is not registered with Alerts.");
-    else {
-        alerts_subscribe ($db->f("email"), $db->f("lang"), "");
-        $Msg = _m("OK. Confirmation email was sent.");
-    }
-}
+// End of New user?
+// ---------------------------------------------------------------------
 
-else if ($uid) {
-    $db->query ("SELECT email, password FROM alerts_user WHERE id=$uid");
-    if (!$db->next_record()) $Err[] = _m("Wrong user ID.");
-    else if ($db->f("password") == "" || (md5($password) == $db->f("password"))) {
-        $alerts_session = new_id ();
-        $db->query ("UPDATE alerts_user 
-            SET session='$alerts_session', sessiontime=".time()." 
-            WHERE id = $uid");
-        go_url (AA_INSTAL_URL."modules/alerts/uc_settings.php3?alerts_session=$alerts_session&lang=$lang&ss=$ss");
-        exit;
-    }
-    else $Err[] = _m("Wrong password.");
-}
-
-else if ($lost_password) {
-    $db->query ("SELECT email, password, confirm FROM alerts_user WHERE id=$uid");
-    if (!$db->next_record()) $Err[] = _m("Wrong user ID.");
-    else {
-        $alerts_session = new_id ();
-        $db->query ("UPDATE alerts_user 
-            SET session='$alerts_session', sessiontime=".time()." 
-            WHERE id = $uid");
-        go_url (AA_INSTAL_URL."misc/alerts/user_filter.php3?alerts_session=$alerts_session&lang=$lang&ss=$ss");
-    }
-}
-*/      
 AlertsPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
 </HEAD>
@@ -83,8 +61,27 @@ echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
     
     <h1>"._m("Login to Personal settings for Alerts sending")."</h1>";
     
+// ---------------------------------------------------------------------
+// New user? Subscribe to ...
+
+$db->query ("SELECT AC.id, name, slice_url FROM alerts_collection AC
+    INNER JOIN module ON AC.moduleid = module.id");
+while ($db->next_record()) 
+    $colls[$db->f("id")] = $db->f("name");
+asort ($colls);
+echo '<FORM name="form_subscribe_to" action="'.$this->url().'" method="post">';
+echo '<b><font size="+1">New User?</font></b> Subscribe to: ';
+FrmSelectEasy ("subscribe_to", $colls);
+echo ' <INPUT TYPE="submit" NAME="go_subscribe_to" VALUE="'._m("Go").'">';
+echo '</FORM>';
+
+// End of New user?
+// ---------------------------------------------------------------------
+    
     echo $Msg;
+    echo '<font color="red">';
     PrintArray ($Err);
+    echo '</font>';
     
     if ($uid) {
         $db->query ("SELECT email FROM alerts_user WHERE id=$uid"); 
@@ -107,8 +104,8 @@ echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
        <p align=center><INPUT TYPE=SUBMIT VALUE='"._m("Login")."'></p>";
        echo _m("Login by your e-mail address. If you don't use password, leave that box empty. 
        If you forgot your password, fill the e-mail, click here and we will send you
-       a single usage code allowing to go directly to the Settings.")
-        ." <p align=center><INPUT TYPE=SUBMIT NAME='send_passwd' VALUE='"._m("Send single usage code")."'></p>
+       a single usage code allowing you to go directly to the Settings.")
+        ." <p align=center><INPUT TYPE=SUBMIT NAME='send_single_usage_code' VALUE='"._m("Send single usage code")."'></p>
     </FORM>";
 
 echo "</TD></TR></TABLE>

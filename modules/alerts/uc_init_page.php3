@@ -66,6 +66,7 @@ if (!$AA_BASE_PATH) {
 
 require $GLOBALS[AA_BASE_PATH] . "modules/alerts/uc_auth.php3";
 require $GLOBALS[AA_INC_PATH] . "scroller.php3";
+require $GLOBALS[AA_BASE_PATH] . "modules/alerts/util.php3";
 
 page_open(array("sess" => "AA_UC_Session", "auth" => "AA_UC_Auth"));
 
@@ -74,7 +75,4 @@ $auth->relogin_if($relogin); // relogin if requested
 if( $slice_id )
   $p_slice_id = q_pack_id($slice_id);
 
-# if we want to use random number generator, we have to use srand just once per
-# script. That's why we called it here. Do not use it on other places in scripts
-srand((double)microtime()*1000000);
 ?>
