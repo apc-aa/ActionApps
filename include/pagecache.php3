@@ -59,8 +59,10 @@ class PageCache  {
         if ( ENABLE_PAGE_CACHE ) {
             if ( $action == 'invalidate' ) {
                 $this->invalidateById( $this->getKeyId($keyString) );
+                if ( $GLOBALS['debug'] ) huhl("<br>Pagecache: invlaidating");
                 return false;
             } elseif (is_numeric($action) ) {  // nocache=1
+                if ( $GLOBALS['debug'] ) huhl("<br>Pagecache: return false - nocache");
                 return false;
             }
             return $this->getById( $this->getKeyId($keyString) );
