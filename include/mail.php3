@@ -148,7 +148,7 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
 {
 
     global $db, $LANGUAGE_CHARSETS;
-    $db->query ("SELECT * FROM email WHERE id = $mail_id");
+    $db->query("SELECT * FROM email WHERE id = $mail_id");
     if (!$db->next_record()) 
         return false;
     $record = $db->Record;

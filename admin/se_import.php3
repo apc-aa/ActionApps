@@ -40,7 +40,7 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $SQL= "SELECT id, name FROM slice WHERE id<>'$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
-  $all_slices[unpack_id($db->f(id))] = $db->f(name);
+  $all_slices[unpack_id128($db->f(id))] = $db->f(name);
 
 // lookup export_to slice
 $SQL= "SELECT name, id FROM slice, feedperms WHERE slice.id=feedperms.to_id 
@@ -54,7 +54,7 @@ $SQL= "SELECT name, id FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from
        WHERE (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1) AND slice.id<>'$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
-  $importable[unpack_id($db->f(id))] = $db->f(name);
+  $importable[unpack_id128($db->f(id))] = $db->f(name);
 
 // lookup imported slices
 $SQL= "SELECT name, id FROM slice, feeds 
@@ -65,7 +65,7 @@ $SQL= "SELECT name, id FROM slice, feeds
 
 $db->query($SQL);
 while($db->next_record())
-  $imported[unpack_id($db->f(id))] = $db->f(name);
+  $imported[unpack_id128($db->f(id))] = $db->f(name);
 
 // export_to_all setting
 $SQL= "SELECT export_to_all FROM slice WHERE slice.id='$p_slice_id'";

@@ -31,7 +31,8 @@ require $GLOBALS[AA_INC_PATH]."stringexpand.php3";
 
 class itemview{
   var $db;
-  var $ids;                      # ids to show
+//  var $ids;                      # ids to show
+  var $zids;                     # zids to show
   var $from_record;              # from which index begin showing items
   var $num_records;              # number of shown records 
   var $slice_info;               # record from slice database for current slice
@@ -42,11 +43,13 @@ class itemview{
   var $clean_url;                # url of slice page with session id and encap..
   var $group_fld;                # id of field for grouping
   var $disc;                     # array of discussion parameters (see apc-aa/view.php3)
-  var $use_short_ids;            # flag indicates if short_id used within $ids
+//  var $use_short_ids;            # flag indicates if short_id used within $ids
   
-  function itemview( $db, $slice_info, $fields, $aliases, $ids, $from, $number, 
-                     $clean_url, $disc="", $use_short_ids=false){
+  function itemview( $db, $slice_info, $fields, $aliases, $zids, $from, $number, 
+                     $clean_url, $disc=""){
+    #huhl("itemview: ",$zids);
    #constructor
+
     $this->db = $db;
     $this->slice_info = $slice_info;  # $slice_info is array with this fields:
                                       #      - print_view() function:
@@ -67,15 +70,16 @@ class itemview{
 
     $this->aliases = $aliases;
     $this->fields = $fields;
-    $this->ids = $ids;
+    $this->zids = $zids;
     $this->from_record = $from;      # number or text "random[:<weight_field>]"
     $this->num_records = $number;    # negative number used for displaying n-th group of items only
     $this->clean_url = $clean_url;
     $this->disc = $disc;
-    $this->use_short_ids = $use_short_ids;
+//    $this->use_short_ids = $use_short_ids;
   }  
    
   function get_output_cached($view_type="") {  
+    #print("XYZZY:get_output_cached");
     $cache = new PageCache($this->db, CACHE_TTL, CACHE_PURGE_FREQ);
 
     #create keystring from values, which exactly identifies resulting content
@@ -88,11 +92,11 @@ class itemview{
               $this->from_record.
               $this->num_records.
               $this->clean_url.
-              $this->ids[0];
+              $this->zids->id(0);
     $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  # negative used for displaying n-th group of items only
                                         $this->from_record+$this->num_records );
     for( $i=$this->from_record; $i<$number_of_ids; $i++)
-      $keystr .= $this->ids[$i];
+      $keystr .= $this->zids->id($i);
     $keystr .=serialize($this->disc);
     $keystr .=serialize($this->aliases);
      
@@ -104,7 +108,7 @@ class itemview{
     #cache new value 
     $res = $this->get_output($view_type);
 
-    $cache->store($keystr, $res, "slice_id=".unpack_id($this->slice_info["id"]));
+    $cache->store($keystr, $res, "slice_id=".unpack_id128($this->slice_info["id"]));
     return $res;
   }  
               
@@ -321,6 +325,8 @@ class itemview{
   
   #view_type used internaly for different view types
   function get_output($view_type="") {  
+    global $debug;
+    #huhl("XYZZY: get_output:$view_type:",$this->zids);
     $db = $this->db;
 
     if ($view_type == "discussion") {
@@ -335,40 +341,50 @@ class itemview{
     }
      // other view_type than discussion
 
-    if( !( isset($this->ids) AND is_array($this->ids) ))
+    if( !( isset($this->zids) AND is_object($this->zids) ))
       return;
 
     # fill the foo_ids - ids to itemids to get from database
     if( substr($this->from_record, 0, 6) != 'random') {
+
+      $foo_zids = $this->zids->slice((integer)$this->from_record,
+         ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
+
+/*
       # negative num_record used for displaying n-th group of items only
       $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  
                                         $this->from_record+$this->num_records );
-    
       for( $i=(integer)$this->from_record; $i<$number_of_ids; $i++){
-        if( $this->ids[$i] )
-          $foo_ids[] = $this->ids[$i];
+        if( $this->zids->id($i) )
+          $foo_ids[] = $this->zids->id($i);
       }
+*/      
     } else {
       list( $random, $rweight ) = explode( ":", $this->from_record);
       if( !$rweight || !is_array($this->fields[$rweight]) ) {  
         # not weighted, we can select random id(s)
         for( $i=0; $i<$this->num_records; $i++) {
-          $sel = rand( 0, count($this->ids)-1 );
-          if( $this->ids[$sel] )
-            $foo_ids[] = $this->ids[$sel];
+          $sel = rand( 0, $this->zids->count() - 1) ;
+          if( $this->zids->id($sel) )
+            $foo_ids[] = $this->zids->id($sel);
         }
-        $this->ids = $foo_ids;
+        $foo_zids = new zids($foo_ids, $this->zids->onetype());
+        $this->zids = $foo_zids;  // Set zids so can index into it
       } else {   # weighted - we must get all items (banners) and then select
                  # the one based on weight field (now in $rweight variable
+        $foo_zids = $this->zids;
+/*
         $ito = count( $this->ids );   # get content of all items (banners) on random selection
         for( $i=0; $i<$ito; $i++){
           if( $this->ids[$i] )
             $foo_ids[] = $this->ids[$i];
         }
+*/
       }
     }
-     
-    $content = GetItemContent($foo_ids, $this->use_short_ids);
+    # Create an array of content, indexed by either long or short id (not tagged id)
+    $content = GetItemContent($foo_zids);
+    if ($debug) huhl("itemview:get_content: found",$content);
     $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
     
     # process the random selection (based on weight)
@@ -385,7 +401,7 @@ class itemview{
         while( list($k,$v) = each($content) ) {
           $ws += $v[$rweight][0]['value'];
           if( $ws >= $winner ) {
-            $this->ids[$i] = $k;
+            $this->zids->a[$i] = $k;
             break;
           }  
         }
@@ -393,10 +409,11 @@ class itemview{
       $this->from_record = 0;  
     }
 
+    #huhl("XYZZY: get_output mid: view_type=$view_type");
     switch ( $view_type ) {
       case "fulltext":  
-        $iid = $this->ids[0];      # unpacked item id
-        $this->set_columns ($CurItem, $content, $iid);   # set right content for aliases
+        $iid = $this->zids->short_or_longids(0);  # unpacked or short id
+        $this->set_columns($CurItem, $content, $iid);   # set right content for aliases
 
         # print item
         $CurItem->setformat( $this->slice_info[fulltext_format],
@@ -409,9 +426,9 @@ class itemview{
       case "itemlist":          # multiple items as fulltext one after one
         $out = $this->slice_info[fulltext_format_top];
         for( $i=0; $i<$this->num_records; $i++ ) {
-          $iid = $this->ids[$this->from_record+$i];
+          $iid = $this->zids->short_or_longids($this->from_record+$i);
           if( !$iid )
-            continue;                                     # iid = unpacked item id 
+            continue;                                     # iid = quoted or short id
 
           $this->set_columns ($CurItem, $content, $iid);   # set right content for aliases
           
@@ -439,10 +456,11 @@ class itemview{
           if( $this->slice_info['banner_parameters'] && 
               ($this->slice_info['banner_position']==$i) )
             $out .= GetView(ParseViewParameters($this->slice_info['banner_parameters']));
-      
-          $iid = $this->ids[$this->from_record+$i];
-          if( !$iid )
-            continue;                                     # iid = unpacked item id 
+
+          $zidx = $this->from_record+$i;
+          if ($zidx >= $this->zids->count()) continue;
+          $iid = $this->zids->short_or_longids($this->from_record+$i);
+          if( !$iid ) { huhe("Warning: itemview: got a null id"); continue; }
           $catname = $content[$iid][$this->group_fld][0][value];
           if ($this->slice_info[gb_header])
             $catname = substr ($catname, 0, $this->slice_info[gb_header]);
@@ -542,7 +560,7 @@ class itemview{
         
         
         for( $i=0; $i<$this->num_records; $i++ ) {
-            $iid = $this->ids[$this->from_record+$i];
+            $iid = $this->zids->short_or_longids($this->from_record+$i);
             if( !$iid )
                 continue;                                     # iid = unpacked item id 
             $start_date = $content[$iid][$this->slice_info['calendar_start_date']][0][value];
@@ -725,6 +743,10 @@ class itemview{
       echo $this->get_output_cached("discussion");
      else 
       echo $this->get_output("discussion");
+  }
+
+  function idcount() {
+        return $this->zids->count();
   }
 };   //class itemview
 

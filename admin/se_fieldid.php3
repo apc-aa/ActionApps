@@ -138,7 +138,7 @@ function tryQuery (&$db, $sql, $always=1) {
     global $debug;
     if (!$always) echo $sql;
     else if ($debug) $db->dquery ($sql);
-    else $db->query ($sql);
+    else $db->query($sql);
 }
 
 function ChangeFieldID ($old_id, $new_id)
@@ -188,7 +188,7 @@ function ChangeFieldID ($old_id, $new_id)
     }
         
     // replace the field id in table content
-    $db->query ("SELECT id FROM item WHERE slice_id='$p_slice_id'");
+    $db->query("SELECT id FROM item WHERE slice_id='$p_slice_id'");
     while ($db->next_record()) 
         $item_ids[] = myaddslashes ($db->f("id"));
     if (count ($item_ids)) tryQuery($db, 
@@ -207,7 +207,7 @@ if ($update && $new_id_text && $p_slice_id) {
             if (my_in_array ($new_id, $reserved_ids)) $err[] = _m("This ID is reserved")." ($new_id).";
             else {
                 // proove the field does not exist
-                $db->query ("SELECT id FROM field WHERE slice_id='$p_slice_id' AND id='$new_id'");
+                $db->query("SELECT id FROM field WHERE slice_id='$p_slice_id' AND id='$new_id'");
                 if ($db->next_record()) $err[] = _m("This ID is already used")." ($new_id).";
             }
             if (count($err) <= 1 ) {
@@ -249,7 +249,7 @@ while (list (,$field) = each ($s_fields))
     if (!my_in_array ($field["id"], $reserved_ids))
         echo "<option value='$field[id]'>$field[id]";
 echo "</select> "._m("to")." <select name='new_id_text'>";
-$db->query ("SELECT id FROM field 
+$db->query("SELECT id FROM field 
              WHERE slice_id='AA_Core_Fields..'");
 while ($db->next_record()) {
     $id_text = $db->f("id");

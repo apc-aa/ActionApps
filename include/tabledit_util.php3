@@ -232,7 +232,7 @@ function TableDelete ($table, $key, $columns, $primary_aliases, $error_msg="", $
     while (list ($column, $val) = each ($vals)) 
         $varset->addkey ($column, "text", $val);
     if ($be_cautious) {
-        $db->query ($varset->makeSELECT ($table));
+        $db->query($varset->makeSELECT ($table));
         if ($db->num_rows() != 1) {
 			$err[] = $error_msg ? $error_msg : 
                 "Error deleting from $table. ".$varset->makeSELECT($table)." returned ".$db->num_rows()." rows instead of 1.";
@@ -240,7 +240,7 @@ function TableDelete ($table, $key, $columns, $primary_aliases, $error_msg="", $
 		}
     }
     callTrigger ($triggers, "BeforeDelete", $varset);       
-    $retval = $db->query ($varset->makeDELETE ($table));
+    $retval = $db->query($varset->makeDELETE ($table));
     callTrigger ($triggers, "AfterDelete", $varset);
     return $retval;
 }
@@ -289,14 +289,14 @@ function TableUpdate ($default_table, $val, $columns, $primary_aliases, $primary
     while (list ($table) = each ($varsets)) {        
         $varset = &$varsets[$table];
         if ($be_cautious) {
-            $db->query ($varset->makeSELECT ($table));
+            $db->query($varset->makeSELECT ($table));
             if ($db->num_rows() != 1) {
                 $err[] = $error_msg ? $error_msg : "Error in TableUpdate ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 1.";
                 return false;
             }
         }
         callTrigger ($triggers, "BeforeUpdate", $varset);
-        $db->query ($varset->makeUPDATE ($table));
+        $db->query($varset->makeUPDATE ($table));
         callTrigger ($triggers, "AfterUpdate", $varset);
     }
 
@@ -350,14 +350,14 @@ function TableInsert (&$newkey, &$where, $key_table, $val, $columns, $primary_al
                 $auto_inc = true;
 
         if (!$auto_inc && $be_cautious) {
-            $db->query ($varset->makeSELECT ($table));
+            $db->query($varset->makeSELECT ($table));
             if ($db->num_rows() > 0) { 
                 $err[] = $error_msg ? $error_msg : "Error in TableInsert ".$varset->makeSELECT($table).", row count is ".$db->num_rows()." instead of 0.";
                 return "";
             }
         }
         callTrigger ($triggers, "BeforeInsert", $varset);
-        $db->query ($varset->makeINSERT ($table)); 
+        $db->query($varset->makeINSERT ($table)); 
         callTrigger ($triggers, "AfterInsert", $varset);
         
         if ($table == $key_table) {    

@@ -121,7 +121,7 @@ if( $slice_id!="" ) {  // set variables from database - allways
     if ($group_by) $category_sort = 0;
     $noitem_msg = $db->f(noitem_msg);
     if (!$group_by && $category_sort) {
-      $db->query ("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='".q_pack_id($slice_id)."'");
+      $db->query("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='".q_pack_id($slice_id)."'");
       if ($db->next_record()) {
         $group_by = $db->f("id");
         $gb_direction  = "2";      # number 2 represents 'a' - ascending (because gb_direction in number)

@@ -38,7 +38,7 @@ function GetCategories($db,$p_slice_id){
  $SQL= " SELECT name, value FROM constant WHERE group_id='".$p_slice_id."'";
  $db->query($SQL);
  while ($db->next_record()){
-   $unpacked=unpack_id($db->f("value"));  
+   $unpacked=unpack_id128($db->f("value"));  
    $arr[$unpacked]=$db->f("name");  
  }
  return $arr;  
@@ -106,7 +106,7 @@ function LogItem($id, $column) {
   $SQL = "SELECT id, display_count FROM item WHERE short_id='$id'";
   $db->query($SQL);
   if( $db->next_record() )
-    return unpack_id( $db->f('id') );
+    return unpack_id128( $db->f('id') );
   return false;
 }  
 
@@ -139,7 +139,7 @@ function PutSearchLog ()
     list($usec, $sec) = explode(" ",microtime()); 
     $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS[slice_starttime]); 
     $user = $GLOBALS[HTTP_SERVER_VARS]['REMOTE_USER'];
-    $db->query (
+    $db->query(
     "INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) 
     VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");
 }

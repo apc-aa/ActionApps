@@ -65,15 +65,15 @@ go_url(con_url($sess->url($AA_INSTAL_PATH . "slicedel.php3"),
 function DeleteAlerts ($module_id) {
     global $db;
     
-    $db->query ("SELECT id FROM alerts_collection WHERE moduleid='".q_pack_id($module_id)."'");
+    $db->query("SELECT id FROM alerts_collection WHERE moduleid='".q_pack_id($module_id)."'");
     if (!$db->next_record())
         return;
     $collectionid = $db->f ("id");
-    $db->query ("DELETE LOW_PRIORITY FROM alerts_collection_filter WHERE collectionid=$collectionid");
-    $db->query ("DELETE LOW_PRIORITY FROM alerts_user_collection WHERE collectionid=$collectionid");
-    $db->query ("DELETE LOW_PRIORITY FROM alerts_user_collection_filter WHERE collectionid=$collectionid");
-    $db->query ("DELETE LOW_PRIORITY FROM alerts_collection WHERE id=$collectionid");
-    $db->query ("UPDATE LOW_PRIORITY alerts_user SET owner_module_id = NULL 
+    $db->query("DELETE LOW_PRIORITY FROM alerts_collection_filter WHERE collectionid=$collectionid");
+    $db->query("DELETE LOW_PRIORITY FROM alerts_user_collection WHERE collectionid=$collectionid");
+    $db->query("DELETE LOW_PRIORITY FROM alerts_user_collection_filter WHERE collectionid=$collectionid");
+    $db->query("DELETE LOW_PRIORITY FROM alerts_collection WHERE id=$collectionid");
+    $db->query("UPDATE LOW_PRIORITY alerts_user SET owner_module_id = NULL 
         WHERE owner_module_id = '".q_pack_id($module_id)."'");
 }
 
@@ -92,7 +92,7 @@ function DeleteSlice ($del) {
     $SQL = "SELECT id FROM item WHERE slice_id='$p_del'";
     $db->query($SQL);
     while( $db->next_record() )
-      DeleteItem($db2, unpack_id($db->f(id))); # deletes from content, offline and
+      DeleteItem($db2, unpack_id128($db->f(id))); # deletes from content, offline and
                                                # relation tables
     
     # delete items

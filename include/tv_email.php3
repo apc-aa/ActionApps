@@ -118,7 +118,7 @@ function GetEmailTableView ($viewID, $processForm = false)
                 "view" => array ("type" => "checkbox")),
             "owner_module_id" => array (
                 "caption" => _m("owner"),
-                "default" => pack_id ($GLOBALS["slice_id"]),
+                "default" => pack_id128($GLOBALS["slice_id"]),
                 "view" => array ("type"=>"select","source"=>SelectModule(),"unpacked"=>true),
             )
         ));

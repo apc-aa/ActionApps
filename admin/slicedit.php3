@@ -57,7 +57,7 @@ if ($db->next_record())
       continue;
     $$key = $val; // variables and database fields have identical names
   }
-$id = unpack_id($db->f("id"));  // correct ids
+$id = unpack_id128($db->f("id"));  // correct ids
 $owner = unpack_id($db->f("owner"));  // correct ids
 
 if( $slice_id == "" ) {         // load default values for new slice
@@ -72,7 +72,7 @@ $slice_owners[0] = _m("Select owner");
 $SQL= " SELECT id, name FROM slice_owner ORDER BY name";
 $db->query($SQL);
 while ($db->next_record()) {
-  $slice_owners[unpack_id($db->f(id))] = $db->f(name);
+  $slice_owners[unpack_id128($db->f(id))] = $db->f(name);
 }
 
 $PERMS_STATE = array( "0" => _m("Not allowed"),

@@ -30,7 +30,7 @@ function add_user_and_welcome ($welcome_id, $user_login, $slice_id, $role) {
         return "";
 
     $db = new DB_AA;
-    $db->query ("SELECT name FROM slice WHERE id = '".q_pack_id($slice_id)."'");
+    $db->query("SELECT name FROM slice WHERE id = '".q_pack_id($slice_id)."'");
     if (!$db->next_record()) return L_SLICE_NOT_FOUND;
     $slice_name = $db->f("name");    
     $me = GetUser ($auth->auth["uid"]);  

@@ -324,7 +324,6 @@ if ($return_url)
   $PASS_PARAM=$PHP_SELF."?return_url=".urlencode($return_url);
 else
   $PASS_PARAM=$PHP_SELF;
-
 // field javascript feature (see /include/javascript.php3)
 $javascript = getJavascript();
 if ($javascript) {
@@ -337,7 +336,6 @@ if ($javascript) {
     <script language="javascript" src="'.$AA_INSTAL_PATH.'javascript/fillform.js">
     </script>';
 }
-
 echo "<form name=inputform $html_form_type method=post action=\""
     .($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PASS_PARAM).'"'
     .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>'
@@ -348,7 +346,6 @@ echo "<form name=inputform $html_form_type method=post action=\""
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" class="inputtab2">
 <?php
-
 if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
   echo "<tr><td>$errmsg</td></tr>";
 

@@ -1,6 +1,4 @@
 <?php
-require $GLOBALS[AA_INC_PATH]."sql_parser.php3";
-
 if (!defined ("SEARCHLIB_INCLUDED"))
    	  define ("SEARCHLIB_INCLUDED",1);
 else return;
@@ -24,6 +22,9 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+require $GLOBALS[AA_INC_PATH]."sql_parser.php3";
+require $GLOBALS[AA_INC_PATH]."zids.php3";
 
 function GetWhereExp( $field, $operator, $querystring ) {
 
@@ -211,9 +212,10 @@ function GetConstantGroup( $input_show_func ) {
              $nocache -- do not use cache, even if use_cache is set
 */
 
-function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE",
-    $slices="", $neverAllItems=0, $restrict_ids=false, $defaultCondsOperator = "LIKE",
-    $use_cache=false ) {
+# Get a zids object that contains a list of the ids that match the query.
+function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="", 
+    $type="ACTIVE", $slices="", $neverAllItems=0, $restrict_zids=false, 
+    $defaultCondsOperator = "LIKE", $use_cache=false ) {
   # parameter format example:
   # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
   # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
@@ -252,15 +254,16 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
               $group_by. $type.
               serialize($slices).
               $neverAllItems.
-              ((isset($restrict_ids) && is_array($restrict_ids)) ? serialize($restrict_ids) : "").
+//              ((isset($restrict_ids) && is_array($restrict_ids)) ? serialize($restrict_ids) : "").
+              ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
               $defaultCondsOperator;
 
     if( $res = $cache->get($keystr)) {
-      $arr = unserialize($res);
-      $QueryIDsCount = count($arr);
+      $zids = unserialize($res);
+      $QueryIDsCount = $zids->count();
       if( $debug )
         echo "<br>Cache HIT - return $QueryIDsCount IDs<br>";
-      return $arr;
+      return $zids;
     }
   }
 
@@ -273,14 +276,8 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   ParseEasyConds ($conds, $defaultCondsOperator);
 
   if( $debug ) {
-    echo "<br>Conds:<br>";
-    p_arr_m($conds);
-    echo "<br><br>Sort:<br>";
-    p_arr_m($sort);
-    echo "<br><br>Group by:<br>";
-    p_arr_m($group_by);
-    echo "<br><br>Slices:<br>";
-    p_arr_m($slices);
+	huhl("Conds=",$conds,"Sort=",$sort,
+		"Group by=",$group_by,"Slices=",$slices);
   }
 
   # parse conditions ----------------------------------
@@ -423,17 +420,10 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
     }
   }
 
-  if( $debug ) {
-    echo "<br><br>slice_id: $slice_id";
-    echo "<br><br>select_tabs:";
-    print_r($select_tabs);
-    echo "<br><br>select_conds:";
-    print_r($select_conds);
-    echo "<br><br>select_order:";
-    print_r($select_order);
-    echo "<br><br>select_group:";
-    print_r($select_group);
-  }
+  if( $debug )
+	huhl("QueryZIDs:slice_id=",$slice_id,"  select_tabs=",$select_tabs,
+		"  select_conds=",$select_conds,"  select_order",$select_order,
+		"  select_group=",$select_group);
 
   # construct query --------------------------
   $SQL = "SELECT DISTINCT item.id FROM item ";
@@ -456,30 +446,16 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
       }
       $SQL .= " item.slice_id IN ( $slicesText ) AND ";
   }
+  if (is_object($restrict_zids)) {
+    if ($restrict_zids->count() == 0) 
+        return new zids(); # restrict_zids defined but empty - no result
 
-  if (is_array($restrict_ids)) {
-    $rids  = "";
-    $delim = "";
-    $column = "";
-    reset ($restrict_ids);
-    while (list (,$id) = each ($restrict_ids)) {
-        if ( !$id )
-          continue;
-        if ( !$column )
-          $column = ( (strlen($id) < 16) ? 'short_id' : 'id' );
-        $rids .= $delim.'"'. (($column=='id') ? addslashes($id) : $id) .'"';
-        $delim = ",";
-    }
-    if ($rids)
-        $SQL .= " item.$column IN (".$rids.') AND ';
-     else
-        return array();   # restrict_id definned but empty - no result
+    $SQL .= " ".$restrict_zids->sqlin() ." AND ";
+  } else {
+    # slice(s) or item_ids MUST be specified (in order we can get answer in limited time)
+    if (!$slicesText) return new zids();  
   }
 
-
-  # slice(s) or item_ids MUST be specified (in order we can get answer in limited time)
-  if( !$rids && !$slicesText )
-    return( array() );
 
   $now = now();                                              # select bin -----
   switch( $type ) {
@@ -525,16 +501,19 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
       $db->query($SQL);
 
     while( $db->next_record() )
-      $arr[] = unpack_id($db->f(id));
+//      $arr[] = unpack_id128($db->f(id));
+      $arr[] = $db->f(id);
   }
 
   $QueryIDsCount = count($arr);
 
+  $zids = new zids($arr,"p");
+
   if( $use_cache AND !$nocache )
-    $cache->store($keystr, serialize($arr), "slice_id=$slice_id,slice_id=".
+    $cache->store($keystr, serialize($zids), "slice_id=$slice_id,slice_id=".
                                          join(',slice_id=', $slices));
 
-  return $arr;
+  return $zids;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -664,7 +643,7 @@ if( $debug ) {
         $db->query($SQL);
 
     while( $db->next_record() ) 
-        $arr[] = unpack_id($db->f(id));
+        $arr[] = unpack_id128($db->f(id));
 
     return $arr;           
 }  
@@ -702,7 +681,7 @@ function GetItemAppIds($fields, $db, $slice_id, $conditions,
 # huh( $SQL );
         $db->query($SQL);
         while( $db->next_record() ) {
-          $posible[unpack_id($db->f(item_id))] .= '.';
+          $posible[unpack_id128($db->f(item_id))] .= '.';
         }  
         $set++;
       }  
@@ -745,12 +724,12 @@ function GetItemAppIds($fields, $db, $slice_id, $conditions,
 
   if( $set ) {    # just for speed up the processing
     while( $db->next_record() ) {
-      if( strlen($posible[$unid = unpack_id($db->f(id))]) == $set)   #all conditions passed
+      if( strlen($posible[$unid = unpack_id128($db->f(id))]) == $set)   #all conditions passed
         $arr[] = $unid;
     }
   } else  {
     while( $db->next_record() ) 
-      $arr[] = unpack_id($db->f(id));
+      $arr[] = unpack_id128($db->f(id));
   }    
   
   return $arr;           
@@ -968,7 +947,7 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
       
     while( $db->next_record() ) {
       if( $oldid != $db->f(id)) {
-        $tmp[$count][] = unpack_id($db->f(id));
+        $tmp[$count][] = unpack_id128($db->f(id));
         $oldid = $db->f(id);
         $count=0;
       }
@@ -976,7 +955,7 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
         $count++;
       }  
     }    
-    $tmp[$count][] = unpack_id($oldid);  # last value isn't stored
+    $tmp[$count][] = unpack_id128($oldid);  # last value isn't stored
 
 //print_r($tmp);
 
@@ -985,7 +964,7 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
       $ret = array_merge( $tmp[$i], $tmp[$i-1] );
   } else {
     while( $db->next_record() )
-      $ret[] = unpack_id($db->f(id));
+      $ret[] = unpack_id128($db->f(id));
   }    
     
   return $ret;  

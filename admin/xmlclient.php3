@@ -102,7 +102,7 @@ function GetCategoryIdFromValue($cat_group, $value) {
   if ($debugfeed >= 8) print("\n<br>$SQL");
   $db->query($SQL);
   if ($db->next_record()) {
-    return unpack_id($db->f(id));
+    return unpack_id128($db->f(id));
   }
 }
 
@@ -349,8 +349,8 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
 
 function onefeed($feed_id,$feed) {
   global $debugfeed, $db; 
-  $l_slice_id = unpack_id($feed[slice_id]);
-  $r_slice_id = unpack_id($feed[remote_slice_id]);
+  $l_slice_id = unpack_id128($feed[slice_id]);
+  $r_slice_id = unpack_id128($feed[remote_slice_id]);
   set_time_limit(240); // Allow 4 minutes per feed
   if ($feed[feed_type] == FEEDTYPE_APC) {
 	//select external categories

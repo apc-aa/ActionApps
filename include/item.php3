@@ -226,7 +226,7 @@ class item {
       
     $url_param = ( $GLOBALS['USE_SHORT_URL'] ? 
             "x=".$this->getval('short_id........') :
-            "sh_itm=".unpack_id($this->getval('id..............')));
+            "sh_itm=".unpack_id128($this->getval('id..............')));
 
        # redirecting to another page 
     $url_base = ($redirect ? $redirect : $this->clean_url );
@@ -304,103 +304,6 @@ class item {
         $out .= substr($vparam,8);
     }
     return $clear_output . $this->remove_strings($out,$remove_arr);
-  }
-
-  # we can't call unalias() function recurently because of referenced variable
-  # maxlevel (can't have implicit value), that's why we introduce unalias_recurent()
-  # Note that this function does not handle Site syntax, 
-  function old_unalias_recurent( &$text, $remove, $level, &$maxlevel ) {
-    $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
-                                        # used just for speed optimalization (QuoteColons)
-
-    $parts_start[0] = 0;      # three variables used to identify the parts
-    $parts_end   = array();   # of output string, where we have to apply
-    $parts_count = 0;         # "remove strings"
-
-    $pos = strcspn( $text, "{}" );
-
-    while( (strlen($text) != $pos) AND ($text[$pos] == '{') ) {
-      $out .= substr( $text,0,$pos );           # initial sequence
-      $text = substr( $text,$pos+1 );           # remove processed text
-                                                # from $text is removed {...} on return
-        # $remove is not needed in deeper levels - we use remove strings just on base level (0)
-      $substitution = $this->old_unalias_recurent( $text, "", $level+1, $maxlevel );
-        # QuoteColons substitutes all colons with special AA string.
-        # Used to mark colons, which is not parameter separators.
-
-      if( $substitution != "" ) {   # brackets produced some output, so we have
-                              # to mark the previous section as removestringable
-        $parts_end[$parts_count++] = strlen($out);
-        $parts_start[$parts_count] = strlen($out)+strlen($substitution);
-      }
-      $out .= $substitution;
-      $pos = strcspn( $text, "{}" );            # process next bracket (in text: "...{..}..{.}..")
-    }
-    $out .= substr( $text,0,$pos );           # end sequence
-    $text = substr( $text,$pos+1 );           # remove processed text
-
-    # now we know, there is no bracket in $out - we can substitute
-
-    # bracket could look like:
-    #   {alias:[<field id>]:<f_* function>[:parameters]} - return result of f_*
-    #   {<field_id>}                                     - return content of field
-    #   {any text}                                       - return "any text"
-    # all parameters could contain aliases (like "{any _#HEADLINE text}"),
-    # which is processed first (see above)
-
-    if( ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
-      # call function (called by function reference (pointer))
-      # like f_d("start_date......", "m-d")
-      $fce = $parts[2];
-      return QuoteColons($level, $maxlevel, $this->$fce($parts[1], $parts[3]));
-      # QuoteColons used to mark colons, which is not parameter separators.
-    }
-    elseif( substr($out, 0, 7) == "switch(" ) {
-      # replace switches
-      return QuoteColons($level, $maxlevel, parseSwitch( substr($out,7) ));
-      # QuoteColons used to mark colons, which is not parameter separators.
-	  }
-    elseif( substr($out, 0, 5) == "math(" ) {
-      # replace math
-      return QuoteColons($level, $maxlevel, parseMath( substr($out,5) ));
-      # QuoteColons used to mark colons, which is not parameter separators.  
-	  }
-    elseif( substr($out, 0, 8) == "include(" ) {
-      # include file
-      if( !($pos = strpos($out,')')) )
-        return "";
-      $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), 
-                               DeQuoteColons( substr($out, 8, $pos-8)));
-           # filename do not use colons as separators => dequote before callig
-      $fp = fopen( self_server().'/'. $filename, 'r' );
-      $fileout = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
-      fclose( $fp );
-      return QuoteColons($level, $maxlevel, $fileout);
-      # QuoteColons used to mark colons, which is not parameter separators.
-    }
-    elseif( substr($out, 0, 1) == "#" )
-      # remove comments
-      return "";
-    elseif( substr($out, 0,5) == "debug" ) {
-      print("<pre>item this="); print_r($this); print_r($GLOBALS["apc_state"]); print("</pre><br>"); 
-#      print("<pre>item this="); print_r($this);  print("</pre><br>"); 
-    }
-    elseif( IsField($out) )
-      return QuoteColons($level, $maxlevel, $this->getval($out));
-      # QuoteColons used to mark colons, which is not parameter separators.
-    else {
-      # replace aliases
-      $remove_arr = explode( "##", $remove );
-      for( $i=0; $i < $parts_count; $i++ ) {
-        $txt = substr($out,$parts_start[$i],$parts_end[$i]-$parts_start[$i]);
-        $bracket = substr($out,$parts_end[$i],$parts_start[$i+1]-$parts_end[$i]);
-        $clear_output .= $this->substitute_alias_and_remove( $txt, $remove_arr ).
-                         $this->substitute_alias_and_remove( $bracket, "" );
-      }
-      $txt = substr($out,$parts_start[$i]);         # remaining string
-      $clear_output .= $this->substitute_alias_and_remove( $txt, $remove_arr );
-      return QuoteColons($level, $maxlevel, ($level==0) ? $clear_output : '{'.$clear_output.'}');
-    }
   }
 
   function unalias( &$text, $remove="" ) {
@@ -717,14 +620,14 @@ class item {
       case "disc":
         # _#DISCEDIT used on admin page index.php3 for edit discussion comments
         return con_url($sess->url("discedit.php3"),
-          "item_id=".unpack_id( $this->getval('id..............')));
+          "item_id=".unpack_id128( $this->getval('id..............')));
       case "itemcount":
       	return $GLOBALS['QueryIDsCount'];
       case "safe":
         return safe( $this->getval($col) ); 
       case "slice_info":
         if( !is_array( $slice_info ) )
-          $slice_info = GetSliceInfo(unpack_id( $this->getval('slice_id........')));
+          $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));
         return $slice_info[$col];
       case "add":
 	$add="add=1";
@@ -735,8 +638,8 @@ class item {
 		isset($sess) ? $sess->url($admin_path ."itemedit.php3") 
 		: ($admin_path . "itemedit.php3" . ((isset($AA_CP_Session)) ? ("?AA_CP_Session=" . $AA_CP_Session) : "" )),
 		(isset($add) ? $add : "edit=1").
-		"&encap=false&id=". unpack_id( $this->getval('id..............') ).
-		  (isset($sess) ? "" : ("&change_id=". unpack_id($this->getval('slice_id........')))).
+		"&encap=false&id=". unpack_id128( $this->getval('id..............') ).
+		  (isset($sess) ? "" : ("&change_id=". unpack_id128($this->getval('slice_id........')))).
              		   make_return_url("&return_url=",$p[1]) );	// it return "" if return_url is not defined.
 	}
     }

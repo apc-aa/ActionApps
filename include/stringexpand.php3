@@ -47,6 +47,7 @@ function ParamExplode($param) {
     $variable = substr(strtok('_'.$text,")"),1);   # add and remove '_' - this 
                                                    # is hack for empty variable 
                                                    # (when $text begins with ')')
+    $variable = DeQuoteColons($variable);	# If expanded, will be quoted ()
     $twos = ParamExplode( strtok("") );
     $i=0;
     while( $i < count($twos) ) {
@@ -90,30 +91,31 @@ function ParamExplode($param) {
     }
   	return $ret;
   }
-    
+
+$QuoteArray = array(":" => "_AA_CoLoN_",
+		"(" => "_AA_OpEnPaR_", ")" => "_AA_ClOsEpAr_",
+		"{" => "_AA_OpEnBrAcE_", "}" => "_AA_ClOsEbRaCe_");
+$UnQuoteArray = array_flip($QuoteArray);
+
+
 # Substitutes all colons with special AA string and back depending on unalias nesting.
-# Used to mark colons, which is not parameter separators.
-# Note that this function is duplicated in ModW_QuoteColons
+# Used to mark characters :{}() which are content, not syntax elements
 function QuoteColons($level, $maxlevel, $text) {
+  global $QuoteArray, $UnQuoteArray; # Global so not built at each call
   if( $level > 0 )                  # there is no need to substitute on level 1
-	return str_replace(":", "_AA_CoLoN_", 
-		str_replace("{", "_AA_OpEnBrAcE_",
-		str_replace("}", "_AA_ClOsEbRaCe_",$text)));
+	return strtr($text, $QuoteArray);
 
   #level 0 - return from unalias - change all back to ':'
   if( ($level == 0) AND ($maxlevel > 0) )  # maxlevel - just for speed optimalization
-    return str_replace("_AA_CoLoN_", ":", 
-		str_replace("_AA_OpEnBrAcE_","{",
-		str_replace("_AA_ClOsEbRaCe_","}", $text)));
+	return strtr($text, $UnQuoteArray);
   return $text;
 }
 
 # Substitutes special AA 'colon' string back to colon ':' character
 # Used for parameters, where is no need colons are not parameter separators
 function DeQuoteColons($text) {
-  return str_replace("_AA_CoLoN_", ":", 
-		str_replace("_AA_OpEnBrAcE_","{",
-		str_replace("_AA_ClOsEbRaCe_", "}", $text)));
+	global $UnQuoteArray;
+	return strtr($text, $UnQuoteArray);
 }
 
 
@@ -171,7 +173,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 	$viewScr = new view_scroller($itemview->slice_info['vid'],
                                    $itemview->clean_url,
                                    $itemview->num_records,
-                                   count($itemview->ids),
+                                   $itemview->idcount(),
                                    $itemview->from_record);
 	list( $begin, $end, $add, $nopage ) = ParamExplode($parts[1]);                         
 	return $viewScr->get( $begin, $end, $add, $nopage );
@@ -194,8 +196,12 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 	return QuoteColons($level, $maxlevel, 
             GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
             # view do not use colons as separators => dequote before callig
+    elseif (isset($item) && ($out == "unpacked_id.....")) {
+        return QuoteColons($level, $maxlevel, $item->f_n('id..............'));
+    } 
     elseif( isset($item) && IsField($out) ) {
-      return QuoteColons($level, $maxlevel, $item->getval($out));
+//      return QuoteColons($level, $maxlevel, $item->getval($out));
+      return QuoteColons($level, $maxlevel, $item->f_h($out,"-"));
       # QuoteColons used to mark colons, which is not parameter separators.
     }
     # Look and see if its in the state variable in module site

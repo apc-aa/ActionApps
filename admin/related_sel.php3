@@ -100,6 +100,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
                                              ?>" );
   }    
 
+  // See also tagprefix in itemfunc.php3
   function SelectRelation(item_id, headline) {
     AddSelectOption( 'window.opener.document.inputform.elements["<?php echo $var_id ?>"]', 
                      '>> ' + headline, item_id ) // item_id begins with foo 'x'
@@ -147,7 +148,7 @@ if( $r_r_admin_search )
 # set user defined sort order
 $sort[] = array ( $r_r_admin_order => $r_r_admin_order_dir); 
 
-$item_ids=QueryIDs($fields, $r_sid, $conds, $sort, "", $bin_condition);
+$zids=QueryZIDs($fields, $r_sid, $conds, $sort, "", $bin_condition);
 
 # mode - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
 if( !$mode )
@@ -201,8 +202,8 @@ echo "<table border=0 cellspacing=0 class=login width=460>
 echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
 '<table width="460" border="0" cellspacing="0" cellpadding="2" bgcolor="#F5F0E7">';
 
-                         
-if( count( $item_ids ) > 0 ) {
+#huhl("XYZZY:related_sel:zids=",$zids);                         
+if( isset($zids) && ($zids->count() > 0) ) {
   if( $design )
     $aliases = GetAliasesFromFields($fields);
    else {                     # define just used aliases, including HEADLINE
@@ -217,11 +218,11 @@ if( count( $item_ids ) > 0 ) {
                                    "hlp" => "");
   }                                 
 
-  $itemview = new itemview( $db, $format_strings, $fields, $aliases, $item_ids,
+  $itemview = new itemview( $db, $format_strings, $fields, $aliases, $zids,
               $st->metapage * ($st->current-1), $st->metapage, "" );
   $itemview->print_view();
     
-  $st->countPages( count( $item_ids ) );
+  $st->countPages( $zids->count() );
 
   echo '</table><br>';
 

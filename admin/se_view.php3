@@ -34,7 +34,7 @@ function show_digest_filters ()
 {
     global $view_id;
     $db = new DB_AA;
-    $db->query ("SELECT * FROM alerts_filter WHERE vid=".($view_id ? $view_id : 0));
+    $db->query("SELECT * FROM alerts_filter WHERE vid=".($view_id ? $view_id : 0));
     $rows = $db->num_rows();
     for ($irow = 0; $irow < $rows+2; $irow ++) {
         if ($irow <= $db->num_rows()) $db->next_record();
@@ -50,7 +50,7 @@ function store_digest_filters ()
     global $view_id, $filters, $err;
     $db = new DB_AA;
     if (!$view_id) {
-   		$db->query ("SELECT LAST_INSERT_ID() AS last_vid FROM view");
+   		$db->query("SELECT LAST_INSERT_ID() AS last_vid FROM view");
         $db->next_record();
         $view_id = $db->f("last_vid");
     }
@@ -59,7 +59,7 @@ function store_digest_filters ()
     while (list ($rowid, $filter) = each ($filters)) {
         if (!$filter["description"]) {
             if (substr ($rowid,0,3) != "new")
-                $db->query ("DELETE FROM alerts_filter WHERE id=$rowid");
+                $db->query("DELETE FROM alerts_filter WHERE id=$rowid");
             continue;
         }    
         $varset->clear();

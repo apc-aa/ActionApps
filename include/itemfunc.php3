@@ -108,7 +108,7 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
                 $varset->set("pri",   $new_pri, "number");
                 $varset->set("id", new_id(), "unpacked" );
                 $varset->set("group_id", $constgroup, "quoted" );
-                $db->query ("INSERT INTO constant " . $varset->makeINSERT() );
+                $db->query("INSERT INTO constant " . $varset->makeINSERT() );
             }
         }
     }
@@ -254,7 +254,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="") {
 
     # new behavior, added by Jakub on 2.8.2002 -- related to File Manager
     $db = new DB_AA;
-    $db->query ("SELECT fileman_dir FROM slice WHERE id='".q_pack_id($GLOBALS["slice_id"])."'");
+    $db->query("SELECT fileman_dir FROM slice WHERE id='".q_pack_id($GLOBALS["slice_id"])."'");
 
     if ($db->num_rows() == 1) {
         $db->next_record();
@@ -642,8 +642,10 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
    else
     return;                              # wrong - there must be slice selected
 
-  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids");
+  # hard coded tag prefixes, see also in related_sel.php3
+  $tagprefix = array("x" => '>> ', 'y' => '<> ', 'z' => '<< ');
 
+  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids",$tagprefix);
   FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid, $mode,
           $design, $field[required], $field[input_help], $field[input_morehlp]);
 }

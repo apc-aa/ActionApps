@@ -271,7 +271,7 @@ function FilemanPerms ($auth, $slice_id) {
     global $fileman_dir; 
     
     $db = new DB_AA;
-    $db->query ("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
+    $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
    
     if ($db->num_rows() != 1) return false;
         
@@ -317,7 +317,7 @@ function GetUserEmails ($type = "", $user_id = "current") {
             $slice_ids[] = q_pack_id ($slice);
         $where .= " AND owner_module_id IN ('".join ("','", $slice_ids)."')";
     }
-    $db->query ("SELECT * FROM email ".$where);
+    $db->query("SELECT * FROM email ".$where);
     while ($db->next_record())
         $retval[$db->f("id")] = $db->f("description");
     return $retval;

@@ -233,7 +233,7 @@ class Cvarset {
   {
     global $db;
     $sql = $this->makeSELECT($table);
-    $db->query ($sql);    
+    $db->query($sql);    
     switch ($db->num_rows()) {
         case 0: return $this->makeINSERT($table);
         case 1: return $this->makeUPDATE($table);

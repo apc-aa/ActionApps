@@ -78,7 +78,7 @@ function PrintModulePermModificator($selected_user) {
   $SQL = "SELECT name, type, id FROM module ORDER BY type,name";
   $db->query($SQL);
   while( $db->next_record() ) {
-    $mid = unpack_id($db->f('id'));
+    $mid = unpack_id128($db->f('id'));
     if( $perm_slices[$mid] )
       PrintModulePermRow($mid, $db->f('type'), $db->f('name'), $perm_slices[$mid]);
      else {               # no permission to this module

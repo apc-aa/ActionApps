@@ -484,7 +484,7 @@ if( $r_admin_search )
 # set user defined sort order
 $sort[] = array ( $r_admin_order => $r_admin_order_dir); 
 
-$item_ids=QueryIDs($fields, $slice_id, $conds, $sort, "", $bin_condition);
+$zids=QueryZIDs($fields, $slice_id, $conds, $sort, "", $bin_condition);
 
 $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
                           "category_sort"=>false,
@@ -558,7 +558,7 @@ echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF).make_r
 '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
 
                          
-if( count( $item_ids ) == 0 ) {
+if( $zids->count() == 0 ) {
     echo "<tr><td><div class=tabtxt>". _m("No item found") ."</div></td></table>";
     HtmlPageEnd(); 
     page_close();
@@ -567,14 +567,14 @@ if( count( $item_ids ) == 0 ) {
 
 $aliases = GetAliasesFromFields($fields);
 
-$itemview = new itemview( $db, $format_strings, $fields, $aliases, $item_ids,
+$itemview = new itemview( $db, $format_strings, $fields, $aliases, $zids,
           $st->metapage * ($st->current-1), $st->metapage, $r_slice_view_url );
 $itemview->print_view("NOCACHE");   # big security hole is open if we cache it
                                   # (links to itemedit.php3 would stay with 
                                   # session ids in cache - you bacame 
                                   # another user !!!
 
-$st->countPages( count( $item_ids ) );
+$st->countPages( $zids->count() );
 
 if($st->pageCount() > 1 || $action_selected != "0") {
     echo "<tr><td colspan=100 class=tabtxt><table border=0 cellpadding=3><tr><td class=tabtxt>";

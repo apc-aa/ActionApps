@@ -171,7 +171,7 @@ class tabledit {
         $this->SetViewDefaults();    
         $where = $this->GetWhere ($where);
         
-        $db->query ("SELECT COUNT(*) AS mycount FROM ".$this->getSelectFrom()." WHERE ".$where);
+        $db->query("SELECT COUNT(*) AS mycount FROM ".$this->getSelectFrom()." WHERE ".$where);
         $db->next_record();        
         $rowcount = $db->f("mycount");
 
@@ -211,7 +211,7 @@ class tabledit {
             $collist[] = $col;
         }
             
-        $db->query (
+        $db->query(
              " SELECT ".join(",",$collist)
             ." FROM ".$this->getSelectFrom()
             ." WHERE ".$where

@@ -47,7 +47,7 @@ $SQL= "SELECT name, id FROM slice, feeds
           AND feeds.to_id='$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
-  $impslices[unpack_id($db->f(id))] = $db->f(name);
+  $impslices[unpack_id128($db->f(id))] = $db->f(name);
 
 // lookup external fed slices
 $SQL = "SELECT remote_slice_id, remote_slice_name, node_name
@@ -55,8 +55,8 @@ $SQL = "SELECT remote_slice_id, remote_slice_name, node_name
         WHERE slice_id='$p_slice_id'";
 $db->query($SQL);
 while($db->next_record()) {
-  $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
-  $remote_slices[unpack_id($db->f(remote_slice_id))] = 1;       // mark slice as external
+  $impslices[unpack_id128($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
+  $remote_slices[unpack_id128($db->f(remote_slice_id))] = 1;       // mark slice as external
 }
 
 // add all slices where I have permission to (for setting of mapping for slices, 

@@ -38,7 +38,7 @@ function getJavascript ()
     $db = new DB_AA;
     if ($slice_id) {
         $p_slice_id = q_pack_id ($slice_id);
-        $db->query ("SELECT javascript FROM slice WHERE id='$p_slice_id'");
+        $db->query("SELECT javascript FROM slice WHERE id='$p_slice_id'");
         if ($db->next_record())
             $javascript = $db->f("javascript");
     }

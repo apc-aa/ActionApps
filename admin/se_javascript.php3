@@ -48,10 +48,10 @@ if (get_magic_quotes_gpc() && $javascript)
     $javascript = stripslashes ($javascript);
 
 if ($p_slice_id && $update) 
-    $db->query ("UPDATE slice SET javascript=\"".myaddslashes($javascript)."\" 
+    $db->query("UPDATE slice SET javascript=\"".myaddslashes($javascript)."\" 
         WHERE id='$p_slice_id'");
 else {
-    $db->query ("SELECT javascript FROM slice WHERE id='$p_slice_id'");
+    $db->query("SELECT javascript FROM slice WHERE id='$p_slice_id'");
     if ($db->next_record())
         $javascript = $db->f("javascript");
 }
@@ -86,7 +86,7 @@ $SQL = "SELECT id FROM field
         WHERE slice_id='$p_slice_id'
         ORDER BY id";
 $db = new DB_AA;
-$db->query ($SQL);
+$db->query($SQL);
 echo '<table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
 <tr><td valign=top><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'">
 <tr><td class=tabtit>'._m("Field IDs").':</td></tr>';

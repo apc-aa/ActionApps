@@ -127,7 +127,7 @@ $SQL = "SELECT * FROM view ORDER BY id";
 $db->query($SQL);
 $i=0;
 while( $db->next_record() ) {
-  $view_sid = unpack_id($db->f(slice_id));
+  $view_sid = unpack_id128($db->f(slice_id));
   if( $view_sid == $slice_id ) # list views for this slice
     PrintViewRow($db->f(id), $db->f(name), $db->f(type));
   if($g_modules[$view_sid]) {  # if user has any permission for the view's slice

@@ -85,7 +85,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     $email_welcomes = array (NOT_EMAIL_WELCOME => _m("Do Not Email Welcome"));
         
     $db = new DB_AA;
-    $db->query ("SELECT description, id FROM wizard_welcome");
+    $db->query("SELECT description, id FROM wizard_welcome");
     while ($db->next_record()) 
         $email_welcomes[$db->f("id")] = $db->f("description");
   

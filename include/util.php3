@@ -29,6 +29,7 @@ else return;
 
 require $GLOBALS[AA_INC_PATH]."constants.php3";
 require $GLOBALS[AA_INC_PATH]."mgettext.php3";
+require $GLOBALS[AA_INC_PATH]."zids.php3";
 
 function get_aa_url ($href) {
     global $AA_INSTAL_PATH, $sess;
@@ -334,18 +335,14 @@ function string2id ($str) {
 }
 
 # returns packed md5 id, not quoted !!!
+# Note that pack_id is used in many places where it is NOT 128 bit ids.
 function pack_id ($unpacked_id){
-  //if (!preg_match ("/^[0-9a-f]+$/", $unpacked_id))
-    // echo "\nWarning: trying to pack $unpacked_id.<br>\n";
+    global $errcheck;
+    if ($errcheck && !preg_match("/^[0-9a-f]+$/", $unpacked_id)) # Note was + instead {32}
+        huhe("Warning: trying to pack $unpacked_id.<br>\n");
   return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
 }
 
-# returns packed and quoted md5 id
-function q_pack_id ($unpacked_id){
-  $foo = pack_id($unpacked_id);
-  return (quote($foo));
-} 
-  
 # returns unpacked md5 id
 function unpack_id($packed_id){
   if( (string)$packed_id == "0" )
@@ -354,6 +351,8 @@ function unpack_id($packed_id){
   return (string)$foo;
 }
 
+
+  
 # returns current date/time as timestamp
  function now(){ 
    return time();
@@ -442,13 +441,28 @@ function huhw($msg) {
   echo "<br>\n". HTMLspecialChars($msg);
 }
 
+# Report only if errcheck is set, this is used to test for errors to speed debugging
+# Use to catch cases in the code which shouldn't exist, but are handled anyway.
+function huhe ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
+    global $errcheck;
+    if ($errcheck) {
+        huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="");
+    }
+}
 # Debug function to print debug messages recursively - handles arrays
-function huhl ($before, $array="", $after="") {
-	if (isset($before)) {
+function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
+	if (isset($a)) {
 		print("<listing>");
-		print_r($before);
-		if (isset($array)) print_r($array);
-		if (isset($array)) print($after);
+		print_r($a);
+		if (isset($b)) print_r($b);
+		if (isset($c)) print($c);
+		if (isset($d)) print($d);
+		if (isset($e)) print($e);
+		if (isset($f)) print($f);
+		if (isset($g)) print($g);
+		if (isset($h)) print($h);
+		if (isset($i)) print($i);
+		if (isset($j)) print($j);
 		print("</listing>\n");
 	}
 }
@@ -568,36 +582,34 @@ function GetFieldNo($id) {
 }
 
 # fills content arr with current content of $sel_in items (comma separated ids)
-function GetItemContent($ids, $use_short_ids=false) {
+# Note $zids can be an array of ids, for backward compatability
+function GetItemContent($zids, $use_short_ids=false) {
   global $db;
-  
+
   if (!is_object ($db)) $db = new DB_AA;
 
-  # construct WHERE clausule
-  if( $ids and is_array($ids) ) {
+  # construct WHERE clause
+  if( $zids and is_array($zids) ) { # Backward compat. array plus flag
     if( $use_short_ids )
-      $sel_in = " IN (". implode( $ids, "," ). ")";
-     else { 
-      $sel_in = " IN (";
-      $delim = "";
-      reset($ids);
-      while( list( ,$v) = each ($ids) ) {
-        if( $v ) {
-          $sel_in .= $delim. "'".q_pack_id($v)."'";
-          $delim = ",";
-        }  
-      }  
-      $sel_in .= ( ($delim=="") ? "'')" : ")");
-    }  
-  } elseif($ids) {
+      $sel_in = " IN (". implode( ",", $zids). ")";
+    else
+      $sel_in = " IN (" . implode(",", array_map("qq_pack_id",$zids)). ")";
+  } elseif ($zids and is_object($zids)) {
+      $use_short_ids = $zids->use_short_ids();
+      $sel_in = " IN ("
+           . implode( ",", 
+            ($use_short_ids ? $zids->shortids() : $zids->qq_packedids())) 
+           .")";
+      if ($zids->onetype() == "t") $settags = true;  # Used below
+  } elseif($zids) {   # Its just one one id, look at the $use_short_ids flag
     if( $use_short_ids )
-      $sel_in = "='$ids'";
+      $sel_in = "='$zids'";
      else
-      $sel_in = "='".q_pack_id($ids)."'";
+      $sel_in = "='".q_pack_id($zids)."'";
   } else 
     return false;
 
-    # get content from item table
+  # get content from item table
   $delim = "";
   $id_column = ($use_short_ids ? "short_id" : "id");   
   $SQL = "SELECT * FROM item WHERE $id_column $sel_in";
@@ -609,19 +621,30 @@ function GetItemContent($ids, $use_short_ids=false) {
     reset( $db->Record );
     if( $use_short_ids ) {
       $foo_id = $db->f("short_id");
-      $translate[unpack_id($db->f("id"))] = $db->f("short_id"); # id -> short_id
+      $translate[unpack_id128($db->f("id"))] = $db->f("short_id"); # id -> short_id
         # WHERE for query to content table
       $new_sel_in .= "$delim '". quote($db->f("id")) ."'"; 
       $delim = ",";
     } else 
-      $foo_id = unpack_id($db->f("id"));
+      $foo_id = unpack_id128($db->f("id"));
+    # Note that it stores into the $content[] array based on the id being used which 
+    # could be either shortid or longid, but is NOT tagged id.
     while( list( $key, $val ) = each( $db->Record )) {
       if( EReg("^[0-9]*$", $key))
         continue;
       $content[$foo_id][substr($key."................",0,16)][] = 
                                                         array("value" => $val);
-    }  
-  }  
+    }
+  }
+
+
+  # If its a tagged id, then set the "idtag..........." field
+  if ($settags) {
+    $tags = $zids->gettags();
+    while ( list($k,$v) = each($tags)) {
+        $content[$k]["idtag..........."][] = array("value" => $v);
+    }
+  }
   
     # construct WHERE query to content table if used short_ids
   if( $use_short_ids ) {
@@ -644,8 +667,8 @@ function GetItemContent($ids, $use_short_ids=false) {
     $db->query($SQL);
 
   while( $db->next_record() ) {
-    $fooid = ( $use_short_ids ? $translate[unpack_id($db->f(item_id))] : 
-                               unpack_id($db->f(item_id)));
+    $fooid = ( $use_short_ids ? $translate[unpack_id128($db->f(item_id))] : 
+                               unpack_id128($db->f(item_id)));
     $content[$fooid][$db->f(field_id)][] = 
       array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
              "flag"=> $db->f(flag) );
@@ -664,7 +687,8 @@ function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
 }
 
 # fills array by headlines of items in specified slice (unpacked_id => headline)
-function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $ids="", $type="all") {
+function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $zids="", 
+    $type="all", $tagprefix=null) {
   $psid = q_pack_id( $sid );
   $time_now = time();
   if ($slice_field=="") $slice_field="headline.";
@@ -676,21 +700,21 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $ids="
     $headline_fld = 'headline........';
   }  
 
+  # Allow passing an array, this is how is used from show_fnc_freeze_iso and show_fnc_iso
+  if (isset($zids) && is_array($zids))
+    $zids = new zids($zids); # Don't guess the type, could be l or t
+
   if( $type == "all" )                          # select all items from slice
     $cond = " AND item.slice_id = '". q_pack_id( $sid ) ."' ";
-  elseif( !(isset($ids) && is_array($ids)) )
-    return false;
-  else {  
-    $cond = ' AND id IN ( '; 
-    reset( $ids );  
-    while( list( , $v ) = each( $ids )) {
-      $cond .= "$delim'". q_pack_id($v[value]) ."'";
-      $delim=',';
-    }
-    $cond .= ' ) ';
+  elseif (isset($zids) && is_object($zids) && ($zids->count() > 0)) {
+    if ($debug) huhl("Getting sql from ",$zids);
+    $cond .= ' AND ' . $zids->sqlin();
   }
-  if( $cond == " AND id IN ( '' ) ")
+  else 
     return false;
+
+//  if( $cond == " AND id IN ( '' ) ")
+//    return false;
   
   $SQL = "SELECT id, text FROM content, item 
            WHERE item.id=content.item_id
@@ -703,10 +727,18 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $ids="
         ORDER BY text";
 
   $db->tquery($SQL);
-    
-  while($db->next_record())
-    $arr[unpack_id($db->f(id))] = substr($db->f(text), 0, 50);  #truncate long headlines
-        
+
+  # See if need to Put the tags back on the ids
+  if (isset($zids) && is_object($zids) && ($zids->onetype() == 't'))
+       $tags = $zids->gettags();
+  
+  while($db->next_record()) {
+    $i = unpack_id128($db->f(id));
+    $arr[(isset($tags) ? ($tags[$i] . $i) : $i)]
+        = ((isset($tags) ? ($tagprefix[$tags[$i]]) : "")
+            . substr($db->f(text), 0, 50));  #truncate long headlines
+  }
+  if ($debug)  huhl("GetItemHeadlines found ",$arr);
   return $arr;
 }
 
@@ -719,7 +751,7 @@ function GetConstantContent( $group, $order='pri,name' ) {
                ORDER BY $order");
   $i=1;               
   while($db->next_record()) {
-    $foo_id = unpack_id($db->f(id));
+    $foo_id = unpack_id128($db->f(id));
     $content[$foo_id]["const_name......"][] = array( "value"=> $db->f("name") );
     $content[$foo_id]["const_value....."][] = array( "value"=> $db->f("value"),
                                                      "flag" => FLAG_HTML );
@@ -776,7 +808,7 @@ function GetId4Sid($sid) {
   $SQL = "SELECT id FROM item WHERE short_id='$sid'";
   $db->query( $SQL );
   if( $db->next_record() ) 
-    return unpack_id($db->f("id"));
+    return unpack_id128($db->f("id"));
   return false;  
 }
 
@@ -923,6 +955,7 @@ function IsField($fld) {
 }
 
 # fulltext is viewed - count hit
+#TODO: Modify to use zid and then change in ParseViewCommand - mitra
 function CountHit($id, $column='id') {
   global $db;
   $where = (( $column == "id" ) ? "id='".q_pack_id($id)."'" : "short_id='$id'");
@@ -1285,7 +1318,7 @@ function add_post2shtml_vars () {
     add_vars();
     if (!$post2shtml_id) return;
     if (!is_object ($db)) $db = new DB_AA;
-    $db->query ("SELECT * FROM post2shtml WHERE id='$post2shtml_id'");
+    $db->query("SELECT * FROM post2shtml WHERE id='$post2shtml_id'");
     $db->next_record();
     $vars = unserialize ($db->f("vars"));
     $var_types = array ("post","get","files","cookie");
@@ -1304,7 +1337,7 @@ function add_post2shtml_vars () {
 
 function delete_post2shtml_vars ($post2sthml_id) {
     global $db;
-    $db->query ("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
+    $db->query("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
 }
 
 /** List of email types with translated description.

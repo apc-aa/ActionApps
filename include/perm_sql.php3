@@ -135,7 +135,7 @@ function FindGroups ($pattern, $flags = 0) {
 
 function find_user_by_login ($login) {
 	$db = new DB_AA;
-	$db->query ("SELECT * FROM users WHERE uid='$login'");
+	$db->query("SELECT * FROM users WHERE uid='$login'");
     while ($db->next_record())
         $by_id[$db->f("id")] = array("name"=>($db->f("givenname")." ".$db->f("sn")),
                                      "mail"=>$db->f("mail"));

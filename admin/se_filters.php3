@@ -50,7 +50,7 @@ $SQL= "SELECT name, id FROM slice, feeds
 
 $db->query($SQL);
 while($db->next_record())
-  $impslices[unpack_id($db->f(id))] = $db->f(name);
+  $impslices[unpack_id128($db->f(id))] = $db->f(name);
 
 // lookup external slices
 $SQL = "SELECT remote_slice_id, remote_slice_name, feed_id, node_name
@@ -59,8 +59,8 @@ $SQL = "SELECT remote_slice_id, remote_slice_name, feed_id, node_name
 $db->query($SQL);
 
 while($db->next_record()) {
-  $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
-  $remote_slices[unpack_id($db->f(remote_slice_id))] = $db->f(feed_id);
+  $impslices[unpack_id128($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
+  $remote_slices[unpack_id128($db->f(remote_slice_id))] = $db->f(feed_id);
 }
 
 if( !isset($impslices) OR !is_array($impslices)){
@@ -86,7 +86,7 @@ if( $group ) {
       $to_categories["0"] = _m("-- The same --");
       $first_time = false;
     } 
-    $to_categories[unpack_id($db->f(id))] = $db->f(name);
+    $to_categories[unpack_id128($db->f(id))] = $db->f(name);
   }  
 }
 
@@ -310,7 +310,7 @@ else {
                ORDER BY name");
     $i=1;
     while($db->next_record()) {
-      PrintOneRow(unpack_id($db->f(id)),$db->f(name),$i++);
+      PrintOneRow(unpack_id128($db->f(id)),$db->f(name),$i++);
     }
   }
 } 

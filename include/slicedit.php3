@@ -76,7 +76,7 @@ if( $add || $update ) {
         ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
 
         if ($fileman_dir) {
-            $db->query ("SELECT * FROM slice WHERE fileman_dir='$fileman_dir' AND id <> '".q_pack_id($slice_id)."'");
+            $db->query("SELECT * FROM slice WHERE fileman_dir='$fileman_dir' AND id <> '".q_pack_id($slice_id)."'");
             if ($db->num_rows()) $err[] = _m("This File Manager Directory is already used by another slice.");
         }
     

@@ -50,10 +50,10 @@ if( $categ OR $category ) {
 
 if( $deleteGroup && $group_id && !$category ) {
   # delete constant group name
-  $db->query ("DELETE FROM constant WHERE (group_id='lt_groupNames' AND value='$group_id')
+  $db->query("DELETE FROM constant WHERE (group_id='lt_groupNames' AND value='$group_id')
               OR group_id='$group_id'");
   # delete constants itself
-  $db->query ("DELETE FROM constant WHERE (group_id='$group_id')");
+  $db->query("DELETE FROM constant WHERE (group_id='$group_id')");
   go_url( $sess->url(self_base() . "se_fields.php3"));
 }
 
@@ -66,7 +66,7 @@ function myQuery (&$db, $SQL)
     if ($debug) 
       return $db->dquery ($SQL);
     else 
-      return $db->query ($SQL);
+      return $db->query($SQL);
 }
 
 // Check permissions
@@ -335,7 +335,7 @@ myQuery ($db, "
 	SELECT * FROM constant_slice INNER JOIN slice 
 	ON constant_slice.slice_id = slice.id 
 	WHERE group_id='$group_id'");
-if ($db->next_record()) $owner_id = unpack_id ($db->f("slice_id"));
+if ($db->next_record()) $owner_id = unpack_id128($db->f("slice_id"));
 
 echo "
 <tr><td><b>"._m("Constant group owner - slice")."</b></td>
@@ -382,7 +382,7 @@ if( $s_constants ) {
     if( $update ) # get values from form
       ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $categ, $classes);
     else          # get values from database
-      ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id($v["id"]), $v["pri"], $v["class"], $categ, $classes);
+      ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id128($v["id"]), $v["pri"], $v["class"], $categ, $classes);
     $i++;  
   }
 }  

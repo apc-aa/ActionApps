@@ -65,12 +65,12 @@ if ($go_findview && $findview) {
     while (list (,$field) = each ($fields)) 
         $SQL .= "view.$field LIKE \"%".addslashes_magic ($findview)."%\" OR ";
     $SQL .= "0";
-    $db->query ($SQL);
+    $db->query($SQL);
     echo $db->num_rows()." matching views found:<br>";
     while ($db->next_record()) 
         echo $db->f("id")." (".$db->f("name").") "
                 ."<a href=\"".$sess->url("se_view.php3?view_id=".$db->f("id")."&view_type=".$db->f("type")
-                ."&change_id=".unpack_id($db->f("slice_id")))
+                ."&change_id=".unpack_id128($db->f("slice_id")))
                 ."\">"._m("Jump")."</a><br>";
 }
 
@@ -98,11 +98,11 @@ if ($go_findslice && $findslice) {
     while (list (,$field) = each ($fields)) 
         $SQL .= "$field LIKE \"%".addslashes_magic ($findslice)."%\" OR ";
     $SQL .= "0";
-    $db->query ($SQL);
+    $db->query($SQL);
     echo $db->num_rows()." matching slices found:<br>";
     while ($db->next_record()) 
         echo $db->f("name")." "
-                ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id ($db->f("id")))
+                ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id128($db->f("id")))
                 ."\">"._m("Jump")."</a><br>";
 }
     

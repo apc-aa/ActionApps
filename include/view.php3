@@ -95,12 +95,11 @@ function ParseViewParameters($query_string="") {
     $query_string = str_replace( 'set[]', "set[".$parts[1]."]", $query_string );
   }
 
-  if( $debug ) {
-    echo "<br>View $vid - query_string:$query_string<br>";
-  }
+  if( $debug ) huhl("ParseViewParameters: vid=$vid, query_string=$query_string");
 
   add_vars($query_string);       # adds values from url (it's not automatical in SSIed script)
 
+  # Splits on "-" and subsitutes aliases
   $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
 
   #  This code below do not work!! - it is not the same as the code above!!
@@ -113,19 +112,26 @@ function ParseViewParameters($query_string="") {
     case 'v':  $vid = $command[1];
                break;
     case 'i':  $vid = $command[1];
-               for( $i=2; $i<count($command); $i++)
-                 $item_ids[] = $command[$i];
+//               for( $i=2; $i<count($command); $i++)
+//                 $item_ids[] = $command[$i];
+		$zids = new zids(array_slice($command,2));
+		// TODO figure out why CountHit not called here - mitra
                break;
     case 'x':  $vid = $command[1];
-               for( $i=2; $i<count($command); $i++)
-                 $item_ids[] = $command[$i];
-               if( strlen($command[2]) < 16  ) {           # short id is used
-                 $use_short_ids = true;
-                 if( $command[2] > 0 )
-                   CountHit($command[2], 'short_id');      # count hit only for
-               } else {                                    #  first displayed
-                 CountHit($command[2], 'id');              #  item
-               }  
+		 $zids = new zids(array_slice($command,2));
+		#huhl("XYZZY: ParseViewParameters: zids=",$zids);
+//               for( $i=2; $i<count($command); $i++)
+//                 $item_ids[] = $command[$i];
+// This is bizarre code, just incrementing the first item, left as it is
+// but questioned on apc-aa-coders - mitra
+		if ($zids->use_short_ids()) {
+			$si = $zids->shortids();
+			CountHit($si[0],'short_id');
+		} else {
+			$li = $zids->longids();
+			CountHit($li[0],'id');
+		}
+		#huhl("XYZZY: ParseViewParameters end X");
                break;
     case 'c':  if( $command[1] && ($command[2] != 'AAnoCONDITION')) 
                  $param_conds[$command[1]] = stripslashes($command[2]);
@@ -170,8 +176,8 @@ function ParseViewParameters($query_string="") {
   $arr['slices']=$slices;
   $arr['mapslices']=$mapslices;
   $arr['param_conds'] = $param_conds; 
-  $arr['item_ids'] = $item_ids;
-  $arr['use_short_ids'] = $use_short_ids;
+//  $arr['item_ids'] = $item_ids;
+  $arr['zids'] = $zids;
 
   return $arr;
 }
@@ -272,16 +278,18 @@ function GetView($view_param) {
 
 # return view result based on parameters
 function GetViewFromDB($view_param, &$cache_sid) {
-  global $db;
+  global $db,$debug;
 
+  if ($debug) huhl("GetViewFromDB:",$view_param);
   $vid = $view_param["vid"];
   $als = $view_param["als"];
   $conds = $view_param["conds"];
   $slices = $view_param["slices"];
   $mapslices = $view_param["mapslices"];
   $param_conds = $view_param["param_conds"];
-  $item_ids = $view_param["item_ids"];
-  $use_short_ids = $view_param["use_short_ids"];
+//  $item_ids = $view_param["item_ids"];
+  $zids = $view_param["zids"];
+//  $use_short_ids = $view_param["use_short_ids"];
   $list_from = max(0, $view_param["from"]-1);    # user counts items from 1, we from 0
   $list_to = max(0, $view_param["to"]-1);        # user counts items from 1, we from 0
   $list_page = $view_param["page"];
@@ -306,23 +314,23 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
   $listlen    = ($view_param["listlen"] ? $view_param["listlen"] : $view_info['listlen'] );
   $p_slice_id = ($view_param["slice_id"] ? q_pack_id($view_param["slice_id"]) : $view_info['slice_id'] );
-  $slice_id = unpack_id($p_slice_id);
+  $slice_id = unpack_id128($p_slice_id);
   
   $cache_sid = $slice_id;     # store the slice id for use in cache (GetView())
   
   # ---- display content in according to view type ----
+  if ($debug) huhl("view_info=",$view_info);
   switch( $view_info['type'] ) {
-    case 'full':  # parameters: item_ids, als
+    case 'full':  # parameters: zids, als
       $format = GetViewFormat($view_info);
   
-      $ids_cnt = count( $item_ids );
-      if( $ids_cnt > 0 ) {
+      if( isset($zids) && ($zids->count() > 0) ) {
         # get alias list from database and possibly from url
         list($fields,) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);
        
-        $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 
-                                  0, 1, shtml_url(), "", $use_short_ids);
+        $itemview = new itemview( $db, $format, $fields, $aliases, $zids, 
+                                  0, 1, shtml_url(), "");
 
         return $itemview->get_output_cached("view");
       }  
@@ -382,7 +390,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                array( 'operator' => '>=',
                       'value' => mktime (0,0,0,$month,1,$year),
                       $view_info['field2'] => 1 ));
-
+        # Note drops through to next case
     case 'digest':
     case 'list':
     case 'rss':
@@ -408,22 +416,34 @@ function GetViewFromDB($view_param, &$cache_sid) {
       }
 
       $sort  = GetViewSort($view_info);
+/*
       unset($p_item_ids);
       if ( $item_ids && !$use_short_ids) {    # ids could be defined via cmd[]=x command
         reset( $item_ids );
         while( list( ,$v) = each( $item_ids ) )
-          $p_item_ids[] = pack_id( $v );   # no q_pack_id - it mustn't be quoted
+          $p_item_ids[] = pack_id128( $v );   # no q_pack_id - it mustn't be quoted
       }
-      $item_ids=QueryIDs($fields, $item_ids ? false : $slice_id, $conds, $sort,
+*/
+//      $item_ids =
+	$zids2 = 
+	    QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
                          $group_by, "ACTIVE", $slices, 0, 
-                         $use_short_ids ? $item_ids : $p_item_ids);
+			 $zids);
+//                         $use_short_ids ? $item_ids : $p_item_ids);
+    # Note this zids2 is always packed ids, so lost tag information
+
+    if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
+        $zids2 = $zids2->retag($zids);
+        if ($debug) huhl("Retagged zids=",$zids2);
+    }
+
+	if ($debug) huhl("GetViewFromDB: Filtered ids=",$zids2); 
 
       $format = GetViewFormat($view_info);
       $format['calendar_month'] = $month;
       $format['calendar_year'] = $year;
 
-      $ids_cnt = count( $item_ids );
-      if( ($ids_cnt > 0) AND !( ($ids_cnt==1) AND !$item_ids[0]) ) {
+      if (isset($zids2) && ($zids2->count() > 0)) {
 
         if( $list_to > 0 )
           $listlen = max(0, $list_to-$list_from + 1);
@@ -434,7 +454,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
           if( $pos ) {
             $no_of_pages = substr($list_page,$pos+1);
             $page_n = substr($list_page,0,$pos)-1;      #count from zero
-            $items = count($item_ids);
+            $items = $zids2->count();
             $items_plus = $items + ($no_of_pages-1); # to be last page shorter than others if there is not so good number of items
 //            $list_from = $page_n * floor($items_plus/$no_of_pages);
 //            $listlen = floor($items_plus/$no_of_pages);
@@ -447,13 +467,15 @@ function GetViewFromDB($view_param, &$cache_sid) {
         if( !$list_from )
           $list_from = 0;
 
-        $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, $random ? $random : $list_from,
+        $itemview = new itemview( $db, $format, $fields, $aliases, $zids2, $random ? $random : $list_from,
                                   $listlen, shtml_url(), "");
+	#if ($debug) huhl("itemview=",$itemview);
         if ($view_info['type'] == 'calendar')
             $itemview_type = 'calendar';
         else $itemview_type = 'view';
+        if ($debug) huhl("GetViewFromDB going to get_output_cached");
         return $itemview->get_output_cached($itemview_type);
-      }  
+      }   #zids2->count >0
       // 	if( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
       return $noitem_msg;
       
@@ -511,7 +533,7 @@ class constantview{
     #cache new value 
     $res = $this->get_output();
 
-    $cache->store($keystr, $res, "slice_id=".unpack_id($this->slice_info["id"]));
+    $cache->store($keystr, $res, "slice_id=".unpack_id128($this->slice_info["id"]));
     return $res;
   }  
               

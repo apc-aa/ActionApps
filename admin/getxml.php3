@@ -133,7 +133,7 @@ function GetFeedingSlices( $node_name, $user) {
   $db->query("SELECT slice_id FROM ef_permissions WHERE (node='$node_name' OR node='')
                                                     AND (user='$user' OR user='')");
   while ($db->next_record()) {
-    $slices[] = unpack_id($db->f(slice_id));
+    $slices[] = unpack_id128($db->f(slice_id));
   }
   return $slices;
 }
@@ -174,7 +174,7 @@ function GetXMLCategories( $slice_id, &$slice_fields, &$xml_categories_refs,
 
   $xml_categories_refs.="\t<aa:categories><rdf:Bag>\n";
   while ($db->next_record()) {
-    $id = unpack_id($db->f(id));
+    $id = unpack_id128($db->f(id));
     $xml_categories .= "<aa:category rdf:about=\"".AA_INSTAL_URL."cat/$id\">\n".
                           "\t<aa:name>".code($db->f(name))."</aa:name>\n".
                           "\t<aa:value>".code($db->f(value))."</aa:value>\n".
@@ -387,7 +387,7 @@ if (!$slice_id) {                           // feed establishing mode
   $ids="";
   $time=0;
   while ($db->next_record()) {
-    $ids[] = unpack_id($db->f(id));
+    $ids[] = unpack_id128($db->f(id));
     $time = max( $time, $db->f(publish_date), $db->f(last_edit));   // save time of the newest item
   }
   $time = unixstamp_to_iso8601($time);

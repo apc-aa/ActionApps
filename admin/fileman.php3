@@ -162,7 +162,7 @@ echo "<tr><td class=tabtxt>".fileAction ("upload",_m("Upload file")." (max. 10 M
 <input type='file' name='uploadarg'></td></tr>";
 echo "<tr height=$space><td class=tabtxt colspan=2></td></tr>";
 
-$db->query ("SELECT * FROM wizard_template");
+$db->query("SELECT * FROM wizard_template");
 if ($db->num_rows()) {
     echo "<tr><td class=tabtxt>".fileAction("copytmp",_m("Copy template dir")). "</td>
     <td class=tabtxt><select name='arg[copytmp]'>";

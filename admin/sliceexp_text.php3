@@ -44,16 +44,16 @@ function getRecord (&$array, &$record)
 function exportOneSliceStruct ($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file) {
 global $db, $sess;
 	
-	$slice_id_bck = stripslashes(unpack_id($slice_id));
+	$slice_id_bck = stripslashes(unpack_id128($slice_id));
 	
 	$SQL = "SELECT * FROM slice WHERE id='$slice_id'";
 	$db->query($SQL);
 	if (!$db->next_record()) {
-		MsgPage($sess->url(self_base())."index.php3", "ERROR - slice $slice_id_bck (".pack_id($slice_id_bck).") not found", "standalone");
+		MsgPage($sess->url(self_base())."index.php3", "ERROR - slice $slice_id_bck (".pack_id128($slice_id_bck).") not found", "standalone");
 		exit;	
 	}
 	
-	$uid = unpack_id($db->f(id));
+	$uid = unpack_id128($db->f(id));
 	getRecord ($slice, $db->Record);
 	
 	//unpack the IDs
@@ -66,7 +66,7 @@ global $db, $sess;
 			MsgPage($sess->url(self_base())."index.php3", L_E_EXPORT_TITLE_IDLENGTH.strlen($SliceID), "standalone");
 			exit;	
 		}
-		else $uid = unpack_id($SliceID);
+		else $uid = unpack_id128($SliceID);
 	}
 	
 	$slice["id"] = $uid;
@@ -93,7 +93,7 @@ global $db, $sess;
 
 function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date) 
 {
-    $slice_id2 = unpack_id($slice_id);
+    $slice_id2 = unpack_id128($slice_id);
     list($fields,) = GetSliceFields($slice_id2);
 	if ($b_export_spec_date) {
 		$conds[0]["operator"] = "e:>=";
@@ -105,11 +105,12 @@ function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_sp
 	} else {
 		$conds="";
 	}
-	$item_ids=QueryIDs($fields, $slice_id2, $conds, "", "", "ALL");
-	if (count($item_ids) == 0) { 
+	$zids=QueryZIDs($fields, $slice_id2, $conds, "", "", "ALL");
+	if ($zids->count() == 0) { 
 		if ($b_export_spec_date) { fwrite($temp_file, "<comment>\nThere are no data in selected days (from ".$b_export_from_date." to ".$b_export_to_date.").\n</comment>\n");}
 		else {fwrite($temp_file, "<comment>\nThere are no data in slice.\n</comment>\n");}
 	} else {
+		$item_ids = $zids->longids();
 		reset($item_ids);	
 		$item_count = count($item_ids);
 		for ($i=0; $i<$item_count; $i++) {
@@ -152,7 +153,7 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 
 	reset($export_slices);
 	while (list(,$slice_id_bck) = each($export_slices)) {
-		$slice_id = addslashes(pack_id($slice_id_bck));
+		$slice_id = addslashes(pack_id128($slice_id_bck));
 
 		$SQL= "SELECT name FROM slice WHERE id like '".$slice_id."' ORDER BY name";
 		$db->query($SQL);
@@ -164,11 +165,11 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 				MsgPage($sess->url(self_base())."index.php3", L_E_EXPORT_TITLE_IDLENGTH.strlen($SliceID), "standalone");
 				exit;	
 			}
-			else $SliceIDunpack = unpack_id($SliceID);
+			else $SliceIDunpack = unpack_id128($SliceID);
 		}
 						
 		fwrite($temp_file, "<slice id=\"");
-		fwrite($temp_file, ($b_export_type != _m("Export to Backup") ? $SliceIDunpack : unpack_id($slice_id)));
+		fwrite($temp_file, ($b_export_type != _m("Export to Backup") ? $SliceIDunpack : unpack_id128($slice_id)));
 		fwrite($temp_file, "\" name=\"".$slice_name."\">\n");	
 		
 		if ($b_export_struct) {

@@ -81,7 +81,7 @@ echo _m("<p>You can delete only slices which are marked as &quot;<b>deleted</b>&
 $SQL = "SELECT * FROM module WHERE deleted>0";
 $db->query($SQL);
 while( $db->next_record() ) {
-  PrintSlice(unpack_id($db->f(id)), $db->f(name), $db->f(type) );
+  PrintSlice(unpack_id128($db->f(id)), $db->f(name), $db->f(type) );
   $slice_to_delete = true;
 }
 if( !$slice_to_delete )

@@ -84,10 +84,10 @@ function SelectModule ($all = false) {
         else $where = 0;
     }
     
-    $db->query ("SELECT id, name FROM module
+    $db->query("SELECT id, name FROM module
         WHERE $where AND type IN ('Alerts','Auth')");
     while ($db->next_record()) 
-        $retval[unpack_id($db->f("id"))] = $db->f("name");
+        $retval[unpack_id128($db->f("id"))] = $db->f("name");
     return $retval;
 }
 
