@@ -52,13 +52,13 @@ while($db->next_record())
   $impslices[unpack_id($db->f(id))] = $db->f(name);
 
 // lookup external slices
-$SQL = "SELECT remote_slice_id, remote_slice_name, feed_id
+$SQL = "SELECT remote_slice_id, remote_slice_name, feed_id, node_name
         FROM external_feeds
         WHERE slice_id='$p_slice_id' ORDER BY remote_slice_name";
 $db->query($SQL);
 
 while($db->next_record()) {
-  $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(remote_slice_name);
+  $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
   $remote_slices[unpack_id($db->f(remote_slice_id))] = $db->f(feed_id);
 }
 
@@ -90,10 +90,25 @@ if ($feed_id = $remote_slices[$import_id]) {
   $imp_count = sizeof($ext_categs);
 
   if ($ext_categs && is_array($ext_categs)) {
-    while (list ($id,$v) = each($ext_categs)) {
-      $chboxcat[$id] = ($v[target_category_id] != "");
-      $selcat[$id] = $v[target_category_id];
-      $chboxapp[$id] = $v[approved];
+    $v0=current($ext_categs);
+    $same = true;
+    while (list(,$v) = each($ext_categs)) {
+      if ($v[target_category_id] != $v0[target_category_id] || $v[approved] != $v0[approved]) {
+        $same = false;
+        break;
+      }
+    }
+    if ($same) {
+      $all_categories=true;
+      $approved_0 = $v0[approved];
+      $categ_0 = $v0[target_category_id];
+    } else {
+      reset($ext_categs);
+      while (list ($id,$v) = each($ext_categs)) {
+        $chboxcat[$id] = ($v[target_category_id] != "");
+        $selcat[$id] = $v[target_category_id];
+        $chboxapp[$id] = $v[approved];
+      }
     }
   }
 } else {
@@ -216,7 +231,7 @@ function UpdateFilters(slice_id, import_id) {
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
-	<td colspan class=tabtxt align=center><b><?php echo L_FLT_FROM_SL . "&nbsp; "?></b></td>
+  <td colspan class=tabtxt align=center><b><?php echo L_FLT_FROM_SL . "&nbsp; "?></b></td>
   <td><?php FrmSelectEasy("import_id", $impslices, $import_id, "OnChange=\"ChangeImport()\""); ?></td>
 </tr>
 </table></td></tr>
@@ -224,9 +239,9 @@ function UpdateFilters(slice_id, import_id) {
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
-	<td width="40%" colspan=2 class=tabtxt align=center><b><?php echo L_FLT_FROM ?></b></td>
-	<td width="30%" class=tabtxt align=center><b><?php echo L_FLT_TO ?></b></td>
-	<td width="30%" class=tabtxt align=center><b><?php echo L_FLT_APPROVED ?></b></td>
+  <td width="40%" colspan=2 class=tabtxt align=center><b><?php echo L_FLT_FROM ?></b></td>
+  <td width="30%" class=tabtxt align=center><b><?php echo L_FLT_TO ?></b></td>
+  <td width="30%" class=tabtxt align=center><b><?php echo L_FLT_APPROVED ?></b></td>
 </tr>  
 
 <tr>
@@ -292,6 +307,9 @@ else {
 } 
 /*
 $Log$
+Revision 1.14  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.13  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 

@@ -63,7 +63,6 @@ $XML_BEGIN = '<'.'?xml version="1.0"?'. ">\n".
 
 //-------------------------- Function definitons -------------------------------
 
-
 function code($v) {
   return utf8_encode(htmlspecialchars($v));
 }
@@ -167,14 +166,15 @@ function CreateXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs,
                  "\t</channel>\n";
 }
 
-function getFieldContent($f, &$content4id) {
-  if ($f)
-    return $content4id[$f][0][value];
-}
-
 function GetBaseFieldContent(&$slice_fields, $ftype, &$content4id) {
+  if ($ftype=="")
+    return "";
   $f = GetBaseFieldId($slice_fields,$ftype);
-  return strip_tags(getFieldContent($f,$content4id));
+  $cont = $content4id[$f][0];
+  if ($cont[flag] & HTML_FLAG == HTML_FLAG)
+    return strip_tags($cont[value]);
+  else
+    return $cont[value];
 }
 
 function GetXMLFieldData($slice_id,&$slice_fields, $field_id, &$content4id) {
@@ -246,10 +246,10 @@ function GetXMLItem($slice_id,$item_id, &$content4id, &$item_categs, &$slice_fie
   // create Dublin Core elements
   reset($MAP_DC2AA);
   while (list($k,$v) = each($MAP_DC2AA)) {
-    if ($k == $p_date_id) // convert publish date
-      $content4id[$p_date_id][0][value] = unixstamp_to_iso8601 ($content4id[$p_date_id][0][value]);
-
-    $xml_items .= "\t<dc:$k>".code(GetBaseFieldContent($slice_fields,$v,$content4id))."</dc:$k>\n";
+    $cont = GetBaseFieldContent($slice_fields,$v,$content4id);
+    if ($v == "publish_date") // convert publish date
+      $cont = unixstamp_to_iso8601 ($cont);
+    $xml_items .= "\t<dc:$k>".code($cont)."</dc:$k>\n";
   }
 
   // create AA field data elements
@@ -307,14 +307,14 @@ $db = new DB_AA;
 
 // check the node_name and password against the nodes table's data
 if ( !CheckNameAndPassword($node_name, $password ))
-  Error("Bad node:$node_name and/or password:$password");
+  Error(ERR_PASSWORD);
 
 $xml_channel = $used_fields = $xml_items = "";
 
 if (!$slice_id) {                           // feed establishing mode
   $slice_ids = GetFeedingSlices( $node_name, $user );
   if (!$slice_ids) {
-   Error("No slices available");
+   Error(ERR_NO_SLICE);
   }
   echo $XML_BEGIN;
   while ( list( ,$sl_id ) = each( $slice_ids )) {
@@ -352,7 +352,6 @@ if (!$slice_id) {                           // feed establishing mode
     $ids[] = unpack_id($db->f(id));
     $time = max( $time, $db->f(publish_date), $db->f(last_edit));   // save time of the newest item
   }
-
   $time = unixstamp_to_iso8601($time);
 
   if ($ids) {
@@ -395,6 +394,9 @@ echo "</rdf:RDF>"
 
 /*
 $Log$
+Revision 1.2  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.1  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 

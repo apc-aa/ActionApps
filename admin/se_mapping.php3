@@ -50,12 +50,12 @@ while($db->next_record())
   $impslices[unpack_id($db->f(id))] = $db->f(name);
 
 // lookup external slices
-$SQL = "SELECT remote_slice_id, remote_slice_name
+$SQL = "SELECT remote_slice_id, remote_slice_name, node_name
         FROM external_feeds
         WHERE slice_id='$p_slice_id'";
 $db->query($SQL);
 while($db->next_record()) {
-  $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(remote_slice_name);
+  $impslices[unpack_id($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
   $remote_slices[unpack_id($db->f(remote_slice_id))] = 1;       // mark slice as external
 }
 

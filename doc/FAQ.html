@@ -647,6 +647,11 @@ If e-mail field is filled, it shows "Email: email@apc.org" (for example), but if
 <tr><td>&nbsp;</td><td class=tabparam>function</td><td>name of called function in include/usr_aliasfnc.php3 file</td></tr>
 <tr><td>&nbsp;</td><td class=tabparam>parameter</td><td>parameters passed to function</td></tr>
 
+<tr><td valign=top class=tabfnc>f_m</td><td clospan="2">mailto link - prints: "begin&lt;a href="mailto:$col"&gt;field/text&lt;/a&gt;"<br>if no $col is filled, prints "else_fileld/text"</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>begin</td><td>text before link (for example "e-mail")</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>field/text</td><td>if field id specified, the field is used as link text else the text is used insteed.</td></tr>
+<tr><td>&nbsp;</td><td class=tabparam>else_fileld/text</td><td>if no e-mail addres specified in $col, the field content (or text) is displayed</td></tr>
+
 </table>
 <br><br>
 
@@ -718,10 +723,10 @@ document.write("&lt;/TABLE&gt;")<br>
 <tr><td valign=top class=tabfnc>cmd[23]=c-<i>1</i>-<i>ICT</i></td><td>display <i>view</i> no <i>23</i> in place of view no <i>23</i> (that's normal), but change <i>value</i> for condition <i>1</i> to "<i>ICT</i>"</td></tr>
 <tr><td valign=top class=tabfnc nowrap>cmd[23]=c-<i>1</i>-<i>ICT</i>-<i>2</i>-<i>Jane</i></td><td>the same as above, but there are redefined two conditions. All three conditions could be redefined</td></tr>
 <tr><td valign=top class=tabfnc>cmd[23]=d-<i>headline........</i>-<i>LIKE</i>-<i>Profit</i>-<i>source.........1</i>-<i>=</i>-<i>Ecn</i>-<i>publish_date....</i>-<i>m:&gt;</i>-<i>86400</i></td><td>displays <i>view</i> no 23 and redefines the conditions. The conditions are in format <i>field</i>-<i>operator</i>-<i>value</i>. For list of possible <i>operators</i> see <A href="#search">search</a> caption. The <i>operators</i> could be with its <A href="#opmodifiers">modifiers</a>, too. The unlimited number of conditions should be there specified. The speciefied conditions allways replaces all conditions specified in view definition (through admin interface). There are three diferences from <i>cmd[]-c</i> command - 1)operators and fields are specified, 2) default view conditions are ingnored, 3) there can be unlimitted number of conditions. The example would show items in which the <i>headline</i> contains '<i>Profit</i>' and <i>source</i> field is '<i>Ecn</i>' and the item is newer that one day.</td></tr>
+<tr><td valign=top class=tabfnc>set[23]=listlen-<i>20</i></td><td>setings to modify view behavior (can be combined with cmd)<br> - sets maximal number of viewed items in view 23 to 20<br> - there can be more settings (in future) - comma separated</td></tr>
 <tr><td valign=top class=tabfnc>als[alias]</td><td>user alias definition - you can define your own aliases in url (for both - slice.php3 and view.php3). Aliases names MUST!!! be 8 characters long. Don't forgot, that the alias value have to be urlencoded.<br><i>Example:</i> als[MY_ALIAS]=Summary%20Page (or maybe better: als%5BMY_ALIAS%5D=Summary%20Page)<br>defines alias _#MY_ALIAS. If used in formatstring ('Admin - Design Index' for example), it prints 'Summary Page'</td></tr>
 </table>
 <br><br>
-
 
 <a name="ids"></a>
 <h3>How to make item url shorter?</h3>

@@ -83,7 +83,7 @@ function ParseViewParameters($query_string="") {
                break;
   }
 
- $arr = ParseSetting($set[ $vid ]);
+ $arr = ParseSettings($set[ $vid ]);
  $arr[vid]=$vid;
  $arr[conds]=$conds;
  $arr[param_conds] = $param_conds; 
@@ -659,6 +659,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.14  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.13  2001/09/27 16:12:09  honzam
 Dash escaping in url parameter, New view alias, New constant view
 

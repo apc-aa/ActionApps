@@ -58,7 +58,7 @@ define("L_LANG_FILE","Pouitı language soubor");
 define("L_PARAMETERS","Parametry");
 define("L_SELECT_APP","Vyber aplikaci");
 define("L_SELECT_OWNER","Vyber vlastníka");
-     
+
 define("L_CANT_UPLOAD", "Soubor (obrázek) nelze uloit");
 define("L_MSG_PAGE", "Zpráva aplikace");   // title of message page
 define("L_EDITOR_TITLE", "Správa zpráv");
@@ -689,7 +689,7 @@ define("L_NODES_LIST","Seznam uzlù");
 define("L_NODES_ADD_NEW","Pøidání uzlu");
 define("L_NODES_EDIT","Editace uzlu");
 define("L_NODES_NODE_NAME","Jméno uzlu ");
-define("L_NODES_SERVER_URL","URL serveru");
+define("L_NODES_SERVER_URL","URL souboru getxml.php3");
 define("L_NODES_PASWORD","Heslo");
 define("L_SUBMIT","Poslat");
 define("L_NODES_SEL_NONE","Nebyl vybrán uzel");
@@ -698,7 +698,7 @@ define("L_NODES_NODE_EMPTY","Jméno uzlu musí bıt vyplnìno");
 
 define("L_IMPORT_TIT","Správa pøijímanıch webíkù");
 define("L_IMPORT_LIST","Seznam pøijímanıch webíkù do webíku ");
-define("L_IMPORT_CONFIRM_DELETE","Opravdu chcete zru¹it pøíjem z tohoto webíku?");
+define("L_IMPORT_CONFIRM_DELETE","Opravdu chcete zrušit pøíjem z tohoto webíku?");
 define("L_IMPORT_SEL_NONE","Nebyl zvolen webík");
 define("L_IMPORT_NODES_LIST","Seznam uzlù");
 define("L_IMPORT_CREATE","Pøijímat webíky z tohoto uzlu");
@@ -706,17 +706,21 @@ define("L_IMPORT_NODE_SEL","Nebyl vybrán uzel");
 define("L_IMPORT_SLICES","Seznam pøijímanıch webíkù");
 define("L_IMPORT_SLICES2","Seznam dostupnıch webíkù z uzlu ");
 define("L_IMPORT_SUBMIT","Zvolte webík");
-define("L_IMPORT2_OK","Pøíjem z webíku úspì¹nì vytvoøen");
-define("L_IMPORT2_ERR","Pøíjem z webíku byl ji¾ vytvoøen");
+define("L_IMPORT2_OK","Pøíjem z webíku úspìšnì vytvoøen");
+define("L_IMPORT2_ERR","Pøíjem z webíku byl ji vytvoøen");
 
-define("L_AA_RSS_ERROR","Nepodaøilo se navázat spojení nebo chybná data. Kontaktuje administrátora");
+define("L_RSS_ERROR","Nepodaøilo se navázat spojení nebo pøijmout data. Kontaktuje administrátora");
+define("L_RSS_ERROR2","Neplatné heslo pro uzel: ");
+define("L_RSS_ERROR3","Kontaktujte administrátora lokálního uzlu.");
+define("L_RSS_ERROR4","ádné dostupné webíky. Nemáte práva pøijímat data z tohoto uzlu. ".
+ "Kontaktujte administrátora vzdáleného webíku a zkontrolujte, e obdrel vaše správné uivatelské jméno.");
 
 define("L_EXPORT_TIT","Správa povolení zasílání webíkù");
-define("L_EXPORT_CONFIRM_DELETE","Opravdu chcete zru¹it povolení zasílání tohoto webíku?");
-define("L_EXPORT_SEL_NONE","Nebyl zvolen uzel a u¾ivatel");
-define("L_EXPORT_LIST","Seznam uzlù a u¾ivatelù, kam bude zasílán webík ");
-define("L_EXPORT_ADD","Pøidejte uzel a u¾ivatele");
-define("L_EXPORT_NAME","Jméno u¾ivatele");
+define("L_EXPORT_CONFIRM_DELETE","Opravdu chcete zrušit povolení zasílání tohoto webíku?");
+define("L_EXPORT_SEL_NONE","Nebyl zvolen uzel a uivatel");
+define("L_EXPORT_LIST","Seznam uzlù a uivatelù, kam bude zasílán webík ");
+define("L_EXPORT_ADD","Pøidejte uzel a uivatele");
+define("L_EXPORT_NAME","Jméno uivatele");
 define("L_EXPORT_NODES","Seznam uzlù");
 
 define("L_RSS_TITL", "Jméno webíku pro RSS");
@@ -724,36 +728,42 @@ define("L_RSS_LINK", "Odkaz na webík pro RSS");
 define("L_RSS_DESC", "Krátkı popisek (vlastník a jméno) webíku pro RSS");
 define("L_RSS_DATE", "Datum v RSS pøehledu je generováno v datovém formátu RSS");
 
-
-//Jakub: nove promenne
 define("L_NO_PS_EXPORT_IMPORT", "Nemáte právo exportovat / importovat webíky");
 define("L_EXPORT_SLICE", "Export");
 define("L_IMPORT_SLICE", "Import");
 define("L_EXPIMP_SET", "Struktura webíku");
-define("L_E_EXPORT_TITLE", "Export struktury webíku do jiného Toolkitu");
-define("L_E_EXPORT_TITLE_BACKUP", "Export struktury webíku do Backupu");
-define("L_E_EXPORT_TEXT_TITLE", "Export struktury webíku - tento text ulote do souboru");
-define("L_E_EXPORT_MEMO", "Mùete exportovat do jiného Toolkitu (export aktuální šablony, zvolíte si novı identifikátor), "
-			."nebo do Backupu (export více šablon najednou)");
+
+define("L_E_EXPORT_TITLE", "Export struktury webíku");
+define("L_E_EXPORT_MEMO", "Vyberte si jeden ze dvou zpùsobù exportu:");
+define("L_E_EXPORT_DESC", "Pøi exportu \"do jiného Toolkitu\" se bude exportovat pouze aktuální šablona "
+		."a vy pro ni zvolíte novı identifikátor.");
+define("L_E_EXPORT_DESC_BACKUP", "Pøi exportu \"do Backupu\" si mùete vybrat nìkolik šablon najednou.");
 define("L_E_EXPORT_MEMO_ID","Zvolte novı identifikátor šablony o délce pøesnì 16 znakù: ");
 define("L_E_EXPORT_SWITCH", "Export do Backupu");
 define("L_E_EXPORT_SWITCH_BACKUP", "Export do jiného Toolkitu");
-define("L_E_EXPORT_CLICK_REF","Klepnutím sem ");
-define("L_E_EXPORT_CLICK_TEXT","zobrazíte text kódující šablonu. Ten ulote do souboru (buï pomocí Copy a Paste, nebo v Internet Exploreru pomocí Uloit jako) a soubor pak mùete pouít pro import.");
-define("L_E_EXPORT_MEMO1", "Nyní jste v Exportu do jiného Toolkitu. Chcete-li exportovat do Backupu, stisknìte ");
-define("L_E_EXPORT_MEMO1_BACKUP", "Nyní jste v Exportu do Backupu. Chcete-li exportovat do jiného Toolkitu, stisknìte ");
-define("L_E_EXPORT_TITLE_IDLENGTH", "Délka identifikátoru musí bıt 16 znakù, a ne ");
+define("L_E_EXPORT_IDLENGTH", "Délka identifikátoru musí bıt 16 znakù, a ne ");
+define("L_E_EXPORT_TEXT_LABEL", "Tento text si nìkde ulote. Mùete ho pouít pro naimportování šablony do Toolkitu:");
+define("L_E_EXPORT_LIST", "Oznaète webíky, které CHCETE exportovat:");
 
 define("L_E_IMPORT_TITLE", "Import struktury webíkù");
-define("L_E_IMPORT_SEND", "Odeslat soubor se strukturou webíkù");
-define("L_E_IMPORT_MEMO", "Import struktury webíku probìhne takto: Napište jméno souboru nebo ho najdìte "
-			."a stisknìte tlaèítko Odeslat. <br>"
+define("L_E_IMPORT_SEND", "Odeslat strukturu webíkù");
+define("L_E_IMPORT_MEMO", "Import struktury webíku probìhne takto:<br>"
+			."Vlote exportovanı text do rámeèku a stisknìte tlaèítko Odeslat.<br>"
 			."Struktura webíku s definicemi políèek se naète a pøidá do Toolkitu.");
 define("L_E_IMPORT_OPEN_ERROR","Neznámá chyba pøi otevírání souboru.");
-define("L_E_IMPORT_WRONG_FILE","Text není v poøádku. Zkontrolujte, e jste ho správnì zkopírovali z Exportu.");
+define("L_E_IMPORT_WRONG_FILE","CHYBA: Text není v poøádku. Zkontrolujte, e jste ho správnì zkopírovali z Exportu.");
+define("L_E_IMPORT_WRONG_ID","CHYBA: ");
+define("L_E_IMPORT_IDCONFLICT", "Webík s tímto ID ji existuje (v databázi je ID ve tvaru %s). "
+			."Zmìòte ID nebo stisknìte PØEPSAT, èím se vám "
+			."pøepíše stará šablona. Pouívejte pouze hexadecimální znaky 0-9,a-f.");
+define("L_E_IMPORT_OVERWRITE", "Pøepsat");
+define("L_E_IMPORT_IDLENGTH", "Délka identifikátoru musí bıt 32 znakù, a ne ");
 
 /*
 $Log$
+Revision 1.37  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.36  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 

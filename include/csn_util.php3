@@ -22,6 +22,10 @@ http://www.apc.org/
 define("HTML",0);
 define("PLAIN",1);
 
+// server module's error message
+define("ERR_NO_SLICE","Error 1");
+define("ERR_PASSWORD","Error 2");
+
 $CONTENT_FORMATS = array("http://www.isi.edu/in-notes/iana/assignments/media-types/text/html" => HTML,
                          "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain"=> PLAIN);
 
@@ -137,6 +141,9 @@ function iso8601_to_unixstamp($t) {
 
 /*
 $Log$
+Revision 1.2  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.1  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 

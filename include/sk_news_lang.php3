@@ -57,8 +57,7 @@ define("L_LANG_FILE","Pouitı language súbor");
 define("L_PARAMETERS","Parametre");
 define("L_SELECT_APP","Vıber aplikácií");
 define("L_SELECT_OWNER","Vıber vlastníka");
-     
-# toolkit aplication dependent labels
+
 define("L_CANT_UPLOAD", "Súbor (obrázok) sa nedá uloi");
 define("L_MSG_PAGE", "Nastavenia");   // title of message page
 define("L_EDITOR_TITLE", "Správy");
@@ -152,7 +151,6 @@ define("L_SEARCH", "H¾adanie");
 define("L_DEFAULTS", "Default");
 define("L_SLICE", "Modul");
 define("L_DELETED_SLICE", "Nebol nájdenı iaden modul, ku ktorému máte prístup");
-define("L_SLICE_URL", "URL modulu");
 define("L_A_NEWUSER", "Novı uivate¾ v systéme");
 define("L_NEWUSER_HDR", "Novı uivate¾");
 define("L_USER_LOGIN", "Uivate¾ské meno");
@@ -244,7 +242,6 @@ define("L_TOO_MUCH_USERS", "Nájdenıch príliš ve¾a uivate¾ov alebo skupín.");
 define("L_MORE_SPECIFIC", "Skúste zada presnejšie údaje.");
 define("L_REMOVE", "Odstráni");
 define("L_ID", "Id");
-define("L_TYPE", "Typ");
 define("L_SETTINGS", "Nastavenia");
 define("L_LOGO", "APC toolkit");
 define("L_USER_MANAGEMENT", "Uivatelia");
@@ -321,7 +318,7 @@ define("L_ALL_GROUPS", "Všetky skupiny");
 define("L_USERS_GROUPS", "Uivate¾ove skupiny");
 define("L_REALY_DELETE_USER", "Naozaj chcete vymaza daného uivate¾a zo systému?");
 define("L_REALY_DELETE_GROUP", "Naozaj chcete vymaza danú skupinu zo systému?");
-define("L_ITEM_NOT_CHANGED", "Správa nezmenená");
+define("L_TOO_MUCH_GROUPS", "Too much groups found.");
 define("L_NO_GROUPS", "Skupina nenájdená");
 define("L_GROUP_NAME", "Méno");
 define("L_GROUP_DESCRIPTION", "Popis");
@@ -344,46 +341,6 @@ define("L_ACTIVE_BIN_PENDING", "Aktuálne - Pripravené");
 define("L_ACTIVE_BIN_EXPIRED_MENU", "... expirované");
 define("L_ACTIVE_BIN_PENDING_MENU", "... pripravené");
 
-define("L_SOURCE_DESC", "Org Description");
-define("L_SOURCE_ADDRESS", "Street Adress");
-define("L_SOURCE_CITY", "City");
-define("L_SOURCE_PROV", "Province/State");
-define("L_SOURCE_COUNTRY", "Country");
-define("L_TIME", "Time");
-define("L_CON_NAME", "Contact Name");
-define("L_CON_EMAIL", "Contact E-mail");
-define("L_CON_PHONE", "Contact phone");
-define("L_CON_FAX", "Contact FAX");
-define("L_LOC_NAME", "Location Name");
-define("L_LOC_ADDRESS", "Location Street Address");
-define("L_LOC_CITY", "Location City");
-define("L_LOC_PROV", "Location Province/State");
-define("L_LOC_COUNTRY", "Location Country");
-define("L_START_DATE", "Start Date");
-define("L_END_DATE", "End Date");
-
-define("L_HLP_SOURCE_DESC", "Alias for Org Description");
-define("L_HLP_SOURCE_ADDRESS", "Alias for Street Adress");
-define("L_HLP_SOURCE_CITY", "Alias for City");
-define("L_HLP_SOURCE_PROV", "Alias for Province/State");
-define("L_HLP_SOURCE_COUNTRY", "Alias for Country");
-define("L_HLP_TIME", "Alias for Time");
-define("L_HLP_CON_NAME", "Alias for Contact Name");
-define("L_HLP_CON_EMAIL", "Alias for Contact E-mail");
-define("L_HLP_CON_PHONE", "Alias for Contact phone");
-define("L_HLP_CON_FAX", "Alias for Contact FAX");
-define("L_HLP_LOC_NAME", "Alias for Location Name");
-define("L_HLP_LOC_ADDRESS", "Alias for Location Street Address");
-define("L_HLP_LOC_CITY", "Alias for Location City");
-define("L_HLP_LOC_PROV", "Alias for Location Province/State");
-define("L_HLP_LOC_COUNTRY", "Alias for Location Country");
-define("L_HLP_START_DATE", "Alias for Start Date");
-define("L_HLP_END_DATE", "Alias for End Date");
-
-//----------------------------
-//define("", "");   
-//prepared for new constants
- 
 define("L_FIELD_PRIORITY", "Priorita");
 define("L_FIELD_TYPE", "Typ");
 define("L_CONSTANTS", "Hodnoty");
@@ -488,10 +445,6 @@ define("L_PERMIT_ANONYMOUS_POST","Anonymné vkladanie");
 define("L_PERMIT_OFFLINE_FILL","Off-line plnenie");
 define("L_SOME_CATEGORY", "<kategória>");
 
-define( "L_BRACKETS_ERR", "Brackets doesn't match in query: ");
-define("L_SLICE_ADM","Administrácia modulu - Menu");
-define("L_A_SLICE_TIT", L_SLICE_ADM);
-define("L_A_SLICE_ADD_HELP", "Novı modul môete vytvori na základe šablóny, alebo skopírova nastavenia z u existujúceho modulu (vytvorí sa presná kópia vrátane nastavení.");
 
 define("L_ALIAS_FUNC_A", "f_a - abstrakt");
 define("L_ALIAS_FUNC_B", "f_b - fulltext odkaz");
@@ -529,6 +482,9 @@ define("L_FORMAT_HLP", "Sem patrí HTML kód v kombinácii s aliasmi uvedenımi dole
 define("L_BOTTOM_HLP", "HTML kód, ktorı sa zobrazí za vlastnım kódom modulu");
 define("L_EVEN_ROW_HLP", "TIP: Rozlíšením párnych a nepárnych záznamov môete dosiahnú napríklad farebné odlíšenie riadkov");
 
+define("L_SLICE_URL", "URL modulu");
+define("L_BRACKETS_ERR", "Brackets doesn't match in query: ");
+define("L_A_SLICE_ADD_HELP", "Novı modul môete vytvori na základe šablóny, alebo skopírova nastavenia z u existujúceho modulu (vytvorí sa presná kópia vrátane nastavení.");
 define("L_REMOVE_HLP", "Odstráni prázdné zátvorky a pod. Pouite ## ako oddelovaè.");
 
 define("L_COMPACT_HELP", "Na tejto stránke je moné nastavi, èo sa objaví na stránke preh¾adu správ");
@@ -548,13 +504,12 @@ define("L_NO_DELETED_SLICE", "Modul nie je oznaèenı za vymazanı");
 define("L_DELSLICE_OK", "Modul bol vymazanı, tabu¾ky boly optimalizované");
 define("L_DEL_SLICE", "Zmaza modul");
 define("L_FEED_STATE", "Zdie¾anie tohto po¾a");
-define( "L_STATE_FEEDABLE", "Kopírova obsah" );
-define( "L_STATE_UNFEEDABLE", "Nekopírova" );
-define( "L_STATE_FEEDNOCHANGE", "Kopírova nemenitelne" );
-define( "L_INPUT_FEED_MODES_HLP", "Má sa kopírova obsah tohoto po¾a do ïalších modulov pri vımene správ mezi modulmi?");
+define("L_STATE_FEEDABLE", "Kopírova obsah" );
+define("L_STATE_UNFEEDABLE", "Nekopírova" );
+define("L_STATE_FEEDNOCHANGE", "Kopírova nemenitelne" );
+define("L_INPUT_FEED_MODES_HLP", "Má sa kopírova obsah tohoto po¾a do ïalších modulov pri vımene správ mezi modulmi?");
 define("L_CANT_CREATE_IMG_DIR","Nie je moné vytvori adresár pre obrázky");
-    
-
+ 
   # constants for View setting 
 define('L_VIEWS','Poh¾ady');
 define('L_ASCENDING','Vzostupne');
@@ -710,7 +665,9 @@ define('L_D_SELECTED_NONE',"Nebyl vybrán ádnı pøíspìvek");
 define("L_D_DELETE_COMMENT","Pøejete si smazat pøíspìvek?");
 
 define("L_D_FORM","HTML kód formuláøe pro poslání pøíspìvku");
+define("L_D_BACK","Zpìt");
 define("L_D_ITEM","Èlánek: ");
+define("L_D_ADMIN2","Správa diskusních pøíspìvkù");
 
 define("L_D_SHOW_SELECTED","Zobraz vybrané");
 define("L_D_SHOW_ALL","Zobraz vše");
@@ -720,6 +677,8 @@ define("L_TOO_MUCH_RELATED","Je vybráno pøíliš mnoho souvisejících èlánkù.");
 define("L_SELECT_RELATED","Vıbìr souvisejících èlánkù");
 define("L_SELECT_RELATED_1WAY","Ano");
 define("L_SELECT_RELATED_2WAY","Vzájemnì");
+
+// - Cross server networking --------------------------------------
 
 define("L_INNER_IMPORT","Lokální vımìna");
 define("L_INTER_IMPORT","Pøíjem z uzlù");
@@ -732,7 +691,7 @@ define("L_NODES_LIST","Seznam uzlù");
 define("L_NODES_ADD_NEW","Pøidání uzlu");
 define("L_NODES_EDIT","Editace uzlu");
 define("L_NODES_NODE_NAME","Jméno uzlu ");
-define("L_NODES_SERVER_URL","URL serveru");
+define("L_NODES_SERVER_URL","URL souboru getxml.php3");
 define("L_NODES_PASWORD","Heslo");
 define("L_SUBMIT","Poslat");
 define("L_NODES_SEL_NONE","Nebyl vybrán uzel");
@@ -741,7 +700,7 @@ define("L_NODES_NODE_EMPTY","Jméno uzlu musí bıt vyplnìno");
 
 define("L_IMPORT_TIT","Správa pøijímanıch webíkù");
 define("L_IMPORT_LIST","Seznam pøijímanıch webíkù do webíku ");
-define("L_IMPORT_CONFIRM_DELETE","Opravdu chcete zru¹it pøíjem z tohoto webíku?");
+define("L_IMPORT_CONFIRM_DELETE","Opravdu chcete zrušit pøíjem z tohoto webíku?");
 define("L_IMPORT_SEL_NONE","Nebyl zvolen webík");
 define("L_IMPORT_NODES_LIST","Seznam uzlù");
 define("L_IMPORT_CREATE","Pøijímat webíky z tohoto uzlu");
@@ -749,17 +708,21 @@ define("L_IMPORT_NODE_SEL","Nebyl vybrán uzel");
 define("L_IMPORT_SLICES","Seznam pøijímanıch webíkù");
 define("L_IMPORT_SLICES2","Seznam dostupnıch webíkù z uzlu ");
 define("L_IMPORT_SUBMIT","Zvolte webík");
-define("L_IMPORT2_OK","Pøíjem z webíku úspì¹nì vytvoøen");
-define("L_IMPORT2_ERR","Pøíjem z webíku byl ji¾ vytvoøen");
+define("L_IMPORT2_OK","Pøíjem z webíku úspìšnì vytvoøen");
+define("L_IMPORT2_ERR","Pøíjem z webíku byl ji vytvoøen");
 
-define("L_AA_RSS_ERROR","Nepodaøilo se navázat spojení nebo chybná data. Kontaktuje administrátora");
+define("L_RSS_ERROR","Nepodaøilo se navázat spojení nebo pøijmout data. Kontaktuje administrátora");
+define("L_RSS_ERROR2","Neplatné heslo pro uzel: ");
+define("L_RSS_ERROR3","Kontaktujte administrátora lokálního uzlu.");
+define("L_RSS_ERROR4","ádné dostupné webíky. Nemáte práva pøijímat data z tohoto uzlu. ".
+ "Kontaktujte administrátora vzdáleného webíku a zkontrolujte, e obdrel vaše správné uivatelské jméno.");
 
 define("L_EXPORT_TIT","Správa povolení zasílání webíkù");
-define("L_EXPORT_CONFIRM_DELETE","Opravdu chcete zru¹it povolení zasílání tohoto webíku?");
-define("L_EXPORT_SEL_NONE","Nebyl zvolen uzel a u¾ivatel");
-define("L_EXPORT_LIST","Seznam uzlù a u¾ivatelù, kam bude zasílán webík ");
-define("L_EXPORT_ADD","Pøidejte uzel a u¾ivatele");
-define("L_EXPORT_NAME","Jméno u¾ivatele");
+define("L_EXPORT_CONFIRM_DELETE","Opravdu chcete zrušit povolení zasílání tohoto webíku?");
+define("L_EXPORT_SEL_NONE","Nebyl zvolen uzel a uivatel");
+define("L_EXPORT_LIST","Seznam uzlù a uivatelù, kam bude zasílán webík ");
+define("L_EXPORT_ADD","Pøidejte uzel a uivatele");
+define("L_EXPORT_NAME","Jméno uivatele");
 define("L_EXPORT_NODES","Seznam uzlù");
 
 define("L_RSS_TITL", "Jméno webíku pro RSS");
@@ -767,9 +730,42 @@ define("L_RSS_LINK", "Odkaz na webík pro RSS");
 define("L_RSS_DESC", "Krátkı popisek (vlastník a jméno) webíku pro RSS");
 define("L_RSS_DATE", "Datum v RSS pøehledu je generováno v datovém formátu RSS");
 
+define("L_NO_PS_EXPORT_IMPORT", "Nemáte právo exportovat / importovat webíky");
+define("L_EXPORT_SLICE", "Export");
+define("L_IMPORT_SLICE", "Import");
+define("L_EXPIMP_SET", "Struktura webíku");
+
+define("L_E_EXPORT_TITLE", "Export struktury webíku");
+define("L_E_EXPORT_MEMO", "Vyberte si jeden ze dvou zpùsobù exportu:");
+define("L_E_EXPORT_DESC", "Pøi exportu \"do jiného Toolkitu\" se bude exportovat pouze aktuální šablona "
+		."a vy pro ni zvolíte novı identifikátor.");
+define("L_E_EXPORT_DESC_BACKUP", "Pøi exportu \"do Backupu\" si mùete vybrat nìkolik šablon najednou.");
+define("L_E_EXPORT_MEMO_ID","Zvolte novı identifikátor šablony o délce pøesnì 16 znakù: ");
+define("L_E_EXPORT_SWITCH", "Export do Backupu");
+define("L_E_EXPORT_SWITCH_BACKUP", "Export do jiného Toolkitu");
+define("L_E_EXPORT_IDLENGTH", "Délka identifikátoru musí bıt 16 znakù, a ne ");
+define("L_E_EXPORT_TEXT_LABEL", "Tento text si nìkde ulote. Mùete ho pouít pro naimportování šablony do Toolkitu:");
+define("L_E_EXPORT_LIST", "Oznaète webíky, které CHCETE exportovat:");
+
+define("L_E_IMPORT_TITLE", "Import struktury webíkù");
+define("L_E_IMPORT_SEND", "Odeslat strukturu webíkù");
+define("L_E_IMPORT_MEMO", "Import struktury webíku probìhne takto:<br>"
+			."Vlote exportovanı text do rámeèku a stisknìte tlaèítko Odeslat.<br>"
+			."Struktura webíku s definicemi políèek se naète a pøidá do Toolkitu.");
+define("L_E_IMPORT_OPEN_ERROR","Neznámá chyba pøi otevírání souboru.");
+define("L_E_IMPORT_WRONG_FILE","CHYBA: Text není v poøádku. Zkontrolujte, e jste ho správnì zkopírovali z Exportu.");
+define("L_E_IMPORT_WRONG_ID","CHYBA: ");
+define("L_E_IMPORT_IDCONFLICT", "Webík s tímto ID ji existuje (v databázi je ID ve tvaru %s). "
+			."Zmìòte ID nebo stisknìte PØEPSAT, èím se vám "
+			."pøepíše stará šablona. Pouívejte pouze hexadecimální znaky 0-9,a-f.");
+define("L_E_IMPORT_OVERWRITE", "Pøepsat");
+define("L_E_IMPORT_IDLENGTH", "Délka identifikátoru musí bıt 32 znakù, a ne ");
 
 /*
 $Log$
+Revision 1.6  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.5  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 

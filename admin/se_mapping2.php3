@@ -34,7 +34,7 @@ require $GLOBALS[AA_INC_PATH]."csn_util.php3";
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING);
   exit;
-}  
+}
 
 $p_from_slice_id= q_pack_id($from_slice_id);
 
@@ -49,12 +49,10 @@ $db->query("DELETE FROM feedmap WHERE from_slice_id = '$p_from_slice_id' AND to_
 // insert into feedmap
 $catVS = new Cvarset();
 while (list($to_field_id,$val) = each($fmap)) {
-  if ($to_field_id == $val)     // do not insert into db if to_id is the same as from_id
-    continue;
 
-    $catVS->clear();
-    $catVS->add("from_slice_id", "unpacked", $from_slice_id);
-    $catVS->add("to_slice_id", "unpacked", $slice_id);
+  $catVS->clear();
+  $catVS->add("from_slice_id", "unpacked", $from_slice_id);
+  $catVS->add("to_slice_id", "unpacked", $slice_id);
   $catVS->add("to_field_id", "quoted",$to_field_id);
   $catVS->add("from_field_name", "quoted", $map_to[$val]);
 
@@ -93,8 +91,8 @@ if ($map_to && is_array($map_to)) {
     $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
     if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
       $err["DB"] .= MsgErr("Can't add fields mapping");
+    }
   }
- }
 }
 
 go_url( $sess->url(self_base() . "se_mapping.php3") . "&from_slice_id=".rawurlencode($from_slice_id) .

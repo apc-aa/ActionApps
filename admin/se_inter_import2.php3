@@ -24,7 +24,6 @@ http://www.apc.org/
 #           $slice_id
 # optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
 
-
 require "../include/init_page.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
@@ -34,6 +33,7 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."xml_fetch.php3";
 require $GLOBALS[AA_INC_PATH]."xml_rssparse.php3";
+require $GLOBALS[AA_INC_PATH]."csn_util.php3";
 
 $db->query("SELECT server_url, password FROM nodes WHERE name='$rem_nodes'");
 if ($db->next_record()) {
@@ -42,21 +42,24 @@ if ($db->next_record()) {
 }
 
 if (!($data = xml_fetch($server_url, ORG_NAME, $password, $auth->auth["uname"],"",0,""))) {
-  MsgPage($sess->url(self_base() . "se_inter_import.php3"), L_AA_RSS_ERROR);
+  MsgPage($sess->url(self_base() . "se_inter_import.php3"), L_RSS_ERROR );
 }
 
 // find out first character of fetched data: if it is not '<' exit
 if (substr($data,0,1) != "<") {
   writeLog("CSN","Establishing mode: $data");
-  MsgPage($sess->url(self_base() . "se_inter_import.php3"), L_AA_RSS_ERROR);
-}
+  switch ($data) {
+    case ERR_NO_SLICE : $err_msg = L_RSS_ERROR4; break;
+    case ERR_PASSWORD : $err_msg = L_RSS_ERROR2 . " ".ORG_NAME . ". ".L_RSS_ERROR3; break;
+  }
+  MsgPage($sess->url(self_base() . "se_inter_import.php3"), $err_msg); // $data contains error message
+}                                                                   // from the server module
 
 // try to parse xml document
 if (!($aa_rss = aa_rss_parse($data,"establish_mode"))) {
   writeLog("CSN","Establishing mode: Unable to parse XML data");
-  MsgPage($sess->url(self_base() . "se_inter_import.php3"), L_AA_RSS_ERROR );
+  MsgPage($sess->url(self_base() . "se_inter_import.php3"), L_RSS_ERROR );
 }
-
 
 while (list($id,) = each($aa_rss[channels])) {
   $chan[$id] = $aa_rss[channels][$id][title];
@@ -125,6 +128,9 @@ function Cancel() {
 page_close()
 /*
 $Log$
+Revision 1.2  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.1  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 

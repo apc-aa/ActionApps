@@ -454,6 +454,7 @@ define("L_ALIAS_FUNC_I", "f_i - Fuente imagen");
 define("L_ALIAS_FUNC_L", "f_l - Campo enlazado");
 define("L_ALIAS_FUNC_M", "f_m - E-mail");
 define("L_ALIAS_FUNC_N", "f_n - Id");
+define("L_ALIAS_FUNC_R", "f_r - rss util");
 define("L_ALIAS_FUNC_S", "f_s - Url");
 define("L_ALIAS_FUNC_T", "f_t - Texto completo");
 define("L_ALIAS_FUNC_U", "f_u - user function");
@@ -542,7 +543,7 @@ define('L_V_ORDER1','Sort primary');
 define('L_V_ORDER1DIR',' ');
 define('L_V_ORDER2','Sort secondary');
 define('L_V_ORDER2DIR',' ');
-define('L_V_SELECTED','Use selected item');
+define('L_V_SELECTED','HTML for Selected');
 define('L_V_COND1FLD','Condition 1');
 define('L_V_COND1OP',' ');
 define('L_V_COND1COND',' ');
@@ -555,7 +556,7 @@ define('L_V_COND3COND',' ');
 define('L_V_LISTLEN',L_D_LISTLEN);
 define('L_V_FLAG','Flag');
 define('L_V_SCROLLER','Display page scroller');
-define('L_V_ADITIONAL','Aditional');
+define('L_V_ADITIONAL','Additional');
 define('L_COMPACT_VIEW','Item listing');
 define('L_FULLTEXT_VIEW','Fulltext view');
 define('L_DIGEST_VIEW','Item digest');
@@ -564,7 +565,7 @@ define('L_RELATED_VIEW','Related item');
 define('L_CONSTANT_VIEW','View of Constants');
 define('L_RSS_VIEW','RSS exchange');
 define('L_STATIC_VIEW','Static page');
-define('L_SCRIPT_VIEW','Javscript item exchange');
+define('L_SCRIPT_VIEW','Javascript item exchange');
 
 define("L_MAP","Mapping");
 define("L_MAP_TIT","Admin - Content Pooling - Fields' Mapping");
@@ -613,27 +614,27 @@ define("L_D_WWWDES_ALIAS","Alias for description of author's www site");
 define("L_D_DATE_ALIAS","Alias for publish date");
 define("L_D_REMOTE_ADDR_ALIAS","Alias pro IP address of author's computer");
 define("L_D_URLBODY_ALIAS","Alias for link to text of the discussion comment<br>
-                             <i>Using: </i>in HTML code for index view of the comment<br>
+                             <i>Usage: </i>in HTML code for index view of the comment<br>
                              <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>");
 define("L_D_CHECKBOX_ALIAS","Alias for checkbox used for choosing discussion comment");
 define("L_D_TREEIMGS_ALIAS","Alias for images");
 define("L_D_ALL_COUNT_ALIAS","Alias for the number of all comments to the item");
 define("L_D_APPROVED_COUNT_ALIAS","Alias for the number of approve comments to the item");
 define("L_D_URLREPLY_ALIAS","Alias for link to a form<br>
-                             <i>Using: </i>in HTML code for fulltext view of the comment<br>
+                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>
                              <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;");
 define("L_D_URL","Alias for link to discussion<br>
-                             <i>Using: </i>in form code<br>
+                             <i>Usage: </i>in form code<br>
                              <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">");
 define("L_D_ID_ALIAS"," Alias for item ID<br>
-                             <i>Using: </i>in form code<br>
+                             <i>Usage: </i>in form code<br>
                              <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">");
 define("L_D_ITEM_ID_ALIAS"," Alias for comment ID<br>
-                             <i>Using: </i>in form code<br>
+                             <i>Usage: </i>in form code<br>
                              <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">");
 
 define("L_D_BUTTONS","Alias for buttons Show all, Show selected, Add new<br>
-                             <i>Using: </i> in the Bottom HTML code");
+                             <i>Usage: </i> in the Bottom HTML code");
 
 define("L_D_COMPACT" , "HTML code for index view of the comment");
 define("L_D_SHOWIMGS" , "Show images");
@@ -690,7 +691,7 @@ define("L_NODES_LIST","Known remote nodes");
 define("L_NODES_ADD_NEW","Add new node");
 define("L_NODES_EDIT","Edit node data");
 define("L_NODES_NODE_NAME","Node name");
-define("L_NODES_SERVER_URL","Server URL");
+define("L_NODES_SERVER_URL","URL of the getxml.php3");
 define("L_NODES_PASWORD","Password");
 define("L_SUBMIT","Submit");
 define("L_NODES_SEL_NONE","No selected node");
@@ -710,7 +711,12 @@ define("L_IMPORT_SUBMIT","Choose slice");
 define("L_IMPORT2_OK","The import was successfully created");
 define("L_IMPORT2_ERR","The import was already created");
 
-define("L_AA_RSS_ERROR","Cannot establish connection. Contact the  administrator of remote node");
+define("L_RSS_ERROR","Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.");
+define("L_RSS_ERROR2","Invalid password for the node name:");
+define("L_RSS_ERROR3","Contact the administrator of the local node.");
+define("L_RSS_ERROR4","No slices available. You have not permissions to import any data of that node. Contact ".
+          "the administrator of the remote slice and check, that he obtained your correct username.");
+
 
 define("L_EXPORT_TIT","Inter node export settings");
 define("L_EXPORT_CONFIRM_DELETE","Are you sure you want to delete the export?");
@@ -725,9 +731,41 @@ define("L_RSS_LINK", "Link to the Slice for RSS");
 define("L_RSS_DESC", "Short description (owner and name) of slice for RSS");
 define("L_RSS_DATE", "Date RSS information is generated, in RSS date format");
 
+define("L_NO_PS_EXPORT_IMPORT", "You are not allowed to export / import slices");
+define("L_EXPORT_SLICE", "Export");
+define("L_IMPORT_SLICE", "Import");
+define("L_EXPIMP_SET", "Slice structure");
+
+define("L_E_EXPORT_TITLE", "Export slice structure");
+define("L_E_EXPORT_MEMO", "Choose one of two export kinds:");
+define("L_E_EXPORT_DESC", "When exporting \"to another Toolkit\" only the current slice will be exported "
+		."and you choose her new identificator.");
+define("L_E_EXPORT_DESC_BACKUP", "When exporting \"to Backup\" you may choose more slices at once.");
+define("L_E_EXPORT_MEMO_ID","Choose a new slice identificator exactly 16 characters long: ");
+define("L_E_EXPORT_SWITCH", "Export to Backup");
+define("L_E_EXPORT_SWITCH_BACKUP", "Export to another Toolkit");
+define("L_E_EXPORT_IDLENGTH", "The identificator should be 16 characters long, not ");
+define("L_E_EXPORT_TEXT_LABEL", "Save this text. You may use it to import the slices into any Toolkit:");
+
+define("L_E_IMPORT_TITLE", "Import slice structure");
+define("L_E_IMPORT_SEND", "Send the slices structure");
+define("L_E_IMPORT_MEMO", "The import of the slices structure is done this way:<br>"
+			."Insert the exported text into the frame and click on Send. <br>"
+			."The slices structure with fields definitions will be read and added to the Toolkit.");
+define("L_E_IMPORT_OPEN_ERROR","Unknown failur when opening the file.");
+define("L_E_IMPORT_WRONG_FILE","ERROR: Text is not OK. Check whether you copied it well from the Export.");
+define("L_E_IMPORT_WRONG_ID","ERROR: ");
+define("L_E_IMPORT_IDCONFLICT", "A slice with this ID already exists (the database form of the ID is %s). "
+			."Change the ID or click on Overwrite and overwrite so the old slice. "
+			."Use only hexadecimal characters 0-9,a-f.");
+define("L_E_IMPORT_OVERWRITE", "Overwrite");
+define("L_E_IMPORT_IDLENGTH", "The identificator should be 32 characters long, not ");
 
 /*
 $Log$
+Revision 1.10  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.9  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 

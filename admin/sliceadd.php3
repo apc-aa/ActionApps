@@ -105,8 +105,21 @@ if( isset( $templates ) AND is_array( $templates ) AND
 <?php 
   echo '<input type=submit name=Add_slice value="'. L_ADD .'">&nbsp;&nbsp;';
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
+?>   
+</td></tr></table>
+</FORM>
+</center>
+<?php echo L_APP_TYPE_HELP ?>
+</BODY>
+</HTML>
+<?php page_close()?>
+
+<?php
 /*
 $Log$
+Revision 1.7  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.6  2001/05/18 13:50:09  honzam
 better Message Page handling (not so much)
 
@@ -140,16 +153,7 @@ also added Id and Log keywords to all .php3 and .inc files
 *.php3 makes use of new variables in config.inc
 
 */
-?>   
-</td></tr></table>
-</FORM>
-</center>
-<?php echo L_APP_TYPE_HELP ?>
-</BODY>
-</HTML>
-<?php page_close()?>
-
-
+?>
 
 
 

@@ -26,7 +26,7 @@ http://www.apc.org/
 
 
 # need config.php3 to set db access, and phplib, and probably other stuff
-$AA_INC_PATH = "/raid/www/htdocs/work.ecn.cz/apc-aa/include/"; 
+$AA_INC_PATH = "/raid/www/htdocs/aa.ecn.cz/aaa/include/"; 
 #$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/"; 
 
 require $GLOBALS[AA_INC_PATH]."config.php3";
@@ -39,6 +39,8 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 $db = new DB_AA;
 $db2 = new DB_AA;
 $err["Init"] = "";          // error array (Init - just for initializing variable
+
+set_time_limit(160);
 
 function IsPaired($field, $fld_array) {
   reset( $fld_array );
@@ -989,14 +991,13 @@ if( $copyold ) {
   echo '<h2>Copying old values to new tables </h2>';
   reset( $tablelist );
   $store_halt = $db->Halt_On_Error;
+  $db->Halt_On_Error = "report";
 
   while( list( ,$t) = each( $tablelist ) ) {   # copy all tables
     unset($old_info);
     unset($tmp_info);
-    $db->Halt_On_Error = "report";
     $old_info = $db->metadata( $t );
     $tmp_info = $db->metadata( "tmp_$t" );
-    $db->Halt_On_Error = $store_halt;
     
     if( isset( $old_info ) AND is_array($old_info) ) {
       $delim = "";
@@ -1015,6 +1016,7 @@ if( $copyold ) {
       $db->query($SQL);
     }
   }
+  $db->Halt_On_Error = $store_halt;
 }
 
 if( $backup )
@@ -1119,6 +1121,9 @@ echo '<h2>Update OK</h2>
 
 /*
 $Log$
+Revision 1.10  2001/10/02 11:36:41  honzam
+bugfixes
+
 Revision 1.9  2001/10/01 16:21:38  honzam
 bugs with non existant tables in sql_update fixed
 
