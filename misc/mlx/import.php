@@ -6,7 +6,7 @@
 /// (C)2004 Michael Moritz
 
 ///set this to false unless you know what you are doing
-define('ALLOW_DROP',true);
+define('ALLOW_DROP',false);
 
 if(!$GLOBALS["AA_INC_PATH"])
 	require_once "../../include/config.php3";
