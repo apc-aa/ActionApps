@@ -632,7 +632,11 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
         array("name"=>_m("case"),
         "desc"=>_m("upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change"),
         "type"=>"STR",
-        "example"=>"1"))),
+        "example"=>"upper"),
+        array("name"=>_m("add string"),
+        "desc"=>_m("if string is shorted, <i>add string</i> is appended to the string (probably something like [...])"),
+        "type"=>"STR",
+        "example"=>"..."))),
 "f_k"=>array("name" => _m("Auto Update Checkbox")),  #auto update check box
 "f_l"=>array("name"=>_m("linked field"),
     "desc"=>_m("prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>"),
@@ -827,4 +831,64 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
         "example"=>_m("vid=4&amp;cmd[23]=v-25")))),
 "f_w"=>array("name"=>_m("image width"),
     "desc"=>_m("An old-style function. Prints <i>the field</i> as image width value (\<img width=...\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". "))));
+
+
+// --------------------------------------------------------------------------------
+
+$TRANS_ACTIONS["name"] = _m("Transformation action");
+$TRANS_ACTIONS["items"]["store"] = array (
+    "name"=>_m("Store"),
+    "desc"=>_m("Simply store a value from the input field")
+    );
+
+$TRANS_ACTIONS["items"]["removestring"] = array (
+    "name"=>_m("Remove string"),
+    "desc"=>_m("Remove all occurences of a string from the input field.") ,
+    "params"=>array(
+        array("name"=>_m("string parameter"),
+        "desc"=>_m("Removed string"),
+        "type"=>"STR"))
+    );
+$TRANS_ACTIONS["items"]["formatdate"] = array (
+    "name"=>_m("Format date"),
+    "desc"=>_m("Parse the date in the input field expected to be in English date format. In case of error, the transformation fails")
+    );
+
+$TRANS_ACTIONS["items"]["web"] = array (
+    "name"=>_m("Add http prefix"),
+    "desc"=>_m("Adds 'http://' prefix to the field if not beginning with 'http://' and not empty.")
+    );
+
+$TRANS_ACTIONS["items"]["value"] = array (
+    "name"=>_m("Store parameter"),
+    "desc"=>_m("Store parameter instead of the input field") ,
+    "params"=>array(
+        array("name"=>_m("string parameter"),
+              "type"=>"STR"))
+    );
+$TRANS_ACTIONS["items"]["storeparsemulti"] = array (
+    "name"=>_m("Split input field by string"),
+    "desc"=>_m("Split input field by string parameter and store the result as multi-value.") ,
+    "params"=>array(
+        array("name"=>_m("string parameter"),
+              "desc"=>_m("string which separates the values of the input field"),
+              "type"=>"STR",
+              "example"=>":"))
+    );
+$TRANS_ACTIONS["items"]["default"] = array (
+    "name"=>_m("Store default value"),
+    "desc"=>_m("Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.
+    <table>
+        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>
+    <tr><td>Status code</td><td>1</td><td>The item will be stored in Active bin (Hint: set it to 2 for Holding bin)</td></tr>
+    <tr><td>Display count</td><td>0</td><td></td></tr>
+        <tr><td>Publish date</td><td>Current date</td><td></td></tr>
+    <tr><td>Post date</td><td>Current date</td><td></td></tr>
+    <tr><td>Last edit</td><td>Current date</td><td></td></tr>
+    <tr><td>Expiry date</td><td>Current date + 10 years</td><td></td></tr>
+    <tr><td>Posted by</td><td>Active user</td><td></td></tr>
+    <tr><td>Edited by</td><td>Active user</td><td></td></tr>
+      </table>
+    ")
+    );
 ?>
