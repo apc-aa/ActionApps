@@ -717,13 +717,23 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
         "desc"=>_m("default value"),
         "type"=>"STR",
         "example"=>_m("javascript: window.alert('No source url specified')")))),
-"f_t"=>array("name"=>_m("print HTML"),
-    "desc"=>_m("prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"),
+"f_t"=>array("name"=>_m("print fied"),
+    "desc"=>_m("prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)"),
     "params"=>array(
         array("name"=>_m("unalias string"),
         "desc"=>_m("if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string"),
         "type"=>"STR",
-        "example"=>_m("<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>")))),
+        "example"=>_m("<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>")),
+        array("name"=>_m("output modify"),
+        "desc"=>_m("You can use some output modifications:<br>
+                   &nbsp; - [<i>empty</i>] - no modification<br>
+                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>
+                   &nbsp; - <i>urlencode</i> - URL-encodes string (see <a href=\"http://php.net/urlencode\">urlencode<a> PHP function)<br>
+                   &nbsp; - <i>safe</i> - converts special characters to HTML entities (see <a href=\"http://php.net/htmlspecialchars\">htmlspecialchars<a> PHP function)<br>
+                   &nbsp; - <i>javascript</i> - escape ' (replace ' with \\')
+                   "),
+        "type"=>"STR",
+        "example"=>_m("")))),
 "f_x"=>array("name"=>_m("transformation"),
     "desc"=>_m("Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_1</b>:<b>return_value_1</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>."),
     "params"=>array(
