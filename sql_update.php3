@@ -21,6 +21,10 @@ http://www.apc.org/
 
 # script for MySQL database update
 
+
+crash !!!    - remove this line to run the script, please!
+
+
 # this script updates the database to last structure, create all tables, ...
 # can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
@@ -81,30 +85,30 @@ function safe_echo ($txt) {
 
 # table definitions
 $tablelist = array( 'active_sessions' => "(
-                         sid varchar(32) NOT NULL,
-                         name varchar(32) NOT NULL,
+                         sid varchar(32) NOT NULL default '',
+                         name varchar(32) NOT NULL default '',
                          val text,
-                         changed varchar(14) NOT NULL,
+                         changed varchar(14) NOT NULL default '',
                          PRIMARY KEY (name, sid),
                          KEY changed (changed)
                       )",
                       'alerts_admin' => "(
                          id int(10) NOT NULL auto_increment,
                          last_mail_confirm int(10) NOT NULL default '0',
-                         mail_confirm int(4) NOT NULL default '0',
-                         delete_not_confirmed int(4) NOT NULL default '0',
+                         mail_confirm int(4) NOT NULL default '3',
+                         delete_not_confirmed int(4) NOT NULL default '10',
                          last_delete int(10) NOT NULL default '0',
                          PRIMARY KEY  (id)
                       )",
                       'alerts_collection' => "(
                          id int(11) NOT NULL auto_increment,
                          description text NOT NULL,
-                         editorial text NOT NULL,
                          showme tinyint(1) NOT NULL default '1',
                          mail_from varchar(255) NOT NULL default '',
                          mail_sender varchar(255) NOT NULL default '',
                          mail_errors_to varchar(255) NOT NULL default '',
                          mail_reply_to varchar(255) NOT NULL default '',
+                         editorial text NOT NULL,
                          PRIMARY KEY  (id)
                       )",
                       'alerts_collection_filter' => "(
@@ -146,26 +150,26 @@ $tablelist = array( 'active_sessions' => "(
                          howoften varchar(10) NOT NULL default 'daily',
                          collectionid int(11) default NULL,
                          PRIMARY KEY  (id),
-                         UNIQUE KEY user_filter (userid,filterid),
-                         UNIQUE KEY alerts_collection (userid,collectionid)
+                         UNIQUE KEY alerts_collection(userid,collectionid),
+                         UNIQUE KEY user_filter(userid,filterid)
                       )", 
                       'constant' => "(
-                         id char(16) NOT NULL,
-                         group_id char(16) NOT NULL,
-                         name char(150) NOT NULL,
-                         value char(255) NOT NULL,
-                         class char(16),
-                         pri smallint(5) DEFAULT '100' NOT NULL,
+                         id char(16) NOT NULL default '',
+                         group_id char(16) NOT NULL default '',
+                         name char(150) NOT NULL default '',
+                         value char(255) NOT NULL default '',
+                         class char(16) default NULL,
+                         pri smallint(5) NOT NULL default '100',
                          ancestors char(160) default NULL,
-                         description text default NULL,
+                         description char(250) default NULL,
                          short_id int(11) NOT NULL auto_increment,
                          PRIMARY KEY (id),
                          KEY group_id (group_id),
                          KEY short_id(short_id)
                       )",
                       'constant_slice' => "(
-                        slice_id char(16),
-                        group_id char(16) NOT NULL,
+                        slice_id char(16) default NULL,
+                        group_id char(16) NOT NULL default '',
                         propagate tinyint(1) NOT NULL default '1',
                         levelcount tinyint(2) NOT NULL default '2',
                         horizontal tinyint(1) NOT NULL default '0',
@@ -174,11 +178,11 @@ $tablelist = array( 'active_sessions' => "(
                         PRIMARY KEY (group_id)
                       )",
                       'content' => "(
-                        item_id varchar(16) NOT NULL,
-                        field_id varchar(16) NOT NULL,
-                        number bigint(20),
+                        item_id varchar(16) NOT NULL default '',
+                        field_id varchar(16) NOT NULL default '',
+                        number bigint(20) default NULL,
                         text mediumtext,
-                        flag smallint(6),
+                        flag smallint(6) default NULL,
                         KEY item_id(item_id,field_id,text(16)),
                         KEY text(text(10))
                       )",
@@ -192,167 +196,166 @@ $tablelist = array( 'active_sessions' => "(
                         script varchar(100) default NULL,
                         params varchar(200) default NULL,
                         last_run bigint(30) default NULL,
-                        PRIMARY KEY (id),
-                        UNIQUE KEY id(id)
+                        PRIMARY KEY (id)
                       )",
                       'db_sequence' => "(
-                         seq_name varchar(127) NOT NULL,
-                         nextid int(10) unsigned DEFAULT '0' NOT NULL,
+                         seq_name varchar(127) NOT NULL default '',
+                         nextid int(10) unsigned NOT NULL default '0',
                          PRIMARY KEY (seq_name)
                       )",
                       'discussion' => "(
-                         id varchar(16) NOT NULL,
-                         parent varchar(16) NOT NULL,
-                         item_id varchar(16) NOT NULL,
-                         date bigint(20) NOT NULL,
+                         id varchar(16) NOT NULL default '',
+                         parent varchar(16) NOT NULL default '',
+                         item_id varchar(16) NOT NULL default '',
+                         date bigint(20) NOT NULL default '0',
                          subject text,
-                         author varchar(255),
-                         e_mail varchar(80),
+                         author varchar(255) default NULL,
+                         e_mail varchar(80) default NULL,
                          body text,
-                         state int(11) NOT NULL,
-                         flag int(11) NOT NULL,
+                         state int(11) NOT NULL default '0',
+                         flag int(11) NOT NULL default '0',
+                         url_address varchar(255) default NULL,
+                         url_description text,
+                         remote_addr varchar(255) default NULL,
                          free1 text,
                          free2 text,
-                         url_address varchar(255),
-                         url_description varchar(255),
-                         remote_addr varchar(255),
                          PRIMARY KEY (id)
-                         )",
+                      )",
                       'ef_categories' => "(
-                         category varchar(255) NOT NULL,
-                         category_name varchar(255) NOT NULL,
-                         category_id varchar(16) NOT NULL,
-                         feed_id int(11) NOT NULL,
-                         target_category_id varchar(16) NOT NULL,
-                         approved int(11) NOT NULL,
+                         category varchar(255) NOT NULL default '',
+                         category_name varchar(255) NOT NULL default '',
+                         category_id varchar(16) NOT NULL default '',
+                         feed_id int(11) NOT NULL default '0',
+                         target_category_id varchar(16) NOT NULL default '',
+                         approved int(11) NOT NULL default '0',
                          PRIMARY KEY (category_id, feed_id)
                       )",
                       'ef_permissions' => "(
-                         slice_id varchar(16) NOT NULL,
-                         node varchar(150) NOT NULL,
-                         user varchar(50) NOT NULL,
+                         slice_id varchar(16) NOT NULL default '',
+                         node varchar(150) NOT NULL default '',
+                         user varchar(50) NOT NULL default '',
                          PRIMARY KEY (slice_id, node, user)
                       )",
                       'email_auto_user' => "(
-                         uid char(50) NOT NULL,
-                         creation_time bigint(20) DEFAULT '0' NOT NULL,
-                         last_change bigint(20) DEFAULT '0' NOT NULL,
-                         clear_pw char(40),
-                         confirmed smallint(5) DEFAULT '0' NOT NULL,
-                         confirm_key char(16),
+                         uid char(50) NOT NULL default '',
+                         creation_time bigint(20) NOT NULL default '0',
+                         last_change bigint(20) NOT NULL default '0',
+                         clear_pw char(40) default NULL,
+                         confirmed smallint(5) NOT NULL default '0',
+                         confirm_key char(16) default NULL,
                          PRIMARY KEY (uid)
                       )",
                       'email_notify' => "(
-                         slice_id char(16) NOT NULL,
-                         uid char(60) NOT NULL,
-                         function smallint(5) DEFAULT '0' NOT NULL,
+                         slice_id char(16) NOT NULL default '',
+                         uid char(60) NOT NULL default '',
+                         function smallint(5) NOT NULL default '0',
                          PRIMARY KEY (slice_id, uid, function),
                          KEY slice_id (slice_id)
                       )",
                       'external_feeds' => "(
                          feed_id int(11) NOT NULL auto_increment,
-                         slice_id varchar(16) NOT NULL,
-                         node_name varchar(150) NOT NULL,
-                         remote_slice_id varchar(16) NOT NULL,
-                         user_id varchar(200) NOT NULL,
-                         newest_item varchar(40) NOT NULL,
-                         remote_slice_name varchar(200) NOT NULL,
+                         slice_id varchar(16) NOT NULL default '',
+                         node_name varchar(150) NOT NULL default '',
+                         remote_slice_id varchar(16) NOT NULL default '',
+                         user_id varchar(200) NOT NULL default '',
+                         newest_item varchar(40) NOT NULL default '',
+                         remote_slice_name varchar(200) NOT NULL default '',
                          PRIMARY KEY (feed_id)
                       )",
                       'feedmap' => "(
-                         from_slice_id varchar(16) NOT NULL,
-                         from_field_id varchar(16) NOT NULL,
-                         to_slice_id varchar(16) NOT NULL,
-                         to_field_id varchar(16) NOT NULL,
-                         flag int(11),
+                         from_slice_id varchar(16) NOT NULL default '',
+                         from_field_id varchar(16) NOT NULL default '',
+                         to_slice_id varchar(16) NOT NULL default '',
+                         to_field_id varchar(16) NOT NULL default '',
+                         flag int(11) default NULL,
                          value mediumtext,
-                         from_field_name varchar(255) NOT NULL,
+                         from_field_name varchar(255) NOT NULL default '',
                          KEY from_slice_id (from_slice_id, to_slice_id)
                       )",
                       'feedperms' => "(
-                         from_id varchar(16) NOT NULL,
-                         to_id varchar(16) NOT NULL,
+                         from_id varchar(16) NOT NULL default '',
+                         to_id varchar(16) NOT NULL default '',
                          flag int(11)
                       )",
                       'feeds' => "(
-                         from_id varchar(16) NOT NULL,
-                         to_id varchar(16) NOT NULL,
-                         category_id varchar(16),
-                         all_categories smallint(5),
-                         to_approved smallint(5),
-                         to_category_id varchar(16),
+                         from_id varchar(16) NOT NULL default '',
+                         to_id varchar(16) NOT NULL default '',
+                         category_id varchar(16) default NULL,
+                         all_categories smallint(5) default NULL,
+                         to_approved smallint(5) default NULL,
+                         to_category_id varchar(16) default NULL,
                          KEY from_id (from_id)
                       )",
                       'field' => "(
-                         id varchar(16) NOT NULL,
-                         type varchar(16) NOT NULL,
-                         slice_id varchar(16) NOT NULL,
-                         name varchar(255) NOT NULL,
-                         input_pri smallint(5) DEFAULT '100' NOT NULL,
-                         input_help varchar(255),
+                         id varchar(16) NOT NULL default '',
+                         type varchar(16) NOT NULL default '',
+                         slice_id varchar(16) NOT NULL default '',
+                         name varchar(255) NOT NULL default '',
+                         input_pri smallint(5) NOT NULL default '100',
+                         input_help varchar(255) default NULL,
                          input_morehlp text,
                          input_default mediumtext,
-                         required smallint(5),
-                         feed smallint(5),
-                         multiple smallint(5),
-                         input_show_func varchar(255),
-                         content_id varchar(16),
-                         search_pri smallint(5) DEFAULT '100' NOT NULL,
-                         search_type varchar(16),
-                         search_help varchar(255),
+                         required smallint(5) default NULL,
+                         feed smallint(5) default NULL,
+                         multiple smallint(5) default NULL,
+                         input_show_func varchar(255) default NULL,
+                         content_id varchar(16) default NULL,
+                         search_pri smallint(5) NOT NULL default '100',
+                         search_type varchar(16) default NULL,
+                         search_help varchar(255) default NULL,
                          search_before text,
                          search_more_help text,
-                         search_show smallint(5),
-                         search_ft_show smallint(5),
-                         search_ft_default smallint(5),
-                         alias1 varchar(10),
-                         alias1_func varchar(255),
-                         alias1_help varchar(255),
-                         alias2 varchar(10),
-                         alias2_func varchar(255),
-                         alias2_help varchar(255),
-                         alias3 varchar(10),
-                         alias3_func varchar(255),
-                         alias3_help varchar(255),
+                         search_show smallint(5) default NULL,
+                         search_ft_show smallint(5) default NULL,
+                         search_ft_default smallint(5) default NULL,
+                         alias1 varchar(10) default NULL,
+                         alias1_func varchar(255) default NULL,
+                         alias1_help varchar(255) default NULL,
+                         alias2 varchar(10) default NULL,
+                         alias2_func varchar(255) default NULL,
+                         alias2_help varchar(255) default NULL,
+                         alias3 varchar(10) default NULL,
+                         alias3_func varchar(255) default NULL,
+                         alias3_help varchar(255) default NULL,
                          input_before text,
                          aditional text,
-                         content_edit smallint(5),
-                         html_default smallint(5),
-                         html_show smallint(5),
-                         in_item_tbl varchar(16),
-                         input_validate varchar(16) NOT NULL,
-                         input_insert_func varchar(255) NOT NULL,
-                         input_show smallint(5),
-                         text_stored smallint(5) DEFAULT '1',
+                         content_edit smallint(5) default NULL,
+                         html_default smallint(5) default NULL,
+                         html_show smallint(5) default NULL,
+                         in_item_tbl varchar(16) default NULL,
+                         input_validate varchar(16) NOT NULL default '',
+                         input_insert_func varchar(255) NOT NULL default '',
+                         input_show smallint(5) default NULL,
+                         text_stored smallint(5) default '1',
                          KEY slice_id (slice_id, id)
                       )",
                       'groups' => "(
-                         name varchar(32) NOT NULL,
-                         description varchar(255) NOT NULL,
+                         name varchar(32) NOT NULL default '',
+                         description varchar(255) NOT NULL default '',
                          PRIMARY KEY (name)
                       )",
                       'item' => "(
-                         id char(16) NOT NULL,
-                         short_id int(11) NOT NULL auto_increment,
-                         slice_id char(16) NOT NULL,
-                         status_code smallint(5) DEFAULT '0' NOT NULL,
-                         post_date bigint(20) DEFAULT '0' NOT NULL,
-                         publish_date bigint(20),
-                         expiry_date bigint(20),
-                         highlight smallint(5),
-                         posted_by char(60),
-                         edited_by char(60),
-                         last_edit bigint(20),
-                         display_count int(11) DEFAULT '0' NOT NULL,
-                         flags char(30),                            
-                         disc_count int(11) DEFAULT '0',            
-                         disc_app int(11) DEFAULT '0',              
-                         externally_fed char(150),
-                         moved2active int(10) NOT NULL default '0',
-                         PRIMARY KEY (id),
-                         KEY short_id (short_id),
-                         KEY slice_id (slice_id, status_code, publish_date),
-                         KEY expiry_date(expiry_date)
+                        id char(16) NOT NULL default '',
+                        short_id int(11) NOT NULL auto_increment,
+                        slice_id char(16) NOT NULL default '',
+                        status_code smallint(5) NOT NULL default '0',
+                        post_date bigint(20) NOT NULL default '0',
+                        publish_date bigint(20) default NULL,
+                        expiry_date bigint(20) default NULL,
+                        highlight smallint(5) default NULL,
+                        posted_by char(60) default NULL,
+                        edited_by char(60) default NULL,
+                        last_edit bigint(20) default NULL,
+                        display_count int(11) NOT NULL default '0',
+                        flags char(30) default NULL,               
+                        disc_count int(11) default '0',            
+                        disc_app int(11) default '0',              
+                        externally_fed char(150) NOT NULL default '',   
+                        moved2active int(10) NOT NULL default '0',
+                        PRIMARY KEY  (id),
+                        KEY short_id (short_id),
+                        KEY slice_id_2 (slice_id,status_code,publish_date),
+                        KEY expiry_date (expiry_date)
                       )",
                       'jump' => "(
                         slice_id varchar(16) NOT NULL default '',
@@ -361,38 +364,38 @@ $tablelist = array( 'active_sessions' => "(
                         PRIMARY KEY (slice_id)
                       )",
                       'log' => "(
-                         id int(11) DEFAULT '0' NOT NULL auto_increment,
-                         time bigint(20) DEFAULT '0' NOT NULL,
-                         user char(60) NOT NULL,
-                         type char(10) NOT NULL,
-                         params char(128),
-                         PRIMARY KEY (id),
-                         KEY time (time)
+                        id int(11) NOT NULL auto_increment,
+                        time bigint(20) NOT NULL default '0',
+                        user char(60) NOT NULL default '',
+                        type char(10) NOT NULL default '',
+                        params char(128) default NULL,
+                        PRIMARY KEY (id),
+                        KEY time (time)
                       )",
                       'membership' => "(
-                         groupid int(11) DEFAULT '0' NOT NULL,
-                         memberid int(11) DEFAULT '0' NOT NULL,
-                         last_mod timestamp(14),
-                         PRIMARY KEY (groupid, memberid),
-                         KEY memberid (memberid)
+                        groupid int(11) NOT NULL default '0',
+                        memberid int(11) NOT NULL default '0',
+                        last_mod timestamp(14) NOT NULL,
+                        PRIMARY KEY (groupid, memberid),
+                        KEY memberid (memberid)
                       )",
                       'module' => "(
-                         id char(16) NOT NULL,     
-                         name char(100) NOT NULL,  
-                         deleted smallint(5),      
-                         type char(16),            
-                         slice_url varchar(255),
-                         lang_file varchar(50),
-                         created_at bigint(20),
-                         created_by varchar(255),
-                         owner varchar(16),
-                         flag int(11) default '0',
-                         PRIMARY KEY (id)
+                        id char(16) NOT NULL default '',   
+                        name char(100) NOT NULL default '',
+                        deleted smallint(5) default NULL,  
+                        type char(16) default 'S',         
+                        slice_url char(255) default NULL,
+                        lang_file char(50) default NULL,
+                        created_at bigint(20) NOT NULL default '0',
+                        created_by char(255) NOT NULL default '',
+                        owner char(16) NOT NULL default '',
+                        flag int(11) default '0',
+                        PRIMARY KEY (id)
                       )",
                       'mysql_auth_group' => "(
-                        slice_id varchar(16) NOT NULL,
-                        groupparent varchar(30),
-                        groups varchar(30)
+                        slice_id varchar(16) NOT NULL default '',
+                        groupparent varchar(30) NOT NULL default '',
+                        groups varchar(30) NOT NULL default ''
                       )",
                       'mysql_auth_user' => "(
                         uid int(10) NOT NULL default '0',
@@ -414,7 +417,7 @@ $tablelist = array( 'active_sessions' => "(
                         organisation varchar(50) default NULL,
                         start_date bigint(20) default NULL,
                         renewal_date bigint(20) default NULL,
-                        email varchar(50),
+                        email varchar(50) default '',
                         membership_type varchar(50) default NULL,
                         status_code smallint(5) default '2',
                         todo varchar(250) default NULL,
@@ -429,35 +432,86 @@ $tablelist = array( 'active_sessions' => "(
                         membership_type varchar(50) default NULL
                       )",
                       'nodes' => "(
-                         name varchar(150) NOT NULL,
-                         server_url varchar(200) NOT NULL,
-                         password varchar(50) NOT NULL,
-                         PRIMARY KEY (name)
+                        name varchar(150) NOT NULL default '',
+                        server_url varchar(200) NOT NULL default '',
+                        password varchar(50) NOT NULL default '',
+                        PRIMARY KEY (name)
                       )",
                       'offline' => "(
-                         id char(16) NOT NULL,
-                         digest char(32) NOT NULL,
-                         flag int(11),
-                         PRIMARY KEY (id),
-                         KEY digest (digest)
+                        id char(16) NOT NULL default '',
+                        digest char(32) NOT NULL default '',
+                        flag int(11) default NULL,
+                        PRIMARY KEY (id),
+                        KEY digest (digest)
                       )",
                       'pagecache' => "(
-                         id varchar(32) NOT NULL,
-                         str2find text,
-                         content mediumtext,
-                         stored bigint(20) NOT NULL,
-                         flag int(11),
-                         PRIMARY KEY (id),
-                         KEY stored (stored)
+                        id varchar(32) NOT NULL default '',
+                        str2find text,
+                        content mediumtext,
+                        stored bigint(20) NOT NULL default '0',
+                        flag int(11) default NULL,
+                        PRIMARY KEY (id),
+                        KEY stored (stored)
                       )",
                       'perms' => "(
-                         object_type char(30) NOT NULL,
-                         objectid char(32) NOT NULL,
-                         userid int(11) DEFAULT '0' NOT NULL,
-                         perm char(32) NOT NULL,
-                         last_mod timestamp(14),
-                         PRIMARY KEY (objectid, userid, object_type),
-                         KEY userid (userid)
+                        object_type char(30) NOT NULL default '',
+                        objectid char(32) NOT NULL default '',
+                        userid int(11) NOT NULL default '0',
+                        perm char(32) NOT NULL default '',
+                        last_mod timestamp(14) NOT NULL,
+                        PRIMARY KEY (objectid, userid, object_type),
+                        KEY userid (userid)
+                      )",
+                      'polls' => "(
+                        id varchar(16) NOT NULL default '',
+                        pollID int(11) NOT NULL auto_increment,
+                        status_code tinyint(4) NOT NULL default '1',
+                        pollTitle varchar(100) NOT NULL default '',
+                        startDate int(11) NOT NULL default '0',
+                        endDate int(11) NOT NULL default '0',
+                        defaults tinyint(1) default NULL,
+                        Logging tinyint(1) default NULL,
+                        IPLocking tinyint(1) default NULL,
+                        IPLockTimeout int(4) default NULL,
+                        setCookies tinyint(1) default NULL,
+                        cookiesPrefix varchar(16) default NULL,
+                        designID int(11) default NULL,
+                        params text NOT NULL,
+                        PRIMARY KEY  (pollID)
+                      )",
+                      'polls_data' => "(
+                        pollID int(11) NOT NULL default '0',
+                        optionText char(50) NOT NULL default '',
+                        optionCount int(11) NOT NULL default '0',
+                        voteID int(11) NOT NULL default '0'
+                      )",
+                      'polls_designs' => "(
+                        designID int(11) NOT NULL auto_increment,
+                        pollsModuleID varchar(16) NOT NULL default '',
+                        name text NOT NULL,
+                        comment text NOT NULL,
+                        resultBarFile text NOT NULL,
+                        resultBarWidth int(4) NOT NULL default '0',
+                        resultBarHeight int(4) NOT NULL default '0',
+                        top text NOT NULL,
+                        answer text NOT NULL,
+                        bottom text NOT NULL,
+                        params text NOT NULL,
+                        PRIMARY KEY  (designID)
+                      )",
+                      'polls_ip_lock' => "(
+                        pollID int(11) NOT NULL default '0',
+                        voteID int(11) NOT NULL default '0',
+                        votersIP char(16) NOT NULL default '',
+                        timeStamp int(11) NOT NULL default '0'
+                      )",
+                      'polls_log' => "(
+                        logID int(11) NOT NULL auto_increment,
+                        pollID int(11) NOT NULL default '0',
+                        voteID int(11) NOT NULL default '0',
+                        votersIP char(16) NOT NULL default '',
+                        timeStamp int(11) NOT NULL default '0',
+                        PRIMARY KEY  (logID)
                       )",
                       'profile' => "(
                          id int(11) NOT NULL auto_increment,
@@ -470,18 +524,18 @@ $tablelist = array( 'active_sessions' => "(
                          KEY slice_user_id (slice_id, uid)
                       )",
                       'relation' => "(
-                         source_id char(16) NOT NULL,
-                         destination_id char(32) NOT NULL,
-                         flag int(11),
-                         KEY source_id (source_id),
-                         KEY destination_id (destination_id)
+                        source_id char(16) NOT NULL default '',
+                        destination_id char(32) NOT NULL default '',
+                        flag int(11) default NULL,
+                        KEY source_id (source_id),
+                        KEY destination_id (destination_id)
                       )",
                       'site' => "(
-                         id varchar(16) NOT NULL,
-                         start_spot int(11),
-                         structure text,
-                         flag int(11),
-                         PRIMARY KEY (id)
+                        id varchar(16) NOT NULL default '',
+                        state_file varchar(255) NOT NULL default '',
+                        structure text,
+                        flag int(11) default NULL,
+                        PRIMARY KEY (id)
                       )",
                       'site_spot' => "(
                         id int(11) NOT NULL auto_increment,
@@ -493,166 +547,166 @@ $tablelist = array( 'active_sessions' => "(
                         KEY spot(site_id,spot_id)
                       )",
                       'slice' => "(
-                         id varchar(16) NOT NULL,
-                         name varchar(100) NOT NULL,
-                         owner varchar(16),
-                         deleted smallint(5),
-                         created_by varchar(255),
-                         created_at bigint(20),
-                         export_to_all smallint(5),
-                         type varchar(16),
-                         template smallint(5),
-                         fulltext_format_top text,
-                         fulltext_format text,
-                         fulltext_format_bottom text,
-                         odd_row_format text,
-                         even_row_format text,
-                         even_odd_differ smallint(5),
-                         compact_top text,
-                         compact_bottom text,
-                         category_top text,
-                         category_format text,
-                         category_bottom text,
-                         category_sort smallint(5),
-                         config text NOT NULL,
-                         slice_url varchar(255),
-                         d_expiry_limit smallint(5),
-                         d_listlen smallint(5),
-                         lang_file varchar(50),
-                         fulltext_remove text,
-                         compact_remove text,
-                         email_sub_enable smallint(5),
-                         exclude_from_dir smallint(5),
-                         notify_sh_offer mediumtext,
-                         notify_sh_accept mediumtext,
-                         notify_sh_remove mediumtext,
-                         notify_holding_item_s mediumtext,
-                         notify_holding_item_b mediumtext,
-                         notify_holding_item_edit_s mediumtext,
-                         notify_holding_item_edit_b mediumtext,
-                         notify_active_item_edit_s mediumtext,
-                         notify_active_item_edit_b mediumtext,
-                         notify_active_item_s mediumtext,
-                         notify_active_item_b mediumtext,
-                         noitem_msg mediumtext,             
-                         admin_format_top text,
-                         admin_format text,
-                         admin_format_bottom text,
-                         admin_remove text,
-                         permit_anonymous_post smallint(5), 
-                         permit_offline_fill smallint(5),   
-                         aditional text,
-                         flag int DEFAULT '0' NOT NULL,    
-                         vid int DEFAULT '0',
-                         gb_direction tinyint(4) default NULL,
-                         group_by varchar(16) default NULL,
-                         gb_header tinyint(4) default NULL,
-                         gb_case varchar(15) default NULL,                       
-                         javascript text,
-                         fileman_access varchar(20) default NULL,
-                         fileman_dir varchar(50) default NULL,                           
-                         PRIMARY KEY (id)
+                        id varchar(16) NOT NULL default '',
+                        name varchar(100) NOT NULL default '',
+                        owner varchar(16) default NULL,
+                        deleted smallint(5) default NULL,
+                        created_by varchar(255) default NULL,
+                        created_at bigint(20) default NULL,
+                        export_to_all smallint(5) default NULL,
+                        type varchar(16) default NULL,
+                        template smallint(5) default NULL,
+                        fulltext_format_top text,
+                        fulltext_format text,
+                        fulltext_format_bottom text,
+                        odd_row_format text,
+                        even_row_format text,
+                        even_odd_differ smallint(5) default NULL,
+                        compact_top text,
+                        compact_bottom text,
+                        category_top text,
+                        category_format text,
+                        category_bottom text,
+                        category_sort smallint(5) default NULL,
+                        config text NOT NULL,
+                        slice_url varchar(255) default NULL,
+                        d_expiry_limit smallint(5) default NULL,
+                        d_listlen smallint(5) default NULL,
+                        lang_file varchar(50) default NULL,
+                        fulltext_remove text,
+                        compact_remove text,
+                        email_sub_enable smallint(5) default NULL,
+                        exclude_from_dir smallint(5) default NULL,
+                        notify_sh_offer mediumtext,
+                        notify_sh_accept mediumtext,
+                        notify_sh_remove mediumtext,
+                        notify_holding_item_s mediumtext,
+                        notify_holding_item_b mediumtext,
+                        notify_holding_item_edit_s mediumtext,
+                        notify_holding_item_edit_b mediumtext,
+                        notify_active_item_edit_s mediumtext,
+                        notify_active_item_edit_b mediumtext,
+                        notify_active_item_s mediumtext,
+                        notify_active_item_b mediumtext,
+                        noitem_msg mediumtext,                           
+                        admin_format_top text,
+                        admin_format text,
+                        admin_format_bottom text,
+                        admin_remove text,
+                        permit_anonymous_post smallint(5) default NULL,  
+                        permit_offline_fill smallint(5) default NULL,    
+                        aditional text,
+                        flag int(11) NOT NULL default '0',
+                        vid int(11) default '0',
+                        gb_direction tinyint(4) default NULL,
+                        group_by varchar(16) default NULL,
+                        gb_header tinyint(4) default NULL,
+                        gb_case varchar(15) default NULL,
+                        javascript text,                                 
+                        fileman_access varchar(20) default NULL,
+                        fileman_dir varchar(50) default NULL,                          
+                        PRIMARY KEY (id)
                       )",
                       'slice_owner' => "(
-                         id char(16) NOT NULL,
-                         name char(80) NOT NULL,
-                         email char(80) NOT NULL,
-                         PRIMARY KEY (id)
+                        id char(16) NOT NULL default '',
+                        name char(80) NOT NULL default '',
+                        email char(80) NOT NULL default '',
+                        PRIMARY KEY (id)
                       )",
                       'subscriptions' => "(
-                         uid char(50) NOT NULL,
-                         category char(16),
-                         content_type char(16),
-                         slice_owner char(16),
-                         frequency smallint(5) DEFAULT '0' NOT NULL,
-                         last_post bigint(20) DEFAULT '0' NOT NULL,
-                         KEY uid (uid, frequency)
+                        uid char(50) NOT NULL default '',
+                        category char(16) default NULL,
+                        content_type char(16) default NULL,
+                        slice_owner char(16) default NULL,
+                        frequency smallint(5) NOT NULL default '0',
+                        last_post bigint(20) NOT NULL default '0',
+                        KEY uid (uid, frequency)
                       )",
                       'users' => "(
-                         id int(11) DEFAULT '0' NOT NULL auto_increment,
-                         type char(10) NOT NULL,
-                         password char(30) NOT NULL,
-                         uid char(40) NOT NULL,
-                         mail char(40) NOT NULL,
-                         name char(80) NOT NULL,
-                         description char(255) NOT NULL,
-                         givenname char(40) NOT NULL,
-                         sn char(40) NOT NULL,
-                         last_mod timestamp(14),
-                         PRIMARY KEY (id),
-                         KEY type (type),
-                         KEY mail (mail),
-                         KEY name (name),
-                         KEY sn (sn)
+                        id int(11) NOT NULL auto_increment,
+                        type char(10) NOT NULL default '',
+                        password char(30) NOT NULL default '',
+                        uid char(40) NOT NULL default '',
+                        mail char(40) NOT NULL default '',
+                        name char(80) NOT NULL default '',
+                        description char(255) NOT NULL default '',
+                        givenname char(40) NOT NULL default '',
+                        sn char(40) NOT NULL default '',
+                        last_mod timestamp(14) NOT NULL,
+                        PRIMARY KEY (id),
+                        KEY type (type),
+                        KEY mail (mail),
+                        KEY name (name),
+                        KEY sn (sn)
                       )",
                       'view' => "(
-                         id int(10) unsigned NOT NULL auto_increment,
-                         slice_id varchar(16) NOT NULL,
-                         name varchar(50),                
-                         type varchar(10),                
-                         before text,
-                         even text,
-                         odd text,
-                         even_odd_differ tinyint(3) unsigned,
-                         after text,
-                         remove_string text,
-                         group_title text,
-                         order1 varchar(16),
-                         o1_direction tinyint(3) unsigned,
-                         order2 varchar(16),
-                         o2_direction tinyint(3) unsigned,
-                         group_by1 varchar(16),
-                         g1_direction tinyint(3) unsigned,
-                         group_by2 varchar(16),
-                         g2_direction tinyint(3) unsigned,
-                         cond1field varchar(16),
-                         cond1op varchar(10),
-                         cond1cond varchar(255),
-                         cond2field varchar(16),
-                         cond2op varchar(10),
-                         cond2cond varchar(255),
-                         cond3field varchar(16),
-                         cond3op varchar(10),
-                         cond3cond varchar(255),
-                         listlen int(10) unsigned,
-                         scroller tinyint(3) unsigned,
-                         selected_item text,
-                         modification int(10) unsigned,
-                         parameter varchar(255),
-                         img1 varchar(255),
-                         img2 varchar(255),
-                         img3 varchar(255),
-                         img4 varchar(255),
-                         flag int(10) unsigned,
-                         aditional text,
-                         aditional2 text,
-                         aditional3 text,
-                         aditional4 text,
-                         aditional5 text,
-                         aditional6 text,
-                         noitem_msg text,                
-                         group_bottom text,
-                         field1 varchar(255) default NULL,
-                         field2 varchar(255) default NULL,
-                         field3 varchar(255) default NULL,
-                         calendar_type varchar(100) default 'mon',
-                         PRIMARY KEY (id),
-                         KEY slice_id (slice_id)
-                      )",
-                      'wizard_welcome' => "(
-                          id int(11) NOT NULL auto_increment,
-                          description varchar(200) NOT NULL default '',
-                          email text,
-                          subject varchar(255) NOT NULL default '',
-                          mail_from varchar(255) NOT NULL default '_#ME_MAIL_',
-                          PRIMARY KEY (id)
+                        id int(10) unsigned NOT NULL auto_increment,
+                        slice_id varchar(16) NOT NULL default '',
+                        name varchar(50) default NULL,      
+                        type varchar(10) default NULL,      
+                        before text,
+                        even text,
+                        odd text,
+                        even_odd_differ tinyint(3) unsigned default NULL,
+                        after text,
+                        remove_string text,
+                        group_title text,
+                        order1 varchar(16) default NULL,
+                        o1_direction tinyint(3) unsigned default NULL,
+                        order2 varchar(16) default NULL,
+                        o2_direction tinyint(3) unsigned default NULL,
+                        group_by1 varchar(16) default NULL,
+                        g1_direction tinyint(3) unsigned default NULL,
+                        group_by2 varchar(16) default NULL,
+                        g2_direction tinyint(3) unsigned default NULL,
+                        cond1field varchar(16) default NULL,
+                        cond1op varchar(10) default NULL,
+                        cond1cond varchar(255) default NULL,
+                        cond2field varchar(16) default NULL,
+                        cond2op varchar(10) default NULL,
+                        cond2cond varchar(255) default NULL,
+                        cond3field varchar(16) default NULL,
+                        cond3op varchar(10) default NULL,
+                        cond3cond varchar(255) default NULL,
+                        listlen int(10) unsigned default NULL,
+                        scroller tinyint(3) unsigned default NULL,
+                        selected_item tinyint(3) unsigned default NULL,
+                        modification int(10) unsigned default NULL,
+                        parameter varchar(255) default NULL,
+                        img1 varchar(255) default NULL,
+                        img2 varchar(255) default NULL,
+                        img3 varchar(255) default NULL,
+                        img4 varchar(255) default NULL,
+                        flag int(10) unsigned default NULL,
+                        aditional text,
+                        aditional2 text,
+                        aditional3 text,
+                        aditional4 text,
+                        aditional5 text,
+                        aditional6 text,
+                        noitem_msg text,                    
+                        group_bottom text,
+                        field1 varchar(16) default NULL,
+                        field2 varchar(16) default NULL,
+                        field3 varchar(16) default NULL,
+                        calendar_type varchar(100) default 'mon',
+                        PRIMARY KEY (id),
+                        KEY slice_id (slice_id)
                       )",
                       'wizard_template' => "(      
-                          id tinyint(10) NOT NULL auto_increment,
-                          dir varchar(100) NOT NULL default '',
-                          description varchar(255) NOT NULL default '',
-                          PRIMARY KEY  (id),
-                          UNIQUE KEY dir (dir)
+                        id tinyint(10) NOT NULL auto_increment,
+                        dir char(100) NOT NULL default '',
+                        description char(255) NOT NULL default '',
+                        PRIMARY KEY  (id),
+                        UNIQUE KEY dir (dir)
+                      )",
+                      'wizard_welcome' => "(
+                        id int(11) NOT NULL auto_increment,
+                        description varchar(200) NOT NULL default '',
+                        email text,
+                        subject varchar(255) NOT NULL default '',
+                        mail_from varchar(255) NOT NULL default '_#ME_MAIL_',
+                        PRIMARY KEY (id)
                       )"
 );
                    
@@ -712,12 +766,12 @@ $SQL_constants[] = "INSERT INTO constant (id, group_id, name, value, class, pri)
 $SQL_constants[] = "INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined051', 'lt_languages', 'Turkish', 'TR', '', '100')";
 $SQL_constants[] = "INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined052', 'lt_languages', 'Ukrainian', 'UK', '', '100')";
 $SQL_constants[] = "INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined053', 'lt_languages', 'Vietnamese', 'VI', '', '100')";
-$SQL_constants[] = "INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined058', 'AA_Core_Bins....', 'Approved', '1', '', '100')";
-$SQL_constants[] = "INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined059', 'AA_Core_Bins....', 'Holding Bin', '2', '', '200')";
-$SQL_constants[] = "INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined060', 'AA_Core_Bins....', 'Trash Bin', '3', '', '300')";
 $SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined054', 'lt_groupNames', 'Code Pages', 'lt_codepages', '', '0')";
 $SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined055', 'lt_groupNames', 'Languages Shortcuts', 'lt_languages', '', '1000')";
 $SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined057', 'lt_groupNames', 'AA Core Bins', 'AA_Core_Bins....', '', '10000')";
+$SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined058', 'AA_Core_Bins....', 'Approved', '1', '', '100')";
+$SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined059', 'AA_Core_Bins....', 'Holding Bin', '2', '', '200')";
+$SQL_constants[] = "REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined060', 'AA_Core_Bins....', 'Trash Bin', '3', '', '300')";
 
 $SQL_apc_categ[] = "DELETE FROM constant WHERE group_id = 'lt_apcCategories'";
 $SQL_apc_categ[] = "INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined100', 'lt_apcCategories', 'Internet & ICT', 'Internet & ICT', '', '1000')";
@@ -859,7 +913,6 @@ $SQL_aacore[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_h
 $SQL_aacore[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'password', '', 'AA_Core_Fields..', 'Password', '2055', 'Password which user must know if (s)he want to edit item on public site', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#UNDEFINE', 'f_i', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')";
 $SQL_aacore[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'relation', '', 'AA_Core_Fields..', 'Relation', '2055', '', '', 'txt:', '0', '0', '1', 'mse:#sLiCe-4e6577735f454e5f746d706c2e2e2e2e:', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_v:vid=243&cmd[243]=x-243-_#this', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text', 'qte', '1', '1')";
 
-
 $SQL_templates[] = "DELETE FROM field WHERE slice_id='News_EN_tmpl....'";
 $SQL_templates[] = "REPLACE INTO slice (id, name, owner, deleted, created_by, created_at, export_to_all, type, template, fulltext_format_top, fulltext_format, fulltext_format_bottom, odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, category_top, category_format, category_bottom, category_sort, config, slice_url, d_expiry_limit, d_listlen, lang_file, fulltext_remove, compact_remove, email_sub_enable, exclude_from_dir, notify_sh_offer, notify_sh_accept, notify_sh_remove, notify_holding_item_s, notify_holding_item_b, notify_holding_item_edit_s, notify_holding_item_edit_b, notify_active_item_edit_s, notify_active_item_edit_b, notify_active_item_s, notify_active_item_b, noitem_msg, admin_format_top, admin_format, admin_format_bottom, admin_remove, permit_anonymous_post, permit_offline_fill, aditional, flag, vid, gb_direction, group_by, gb_header, gb_case, javascript) VALUES( 'News_EN_tmpl....', 'News (EN) Template', 'AA_Core.........', '0', '', '975157733', '0', 'News_EN_tmpl....', '1', '', '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR><img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\">_#FULLTEXT ', '','<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font><font color=#FF0000><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font><font color=#808080 size=-1><br>_#PLACE###(_#LINK_SRC) - </font><font color=black size=-1>_#ABSTRACT<br></font><br>', '', '0', '<br>', '<br>', '', '<p>_#CATEGORY</p>', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', 'No item found', '<tr class=tablename><td width=30>&nbsp;</td><td>Click on Headline to Edit</td><td>Date</td></tr>', '<tr class=tabtxt><td width=30><input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"></td><td><a href=\"_#EDITITEM\">_#HEADLINE</a></td><td>_#PUB_DATE</td></tr>', '', '', '1', '1', '', '0', '0', NULL, NULL, NULL, NULL,'')";
 $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'abstract........', '', 'News_EN_tmpl....', 'Abstract', '150', 'Abstract', 'http://aa.ecn.cz/aa/doc/help.html', 'qte', '0', '0', '0', 'txt:8', '', '100', '', '', '', '', '0', '1', '1', '_#ABSTRACT', 'f_t', 'alias for abstract', '_#RSS_IT_D', 'f_r:256', 'Abstract for RSS', '', '', '', '', '', '0', '0', '1', '', 'text', 'qte', '1', '1')";
@@ -892,7 +945,7 @@ $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, inpu
 $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_count......', '', 'News_EN_tmpl....', 'Comments Count', '5060', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_ALLCNT', 'f_h', 'alias for number of all discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_count', '', 'nul', '0', '1')";
 $SQL_templates[] = "INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_app........', '', 'News_EN_tmpl....', 'Approved Comments Count', '5070', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_APPCNT', 'f_h', 'alias for number of approved discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_app', '', 'nul', '0', '1')";
 
-$SQL_view_templates[] = "DELETE FROM field WHERE slice_id='AA_Core_Fields..' AND name IN ('Discussion ...','Constant view ...','Javascript ...','rss','Calendar')";
+$SQL_view_templates[] = "DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND name IN ('Discussion ...','Constant view ...','Javascript ...','rss','Calendar')";
 $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Discussion ...', 'discus', '<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', '<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=20%><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', '<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=http://work.ecn.cz/apc-aa/images/blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', 1, '</table></td></tr></table>_#BUTTONS#', '<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 23, NULL, '<img src=http://work.ecn.cz/apc-aa/images/i.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/l.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/t.gif width=9 height=21>', '<img src=http://work.ecn.cz/apc-aa/images/blank.gif width=12 height=21>', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
 $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Constant view ...', 'const', '<table border=0 cellpadding=0 cellspacing=0>', '', '<tr><td>_#VALUE###</td></tr>', 0, '</table>', NULL, NULL, 'value', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10, NULL, 0, NULL, 'lt_languages', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
 $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Javascript ...', 'script', '/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"http://work.ecn.cz/apc-aa/view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', NULL, 'document.write(\"_#HEADLINE\");', NULL, '// script end ', NULL, NULL, '', 0, '', 0, NULL, NULL, NULL, NULL, '', '<', '', '', '<', '', '', '<', '', 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'No item found', NULL, '', NULL, NULL, 'mon')";
@@ -900,12 +953,15 @@ $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, eve
 $SQL_view_templates[] = "INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Calendar', 'calendar', '<table border=1>\r\n<tr><td>Mon</td><td>Tue</td><td>Wen</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr>', NULL, '_#STARTDAT-_#END_DATE <b>_#HEADLINE</b>', 1, '</table>', '', '<td><font size=+2><A href=\"calendar.shtml?vid=319&cmd[319]=c-1-_#CV_TST_2-2-_#CV_TST_1&month=_#CV_NUM_M&year=_#CV_NUM_Y&day=_#CV_NUM_D\"><B>_#CV_NUM_D</B></A></font></td>', '', 0, '', 0, NULL, NULL, NULL, NULL, 'publish_date....', '<', '', '', '<', '', '', '<', '', 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<td><font size=+2>_#CV_NUM_D</font></td>', '', 'bgcolor=\"_#COLOR___\"', NULL, NULL, NULL, 'There are no events in this month.', '', 'start_date.....1', 'end_date.......1', NULL, 'mon_table')";
 $SQL_view_templates[] = "REPLACE INTO wizard_welcome (id, description, email, subject, mail_from) VALUES (1,'Generic Item Manager Welcome','You have been assigned an Item Manager for the slice _#SLICNAME. Your username is _#LOGIN___. See <a href=\"http://apc-aa.sf.net/faq\">FAQ</a> for help.','Welcome, AA _#ROLE____','\"_#ME_NAME_\" <_#ME_MAIL_>')";
 
-$SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner FROM slice";
+$SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner, 0 FROM slice";
+$SQL_update_modules[] = "REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'http://domain.org/index.shtml', 'en_site_lang.php3', 1000000000, '', '', 0)";
+$SQL_update_modules[] = "REPLACE INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', 'template.php3', 'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}', 0)";
 
-$SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '*', '*', '*', 'misc/alerts/alerts.php3', 'lang=en&howoften=daily');";
-$SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '*', '*', '1', 'misc/alerts/alerts.php3', 'lang=en&howoften=weekly');";
-$SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '1', '*', '*', 'misc/alerts/alerts.php3', 'lang=en&howoften=monthly');";
-$SQL_alerts[] = "INSERT INTO cron (minutes, hours, mday, mon, wday, script, params) VALUES ('*', '1', '*', '*', '*', 'misc/alerts/admin_mails.php3', '');";
+$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (1, '*',          '1', '*', '*', '*', 'misc/alerts/alerts.php3', 'howoften=daily&lang=en', NULL)";  
+$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (2, '*',          '1', '*', '*', '1', 'misc/alerts/alerts.php3', 'howoften=weekly&lang=en', NULL)"; 
+$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (3, '*',          '1', '1', '*', '*', 'misc/alerts/alerts.php3', 'howoften=monthly&lang=en', NULL)";
+$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (4, '*',          '1', '*', '*', '*', 'misc/alerts/admin_mails.php3', '', NULL)";        
+$SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (5, '8,23,38,53', '*', '*', '*', '*', 'admin/xmlclient.php3', '', NULL)";
 
 # -------------------------------- Executive part -----------------------------
 
@@ -925,7 +981,7 @@ if( !$update AND !$restore AND !$restore_now) {
      right names. Then it possibly updates common records (like default field 
      definitions, APC-wide constants and templates).</p>
   <p><font color="red">However, it is strongly recommended backup your current 
-  database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u root -p --opt aadb &gt; ./aadb/aadb.sql</code></p>
+  database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u aa_database_user -p --opt aadb &gt; ./aadb/aadb.sql</code></p>
   <p><b>!!!Please remove or invalidate this script after use!!!</b></p>
 
   <form name=f action="' .$PHP_SELF .'">
@@ -954,9 +1010,9 @@ if( !$update AND !$restore AND !$restore_now) {
   FrmInputChBox("addstatistic", "Add statistic fields", true, false, "", 1, false, 
                 "New fields (display_count, disc_count, disc_app) in v1.8 should be added to all slice definitions","");
   FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false, 
-                "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice).","");
+                "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice). The default site and poll module is also created/renewed with this option.","");
   FrmInputChBox("alerts", "Add Alerts defaults", true, false, "", 1, false,
-                "Alerts are run by cron.php3, 4 entries to table cron are added. Also two defaults to table alerts_collection are added.");
+                "Alerts are run by cron.php3, 5 entries to table cron are added/renewed (4 for alerts, 1 for cross server networking). Also two defaults to table alerts_collection are added.");
   echo '
   </table></td></tr>
   <tr><td align="center">
