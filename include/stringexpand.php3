@@ -94,7 +94,7 @@ function GetAuthData() {
 *                   'role'
 */
 function parseUser($field) {
-    global $auth_user_info, $cache_nostore, $auth, $slice_id;
+    global $auth_user_info, $cache_nostore, $auth, $slice_id, $perms_roles;
     // this GLOBAL :-( variable is message for pagecache to NOT store views (or
     // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
     // cache's keyString.
@@ -105,24 +105,17 @@ function parseUser($field) {
         case 'password': return $_SERVER['PHP_AUTH_PW'];
         case 'role' : // returns users permission to slice
         case 'permission' :
-            $user = $auth->auth["uid"];
-            if ($user) {
-                $perm = GetSlicePerms($user, $slice_id);
-                switch ($perm) {
-                    case 4 : $role = "super";
-                             break;
-                    case 3 : $role = "administrator";
-                             break;
-                    case 2 : $role = "editor";
-                             break;
-                    case 1 : $role = "author";
-                             break;
-                    default: $role = "undefined";
+                if( IfSlPerm($perms_roles['SUPER']['perm']) ) {
+                    return 'super';
+                } elseif( IfSlPerm($perms_roles['ADMINISTRATOR']['perm'] ) ) {
+                    return 'administrator';
+                } elseif( IfSlPerm($perms_roles['EDITOR']['perm'] ) ) {
+                    return 'editor';
+                } elseif( IfSlPerm($perms_roles['AUTHOR']['perm'] ) ) {
+                    return 'author';
+                } else {
+                    return 'undefined';
                 }
-                return $role;
-            } else {
-                return "undefined";
-            }
             break;
         default:
             if ( !isset($auth_user_info[$_SERVER['PHP_AUTH_USER']]) ) {
