@@ -83,8 +83,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 <?php
   $useOnLoad = false;
-  $show ["newuser"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu("sliceadmin","newuser");
 
   echo "<H1><B>" . L_A_NEWUSER . "</B></H1>";
   PrintArray($err);

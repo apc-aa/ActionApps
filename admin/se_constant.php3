@@ -280,10 +280,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo L_A_CONSTANTS_TIT;?></TITLE>
 </HEAD>
 <?php 
-  $xx = ($slice_id!="");
-  $show["category"] = $xx && !$categ;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
-  
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu ("sliceadmin", $categ ? "category" : "");
+    
   echo "<H1><B>" . L_A_CONSTANTS_EDT . "</B></H1>";
   PrintArray($err);
   echo $Msg;  

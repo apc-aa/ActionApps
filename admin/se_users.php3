@@ -98,11 +98,8 @@ HtmlPageBegin();   // Prints HTML start page tags
  <TITLE><?php echo L_A_PERMISSIONS;?></TITLE>
 </HEAD>
 <?php
-
-  $show[ $show_adduser ?  "addusers" : "users" ] = false;
-
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   // show navigation column in dependance
-                                                 // on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu ("sliceadmin", $show_adduser ? "addusers" : "users");
 
   echo "<H1><B>".L_A_PERMISSIONS."</B></H1>";
 //  PrintArray($err);

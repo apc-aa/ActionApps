@@ -201,8 +201,8 @@ function RealyDelete() {
 </HEAD>
 
 <?php
-  if ($usr_new) $show["g_new"] = false; else $show["g_edit"] = false;
-  require $GLOBALS[AA_INC_PATH]."aa_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu("aaadmin",$usr_new? "g_new" : "g_edit");
 
   echo "<H1><B>". ( $grp_new ? L_NEW_GROUP : L_EDIT_GROUP )."</B></H1>";
   PrintArray($err);

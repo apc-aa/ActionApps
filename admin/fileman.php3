@@ -80,9 +80,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo L_A_FTP_TIT;?></TITLE>
 </HEAD>
 <?php
-
-$show ["fileman"] = false;
-require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+require $GLOBALS[AA_INC_PATH]."menu.php3"; 
+showMenu ("sliceadmin","fileman");
 
 echo "<H1><B>" . L_A_FTP_TIT;
 if ($directory) echo " - ".L_DIRECTORY." ".$directory;

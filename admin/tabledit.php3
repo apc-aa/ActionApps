@@ -19,8 +19,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     <TITLE><?php echo L_EDIT_WIZARD_WELCOME;?></TITLE>
     </HEAD>
 <?php
-    $show ["tabledit"] = false;
-    require $GLOBALS[AA_INC_PATH]."aa_inc.php3";   //show navigation column depending on $show variable
+    require $GLOBALS[AA_INC_PATH]."menu.php3"; 
+    showMenu ("aaadmin","tabledit");
     
     echo "<H1><B>" . L_EDIT_WIZARD_WELCOME . "</B></H1>";
     PrintArray($err);

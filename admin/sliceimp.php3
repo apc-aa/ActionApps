@@ -260,8 +260,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 
 <?php 
-  	$show["sliceimp"] = false;
-	require $GLOBALS[AA_INC_PATH]."aa_inc.php3"; //show navigation column depending on $show 
+	require $GLOBALS[AA_INC_PATH]."menu.php3"; 
+    showMenu ("aaadmin","sliceimp");
 ?>
 <?php echo $pom ?>
 <form name=formular method=post action="<?php echo $sess->url("sliceimp.php3") ?>" 

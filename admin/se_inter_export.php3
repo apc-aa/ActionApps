@@ -91,8 +91,9 @@ function Cancel() {
 <BODY>
 <?php
   $useOnLoad = true;
-  $show["n_export"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu ("sliceadmin", "n_export");
+
   echo "<H1><B>" . L_EXPORT_TIT . "</B></H1>";
   PrintArray($err);
   echo $Msg;

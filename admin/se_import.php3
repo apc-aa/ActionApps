@@ -110,9 +110,9 @@ function UpdateImportExport(slice_id)
 </HEAD>
 <?php
   $useOnLoad = true;
-  $show ["import"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
-
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu ("sliceadmin", "import");
+  
   echo "<H1><B>" . L_A_SLICE_IMP . "</B></H1>";
   PrintArray($err);
   echo $Msg;

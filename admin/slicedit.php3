@@ -80,8 +80,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo L_A_SLICE_TIT;?></TITLE>
 </HEAD>
 <?php
-  $show ["main"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu("sliceadmin","main");
 
   echo "<H1><B>" . ( $slice_id=="" ? L_A_SLICE_ADD : L_A_SLICE_EDT) . "</B></H1>";
   PrintArray($err);

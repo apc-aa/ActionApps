@@ -29,6 +29,56 @@ require $GLOBALS[AA_INC_PATH]."item.php3";     // GetAliasesFromField funct def
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."discussion.php3";  // GetDiscussionAliases funct def
 
+function show_digest_filters ()
+{
+    global $view_id;
+    $db = new DB_AA;
+    $db->query ("SELECT * FROM alerts_digest_filter WHERE vid=".($view_id ? $view_id : 0));
+    $rows = $db->num_rows();
+    for ($irow = 0; $irow < $rows+2; $irow ++) {
+        if ($irow <= $db->num_rows()) $db->next_record();
+        $rowid = $db->f("id");
+        if (!$rowid) $rowid = "new$irow";
+        FrmTextarea("filters[$rowid][conds]", L_FILTER." ".($irow+1), $db->f("conds"), 3, 50, false); 
+        FrmTextarea("filters[$rowid][description]", L_DESCRIPTION, $db->f("description"), 2, 50, false);
+        FrmInputText("filters[$rowid][sort]", L_SORT, $db->f("sort"), 254, 50, false); 
+    }
+}
+
+function store_digest_filters ()
+{
+    global $view_id, $filters, $err;
+    $db = new DB_AA;
+    if (!$view_id) {
+   		$db->query ("SELECT LAST_INSERT_ID() AS last_vid FROM view");
+        $db->next_record();
+        $view_id = $db->f("last_vid");
+    }
+    $varset = new CVarset();
+    reset ($filters);
+    while (list ($rowid, $filter) = each ($filters)) {
+        if (!$filter["description"]) {
+            if (substr ($rowid,0,3) != "new")
+                $db->query ("DELETE FROM alerts_digest_filter WHERE id=$rowid");
+            continue;
+        }    
+        $varset->clear();
+        $varset->add("description", "quoted", $filter["description"]);
+        $varset->add("conds", "quoted", $filter["conds"]);
+        $varset->add("sort", "quoted", $filter["sort"]);
+        $varset->add("vid", "number", $view_id);
+        $varset->add("showme", "number", 1);
+
+        if (substr ($rowid,0,3) != "new") 
+            $SQL = "UPDATE alerts_digest_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";
+        else $SQL = "INSERT INTO alerts_digest_filter ".$varset->makeINSERT();
+        if( !$db->query($SQL)) {
+            $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
+            break;   # not necessary - we have set the halt_on_error
+        }
+    }
+}       
+
 function OrderFrm($name, $txt, $val, $order_fields) {
   global $vw_data;
   $name=safe($name); $txt=safe($txt);
@@ -120,6 +170,14 @@ if( $update )
     }
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+
+    reset($VIEW_TYPES[$view_type]);
+    while(list($k, $v) = each($VIEW_TYPES[$view_type])) 
+      if (substr ($k,0,strlen("function:")) == "function:") {
+        $show_fn = "store_".substr($k,strlen("function:"));
+        $show_fn ();
+      }    
+
     go_url( $sess->url(self_base() . "se_views.php3"));
   }while(false);
 
@@ -196,8 +254,8 @@ echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>
     </HEAD>";
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
-//$show ["views"] = true;
-require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+require $GLOBALS[AA_INC_PATH]."menu.php3";
+showMenu("sliceadmin","");
 
 echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
 PrintArray($err);
@@ -218,6 +276,10 @@ echo "<input type=hidden name='view_type' value='$view_type'>";
 
 reset($VIEW_TYPES[$view_type]);
 while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
+  if (substr ($k,0,strlen("function:")) == "function:") {
+    $show_fn = "show_".substr($k,strlen("function:"));
+    $show_fn ();
+  }    
   if( !($value = $vw_data[$k]) && $VIEW_TYPES_INFO[$view_type][$k]['default'] )  // we can define default values for fields (see constants.php3)
     $value = $VIEW_TYPES_INFO[$view_type][$k]['default'];
   switch ( $VIEW_FIELDS[$k]["input"] ) {

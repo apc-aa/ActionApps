@@ -57,8 +57,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
 
 $useOnLoad = ($new_compact ? true : false);
-$show ["slicedel"] = false;
-require $GLOBALS[AA_INC_PATH]."aa_inc.php3";   //show navigation column depending on $show variable
+require $GLOBALS[AA_INC_PATH]."menu.php3";
+showMenu("aaadmin","slicedel");
 
 echo "<H1><B>" . L_A_DELSLICE . "</B></H1>";
 echo $Msg;

@@ -169,8 +169,8 @@ function EnableClick(cond,what) {
 
 <?php
   $useOnLoad = true;
-  $show ["compact"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu ("sliceadmin", "compact");
 
   echo "<H1><B>" . L_A_COMPACT . "</B></H1>&nbsp;" . L_COMPACT_HELP;
   PrintArray($err);

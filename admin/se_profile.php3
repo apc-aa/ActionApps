@@ -247,7 +247,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </script>
 </HEAD>
 <?php
-require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+require $GLOBALS[AA_INC_PATH]."menu.php3";
+showMenu("sliceadmin","");
 
 echo "<H1><B>" . L_A_PROFILE_TIT . "</B></H1>";
 PrintArray($err);

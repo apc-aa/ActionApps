@@ -61,8 +61,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 </HEAD>
 <?php 
-  $show ["javascript"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3"; 
+  showMenu ("sliceadmin","javascript");
   
   echo "<H1><B>" . L_F_JAVASCRIPT . "</B></H1>";
   PrintArray($err);

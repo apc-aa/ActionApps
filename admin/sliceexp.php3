@@ -127,8 +127,8 @@ function b_export_date_onchange(vstup)
 <BODY>
 
 <?php
-  	$show["sliceexp"] = false;
-	require $GLOBALS[AA_INC_PATH]."aa_inc.php3"; //show navigation column depending on $show 
+	require $GLOBALS[AA_INC_PATH]."menu.php3";
+    showMenu("aaadmin","sliceexp");
 ?>
 
 <h1><b><?php echo L_E_EXPORT_TITLE ?></b></h1>

@@ -105,8 +105,8 @@ echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>"; ?>
 </HEAD><?php
 
 $useOnLoad = ($new_compact ? true : false);
-$show ["views"] = false;
-require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+require $GLOBALS[AA_INC_PATH]."menu.php3";
+showMenu("sliceadmin","views");
 
 echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
 PrintArray($err);

@@ -214,9 +214,8 @@ while ($row = mysql_fetch_array ($result)){
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 HtmlPageBegin();
 echo '<TITLE> '. L_A_NOTIFY_TIT. '</TITLE></HEAD>';
-  $xx = ($slice_id!="");
-$show["notify"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu("sliceadmin","notify");
   
   echo "<H1><B>" . L_A_NOTIFY_TIT . "</B></H1>";
   PrintArray($err);

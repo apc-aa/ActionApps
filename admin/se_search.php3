@@ -104,8 +104,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo L_A_SEARCH_TIT;?></TITLE>
 </HEAD>
 <?php 
-  $show ["search"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu("sliceadmin","search");
   
   echo "<H1><B>" . L_A_SEARCH_EDT . "</B></H1>";
   PrintArray($err);

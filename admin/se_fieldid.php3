@@ -230,8 +230,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 </HEAD>
 <?php 
-  $show ["field_ids"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu ("sliceadmin", "field_ids");  
   
   echo "<H1><B>" . L_A_FIELD_IDS_TIT . "</B></H1>";
   PrintArray($err);

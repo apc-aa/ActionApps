@@ -388,16 +388,8 @@ if( $open_preview )
  else 
   echo '<body>';
 
-$editor_page = true;
-######## add by setu 2002-0206 #######
-if ($navbar != "0") {
-  require $GLOBALS[AA_INC_PATH] . "navbar.php3";
-}
-if ($leftbar != "0") {
-  $menu = "itemmanager";
-  require $GLOBALS[AA_INC_PATH] . "leftbar.php3";
-}
-######
+require $GLOBALS[AA_INC_PATH]."menu.php3";
+showMenu ("itemmanager", "", $navbar != "0", $leftbar != "0");
 
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
 switch( $r_bin_state ) {

@@ -134,8 +134,9 @@ function Cancel() {
 <BODY>
 <?php
   $useOnLoad = true;
-  $show ["nodes"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu("sliceadmin","nodes");
+
   echo "<H1><B>" . L_NODES_ADMIN_TIT . "</B></H1>";
   PrintArray($err);
   echo $Msg;

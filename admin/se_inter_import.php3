@@ -103,8 +103,9 @@ function Submit() {
 <BODY>
 <?php
   $useOnLoad = true;
-  $show["n_import"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu("sliceadmin","n_import");
+
   echo "<H1><B>" . L_IMPORT_TIT . "</B></H1>";
   PrintArray($err);
   echo $Msg;

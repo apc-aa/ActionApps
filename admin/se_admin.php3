@@ -106,8 +106,8 @@ function Defaults() {
 </HEAD>
 
 <?php
-  $show ["config"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu ("sliceadmin", "config");
 
   echo "<H1><B>" . L_A_ADMIN . "</B></H1>";
   PrintArray($err);

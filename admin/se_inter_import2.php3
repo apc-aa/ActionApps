@@ -85,11 +85,10 @@ function Cancel() {
 </HEAD>
 <BODY>
 <?php
-  $xx = ($slice_id!="");
   $useOnLoad = true;
-  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
-                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "nodes"=>isSuperadmin(), "n_import"=>false, "n_export"=>$xx, "filters"=>$xx, "mapping"=>false);
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu("sliceadmin","n_import");
+
   echo "<H1><B>" . L_IMPORT_TIT. "</B></H1>";
   PrintArray($err);
   echo $Msg;

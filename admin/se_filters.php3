@@ -32,7 +32,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "admin");
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "sliceadmin", "filters");
   exit;
 }  
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -63,7 +63,7 @@ while($db->next_record()) {
 }
 
 if( !isset($impslices) OR !is_array($impslices)){
-  MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE, "admin");
+  MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE, "sliceadmin", "filters");
   exit;
 }  
   
@@ -223,8 +223,9 @@ function UpdateFilters(slice_id, import_id) {
 </HEAD>
 <?php
   $useOnLoad = true;
-  $show ["filters"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu ("sliceadmin", "filters");
+  
   echo "<H1><B>" . L_A_FILTERS_FLT . "</B></H1>";
   PrintArray($err);
   echo $Msg;

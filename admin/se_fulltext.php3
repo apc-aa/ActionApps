@@ -124,9 +124,9 @@ function Defaults() {
 </HEAD>
 
 <?php
-  $show ["fulltext"] = false;
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
-
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  showMenu ("sliceadmin", "fulltext");
+  
   echo "<H1><B>" . L_A_FULLTEXT . "</B></H1>&nbsp;&nbsp;" . L_A_FULLTEXT_HELP;
   PrintArray($err);
   echo $Msg;
