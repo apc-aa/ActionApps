@@ -158,6 +158,7 @@ $lookup_op = array( "<"  => "<",
                     ">"  => ">",
                     ">=" => ">=",
                     "LIKE"  => "substring (LIKE)",
+                    "ISNULL"  => "not set",
                     "m:<" => "< now() - x [in seconds]",
                     "m:>" => "> now() - x [in seconds]");
 
@@ -256,6 +257,9 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.10  2002/01/15 13:06:04  honzam
+new ISNULL operator
+
 Revision 1.9  2001/11/26 11:03:43  honzam
 sort slice/constant in listbox by name
 
