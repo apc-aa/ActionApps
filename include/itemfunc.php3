@@ -342,7 +342,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
 
     // copy the file from the temp directory to the upload directory, and test for success
     $e = aa_move_uploaded_file($filevarname, $dirname,
-        $fileman_used ? $FILEMAN_MODE_FILE : 0, $dest_file);
+        $fileman_used ? $FILEMAN_MODE_FILE : (int)IMG_UPLOAD_FILE_MODE, $dest_file);
     if ($debugupload) huhl("File moved to $dirname/$dest_file: ");
     if ($e) {
         $err[$field["id"]] = $e;
