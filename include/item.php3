@@ -50,60 +50,36 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
   }
 
   #  Standard aliases
-  $aliases["_#ID_COUNT"] = array("fce" => "f_e:itemcount",
-                                 "param" => "id..............",
-                                 "hlp" => _m("number of found items"));
-  $aliases["_#ITEMINDX"] = array("fce" => "f_e:itemindex",
-                                 "param" => "id..............",
-                                 "hlp" => _m("index of item within view"));
-  $aliases["_#ITEM_ID_"] = array("fce" => "f_n:id..............",
-                                 "param" => "id..............",
-                                 "hlp" => _m("alias for Item ID"));
-  $aliases["_#SITEM_ID"] = array("fce" => "f_h",
-                                 "param" => "short_id........",
-                                 "hlp" => _m("alias for Short Item ID"));
+  $aliases["_#ID_COUNT"] = GetAliasDef( "f_e:itemcount",        "id..............", _m("number of found items"));
+  $aliases["_#ITEMINDX"] = GetAliasDef( "f_e:itemindex",        "id..............", _m("index of item within view"));
+  $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............", _m("alias for Item ID"));
+  $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........", _m("alias for Short Item ID"));
 
   if( $type == 'justids') {  // it is enough for view of urls
       trace("-");
       return $aliases;
   }
 
-  $aliases["_#EDITITEM"] = array("fce" => "f_e",
-                                 "param" => "id..............",
-                                 "hlp" => _m("alias used on admin page index.php3 for itemedit url"));
-  $aliases["_#ADD_ITEM"] = array("fce" => "f_e:add",
-                                 "param" => "id..............",
-                                 "hlp" => _m("alias used on admin page index.php3 for itemedit url"));
-  $aliases["_#EDITDISC"] = array("fce" => "f_e:disc",
-                                 "param" => "id..............",
-                                 "hlp" => _m("Alias used on admin page index.php3 for edit discussion url"));
-  $aliases["_#RSS_TITL"] = array("fce" => "f_r",
-                                 "param" => "SLICEtitle",
-                                 "hlp" => _m("Title of Slice for RSS"));
-  $aliases["_#RSS_LINK"] = array("fce" => "f_r",
-                                 "param" => "SLICElink",
-                                 "hlp" => _m("Link to the Slice for RSS"));
-  $aliases["_#RSS_DESC"] = array("fce" => "f_r",
-                                 "param" => "SLICEdesc",
-                                 "hlp" => _m("Short description (owner and name) of slice for RSS"));
-  $aliases["_#RSS_DATE"] = array("fce" => "f_r",
-                                 "param" => "SLICEdate",
-                                 "hlp" => _m("Date RSS information is generated, in RSS date format"));
-  $aliases["_#SLI_NAME"] = array("fce" => "f_e:slice_info",
-                                 "param" => "name",
-                                 "hlp" => _m("Slice name"));
+  $aliases["_#EDITITEM"] = GetAliasDef(  "f_e",            "id..............", _m("alias used on admin page index.php3 for itemedit url"));
+  $aliases["_#ADD_ITEM"] = GetAliasDef(  "f_e:add",        "id..............", _m("alias used on admin page index.php3 for itemedit url"));
+  $aliases["_#EDITDISC"] = GetAliasDef(  "f_e:disc",       "id..............", _m("Alias used on admin page index.php3 for edit discussion url"));
+  $aliases["_#RSS_TITL"] = GetAliasDef(  "f_r",            "SLICEtitle",       _m("Title of Slice for RSS"));
+  $aliases["_#RSS_LINK"] = GetAliasDef(  "f_r",            "SLICElink",        _m("Link to the Slice for RSS"));
+  $aliases["_#RSS_DESC"] = GetAliasDef(  "f_r",            "SLICEdesc",        _m("Short description (owner and name) of slice for RSS"));
+  $aliases["_#RSS_DATE"] = GetAliasDef(  "f_r",            "SLICEdate",        _m("Date RSS information is generated, in RSS date format"));
+  $aliases["_#SLI_NAME"] = GetAliasDef(  "f_e:slice_info", "name",             _m("Slice name"));
 
   # database stored aliases
   while( list($k,$val) = each($fields) ) {
     if( $val[alias1] )
-      $aliases[$val[alias1]] = array("fce" => $val[alias1_func],
+      $aliases[$val[alias1]] = array("fce" =>  $val[alias1_func],
                                      "param" => ( $val[id] ),
                                      "hlp" => $val[alias1_help],
                                      "fld" => $k);                 # fld used
                            # in PrintAliasHelp to point to alias editing page
 
     if( $val[alias2] )
-      $aliases[$val[alias2]] = array("fce" => $val[alias2_func],
+      $aliases[$val[alias2]] = array("fce" =>  $val[alias2_func],
                                      "param" => ( $val[id] ),
                                      "hlp" => $val[alias2_help],
                                      "fld" => $k);
@@ -119,42 +95,21 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
 
 function GetConstantAliases( $additional="" ) {
   #  Standard aliases
-  $aliases["_#NAME###_"] = array("fce" => "f_h",
-                                 "param" => "const_name......",
-                                 "hlp" => _m("Constant name"));
-  $aliases["_#VALUE##_"] = array("fce" => "f_h",
-                                 "param" => "const_value.....",
-                                 "hlp" => _m("Constant value"));
-  $aliases["_#PRIORITY"] = array("fce" => "f_h",
-                                 "param" => "const_priority..",
-                                 "hlp" => _m("Constant priority"));
-  $aliases["_#GROUP##_"] = array("fce" => "f_n",
-                                 "param" => "const_group.....",
-                                 "hlp" => _m("Constant group id"));
-  $aliases["_#CLASS##_"]= array("fce" => "f_h",
-                                 "param" => "const_class.....",
-                                 "hlp" => _m("Category class (for categories only)"));
-  $aliases["_#COUNTER_"] = array("fce" => "f_h",
-                                 "param" => "const_counter...",
-                                 "hlp" => _m("Constant number"));
-  $aliases["_#CONST_ID"] = array("fce" => "f_n",
-                                 "param" => "const_id........",
-                                 "hlp" => _m("Constant unique id (32-haxadecimal characters)"));
-  $aliases["_#SHORT_ID"] = array("fce" => "f_t",
-                                 "param" => "const_short_id..",
-                                 "hlp" => _m("Constant unique short id (autoincremented from '1' for each constant in the system)"));
-  $aliases["_#DESCRIPT"] = array("fce" => "f_t",
-                                 "param" => "const_descr.....",
-                                 "hlp" => _m("Constant description"));
-  $aliases["_#LEVEL##_"] = array("fce" => "f_t",
-                                 "param" => "const_level.....",
-                                 "hlp" => _m("Constant level (used for hierachical constants)"));
+  $aliases["_#NAME###_"] = GetAliasDef( "f_h", "const_name",        _m("Constant name"));
+  $aliases["_#VALUE##_"] = GetAliasDef( "f_h", "const_value",       _m("Constant value"));
+  $aliases["_#PRIORITY"] = GetAliasDef( "f_h", "const_priority",    _m("Constant priority"));
+  $aliases["_#GROUP##_"] = GetAliasDef( "f_n", "const_group",       _m("Constant group id"));
+  $aliases["_#CLASS##_"] = GetAliasDef( "f_h", "const_class",       _m("Category class (for categories only)"));
+  $aliases["_#COUNTER_"] = GetAliasDef( "f_h", "const_counter",     _m("Constant number"));
+  $aliases["_#CONST_ID"] = GetAliasDef( "f_n", "const_id",          _m("Constant unique id (32-haxadecimal characters)"));
+  $aliases["_#SHORT_ID"] = GetAliasDef( "f_t", "const_short_id",    _m("Constant unique short id (autoincremented from '1' for each constant in the system)"));
+  $aliases["_#DESCRIPT"] = GetAliasDef( "f_t", "const_description", _m("Constant description"));
+  $aliases["_#LEVEL##_"] = GetAliasDef( "f_t", "const_level",       _m("Constant level (used for hierachical constants)"));
 
   # add additoinal aliases
   if( isset( $additional ) AND is_array( $additional ) ) {
-    reset( $additional );
-    while( list($k,$v) = each( $additional ) )
-      $aliases["_#".$k] = array("fce"=>"f_s:$v", "param"=>"", "hlp"=>"");
+    foreach ( $additional as $k => $v)
+        $aliases["_#".$k] = GetAliasDef( "f_s:$v");
   }
   return($aliases);
 }
@@ -880,12 +835,33 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
   {
     global $AA_INSTAL_PATH;
     $short_id = $this->columns["short_id........"][0]["value"];
-    $name = "live_checkbox[".$short_id."][$col]";
-    $img = $this->getval($col) ? "on" : "off";
-    return "<img width='16' height='16' name='$name' border='0'
+    
+    if ($param == "") {
+    //    $short_id = $this->columns["short_id........"][0]["value"];
+        $name = "live_checkbox[".$short_id."][$col]";
+        $img = $this->getval($col) ? "on" : "off";
+        return "<img width='16' height='16' name='$name' border='0'
                  onClick='javascript:CallLiveCheckbox (\"$name\");'
                  src='".$AA_INSTAL_PATH."images/cb_".$img.".gif'
                  alt='".($this->getval($col) ? _m("on") : _m("off"))."'>";
+    } else {
+        $params = ParamExplode($param);
+        
+        $fncname = "show_fnc_".$params[0];
+        $param2 = substr($param, strpos($param, ":")+1);
+
+        $content4id = $this->columns;        
+        
+        $varname = "live_change[".$short_id."][$col]";
+        /*
+        echo "<pre>";
+        print_r($content4id);
+        echo "</pre>";
+        */
+   	    return $fncname($varname, "", $content4id[$col],
+                 $param2, $content4id[$col][0]['flag'] & FLAG_HTML, true );
+
+    }
   }
 
   # transformation function - transforms strings to another strings
