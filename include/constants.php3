@@ -50,7 +50,8 @@ $DEFAULT_SEARCH_IN = array( headline=>L_SRCH_HEADLINE, abstract=>L_SRCH_ABSTRACT
 
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "es_news_lang.php3" => "es_news_lang.php3",
-                         "cz_news_lang.php3" => "cz_news_lang.php3");
+                         "cz_news_lang.php3" => "cz_news_lang.php3",
+                         "de_news_lang.php3" => "de_news_lang.php3");
   
 $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom",
@@ -377,6 +378,9 @@ require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 
 /*
 $Log$
+Revision 1.20  2001/11/07 16:30:38  udosw
+Included German language files -- UdoSW
+
 Revision 1.19  2001/10/24 18:44:10  honzam
 new parameter wizard for function aliases and input type parameters
 
