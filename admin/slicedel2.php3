@@ -72,13 +72,9 @@ function DeleteAlerts ($module_id) {
         return;
     $collectionid = $db->f ("id");
     $db->query("DELETE LOW_PRIORITY FROM alerts_collection_filter WHERE collectionid=$collectionid");
-    $db->query("DELETE LOW_PRIORITY FROM alerts_user_collection WHERE collectionid=$collectionid");
-    $db->query("DELETE LOW_PRIORITY FROM alerts_user_collection_filter WHERE collectionid=$collectionid");
     $db->query("DELETE LOW_PRIORITY FROM alerts_collection WHERE id=$collectionid");
+    $db->query("DELETE LOW_PRIORITY FROM alerts_collection_howoften WHERE id=$collectionid");
     $db->query("DELETE LOW_PRIORITY FROM module WHERE id='".q_pack_id($module_id)."'");
-    
-    $db->query("UPDATE LOW_PRIORITY alerts_user SET owner_module_id = NULL 
-        WHERE owner_module_id = '".q_pack_id($module_id)."'");
 }
 
 function DeleteSlice ($del) {
