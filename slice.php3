@@ -246,6 +246,9 @@ if( $bigsrch ) {  # big search form ------------------------------------------
 GetAliasesFromUrl();
 $urlaliases = $aliases;
 
+// if banner parameter supplied => set format
+ParseBannerParam($slice_info, $banner);
+
 # get alias list from database and possibly from url
 # if working with multi-slice, get aliases for all slices
 if (!is_array ($slices)) {

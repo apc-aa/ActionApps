@@ -253,6 +253,22 @@ function GetViewFormat($view_info) {
   return $format;
 }
 
+/** Parses banner url parameter (for view.php3 as well as for slice.php3 
+ *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
+ *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
+ */
+function ParseBannerParam(&$view_info, $banner_param) {
+    if( $banner_param ) {
+        list( $foo_pos, $foo_vid, $foo_fld ) = explode('-',$banner_param);
+        $view_info['banner_position'] = $foo_pos;
+        $view_info['banner_parameters'] = "vid=$foo_vid";
+        if( $foo_fld == 'norandom' )
+            return;
+        $view_info['banner_parameters'] .= "&set[$foo_vid]=random-".
+                                                     ($foo_fld ? $foo_fld : 1);
+    }
+}
+
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
   global $db, $nocache, $debug;
@@ -302,12 +318,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                    ( $view_info['noitem_msg'] ? $view_info['noitem_msg'] : 
                                                 ("<div>"._m("No item found") ."</div>")));
   
-  if( $view_param["banner"] ) {
-    list( $foo_pos, $foo_vid, $foo_fld ) = explode('-',$view_param["banner"]);
-    $view_info['banner_position'] = $foo_pos;
-    $view_info['banner_parameters'] = "vid=$foo_vid&set[$foo_vid]=random-".
-                                      ($foo_fld ? $foo_fld : 1);
-  }  
+  ParseBannerParam($view_info, $view_param["banner"]);  // if banner set format
 
   $listlen    = ($view_param["listlen"] ? $view_param["listlen"] : $view_info['listlen'] );
   $p_slice_id = ($view_param["slice_id"] ? q_pack_id($view_param["slice_id"]) : $view_info['slice_id'] );
@@ -452,9 +463,10 @@ function GetViewFromDB($view_param, &$cache_sid) {
         if( !$list_from )
           $list_from = 0;
 
-        $itemview = new itemview( $db, $format, $fields, $aliases, $zids2, $random ? $random : $list_from,
-                                  $listlen, shtml_url(), "");
-	#if ($debug) huhl("itemview=",$itemview);
+        $itemview = new itemview( $db, $format, $fields, $aliases, $zids2, 
+                                  $random ? $random : $list_from, $listlen, 
+                                  shtml_url(), "");
+                                  
         if ($view_info['type'] == 'calendar')
             $itemview_type = 'calendar';
         else $itemview_type = 'view';
