@@ -174,6 +174,7 @@ define("IMG_UPLOAD_DIR_MODE", 508);    # mkdir perms (508 = 0774 in octal, but
                                                    # not encapsulated slices
   */
 
+/*
 # Language: uncomment one language  file
 require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
 # require ($GLOBALS[AA_INC_PATH] . "cz_common_lang.php3");  # Czech
@@ -182,6 +183,7 @@ require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
 # require ($GLOBALS[AA_INC_PATH] . "de_common_lang.php3");  # Deutsch
 # require ($GLOBALS[AA_INC_PATH] . "ro_common_lang.php3");  # Romanian
 # require ($GLOBALS[AA_INC_PATH] . "ja_common_lang.php3");  # Japan
+*/
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG
