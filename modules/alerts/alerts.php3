@@ -4,14 +4,14 @@
  * To be called directly or by Cron.
  * Parameter:
  *     $howoften
- * 
+ *
  * @package Alerts
  * @version $Id$
  * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
- * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2002 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2002 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,29 @@ require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
 require_once "alerts_sending.php3";
 
+
+/** This script is possible to run from commandline (so also from cron). The
+ * benefit is, that the script then can run as long as you want - it is not
+ * stoped be Apache after 2 minutes or whatever is set in TimeOut
+ * The commandline could look like:
+ *   # php alert.php3 howoften=weekly
+ * or with 'nice' and allowing safe_mode (for set_time_limit) and skiping to
+ * right directory for example:
+ *   # cd /var/www/example.org/apc-aa/modules/alerts && nice php -d safe_mode=Off alerts.php3 howoften=weekly
+ * The command above could be used from cron.
+ */
+
+// get 'howoften' parameter from comandline, if it is specified.
+
+if (isset($_SERVER["argv"] )) {
+    $cmd_parameters = array();
+    parse_str( implode('&',$_SERVER["argv"]), $cmd_parameters );
+    if ( $cmd_parameters['howoften'] ) {
+        $howoften = $cmd_parameters['howoften'];
+    }
+}
+
+
 //$debug = 1;
 
 if (!is_object ($db)) $db = new DB_AA;
@@ -46,7 +69,7 @@ if ($howoften_options[$howoften]) {
     initialize_last();
     //echo "<h1>$ho</h1>";
     $mail_count = send_emails($howoften, "all", "all", true, "");
-    //echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
+    echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
 }
 
 ?>
