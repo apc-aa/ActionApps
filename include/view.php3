@@ -274,7 +274,7 @@ function GetView($view_param) {
   global $db, $nocache, $debug;
   trace("+","GetView",$view_param);
   #create keystring from values, which exactly identifies resulting content
-  $keystr = serialize($view_param);
+  $keystr = serialize($view_param).stringexpand_keystring();
 
   if( !$nocache && ($res = $GLOBALS['pagecache']->get($keystr)) ) {
     trace("-");

@@ -40,7 +40,7 @@ function IsInDomain( $domain ) {
 }  
 
 # ----------------- function definition end -----------------------------------
-
+trace("+","site.php3");
 $db = new DB_AA;
 $err["Init"] = "";          # error array (Init - just for initializing variable
 
@@ -62,6 +62,7 @@ if( substr($site_info['state_file'],0,4) == 'http' ) {
   require_once "./sites/site_".$site_info['state_file'];   
 }
 
+trace("=","site.php3","precachecheck");
 # look into cache if the page is not cached
 
 # CACHE_TTL defines the time in seconds the page will be stored in cache
@@ -79,8 +80,10 @@ if( is_array($slices4cache) && !$nocache && ($res = $GLOBALS[pagecache]->get($ke
     $time = $timeend - $timestart;
     echo "<br><br>Site cache hit!!! Page generation time: $time";
   }  
+  trace("-");
   exit;
 } 
+trace("=","site.php3","precachecheck");
 
 require_once "./util.php3";                      # module specific utils
 require_once "./sitetree.php3";                  # module specific utils
@@ -90,6 +93,7 @@ require_once $GLOBALS["AA_INC_PATH"]."view.php3";
 require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
 require_once $GLOBALS["AA_INC_PATH"]."item.php3"; 
   
+trace("=","site.php3","preGetSite");
 $res = ModW_GetSite( $apc_state, $site_id, $site_info );
 echo $res;
 
@@ -98,7 +102,7 @@ echo $res;
 # mention the slice in this array, cache is cleared on any change of the slice
 # (item addition) - the page is regenerated, then.
 
-if (is_array($slices4cache)) {
+if (is_array($slices4cache) && !$nocache) {
   $clear_cache_str = "slice_id=". join(',slice_id=', $slices4cache);
   $GLOBALS[pagecache]->store($key_str, $res, $clear_cache_str);
 }  
@@ -113,7 +117,8 @@ if( $debugtime ) {
 # ----------------- process status end ----------------------------------------
 
 function ModW_GetSite( $apc_state, $site_id, $site_info ) {
-  global $db, $show_ids;
+  global $show_ids;
+  trace("+","ModW_GetSite");
 
   # site_id should be defined as url parameter
   $module_id = $site_id;
@@ -126,11 +131,14 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
 
   # it fills $show_ids array
   $tree->walkTree($apc_state, 1, 'ModW_StoreIDs', 'cond');
-  if(count($show_ids)<1)
+  if(count($show_ids)<1) {
+    trace("-");
     exit;
+  }
 
   $in_ids = implode( $show_ids, ',' );
 
+  $db = getDB();
   # get contents to show
   $SQL = "SELECT spot_id, content, flag from site_spot 
            WHERE site_id='$p_module_id' AND spot_id IN ($in_ids)";
@@ -139,95 +147,32 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     $contents[$db->f('spot_id')] = $db->f('content');
     $flags[$db->f('spot_id')] = $db->f('flag');
   }
-  
+  freeDB($db);
+
   reset($show_ids);
   while( list(,$v) = each($show_ids)) {
     $spot_content = $contents[$v];
     $out .= ( ($flags[$v] & MODW_FLAG_JUST_TEXT) ? $spot_content
                                               : ModW_unalias($spot_content, $apc_state) );
   }                                            
+  trace("-");
   return $out;
 }                                                
-  
+
 function ModW_StoreIDs($spot_id, $depth) {
     if ($GLOBALS['errcheck'] && ! $spot_id)  # There is a bug causes this
         huhl("Warning adding empty spot_id");
   $GLOBALS['show_ids'][] = $spot_id;
 }  
-/* Deprecated - uses code in stringexpand.php3}
-function ModW_ParseSwitch($text, &$state) {
-  $variable = strtok($text,")");
-  $twos = ParamExplode( strtok("") );
 
-
-  global $debug;
-  if ( $debug == 2 ) {
-    print_r($twos);
-  }
-
-  $i=0;
-  while( $i < count($twos) ) {
-    $val = trim($twos[$i]);
-    if( !$val OR ereg($val, $state[$variable]) )
-      return $twos[$i+1];
-    $i+=2;
-  }
-  return "";
-}
-*/
-/* Deprecated uses stringexpand.php3 
-# See include/item.php3 for other places that {...} syntax is used, 
-function ModW_unalias_recurent(&$text, &$state, $level, &$maxlevel) {
-
-  $maxlevel = max($level, $maxlevel);       # just for speed optimalization (ModW_QuoteColons)
-
-  $pos = strcspn( $text, "{}" );
-  while( $text[$pos] == '{' ) {
-    $out .= substr( $text,0,$pos );         # initial sequence
-    $text = substr( $text,$pos+1 );         # remove processed text
-    $out .= ModW_unalias_recurent( $text, $state, $level+1, $maxlevel ); # from $text is removed {...} on return
-    $pos = strcspn( $text, "{}" );          # process next bracket (in text: "...{..}..{.}..")
-  }
-  $out .= substr( $text,0,$pos );           # end sequence
-  $text = substr( $text,$pos+1 );           # remove processed text
-  
-  # now we know, there is no bracket in $out - we can substitute
-
-  # bracket could look like:
-  #   {switch(var1,var2)val1,val2:<printed text>:
-  #                     val1,val2:<printed text>}   - return text based on condition (reguler expression)
-  #   {view.php3?vid=<vid>&<view parameters>}       - return view
-  #   {<variable>}                                  - return content of variable
-  #   {any text}                                    - return "any text"
-
-  # replace all variable aliases
-  if( substr($out, 0, 5) == "debug" ) {
-	print_r($state);
-	return "";
-  }
-  if( (strlen($out)<=32) AND isset($state) AND is_array($state) AND isset($state[$out]) )
-    return ModW_QuoteColons($level, $maxlevel, $state[$out]);
-  # replace switches
-  if( substr($out, 0, 7) == "switch(" )
-    return ModW_QuoteColons($level, $maxlevel, ModW_ParseSwitch( substr($out,7), $state ));
-  # remove comments
-  if( substr($out, 0, 1) == "#" )
-    return "";
-  # replace views
-  if( substr($out, 0, 10) == "view.php3?" )
-    return ModW_QuoteColons($level, $maxlevel, 
-            GetView(ParseViewParameters(ModW_DeQuoteColons(substr($out,10) ))));
-            # view do not use colons as separators => dequote before callig
-  # else just print text
-  return ModW_QuoteColons($level, $maxlevel, ($level>0) ? '{'.$out.'}' : $out);
-}
-*/
 function ModW_unalias( &$text, &$state ) {
   // just create variables and set initial values
+  trace("+","ModW_unalias",htmlentities($text));
   $maxlevel = 0;   
   $level = 0;
-  return new_unalias_recurent($text, "", $level, $maxlevel,$state[item]);
-#  return ModW_unalias_recurent( $text, $state, $level, $maxlevel );
+  $ret = new_unalias_recurent($text, "", $level, $maxlevel,$state[item]);
+  trace("-");
+  return $ret;
 }
 
 // id = an item id, unpacked or short
@@ -270,7 +215,6 @@ function ModW_arr2str($varnames, $arr) {
 	}
 	return $strout;
 }
-
 
 exit;
 

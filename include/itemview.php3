@@ -112,7 +112,7 @@ class itemview {
   }
 
   function get_output_cached($view_type="") {
-    trace("+","get_output_cached",$this);
+    trace("+","get_output_cached",null); #$this);
 
     #create keystring from values, which exactly identifies resulting content
 

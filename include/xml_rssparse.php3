@@ -209,7 +209,7 @@ function endElement($parser, $name) {
 function charD($parser, $data) {
  global $cur_tag,
          $aa_rss, $channel, $category, $field, $item,
-         $fulltext_content, $fielddata;
+         $fulltext_content, $fielddata,$content_format;
 
   switch ($cur_tag) {
 
@@ -235,6 +235,12 @@ function charD($parser, $data) {
 	case "^RSS^CHANNEL^ITEM^TITLE":
     case "^RDF:RDF^RSS:ITEM^RSS:TITLE" : $item[title] .= decode($data); break;
 	case "^RSS^CHANNEL^ITEM^DESCRIPTION":
+      # Have to check if its HTML by looking for &lt
+# This doesnt work - Mitra working on it - shouldnt be checked into CVS
+#      $content_format = (strstr(decode($data),'&') ? 0 : 1 );
+        $content_format = 0;
+#huhl("Set content_format to $content_format",$data);
+      # Drop through to RSS 1.0
     case "^RDF:RDF^RSS:ITEM^RSS:DESCRIPTION" : $item[description] .= decode($data); break;
 	case "^RSS^CHANNEL^ITEM^LINK":
     case "^RDF:RDF^RSS:ITEM^RSS:LINK" : $item['link'] .= decode($data); break;

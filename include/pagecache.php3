@@ -87,7 +87,8 @@ class PageCache  {
   # cache informations based on $keyString
   function store($keyString, $content, $str2find="") {
     if ($GLOBALS[debugcache]) { 
-        huhl("Cache:store:$str2find:",$this->caller,htmlentities($content)); trace("p"); }
+        huhl("Cache:store:keystring:$keyString");
+        huhl("$str2find:",$this->caller,htmlentities($content)); trace("p"); }
     if( ENABLE_PAGE_CACHE ) {
       $db = getDB();
       $tm = time();
