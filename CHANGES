@@ -5,6 +5,8 @@
 07/25/02 - hierarchical constants: added check not to allow users to select one constant twice
 07/23/02 - fixed minor bug, added als[] to scroller sessions
 07/23/02 - added 5th param to hier const field type, Level Names
+07/22/02 - added sorting (and grouping) by constant-priority to view
+07/21/02 - better names for uploaded files
 07/18/02 - bug fix: sort didn't work with scroller
 07/16/02 - fully functional File Manager with Copy Template feature
 07/12/02 - added a new defaultCondsOperator URL parameter which changes the default operator LIKE to another one
