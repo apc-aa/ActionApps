@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
+<article>
+  <title>Reader Management</title>
+
+  <articleinfo>
+    <date>5.2.2003</date>
+
+    <author>
+      <firstname>Jakub</firstname>
+
+      <surname>Adámek</surname>
+
+      <affiliation>
+        <orgname>Econnect</orgname>
+      </affiliation>
+    </author>
+
+    <revhistory>
+      <revision>
+        <revnumber>1.0</revnumber>
+
+        <date>5.2.2003</date>
+      </revision>
+    </revhistory>
+  </articleinfo>
+
+  <sect1>
+    <title>Basic idea</title>
+
+    <para>Readers are users with no AA admin access. I don&#39;t want to use
+    the term <quote>users</quote> because of possible confusion with the AA
+    users like Authors and more.</para>
+
+    <para>Several modules may be connected with readers:</para>
+
+    <itemizedlist>
+      <listitem>
+        <simpara>Alerts, for sending new items by email</simpara>
+      </listitem>
+
+      <listitem>
+        <simpara>Authorization (Auth), for HTTP authorization via MySQL_Auth</simpara>
+      </listitem>
+
+      <listitem>
+        <simpara>Mailman, for e-mail discussions</simpara>
+      </listitem>
+    </itemizedlist>
+
+    <para>Readers are identified by email in Alerts and Mailman and by
+    username in Auth.</para>
+  </sect1>
+
+  <sect1>
+    <title>Central point: Slice</title>
+
+    <para>After a lot of discussing and unhappily also a lot of work to be
+    thrown off, we have in Econnect decided the best approach to handle Reader
+    management will be a slice. It is so simple: each item belongs to one
+    person. The individual settings for Alerts, Auth etc. are added as fields
+    to the item design.</para>
+
+    <para>The minimal slice template named Reader Management Minimal is now a
+    part of the sql_update script and consists of:</para>
+
+    <table>
+      <title>Fields in the Reader Management Minimal template</title>
+
+      <tgroup cols="2">
+        <tbody>
+          <row>
+            <entry>Username</entry>
+
+            <entry>Used in the Authorization (Auth) module</entry>
+          </row>
+
+          <row>
+            <entry>Email</entry>
+
+            <entry>Required for Alerts and Mailman modules. For each Reader
+            Management slice either username or email should be flagged as
+            required.</entry>
+          </row>
+
+          <row>
+            <entry>Password</entry>
+
+            <entry>If the web uses Auth, this is the HTTP password. Otherwise
+            this password must be filled in the anonymous form every time a
+            reader wants to change his or her personal details.</entry>
+          </row>
+
+          <row>
+            <entry>First / Last name</entry>
+
+            <entry>Not required, may be used to personalize emails.</entry>
+          </row>
+
+          <row>
+            <entry>Email Confirmed</entry>
+
+            <entry>This box is automatically checked after the reader clicks
+            on a link including the Access Code (see below). No reader
+            receives any Alert email until it is checked.</entry>
+          </row>
+
+          <row>
+            <entry><anchor id="access_code" />Access Code</entry>
+
+            <entry>This code is received in emails as a part of a URL. By
+            clicking on this URL a reader confirms his or her email address.
+            The URL points to reader personal details. On webs not using Auth
+            this is the only way to edit personal details.</entry>
+          </row>
+
+          <row>
+            <entry>Remark</entry>
+
+            <entry>Any remark, may or may not be a part of the personal
+            details shown to readers.</entry>
+          </row>
+
+          <row>
+            <entry>Start date</entry>
+
+            <entry>Membership start, readers are disabled before this point
+            for all related modules.</entry>
+          </row>
+
+          <row>
+            <entry>Expiry date</entry>
+
+            <entry>Membership finish, readers are disabled after this point.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <para>Slice administrators create new slice based on this template and may
+    add any number of further fields, which is the main advantage of using a
+    slice for Reader Management.</para>
+
+    <para>The Alerts module adds automatically its own fields, with special
+    field IDs linking to the module, e.g. <constant>alerts1....4e4c7</constant>
+    for <quote>how often</quote> and Alerts Collection with ID
+    <constant>4e4c7</constant>.</para>
+
+    <para>One Reader management slice may be connected with several modules,
+    usually belonging to the same web site. Suppose you create a site with
+    HTTP restricted access. You may provide an Authorization module and two
+    different Alerts Collections. They all link to the same reader group and
+    thus use the same Reader management slice.</para>
+
+    <para>In the simplest cases, there will be one Reader management slice +
+    one Alerts or Auth module. The Alerts or Auth module will always use
+    (almost) directly the slice data.</para>
+  </sect1>
+
+  <sect1>
+    <title>Editing Reader Info: Anonymous posting form</title>
+
+    <para>As readers do not have access to the AA control panel, they must
+    edit their personal details on the Anonymous posting form.</para>
+
+    <sect2>
+      <title>General usage of Anonymous Forms</title>
+
+      <para>Anonymous posting forms are similar in function and design to the
+      Add / Edit item page. The main difference is they are placed outside of
+      AA Control Panel and thus do not provide the AA authorization and have a
+      design of their own.</para>
+
+      <para>The most common usage is to allow web readers to suggest new
+      content. After filling the Anonymous Form it is sent to the Holding Bin
+      and a <emphasis>Thank you</emphasis> page appears.</para>
+
+      <para>But you can also allow readers to edit items with the Anonymous
+      Form. Two types of authorization are provided: Basically only items
+      posted from an Anonymous Form and not updated in the Control Panel are
+      allowed to be edited. <emphasis>This is ensured by a special flag
+      ITEM_FLAG_ANONYMOUS_EDITABLE which is cleared on every update in the
+      Control Panel.</emphasis></para>
+
+      <para>The second possibility is to add a Password field to the item. The
+      new Field Input Type, Field Insert Function and Field Validate Functions
+      <quote>Password and Change Password</quote> provide the usual edit boxes
+      for changing, deleting and entering password, which is stored encrypted.
+      If a password-protected item is edited and a password is set for this
+      item, it must be sent on every update.</para>
+    </sect2>
+
+    <sect2>
+      <title>Reader management specifics</title>
+
+      <para>Each reader has her or his own item in the Reader management
+      slice. Thus the HTTP authentication may be used directly to determine
+      which item (reader personal details) to show in the form. This is
+      achieved by sending the <constant>use_http_auth=1</constant> setting to
+      <constant>fillform.php3</constant>.</para>
+
+      <para>In this case two forms are needed, one being the publicly
+      accessible subscribe form and the second being the HTTP protected
+      <quote>Change personal details</quote> form. Because the fields on both
+      the forms may be the same, you can use one form and include it into two
+      different .shtml pages.</para>
+
+      <para>For webs not using Auth we need a way to ensure nobody not only
+      edits but even views the data. This is achieved by assigning a special
+      <quote>Access Code</quote> (<link linkend="access_code">see above</link>)
+      to each reader, which must be added to the URL in order that the data
+      are prefilled.</para>
+    </sect2>
+
+    <sect2>
+      <title>Show results</title>
+
+      <para>Sending the data to AA results in adding the data into database or
+      in an error. Some of the errors may be excluded by Javascript, which
+      does not allow to send an errornous form. But some of them, like a
+      username being already used, can&#39;t.</para>
+
+      <para>You may create your own PHP script and send its URL as a value of
+      a <constant>show_result</constant> variable. An array with the errors
+      will be sent to the script and you may view them in your own design. If
+      you do not send <constant>show_result</constant>, the
+      <constant>fillform.php3</constant> script shows them.</para>
+
+      <para>TODO: details on the array content.</para>
+
+      <para><emphasis role="bold">Discussion</emphasis>: A similar result may
+      be achieved by adding several fields to the form, e.g. fields
+      <screen>err_page[validate][username......]=&#34;err_username.shtml&#34;
+err_page[validate][*]=&#34;err_validate.shtml&#34;
+err_page[*]=&#34;err_unrecognized.shtml&#34;</screen>and by creating the
+      .shtml pages with a static message concerning the particular error. The
+      main advantage of this approach is the web administrator may not know
+      PHP. The disadvantage is the necessity of creating many pages but using
+      SSI includes the pages could look only like:<screen>&#60;!--#include file=&#34;err_top.shtml&#34;--&#62;
+The username you entered has already been used. Please try another username.
+&#60;!--#include file=&#34;err_bottom.shtml&#34;--&#62;</screen></para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Module common behaviour</title>
+
+    <para>Only readers in Active bin will receive Alerts, be allowed to pages
+    guarded by Authorization etc.</para>
+
+    <para>In special cases, when you want to stop web access for some reader
+    (authorization) but don&#39;t want to stop him or her receiving Alerts,
+    you must create a dummy authorization group and assign this group to him
+    or her.</para>
+  </sect1>
+
+  <sect1>
+    <title>Module specific behaviour</title>
+
+    <sect2>
+      <title>Alerts specific behaviour</title>
+
+      <para>The Alerts module appears like other regular modules in the slice
+      select box. It offers these pages:</para>
+
+      <table>
+        <title>Alerts menu</title>
+
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry>Alerts Admin - Design</entry>
+
+              <entry>Email design, choose which filters you want to show and
+              their order. You can send an example email to see exactly what
+              readers receive.</entry>
+            </row>
+
+            <row>
+              <entry>Alerts Admin - Settings</entry>
+
+              <entry>Core settings for the Collection</entry>
+            </row>
+
+            <row>
+              <entry>Alerts Admin - Emails</entry>
+
+              <entry>Allows to edit all emails.</entry>
+            </row>
+
+            <row>
+              <entry>Slice Synchro</entry>
+
+              <entry>Sets the Reader Management Slice which feeds this Alerts
+              Collection. Allows to add or delete the Alerts-specific fields
+              to the slice.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>The fields added by Slice Synchro are:</para>
+
+      <table>
+        <title>Alerts specific fields</title>
+
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry>how often</entry>
+
+              <entry>How often the reader receives a digest: instant (each new
+              item in one e-mail), daily, weekly, monthly.</entry>
+            </row>
+
+            <row>
+              <entry>choose filters</entry>
+
+              <entry>Multiple checkboxes allowing to choose which filters from
+              the collection the reader wants to read.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>You may show <emphasis>how often</emphasis> or
+      <emphasis>choose filters </emphasis>in the anonymous forms or you may
+      set defaults by hidden fields.</para>
+    </sect2>
+
+    <sect2>
+      <title><anchor id="auth" />Auth specific behaviour</title>
+
+      <para>The Auth administration includes creating groups (Membership
+      Types) and assigning disk folders to them. This may be achieved with the
+      usage of AA constants, where the constant name is the membership type
+      and the constant value are the subgroups assigned to individual folders,
+      joined by semicolon.</para>
+
+      <para>For example, if you want to create Standard Membership and
+      Privileged Membership, where the first is permitted to folders
+      &#34;main&#34; and &#34;search&#34; and the second to &#34;main&#34;,
+      &#34;search&#34; and &#34;privileged&#34;, you create these two
+      constants:</para>
+
+      <table>
+        <title>Membership Constants Example</title>
+
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry><emphasis>Name</emphasis></entry>
+
+              <entry><emphasis>Value</emphasis></entry>
+            </row>
+
+            <row>
+              <entry>Standard Membership</entry>
+
+              <entry>main;search</entry>
+            </row>
+
+            <row>
+              <entry>Privileged Membership</entry>
+
+              <entry>main;search;privileged</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>The StoreItem function must be edited to call some synchronization
+      function, which exports user / group assignments into tables auth_user
+      and auth_group, which are used by the MySQL_Auth Apache module.</para>
+
+      <para>To avoid the conflict when two slices use the same subgroup names,
+      a postfix (preceded by &#34;_&#34;) will be added to each subgroup
+      during the export. This is a new setting in Admin - Slice Settings, the
+      field <quote>Auth Postfix</quote>.</para>
+
+      <para>The second new field in Slice Settings is <quote>Auth Group</quote>
+      with the name of the field containing the membership type. If this field
+      is filled, the slice is synchronized with the auth_user/group tables.</para>
+
+      <para>Both these fields are offered only for Reader Management slices
+      created from the Reader Management Minimal template.</para>
+
+      <para>You may set to which bin new users are put on subscription with
+      the standard &#34;Allow anonymous posting of items&#34; setting.</para>
+    </sect2>
+
+    <sect2>
+      <title>Mailman specific behaviour</title>
+
+      <para>The Mailman functionality includes some script run regularly by
+      cron, which copies info from the AA databse to some text file which in
+      turn is read by mailman and used to synchronize its database.</para>
+
+      <para>A multi-checkbox for selecting to which mail lists a user is
+      subscribed may be created by standard constants. The name and values of
+      the constants are the names of the mail lists. A new Slice Setting is
+      shown in Reader Management slices, named <quote>Mailman Lists</quote>,
+      with the name of the field containing the list names. </para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Discussion - Why to use slice?</title>
+
+    <para>The main reason to use slice was that we need some reader management
+    with the possibility to add any new fields. This is exactly what slice
+    does. Also, we can use many other nice features already developed for
+    slice. And last but not least if we need to improve the current slice
+    interface to better support Reader management, this will be useful for all
+    other slices as well. This is for example the case of Anonymous forms.</para>
+  </sect1>
+</article>
