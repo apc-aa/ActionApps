@@ -100,6 +100,7 @@ function ProoveFieldNames ($slices, $conds) {
       return;
 
     global $conds_not_field_names;
+    if (!is_array ($slices) || !is_array ($conds)) return;
     $db = new DB_AA;
     reset ($slices);
     while (list(,$slice_id) = each ($slices)) {
@@ -221,6 +222,10 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
 
   global $debug, $QueryIDsCount;          # displays debug messages
   global $conds_not_field_names; # list of special conds[] indexes (defined in constants.php3)
+  global $defaultCondsOperator;  # used to override LIKE
+  if (!$defaultCondsOperator) 
+    $defaultCondsOperator = 'LIKE';
+    
   $db = new DB_AA;
 
     if ($GLOBALS[debugfields] || $debug) {
@@ -240,22 +245,13 @@ if( $debug ) {
 }
 
   ParseMultiSelectConds ($conds);
+  ParseEasyConds ($conds, $defaultCondsOperator);
   
   # parse conditions ----------------------------------
-  if( isset($conds) AND is_array($conds)) {
+  if( is_array($conds)) {
     reset($conds); 
     $tbl_count=0;
     while( list( , $cond) = each( $conds )) {
-
-      if( !isset($cond['value']) && is_array($cond) && count($cond) == 1 ) {
-        reset ($cond);
-        $cond['value'] = current($cond);
-      }
-      if( !$cond['operator'] )
-        $cond['operator'] = 'LIKE';
-        
-      if( !isset($cond) OR !is_array($cond) OR ($cond['value']==""))
-        continue;             # bad condition - ignore
 
       # fill arrays according to this condition
       reset($cond); 
@@ -265,7 +261,7 @@ if( $debug ) {
         if( $conds_not_field_names[$fid] )
           continue;           # it is not field_id parameters - skip it for now
           
-        if( !$fields[$fid] OR ($v=="")) 
+        if( !$fields[$fid] OR $v=="") 
           continue;            # bad field_id or not defined condition - skip
           
         if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
