@@ -46,7 +46,7 @@ $p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
 $links_info = GetModuleInfo($module_id,'Links');
 
 // load right langfile, if it is not loaded
-bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$r_lang_file[$slice_id]);
+bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$r_lang_file);
 
 // r_err and r_msg - passes messages between scripts
 if ( !isset($r_err) ) { 

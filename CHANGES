@@ -1,3 +1,6 @@
+03/04/03 -new parameters columns and move_right for Radio Button input type 
+(honzam)  (just like for Multiple Selectbox)
+         - fixed problem with language files in links module
 03/04/03 - added display of GD types in test.php3
 (mitra)  - remove warning on no picture in i_s - common when expanding
          - Added some debugging to PageCache

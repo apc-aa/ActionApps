@@ -235,7 +235,7 @@ if( !$no_slice_id ) {
     }
 }
 
-if( !$require_default_lang AND $r_lang_file != "" ) {
+if( !$require_default_lang AND ($r_lang_file != "") ) {
     // do not delete the curly braces - include in condition statement must be in braces!
     bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$r_lang_file);
 }  

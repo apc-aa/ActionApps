@@ -61,7 +61,7 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
     $_m = $_m_backup[$mgettext_domain];
     if ($_m) return;
     
-    if (!file_exists ($filename)) {
+    if ( !is_file($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
 #        exit;
     }

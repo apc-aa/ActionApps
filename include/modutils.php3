@@ -74,7 +74,7 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
     }
 
     $GLOBALS['r_slice_headline'] = stripslashes($name);
-    $GLOBALS['r_lang_file'][$module_id] = stripslashes($lang_file);
+    $GLOBALS['r_lang_file'] = stripslashes($lang_file);
     $GLOBALS['r_slice_view_url'] = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                     : stripslashes($slice_url));
   } else {  // insert (add)
@@ -95,7 +95,7 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
       return false;
     }
 
-    $GLOBALS['r_lang_file'][$module_id] = $lang_file;
+    $GLOBALS['r_lang_file'] = stripslashes($lang_file);
     AddPermObject($module_id, "slice");    // no special permission added - only superuser can access
   }
   return $module_id;

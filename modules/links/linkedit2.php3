@@ -1,4 +1,4 @@
-<?php  #catedit2.php3 - proceeds submitted data from catedit.php3
+<?php  
 //$Id$
 
 $directory_depth = '../';
