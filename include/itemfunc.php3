@@ -683,14 +683,13 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         $SQL = "UPDATE item SET ". $itemvarset->makeUPDATE()
             . " WHERE id='". q_pack_id($id). "'";
     } else {
-        if( $itemvarset->get('status_code') < 1 )
-            $itemvarset->set('status_code', 1);
+        if( $itemvarset->get('status_code') < 1 )    $itemvarset->set('status_code',    1);
+        $itemvarset->set( 'display_count',
+            isset($content4id['display_count...']) ? $content4id['display_count...'][0]['value'] : 0 );
         $itemvarset->add("id", "unpacked", $id);
         $itemvarset->add("slice_id", "unpacked", $slice_id);
         $itemvarset->add("post_date", "quoted", default_fnc_now(""));
         $itemvarset->add("posted_by", "quoted", default_fnc_uid(""));
-        $itemvarset->add("display_count", "quoted", "0");
-
         $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
     }
     $db = getDB();
