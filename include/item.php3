@@ -369,6 +369,17 @@ class item {
       NO_PICTURE_URL);
   }
 
+  # prints height and width of image file or URL referenced in field
+  # Could be special case if in uploads directory, so can read directly
+  function i_s($col, $param="") {
+    $f = $this->columns[$col][0][value];
+    if (! $f) return "";  # No picture
+    # Could speed up a little with a test for URLs in uploads directory here
+#PHP>4.0.5 supports URLs so no need to skip URLs
+    $a = getimagesize($f);
+    return($a[3]);  #height="xxx" width="yyy"
+  }
+
   # prints unpacked id
   # param: 0
   function f_n($col, $param="") {
