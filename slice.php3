@@ -143,7 +143,7 @@ function CompactView($where, $catsel=false) {
    else 
     $SQL .= " ORDER BY publish_date DESC";
 
-  if( OPTIMIZE_FOR_MYSQL ) {                 // if no mySQL - go to item no (mySQL use LIMIT)
+  if( OPTIMIZE_FOR_MYSQL ) {                 // mySQL - use LIMIT
     $SQL .= " LIMIT ". $scr->metapage * ($scr->current - 1). ", ". $scr->metapage;
   }  
 
@@ -162,8 +162,8 @@ function CompactView($where, $catsel=false) {
                         $compact_remove, $fulltext_remove);
     $oldcat = "_No CaTeg";
 
-    if( !OPTIMIZE_FOR_MYSQL )                             // if no mySQL - go to item no (mySQL use LIMIT)
-      $db->seek(max(0,min(0,$scr->metapage * ($scr->current - 1)),$db->nf()));
+    if( !OPTIMIZE_FOR_MYSQL )                // no mySQL - seek in result set
+      $db->seek($scr->metapage * ($scr->current - 1));
       
     while($db->next_record()){ 
       $CurItem->odd = $i%2;
@@ -323,6 +323,9 @@ function CompactView($where, $catsel=false) {
 //    p_arr_m($debugtimes);
 /*
 $Log$
+Revision 1.4  2000/07/12 16:53:09  kzajicek
+No min-max games are necessary, scroller keeps us within boundaries.
+
 Revision 1.3  2000/07/07 21:31:15  honzam
 Wrong parameter count in min() - fixed
 
