@@ -493,6 +493,7 @@ modificators are now:
 <tr><td class=tabtit>Operator modificator</td><td class=tabtit>Usage</td><td class=tabtit>Description</td></tr>
 <tr><td valign=top class=tabfnc>d</td><td>d:&gt;=</td><td>Used for english style datum transformation. If used, the "value" can be in format like '06/24/2001' or '10 September 2000' see <a href="http://php.net/strtotime">strtotime</a> PHP function definition</td></tr>
 <tr><td valign=top class=tabfnc>e</td><td>e:&gt;=</td><td>Used for european style datum transformation. If used, the "value" can be in format like '24.12.2001'</td></tr>
+<tr><td valign=top class=tabfnc>-</td><td>-:&gt;=</td><td>Used for comparison with current time. If used, the "value" is substracted from current time (time()) and result value is used in comparison. The value should be in seconds. This modifier is good for displaying items newer than two days, for example.</td></tr>
 </table><br>
 - <b>&lt;field_id&gt;</b> atributes, where are specified ids of fields, where to search (note, that there can be specified more than one field. The value for those atributes are allways 1 - as shown in example)<br><br></li>
 <li>It is possible to specify search order of found items. For this purpose is there sort[] variable, where the last index specifies the id of field we wont sort listing by. The value can by either<br>
@@ -646,15 +647,16 @@ document.write("&lt;/TABLE&gt;")<br>
 
 <a name="viewparam"></a>
 <h3>Which parameters can I use with view.php3</h3>
-<p>The only required parameter to view.php3 script is number of <i>view</i> to show. This parameter is given by vid url variable. All remaining parameters are optional.</p>
-<p>Each optional <i>view</i> parameter begins with cmd[x], where <i>x</i> is <i>view</i> number in which the parameter should be used. This is needed because of possibility to include more than view to one shtml page. What's why we need to tell, for which vie the command should work.</p>
+<p>The only required parameter to view.php3 script is number of <i>view</i> to show. This parameter is given by <i>vid</i> url variable. All remaining parameters are optional.</p>
+<p>Each optional <i>view</i> parameter begins with <i>cmd</i>[<i>x</i>], where <i>x</i> is <i>view</i> number in which the parameter should be used. This is needed because of possibility to include more than view to one shtml page. That's why we need to specify, for which view the command should work.</p>
+<p>After the <i>cmd</i>[<i>x</i>]= is always character, which specify which command is used - how modify the view. The <i>c</i> command modifies conditions, for example. The values after command character are user parameters and its meaning is different for each command. The parameters are separated by '<i>-</i>' character. Description of parameters is in following table of examples.</p>
 <table align=center cellpadding=3 border=0>
-<tr><td class=tabtit>Parameter</td><td class=tabtit>Description</td></tr>
-<tr><td valign=top class=tabfnc>vid=4</td><td>id of displayed view</td></tr>
-<tr><td valign=top class=tabfnc>cmd[23]=v-25</td><td>show <i>view</i> id 25 in place of <i>view</i> id 23</td></tr>
-<tr><td valign=top class=tabfnc nowrap>cmd[23]=i-24-7464647</td><td><i>view</i> number 23 has to display item 74.. in format defined in view 24</td></tr>
-<tr><td valign=top class=tabfnc>cmd[23]=c-1-ICT</td><td>display <i>view</i> no 23 in place of view no 23 (that's normal), but change <i>value</i> for condition 1 to "ICT"</td></tr>
-<tr><td valign=top class=tabfnc nowrap>cmd[23]=c-1-ICT-2-Jane</td><td>the same as above, but there are redefined two conditions. All three conditions could be redefined</td></tr>
+<tr><td class=tabtit>Parameter example</td><td class=tabtit>Description</td></tr>
+<tr><td valign=top class=tabfnc>vid=<i>4</i></td><td>id of displayed view</td></tr>
+<tr><td valign=top class=tabfnc>cmd[23]=v-<i>25</i></td><td>show <i>view</i> id 25 in place of <i>view</i> id 23</td></tr>
+<tr><td valign=top class=tabfnc nowrap>cmd[23]=i-<i>24</i>-<i>7464647</i></td><td><i>view</i> number <i>23</i> has to display item <i>7464647</i> in format defined in view <i>24</i></td></tr>
+<tr><td valign=top class=tabfnc>cmd[23]=c-<i>1</i>-<i>ICT</i></td><td>display <i>view</i> no <i>23</i> in place of view no <i>23</i> (that's normal), but change <i>value</i> for condition <i>1</i> to "<i>ICT</i>"</td></tr>
+<tr><td valign=top class=tabfnc nowrap>cmd[23]=c-<i>1</i>-<i>ICT</i>-<i>2</i>-<i>Jane</i></td><td>the same as above, but there are redefined two conditions. All three conditions could be redefined</td></tr>
 <tr><td valign=top class=tabfnc>als[alias]</td><td>user alias definition - you can define your own aliases in url (for both - slice.php3 and view.php3). Aliases names MUST!!! be 8 characters long. Don't forgot, that the alias value have to be urlencoded.<br><i>Example:</i> als[MY_ALIAS]=Summary%20Page (or maybe better: als%5BMY_ALIAS%5D=Summary%20Page)<br>defines alias _#MY_ALIAS. If used in formatstring ('Admin - Design Index' for example), it prints 'Summary Page'</td></tr>
 </table>
 <br><br>

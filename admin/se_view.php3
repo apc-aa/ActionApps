@@ -152,7 +152,9 @@ $lookup_op = array( "<"  => "<",
                     "<>" => "<>", 
                     ">"  => ">",
                     ">=" => ">=",
-                    "LIKE"  => "LIKE");
+                    "LIKE"  => "substring (LIKE)",
+                    "-:<" => "< now() - x [in seconds]",
+                    "-:>" => "> now() - x [in seconds]");
 
 # lookup group of constatnts
 $lookup_groups = GetConstants('lt_groupNames', $db);
@@ -246,6 +248,9 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.5  2001/07/31 16:32:51  honzam
+Added '-' operator modifier for relative time conditions. The operator was implemented to view definition too (se_view.php3)
+
 Revision 1.4  2001/07/31 15:20:12  honzam
 new - display condition redefining parameter to view.php3 (cmd[]=c)
 

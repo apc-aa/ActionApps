@@ -42,6 +42,8 @@ function GetWhereExp( $field, $operator, $querystring ) {
                     }  
                 $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
                 break;
+      case '-': $querystring = time() - $querystring;
+                break;
     }
   }               
 
@@ -778,6 +780,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.16  2001/07/31 16:32:51  honzam
+Added '-' operator modifier for relative time conditions. The operator was implemented to view definition too (se_view.php3)
+
 Revision 1.15  2001/07/09 17:47:41  honzam
 Operator date modifiers fixed
 

@@ -1,5 +1,7 @@
 07/31/01 - new - display condition redefining parameter to view.php3 (cmd[]=c)
          - added LIKE operator for view conditions
+         - added '-' operator modifier for relative time conditions. 
+           The operator was implemented to view definition too (se_view.php3)
 07/04/01 - new support for custom alias function definitions 
            (include/usr_aliasfnc.php3 - not in CVS! - you can create it)
          - new user defined aliases (see url parameter 'als' to slice.php3)  
