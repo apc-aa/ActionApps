@@ -313,5 +313,11 @@ define("L_ALERTS_USERS", "Users");
 define("L_ALERTS_UI", "User Interface");
 
 /* END OF E-MAIL ALERTS */
-
+define("L_DISCUSSION_2_MAIL","Discussion To Mail");
+define("L_V_MAIL_FROM","From: (email header)");
+define("L_V_MAIL_REPLY_TO","Reply-To:");
+define("L_V_MAIL_ERRORS_TO","Errors-To:");
+define("L_V_MAIL_SENDER","Sender:");
+define("L_V_MAIL_SUBJECT","Mail Subject:");
+define("L_V_MAIL_BODY","Mail Body:");
 ?>
