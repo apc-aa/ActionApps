@@ -70,8 +70,14 @@ $sess->register("slice_id");
 $sess->register("r_config_type");
 $sess->register("r_slice_config");      // stores many config parameters for slice (WDDX in slices.config field)
 $sess->register("r_slice_headline");    // stores headline of slice
-$sess->register("r_slice_view_url");      // url of slice
+$sess->register("r_slice_view_url");    // url of slice
 $sess->register("r_stored_slice");      // id of slice which values are in r_slice_headline ,r_slice_config and r_slice_view_url
+$sess->register("r_hidden");            // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
+
+//huh( $r_hidden["hidden_acceptor"]. " = ". (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF));
+if( $r_hidden["hidden_acceptor"] != (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF))
+  unset( $r_hidden );    // only acceptor can read this values. 
+                         // For others they are destroyed.
 
 $ldap_slices = GetUsersSlices( $auth->auth[uid] );
 
@@ -147,8 +153,11 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:39  madebeer
-Initial revision
+Revision 1.2  2000/08/03 12:36:21  honzam
+Session variable r_hidden used instead of HIDDEN html tag.
+
+Revision 1.1.1.1  2000/06/21 18:40:39  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:24  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
