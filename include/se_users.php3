@@ -45,7 +45,6 @@ function ChangeRole () {
     if( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false),
                        $editor_perms,
                        $perms_roles[$role]['perm']) ) {
-      echo serialize (array ($UsrAdd,$slice_id,$perms_roles[$role]['id'],$role));
       AddPerm($UsrAdd, $slice_id, "slice", $perms_roles[$role]['id']);
       $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     }
@@ -54,6 +53,7 @@ function ChangeRole () {
                       $editor_perms,
                       $perms_roles["AUTHOR"]['perm']) )  // smallest permission
       DelPerm($UsrDel, $slice_id, "slice");
+      DelUserProfile($UsrDel, $slice_id); 
       $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
   }
 }
