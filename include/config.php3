@@ -262,4 +262,9 @@ define("FILEMAN_UPLOAD_TIME_LIMIT",600);
 
 // e-mail for Alerts management
 define("ALERTS_EMAIL", "aaadmin@somewhere.com");
+
+// ------------------------------------------------------------------
+// XMGETTEXT language files - this setting is needed only for AA developers
+// who want to run xmgettext (see misc/mgettext/index.php3). 
+$XMGETTEXT_DESTINATION_DIR = "/www/apc-aa/php_rw/lang/";
 ?>
