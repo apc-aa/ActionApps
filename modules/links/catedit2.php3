@@ -80,28 +80,6 @@ function ChangeCatPriority($category_id, $insertedId, $pri, $state) {
 	$db->query( $SQL );
 }
 
-function UpdateCatProperties($cat_id, $name, $template, $infodoc) {
-	global $db;
-
-	$name_set = (isset($name) && $name != "") ? "name='$name'" : "" ;
-	$template_set = (isset($template) && $template != "") ?
-		"html_template='$template'" : "";
-	$infodoc_set = (isset($infodoc) && $infodoc != "") ?
-		"inc_file ='$infodoc'" : "";
-
-	$delim1 = ($name_set != "" &&
-				($template_set != "" || $infodoc_set != "")) ? "," : "";
-	$delim2 = ($template_set != "" && $infodoc_set != "") ? "," : "";
-
-//	if ($name_set != "" || $template_set != "") {
-	if ($i >= 1) {
-  		$SQL = "UPDATE links_categories SET $name_set $delim1 $template_set $delim2 $infodoc_set WHERE links_categories.id = $cat_id";
-
-		$db->query( $SQL );
-	}
-}
-
-
 # Moves this category to another subtree or delete (if clear and no link to it)
 function UnassignBaseCategory($parent, $child) {
 	global $db, $r_msg, $r_err;
@@ -212,27 +190,19 @@ $varset = new Cvarset();
 
 # Category properties ------------------
 
-ValidateInput("cat_name", _m('Category name'), &$cat_name, &$r_err, true, "text");
-ValidateInput("description", _m('Category description'), &$description, &$r_err, false, "text");
-ValidateInput("html_template", _m('HTML Template'), &$html_template, &$r_err, false, "text");
-ValidateInput("inc_file1", _m('First text box'), &$inc_file1, &$r_err, false, "text");
-ValidateInput("inc_file2", _m('Second text box'), &$inc_file2, &$r_err, false, "text");
-ValidateInput("banner_file", _m('Banner'), &$banner_file, &$r_err, false, "text");
-ValidateInput("note", _m('Editor\'s note'), &$note, &$r_err, false, "text");
+ValidateInput("cat_name",    _m('Category name'),          $cat_name,    $r_err, true,  "text");
+ValidateInput("description", _m('Category description'),   $description, $r_err, false, "text");
+ValidateInput("additional",  _m('Additional information'), $additional,  $r_err, false, "text");
+ValidateInput("note",        _m('Editor\'s note'),         $note,        $r_err, false, "text");
 
 if (count($r_err) <= 1) {
-	$varset->add("name", "quoted", $cat_name);
+	$varset->add("name",        "quoted", $cat_name);
 	$varset->add("description", "quoted", $description);
-	$varset->add("html_template", "quoted", $html_template);
-	$varset->add("inc_file1", "quoted", $inc_file1);
-	$varset->add("inc_file2", "quoted", $inc_file2);
-	$varset->add("banner_file", "quoted", $banner_file);
-	$varset->add("note", "quoted", $note);
+	$varset->add("additional",  "quoted", $additional);
+	$varset->add("note",        "quoted", $note);
 	$db->query("UPDATE links_categories SET ". $varset->makeUPDATE() . " WHERE id=$cid");
-
 	$r_msg[] = MsgOK(_m('Category data changed'));
-}
-else {
+} else {
 	page_close();
 	go_url( $sess->url(self_base() . "catedit.php3"));
 }
@@ -287,7 +257,7 @@ if (isset($ids) && is_array($ids) && $subcatIds!="") {
 
         // new subcategory
         if ( $insertedId == 0 ) {
-            $foo_id = Links_AddCategory($names[$key], $cid, $cpath, $html_template);
+            $foo_id = Links_AddCategory($names[$key], $cid, $cpath);
 
             // adds perms too
             Links_AssignCategory($cid, $foo_id, $pri, LINKS_BASE_CAT, $states[$key]);

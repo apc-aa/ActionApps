@@ -124,10 +124,9 @@ function Links_AssignCategory($category_id, $insertedId, $pri=10, $base='y', $st
 /** Add new category, copies parents permissions
  *  @returns id of new category
  */
-function Links_AddCategory($name, $parent, $parentpath, $template="") {
+function Links_AddCategory($name, $parent, $parentpath) {
     global $db;
-    $SQL = "INSERT INTO links_categories  ( name, html_template )
-                             VALUES ('$name', '$template')";
+    $SQL = "INSERT INTO links_categories  ( name ) VALUES ('$name')";
     $db->query( $SQL );
     $db->query( "select LAST_INSERT_ID() as id" );
 
@@ -219,12 +218,11 @@ function ThisFileName() {
 }
 
 function FillCategoryInfo($category) {
-    global $db, $r_category_id, $r_category_path, $r_category_template;
+    global $db, $r_category_id, $r_category_path;
     $SQL= "SELECT * FROM links_categories WHERE id = $category";
     $db->query($SQL);
     if($db->next_record()) {
         $r_category_id       = $db->f(id);
-        $r_category_template = $db->f(html_template);
         $r_category_path     = $db->f(path);
     }
 }

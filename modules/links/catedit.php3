@@ -10,7 +10,7 @@ $directory_depth = '../';
 require_once "../../include/init_page.php3";
 require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
 require_once "./cattree.php3";
-require_once "./constants.php3"; 
+require_once "./constants.php3";
 require_once "./util.php3";
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
@@ -46,12 +46,9 @@ if( !$updated ) {
     $db->query($SQL);
     if ($db->next_record()) {
         $cat_name       = $db->f('name');
-        $html_template  = $db->f('html_template');
-        $inc_file1      = $db->f('inc_file1');
-        $inc_file2      = $db->f('inc_file2');
-        $banner_file    = $db->f('banner_file');
         $cat_path       = $db->f('path');
         $description    = $db->f('description');
+        $additional      = $db->f('additional');
         $note           = $db->f('note');
     }
 }
@@ -86,20 +83,11 @@ PrintArray($r_msg);
 
 echo '<form name=f method=post action="catedit2.php3">';
     FrmTabCaption( _m('Category') );
-    FrmStaticText(                _m('Id'),             $id. '&nbsp; &nbsp; &nbsp;('. _m('Links in subtree').': '.$links_count.')', false, "", "", false);
-    FrmInputText( 'cat_name',     _m('Category name'),           $cat_name,  250, 50, false);
-    FrmTextarea(  'description',  _m('Category description'),    $description, 3, 60, false);
-    FrmTextarea(  'note',         _m('Editor\'s note'),    $note, 3, 60, false);
-
-//    FrmHidden( 'html_template',$html_template);
-//    FrmHidden( 'inc_file1',    $inc_file1);
-//    FrmHidden( 'inc_file2',    $inc_file2);
-//    FrmHidden( 'banner_file',  $banner_file);
-
-//    FrmInputText( 'html_template',_m('HTML template'),  $html_template,  250, 50, false);
-//    FrmInputText( 'inc_file1',    _m('First text box'), $inc_file1,  250, 50, false);
-//    FrmInputText( 'inc_file2',    _m('Second text box'),$inc_file2,  250, 50, false);
-//    FrmInputText( 'banner_file',  _m('Banner'),         $banner_file,  250, 50, false);
+    FrmStaticText(                _m('Id'),                     $id. '&nbsp; &nbsp; &nbsp;('. _m('Links in subtree').': '.$links_count.')', false, "", "", false);
+    FrmInputText( 'cat_name',     _m('Category name'),          $cat_name,  250, 50, false);
+    FrmTextarea(  'description',  _m('Category description'),   $description, 3, 60, false);
+    FrmTextarea(  'note',         _m('Editor\'s note'),         $note, 3, 60, false);
+//  FrmInputText( 'additional',   _m('Additional inormations'), $additional,  250, 50, false);
     FrmTabSeparator( _m('Subcategories') );
 echo '
       <tr>
