@@ -1,3 +1,5 @@
+03/24/03 - fixed "Bad Table view ID: modedit" bug when switching from one module 
+           type to another (honzam)
 03/24/03 - removed the old Alerts scripts from misc/alerts (jakub)
 03/24/03 - fixed several things in Alerts (jakub)
 03/24/03 - fixed bug of empty row appearing in "Two boxes" input type
@@ -64,6 +66,10 @@
          -    Added PrintSupportedTypes for test.php3
          - itemfunc.php3 - added debugging $debugupload=1
          -   commented out Event_ItemAfterInsert etc since crashes         
+03/04/03 - new parameters columns and move_right for Radio Button input type, 
+(honzam)   which allows you to put radiobuttons in the grid (just like for 
+           Multiple Checkboxes)
+         - fixed problem with language files in links module
 03/04/03 - added display of GD types in test.php3
 (mitra)  - remove warning on no picture in i_s - common when expanding
          - Added some debugging to PageCache

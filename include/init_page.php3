@@ -228,7 +228,7 @@ if( !$no_slice_id ) {
         $page = filename ($PHP_SELF);        
         $hdd_dir = $AA_INC_PATH."../".$MODULES[$g_modules[$slice_id]['type']]['directory'];
         $web_dir = $AA_INSTAL_PATH.$MODULES[$g_modules[$slice_id]['type']]['directory'];
-        if (!file_exists ($hdd_dir.$page))
+        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') )
             $page = "index.php3";
         if ($web_dir.$page != $PHP_SELF) {
             $page = $sess->url($web_dir.$page."?slice_id=$slice_id");
