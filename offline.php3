@@ -27,6 +27,26 @@ http://www.apc.org/
 #   del_url      - url to point the script if filling is successfull 
 #                  (should delete local copy of file with wddx)
 
+# handle with PHP magic quotes - quote the variables if quoting is set off
+function Myaddslashes($val, $n=1) {
+  if (!is_array($val)) {
+    return addslashes($val);
+  }  
+  for (reset($val); list($k, $v) = each($val); )
+    $ret[$k] = Myaddslashes($v, $n+1);
+  return $ret;
+}    
+
+if (!get_magic_quotes_gpc()) { 
+  // Overrides GPC variables 
+  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+  $$k = Myaddslashes($v); 
+}
+
 require "./include/config.php3";
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
@@ -104,6 +124,9 @@ if( $error )
    
 /*
 $Log$
+Revision 1.5  2001/12/18 11:37:38  honzam
+scripts are now "magic_quotes" independent - no matter how it is set
+
 Revision 1.4  2001/03/30 11:50:22  honzam
 offline filling bug and other smalll bugs fixed
 

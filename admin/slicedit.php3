@@ -20,11 +20,12 @@ http://www.apc.org/
 */
 # expected $slice_id for edit slice, Add_slice=1 for adding slice
 
-if($template_slice_sel=="slice")          # new slice - template as slice 
-  $template_id = $template_id2;
-if( $template_id ) {
-  $foo = explode("{", $template_id);
-  $template_id = $foo[0];
+# new slice - template as slice 
+$set_template_id = (($template_slice_sel=="slice") ? $template_id2 : $template_id);
+  
+if( $set_template_id ) {
+  $foo = explode("{", $set_template_id);
+  $set_template_id = $foo[0];
   $change_lang_file = $foo[1];
 }  
 
@@ -110,12 +111,16 @@ if( $add || $update ) {
         $err["DB"] = MsgErr("Can't change slice");
         break;
       }
+      $r_slice_headline = stripslashes($name);
+      $r_config_file[$slice_id] = stripslashes($lang_file);
+      $r_slice_view_url = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
+                                      : stripslashes($slice_url));
     }
     else  // insert (add)
     {
         # get template data
       $varset->addArray( $SLICE_FIELDS_TEXT, $SLICE_FIELDS_NUM );
-      $SQL = "SELECT * FROM slice WHERE id='". q_pack_id($template_id) ."'";
+      $SQL = "SELECT * FROM slice WHERE id='". q_pack_id($set_template_id) ."'";
       $db->query($SQL);
       if( !$db->next_record() ) {
         $err["DB"] = MsgErr("Bad template id");
@@ -144,7 +149,7 @@ if( $add || $update ) {
 
          # copy fields
       $db2  = new DB_AA;         
-      $SQL = "SELECT * FROM field WHERE slice_id='". q_pack_id($template_id) ."'";
+      $SQL = "SELECT * FROM field WHERE slice_id='". q_pack_id($set_template_id) ."'";
       $db->query($SQL);
       while( $db->next_record() ) {
         $varset->clear();
@@ -162,7 +167,7 @@ if( $add || $update ) {
 
         # find name for category group_id
       $SQL = "SELECT input_show_func FROM field 
-               WHERE slice_id='". q_pack_id($template_id) ."' 
+               WHERE slice_id='". q_pack_id($set_template_id) ."' 
                  AND input_show_func LIKE '%SliceCateg-%'";
       $db->query($SQL);
       $max=0;
@@ -231,7 +236,7 @@ if( $add || $update ) {
   }
 }
 
-$foo_source = ( ( $slice_id=="" ) ? $template_id : $slice_id);
+$foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
   # set variables from database - allways
 $SQL= " SELECT * FROM slice WHERE id='".q_pack_id($foo_source)."'";
 $db->query($SQL);
@@ -311,7 +316,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 if($slice_id=="") {
   echo "<input type=hidden name=\"add\" value=1>";        // action
   echo "<input type=hidden name=\"Add_slice\" value=1>";  // detects new slice
-  echo "<input type=hidden name=template_id value=\"". $template_id .'">';
+  echo "<input type=hidden name=template_id value=\"". $set_template_id .'">';
   echo "<input type=submit name=insert value=\"". L_INSERT .'">';
 }else{
   echo "<input type=hidden name=\"update\" value=1>";
@@ -322,6 +327,9 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.23  2001/12/18 11:37:39  honzam
+scripts are now "magic_quotes" independent - no matter how it is set
+
 Revision 1.22  2001/09/27 15:44:35  honzam
 Easiest left navigation bar editation
 

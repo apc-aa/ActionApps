@@ -42,6 +42,26 @@ http://www.apc.org/
                     #   - there can be more settings (future) - comma separated 
 #optionaly als[]    # user alias - see slice.php3 for more details
 
+# handle with PHP magic quotes - quote the variables if quoting is set off
+function Myaddslashes($val, $n=1) {
+  if (!is_array($val)) {
+    return addslashes($val);
+  }  
+  for (reset($val); list($k, $v) = each($val); )
+    $ret[$k] = Myaddslashes($v, $n+1);
+  return $ret;
+}    
+
+if (!get_magic_quotes_gpc()) { 
+  // Overrides GPC variables 
+  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+  $$k = Myaddslashes($v); 
+}
+
 require "./include/config.php3";
 require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
@@ -61,6 +81,9 @@ exit;
 
 /*
 $Log$
+Revision 1.11  2001/12/18 11:37:38  honzam
+scripts are now "magic_quotes" independent - no matter how it is set
+
 Revision 1.10  2001/09/27 16:13:41  honzam
 New listlen parameter, New view alias, New discussion support
 

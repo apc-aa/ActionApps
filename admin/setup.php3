@@ -21,6 +21,26 @@ http://www.apc.org/
 
 ///////////////////////////////////////////////////////////////////////////
 
+# handle with PHP magic quotes - quote the variables if quoting is set off
+function Myaddslashes($val, $n=1) {
+  if (!is_array($val)) {
+    return addslashes($val);
+  }  
+  for (reset($val); list($k, $v) = each($val); )
+    $ret[$k] = Myaddslashes($v, $n+1);
+  return $ret;
+}    
+
+if (!get_magic_quotes_gpc()) { 
+  // Overrides GPC variables 
+  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+  $$k = Myaddslashes($v); 
+}
+
 require ("../include/config.php3");
 require ("$GLOBALS[AA_INC_PATH]" . "locsessi.php3");
 require ("$GLOBALS[AA_INC_PATH]" . "perm_core.php3");
@@ -48,10 +68,10 @@ function PrintErr($err) {
 }
 
 function SuperForm() {
-  global $myurl;
+  global $sess;
   global $login, $password1, $password2, $fname, $lname, $email;
   ?>
-  <form method=post action="<?php echo $myurl; ?>">
+  <form action="setup.php3">
     <table border="0" cellspacing="0" cellpadding="1" width="440"
            bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
       <tr><td class=tabtit><b><?php echo L_SETUP_USER; ?></b></td></tr>
@@ -68,6 +88,7 @@ function SuperForm() {
             ?>
          </table>
       <tr><td align="center">
+         <?php $sess->hidden_session(); ?>
          <input type=submit name=phase value="<?php echo L_SETUP_CREATE ?>">
     </td></tr>
     </table>
@@ -76,17 +97,18 @@ function SuperForm() {
 }
 
 function InitForm() {
-   global $myurl;
+   global $sess;
    echo L_SETUP_INFO1;
    echo L_SETUP_INFO2;
    ?>
-   <form method=post action="<?php echo $myurl; ?>">
+   <form method=get action="setup.php3">
+   <?php $sess->hidden_session(); ?>
    <input type=submit name=phase value="<?php echo L_SETUP_INIT; ?>">
    <input type=submit name=phase value="<?php echo L_SETUP_RECOVER; ?>">
    </form>
    <?php
 }
-
+ 
 function HtmlEnd() {
    echo "</center></body></html>\n";
 }
@@ -94,8 +116,6 @@ function HtmlEnd() {
 ///////////////////////////////////////////////////////////////////////////
 
 page_open(array("sess" => "AA_SL_Session"));
-
-$myurl = $sess->url($PHP_SELF);
 
 // Discover current state in AA object perms
 
@@ -130,7 +150,6 @@ HtmlStart();
 switch ($phase) {
 
    case L_SETUP_INIT: 
-
       if ($superusers || $supergroups) {
          NoAction();
          break;
@@ -258,6 +277,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.8  2001/12/18 11:37:39  honzam
+scripts are now "magic_quotes" independent - no matter how it is set
+
 Revision 1.7  2001/02/26 17:26:08  honzam
 color profiles
 

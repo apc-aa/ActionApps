@@ -22,6 +22,26 @@ http://www.apc.org/
 
 # Cross-Server Networking - client module
 
+# handle with PHP magic quotes - quote the variables if quoting is set off
+function Myaddslashes($val, $n=1) {
+  if (!is_array($val)) {
+    return addslashes($val);
+  }  
+  for (reset($val); list($k, $v) = each($val); )
+    $ret[$k] = Myaddslashes($v, $n+1);
+  return $ret;
+}    
+
+if (!get_magic_quotes_gpc()) { 
+  // Overrides GPC variables 
+  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+  $$k = Myaddslashes($v); 
+}
+
 require "../include/config.php3";
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
@@ -262,6 +282,9 @@ while (list ($feed_id,$feed) = each($feeds)) {
 }
 /*
 $Log$
+Revision 1.2  2001/12/18 11:37:39  honzam
+scripts are now "magic_quotes" independent - no matter how it is set
+
 Revision 1.1  2001/09/27 13:09:53  honzam
 New Cross Server Networking now is working (RSS item exchange)
 

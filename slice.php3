@@ -66,6 +66,26 @@ http://www.apc.org/
 #optionaly ids[]      // array of discussion comments to show in fulltext mode (ids['x'.$id])
 #optionaly all_ids    // if set, show all discussion comments
 
+# handle with PHP magic quotes - quote the variables if quoting is set off
+function Myaddslashes($val, $n=1) {
+  if (!is_array($val)) {
+    return addslashes($val);
+  }  
+  for (reset($val); list($k, $v) = each($val); )
+    $ret[$k] = Myaddslashes($v, $n+1);
+  return $ret;
+}    
+
+if (!get_magic_quotes_gpc()) { 
+  // Overrides GPC variables 
+  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+  $$k = Myaddslashes($v); 
+  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+  $$k = Myaddslashes($v); 
+}
+
 $encap = ( ($encap=="false") ? false : true );
 
 require "./include/config.php3";
@@ -206,8 +226,8 @@ function GetSortArray( $sort ) {
 //-----------------------------End of functions definition---------------------
 # $debugtimes[]=microtime();
 
-if ($encap) add_vars("",1);        # adds values from QUERY_STRING_UNESCAPED 
-                               #       and REDIRECT_STRING_UNESCAPED
+if ($encap) add_vars("");        # adds values from QUERY_STRING_UNESCAPED 
+                                 #       and REDIRECT_STRING_UNESCAPED
 
 if( $debug ) {
   echo "<br><br>Conds by:<br>";
@@ -254,7 +274,6 @@ else {
   echo L_SLICE_INACCESSIBLE . " (ID: $slice_id)";
   ExitPage();
 }  
-
 
 if( !$slice_info[even_odd_differ] )
   $slice_info[even_row_format] = "";
@@ -515,6 +534,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.30  2001/12/18 11:37:38  honzam
+scripts are now "magic_quotes" independent - no matter how it is set
+
 Revision 1.29  2001/11/05 13:46:11  honzam
 Improved sort url parameters
 
