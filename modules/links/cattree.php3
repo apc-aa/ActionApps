@@ -7,10 +7,10 @@
  * @package Links
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ if (!defined("LINKS_CATTREE_INCLUDED"))
      define ("LINKS_CATTREE_INCLUDED",1);
 else return;
 
-/** 
+/**
  * cattree class - handles tree of categories
  */
 class cattree {
@@ -39,17 +39,17 @@ class cattree {
   var $treeStart;      // where to start - category root
   var $go_to_empty;    // boolean - should we go to the empty subcategories?
   var $path_delimeter; // string to show between categories in path
-  
-  var $catnames;       // asociative array with names of columns and values of current row 
+
+  var $catnames;       // asociative array with names of columns and values of current row
   var $fromList;
   var $toList;
   var $baseList;
   var $stateList;
-  
-  var $STATES_CODING = array('highlight'=>'!', 'visible'=>'-', 'hidden'=>'x'); 
-  
-  // constructor 
-  function cattree(&$db, $treeStart=-1, $go_to_empty=false, $path_delimeter=' > ') {   
+
+  var $STATES_CODING = array('highlight'=>'!', 'visible'=>'-', 'hidden'=>'x');
+
+  // constructor
+  function cattree(&$db, $treeStart=-1, $go_to_empty=false, $path_delimeter=' > ') {
     $this->db             = $db;
     $this->treeStart      = $treeStart;
     $this->go_to_empty    = $go_to_empty;
@@ -67,11 +67,11 @@ class cattree {
       # lookup - all categories names
       $SQL= " SELECT id, name FROM links_categories WHERE deleted='n'";
       $db->query($SQL);
-      while ($db->next_record()) 
+      while ($db->next_record())
           $this->catnames[$db->f('id')] = htmlspecialchars($db->f('name'));
-      
+
       # lookup - category tree
-      $SQL= " SELECT category_id, what_id, base, state FROM links_cat_cat 
+      $SQL= " SELECT category_id, what_id, base, state FROM links_cat_cat
                ORDER BY priority";
       $db->query($SQL);
       while ($db->next_record()) {
@@ -79,14 +79,14 @@ class cattree {
           $this->toList[] = $db->f('what_id');
           $this->baseList[] = ($db->f('base')=='n' ? '@' : ' ');
           $this->stateList[] = $this->STATES_CODING[$db->f('state')];
-      }   
+      }
   }
-   
-  /** 
-   * Prints javascript which defines necessary javascript variables for category 
+
+  /**
+   * Prints javascript which defines necessary javascript variables for category
    * tree. There must be already includede js_lib_links.js file on the page
    * in order ClearListbox(), GoCategory() and ChangeCategory() are defined
-   * 
+   *
    * @param string $fromId special string which in conjunction with $toId defines
    *                       the tree for javascript (see Links_GetTreeDefinition)
    * @param string $toId (see fromId, Links_GetTreeDefinition())
@@ -97,7 +97,7 @@ class cattree {
           $this->update();
       if( $treeStart == -1 )
         $treeStart = $this->treeStart;
-        
+
       echo '<SCRIPT Language="JavaScript"><!--
 
   // data ----------------------------------------------
@@ -111,25 +111,25 @@ class cattree {
   var go_into_empty_cat = '. ($this->go_to_empty ? 'true' : 'false') .'
   var path_delimeter    = "'. $this->path_delimeter .'"
   a=new Array()'."\n";
-   
+
   reset( $this->catnames );
   while( list( $allId, $allName ) = each( $this->catnames ) )
       echo 'a['. $allId .']="'. $allName ."\"\n";
-  
+
   echo '
   downcat = new Array()
   downcat[level] = treeStart // stores path form root to current category
   // -->
   </SCRIPT>';
-  }    
-  
+  }
 
-  /** 
+
+  /**
    * Prints javascript which changes tree to given category
    * There must be already includede js_lib_links.js file on the page
    * in order ClearListbox(), GoCategory() and ChangeCategory() are defined
-   * 
-   * @param int $cat_path path of category to switch to (this->treeStart must 
+   *
+   * @param int $cat_path path of category to switch to (this->treeStart must
    *                      be on the path
    * @param int $pathDiv  <div> #id where the path should be displayed
    * @param int $cat_id_field hidden form field which stores selected category
@@ -138,14 +138,14 @@ class cattree {
       $ids_on_path = explode( ',', $cat_path );
       if ( !isset($ids_on_path) OR !is_array($ids_on_path) )
           return false;
-      
+
       $state = 'before_treeStart'; // indicates state of processing while cycle
       reset( $ids_on_path );
       while( list( ,$cid) = each($ids_on_path) ) {
           if ( $state=='before_treeStart' ) {
-              if ( $cid == $this->treeStart ) 
+              if ( $cid == $this->treeStart )
                   $state = 'start';
-              continue;    
+              continue;
           } elseif ( $state=='start' ) {
               echo "\n".'<SCRIPT Language="JavaScript"><!--'."\n";
               $state = 'go';
@@ -155,17 +155,17 @@ class cattree {
       if ($state == 'go')
           echo '  // -->
                  </SCRIPT>';
-  }    
-  
+  }
 
-  /** 
+
+  /**
    * Returns multiple selectbox which behaves like category tree
-   * Links_PrintTreeData() function must be called first (to define javascript 
-   * variables. 
+   * Links_PrintTreeData() function must be called first (to define javascript
+   * variables.
    * @param bool   withState  Have we show also category state?
    * @param string onWhat     Event to react (onchange/ondblclick)
    * @param int    cat2show   Which category to show as default
-   * @param string pathdiv    id of an html element (<div id='...'>) where to 
+   * @param string pathdiv    id of an html element (<div id='...'>) where to
    *                          display currently selected category path
    * @param string cat_id_fld (probably hidden) form field, where the current
    *                          selected category id is written
@@ -173,20 +173,20 @@ class cattree {
    *                          by the form
    * @param string in_form    the name of form, in which the tree selectbox is
    *                          (it must be specified for $onWhat='dblclick' where
-   *                          $form is not specified)         
+   *                          $form is not specified)
    * @return string selectbox prepared to print
    */
-  function getFrmTree($withState, $onWhat, $cat2show=-1, $pathDiv="", 
+  function getFrmTree($withState, $onWhat, $cat2show=-1, $pathDiv="",
                       $cat_id_fld="", $form="", $width=250, $rows=8, $in_form="") {
       if ( !isset($this->catnames) OR !is_array($this->catnames) ) {
           $this->update();
-      }    
+      }
       if( $cat2show == -1 ) {
         $cat2show = $this->treeStart;
-      }  
-      $on = ( ($onWhat == 'change')   ? 
+      }
+      $on = ( ($onWhat == 'change')   ?
        "onchange=\"GoToCategoryID('', this, '$pathDiv', '$cat_id_fld')\"" :
-             (($onWhat == 'dblclick') ? 
+             (($onWhat == 'dblclick') ?
        "ondblclick=\"GoToCategoryID('', this, '$pathDiv', '$cat_id_fld')\"
         onchange=\"ChangeSelectedCat('', this, '$pathDiv', '$cat_id_fld')\""
        :''));
@@ -195,20 +195,20 @@ class cattree {
       $ret .= $this->getFrmSubCatList($withState, $on, $cat2show, $width, "", $rows);
       $ret .= ($form ? '</form>' : '' );
 
-      // for selectbox which use doubleclick we have to print also 'GO' button, 
+      // for selectbox which use doubleclick we have to print also 'GO' button,
       // because Netscape 4 do not support dblclick event
 
       if ( $onWhat == 'dblclick' ) {
           $ret .= '<div align="center"><br>
                       <a href="javascript:GoToCategoryID(\'\', eval(document.'.
                       ($form ? $form : $in_form) .'.tree), \''.$pathDiv.'\', \''.
-                      $cat_id_fld .'\')">'. _m('Jdi') .'</a>
+                      $cat_id_fld .'\')">'. _m('Switch to category') .'</a>
                    </div>';
       }
       return $ret;
   }
 
-  /** 
+  /**
    * Returns multiple selectbox with subcategory list
    * @return string selectbox prepared to print
    */
@@ -224,16 +224,16 @@ class cattree {
               $ret .= ($withState ? '('. $this->stateList[$i]. ') ' : '');
               $ret .= $this->catnames[$this->toList[$i]]. $this->baseList[$i];
               $ret .= '</option>';
-          }    
-      }                                   
+          }
+      }
       $ret .=  '</select>';
       return $ret;
-  }    
+  }
 
-  
-  /** 
+
+  /**
    * Walks category tree and calls specified function
-   * 
+   *
    * @param string $function - called function
    */
   function walkTree($start_id, $function, $level=0) {
@@ -251,9 +251,9 @@ class cattree {
               // not crossreferenced and never ending cycles protection
               if( ($this->baseList[$k] != '@') AND ($level <= 100) )
                   $this->walkTree($this->toList[$k], $function, $level+1);
-          }        
-      }   
+          }
+      }
   }
-}   
- 
+}
+
 ?>

@@ -1,6 +1,6 @@
 <?php
 //$Id$
-/* 
+/*
 Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
@@ -27,11 +27,19 @@ http://www.apc.org/
 
 /*  Top level (navigation bar) menu description:
     label       to be shown
-    cond        if not satisfied, don't show the label linked  
+    cond        if not satisfied, don't show the label linked
                 slice_id is included in the cond automatically
     href        link, relative to aa/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
+
+/**
+ * You can insert special content to the left menu column. Just use following
+ * keywords as itentifiers:
+ *      "textXXX"   - display text
+ *      "lineXXX"   - display line
+ *      "headerXXX" - display menu header
+ */
 
 if (!defined("LINKS_MENU_INCLUDED"))
       define("LINKS_MENU_INCLUDED",1);
@@ -108,6 +116,12 @@ function get_aamenus ()
             "new"=>array ("cond"=> $r_state['bin'] != "new",
                             "href"=>$module_location."index.php3?Tab=new",
                             "label"=>_m('New Links')." (".$r_state['bin_cnt']['new'].")"),
+            "folder2"=>array ("cond"=> $r_state['bin'] != "folder2",
+                            "href"=>$module_location."index.php3?Tab=folder2",
+                            "label"=>_m('Holding bin')." (".$r_state['bin_cnt']['folder2'].")"),
+            "folder3"=>array ("cond"=> $r_state['bin'] != "folder3",
+                            "href"=>$module_location."index.php3?Tab=folder3",
+                            "label"=>_m('Trash')." (".$r_state['bin_cnt']['folder3'].")"),
             "unasigned"=>array ("cond"=> $r_state['bin'] != "unasigned",
                             "href"=>$module_location."index.php3?Tab=unasigned",
                             "label"=>_m('Unasigned')." (".$r_state['bin_cnt']['unasigned'].")"),
@@ -115,11 +129,11 @@ function get_aamenus ()
     if( isset($bookmarks) AND is_array($bookmarks) ) {
         reset( $bookmarks );
         while( list( $bookid, $bookname ) = each( $bookmarks ) ) {
-            $aamenus['linkmanager_submenu']['items']['bookmark'.$bookid] = 
+            $aamenus['linkmanager_submenu']['items']['bookmark'.$bookid] =
                 array( "href"=>$module_location."index.php3?GoBookmark=$bookid",
                        "label"=>$bookname);
         }
-    }    
+    }
 /*    $aamenus['linkmanager_submenu']['items']['header3'] = _m('Misc');
     $aamenus['linkmanager_submenu']['items']['item6'] =  array (
                             "cond"=>IfSlPerm(PS_LINKS_DELETE_LINKS),
@@ -136,15 +150,15 @@ function get_aamenus ()
         "level"=>"submenu",
         "items"=> array(
         "header1"=>_m('Main settings'),
-        "main"=>array ("cond"=>IfSlPerm(PS_LINKS_SETTINGS), 
-                       "href"=>$module_location."modedit.php3", 
+        "main"=>array ("cond"=>IfSlPerm(PS_LINKS_SETTINGS),
+                       "href"=>$module_location."modedit.php3",
                        "label"=>_m('Polls')),
-        "design"=>array ("cond"=>IfSlPerm(PS_LINKS_EDIT_DESIGN), 
-                         "href"=>"admin/tabledit.php3?set_tview=polls_designs", 
+        "design"=>array ("cond"=>IfSlPerm(PS_LINKS_EDIT_DESIGN),
+                         "href"=>"admin/tabledit.php3?set_tview=polls_designs",
                          "label"=>_m('Designs')),
     ));
-    
-    
+
+
     /*  Second-level (left) menu description:
         bottom_td       empty space under the menu
         items           array of menu items in form item_id => properties

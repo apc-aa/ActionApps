@@ -7,10 +7,10 @@
  * @package Links
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ define('CATEGORIES_COUNT_TO_MANAGE', 12);
 define('LINK_TYPE_CONSTANTS', 'Ekolink_obecne_k');
 
 
-/** 
+/**
  * List of fields, which will be listed in searchbar in Links Manager (search)
  * (modules/links/index.php3)
  */
@@ -97,6 +97,9 @@ $LINKS_FIELDS = array( 'id'=>              array( 'name'  => _m('Id'),
                        'flag'=>            array( 'name'  => _m('Flag'),
                                                   'field'=> 'links_links.flag',
                                                   'operators'=> 'numeric'),
+                       'note'=>            array( 'name'  => _m('Editor\'s note'),
+                                                  'field'=> 'links_links.note',
+                                                  'operators'=> 'text'),
                        'org_city'=>        array( 'name'  => _m('Organization city'),
                                                   'field'=> 'links_links.org_city',
                                                   'operators'=> 'text'),
@@ -177,19 +180,19 @@ $LINKS_FIELDS = array( 'id'=>              array( 'name'  => _m('Id'),
                                                   'operators'=> 'numeric',
                                                   'table'=> 'changes'));
 
-                                                  
-                                                  
-                                                  
-                                                  
-                                                  
-/** 
+
+
+
+
+
+/**
  * List of fields, which will be listed in searchbar in Links Manager (search)
  * (modules/links/index.php3)
  */
 $LINKS_SEARCH_FIELDS = array('name','original_name','description','type', 'id','rate','votes',
                              'created_by','created','edited_by','last_edit',
-                             'checked_by','checked','initiator','url','voted',
-                         /*  'org_city','org_street','org_post_code','org_phone','org_fax','org_email', */                                                  
+                             'checked_by','checked','initiator','url','voted','note',
+                         /*  'org_city','org_street','org_post_code','org_phone','org_fax','org_email', */
                          /*  'flag','reg_id',*/'reg_name',/*'reg_level','lang_id',*/
                              'lang_name','lang_short_name',/*'cat_id',*/'cat_name',
                          /*    'cat_deleted','cat_path',*/'cat_link_count',
@@ -197,14 +200,14 @@ $LINKS_SEARCH_FIELDS = array('name','original_name','description','type', 'id','
                              'cat_proposal',/*'cat_proposal_delete',
                              'cat_priority',*/'change');
 
-/** 
+/**
  * List of fields, which will be listed in searchbar in Links Manager (order)
  * (modules/links/index.php3)
  */
 $LINKS_ORDER_FIELDS = array( 'name','original_name','description','type', 'id','rate','votes',
                              'created_by','created','edited_by','last_edit',
-                             'checked_by','checked','initiator','url','voted',
-                         /*  'org_city','org_street','org_post_code','org_phone','org_fax','org_email', */                                                  
+                             'checked_by','checked','initiator','url','voted','note',
+                         /*  'org_city','org_street','org_post_code','org_phone','org_fax','org_email', */
                          /*  'flag','reg_id',*/'reg_name',/*'reg_level','lang_id',*/
                              'lang_name','lang_short_name',/*'cat_id',*/'cat_name',
                          /*    'cat_deleted','cat_path',*/'cat_link_count',
@@ -212,10 +215,10 @@ $LINKS_ORDER_FIELDS = array( 'name','original_name','description','type', 'id','
                              'cat_proposal',/*'cat_proposal_delete',
                              'cat_priority',*/'change');
 
-/** 
- * Predefined aliases for links. For another aliases use 'inline' aliases. 
+/**
+ * Predefined aliases for links. For another aliases use 'inline' aliases.
  */
-$LINK_ALIASES = array( 
+$LINK_ALIASES = array(
     "_#LINK_ID_" => array("fce" => "f_t",
                           "param" => "id",
                           "hlp" => _m('Link id')),
@@ -258,15 +261,21 @@ $LINK_ALIASES = array(
     "_#LINK_EML" => array("fce" => "f_m::::mailto:",
                           "param" => "initiator",
                           "hlp" => _m('Link author\'s e-mail')),
-    "_#LINK_URL" => array("fce" => "f_m::::href:",
+    "_#LINK_URL" => array("fce" => "f_t",
                           "param" => "url",
                           "hlp" => _m('Link url')),
+    "_#LINK_LNK" => array("fce" => "f_m::::href:",
+                          "param" => "url",
+                          "hlp" => _m('Link link')),
     "_#LINK_VOD" => array("fce" => "f_d:n/j/Y",
                           "param" => "voted",
                           "hlp" => _m('Link - last vote date')),
     "_#LINK_FLG" => array("fce" => "f_t",
                           "param" => "flag",
                           "hlp" => _m('Link flag')),
+    "_#LINK_NOT" => array("fce" => "f_t",
+                          "param" => "note",
+                          "hlp" => _m('Link editor\'s note')),
     "_#LINK_OCI" => array("fce" => "f_t",
                           "param" => "org_city",
                           "hlp" => _m('Link organization city')),
@@ -308,12 +317,12 @@ $LINK_ALIASES = array(
                           "hlp" => _m('Category ids (comma separated)')),
     "_#CAT_NAME" => array("fce" => "f_h:, ",
                           "param" => "cat_name",
-                          "hlp" => _m('Category ids (comma separated)')),
+                          "hlp" => _m('Category names (comma separated)')),
     "_#EDITLINK" => array("fce" => "f_e:link_edit",
                           "param" => "cat_id",
                           "hlp" => _m('Link to link editing page (for admin interface only)')),
     "_#CATEG_GO" => array("fce" => "f_e:link_go_categ",
                           "param" => "cat_id",
                           "hlp" => _m('Category listing with links (for admin interface only)'))
-);                              
+);
 ?>

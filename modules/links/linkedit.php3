@@ -1,4 +1,4 @@
-<?php  
+<?php
 //$Id$
 # params:
 #   lid  - id of edited link
@@ -7,7 +7,7 @@
 # - links are visible to normal surfer after assigments.proposal='n'
 # - new link is visible only to editor of first specified category
 #   (proposal='y', state='visible', base='y')
-# - after aproval of new link, it became visible to editors of all proposed 
+# - after aproval of new link, it became visible to editors of all proposed
 #   categories (proposal='y', state='visible', base='n')
 # - proposal of link change have two parts: link data and link assignment
 #   - new data is specified by changes table, which points to changed link data
@@ -31,14 +31,14 @@ function printChange($change_arr, $original_value="") {
             if( trim($original_value) != trim($val) ) {
                 FrmStaticText( MarkChanged( _m('Change') ), MarkChanged( $val ),
                                false, "", "", false);
-            }    
-        }    
+            }
+        }
     }
 }
 
 function MarkChanged($txt) {
     return "<span class=\"change\">$txt</span>";
-}    
+}
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id = $slice_id;
@@ -49,19 +49,19 @@ $links_info = GetModuleInfo($module_id,'Links');
 bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$r_lang_file);
 
 // r_err and r_msg - passes messages between scripts
-if ( !isset($r_err) ) { 
+if ( !isset($r_err) ) {
     $sess->register('r_err');
     $sess->register('r_msg');
 }
 
-if($cancel) 
+if($cancel)
     go_url( $sess->url(self_base() . "index.php3"));
 
 # get lid via url
 if( $lid ) {
     $r_state['link_id'] = $lid;
     $pagename = _m('Edit Link');
-} else {     
+} else {
     # adding new link
     # prefill the values from last filling
     $r_state['link_id'] = "";
@@ -76,12 +76,12 @@ if( $r_state['link_id'] ) {
         MsgPage($sess->url(self_base()."index.php3"), _m('Link do not exist or the base category is not set'));
         exit;
     }
-    
+
     # no permission to change slice - doesn't matter - propose change
     #   how? - create new link and join it to existing by "changes" table
     #   (see linkedit2.php3)
-    
-/*  all users have the permissions to create link 
+
+/*  all users have the permissions to create link
 } elseif (!IsGlobalPerm( PS_LINKS_CREATE_LINK )) {
     MsgPage($sess->url(self_base()."index.php3"), _m('No permission to create link'));
     exit;
@@ -97,7 +97,7 @@ $db->query($SQL);
 while ($db->next_record()) {
     // just for translation from id to name
     $tmp_translate[$db->f('id')] = htmlspecialchars($db->f('name'));
-}  
+}
 
 # This link specific data -----------------------------------------------------
 
@@ -114,9 +114,10 @@ if( $getOldV ){  // error message - fill old values
     $org_phone     = $r_state['linkedit']['old']['org_phone'];
     $org_fax       = $r_state['linkedit']['old']['org_fax'];
     $org_email     = $r_state['linkedit']['old']['org_email'];
-    
+    $note          = $r_state['linkedit']['old']['note'];
+
 	# recoverring previously set values of categories
-	for ($selcatCount=$r_state['linkedit']['old']['selcatCount'], $sci=0; 
+	for ($selcatCount=$r_state['linkedit']['old']['selcatCount'], $sci=0;
 			$sci < $selcatCount; $sci++) {
 		$selcatValue[$sci] = $r_state['linkedit']['old']["selcat$sci"];
 		$selcatSelectValue[$sci] = $r_state['linkedit']['old']["selcatSelect$sci"];
@@ -126,14 +127,14 @@ if( $getOldV ){  // error message - fill old values
 	# recoverring previously set values of regions and languages
 	$reg  = $r_state['linkedit']['old']['reg'];
 	$lang = $r_state['linkedit']['old']['lang'];
-	
+
 	for ($i=0; $i<Count($reg); $i++)
 		$reg_checked[$reg[$i]]=true;
 	for ($i=0; $i<Count($lang); $i++)
 		$lang_checked[$lang[$i]]=true;
 }
 
-// get edited link data 
+// get edited link data
 if( !$getOldV AND $r_state['link_id'] ) {
     $id            = $db_link['id'];
     $linkname      = $db_link['name'];
@@ -149,9 +150,10 @@ if( !$getOldV AND $r_state['link_id'] ) {
     $org_phone     = $db_link['org_phone'];
     $org_fax       = $db_link['org_fax'];
     $org_email     = $db_link['org_email'];
+    $note          = $db_link['note'];
 }
 
-// get edited link data 
+// get edited link data
 if( $r_state['link_id'] ) {
     $created     = $db_link['created'];
     $created_by  = $db_link['created_by'];
@@ -163,21 +165,21 @@ if( $r_state['link_id'] ) {
 
 if( $r_state['link_id'] ) {                  // not new link
     # link region info
-    $SQL= "SELECT region_id FROM links_link_reg 
+    $SQL= "SELECT region_id FROM links_link_reg
             WHERE link_id=".$r_state['link_id'];
     $db->query($SQL);
     while( $db->next_record() )
         $region[$db->f('region_id')]=true;
-    
+
     # link language info
-    $SQL= "SELECT lang_id FROM links_link_lang 
+    $SQL= "SELECT lang_id FROM links_link_lang
             WHERE link_id=".$r_state['link_id'];
     $db->query($SQL);
     while( $db->next_record() )
         $language[$db->f('lang_id')]=true;
-    
+
     # lookup - changes proposal
-    $SQL= "SELECT * FROM links_changes, links_links 
+    $SQL= "SELECT * FROM links_changes, links_links
             WHERE links_changes.proposal_link_id=links_links.id
               AND links_changes.changed_link_id=". $r_state['link_id'] ."
               AND links_changes.rejected='n'";
@@ -197,12 +199,13 @@ if( $r_state['link_id'] ) {                  // not new link
         $org_phone_change[]     = htmlspecialchars($db->f('org_phone'));
         $org_fax_change[]       = htmlspecialchars($db->f('org_fax'));
         $org_email_change[]     = htmlspecialchars($db->f('org_email'));
+        $note_change[]          = htmlspecialchars($db->f('note'));
 
         $changeIds .= $delimeter.$db->f('id');   // set of link id's which holds requested changes
         $delimeter = ',';
         $change_no++;
-    }  
-    
+    }
+
     # lookup - proposal for region and language changes
     if($changeIds) {
         #region
@@ -210,8 +213,8 @@ if( $r_state['link_id'] ) {                  // not new link
         $db->query($SQL);
         while ($db->next_record())
             $region_changes[$db->f('region_id')]++;   // count it
-        
-        #language    
+
+        #language
         $SQL= "SELECT lang_id FROM links_link_lang WHERE link_id IN ($changeIds)";
         $db->query($SQL);
         while ($db->next_record())
@@ -227,16 +230,16 @@ while ($db->next_record()) {
     $regId[]       = $fid;
     $regName[]     = (($db->f('level')==2) ? "&nbsp;&nbsp;&nbsp;" : "").
                      htmlspecialchars($db->f('name'));
-    $reg_changes[] = (($region[$fid]) ?            // was this checkbox checked? 
-        (($region_changes[$fid] == $change_no ) ? "" : MarkChanged(_m('Proposal to uncheck'))) :    // "" means 'Unchanged'  
+    $reg_changes[] = (($region[$fid]) ?            // was this checkbox checked?
+        (($region_changes[$fid] == $change_no ) ? "" : MarkChanged(_m('Proposal to uncheck'))) :    // "" means 'Unchanged'
         (($region_changes[$fid] == 0 )          ? "" : MarkChanged(_m('Proposal to check'))));    // "" means 'Unchanged'
     if (!$update) {
         if ($getOldV)
             $regChecked[] = ($reg_checked[$fid] ? "checked" : ' ');
         else
             $regChecked[] = ($region[$fid] ? "checked" : ' ');
-    }        
-}  
+    }
+}
 
 # lookup - all language names
 $SQL= "SELECT * FROM links_languages ORDER BY id";
@@ -245,7 +248,7 @@ while ($db->next_record()) {
     $fid            = $db->f('id');
     $langId[]       = $fid;
     $langName[]     = htmlspecialchars($db->f('name'));
-    $lang_changes[] = (($language[$fid]) ?        // was this checkbox checked? 
+    $lang_changes[] = (($language[$fid]) ?        // was this checkbox checked?
         (($language_changes[$fid] == $change_no ) ? "" : MarkChanged(_m('Proposal to uncheck')) ) :   // "" means 'Unchanged'
         (($language_changes[$fid] == 0 )          ? "" : MarkChanged(_m('Proposal to check')) ));            // "" means 'Unchanged'
     if (!$update) {
@@ -253,8 +256,8 @@ while ($db->next_record()) {
             $langChecked[] = ($lang_checked[$fid] ? "checked" : ' ');
         else
             $langChecked[] = ($language[$fid] ? "checked" : ' ');
-    }    
-}  
+    }
+}
 
 # lookup - link types
 $link_types = GetConstants(LINK_TYPE_CONSTANTS, $db);
@@ -265,7 +268,7 @@ $link_types = GetConstants(LINK_TYPE_CONSTANTS, $db);
 $idx=0;  // start with 1 ($idx=0 is for base category)
 if( $r_state['link_id'] ) {                  // not new link
     # lookup - this link assignments
-    $SQL= "SELECT id, path, base, proposal, proposal_delete, state 
+    $SQL= "SELECT id, path, base, proposal, proposal_delete, state
              FROM links_link_cat, links_categories
             WHERE links_link_cat.category_id=links_categories.id
               AND what_id=".$r_state['link_id'];
@@ -276,16 +279,16 @@ if( $r_state['link_id'] ) {                  // not new link
         $selcatSelectValue[$i]       = $db->f('id');
         $getPathFromID[$db->f('id')] = $db->f('path');
         $selcatState[$i]             = $db->f('state');
-        $selcatPropAdd[$i]           = (($db->f('proposal')=='y') ? 
+        $selcatPropAdd[$i]           = (($db->f('proposal')=='y') ?
                                        MarkChanged(_m('Proposal to add')) : ""); //_m('No proposal to add'));
-        $selcatPropDel[$i]           = (($db->f('proposal_delete')=='y') ? 
+        $selcatPropDel[$i]           = (($db->f('proposal_delete')=='y') ?
                                        MarkChanged(_m('Proposal to del')) : ""); //_m('No proposal to del'));
         $displayed_p[$db->f('id')]   = true;
     }
-    
+
     # now proposals from anonymous change link
     if($changeIds) {
-        $SQL= "SELECT path, id 
+        $SQL= "SELECT path, id
                  FROM links_link_cat, links_categories
                 WHERE links_link_cat.category_id=links_categories.id
                   AND what_id IN ($changeIds)";
@@ -293,15 +296,15 @@ if( $r_state['link_id'] ) {                  // not new link
         while( $db->next_record() ) {
             $assignment_changes[$db->f('id')]++;   // count it
             $getPathFromID[$db->f('id')] = $db->f('path');
-        }    
-        
+        }
+
         # mark delete proposals
         for( $i=0; $i<=$idx; $i++ ) {
-            if( $selcatSelectValue[$i] AND 
+            if( $selcatSelectValue[$i] AND
                ($assignment_changes[$selcatSelectValue[$i]] <> $change_no) )
                 $selcatPropDel[$i] = MarkChanged(_m('Proposal to del'));
-        }    
-        
+        }
+
         # add new proposals
         if( isset($assignment_changes) AND is_array($assignment_changes) ) {
             reset($assignment_changes);
@@ -316,7 +319,7 @@ if( $r_state['link_id'] ) {                  // not new link
                 $selcatPropDel[$i]     = ""; // _m('No proposal to del');
             }
         }
-    }  
+    }
 }
 
 $idx++;
@@ -327,8 +330,8 @@ for( $i=0 ; $i < CATEGORIES_COUNT_TO_MANAGE; $i++ ) {
         $selcatSelectValue[$i] = "";
         $selcatPropAdd[$i]     = ""; // _m('No proposal to add');
         $selcatPropDel[$i]     = ""; // _m('No proposal to del');
-    }  
-}  
+    }
+}
 
 $selcatCount = max( $idx, CATEGORIES_COUNT_TO_MANAGE );
 
@@ -336,9 +339,9 @@ if (isset($checked_url))
 	$url = $checked_url;
 
 // AND now display the form --------------------------------------------------
-    
+
 // Print HTML start page (html begin, encoding, style sheet, no title)
-HtmlPageBegin();   
+HtmlPageBegin();
 echo '<title>'. _m('APC ActionApps') ." - $pagename</title>";
 
 $tree = new cattree( $db, $links_info['select_start'] ? $links_info['select_start'] : 2, false, ' > ');
@@ -349,7 +352,7 @@ $tree->printTreeData($links_info['tree_start']);
 
 if( !$r_state['link_id'] ) {  // add new link
     $url = "http://";
-    // select current caterory 
+    // select current caterory
     $on_load = 'onLoad="GoToCategoryID('.$r_state['cat_id'].', eval(document.f.tree), \'patharea\', \'\');'.
                'MoveSelectedTo(\'document.f.tree\', \'document.f.selcat0\', \'document.f.selcatSelect0\');"';
 }
@@ -362,7 +365,7 @@ echo '
 </head>
 <body id="body_white_color" '.$on_load.'>
  <H1><B>'. $pagename .'</B></H1>';
- 
+
 PrintArray($r_err);
 PrintArray($r_msg);
 unset($r_err);
@@ -398,6 +401,10 @@ echo '
     FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
     FrmInputText( 'initiator', _m('Author\'s e-mail'),           $initiator,  250, 50, false);
     printChange($initiator_change, $initiator);
+    FrmTextarea(  'note',  _m('Editor\'s note'),    $note, 3, 60, false,
+                  _m('You can type any message here - it is never shown on the website'));
+    printChange($note_change, $note);
+
 if( $r_state['link_id'] ) {        // 'edit link', not 'add link'
     FrmStaticText( _m('Last checked'), date(_m('n/j/Y'), $checked). ', '. perm_username($checked_by),  false, "", "", false);
     FrmStaticText( _m('Last changed'), date(_m('n/j/Y'), $last_edit). ', '.  perm_username($edited_by), false, "", "", false);
@@ -422,26 +429,26 @@ echo '
            $tree->getFrmTree(false, 'dblclick', $links_info['select_start'] ? $links_info['select_start'] : 2,
                                   'patharea', '', false, '', 15, 'f') .'</td>
            <td  align="CENTER" colspan=2>';
-              
+
                 for( $i=0; $i<CATEGORIES_COUNT_TO_MANAGE; $i++ ) {
-                     echo '<a href="javascript:MoveSelectedTo(\'document.f.tree\', \'document.f.selcat'.$i.'\', \'document.f.selcatSelect'.$i.'\')"><img 
-                           src="'.$AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a>&nbsp;<input 
-                           type="text" name="selcat'.$i.'" value="'.$selcatValue[$i].'" 
-                           size="60">&nbsp;<a href="javascript:DeleteField(\''.$i.'\')"><img 
+                     echo '<a href="javascript:MoveSelectedTo(\'document.f.tree\', \'document.f.selcat'.$i.'\', \'document.f.selcatSelect'.$i.'\')"><img
+                           src="'.$AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a>&nbsp;<input
+                           type="text" name="selcat'.$i.'" value="'.$selcatValue[$i].'"
+                           size="60">&nbsp;<a href="javascript:DeleteField(\''.$i.'\')"><img
                            src="'.$AA_INSTAL_PATH.'images/bx.gif" border="0" alt="delete"></a>'.$selcatPropAdd[$i].$selcatPropDel[$i].'
                            <input type="hidden" name="selcatSelect'.$i.'" value="'.$selcatSelectValue[$i].'">
                            <input type="hidden" name="selcatState'.$i.'" value="'.$selcatState[$i].'"><br>';
-                }    
-              
+                }
+
     echo '    </td>
           </tr>
-         </table> 
+         </table>
         </td>
        </tr>';
-       
-// show the organization information only to real editors or to public, if 
-// the link is of special type 
-if( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {  
+
+// show the organization information only to real editors or to public, if
+// the link is of special type
+if( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
        FrmTabSeparator( _m('Organization') );
        FrmInputText( 'org_city', _m('City'), $org_city,  250, 50, false);
        printChange( $org_city_change, $org_city );
@@ -455,22 +462,22 @@ if( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
        printChange( $org_fax_change, $org_fax );
        FrmInputText( 'org_email', _m('E-mail'), $org_email,  250, 50, false);
        printChange( $org_email_change, $org_email );
-}       
-                             
+}
+
        FrmTabSeparator( _m('Regions and languages') );
-   echo '       
+   echo '
       <tr><td width="50%" align=center><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
           <td align=center><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>
       <tr><td valign="top">';
         if( isset($regId) AND is_array($regId) )
-            for( $i=0; $i<count($regId); $i++ ) 
+            for( $i=0; $i<count($regId); $i++ )
                 echo '<input type="checkbox" name="reg[]" value="'.$regId[$i].'" '.$regChecked[$i].'>'.$regName[$i].' '.$reg_changes[$i].'<br>';
 echo '</td>
        <td valign="top">';
         if( isset($langId) AND is_array($langId) )
-            for( $i=0; $i<count($langId); $i++ ) 
+            for( $i=0; $i<count($langId); $i++ )
                 echo '<input type="checkbox" name="lang[]" value="'.$langId[$i].'" '.$langChecked[$i].'>'.$langName[$i].' '.$lang_changes[$i].'<br>';
-       
+
 echo '</td></tr>
   </table></td></tr>
    <tr><td align="center">
@@ -488,8 +495,8 @@ echo '</td></tr>
 echo '
 	</form>
  </body>
-</html>';       
-                      
+</html>';
+
 unset($checked_url);
 
 page_close();

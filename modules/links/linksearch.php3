@@ -1,13 +1,14 @@
 <?php
 require_once $GLOBALS[AA_INC_PATH]."searchlib.php3";
+require_once "./constants.php3";
 
 if (!defined ("LINKS_LINKSEARCH_INCLUDED"))
    	  define ("LINKS_LINKSEARCH_INCLUDED",1);
 else return;
 
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -28,8 +29,8 @@ http://www.apc.org/
 
 // -------------------------------------------------------------------------------------------
 
-/** Checks if the field is 'link description field' and not field used for  
- *  relation 
+/** Checks if the field is 'link description field' and not field used for
+ *  relation
  */
 function IsLinkDataField($field) {
     return (substr($field, 0, 12) =='links_links.') OR
@@ -38,7 +39,7 @@ function IsLinkDataField($field) {
            (substr($field, 0, 16) =='links_languages.') OR
            (substr($field, 0, 16) =='links_link_lang.') OR
            (substr($field, 0, 14) =='links_changes.');
-}   
+}
 
 
 /* Function: QueryIDs
@@ -55,8 +56,8 @@ function IsLinkDataField($field) {
                                sorting and eliminating of expired items))
                               ids are packed but not quoted in $restrict_ids or short
              $defaultCondsOperator
-             $use_cache -- if set, the cache is searched , if the result isn't 
-                           already known. If not, the result is found and stored into 
+             $use_cache -- if set, the cache is searched , if the result isn't
+                           already known. If not, the result is found and stored into
                            cache.
 
    Globals:  $debug=1 -- many debug messages
@@ -66,7 +67,7 @@ function IsLinkDataField($field) {
              $nocache -- do not use cache, even if use_cache is set
 */
 
-function Links_QueryIDs($cat_path, $conds, $sort="", $subcat=false, $type="app") {
+function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app") {
   # parameter format example:
   # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
   # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
@@ -98,7 +99,7 @@ function Links_QueryIDs($cat_path, $conds, $sort="", $subcat=false, $type="app")
 
   if( $use_cache AND !$nocache ) {
     #create keystring from values, which exactly identifies resulting content
-    $keystr = $cat_path . $subcat. 
+    $keystr = $cat_path . $subcat.
               serialize($conds).
               serialize($sort).
               $type;
@@ -117,15 +118,15 @@ if( $debug ) {
   echo "<br>--";
   echo "<br>Sort:"; print_r($sort);
   echo "<br>--";
-}  
+}
 
   ParseEasyConds($conds, $LINKS_FIELDS);
 
 if( $debug ) {
   echo "<br>Conds:"; print_r($conds);
   echo "<br>--";
-}  
-  
+}
+
   # parse conditions ----------------------------------
   if( isset($conds) AND is_array($conds)) {
       reset($conds);
@@ -138,7 +139,7 @@ if( $debug ) {
               if ( !isset($finfo) OR !is_array($finfo) )
                   continue;                         // fid is not field
               if ( ($type=='unasigned') AND !IsLinkDataField($finfo['field']) )
-                  continue;             // we take care about link table fields 
+                  continue;             // we take care about link table fields
                                         // only, if we want to search in unasigned
               $link_conds[] = GetWhereExp( $finfo['field'],
                                           $cond['operator'], $cond['value'] );
@@ -146,7 +147,7 @@ if( $debug ) {
                   $join_tables[$finfo['table']] = true;
           }
       }
-  }    
+  }
 
   # parse sort order ----------------------------
   if( isset($sort) AND is_array($sort)) {
@@ -155,28 +156,29 @@ if( $debug ) {
           if( !isset($srt) OR !is_array($srt) )
               continue;                              // bad sort order
           $fid = key($srt);
-          if( !$LINKS_FIELDS[$fid] )  # bad field_id - skip
+          $finfo = $LINKS_FIELDS[$fid];
+          if( !$finfo OR !is_array($finfo))  # bad field_id - skip
               continue;
           if ( ($type=='unasigned') AND !IsLinkDataField($finfo['field']) )
-              continue;             // we take care about link table fields 
+              continue;             // we take care about link table fields
                                     // only, if we want to search in unasigned
-             
-          $link_order[] = $LINKS_FIELDS[$fid]['field'] . 
+
+          $link_order[] = $finfo['field'] .
                           (stristr(current( $srt ), 'd') ? " DESC" : "");
       }
   }
 
-/*- Aktivní 
-- Návrhy na zm_nu (jak od správc_, tak od vn_jích uivatel_  kritériem tohoto a následujícího foldru je, zda ji jsou vid_t na webu nebo nejsou) 
-- Nové odkazy (návrhy od vn_jích uivatel_ tak od správc_) 
-- Neza_azené odkazy (odkazy, které nemají ádnou kategorii, zcelého katalogu, kdo d_ív p_ijde a za_adí ten má, za_azují se sem automaticky) 
-- Ko (sem p_ijde jen to, co n_kdo skute_n_ vyhodil) */ 
-  # app | changed | new | unasigned | trash | all
+/*- Aktivní
+- Návrhy na zm_nu (jak od správc_, tak od vn_jích uivatel_  kritériem tohoto a následujícího foldru je, zda ji jsou vid_t na webu nebo nejsou)
+- Nové odkazy (návrhy od vn_jích uivatel_ tak od správc_)
+- Neza_azené odkazy (odkazy, které nemají ádnou kategorii, zcelého katalogu, kdo d_ív p_ijde a za_adí ten má, za_azují se sem automaticky)
+- Kos (sem prijde jen to, co n_kdo skute_n_ vyhodil) */
+  # app | changed | new | unasigned | trash | all | folderX (where X is folder number)
 
-                     
-    $SQL = ( ($type=='unasigned') ? 
-           'SELECT  DISTINCT links_links.id  FROM links_links 
-              LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id' :
+
+    $SQL = ( ($type=='unasigned') ?
+           'SELECT  DISTINCT links_links.id  FROM links_links
+              LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ' :
            'SELECT  DISTINCT links_links.id  FROM links_links, links_link_cat, links_categories ');
 
     if( $type == 'changed' ) {
@@ -184,47 +186,56 @@ if( $debug ) {
     }
 
     if( $join_tables['regions'] )
-        $SQL .= 'LEFT JOIN links_link_reg ON links_links.id = links_link_reg.link_id
-                 LEFT JOIN links_regions ON links_regions.id = links_link_reg.region_id ';
+        $SQL .= ' LEFT JOIN links_link_reg ON links_links.id = links_link_reg.link_id
+                  LEFT JOIN links_regions ON links_regions.id = links_link_reg.region_id ';
     if( $join_tables['languages'] )
-        $SQL .= 'LEFT JOIN links_link_lang ON links_links.id = links_link_lang.link_id
-                 LEFT JOIN links_languages ON links_languages.id = links_link_lang.lang_id ';
+        $SQL .= ' LEFT JOIN links_link_lang ON links_links.id = links_link_lang.link_id
+                  LEFT JOIN links_languages ON links_languages.id = links_link_lang.lang_id ';
     if( $join_tables['changes'] )
-        $SQL .= 'LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id ';
-    
+        $SQL .= ' LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id ';
 
-    if( $type != 'unasigned' ) { 
+
+    if( $type != 'unasigned' ) {
         $SQL .= '  WHERE links_links.id = links_link_cat.what_id
                      AND links_link_cat.category_id = links_categories.id ';
-                     
+
         $SQL .= ( $subcat ? " AND ((path = '$cat_path') OR (path LIKE '$cat_path,%')) "
                           : " AND (path = '$cat_path') ");
-    }                  
-                      
+    }
+
     switch ($type) {
-        case 'all':   break;
-        case 'new':       $SQL .= ' AND (links_link_cat.proposal = \'y\') 
-                                    AND (links_link_cat.base = \'y\') '; break;
+        case 'all':       $SQL .= " AND (links_link_cat.proposal = 'n') ";
+                          break;
+        case 'new':       $SQL .= ' AND (links_link_cat.proposal = \'y\')
+                                    AND (links_link_cat.base = \'y\')
+                                    AND (links_links.folder < 2) ';
+                          break;
         case 'changed':   $SQL .= ' AND (   (     (links_link_cat.proposal = \'y\')
                                               AND (links_link_cat.state <> \'hidden\')
                                               AND (links_link_cat.base = \'n\'))
                                           OR
                                             (     (links_changes.rejected =\'n\')
-                                              AND (links_link_cat.proposal = \'n\')))';
-                                         
+                                              AND (links_link_cat.proposal = \'n\')))
+                                    AND (links_links.folder < 2) ';
                           break;
-        case 'unasigned': $SQL .= ' WHERE (links_link_cat.category_id IS NULL) '; break;
-        case 'app': 
-        default:          $SQL .= ' AND (links_link_cat.proposal = \'n\') ';
-    }
-                      
+        case 'unasigned': $SQL .= ' WHERE (links_link_cat.category_id IS NULL)';
+                          break;
+        case 'app':
+        default:          $folder = Links_GetFolder($type);
+                          // folder string (like folder3) contains folder number
 
-    if( isset($link_conds) AND is_array($link_conds) ) 
+                          $SQL .= " AND (links_link_cat.proposal = 'n') ";
+                          $SQL .= ($folder ?
+                                      " AND (links_links.folder = $folder) " :
+                                      " AND (links_links.folder < 2) " );
+    }
+
+    if( isset($link_conds) AND is_array($link_conds) )
         $SQL .= ' AND ' . join(' AND ', $link_conds );
- 
-    if( isset($link_order) AND is_array($link_order) ) 
+
+    if( isset($link_order) AND is_array($link_order) )
         $SQL .= ' ORDER BY '. join(', ', $link_order );
-    
+
   # get result --------------------------
     $db->tquery($SQL);
 
@@ -236,7 +247,7 @@ if( $debug ) {
   $zids = new zids($arr,"s");
 
   if( $use_cache AND !$nocache )
-    $GLOBALS[pagecache]->store($keystr, serialize($zids), "cat_path=$cat_path");
+    $GLOBALS['pagecache']->store($keystr, serialize($zids), "cat_path=$cat_path");
 
   return $zids;
 }

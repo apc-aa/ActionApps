@@ -1,4 +1,4 @@
-<?php  
+<?php
 //$Id$
 # Edit Category Page
 
@@ -18,7 +18,7 @@ $p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
 $links_info = GetModuleInfo($module_id,'Links');
 
 // r_err and r_msg - passes messages between scripts
-if ( !isset($r_err) ) { 
+if ( !isset($r_err) ) {
     $sess->register('r_err');
     $sess->register('r_msg');
 }
@@ -33,7 +33,7 @@ $cpath = GetCategoryPath( $cid );
 if( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
     $r_state['cat_id']    = $cid;
     $r_state['cat_path']  = $cpath;
-} 
+}
 else {
     MsgPage($sess->url(self_base())."index.php3", _m('No permission to edit category'));
     exit;
@@ -51,6 +51,7 @@ if( !$updated ) {
         $banner_file    = $db->f('banner_file');
         $cat_path       = $db->f('path');
         $description    = $db->f('description');
+        $note           = $db->f('note');
     }
 }
 $id = $r_state['cat_id'];
@@ -60,9 +61,9 @@ $links_count = CountCategLinks($cat_path, $r_state['cat_id']);
 
 
 // AND now display the form --------------------------------------------------
-    
+
 // Print HTML start page (html begin, encoding, style sheet, no title)
-HtmlPageBegin();   
+HtmlPageBegin();
 echo '<title>'. _m('APC ActionApps - Category Edit'). '</title>';
 
 $tree = new cattree( $db, $links_info['tree_start'], true, ' > ');
@@ -78,7 +79,7 @@ echo '
 </head>
 <body id="body_white_color">
  <H1><B>'. _m('Category Edit') .'</B></H1>';
- 
+
 PrintArray($r_err);
 PrintArray($r_msg);
 
@@ -87,6 +88,7 @@ echo '<form name=f method=post action="catedit2.php3">';
     FrmStaticText(                _m('Id'),             $id. '&nbsp; &nbsp; &nbsp;('. _m('Links in subtree').': '.$links_count.')', false, "", "", false);
     FrmInputText( 'cat_name',     _m('Category name'),           $cat_name,  250, 50, false);
     FrmTextarea(  'description',  _m('Category description'),    $description, 3, 60, false);
+    FrmTextarea(  'note',         _m('Editor\'s note'),    $note, 3, 60, false);
 
 //    FrmHidden( 'html_template',$html_template);
 //    FrmHidden( 'inc_file1',    $inc_file1);
@@ -118,15 +120,15 @@ echo '
       <tr>
        <td>&nbsp;</td>
        <td>&nbsp;</td>
-       <td align="center">
-         <a href="javascript:MoveSelectedUp(\'document.f.selcat\')"><img src="'.$AA_INSTAL_PATH.'images/cup.gif" border="0" alt="'. _m('Up') .'"></a>
-         <a href="javascript:MoveSelectedDown(\'document.f.selcat\')"><img src="'.$AA_INSTAL_PATH.'images/cdown.gif" border="0" alt="'. _m('Down') .'"></a><br>';
+       <td align="center">';
+//         <a href="javascript:MoveSelectedUp(\'document.f.selcat\')"><img src="'.$AA_INSTAL_PATH.'images/cup.gif" border="0" alt="'. _m('Up') .'"></a>
+//         <a href="javascript:MoveSelectedDown(\'document.f.selcat\')"><img src="'.$AA_INSTAL_PATH.'images/cdown.gif" border="0" alt="'. _m('Down') .'"></a><br>';
 if( IsCatPerm(PS_LINKS_ADD_SUBCATEGORY, $r_state['cat_path']) )
     echo ' <a href="javascript:NewCateg(\''._m('New subcategory').'\')">'. _m('Add') .'</a> &nbsp; ';
 if( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
     echo ' <a href="javascript:DelCateg(\''._m('Remove selected subcategory?').'\')">'. _m('Del') .'</a> &nbsp; ';
     echo ' <a href="javascript:ChangeStateCateg(\'document.f.selcat\')">'. _m('Change state') .'</a>';
-    
+
     FrmTabEnd( array('sbmt_button'  => array('type' =>"button",
                                              'value'=> ' '. _m('OK') .' ',
                                              'add'  => 'onClick="UpdateCategory(\'update_submit\')"'),
@@ -136,7 +138,7 @@ if( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
                      'subcatNames'  => array('type'=>"hidden"),   // to this variable store assigned subcategory names (by javascript)
                      'subcatStates' => array('type'=>"hidden")),   // to this variable store assigned subcategory states (by javascript)
                $sess);                    // add session_id
-echo '  
+echo '
     </form>
   </body>
 </html>';

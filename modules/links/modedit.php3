@@ -29,7 +29,7 @@ $LINKS_LANGUAGE_FILES = array( "en_links_lang.php3" => "en_links_lang.php3",
 
 
 if( $template['Links'] )
-  $Add_slice = true;       # message for init_page.php3
+    $no_slice_id = true;;       # message for init_page.php3
 
 $directory_depth = "../";
 require_once "../../include/init_page.php3";
@@ -50,6 +50,7 @@ $varset = new CVarset();
 $superadmin = IsSuperadmin();
 $module_id = $slice_id;
 
+
 if($template['Links']) {        // add module
   if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
     MsgPage($sess->url(self_base())."index.php3", _m('No permission to add module'), "standalone");
@@ -63,6 +64,7 @@ if($template['Links']) {        // add module
 }
 
 if( $insert || $update ) {
+
   do {
     if( !$owner )   # insert new owner
       if( !( $owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset, $db)))
@@ -85,8 +87,8 @@ if( $insert || $update ) {
 
     # write all fields needed for module table
     $module_id = WriteModuleFields(($update && $module_id) ? $module_id : false,
-                                   $db, $varset, $superadmin, $auth, 'Links', 
-                                   $name, $slice_url, $lang_file, $owner, 
+                                   $db, $varset, $superadmin, $auth, 'Links',
+                                   $name, $slice_url, $lang_file, $owner,
                                    $deleted, Links_Category2SliceID($start_id));
     if( !$module_id )       // error?
       break;
@@ -219,7 +221,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
-  
+
   $include_cmd = "<!--#include virtual=\"${AA_INSTAL_PATH}modules/links/links.php3?link_id=$module_id\"-->";
   FrmStaticText(_m('ID'), $module_id);
   FrmInputText("name", _m('Title'), $name, 99, 25, true);
