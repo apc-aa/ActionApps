@@ -42,7 +42,7 @@ function ParseCommand($cmd) {
 }  
 
 function ParseSettings($set) {
-  $a = str_replace (",,", "__u>_.", $cmd);# dummy string
+  $a = str_replace (",,", "__u>_.", $set);# dummy string
   $b = str_replace (",", "##Sx", $a);     # Separation string is ##Sx
   $c = str_replace ("__u>_.", ",", $b);   # change ",," to ","
   $sets = explode( "##Sx", $c );
@@ -671,8 +671,8 @@ class constantview{
 
 /*
 $Log$
-Revision 1.15  2001/10/04 13:57:23  honzam
-bugfix: GetAliasFromUrl missing
+Revision 1.16  2001/10/04 14:39:41  honzam
+bugfix: set parameter is now parsed correctly
 
 Revision 1.14  2001/10/02 11:36:41  honzam
 bugfixes
