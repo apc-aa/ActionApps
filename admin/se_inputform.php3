@@ -84,7 +84,7 @@ if( $update ) {
     $varset->add("input_morehlp", "quoted", $input_morehlp);
     $varset->add("input_default", "quoted", "$input_default_f:$input_default");
     $varset->add("multiple", "quoted",                     # mark as multiple
-              ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0);
+              ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0));
     $varset->add("alias1", "quoted", $alias1);
     $varset->add("alias1_help", "quoted", $alias1_help);
     $varset->add("alias1_func", "quoted", "$alias1_func_f:$alias1_func");
