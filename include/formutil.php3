@@ -623,10 +623,10 @@ function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
       </tr>";
 }
 
-# Prints html tag <input type="radio" .. to 2-column table
+# Prints a radio group, html tags <input type="radio" .. to 2-column table
 # for use within <form> and <table> tag
 function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
-                       $hlp="", $morehlp="") {
+                       $hlp="", $morehlp="", $linebreaks=false) {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
@@ -639,6 +639,8 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
     if ((string)$selected == (string)$k) 
       echo " checked";
     echo ">".htmlspecialchars($v);
+    if ($linebreaks) echo "<br>";
+    echo "\n";
   }
   reset($arr);
   PrintMoreHelp($morehlp);
