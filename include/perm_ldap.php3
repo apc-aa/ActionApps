@@ -68,7 +68,7 @@ function AuthenticateUsername($username, $password, $flags = 0) {
 
   $ds = LDAP_Connect($LDAPserver[host], $LDAPserver[port]);	// connect LDAP server
   if (!$ds)                  			// not connected
-    return false;	
+    return false;
 
   if($org = strstr($username, "@")) { // user typed e-mail -> search to get DN
     $search = "(&(objectclass=inetOrgPerson)(mail=$username))";
@@ -135,7 +135,7 @@ function DelUser ($user_id, $flags = 3) {
   // To keep integrity of LDAP DB, we should also delete all references
   // to this user in other LDAP entries (e.g. member=.., apcaci=..).
   // But this requires explicit knowledge of the schema!
-  
+
   if ($flags & 1) {            // cancel membership in groups
      $filter = "(&(objectclass=groupOfNames)(member=$user_id))";
      $r = ldap_search($ds, $aa_default_ldap[groups], $filter, array(""));
@@ -145,7 +145,7 @@ function DelUser ($user_id, $flags = 3) {
      }
      ldap_free_result($r);
   }
-  
+
   if ($flags & 2) {            // cancel asssigned permissions
      $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
      $r = ldap_search($ds, $aa_default_ldap[acls], $filter,
@@ -203,8 +203,9 @@ function GetUser ($user_id, $flags = 0) {
 
   $res["uid"] = $user_id;
   $res["login"] = $arr["uid"][0];
-  if( is_array($arr["givenname"]) )
-    $res["givenname"] = $arr["givenname"][0];
+  $gname = ( is_array($arr["givenname"]) ? $arr["givenname"] : $arr["givenName"] );
+  if( is_array($gname) )
+    $res["givenname"] = $gname[0];
   if( is_array($arr["sn"]) )
     $res["sn"] = $arr["sn"][0];
   if( is_array($arr["cn"]) )
@@ -215,7 +216,7 @@ function GetUser ($user_id, $flags = 0) {
   if( is_array($arr["telephonenumber"]) ) 
     for($i=0; $i < $arr["telephonenumber"]["count"]; $i++) 
       $res["phone"][$i] = $arr["telephonenumber"][$i];
-        
+
   ldap_close($ds);
   return $res;
 }
@@ -569,19 +570,21 @@ function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
 
   $filter = "(&(objectclass=apcacl)(apcobjecttype=$objectType))";
   $basedn = "apcobjectid=$objectID,$aa_default_ldap[acls]";
-  
+
   $result = @ldap_read($ds,$basedn,$filter,array("apcaci"));
   if (!$result) return false;
-  
+
   $entry = ldap_first_entry ($ds, $result);
   $arr = ldap_get_attributes($ds, $entry);
+  
+  $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
 
-  for($i=0; $i < $arr["apcaci"]["count"]; $i++) {
-    $apcaci = ParseApcAci( $arr["apcaci"][$i] );
+  for($i=0; $i < $aci["count"]; $i++) {
+    $apcaci = ParseApcAci( $aci[$i] );
     if( $apcaci ) {
       $info[$apcaci["dn"]]   = GetIDsInfo($apcaci["dn"]);
       $info[$apcaci["dn"]]["perm"] = $apcaci["perm"];
-    }  
+    }
   }
   return $info;
 }
@@ -594,7 +597,7 @@ function GetIDPerms ($id, $objectType, $flags = 0) {
   if( !($ds=InitLDAP()) )
     return false;
     
-  $filter = "(&(objectclass=apcacl)(apcobjecttype=$objectType)" . 
+  $filter = "(&(objectclass=apcacl)(apcobjecttype=$objectType)" .
             "(|(apcaci=$id:*)";
 
   if (!($flags & 1)) {
@@ -604,19 +607,19 @@ function GetIDPerms ($id, $objectType, $flags = 0) {
      }
   }
   $filter .= "))";
-  
+
   $basedn = $aa_default_ldap[acls];
 
   $result = ldap_search($ds,$basedn,$filter,array("apcaci","apcobjectid"));
   if (!$result) return false;
-  
+
   $arr = ldap_get_entries($ds,$result);
-  
+
   for($i=0; $i < $arr["count"]; $i++) {
      for($j=0; $j < $arr[$i]["apcaci"]["count"]; $j++) {
         for ($k = 0; $k < sizeof($groups); $k++) {
            if (stristr($arr[$i]["apcaci"][$j],$groups[$k])) {
-              $perms[$arr[$i]["apcobjectid"][0]] .= 
+              $perms[$arr[$i]["apcobjectid"][0]] .=
                  GetApcAciPerm ($arr[$i]["apcaci"][$j]);
            }
         }
@@ -692,7 +695,7 @@ function GetIDsInfo ($id, $ds = "") {
        $res["type"] = L_GROUP;
     }
   }
-  
+
   if (!$res["type"])
     $res["type"] = L_USER;
   $res["name"] = $arr["cn"][0];
