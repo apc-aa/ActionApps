@@ -28,47 +28,47 @@ H1 {
 }
 
 .navbar {
-	font-family: Arial, Helvetica, sans;
-	font-size: small;
+    font-family: Arial, Helvetica, sans;
+    font-size: small;
     background: #EBDABE;
-	color: #584011;
+    color: #584011;
 }
 
 .nbmenu {
-	font-family: Arial, Helvetica, sans;
-	font-size: small;
+    font-family: Arial, Helvetica, sans;
+    font-size: small;
     background: #F5F0E7;
-	color: #584011;
+    color: #584011;
 }
 
 .nbenable {
-	font-family: Arial, Helvetica, sans;
-	font-size: small;
+    font-family: Arial, Helvetica, sans;
+    font-size: small;
   background: #F5F0E7;
-	color: #4A4A4A;
+    color: #4A4A4A;
 }
 
 .nbdisable {
-	font-family: Arial, Helvetica, sans;
-	font-size: small;
+    font-family: Arial, Helvetica, sans;
+    font-size: small;
     background: #F5F0E7;
-	color: #EBDABE;
+    color: #EBDABE;
 }
 
-.disabled { 
-	color: #808080;
+.disabled {
+    color: #808080;
 }
 
 .example {
-	font-family: Courier, sans-serif;
-	font-size: small;
+    font-family: Courier, sans-serif;
+    font-size: small;
 }
 
 .slicehead {
-	font-family: Arial, Helvetica, sans;
-	font-size : 13pt;
-	color: #584011;
-	font-weight : bold;
+    font-family: Arial, Helvetica, sans;
+    font-size : 13pt;
+    color: #584011;
+    font-weight : bold;
     background: #EBDABE;
 }
 
@@ -86,10 +86,10 @@ H1 {
 }
 
 .leftmenun  {
-	font-family: Arial, Helvetica, sans;
-	font-size: small;
-	color: #F5F0E7;
-	text-decoration: none;
+    font-family: Arial, Helvetica, sans;
+    font-size: small;
+    color: #F5F0E7;
+    text-decoration: none;
 }
 
 .tabtit {
@@ -101,6 +101,17 @@ H1 {
 .tabtxt {
   font-family: Arial, Helvetica, sans;
   font-size: small;
+}
+
+.tabtxteven {
+    background-color: #C8E6C5; /* #f6e5c9 */
+    color: #526952;
+}
+
+.tabtitlight {
+    text-align: center;
+    font-weight: bold;
+    background-color:#589868;
 }
 
 .tabhlp {
