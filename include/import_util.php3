@@ -120,7 +120,7 @@ class Actions {
              // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
              if (!$action || $action['action']->getAction() == "default") {
                  switch ($field_id) {
-                     case "display_count..." : $v = 0; break;
+                     // case "display_count..." : $v = 0; break;
                      case "status_code....." : $v = 1; break; // todo
                      case "flags..........." : $v = ITEM_FLAG_OFFLINE; break;
                      case "publish_date...." : $v =  time(); break;
