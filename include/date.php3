@@ -143,8 +143,11 @@ class datectrl {
 	# print select box for year
 	function getyearselect() {
 		$at = getdate(time());
-		$sel = ((($this->year==0) OR ($this->from_now)) ? $at[year] : $this->year );
-		for($i = $sel - $this->y_range_minus; $i <= $sel + $this->y_range_plus; $i++) {
+    $from = ( $this->from_now ? $at[year] - $this->y_range_minus : 
+                                $this->y_range_minus );
+    $to   = ( $this->from_now ? $at[year] + $this->y_range_plus : 
+                                $this->y_range_plus );
+		for($i = $from; $i <= $to; $i++) {
 			$ret .= "<option value=\"$i\"" . (($i == $this->year) ? " selected":""). 
 			       ">$i</option>";
 		}
