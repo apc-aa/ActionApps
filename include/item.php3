@@ -175,8 +175,9 @@ function make_return_url($prifix,$r1="") {
 	return $prifix . urlencode($return_url);
   elseif (!$sess) {   # If there is no $sess, then we need a return url, default to self, including parameters
 			# but remove any left over AA_CP_Session, it will be re-added if needed
-	$r2 = ereg("(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)",$REQUEST_URI,$parts);
-	return $prifix . urlencode($parts[1].$parts[2].$parts[3]);
+        if (ereg("(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)",$REQUEST_URI,$parts))
+          return $prifix . urlencode($parts[1].$parts[2].$parts[3]);
+        return($prifix . urlencode($REQUEST_URI));
   }
   else 
 	return "";
