@@ -474,7 +474,7 @@ if (! $perm_edit_all )
                   'posted_by.......' => 1 );
                   
 # if user sets search condition
-if( $r_admin_search )
+if( $r_admin_search != "" )
   $conds[]=array( 'operator' => 'LIKE',
                   'value' => $r_admin_search,
                   $r_admin_search_field => 1 );
