@@ -15,59 +15,59 @@ $mgettext_lang = "es";
 
 # admin/param_wizard.php3, row 81
 $_m["Wizard"]
-  = "";
+  = " - Asistente";
 
 # admin/param_wizard.php3, row 166
 $_m["This is an undocumented %s. We don't recommend to use it."]
-  = "";
+  = "Esta %s no está documentada. No se recomienda su uso.";
 
 # admin/param_wizard.php3, row 167
 $_m["Close the wizard"]
-  = "";
+  = "Cerrar asistente";
 
 # admin/param_wizard.php3, row 181
 $_m["Available parameters: "]
-  = "";
+  = "Parámetros disponibles: ";
 
 # admin/param_wizard.php3, row 194
 $_m["integer&nbsp;number"]
-  = "";
+  = "número&nbsp;entero";
 
 # admin/param_wizard.php3, row 195
 $_m["any&nbsp;text"]
-  = "";
+  = "cuarquier&nbsp;texto";
 
 # admin/param_wizard.php3, row 196
 $_m["field&nbsp;id"]
-  = "";
+  = "id&nbsp;campo";
 
 # admin/param_wizard.php3, row 197
 $_m["boolean:&nbsp;0=false,1=true"]
-  = "";
+  = "booleano:&nbsp;0=falso,1=verdadero";
 
 # admin/param_wizard.php3, row 210
 $_m["This %s has no parameters."]
-  = "";
+  = "Esta %s no tiene parámetros.";
 
 # admin/param_wizard.php3, row 220
 $_m["Have a look at these examples of parameters sets:"]
-  = "";
+  = "Puede tomar ideas de estos ejemplos:";
 
 # admin/param_wizard.php3, row 227
 $_m["Show"]
-  = "";
+  = "Mostrar";
 
 # admin/param_wizard.php3, row 237
 $_m["OK - Save"]
-  = "";
+  = "OK - Guardar";
 
 # admin/param_wizard.php3, row 238
 $_m["Cancel"]
-  = "";
+  = "Cancelar";
 
 # admin/param_wizard.php3, row 239
 $_m["Show example params"]
-  = "";
+  = "Mostrar ejemplo";
 
 # admin/param_wizard.php3, row 241
 $_m["OK"]
@@ -75,51 +75,51 @@ $_m["OK"]
 
 # include/constants_param_wizard.php3, row 54
 $_m["Insert Function"]
-  = "";
+  = "Función de Inserción";
 
 # include/constants_param_wizard.php3, row 56
 $_m["Text = don't modify"]
-  = "";
+  = "Texto = no modificar";
 
 # include/constants_param_wizard.php3, row 57
 $_m["Does not modify the value."]
-  = "";
+  = "No modifica el valor del campo.";
 
 # include/constants_param_wizard.php3, row 59
 $_m["Boolean = store 0 or 1"]
-  = "";
+  = "Booleano = guardar 0 o 1";
 
 # include/constants_param_wizard.php3, row 61
 $_m["File = uploaded file"]
-  = "";
+  = "Archivo = subir archivo";
 
 # include/constants_param_wizard.php3, row 62
 $_m["Stores the uploaded file and a link to it, parameters only apply if type is image/something."]
-  = "";
+  = "Coloca el archivo en la carpeta de archivos de las AA, y almacena el URL que permite acceder a él. Los parámetros sólo sirven si el tipo MIME es image/*.";
 
 # include/constants_param_wizard.php3, row 64
 $_m["Mime types accepted"]
-  = "";
+  = "Tipos MIME aceptados";
 
 # include/constants_param_wizard.php3, row 65
 $_m["Only files of matching mime types will be accepted"]
-  = "";
+  = "Solo se aceptarán los tipos de archivo que coincidan";
 
 # include/constants_param_wizard.php3, row 68
 $_m["Maximum image width"]
-  = "";
+  = "Ancho máximo de imágen";
 
 # include/constants_param_wizard.php3, row 71
 $_m["Maximum image height"]
-  = "";
+  = "Altura máxima imágen";
 
 # include/constants_param_wizard.php3, row 72
 $_m["The image will be resampled to be within these limits, while retaining aspect ratio."]
-  = "";
+  = "La imágen será redimensionada para que esté dentro de estos límites, manteniendo su proporción.";
 
 # include/constants_param_wizard.php3, row 75
 $_m["Other fields"]
-  = "";
+  = "Otros campos";
 
 # include/constants_param_wizard.php3, row 76
 $_m["List of other fields to receive this image, separated by ##"]
@@ -127,61 +127,63 @@ $_m["List of other fields to receive this image, separated by ##"]
 
 # include/constants_param_wizard.php3, row 81
 $_m["User ID = always store current user ID"]
-  = "";
+  = "ID usuario = almacenar el ID usuario actual";
 
 # include/constants_param_wizard.php3, row 84, 113
 $_m["Login name"]
-  = "";
+  = "Nombre de usuario";
 
 # include/constants_param_wizard.php3, row 86
 $_m["Item IDs"]
-  = "";
+  = "IDs ítems";
 
 # include/constants_param_wizard.php3, row 88
 $_m["Now = always store current time"]
-  = "";
+  = "Ahora = almacenar hora actual";
 
 # include/constants_param_wizard.php3, row 89
 $_m["Inserts the current time, no matter what the user sets."]
-  = "";
+  = "Inserta la hora actual, independientemente del valor del campo introducido por el autor.";
 
 # include/constants_param_wizard.php3, row 91, 190, 435
 $_m["Password and Change Password"]
-  = "";
+  = "Clave y Cambiar Clave";
 
 # include/constants_param_wizard.php3, row 94
 $_m["Stores value from a 'Password and Change Password' field type.\n"
    ."           First prooves the new password matches the retyped new password,\n"
    ."           and if so, MD5-encrypts the new password and stores it."]
-  = "";
+  = "Almacena el valor de un tipo de entrada 'Clave y Cambio de Clave'.\n"
+   ."Primero comprueba que las dos claves coinciden, y si es así,\n"
+   ."inserta la clave encriptada con MD5.";
 
 # include/constants_param_wizard.php3, row 103
 $_m["Default Value Type"]
-  = "";
+  = "Valor por defecto";
 
 # include/constants_param_wizard.php3, row 105
 $_m["Text from 'Parameter'"]
-  = "";
+  = "Texto de 'parámetro'";
 
 # include/constants_param_wizard.php3, row 106
 $_m["Text"]
-  = "";
+  = "Texto";
 
 # include/constants_param_wizard.php3, row 108
 $_m["Date + 'Parameter' days"]
-  = "";
+  = "Fecha + 'parámetro' días";
 
 # include/constants_param_wizard.php3, row 109
 $_m["Number of days"]
-  = "";
+  = "Número de días";
 
 # include/constants_param_wizard.php3, row 111
 $_m["User ID"]
-  = "";
+  = "ID usuario";
 
 # include/constants_param_wizard.php3, row 115
 $_m["Now, i.e. current date"]
-  = "";
+  = "Ahora (fecha actual)";
 
 # include/constants_param_wizard.php3, row 117
 $_m["Variable"]
@@ -189,23 +191,23 @@ $_m["Variable"]
 
 # include/constants_param_wizard.php3, row 118
 $_m["A dangerous function. Do not use."]
-  = "";
+  = "Función peligrosa. No la use.";
 
 # include/constants_param_wizard.php3, row 120
 $_m["Random string"]
-  = "";
+  = "Cadena aleatória";
 
 # include/constants_param_wizard.php3, row 121
 $_m["Random alphanumeric [A-Z0-9] string."]
-  = "";
+  = "Una cadena alfanumérica [A-Z0-9] elegida al azar.";
 
 # include/constants_param_wizard.php3, row 123
 $_m["String length"]
-  = "";
+  = "Longitud cadena";
 
 # include/constants_param_wizard.php3, row 126
 $_m["Field to check"]
-  = "";
+  = "Campo a verificar";
 
 # include/constants_param_wizard.php3, row 128
 $_m["If you need a unique code, you must send the field ID,\n"
@@ -247,11 +249,11 @@ $_m["Id = 1-32 hexadecimal digits [0-9a-f]"]
 
 # include/constants_param_wizard.php3, row 152
 $_m["Date = store as date"]
-  = "";
+  = "Fecha = guardar como fecha";
 
 # include/constants_param_wizard.php3, row 154
 $_m["Bool = store as bool"]
-  = "";
+  = "Bool = guardar como booleano";
 
 # include/constants_param_wizard.php3, row 156
 $_m["User = does nothing ???"]
@@ -268,7 +270,7 @@ $_m["Validates only if the value is not yet used. Useful e.g.\n"
 
 # include/constants_param_wizard.php3, row 162, 179
 $_m["Field ID"]
-  = "";
+  = "ID campo";
 
 # include/constants_param_wizard.php3, row 163, 180
 $_m["Field in which to look for matching values."]
@@ -822,51 +824,51 @@ $_m["How the formatting in the text on this page is used:<br><i>the field</i> in
 
 # include/constants_param_wizard.php3, row 478
 $_m["null function"]
-  = "";
+  = "función nula";
 
 # include/constants_param_wizard.php3, row 479
 $_m["prints nothing"]
-  = "";
+  = "no muestra nada";
 
 # include/constants_param_wizard.php3, row 480
 $_m["abstract"]
-  = "";
+  = "resúmen";
 
 # include/constants_param_wizard.php3, row 481
 $_m["prints abstract (if exists) or the beginning of the <b>fulltext</b>"]
-  = "";
+  = "muestra el resúmen (si existe), o el principio del <b>texto completo</b>";
 
 # include/constants_param_wizard.php3, row 483
 $_m["length"]
-  = "";
+  = "longitud";
 
 # include/constants_param_wizard.php3, row 484
 $_m["number of characters from the <b>fulltext</b> field"]
-  = "";
+  = "número de caracteres del campo <b>texto completo</b>";
 
 # include/constants_param_wizard.php3, row 487
 $_m["fulltext"]
-  = "";
+  = "texto completo";
 
 # include/constants_param_wizard.php3, row 488
 $_m["field id of fulltext field (like full_text.......)"]
-  = "";
+  = "id del campo de texto completo (por ejemplo full_text.......)";
 
 # include/constants_param_wizard.php3, row 490, 517, 694
 $_m["full_text......."]
-  = "";
+  = "texto_completo..";
 
 # include/constants_param_wizard.php3, row 491
 $_m["paragraph"]
-  = "";
+  = "párrafo";
 
 # include/constants_param_wizard.php3, row 492
 $_m["take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\) if shorter then <b>length</b>"]
-  = "";
+  = "tomar sólo el primer párrafo (el texto hasta \\<BR\\> or \\<P\\> or \\</P\\) si es más corto que <b>longitud</b>";
 
 # include/constants_param_wizard.php3, row 495
 $_m["extended fulltext link"]
-  = "";
+  = "enlace a texto completo extendido";
 
 # include/constants_param_wizard.php3, row 496
 $_m["Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>."]
@@ -946,7 +948,7 @@ $_m["If 1, the session id (AA_SL_Session=...) is not added to url"]
 
 # include/constants_param_wizard.php3, row 526, 529
 $_m["condition"]
-  = "";
+  = "condición";
 
 # include/constants_param_wizard.php3, row 527
 $_m["This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it."]
@@ -1078,7 +1080,7 @@ $_m["/mysite.shtml"]
 
 # include/constants_param_wizard.php3, row 578
 $_m["fulltext link"]
-  = "";
+  = "enlace a texto completo";
 
 # include/constants_param_wizard.php3, row 579
 $_m["Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\""]
@@ -1414,11 +1416,11 @@ $_m["if no content matches, use this string as return value"]
 
 # include/constants_param_wizard.php3, row 798
 $_m["user function"]
-  = "";
+  = "definida por el usuario";
 
 # include/constants_param_wizard.php3, row 799
 $_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
-  = "";
+  = "hace un llamado a una función definida por el administrador de este sistema (vea <em>How to create new aliases</em> en el <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)";
 
 # include/constants_param_wizard.php3, row 801
 $_m["function"]
