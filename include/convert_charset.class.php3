@@ -398,12 +398,14 @@ class ConvertCharset {
          **/
         if ($FromCharset == $ToCharset) {
             print $this->DebugOutput(1, 0, $FromCharset);
+            return $StringToChange
         }
+        /*
         if (($FromCharset == $ToCharset) AND ($FromCharset == "utf-8")) {
             print $this->DebugOutput(0, 4, $FromCharset);
             exit;
         }
-
+        */
         /**
          * This divison was made to prevent errors during convertion to/from utf-8 with
          * "entities" enabled, because we need to use proper destination(to)/source(from)
