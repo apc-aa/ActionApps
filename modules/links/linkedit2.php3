@@ -19,10 +19,10 @@ unset($r_err);
 $senderUrlOK  = ( Links_IsPublic() ? "/podekovani.shtml" : $sess->url(self_base()."index.php3"));      // TODO - poradne
 $senderUrlErr = ( Links_IsPublic() ? $sess->url(self_base()."linkedit.php3") : $sess->url(self_base()."linkedit.php3"));
 
-// page where to go after this script execution
-$cancelUrl = ( Links_IsPublic() ? "/" : $sess->url(self_base() ."index.php3"));         // TODO - poradne
-
+// this is not used, now I think - cancel is served in linkedit.php3
 if ($cancel) {
+    // page where to go after this script execution
+    $cancelUrl = ( Links_IsPublic() ? "/" : $sess->url(self_base() ."index.php3"));         // TODO - poradne
     go_url( $cancelUrl );
 }
 

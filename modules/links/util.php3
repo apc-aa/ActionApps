@@ -485,7 +485,7 @@ $GENERAL_CATS['E-mailové konference a diskusní skupiny']    = array( 'pri' => 20
 $GENERAL_CATS['Názory a komentáøe']                         = array( 'pri' => 2030, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
 $GENERAL_CATS['Knihovny, knihkupectví, literatura']         = array( 'pri' => 2040, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
 $GENERAL_CATS['Adresáøe, databáze']                         = array( 'pri' => 2050, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
-$GENERAL_CATS['Katalogy odkaz?, rozcestníky, vyhledavaèe']  = array( 'pri' => 2060, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
+$GENERAL_CATS['Katalogy odkazù, rozcestníky, vyhledavaèe']  = array( 'pri' => 2060, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
 $GENERAL_CATS['Právní pøedpisy']                            = array( 'pri' => 2070, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
 $GENERAL_CATS['Studie, statistiky, hodnotící zprávy']       = array( 'pri' => 2080, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
 $GENERAL_CATS['Dokumenty, publikace, studijní texty']       = array( 'pri' => 2090, 'super' => 'Zpravodajství, informaèní zdroje, dokumenty' );
@@ -498,8 +498,7 @@ $GENERAL_CATS['Festivaly']                                  = array( 'pri' => 30
 $GENERAL_CATS['Kalendáøe akcí']                             = array( 'pri' => 3050, 'super' => 'Akce' );
 $GENERAL_CATS['Ostatní akce']                               = array( 'pri' => 3060, 'super' => 'Akce' );
 
-
-/** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
+ /** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
 function  Links_LoadGlobalCategories() {
     global $LINK_TYPE_CONSTANTS, $LINK_TYPE_CONSTANTS_ARR;
     if ( !$LINK_TYPE_CONSTANTS )

@@ -30,6 +30,8 @@ function printChange($field, $change_arr, $original_value="") {
     $i=0;
     foreach ( (array)$change_arr as $key => $val) {
         if( trim($original_value) != trim($val) ) {
+//            echo "$field:<br>".trim($original_value)."<br>".trim($val);
+
             $hidden_field = $field .'_hid'. $i++;
             FrmHidden($hidden_field, $val);
             $accept     = " <a href=\"javascript:AcceptChange('$field','$hidden_field')\">"._m('Accept').'</a>';
@@ -61,8 +63,11 @@ if ( !isset($r_err) ) {
     $sess->register('r_msg');
 }
 
-if($cancel)
-    go_url( $sess->url(self_base() . "index.php3"));
+if ($cancel) {
+    // page where to go after this script execution
+    $cancelUrl = ( Links_IsPublic() ? "/" : $sess->url(self_base() ."index.php3"));
+    go_url( $cancelUrl );
+}
 
 # get lid via url
 if( $lid ) {
@@ -195,20 +200,19 @@ if( $r_state['link_id'] ) {                  // not new link
     $delimeter = "";
     $change_no = 0;          // number of changes
     while ($db->next_record()) {
-debug('changes Record',$db->Record);
-        $aa_name_change[]       = htmlspecialchars($db->f('name'));
-        $original_name_change[] = htmlspecialchars($db->f('original_name'));
-        $description_change[]   = htmlspecialchars($db->f('description'));
-        $type_change[]          = htmlspecialchars($db->f('type'));
-        $url_change[]           = htmlspecialchars($db->f('url'));
-        $initiator_change[]     = htmlspecialchars($db->f('initiator'));
-        $org_city_change[]      = htmlspecialchars($db->f('org_city'));
-        $org_street_change[]    = htmlspecialchars($db->f('org_street'));
-        $org_post_code_change[] = htmlspecialchars($db->f('org_post_code'));
-        $org_phone_change[]     = htmlspecialchars($db->f('org_phone'));
-        $org_fax_change[]       = htmlspecialchars($db->f('org_fax'));
-        $org_email_change[]     = htmlspecialchars($db->f('org_email'));
-        $note_change[]          = htmlspecialchars($db->f('note'));
+        $aa_name_change[]       = $db->f('name');
+        $original_name_change[] = $db->f('original_name');
+        $description_change[]   = $db->f('description');
+        $type_change[]          = $db->f('type');
+        $url_change[]           = $db->f('url');
+        $initiator_change[]     = $db->f('initiator');
+        $org_city_change[]      = $db->f('org_city');
+        $org_street_change[]    = $db->f('org_street');
+        $org_post_code_change[] = $db->f('org_post_code');
+        $org_phone_change[]     = $db->f('org_phone');
+        $org_fax_change[]       = $db->f('org_fax');
+        $org_email_change[]     = $db->f('org_email');
+        $note_change[]          = $db->f('note');
 
         $created_by_change[]    = perm_username($db->f('created_by'));  // used for display of initiator of the change
 
@@ -435,8 +439,12 @@ echo '
                        _m('Select the type, if the link belongs to some special category'),
                        get_help_url(AA_LINKS_HELP_LINK,"obecna-kategorie"));
         printChange('type', $type_change, $type);
+    } else {
+        // we have to preserve current value (if we do not want to show it as
+        // "proposal to change" => we put it in hidden field
+        FrmHidden('type', $type );
     }
-//    FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
+    // FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
     FrmInputText( 'initiator', _m('Author\'s e-mail'),           $initiator,  250, 50, false,
                   "", get_help_url(AA_LINKS_HELP_LINK,"e-mail"));
     printChange('initiator', $initiator_change, $initiator);

@@ -1,3 +1,32 @@
+11/18/04 - added "id" and "short_id" definitions to fields table for each slice,
+(honzam)   where the definition is missing. It allows searchbar in Item Manager
+           to create filter also on Short id field, ...
+         - added missing nolinks field to links_categories table in sql_update
+         - default empty option for selectboxes is on the top of list
+           (not the bottom), now
+         - MySQL - fixes for 4.1 (works without problems, now)
+            - table columns in queries are enclosed by apostrophs (`column`)
+            - trying to simplify queries to MySQL can use indexes better
+         - alerts sending script (modules/alerts/alerts.php3) could be called
+           also from real - system cron (reads also commandline arguments, now).
+           The benefit is, that the script then can run as long as you want -
+           it is not stoped be Apache after 2 minutes or whatever is set
+           in TimeOut. The commandline could look like:
+               # php alert.php3 howoften=weekly
+           or with 'nice' and allowing safe_mode (for set_time_limit)
+           and skiping to right directory for example:
+               # cd /var/www/example.org/apc-aa/modules/alerts && nice php
+                 -d safe_mode=Off alerts.php3 howoften=weekly
+           The command above could be used from cron.
+         - Links module improvements
+            - fixed "Change state" for categories - it could by highlighted now
+            - fixed "general categories proposal from public"
+            - new possibility to restrict category list on output by l_p alias
+         - fix of "{user:...} alias"
+         - fixed e-mail validation for 4-characters domains (.info)
+         - better "end of paragraph" detection for f_a - abstract function
+         - better setting of slice.php3 cache - now the cache hit is much more
+           probable (clear_url (with session ID!) is not in keystring, now)
 11/12/04 - fixed HTMLArea 3.0rc1 support (honzam)
 11/11/04 - Two Boxes input type (as well as some others types) now are able to
 (honzam)   display not only name of the constant, but any other field from
