@@ -28,14 +28,14 @@ if( file_exists( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" ) ) {
 
 require $GLOBALS[AA_INC_PATH]."math.php3";
 
-function txt2html($txt) {          #converts plain text to html
-  $txt = nl2br(htmlspecialchars($txt));
-//  $txt = ERegI_Replace('  ', ' &nbsp;', $txt);
-  return $txt;
+function txt2html($txt) {          // converts plain text to html
+  return nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));
+                                   // preg allows text to be pasted from Word
+                                   // displays qoutes instead of &8221;
 }
 
 function DeHtml($txt, $flag) {
-  return ( ($flag & FLAG_HTML) ? $txt : nl2br(htmlspecialchars( $txt )) );
+  return ( ($flag & FLAG_HTML) ? $txt : txt2html($txt) );
 }
 
 function GetAliasesFromFields($fields, $additional="") {
@@ -509,7 +509,7 @@ class item {
           $delim = $param;        # add value separator just if field is filled
       }  
       return $res;
-    }    
+    }
     return DeHtml($this->columns[$col][0][value], $this->columns[$col][0][flag]);
   }    
 
@@ -722,8 +722,8 @@ class item {
       $description     = $this->RSS_restrict( $db2->f(name).": $name", 500);
 
     }
-    //   return "tt: $col : $param<BR>"; 
-    if ($col == 'SLICEdate') 
+    //   return "tt: $col : $param<BR>";
+    if ($col == 'SLICEdate')
       return $this->RSS_restrict( GMDate("D, d M Y H:i:s "). "GMT", 100);
     if ($col == 'SLICEtitle') return $title;
     if ($col == 'SLICElink') return $link;
@@ -732,8 +732,8 @@ class item {
     $p = ParamExplode($param);
 
     if ($col == 'hl_href.........') {
-      if (! $p[1] ) 
-        $redirect = strtr(AA_INSTAL_URL, ':', '#:') . 
+      if (! $p[1] )
+        $redirect = strtr(AA_INSTAL_URL, ':', '#:') .
                                   "slice.php3?slice_id=$slice_id&encap=false";
 //      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
       return $this->RSS_restrict(strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/'),500) ;
@@ -743,15 +743,13 @@ class item {
       return $this->RSS_restrict( $foo, $p[0]);
   }
 
-  # prints the field content and converts text to html or escape html (due to 
+  # prints the field content and converts text to html or escape html (due to
   # html flag). If param is specified, it prints rather param (instead of field)
-  # param: string to be printed (like <img src="{img_src........1}"></img> 
-  function f_t($col, $param="") { 
-    if($param) 
+  # param: string to be printed (like <img src="{img_src........1}"></img>
+  function f_t($col, $param="") {
+    if($param)
       return $this->subst_alias( $param );
-    return ( ($this->getval($col,'flag') & FLAG_HTML) ? 
-                         $this->getval($col) : 
-                         txt2html($this->getval($col)) );
+    return DeHtml($this->getval($col), $this->getval($col,'flag'));
   }
 
   # print database field or default value if empty
