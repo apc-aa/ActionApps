@@ -21,6 +21,234 @@ http://www.apc.org/
 
 define("VIEW_PHP3_INC",1);
 
+# ----------------------------------------------------------------------------
+#                         view functions
+# ----------------------------------------------------------------------------
+
+function ParseCommand($cmd) {
+  $a = str_replace ("--", "__u>_.", $cmd);# dummy string
+  $b = str_replace ("-", "##Sx", $a);     # Separation string is ##Sx
+  $c = str_replace ("__u>_.", "-", $b);   # change "--" to "-"
+  return explode( "##Sx", $c );
+}  
+
+function ParseSettings($set) {
+  $a = str_replace (",,", "__u>_.", $cmd);# dummy string
+  $b = str_replace (",", "##Sx", $a);     # Separation string is ##Sx
+  $c = str_replace ("__u>_.", ",", $b);   # change ",," to ","
+  $sets = explode( "##Sx", $c );
+  if( !( isset($sets) AND is_array($sets) ))
+    return false;
+  reset($sets);
+  while( list(,$v) = each($sets) ) {
+    $pos=strpos($v,'-');
+    if( $pos )
+      $ret[substr($v,0,$pos)] = substr($v,$pos+1);
+  }
+  return $ret;    
+}  
+
+function ParseViewParameters($query_string="") {
+  global $cmd, $set, $vid, $als;
+
+  add_vars($query_string);       # adds values from url (it's not automatical in SSIed script)
+
+  # Parse parameters
+  $command = ParseCommand($cmd[ $vid ]);
+  switch ($command[0]) {
+    case 'v':  $vid = $command[1];
+               break;
+    case 'i':  $vid = $command[1];
+               $item_ids[] = $command[2];
+               break;
+    case 'x':  $vid = $command[1];
+               for( $i=2; $i<count($command); $i++)
+                 $item_ids[] = $command[$i];
+               $use_short_ids = true;
+               break;
+    case 'c':  if( $command[1] ) 
+                 $param_conds[$command[1]] = $command[2];
+               if( $command[3] ) 
+                 $param_conds[$command[3]] = $command[4];
+               if( $command[5] ) 
+                 $param_conds[$command[5]] = $command[6];
+               break;
+    case 'd':  $i=1;
+               while( $command[$i] ) {
+                 $conds[]=array( 'operator' => $command[$i+1],
+                                 'value' => $command[$i+2],
+                                 $command[$i] => 1 );
+                 $i += 3;
+               }
+               break;
+  }
+
+ $arr = ParseSetting($set[ $vid ]);
+ $arr[vid]=$vid;
+ $arr[conds]=$conds;
+ $arr[param_conds] = $param_conds; 
+ $arr[item_ids] = $item_ids;
+ $arr[use_short_ids] = $use_short_ids;
+ return $arr;
+}
+
+
+function GetViewConds($view_info, $param_conds) {
+  # param_conds - redefines default condition values by url parameter (cmd[]=c)
+  if( $view_info['cond1field'] )
+    $conds[]=array( 'operator' => $view_info['cond1op'],
+                    'value' => ($param_conds[1] ? $param_conds[1] : 
+                                                  $view_info['cond1cond']),
+                     $view_info['cond1field'] => 1 );
+  if( $view_info['cond2field'] )
+    $conds[]=array( 'operator' => $view_info['cond2op'],
+                    'value' => ($param_conds[2] ? $param_conds[2] : 
+                                                  $view_info['cond2cond']),
+                     $view_info['cond2field'] => 1 );
+  if( $view_info['cond3field'] )
+    $conds[]=array( 'operator' => $view_info['cond3op'],
+                    'value' => ($param_conds[3] ? $param_conds[3] : 
+                                                  $view_info['cond3cond']),
+                     $view_info['cond3field'] => 1 );
+  return $conds;                   
+}                     
+
+function GetViewSort($view_info) {
+  if( $view_info['group_by1'] )
+    $sort[] = array ( $view_info['group_by1'] => 
+        (( $view_info['g1_direction'] == 1 ) ? 'd' : 'a'));
+  if( $view_info['group_by2'] )
+    $sort[] = array ( $view_info['group_by2'] => 
+        (( $view_info['g2_direction'] == 1 ) ? 'd' : 'a'));
+
+  if( $view_info['order1'] )
+    $sort[] = array ( $view_info['order1'] => 
+        (( $view_info['o1_direction'] == 1 ) ? 'd' : 'a'));
+  if( $view_info['order2'] )
+    $sort[] = array ( $view_info['order2'] => 
+        (( $view_info['o2_direction'] == 1 ) ? 'd' : 'a'));
+        
+  return $sort;
+}
+
+function GetViewGroup($view_info) {
+  return false;                        # this is managed by GetViewSort()
+}
+
+function GetViewFormat($view_info) {
+  $format['group_by'] = $view_info['group_by1'];
+  $format['category_format'] = $view_info['group_title'];
+  $format['compact_top'] = $view_info['before'];
+  $format['compact_bottom'] = $view_info['after'];
+  $format['compact_remove'] = $view_info['remove_string'];
+  $format['even_row_format'] = $view_info['even'];
+  $format['odd_row_format'] = $view_info['odd'];
+  $format['even_odd_differ'] = $view_info['even_odd_differ'];
+  $format['id'] = $view_info['slice_id'];
+  return $format;
+}
+
+# return view result based on parameters
+function GetView($view_param) {
+   global $db;
+
+  $vid = $view_param["vid"];
+  $als = $view_param["als"];
+  $conds = $view_param["conds"];
+  $param_conds = $view_param["param_conds"];
+  $item_ids = $view_param["item_ids"];
+  $use_short_ids = $view_param["use_short_ids"];
+  $listlen = $view_param["listlen"];
+  
+  # gets view data
+  $db->query("SELECT view.*, slice.deleted FROM view, slice
+               WHERE slice.id=view.slice_id
+                 AND view.id='$vid'");
+  if( $db->next_record() )
+    $view_info = $db->Record;
+  
+  if (!$view_info OR ($view_info['deleted']>0)) {
+    return false; 
+  }  
+  
+  $p_slice_id = $view_info["slice_id"];
+  $slice_id = unpack_id($p_slice_id);
+  
+  # ---- display content in according to view type ----
+  switch( $view_info['type'] ) {
+    case 'full':  # parameters: item_ids, als
+      $format = GetViewFormat($view_info);
+  
+      $ids_cnt = count( $item_ids );
+      if( $ids_cnt > 0 ) {
+        # get alias list from database and possibly from url
+        list($fields,) = GetSliceFields($slice_id);
+        $aliases = GetAliasesFromFields($fields, $als);
+        
+        $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 
+                                  0, 1, shtml_url(), "", $use_short_ids);
+
+        return $itemview->get_output_cached("view");
+      }  
+      return "<div>". L_NO_ITEM ."</div>";
+  
+    case 'const':
+      $format = GetViewFormat($view_info);
+      $aliases = GetConstantAliases($als);
+      $constantview = new constantview( $db, $format, $aliases, 
+                            $view_info['parameter'], $view_info['order1'], 
+                            ( ($view_info['o1_direction'] == 1) ? 'DESC' : ''), 
+                            ($listlen ? $listlen : $view_info['listlen']) );
+      return $constantview->get_output_cached();
+  
+    case 'discus':
+    case 'seetoo':
+  
+    case 'digest':
+    case 'list':
+    case 'rss':
+    case 'script':  # parameters: conds, param_conds, als
+  
+      if (! $conds )         # conds could be defined via cmd[]=d command
+        $conds = GetViewConds($view_info, $param_conds);
+      list($fields,) = GetSliceFields($slice_id);
+      if (! $item_ids ) {    # ids could be defined via cmd[]=x command
+        $sort  = GetViewSort($view_info);
+        $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by );
+      }  
+      $format = GetViewFormat($view_info);
+  
+  //p_arr_m( $format );
+  
+      $ids_cnt = count( $item_ids );
+      if( $ids_cnt > 0 ) {
+        $aliases = GetAliasesFromFields($fields, $als);
+        $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 0,
+                                  ($listlen ? $listlen : $view_info['listlen']), 
+                                  shtml_url(), "", $use_short_ids );
+        return $itemview->get_output_cached("view");
+      }  
+      // 	if( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
+      return "<div>". L_NO_ITEM ."</div>";
+      
+    case 'static':   # parameters: 0
+  case 'static': 
+    // $aliases;
+    // let us see if this work!
+    GetAliasesFromUrl();
+    //echo ($aliases);       // debugging
+    $format = GetViewFormat($view_info);
+    // I create a CurItem object so I can use the unalias function 
+    $CurItem = new item("", "", $aliases, "", "", "");
+    return $CurItem->unalias( $view_info["odd"] );
+  }
+}  
+
+
+# ----------------------------------------------------------------------------
+#                         itemview class
+# ----------------------------------------------------------------------------
+
 class itemview{
   var $db;
   var $ids;                      # ids to show
@@ -31,8 +259,12 @@ class itemview{
   var $aliases;                  # array of alias definitions
   var $clean_url;                # url of slice page with session id and encap..
   var $group_fld;                # id of field for grouping
+  var $disc;                     # array of discussion parameters (see apc-aa/view.php3)
+  var $use_short_ids;            # flag indicates if short_id used within $ids
   
-  function itemview( $db, $slice_info, $fields, $aliases, $ids, $from, $number, $clean_url){                   #constructor 
+  function itemview( $db, $slice_info, $fields, $aliases, $ids, $from, $number, 
+                     $clean_url, $disc="", $use_short_ids=false){
+   #constructor
     $this->db = $db;
     $this->slice_info = $slice_info;  # $slice_info is array with this fields:
                                       #      - print_view() function:
@@ -54,9 +286,11 @@ class itemview{
     $this->from_record = $from;
     $this->num_records = $number;
     $this->clean_url = $clean_url;
+    $this->disc = $disc;
+    $this->use_short_ids = $use_short_ids;
   }  
-    
 
+    
   function get_output_cached($view_type="") {  
     $cache = new PageCache($this->db, CACHE_TTL, CACHE_PURGE_FREQ);
 
@@ -70,6 +304,7 @@ class itemview{
               $this->ids[0];
     for( $i=$this->from_record; $i<$this->from_record+$this->num_records; $i++)
       $keystr .= $this->ids[$i];
+    $keystr .=serialize($this->disc);
       
     if( $res = $cache->get($keystr) )
       return $res;
@@ -81,9 +316,152 @@ class itemview{
     return $res;
   }  
               
+  // show discussion comments in the thread mode
+  function get_disc_thread(&$CurItem) {
+
+    if (!$this->slice_info['d_showimages']) {
+       $order =  $this->slice_info['d_order'];
+    }
+
+    $d_content = GetDiscussionContent($this->disc['item_id'], "",$this->disc['vid'],true,$order,$this->disc['html_format'],$this->clean_url);
+    $d_tree = GetDiscussionTree($d_content);
+
+    $out .= "<form name=f>";
+    $script_loc = $this->clean_url."&sh_itm=".$this->disc['item_id']; // location of the shtml with slice.php3 script
+    $cnt = 0;     // count of discussion comments
+
+    if ($d_tree) {    // if not empty tree
+
+      $out .= $this->slice_info['d_top'];         // top html code
+      $CurItem->setformat( $this->slice_info['d_compact']);
+
+      if ($this->slice_info['d_showimages'] || $this->slice_info['d_order'] == 'thread') {  // show discussion in the thread mode
+         GetDiscussionThread($d_tree, "0", 0, $outcome);
+
+         while ( list( $d_id, $images ) = each( $outcome )) {
+            SetCheckboxContent( $d_content, $d_id, $cnt++ );
+            SetImagesContent( $d_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
+            $CurItem->columns = $d_content[$d_id];
+            $out.= $CurItem->get_item();
+         }
+      }
+      else {                      // show discussion sorted by date
+        reset($d_content);
+         while ( list( $d_id, ) = each( $d_content )) {
+          if ( $d_content[$d_id]["hide"] )
+            continue;
+          SetCheckboxContent( $d_content, $d_id, $cnt++ );
+          $CurItem->columns = $d_content[$d_id];
+          $out.= $CurItem->get_item();
+        }
+      }
+    }
+
+    // buttons bar
+     $CurItem->setformat($this->slice_info[d_bottom]);        // bottom html code
+     $col["d_buttons......."][0][value] = GetButtons($cnt==0, $script_loc);
+     $col["d_buttons......."][0][flag] = FLAG_HTML;
+     $CurItem->columns = $col;
+     $out.= $CurItem->get_item() ;
+
+     $out.= "</form>";
+
+    // create a javascript code for getting selected ids and sending them to a script
+    $out .= "
+      <SCRIPT Language=\"JavaScript\"><!--
+        function showSelectedComments() {
+          var url = \"". $script_loc . "&sel_ids=1\"
+          var done = 0;
+
+          for (var i = 0; i < ".$cnt."; i++) {
+            if( eval('document.f.c_'+i).checked) {
+              done = 1
+              url += \"&ids[\" +  escape(eval('document.f.h_'+i).value) + \"]=1\"
+            }
+          }
+          if (done == 0) {
+            alert (\" ". L_D_SELECTED_NONE ."\" )
+          } else {
+            document.location = url
+          }
+        }
+       // --></SCRIPT>";
+   return $out;
+  }
+
+  // show discussion comments in the fulltext mode
+  function get_disc_fulltext(&$CurItem) {
+
+    $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
+    $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],$this->disc['vid'],true,'timeorder',$this->disc['html_format'],$this->clean_url);
+    $d_tree = GetDiscussionTree($d_content);
+    if ($this->disc['ids'] && is_array($this->disc['ids'])) {  // show selected cooments
+      reset($d_content);
+      while (list ($id,) = each($d_content)) {
+        if ($outcome[$id])            // if the comment is already in the outcome => skip
+          continue;
+        GetDiscussionThread($d_tree, $id, 1, $outcome);
+      }
+    }
+    else     // show all comments
+      GetDiscussionThread($d_tree, "0", 0, $outcome);
+
+    $out.= "<table border=0 cellspacing=0 cellpadding=0>";
+    while ( list( $d_id, $images ) = each( $outcome )) {
+      $CurItem->columns = $d_content[$d_id];
+      $depth = count($images)-1;
+      $out.= "<tr><td><table border=0 cellspacing=0 cellpadding=0>
+                      <tr>";
+      if ($depth>0)
+         $out .= "<td>".PrintImg("blank.gif",$depth*20, 21)."</td>";
+      $out .= "<td><table border=0 cellspacing=0 cellpadding=0>
+                   <tr><td>".$CurItem->get_item()."</td></tr>
+                   </table>
+                  </td></tr>
+                  </table>
+             </td></tr>";
+    }
+    $out.="</table>";
+
+    return $out;
+  }
+
+  // show the form for adding discussion comments
+  function get_disc_add(&$CurItem) {
+
+    // if parent_id is set => show discussion comment
+    if ($this->disc['parent_id']) {
+      $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],$this->disc['vid'],true,'timeorder',$this->disc['html_format'],$this->clean_url);
+      $CurItem->setformat( $this->slice_info['d_fulltext']);
+      $CurItem->columns = $d_content[$this->disc['parent_id']];
+      $out .= $CurItem->get_item();
+    } else {
+      $col["d_item_id......."][0][value] = $this->disc['item_id'];
+      $col["d_disc_url......"][0][value] = $this->clean_url . "&sh_itm=".$this->disc['item_id'];
+      $CurItem->columns = $col;
+    }
+    // show a form for posting a comment
+    $CurItem->setformat( $this->slice_info['d_form']);
+    $out .= $CurItem->get_item();
+
+    return $out;
+  }
+
   #view_type used internaly for different view types
   function get_output($view_type="") {  
     $db = $this->db;
+
+    if ($view_type == "discussion") {
+      $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
+      switch ($this->disc['type']) {
+        case 'thread' : $out = $this->get_disc_thread($CurItem); break;
+        case 'fulltext' : $out = $this->get_disc_fulltext($CurItem); break;
+        default: $out = $this->get_disc_add($CurItem); break;
+      }
+    }
+
+    else {
+     // other view_type than discussion
     if( !( isset($this->ids) AND is_array($this->ids) ))
       return;
 
@@ -91,12 +469,11 @@ class itemview{
       if( $this->ids[$i] )
         $foo_ids[] = $this->ids[$i];
     }  
-    
-    $content = GetItemContent($foo_ids);
-
+    $content = GetItemContent($foo_ids, $this->use_short_ids);
     $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
 
     switch ( $view_type ) {
+
       case "fulltext":  
         $iid = $this->ids[0];      # unpacked item id
         $CurItem->columns = $content[$iid];   # set right content for aliases
@@ -108,6 +485,7 @@ class itemview{
         $out .= $CurItem->get_item();
         $out .= $this->slice_info[fulltext_format_bottom];
         break;
+
       case "itemlist":          # multiple items as fulltext one after one
         $out = $this->slice_info[fulltext_format_top];
         for( $i=0; $i<$this->num_records; $i++ ) {
@@ -158,30 +536,132 @@ class itemview{
           $out .= $CurItem->get_item();
         }
         $out .= $this->slice_info[compact_bottom];
-    }  
+      }  
+    }
     return $out;
   }
 
   # compact view
-  function print_view() {
-    echo $this->get_output_cached("view");
+  function print_view($flag="CACHE") {
+    if( $flag == "CACHE" )
+      echo $this->get_output_cached("view");
+     else 
+      echo $this->get_output("view");
   }  
   
   # fulltext of one item  
-  function print_item() {
-    echo $this->get_output_cached("fulltext");
+  function print_item($flag="CACHE") {
+    if( $flag == "CACHE" )
+      echo $this->get_output_cached("fulltext");
+     else 
+      echo $this->get_output("fulltext");
   }
 
   # multiple items as fulltext one after one
-  function print_itemlist() {
-    echo $this->get_output_cached("itemlist");
+  function print_itemlist($flag="CACHE") {
+    if( $flag == "CACHE" )
+      echo $this->get_output_cached("itemlist");
+     else 
+      echo $this->get_output("itemlist");
   }
-  
+
+  # discusion thread or fulltext or one comment
+  function print_discussion($flag="CACHE") {
+    if( $flag == "CACHE" )
+      echo $this->get_output_cached("discussion");
+     else 
+      echo $this->get_output("discussion");
+  }
 };
+
+
+# ----------------------------------------------------------------------------
+#                        constantview class
+# ----------------------------------------------------------------------------
+
+class constantview{
+  var $db;
+  var $slice_info;               # record from slice database for current slice
+  var $aliases;                  # array of alias definitions
+  var $group;                    # id of constant group
+  var $order_fld;                # name of order field
+  var $order_dir;                # order direction (DESC)
+  
+  function constantview( $db, $slice_info, $aliases, $group, $order_fld='pri', $order_dir='', $number=10000) {                   #constructor 
+    $this->db = $db;
+    $this->slice_info = $slice_info;  # $slice_info is array with this fields:
+                                      #   compact_top, category_sort,
+                                      #   category_format, category_top,
+                                      #   category_bottom, even_odd_differ,
+                                      #   even_row_format, odd_row_format,
+                                      #   compact_remove, compact_bottom,
+    $this->aliases = $aliases;
+    $this->group = $group;
+    $this->order_fld = $order_fld;
+    $this->order_dir = $order_dir;
+    $this->num_records = $number;
+  }  
+    
+
+  function get_output_cached() {  
+    $cache = new PageCache($this->db, CACHE_TTL, CACHE_PURGE_FREQ);
+
+    #create keystring from values, which exactly identifies resulting content
+    $keystr = serialize($this->slice_info).
+              $this->group.
+              $this->order_fld.
+              $this->order_dir. 
+              $this->num_records;
+      
+    if( $res = $cache->get($keystr) )
+      return $res;
+
+    #cache new value 
+    $res = $this->get_output();
+
+    $cache->store($keystr, $res, "slice_id=".unpack_id($this->slice_info["id"]));
+    return $res;
+  }  
+              
+  function get_output() {  
+    $db = $this->db;
+    $content = GetConstantContent($this->group, $this->order_fld. " " .$this->order_dir);
+    $CurItem = new item("", "", $this->aliases, "", "", "");   # just prepare
+    $out = $this->slice_info[compact_top];
+        
+    reset( $content );
+    $i=0;
+    while( list( $iid, $const_cont) = each( $content ) ) {
+      if( $const_cont["const_counter..."][0][value] > $this->num_records )
+        break;
+
+      $CurItem->columns = $const_cont;   # set right content for aliases
+            # print item
+      $CurItem->setformat( 
+             (!($i%2) AND $this->slice_info[even_odd_differ]) ?
+             $this->slice_info[even_row_format] : $this->slice_info[odd_row_format],
+             $this->slice_info[compact_remove] );
+
+      $out .= $CurItem->get_item();
+      $i++;
+    }  
+    $out .= $this->slice_info[compact_bottom];
+    return $out;
+  }
+
+  # print constant view
+  function print_constant() {
+    echo $this->get_output_cached();
+  }  
+};
+
 
 
 /*
 $Log$
+Revision 1.13  2001/09/27 16:12:09  honzam
+Dash escaping in url parameter, New view alias, New constant view
+
 Revision 1.12  2001/09/12 06:19:00  madebeer
 Added ability to generate RSS views.
 Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
