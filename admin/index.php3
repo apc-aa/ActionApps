@@ -29,21 +29,33 @@ require $GLOBALS[AA_INC_PATH] . "itemfunc.php3";
 require $GLOBALS[AA_INC_PATH] . "notify.php3";
 require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
 require $GLOBALS[AA_INC_PATH] . "formutil.php3";
-
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 $now = now();
 
 function MoveItems($chb,$status) {
   global $db, $auth;
   if( isset($chb) AND is_array($chb) ) {
+    $item_ids = "";
     reset( $chb );
-    while( list($it_id,) = each( $chb ) )
-      $db->query("UPDATE item SET
-       status_code = $status, 
-       last_edit   = '$now',
-       edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999") ."'
-                   WHERE id='".q_pack_id(substr($it_id,1))."'"); 
-
+    while( list($it_id,) = each( $chb ) ) {
+        if ($item_ids) $item_ids .= ",";
+        $item_ids .= "'".q_pack_id(substr($it_id,1))."'";
+    }
+    
+    if ($item_ids) {
+        $SQL = "UPDATE item SET
+           status_code = $status, 
+           last_edit   = '$now',
+           edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999")."'";
+        
+        // E-mail Alerts  
+        $moved2active = $status == 1 ? time() : 0;
+        $SQL .= ", moved2active = $moved2active";
+       
+        $SQL .= " WHERE id IN ($item_ids)"; 
+        $db->tquery ($SQL);
+    }
                                          // substr removes first 'x'
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
@@ -190,7 +202,7 @@ if ($action) {
   switch( $action ) {  // script post parameter 
     case "app":
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
-        MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
+        MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
         exit;
       }  
       MoveItems($chb,1);
@@ -198,14 +210,14 @@ if ($action) {
       break;
     case "hold":
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
-        MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
+        MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
         exit;
       }  
       MoveItems($chb,2);
       break;
     case "trash":
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH)) {
-        MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
+        MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
         exit;
       }  
       MoveItems($chb,3);
@@ -280,7 +292,7 @@ switch( $More ) {
 if($Delete == "trash") {         // delete feeded items in trash bin
     // feeded items we can easy delete
   if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_DELETE_ITEMS )) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_DELETE_ITEMS, "items");
+    MsgPageMenu($sess->url(self_base())."index.php3", L_NO_DELETE_ITEMS, "items");
     exit;
   }  
  	$db->query("SELECT id FROM item 

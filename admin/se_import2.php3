@@ -26,9 +26,10 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."logs.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "admin");
   exit;
 }  
 

@@ -25,6 +25,7 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 function InsertProfileProperty($uid, $property, $selector, $value) {
   global $db, $p_slice_id, $err;
@@ -128,7 +129,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "./se_users.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
   exit;
 }
 

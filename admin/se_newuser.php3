@@ -26,12 +26,13 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_NEW_USER, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_NEW_USER, "admin");
   exit;
 }  
 

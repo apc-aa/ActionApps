@@ -24,6 +24,7 @@ http://www.apc.org/
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 if( $usr_edit AND $selected_user AND ($selected_user>0) )
   go_url(	$sess->url(self_base() . "um_uedit.php3"));
@@ -31,7 +32,7 @@ elseif( $grp_edit AND $selected_group AND ($selected_group>0) )
   go_url(	$sess->url(self_base() . "um_gedit.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_USERS, "admin");
   exit;
 }  
 

@@ -24,12 +24,13 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!IsSuperadmin()) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_DEL_SLICE, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_DEL_SLICE, "admin");
   exit;
 }  
 

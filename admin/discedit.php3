@@ -31,6 +31,7 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."discussion.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 // get a headline of the item
 function getHeadline($content4id) {
@@ -46,7 +47,7 @@ function getHeadline($content4id) {
 
 # check permission to edit discussion - you must be Editor, at least
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ALL_ITEMS, "items");
+  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ALL_ITEMS, "items");
   exit;
 }  
 

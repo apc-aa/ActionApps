@@ -27,12 +27,13 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."csn_util.php3";
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "sliceadmin", "filters");
+  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FEEDING, "sliceadmin", "filters");
   exit;
 }  
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -63,7 +64,7 @@ while($db->next_record()) {
 }
 
 if( !isset($impslices) OR !is_array($impslices)){
-  MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE, "sliceadmin", "filters");
+  MsgPageMenu(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE, "sliceadmin", "filters");
   exit;
 }  
   

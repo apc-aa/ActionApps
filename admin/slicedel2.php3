@@ -22,6 +22,7 @@ http://www.apc.org/
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
