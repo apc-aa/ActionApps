@@ -61,8 +61,25 @@ define("DEFAULT_EDIT_FIELDS",    // shown fields (headline if allways shown)
  "y".  // publish_date
  "y".  // expiry_date
  "y".  // edit_note
- "y".  // redirect
- "y".  // reserved
+ "n".  // redirect
+ "n".  // source_desc
+ "n".  // source_address
+ "n".  // source_city
+ "n".  // source_prov
+ "n".  // source_country
+ "n".  // start_date
+ "n".  // end_date
+ "n".  // time
+ "n".  // con_name
+ "n".  // con_email
+ "n".  // con_phone
+ "n".  // con_fax
+ "n".  // loc_name
+ "n".  // loc_address
+ "n".  // loc_city
+ "n".  // loc_prov
+ "n".  // loc_country
+ "n".  // reserved
  "y".  // reserved
  "y".  // reserved
  "y".  // reserved
@@ -93,6 +110,23 @@ define("DEFAULT_NEEDED_FIELDS",
  "n".  // expiry_date
  "n".  // edit_note
  "n".  // redirect
+ "n".  // source_desc
+ "n".  // source_address
+ "n".  // source_city
+ "n".  // source_prov
+ "n".  // source_country
+ "n".  // start_date
+ "n".  // end_date
+ "n".  // time
+ "n".  // con_name
+ "n".  // con_email
+ "n".  // con_phone
+ "n".  // con_fax
+ "n".  // loc_name
+ "n".  // loc_address
+ "n".  // loc_city
+ "n".  // loc_prov
+ "n".  // loc_country
  "n".  // reserved
  "n".  // reserved
  "n".  // reserved
@@ -596,6 +630,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.15  2000/10/12 15:56:09  honzam
+Updated language files with better defaults
+
 Revision 1.14  2000/10/10 18:28:00  honzam
 Support for Web.net's extended item table
 

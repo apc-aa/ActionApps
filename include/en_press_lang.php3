@@ -54,6 +54,23 @@ define("DEFAULT_EDIT_FIELDS",    // shown fields (headline if allways shown)
  "y".  // expiry_date
  "n".  // edit_note
  "n".  // redirect
+ "n".  // source_desc
+ "n".  // source_address
+ "n".  // source_city
+ "n".  // source_prov
+ "n".  // source_country
+ "n".  // start_date
+ "n".  // end_date
+ "n".  // time
+ "n".  // con_name
+ "n".  // con_email
+ "n".  // con_phone
+ "n".  // con_fax
+ "n".  // loc_name
+ "n".  // loc_address
+ "n".  // loc_city
+ "n".  // loc_prov
+ "n".  // loc_country
  "n".  // reserved
  "n".  // reserved
  "n".  // reserved
@@ -85,6 +102,23 @@ define("DEFAULT_NEEDED_FIELDS",
  "n".  // expiry_date
  "n".  // edit_note
  "n".  // redirect
+ "n".  // source_desc
+ "n".  // source_address
+ "n".  // source_city
+ "n".  // source_prov
+ "n".  // source_country
+ "n".  // start_date
+ "n".  // end_date
+ "n".  // time
+ "n".  // con_name
+ "n".  // con_email
+ "n".  // con_phone
+ "n".  // con_fax
+ "n".  // loc_name
+ "n".  // loc_address
+ "n".  // loc_city
+ "n".  // loc_prov
+ "n".  // loc_country
  "n".  // reserved
  "n".  // reserved
  "n".  // reserved
@@ -582,6 +616,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.17  2000/10/12 15:56:09  honzam
+Updated language files with better defaults
+
 Revision 1.16  2000/10/11 20:18:29  honzam
 Upadted database structure and language files for web.net's extended item table
 
