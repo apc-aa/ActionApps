@@ -69,6 +69,7 @@ $menus = array (
     array (
     "header0" => L_MODULES,
     "sliceadd" => array ("label" => L_ADD_MODULE, "cond"=>IfSlPerm(PS_ADD), "href"=>"sliceadd.php3"),
+    "slicewiz" => array ("label" => L_ADD_SLICE_WIZ, "cond"=>IfSlPerm(PS_ADD), "href"=>"slicewiz.php3"),
     "slicedel" => array ("label" => L_DELETE_MODULE, "cond"=>IsSuperadmin(), "href"=>"slicedel.php3"),
     "jumpedit" => array ("label"=>L_EDIT_JUMP, "cond"=>IfSlPerm(PS_ADD), "exact_href" => $AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1&AA_CP_Session=$AA_CP_Session"),
 /*    "delete" => array ("label" => L_DELETE_TRASH, "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"index.php3?Delete=trash"),*/
@@ -80,7 +81,9 @@ $menus = array (
     "g_new" => array ("href"=>"um_gedit.php3?grp_new=1", "cond"=>1, "label"=>L_NEW_GROUP),
     "header5"=>L_EXPIMP_SET,
     "sliceexp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceexp.php3", "label"=>L_EXPORT_SLICE), 
-    "sliceimp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceimp.php3", "label"=>L_IMPORT_SLICE)
+    "sliceimp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceimp.php3", "label"=>L_IMPORT_SLICE),
+    "header70"=>L_MISC,
+    "tabledit" => array ("label"=>L_EDIT_WIZARD_WELCOME, "cond"=>IsSuperadmin(), "href"=>"tabledit.php3")
 )));
   
 echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">';
