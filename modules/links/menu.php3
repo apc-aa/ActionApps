@@ -48,7 +48,7 @@ else return;
 require_once $GLOBALS[AA_INC_PATH]."menu_util.php3";
 require_once $GLOBALS[AA_INC_PATH]."perm_core.php3";
 require_once $GLOBALS[AA_INC_PATH]."mgettext.php3";
-//bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".substr(LANG_FILE,0,2)."_news_lang.inc");
+//bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".substr(LANG_FILE,0,2)."_news_lang.php3");
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
@@ -108,7 +108,7 @@ function get_aamenus_links()
         "bottom_td"=>200,
         "level"=>"submenu",
         "items"=> array(
-            "header1"=>_m('Folders'),
+            "header1"=>_m('Folders').FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"schranky"),"",_m("Folders with links, sorted by their status (active, changed, new, ...)"), true),
             "app"=>array ("cond"=> $r_state['bin'] != "app",
                             "href"=>$module_location."index.php3?Tab=app",
                             "label"=>_m('Active')." (".$r_state['bin_cnt']['app'].")"),
@@ -127,7 +127,7 @@ function get_aamenus_links()
             "unasigned"=>array ("cond"=> $r_state['bin'] != "unasigned",
                             "href"=>$module_location."index.php3?Tab=unasigned",
                             "label"=>_m('Unasigned')." (".$r_state['bin_cnt']['unasigned'].")"),
-            "header2" => _m('Bookmarks')));
+            "header2" => _m('Bookmarks').FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zalozky-odkazu"),"",_m("My own links"), true)));
     if( isset($bookmarks) AND is_array($bookmarks) ) {
         reset( $bookmarks );
         while( list( $bookid, $bookname ) = each( $bookmarks ) ) {

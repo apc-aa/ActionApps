@@ -20,6 +20,7 @@ $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
 require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
+require_once $GLOBALS[AA_INC_PATH]."util.php3";
 require_once "./constants.php3";
 require_once "./cattree.php3";
 require_once "./util.php3";
@@ -384,44 +385,50 @@ unset($r_msg);
 
 echo '
 <form name="f" method=post action="'. $sess->url("linkedit2.php3") .'">';
-FrmTabCaption( _m('Link') );
+FrmTabCaption( _m('Link').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"formular-odkaz"),
+                                      array("before"=>"(", "text"=>"?", "after"=>")")) );
 
 $bin_names = get_bin_names();
 if ( $id ) {
     FrmStaticText( _m('Id'),  $id .' ('.$bin_names[$folder].')', false, "", "", false);
 }
+
 echo '
     <tr>
       <td class=tabtxt valign="top"><b>'. _m('Url') .'</b>&nbsp;*</td>
       <td align="left">
-        <input type="text" name="url" size=50 value="'.$url.'">&nbsp;
-        <input type="button" value="'. _m('Check url') .'" onclick="CheckURL()">&nbsp;
+        <input type="text" name="url" size=50 value="'.$url.'">&nbsp;<a href="'.get_help_url(AA_LINKS_HELP_LINK,"url").'" target="_blank">?</a>&nbsp;&nbsp;
+        <input type="button" value="'. _m('Check url') .'" onclick="CheckURL()">&nbsp;<a href="'.get_help_url(AA_LINKS_HELP_LINK,"hledej-url").'" target="_blank">?</a>&nbsp;&nbsp;
         <input type="button" value="'. _m('View') .'" onclick="window.open(document.f.url.value, \'blank\')">
         <div class="tabhlp">'. _m('You can check, if the page is not in database already') .'</div>
           </td>
       </tr>';
     printChange($url_change, $url);
     FrmInputText( 'linkname', _m('Page name'),           $linkname,  250, 50, true,
-                   _m('English name of the page'));
+                   _m('English name of the page'), get_help_url(AA_LINKS_HELP_LINK,"nazev-odkazu"));
     printChange($name_change, $linkname);
     FrmInputText( 'original_name', _m('Original page name'), $original_name,  250, 50, false,
-                   _m('Name of the page in original language'));
+                   _m('Name of the page in original language'), get_help_url(AA_LINKS_HELP_LINK,"preklad-nazvu"));
     printChange($original_name_change, $original_name);
     FrmTextarea(  'description',  _m('Description'),    $description, 5, 60, false,
-                  _m('Do not use HTML tags and do not write words like "best page", ... The maximum length of the description should be about 250 characters.'));
+                  _m('Do not use HTML tags and do not write words like "best page", ... The maximum length of the description should be about 250 characters.'),
+                  get_help_url(AA_LINKS_HELP_LINK,"popis-odkazu"));
     printChange($description_change, $description);
 
     // do not show general categories to public (anonymous) users
     if( !Links_IsPublic() ) {
         FrmInputSelect( 'type', _m('Link type'), $link_types, $type, false,
-                       _m('Select the type, if the link belongs to some special category'));
+                       _m('Select the type, if the link belongs to some special category'),
+                       get_help_url(AA_LINKS_HELP_LINK,"obecna-kategorie"));
         printChange($type_change, $type);
     }
 //    FrmInputText( 'rate', _m('Rating'). ' (1-10)',           $rate,  2, 5, false);
-    FrmInputText( 'initiator', _m('Author\'s e-mail'),           $initiator,  250, 50, false);
+    FrmInputText( 'initiator', _m('Author\'s e-mail'),           $initiator,  250, 50, false,
+                  "", get_help_url(AA_LINKS_HELP_LINK,"e-mail"));
     printChange($initiator_change, $initiator);
     FrmTextarea(  'note',  _m('Editor\'s note'),    $note, 3, 60, false,
-                  _m('You can type any message here - it is never shown on the website'));
+                  _m('You can type any message here - it is never shown on the website'),
+                  get_help_url(AA_LINKS_HELP_LINK,"poznamka-odkaz"));
     printChange($note_change, $note);
 
 if( $r_state['link_id'] ) {        // 'edit link', not 'add link'
@@ -429,7 +436,8 @@ if( $r_state['link_id'] ) {        // 'edit link', not 'add link'
     FrmStaticText( _m('Last changed'), date(_m('n/j/Y'), $last_edit). ', '.  perm_username($edited_by), false, "", "", false);
     FrmStaticText( _m('Inserted'),     date(_m('n/j/Y'), $created). ', '. perm_username($created_by),  false, "", "", false);
 }
-    FrmTabSeparator( _m('Show in category') );
+    FrmTabSeparator( _m('Show in category').FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"odkaz-dokategorii"),
+                                                        array("before"=>"(", "text"=>"?", "after"=>")")) );
 echo '
       <tr>
        <td colspan="2">
@@ -475,7 +483,8 @@ echo      '</td>
 // show the organization information only to real editors or to public, if
 // the link is of special type
 if( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
-       FrmTabSeparator( _m('Organization') );
+       FrmTabSeparator( _m('Organization') .FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"kontakt"),
+                                                        array("before"=>"(", "text"=>"?", "after"=>")")) );
        FrmInputText( 'org_city', _m('City'), $org_city,  250, 50, false);
        printChange( $org_city_change, $org_city );
        FrmInputText( 'org_street', _m('Street'), $org_street,  250, 50, false);
@@ -490,7 +499,8 @@ if( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
        printChange( $org_email_change, $org_email );
 }
 
-       FrmTabSeparator( _m('Regions and languages') );
+       FrmTabSeparator( _m('Regions and languages').
+           FrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK,"region-jazyk"), array("before"=>"(", "text"=>"?", "after"=>")")) );
    echo '
       <tr><td width="50%" align=center><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
           <td align=center><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>

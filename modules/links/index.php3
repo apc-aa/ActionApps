@@ -47,7 +47,7 @@ if( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
     exit;
 }
 
-
+/** Special function used for setting of additional searchbar properties */
 function Links_UpdateStateFromFilter() {
     global $r_state;
     $r_state["show_subtree"] = ($_POST['show_subtree'] ? true : false);
@@ -69,7 +69,9 @@ function Links_GoCateg($value, $param) {
 
 /** Handler for Tab switch - switch between bins */
 function Links_Tab($value, $param) {
+    global $manager;
     $GLOBALS['r_state']['bin']       = $value;
+    $manager->go2page(1);
 }
 
 /** Handler for GoBookmark switch - set the state from bookmark */
@@ -87,8 +89,9 @@ function Links_GoBookmark($value, $param) {
             $GLOBALS['r_state']['start_path']      = $start_path;
             $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
             $GLOBALS['r_state']['bin'] = 'app';
-            $manager->setOrderBar(array('1'=>'name'), array('1'=>''));
-            $manager->setSearchBar(array('1'=>'name'), array('1'=>''), array('1'=>'RLIKE'));
+            $manager->resetSearchBar();
+            $manager->addOrderBar(  array(0=>array('name'=>'a')) );
+            $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
             break;
         case '2':             // links to check
             $GLOBALS['r_state']['show_subtree']    = 1;
@@ -97,8 +100,9 @@ function Links_GoBookmark($value, $param) {
             $GLOBALS['r_state']['start_path']      = $start_path;
             $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
             $GLOBALS['r_state']['bin'] = 'app';
-            $manager->setOrderBar(array('1'=>'checked'), array('1'=>''));
-            $manager->setSearchBar(array('1'=>'name'), array('1'=>''), array('1'=>'RLIKE'));
+            $manager->resetSearchBar();
+            $manager->addOrderBar(  array(0=>array('checked'=>'a')) );
+            $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
             break;
         case '3':             // last edited links
             $GLOBALS['r_state']['show_subtree']    = 1;
@@ -107,8 +111,9 @@ function Links_GoBookmark($value, $param) {
             $GLOBALS['r_state']['start_path']      = $start_path;
             $GLOBALS['r_state']['tree_start_path'] = $links_info['tree_start'];
             $GLOBALS['r_state']['bin'] = 'app';
-            $manager->setOrderBar(array('1'=>'last_edit'), array('1'=>'on'));
-            $manager->setSearchBar(array('1'=>'name'), array('1'=>''), array('1'=>'RLIKE'));
+            $manager->resetSearchBar();
+            $manager->addOrderBar(  array(0=>array('last_edit'=>'d')) );
+            $manager->addSearchBar( array(0=>array('name'=>1, 'value'=>'', 'operator'=>'RLIKE')) );
             break;
     }
 }
@@ -238,7 +243,10 @@ $manager_settings = array(
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
          'add_empty_search_row' => true,
-         'function'             => 'Links_UpdateStateFromFilter'  // aditional action hooked on standard filter action
+         'show_bookmarks'       => false,
+         'function'             => 'Links_UpdateStateFromFilter',  // aditional action hooked on standard filter action
+         'hint'                 => _m("HINT: \"social ecology\" AND environment"),
+         'hint_url'             => get_help_url(AA_LINKS_HELP_MAIN,"hledat-radit")
                          ),
      'scroller'  => array(
          'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
@@ -254,7 +262,8 @@ $manager_settings = array(
              'category_bottom'  => "",
              'even_odd_differ'  => false,
              'even_row_format'  => "",
-             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td class=tabtxt><a href="_#EDITLINK">_#L_NAME__</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>',
+             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td class=tabtxt><a href="_#EDITLINK">_#L_NAME__</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+             ',
              'compact_remove'   => "()",
              'compact_bottom'   => "</table>",
              'id'               => $link_info['id'] ),
@@ -263,6 +272,8 @@ $manager_settings = array(
          'get_content_funct'    => 'Links_GetLinkContent'
                          ),
      'actions_perm_function' => 'Links_IsActionPerm',
+     'actions_hint' => _m("Perform action on selected items"),
+     'actions_hint_url' => get_help_url(AA_LINKS_HELP_MAIN,"co-udelat-sodkazy"),
      'actions'   => array(
          'Check'       => array('function'   => 'Links_CheckLink',
                                 'name'       => _m('Check Link'),
@@ -348,10 +359,6 @@ $manager = new manager($manager_settings);
 if( $r_state['manager'] )        // do not set state for the first time calling
     $manager->setFromState($r_state['manager']);
 
-// we set the permissions for the actions in $manager_settings, but it was
-// rewritten by setFromState() - we have to set it again to the fresh state
-//$manager->refreshPermissions($manager_settings);
-
 $manager->performActions();
 $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 
@@ -410,10 +417,12 @@ echo '<table width="100%" border="0" cellspacing="0" cellpadding="3"
 echo '<tr><td><div id="patharea">'. ' '. '</div> </td></tr>';
 FrmInputButtons( array( 'gocat'    => array('type'=>'button',
                                             'value'=>_m('Show Links'),
-                                            'add'=>'onclick="document.filterform.submit()"'),
+                                            'add'=>'onclick="document.filterform.submit()"',
+                                            'help'=>get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")),
                         'editcat'  => array('type'=>'button',
                                             'value'=>_m('Edit Category'),
-                                            'add'=>'onclick="EditCurrentCat()"')
+                                            'add'=>'onclick="EditCurrentCat()"',
+                                            'help'=>get_help_url(AA_LINKS_HELP_MAIN,"editujkat"))
 //                        'bookmark' => array('type'=>'button',
 //                                            'value'=>_m('Bookmark'))
                       ),  false, false, 'bottom');
@@ -421,9 +430,12 @@ FrmInputButtons( array( 'gocat'    => array('type'=>'button',
 echo '<tr><td class=tabtxt>';
 FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);
 echo '<input type="hidden" name="cat_id" value="'.$r_state['cat_id'].'">';
-echo _m('Show subtree links'). ' </td></tr>';
+echo _m('Show subtree links');
+echo FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")). ' </td></tr>';
 
-echo "</table></td></tr></table>";
+echo "</table></td></tr>";
+echo "<tr><td>".FrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"seznamkat"))."</td></tr>";
+echo "</table>";
 
 $manager->printSearchbarEnd();   // close the searchbar form
 
