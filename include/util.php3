@@ -56,21 +56,21 @@ function my_in_array($needle, $array) {
 /** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
 function debuglog ($text)
 {
-	$f = fopen ($GLOBALS["AA_INC_PATH"]."logs.txt","a");
+    $f = fopen ($GLOBALS["AA_INC_PATH"]."logs.txt","a");
     if ($f) {
-    	fwrite ($f, date( "h:i:s j-m-y ")  . $text . "\n");
-	    fclose ($f);
+        fwrite ($f, date( "h:i:s j-m-y ")  . $text . "\n");
+        fclose ($f);
     }
 }
 
 // Expand return_url, possibly adding a session to it
 function expand_return_url ($addsess) {
-	global $return_url, $sess;
-	$r1 = $return_url;    # return_url is encoded in calling URL, but decoded by PHP before global is set
+    global $return_url, $sess;
+    $r1 = $return_url;    # return_url is encoded in calling URL, but decoded by PHP before global is set
 #	$r1 = urldecode($return_url);
-	if ($addsess && isset($sess))
-		return $sess->url($r1);
-	else	return $r1;
+    if ($addsess && isset($sess))
+        return $sess->url($r1);
+    else	return $r1;
 }
 
 // This function goes to either $return_url if set, or to $url
@@ -80,20 +80,20 @@ function expand_return_url ($addsess) {
 //    session is always added to the other case
 // if $add_param are set, then they are added to the cases EXCEPT return_url
 function go_return_or_url($url,$usejs,$addsess,$add_param="") {
-	global $return_url,$sess;
+    global $return_url,$sess;
     if ($return_url) {
-    	if ($usejs) {
-    		echo '
+        if ($usejs) {
+            echo '
             <SCRIPT Language="JavaScript"><!--
                   document.location = "'. expand_return_url($addsess) .'";
-    	    // -->
+            // -->
             </SCRIPT>';
-    	} else {
+        } else {
             go_url(expand_return_url($addsess));
         }
     } else {
-    	if ($url) go_url($sess->url($url),$add_param);
-    	// Note if no $url or $return_url then drops through - this is used in index.php3
+        if ($url) go_url($sess->url($url),$add_param);
+        // Note if no $url or $return_url then drops through - this is used in index.php3
     }
 }
 
@@ -122,7 +122,7 @@ function self_server() {
       $port = ":$SERVER_PORT";
   } else {
     $PROTOCOL='http';
-	  if($SERVER_PORT != "80")
+      if($SERVER_PORT != "80")
       $port = ":$SERVER_PORT";
   }
   // better to use HTTP_HOST - if we use SERVER_NAME and we try to open window
@@ -167,7 +167,7 @@ function shtml_query_string() {
 
 # skips terminating backslashes
 function DeBackslash($txt) {
-	return str_replace('\\', "", $txt);        // better for two places
+    return str_replace('\\', "", $txt);        // better for two places
 }
 
 /** Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
@@ -286,7 +286,7 @@ function GetHidden() {
 # function to reverse effect of "magic quotes"
 // not needed in MySQL and get_magic_quotes_gpc()==1
 function dequote($str) {
-		return $str;
+        return $str;
 }
 
 # prints content of a (multidimensional) array
@@ -498,11 +498,11 @@ function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
 }
 
 function huhsess($msg="") {
-	global $sess;
-	foreach (array_keys($sess->pt) as $i) {
-		$sessvars[$i]=$GLOBALS[$i];
-	}
-	huhl($msg,$sessvars);
+    global $sess;
+    foreach (array_keys($sess->pt) as $i) {
+        $sessvars[$i]=$GLOBALS[$i];
+    }
+    huhl($msg,$sessvars);
 }
 
 #Prints all values from array
@@ -623,7 +623,7 @@ function GetSliceFields($slice_id) {
 }
 
 # create field id from type and number
-function CreateFieldId ($ftype, $no) {
+function CreateFieldId ($ftype, $no="0") {
   if( (string)$no == "0" )
     $no="";    # id for 0 is "xxxxx..........."
   return $ftype. substr("................$no", -(16-strlen($ftype)));
@@ -721,7 +721,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         while( list( $key, $val ) = each( $db->Record )) {
             if( EReg("^[0-9]*$", $key))
                 continue;
-            $content[$foo_id][substr($key."................",0,16)][] =
+            $content[$foo_id][CreateFieldId($key)][] =
                array("value" => $reading_permitted ? $val
                      : _m("Error: Missing Reading Password"));
         }
@@ -767,6 +767,12 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             : array( "value" => _m("Error: Missing Reading Password"));
     }
 
+    // slice_id... and id... is packed  - add unpacked variant now
+    $content[$fooid]['u_slice_id......'][] =
+        array('value' => unpack_id128($content[$fooid]['slice_id........'][0]['value']));
+    $content[$fooid]['unpacked_id.....'][] =
+        array('value' => unpack_id128($content[$fooid]['id..............'][0]['value']));
+
     freeDB($db);
     trace("-");
     return $content;   // Note null returned above if no items found
@@ -777,26 +783,31 @@ function GetItemContent_Short($ids) {
     GetItemContent($ids, true);
 }
 
-/**
- * The same as GetItemContent function, but it returns just id and short_id for
- * the item (used in URL listing view @see view_type['urls'])
+/** The same as GetItemContent function, but it returns just id and short_id
+ *  (or other fields form item table - specified in $fields2get) for the item
+ *  (used in URL listing view @see view_type['urls'])
  */
-function GetItemContentMinimal($zids) {
+function GetItemContentMinimal($zids, $fields2get=false) {
+  if ( !$fields2get ) {
+      $fields2get = array( 'id', 'short_id' );
+  }
   $db = getDB();
+  $columns = join(',',$fields2get);
 
   # construct WHERE clause
   list($sel_in, $settags) = itemContent_getWhere($zids);
   if($sel_in) {
       # get content from item table
       $delim = "";
-      $SQL = "SELECT id, short_id FROM item WHERE id $sel_in";
+      $SQL = "SELECT $columns FROM item WHERE id $sel_in";
       $db->tquery($SQL);
       $n_items = 0;
       while( $db->next_record() ) {
           $n_items++;
           $foo_id = unpack_id128($db->f("id"));
-          $content[$foo_id]['id..............'][] = array("value" => $db->f("id"));
-          $content[$foo_id]['short_id........'][] = array("value" => $db->f("short_id"));
+          foreach ( $fields2get as $fld ) {
+              $content[$foo_id][CreateFieldId($fld)][] = array("value" => $db->f($fld));
+          }
       }
   }
 
@@ -1028,8 +1039,8 @@ function safe( $var ) {
 // is the browser able to show rich edit box? (using triedit.dll)
 function richEditShowable () {
   global $BName, $BVersion, $BPlatform;
-	global $showrich;
-	detect_browser();
+    global $showrich;
+    detect_browser();
   # Note that Macintosh IE 5.2 does not support either richedit or current iframe
   # Mac Omniweb/4.1.1 detects as Netscape 4.5 and doesn't support either
   return (($BName == "MSIE" && $BVersion >= "5.0" && $BPlatform != "Macintosh") || $showrich > "");
@@ -1240,7 +1251,7 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = "", $id_co
 
     reset ($data);
     while (list (,$datarow) = each ($data)) {
-		$varset->Clear();
+        $varset->Clear();
         reset ($columns);
 
         // create the varset
@@ -1265,10 +1276,10 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = "", $id_co
         if ($GLOBALS[debug]) { echo "Row $rows<br>"; $rows ++; }
 
         if (!tryQuery("INSERT INTO $table ".$varset->makeINSERT())) {
-			return false;
+            return false;
         }
     }
-	return true;
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -1606,7 +1617,7 @@ function get_email_types () {
 function monthNames ()
 {
     return array( 1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'),
-		_m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
+        _m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
 }
 
 /** Creates values for a select box showing some param wizard section. */
@@ -1709,13 +1720,13 @@ function trace($d,$v="NONE",$c="") {
     if ($traceall) huhl("TRACE: $d:",$v," ",$c);
 // Below here you can put variables you want traced
     if ($traceall) huhl("TRACE:slice_id=",$slice_id);
-// end variables 
+// end variables
     switch ($d) {
     case "+": array_push($tracearr,$v,$c); break;
     case "-": array_pop($tracearr); array_pop($tracearr); break;
     case "=": array_pop($tracearr); array_push($tracearr,$c); break ;
     case "p": huhl("TRACE: ",$tracearr); break;
-    default: echo "Illegal argument to trace:$d"; break; 
+    default: echo "Illegal argument to trace:$d"; break;
     }
 }
 ?>
