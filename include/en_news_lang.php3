@@ -148,7 +148,6 @@ define("L_SEARCH", "Search");
 define("L_DEFAULTS", "Default");
 define("L_SLICE", "Slice");
 define("L_DELETED_SLICE", "No slice found for you");
-define("L_SLICE_URL", "Slice URL");
 define("L_A_NEWUSER", "New user in permission system");
 define("L_NEWUSER_HDR", "New user");
 define("L_USER_LOGIN", "Login name");
@@ -472,6 +471,12 @@ define("L_BOTTOM_HLP", "HTML code which appears at the bottom of slice area");
 define("L_EVEN_ROW_HLP", "You can define different code for odd and ever rows
                          <br>first red, second black, for example");
 
+define("L_SLICE_URL", "URL of .shtml page (often leave blank)");
+define("L_A_SLICE_ADD_HELP", "To create the new Slice, please choose a template.
+        The new slice will inherit the template's default fields.  
+        You can also choose a non-template slice to base the new slice on, 
+        if it has the fields you want."); 
+
 // not appended to other lang files
 //define("", "");
 
@@ -479,6 +484,9 @@ define("L_EVEN_ROW_HLP", "You can define different code for odd and ever rows
 
 /*
 $Log$
+Revision 1.26  2001/01/25 10:09:09  honzam
+Gived back acidentaly deleted Michael's definitions
+
 Revision 1.25  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 
