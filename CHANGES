@@ -1,6 +1,13 @@
-02/20/05 - Added MLX mini view to display list of alternative translations for an article
-(mimo)     {mlx_view:view format in html} mini view of translations available for this article
-                                          does substitutions %lang, %itemid
+02/22/05 - new logout functionality (logout from admin interface)
+(honzam) - fixed {include:/directory/file.inc} construct - corrected url when
+           file starting with slash
+         - fixed sql_update.php3 for MySQL 4.1
+         - LDAP configuration updated (again)
+02/20/05 - Added MLX mini view to display list of alternative translations for 
+(mimo)     an article
+           {mlx_view:view format in html} mini view of translations available 
+                                          for this article does substitutions 
+                                          %lang, %itemid
            e.g. {mlx_view:<a href='?x-_#SITEMID_-&mlx=%lang'>%lang</a>}
          - Fixed a problem in MLXGetText I had already fixed in 1.15
          - Finalised reverse relation thing below  
