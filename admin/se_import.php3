@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ if($cancel)
 if(!IfSlPerm(PS_FEEDING, "admin")) {
   MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
   exit;
-}  
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
@@ -43,23 +43,23 @@ while($db->next_record())
   $all_slices[unpack_id128($db->f(id))] = $db->f(name);
 
 // lookup export_to slice
-$SQL= "SELECT name, id FROM slice, feedperms WHERE slice.id=feedperms.to_id 
+$SQL= "SELECT name, id FROM slice, feedperms WHERE slice.id=feedperms.to_id
                    AND feedperms.from_id='$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
   $export_to[unpack_id($db->f(id))] = $db->f(name);
 
 // lookup importable slice
-$SQL= "SELECT name, id FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from_id 
+$SQL= "SELECT name, id FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from_id
        WHERE (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1) AND slice.id<>'$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
   $importable[unpack_id128($db->f(id))] = $db->f(name);
 
 // lookup imported slices
-$SQL= "SELECT name, id FROM slice, feeds 
-        LEFT JOIN feedperms ON slice.id=feedperms.from_id 
-        WHERE slice.id=feeds.from_id 
+$SQL= "SELECT name, id FROM slice, feeds
+        LEFT JOIN feedperms ON slice.id=feedperms.from_id
+        WHERE slice.id=feeds.from_id
           AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
           AND feeds.to_id='$p_slice_id' ORDER BY name";
 
@@ -72,9 +72,10 @@ $SQL= "SELECT export_to_all FROM slice WHERE slice.id='$p_slice_id'";
 $db->query($SQL);
 if($db->next_record())
   $export_to_all = $db->f(export_to_all);
-  
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
+
+// Print HTML start page tags (html begin, encoding, style sheet, but no title)
+// Include also js_lib.js javascript library
+HtmlPageBegin('default', true);
 ?>
  <TITLE><?php echo _m("Slice Administration");?></TITLE>
 
@@ -98,13 +99,13 @@ function UpdateImportExport(slice_id)
   for (var i = 0; i < document.f.import_y.options.length; i++) {
     if(document.f.import_y.options[i].value != "0")    // imported slices
       url += "&I%5B" + i + "%5D=" + escape(document.f.import_y.options[i].value)
-  }  
+  }
   for (var i = 0; i < document.f.export_y.options.length; i++) {
     if(document.f.export_y.options[i].value != "0")    // exported to slices
       url += "&E%5B" + i + "%5D=" + escape(document.f.export_y.options[i].value)
-  }  
+  }
   document.location=url
-}  
+}
 // -->
 </SCRIPT>
 </HEAD>
@@ -112,15 +113,15 @@ function UpdateImportExport(slice_id)
   $useOnLoad = true;
   require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "import");
-  
+
   echo "<H1><B>" . _m("Admin - configure Content Pooling") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
-  
+
 $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "accesskey"=>"S",
                                       "add"=>"onClick = \"UpdateImportExport(\'".$slice_id."\')\""),
                        "cancel"=>array("url"=>"se_fields.php3"));
-  
+
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
@@ -132,9 +133,9 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
   FrmTabCaption(_m("Enable export to slice:"));
 ?>
 <tr>
-	<td width="45%" class=tabtxt align=center><b><?php echo _m("Export disable") ?></b></td>
-	<td width="10%">&nbsp;</td>
-	<td width="45%" class=tabtxt align=center><b><?php echo _m("Export enable") ?></b></td>
+    <td width="45%" class=tabtxt align=center><b><?php echo _m("Export disable") ?></b></td>
+    <td width="10%">&nbsp;</td>
+    <td width="45%" class=tabtxt align=center><b><?php echo _m("Export enable") ?></b></td>
 </tr>
 <tr>
 <td align="CENTER" valign="TOP">
@@ -144,10 +145,10 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
   if( isset($export_to) AND is_array($export_to)) {
     while(list($s_id,$name) = each($all_slices))
       if( $export_to[$s_id] == "" )
-        echo "<option value=\"$s_id\"> $name </option>"; 
-  }else 
+        echo "<option value=\"$s_id\"> $name </option>";
+  }else
     while(list($s_id,$name) = each($all_slices))
-      echo "<option value=\"$s_id\"> $name </option>"; 
+      echo "<option value=\"$s_id\"> $name </option>";
   ?>
 </SELECT></td>
 <td><input type="button" VALUE="  >>  " onClick = "MoveSelected('document.f.export_n','document.f.export_y')" align=center>
@@ -158,7 +159,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
   if( isset($export_to) AND is_array($export_to)) {
     reset($export_to);
     while(list($s_id,$name) = each($export_to))
-      echo "<option value=\"$s_id\"> $name </option>"; 
+      echo "<option value=\"$s_id\"> $name </option>";
   }    ?>
 </SELECT>
 </td>
@@ -166,7 +167,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <tr><td colspan=3><table>
 <?php
   FrmInputChBox("export_to_all", _m("Enable export to any slice"), $export_to_all, true, "OnClick=\"ExportAllClick()\"");
-?>  
+?>
 </table></td></tr>
 <?php
   FrmTabSeparator(_m("Import from slice:"));
@@ -178,9 +179,9 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">*/
 ?>
 <tr>
-	<td width="45%" class=tabtxt align=center><b><?php echo _m("Do not import") ?></b></td>
-	<td width="10%">&nbsp;</td>
-	<td width="45%" class=tabtxt align=center><b><?php echo _m("Import") ?></b></td>
+    <td width="45%" class=tabtxt align=center><b><?php echo _m("Do not import") ?></b></td>
+    <td width="10%">&nbsp;</td>
+    <td width="45%" class=tabtxt align=center><b><?php echo _m("Import") ?></b></td>
 </tr>
 <tr>
 <td align="CENTER" valign="TOP">
@@ -190,7 +191,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
     reset($importable);
     while(list($s_id,$name) = each($importable))
       if( $imported[$s_id] == "" )
-        echo "<option value=\"$s_id\"> $name </option>"; 
+        echo "<option value=\"$s_id\"> $name </option>";
   }
   ?>
 </SELECT></td>
@@ -203,7 +204,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
     reset($imported);
     while( list($id, $name) = each($imported)) {
       echo "<option value=$id> $name </option>";
-    }  
+    }
   }     ?>
 </SELECT>
 </td>

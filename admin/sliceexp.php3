@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 2001 Association for Progressive Communications 
+/*
+Copyright (C) 2001 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* 
+/*
     Author: Jakub Adámek, Pavel  Jisl
 
     Exports the slice definition as a template
@@ -48,16 +48,17 @@ if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 /* Three likely options
 1: Write a file  ($b_export_to_file set)
 2: export to screen: Gives a textarea that can be cut-and-pasted from $SHOWTEXT
-3: Neither, display a form 
+3: Neither, display a form
 */
 
-if (isset($b_export_to_file))
-{
+if (isset($b_export_to_file)) {
     exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
     exit;
 } else {
-
-    HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+    // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+    // Include also js_lib.js javascript library
+    HtmlPageBegin('default', true);
+}
 
 ?>
 <TITLE><?php echo _m("Export slice structure")?></TITLE>
@@ -130,13 +131,8 @@ if (isset($b_export_to_file))
     };
     //-->
 </SCRIPT>
-
-<?php include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js"; ?>
-
 </HEAD>
-
 <BODY>
-
 <?php
   require_once menu_include();   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin","sliceexp");
@@ -148,18 +144,18 @@ if (isset($b_export_to_file))
 
 FrmTabCaption(_m("Export slice structure"));
 
-if ($SHOWTEXT == ""): 
+if ($SHOWTEXT == ""):
 
 ?>
     <form name="f" method=post action="<?php echo $sess->url("sliceexp.php3") ?>" onsubmit="return validate2();">
-    
+
     <?php
         $SQL= "SELECT id, name FROM slice ORDER BY name";
         $db->query($SQL);
         while($db->next_record())
             $all_slices[unpack_id128($db->f(id))] = $db->f(name);
     ?>
-    
+
     <tr><td class=tabtxt colspan=2>
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr><td class=tabtxt>
@@ -179,7 +175,7 @@ if ($SHOWTEXT == ""):
             <td class=tabtxt><?php echo _m("From ") ?><input type="text" name="b_export_from_date" length="10" maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
             <td class=tabtxt><?php echo _m("to") ?><input type="text" name="b_export_to_date" length="10"  maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
         </tr>
-        </table>        
+        </table>
         </td>
     </tr>
 <?php
@@ -199,17 +195,17 @@ if ($SHOWTEXT == ""):
                     reset($all_slices);
                     while(list($s_id,$name) = each($all_slices))
                         echo "<option value=\"$s_id\"> $name </option>";
-                ?> 
+                ?>
                 </SELECT>
                 </td></tr>
-                </table>                            
-        </table>        
-        </td>   
+                </table>
+        </table>
+        </td>
         <td class=tabtxt width=50% valign=top>
             <b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator.") ?></b></P>
             <b><?php echo _m("Choose a new slice identificator exactly 16 characters long: ") ?></b>
             <INPUT TYPE="TEXT" NAME="SliceID" VALUE="template" SIZE=16 MAXLENGTH=16></P>
-            <INPUT TYPE="HIDDEN" NAME="SHOWTEXT" VALUE="OHYES">         
+            <INPUT TYPE="HIDDEN" NAME="SHOWTEXT" VALUE="OHYES">
         </td>
     </tr>
     <tr>
@@ -225,17 +221,6 @@ endif;
 ?>
 
 </TABLE>
-<?php 
-/* Testing code
-$slobj = new slice($slice_id);
-$sv = $so->views();
-#$j = $sv[18]->fields;
-#$j = $sv[18];
-$j = $sv;
-$xf = xml_serialize("18",$j,"\n","    ");
-huhl("SE:",$j);
-huhl("SE2:",$xf);
-huhl("SE3:",xml_unserialize($xf));
-*/
+<?php
 HtmlPageEnd();
 page_close(); } ?>

@@ -116,10 +116,10 @@ if( $add_submit OR ($submit_action == "update_submit")) {
   }
 }
 
-# HtmlPageBegin----------------------------------------
+// Print HTML start page tags (html begin, encoding, style sheet, but no title)
+// Include also js_lib.js javascript library
+HtmlPageBegin('default', true);
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
 ?>
  <TITLE><?php echo _m("User management - Users");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
@@ -169,7 +169,7 @@ include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
 <!-- Select user form -->
 <?php
 FrmTabCaption(_m("Users"));
-?> 
+?>
  <tr><td>
    <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
@@ -185,7 +185,7 @@ FrmTabCaption(_m("Users"));
  </tr>
 <?php
 FrmTabSeparator("");
-?> 
+?>
  <tr>
   <td><form name=f2 method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
@@ -199,7 +199,7 @@ FrmTabSeparator("");
      </tr>
     </table>
    </FORM>
-<?php   
+<?php
   /*</td>
  </tr>
 </table>

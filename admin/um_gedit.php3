@@ -93,10 +93,9 @@ if( $add_submit OR ($submit_action == "update_submit")) {
   }
 }
 
-# HTML form -----------------------------------------
-
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
+// Print HTML start page tags (html begin, encoding, style sheet, but no title)
+// Include also js_lib.js javascript library
+HtmlPageBegin('default', true);
 ?>
  <TITLE><?php echo _m("User management - Groups");?></TITLE>
 <SCRIPT Language="JavaScript"><!--
@@ -111,7 +110,7 @@ function RealyDelete() {
   if( window.confirm('<?php echo _m("Are you sure you want to delete selected group from whole permission system?") ?>')) {
     document.f2.submit_action.value = 'grp_del'
     document.f2.submit()
-  }  
+  }
 }
 
   // function changes content of role listbox for new module, when user selects another module to be added
@@ -147,7 +146,7 @@ function RealyDelete() {
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align=center>
  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
  */
-?> 
+?>
  <tr><td>
    <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
@@ -162,7 +161,7 @@ function RealyDelete() {
   </td>
 <?php
 FrmTabSeparator("");
-?>  
+?>
  <tr>
   <td><form name=f2 method=post action="<?php echo $sess->url($PHP_SELF) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
@@ -189,9 +188,9 @@ do {
       $group_description = $group_data[description];
       $aa_users = GetObjectsPerms(AA_ID, "aa");
       if (strstr($aa_users[$selected_group]["perm"], $perms_roles["SUPER"]['id'])) {
-	$group_super = true;
+    $group_super = true;
       }
-    }  
+    }
   } else {
     HtmlPageEnd();
     page_close();
@@ -247,9 +246,9 @@ if( !$add_submit AND !$grp_new) {
    FrmTabSeparator(_m("Users"));
 
   echo "
-  <tr><td>  
+  <tr><td>
   <table width=\"440\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"".COLOR_TABBG."\">";
-  
+
   # User - group membership -----------------------------------------
 
   echo '<tr><td width=190 align=center>'. _m("All Users") .'</td>

@@ -44,7 +44,7 @@ require_once $GLOBALS["AA_INC_PATH"] . "manager.class.php3";
 
 /* use stored values from session, if we call related window
    for secnd time (eg. after search or filtering data) */
-if ((isset($r_state)) && !($sid))  {
+if ( isset($r_state) && !$sid)  {
 //  $sid      = $r_state['related']['sid'];
     $mode     = $r_state['related']['mode'];
     $var_id   = $r_state['related']['var_id'];
@@ -55,7 +55,7 @@ if ((isset($r_state)) && !($sid))  {
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id = ( isset($sid) ? $sid : $r_state['module_id'] );
+$module_id = get_if( $sid, $r_state['related']['sid'] );
 
 // module_id is the same as slice_id (slice_id was used before AA introduced
 // modules. Now it is better to use module_id, because in other modules
@@ -78,20 +78,17 @@ $aliases = $slice->aliases();
 // if it is not 'Admin design', we need just following aliases
 if ( !isset($aliases["_#ITEM_ID_"]) ) $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............");
 if ( !isset($aliases["_#SITEM_ID"]) ) $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........");
-if ( !isset($aliases["_#HEADLINE"]) ) $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($r_sid));
-if ( !isset($aliases["_#JS_HEAD_"]) ) $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($r_sid));
+if ( !isset($aliases["_#HEADLINE"]) ) $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($module_id));
+if ( !isset($aliases["_#JS_HEAD_"]) ) $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($module_id));
 
-if (!($design)) {
+if ( !$design ) {
     $format["odd_row_format"] = '<tr><td class="tabtxt">_#PUB_DATE&nbsp;</td><td class="tabtxt">_#HEADLINE</td><td class="tabtxt">'.$mode_string.'</td></tr>';
     $format["even_row_format"] = '<tr><td class="tabtxteven">_#PUB_DATE&nbsp;</td><td class="tabtxteven">_#HEADLINE</td><td class="tabtxteven">'.$mode_string.'</td></tr>';
     $format["even_odd_differ"] = 1;
     $format["compact_top"] = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
     <tr><td class="tabtitlight">'._m("Publish date").'</td><td class="tabtitlight">'._m("Headline").'</td><td class="tabtitlight">'._m("Actions").'</td></tr>';
-    $aliases["_#JS_HEAD_"] = array("fce" => "f_e:javascript",
-                                   "param" => GetHeadlineFieldID($sid),
-                                   "hlp" => "");
 } else {
-  $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">',
+    $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">',
                                                   $mode_string, $format['odd_row_format']);
 }
 if (isset($showcondsro)) {
@@ -122,7 +119,7 @@ $manager_settings = array(
                          ),
      'scroller'  => array(
          'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
-         'slice_id'             => $slice_id
+         'slice_id'             => $module_id
                          ),
      'itemview'  => array(
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
@@ -147,16 +144,16 @@ if ((isset($conds_rw)) && (isset($showcondsrw))) {
 
 // r_state array holds all configuration of Links Manager
 // the configuration then could be Bookmarked
-if ( !isset($r_state) OR $sid OR ($r_state["module_id"] != $module_id)) {
+if ( !isset($r_state['related']) OR $sid OR ($r_state['related']['module_id'] != $module_id)) {
     // we are here for the first time or we are switching to another slice
-    unset($r_state);
+    unset($r_state['related']);
     // set default admin interface settings from user's profile
-    $r_state["module_id"]       = $module_id;
-    $r_state['bin']             = 'app';
- //   $r_state['related']['sid']  = $sid;
-    $r_state['related']['mode']  = $mode;
-    $r_state['related']['var_id']  = $var_id;
-    $r_state['related']['design']  = $design;
+    // $r_state["module_id"]         = $module_id;
+    // $r_state['bin']               = 'app';
+    $r_state['related']['sid']       = $module_id;
+    $r_state['related']['mode']      = $mode;
+    $r_state['related']['var_id']    = $var_id;
+    $r_state['related']['design']    = $design;
     $r_state['related']['frombins']  = $frombins;
 //    $r_state['related']['conds_ro'] = $conds_ro;
 //    $r_state['related']['conds_rw'] = $conds_rw;
@@ -166,8 +163,9 @@ if ( !isset($r_state) OR $sid OR ($r_state["module_id"] != $module_id)) {
     $manager->setFromProfile($profile);
 }
 
-if( $r_state['manager_related'] )        // do not set state for the first time calling
-    $manager->setFromState($r_state['manager_related']);
+if( $r_state['related']['manager'] ) {        // do not set state for the first time calling
+    $manager->setFromState($r_state['related']['manager']);
+}
 
 $manager->performActions();
 
@@ -184,7 +182,7 @@ echo "<script type=\"text/javascript\" language=\"javascript\"> <!--
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
-$zids=QueryZIDs($slice->fields('record'), $slice_id, $conds, $sort, "", $frombins);
+$zids=QueryZIDs($slice->fields('record'), $module_id, $conds, $sort, "", $frombins);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form
@@ -196,7 +194,7 @@ unset($r_err);
 unset($r_msg);
 
 $manager->printItems($zids);   // print links and actions
-$r_state['manager_related'] = $manager->getState();
+$r_state['related']['manager'] = $manager->getState();
 
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
 <tr><td align=center><input type=button value='". _m("Back") ."' onclick='window.close()'></td></tr></table>";
