@@ -187,8 +187,11 @@ class AA_SL_Session extends Session {
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:36  madebeer
-Initial revision
+Revision 1.2  2000/07/21 15:25:03  kzajicek
+Fixed DOS newlines
+
+Revision 1.1.1.1  2000/06/21 18:40:36  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:22  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
