@@ -1,8 +1,14 @@
+04/17/01 - new script go.php3 for finding links to asiciated items (fed from...)
+         - corrected LDIF.init and slapd.conf for LDAP permissions system
+         - fixed bug of not displayed top/bottom HTML code in fulltext 
+           and category
+         - new conditional alias  
 04/09/01 - order parameter works with '+' sign too in slice.php3
          - new timeorder parameter in slice.php3
          - fixed bug in selecting bin, where to put item in filler.php3
          - fixed bug of not stored parameter for field input type in 
            se_inputform.php3
+         - added size and maxlength parameters to field input type
 03/30/01 - uploaded images goes to sepatrate directories (separated by slice)
            (subdirectories under IMG_UPLOAD_PATH with name based on slice_id)
          - offline filling bug fixed
