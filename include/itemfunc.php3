@@ -57,22 +57,10 @@ function default_fnc_($param) {
   return "";
 }
 
-/*
-Code Added by Ram Prasad on 05-March-2002
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Function:
-~~~~~~~~~
-return the query string variable( as specified in the field settings) as default value
-*/      
-// Begin Ram's Code
-/*
-  this should be changed - we can't display any global variable to any sliceadmin
-  code commented out until fixed to display just the variables needed.
+/** @author Ram Prasad, 05-March-2002 */      
 function default_fnc_variable($param) {
   return ($GLOBALS[$param]);
 }
-*/
-// End of Rams Code
 # ----------------------- insert functions ------------------------------------
 
 function insert_fnc_qte($item_id, $field, $value, $param) {
@@ -168,7 +156,7 @@ function insert_fnc_boo($item_id, $field, $value, $param) {
 function insert_fnc_ids($item_id, $field, $value, $param) {
   global $varset, $itemvarset, $db;
 
-#echo "<script> alert( 'insert_fnc_ids($item_id, $field, $value, $param), ". $value['value'] ." ".substr($value['value'],0,1)."');</script>";
+/*echo "<script> alert( 'insert_fnc_ids($item_id, $field, $value, $param), ". $value['value'] ." ".substr($value['value'],0,1)."');</script>";*/
 #flush();  
   $add_mode = substr($value['value'],0,1);      # x=add, y=add mutual, z=add backward
   if( ($add_mode == 'x') || ($add_mode == 'y') || ($add_mode == 'z') ) 
@@ -228,34 +216,36 @@ function GetDestinationFileName($dirname, $uploaded_name) {
   return $dest_file;
 }
   
-  # File upload
-function insert_fnc_fil($item_id, $field, $value, $param, $fields="") {
-  global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR;
+// -----------------------------------------------------------------------------
+/** Insert function for File Upload.
+*   @return Array of fields stored inside this function as thumbnails.
+*/
+function insert_fnc_fil($item_id, $field, $value, $param, $fields="") 
+{
+    global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR;
 
-  $filevarname = "v".unpack_id($field[id])."x";
-
+    $filevarname = "v".unpack_id($field[id])."x";
     
-  # look if the uploaded picture exists
-  if($GLOBALS[$filevarname."_name"] != "none" && $GLOBALS[$filevarname."_name"] != "") {
-
+    // look if the uploaded picture exists
+    if($GLOBALS[$filevarname."_name"] == "none" || $GLOBALS[$filevarname."_name"] == "") 
+        continue;
 
     $params=explode(":",$param);
   
-  # look if type of file is allowed
+    // look if type of file is allowed
     if (substr($params[0],-1)=="*")
-	$file_type=substr($params[0],0,strpos($params[0],'/'));
+        $file_type=substr($params[0],0,strpos($params[0],'/'));
     else	
-	$file_type=$params[0];
-       # echo "uploaded type:".$GLOBALS[$filevarname."_type"].", allowed type:".$file_type;exit;
-  if (@strstr($GLOBALS[$filevarname."_type"],$file_type)==false && $params[0]!="")
-    return $err="type of uploaded file is not allowed";
-	  
-       
-
-    # get filename and replace bad characters
+        $file_type=$params[0];
+    //echo "uploaded type:".$GLOBALS[$filevarname."_type"].", allowed type:".$file_type;exit;
+    if (@strstr($GLOBALS[$filevarname."_type"],$file_type)==false && $params[0]!="")
+        return "type of uploaded file not allowed";
+ 
+    // get filename and replace bad characters
     $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
 
-    # new behavior, added by Jakub on 2.8.2002 -- related to File Manager
+    // new behavior, added by Jakub on 2.8.2002 -- related to File Manager
+    // fill $dirname with the destination directory for storing uploaded files
     $db = new DB_AA;
     $db->query("SELECT fileman_dir FROM slice WHERE id='".q_pack_id($GLOBALS["slice_id"])."'");
 
@@ -270,9 +260,10 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="") {
             $fileman_used = true;
         }
     }
+    // end of new behavior
     
     if (!$dirname) {
-        # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
+        // images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
         $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
         $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
 
@@ -283,87 +274,68 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="") {
 
     $dest_file = GetDestinationFileName($dirname, $dest_file);
     
-    # copy the file from the temp directory to the upload directory, and test for success    
-    $err = aa_move_uploaded_file ($filevarname, $dirname, $fileman_used ? $FILEMAN_MODE_FILE : 0, $dest_file);
+    // copy the file from the temp directory to the upload directory, and test for success    
+    $err = aa_move_uploaded_file ($filevarname, $dirname, 
+        $fileman_used ? $FILEMAN_MODE_FILE : 0, $dest_file);
     if ($err) return $err;
-
     
+    //echo "type:"; echo $filevarname; print_r($GLOBALS);
     
-    
-    //echo "type:"; echo $filevarname;
-    //print_r($GLOBALS);
-    
-    #do thumbnails if file type is supported by GD library
-    ######################################################
+    // ------------------------------------------------------------------------------------
+    // Create thumbnails (image miniature) into fields identified in this field's parameters
+    // if file type is supported by GD library.
     
     $imageInfo=GetImageSize("$dirname/$dest_file");
     $type_supported=GetSupportedTypes($imageInfo[2]);
         
-    if ($type_supported && !is_array($type_supported))
-    {
+    if ($type_supported && !is_array($type_supported)) {   
+        // resample image if max dimensions are set
+        if ($params[1] || $params[2]) 
+        	ResampleImage("$dirname/$dest_file","$dirname/$dest_file",$params[1],$params[2]);
+        // make thumbnails  if fields for are set
+        //echo $params[3]; exit;
     
-    # resample image if max dimensions are sets
-    ###########################################
-    if ($params[1]!="" || $params[2]!="") 
-	ResampleImage("$dirname/$dest_file","$dirname/$dest_file",$params[1],$params[2]);
+        if ($params[3]!="")	{
+    	    // get ids of field store thumbnails
+    	    $thumb_arr=explode("##",$params[3]);
+    	    	    	    
+    	    reset($thumb_arr);
+    	    while(list(,$fid) = each($thumb_arr)) {	     
+        		$num ++;
+        		//copy thumbnail
+   				$thumbnail = $fields[$fid];
+    		    $fncpar = ParseFnc($f[input_insert_func]);
+    		    $thumb_params=explode(":",$fncpar[param]);
+    		    //echo $thumb_params[0].$thumb_params[1];
+    		    $dest_file_tmb=substr($dest_file,0,strrpos($dest_file,"."))
+                    ."_thumb$num".substr($dest_file,strrpos($dest_file,"."));
+    		
+    		    if (ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb",
+                        $thumb_params[0],$thumb_params[1]))
+    		        // store link to thumbnail 
+    		        $val["value"] = "$dirurl/$dest_file_tmb";
+    		    else
+    		        // if picture cannot be resampled or it is not necessary 
+                    // thumb fields will store path to original file
+        		    $val["value"] = "$dirurl/$dest_file";    		    
+        		//exit;
     
-    # make thumbnails  if fields for are set
-    ########################################
-    
-//    echo $params[3];
-//    exit;
-    
-    if ($params[3]!="")
-	{
-	    #get ids of field store thumbnails
-	    $thumb_arr=explode("##",$params[3]);
-	    $num=1;
-	    	    	    
-	    reset($thumb_arr);
-	    while(list(,$fid) = each($thumb_arr)) 
-	    {	     
-		#copy thumbnail
-		
-			
-		$f=$fields[$fid];
-		$fncpar = ParseFnc($f[input_insert_func]);
-		$thumb_params=explode(":",$fncpar[param]);
-		//echo $thumb_params[0].$thumb_params[1];
-		$dest_file_tmb=substr($dest_file,0,strrpos($dest_file,"."))."_thumb$num".substr($dest_file,strrpos($dest_file,"."));
-		
-		if (ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb",$thumb_params[0],$thumb_params[1]))
-		    # store link to thumbnail 
-		    $val["value"] = "$dirurl/$dest_file_tmb";
-		else
-		    #if picture cannot be resampled or it is not necessary thumb fields will store path to original file
-		    $val["value"] = "$dirurl/$dest_file";
-		    
-		//exit;
-
-		insert_fnc_qte($item_id, $f, $val, "");
-		
-		$num++;
-		
-		
-    	    }
-	    
-	}
-	
-	
-    
+        		insert_fnc_qte( $item_id, $thumbnail, $val, "");    		
+       	    }    	    
+    	}
     }
 
-    $value["value"] = "$dirurl/$dest_file";
-    
-  }
-  # store link to uploaded file or specified file URL if nothing was uploaded
-  // print_r($value);exit;
-   insert_fnc_qte($item_id, $field, $value, "");
+    $value["value"] = "$dirurl/$dest_file";    
+
+    // store link to uploaded file or specified file URL if nothing was uploaded
+    //print_r($value);exit;
+    insert_fnc_qte( $item_id, $field, $value, "");
    
-   #return array with fields was filled
-   
-   return $thumb_arr;
-}    
+    // return array with fields that were filled with thumbnails 
+    return $thumb_arr;
+} // end of insert_fnc_fil
+
+// -----------------------------------------------------------------------------
 
 function insert_fnc_nul($item_id, $field, $value, $param) {
 }
@@ -810,127 +782,135 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
   return $content4id; 
 }
 
+// -----------------------------------------------------------------------------
+/** Basic function for changing contents of items. 
+*   Use always this function, not direct SQL queries.
+*   Updates the tables @c item and @c content.
+*
+*   @param array $content4id   array (field_id => array of values 
+*						      (usually just a single value, but still an array))
+*/
 function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
-                    $invalidatecache=true, $feed=true ) {
-  global $db, $varset, $itemvarset;
-
-  if (!is_object ($db)) $db = new DB_AA;
-  if (!is_object ($varset)) $varset = new CVarset();
-  if (!is_object ($itemvarset)) $itemvarset = new CVarset();
-
-  if( !( $id AND isset($fields) AND is_array($fields)
-        AND isset($content4id) AND is_array($content4id)) )
-    return false;
-
-  // Note: $content4id is an associative array.
-  //       they key is a field_id, like 'source..........'
-  // The value is an array of values (usually just a single value, but still an array)
-
-  if( !$insert ) {  # remove old content first (just in content table - item is updated)
+                    $invalidatecache=true, $feed=true ) 
+{
+    global $db, $varset, $itemvarset;
+    
+    if (!is_object ($db)) $db = new DB_AA;
+    if (!is_object ($varset)) $varset = new CVarset();
+    if (!is_object ($itemvarset)) $itemvarset = new CVarset();
+    
+    if( !( $id AND isset($fields) AND is_array($fields)
+            AND isset($content4id) AND is_array($content4id)) )
+        return false;
+    
+    // remove old content first (just in content table - item is updated)
+    if( !$insert ) {  
+        reset($content4id);
+        $delim="";
+        while(list($fid,) = each($content4id)) {
+            if ( !$fields[$fid]['in_item_tbl']) {
+                $in .= $delim."'$fid'";
+                $delim = ",";
+            }
+        }
+        if ( $in ) { 
+            // delete content just for displayed fields
+            $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($id). "'
+                            AND field_id IN ($in)";
+            $db->query($SQL);
+        }
+    }
+    
     reset($content4id);
-    $delim="";
-    while(list($fid,) = each($content4id)) {
-      if ( !$fields[$fid]['in_item_tbl']) {
-        $in .= $delim."'$fid'";
-        $delim = ",";
-      }
+    while(list($fid,$cont) = each($content4id)) {
+        $f = $fields[$fid];
+        //print_r($f);
+        // input insert function
+        $fnc = ParseFnc($f[input_insert_func]);   
+        // input insert function parameters of field
+        $fncpar = ParseFnc($f[input_insert_func]);   
+        if( $fnc ) {                  
+            $fncname = 'insert_fnc_' . $fnc[fnc];
+            // update content table or fill $itemvarset
+            if( !is_array($cont))
+                continue;
+            // serve multiple values for one field                
+            reset($cont);               
+            while(list(,$v) = each($cont)) {
+                // file upload needs the $fields array, because it stores
+                // some other fields as thumbnails
+                if ($fnc[fnc]=="fil") 
+                {    
+                    //print_r($arr_stop);                    
+                    if (is_array($thumbnails)){
+                        reset($thumbnails);
+                        while(list(,$v_stop) = each($thumbnails))	    
+                            if ($v_stop==$fid) $stop=true;
+                    };
+                    
+                    if (!$stop)	  
+                        $thumbnails = $fncname($id, $f, $v, $fncpar[param], $fields);
+                }
+                else
+                    $fncname($id, $f, $v, $fncpar[param]);
+                //    print_r($fnc);
+                // do not store multiple values if field is not marked as multiple
+                // ERRORNOUS
+                //if( !$f[multiple]!=1 ) 
+                    //continue;
+            }
+        }
     }
-    if ( $in ) { # delete content just for displayed fields
-      $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($id). "'
-                                    AND field_id IN ($in)";
-      $db->query($SQL);
-    }
-  }
 
-  reset($content4id);
-  while(list($fid,$cont) = each($content4id)) {
-    $f = $fields[$fid];
-    #print_r($f);
-    $fnc = ParseFnc($f[input_insert_func]);   # input insert function
-    $fncpar = ParseFnc($f[input_insert_func]);   # input insert function parameters of field
-    if( $fnc ) {                  # function to call
-      $fncname = 'insert_fnc_' . $fnc[fnc];
-        # updates content table or fills $itemvarset
-      if( !( isset($cont) AND is_array($cont)))
-        continue;
-      reset($cont);               # it must serve multiple values for one field
-      while(list(,$v) = each($cont)) {
+    // update item table    
+    if( !$insert ) {
+        $itemvarset->add("slice_id", "unpacked", $slice_id);
+        $itemvarset->add("last_edit", "quoted", default_fnc_now(""));
+        $itemvarset->add("edited_by", "quoted", default_fnc_uid(""));
+        $SQL = "UPDATE item SET ". $itemvarset->makeUPDATE() 
+            . " WHERE id='". q_pack_id($id). "'";
+    } else {
+        if( $itemvarset->get('status_code') < 1 )
+            $itemvarset->set('status_code', 1);
+        $itemvarset->add("id", "unpacked", $id);
+        $itemvarset->add("slice_id", "unpacked", $slice_id);
+        $itemvarset->add("display_count", "quoted", "0");
         
-        # add to content table or to itemvarset
-        if ($fnc[fnc]=="fil") #if function is file upload need send $fields array, 
-	    {    
-	      #function return array of fields that store thumbnails and will not by filled 
-          print_r($arr_stop);
-	      
-	      if (is_array($arr_stop))
-	      {
-	      reset($arr_stop);
-	      while(list(,$v_stop)=each($arr_stop))
-		{	    
-		    if ($v_stop==$fid) $stop=true;
-		};
-	      };
-	      
-	    if (!$stop)	{  
-		   $arr_stop=$fncname($id, $f, $v, $fncpar[param],$fields);
-		}
-	    }
-	else
-	$fncname($id, $f, $v, $fncpar[param]);
-    //    print_r($fnc);
-	  # do not store multiple values if field is not marked as multiple
-          # ERRORNOUS
-        if( !$f[multiple]!=1 ) 
-          continue;
-      }
+        /* Alerts module uses moved2active as the time when
+           an item was moved to the active bin */
+        $itemvarset->add("moved2active", "number", 
+            $itemvarset->get('status_code') == 1 ? time () : 0);
+        $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
+    }  
+    $db->query($SQL);
+    if( $invalidatecache ) {
+        $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+        $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    }  
+
+    if( $feed )
+        FeedItem($id, $fields);
+
+    // notifications 
+    $status_id = 'status_code.....'; 
+    
+    $status_code = $content4id[$status_id][0]['value']; 
+    
+    if( $insert ) {                          // new + 
+        if ($status_code == '1')             //    active 
+            email_notify($slice_id, 3, $id); // notify function 3) 
+        elseif($status_code == '2')          // holding bin   
+            email_notify($slice_id, 1, $id); // notify function 1 
+    } else {                                 // changed + 
+        if ($status_code == '1')             //    active 
+            email_notify($slice_id, 4, $id); // = notify-function 4 
+        elseif ($status_code == '2')         // hodling bin 
+            email_notify($slice_id, 2, $id); // =  notify-function 2 
     }
-  }
- //exit;
-   
-    # update item table
-  if( !$insert ) {
-    $itemvarset->add("slice_id", "unpacked", $slice_id);
-    $itemvarset->add("last_edit", "quoted", default_fnc_now(""));
-    $itemvarset->add("edited_by", "quoted", default_fnc_uid(""));
-    $SQL = "UPDATE item SET ". $itemvarset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
-  } else {
-    if( $itemvarset->get('status_code') < 1 )
-      $itemvarset->set('status_code', 1);
-    $itemvarset->add("id", "unpacked", $id);
-    $itemvarset->add("slice_id", "unpacked", $slice_id);
-    $itemvarset->add("display_count", "quoted", "0");
-    
-    /* e-mail alerts */
-    $itemvarset->add("moved2active", "number", $itemvarset->get('status_code') == 1 ? time () : 0);
-    $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
-  }  
-  $db->query($SQL);
-  if( $invalidatecache ) {
-    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-  }  
+    return true;
+} // end of StoreItem
 
-  if( $feed )
-    FeedItem($id, $fields);
-    
-  // notifications 
-  $status_id = 'status_code.....'; 
-
-  $status_code = $content4id[$status_id][0]['value']; 
-
-  if( $insert ) {                               // new + 
-    if ($status_code == '1')                      //    active 
-      email_notify($slice_id, 3, $id);            // notify function 3) 
-  	elseif($status_code == '2')                   // holding bin   
-	    email_notify($slice_id, 1, $id);            // notify function 1 
-  } else {                                     // changed + 
-    if ($status_code == '1')                     //    active 
-      email_notify($slice_id, 4, $id);           // = notify-function 4 
-  	elseif ($status_code == '2')                 // hodling bin 
-	    email_notify($slice_id, 2, $id);           // =  notify-function 2 
-  }
-  return true;
-}
+// -----------------------------------------------------------------------------
 
 function GetDefault($f) {
   $fnc = ParseFnc($f[input_default]);    # all default should have fnc:param format
