@@ -1,3 +1,4 @@
+06/15/01 - improved f_h alias function for displaying multiple values
 06/13/01 - added negation in condition alias function f_c 
          - fixed bug of reverse meaning of condition
          - FAQ updated - slice.php3 parameters covered

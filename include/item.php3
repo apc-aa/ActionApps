@@ -28,6 +28,10 @@ function txt2html($txt) {          #converts plain text to html
   return $txt;
 }  
 
+function DeHtml($txt, $flag) {
+  return ( ($flag & FLAG_HTML) ? $txt : htmlspecialchars( $txt ) );
+}  
+
 function GetAliasesFromFields($fields) {
   if( !( isset($fields) AND is_array($fields)) )
     return false;
@@ -135,10 +139,16 @@ class item {
 
   # print due to html flag set (escape html special characters or just print)
   # param: 0
-  function f_h($col, $param="") { 
-    return ( ($this->columns[$col][0][flag] & FLAG_HTML) ? 
-      $this->columns[$col][0][value] : 
-      htmlspecialchars( $this->columns[$col][0][value] ) );
+  function f_h($col, $param="") {
+    if( $param ) {  # create list of values for multivalue fields
+      reset( $this->columns[$col] );
+      while( list( ,$v) = each( $this->columns[$col] ) ) {
+        $res .= $delim . DeHtml($v[value], $v[flag]);
+        $delim = $param;
+      }  
+      return $res;
+    }    
+    return DeHtml($this->columns[$col][0][value], $this->columns[$col][0][flag]);
   }    
 
   # prints date in user defined format
@@ -192,7 +202,7 @@ class item {
   function f_a($col, $param="") {
     $p = ParamExplode($param);
     if ($this->columns[$col][0][value])
-      return htmlspecialchars($this->columns[$col][0][value]);
+      return DeHtml( $this->columns[$col][0][value], $this->columns[$col][0][flag]);
     return htmlspecialchars(substr($this->columns[ $p[1] ][0][value], 0, $p[0] ) );
   }
 
@@ -360,6 +370,9 @@ class item {
 
 /*
 $Log$
+Revision 1.17  2001/06/15 15:27:58  honzam
+improved f_h alias function for displaying multiple values
+
 Revision 1.16  2001/06/14 13:03:12  honzam
 better time handling in inputform and view
 
