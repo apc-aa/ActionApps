@@ -196,7 +196,7 @@ function insert_fnc_boo($item_id, $field, $value, $param) {
 function insert_fnc_ids($item_id, $field, $value, $param) {
   global $varset, $itemvarset, $db;
 
-/*echo "<script> alert( 'insert_fnc_ids($item_id, $field, $value, $param), ". $value['value'] ." ".substr($value['value'],0,1)."');</script>";*/
+//echo "<script> alert( 'insert_fnc_ids($item_id, $field, $value, $param), ". $value['value'] ." ".substr($value['value'],0,1)."');</script>";
 #flush();  
   $add_mode = substr($value['value'],0,1);      # x=add, y=add mutual, z=add backward
   if( ($add_mode == 'x') || ($add_mode == 'y') || ($add_mode == 'z') ) 
@@ -852,7 +852,7 @@ function IsEditable($fieldcontent, $field) {
 function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=true ) {
   if( !isset($prifields) OR !is_array($prifields) )
     return false;
-  
+    
   // print_r($fields); exit;
   reset($prifields);
   while(list(,$pri_field_id) = each($prifields)) {
@@ -954,7 +954,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     }
     else if (!Event_ItemBeforeInsert ($id, $slice_id, new ItemContent ($content4id)))
         return false;
-    
+
     reset($content4id);
     while(list($fid,$cont) = each($content4id)) {
         $f = $fields[$fid];
@@ -1152,10 +1152,10 @@ function ShowFormJavascript ($show_func_used, $js_proove_fields) {
       var myform = document.inputform;
 
       function SelectAllInBox( listbox ) {
-          for (var i = 0; i < myform[listbox].length; i++) 
+          for (var i = 0; i < document.inputform[listbox].length; i++) 
               // select all rows without the wIdThTor one, which is only for <select> size setting
-             myform[listbox].options[i].selected = 
-               ( myform[listbox].options[i].value != "wIdThTor" );
+             document.inputform[listbox].options[i].selected = 
+               ( document.inputform[listbox].options[i].value != "wIdThTor" );
       }
 
       // before submit the form we need to select all selections in some

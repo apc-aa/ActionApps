@@ -1,9 +1,15 @@
+02/27/03 - fixed bug of not storing related items
+(honzam) - fixed bug with wrong display multiple checkboxes input 
+           when "move down" is ON
+         - fixed bug of not showing cron admin pages
+02/25/03 - fixed bug of not showing buttons in related item select window (honzam)
 02/20/03 - added the mailman feature, which creates files with lists of 
            email addresses (jakub)
 02/20/03 - added new input type field for itemedit - Hidden
 (honzam) - added new alias function f_o which displaye "New" or "Old"
            or such text for the item
-         - added banner parameter to slice.php3 (see http://apc-aa.sourceforge.net/faq/#sliceparam)
+         - added banner parameter to slice.php3 
+           (see http://apc-aa.sourceforge.net/faq/#sliceparam)
          - added database optimize script - called from AA cron.php3
          - new Links module (not complete, yet)
          - fixed wrong order of odd/even rows in itemview (Index)
@@ -13,14 +19,16 @@
          - it is impossible to use "AA Core slice" as template, now
          - fixed problem of not showing roles for slices in user management
          - fixed bug with call nonmember function in itemfunct.php3
-         - constants in selectbox is shown even if they have the same value (space added)
-         - added new paramewter for Selectbox input field - "show all" which displays
-           all items including expited ones for slice
+         - constants in selectbox is shown even if they have the same value 
+           (space added)
+         - added new paramewter for Selectbox input field - "show all" which 
+           displays all items including expited ones for slice
 02/20/03 - added parameter wizzard for uploaded file (mitra)
          - fixed warning about missing field in fpr example {alias::f_e:add} 
          - more functionality in sliceobj
          - another check in stringexpand
-         - fixed permissions to allow adding AUTHOR EDITOR ADMINISTRATOR (may not be ok)
+         - fixed permissions to allow adding AUTHOR EDITOR ADMINISTRATOR 
+           (may not be ok)
 02/18/03 - added slice_id=$slice_id automatically to the menu_util and removed
            from the items in menu.php3 (jakub)
 02/17/03 - updated sql_update to match the current changes

@@ -663,7 +663,9 @@ class item {
       case "itemindex";
       	return "".$GLOBALS['QueryIDsIndex'];   # Need to append to "" so doesn't return "false" on 0th item
       case "safe":
-        return safe( $this->getval($col) ); 
+        return safe($this->getval($col));
+      case "javascript":                       # In javascript we need escape apostroph 
+        return str_replace( "'", "\'", safe($this->getval($col)) );
       case "slice_info":
         if( !is_array( $slice_info ) )
           $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));

@@ -145,7 +145,7 @@ if( !$mode )
   $mode='AMB';
 for( $i=0; $i<strlen($mode); $i++) {
     $m1 = substr($mode,$i,1);
-    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#HEADLINE')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
+    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#JS_HEAD_')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
 }   
 
 
@@ -199,8 +199,13 @@ if( isset($zids) && ($zids->count() > 0) ) {
     $aliases["_#HEADLINE"] = array("fce" => "f_e:safe",
                                    "param" => GetHeadlineFieldID($r_sid, $db),
                                    "hlp" => "");
+    $aliases["_#JS_HEAD_"] = array("fce" => "f_e:javascript",
+                                   "param" => GetHeadlineFieldID($r_sid, $db),
+                                   "hlp" => "");
   }                                 
 
+  $nocache=1;
+  
   $itemview = new itemview( $db, $format_strings, $fields, $aliases, $zids,
               $st->metapage * ($st->current-1), $st->metapage, "" );
   $itemview->print_view();
