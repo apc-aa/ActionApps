@@ -7,9 +7,9 @@
 function CountCategLinks($path, $cid) {
   global $db;
   $SQL= " SELECT count(*) as links_count FROM links_categories, links_link_cat
-  	WHERE links_link_cat.category_id = links_categories.id
-  	  AND links_link_cat.proposal = 'n'
-  	  AND (links_categories.path = '$path' OR links_categories.path like '$path,%')";
+    WHERE links_link_cat.category_id = links_categories.id
+      AND links_link_cat.proposal = 'n'
+      AND (links_categories.path = '$path' OR links_categories.path like '$path,%')";
   $db->query($SQL);
 
   if ($db->next_record()) {
@@ -21,20 +21,65 @@ function CountCategLinks($path, $cid) {
   return $links_count;
 }
 
-# Counts links in all subcategories
-function CountAllLinks() {
-  $db2  = new DB_AA;   // can't use $db - colision with CountCategLinks
-  $SQL= "SELECT id, path FROM links_categories";
-  $db2->query($SQL);
-  while($db2->next_record())
-    CountCategLinks($db2->f('path'), $db2->f('id'));
+/** update number of links info
+ *  @param array $categs2assign array of categories where we have to count links
+ *               this function count links also in all parent categories
+ *  @param bool  $subcatn       count also in subcategories (whole subtree)?
+ */
+function Links_CountLinksInCategories($categs2assign, $count_subcat=true) {
+    if ( !isset($categs2assign) OR !is_array($categs2assign) )
+        return array();
+    // get all paths, in which we have to count links
+    // (specified categories and all parent ones)
+    foreach( $categs2assign as $cid ) {
+        $cpath = Links_GetCategoryColumn( $cid, 'path');
+        $cat_on_path = explode(',', $cpath);
+        $curr_path = '';
+        $delim='';
+        foreach ( $cat_on_path as $subcat ) {
+            $curr_path .= $delim . $subcat;  // Create path
+            $delim = ',';
+            $cat_paths[$curr_path] = $subcat;   // mark the subpath
+        }
+    }
+    if ( !isset($cat_paths) OR !is_array($cat_paths) )
+        return array();
+    foreach( $cat_paths as $cpath => $cid ) {
+        if ( $cpath ) {
+            $zids = Links_QueryZIDs($cpath, '', '', $count_subcat);
+            $counts[$cid] = $zids->count();
+        }
+    }
+    // and now write into database
+    if ( isset($counts) ) {
+        $db = getDB();
+        foreach( $counts as $cid => $count ) {
+            $db->tquery("UPDATE links_categories SET link_count='$count' WHERE id='$cid'");
+        }
+        freeDB($db);
+    }
+    return $counts;
 }
 
-# Counts links in each category and returns array[category]=link_count
+/** Counts links in all categories */
+function Links_CountAllLinks() {
+    $db = getDB();
+    $db->tquery("SELECT id FROM links_categories");
+    while($db->next_record()) {
+       $cats[] = $db->f('id');
+    }
+    freeDB($db);
+    return Links_CountLinksInCategories($cats);
+}
+
+/** Counts links in each category (but not in subcategories)
+ *  and returns array[category]=link_count
+ *  It is just helper function - it do not respect proposals, trash folders, ...
+ */
 function CountLinks4Each() {
   global $db;
   $SQL= " SELECT category_id, count(*) as links_count FROM links_link_cat
-  	WHERE links_link_cat.proposal = 'n'
+    WHERE links_link_cat.proposal = 'n'
     GROUP BY category_id";
   $db->query($SQL);
 
@@ -67,38 +112,38 @@ function GetCategoryFromPath( $path ) {
 
 /** Assign category to given parent category */
 function Links_AssignCategory($category_id, $insertedId, $pri=10, $base='y', $state='visible') {
-	global $db;
+    global $db;
 
-	$SQL = "INSERT INTO links_cat_cat
+    $SQL = "INSERT INTO links_cat_cat
            (category_id, what_id, base, state, priority, proposal, proposal_delete)
-   	VALUES ($category_id, $insertedId, '$base', '$state',  $pri, 'n', 'n')";
+    VALUES ($category_id, $insertedId, '$base', '$state',  $pri, 'n', 'n')";
 
-	$db->query( $SQL );
+    $db->query( $SQL );
 }
 
 /** Add new category, copies parents permissions
  *  @returns id of new category
  */
 function Links_AddCategory($name, $parent, $parentpath, $template="") {
-	global $db;
-  	$SQL = "INSERT INTO links_categories  ( name, html_template )
-	                         VALUES ('$name', '$template')";
-	$db->query( $SQL );
-  	$db->query( "select LAST_INSERT_ID() as id" );
+    global $db;
+    $SQL = "INSERT INTO links_categories  ( name, html_template )
+                             VALUES ('$name', '$template')";
+    $db->query( $SQL );
+    $db->query( "select LAST_INSERT_ID() as id" );
 
-  	if(!$db->next_record()) {
-    	huh("Error - Last inserted ID is lost");
-	    exit;
-  	}
+    if(!$db->next_record()) {
+        huh("Error - Last inserted ID is lost");
+        exit;
+    }
 
-  	$res = $db->f('id');
+    $res = $db->f('id');
 
     // correct path
-	$SQL = "UPDATE links_categories set path='$parentpath,$res' WHERE id=$res";
-  	$db->query( $SQL );
+    $SQL = "UPDATE links_categories set path='$parentpath,$res' WHERE id=$res";
+    $db->query( $SQL );
 
-  	ChangeCatPermAsIn($res, $parent);
-  	return $res;
+    ChangeCatPermAsIn($res, $parent);
+    return $res;
 }
 
 # Get specified column for base category of specified link
@@ -174,68 +219,68 @@ function ThisFileName() {
 }
 
 function FillCategoryInfo($category) {
-	global $db, $r_category_id, $r_category_path, $r_category_template;
-  	$SQL= "SELECT * FROM links_categories WHERE id = $category";
-  	$db->query($SQL);
-  	if($db->next_record()) {
-    	$r_category_id       = $db->f(id);
-    	$r_category_template = $db->f(html_template);
-    	$r_category_path     = $db->f(path);
-  	}
+    global $db, $r_category_id, $r_category_path, $r_category_template;
+    $SQL= "SELECT * FROM links_categories WHERE id = $category";
+    $db->query($SQL);
+    if($db->next_record()) {
+        $r_category_id       = $db->f(id);
+        $r_category_template = $db->f(html_template);
+        $r_category_path     = $db->f(path);
+    }
 }
 
 # get information from view table, where information for viewing are stored
 function Links_GetViewInfo($view_id, $server_url) {
-	global $db;
+    global $db;
 
-	if ($view_id)
-		$test = " (id = $view_id) ";
+    if ($view_id)
+        $test = " (id = $view_id) ";
     elseif (!$server_url)
-  	    $test = " (id = ".DEFAULT_BASE_CATEGORY." )";
+        $test = " (id = ".DEFAULT_BASE_CATEGORY." )";
     elseif (strlen($server_url) <= 4)
-		$test = " (server_name = '$server_url') ";
+        $test = " (server_name = '$server_url') ";
     else
         $test = ( (StrCaseCmp(SubStr($server_url, 0, 4), "www.") == 0) ?
-			" (server_name = '". Substr($server_url,4) . "') " :
+            " (server_name = '". Substr($server_url,4) . "') " :
       " (server_name = '$server_url') " );
 
-	$SQL = " SELECT * FROM links_views WHERE $test";
-	$db->query($SQL);
+    $SQL = " SELECT * FROM links_views WHERE $test";
+    $db->query($SQL);
 
-	if ($db->next_record())
+    if ($db->next_record())
        return $db->Record;
 
-	return false;
+    return false;
 }
 
 # get information from profile table, where user setting are stored
 function GetProfileInfo($uid) {
-	global $db;
+    global $db;
 
   if( !$uid )
     $uid = "nobody";
 
-	$SQL = "SELECT * FROM links_profiles WHERE uid = '$uid'";
-	$db->query($SQL);
-	if ($db->next_record())
+    $SQL = "SELECT * FROM links_profiles WHERE uid = '$uid'";
+    $db->query($SQL);
+    if ($db->next_record())
     return $db->Record;
 
   # if user not exist - get nobody's settings
-	$SQL = "SELECT * FROM links_profiles WHERE uid = 'nobody'";
-	$db->query($SQL);
-	if ($db->next_record())
+    $SQL = "SELECT * FROM links_profiles WHERE uid = 'nobody'";
+    $db->query($SQL);
+    if ($db->next_record())
     return $db->Record;
-	return false;
+    return false;
 }
 
 function TestBaseCat($ctg, $base_cat, $ctg_path) {
-	$cats = explode(",", $ctg_path);
-	for ($found = false, reset($cats); current($cats); next($cats))
-		if (current($cats) == $base_cat) {
-			$found = true; break;
-		}
+    $cats = explode(",", $ctg_path);
+    for ($found = false, reset($cats); current($cats); next($cats))
+        if (current($cats) == $base_cat) {
+            $found = true; break;
+        }
 
-	return ($found ? $ctg : $base_cat);
+    return ($found ? $ctg : $base_cat);
 }
 
 /**
