@@ -206,10 +206,10 @@ function GetKey ($columns, $record)
     reset ($columns);
     unset ($key);
     while (list ($colname,$column) = each ($columns)) 
-        switch ($column["primary"]) {
-        //case "packed": $key[] = unpack_id ($record [$colname]); break;
-        case "number": $key[] = $record[$colname]; break;
-        case "text": $key[] = htmlentities ($record[$colname]); break;
+        if ($column["primary"]) {
+            if ($column["view"]["unpacked"])
+                $key[] = unpack_id ($record[$colname]);
+            else $key[] = htmlentities ($record[$colname]); 
         }
     return join_escaped (":",$key,"#:");
 }
@@ -235,9 +235,12 @@ function CreateWhereCondition ($key_value, $columns, $table="", $join="") {
             if (!$colname) 
                 continue;
         }        
-        if ($column["primary"]) 
+        if ($column["primary"]) {
+            if ($column["view"]["unpacked"])
+                $val = pack_id ($val);
             $where[] = ($table ? $table."." : "")
-                ."$colname='".str_replace("'","\\'",$val)."'";
+                .$colname."='".addslashes ($val)."'";
+        }
     }
     return join (" AND ",$where);
 }
