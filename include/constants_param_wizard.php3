@@ -83,17 +83,17 @@ array ("name" => _m("Password and Change Password"),
     
 $DEFAULT_VALUE_TYPES["name"] = _m("Default Value Type");
 $DEFAULT_VALUE_TYPES["items"]["txt"] =
-array ("name" => _m("Text = text from 'Parameter' field"),
+array ("name" => _m("Text from 'Parameter'"),
        "params" => array (array ("name" => _m("Text"))));
 $DEFAULT_VALUE_TYPES["items"]["dte"] =
-array ("name" => _m("Date = current date plus 'Parameter' number of days"),
+array ("name" => _m("Date + 'Parameter' days"),
        "params" => array (array ("name" => _m("Number of days"))));
 $DEFAULT_VALUE_TYPES["items"]["uid"] =
-array ("name" => _m("User ID = current user ID"));
+array ("name" => _m("User ID"));
 $DEFAULT_VALUE_TYPES["items"]["log"] =
 array ("name" => _m("Login name"));
 $DEFAULT_VALUE_TYPES["items"]["now"] =
-array ("name" => _m("Now = current date"));
+array ("name" => _m("Now, i.e. current date"));
 $DEFAULT_VALUE_TYPES["items"]["variable"] =
 array ("name" => _m("Variable"),
        "desc" => _m("A dangerous function. Do not use."));

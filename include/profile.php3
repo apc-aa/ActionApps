@@ -19,6 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
+
 # deletes all rules for the user (used on revoking the perms for user on a slice)
 function DelUserProfile($uid, $slice_id) {
   global $db, $err;
@@ -73,7 +75,7 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
 
 function PrintRule($rule) {
   global $PROPERTY_TYPES, $SORTORDER_TYPES, $fields; 
-  $INPUT_DEFAULT_TYPES = inputDefaultTypes();
+  $INPUT_DEFAULT_TYPES = getSelectBoxFromParamWizard ($DEFAULT_VALUE_TYPES);
 
   $prop = $rule['property'];
   $rid  = $rule['id'];

@@ -27,6 +27,7 @@ require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 require_once $GLOBALS["AA_INC_PATH"]."profile.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "./se_users.php3"));
@@ -191,13 +192,15 @@ echo "</table>
        <td>&nbsp;</td>
       </tr>";
 
+$inputDefaultTypes = getSelectBoxFromParamWizard ($DEFAULT_VALUE_TYPES);
+
 PrintSetRule(1,'listlen',     0,0,                   1,0,_m("number of item displayed in Item Manager") );
 PrintSetRule(2,'admin_search',1,0,                   1,0,_m("preset \"Search\" in Itme Manager"));
 PrintSetRule(3,'admin_order', 1,$SORTORDER_TYPES,    0,0,_m("preset \"Order\" in Itme Manager"));
 PrintSetRule(4,'hide',        1,0,                   0,0,_m("hide the field in inputform"));
-PrintSetRule(5,'hide&fill',   1,inputDefaultTypes(), 1,1,_m("hide the field in inputform and fill it by the value"));
-PrintSetRule(6,'fill',        1,inputDefaultTypes(), 1,1,_m("fill the field in inputform by the value"));
-PrintSetRule(7,'predefine',   1,inputDefaultTypes(), 1,1,_m("predefine value of the field in inputform"));
+PrintSetRule(5,'hide&fill',   1,$inputDefaultTypes, 1,1,_m("hide the field in inputform and fill it by the value"));
+PrintSetRule(6,'fill',        1,$inputDefaultTypes, 1,1,_m("fill the field in inputform by the value"));
+PrintSetRule(7,'predefine',   1,$inputDefaultTypes, 1,1,_m("predefine value of the field in inputform"));
 
 echo "</table>
     </form>
