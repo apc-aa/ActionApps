@@ -27,6 +27,9 @@ require $GLOBALS[AA_INC_PATH]."constants.php3";
 
 // Shift to another page (must be before any output from script)
 function go_url($url, $add_param="") {
+  global $sess;
+  if( isset( $sess ) )
+    page_close();
   if( $add_param != "" )
     $url = con_url( $url, rawurlencode($add_param));
   $netscape = (r=="") ? "r=1" : "r=".++$r;   // special parameter for Netscape to reload page
@@ -641,6 +644,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.26  2001/11/05 13:33:06  honzam
+fixed bug of unsuccessfull switching slice on some pages
+
 Revision 1.25  2001/10/05 10:55:38  honzam
 bugfix: field variables posted in url are parsed correctly in add_vars() now.
 
