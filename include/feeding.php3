@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -42,15 +42,15 @@ function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to=
               AND to_slice_id = '$p_to_slice_id'";
   $db->query($SQL);
   while( $db->next_record() ) {
-  	switch ($db->f(flag)) {
-  	case FEEDMAP_FLAG_MAP:
-  		$val = $db->f(from_field_id); break;
-  	case FEEDMAP_FLAG_VALUE:
-  	case FEEDMAP_FLAG_JOIN:
-  		$val = $db->f(value); break;
-  	default:
-  		$val = ""; break;
-  	}
+    switch ($db->f(flag)) {
+    case FEEDMAP_FLAG_MAP:
+        $val = $db->f(from_field_id); break;
+    case FEEDMAP_FLAG_VALUE:
+    case FEEDMAP_FLAG_JOIN:
+        $val = $db->f(value); break;
+    default:
+        $val = ""; break;
+    }
     $m[$db->f(to_field_id)] = array("feedmap_flag"=>$db->f(flag),"val"=>$val);
   }
 
@@ -115,52 +115,52 @@ function IsItemFed($item_id, $destination) {
   return false;
 }
 
-/* returns the joined fields 
-	Params: 
-		columns = values of the processed item (db record)
-		fields  = source fields description
-		params  = parameters of the "join" mapping function - separated by ':', contains
-			field names separated by HTML separator description (the result will be the
-			fields' content separated by the separators)
-		result  = the value to be changed (see FeedItemTo)
-	Return value:
-		result
+/* returns the joined fields
+    Params:
+        columns = values of the processed item (db record)
+        fields  = source fields description
+        params  = parameters of the "join" mapping function - separated by ':', contains
+            field names separated by HTML separator description (the result will be the
+            fields' content separated by the separators)
+        result  = the value to be changed (see FeedItemTo)
+    Return value:
+        result
    written by Jakub Adámek
 */
 
 function FeedJoin ($columns, $fields, $params, &$result)
 {
-	$params = str_replace ("#:","#~",$params);
-	$params = split (":",$params);
-	reset($params);
-	$parts;
-	$i = 0;
-	// should all the joined fields be updated? 0 = don't know, -1 = no, 1 = yes
-	$update = 0;
-	while (list (,$val) = each ($params)) {
-		if ($i++ % 2 == 0) {
-			switch ($fields[$val][feed]) {
-			case STATE_UNFEEDABLE:	 return;
-			case STATE_FEEDNOCHANGE:
-				$result[flag] |= FLAG_FREEZE;
-				$update = -1;
-  			 	break;
-			case STATE_FEEDABLE_UPDATE_LOCKED: 
-				$result[flag] |= FLAG_FREEZE; // break shouldn't be here!
-			case STATE_FEEDABLE_UPDATE:
-				if ($update > -1) $update = 1;
-				break;
-			}
-			if (is_array($columns[$val]))
-				$result_val .= $columns[$val][0][value];
-			else $result_val .= $val;
-		}
-		else $result_val .= str_replace('\n',"\n",$val);
-	}
-	$result[flag] |= FLAG_UPDATE;
-	//if ($update != 1) // the function "update" doesn't support joined fields
-	$result[flag] -= FLAG_UPDATE;
-	$result[value] = str_replace ("#~",":",$result_val);
+    $params = str_replace ("#:","#~",$params);
+    $params = split (":",$params);
+    reset($params);
+    $parts;
+    $i = 0;
+    // should all the joined fields be updated? 0 = don't know, -1 = no, 1 = yes
+    $update = 0;
+    while (list (,$val) = each ($params)) {
+        if ($i++ % 2 == 0) {
+            switch ($fields[$val][feed]) {
+            case STATE_UNFEEDABLE:	 return;
+            case STATE_FEEDNOCHANGE:
+                $result[flag] |= FLAG_FREEZE;
+                $update = -1;
+                break;
+            case STATE_FEEDABLE_UPDATE_LOCKED:
+                $result[flag] |= FLAG_FREEZE; // break shouldn't be here!
+            case STATE_FEEDABLE_UPDATE:
+                if ($update > -1) $update = 1;
+                break;
+            }
+            if (is_array($columns[$val]))
+                $result_val .= $columns[$val][0][value];
+            else $result_val .= $val;
+        }
+        else $result_val .= str_replace('\n',"\n",$val);
+    }
+    $result[flag] |= FLAG_UPDATE;
+    //if ($update != 1) // the function "update" doesn't support joined fields
+    $result[flag] -= FLAG_UPDATE;
+    $result[value] = str_replace ("#~",":",$result_val);
 }
 
 
@@ -219,9 +219,20 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
             $new4id[$newfld][0][flag] |= FLAG_FREEZE | FLAG_UPDATE;   #update and don't allow to change
         }
         break;
-      case FEEDMAP_FLAG_VALUE : $new4id[$newfld][0][value] = $val; break;
-	  case FEEDMAP_FLAG_JOIN: 	
-	  	FeedJoin ($content4id, $fields, $val, $new4id[$newfld][0]); break;
+
+        // in value you can specify not only new value but you can write there
+        // also AA expression, which is unaliased - example:
+        // <a href="{source_href.....}">{source..........}</a>
+      case FEEDMAP_FLAG_VALUE :
+        // create item from source data (in order we can unalias)
+        if ( !$item2fed ) {
+          $item2fed = new item('', $content4id, GetAliasesFromFields($fields));
+        }
+// for apc-aa-dev - ne version:       $item2fed =  new item($content4id='', $aliases='', $clean_url='', $format='', $remove='', $param=false){
+        $new4id[$newfld][0]['value'] = $item2fed->unalias($val);
+        break;
+      case FEEDMAP_FLAG_JOIN:
+        FeedJoin ($content4id, $fields, $val, $new4id[$newfld][0]); break;
     }
 
     $new4id[$newfld][0][flag] |= FLAG_FEED;      # mark as fed
@@ -229,32 +240,39 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
     # category mapping
     if( $newfld == $catfieldid ) {
       if( (string)$tocategory != "0" )    # if 0 - don't change category
-        $new4id[$newfld][0][value] = $destinationcat;
+        $new4id[$newfld][0]['value'] = $destinationcat;
     }
-    $new4id[$newfld][0][value]=quote($new4id[$newfld][0][value]);
+    $new4id[$newfld][0]['value']=quote($new4id[$newfld][0]['value']);
   }
 
-  # fill required fields if not set
-  $new4id["status_code....."][0][value] = ($approved=='y' ? 1 : 2);
+  // --- fill required fields if not set ---
+
+  // status_code can be redefined in 'Mapping'
+  // Use it only when 'Value' is used for status_code (we do not want to copy
+  // status_code field from source item (since it is allways '1')
+
+  if ( !(($map['status_code.....']['feedmap_flag'] == FEEDMAP_FLAG_VALUE) AND
+         ((int)$new4id['status_code.....'][0]['value'] > 0)) ) {
+      $new4id['status_code.....'][0][value] = ($approved=='y' ? 1 : 2);
+  }
   $field_ids = array("post_date", "publish_date","expiry_date", "highlight", "posted_by",
                      "edited_by", "last_edit");
   while (list(,$fid) = each($field_ids)) {
-    $f_id = substr($fid."................",0,16);
+    $f_id = CreateFieldId($fid);
     if (!$new4id[$f_id])
       $new4id[$f_id] = $content4id[$f_id];
   }
-
-  StoreItem( $id, $destination, $new4id, $fields_to, true, true, false, $oldcontent4id );
-                                        # insert, invalidatecache, not feed
-  AddRelationFeed($id,$item_id); // Add to relation table
-
+                                             # insert, invalidatecache, not feed
+  if ( StoreItem( $id, $destination, $new4id, $fields_to, true, true, false, $oldcontent4id ) ) {
+      AddRelationFeed($id,$item_id); // Add to relation table
+  }
   return $id;
 }
 
 function AddRelationFeed ( $dest_id, $source_id) {
    global $db;
-	$p_dest_id = q_pack_id($dest_id);
-	$p_source_id = q_pack_id($source_id);
+    $p_dest_id = q_pack_id($dest_id);
+    $p_source_id = q_pack_id($source_id);
   # update relation table - stores where is what fed
   $SQL = "INSERT INTO relation ( destination_id, source_id,   flag )
                VALUES ( '$p_dest_id', '$p_source_id', '". REL_FLAG_FEED ."' )";
@@ -323,8 +341,8 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
     $val = $map[$key][val];
     if (($fval[0][flag] & FLAG_UPDATE) || $fields[$val][feed]==STATE_FEEDABLE_UPDATE )
        $oldcontent4id[$key][0][value] = quote($content4id[$val][0][value]);
-     else  
-       $oldcontent4id[$key][0][value] = quote($oldcontent4id[$key][0][value]);   
+     else
+       $oldcontent4id[$key][0][value] = quote($oldcontent4id[$key][0][value]);
        # we have to quote - data is from database
   }
   StoreItem( $dest_id, $destination, $oldcontent4id, $fields_to, false, true, false,
@@ -365,8 +383,8 @@ function UpdateItems($tree, $item_id, $slice_id, $cat_id) {
 
 # Feeds item to all apropriate slices
 # item_id is unpacked id of feeded item
-function FeedItem($item_id, $fields) {   
-  global $db, $slice_id;    
+function FeedItem($item_id, $fields) {
+  global $db, $slice_id;
 
   # get item field definition
   $content = GetItemContent($item_id);
@@ -382,8 +400,8 @@ function FeedItem($item_id, $fields) {
   $cat_field = GetCategoryFieldId( $fields );
 
   if($cat_group AND $cat_field) {
-    $SQL = "SELECT id FROM constant 
-             WHERE group_id = '$cat_group' 
+    $SQL = "SELECT id FROM constant
+             WHERE group_id = '$cat_group'
                AND value = '". addslashes ($content4id[$cat_field][0][value]) ."'";
     $db->query($SQL);
     if( $db->next_record() )
@@ -432,5 +450,5 @@ function DeleteItem($db, $id) {
                                                OR destination_id='$p_itm_id')
                                               AND flag & ".REL_FLAG_FEED;
   $db->query($SQL);
-}  
+}
 ?>
