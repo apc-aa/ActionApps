@@ -96,7 +96,7 @@ $lang_groups ["param_wizard"] =
    the language constants to fill translations into mgettext language files. */
 
 // set to true to show the related HTML
-$show_create_related = true;
+$show_create_related = false;
    
 /* $translateddir is needed only on moving PHP scripts to mgettext. 
    The PHP files which you translate from language constants to mgettext will be placed there.*/
