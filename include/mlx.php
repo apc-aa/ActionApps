@@ -198,8 +198,7 @@ class MLX
 		$content4mlxid["publish_date...."][0][value] = time();
 		$content4mlxid["expiry_date....."][0][value] = time() + 200*365*24*60*60;
 		$content4mlxid["status_code....."][0][value] = 1;
-		StoreItem($id,$this->langSlice,$content4mlxid,
-			$this->ctrlFields,$insert,true,true);
+		StoreItem($id,$this->langSlice,$content4mlxid, $this->ctrlFields,$insert,true,true);
 		$content4id[MLX_CTRLIDFIELD][0][value] = q_pack_id($id);
 		$this->trace("done. id=$id");
 	}
@@ -208,7 +207,6 @@ class MLX
 		global $DOCUMENT_URI;
 		global $PHP_SELF;
 		global $err;
-		global $r_hidden;
 		$mlxout = MLX_HTML_TABHD;
 		$mlx_url = ($DOCUMENT_URI != "" ? $DOCUMENT_URI :
 			$PHP_SELF . ($return_url ? "?return_url=".urlencode($return_url) : ''));
@@ -297,17 +295,12 @@ class MLX
 			$langName = $GLOBALS['g_const_Lang'][$v[name]];
 			$mlxout .= $modstr.($langName?$langName:$v[name]).($href?"</a>":"").$extra;
 			$mlxout .= "&nbsp;</td>\n ";
-			
 		}
-		//finally set hidden fields for AA
-		$r_hidden[mlxid] = (string)$mlxid;
-		$r_hidden[mlxl] = (string)$lang;
 		//this is a hack
 		if($GLOBALS['mlxScriptsTable'][(string)$lang]
 			&& $GLOBALS['mlxScriptsTable'][(string)$lang]['DIR'])
 			$GLOBALS['mlxFormControlExtra'] = " DIR=".$GLOBALS['mlxScriptsTable'][(string)$lang]['DIR']." ";
-		return $mlxout.MLX_HTML_TABFT;//"\n</tr>\n</tbody>\n</table>\n<br>\n";
-		//$r_hidden[mlxcontent] = $content4id;
+        return array($mlxout.MLX_HTML_TABFT, (string)$lang, (string)$mlxid);//"\n</tr>\n</tbody>\n</table>\n<br>\n";
 	}
 	// helper functions
 	//protected:
@@ -425,8 +418,8 @@ class MLXView
 					serialize($restrict_zids) : "")
 				. $defaultCondsOperator . $cachekeyextra;
 		
-			$cachestr = "slice_id=$ctrlSliceID";
-			if ( $res = CachedSearch( !$nocache, $keystr, $cachestr )) {
+            $str2find = new CacheStr2find($ctrlSliceID, 'slice_id');
+            if ( $res = CachedSearch( !$nocache, $keystr )) {
 				if(MLX_TRACE)
 					__mlx_trace("using cache for $keystr");
 				$zidsObj->refill( $res->a );
@@ -480,9 +473,9 @@ class MLXView
 		freeDB($db);
 		$QueryIDsCount = count($arr);
 		$zidsObj->a = array_keys($arr);
-		if( !$nocache )
-			$pagecache->store($keystr, serialize($zidsObj), $cachestr);
-		
+        if ( !$nocache ) {
+            $pagecache->store($keystr, serialize($zidsObj), $str2find);
+        }
 	}
 	/*
 	// I am still unsure if the JOIN is correct -- use this one to compare results (And nocache!)

@@ -39,10 +39,14 @@ require_once $GLOBALS["AA_INC_PATH"]."zids.php3"; // Pack and unpack ids
 require_once $GLOBALS["AA_INC_PATH"]."viewobj.php3"; //GetViewsWhere
 
 class slice {
-    var $name;          // The name of the slice
-    var $unpackedid;    // The unpacked id of the slice i.e. 32 chars
-    var $fields;        // 2 member array( $slice_fields, $prifields)
-    var $setting;       // slice setting - Record form slice table
+    var $name;           // The name of the slice
+    var $unpackedid;     // The unpacked id of the slice i.e. 32 chars
+    var $fields;         // 2 member array( $slice_fields, $prifields)
+    var $setting;        // slice setting - Record form slice table
+
+    // computed values form slice fields
+    var $js_validation;  // javascript form validation code
+    var $show_func_used; // used show functions in the input form
 
     function slice($init_id="",$init_name=null) {
         global $errcheck;
@@ -150,6 +154,93 @@ class slice {
     /** Get standard aliases definition from slice's fields */
     function aliases($additional_aliases = false) {
         return GetAliasesFromFields($this->fields('record'), $additional_aliases);
+    }
+
+    /** Returns javascript code for inputform validation */
+    function get_js_validation($action, $id=0, $notshown="") {
+        $this->_compute_field_stats($action, $id, $notshown);
+        return $this->js_validation;
+    }
+
+    /** Returns array of inputform function used the in inputform */
+    function get_show_func_used($action, $id=0, $notshown="") {
+        $this->_compute_field_stats($action, $id, $notshown);
+        return $this->show_func_used;
+    }
+
+    /** Computes js_validation code and show_func_used
+     *  $action = 'update' | 'edit'
+     *  $id       - id of item to edit
+     *  $notshown - fields, which are not shown in the inputform
+     */
+    function _compute_field_stats($action, $id=0, $notshown) {
+        if (isset($this->js_validation)) {
+            return;                                // already computed
+        }
+
+        global $profile, $auth;
+        if (!is_object( $profile ) ) {             // current user settings
+            $profile = new aaprofile($auth->auth["uid"], $this->unpacked_id());
+        }
+        $this->loadsettings();
+
+        // get slice fields and its priorities in inputform
+        list( $fields, $prifields) = $this->fields();
+        if (!is_array($prifields)) {
+            return '';
+        }
+
+        // it is needed to call IsEditable() function and GetContentFromForm()
+        if( $id ) {
+            $oldcontent = GetItemContent($id);
+            $oldcontent4id = $oldcontent[$id];   # shortcut
+        }
+
+        $js_proove_fields = 'true';
+        foreach ( $prifields as $pri_field_id ) {
+
+            $f = $fields[$pri_field_id];
+
+            //  'status_code.....' is not in condition - could be set from defaults
+            if (($pri_field_id=='edited_by.......') || ($pri_field_id=='posted_by.......')) {
+                continue;   // filed by AA - it could not be filled here
+            }
+            $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
+
+            list($validate) = split (":", $f["input_validate"]);
+            if ($validate == 'e-unique') {
+                $validate = "email";
+            }
+
+            $editable = IsEditable($oldcontent4id[$pri_field_id], $f, $profile) && !$notshown[$varname];
+            $js_proove_password_filled = ($action != "edit") && $f["required"] && !$oldcontent4id[$pri_field_id][0]["value"];
+
+            // prepare javascript function for validation of the form
+            if( $editable ) {
+
+                list($show_func) = explode(":", $f["input_show_func"], 2);
+                $this->show_func_used[$show_func] = true;
+
+                switch( $validate ) {
+                    case 'text':
+                    case 'url':
+                    case 'email':
+                    case 'number':
+                    case 'id':
+                    case 'pwd':
+                        $js_proove_fields .= "\n && validate (myform, '$varname', '$validate', "
+                            .($f["required"] ? "1" : "0").", "
+                            .($js_proove_password_filled ? "1" : "0").")";
+                    break;
+                }
+            }
+        }
+
+        $this->js_validation = get_javascript_field_validation(). "\n
+            function proove_fields () {
+                var myform = document.inputform;
+                return $js_proove_fields;
+            }\n";
     }
 }
 

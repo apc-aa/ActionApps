@@ -37,6 +37,8 @@ require_once $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
 require_once $GLOBALS["AA_INC_PATH"]."profile.class.php3";
 require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
+
 // IsUserNameFree() function deffinition here
 require_once($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
 
@@ -114,10 +116,11 @@ class inputform {
         $this->messages             = $settings['messages'];
         $this->result_mode          = $settings['result_mode'];  // if not supplied, standard form is used
         $this->template             = $settings['template'];
-    $this->formheading          = $settings['formheading']; //aded for MLX
+        $this->formheading          = $settings['formheading']; //aded for MLX
+        $this->hidden               = $settings['hidden'];      // array of hidden fields to be added to the form
     }
 
-    function printForm($content4id, $fields, $prifields, $edit, $slice_id) {
+    function printForm($content4id, &$slice, $edit) {
         global $sess;
         if ( $this->display_aa_begin_end ) {
             HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -142,7 +145,7 @@ class inputform {
                     getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>';
 
         // get the default form and FILL CONTENTCACHE with fields
-        $form = $this->getForm($content4id, $fields, $prifields, $edit);
+        $form = $this->getForm($content4id, $slice, $edit);
 
         // design of form could be customized by view
         if ( $this->template AND ($view_info = GetViewInfo($this->template))) {
@@ -155,9 +158,9 @@ class inputform {
 //        debug( $form, $GLOBALS['contentcache']);
     //added for MLX
         // print the inputform
-        $CurItem = new item($content4id, GetAliasesFromFields($fields), '', $form, $remove_string);   # just prepare
+        $CurItem = new item(&$content4id, $slice->aliases(), '', $form, $remove_string);   # just prepare
 
-    $out = $CurItem->get_item();
+        $out = $CurItem->get_item();
 
         FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"' );
         $parts = $GLOBALS['g_formpart'];
@@ -172,9 +175,9 @@ class inputform {
             FrmTabs( $tabs, 'formtabs' );
         }
 
-    if($this->formheading) // added for mlx tab
-        echo $this->formheading;
-
+        if ($this->formheading) {// added for mlx tab
+            echo $this->formheading;
+        }
 
         echo $out;
 
@@ -183,6 +186,11 @@ class inputform {
             FrmTabs( $tabs, 'formtabs' );
         }
 
+        if (is_array($this->hidden)) {
+            foreach ( (array)$this->hidden as $name => $value) {
+                $buttons[$name]         = array('value' => $value);
+            }
+        }
 
         $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );
         $buttons['encap']               = array('value' => (($encap) ? "true" : "false"));
@@ -200,7 +208,7 @@ class inputform {
         }
         $buttons['cancel']              = array('type'=>'button', 'value'=>_m("Cancel"),
                                                 'url'=> $this->cancel_url);
-        FrmTabEnd( $buttons, $sess, $slice_id );
+        FrmTabEnd( $buttons, $sess, $slice->unpacked_id() );
 
         if ( $GLOBALS['g_formpart'] ) {
             FrmJavascript('document.getElementById("inputtabrows").style.disply = \'\';
@@ -217,14 +225,16 @@ class inputform {
     *   @param $show is used by the Anonymous Form Wizard, it is an array
     *                (packed field id => 1) of fields to show
     */
-    function getForm($content4id, $fields, $prifields, $edit, $show="") {
-        global $slice_id, $auth, $profile;
-
-        if( !isset($prifields) OR !is_array($prifields) )
-            return MsgErr(_m("No fields defined for this slice"));
+    function getForm(&$content4id, &$slice, $edit, $show="") {
+        global $auth, $profile;
 
         if ( !is_object( $profile ) ) {
-            $profile = new aaprofile($auth->auth["uid"], $slice_id);  // current user settings
+            $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
+        }
+
+        list($fields, $prifields) = $slice->fields();
+        if( !isset($prifields) OR !is_array($prifields) ) {
+            return MsgErr(_m("No fields defined for this slice"));
         }
 
         $form4anonymous_wizard = is_array($show);
@@ -1068,14 +1078,90 @@ class aainputfield {
              $this->echoo("</td>");
         }
         $this->echoo("</tr>\n <tr><td valign=\"bottom\"><center>
-          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
-          &nbsp;&nbsp;");
-/*              <input type='button' value='". _m("Delete") ."' size='250'
-            onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
-                     document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'>*/
-        $this->echoo("<input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>\n");
+          <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>\n");
+        $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' size='250' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");
+        $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>\n");
         $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
         $this->echoo("</td></tr></table>\n");
+        $this->helps('plus');
+    }
+
+
+    /**
+    * Prints html tag <select multiple .. and "Add" relation button
+    * to 2-column table for use within <form> and <table> tag
+    */
+    function inputRelation2($size=6, $sid='', $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
+        list($name,$val,$add) = $this->prepareVars('multi');
+        $size                 = get_if($size, 6);
+        if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+
+        $this->field_name('plus');
+
+        $new_version = true;
+        if ( $new_version ) {
+            $varname = $this->varname;  // name without ending []
+            $var_code = '
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="formtable" id="rel'.$varname.'">
+              <tr>
+                <th>'._m('Item').'</th>
+                <th>'._m('Actions').'</th>
+              </tr>';
+            $i=0;
+            foreach ( (array)$this->const_arr as $id => $text) {
+                $tr_id = 'rel'.$varname.'old'.($i++);
+                $var_code .= '<tr id="'.$tr_id.'">
+                <td>'.htmlentities($text).'<input type="hidden" name="'.$name.'" value="'.htmlentities($id).'"></td>
+                <td>'.
+                  GetAAImage("edit.gif", _m('Edit'), 16, 16).
+                  GetAAImage("delete.gif", _m('Delete'), 16, 16).
+                  '<a href="javascript:MoveRowUp(\''.$tr_id.'\')">'. GetAAImage("up.gif", _m('Move up'), 16, 16). '</a>'.
+                  '<a href="javascript:MoveRowDown(\''.$tr_id.'\')">'. GetAAImage("down.gif", _m('Move down'), 16, 16). '</a>'.
+                '</td>
+              </tr>';
+            }
+            $var_code .= '</table>';
+            $this->echovar( $var_code );
+            $var_code = '
+            <div>
+              <input type="button" value="'. _m("Add") ."\" onclick=\"OpenRelated('".$this->varname."', '$sid', '$mode', '$design', '$whichitems','".rawurlencode($conds)."','".rawurlencode($condsrw)."','".get_admin_url('related_sel.php3')."' )\">
+            </div>
+            ";
+            $this->echovar( $var_code, 'buttons' );
+        } else {
+            $ret ="<select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";
+            $ret .= $this->get_options( $this->const_arr, false, false, 'all', false);
+            $option_no = count($this->const_arr) + ($this->required ? 0:1);
+            // add blank rows if asked for
+            while( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
+                $ret .= AA_WIDTHTOR;
+            }
+            $ret .= "</select>";
+
+            $this->echoo('<table border="0" cellspacing="0"><tr>');
+            if ($movebuttons) { $this->echoo("\n <td rowspan=\"2\">");
+            } else {
+                $this->echoo("\n <td>");
+            }
+            $this->echovar( $ret );
+            $this->echoo("</td>\n");
+            if ($movebuttons) {
+                 $this->echoo("<td valign=\"top\">");
+                 $this->echoo("<input type=\"button\" value=\" /\ \" ".
+                 " onClick=\"moveItem(document.inputform['".$name."'],'up');\">");
+                 $this->echoo('</td></tr>');
+                 $this->echoo('<tr><td valign="bottom">');
+                 $this->echoo("<input type=\"button\" value=\" \/ \" ".
+                 " onClick=\"moveItem(document.inputform['".$name."'], 'down');\">");
+                 $this->echoo("</td>");
+            }
+            $this->echoo("</tr>\n <tr><td valign=\"bottom\"><center>
+              <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
+              &nbsp;&nbsp;");
+            $this->echoo("<input type='button' value='". _m("Delete") ."' size='250' onclick=\"removeItem(document.inputform['".$name."']);\"></center>\n");
+            $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
+            $this->echoo("</td></tr></table>\n");
+        }
         $this->helps('plus');
     }
 
@@ -1953,13 +2039,14 @@ function getFrmJavascript( $jscode ) {
  *  (=keystr) and then call it as external file with this ID as parameter
  */
 function getFrmJavacrtiptCached( $jscode, $name ) {
+    global $pagecache;
     $keystr = serialize($jscode);
 
-    if ( !$GLOBALS['pagecache']->get($keystr) ) {  // not in cache, yet
-        $str2find = ",js=$name";
-        $GLOBALS['pagecache']->store($keystr, $jscode, $str2find);
+    if (!$pagecache->get($keystr)) {     // not in cache, yet
+        $str2find = new CacheStr2find($name, 'js');
+        $pagecache->store($keystr, $jscode, $str2find);
     }
-    $keyid = $GLOBALS['pagecache']->getKeyId($keystr);
+    $keyid = $pagecache->getKeyId($keystr);
     return getFrmJavascriptFile( 'cached.php3?keystr='.$keyid );
 }
 
@@ -1983,6 +2070,7 @@ function GetFormJavascript($show_func_used, $js_proove_fields) {
     global $slice_id, $sess;
 
     $retval  = getFrmJavascriptFile( 'javascript/inputform.js' );
+    $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
 
     $jscode .= $js_proove_fields;
     // field javascript feature (see /include/javascript.php3)
@@ -2331,7 +2419,7 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
 /**
 * used in tabledit.php3 and itemedit.php3
 */
-function get_javascript_field_validation () {
+function get_javascript_field_validation() {
     /* javascript params:
        myform = the form object
        txtfield = field name in the form
