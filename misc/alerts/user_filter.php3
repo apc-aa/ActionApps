@@ -128,6 +128,7 @@ $ac_trstart<TD>
    <table border='0' cellspacing='0' cellpadding='3' bgcolor=".COLOR_TABBG." align='center'>
      $ac_trstart<TD class=tabtxt><B>"._m("Language").":</B></TD>
         <TD class=tabtxt>";
+        asort ($LANGUAGE_NAMES);
         FrmSelectEasy ("chuser[lang]", $LANGUAGE_NAMES, $lang);
      echo "</TD>$ac_trend
      $ac_trstart<TD class=tabtxt><B>"._m("First name").":</B></TD>
