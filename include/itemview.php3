@@ -151,7 +151,7 @@ class itemview{
     $d_content = GetDiscussionContent($this->disc['item_id'], "",$this->disc['vid'],true,$order,$this->disc['html_format'],$this->clean_url);
     $d_tree = GetDiscussionTree($d_content);
 
-    $out .= "<form name=discusform>";
+    $out .= "<a name=\"disc\"></a><form name=discusform>";
     $script_loc = con_url($this->clean_url,"sh_itm=".$this->disc['item_id']); // location of the shtml with slice.php3 script
 
     $cnt = 0;     // count of discussion comments
@@ -207,6 +207,7 @@ class itemview{
               url += \"&ids[\" +  escape(eval('document.forms[\"discusform\"].h_'+i).value) + \"]=1\"
             }
           }
+          url += \"\#disc\"
           if (done == 0) {
             alert (\" ". L_D_SELECTED_NONE ."\" )
           } else {
@@ -214,10 +215,10 @@ class itemview{
           }
         }
         function showAllComments() {
-          document.location = \"". $script_loc . "&nocache=1&all_ids=1\"
+          document.location = \"". $script_loc . "&nocache=1&all_ids=1#disc\"
         }
         function showAddComments() {
-          document.location = \"". $script_loc . "&nocache=1&add_disc=1\"
+          document.location = \"". $script_loc . "&nocache=1&add_disc=1#disc\"
         }
        // --></SCRIPT>";
    return $out;
@@ -242,10 +243,11 @@ class itemview{
     else     // show all comments
       GetDiscussionThread($d_tree, "0", 0, $outcome);
 
+    $out.= '<a name="disc"></a>';
     if( isset($outcome) AND is_array($outcome) ) {
-    while ( list( $d_id, $images ) = each( $outcome )) {
-      $this->set_columns ($CurItem, $d_content, $d_id);
-      $depth = count($images)-1;
+      while ( list( $d_id, $images ) = each( $outcome )) {
+        $this->set_columns ($CurItem, $d_content, $d_id);
+        $depth = count($images)-1;
         $spacer = "";
         $out.= '
           <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -254,7 +256,7 @@ class itemview{
           $spacer .= $this->slice_info['d_spacer'];
         if($spacer)
           $out .= "
-              <td width=\"1%\" valign=top>$spacer</td>";
+              <td valign=top>$spacer</td>";
         $out .= "
               <td>".$CurItem->get_item()."
               </td>
@@ -270,6 +272,7 @@ class itemview{
   function get_disc_add(&$CurItem) {
 
     // if parent_id is set => show discussion comment
+    $out.= '<a name="disc"></a>';
     if ($this->disc['parent_id']) {
       $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],$this->disc['vid'],true,'timeorder',$this->disc['html_format'],$this->clean_url);
       $CurItem->setformat( $this->slice_info['d_fulltext']);

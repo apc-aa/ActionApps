@@ -81,9 +81,9 @@ function GetDiscussionContentSQL ($SQL, $item_id, $ids, $vid, $state, $html_flag
       $col["d_date.........."][0][value] = $db->f(date);
       $col["d_remote_addr..."][0][value] = $db->f(remote_addr);
       $col["d_state........."][0][value] = $db->f(state);
-      $col["d_url_fulltext.."][0][value] = $clean_url."&nocache=1&sh_itm=".$item_id."&sel_ids=1&ids[x".$d_id."]=1";
-      $col["d_url_reply....."][0][value] = $clean_url."&nocache=1&sh_itm=".$item_id."&add_disc=1&parent_id=".$d_id;
-      $col["d_disc_url......"][0][value] = $clean_url ."&nocache=1&sh_itm=".$item_id;
+      $col["d_url_fulltext.."][0][value] = $clean_url."&nocache=1&sh_itm=".$item_id."&sel_ids=1&ids[x".$d_id."]=1#disc";
+      $col["d_url_reply....."][0][value] = $clean_url."&nocache=1&sh_itm=".$item_id."&add_disc=1&parent_id=".$d_id."#disc";
+      $col["d_disc_url......"][0][value] = $clean_url."&nocache=1&sh_itm=".$item_id."#disc";
 
       // set html flag
       if ($html_flag)
