@@ -72,7 +72,9 @@ if($encap == "false")    // used in itemedit for anonymous form
                          // if the get_magic_quotes_gpc()==false (see above)
 
 // modules other than slices are in deeper directory -> $directory_depth
-require_once "$directory_depth../include/config.php3";
+$config_path = ( $directory_depth == 'base' ) ? "./include/config.php3" :  // base (for live_checkbox.php3)
+                               "$directory_depth../include/config.php3"; 
+require_once $config_path;
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";  
 
 // should be set in config.php3

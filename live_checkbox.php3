@@ -39,8 +39,8 @@ readfile ($image_path.'cb_on.gif');
 exit;
 }
          
-$directory_depth = "include/";           
-require_once "include/init_page.php3";
+$directory_depth = "base";           
+require_once "./include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 
