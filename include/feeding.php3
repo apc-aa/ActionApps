@@ -70,7 +70,7 @@ function FeedItemTo($item_id, $destination, $fields, $approved, $tocategory=0,
              AND flag & 1";   // 1. bit - feed
   $db->query($SQL);
   if( $db->next_record() )    // the item is already fed
-    exit;           // maybe we can update the item somehow
+    return false;           // maybe we can update the item somehow
 
   $map = GetFieldMap($slice_id, $destination, $fields);
 
@@ -134,6 +134,7 @@ function FeedItemTo($item_id, $destination, $fields, $approved, $tocategory=0,
   $cache->invalidateFor("slice_id=$destination");  # invalidate cached values
 
   return true;
+  
 }
 
 
@@ -186,7 +187,7 @@ function FeedItem($item_id, $fields) {
 
   # if not approved - exit
   if( $content[$item_id][status_code][0][value] != '1' )
-    exit;
+    return false;
 
   # get this item category_id
   $cat_group = GetCategoryGroup($slice_id);
@@ -205,9 +206,9 @@ function FeedItem($item_id, $fields) {
   $slices = GetSlicesIntoExportItem($slice_id, $cat_id);
 
   # now we have in $slices array set of slices to export the item 
-  # with destination category and state (approved or not)
-  #  huh("xxxxxxxxxxx All feed slices<br>");
-  #  p_arr($slices);
+  # with destination category and state (approved or not) 
+  #    huh("xxxxxxxxxxx All feed slices<br>");
+  #    p_arr($slices);
 
   // do not import the item twice
   reset( $slices );
@@ -216,6 +217,9 @@ function FeedItem($item_id, $fields) {
 }
 /*
 $Log$
+Revision 1.7  2001/03/07 14:34:01  honzam
+fixed bug with radiobuttons dispaly
+
 Revision 1.6  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

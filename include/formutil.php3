@@ -208,11 +208,11 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
   echo "</td>\n <td>";	
   reset($arr);
   while(list($k, $v) = each($arr)) { 
-    echo "<input type='radio' name='". htmlspecialchars($k)."'
-                 value='". htmlspecialchars($v) ."'";
+    echo "<input type='radio' name='$name'
+                 value='". htmlspecialchars($k) ."'";
     if ((string)$selected == (string)$k) 
       echo " checked";
-    echo ">$txt ";
+    echo ">".htmlspecialchars($v);
   }
   reset($arr);
   PrintMoreHelp($morehlp);
@@ -300,6 +300,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.11  2001/03/07 14:34:01  honzam
+fixed bug with radiobuttons dispaly
+
 Revision 1.10  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 
