@@ -37,6 +37,7 @@ DROP TABLE IF EXISTS subscriptions  ;
 DROP TABLE IF EXISTS users          ;
 DROP TABLE IF EXISTS view           ;
 
+# 21/06/02 - added column javascript to table slice
 # 04/22/02 - added constant_slice, jump, mysql_auth_group, mysql_auth_user, 
 #            mysql_auth_user_group, mysql_auth_userinfo tables
 #          - added some columns to constant, module, slice and view table  
@@ -619,6 +620,7 @@ CREATE TABLE slice (
    group_by varchar(16) default NULL,
    gb_header tinyint(4) default NULL,
    gb_case varchar(15) default NULL,
+   javascript text,                    # field triggers in JavaScript
    PRIMARY KEY (id)
 );
 
