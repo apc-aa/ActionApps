@@ -27,7 +27,14 @@ function get_mgettext_lang () {
    Remarks:  use full file name 
 */
 function bind_mgettext_domain ($filename) {
-    global $_m, $mgettext_lang;
+    global $_m, $mgettext_lang, $mgettext_domain;
+    
+    // store strings into backup and look for new strings in backup
+    if (!$_m_backup[$mgettext_domain])
+        $_m_backup[$mgettext_domain] = $_m;
+    $mgettext_domain = $filename;
+    $_m = $_m_backup[$mgettext_domain];
+    if ($_m) return;
     
     if (!file_exists ($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
