@@ -176,7 +176,7 @@ $_m["Subject"]
 # include/constants.php3, row 247
 # include/um_uedit.php3, row 37, 38, 39
 $_m["E-mail"]
-  = "";
+  = "E-mail";
 
 # admin/discedit2.php3, row 51, 111
 $_m["Text of discussion comment"]
@@ -324,7 +324,7 @@ $_m["Copy template dir"]
 
 # admin/fileman.php3, row 174
 $_m["Create new directory"]
-  = "";
+  = "Vytvoø nový adresáø";
 
 # admin/index.php3, row 212, 220, 227
 $_m["You have not permissions to move items"]
@@ -443,7 +443,7 @@ $_m["Update & View"]
 
 # admin/prev_navigation.php3, row 31
 $_m["OK"]
-  = "";
+  = "OK";
 
 # admin/related_sel.php3, row 128
 $_m["Select related items"]
@@ -478,11 +478,11 @@ $_m["Back"]
 
 # admin/setup.php3, row 58, 61
 $_m["AA Setup"]
-  = "";
+  = "Instalace AA";
 
 # admin/setup.php3, row 65
 $_m["This script can't be used on a configured system."]
-  = "";
+  = "Skript nelze použít na nakonfigurovaném systému.";
 
 # admin/setup.php3, row 81
 # admin/um_uedit.php3, row 259
@@ -510,7 +510,7 @@ $_m["Password"]
 
 # admin/setup.php3, row 88, 205
 $_m["Retype Password"]
-  = "";
+  = "Zopakujte heslo";
 
 # admin/setup.php3, row 89, 207
 # admin/se_newuser.php3, row 53, 105
@@ -522,15 +522,15 @@ $_m["First name"]
 
 # admin/setup.php3, row 90, 208
 $_m["Last name"]
-  = "";
+  = "Pøíjmení";
 
 # admin/setup.php3, row 105
 $_m["Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>"]
-  = "";
+  = "Dobrý den! Použijte tento skript k vytvoøení superuživatelského úètù.<p>Pokud instalujete novou kopii AA, stisknìte <strong>Init</strong>.</p>";
 
 # admin/setup.php3, row 106
 $_m["If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>"]
-  = "";
+  = "Pokud jste smazali superuživatelský úèet omylem, stisknìte <b>Obnovit</b>.<br>";
 
 # admin/setup.php3, row 132
 # admin/se_users.php3, row 89
@@ -545,7 +545,7 @@ $_m["User"]
 
 # admin/setup.php3, row 156
 $_m[" Init "]
-  = "";
+  = " Init ";
 
 # admin/setup.php3, row 165
 $_m["Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>"]
@@ -553,15 +553,15 @@ $_m["Can't add primary permission object.<br>Please check the access settings to
 
 # admin/setup.php3, row 170
 $_m["Recover"]
-  = "";
+  = "Obnovit";
 
 # admin/setup.php3, row 180
 $_m["Can't delete invalid permission."]
-  = "";
+  = "Nemohu smazat chybné nastavení.";
 
 # admin/setup.php3, row 182
 $_m["Invalid permission deleted (no such user/group): "]
-  = "";
+  = "Chybné nastavení smazáno (neexistuje tento uživatel/skupina): ";
 
 # admin/setup.php3, row 195
 $_m["Create"]
@@ -581,11 +581,11 @@ $_m["It is impossible to add user to permission system"]
 
 # admin/setup.php3, row 251
 $_m["Congratulations! The account was created."]
-  = "";
+  = "Blahopøejeme! Úèet byl vytvoøen.";
 
 # admin/setup.php3, row 253
 $_m["Use this account to login and add your first slice:"]
-  = "";
+  = "Použijte tento úèet k pøihlášení a vytvoøte první webík:";
 
 # admin/setup.php3, row 254
 # admin/slicedit.php3, row 90
@@ -596,7 +596,7 @@ $_m["Add Slice"]
 
 # admin/setup.php3, row 257
 $_m["Can't assign super access permission."]
-  = "";
+  = "Nemohu pøidat superuživatelské právo.";
 
 # admin/se_admin.php3, row 36
 $_m["You have no permission to set configuration parameters of this slice"]
@@ -677,7 +677,7 @@ $_m["Removes empty brackets etc. Use ## as delimeter."]
 # admin/se_fulltext.php3, row 165
 # admin/se_inputform.php3, row 70, 309
 $_m["Default"]
-  = "";
+  = "Implicitní";
 
 # admin/se_compact.php3, row 37
 $_m["You have not permissions to change compact view formatting"]
@@ -796,7 +796,7 @@ $_m["You have not permissions to change fields settings for the slice owning thi
 
 # admin/se_constant.php3, row 139
 $_m[" items changed to new value "]
-  = "";
+  = " èlánkù bylo zmìnìno na novou hodnotu ";
 
 # admin/se_constant.php3, row 153, 370
 # admin/um_gedit.php3, row 218
@@ -921,11 +921,11 @@ $_m["yes"]
 
 # admin/se_fieldid.php3, row 207
 $_m["This ID is reserved"]
-  = "";
+  = "Toto ID je rezerováno";
 
 # admin/se_fieldid.php3, row 211
 $_m["This ID is already used"]
-  = "";
+  = "Toto ID je již použito";
 
 # admin/se_fieldid.php3, row 230, 237
 $_m["Admin - change Field IDs"]
@@ -966,7 +966,7 @@ $_m["to"]
 # include/constants.php3, row 249
 # other translations: Typ
 $_m["Id"]
-  = "";
+  = "Id";
 
 # admin/se_fieldid.php3, row 273
 # admin/se_fields.php3, row 100, 203
@@ -1176,7 +1176,7 @@ $_m["More help"]
 
 # admin/se_inputform.php3, row 73
 $_m["Alias 1"]
-  = "";
+  = "Alias 1";
 
 # admin/se_inputform.php3, row 74, 77, 80, 397
 $_m["Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters."]
@@ -1190,11 +1190,11 @@ $_m["Function"]
 
 # admin/se_inputform.php3, row 76
 $_m["Alias 2"]
-  = "";
+  = "Alias 2";
 
 # admin/se_inputform.php3, row 79
 $_m["Alias 3"]
-  = "";
+  = "Alias 3";
 
 # admin/se_inputform.php3, row 262
 $_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
@@ -1376,19 +1376,19 @@ $_m["Field Triggers"]
 
 # admin/se_javascript.php3, row 74
 $_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
-  = "";
+  = "Vložte kód v JavaScriptu. Bude zahrnut na stránce Pøidat / Upravit zprávu (itemedit.php3).";
 
 # admin/se_javascript.php3, row 92
 $_m["Field IDs"]
-  = "";
+  = "ID políèek";
 
 # admin/se_javascript.php3, row 98
 $_m["Triggers"]
-  = "";
+  = "Triggery";
 
 # admin/se_javascript.php3, row 99
-$_m["Write trigger functions like \"aa_onSubmit (fieldid) { }\""]
-  = "";
+$_m["Write trigger functions like"]
+  = "Pište triggery jako napø.";
 
 # admin/se_javascript.php3, row 99
 $_m["see FAQ</a> for more details and examples"]
