@@ -236,22 +236,17 @@ function insert_fnc_ids($item_id, $field, $value, $param, $additional='') {
         # add reverse related
       $reverse_id = $value['value'];
       $value['value'] = $item_id;
-/*
-      This works for mysql-server 4.1 but I think it's broken (the mysql)
-      The clause should be AND `text`='' but doesnt work in mysql 4.1
-      It works on 4.0 
       // mimo added
-      // get rid of empty dummy relations (text=0) 
+      // get rid of empty dummy relations (text='')
       // this is only a problem for text content
       $db = getDB();
       if($field["text_stored"]) { 
         $SQL = "DELETE FROM content
                  WHERE item_id = '". q_pack_id($reverse_id) ."'
                    AND field_id = '". $field["id"] ."'
-                   AND `text`=0";
+                   AND `text`=''";
         $db->query( $SQL );
       }
-*/
         # is reverse relation already set?
       $SQL = "SELECT * FROM content
                WHERE item_id = '". q_pack_id($reverse_id) ."'
