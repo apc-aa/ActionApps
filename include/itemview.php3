@@ -145,7 +145,10 @@ class itemview {
               $view_type.
               $this->from_record.
               $this->num_records.
-              $this->clean_url.
+              // clean_url removed from keystring - it contains AA_SL_Session,
+              // which differs for each page, so it is never cached!!!
+              // (Honza 2004-11-4)
+              //              $this->clean_url.
               ((isset($this->zids)) ? $this->zids->id(0) : "");
     $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  # negative used for displaying n-th group of items only
                                         $this->from_record+$this->num_records );
