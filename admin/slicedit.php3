@@ -234,6 +234,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
+  FrmStaticText(L_ID, $slice_id);
   FrmInputText("headline", L_HEADLINE, $headline, 254, 25, true);
   FrmInputText("short_name", L_SHORT_NAME, $short_name, 254, 25, true);
   FrmInputText("slice_url", L_SLICE_URL, $slice_url, 254, 25, false);
@@ -288,8 +289,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
+Revision 1.3  2000/07/07 21:37:45  honzam
+Slice ID is displayed
 
 Revision 1.1.1.1  2000/06/21 18:40:05  madebeer
 reimport tree , 2nd try - code works, tricky to install
