@@ -1846,4 +1846,17 @@ function get_if($value, $else, $else2='aa_NoNe') {
            ($else ? $else :
            (($else2=='aa_NoNe') ? $else : $else2));
 }
+
+// file_get_contents works in PHP >=4.3.0
+if (!function_exists("file_get_contents")) {
+  function file_get_contents($filename, $use_include_path = 0) {
+    $data = ""; // just to be safe. Dunno, if this is really needed
+    $file = @fopen($filename, "rb", $use_include_path);
+    if ($file) {
+      while (!feof($file)) $data .= fread($file, 1024);
+      fclose($file);
+    }
+    return $data;
+  }
+}
 ?>
