@@ -65,7 +65,10 @@ $module2abbrev = array(
   * - g_slice_encoding    - destination encoding
   */
 function decode($v) {
-    static $encoder = new ConvertCharset;
+    static $encoder;
+    if ( !$encoder ) {
+        $encoder = new ConvertCharset;
+    }
     return $encoder->Convert($v, $GLOBALS['g_source_encoding'], $GLOBALS['g_slice_encoding']);
 }
 

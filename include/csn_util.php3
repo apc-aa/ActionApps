@@ -42,7 +42,7 @@ function getSliceEncoding($slice_id) {
     $db->next_record();
     $lang = substr($db->f("lang_file"),0,2);
     freeDB($db);
-    return $GLOBALS["LANGUAGE_CHARSETS"][$lang]);
+    return $GLOBALS["LANGUAGE_CHARSETS"][$lang];
 }
 
 /** Get categories from table ef_categories

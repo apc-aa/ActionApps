@@ -116,7 +116,7 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
         if ($debugfeed >= 1) print("\n<br>".$feed["DebugName"]);
 
         // now we have cat_ids[] array => we can ask for data
-        $categories2fed = null // implode(" ",$cat_ids) // older version (see above) (Honzam 04/26/04)
+        $categories2fed = null; // implode(" ",$cat_ids) // older version (see above) (Honzam 04/26/04)
         $xml_data = xml_fetch( $feed['server_url'], ORG_NAME, $feed['password'], $feed['user_id'], unpack_id128($feed['remote_slice_id']),  $feed['newest_item'], $categories2fed);
     } else {   // not FEEDTYPE_APC
         $feed["DebugName"] = "RSS Feed #$feed_id: $feed[name]: -> ".$l_slice->name();
@@ -140,7 +140,7 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
     }
 
     /** $g_slice_encoding is passed to aa_rss_parse() - it defines output character encoding */
-    $GLOBALS['g_slice_encoding'] = getSliceEncoding($feed['slice_id']);
+    $GLOBALS['g_slice_encoding'] = getSliceEncoding(unpack_id128($feed['slice_id']));
 
     if (!( $feed["aa_rss"] = aa_rss_parse( $xml_data ))) {
         writeLog("CSN","Feeding mode: Unable to parse XML data");
@@ -202,7 +202,7 @@ function translateCategory( $r_cat_id, &$ext_categs, &$l_categs ) {
     }
 
     if ( $target_category_id == unpack_id128('AA_The_Same_Cate') ) {
-        return  'other category'  // TODO: Return remote value
+        return  'other category';  // TODO: Return remote value
     } else {
         return $l_categs[$target_category_id]['value'];
     }

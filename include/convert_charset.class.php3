@@ -7,7 +7,7 @@
  *
  **/
 
-define (CONVERT_TABLES_DIR, $GLOBALS["AA_INC_PATH"]."/ConvertTables/");
+define (CONVERT_TABLES_DIR, $GLOBALS["AA_INC_PATH"]."ConvertTables/");
 define (DEBUG_MODE, 1);
 
 /**
