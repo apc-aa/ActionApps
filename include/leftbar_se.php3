@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.7  2001/02/23 11:18:04  madebeer
+interface improvements merged from wn branch
+
 Revision 1.6  2001/01/31 02:46:03  madebeer
 moved Fields leftbar section back up to Slice main settings section.
 updated some english language titles
@@ -52,7 +55,7 @@ added $Id $Log and $Copyright to some stray files
 
 */
 ?>
-<table width="122" border="0" cellspacing="0" bgcolor="#EBDABE" cellpadding="1" align="LEFT">
+<table width="122" border="0" cellspacing="0" bgcolor="#EBDABE" cellpadding="1" align="LEFT" class="leftmenu">
   <tr><td>&nbsp;</td></tr>
   <tr><td valign="TOP">
   <?php
@@ -107,17 +110,17 @@ added $Id $Log and $Copyright to some stray files
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <tr><td valign="TOP">
   <?php
-  if( $show["users"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS) ) 
-    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_users.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_PERM_CHANGE."</a></td>"; 
-   else 
-    echo "&nbsp;&nbsp;<span class=leftmenun>". L_PERM_CHANGE ."</span></td>"; ?>
-  </tr>
-  <tr><td valign="TOP">
-  <?php
   if( $show["addusers"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ADD_USER) ) 
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_users.php3") ."&adduser=1&slice_id=$slice_id\" class=leftmenuy>".L_PERM_ASSIGN."</a></td>"; 
    else 
     echo "&nbsp;&nbsp;<span class=leftmenun>". L_PERM_ASSIGN ."</span></td>"; ?>
+  </tr>
+  <tr><td valign="TOP">
+  <?php
+  if( $show["users"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS) ) 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_users.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_PERM_CHANGE."</a></td>"; 
+   else 
+    echo "&nbsp;&nbsp;<span class=leftmenun>". L_PERM_CHANGE ."</span></td>"; ?>
   </tr>
   <tr><td>&nbsp;</td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>

@@ -18,7 +18,8 @@
 # this path with a slash!
 # Example:
 # $AA_INC_PATH = "/home/httpd/html/aa/include/";
-$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa2/include/"; 
+$AA_INC_PATH = "/home/groups/apc-aa/htdocs/apc-aa/include/"; 
+$_PHPLIB["libdir"] = "/home/groups/apc-aa/phplib/";
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
@@ -28,21 +29,21 @@ define("AA_INSTAL_URL", "http://aa.ecn.cz/aa/");
 define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
 
 # Your Internet Domain
-define("DEFAULT_ORG_ID", "ecn.cz");
+define("DEFAULT_ORG_ID", "apc-aa.sourceforge.org");
 
 # DB Access Configuration
-define("DB_HOST", "localhost");
-define("DB_NAME", "aa-db");
-define("DB_USER", "aa-user");
-define("DB_PASSWORD", "somepasswd");
+define("DB_HOST", "moby");
+define("DB_NAME", "apcaa");
+define("DB_USER", "apcaa");
+define("DB_PASSWORD", "haXseMfl");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
-define("AA_ID", "420224311780abcd420224311780abcd");
 #define("AA_ID", "000111222333444555666777888999A9");
+define("AA_ID", "120224311780abcd420224311780zxab");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
-define("PERM_LIB", "ldap");
+define("PERM_LIB", "sql");
 
 # LDAP Configuration
 define("LDAP_HOST", "localhost");
@@ -54,7 +55,7 @@ define("LDAP_GROUPS", "ou=AA");
 define("LDAP_ACLS", "ou=ACLs,ou=AA");
 
 # e-mail for bug reporting contact
-define("ERROR_REPORTING_EMAIL", "technical@ecn.cz");
+define("ERROR_REPORTING_EMAIL", "madebeer@igc.apc.org");
 
 # set this directive to true, if you use MySQL 
 # (uses LIMIT clause in SELECTs)

@@ -48,10 +48,10 @@ $nb_settings = ( (!$slice_id OR $settings_page OR !IfSlPerm(PS_EDIT) ) ?
   '<a href="'. $sess->url("slicedit.php3") .'"><span class=nbenable>'. L_SETTINGS .'</span></a>');
 
 $nb_view = (!$slice_id ?
-  '<span class=nbviewlp>'. L_VIEW_SLICE .'</span>' :
-  "<a href=\"$r_slice_view_url\"><span class=nbviewlp>". L_VIEW_SLICE .'</span></a>');
+  '<span class=nbenable>'. L_VIEW_SLICE .'</span>' :
+  " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". L_VIEW_SLICE .'</span></a>');
 
-$nb_logo = '<a href="'. $sess->url(self_base()."index.php3") .'"><span class=nblogo>'. L_LOGO .'</span></a>';
+$nb_logo = '<span class=nblogo> <IMG SRC=../images/action.gif ALT="'. L_LOGO .'"></span>';
 
 $nb_go = '<span class=nbenable>'. L_GO .'</span>';
 
@@ -61,6 +61,9 @@ $nb_usermng = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
 
 /*
 $Log$
+Revision 1.5  2001/02/23 11:18:04  madebeer
+interface improvements merged from wn branch
+
 Revision 1.4  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 
@@ -105,12 +108,12 @@ config.inc
     <TD><IMG src="../images/spacer.gif" width=267 height=1></TD>
   </TR>
   <TR>
-    <TD bgcolor="#584011" align=center> <?php echo $nb_logo; ?></td>
-    <TD height=43 colspan=2 align=center valign=middle class=slicehead bgcolor=#EBDABE><?php echo "$nb_context  -  $r_slice_headline "; ?></TD>
+    <TD rowspan=2 align=center class=nblogo> <?php echo $nb_logo; ?></td>
+    <TD height=43 colspan=2 align=center valign=middle class=slicehead>
+    <?php echo "$nb_context  -  $r_slice_headline "; ?></TD>
   </TR>
   <TR>
-    <TD bgcolor=#584011 align=center> <?php echo $nb_view ?> </td>
-    <td align=center class=navbar><?php echo "$nb_additem | $nb_manager | $nb_settings | $nb_usermng "; ?></td>
+    <td align=center class=navbar><?php echo " $nb_view | $nb_additem | $nb_manager | $nb_settings | $nb_usermng "; ?></td>
     <TD align=center class=navbar><?php
       if( is_array($slices) AND (count($slices) > 1) ) {
         echo "<span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>";

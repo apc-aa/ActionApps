@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.4  2001/02/23 11:18:04  madebeer
+interface improvements merged from wn branch
+
 Revision 1.3  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 
@@ -40,7 +43,7 @@ added $Id $Log and $Copyright to some stray files
 
 */
 ?>
-<table width="122" border="0" cellspacing="0" bgcolor="#EBDABE" cellpadding="1" align="LEFT">
+<table width="122" border="0" cellspacing="0" bgcolor="#EBDABE" cellpadding="1" align="LEFT" class="leftmenu">
   <tr><td>&nbsp;</td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <tr><td class=leftmenu><?php echo L_CHANGE_MARKED ?></td></tr>

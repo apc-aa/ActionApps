@@ -7,9 +7,17 @@ td.scroller {background: #a0a0a0;}
 } 
 
 body { margin-left: 4px;
-       background: #F5F0E7;
+       background: #213F21;
        font-family: Verdana, Arial, Helvetica, sans-serif;
        font-size: 8pt;
+	color: #FFFFFF;
+}
+
+.login { 
+	background: #A8C8B0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	color: #000000;
 }
 
 SELECT {  
@@ -22,17 +30,18 @@ TD, INPUT, TEXTAREA {
   font-size: 8pt;
  }
 
-H1, .tablename {
+H1 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: medium;
   margin-left: 20px;  
+  color: #FFFFFF;
 }
 
 .navbar {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
-  background: #EBDABE;
-	color: #584011;
+	background: #A8C8B0; 
+	color: #FFFFFF;
 }
 
 .nbviewlp {
@@ -46,8 +55,8 @@ H1, .tablename {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	font-weight : bold;
-  background: #584011;
-	color: #F5F0E7;
+  background: #FFFFFF;
+	color: #FFFFFF;
   text-decoration: none;
 }
 
@@ -61,14 +70,14 @@ H1, .tablename {
 .nbenable {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
-  background: #EBDABE;
-	color: #4A4A4A;
+/*  background: #EBDABE;  don't change the background colour*/
+	#color: #000000;
 }
 
 .nbdisable {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
-  background: #EBDABE;
+/*   background: #EBDABE; */
 	color: #4A4A4A;
 }
 
@@ -77,43 +86,79 @@ H1, .tablename {
 	font-size: 8pt;
 }
 
+.slicesubhead {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : 8pt;
+	color: #EEEEEE;
+	font-weight : bold;
+	background: #589868;
+}
+
 .slicehead {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size : 13pt;
-	color: #584011;
+	color: #FFFFFF;
 	font-weight : bold;
-  background: #EBDABE;
+	background: #589868;
 }
 
 .leftmenu  {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: x-small;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: x-small;
 	font-weight : bold;
-  color: #4A4A4A;
+	background: #A8C8B0;
+	color: #4A4A4A;
 }
 
 .leftmenuy  {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
-  color: #4A4A4A;
+        background: #A8C8B0;
+  color: #000000;
 }
 
 .leftmenun  {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: x-small;
+        background: #A8C8B0;
   color: #4A4A4A;
 }
 
-.ipreview, .iid, .ipostdate, .ihedline, .icategory, .ifeedtit, .ifeed, .navbar, .headline {
+.subwindow  {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: x-small;
+	font-weight : bold;
+	background: #A8C8B0;
+	color: #4A4A4A;
+}
+
+.windowtitle {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: x-small;
+	font-weight : bold;
+	background: #589868;
+	color: #FFFFFF;
+}
+
+.ipreview, .iid, .ipostdate, .ihedline, .icategory, .ifeedtit, .ifeed {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #4A4A4A;
+  background: #A8C8B0;
 }
 
 .inoutertd {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
   color: #FFFFFF;
+}
+
+.tablename {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  font-weight: bold; 
+  color: #FFFFFF;
+  background: #589868;
 }
 
 .tabtit {
@@ -124,12 +169,14 @@ H1, .tablename {
 
 .tabtxt {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: small;
+  font-size: x-small;
 }
 
 .tabhlp {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: x-small;
+  font-size: xx-small;
+  color: #4A4A4A;
+  background: #A8C8B0;
 }
 
 .taberr {
