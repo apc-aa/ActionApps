@@ -130,9 +130,13 @@ if( $update )
 if( !$update ) {  # set variables from database
   if( $view_id )  # edit specified view data
     $SQL= " SELECT * FROM view WHERE id='$view_id'";
-   else           # new view - get default values from view table - 
+   else {         # new view - get default values from view table - 
                   #            take first view of the same type
-    $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
+    if( $view_type )
+      $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
+     else         # error - someone swith the slice or so
+      go_url($sess->url("se_views.php3")); 
+  }    
   $db->query($SQL);
   if ($db->next_record())
     $vw_data = $db->Record;
@@ -252,6 +256,9 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.8  2001/11/05 13:44:18  honzam
+fixed bug after switching to another slice
+
 Revision 1.7  2001/09/27 15:45:49  honzam
 Easiest left navigation bar editation, New constant view
 
