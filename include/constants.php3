@@ -744,7 +744,7 @@ $conds_not_field_names = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuej
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);
 // CountHit probability - how offen write logged hits to item table
-define ("COUNTHIT_PROBABILITY", 50);
+define ("COUNTHIT_PROBABILITY", 1000);
 
 // how much links check in one run (for links module link checker)
 define ("LINKS_VALIDATION_COUNT", 100);
