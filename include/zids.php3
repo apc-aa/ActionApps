@@ -296,10 +296,15 @@ class zids {
 
     # Create a new zids, from a subset of the data,  with the same type
     # Parameters are same as for "array_slice"
-    function slice($offset, $length) {
+    function slice($offset, $length=1) {
         if (is_array ($this->a))
             return new zids(array_slice($this->a,$offset,$length),$this->type);
         else return new zids(null, $this->type);
+    }
+    
+    /** Returns n-th zid */
+    function zid($index) {
+        return $this->slice($index);
     }
 
     # Return associative array, longid->tag;

@@ -153,7 +153,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
                <td nowrap>_#DATE####</td>
                <td>&nbsp;</td>";
        $item->setformat($im2);
-       $item->columns = $dcontent[$d_id];
+       $item->set_data($dcontent[$d_id]);
        echo $item->get_item();
 
        echo "<td align=center>&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><SMALL>". _m("Delete") ."</SMALL></a>";

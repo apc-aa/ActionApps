@@ -170,12 +170,12 @@ class slices {
     function objarr() {
         return $this->a;
     }
-    function addslice($unpackedsliceid) {
-        if ($this->a[$unpackedsliceid])
-            return $this->a[$unpackedsliceid];
-        $s = new slice($unpackedsliceid);
-        $this->a[$unpackedsliceid] = $s;
-        return $s;
+
+    function & addslice($unpackedsliceid) {
+        if (!$this->a[$unpackedsliceid]) {
+            $this->a[$unpackedsliceid] = new slice($unpackedsliceid);
+        }
+        return $this->a[$unpackedsliceid];
     }
 }
 

@@ -30,6 +30,7 @@ require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 $where_used = true;
 

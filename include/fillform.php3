@@ -322,7 +322,6 @@ function unsubscribe_reader() {
 */
 function fillConds () {
     global $form, $conds, $dateConds;
-    global $conds_not_field_names;
     $res = "";
     $res .= $GLOBALS["jsstart"]
         ."function fillConds () {";

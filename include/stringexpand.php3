@@ -154,10 +154,10 @@ function parseLoop($out, &$item) {
             $params = explode(",",$param);
             // field name
             $field = substr($field, 0, strpos($field, "("));
-            $group_id = getConstantsGroupID($item->columns["slice_id........"][0]["value"], $field);
+            $group_id = getConstantsGroupID($item->columns["slice_id........"][0]["value"], $field); //
         }
     }
-    $val = $item->getmultipleval($field);
+    $val = $item->getvalues($field);
     if (!is_array($val)) {
         return '';
     }
@@ -291,7 +291,13 @@ function stringexpand_substr($string,$start,$length=999999999) {
     return substr($string,$start,$length);
 }
 
-/** Expand URL by adding session, 
+function stringexpand_item($item_id,$field) {
+    $zid  = new zids($item_id);
+    $item = GetItemFromId($zid);
+    return ( $item ? $item->subst_alias($field) : '');
+}
+
+/** Expand URL by adding session,
     also handle special cases like {sessurl:hidden} */
 function stringexpand_sessurl($url) {
     global $sess;
@@ -299,15 +305,9 @@ function stringexpand_sessurl($url) {
         case "hidden":
             return "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">";
             break;
-        default: 
+        default:
             return $sess->url($url);
     }
-}
-
-function stringexpand_item($item_id,$field) {
-    $zid  = new zids($item_id);
-    $item = GetItemFromId($zid);
-    return ( $item ? $item->subst_alias($field) : '');
 }
 
 # Expand a single, syntax element.

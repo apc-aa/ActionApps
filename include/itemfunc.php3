@@ -571,6 +571,8 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         $event->comes('ITEM_BEFORE_UPDATE', $slice_id, 'S', new ItemContent ($content4id), new ItemContent ($oldcontent4id));
         if ($debugsi) huhl("StoreItem: done events");
 
+        // delete content of all fields, which are in new content array
+        // (this means - all not redefined fields are unchanged)
         reset($content4id);
         $delim="";
         while(list($fid,) = each($content4id)) {

@@ -786,6 +786,7 @@ define ("DISCUS_HTML_FORMAT",  1);  // discussion html format flag in slice tabl
 
 // don't check whether these fields exist (in the conds[] array used by searchform):
 $CONDS_NOT_FIELD_NAMES = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuejoin"=>1);
+
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);
 // CountHit probability - how offen write logged hits to item table
