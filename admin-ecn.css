@@ -42,84 +42,84 @@ H1, .tablename {
 }
 
 .navbar {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size: 8pt;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size: 8pt;
         background: #EBDABE;
-	color: #584011;
+    color: #584011;
         vertical-align: middle;
 }
 
 .nbviewlp {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size: 10pt;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size: 10pt;
         background: #584011;
-	color: #F5F0E7;
+    color: #F5F0E7;
 }
 
 .nblogo {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size: 10pt;
-	font-weight : bold;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    font-weight : bold;
         background: #FFFFFF;
-	color: #F5F0E7;
+    color: #F5F0E7;
         text-decoration: none;
 }
 
 .nbmenu {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size: 8pt;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size: 8pt;
         background: #F5F0E7;
-	color: #584011;
+    color: #584011;
 }
 
 .nbenable {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size: 8pt;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size: 8pt;
   /*  background: #EBDABE;  don't change the background colour*/
-	color: #4A4A4A;
+    color: #4A4A4A;
 }
 
 .nbactive {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size: 8pt;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size: 8pt;
   /*  background: #EBDABE;  don't change the background colour*/
-	color: black;
+    color: black;
     background: white;
 }
 
 .nbdisable {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size: 8pt;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size: 8pt;
 /*  background: #EBDABE;  */
-	color: #4A4A4A;
-	vertical-align: middle;
+    color: #4A4A4A;
+    vertical-align: middle;
 }
 
-.disabled { 
-	color: #808080;
+.disabled {
+    color: #808080;
 }
 
 .example {
-	font-family: Courier, sans-serif;
-	font-size: 8pt;
+    font-family: Courier, sans-serif;
+    font-size: 8pt;
 }
 
 .slicesubhead {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size : 8pt;
-	color: #EEEEEE;
-	font-weight : bold;
-	background: #589868;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size : 8pt;
+    color: #EEEEEE;
+    font-weight : bold;
+    background: #589868;
 }
 
 .slicehead {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size : 13pt;
-	color: #584011;
-	font-weight : bold;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size : 13pt;
+    color: #584011;
+    font-weight : bold;
   background: #EBDABE;
-	width: 100%;
-	vertical-align: middle;
+    width: 100%;
+    vertical-align: middle;
 }
 
 .leftmenu  {
@@ -129,7 +129,7 @@ H1, .tablename {
 }
 
 TD.leftmenu {
-	font-weight : bold;
+    font-weight : bold;
 }
 
 .leftmenuy  {
@@ -155,19 +155,19 @@ TD.leftmenu {
 }
 
 .subwindow  {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size: x-small;
-	font-weight : bold;
-	background: #A8C8B0;
-	color: #4A4A4A;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size: x-small;
+    font-weight : bold;
+    background: #A8C8B0;
+    color: #4A4A4A;
 }
 
 .windowtitle {
-	font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-	font-size: x-small;
-	font-weight : bold;
-	background: #589868;
-	color: #FFFFFF;
+    font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
+    font-size: x-small;
+    font-weight : bold;
+    background: #589868;
+    color: #FFFFFF;
 }
 
 .ipreview, .iid, .ipostdate, .icategory, .ifeedtit, .ifeed, .navbar, .headline {
@@ -190,7 +190,7 @@ TD.leftmenu {
 .tabtit {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: x-small;
-	background: #584011;
+    background: #584011;
   color: #FFFFFF;
 }
 
@@ -207,7 +207,7 @@ TD.leftmenu {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 12pt;
   font-weight: bold;
-	color: #584011;
+    color: #584011;
   background: #EBDABE;
 }
 
@@ -239,5 +239,5 @@ TD.leftmenu {
 }
 
 .sel_title {
-       background: #F5F0E7;
+       background: #EBDABE;
 }

@@ -1,3 +1,18 @@
+08/21/03 - category tree display speedup (in links module)
+(honzam) - fixed sql_update to not add disc_count,.. fields twice to the slie
+         - sql_update - refreshed to last database state
+           (added 'selector' column to log table)
+         - discussions in thread view could be sorted in reverse time order
+           (first thread is the newes one)
+08/20/03 - added new parameter "hide email" for f_m alias function which prints
+(honzam)   email using javascript, so it is hopefuly unvisible to spam robots
+08/14/03 - fixed hierarchical editor on inputform - it show names of constants
+(honzam)   instead of values
+         - fixed redefine function problem in manager and scroller
+           (require once, now)
+         - language constants for output (view, slice) are now loaded
+           (so "Next" is translated, for example)
+         - fixed als[] defined aliases in constant view - now works
 08/10/03 - {slice_id........} and {id..............} inline aliases displays
 (honzam)   unpacked ids, now
          - fixed bug in Jump module - error when jumping from Edit Jump page
