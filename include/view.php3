@@ -56,12 +56,22 @@ function GetAliasesFromUrl($to_arr = false) {
  * @return array separated cmd parameters
  */
 function ParseCommand($cmd,$als=false) {
-  if( isset( $als ) AND is_array( $als ) ) {  # substitute url aliases in cmd
-    reset( $als );
-    while( list($k,$v) = each( $als ) )
-      $cmd = str_replace ($k, $v, $cmd);
-  }
-  return split_escaped("-", $cmd, "--");
+    if ( isset($cmd) AND is_array($cmd) ) {
+        // handle cmd[89][]=... parameters (for combining more commands)
+        foreach( $cmd as $cmd_part ) {
+            if( !$cmd_res ) {
+                $cmd_res = $cmd_part;
+            } elseif ( $cmd_res{0} == $cmd_part{0} ) {   // we can combine only
+                $cmd_res .= '-'.substr($cmd_part,2);     // the same commands
+            }
+        }
+        $cmd = $cmd_res;
+    } elseif ( isset( $als ) AND is_array( $als ) ) {  # substitute url aliases in cmd
+        foreach( $als as $k => $v ) {
+            $cmd = str_replace ($k, $v, $cmd);
+        }
+    }
+    return split_escaped("-", $cmd, "--");
 }
 
 /**
@@ -496,7 +506,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $itemview->parameter('category_id', $category_id);
 
       if ( !isset($zids) || $zids->count() <= 0) {
-        # $ret = $noitem_msg; 
+        # $ret = $noitem_msg;
         $ret = $itemview->unaliasWithScroller($noitem_msg);
           return $ret;
       }
@@ -581,7 +591,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                             ? 'calendar' : 'view');
         $ret = $itemview->get_output_cached($itemview_type);
       }   #zids2->count >0
-      else { 
+      else {
         $ret = $itemview->unaliasWithScroller($noitem_msg);
       }
       // 	if( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();

@@ -1,6 +1,9 @@
+11/06/03 - added array possibility for cmd[89][]=.. view parameter, which allows
+(honzam)   to combine more commands for the same view
+           (one from url, one from SSI, ... - for example)
 11/05/03 - fixed discussion  to mailing list where field present but unfilled
 (mitra)  - fixed bug in error message in init_page
-10/30/03 - removed utf8 encode and decode in RSS_restrict and decode (mitra)
+
 --------------------
 11/04/03 - v2.6.0 - stable release
 --------------------
@@ -21,6 +24,7 @@
          - improved the spanish translation
 10/30/03 - fixed RSS feeds to work in PHP <4.3.0 (honzam)
 10/30/03 - fixed bug with $scr->current in slice.php3 (setu)
+10/30/03 - removed utf8 encode and decode in RSS_restrict and decode (mitra)
 10/24/03 - fixed bug with state variable expanding in site module
 (mitra)  - parseUser becomes stringexpand_user
 10/19/03 - Added mapping to RSS,
