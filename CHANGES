@@ -1,4 +1,4 @@
-7/27/00  - to change priviliges of other accounts, equality of permissions 
+7/27/00  - to change privileges of other accounts, equality of permissions 
            is no longer adequate (higher role is required)
          - superadmin privilege settings in User / Group management
 7/25/00  - fixed minor Javascript errors in se_compact.php3 and index.php3

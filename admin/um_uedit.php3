@@ -392,6 +392,9 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.4  2000/07/27 18:42:40  kzajicek
+*** empty log message ***
+
 Revision 1.3  2000/07/27 18:17:21  kzajicek
 Added superadmin settings in User/Group management
 
