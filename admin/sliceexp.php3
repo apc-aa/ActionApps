@@ -233,9 +233,9 @@ $sv = $so->views();
 #$j = $sv[18];
 $j = $sv;
 $xf = xml_serialize("18",$j,"\n","    ");
-huhl("XYZZY:SE:",$j);
-huhl("XYZZY:SE2:",$xf);
-huhl("XYZZY:SE3:",xml_unserialize($xf));
+huhl("SE:",$j);
+huhl("SE2:",$xf);
+huhl("SE3:",xml_unserialize($xf));
 */
 HtmlPageEnd();
 page_close(); } ?>

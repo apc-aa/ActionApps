@@ -101,7 +101,7 @@ $allviews = new views();
 function VIEWS_xml_unserialize($n,$a) {
     $vs = new views();
     $vs->a = $a;
-    #huhl("XYZZY: created VIEWS ",$vs);
+    #huhl("created VIEWS ",$vs);
     return $vs;
 }
 function GetViewInfo($vid) {
@@ -125,13 +125,13 @@ function GetViewsWhere($sql="") {
         $a["$id"] = &$allviews->a[$id];
     }
     freeDB($db);
-    #huhl("XYZZY:VO:GVW:",$a);
+    #huhl("VO:GVW:",$a);
     return $a;
 }  
 
 
 
 #$foo = GetViewInfo(18);
-#huhl("XYZZY: VO:GVI:",$foo,$allviews); 
+#huhl("VO:GVI:",$foo,$allviews); 
 
 ?>

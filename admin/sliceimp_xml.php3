@@ -156,7 +156,6 @@ function sliceimp_xml_parse($xml_data,$dry_run=false) {
         } else 
 			   import_slice($slice);
 
-        #huhl("XYZZY:Maybe views",$sl);
         if (is_object($sl[VIEWS])) {
             import_views($sl[VIEWS]);
         } // have some views
@@ -214,12 +213,12 @@ function import_views(&$slvs) {
     // currently deleted, although that would be an OK change to make
     reset($slvs->a);
     foreach ($slvs->a as $slv) { # $slv is a viewobj
-        #huhl("XYZZY: Working on view",$slv);
+        #huhl("Working on view",$slv);
         $varset = new Cvarset();
         $slvf = $slv->f();
         $id = $slvf["id"];
 
-        #huhl("XYZZY`:varset=",$varset);
+        #huhl("varset=",$varset);
         if($dry_run) {
                  print("Would import view $id: "
                             .$slv->f("name"));

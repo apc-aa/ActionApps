@@ -306,7 +306,7 @@ if ($data_conflicts_list) {
 }
 
 if ($slice_def != "") {
-	$err = sliceimp_xml_parse ($slice_def,true);	//XYZZY set dry run
+	$err = sliceimp_xml_parse ($slice_def,false);
 	if ($err != "") si_err($err);
 }
 
