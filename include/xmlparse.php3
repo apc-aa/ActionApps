@@ -73,16 +73,11 @@ function StoreWDDX2DB( $packet, $slice_id, $fields ) {
   # store prepared data to item table 
   $itemvarset->add("id", "unpacked", $id);
   $itemvarset->add("slice_id", "unpacked", $slice_id);
-  if( !($itemvarset->get("status_code")) )
-    $itemvarset->add("status_code", "quoted", "1");
-  if( !($itemvarset->get("post_date")) )
-    $itemvarset->add("post_date", "quoted", time()+157680000);
-  if( !($itemvarset->get("publish_date")) )
-    $itemvarset->add("post_date", "quoted", time());
-  if( !($itemvarset->get("last_edit")) )
-    $itemvarset->add("last_edit", "quoted", time());
-  if( !($itemvarset->get("expiry_date")) )
-    $itemvarset->add("expiry_date", "quoted", time()+157680000); // 5 years
+  $itemvarset->ifnoset("status_code", "1", "quoted");
+  $itemvarset->ifnoset("post_date", time()+157680000, "quoted"); // 5 years
+  $itemvarset->ifnoset("publish_date", time(), "quoted");
+  $itemvarset->ifnoset("last_edit", time(), "quoted");
+  $itemvarset->ifnoset("expiry_date", time()+157680000, "quoted"); // 5 years
   $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
   
   $db->query($SQL);
@@ -97,6 +92,9 @@ function StoreWDDX2DB( $packet, $slice_id, $fields ) {
 
 /*
 $Log$
+Revision 1.3  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.2  2001/02/20 13:25:16  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 

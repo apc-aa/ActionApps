@@ -79,6 +79,12 @@ class Cvarset {
     $this->add($varname, $type, $value);   // it must be assigned this way, because $v is just copy
   }
 
+  # if undefined - set
+  function ifnoset($varname, $value, $type="") {
+    if( !($this->get($varname)) )
+      $this->add($varname, ($type ? $type : "quoted"), $value);
+  }    
+
 	# return variable value
   function value($varname){
     $v = $this->vars["$varname"];
@@ -184,6 +190,9 @@ class Cvarset {
 }
 /*
 $Log$
+Revision 1.4  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.3  2001/01/26 15:06:50  honzam
 Off-line filling - first version with WDDX (then we switch to APC RSS+)
 

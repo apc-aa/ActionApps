@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.9  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.8  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 
@@ -75,6 +78,13 @@ added $Id $Log and $Copyright to some stray files
     echo   '&nbsp;&nbsp;<span class=leftmenun>'. L_NEW_SLICE ."</span></td>";?>
   </tr>
   <tr><td valign="TOP">
+  <?php /*
+  if( $show["delslice"] AND IsSuperadmin() )
+    echo   '&nbsp;&nbsp;<a href="'. $sess->url("slicedel.php3"). '" class=leftmenuy>'. L_DEL_SLICE .'</a>';
+   else 
+    echo   '&nbsp;&nbsp;<span class=leftmenun>'. L_DEL_SLICE ."</span></td>"; */?>
+<!--   </tr>
+  <tr><td valign="TOP"> -->
   <?php
   if( ($slice_id AND IfSlPerm(PS_DELETE_ITEMS) ))
     echo   '&nbsp;&nbsp;<a href="'. $sess->url("index.php3?Delete=trash") .  '" class=leftmenuy>'. L_DELETE_TRASH .'</a>';
@@ -144,20 +154,20 @@ added $Id $Log and $Copyright to some stray files
     echo "<span class=leftmenun>&nbsp;&nbsp;". L_FULLTEXT ."</span></td>";?>
   </tr>
   <tr><td valign="TOP">
-  <?php
+  <?php/*
   if( $show["views"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT) ) 
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_views.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_VIEWS."</a></td>"; 
    else 
-    echo "&nbsp;&nbsp;<span class=leftmenun>". L_VIEWS ."</span></td>"; ?>
-  </tr>
-  <tr><td valign="TOP">
-  <?php
+    echo "&nbsp;&nbsp;<span class=leftmenun>". L_VIEWS ."</span></td>"; */?>
+<!--   </tr>
+  <tr><td valign="TOP"> -->
+  <?php /*
   if( $show["search"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_SEARCH) ) 
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_search.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_SEARCH_SET."</a></td>"; 
    else 
-    echo "&nbsp;&nbsp;<span class=leftmenun>". L_SEARCH_SET ."</span></td>"; ?>
-  </tr>
-  <tr><td valign="TOP">
+    echo "&nbsp;&nbsp;<span class=leftmenun>". L_SEARCH_SET ."</span></td>"; */?>
+<!--   </tr>
+  <tr><td valign="TOP"> -->
   <?php
   if( $show["config"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CONFIG) ) 
     echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_admin.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_SLICE_CONFIG."</a></td>"; 

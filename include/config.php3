@@ -70,8 +70,6 @@ define("SINGLE_COLUMN_FORM", "0");
 #/var/php/phplib/php/db_mysql.inc on line 12
 
 define("PHPLIB_ALREADY_LOADED", false);
-define("ADM_SLICE_CSS","adm_slice.css");
-define("ADMIN_CSS","admin.css");
 
 # number of shown pages links in scroller's navigation bar
 define("SCROLLER_LENGTH", 3);
@@ -108,6 +106,39 @@ if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
 
 define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
 
+# Select color profile for administation pages
+
+  # -- WebNetworks profile
+    define("COLOR_TABBG",     "#A8C8B0");          # background of tables
+    define("COLOR_TABTITBG",  "#589868");          # background of table titles
+    define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
+
+      # You can redefine the colors in styles too
+    define("ADMIN_CSS","admin.css");               # style for admin interface
+    define("ADM_SLICE_CSS","adm_slice.css");       # style for public view of 
+                                                   # not encapsulated slices
+
+  # -- IGC profile --- 
+  /*
+    define("COLOR_TABBG",   "#A8C8B0");            # background of tables
+    define("COLOR_TABTITBG","#589868");            # background of table titles
+    define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
+      # You can redefine the colors in styles too
+    define("ADMIN_CSS","admin-igc.css");           # style for admin interface
+    define("ADM_SLICE_CSS","adm_slice-igc.css");   # style for public view of 
+                                                   # not encapsulated slices
+  */
+
+  # -- Econnects profile --- 
+  /*
+    define("COLOR_TABBG",   "#EBDABE");            # background of tables
+    define("COLOR_TABTITBG","#584011");            # background of table titles
+    define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
+      # You can redefine the colors in styles too
+    define("ADMIN_CSS","admin-ecn.css");           # style for admin interface
+    define("ADM_SLICE_CSS","adm_slice.css");       # style for public view of 
+                                                   # not encapsulated slices
+  */
 // ------------------------------------------------------------------
 // developer SITE_CONFIG
 

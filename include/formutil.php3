@@ -163,7 +163,7 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false,
 
 # Prints html tag <input type=checkbox 
 function FrmChBoxEasy($name, $checked=true, $add="") {
-  $name=safe($name); $add=safe($add);
+  $name=safe($name); # $add=safe($add); NO!!
 
   echo "<input type=\"checkbox\" name=\"$name\" $add ";
   if($checked)
@@ -222,7 +222,7 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
 
 # Prints html tag <select .. 
 function FrmSelectEasy($name, $arr, $selected="", $add="") { 
-  $name=safe($name); $add=safe($add);
+  $name=safe($name); # safe($add) - NO! - do not safe it
 
   echo "<select name=\"$name\" $add>";	
   reset($arr);
@@ -300,6 +300,9 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.10  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.9  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 

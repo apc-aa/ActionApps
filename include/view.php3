@@ -136,7 +136,7 @@ class itemview{
           $iid = $this->ids[$this->from_record+$i];
           if( !$iid )
             continue;                                     # iid = unpacked item id 
-          $catname = $content[$iid]["category........"][0][name];
+          $catname = $content[$iid]["category........"][0][value];
               
           $CurItem->columns = $content[$iid];   # set right content for aliases
           
@@ -182,6 +182,9 @@ class itemview{
 
 /*
 $Log$
+Revision 1.8  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.7  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 

@@ -62,10 +62,13 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
   $item_SQL = "SELECT item.id FROM item ";
   if( $order_fld AND !$fields[$order_fld][in_item_tbl] ) {
     $order_content_fld = ($fields[$order_fld][text_stored] ? "text" : "number");
-    $item_SQL .= " LEFT JOIN content ON item.id=content.item_id
-                   LEFT JOIN constant ON content.$order_content_fld=constant.value ";
+    $item_SQL .= " LEFT JOIN content ON item.id=content.item_id ";
+    $add_where = " content.field_id='$order_fld' AND ";
+    
+#    $item_SQL .= " LEFT JOIN content ON item.id=content.item_id
+#                   LEFT JOIN constant ON content.$order_content_fld=constant.value ";
   }                 
-  $item_SQL .= " WHERE (slice_id='$p_slice_id' AND ";
+  $item_SQL .= " WHERE $add_where (slice_id='$p_slice_id' AND ";
   $item_SQL .= ( $items_cond ? $items_cond.")" : 
                 "publish_date <= '". mktime(23,59,59,$de[mon],$de[mday],$de[year]). "' AND ".  //if you change bounds, change it in table.php3 too
                 "expiry_date > '". mktime(0,0,0,$de[mon],$de[mday],$de[year]). "' AND ".             //if you change bounds, change it in table.php3 too
@@ -74,12 +77,12 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
                 
 
   if( $order_fld AND !$fields[$order_fld][in_item_tbl] )
-    $item_SQL .= " ORDER BY pri $order_dir, publish_date $pubdate_order";
+    $item_SQL .= " ORDER BY content.$order_content_fld $order_dir, publish_date $pubdate_order";
    else 
     $item_SQL .= " ORDER BY " . ($order_fld ? "$order_fld $order_dir," : ""). " publish_date $pubdate_order";
 
 //  $item_SQL .= " LIMIT 0,100";
-                
+
   $db->query($item_SQL);     
 
   if( $set ) {    # just for speed up the processing
@@ -521,6 +524,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.8  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.7  2001/02/20 13:25:16  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 

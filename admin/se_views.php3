@@ -74,16 +74,15 @@ if( $new_compact ) {     # new compact view
 }
 echo "</HEAD>";
 
-<?php
-  $xx = ($slice_id!="");
-  $useOnLoad = ($new_compact ? true : false);
-  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "views"=>false, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
-  require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+$xx = ($slice_id!="");
+$useOnLoad = ($new_compact ? true : false);
+$show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+              "views"=>false, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
-  echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
-  PrintArray($err);
-  echo $Msg;
+echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
+PrintArray($err);
+echo $Msg;
 ?>
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR>
@@ -327,6 +326,9 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.2  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.1  2001/02/26 17:26:08  honzam
 color profiles
 

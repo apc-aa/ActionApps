@@ -56,28 +56,27 @@ if( $import_id == "" ) {
 $p_import_id = q_pack_id($import_id);
 
 // lookup (to_categories) 
-$SQL = "SELECT input_show_func FROM field
-         WHERE slice_id='$p_slice_id' AND id like 'category.%'
-         ORDER BY input_pri";
-$db->query($SQL);
-if( $db->next_record()) {
-  $foo = ParseFnc($db->f(input_show_func));
-  $group = $foo['param'];
-  $db->query("SELECT name, value FROM constant 
+$group = GetCategoryGroup($slice_id);
+if( $group ) {
+  $db->query("SELECT id, name FROM constant 
                WHERE group_id='$group'
                ORDER BY pri");
   $first_time = true;
-  while($db->next_record())
+  while($db->next_record()) {
     if( $first_time ) {          // in order to The Same to be first in array
       $to_categories["0"] = L_THE_SAME;
       $first_time = false;
     } 
-    $to_categories[unpack_id($db->f(value))] = $db->f(name);
+    $to_categories[unpack_id($db->f(id))] = $db->f(name);
+  }  
 }
+
+// lookup (from_categories) 
+$imp_group = GetCategoryGroup($import_id);
 
 // count number of imported categories
 $SQL= "SELECT count(*) as cnt FROM constant 
-        WHERE group_id='$group'";
+        WHERE group_id='$imp_group'";
 $db->query($SQL);
 $imp_count = ($db->next_record() ? $db->f(cnt) : 0);
 
@@ -230,14 +229,8 @@ if ($imp_count) {
 <?php
 
 
-// lookup (to_categories) 
-$SQL = "SELECT input_show_func FROM field
-         WHERE slice_id='$p_import_id' AND id like 'category.%'";
-$db->query($SQL);
-if( $db->next_record()) {
-  $foo = ParseFnc($db->f(input_show_func));
-  $imp_group = $foo['param'];
-  $db->query("SELECT name, value FROM constant 
+if( $imp_group ) {
+  $db->query("SELECT id, name, value FROM constant 
                WHERE group_id='$imp_group'
                ORDER BY name");
   $i=1;
@@ -262,6 +255,9 @@ if( $db->next_record()) {
 } 
 /*
 $Log$
+Revision 1.8  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.7  2001/02/26 17:26:08  honzam
 color profiles
 

@@ -26,7 +26,7 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if($delslice) {  
-  if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
+  if(!IsSuperadmin()) {
     MsgPage($sess->url(self_base())."index.php3", L_NO_PS_DEL);
     exit;
   }
@@ -65,6 +65,9 @@ go_url($sess->url(self_base() . "slicedel.php3"));
 
 /*
 $Log$
+Revision 1.2  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.1  2001/02/26 17:26:08  honzam
 color profiles
 

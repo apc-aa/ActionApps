@@ -118,11 +118,13 @@ function ResolvePerms($perms) {
 
 // save all permissions for specified user to session variable
 function CachePermissions($user_id) {
-  global $permission_uid, $permission_to_slice, $permission_to_aa, $sess;
+  global $permission_uid, $permission_to_slice, $permission_to_aa, $sess, 
+         $r_superuser;
 
   $sess->register(permission_uid);
   $sess->register(permission_to_slice);
   $sess->register(permission_to_aa);
+  $sess->register(r_superuser);
 
   $permission_uid = $user_id;
   $permission_to_slice = GetIDPerms ($permission_uid, "slice");
@@ -138,8 +140,11 @@ function CachePermissions($user_id) {
     $permission_to_slice[$key] = ResolvePerms($val);       
 
   reset($permission_to_aa); 
-  while( list($key,$val) = each($permission_to_aa) ) 
+  while( list($key,$val) = each($permission_to_aa) ) {
+    if( IsPerm($val, $perms_roles_id[SUPER]) )
+      $r_superuser[$key] = true;
     $permission_to_aa[$key] = ResolvePerms($val);       
+  }  
 }  
 
 // function check, if specified $perm is in $perms list
@@ -222,12 +227,16 @@ function IfSlPerm($perm) {
 function IsSuperadmin() {
   global $auth;
     # check all superadmin's global permissions
-  return ( CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)
-       AND CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_MANAGE_ALL_SLICES));
+  if($permission_uid != $auth->auth["uid"]) 
+    CachePermissions($auth->auth["uid"]);
+  return $r_superuser[AA_ID];
 }
 
 /*
 $Log$
+Revision 1.7  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.6  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 

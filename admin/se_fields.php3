@@ -116,8 +116,8 @@ if( $update )
           $max = max( $max, substr (strrchr ($db->f(id), "."), 1 ));
         $max++;
            #create name like "time...........2"
-        $fieldid = $ftype. substr("................$max", -(16-strlen($ftype)));
-        
+        $fieldid = CreateFieldId ($ftype, $max);
+
         $varset->set("slice_id", $slice_id, "unpacked" );
         $varset->set("id", $fieldid, "quoted" );
         $varset->set("name",  $val, "quoted");
@@ -227,6 +227,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.7  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.6  2001/02/26 17:26:08  honzam
 color profiles
 

@@ -28,10 +28,52 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS);
+if(!IsSuperadmin()) {
+  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_DEL_SLICE);
   exit;
 }  
+
+function PrintSlice($id, $name) {
+  global $sess;
+
+  $name=safe($name); $id=safe($id);     
+  echo "<tr class=tabtxt><td>$name</td>
+          <td><a href=\"". con_url($sess->url("slicedel2.php3"),"delslice=$id"). "\">".
+            L_DELETE . "</a></td></tr>";
+}
+
+$xx = ($slice_id!="");
+$useOnLoad = ($new_compact ? true : false);
+$show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+              "views"=>false, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
+
+echo "<H1><B>" . L_A_VIEWS . "</B></H1>";
+PrintArray($err);
+echo $Msg;
+?>
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+<tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR>
+</td></tr>
+<tr><td>
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+<?php
+  
+# -- get views for current slice --
+$SQL = "SELECT * FROM view WHERE slice_id='$p_slice_id'";
+$db->query($SQL);
+while( $db->next_record() )
+  PrintView($db->f(id), $db->f(name), $db->f(type));
+
+  # row for new view
+echo "<tr class=tabtit><td align=center colspan=2>
+        <a href=\"". con_url($sess->url($PHP_SELF),"new_compact=1"). "\">".
+            L_NEW_COMPACT . "</a></td>
+          <td align=center colspan=2>
+        <a href=\"". con_url($sess->url($PHP_SELF),"new_full=1"). "\">".
+            L_NEW_FULLTEXT . "</a></td></tr>
+  </table></td></tr></table><br>";
+
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
@@ -254,6 +296,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.2  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.1  2001/02/26 17:26:08  honzam
 color profiles
 

@@ -23,51 +23,117 @@ http://www.apc.org/
 # Functions for feeding
 #
 
-function FeedItemTo($item_id, $destination, $approved, $tocategory=0) {
-  global $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM, $db;
-//huh("FeedItemTo($item_id, $destination, $approved, $tocategory =0)");
-   
-
-kouknout, zda uz tam neni feedly - pak jen update
-
-
---    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
---    $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-
-
-  $varset = new Cvarset;
-  $varset->addArray( $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM );
-  $SQL = "SELECT items.* FROM items WHERE id='". q_pack_id($item_id) ."'";
-  $db->query($SQL);
-  if( $db->next_record() )
-    $varset->setFromArray($db->Record);
-   else
-    return false;
+# Find fields mapping. If not found apropriate fields, map is blank
+function GetFieldMap($slice_id, $destination, $fields_from) {
+  global $db;
   
-  $p_slice_id = $varset->value(slice_id);
-  $slice_id = unpack_id($p_slice_id);
+  $p_destination = q_pack_id($destination);
+  $p_slice_id = q_pack_id($slice_id);
 
-  $SQL = "SELECT id, slice_id, master_id FROM items 
-           WHERE master_id='". quote($varset->value(master_id)). "' AND slice_id='". q_pack_id($slice). "'";
-  $SQL = "SELECT id, slice_id, master_id FROM items 
-           WHERE master_id='". quote($varset->value(master_id)). "' AND slice_id='". q_pack_id($destination). "'";
+  list($fields_to,) = GetSliceFields($p_destination);
+
+  $SQL = "SELECT from_field_id, to_field_id from feedmap WHERE from_slice_id = '$p_slice_id'
+                                  AND to_slice_id = '$p_destination'";
   $db->query($SQL);
-  if( !$db->next_record() ) { // this condition is enough - we can import
-//huh("Pass feeding condition => feeding<br>");
-    $p_new_id = pack_id(new_id()); 
-    $varset->set("id", $p_new_id );
-    $varset->set("slice_id", pack_id($destination));  //this is "text" type of varset variable - quote is done in makeInsert()
-   // master_id is the same
-    $varset->set("status_code", ($approved ? 1 : 2));    // to active bin/holding bin
-    if( (string)$tocategory != "0" )
-      $varset->set("category_id", pack_id($tocategory) );    // to category setted in filters
-    $insertSQL = "INSERT INTO items" . $varset->makeINSERT();
-//      $db->query("INSERT INTO fulltexts (ft_id, full_text) VALUES ('$q_p_new_id', '')");  // added to keep 1:1 relation between items and fulltexts - (why???)
-    if (!$db->query($insertSQL))   # not necessary - we have set the halt_on_error
-      return false;
-    return true;  
+  while( $db->next_record() )
+    $map[$db->f(from_field_id)] = $db->f(to_field_id);
+  
+  if( isset($fields_from) AND is_array($fields_from) ) {
+    reset( $fields_from ) ;
+    while( list( $k, $v ) = each( $fields_from ) ) {
+      if( $map[$k] )
+        $pair[$k] = $map[$k];               # set if mapped
+       else                                 # if not mapped - store in the same       
+        $pair[$k] = ( $fields_to[$k] ? $k : "" );  # if not exist - leave blank
+    }
   }
-  else return false;
+  return $pair;  
+}
+
+function FeedItemTo($item_id, $destination, $fields, $approved, $tocategory=0, 
+                    $content="") {
+  global $db, $slice_id, $varset, $itemvarset;
+#echo "  global $slice_id<br>";
+#huh("FeedItemTo($item_id, $destination, $fields, $approved, $tocategory =0, $content)");
+
+  if( $destination == $slice_id )  # don't feed into the same slice
+    return false;
+       
+  $p_item_id = q_pack_id($item_id);
+  $p_destination = q_pack_id($destination);
+
+  # is item already fed?
+  $SQL = "SELECT destination_id FROM relation, item
+           WHERE relation.destination_id = item.id
+             AND item.slice_id = '$p_destination'
+             AND source_id='$p_item_id'
+             AND flag & 1";   // 1. bit - feed
+  $db->query($SQL);
+  if( $db->next_record() )    // the item is already fed
+    exit;           // maybe we can update the item somehow
+
+  $map = GetFieldMap($slice_id, $destination, $fields);
+
+  #echo "map:<br>";
+  #p_arr_m($map);
+  
+  if( !$content )
+    $content = GetItemContent("('".q_pack_id($item_id)."')");
+
+  $catfieldid = GetCategoryFieldId( $fields );
+
+  if( $catfieldid AND ( (string)$tocategory != "0" ) ) {
+    $SQL = "SELECT value FROM constant WHERE id='".q_pack_id($tocategory)."'";
+    $db->query($SQL);
+    if( $db->next_record() )
+      $destinationcat = $db->f(value);
+  }    
+
+  #huh( "Catfield: $catfieldid - $destinationcat");
+      
+  $varset = new Cvarset;
+  $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
+  $id = new_id();
+  $p_id = q_pack_id($id);
+
+  reset($content);
+  while(list($key,$val) = each($content[$item_id])) {
+    # add to content table or prepare itemvarset for addition in item table
+    
+    if( $map[$key] ) {
+      if( $map[$key] == $catfieldid ) {     # category mapping
+        if( (string)$tocategory != "0" )    # if 0 - don't change category
+          $val[0][value] = $destinationcat;
+      }    
+      insert_fnc_qte($id, $fields[$map[$key]], quote($val[0][value]), "", true); 
+    }  
+  }                                                          
+  
+  # store prepared data to item table 
+  $itemvarset->add("id", "unpacked", $id);
+  $itemvarset->set("slice_id", $destination, "unpacked");
+  $itemvarset->set("status_code", ($approved=='y' ? 1 : 2), "quoted");
+  $itemvarset->ifnoset("post_date", $content[$item_id][post_date][0][value], "quoted");
+  $itemvarset->ifnoset("publish_date", $content[$item_id][publish_date][0][value], "quoted");
+  $itemvarset->ifnoset("expiry_date", $content[$item_id][expiry_date][0][value], "quoted");
+  $itemvarset->ifnoset("highlight", $content[$item_id][highlight][0][value], "quoted");
+  $itemvarset->ifnoset("posted_by", $content[$item_id][posted_by][0][value], "quoted");
+  $itemvarset->ifnoset("edited_by", $content[$item_id][edited_by][0][value], "quoted");
+  $itemvarset->ifnoset("last_edit", $content[$item_id][last_edit][0][value], "quoted");
+
+  $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
+  $db->query($SQL);
+  
+  # update relation table - stores where is what fed
+  $SQL = "INSERT INTO relation SET destination_id='$p_id',
+                                   source_id='$p_item_id',
+                                   flag = '1'";            // 1. bit - feed
+  $db->query($SQL);
+
+  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+  $cache->invalidateFor("slice_id=$destination");  # invalidate cached values
+
+  return true;
 }
 
 
@@ -75,30 +141,34 @@ kouknout, zda uz tam neni feedly - pak jen update
 function GetSlicesIntoExportItem($slice_id, $from_category_id) {
   global $db;
   
+  if( $from_category_id )
+    $p_from_cat_id = q_pack_id($from_category_id);
+
   $slices[$slice_id] = array( approved=>"y",  # two purpose array - 1) set of feeding slices
                                               #                     2) hold if import to approved
                               category=>"0"); # stores categories we should import to
   reset($slices);
-  while( $akt=key($slices) ) {
-//    huh("<br>slices:<br>");
-//    p_arr($slices);
-//    huh("<br>--$akt---------<br>");
+  while( $akt=key($slices) ) { 
+  #    huh("<br>slices:<br>");
+  #    p_arr($slices);
+  #    huh("<br>--$akt-----From: $from_category_id----<br>");
     
     if ( $slices[$akt][approved] == "y" ) {   // if yes then continue feeding down
       $SQL = "SELECT to_id, category_id, all_categories, to_approved, to_category_id 
                 FROM feeds 
               WHERE from_id='". q_pack_id($akt) ."'";
       $db->query($SQL);
-//      huh("akt == y<br>");
+  #    huh("akt == y<br>");
       while($db->next_record()) {
         $to_id = unpack_id($db->f(to_id));
-//        huh("try from: $akt to: $to_id<br>");
-        if( $slices[$to_id][approved] != "y" )   // condition is necessary for multi feeding to this slice
-          if( $from_category_id == $db->f(category_id)) OR $db->f(all_categories) ) {
-//            huh("add to slices: $to_id<br>");
+  #      huh("try from: $akt to: $to_id<br>");
+        if( $slices[$to_id][approved] != "y" ) { // condition is necessary for multi feeding to this slice
+          if( ($p_from_cat_id == $db->f(category_id)) OR $db->f(all_categories) ) {
+  #          huh("add to slices: $to_id<br>");
             $slices[$to_id][approved] = ($db->f(to_approved) ? "y" : "n");  // add new feed slice
             $slices[$to_id][category] = unpack_id($db->f(to_category_id));
           }  
+        }  
       }      
     }  
     next($slices);
@@ -108,50 +178,47 @@ function GetSlicesIntoExportItem($slice_id, $from_category_id) {
 
 # Feeds item to all apropriate slices
 # item_id is unpacked id of feeded item
-function FeedItem($item_id, $fields) {     //TODO  - category problem when you feed down and down, the category can change
-  global $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM, $db;    //      - it is no so big problem (19.11.99) 
+function FeedItem($item_id, $fields) {   
+  global $db, $slice_id;    
 
   # get item field definition
-nee - parametr  $fields = GetTable2Array("SELECT * FROM field WHERE slice_id='$p_slice_id'", $db);
-nacist obsah feedovaneho clanku
+  $content = GetItemContent("('".q_pack_id($item_id)."')");
 
-neni-li approved - exit
+  # if not approved - exit
+  if( $content[$item_id][status_code][0][value] != '1' )
+    exit;
 
+  # get this item category_id
+  $cat_group = GetCategoryGroup($slice_id);
+  $cat_field = GetCategoryFieldId( $fields );
 
+  if($cat_group AND $cat_field) {
+    $SQL = "SELECT id FROM constant 
+             WHERE group_id = '$cat_group' 
+               AND value = '". $content[$item_id][$cat_field][0][value] ."'";
+    $db->query($SQL);
+    if( $db->next_record() )
+      $cat_id = unpack_id($db->f(id));
+  }    
 
+  # select slices where item should be exported
+  $slices = GetSlicesIntoExportItem($slice_id, $cat_id);
 
-
-
-
-
-   
-
-
-
-
-  // select slices where item should be exported
-  $varset = new Cvarset;
-  $varset->addArray( $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM );
-  $SQL = "SELECT items.* FROM items WHERE id='". q_pack_id($item_id) ."'";
-  $db->query($SQL);
-  if( $db->next_record() ){
-    $varset->setFromArray($db->Record);
-  }
-  
-  GetSlicesIntoExportItem($slice_id, $from_category_id) {
-
-# now we have in $slices array set of slices to export the item 
-# with destination category and state (approved or not)
-//  huh("xxxxxxxxxxx All feed slices<br>");
-//  p_arr($slices);
+  # now we have in $slices array set of slices to export the item 
+  # with destination category and state (approved or not)
+  #  huh("xxxxxxxxxxx All feed slices<br>");
+  #  p_arr($slices);
 
   // do not import the item twice
   reset( $slices );
   while( list($slice,$atribs) = each($slices) )
-    FeedItemTo($item_id, $slice, $atribs[approved]=="y", $atribs[category]);
+    FeedItemTo($item_id, $slice, $fields, $atribs[approved], $atribs[category], $content);
 }
 /*
 $Log$
+Revision 1.6  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.5  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

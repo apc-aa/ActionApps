@@ -34,9 +34,9 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
-//require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require $GLOBALS[AA_INC_PATH]."feeding.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH] . "itemfunc.php3";
+require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 
 if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED
@@ -170,7 +170,7 @@ if( ($insert || $update) AND (count($err)<=1)
   $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
   $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
-//  FeedItem($id, $fields);
+  FeedItem($id, $fields);
 
   if( count($err) <= 1) {
     page_close(); 
@@ -326,6 +326,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.18  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.17  2001/02/26 17:26:08  honzam
 color profiles
 

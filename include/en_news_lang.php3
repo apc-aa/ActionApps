@@ -487,6 +487,10 @@ define("L_A_FULLTEXT_HELP", "Use these boxes ( with the tags listed below ) to c
 
 /*
 $Log$
+Revision 1.32  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
+
 Revision 1.31  2001/02/25 08:49:54  madebeer
 added help for admin-Fields-Edit
 

@@ -1,4 +1,4 @@
-<SCRIPT language="php"> //<?
+<?php
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -621,6 +621,9 @@ function A2sql_update ($table, $keyField, $aData) {
 
 /*
 $Log$
+Revision 1.13  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.12  2000/08/14 09:22:17  kzajicek
 Fixed incorrect default for in DelGroup
 
@@ -684,4 +687,4 @@ system for config-ecn.inc and config-igc.inc both called from
 config.inc
 
 */
-</SCRIPT>
+?>

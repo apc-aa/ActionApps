@@ -24,7 +24,8 @@ require $GLOBALS[AA_INC_PATH] . "varset.php3";
 require $GLOBALS[AA_INC_PATH] . "view.php3";
 require $GLOBALS[AA_INC_PATH] . "pagecache.php3";
 require $GLOBALS[AA_INC_PATH] . "item.php3";
-//require $GLOBALS[AA_INC_PATH] . "feeding.php3";
+require $GLOBALS[AA_INC_PATH] . "feeding.php3";
+require $GLOBALS[AA_INC_PATH] . "itemfunc.php3";
 require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
 
 function MoveItems($chb,$status) {
@@ -44,8 +45,9 @@ function FeedAllItems($chb, $fields) {    // Feed all checked items
   global $db;
   if( isset($chb) AND is_array($chb) ) {
     reset( $chb );
-    while( list($it_id,) = each( $chb ) )
-      FeedItem( $it_id, $fields );
+    while( list($it_id,) = each( $chb ) ) {
+      FeedItem( substr($it_id,1), $fields );       // substr removes first 'x'
+    }  
   }
 }  
 
@@ -133,7 +135,8 @@ switch( $action ) {  // script post parameter
   case "edit":  // edit the first one
     if( isset($chb) AND is_array($chb) ) {
       reset( $chb );
-      go_url(con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=") .key($chb) );
+      go_url(con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=")
+            . substr(key($chb),1) );
     }  
     break;
   case "feed":  // feed selected items to selected slices
@@ -158,7 +161,8 @@ switch( $action ) {  // script post parameter
           reset( $chb );
           while( list($it_id,) = each( $chb ) ) {
 //          huh("Item: $it_id -> $sl_id <br>/n");
-            FeedItemTo($it_id, $sl_id, $approvedfeed[$sl_id] , $db);
+            $it_id = substr($it_id,1);  // remove beginning 'x'
+            FeedItemTo($it_id, $sl_id, $fields, ($approvedfeed[$sl_id] ? 'y':'n'), 0);
           }  
         }
       }
@@ -391,7 +395,7 @@ if( count( $item_ids ) > 0 ) {
     $st->pnavbar();
 }  
 else 
-  echo "<tr><td><div>". L_NO_ITEM ."</div></td></td></table>";
+  echo "<tr><td><div class=tabtxt>". L_NO_ITEM ."</div></td></td></table>";
   
 echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
 echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
@@ -448,6 +452,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.18  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.17  2001/02/26 17:26:08  honzam
 color profiles
 

@@ -37,6 +37,9 @@ function writeLog($event, $params="" ) {
 
 /*
 $Log$
+Revision 1.2  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.1  2001/01/22 17:32:49  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

@@ -150,13 +150,10 @@ if( $update )
 
   # edit categories for this slice
 if( $category ) {
-  $SQL = "SELECT input_show_func FROM field
-           WHERE slice_id='$p_slice_id' AND id LIKE 'category%'";
-  $db->query($SQL);
-  if( $db->next_record() ) {
+  $group_id = GetCategoryGroup($slice_id);
+  if( $group_id )
     $categ=true;
-    $group_id = substr( strchr($db->f(input_show_func),':'),1);
-  } else {
+  else {
     MsgPage($sess->url(self_base())."slicedit.php3", L_NO_CATEGORY_FIELD);
     exit;
   }
@@ -211,7 +208,6 @@ echo "
 </tr>
 <tr><td colspan=4><hr></td></tr>";
 
-
    # existing constants
 if( $s_constants ) {
   reset($s_constants);
@@ -248,6 +244,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.7  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.6  2001/02/26 17:26:08  honzam
 color profiles
 

@@ -1,3 +1,6 @@
+03/03/01 - feeding support
+         - fixed bug with radiobuttons, ...
+         - better seting of News template
 02/24/01 - color profiles definitoins
          - template/delete options in slicedit.php3 visible only to Superadmins
 --------------------

@@ -51,14 +51,22 @@ function default_fnc_($param) {
 
 function insert_fnc_qte($item_id, $field, $value, $param, $insert=true) {
   global $varset, $itemvarset, $db;
+
+  #huh( "insert_fnc_qte($item_id, $field, $value, $param, $insert)"); 
+  #p_arr_m($field);
+
   if( $field[in_item_tbl] ) {
     # field in item table
     $itemvarset->add( $field[in_item_tbl], "quoted", $value);
     return;
   }  
+
     # field in content table
   $varset->clear();
-  $varset->add("text", "quoted", $value);
+  if( $field[text_stored] )
+    $varset->add("text", "quoted", $value);
+   else 
+    $varset->add("number", "quoted", $value);
   if( $insert ) {
     $varset->add("item_id", "unpacked", $item_id);
     $varset->add("field_id", "quoted", $field[id]);
@@ -173,9 +181,9 @@ function show_fnc_fil($varname, $field, $content, $value, $param, $edit) {
 function show_fnc_dte($varname, $field, $content, $value, $param, $edit) {
   echo $field[input_before];
   if( strstr($param, "'"))
-    explode("'",$param);  // old format
+    $arr = explode("'",$param);  // old format
    else 
-    explode(":",$param);  // new format
+    $arr = explode(":",$param);  // new format
   $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2]);
   $datectrl->setdate_int($edit ? $content[0] : $value);
   FrmStaticText($field[name], $datectrl->getselect(), $field[required], 
@@ -187,8 +195,8 @@ function show_fnc_nul($varname, $field, $content, $value, $param, $edit) {
 
 /*
 $Log$
-Revision 1.4  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
+Revision 1.5  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
 
 Revision 1.1  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)

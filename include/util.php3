@@ -141,7 +141,7 @@ function new_id ($seed="hugo"){
 
 # returns packed md5 id, not quoted !!!
 function pack_id ($unpacked_id){
-  return ((string)$unpacked_id == "0" ? "0" : pack("H*",$unpacked_id));
+  return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
 }
 
 # returns packed and quoted md5 id
@@ -300,10 +300,20 @@ function GetSliceFields($p_slice_id) {
   return array($fields, $prifields);
 }    
 
+# create field id from type and number
+function CreateFieldId ($ftype, $no) {
+  return $ftype. substr("................$no", -(16-strlen($ftype)));
+}
+
 # get field type from id
 function GetFieldType($id) {
   return substr($id, 0, strpos($id, "."));
 }  
+
+# get field number from id ('.', '0', '1', '12', ...)
+function GetFieldNo($id) {
+  return (string) substr( strrchr($id,'.'), 1 );
+}
 
 # fills content arr with current content of $sel_in items (comma separated ids)
 function GetItemContent($sel_in) {
@@ -333,6 +343,38 @@ function GetItemContent($sel_in) {
              "flag"=> $db->f(flag) );
   }
   return $content;
+}  
+
+# find group_id for constants of the slice
+function GetCategoryGroup($slice_id) {
+  global $db;
+  $SQL = "SELECT input_show_func FROM field
+          WHERE slice_id='". q_pack_id($slice_id) ."'
+            AND id LIKE 'category%'
+          ORDER BY id";  # first should be category........, 
+                          # then category.......1, etc.
+  $db->query($SQL);
+  if( $db->next_record() )
+    return substr( strchr($db->f(input_show_func),':'),1);
+   else
+    return false; 
+}    
+
+function GetCategoryFieldId( $fields ) {
+  $no = 10000;
+  if( isset($fields) AND is_array($fields) ) {
+    reset( $fields );
+    while( list( $k,$val ) = each( $fields ) ) {
+      if( substr($val[id], 0, 8) != "category" )
+        continue;    
+      $last = GetFieldNo($val[id]);
+      $no = min( $no, ( ($last=='') ? -1 : (integer)$last) );
+    }
+  }
+  if($no==10000)
+    return false;
+  $no = ( ($no==-1) ? '.' : (string)$no);
+  return CreateFieldId("category", $no);
 }  
 
 # in_array is available since PHP4
@@ -381,6 +423,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.17  2001/03/06 00:15:14  honzam
+Feeding support, color profiles, radiobutton bug fixed, ...
+
 Revision 1.16  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 
