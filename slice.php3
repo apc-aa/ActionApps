@@ -163,7 +163,7 @@ function CompactView($where, $catsel=false) {
     $oldcat = "_No CaTeg";
 
     if( !OPTIMIZE_FOR_MYSQL )                             // if no mySQL - go to item no (mySQL use LIMIT)
-      $db->seek(max(0,min($scr->metapage * ($scr->current - 1)),$db->nf()));
+      $db->seek(max(0,min(0,$scr->metapage * ($scr->current - 1)),$db->nf()));
       
     while($db->next_record()){ 
       $CurItem->odd = $i%2;
@@ -323,8 +323,8 @@ function CompactView($where, $catsel=false) {
 //    p_arr_m($debugtimes);
 /*
 $Log$
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
+Revision 1.3  2000/07/07 21:31:15  honzam
+Wrong parameter count in min() - fixed
 
 Revision 1.22  2000/06/12 19:57:51  madebeer
 added GPL LICENSE file, added copyright notice to all files that
