@@ -44,7 +44,7 @@ function ParamExplode($param) {
 }
 
 
-  function parseSwitch($text) {
+function parseSwitch($text) {
     $variable = substr(strtok('_'.$text,")"),1);   # add and remove '_' - this
                                                    # is hack for empty variable
                                                    # (when $text begins with ')')
@@ -63,37 +63,82 @@ function ParamExplode($param) {
       $i+=2;
     }
     return "";
-  }
+}
 
-  # text = [ decimals [ # dec_point [ thousands_sep ]]] )
-  function parseMath($text)
-  {
+/** Fills content array for current loged user */
+function GetAuthData() {
+    // create fields array - headline is enough - in headline........ we store
+    // user name
+    $fields['headline........'] = array( 'in_item_tbl' => false,
+                                         'text_stored' => true );
+    $conds[] = array( 'headline........' => $_SERVER['PHP_AUTH_USER'] );
+
+    // getReaderManagement slices
+    $db = getDB();
+    $db->tquery("SELECT id FROM slice WHERE type='ReaderManagement'");
+    while ($db->next_record()) {
+        $slices[] = unpack_id128($db->f('id'));
+    }
+    freeDB($db);
+
+    // get item id of current user
+    $zid = QueryZIDs($fields, '', $conds, '', '', 'ACTIVE', $slices, 0, false, '=' );
+    if( $zid->count()<1 )      return false;
+
+    $content = GetItemContent($zid);
+    if( !is_array($content) )  return false;
+
+    $ret[$_SERVER['PHP_AUTH_USER']] = reset($content);
+    return $ret;
+}
+
+/** Expands {user:xxxxxx} alias - auth user informations (of current user)
+*   @param $field - field to show ('headline........', 'alerts1....BWaFs' ...).
+*                   empty for username (of curent logged user)
+*                   'password' for plain text password of current user
+*/
+function parseUser($field) {
+    global $auth_user_info;
+    switch ($field = trim($field)) {
+        case '':         return $_SERVER['PHP_AUTH_USER'];
+        case 'password': return $_SERVER['PHP_AUTH_PW'];
+        default:
+            if ( !isset($auth_user_info[$_SERVER['PHP_AUTH_USER']]) ) {
+                if( ( $auth_user_info = GetAuthData() ) == false )
+                    return "";
+            }
+            return $auth_user_info[$_SERVER['PHP_AUTH_USER']][$field][0]['value'];
+    }
+}
+
+# text = [ decimals [ # dec_point [ thousands_sep ]]] )
+function parseMath($text) {
     // get format string, need to add and remove # to
     // allow for empty string
-  	$variable = substr(strtok("#".$text,")"),1);
+    $variable = substr(strtok("#".$text,")"),1);
     $twos = ParamExplode( strtok("") );
-	$i=0;
+    $i=0;
     $key=true;
-	while( $i < count($twos) ) {
+    while( $i < count($twos) ) {
      $val = trim($twos[$i]);
-	  if ($key)
-	  	{
-			if ($val) $ret.=str_replace("#:","",$val); $key=false;
-		}
-	  	else {	#$val=str_replace ("{", "", $val);
-			#$val=str_replace ("}", "", $val);
+      if ($key)
+        {
+            if ($val) $ret.=str_replace("#:","",$val); $key=false;
+        }
+        else {	#$val=str_replace ("{", "", $val);
+            #$val=str_replace ("}", "", $val);
             $val = calculate ($val); // defined in math.php3
             if ($variable) {
-    			$format=explode("#",$variable);
-	    		$val = number_format($val, $format[0], $format[1], $format[2]);
+                $format=explode("#",$variable);
+                $val = number_format($val, $format[0], $format[1], $format[2]);
             }
-			$ret.=$val;
-			$key=true;
-		}
-	 $i++;
+            $ret.=$val;
+            $key=true;
+        }
+     $i++;
     }
-  	return $ret;
-  }
+    return $ret;
+}
 
 # Do not change strings used, as they can be used to force an escaped character
 # in something that would normally expand it
@@ -157,6 +202,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     #   {any text}                                       - return "any text"
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which are processed before expanding the function
+
     if( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
@@ -169,6 +215,11 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     elseif( substr($out, 0, 7) == "switch(" ) {
       # replace switches
       return QuoteColons($level, $maxlevel, parseSwitch( substr($out,7) ));
+      # QuoteColons used to mark colons, which is not parameter separators.
+          }
+    elseif( substr($out, 0, 5) == "user:" ) {
+      # replace user auth informations
+      return QuoteColons($level, $maxlevel, parseUser( substr($out,5) ));
       # QuoteColons used to mark colons, which is not parameter separators.
           }
     elseif( substr($out, 0, 5) == "math(" ) {
