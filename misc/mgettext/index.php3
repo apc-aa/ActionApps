@@ -55,10 +55,10 @@ endslash ($destdir);
    
    Why so many groups? To save time on reading language translations. */
    
-// _alerts_lang.inc language files, used in the Alerts module
+// _alerts_lang.php3 language files, used in the Alerts module
 $lang_groups ["alerts"] =
     array ("modules/alerts/");
-// _news_lang.inc language files, used almost everywhere in Control panel
+// _news_lang.php3 language files, used almost everywhere in Control panel
 $lang_groups ["news"] =
     array ("./",
            "admin/",
@@ -68,10 +68,10 @@ $lang_groups ["news"] =
            "-include/view.php3",
            "-include/constants_param_wizard.php3",
            "-include/mgettext.php3");
-// _site_lang.inc language files, used in the Site module           
+// _site_lang.php3 language files, used in the Site module           
 $lang_groups ["site"] = 
     array ("modules/site/");               
-// _output_lang.inc language files, used in the output, i.e. slice.php3 and view.php3    
+// _output_lang.php3 language files, used in the output, i.e. slice.php3 and view.php3    
 $lang_groups ["output"] =
     array ("./slice.php3",
            "./view.php3",
@@ -83,7 +83,7 @@ $lang_groups ["output"] =
            "include/scroller.php3",
            "include/easy_scroller.php3",
            "include/itemview.php3");
-// _param_wizard_lang.inc language files, used only in the parameter wizard           
+// _param_wizard_lang.php3 language files, used only in the parameter wizard           
 $lang_groups ["param_wizard"] = 
     array ("admin/param_wizard.php3",
            "include/constants_param_wizard.php3");
@@ -108,7 +108,7 @@ if (!$addlogs) $addlogs = false;
    which enable to include language constants into mgettext language files. */
 $old_group = "news";
 $old_lang_files = $aadir."include/??_".$old_group."_lang.php3"; 
-$log_files = $destdir."log_??_".$old_group."_lang.inc";
+$log_files = $destdir."log_??_".$old_group."_lang.php3";
 
 /* The file taken as the base for translations, usually the English one.
    If you are using English messages in _m() calls in source code, use the English file. */
@@ -152,9 +152,9 @@ function update_language_files ($aadir, $destdir)
             fclose ($fd);
             chmod ($logfile, 0664);
             if (!$addlogs)
-                xmgettext ($xmgettext_logfile, $destdir."??_".$langfiles."_lang.inc", $aadir, $srcfiles, 0666, false);
-            else xmgettext ($xmgettext_logfile, $destdir."??_".$langfiles."_lang.inc", $aadir, $srcfiles, 0666, false,
-                $destdir."log_??_".$langfiles."_lang.inc");
+                xmgettext ($xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false);
+            else xmgettext ($xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false,
+                $destdir."log_??_".$langfiles."_lang.php3");
         }
     }
     unlink ($logfile);
@@ -220,7 +220,7 @@ reset ($lang_groups);
 while (list ($group, $members) = each ($lang_groups)) 
     echo '<tr><td>
         <input type="checkbox" name="update['.$group.']" checked>
-        ??_'.$group.'_lang.inc</td><td>'.join (", ", $members).'</td></tr>';
+        ??_'.$group.'_lang.php3</td><td>'.join (", ", $members).'</td></tr>';
     
 echo '</table>';
     
