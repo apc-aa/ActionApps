@@ -27,12 +27,11 @@ http://www.apc.org/
 
 # DB Access Configuration
 define("DB_HOST", "localhost");
-define("DB_NAME", "aadbnew");
-define("DB_USER", "aauser");            # user have to have MySQL permission to 
-define("DB_PASSWORD", "wAmp1rSysteM");  # CREATE ana DROP tables
+define("DB_NAME", "aa-db");
+define("DB_USER", "aa-user");          # user have to have MySQL permission to 
+define("DB_PASSWORD", "somepasswd");   # CREATE ana DROP tables
 
-$AA_INC_PATH = "/raid/www/htdocs/work.ecn.cz/apc-aa/include/";
-define("PHPLIB_ALREADY_LOADED", false);
+$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa/include/"; 
 
 require $GLOBALS[AA_INC_PATH]."locsess.php3";   # DB_AA definition
 require $GLOBALS[AA_INC_PATH]."util.php3";
@@ -784,11 +783,11 @@ while( list( ,$t) = each( $tablelist ) ) {
   $db->query($SQL);
 }  
 
-if( $addstatistic )
+if( $addstatistic ) {
   echo '<h2>Add statistic field for each slice</h2>';
   $SQL = "SELECT id FROM slice";
   $db->query( $SQL );
-  while( $db->next_record() )
+  while( $db->next_record() ) {
     if( $db->f(slice_id) == 'AA_Core_Fields..' )
       continue;
     $SQL = "REPLACE INTO field VALUES( 'display_count...', '', '". quote($db->f(slice_id)) ."', 'Displayed Times', '5050', 'Internal field - do not change', 'http://aa.ecn.cz/aa/doc/help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')";
@@ -838,6 +837,9 @@ echo '<h2>Update OK</h2>';
 
 /*
 $Log$
+Revision 1.2  2001/06/03 16:37:39  honzam
+parse error bug fixed
+
 Revision 1.1  2001/06/03 15:54:31  honzam
 new sql_update.php3 script for easy database install & reinstalation
 
