@@ -753,8 +753,6 @@ define ("L_E_IMPORT_COUNT", "Count of imported slices: %d.");
 define ("L_E_IMPORT_ADDED", "Added were:");
 define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 
-require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
-
 define("L_PARAM_WIZARD_LINK", "Wizard with help");
 define("L_SHOW_RICH", "Show this field as a rich text editor (use only after having installed the necessary components!)");
 define("L_MAP_JOIN","-- Joined fields --");
@@ -806,188 +804,13 @@ define('L_V_NO_ITEM','HTML code for "No item found" message');
 define('L_INPUT_SHOW_HCO','Hierachical constants');
 define("L_NO_ITEM_FOUND", "No item found");
 
-define("L_CONSTANT_HIERARCH_EDITOR","Edit in Hierarchical editor (allows to create constant hierarchy)");
-define("L_CONSTANT_PROPAGATE","Propagate changes into current items");
-define("L_CONSTANT_OWNER","Constant group owner - slice");
-define("L_A_CONSTANTS_HIER_EDT","Admin - Hierarchical Constants Setting");
-define("L_CONSTANT_HIER_SORT","Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name.");
-define("L_CONSTANT_DESC","Description");
-define("L_CONSTANT_HIER_SAVE","Save all changes to database");
-
-/*
-$Log$
-Revision 1.20  2002/03/06 12:32:09  honzam
-preparation for hierarchical constant editor
-
-Revision 1.19  2002/02/05 21:46:03  honzam
-the message "no item found" can be redefined
-
-Revision 1.18  2002/01/10 13:51:43  honzam
-new alias for number of returned items
-
-Revision 1.17  2002/01/04 13:07:40  honzam
-Added language constants for profiles, notifications.
-
-Revision 1.16  2001/12/26 22:11:37  honzam
-Customizable 'No item found' message. Added missing language constants.
-
-Revision 1.15  2001/12/18 11:49:26  honzam
-new WYSIWYG richtext editor for inputform (IE5+)
-
-Revision 1.14  2001/11/29 08:40:09  mitraearth
-Provides help when using the Nodes screen to configre inter-node feeding
-It informs of the correect values to tell the superadmin of the other node.
-
-Revision 1.13  2001/10/24 18:44:10  honzam
-new parameter wizard for function aliases and input type parameters
-
-Revision 1.12  2001/10/08 17:03:35  honzam
-Language constants fixes
-
-Revision 1.11  2001/10/05 10:51:29  honzam
-Slice import/export allows backup of more slices, bugfixes
-
-Revision 1.10  2001/10/02 11:36:41  honzam
-bugfixes
-
-Revision 1.9  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-Revision 1.8  2001/07/09 09:28:44  honzam
-New supported User defined alias functions in include/usr_aliasfnc.php3 file
-
-Revision 1.7  2001/06/24 16:46:22  honzam
-new sort and search possibility in admin interface
-
-Revision 1.6  2001/06/21 14:15:44  honzam
-feeding improved - field value redefine possibility in se_mapping.php3
-
-Revision 1.5  2001/06/12 16:07:22  honzam
-new feeding modes -  "Feed & update" and "Feed & update & lock"
-
-Revision 1.4  2001/06/03 16:00:49  honzam
-multiple categories (multiple values at all) for item now works
-
-Revision 1.3  2001/05/21 13:52:32  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.2  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.1  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.32  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-
-Revision 1.31  2001/02/25 08:49:54  madebeer
-added help for admin-Fields-Edit
-
-Revision 1.30  2001/02/25 08:33:40  madebeer
-fixed some table formats, cleaned up admin headlines
-
-Revision 1.29  2001/02/23 11:18:04  madebeer
-interface improvements merged from wn branch
-
-Revision 1.28  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-Revision 1.27  2001/01/31 02:46:03  madebeer
-moved Fields leftbar section back up to Slice main settings section.
-updated some english language titles
-
-Revision 1.26  2001/01/25 10:09:09  honzam
-Gived back acidentaly deleted Michael's definitions
-
-Revision 1.25  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
-
-Revision 1.21  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.20  2000/12/23 19:56:50  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
-
-Revision 1.19  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.18  2000/12/05 14:01:19  honzam
-Better help for upload image alias
-
-Revision 1.17  2000/11/16 11:48:39  madebeer
-11/16/00 a- changed admin leftbar menu order and labels
-         b- changed default article editor field order & fields
-         c- improved some of the english labels
-
-Revision 1.16  2000/11/13 10:41:14  honzam
-Fixed bad order for default setting of show fields and needed fields
-
-Revision 1.15  2000/10/12 15:56:09  honzam
-Updated language files with better defaults
-
-Revision 1.14  2000/10/11 20:18:29  honzam
-Upadted database structure and language files for web.net's extended item table
-
-Revision 1.13  2000/10/10 18:28:00  honzam
-Support for Web.net's extended item table
-
-Revision 1.12  2000/08/17 15:17:55  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.11  2000/08/15 08:58:31  kzajicek
-Added missing L_HLP_CATEGORY_ID
-
-Revision 1.10  2000/08/15 08:43:41  kzajicek
-Fixed spelling error in constant name
-
-Revision 1.9  2000/08/03 12:49:22  kzajicek
-English editing
-
-Revision 1.8  2000/08/03 12:34:27  honzam
-Default values for new slice defined.
-
-Revision 1.7  2000/07/27 18:17:21  kzajicek
-Added superadmin settings in User/Group management
-
-Revision 1.6  2000/07/27 13:23:58  kzajicek
-Language correction
-
-Revision 1.5  2000/07/17 13:40:11  kzajicek
-Alert box when no input category selected
-
-Revision 1.4  2000/07/17 12:29:56  kzajicek
-Language changes
-
-Revision 1.3  2000/07/12 11:06:26  kzajicek
-names of image upload variables were a bit confusing
-
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.1.1.1  2000/06/21 18:40:33  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:19  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.12  2000/06/12 19:58:35  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.11  2000/06/09 15:14:11  honzama
-New configurable admin interface
-
-Revision 1.10  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.9  2000/03/29 15:54:47  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.8  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
-?>
+// constants used in param wizard only:
+require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
+// new constants to be translated are here. Leave this "require" always at the 
+// end of this file
+// If You want to translate the new texts (which is in new_news_lang.php3 file),
+// just copy them from the new_news_lang.php3 file here and translate.
+// IMPORTANT: Leave the require new_news_lang.php3 as the last line of this
+// file - it will not redefine the constant You translated and helps You when 
+// we add new texts !!!
+require  $GLOBALS[AA_INC_PATH]."new_news_lang.php3"; ?>

@@ -52,7 +52,8 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "es_news_lang.php3" => "es_news_lang.php3",
                          "cz_news_lang.php3" => "cz_news_lang.php3",
                          "sk_news_lang.php3" => "sk_news_lang.php3",
-                         "de_news_lang.php3" => "de_news_lang.php3");
+                         "de_news_lang.php3" => "de_news_lang.php3",
+                         "ro_news_lang.php3" => "ro_news_lang.php3");
   
 $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom",
@@ -88,7 +89,7 @@ $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
                               "now" => L_INPUT_DEFAULT_NOW);
   
 $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
-																"edt" => L_INPUT_SHOW_EDT,
+								"edt" => L_INPUT_SHOW_EDT,
                                 "fld" => L_INPUT_SHOW_FLD, 
                                 "sel" => L_INPUT_SHOW_SEL, 
                                 "pre" => L_INPUT_SHOW_PRE, 
@@ -101,7 +102,8 @@ $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
                                 "fil" => L_INPUT_SHOW_FIL,
 #                               "isi" => L_INPUT_SHOW_ISI,
                                 "iso" => L_INPUT_SHOW_ISO,
-                                "nul" => L_INPUT_SHOW_NUL);
+                                "nul" => L_INPUT_SHOW_NUL,
+								"hco" => L_INPUT_SHOW_HCO);
                               
 $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
                                "url" => L_INPUT_VALIDATE_URL, 
@@ -399,6 +401,9 @@ require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 
 /*
 $Log$
+Revision 1.26  2002/03/12 16:29:16  honzam
+new romanian language supprt (Thanks to Mihály Bakó, StrawberryNet Foundation), new_news_lang.php3 file introduced for better support of many language versions
+
 Revision 1.25  2002/02/05 21:46:03  honzam
 the message "no item found" can be redefined
 

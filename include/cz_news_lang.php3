@@ -750,8 +750,6 @@ define ("L_E_IMPORT_COUNT", "Poèet importovaných šablon: %d.");
 define ("L_E_IMPORT_ADDED", "Pøidány byly:");
 define ("L_E_IMPORT_OVERWRITTEN", "Pøepsány byly:");
 
-require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
-
 define("L_PARAM_WIZARD_LINK", "Prùvodce s nápovìdou");
 define("L_SHOW_RICH", "Zobraz toto pole v rich text editoru (použijte až po nainstalování potøebných komponent!)");
 define("L_MAP_JOIN","-- Spojení polí --");
@@ -806,173 +804,33 @@ define('L_INPUT_SHOW_HCO','Hierachie konstant');
 define("L_CONSTANT_HIERARCH_EDITOR","Editovat v Hierarchickém editoru (umožòuje urèit hierarchii hodnot)");
 define("L_CONSTANT_PROPAGATE","Propagovat zmìny do stávajících èlánkù");
 define("L_CONSTANT_OWNER","Vlastník skupiny - webík");
-define("L_A_CONSTANTS_HIER_EDT","Správa webíku - Hiearchické nastavení hodnot");
 define("L_CONSTANT_HIER_SORT","Zmìny nebudou uloženy do databáze, dokud nestisknete tlaèítko dole na stránce.<br>Konstanty jsou øazeny zaprvé podle Øazení a zadruhé podle Názvu.");
 define("L_CONSTANT_DESC","Popis");
 define("L_CONSTANT_HIER_SAVE","Ulož všechny zmìny do databáze");
 define("L_CONSTANT_CHOWN", "Zmìnit vlastníka");
 define("L_CONSTANT_OWNER_HELP", "Vlastníkem se stane první webík, který upraví hodnoty.");
 define("L_NO_PS_FIELDS_GROUP","Nemáte administrátorská práva k webíku, který vlastní tuto skupinu hodnot");
+define("L_CONSTANTS_HIER_EDT","Konstanty - Hiearchický editor");
 
-/*
-$Log$
-Revision 1.47  2002/03/06 12:32:09  honzam
-preparation for hierarchical constant editor
+define ("L_CONSTANT_LEVELS_HORIZONTAL", "Úrovnì horizontálnì");
+define ("L_CONSTANT_VIEW_SETTINGS", "Zobrazení");
+define ("L_CONSTANT_HIERARCHICAL", "Hierarchcké");
+define ("L_CONSTANT_HIDE_VALUE", "Skryj hodnotu");
+define ("L_CONSTANT_CONFIRM_DELETE","Zatrhnìte pro potvrzení mazání");
+define ("L_CONSTANT_COPY_VALUE","Kopírovat hodnotu z názvu");
+define ("L_CONSTANT_LEVEL_COUNT","Poèet úrovní");
+define ("L_CONSTANT_LEVEL", "Úroveò");
+define ("L_SELECT","Zvolit");
+define ("L_ADD_NEW","Pøidat");
 
-Revision 1.46  2002/02/05 21:46:03  honzam
-the message "no item found" can be redefined
-
-Revision 1.45  2002/01/10 13:51:42  honzam
-new alias for number of returned items
-
-Revision 1.44  2002/01/04 13:07:40  honzam
-Added language constants for profiles, notifications.
-
-Revision 1.43  2001/12/26 22:11:37  honzam
-Customizable 'No item found' message. Added missing language constants.
-
-Revision 1.42  2001/12/18 11:49:26  honzam
-new WYSIWYG richtext editor for inputform (IE5+)
-
-Revision 1.41  2001/11/29 08:40:08  mitraearth
-Provides help when using the Nodes screen to configre inter-node feeding
-It informs of the correect values to tell the superadmin of the other node.
-
-Revision 1.40  2001/10/24 18:44:10  honzam
-new parameter wizard for function aliases and input type parameters
-
-Revision 1.39  2001/10/08 17:03:35  honzam
-Language constants fixes
-
-Revision 1.38  2001/10/05 10:51:29  honzam
-Slice import/export allows backup of more slices, bugfixes
-
-Revision 1.37  2001/10/02 11:36:41  honzam
-bugfixes
-
-Revision 1.36  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-Revision 1.35  2001/07/09 09:28:45  honzam
-New supported User defined alias functions in include/usr_aliasfnc.php3 file
-
-Revision 1.34  2001/06/24 16:46:22  honzam
-new sort and search possibility in admin interface
-
-Revision 1.33  2001/06/21 14:15:44  honzam
-feeding improved - field value redefine possibility in se_mapping.php3
-
-Revision 1.32  2001/06/12 16:07:22  honzam
-new feeding modes -  "Feed & update" and "Feed & update & lock"
-
-Revision 1.31  2001/06/03 16:00:49  honzam
-multiple categories (multiple values at all) for item now works
-
-Revision 1.30  2001/05/21 13:52:32  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.29  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.28  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.27  2001/04/17 21:32:08  honzam
-New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
-
-Revision 1.26  2001/03/30 11:54:35  honzam
-offline filling bug and others small bugs fixed
-
-Revision 1.25  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.24  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-Revision 1.21  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.20  2000/12/23 19:56:50  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
-
-Revision 1.19  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.18  2000/12/05 14:01:58  honzam
-Better help for upload image alias
-
-Revision 1.17  2000/11/13 10:41:14  honzam
-Fixed bad order for default setting of show fields and needed fields
-
-Revision 1.16  2000/10/12 15:56:09  honzam
-Updated language files with better defaults
-
-Revision 1.15  2000/10/10 18:28:00  honzam
-Support for Web.net's extended item table
-
-Revision 1.14  2000/08/17 15:17:55  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.13  2000/08/15 08:58:31  kzajicek
-Added missing L_HLP_CATEGORY_ID
-
-Revision 1.12  2000/08/15 08:43:41  kzajicek
-Fixed spelling error in constant name
-
-Revision 1.11  2000/08/14 12:39:13  kzajicek
-Language definitions required by setup.php3
-
-Revision 1.10  2000/08/03 15:19:57  kzajicek
-Language changes
-
-Revision 1.9  2000/08/03 12:49:22  kzajicek
-English editing
-
-Revision 1.8  2000/08/03 12:34:27  honzam
-Default values for new slice defined.
-
-Revision 1.7  2000/07/27 18:17:21  kzajicek
-Added superadmin settings in User/Group management
-
-Revision 1.6  2000/07/27 13:23:58  kzajicek
-Language correction
-
-Revision 1.5  2000/07/17 13:40:11  kzajicek
-Alert box when no input category selected
-
-Revision 1.4  2000/07/17 12:29:56  kzajicek
-Language changes
-
-Revision 1.3  2000/07/12 11:06:26  kzajicek
-names of image upload variables were a bit confusing
-
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.1.1.1  2000/06/21 18:40:27  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:14  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.6  2000/06/12 19:58:34  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.5  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.4  2000/04/24 16:50:33  honzama
-New usermanagement interface.
-
-Revision 1.3  2000/03/29 15:54:46  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.2  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
+// constants used in param wizard only:
+require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
+// new constants to be translated are here. Leave this "require" always at the 
+// end of this file
+// If You want to translate the new texts (which is in new_news_lang.php3 file),
+// just copy them from the new_news_lang.php3 file here and translate.
+// IMPORTANT: Leave the require new_news_lang.php3 as the last line of this
+// file - it will not redefine the constant You translated and helps You when 
+// we add new texts !!!
+require  $GLOBALS[AA_INC_PATH]."new_news_lang.php3";
 ?>

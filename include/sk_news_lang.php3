@@ -754,8 +754,6 @@ define("L_SHOW_RICH", "Zobraz toto pole v rich text editore (pouijte sa po nainš
 define("L_MAP_JOIN","-- Spojenie polí --");
 define ("L_E_IMPORT_OVERWRITTEN", "Prepísané boli:");
 
-require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
-
 define("L_PARAM_WIZARD_LINK", "Sprievodca s nápovedou");
 
 
@@ -813,60 +811,13 @@ define("L_CONSTANT_HIER_SORT","Zmìny nebudou uloženy do databáze, dokud nestiskn
 define("L_CONSTANT_DESC","Popis");
 define("L_CONSTANT_HIER_SAVE","Ulož všechny zmìny do databáze");
 
-/*
-Revision 1.15  2002/02/05 21:46:04  honzam
-the message "no item found" can be redefined
-
-Revision 1.14  2002/01/10 13:51:43  honzam
-new alias for number of returned items
-
-Revision 1.13  2002/01/04 13:07:40  honzam
-Added language constants for profiles, notifications.
-
-Revision 1.12  2001/12/26 22:11:37  honzam
-Customizable 'No item found' message. Added missing language constants.
-
-Revision 1.11  2001/12/18 11:49:26  honzam
-new WYSIWYG richtext editor for inputform (IE5+)
-
-Revision 1.10  2001/11/29 08:40:09  mitraearth
-Provides help when using the Nodes screen to configre inter-node feeding
-It informs of the correect values to tell the superadmin of the other node.
-
-$Log$
-Revision 1.17  2002/03/06 12:32:09  honzam
-preparation for hierarchical constant editor
-
-Revision 1.16  2002/02/08 10:13:35  honzam
-corrected slovak language by Norbert Brazda
-
-Revision 1.9  2001/10/24 18:44:10  honzam
-new parameter wizard for function aliases and input type parameters
-
-Revision 1.8  2001/10/08 17:03:35  honzam
-Language constants fixes
-
-Revision 1.7  2001/10/05 10:51:29  honzam
-Slice import/export allows backup of more slices, bugfixes
-
-Revision 1.6  2001/10/02 11:36:41  honzam
-bugfixes
-
-Revision 1.5  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-Revision 1.4  2001/07/09 09:28:44  honzam
-New supported User defined alias functions in include/usr_aliasfnc.php3 file
-
-Revision 1.3  2001/06/24 16:46:22  honzam
-new sort and search possibility in admin interface
-
-Revision 1.2  2001/06/21 14:15:44  honzam
-feeding improved - field value redefine possibility in se_mapping.php3
-
-Revision 1.1  2001/06/12 16:07:22  honzam
-new feeding modes -  "Feed & update" and "Feed & update & lock"
-*/
-?>
-
-
+// constants used in param wizard only:
+require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
+// new constants to be translated are here. Leave this "require" always at the 
+// end of this file
+// If You want to translate the new texts (which is in new_news_lang.php3 file),
+// just copy them from the new_news_lang.php3 file here and translate.
+// IMPORTANT: Leave the require new_news_lang.php3 as the last line of this
+// file - it will not redefine the constant You translated and helps You when 
+// we add new texts !!!
+require  $GLOBALS[AA_INC_PATH]."new_news_lang.php3"; ?>
