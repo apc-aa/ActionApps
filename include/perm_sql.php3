@@ -197,7 +197,7 @@ function GetMembership ($id, $flags = 0) {
     while($row = mysql_fetch_array($sth)) {
       //echo "row $row[id]\n";
         # Realize that it has already checked a group and eliminate it.
-        if (! in_array($row[id],$all_groups)) {
+        if (! in_array($row[id],array($all_groups))) {
           $last_groups[] = $row["id"];
           $all_groups[]  = $row["id"];
 	  /*
@@ -621,6 +621,9 @@ function A2sql_update ($table, $keyField, $aData) {
 
 /*
 $Log$
+Revision 1.10  2000/08/07 18:36:22  kzajicek
+Prototype needed in the first run
+
 Revision 1.9  2000/08/07 15:52:13  kzajicek
 in_array moved to util.php3 and defined optionally
 
