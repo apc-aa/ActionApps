@@ -203,19 +203,16 @@ if (! $insert && is_array ($notshown)) {
     }
 }
 
+// put the item into the right bin
+$bin2fill = $slice_info["permit_anonymous_post"];
+if( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
+// you may force to put the item into a higher bin (active < hold < trash)
+$bin2fill = max ($bin2fill, $force_status_code);
+$content4id["status_code....."][0]['value'] = $bin2fill;
+
 if ($insert) {
     $content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
-
-    // put the item into the right bin
-    $bin2fill = $slice_info["permit_anonymous_post"];
-    if( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
-
-    // you may force to put the item into a higher bin (active < hold < trash)
-    $bin2fill = max ($bin2fill, $force_status_code);
-    $content4id["status_code....."][0][value] = $bin2fill;
-}
-
-else if (!is_array ($result)) {
+} else if (!is_array ($result)) {
     // Proove we are permitted to update this item.
     switch ($slice_info["permit_anonymous_edit"]) {
     case ANONYMOUS_EDIT_NOT_ALLOWED: $permok = false; break;
@@ -223,8 +220,8 @@ else if (!is_array ($result)) {
     case ANONYMOUS_EDIT_ONLY_ANONYMOUS:
     case ANONYMOUS_EDIT_NOT_EDITED_IN_AA:
         $oldflags = $oldcontent4id["flags..........."][0]['value'];
-	    // are we allowed to update this item?
-    	$permok = ($oldflags & ITEM_FLAG_ANONYMOUS_EDITABLE != 0);
+        // are we allowed to update this item?
+        $permok = (($oldflags & ITEM_FLAG_ANONYMOUS_EDITABLE) != 0);
         $content4id["flags..........."][0]['value'] = $oldflags;
         break;
     case ANONYMOUS_EDIT_HTTP_AUTH:
@@ -234,15 +231,15 @@ else if (!is_array ($result)) {
         break;
     case ANONYMOUS_EDIT_PASSWORD:
         $permok = false;
-    	reset ($fields);
-    	while (list ($fid) = each($fields))
-    		if (substr ($fid,0,14) == "password......") {
+        reset ($fields);
+        while (list ($fid) = each($fields))
+            if (substr ($fid,0,14) == "password......") {
                 $password = $content4id[$fid][0]['value'];
                 if (!$text_password && $password)
                     $password = crypt($password, 'xx');
-    			$permok = ($oldcontent4id[$fid][0]['value'] == $password);
+                $permok = ($oldcontent4id[$fid][0]['value'] == $password);
                 break;
-    		}
+            }
         break;
     }
 

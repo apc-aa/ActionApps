@@ -1,6 +1,6 @@
 <?php
-/* 
- * Extracted from fillform.php3 to allow inclusion from site module 
+/*
+ * Extracted from fillform.php3 to allow inclusion from site module
  */
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -49,7 +49,7 @@ function fillFormFromVars($fillConds) {
 </SCRIPT>\n";
 
     if (isset($fillConds))
-	    $res .= fillConds();
+        $res .= fillConds();
     else $res .= fillForm();
     return $res;
 }
@@ -63,8 +63,8 @@ function safeChars ($str) {
   for ($i=0; $i < strlen ($str); ++$i) {
     if ($str[$i] == "\n") $retVal .= "\\n";
     if (ord($str[$i]) > 31)
-		if ($str[$i] == "'" ) $retVal .= "\\'";
-		else $retVal .= $str[$i];
+        if ($str[$i] == "'" ) $retVal .= "\\'";
+        else $retVal .= $str[$i];
   }
   return $retVal;
 }
@@ -72,11 +72,29 @@ function safeChars ($str) {
 
 /** Finds the item content and calls fillFormWithContent.
 *   Prooves permissions to update an item.
-*   Returns stirng of HTML and Javascript for echoing 
+*   Returns stirng of HTML and Javascript for echoing
 */
 function fillForm () {
     global $my_item_id, $slice_id, $oldcontent4id;
-    if (! $slice_id) {  "fillform.php3: error: Slice ID not set."; return; }
+    // get slice_id if not specified - try get it from $my_item_id
+    if ( !$slice_id AND $my_item_id ) {
+        $zid = new zids( $my_item_id, 'l' );
+        $content = GetItemContentMinimal($zid, array('id','slice_id'));
+        if ( $p_slice_id = $content[$my_item_id]["slice_id........"][0]['value'] ) {
+            $slice_id = unpack_id128($p_slice_id);
+        }
+    }
+    // get slice_id if not specified - try get it from $oldcontent4id
+    if ( !$slice_id AND $oldcontent4id AND is_array($oldcontent4id) ) {
+        if ( $p_slice_id = $oldcontent4id["slice_id........"][0]['value'] ) {
+            $slice_id = unpack_id128($p_slice_id);
+        }
+    }
+    if ( !$slice_id ) {
+       echo "<!-- fillform.php3: Slice ID not set, but it could be OK -->";
+       return;
+    }
+
     $slice_info = GetSliceInfo($slice_id);
 
     // reader management: aw=ABCDE is sent in welcome
@@ -123,7 +141,7 @@ function fillForm () {
         // access code
         else if ($GLOBALS["ac"]) {
             $db = getDB();
-            $SQL = 
+            $SQL =
                 "SELECT item.id FROM content INNER JOIN item
                  ON content.item_id = item.id
                  WHERE item.slice_id='".q_pack_id($slice_id)."'
@@ -150,8 +168,8 @@ function fillForm () {
     case ANONYMOUS_EDIT_NOT_ALLOWED: $permsok = false; break;
     case ANONYMOUS_EDIT_ONLY_ANONYMOUS:
     case ANONYMOUS_EDIT_NOT_EDITED_IN_AA:
-    	$permsok = ($oldcontent4id["flags..........."][0]['value']
-           & ITEM_FLAG_ANONYMOUS_EDITABLE != 0);
+        $permsok = (($oldcontent4id["flags..........."][0]['value']
+           & ITEM_FLAG_ANONYMOUS_EDITABLE) != 0);
         break;
     }
     if (!$permsok) { return "<!--this item is not allowed to be updated-->"; }
@@ -161,42 +179,42 @@ function fillForm () {
 
 /* Jakub: I had troubles with the packed IDs because some chars (codes > 128)
     from them appear as
-	single quote - of course it depends on used char-encoding and therefore
-	is hard to solve. I have forbidden id and slice_id to appear and hope this
-	is enough. */
+    single quote - of course it depends on used char-encoding and therefore
+    is hard to solve. I have forbidden id and slice_id to appear and hope this
+    is enough. */
 /* Returns HTML and Javascript for echoing */
 function fillFormWithContent ($oldcontent4id) {
-	global $form, $suffix, $conds, $dateConds, $my_item_id, $checkbox;
+    global $form, $suffix, $conds, $dateConds, $my_item_id, $checkbox;
 
     $timezone = getTimeZone();
     $res = "";
 
     $res .= $GLOBALS["jsstart"];
-	$res .= "
+    $res .= "
     var fillform_fields".$suffix." = new Array (\n";
 
     $first = true;
-	if (is_array ($oldcontent4id)) {
-		reset ($oldcontent4id);
-		while (list ($field_id,$field_array) = each ($oldcontent4id)) {
+    if (is_array ($oldcontent4id)) {
+        reset ($oldcontent4id);
+        while (list ($field_id,$field_array) = each ($oldcontent4id)) {
             if (is_array ($field_array))
-			foreach ($field_array as $field) {
-				$myvalue = safeChars ($field["value"]);
-				//$control_id = $field_id;
-				$control_id = 'v'.unpack_id128($field_id);
-				// field password.......x is used to authenticate item edit
-				if (substr ($field_id, 0, 14) != "password......"
-					&& $field_id != "id.............."
-					&& $field_id != "slice_id........"
-					//&& $myvalue != ""
+            foreach ($field_array as $field) {
+                $myvalue = safeChars ($field["value"]);
+                //$control_id = $field_id;
+                $control_id = 'v'.unpack_id128($field_id);
+                // field password.......x is used to authenticate item edit
+                if (substr ($field_id, 0, 14) != "password......"
+                    && $field_id != "id.............."
+                    && $field_id != "slice_id........"
+                    //&& $myvalue != ""
                     ) {
                     if (!$first) $res .= ",\n"; else $first = false;
-					$res .= "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','".
-					($field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone)";
+                    $res .= "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','".
+                    ($field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone)";
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 
     $res .= ");
 
@@ -207,7 +225,7 @@ function fillFormWithContent ($oldcontent4id) {
             setControlOrAADate (item[0],item[1],item[2],item[3],item[4],item[5]);
         }
     }\n";
-	if (!isset ($GLOBALS["notrun"])) $res .= "
+    if (!isset ($GLOBALS["notrun"])) $res .= "
     fillForm ();";
     $res .= $GLOBALS["jsfinish"];
     return $res;
@@ -268,7 +286,7 @@ function unsubscribe_reader() {
          AND content.field_id='".FIELDID_ACCESS_CODE."'
          AND content.text='".$GLOBALS["au"]."'");
     if ($db->num_rows() != 1) {
-        if ($debug) echo "AU not OK: ".$db->num_rows()." items"; 
+        if ($debug) echo "AU not OK: ".$db->num_rows()." items";
         freeDB($db);
         return false;
     }
@@ -299,26 +317,26 @@ function unsubscribe_reader() {
 // ----------------------------------------------------------------------------
 /* * * * * * * * * * * FILL CONDS * * * * * * * * * */
 /** gives JavaScript filling the AA date 3 selectboxes
-	params: $mydate .. UNIX timestamp
-			$dateField .. field name
+    params: $mydate .. UNIX timestamp
+            $dateField .. field name
 */
 function fillConds () {
-	global $form, $conds, $dateConds;
+    global $form, $conds, $dateConds;
     global $conds_not_field_names;
     $res = "";
-	$res .= $GLOBALS["jsstart"]
+    $res .= $GLOBALS["jsstart"]
         ."function fillConds () {";
 
-	if (is_array ($conds)) {
-		reset ($conds);
-		while (list ($i,$cond) = each ($conds)) {
-        	if (is_array($cond)) {
-        		reset ($cond);
+    if (is_array ($conds)) {
+        reset ($conds);
+        while (list ($i,$cond) = each ($conds)) {
+            if (is_array($cond)) {
+                reset ($cond);
                 while( list($k, $v) = each($cond) ) {
                     if( $v ) {
                         if (!is_array ($v)) {
                             $v = str_replace ("\"", '\\"', $v);
-                    		$res .= "setControl ('$form','conds[$i][$k]',\"$v\");\n";
+                            $res .= "setControl ('$form','conds[$i][$k]',\"$v\");\n";
                         }
                         else {
                             $arr = "";
@@ -332,21 +350,21 @@ function fillConds () {
                     }
                 }
             }
-		}
-	}
+        }
+    }
 
-	if (is_array ($dateConds)) {
+    if (is_array ($dateConds)) {
         $timezone = getTimeZone();
-		reset ($dateConds);
-		while (list($i,$dateField) = each ($dateConds)) {
-			if (isset ($conds[$i][value]) && $conds[$i][value])
-				$res .= "setControlOrAADate ('$form','$dateField','".
-					strtotime($conds[$i][value])."','',0,$timezone);\n";
-		}
-	}
-	$res .= "\n}\n";
+        reset ($dateConds);
+        while (list($i,$dateField) = each ($dateConds)) {
+            if (isset ($conds[$i][value]) && $conds[$i][value])
+                $res .= "setControlOrAADate ('$form','$dateField','".
+                    strtotime($conds[$i][value])."','',0,$timezone);\n";
+        }
+    }
+    $res .= "\n}\n";
 
-	if (!isset ($GLOBALS["notrun"])) $res .= "\n fillConds ();\n";
+    if (!isset ($GLOBALS["notrun"])) $res .= "\n fillConds ();\n";
     $res .= $GLOBALS["jsfinish"];
     return $res;
 }
