@@ -277,16 +277,16 @@ $QuoteArray = array(":" => "_AA_CoLoN_",
 $UnQuoteArray = array_flip($QuoteArray);
 
 
-/** Substitutes all colons with special AA string and back depending on unalias 
- *  nesting. Used to mark characters :{}() which are content, not syntax 
- * elements
+/** Substitutes all colons with special AA string and back depending on unalias
+ *  nesting. Used to mark characters :{}() which are content, not syntax
+ *  elements
  */
 function QuoteColons($level, $maxlevel, $text) {
     global $QuoteArray, $UnQuoteArray;  // Global so not built at each call
     if ( $level > 0 ) {                 // there is no need to substitute on level 1
         return strtr($text, $QuoteArray);
     }
-    
+
     // level 0 - return from unalias - change all back to ':'
     if ( ($level == 0) AND ($maxlevel > 0) ) { // maxlevel - just for speed optimalization
         return strtr($text, $UnQuoteArray);
@@ -344,7 +344,7 @@ function stringexpand_sessurl($url) {
  *  slice, format string which defines the format and possible slice codnitions.
  *   [biom] => <a href="http://biom.cz">_#KEYWORD_</a>, ...
  */
-function getDictReplacePairs($dictionary, $format, $conds='') {
+function getDictReplacePairs($dictionary, $format, &$delimiters, $conds='') {
     // return array of pairs: [biom] => <a href="http://biom.cz">_#KEYWORD_</a>
     $replace_pairs = array();
 
@@ -365,14 +365,48 @@ function getDictReplacePairs($dictionary, $format, $conds='') {
         list($keywords, $link) = explode('_AA_DeLiM_', $kw_string,2);
         $kw_array              = explode('##', $keywords);
         foreach ( (array)$kw_array as $kw ) {
-            $replace_pairs[$kw] = str_replace('_#KEYWORD_', $kw, $link);
+            /*
+            $search_kw - Replace inner delimiters from collocations (we suppose
+            that the single words, compound words and also collocations will
+            beare replaced) and add special word boundary in order to recognize
+            text as the whole word - not as part of any word
+            added by haha
+             */
+            $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
+            $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
         }
     }
     return $replace_pairs;
 }
 
+/** It's necessary to select characters used as standard word delimiters
+ *  Check the value of the string variable $delimiter_chars and correct it.
+ *  Associative array $delimiters contains frequently used delimiters and it's
+ *  special replace_strings used as word boundaries
+ *  @author haha
+ */
+function define_delimiters()
+{
+    $delimiter_chars = "()[] ,.;:?!\"&'\n";
+    for ($i=0; $i<strlen($delimiter_chars); $i++) {
+        $index              = $delimiter_chars[$i];
+        $delimiters[$index] = 'AA#@'.$index.'AA#@';
+    }
+    // HTML tags are word delimiters, too
+    $delimiters['<'] = 'AA#@<';
+    $delimiters['>'] ='>AA#@';
+    /*
+    Some HTML tags in text will be replaced with special strings
+    beginning with '_AA_' and ending with '_ShCut'
+    (see function makeAsShortcut())
+    these special strings are taken as delimiters
+    */
+    $delimiters['_ShCut']='_ShCutAA#@';
+    $delimiters['_AA_']='AA#@_AA_';
+    return $delimiters;
+}
 
-/** Store $text in the $html_subst_arr array - used for distinary escaping html 
+/** Store $text in the $html_subst_arr array - used for dictionary escaping html
  *  tags
  */
 function makeAsShortcut($text) {
@@ -383,37 +417,57 @@ function makeAsShortcut($text) {
     return $shortcut;
 }
 
-/** Uses one slice ($dictionary) and replace any word which matches a word in
- *  dictionary by the text specified in $format
+/** Uses one slice ($dictionary) and replace any word which matches a word
+ *  in dictionary by the text specified in $format.
+ *  It do not search in <script>, <a>, <h*> tags and HTML tags itself.
+ *  It also searches only for whole word (not word substrings)
+ *  It is writen as quick as possible, so we do not use preg_replace for the
+ *  main replaces (it is extremly slow for bigger dictionaries) - strtr used
+ *  instead
+ *  @author Honza Malik, Hana Havelková
  */
 function stringexpand_dictionary($dictionaries, $text, $format, $conds='') {
     global $contentcache;
+
+    $delimiters = define_delimiters();
     // get pairs (like APC - <a href="http://apc.org">APC</a>' from dict. slice
-    // (we call it through the contentcache in order it is called only once for 
+    // (we call it through the contentcache in order it is called only once for
     // the same parameters)
-    $replace_pairs = $contentcache->get_result("getDictReplacePairs", array($dictionaries, $format, $conds));
-    
-    // we do not want to replace text in the html tags, so we substitute all 
-    // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the 
+    $replace_pairs = $contentcache->get_result("getDictReplacePairs", array($dictionaries, $format, $delimiters, $conds));
+
+    // we do not want to replace text in the html tags, so we substitute all
+    // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the
     // $html_subst_arr. Then it is used with replace_pairs to return back
     $GLOBALS['html_subst_arr'] = array();
     $search = array ("'<script[^>]*?>.*?</script>'sie",  // Strip out javascript
-                     "'<h[1-6][^>]*?>.*?</h[1-6]>'sie",  // Strip out titles (can't be nested)
+                     "'<h[1-6][^>]*?>.*?</h[1-6]>'sie",  // Strip out titles
+                                                                                                                             // can't be nested
                      "'<a[^>]*?>.*?</a>'sie",            // Strip out links
                      "'<[\/\!]*?[^<>]*?>'sie");          // Strip out HTML tags
 
-    $replace = array ("makeAsShortcut('\\0')", "makeAsShortcut('\\0')", "makeAsShortcut('\\0')", "makeAsShortcut('\\0')");
+    $replace = array ("makeAsShortcut('\\0')", "makeAsShortcut('\\0')",
+                      "makeAsShortcut('\\0')", "makeAsShortcut('\\0')");
 
     // substitute html tags with shortcuts
+    // (= remove the code where we do not want replace text)
     $text = preg_replace($search, $replace, $text);
-    
-    $replace_pairs = array_merge($replace_pairs,$GLOBALS['html_subst_arr']);
-    unset($GLOBALS['html_subst_arr']);                   // just clean up
-    
-    // do both: process dictionary words and put back the shortcuted text
-    return strtr($text,$replace_pairs);  
-}
 
+    // Insert special string before the beginning and after the end of the text
+    // Replacing all delimiters with special strings!!!
+    $text = 'AA#@'.strtr($text, $delimiters).'AA#@';
+
+    // add shortcuts also to the replace_pairs, so all is done in one step
+    $replace_pairs = array_merge($replace_pairs, $GLOBALS['html_subst_arr']);
+    // do both: process dictionary words and put back the shortcuted text
+    $text = strtr($text, $replace_pairs);
+
+    unset($GLOBALS['html_subst_arr']);         // just clean up
+
+    // finally - removing additional vaste text 'AA#@' - recovering original
+    // word delimiters
+    $text = str_replace('AA#@', '', $text);
+    return $text;
+}
 
 /** Expand a single, syntax element */
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
