@@ -70,7 +70,7 @@ if( $r_fields )
 else
   list($fields,) = GetSliceFields($r_sid);
 
-if( $action == "filter" ) { // edit the first one
+if( $akce == "filter" ) { // edit the first one
     $r_r_admin_order = ( $admin_order ? $admin_order : "publish_date...." );
     $r_r_admin_order_dir = ( $admin_order_dir ? "d" : "a");
     
@@ -231,7 +231,7 @@ if( count( $item_ids ) > 0 ) {
 else 
   echo "<tr><td><div class=tabtxt>". L_NO_ITEM ."</div></td></td></table>";
   
-echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
+echo '<input type=hidden name=akce value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
 echo '</form>';
 
 # user definend sorting and filtering ---------------------------------------
@@ -263,7 +263,7 @@ FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_r_admin_search_field
 echo "<input type='Text' name='admin_search' size=20
       maxlength=254 value=\"". safe($r_r_admin_search). "\"></td></tr></table>
       <input type=hidden name=var_id value='$var_id'><br><br>
-      <input type=hidden name=action value='filter'><br><br>
+      <input type=hidden name=akce value='filter'><br><br>
       <input type=button value='". L_BACK ."' onclick='window.close()'>
       </form></center>";
   echo "</body></html>";

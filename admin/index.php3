@@ -205,8 +205,8 @@ if ($bodyonly == "1") {
 }
 ######################################
 
-if ($action) {
-  switch( $action ) {  // script post parameter
+if ($akce) {
+  switch( $akce ) {  // script post parameter
     case "app":
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
         MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
@@ -279,7 +279,7 @@ if ($action) {
   	exit();
   }
 
-} // end if ($action)
+} // end if ($akce)
 
 // script paramerer - table switching
 switch( $Tab ) {
@@ -344,7 +344,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <title><?php echo L_EDITOR_TITLE ?></title>
 <SCRIPT Language="JavaScript"><!--
 function SubmitItems(act) {
-  document.itemsform.action.value = act
+  document.itemsform.akce.value = act
   document.itemsform.submit()
 }
 
@@ -582,7 +582,7 @@ if($st->pageCount() > 1 || $action_selected != "0") {
         
 if ($action_selected != "0")
 {  
-    echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
+    echo '<input type=hidden name=akce value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
     echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
     echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
     

@@ -77,7 +77,7 @@ if( $i==1 )    // can't feed to any slice
             delimeter=',';
           }  
         }
-        window.opener.document.itemsform.action.value = 'feed';
+        window.opener.document.itemsform.akce.value = 'feed';
         window.opener.document.itemsform.submit();                                     
         close();
       }
