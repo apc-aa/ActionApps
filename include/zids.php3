@@ -212,12 +212,6 @@ class zids {
             : $this->longids($i));
     }
         
-
-    function __sleep() {
-#       $this->s = null;  # Don't serialize cached version of $s
-    }
-   #TODO - consider superclassing "serialize" as used in GetView
-
     function use_short_ids() {
         if ($this->type == "s") return true;
         return false;

@@ -1,3 +1,4 @@
+02/15/03 - fixed bug and added debugging to cache
 02/11/03 - created the item_content.php3 file to ease manipulation with
            $content4id (jakub)
 02/11/03 - created the event_handler.php3 file, useful for various

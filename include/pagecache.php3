@@ -48,6 +48,7 @@ class PageCache  {
     $this->clearFreq = $cf;
   }  
 
+  # Local
   # returns keystring 
   # $keyVars - array of names of global variables which identifies cached information
   function getKeystring($keyVars) {
@@ -61,6 +62,7 @@ class PageCache  {
 
   # returns cached informations or false
   function get($keyString) {
+    if ($GLOBALS[debugcache]) huhl("Cache:get:$keyString");
     if( ENABLE_PAGE_CACHE ) {
       $db = $this->db;
 //      if( $GLOBALS['debug'] )
@@ -84,6 +86,7 @@ class PageCache  {
   
   # cache informations based on $keyString
   function store($keyString, $content, $str2find="") {
+    if ($GLOBALS[debugcache]) huhl("Cache:store:$keystring:$str2find");
     if( ENABLE_PAGE_CACHE ) {
       $db = $this->db;
       $tm = time();
@@ -100,6 +103,7 @@ class PageCache  {
 
   # clears all old cached data
   function purge() {
+    if ($GLOBALS[debugcache]) huhl("Cache:purge");
     $db = $this->db;
     $tm = time();
     $SQL = "DELETE FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'";
@@ -109,6 +113,7 @@ class PageCache  {
 
   # remove cached informations for all rows which have the $cond in str2find
   function invalidateFor($cond) {
+    if ($GLOBALS[debugcache]) huhl("Cache:invalidateFor:$cond");
     $db = $this->db;
     $SQL = "DELETE FROM pagecache WHERE str2find LIKE '%". quote($cond) ."%'";
     $db->query($SQL);
@@ -116,6 +121,7 @@ class PageCache  {
 
   # remove cached informations for all rows
   function invalidate() {
+    if ($GLOBALS[debugcache]) huhl("Cache:invalidate");
     $db = $this->db;
     $SQL = "DELETE FROM pagecache";
     $db->query($SQL);
