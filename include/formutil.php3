@@ -755,10 +755,10 @@ class aainputfield {
     * Prints html tag <textarea .. to 2-column table
     * for use within <form> and <table> tag
     *
-    * changes: because of move from IE specific RichEditor to HTMLArea,
-    * showrich_href is used for specifying type of area, if true - HTMLArea is used
+    * $showrich_href - have we show "Show Editor" link? (if we want to, we have
+    *                  to include /misc/htmlarea/aafunc.js script to the page
     */
-    function textarea( $rows=4, $cols=60, $single=false, $showrich_href=false, $showhtmlarea=false) {
+    function textarea( $rows=4, $cols=60, $single=false, $showrich_href=true, $showhtmlarea=false) {
 
         global $BName, $BPlatform, $sess;
 
@@ -778,7 +778,7 @@ class aainputfield {
             <script type="text/javascript" language="javascript"><!--
                 generateArea("'.$name.'", true, '.(AA_HTMLAREA_SPELL_CGISCRIPT ? "true" : "false").', "'.$rows.'", "'.$cols.'", "'.$sess->id.'");
             //--></script>';
-        } else {
+        } elseif ( $showrich_href ) {
                         $tarea .= '
             <script type="text/javascript" language="javascript"><!--
                 showHTMLAreaLink("'.$name.'");
@@ -1298,9 +1298,10 @@ function FrmHidden($name, $val, $safing=true ) {
 /** Prints html tag <textarea .. to 2-column table
  *  for use within <form> and <table> tag
  */
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single="", $html=false, $showrich_href=false) {
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single="") {
+    $html=false;  // it was in parameter, but was never used in the code /honzam 05/15/2004
     $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->textarea($rows, $cols, $single, $showrich_href);
+    $input->textarea($rows, $cols, $single, false);
     $input->print_result();
 }
 

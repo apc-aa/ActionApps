@@ -1,3 +1,8 @@
+05/15/04 - fixed problem with multivalue fields, when one of the value is empty
+(honzam)   (it displayed number). Now we introduced FLAG_TEXT_STORED, which
+           helps to determine text/numer stored values
+         - fixed javascript error on several admin pages - it tried to display
+           HTMLArea link, but the js file was not included
 05/13/04 - fixed Cross Server Feeding - filters did not work properly (honzam)
 05/11/04 - improved Cross Server Feeding
 (honzam)    - added APC RSS and RSS test pages with debug options (see AA menu),
