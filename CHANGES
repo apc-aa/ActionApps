@@ -1,3 +1,8 @@
+12/03/03 - fixed bug in filler.php3 - not shown fields with apostrph now works
+(honzam)   well
+11/10/03 - fixed problem with {user} alias - no warning displayed, now (honzam)
+11/09/03 - e-mail "technical@ecn.cz" replaced by generic ERROR_REPORTING_EMAIL
+(honzam) - fixed bug in input type Related Window: row count parameter now works
 11/06/03 - added array possibility for cmd[89][]=.. view parameter, which allows
 (honzam)   to combine more commands for the same view
            (one from url, one from SSI, ... - for example)

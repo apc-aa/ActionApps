@@ -180,6 +180,9 @@ else {
 }
 if ($debugfill) huhl("Debugfill insert=",$insert);
 
+// Fills also global variable $oldcontent4id (which is NOT! DB quoted)
+// (so $oldcontent4id is incompatible with $content4id - should be fixed
+// by using ItemContent object in near future)
 ValidateContent4Id ($err_valid, $slice_id, $insert ? "insert" : "update", $my_item_id,
     ! $notvalidate, $notshown);
 
@@ -196,8 +199,12 @@ if (count($err_valid) > 1) {
     }
 }
 
-// prepare content4id array before calling StoreItem
-$content4id = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
+// prepare content4id array before calling StoreItem (content4id is QUOTED!)
+$content4id    = GetContentFromForm( $fields, $prifields, $oldcontent4id, $insert );
+
+// just quote all $oldcontent4id values
+$foocontent4id = new ItemContent($oldcontent4id);
+$oldcontent4id = $foocontent4id->getContentQuoted();
 
 // copy old values for fields not shown in the form
 if (! $insert && is_array ($notshown)) {

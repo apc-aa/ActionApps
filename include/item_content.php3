@@ -69,6 +69,30 @@ class ItemContent {
         return $this->content;
     }
 
+    /** Function quotes all content to use in database query */
+    //  This is just transformation function - we do not say, that content is
+    //  not already quoted - we will add $quoted flag to this class in order
+    //  it will be transparent for ussage in near future
+    function getContentQuoted() {
+        return $this->_content_walk('quote');
+    }
+
+    /** Goes through all values of content and and returns transformed content.
+     *  Transformation is given by callback function.
+     */
+    function _content_walk($callback) {     // private function
+        if ( !isset( $this->content ) OR !is_array(  $this->content ) ) {
+            return false;
+        }
+        foreach ( $this->content as $field => $val_array ) {
+            foreach ( $val_array as $key => $val ) {
+                $ret[$field][$key] = array( 'value' => $callback($val['value']),
+                                            'flag'  => $val['flag']);
+            }
+        }
+        return $ret;
+    }
+
     /** Returns the value for a field. If it is a multi-value
     *   field, this is the first value. */
     function getValue ($field_id) {
