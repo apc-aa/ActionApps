@@ -374,21 +374,24 @@ else {
                AND id = '". q_pack_id($cat_id) ."'";
     $db->query($SQL);
     if( $db->next_record() ) {
-      $conds [] = array (GetCategoryFieldId( $fields )=>1,
+      $conds[] = array (GetCategoryFieldId( $fields )=>1,
                         'value' => $db->f(value),
-                        'operator' => '=');
+                        'operator' => ($exact ? '=' : 'LIKE'));
     }  
   }  
   elseif ( $cat_name )   // optional parameter cat_name -------
-    $conds [GetCategoryFieldId( $fields )] = $cat_name;
+    $conds[] = array (GetCategoryFieldId( $fields )=>1,
+                      'value' => $cat_name,
+                      'operator' => ($exact ? '=' : 'LIKE'));
     
-  elseif ( $restrict ) 
-    $conds [$restrict] = ($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 
-        ? $res_val : "'$res_val'";
-  
-  if( $highlight != "" )
-    $conds['highlight.......'] = 1;
+  if ( $restrict ) 
+    $conds[] = array( $restrict=>1,
+                      'value' => ((($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 ) ? $res_val : "'$res_val'"),
+                      'operator' => ($exact ? '=' : 'LIKE'));
 
+  if( $highlight != "" )
+    $conds[] = array ('highlight.......' => 1);
+    
   if(is_array($conds)) {
     if (! isset ($defaultCondsOperator))
       $defaultCondsOperator = 'LIKE'; 
@@ -420,12 +423,15 @@ else {
     $grp_odir = (($order==$group_field) AND ($orderdirection!='d')) ? 'a':'d';
     $sort_tmp[] = array ( $group_field => $grp_odir );
   }  
-  else if ($slice_info['group_by']) 
-  	$sort_tmp[] = array ( $slice_info['group_by'] => 
-      (strstr('aAdD19',$slice_info['gb_direction']) ? $slice_info['gb_direction'] : 'a'));
-      # validate content - a,A=the same - ascending; d,D=the same - descending
-      # 1 - ascending by priority, 9 - descending by priority (for fields using constants)
-
+  else if ($slice_info['group_by']) { 
+    switch( (string)$slice_info['gb_direction'] ) {  # gb_direction is number
+      case '1': $gbd = '1'; break;      # 1 (1)- ascending by priority
+      case '8': $gbd = 'd'; break;      # d (8) - descending
+      case '9': $gbd = '9'; break;      # 9 (9)- descending by priority (for fields using constants)
+      default:  $gbd = 'a';             # 2 (2) - ascending;
+    }   
+  	$sort_tmp[] = array ( $slice_info['group_by'] => $gbd);
+  }    
   if(isset($sort)) {
     if( !is_array($sort) )
       $sort_tmp[] = GetSortArray( $sort );

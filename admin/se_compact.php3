@@ -69,7 +69,7 @@ if( $update )
     $varset->add("odd_row_format", "quoted", $odd_row_format);
     $varset->add("even_row_format", "quoted", $even_row_format);
     $varset->add("group_by","quoted",$group_by);
-    $varset->add("gb_direction","quoted",$gb_direction);
+    $varset->add("gb_direction","number",$gb_direction);
     $varset->add("gb_header","number",$gb_header);
     $varset->add("category_top", "quoted", $category_top);
     $varset->add("category_format", "quoted", $category_format);
@@ -124,7 +124,7 @@ if( $slice_id!="" ) {  // set variables from database - allways
       $db->query ("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='".q_pack_id($slice_id)."'");
       if ($db->next_record()) {
         $group_by = $db->f("id");
-        $gb_direction  = "a";
+        $gb_direction  = "2";      # number 2 represents 'a' - ascending (because gb_direction in number)
         $gb_header = 0;
         $category_sort = 0;
       }
@@ -207,7 +207,7 @@ function EnableClick(cond,what) {
   echo "</td></tr>
   <tr><td>&nbsp;</td><td>";
   FrmSelectEasy ("gb_header", array (L_WHOLE_TEXT,L_FIRST_LETTER,"2 ".L_LETTERS,"3 ".L_LETTERS), $gb_header);
-  FrmSelectEasy("gb_direction", array( 'a'=>L_ASCENDING, 'd' => L_DESCENDING, '1' => L_ASCENDING_PRI, '9' => L_DESCENDING_PRI  ), 
+  FrmSelectEasy("gb_direction", array( '2'=>L_ASCENDING, '8' => L_DESCENDING, '1' => L_ASCENDING_PRI, '9' => L_DESCENDING_PRI  ), 
                 $gb_direction);
   PrintHelp( L_SORT_DIRECTION_HLP );
   echo "<input type=hidden name='category_sort' value='$category_sort'>";
