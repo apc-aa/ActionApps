@@ -788,14 +788,12 @@ function HtmlPageBegin() {
   echo HTML_PAGE_BEGIN;
 }  
 
-include $GLOBALS[AA_INC_PATH] . "menu.php3";
-
 # Displays page with message and link to $url
 #   url - where to go if user clicks on Back link on this message page
 #   msg - displayed message
 #   mode - items/admin/standalone for surrounding of message
 function MsgPage($url, $msg, $mode="standalone", $menu="") {
-  global $sess, $auth, $slice_id;
+  global $sess, $auth, $slice_id, $aamenus;
 
   if( !isset($sess) AND ($mode!="standalone")) {
     require $GLOBALS[AA_INC_PATH] . "locauth.php3";

@@ -192,6 +192,7 @@ function GetConstantGroup( $input_show_func ) {
                           translated to $slices = array($slice_id) 
              $neverAllItems -- if no conds[] apply (all are wrong formatted or empty),
                                generates an empty set
+             $restrict_ids -- if you want to choose only from a set of items (used by E-nail Alerts)
    Globals:  $debug=1 -- many debug messages
              $debugfields=1 -- useful mainly for multiple slices mode -- views info about field_ids 
                 used in conds[] but not existing in some of the slices
@@ -199,7 +200,7 @@ function GetConstantGroup( $input_show_func ) {
 */
 
 function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", 
-    $slices="", $neverAllItems=0 ) {
+    $slices="", $neverAllItems=0, $restrict_ids=array() ) {
   # parameter format example:  
   # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
   # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
@@ -232,6 +233,9 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
         if ($slices) ProoveFieldNames ($slices, $conds);        
         else ProoveFieldNames (array ($slice_id), $conds);
     }
+
+  ParseMultiSelectConds ($conds);
+  ParseEasyConds ($conds, $defaultCondsOperator);
     
 if( $debug ) {
   echo "<br>Conds:<br>";
@@ -243,10 +247,7 @@ if( $debug ) {
   echo "<br><br>Slices:<br>";
   p_arr_m($slices);
 }
-
-  ParseMultiSelectConds ($conds);
-  ParseEasyConds ($conds, $defaultCondsOperator);
-  
+ 
   # parse conditions ----------------------------------
   if( is_array($conds)) {
     reset($conds); 
@@ -421,6 +422,16 @@ if( $debug ) {
       $SQL .= " item.slice_id IN ( $slicesText ) AND ";
   }
   else $SQL .= " item.slice_id='". q_pack_id(current($slices)) ."' AND ";
+  
+  if (is_array ($restrict_ids)) {
+    $rids = "";
+    reset ($restrict_ids);
+    while (list (,$id) = each ($restrict_ids)) {
+        if ($rids) $rids .= ",";
+        $rids .= '"'.addslashes($id).'"';
+    }
+    if ($rids) $SQL .= ' item.id IN ('.$rids.') AND ';
+  }
 
   $now = now();                                              # select bin -----
   switch( $type ) {
