@@ -730,18 +730,6 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
 		
   $name=safe($name); $val=safe($val); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
-  echo "\n<script language=\"JavaScript\">
-	<!--
-		function add_to_area(inputbox, value) {
-		  if (inputbox.value.length != 0) {
-		    inputbox.value=inputbox.value+\",\"+value;
-		  } else {
-		    inputbox.value=value;
-		  }	
-		}
-	//-->
-	</script>\n";
-
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
@@ -749,7 +737,7 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
     echo "</tr><tr align=left>";
   echo "<td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual".getTriggers("textarea",$name).">$val</textarea>
           <select name=\"foo_$name\"";
-  echo "onchange=\"add_to_area($name, this.options[this.selectedIndex].value)\">";
+  echo "onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">";
   
   reset($arr);
   while(list($k, $v) = each($arr)) { 

@@ -90,9 +90,9 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
-                
+
   # get slice fields and its priorities in inputform
-list($fields,$prifields) = GetSliceFields($slice_id);   
+list($fields,$prifields) = GetSliceFields($slice_id);
 
 if( isset($prifields) AND is_array($prifields) ) {
 
@@ -105,28 +105,33 @@ if( isset($prifields) AND is_array($prifields) ) {
                     myform = document.inputform;\n";
 
     #it is needed to call IsEditable() function and GetContentFromForm()
-    if( $update ) { 
+    if( $update ) {
         $oldcontent = GetItemContent($id);
         $oldcontent4id = $oldcontent[$id];   # shortcut
-    }   
+    }
 
 	reset($prifields);
 	while(list(,$pri_field_id) = each($prifields)) {
         $f = $fields[$pri_field_id];
         $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
         $htmlvarname = $varname."html";
-    
+
         if( $add OR (!$f[input_show] AND ($insert OR $update) )) {
             $$varname = GetDefault($f);
             $$htmlvarname = GetDefaultHTML($f);
-        }    
-        
+        }
+
+        # determine if we have to use enctype="multipart/form-data" type of form
+        if ( substr($f['input_show_func'], 0, 3) == 'fil')  # uses fileupload?
+          $html_form_type = 'enctype="multipart/form-data"';
+
+        # prepare javascript function for validation of the form
         switch( $f[input_validate] ) {
-            case 'text': 
-            case 'url':  
-            case 'email':  
-            case 'number':  
-            case 'id':  
+            case 'text':
+            case 'url':
+            case 'email':
+            case 'number':
+            case 'id':
                 $js_proove_fields .= "
                     if (!validate (myform['$varname'], '$f[input_validate]', "
                         .($f[required] ? "1" : "0")."))
@@ -135,18 +140,18 @@ if( isset($prifields) AND is_array($prifields) ) {
         }
 
           # validate input data
-        if( ( $insert || $update ) 
+        if( ( $insert || $update )
             && IsEditable($oldcontent4id[$pri_field_id], $f)) {
             switch( $f[input_validate] ) {
-                case 'text': 
-                case 'url':  
-                case 'email':  
-                case 'number':  
-                case 'id':  
+                case 'text':
+                case 'url':
+                case 'email':
+                case 'number':
+                case 'id':
                     ValidateInput($varname, $f[name], $$varname, $err,
                               $f[required] ? 1 : 0, $f[input_validate]);
                     break;
-                case 'date':  
+                case 'date':
                     $foo_datectrl_name = new datectrl($varname);
                     $foo_datectrl_name->update();                   # updates datectrl
                     if( $$varname != "")                            # loaded from defaults
@@ -154,28 +159,28 @@ if( isset($prifields) AND is_array($prifields) ) {
                     $foo_datectrl_name->ValidateDate($f[name], $err);
                     $$varname = $foo_datectrl_name->get_date();  # write to var
                     break;
-                case 'bool':  
+                case 'bool':
                     $$varname = ($$varname ? 1 : 0);
                     break;
-        	    case 'user':
-            	    // this is under development.... setu, 2002-0301
-            	    // value can be modified by $$varname = "new value";
-            	    $$varname = usr_validate($varname, $f[name], $$varname, $err, $f, $fields);
+                case 'user':
+                    // this is under development.... setu, 2002-0301
+                    // value can be modified by $$varname = "new value";
+                    $$varname = usr_validate($varname, $f[name], $$varname, $err, $f, $fields);
                     ##	echo "ItemEdit- user value=".$$varname."<br>";
-            	    break;    
+                    break;
             }
-        }   
+        }
     }
-    
+
     $js_proove_fields .= "
-                    return true; 
-                } 
+                    return true;
+                }
             // -->
-         </script>";         
+         </script>";
 }
 
   # update database
-if( ($insert || $update) AND (count($err)<=1) 
+if( ($insert || $update) AND (count($err)<=1)
     AND isset($prifields) AND is_array($prifields) ) {
 
   # prepare content4id array before call StoreItem function
@@ -187,12 +192,12 @@ if( ($insert || $update) AND (count($err)<=1)
 
   if( $insert )
     $id = new_id();
-	
-  $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert, 
+
+  $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                             true, true );     # invalidatecache, feed
- 
+
   if( count($err) <= 1) {
-    page_close(); 
+    page_close();
 
     if( $anonymous )  // anonymous login
       if( $encap ) {
@@ -202,7 +207,7 @@ if( ($insert || $update) AND (count($err)<=1)
              </SCRIPT>';
       } else
         go_url( $r_slice_view_url );
-    elseif( $ins_preview OR $upd_preview ) 
+    elseif( $ins_preview OR $upd_preview )
       go_url( con_url($sess->url(self_base() .  "preview.php3"), "slice_id=$slice_id&sh_itm=$id"));
     else  {
       if ($return_url) {
@@ -213,16 +218,16 @@ if( ($insert || $update) AND (count($err)<=1)
       } else {
         go_url( $sess->url(self_base() . "index.php3"));
       }
-    }      	
-  }  
+    }
+  }
 }
-    
+
 # -----------------------------------------------------------------------------
 # Input form
 # -----------------------------------------------------------------------------
 
 unset( $content );       # used in another context for storing item to db
-unset( $content4id ); 
+unset( $content4id );
 
 if($edit) {
   if( !(isset($fields) AND is_array($fields)) ) {
@@ -235,13 +240,13 @@ if($edit) {
     # fill content array from item and content tables
   $content = GetItemContent($id);
   if( !$content ) {
-    $err["DB"] = MsgErr(L_BAD_ITEM_ID);  
+    $err["DB"] = MsgErr(L_BAD_ITEM_ID);
     MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"),
             $err, "standalone");
     exit;
   }
   $content4id = $content[$id];
-}    
+}
 
 //print_r($content);
 
@@ -249,41 +254,41 @@ if($edit) {
 
 if( !$encap ) {
   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-	echo '
-		<style>
-		#body_white_color { color: #000000; }
-		</style>
+  echo '
+    <style>
+    #body_white_color { color: #000000; }
+    </style>
     <title>'.( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT). '</title>
-    <script Language="JavaScript"><!--    
+    <script Language="JavaScript"><!--
       function SelectAllInBox( listbox ) {
         var len = eval(listbox).options.length
         for (var i = 0; i < eval(listbox).options.length; i++) {
           // select all rows without the wIdThTor one, which is only for <select> size setting
-          eval(listbox).options[i].selected = ( eval(listbox).options[i].value != "wIdThTor" );  
+          eval(listbox).options[i].selected = ( eval(listbox).options[i].value != "wIdThTor" );
         }
-      }  
-        
+      }
+
       var box_index=0;   // index variable for box input fields
       var listboxes=Array(); // array of listboxes where all selection should be selected
       var relatedwindow;  // window for related stories
-      
-      // before submit the form we need to select all selections in some 
+
+      // before submit the form we need to select all selections in some
       // listboxes (2window, relation) in order the rows are sent for processing
       function BeforeSubmit() {
-        for(var i = 0; i < listboxes.length; i++) 
+        for(var i = 0; i < listboxes.length; i++)
           SelectAllInBox( listboxes[i] );';
-        if ( richEditShowable() )	echo 'saveRichEdits();';            
+        if ( richEditShowable() )	echo 'saveRichEdits();';
         echo '
-        return proove_fields ();  
-      }    
-    
+        return proove_fields ();
+      }
+
       function OpenRelated(varname, sid, mode, design) {
         if ((relatedwindow != null) && (!relatedwindow.closed)) {
           relatedwindow.close()    // in order to preview go on top after open
         }
         relatedwindow = open( "'. $sess->url("related_sel.php3") . '&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design, "relatedwindow", "scrollbars=1, resizable=1, width=500");
       }
-      
+
       function MoveSelected(left, right) {
         var i=eval(left).selectedIndex;
         if( !eval(left).disabled && ( i >= 0 ) )
@@ -312,20 +317,20 @@ if( !$encap ) {
           inputbox.value=value;
         }
       }
-
+        
     // -->
     </script>';
-
-    echo $js_proove_fields;     
-    
-		echo '
-    </head>
-  <body id="body_white_color">
-   <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
-}
-PrintArray($err);
-echo $Msg;  
-
+echo "\n<script language=\"JavaScript\">
+<!--
+  function add_to_area(inputbox, value) {
+    if (inputbox.value.length != 0) {
+      inputbox.value=inputbox.value+\",\"+value;
+    } else {
+      inputbox.value=value;
+    }
+  }
+//-->
+</script>\n";
 if ($return_url)
   $PASS_PARAM=$PHP_SELF."?return_url=".urlencode($return_url);
 else
@@ -344,7 +349,7 @@ if ($javascript) {
     </script>';
 }
 
-echo '<form name=inputform enctype="multipart/form-data" method=post action="'
+echo "<form name=inputform $html_form_type method=post action=\""
     .($DOCUMENT_URI != "" ? $DOCUMENT_URI : $PASS_PARAM).'"'
     .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>'
     .'<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center" class="inputtab">'; ?>
@@ -361,7 +366,7 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
 ?>
 <tr>
   <td colspan=2>
-  <?php 
+  <?php
   if(DEBUG_FLAG && $id) {       //  do not print empty info for new articles
 /*    echo '<I>';
     echo L_POSTDATE.": ".(sec2userdate(dequote($post_date)));
