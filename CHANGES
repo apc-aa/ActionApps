@@ -1,3 +1,12 @@
+06/01/01 - multiple categories (multiple values at all) for item now works
+         - new item view statistics field (displayed_count) in item table 
+           (normal field, so you can view it, sort by it, make conditions ...)
+         - new sql_update.php3 script for easy database install & reinstalation
+         - new short_id for item (and new x parameter to slice.php3 script) for
+           shorter item urls
+         - little changes in view setting - better user interface  
+05/29/01 - shared field displayed in itemedit form, even they are locked for 
+           update
 05/27/01 - fixed problem with doubled item from search
 05/26/01 - fixed problem with '=' character passed by url
          - doc/FAQ.html updated
@@ -5,7 +14,8 @@
          - new search parameters in slice.php3, which uses beter search funct.
 05/24/01 - fixed bug of item disapearing after item modify
          - fixed bug of not updated list of item in Item manager after item edit
-05/21/01 - new "field mapping" feature for feeding - se_mapping.php3
+05/21/01 - new "field mapping" feature for feeding - se_mapping.php3 
+           (by Ondra Mazanec)
 05/18/01 - new View feature, new and improved search function (QueryIDs)
          - better Message Page handling (not so much)
          - removed unnecessary enctype="multipart/form-data" from <form> tags

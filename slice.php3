@@ -22,6 +22,8 @@ http://www.apc.org/
 #expected  slice_id 
 #expected  encap     // determines wheather this file is ssi included or called directly  
 #optionaly sh_itm    // if specified - selected item is shown in full text
+#optionaly x         // the same as sh_itm, but short_id is used instead
+                     // implemented for shorter item url (see _#SITEM_ID alias)
 #optionaly srch      // true if this script have to show search results
 #optionaly highlight // when true, shows only highlighted items in compact view
 #optionaly bigsrch   // true, if this script have to show big search form
@@ -163,6 +165,23 @@ function RestoreVariables() {
   }
 }  
 
+# two purpose function - it loggs item view and it translates short_id to id
+function LogItem($id, $column) {
+  global $db;
+  $where = (( $column == "id" ) ? "id='".q_pack_id($id)."'" : "short_id=$id");
+  $SQL = "SELECT id, display_count FROM item WHERE $where";
+  $db->query($SQL);
+  if( $db->next_record() ) {
+    $rec = $db->Record;
+    $SQL = "UPDATE LOW_PRIORITY item 
+               SET display_count=". ($rec['display_count']+1). 
+           " WHERE $where";
+    $db->query($SQL);
+    return unpack_id( $rec['id'] );
+  }
+  return false;
+}  
+    
 //-----------------------------End of functions definition---------------------
 # $debugtimes[]=microtime();
 
@@ -227,8 +246,13 @@ if( $bigsrch ) {
 
 # fulltext view ---------------------------------------------------------------
 
-if( $sh_itm ) {
+if( $sh_itm OR $x ) {
 //  $r_state_vars = StoreVariables(array("sh_itm")); # store in session
+  if($sh_itm)
+    LogItem($sh_itm, "id");
+   else
+    $sh_itm = LogItem($x,"short_id");
+    
   $aliases = GetAliasesFromFields($fields);
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
   $itemview->print_item();
@@ -302,7 +326,7 @@ elseif(isset($conds) AND is_array($conds)) {     # posted by easy query form ---
   if( isset($sort_tmp) )
     $sort = $sort_tmp;
    else 
-    $sort[] = array ( 'pub_date........' => 'd' );
+    $sort[] = array ( 'publish_date....' => 'd' );
 
   $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, "" );
 
@@ -394,7 +418,7 @@ $debugtimes[]=microtime();*/
 
   if( $order )
     $srt[] = array ( $order => (( $orderdirection == "DESC" ) ? 'd' : 'a'));
-  $srt[] = array ( 'pub_date........' => 'd' );
+  $srt[] = array ( 'publish_date....' => 'd' );
 
     
   $item_ids=QueryIDs($fields, $slice_id, $cnds, $srt, $group_by );
@@ -430,6 +454,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.21  2001/06/03 15:51:59  honzam
+new short_id for item (and new x parameter to slice.php3 script) for shorter item urls
+
 Revision 1.20  2001/05/25 16:10:52  honzam
 New search parameters in slice.php3, which uses beter search function
 
