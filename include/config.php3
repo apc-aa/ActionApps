@@ -170,6 +170,7 @@ require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
 # require ($GLOBALS[AA_INC_PATH] . "es_common_lang.php3");  # Spanish
 # require ($GLOBALS[AA_INC_PATH] . "sk_common_lang.php3");  # Slovak
 # require ($GLOBALS[AA_INC_PATH] . "de_common_lang.php3");  # Deutsch
+# require ($GLOBALS[AA_INC_PATH] . "ro_common_lang.php3");  # Romanian
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG
