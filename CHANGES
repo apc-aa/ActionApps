@@ -1,5 +1,9 @@
 03/24/03 - fixed "Bad Table view ID: modedit" bug when switching from one module 
-           type to another (honzam)
+(honzam)   type to another
+         - fixed: design setting is not lost when you scroll to another page 
+           in Related Item window
+         - Fixed problem of duplicitly fed items when source item is edited 
+           again
 03/24/03 - removed the old Alerts scripts from misc/alerts (jakub)
 03/24/03 - fixed several things in Alerts (jakub)
 03/24/03 - fixed bug of empty row appearing in "Two boxes" input type

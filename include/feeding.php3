@@ -257,7 +257,7 @@ function AddRelationFeed ( $dest_id, $source_id) {
 	$p_source_id = q_pack_id($source_id);
   # update relation table - stores where is what fed
   $SQL = "INSERT INTO relation ( destination_id, source_id,   flag )
-               VALUES ( '$p_id', '$p_source_id', '". REL_FLAG_FEED ."' )";
+               VALUES ( '$p_dest_id', '$p_source_id', '". REL_FLAG_FEED ."' )";
   $db->query($SQL);
 }
 
