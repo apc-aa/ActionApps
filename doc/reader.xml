@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1250"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
 <article>
@@ -10,7 +10,7 @@
     <author>
       <firstname>Jakub</firstname>
 
-      <surname>Adámek</surname>
+      <surname>AdĂˇmek</surname>
 
       <affiliation>
         <orgname>Econnect</orgname>
@@ -409,148 +409,156 @@ The Econnect team
 
         <orderedlist>
           <listitem>
-            <para>Update to the new AA version from CVS and run
-            <constant>sql_update.php3</constant></para>
+            <simpara>Update to the new AA version from CVS and run
+            <constant>sql_update.php3</constant></simpara>
           </listitem>
 
           <listitem>
-            <para>Create <quote>My Readers</quote>:</para>
+            <simpara>Create <quote>My Readers</quote>:</simpara>
 
             <orderedlist>
               <listitem>
-                <para>Create a new slice from the <quote>Reader Management
-                Minimal</quote> template with the name <quote>My Readers</quote></para>
+                <simpara>Create a new slice from the <quote>Reader Management
+                Minimal</quote> template with the name <quote>My Readers</quote></simpara>
               </listitem>
 
               <listitem>
-                <para>Set <quote>Allow anonymous posting</quote> to
-                <quote>Active</quote></para>
+                <simpara>Set <quote>Allow anonymous posting</quote> to
+                <quote>Active</quote></simpara>
               </listitem>
 
               <listitem>
-                <para>Set <quote>Allow anonymous editing</quote> to
-                <quote>All items</quote></para>
+                <simpara>Set <quote>Allow anonymous editing</quote> to
+                <quote>All items</quote></simpara>
               </listitem>
             </orderedlist>
           </listitem>
 
           <listitem>
-            <para>Create filters:</para>
+            <simpara>Create filters:</simpara>
 
             <orderedlist>
               <listitem>
-                <para>In your favorite test slice, create a view with type
+                <simpara>In your favorite test slice, create a view with type
                 <quote>Alerts Digest</quote>. Fill something intelligent into
-                the design, particularly the <quote>Odd Rows</quote> field</para>
+                the design, particularly the <quote>Odd Rows</quote> field</simpara>
               </listitem>
 
               <listitem>
-                <para>Fill the Filter 1 and 2 Description with <quote>My
-                Filter 1</quote> and 2. Do not fill <constant>conds[]</constant>,
-                you can play with them when you are an Alerts-master</para>
+                <simpara>Fill the Filter 1 and 2 Description with
+                <quote>My Filter 1</quote> and 2. Do not fill
+                <constant>conds[]</constant>, you can play with them when you
+                are an Alerts-master</simpara>
               </listitem>
             </orderedlist>
           </listitem>
 
           <listitem>
-            <para>Create a collection:</para>
+            <simpara>Create a collection:</simpara>
 
             <orderedlist>
               <listitem>
-                <para>Create a new Alerts module with the name <quote>My
-                Collection</quote></para>
+                <simpara>Create a new Alerts module with the name
+                <quote>My Collection</quote></simpara>
               </listitem>
 
               <listitem>
-                <para>Fill the name <quote>My Alerts</quote> and the form URL
-                with some web folder to which you have access, e.g.
-                <constant>http://have_access_to/myalerts.shtml</constant>
-                </para>
+                <simpara>Fill the name <quote>My Alerts</quote> and the form
+                URL with some web folder to which you have access, e.g.
+                <constant>http://have_access_to/myalerts.shtml</constant></simpara>
               </listitem>
             </orderedlist>
           </listitem>
 
           <listitem>
-            <para>Design emails:</para>
+            <simpara>Design emails:</simpara>
 
             <orderedlist>
               <listitem>
-                <para>In the Alerts menu, click on Emails and on the Add icon</para>
+                <simpara>In the Alerts menu, click on Emails and on the Add
+                icon</simpara>
               </listitem>
 
               <listitem>
-                <para>Create a new email with name <quote>My Welcome</quote>
-                and fill the fields similar to the example above</para>
+                <simpara>Create a new email with name <quote>My Welcome</quote>
+                and fill the fields similar to the example above</simpara>
               </listitem>
 
               <listitem>
-                <para>Click again on Emails, Add and create a new email with
-                name <quote>My Alert</quote> and type <quote>alerts alert</quote>
-                and fill the fields similar to the example above</para>
+                <simpara>Click again on Emails, Add and create a new email
+                with name <quote>My Alert</quote> and type <quote>alerts alert</quote>
+                and fill the fields similar to the example above</simpara>
               </listitem>
 
               <listitem>
-                <para>Click again on Emails, there should be the two emails
-                listed</para>
+                <simpara>Click again on Emails, there should be the two emails
+                listed</simpara>
               </listitem>
             </orderedlist>
           </listitem>
 
           <listitem>
-            <para>Set the collection:</para>
+            <simpara>Set the collection:</simpara>
 
             <orderedlist>
               <listitem>
-                <para>Click on Settings and set the emails for your collection</para>
+                <simpara>Click on Settings and set the emails for your
+                collection</simpara>
               </listitem>
 
               <listitem>
-                <para>Click on Design and insert My Filter 1 and 2 into the
-                collection</para>
+                <simpara>Click on Filters and insert My Filter 1 and 2 into
+                the collection</simpara>
               </listitem>
 
               <listitem>
-                <para>Click on Slice Synchro, change to My Readers</para>
+                <simpara>Click on Slice Synchro, change to My Readers</simpara>
               </listitem>
 
               <listitem>
-                <para>Click on Add or refresh fields. A message
-                <quote>2 field(s) added</quote> appears.</para>
+                <simpara>Click on Add or refresh fields. A message
+                <quote>2 field(s) added</quote> appears.</simpara>
               </listitem>
             </orderedlist>
           </listitem>
 
           <listitem>
-            <para>Create the anonymous form:</para>
+            <simpara>Create the anonymous form:</simpara>
 
             <orderedlist>
               <listitem>
-                <para>Move to My Readers</para>
+                <simpara>Move to My Readers</simpara>
               </listitem>
 
               <listitem>
-                <para>In Slice Admin - Fields uncheck Show for Username and
-                check Required for Email </para>
+                <simpara>In Slice Admin - Fields uncheck Show for Username and
+                check Required for Email</simpara>
               </listitem>
 
               <listitem>
-                <para>Choose Slice Admin - Anonymous Form Wizard</para>
+                <simpara>Choose Slice Admin - Anonymous Form Wizard</simpara>
               </listitem>
 
               <listitem>
-                <para>Fill the URL similar to <constant>http://have_access_to/myalerts.shtml</constant></para>
+                <simpara>Fill the URL similar to <constant>http://have_access_to/myalerts.shtml</constant></simpara>
               </listitem>
 
               <listitem>
-                <para>Uncheck all fields except of Email, Password, How often
-                and Filters</para>
+                <simpara>Uncheck all fields except of Email, Password, How
+                often and Filters</simpara>
               </listitem>
 
               <listitem>
-                <para>Click on Show form and copy the form HTML to the file
-                <constant>http://have_access_to/myalerts.shtml</constant></para>
+                <simpara>Click on Show form and copy the form HTML to the file
+                <constant>http://have_access_to/myalerts.shtml</constant></simpara>
               </listitem>
+            </orderedlist>
+          </listitem>
 
+          <listitem>
+            <simpara>Subscribe to Alerts:</simpara>
+
+            <orderedlist>
               <listitem>
                 <para>Go to the address <constant>http://have_access_to/myalerts.shtml</constant>
                 and fill in your email address, the password <quote>abcde</quote>,
@@ -561,46 +569,39 @@ The Econnect team
                 <para>Click on Send, a message <quote>success: insert</quote>
                 appears. You may change your settings and use Send again.</para>
               </listitem>
+
+              <listitem>
+                <para>Confirm your subscription: Click on the link received in
+                the Welcome email</para>
+              </listitem>
             </orderedlist>
           </listitem>
 
           <listitem>
-            <para>Confirm your subscription: Click on the link received in the
-            Welcome email</para>
-          </listitem>
-
-          <listitem>
-            <para>Send alerts:</para>
+            <simpara>Send alerts:</simpara>
 
             <orderedlist>
               <listitem>
-                <para>Go to My Alerts, Design. Choose <quote>daily</quote> and
-                click on <quote>Go!</quote> at <quote>Send example</quote>.
+                <simpara>Go to My Alerts, Send emails. Choose <quote>daily</quote>
+                and click on <quote>Go!</quote> at <quote>Send example</quote>.
                 You should receive a digest of all items added in the last 24
                 hours to your favorite test slice. If there are no such items,
                 add some: click on My Filter 1, this moves you to your
-                favorite test slice. </para>
+                favorite test slice.</simpara>
               </listitem>
 
               <listitem>
-                <para>Try the same with <quote>Send now alerts to all users</quote>.
+                <simpara>Try the same with <quote>Send now alerts to all users</quote>.
                 Note this will store the time into the database and if you
                 click again on this button, no mail will be sent because no
-                message was added between the two runs. </para>
+                message was added between the two runs.</simpara>
               </listitem>
             </orderedlist>
           </listitem>
 
           <listitem>
-            <para></para>
-          </listitem>
-
-          <listitem>
-            <para></para>
-          </listitem>
-
-          <listitem>
-            <para></para>
+            <simpara>Add items to your favorite test slice and test that you
+            receive them</simpara>
           </listitem>
         </orderedlist>
       </sect3>

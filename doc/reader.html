@@ -110,40 +110,43 @@ The Econnect team
         <tt>f_c</tt> function and the values in the database are 0
         or 1. Thus give &#8220;0&#8221; and not &#8220;no&#8221; into the
         Search box.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e344"></a>Step by step tutorial</h4></div></div><p>Here is a tutorial, describing in steps how you can try the
-        Alerts module.</p><div class="orderedlist"><ol type="1"><li><p>Update to the new AA version from CVS and run
-            <tt>sql_update.php3</tt></p></li><li><p>Create &#8220;My Readers&#8221;:</p><div class="orderedlist"><ol type="a"><li><p>Create a new slice from the &#8220;Reader Management
-                Minimal&#8221; template with the name &#8220;My Readers&#8221;</p></li><li><p>Set &#8220;Allow anonymous posting&#8221; to
-                &#8220;Active&#8221;</p></li><li><p>Set &#8220;Allow anonymous editing&#8221; to
-                &#8220;All items&#8221;</p></li></ol></div></li><li><p>Create filters:</p><div class="orderedlist"><ol type="a"><li><p>In your favorite test slice, create a view with type
+        Alerts module.</p><div class="orderedlist"><ol type="1"><li>Update to the new AA version from CVS and run
+            <tt>sql_update.php3</tt></li><li><p>Create &#8220;My Readers&#8221;:</p><div class="orderedlist"><ol type="a"><li>Create a new slice from the &#8220;Reader Management
+                Minimal&#8221; template with the name &#8220;My Readers&#8221;</li><li>Set &#8220;Allow anonymous posting&#8221; to
+                &#8220;Active&#8221;</li><li>Set &#8220;Allow anonymous editing&#8221; to
+                &#8220;All items&#8221;</li></ol></div></li><li><p>Create filters:</p><div class="orderedlist"><ol type="a"><li>In your favorite test slice, create a view with type
                 &#8220;Alerts Digest&#8221;. Fill something intelligent into
-                the design, particularly the &#8220;Odd Rows&#8221; field</p></li><li><p>Fill the Filter 1 and 2 Description with &#8220;My
-                Filter 1&#8221; and 2. Do not fill <tt>conds[]</tt>,
-                you can play with them when you are an Alerts-master</p></li></ol></div></li><li><p>Create a collection:</p><div class="orderedlist"><ol type="a"><li><p>Create a new Alerts module with the name &#8220;My
-                Collection&#8221;</p></li><li><p>Fill the name &#8220;My Alerts&#8221; and the form URL
-                with some web folder to which you have access, e.g.
-                <tt>http://have_access_to/myalerts.shtml</tt>
-                </p></li></ol></div></li><li><p>Design emails:</p><div class="orderedlist"><ol type="a"><li><p>In the Alerts menu, click on Emails and on the Add icon</p></li><li><p>Create a new email with name &#8220;My Welcome&#8221;
-                and fill the fields similar to the example above</p></li><li><p>Click again on Emails, Add and create a new email with
-                name &#8220;My Alert&#8221; and type &#8220;alerts alert&#8221;
-                and fill the fields similar to the example above</p></li><li><p>Click again on Emails, there should be the two emails
-                listed</p></li></ol></div></li><li><p>Set the collection:</p><div class="orderedlist"><ol type="a"><li><p>Click on Settings and set the emails for your collection</p></li><li><p>Click on Design and insert My Filter 1 and 2 into the
-                collection</p></li><li><p>Click on Slice Synchro, change to My Readers</p></li><li><p>Click on Add or refresh fields. A message
-                &#8220;2 field(s) added&#8221; appears.</p></li></ol></div></li><li><p>Create the anonymous form:</p><div class="orderedlist"><ol type="a"><li><p>Move to My Readers</p></li><li><p>In Slice Admin - Fields uncheck Show for Username and
-                check Required for Email </p></li><li><p>Choose Slice Admin - Anonymous Form Wizard</p></li><li><p>Fill the URL similar to <tt>http://have_access_to/myalerts.shtml</tt></p></li><li><p>Uncheck all fields except of Email, Password, How often
-                and Filters</p></li><li><p>Click on Show form and copy the form HTML to the file
-                <tt>http://have_access_to/myalerts.shtml</tt></p></li><li><p>Go to the address <tt>http://have_access_to/myalerts.shtml</tt>
+                the design, particularly the &#8220;Odd Rows&#8221; field</li><li>Fill the Filter 1 and 2 Description with
+                &#8220;My Filter 1&#8221; and 2. Do not fill
+                <tt>conds[]</tt>, you can play with them when you
+                are an Alerts-master</li></ol></div></li><li><p>Create a collection:</p><div class="orderedlist"><ol type="a"><li>Create a new Alerts module with the name
+                &#8220;My Collection&#8221;</li><li>Fill the name &#8220;My Alerts&#8221; and the form
+                URL with some web folder to which you have access, e.g.
+                <tt>http://have_access_to/myalerts.shtml</tt></li></ol></div></li><li><p>Design emails:</p><div class="orderedlist"><ol type="a"><li>In the Alerts menu, click on Emails and on the Add
+                icon</li><li>Create a new email with name &#8220;My Welcome&#8221;
+                and fill the fields similar to the example above</li><li>Click again on Emails, Add and create a new email
+                with name &#8220;My Alert&#8221; and type &#8220;alerts alert&#8221;
+                and fill the fields similar to the example above</li><li>Click again on Emails, there should be the two emails
+                listed</li></ol></div></li><li><p>Set the collection:</p><div class="orderedlist"><ol type="a"><li>Click on Settings and set the emails for your
+                collection</li><li>Click on Filters and insert My Filter 1 and 2 into
+                the collection</li><li>Click on Slice Synchro, change to My Readers</li><li>Click on Add or refresh fields. A message
+                &#8220;2 field(s) added&#8221; appears.</li></ol></div></li><li><p>Create the anonymous form:</p><div class="orderedlist"><ol type="a"><li>Move to My Readers</li><li>In Slice Admin - Fields uncheck Show for Username and
+                check Required for Email</li><li>Choose Slice Admin - Anonymous Form Wizard</li><li>Fill the URL similar to <tt>http://have_access_to/myalerts.shtml</tt></li><li>Uncheck all fields except of Email, Password, How
+                often and Filters</li><li>Click on Show form and copy the form HTML to the file
+                <tt>http://have_access_to/myalerts.shtml</tt></li></ol></div></li><li><p>Subscribe to Alerts:</p><div class="orderedlist"><ol type="a"><li><p>Go to the address <tt>http://have_access_to/myalerts.shtml</tt>
                 and fill in your email address, the password &#8220;abcde&#8221;,
                 how often &#8220;daily&#8221; and choose one of the filters</p></li><li><p>Click on Send, a message &#8220;success: insert&#8221;
-                appears. You may change your settings and use Send again.</p></li></ol></div></li><li><p>Confirm your subscription: Click on the link received in the
-            Welcome email</p></li><li><p>Send alerts:</p><div class="orderedlist"><ol type="a"><li><p>Go to My Alerts, Design. Choose &#8220;daily&#8221; and
-                click on &#8220;Go!&#8221; at &#8220;Send example&#8221;.
+                appears. You may change your settings and use Send again.</p></li><li><p>Confirm your subscription: Click on the link received in
+                the Welcome email</p></li></ol></div></li><li><p>Send alerts:</p><div class="orderedlist"><ol type="a"><li>Go to My Alerts, Send emails. Choose &#8220;daily&#8221;
+                and click on &#8220;Go!&#8221; at &#8220;Send example&#8221;.
                 You should receive a digest of all items added in the last 24
                 hours to your favorite test slice. If there are no such items,
                 add some: click on My Filter 1, this moves you to your
-                favorite test slice. </p></li><li><p>Try the same with &#8220;Send now alerts to all users&#8221;.
+                favorite test slice.</li><li>Try the same with &#8220;Send now alerts to all users&#8221;.
                 Note this will store the time into the database and if you
                 click again on this button, no mail will be sent because no
-                message was added between the two runs. </p></li></ol></div></li><li><p></p></li><li><p></p></li><li><p></p></li></ol></div></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e545"></a>Auth specific behaviour</h3></div></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e548"></a>Apache module mod_auth_mysql</h4></div></div><p>The Auth feature (it is not a real module) is meant to be used
+                message was added between the two runs.</li></ol></div></li><li>Add items to your favorite test slice and test that you
+            receive them</li></ol></div></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e545"></a>Auth specific behaviour</h3></div></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e548"></a>Apache module mod_auth_mysql</h4></div></div><p>The Auth feature (it is not a real module) is meant to be used
         by the <tt>mod_auth_mysql</tt> Apache module. You must
         install this module on your web server to appreciate the Auth feature.
         There are several versions of the module with different option names.
