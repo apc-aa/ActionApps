@@ -136,6 +136,18 @@ define("L_PARAM_WIZARD_INPUT_mse_DESC","Multiple choice select box. " . L_PARAM_
 define("L_PARAM_WIZARD_INPUT_mse_PAR0_NAME","Row count");
 define("L_PARAM_WIZARD_INPUT_mse_PAR0_DESC","");
 define("L_PARAM_WIZARD_INPUT_mse_PAR0_EXAMPLE","5");
+define("L_PARAM_WIZARD_INPUT_wi2_NAME","Two Windows");
+define("L_PARAM_WIZARD_INPUT_wi2_DESC","Two Windows. " . L_PARAM_WIZARD_INPUT_USING_CONSTANTS);
+define("L_PARAM_WIZARD_INPUT_wi2_PAR0_NAME","Row count");
+define("L_PARAM_WIZARD_INPUT_wi2_PAR0_DESC","");
+define("L_PARAM_WIZARD_INPUT_wi2_PAR0_EXAMPLE","5");
+define("L_PARAM_WIZARD_INPUT_wi2_PAR1_NAME","Title of \"Offer\" selectbox");
+define("L_PARAM_WIZARD_INPUT_wi2_PAR1_DESC","");
+define("L_PARAM_WIZARD_INPUT_wi2_PAR1_EXAMPLE","Our offer");
+define("L_PARAM_WIZARD_INPUT_wi2_PAR2_NAME","Title of \"Selected\" selectbox");
+define("L_PARAM_WIZARD_INPUT_wi2_PAR2_DESC","");
+define("L_PARAM_WIZARD_INPUT_wi2_PAR2_EXAMPLE","Selected");
+
 define("L_PARAM_WIZARD_INPUT_fil_NAME","File");
 define("L_PARAM_WIZARD_INPUT_fil_DESC","File upload - a text field with the file find button");
 define("L_PARAM_WIZARD_INPUT_fil_PAR0_NAME","Allowed file types");
