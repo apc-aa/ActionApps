@@ -36,7 +36,21 @@ http://www.apc.org/
 #easy_query          // for easiest form of query
 #order               // order field id - if other than publish date
                      // add minus sign for descending order (like "headline.......1-"); 
-//phpinfo();                     
+#no_scr              // if true, no scroller is displayed                     
+#scr_go              // sets scroller to specified page
+#restrict            // field id used with "res_val" and "exact" for restricted
+                     // output (display only items with 
+                     //       "restrict" field = "res_val"
+#res_val             // see restrict
+#exact               // if set, "restrict" field must match res_val exactly (=)
+                     // otherwise substring is sufficient (LIKE '%res_val%')
+#lock                // used in join with "key" for multiple slices on one page
+                     // display. each slice have to have its lock, so commands 
+                     // (like sh_itm, scr_go, ...) will be executed only if key
+                     // is the same as lock. key is send automaticaly with all 
+                     // links generated in slice (at this time just prepared)
+#key                 // see lock (at this time just prepared)
+
 $encap = ( ($encap=="false") ? false : true );
 
 require "./include/config.php3";
@@ -52,14 +66,17 @@ require $GLOBALS[AA_INC_PATH]."searchlib.php3";
 if ($encap){require $GLOBALS[AA_INC_PATH]."locsessi.php3";}
 else {require $GLOBALS[AA_INC_PATH]."locsess.php3";} 
 page_open(array("sess" => "AA_SL_Session"));
-$sess->register(r_highlight); 
-$sess->register(r_category); 
+$sess->register(r_packed_state_vars); 
+
+$r_state_vars = unserialize($r_packed_state_vars);
+
 # there was problems with storing too much ids in session veriable, 
 # so I commented it out. It is not necessary to have it in session. The only
 # reason to have it there is the display speed, but because of impementing
-# pagecache.php3, it is not problem now
+# pagecache.php3, it is not so big problem now
 
 //$sess->register(item_ids);    
+
 
 //-----------------------------Functions definition--------------------------------------------------- 
 
@@ -117,64 +134,79 @@ function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps
  }
 }    
 
-//-----------------------------End of functions definition------------------------------------------ 
+function ExitPage() {
+  global $encap, $r_packed_state_vars, $r_state_vars;
+  if (!$encap)
+    Page_HTML_End();
+  $r_packed_state_vars = serialize($r_state_vars);
+  page_close();
+  exit;
+}  
+
+function StoreVariables( $vars ) {
+  global $r_state_vars;
+
+  unset($r_state_vars);
+  if( isset($vars) AND is_array($vars) ) {
+    reset($vars);
+    while( list(,$v) = each( $vars ) )
+      $r_state_vars[$v] = $GLOBALS[$v];
+  }
+}  
+
+function RestoreVariables() {
+  global $r_state_vars;
+  if( isset($r_state_vars) AND is_array($r_state_vars) ) {
+    reset($r_state_vars);
+    while( list($k,$v) = each( $r_state_vars ) )
+      $GLOBALS[$k] = $v;
+  }
+}  
+
+//-----------------------------End of functions definition---------------------
+# $debugtimes[]=microtime();
 
 if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED
 
-# $debugtimes[]=microtime();
+// p_arr_m( $r_state_vars );
 
-  # url posted command to display another file
+if( ($key != $lock) OR $scrl ) # command is for other slice on page
+  RestoreVariables();          # or scroller
+
+# url posted command to display another file ----------------------------------
 if( $inc ) {                   # this section must be after $sess->add_vars()
+//  StoreVariables(array("inc")); # store in session
   if( !eregi("^([0-9a-z_])+(\.[0-9a-z]*)?$", $inc) ) {
     echo L_BAD_INC. " $inc";
-    page_close();
-    exit;
+    ExitPage();
   } else {  
     $fp = @fopen( shtml_base().$inc, "r");    #   if encapsulated
     if( !$fp )
       echo L_NO_SUCH_FILE ." $inc";
      else
       FPassThru($fp); 
-    exit;
+    ExitPage();
   }  
 }  
-
-# order the fields in compact view - how?
-if( $order ) {
-  if( substr($order,-1) == '-' ) {
-    $orderdirection = "DESC";
-    $order = substr($order,0,-1);
-  }
-}    
 
 $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 		 // open BD	
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
-$cur_cats=GetCategories($db,$p_slice_id);     // get list of categories 
-
-# $debugtimes[]=microtime();
 
   # get fields info
-list($fields,) = GetSliceFields($p_slice_id);
-
-# $debugtimes[]=microtime();
+list($fields,) = GetSliceFields($slice_id);
 
   # get slice info
-$slice_info = GetSliceInfo($p_slice_id);
+$slice_info = GetSliceInfo($slice_id);
 if ($slice_info AND ($slice_info[deleted]<1)) {
   include $GLOBALS[AA_INC_PATH] . $slice_info[lang_file];  // language constants (used in searchform...)
 }
 else {
   echo L_SLICE_INACCESSIBLE . " (ID: $slice_id)";
-  if (!$encap)
-    Page_HTML_End();
-  page_close();
-  exit;
+  ExitPage();
 }  
 
-
-# $debugtimes[]=microtime();
 
 if( !$slice_info[even_odd_differ] )
   $slice_info[even_row_format] = "";
@@ -182,134 +214,150 @@ if( !$slice_info[even_odd_differ] )
 if (!$encap)
   Page_HTML_Begin("iso-8859-1", $slice_info[name] );  // TODO codepage
 
-if( $bigsrch ) {      // big search form --------------------------------------
+
+# big search form -------------------------------------------------------------
+
+if( $bigsrch ) {
+  StoreVariables(array("bigsrch")); # store in session
   $show = Array("slice"=>true, "category"=>true, "author"=>true, "lang"=>true, "headline"=>true,
                 "full_text"=>true, "abstract"=>true, "from"=>true, "to"=>true, "edit_note"=>true);
   require $GLOBALS[AA_INC_PATH]."big_srch.php3";
+  ExitPage();
 }
-elseif( $sh_itm ) {   // fulltext view ----------------------------------------
+
+# fulltext view ---------------------------------------------------------------
+
+if( $sh_itm ) {
+//  StoreVariables(array("sh_itm")); # store in session
   $aliases = GetAliasesFromFields($fields);
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
   $itemview->print_item();
+  ExitPage();
 }
-elseif( $items  AND is_array($items) ) {   // multiple items fulltext view --------------------------
-  # shows all $items[] as fulltext one after one
+
+# multiple items fulltext view ------------------------------------------------
+if( $items  AND is_array($items) ) {   # shows all $items[] as fulltext one after one
+//  StoreVariables(array("items")); # store in session
   while(list($k,) = each( $items ))
     $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
   $aliases = GetAliasesFromFields($fields);
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, $ids, 0,count($ids), $sess->MyUrl($slice_id, $encap));
   $itemview->print_itemlist();
+  ExitPage();
 }
-else {               //compact view -------------------------------------------
-  if(!is_object($scr)) {
-    $sess->register(scr); 
-    $scr = new easy_scroller("scr",$sess->MyUrl($slice_id, $encap)."&", $slice_info[d_listlen]);	
-  }
-  if( $listlen )    // change number of listed items
-    $scr->metapage = $listlen;
- 
-  if($query) {
-    $r_category_id = "";
-    $r_highlight = "";
-    $item_ids = ExtSearch ($query, $p_slice_id, 0);
-    if( isset($item_ids) AND !is_array($item_ids))
-      echo "<div>$item_ids</div>";
-    $scr->current = 1;
-  }
-  elseif($easy_query) {
-# $debugtimes[]=microtime();
-    $item_ids = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, 
-                                 $srch_from, $srch_to, $easy_query, $srch_relev);
-    if( isset($item_ids) AND !is_array($item_ids))
-      echo "<div>$item_ids</div>";
-    $scr->current = 1;
-  }
-  elseif($srch) {
-    $r_category_id = "";
-    $r_highlight = "";
-    if( !$big )      // posted by bigsrch form -------------------
-      $search[slice] = $slice_id;
-    $item_ids = SearchWhere($search, $s_col);
-    $scr->current = 1;
-  }
-  else {
-    if( $cat_id ) {         // optional parameter cat_id ---------
-      $r_category = ( $cat_id == "all" ? "" : $cat_id );
-      $r_highlight = $highlight;
-      $scr->current = 1;
+
+# compact view ----------------------------------------------------------------
+if(!is_object($scr)) {
+  $sess->register(scr); 
+  $scr = new easy_scroller("scr",$sess->MyUrl($slice_id, $encap)."&", $slice_info[d_listlen]);	
+}
+if( $listlen )    // change number of listed items
+  $scr->metapage = $listlen;
+
+if( $scr_go )     // optional script parameter
+  $scr->current = $scr_go;
+  
+if( $scrl ) {      // comes from easy_scroller -----------
+  if (is_object($scr)) 
+    $scr->update();
+}    
+  
+if($query) {              # complex query - posted by big search form ---
+  StoreVariables(array("listlen","no_scr","scr_go","query")); # store in session
+  $item_ids = ExtSearch ($query, $p_slice_id, 0);
+  if( isset($item_ids) AND !is_array($item_ids))
+    echo "<div>$item_ids</div>";   # it must be error message
+  $scr->current = 1;
+}
+elseif($easy_query) {     # posted by easy query form ----------------
+  StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
+                      "easy_query", "srch_relev")); # store in session
+  $item_ids = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, 
+                               $srch_from, $srch_to, $easy_query, $srch_relev);
+  if( isset($item_ids) AND !is_array($item_ids))
+    echo "<div>$item_ids</div>";
+  $scr->current = 1;
+}
+elseif($srch) {            # posted by bigsrch form -------------------
+  StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col")); # store in session
+  if( !$big )
+    $search[slice] = $slice_id;
+  $item_ids = SearchWhere($search, $s_col);
+  $scr->current = 1;
+}
+else {
+  StoreVariables(array("listlen","no_scr","scr_go","order","cat_id", "cat_name",
+                      "exact","restrict","res_val","highlight")); # store in session
+  if( $cat_id ) {  // optional parameter cat_id - deprecated - slow ------
+    $cat_group = GetCategoryGroup($slice_id);
+    $SQL = "SELECT value FROM constant
+             WHERE group_id = '$cat_group'
+               AND id = '". q_pack_id($cat_id) ."'";
+    $db->query($SQL);
+    if( $db->next_record() ) {
+      $res_field = GetCategoryFieldId( $fields );
+      $res_value = $db->f(value);
+      $exact = true;
     }  
-    elseif ( $cat_name ) {  // optional parameter cat_name -------
-      $SQL = "SELECT value FROM constant
-               WHERE group_id = '$p_slice_id'
-                 AND name LIKE '%$cat_name%'";
-      $db->query($SQL);
-      $r_category = ( $db->next_record() ? $db->f(value) : "" );
-      $r_highlight = $highlight;
-      $scr->current = 1;
-    }
-    elseif( $scrl ) {      // comes from easy_scroller -----------
-      if (is_object($scr)) 
-        $scr->update();
-    }    
-    else {                 // no parameters - initial settings ---
-      $r_category_id = "";
-      $r_highlight = $highlight;
-      $scr->current = 1;
-    }  
-    if( $r_category != "" )
-      $conditions['category........'] = $r_category;
-    if( $r_highlight != "" )
-      $conditions['highlight.......'] = 1;
-
-# $debugtimes[]=microtime();
-
-    $item_ids = GetItemAppIds($fields, $db, $p_slice_id, $conditions, 
-                   "DESC", ($slice_info[category_sort] ? "category........" : $order), $orderdirection );
-
-# $debugtimes[]=microtime();
-  }    
-  if(!$encap) 
-    echo '<a href="'. $sess->MyUrl($slice_id, $encap). '&bigsrch=1">Search form</a><br>';
-  if( !$srch AND !$encap )
-    pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
-
-  if( count( $item_ids ) > 0 ) {
-
-# $debugtimes[]=microtime();
-
-    $aliases = GetAliasesFromFields($fields);
-
-# $debugtimes[]=microtime();
-
-    $itemview = new itemview( $db, $slice_info, $fields, $aliases, $item_ids,
-                $scr->metapage * ($scr->current - 1), $scr->metapage, $sess->MyUrl($slice_id, $encap) );
-
-# $debugtimes[]=microtime();
-
-    $itemview->print_view();
-      
-# $debugtimes[]=microtime();
-
-    $scr->countPages( count( $item_ids ) );
-  	if( ($scr->pageCount() > 1) AND !$easy_query AND !$query)  # $easy_query and $query conditions shoul be removed
-      $scr->pnavbar();
   }  
-  else 
-    echo "<div>". L_NO_ITEM ."</div>";
+  elseif ( $cat_name ) {  // optional parameter cat_name -------
+    $res_field = GetCategoryFieldId( $fields );
+    $res_value = $cat_name;
+  }
+  elseif ( $restrict ) { 
+    $res_field = $restrict;
+    $res_value = $res_val;
+  } else {             # no parameters - initial settings ---
+    $res_field = "";
+    $res_value = "";
+  }  
+
+  # order the fields in compact view - how?
+  if( $order ) {
+    if( substr($order,-1) == '-' ) {
+      $orderdirection = "DESC";
+      $order = substr($order,0,-1);
+    }
+  }    
+
+  if( $res_field != "" )
+    $conditions[$res_field] = $res_value;
+  if( $highlight != "" )
+    $conditions['highlight.......'] = 1;
+
+  $item_ids = GetItemAppIds($fields, $db, $slice_id, $conditions, "DESC",
+    ($slice_info[category_sort] ? GetCategoryFieldId( $fields ) : $order),
+    $orderdirection, "", $exact );
+}    
+if(!$encap) 
+  echo '<a href="'. $sess->MyUrl($slice_id, $encap). '&bigsrch=1">Search form</a><br>';
+if( !$srch AND !$encap AND !$query AND !$easy_query ) {
+  $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories 
+  pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
 }
-?>
- <br>
-<?php 
-  //<a href= $sess->MyUrl($slice_id, $encap)> Reload this</a> 
-if (!$encap)
-  Page_HTML_End();
 
-# $debugtimes[]=microtime();
+$ids_cnt = count( $item_ids );
+if( $ids_cnt > 0 ) {
+  $scr->countPages( count( $item_ids ) );
 
-page_close();
-#    p_arr_m( $debugtimes);
+  $aliases = GetAliasesFromFields($fields);
+  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $item_ids,
+              $scr->metapage * ($scr->current - 1), $scr->metapage, $sess->MyUrl($slice_id, $encap) );
+  $itemview->print_view();
+    
+	if( ($scr->pageCount() > 1) AND !$no_scr)
+    $scr->pnavbar();
+}  
+else 
+  echo "<div>". L_NO_ITEM ."</div>";
+
+ExitPage();
+
 /*
 $Log$
+Revision 1.16  2001/03/20 15:21:33  honzam
+Scrollers used in search output too, better parameters handling
+
 Revision 1.15  2001/03/07 14:34:56  honzam
 no message
 

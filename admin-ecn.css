@@ -46,7 +46,7 @@ H1, .tablename {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	font-weight : bold;
-  background: #584011;
+  background: #FFFFFF;
 	color: #F5F0E7;
   text-decoration: none;
 }
@@ -134,6 +134,14 @@ H1, .tablename {
 
 .taberr {
   color: red;
+}
+
+.tablename {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  font-weight: bold; 
+	color: #584011;
+  background: #EBDABE;
 }
 
 .notpubl {
