@@ -2,7 +2,7 @@
 # $Id$
 # Language: CZ
 # This file was automatically created by the Mini GetText environment
-# on 8.10.2002 11:33
+# on 11.10.2002 17:37
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -16,248 +16,268 @@ $_m["0 = special or user def"]
   = "0 = speciální nebo uživatelská";
 # End of unused messages
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/menu.php3, row 140
+# c:/apache/htdocs/aa_jakub/include/menu.php3, row 140
 $_m["Admin"]
   = "Administrace";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/menu.php3, row 192
+# c:/apache/htdocs/aa_jakub/include/menu.php3, row 192
 $_m["Wizard"]
   = "Prùvodce";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/menu.php3, row 193
+# c:/apache/htdocs/aa_jakub/include/menu.php3, row 193
 $_m["Welcomes"]
   = "Vítací maily";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/menu.php3, row 194
+# c:/apache/htdocs/aa_jakub/include/menu.php3, row 194
 $_m["Templates"]
   = "Šablony";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/menu.php3, row 196
+# c:/apache/htdocs/aa_jakub/include/menu.php3, row 196
 $_m["Misc"]
   = "Rùzné";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/menu.php3, row 197
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 469, 470
+# c:/apache/htdocs/aa_jakub/include/menu.php3, row 197
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 463, 464
 $_m["Cron"]
   = "Cron";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 217
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 272
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 296
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 272
 $_m["order ascending"]
   = "seøadit vzestupnì";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 218
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 273
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 297
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 273
 $_m["order descending"]
   = "seøadit sestupnì";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 321
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 378
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 334
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 378
 $_m["Nothing to be shown."]
   = "Není co zobrazit";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 393
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 444
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 406
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 444
 $_m["Quick Search: "]
   = "Rychlé Hledání: ";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 407, 411
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 458, 462
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 416, 420
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 458, 462
 $_m["Go"]
   = "Jeï";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 408
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 459
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 417
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 459
 $_m["Complex Search (SQL WHERE clause): "]
   = "Komplexní hledání (pøíkaz SQL WHERE): ";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 532
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 578
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 609
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 578
 $_m["edit"]
   = "upravit";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 536
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 582
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 614
+$_m["add"]
+  = "pøidat";
+
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 619, 626
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 582
 $_m["delete"]
   = "smazat";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 540
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 586
-$_m["update"]
-  = "odeslat";
-
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 541
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 587
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 626, 637
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 587
 $_m["insert"]
   = "vložit";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 547
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 632
+$_m["delete checked"]
+  = "smazat oznaèené";
+
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 637
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 586
+$_m["update"]
+  = "odeslat";
+
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 642
+$_m["update all"]
+  = "uložit vše";
+
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 647
 $_m["cancel"]
   = "storno";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 884
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 905
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 684
+$_m["Are you sure you want to permanently DELETE all the checked records?"]
+  = "Jste si jisti, že chcete navždy SMAZAT všechny oznaèené záznamy?";
+
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 1054
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 905
 $_m["Wrong value: a number between %1 and %2 is expected."]
   = "Špatná hodnota: oèekává se èíslo mezi %1 a %2.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 901
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 922
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 1071
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 922
 $_m["This field is required."]
   = "Toto pole je povinné.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 906
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 927
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 1076
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 927
 $_m["Not a valid integer number."]
   = "Není platné celé èíslo.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 910
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 931
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 1080
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 931
 $_m["Not a valid file name."]
   = "Není platný název souboru.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 914
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 935
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 1084
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 935
 $_m["Not a valid email address."]
   = "Není platný email.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit.php3, row 927
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tabledit1.php3, row 948
+# c:/apache/htdocs/aa_jakub/include/tabledit.php3, row 1097
+# c:/apache/htdocs/aa_jakub/include/tabledit1.php3, row 948
 $_m["Are you sure you want to permanently DELETE this record?"]
   = "Chcete opravdu trvale SMAZAT tento záznam?";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 56
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 56
 $_m["mail body"]
   = "tìlo zprávy";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 58
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 58
 $_m["From: mail header"]
   = "From: hlavièka mailu";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 110, 111
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 106, 107
 $_m["Alerts Collection"]
   = "Zasílání Zpráv - Kolekce";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 116, 263
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 112, 256
 $_m["description"]
   = "popis";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 120, 266
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 116, 259
 $_m["standard"]
   = "standartní";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 125, 269, 605
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 121, 262, 599
 $_m["no"]
   = "ne";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 125, 269, 605
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 121, 262, 599
 $_m["yes"]
   = "ano";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 127
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 123, 267
 $_m["mail header"]
   = "hlavièka mailu";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 134
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 130
 $_m["Filters"]
   = "Filtry";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 138
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 134
 $_m["Users"]
   = "Uživatelé";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 144
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 140
 $_m["You don't have permissions to edit any collection or no collection exists."]
   = "Nemáte práva na editování žádné kolekce nebo žádná kolekce neexistuje.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 180
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 176
 $_m["Error inserting Filter. Perhaps it is already in the collection."]
   = "Chyba pøi vkládání Filtru. Pravdìpodobnì už je v kolekci.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 183
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 179
 $_m["filter"]
   = "filtr";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 193
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 189
 $_m["order"]
   = "poøadí";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 208
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 204
 $_m["Not yet confirmed"]
   = "Dosud nepotvrzen(a)";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 222
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 217
 $_m["There are no users subscribed to this collection yet."]
   = "Žádní uživatelé nejsou ještì zapsaní k této kolekci.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 225, 306, 336
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 220, 301, 331
 $_m["email"]
   = "email";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 233, 387
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 228, 382
 $_m["how often"]
   = "jak èasto";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 258
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 251
 $_m["No collection uses any filter defined in any slice you have Admin permissions to."]
   = "Žádná kolekce nepoužívá filtr z žádného webíku, ke kterému máte Admin práva.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 296
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 291
 $_m["To add users use the standard Alerts User Interface."]
   = "Pro pøidání uživatele použijte standardní Uživatelské Rozhraní pro Zasílání zpráv.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 300, 301
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 294, 295
 $_m["Alerts Users"]
   = "Zasílání Zpráv - Uživatelé";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 310, 339
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 305, 334
 $_m["first name"]
   = "køestní jméno";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 311, 340
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 306, 335
 $_m["last name"]
   = "pøíjmení";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 312
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 307
 $_m["confirmed"]
   = "potvrzen(a)";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 313, 341
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 308, 336
 $_m["language"]
   = "jazyk";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 317
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 312
 $_m["No user is subscribed to any collection you have permissions to."]
   = "Žádný uživatel není zapsán k žádné kolekci, ke které máte práva.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 330, 331
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 325, 326
 $_m["Alerts User"]
   = "Zasílání Zpráv - Uživatel";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 345
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 340
 $_m["Collections"]
   = "Kolekce";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 401, 402
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 396, 397
 $_m["Alerts Admin"]
   = "Administrace Zasílání Zpráv";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 414
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 409
 $_m["confirm mail"]
   = "potvrzovací mail";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 421
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 410, 417
+$_m["number of days, 0 = off"]
+  = "poèet dnù, 0 = vypnuto";
+
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 416
 $_m["delete not confirmed"]
   = "smazat nepotvrzené";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 428
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 423
 $_m["last confirm mail"]
   = "minulý potvrzovací mail";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 435
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 430
 $_m["last delete not confirmed"]
   = "minulé smazat nepotvrzené";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 451
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 446
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            to superadmins.\n"
    ."            You can delete not confirmed users after a number of days and / or send them an email \n"
@@ -276,7 +296,7 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
    ."            Více viz <a href='http://apc-aa.sourceforge.net/faq/#1389'>FAQ</a>.";
 
-# /raid/www/htdocs/work.ecn.cz/aa_jakub/include/tableviews.php3, row 464
+# c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 459
 $_m["For help see FAQ: "]
   = "Nápovìdu najdete ve FAQu: ";
 

@@ -1,0 +1,401 @@
+<html>
+<head>
+<title>Table View</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1>Table View grammar </h1>
+<p>This document describes the configuration array for the <a href="tabledit.html">TableEdit 
+  class</a>, called Table View.</p>
+<p>The basic Table View grammar may be enhanced by other attributes, used in the 
+  script calling TableEdit. In AA admin/tabledit.php3, there are already some 
+  special attributes used, which are listed at the end of this file.</p>
+<p>Each table in this document describes attributes of a PHP array. The basic 
+  Table View with the two required parameters and one field (see table <a href="#tableview">&quot;Table 
+  View grammar&quot;</a>) may be:</p>
+<pre>array (
+	&quot;table&quot; =&gt; &quot;mytable&quot;, 
+	&quot;type&quot; =&gt; &quot;browse&quot;, 
+	&quot;fields&quot; =&gt; array (
+		&quot;id&quot; =&gt; array ()));</pre>
+<p>A somewhat more useful one may be:</p>
+<pre>array (<br>	&quot;table&quot; =&gt; &quot;alerts_collection&quot;,<br>	&quot;type&quot; =&gt; &quot;browse&quot;,<br>	&quot;readonly&quot; =&gt; false,<br>	&quot;addrecord&quot; =&gt; false,<br>	&quot;buttons&quot; =&gt; array (&quot;update&quot;=&gt;1,&quot;delete&quot;=&gt;1,&quot;edit&quot;=&gt;1),<br>	&quot;button_add&quot;=&gt;1,<br>	&quot;gotoview&quot; =&gt; &quot;ac_edit&quot;,<br>	&quot;cond&quot; =&gt; CheckPerms( $auth-&gt;auth[&quot;uid&quot;], &quot;slice&quot;, $slice_id, PS_FULLTEXT),<br>	&quot;orderby&quot; =&gt; &quot;description&quot;,<br>	&quot;messages&quot; =&gt; array (<br>		&quot;no_item&quot; =&gt; _m(&quot;No collection uses any filter defined in any slice you have Admin permissions to.&quot;)),<br>	&quot;fields&quot; =&gt; array (<br>		&quot;id&quot; =&gt; array (<br>			&quot;view&quot; =&gt; array (&quot;readonly&quot; =&gt; true)),<br>		&quot;description&quot; =&gt; array (<br>			&quot;caption&quot; =&gt; _m(&quot;description&quot;),<br>			&quot;view&quot; =&gt; array (&quot;type&quot;=&gt;&quot;text&quot;,&quot;size&quot;=&gt;array(&quot;cols&quot;=&gt;30)),<br>			&quot;required&quot; =&gt; true),<br>		&quot;showme&quot; =&gt; array (
+			&quot;caption&quot; =&gt; _m(&quot;standard&quot;),<br>			&quot;view&quot; =&gt; array (<br>				&quot;type&quot;=&gt;&quot;select&quot;,<br>				&quot;source&quot;=&gt;array(&quot;0&quot;=&gt;_m(&quot;no&quot;),&quot;1&quot;=&gt;_m(&quot;yes&quot;)),<br>                &quot;readonly&quot; =&gt; true)),<br>		&quot;editorial&quot; =&gt; array (
+			&quot;view&quot;=&gt;array(&quot;type&quot;=&gt;&quot;text&quot;,&quot;size&quot;=&gt;array(&quot;cols&quot;=&gt;35))),<br>		&quot;mail_from&quot; =&gt; array (<br>			&quot;caption&quot;=&gt;&quot;From:&quot;,&quot;hint&quot;=&gt;&quot;mail header&quot;,<br>			&quot;view&quot; =&gt; array (&quot;type&quot;=&gt;&quot;text&quot;,&quot;size&quot;=&gt;array(&quot;cols&quot;=&gt;15))),<br>		&quot;mail_reply_to&quot; =&gt; array (&quot;caption&quot;=&gt;&quot;Reply-To:&quot;,&quot;view&quot; =&gt; array (&quot;type&quot;=&gt;&quot;text&quot;,&quot;size&quot;=&gt;array(&quot;cols&quot;=&gt;15))),
+		&quot;mail_errors_to&quot; =&gt; array (&quot;caption&quot;=&gt;&quot;Errors-To:&quot;,&quot;view&quot; =&gt; array (&quot;type&quot;=&gt;&quot;text&quot;,&quot;size&quot;=&gt;array(&quot;cols&quot;=&gt;15))),
+		&quot;mail_sender&quot; =&gt; array (&quot;caption&quot;=&gt;&quot;Sender:&quot;,&quot;view&quot; =&gt; array (&quot;type&quot;=&gt;&quot;text&quot;,&quot;size&quot;=&gt;array(&quot;cols&quot;=&gt;15)))),
+		&quot;attrs&quot; =&gt; array (
+			&quot;table&quot;=&gt;&quot;border=1 cellpadding=3 cellspacing=0&quot;,
+			&quot;table_search&quot; =&gt;&quot;border=0 cellpadding=3 cellspacing=0&quot;));<br></pre>
+<p><br>
+  Contents:</p>
+<p>&nbsp;</p>
+<ul>
+  <li><a href="#tableview">Table View</a> </li>
+  <li><a href="#fieldparams">Field Parameters</a></li>
+  <li><a href="#fieldview">Field View</a></li>
+  <li><a href="#child">Children</a></li>
+  <li><a href="#aa">AA special Table View attributes</a></li>
+</ul>
+<h2>Table View Grammar</h2>
+<a name="tableview"></a>
+<table width="105%" border="1">
+  <tr> 
+    <td width="12%"><b>Attribute</b></td>
+    <td width="21%"><b>Values</b></td>
+    <td width="56%"><b>Description</b></td>
+    <td width="11%"><b>Default</b></td>
+  </tr>
+  <tr> 
+    <td width="12%">table</td>
+    <td width="21%">&nbsp;</td>
+    <td width="56%">required: table name</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">type</td>
+    <td width="21%"><code>edit | browse</code></td>
+    <td width="56%">required: browse / edit view type</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">attrs</td>
+    <td width="21%"><code>table</code> =&gt; </td>
+    <td width="56%">additional attributes for data TABLE</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">&nbsp;</td>
+    <td width="21%"><code>table_search</code> =&gt;</td>
+    <td width="56%">additional attributes for search TABLE</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">addrecord</td>
+    <td width="21%"><code>true | false</code></td>
+    <td width="56%">show an empty record, applies only with readonly views</td>
+    <td width="11%">true</td>
+  </tr>
+  <tr> 
+    <td width="12%">buttons</td>
+    <td width="21%"><code>delete </code>=&gt; 1</td>
+    <td width="56%">show delete button at each record </td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">&nbsp;</td>
+    <td width="21%"><code>update </code>=&gt; 1</td>
+    <td width="56%">show update button </td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">&nbsp;</td>
+    <td width="21%"><code>edit</code> =&gt; 1</td>
+    <td width="56%">show edit button <span lang="en-us">(sensefull only in 
+    Browse view)</span></td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">&nbsp;</td>
+    <td width="21%"><code><span lang="en-us">cancel</span></code> =&gt; 1</td>
+    <td width="56%"><span lang="en-us">show cancel (exit) button (sensefull only 
+    in Edit view)</span></td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">buttons_big</td>
+    <td width="21%"><code>true | false</code></td>
+    <td width="56%">s<span lang="en-us">how big images (24x24 instead of 16x16)</span></td>
+    <td width="11%"><code>true</code> for <span lang="en-us">edit</span>, <code>false</code> for 
+    <span lang="en-us">browse</span></td>
+  </tr>
+  <tr> 
+    <td width="12%">button_add</td>
+    <td width="21%"><code>true | false</code></td>
+    <td width="56%">show insert button at the bottom of browse view</td>
+    <td width="11%">false</td>
+  </tr>
+  <tr> 
+    <td width="12%">gotoview</td>
+    <td width="21%">view ID</td>
+    <td width="56%">which view to show after clicking on Edit or Insert (Browse 
+      view)<br>
+      or after clicking on Cancel (Edit view)</td>
+    <td width="11%">stay in the same view</td>
+  </tr>
+  <tr> 
+    <td width="12%">listlen</td>
+    <td width="21%">&nbsp;</td>
+    <td width="56%">number of records to be shown at once</td>
+    <td width="11%">15</td>
+  </tr>
+  <tr> 
+    <td width="12%">orderby</td>
+    <td width="21%">&nbsp;</td>
+    <td width="56%">field to sort by</td>
+    <td width="11%">unsorted</td>
+  </tr>
+  <tr> 
+    <td width="12%">oderdir</td>
+    <td width="21%"><code>a | d</code></td>
+    <td width="56%">sort direction ascending / descending</td>
+    <td width="11%">a</td>
+  </tr>
+  <tr> 
+    <td width="12%">messages</td>
+    <td width="21%"><code>no_item </code>=&gt;</td>
+    <td width="56%">message to be shown when no items pass the WHERE SQL clause</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">&nbsp;</td>
+    <td width="21%"><code>error_insert </code>=&gt;</td>
+    <td width="56%">when insert fails</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">&nbsp;</td>
+    <td width="21%"><code>error_update </code>=&gt;</td>
+    <td width="56%">when update fails</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">&nbsp;</td>
+    <td width="21%"><code>error_delete </code>=&gt;</td>
+    <td width="56%">when delete fails</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">readonly</td>
+    <td width="21%"><code>true | false</code></td>
+    <td width="56%">default for all fields</td>
+    <td width="11%">true</td>
+  </tr>
+  <tr> 
+    <td width="12%">where</td>
+    <td width="21%">&nbsp;</td>
+    <td width="56%">SQL WHERE condition</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">search</td>
+    <td width="21%"><code>true | false</code></td>
+    <td width="56%">view the search form</td>
+    <td width="11%"><code>true</code> for browse, <code>false</code> for edit</td>
+  </tr>
+  <tr> 
+    <td width="12%">primary</td>
+    <td width="21%"><code>array</code> (field1, field2, ...)</td>
+    <td width="56%">If a table has more than 1 primary key,<br>
+      you must set it here. If there is just 1 primary key,<br>
+      it will be found automatically. If there is no primary key ...<br>
+      the table can't be edited by TableEdit.</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">fields</td>
+    <td width="21%"><code>array</code> (field_name1 =&gt; field1_params, ...)</td>
+    <td width="56%">field_name must be the real database name, field_params is 
+      an array of parameters for each field, see below</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">children</td>
+    <td width="21%"><code>array</code> (child_view_id1 =&gt; table1_params, ...)</td>
+    <td width="56%">shows records from tables with relationship n:1, child_view_id 
+      is view ID of a view showing a child table, params are described below</td>
+    <td width="11%">&nbsp;</td>
+  </tr>
+</table>
+<h2>Field Parameters Grammar</h2>
+<a name="fieldparams"></a>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><b>Attribute</b></td>
+    <td width="17%"><b>Values</b></td>
+    <td width="54%"><b>Description</b></td>
+    <td width="8%"><b>Default</b></td>
+  </tr>
+  <tr> 
+    <td>caption</td>
+    <td>&nbsp;</td>
+    <td>column caption, in Edit view linked to sort items by this column</td>
+    <td>field name</td>
+  </tr>
+  <tr> 
+    <td>hint</td>
+    <td>&nbsp;</td>
+    <td>hint to be shown under the caption</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>validate</td>
+    <td><code>number | email | filename</code></td>
+    <td>validation type</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>validate_min</td>
+    <td>&nbsp;</td>
+    <td>used with validate=number, bounds the value entered</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>validate_max</td>
+    <td>&nbsp;</td>
+    <td>-&quot;-</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>default</td>
+    <td>&nbsp;</td>
+    <td>default value (for new records)</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>required</td>
+    <td><code>true | false</code></td>
+    <td>required fields must be filled</td>
+    <td>false</td>
+  </tr>
+  <tr> 
+    <td>view</td>
+    <td>&nbsp;</td>
+    <td>array with field view definition, see below</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>view_new_record</td>
+    <td>&nbsp;</td>
+    <td>array with field view definition, applied on new records, see below</td>
+    <td>the same parameters as for all other records </td>
+  </tr>
+</table>
+<h2>Field View Grammar</h2>
+<a name="fieldview"></a>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><b>Attribute</b></td>
+    <td width="20%"><b>Values</b></td>
+    <td width="55%"><b>Description</b></td>
+    <td width="13%"><b>Default</b></td>
+  </tr>
+  <tr> 
+    <td width="12%">type</td>
+    <td width="20%"><code>hide | select | text | area | date | userdef</code></td>
+    <td width="55%">
+      <p>hidden | select box | text edit box | text area | date special | user 
+        defined function</p>
+      <p>Date is shown formatted with &quot;format&quot; and may be changed by 
+        typing a value in the same format. </p>
+      <p>User defined function is always used only to print the field value, always 
+        shown readonly.</p>
+    </td>
+    <td width="13%">depends on database field type</td>
+  </tr>
+  <tr>
+    <td width="12%">size</td>
+    <td width="20%"><code>array (&quot;cols&quot;</code> =&gt; c, <code>&quot;rows&quot;</code> 
+      =&gt; r)</td>
+    <td width="55%"> used with &quot;text edit box&quot; (only &quot;cols&quot;) 
+      and &quot;text area&quot; (both &quot;cols&quot; and &quot;rows&quot;) types, 
+      replace &quot;c&quot; with number of columns, &quot;r&quot; with number 
+      of rows</td>
+    <td width="13%">c = 40, r = 4</td>
+  </tr>
+  <tr> 
+    <td width="12%">function</td>
+    <td width="20%">&nbsp;</td>
+    <td width="55%">required for &quot;userdef&quot; type, name of function which<br>
+      takes field value as the only parameter</td>
+    <td width="13%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">source</td>
+    <td width="20%">&nbsp;</td>
+    <td width="55%">required for &quot;select&quot; type, array of (&quot;value&quot;=&gt;&quot;option&quot;)</td>
+    <td width="13%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">format</td>
+    <td width="20%">&nbsp;</td>
+    <td width="55%">required for &quot;date&quot;, PHP date() format</td>
+    <td width="13%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">readonly</td>
+    <td width="20%"><code>true | false</code></td>
+    <td width="55%">if false, shows only the field value instead of form controls</td>
+    <td width="13%">global table view &quot;readonly&quot;, for &quot;userdef&quot; 
+      type always <code>true</code> </td>
+  </tr>
+  <tr> 
+    <td width="12%">href_view</td>
+    <td width="20%">&nbsp;</td>
+    <td width="55%">applied only on readonly fields, links the text to another 
+      table view, shows the record identified by this field there</td>
+    <td width="13%">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="12%">html</td>
+    <td width="20%"><code>true | false</code></td>
+    <td width="55%">applied only on readonly fields, show as HTML or as plain 
+      text</td>
+    <td width="13%"><code>false</code></td>
+  </tr>
+</table>
+<h2>Child Table Grammar</h2>
+<a name="child"></a>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><b>Attribute</b></td>
+    <td width="20%"><b>Values</b></td>
+    <td width="55%"><b>Description</b></td>
+  </tr>
+  <tr> 
+    <td>join</td>
+    <td><code>array</code> (master_field1 =&gt; child_field1, ...)</td>
+    <td>master fields must form the primary key in the master table</td>
+  </tr>
+  <tr> 
+    <td>header</td>
+    <td>&nbsp;</td>
+    <td>header to be shown above the child table</td>
+  </tr>
+</table>
+<h2>AA special Table View attributes</h2>
+<a name="aa"></a> 
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><b>Attribute</b></td>
+    <td width="55%"><b>Description</b></td>
+  </tr>
+  <tr> 
+    <td>title</td>
+    <td>required: HTML page title</td>
+  </tr>
+  <tr> 
+    <td>mainmenu</td>
+    <td>required: top navigation bar menu</td>
+  </tr>
+  <tr> 
+    <td>submenu</td>
+    <td>required: left menu</td>
+  </tr>
+  <tr> 
+    <td>caption</td>
+    <td>required: caption to be shown above the table</td>
+  </tr>
+  <tr> 
+    <td>help</td>
+    <td>text to be shown under the caption</td>
+  </tr>
+  <tr> 
+    <td>cond</td>
+    <td>required: permissions needed to access this table view</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+</body>
+</html>
