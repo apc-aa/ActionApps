@@ -1,3 +1,23 @@
+10/01/01 - better Halt_On_Error support in extsess and extsessi
+09/27/01 - added Cross Server Networking (RSS item exchange between AA)
+         - added support for related items
+         - new listlen parameter for view.php3
+         - new view as alias feature
+         - dash escaping in view.php3 url parameter
+         - field ids will begin with zero ( headline........) not with 1
+         - better support for dates in "<=", ">" comparison
+         - new backup & restore possibility with sql_update.php3 script
+         - new e-mail alias function f_m
+         - new input type - preselect
+         - generalized permissions functions to be able to store permissions 
+           for more modules and more AA installations
+         - starting with alias different from AA Core (for superadmins)
+         - moving item between bins updates "last_edit" and "edited_by" fields
+         - navigation bar rewriten in order to simplify a new option addition
+09/17/01 - fixed security hole in itemedit.php3 (caching of admin pages)
+08/16/01 - added constant view type
+         - added discussions
+         - fixed bug with upload of file with bad charactes (like accents, ...)
 08/03/01 - if no time in expiry date is specified, the end of day is stored
 08/02/01 - new cmd[]-d parameter to view.php3 which is much stronger condition
            defining parameter than cmd[]-c
