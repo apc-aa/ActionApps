@@ -199,7 +199,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <td class=tabtxt><b><?php echo L_CONSTANT_GROUP ?></b></td>
  <td class=tabtxt colspan=3><?php
    echo ( $group_id ? safe($group_id) :
-         "<input type=\"Text\" name=\"new_group_id\" size=16 maxlength=16 value=\"".safe($new_group_id).\">");?>
+         '<input type="Text" name="new_group_id" size=16 maxlength=16 value="'.safe($new_group_id).'">');?>
  </td>
 </tr>
 <tr><?php
@@ -248,6 +248,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.4  2001/01/24 19:58:32  madebeer
+fixed a missing quote problem
+
 Revision 1.3  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 
