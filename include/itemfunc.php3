@@ -272,10 +272,13 @@ function show_fnc_freeze_fld($varname, $field, $value, $param, $html) {
 function show_fnc_rio($varname, $field, $value, $param, $html) {
   global $db;
 
-  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($param, 7) );
+  if (!empty($param))     # there are no parameters now, but 1) may be in future
+    list($constgroup, ) = explode(':', $param); # 2) sometimes there is ':' at the end as parameter separation 
+
+  if( substr($constgroup,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
    else 
-    $arr = GetConstants($param, $db);
+    $arr = GetConstants($constgroup, $db);
   
   echo $field[input_before];
   FrmInputRadio($varname, $field['name'], $arr, $value[0]['value'],
@@ -290,10 +293,13 @@ function show_fnc_freeze_rio($varname, $field, $value, $param, $html) {
 function show_fnc_mch($varname, $field, $value, $param, $html) {
   global $db;
 
-  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
-    $arr = GetItemHeadlines( $db, substr($param, 7) );
+  if (!empty($param))     # there are no parameters now, but 1) may be in future
+    list($constgroup, ) = explode(':', $param); # 2) sometimes there is ':' at the end as parameter separation 
+
+  if( substr($constgroup,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
    else 
-    $arr = GetConstants($param, $db);
+    $arr = GetConstants($constgroup, $db);
 
   # fill selected array from value
   if( isset($value) AND is_array($value) ) {
@@ -304,6 +310,11 @@ function show_fnc_mch($varname, $field, $value, $param, $html) {
     }
   }  
   
+  if( $GLOBALS['debug'] ) {
+    echo "$varname, $field, $value, $param, $html";
+    print_r($arr);
+  }  
+    
   echo $field[input_before];
   FrmInputMultiChBox($varname."[]", $field['name'], $arr, $selected, 
     $field[required], $field[input_help], $field[input_morehlp]);
