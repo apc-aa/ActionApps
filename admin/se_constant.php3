@@ -29,7 +29,7 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-//require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
+require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
 
 $where_used = true;
 
@@ -49,11 +49,7 @@ if( $categ OR $category ) {
 }
 
 if( $deleteGroup && $group_id && !$category ) {
-  # delete constant group name
-  $db->query("DELETE FROM constant WHERE (group_id='lt_groupNames' AND value='$group_id')
-              OR group_id='$group_id'");
-  # delete constants itself
-  $db->query("DELETE FROM constant WHERE (group_id='$group_id')");
+  delete_constant_group ($group_id);
   go_url( $sess->url(self_base() . "se_fields.php3"));
 }
 
@@ -111,6 +107,7 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
   echo "</tr>\n";
 }
 
+/** Propagates changes to a constant value to the items which contain this value. */
 function propagateChanges ($cid, $newvalue, $short=true)
 {
 	global $db, $group_id, $Msg, $debug;
