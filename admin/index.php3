@@ -507,6 +507,7 @@ if ($sort_filter != "0") {
       #if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";
       // action URL with return_url if $return_url is set.
     echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url="). '">
+          <input type="hidden" name="akce" value="filter">    
           <table width="490" border="0" cellspacing="0" cellpadding="0" 
           class=leftmenu bgcolor="'. COLOR_TABBG .'">';
     
