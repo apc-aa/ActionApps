@@ -91,8 +91,9 @@ echo $Msg;
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR>
 </td></tr>
-<tr><td>
+<tr>
 <form name="fvtype" method=post action="<?php echo $sess->url("./se_view.php3") ?>">
+<td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   
@@ -103,15 +104,21 @@ while( $db->next_record() )
   PrintViewRow($db->f(id), $db->f(name), $db->f(type));
 
   # row for new view
-echo "<tr class=tabtit><td align=center colspan=4>
-      <select name='view_type'>";	
+echo "<tr class=tabtit><td align=center colspan=5><select name='view_type'>";	
 reset($VIEW_TYPES);
 while(list($k, $v) = each($VIEW_TYPES)) { 
   echo "<option value='$k'> ". htmlspecialchars($v["name"]) ." </option>";
 }
 echo "</select>
-      <input type=submit name=new value='". L_NEW ."'>
-  </table></form></td></tr></table><br>";
+      <input type=submit name=new value='". L_NEW ."'></td>
+     </tr>
+    </table>
+  </td>
+   </form>
+ </tr>
+</table><br>";
+
+
 
 $viewuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF); #include help
 echo L_SLICE_HINT ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri . 
@@ -119,31 +126,4 @@ echo L_SLICE_HINT ."<br><pre>&lt;!--#include virtual=&quot;" . $viewuri .
  </BODY></HTML>';
 page_close();
 
-/*
-$Log$
-Revision 1.8  2001/09/27 15:44:35  honzam
-Easiest left navigation bar editation
-
-Revision 1.7  2001/05/21 13:52:32  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.6  2001/05/18 13:43:43  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.5  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.4  2001/03/30 11:52:53  honzam
-reverse displaying HTML/Plain text bug and others smalll bugs fixed
-
-Revision 1.3  2001/03/20 15:27:03  honzam
-Changes due to "slice delete" feature
-
-Revision 1.2  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.1  2001/02/26 17:26:08  honzam
-color profiles
-
-*/
 ?>
