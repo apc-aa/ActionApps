@@ -92,7 +92,7 @@ $qp_slice_id=q_pack_id($slice_id);
 
    }
 
-$db->query('SELECT * FROM rssfeeds ORDER BY name ');
+$db->query("SELECT * FROM rssfeeds WHERE slice_id = '$qp_slice_id' ORDER BY name ");
 $rssfeeds="";
 while ($db->next_record()) {
   $rssfeeds[] = $db->f(name);
