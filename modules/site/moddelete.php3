@@ -20,7 +20,8 @@ http://www.apc.org/
 */
 # expected $del - unpacked id of module to delete
 
-require "../include/init_page.php3";
+$directory_depth = "../";
+require "../../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH] . "msgpage.php3";
 require $GLOBALS[AA_INC_PATH] . "modutils.php3";
 
@@ -65,7 +66,7 @@ $db->query("OPTIMIZE TABLE site");
 $db->query("OPTIMIZE TABLE site_spot");
 
 page_close();                                // to save session variables
-go_url(con_url($sess->url(self_base() . "slicedel.php3"),
+go_url(con_url($sess->url($AA_INSTAL_PATH . "admin/slicedel.php3"),
                                           "Msg=".rawurlencode(L_DELSLICE_OK)));
 
 ?>

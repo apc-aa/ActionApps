@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -35,23 +35,25 @@ if(!IsSuperadmin()) {
   exit;
 }
 
-function PrintSlice($id, $name) {
-  global $sess;
+function PrintSlice($id, $name, $type) {
+  global $sess, $MODULES;
 
   $name=safe($name); $id=safe($id);
+  $url = (($type=='S') ? './slicedel2.php3' : $MODULES[$type]['directory']."moddelete.php3" );
+
   echo "<tr class=tabtxt><td>$name</td>
-          <td class=tabtxt><a href=\"javascript:DeleteSlice('$id')\">". L_DELETE ."</a></td></tr>";
+          <td class=tabtxt><a href=\"javascript:DeleteSlice('$id', '$url')\">". L_DELETE ."</a></td></tr>";
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo L_DELSLICE_TIT;?></TITLE>
  <SCRIPT Language="JavaScript"><!--
-   function DeleteSlice(id) {
+   function DeleteSlice(id,url2go) {
      if( !confirm("<?php echo L_DELETE_SLICE; ?>"))
        return
-     var url="<?php echo con_url($sess->url("./slicedel2.php3"),"delslice="); ?>"
-     document.location=url+id;
+     var url=url2go+"<?php echo $sess->url("?"); ?>"
+     document.location=url+'&del='+id;
    }
 // -->
 </SCRIPT>
@@ -74,14 +76,14 @@ echo L_DEL_SLICE_HLP;
  <tr><td>
   <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
-  
+
 # -- get views for current slice --
-$SQL = "SELECT * FROM slice WHERE deleted>0";
+$SQL = "SELECT * FROM module WHERE deleted>0";
 $db->query($SQL);
 while( $db->next_record() ) {
-  PrintSlice(unpack_id($db->f(id)), $db->f(name));
+  PrintSlice(unpack_id($db->f(id)), $db->f(name), $db->f(type) );
   $slice_to_delete = true;
-}  
+}
 if( !$slice_to_delete )
   echo "<tr class=tabtxt><td>". L_NO_SLICE_TO_DELETE ."</td></tr>";
 
