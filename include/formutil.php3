@@ -60,41 +60,45 @@ function PrintMoreHelp( $txt ) {
 *  shows boxes allowing to choose constant in a hiearchical way
 */
 function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $boxWidth,
-	$size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="")
+    $size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="")
 {
-	if (!$levelCount) $levelCount = 3;
-	if (!$size) $size = 5;
-	$name = safe($name);
+    if (!$levelCount) $levelCount = 3;
+    if (!$size) $size = 5;
+    $name = safe($name);
 
-	echo "<tr align=left><td class=tabtxt $colspan><b>$txt</b>";
-	Needed($needed);
-	echo "</td>\n";
-	if (SINGLE_COLUMN_FORM)
-	  echo "</tr><tr align=left>";
-	echo "<td>";
-	showHierConstInitJavaScript ($group_id, $levelCount, "inputform", false);
-	showHierConstBoxes ($levelCount, $horizontal, $name, false, $firstSelect, $boxWidth, $levelNames);
-	for ($i=0; $i<$boxWidth; ++$i) $widthTxt .= "m";
-	echo "
-	<TABLE border=0 cellpadding=2 width='100%'><TR>
-	<TD align=center><b><span class=redtext>Selected:<span></b><BR><BR><INPUT TYPE=BUTTON VALUE='Delete' onclick='hcDelete(\"$name\")'></TD>
-	<TD><SELECT name='$name' MULTIPLE size=$size".getTriggers("select",$name).">";
+    echo "<tr align=left><td class=tabtxt $colspan><b>$txt</b>";
+    Needed($needed);
+    echo "</td>\n";
+    if (SINGLE_COLUMN_FORM)
+      echo "</tr><tr align=left>";
+    echo "<td>";
+    showHierConstInitJavaScript ($group_id, $levelCount, "inputform", false);
+    showHierConstBoxes ($levelCount, $horizontal, $name, false, $firstSelect, $boxWidth, $levelNames);
+    for ($i=0; $i<$boxWidth; ++$i) $widthTxt .= "m";
+    echo "
+    <TABLE border=0 cellpadding=2 width='100%'><TR>
+    <TD align=center><b><span class=redtext>Selected:<span></b><BR><BR><INPUT TYPE=BUTTON VALUE='Delete' onclick='hcDelete(\"$name\")'></TD>
+    <TD><SELECT name='$name' MULTIPLE size=$size".getTriggers("select",$name).">";
 //    debuglog (serialize ($value));
-    if (is_array ($value))
-	for ($i=0; $i < count($value); ++$i)
-		if ($value[$i]['value'])
-		    echo "<option>".htmlspecialchars($value[$i]['value'])."\n";
-	echo "<OPTION value='wIdThTor'>$widthTxt";
-	echo "</SELECT></TD></TR></TABLE>";
-	echo "<script language=\"javascript\" type=\"text/javascript\"><!--\n
-		hcInit();
-		hcDeleteLast ('$name');
+    if (is_array ($value)) {
+        $constants_names = GetConstants($group_id);
+        foreach( $value as $val) {
+            if ($val['value']) {
+                echo "<option value=\"".htmlspecialchars($val['value'])."\">".htmlspecialchars($constants_names[$val['value']])."\n";
+            }
+        }
+    }
+    echo "<OPTION value='wIdThTor'>$widthTxt";
+    echo "</SELECT></TD></TR></TABLE>";
+    echo "<script language=\"javascript\" type=\"text/javascript\"><!--\n
+        hcInit();
+        hcDeleteLast ('$name');
         listboxes[listboxes.length] = '$name';
-		// -->\n
-		</script>\n";
-	PrintMoreHelp($morehlp);
-	PrintHelp($hlp);
-	echo "</td></tr>\n";
+        // -->\n
+        </script>\n";
+    PrintMoreHelp($morehlp);
+    PrintHelp($hlp);
+    echo "</td></tr>\n";
 }
 
 /**
@@ -213,14 +217,14 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
 
     global $CONV_HTMLFILTERS, $AA_INSTAL_PATH;
 
-	if ( $showrich_href ) {
+    if ( $showrich_href ) {
         $htmlrow = '
             <script language="javascript" type="text/javascript">
             function load_rich_edit ()
             { window.location.href = window.location.href+"&showrich=1"; }
             </script>
             <a href="javascript:load_rich_edit();">'._m("Show this field as a rich text editor (use only after having installed the necessary components!)").'</a><br>';
-	}
+    }
 
     if( $html ) {
         $htmlvar = $name."html";
@@ -275,7 +279,7 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
     if (!$BName || !$GLOBALS['BPlatform']) {
         detect_browser();
         $BName = $GLOBALS['BName'];
-	$BPlatform = $GLOBALS['BPlatform'];
+    $BPlatform = $GLOBALS['BPlatform'];
     }
 
     $name=safe($name);
@@ -297,24 +301,24 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
         $richedit = "richedt_ie";
     else $richedit = "richedit_ns";
 
-	if ($GLOBALS[debug]) echo $richedit;
+    if ($GLOBALS[debug]) echo $richedit;
     echo
         "<script language=\"javascript\" type=\"text/javascript\">
         <!--
-		var edt$name"."_doc_complet = $doc_complet;
+        var edt$name"."_doc_complet = $doc_complet;
         var edt = \"edt$name\";
- 		var edtdoc = \"edt$name.document\";
+        var edtdoc = \"edt$name.document\";
         var richHeight = ".($rows * 22).";
         var richWidth = ".($cols * 8).";
         var imgpath = '../misc/wysiwyg/images/';
 
         richedits[richedits.length] = '".$name."';
         // -->
-	</script>
+    </script>
     <script language=\"javascript\"  type=\"text/javascript\" src=\"../misc/wysiwyg/".$richedit.".js\">
-	</script>
+    </script>
     <script language=\"javascript\" type=\"text/javascript\" src=\"../misc/wysiwyg/".$richedit.".html\">
-	</script>";
+    </script>";
 
     echo "
     <script language =\"javascript\"  type=\"text/javascript\">
@@ -325,7 +329,7 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
             //change_state ('edt$name');
             posa_contingut_html('edt$name',edt$name"."_content);
             //change_state ('edt$name');
-     	    clearInterval(edt$name"."_timerID);
+            clearInterval(edt$name"."_timerID);
             return true;
         }
         // -->
@@ -342,7 +346,7 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class
                      $hlp="", $morehlp="", $single="", $html=false) {
   global $BName;
   if (! richEditShowable()) {
-	 FrmTextarea($name, $txt, $val, $rows, $cols, $needed, $hlp, $morehlp, $single, $html, $BName != "MSIE");
+     FrmTextarea($name, $txt, $val, $rows, $cols, $needed, $hlp, $morehlp, $single, $html, $BName != "MSIE");
      return;
   }
 
@@ -362,8 +366,8 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class
   RawRichEditTextarea ($BName, $name, $val, $rows, $cols, $type);
 
     echo "
-  	<input type=hidden name='$name' value='$val'>
- 	<input type=hidden name='".$name."html' value='h'>";
+    <input type=hidden name='$name' value='$val'>
+    <input type=hidden name='".$name."html' value='h'>";
 
     PrintMoreHelp($morehlp);
     PrintHelp($hlp);
@@ -453,7 +457,7 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
 */
 function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25,
                            $needed=false, $hlp="", $morehlp="", $adding=0,
-						   $secondfield="", $usevalue=false) {
+                           $secondfield="", $usevalue=false) {
   $name=safe($name); $val=safe($val); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   if( !$maxsize )
@@ -986,7 +990,7 @@ function FrmInputButtons( $buttons, $sess=false, $slice_id=false, $valign='middl
           echo '&nbsp;<input type="reset" value=" '. _m("Reset form") .' ">&nbsp;';
           break;
         default:
-          echo '&nbsp;<input type="'.  ($properties['type'] ? $properties['type'] : 'hidden') .  // hidden is default
+          echo '&nbsp;<input type="'.  ($properties['type'] ? $properties['type'] : 'hidden') .
                           '" name="'.  $name .
                           '" value="'. $properties['value'] .
                           '" '. $properties['add'] . '>&nbsp;';
@@ -1179,8 +1183,9 @@ function get_javascript_field_validation () {
     */
     return "
         function validate (myform, txtfield, type, required, add) {
-            var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/;
-            var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/;
+			var ble;
+            var invalid_email = /(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)/;
+            var valid_email = /^.+@[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})$/;
 
             if (type == 'pwd') {
                 myfield = myform[txtfield+'a'];
@@ -1230,4 +1235,14 @@ function get_javascript_field_validation () {
             else return true;
         }";
 }
+
+function FrmTabRow($arr) {
+    echo "<tr>";
+        reset($arr);
+    while (list (,$v) = each($arr)) {
+        echo "<td>".$v."</td>";
+    }
+    echo "</tr>";
+}
+
 ?>

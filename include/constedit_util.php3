@@ -58,7 +58,7 @@ function showHierConstInitJavaScript ($group_id, $levelCount=3, $formName='f', $
 
 		// this will be supplied by the database
 		echo "
-		var hcConsts = ".createConstsJavaScript ($group_id, $admin).";
+		var hcConsts = ".createConstsJavaScript($group_id, $admin).";
 	// -->
 	</script>
 	<script language=javascript src=\"".$GLOBALS[AA_INSTAL_PATH]."javascript/constedit.js\"></script>";
@@ -84,7 +84,7 @@ function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=t
 
 	echo "<table border=0 cellpadding=3>";
 	if ($horizontal) echo "<tr>";
-	for ($i=0; $i < $boxWidth; ++$i) $widhtTxt .= "m";
+	for ($i=0; $i < $boxWidth; ++$i) $widthTxt .= "m";
 
 	for ($i=0; $i < $levelCount; ++$i) {
 		if ($admin) {
@@ -112,7 +112,7 @@ function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=t
 				<img src=\"../images/spacer.gif\" width=1 height=2><br>$buttonSelect
 				</td><td>
 		 		<select name=\"hclevel$i\" multiple size=4 onChange=\"hcSelectItem($i,$admin)\">
-				<option>$widhtTxt</select>
+				<option>$widthTxt</select>
 			</td></tr>";
 	}
 
@@ -125,9 +125,9 @@ function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=t
 		group_id - name of constants group
 		admin - admin pages
 */
-function createConstsJavaScript ($group_id, $admin)
+function createConstsJavaScript($group_id, $admin)
 {
-	createConstsArray ($group_id, $admin, $myconsts);
+	createConstsArray($group_id, $admin, $myconsts);
 	//return $myconsts;
 	eval ('$data = '.$myconsts.';');
 	//print_r ($data);
@@ -144,8 +144,7 @@ function createConstsJavaScript ($group_id, $admin)
 }
 
 // creates string forming PHP array definition
-
-function createConstsArray ($group_id, $admin, &$consts)
+function createConstsArray($group_id, $admin, &$consts)
 {
     global $get_method;
 	$dbc = new DB_AA;
