@@ -17,7 +17,9 @@
 # Make sure to terminate this path with a slash!
 # Example:
 # $AA_BASE_PATH = "/home/httpd/html/aa/";
-$AA_BASE_PATH = "/home/httpd/html/apc-aa/";
+# AA_BASE_DIR is only used in this file so that a single change is required for multiple AA versions
+$AA_BASE_DIR = "apc-aa/";
+$AA_BASE_PATH = "/home/httpd/html/".$AA_BASE_DIR;
 
 $AA_INC_PATH = $AA_BASE_PATH."include/";        # do not change
 
@@ -27,11 +29,17 @@ $_PHPLIB["libdir"] = $AA_INC_PATH.'phplib/';    # do not change
                                                 # no need to care about PHPLib
 
 # Server url relative path to base AA directory
-$AA_INSTAL_PATH = "/apc-aa/";
+$AA_INSTAL_PATH = "/".$AA_BASE_DIR;
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
-define("AA_INSTAL_URL", "http://my.domain.org/apc-aa/");
+define("AA_INSTAL_URL", "http://my.domain.org/".$AA_BASE_DIR);
+
+# URL or URL path to call admin/edititem.php etc.
+# this is the variable to make _#EDITITEM alias, etc.
+$AA_INSTAL_EDIT_PATH = AA_INSTAL_URL;
+# if your site has problem set...
+#$AA_INSTAL_EDIT_PATH = "/".$AA_BASE_DIR;
 
 # URL of index of help files for AA
 #OLD define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
@@ -99,6 +107,7 @@ define( "ENABLE_PAGE_CACHE", true );
 # CACHE_TTL defines the time in seconds the page will be stored in cache
 # (Time To Live) - in fact it can be infinity because of automatic cache
 # flushing on page change
+# Typically this is 600, i.e. 10 minutes, but 1 day (86400) makes for faster serving
 define("CACHE_TTL", 600 );
 
 # The frequency in which the cache is checked for old values (in seconds)

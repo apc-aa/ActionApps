@@ -60,41 +60,68 @@ if( $del ) {
 }
 
 $INPUT_SHOW_FUNC_TYPES = inputShowFuncTypes();  
-      
+
+// If $onlyupdate is set, then just set fields defined Note exceptiosn
+//      $input_default is as to store in the database, i.e. input_default_f:$input_default
+//      $alias1_func is as to store in database ie alias1_func_f:alias1_func (same for 2 and 3)
+//      $input_show_func instead of $input_show_func_f:$input_show_func_p (and some other variations)
+//      $input_insert_func instead of $input_insert_func_f:$input_insert_func_p etc
+//      $input_validate instead of $input_validate_f:$input_validate_p
+//      $html_show as in db, not as returned by HTML check
+//      $text_stored instead of function of $input_validate_f 
+
+// Extend ValidateInput to NOT check if field is not present
+function QValidateInput($variableName, $inputName, $variable, &$err, $needed, $type) {
+    global $onlyupdate;
+    if (! $onlyupdate || ($variable !== null)) {
+        ValidateInput($variableName, $inputName, $variable, $err, $needed, $type);
+    }
+}
+
+function Qvarsetadd($varname, $type, $value) {
+    global $varset,$onlyupdate;
+    if (! $onlyupdate || ($value !== null)) {
+    	$varset->add($varname, $type, $value);
+    }
+}
+
 if( $update ) {
   do {
-    ValidateInput("input_before", _m("Before HTML code"), $input_before, $err, false, "text");
-    ValidateInput("input_help", _m("Help for this field"), $input_help, $err, false, "text");
-    ValidateInput("input_morehlp", _m("More help"), $input_morehlp, $err, false, "text");
-    ValidateInput("input_default", _m("Default"), $input_default, $err, false, "text");
-    ValidateInput("input_show_func", _m("Input show function"), $input_show_func_f, $err, false, "text");
+    QValidateInput("input_before", _m("Before HTML code"), $input_before, $err, false, "text");
+    QValidateInput("input_help", _m("Help for this field"), $input_help, $err, false, "text");
+    QValidateInput("input_morehlp", _m("More help"), $input_morehlp, $err, false, "text");
+    QValidateInput("input_default", _m("Default"), $input_default, $err, false, "text");
+    QValidateInput("input_show_func", _m("Input show function"), $input_show_func_f, $err, false, "text");
 
 	$alias_err = _m("Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING.");
 	for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
 		$alias_var = "alias".$iAlias;
 		if ($$alias_var == "_#") $$alias_var = "";
-	    ValidateInput("alias".$iAlias, _m("Alias")." ".$iAlias, $$alias_var, $err, false, "alias");
+	    QValidateInput("alias".$iAlias, _m("Alias")." ".$iAlias, $$alias_var, $err, false, "alias");
 		$alias_var = "alias".$iAlias."_help";
-    	ValidateInput("alias".$iAlias."_help", $alias_err.$iAlias, $$alias_var, $err, false, "text");
+    	QValidateInput("alias".$iAlias."_help", $alias_err.$iAlias, $$alias_var, $err, false, "text");
 		$alias_var = "alias".$iAlias."_func";		
-    	ValidateInput("alias".$iAlias."_func", _m("Function").$iAlias, $$alias_var, $err, false, "text");
+    	QValidateInput("alias".$iAlias."_func", _m("Function").$iAlias, $$alias_var, $err, false, "text");
 	}
 
     if( count($err) > 1)
       break;
 
-    $varset->add("input_before", "quoted", $input_before);
-    $varset->add("input_help", "quoted", $input_help);
-    $varset->add("input_morehlp", "quoted", $input_morehlp);
-    $varset->add("input_default", "quoted", "$input_default_f:$input_default");
-    $varset->add("multiple", "quoted",                     # mark as multiple
-              ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0));
+    Qvarsetadd("input_before", "quoted", $input_before);
+    Qvarsetadd("input_help", "quoted", $input_help);
+    Qvarsetadd("input_morehlp", "quoted", $input_morehlp);
+    Qvarsetadd("input_default", "quoted", 
+        ($onlyupdate ? $input_default : "$input_default_f:$input_default"));
+    Qvarsetadd("multiple","quoted",                     # mark as multiple
+        ($onlyupdate ? $multiple : 
+              ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0)));
               
     for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
-        $varset->add("alias".$iAlias, "quoted", $GLOBALS["alias".$iAlias]);
-        $varset->add("alias".$iAlias."_help", "quoted", $GLOBALS["alias".$iAlias."_help"]);
-        $varset->add("alias".$iAlias."_func", "quoted", 
-            $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]);
+        Qvarsetadd("alias".$iAlias, "quoted", $GLOBALS["alias".$iAlias]);
+        Qvarsetadd("alias".$iAlias."_help", "quoted", $GLOBALS["alias".$iAlias."_help"]);
+        Qvarsetadd("alias".$iAlias."_func", "quoted", 
+            ($onlyupdate ? $GLOBALS["alias".$iAlias."_func"]
+            : $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]));
     }
 
     # setting input show function 
@@ -112,19 +139,24 @@ if( $update ) {
     
     # setting input insert function
     $iif="$input_insert_func_f:$input_insert_func_p";
-    
-    $varset->add("input_show_func", "quoted", "$isf");
-    $varset->add("input_validate", "quoted", "$input_validate_f:$input_validate_p");
-    $varset->add("feed", "quoted", "$feed");
-    $varset->add("input_insert_func", "quoted","$iif" );
-    $varset->add("html_default", "number", ($html_default ? 1 : 0));
-    $varset->add("html_show", "number", ($html_show ? 1 : 0));
-    $varset->add("text_stored", "number", ((($input_validate_f=="number") 
+
+    Qvarsetadd("input_show_func", "quoted", 
+        ($onlyupdate ? $input_show_func : "$isf"));
+    Qvarsetadd("input_validate", "quoted", 
+        ($onlyupdate ? $input_validate : "$input_validate_f:$input_validate_p"));
+    Qvarsetadd("feed", "quoted", "$feed");
+    Qvarsetadd("input_insert_func", "quoted", 
+        ($onlyupdate ? $input_insert_func : "$iif") );
+    Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
+    Qvarsetadd("html_show", "number", 
+        ($onlyupdate ? $html_show : ($html_show ? 1 : 0)));
+    Qvarsetadd("text_stored", "number", 
+        ($onlyupdate ? $text_stored : 
+                                        ((($input_validate_f=="number") 
                                          OR ($input_validate_f=="bool")  
-                                         OR ($input_validate_f=="date")) ? 0:1));
+                                         OR ($input_validate_f=="date")) ? 0:1)));
    $SQL = "UPDATE field SET ". $varset->makeUPDATE() . 
            " WHERE id='$fid' AND slice_id='$p_slice_id'";
-
     if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
       $err["DB"] = MsgErr("Can't change field");
       break;
@@ -133,7 +165,8 @@ if( $update ) {
 
     if( count($err) <= 1 ) {
       $Msg = MsgOK(_m("Fields update successful"));
-      go_url( $sess->url("./se_fields.php3") );  # back to field page
+    go_url( ($return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) :
+        $sess->url("./se_fields.php3") ));  # back to field page
     }    
   } while( 0 );           #in order we can use "break;" statement
 } 
@@ -161,7 +194,8 @@ if( $db->next_record())
   $fld = $db->Record;
 else {
   $Msg = MsgErr(_m("No fields defined for this slice"));
-  go_url( $sess->url("./se_fields.php3") );  # back to field page
+  go_url( ($return_url ? expand_return_url(1) :
+        $sess->url("./se_fields.php3") ));  # back to field page
 }    
 
 /** Finds the first ":" and fills the part before ":" into $fnc, after ":" into $params.

@@ -67,6 +67,7 @@ $CoreFields = $sao[unpack_id128("AA_Core_Fields..")]->fields();
 
 //huhl("Test pack",$ignored_sliceids[1],":::",pack_id128($ignored_sliceids[1]));
 
+if ($msg) { print("<p>".$msg."</p>"); }   // Typically include HTML 
 $nocache=1;
 sliceshortcuts(1);
 mapslices();
@@ -144,10 +145,10 @@ function compareSlices($st,$sm,$pr) {
     reset($ft[0]);
     while (list($ftn,$fta) = each($ft[0])) {
         if (! $fm[0][$ftn]) {
-            compareFields($ftn,$ft[0][$ftn],$CoreFields[0][GetFieldType($ftn)],$pr,"Added");
+            compareFields($ftn,$ft[0][$ftn],$CoreFields[0][GetFieldType($ftn)],$pr,"Added",$st,$sm);
             $score += $scoreAddOrMiss;
         } else {
-            $score = $score + compareFields($ftn,$ft[0][$ftn],$fm[0][$ftn],$pr,"Common");
+            $score = $score + compareFields($ftn,$ft[0][$ftn],$fm[0][$ftn],$pr,"Common",$st,$sm);
         }
     }
     reset($fm[0]);
@@ -161,30 +162,47 @@ function compareSlices($st,$sm,$pr) {
     return $score;
 }
 
-function compareFields($fn,$ft,$fm,$pr,$pre) {
-    global $scoreUnshown;
+function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
+    global $scoreUnshown,$AA_CP_Session;
     $score = 0;
     $opened = 0;
     if ((($ft["input_show"] == 0) && ($ft["required"] == 0)) && (($fm["input_show"] == 1) || ($fm["required"] == 1))) {
         if ($pr) print("<li>$pre field: $fn : " . (($fm["input_show"] == 1) ? "not shown " : "") . (($fm["required"] == 1) ? "not required " : "")) . "</li>\n" ;
         $score += $scoreUnshown;
     } else {
+      $fixer="";
       reset($ft);
       while(list($ftk,$ftv) = each($ft)) {
         if ($ftk == "slice_id") continue;
         if( EReg("^[0-9]*$", $ftk))
             continue;
-        if ($ftv == $fm[$ftk]) continue;
+        if ($ftv == $fm[$ftk]) continue; // They match
         if (EReg("^input_",$ftk) && ($ftv == $fm[$ftk] . ":")) continue;
         if (EReg("^input_",$ftk) && ($ftv . ":" == $fm[$ftk])) continue;
-        if (EReg("^alias_",$ftk) && (! $ft["alias"]))  continue; // Just report the changed alias, not unused _func etc
+        // If alias or alias2 or alias3 not defined, then dont care about subsiduaries
+        if (EReg("^alias_",$ftk) && (! $ft["alias"]))  continue; 
         if (EReg("^alias2_",$ftk) && (! $ft["alias2"]))  continue;
         if (EReg("^alias3_",$ftk) && (! $ft["alias3"]))  continue;
         if (!$opened && $pr) { print("<li>$pre field: $fn differs</li><ul>\n"); $opened = 1; }
-        if($pr) print("<li>$ftk: $fm[$ftk] -> $ftv</li>\n");
+        if($pr) {
+            print("<li>$ftk: $fm[$ftk] -> $ftv</li>\n");
+            $fixert .= "&$ftk=" . urlencode($fm[$ftk]);
+            $fixerm .= "&$ftk=" . urlencode($ftv);
+        }
         $score++;
       }
-      if ($opened) { print("</ul>\n"); }
+      if ($opened) { 
+        $u1 = "temp_se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
+        print("<li><a href=\"" . $u1
+        . "&change_id=" . $st->unpacked_id()
+        . $fixert ."\">Fix this slice</a>");
+        if (!ignored_slice($sm->unpacked_id())) {
+            print("<li>or <a href=\"" . $u1
+            . "&change_id=" . $sm->unpacked_id()
+            . $fixerm ."\">Fix slice '". $sm->name() . "'</a>");
+        }
+        print("</li></ul>\n"); 
+      }
     }
     //huhl("Adding score for field = $score");
     return $score;
