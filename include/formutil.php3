@@ -62,8 +62,8 @@ function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $
 	showHierConstBoxes ($levelCount, $horizontal, $name, false, $firstSelect, $boxWidth, $levelNames);
 	for ($i=0; $i<$boxWidth; ++$i) $widthTxt .= "m";
 	echo "
-	<TABLE border=1 cellpadding=2 width='100%'><TR>
-	<TD align=center><B>Selected:</B><BR><BR><INPUT TYPE=BUTTON VALUE='Delete' onclick='hcDelete(\"$name\")'></TD>
+	<TABLE border=0 cellpadding=2 width='100%'><TR>
+	<TD align=center><b><span class=redtext>Selected:<span></b><BR><BR><INPUT TYPE=BUTTON VALUE='Delete' onclick='hcDelete(\"$name\")'></TD>
 	<TD><SELECT name='$name' MULTIPLE size=$size".getTriggers("select",$name).">";
 //    debuglog (serialize ($value));
     if (is_array ($value))

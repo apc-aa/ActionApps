@@ -114,7 +114,7 @@ class datectrl {
 
   # check if date is valid  
   function ValidateDate($inputName, &$err)  {
-    if( $this->get_date() > 0 ) 
+    if (( $this->get_date() > 0  ) or ($this->get_date()==-3600))
       return true;
     $err[$this->name] = MsgErr(L_ERR_IN." $inputName");
     return false;

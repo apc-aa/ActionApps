@@ -78,7 +78,7 @@ function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=t
 	$admin = $admin ? 1 : 0;
 	if ($boxWidth == 0) $boxWidth = $horizontal ? 30 : 70;
 
-	echo "<table border=1 cellpadding=3>";
+	echo "<table border=0 cellpadding=3>";
 	if ($horizontal) echo "<tr>";
 	for ($i=0; $i < $boxWidth; ++$i) $widhtTxt .= "m";
 		
@@ -96,7 +96,7 @@ function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=t
 		if ($horizontal)
 			echo "
 			<td align=left valign=top width='10%'>
-				<b>".$levelNames[$i].":</b><br>
+				<b>".$levelNames[$i]."</b><br>
 		 		<select name=\"hclevel$i\" multiple size=10 onChange=\"hcSelectItem($i,$admin)\">
 				<option>$widthTxt</select>
 				<br><br>$buttonAdd&nbsp;&nbsp;$buttonSelect
@@ -104,7 +104,7 @@ function showHierConstBoxes ($levelCount, $horizontal=0, $targetBox="", $admin=t
 		else
 			echo "
 			<tr><td align=right valign=top>
-	  		    <b>".$levelNames[$i].":</b><br>$buttonAdd<br>
+	  		    <b>".$levelNames[$i]."</b><br>$buttonAdd<br>
 				<img src=\"../images/spacer.gif\" width=1 height=2><br>$buttonSelect
 				</td><td>
 		 		<select name=\"hclevel$i\" multiple size=4 onChange=\"hcSelectItem($i,$admin)\">
