@@ -234,7 +234,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     trace("-");
 }
 
-function showSubMenuRows( $aamenuitems ) {
+function showSubMenuRows( $aamenuitems, $active ) {
     global $AA_INSTAL_PATH, $slice_id,$debug;
 
     if ( !isset($aamenuitems) OR !is_array($aamenuitems) )
@@ -242,37 +242,36 @@ function showSubMenuRows( $aamenuitems ) {
 
     reset ($aamenuitems);
     while (list ($itemshow, $item) = each ($aamenuitems)) {
-        if (substr($itemshow,0,4) == "text")
+        if (substr($itemshow,0,4) == "text") {
             echo "<tr><td>$item</td></tr>\n";
-        if (substr($itemshow,0,6) == "header")
+        } elseif (substr($itemshow,0,6) == "header") {
             echo '<tr><td>&nbsp;</td></tr>
                   <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>
                   <tr><td class=leftmenu>'.$item.'</td></tr>
                   <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
-        else if (substr($itemshow,0,4) == "line")
+        } elseif (substr($itemshow,0,4) == "line") {
             echo '<tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
-        else {
+        } elseif ( $item["function"] ) {
+            // call some function to get menu items
+            // it is better mainly for left submenus for which we need
+            // database access - if we use function, it is called only if
+            // submenu should be displayed.
+            $function = $item["function"];
+            showSubMenuRows( $function( $item["func_param"] ), $active );
+        } else {
             echo '<tr><td width="122" valign="TOP">&nbsp;';
-            if ( $item["function"] ) {
-                // call some function to get menu items
-                // it is better mainly for left submenus for which we need
-                // database access - if we use function, it is called only if
-                // submenu should be displayed.
-                $function = $item["function"];
-                showSubMenuRows( $function( $item["func_param"] ) );
-                continue;
-            }
             if (!isset ($item["cond"])) $item["cond"] = 1;
-            if ($itemshow == $active)
+            if ($itemshow == $active) {
                 echo "<span class=leftmenua>".$item["label"]."</span>\n";
-            else if (($slice_id || $item["show_always"]) && $item["cond"]) {
-                if ($item["exact_href"]) $href = $item["exact_href"];
-                else $href = get_aa_url($item["href"]);
+            } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
+                $href = ($item["exact_href"] ?
+                              $item["exact_href"] : get_aa_url($item["href"]));
                 if ($slice_id && !$item["no_slice_id"])
                     $href = con_url ($href, "slice_id=$slice_id");
                 echo '<a href="'.$href.'" class=leftmenuy>'.$item["label"]."</a>\n";
+            } else {
+                echo "<span class=leftmenun>".$item["label"]."</span>\n";
             }
-            else echo "<span class=leftmenun>".$item["label"]."</span>\n";
             echo "</td></tr>\n";
         }
     }
@@ -288,7 +287,7 @@ function showSubmenu (&$aamenu, $active)
     echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">'."\n";
 
     $aamenuitems = $aamenu["items"];
-    showSubMenuRows( $aamenuitems );
+    showSubMenuRows( $aamenuitems, $active );
 
     echo '<tr><td class=leftmenu>&nbsp;</td></tr>
           <tr><td class=leftmenu height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>

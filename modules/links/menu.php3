@@ -155,16 +155,13 @@ function get_aamenus ()
                        "href"      => $module_location."modedit.php3",
                        "label"     => _m('Links')),
         "header2" => _m("Design"),
-        "design"=>array ("cond"    => IfSlPerm(PS_LINKS_EDIT_DESIGN),
-                         "href"    => "admin/tabledit.php3?set_tview=polls_designs",
-                         "label"   => _m('Designs')),
         "views"=>array('function'  => 'CreateMenu4Views',
                        'func_param'=> ''),
         "newcatview" =>  array ("cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
-                                "href"  => get_admin_url('se_view.php3?new=1&view_type=categories'),
+                                "href"  => 'admin/se_view.php3?new=1&view_type=categories',
                                 "label" => _m('New Category View')),
         "newlinkview" => array ("cond"  => IfSlPerm(PS_LINKS_EDIT_DESIGN),
-                                "href"  => get_admin_url('se_view.php3?new=1&view_type=links'),
+                                "href"  => 'admin/se_view.php3?new=1&view_type=links',
                                 "label" => _m('New Link View'))
         ));
 
@@ -202,11 +199,11 @@ function CreateMenu4Views( $foo ) {
 
     $db = getDB();
 
-    $SQL = "SELECT id, name, type FROM views WHERE slice_id='". q_pack_id($sl_id)."'";
+    $SQL = "SELECT id, name, type FROM view WHERE slice_id='". q_pack_id($slice_id)."'";
     $db->tquery( $SQL );
     while($db->next_record()) {
         $menu['view'.$db->f('id')] = CreateMetuItem( $db->f('name'),  // label, href [, cond]
-            get_admin_url('se_view.php3?view_id='.$db->f('id').'&view_type='.$db->f('type')));
+            'admin/se_view.php3?view_id='.$db->f('id').'&view_type='.$db->f('type'));
     }
     freeDB($db);
     return $menu;
