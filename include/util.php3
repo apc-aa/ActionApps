@@ -20,17 +20,32 @@ http://www.apc.org/
 */
 
 #
-# Miscellaneous utility functions
+# Miscellaneous utility functions 
 #
 
 require $GLOBALS[AA_INC_PATH]."constants.php3";
 
+function my_in_array ($needle, $array) {
+    if (function_exists ("in_array"))
+        return in_array ($needle, $array);
+    else {
+        if (!is_array ($array)) return false;
+        reset ($array);
+        while (list (,$val) = each ($array))
+            if ($val == $needle) 
+                return true;
+        return false;
+    }
+}
+
 /** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
 function debuglog ($text) 
 {
-	$f = fopen ($GLOBALS[AA_INC_PATH]."debuglog.txt","a");
-	fwrite ($f, $text);
-	fclose ($f);
+	$f = fopen ($GLOBALS[AA_INC_PATH]."logs.txt","a");
+    if ($f) {
+    	fwrite ($f, date( "h:i:s j-m-y ")  . $text . "\n");
+	    fclose ($f);
+    }
 }
 
 // Shift to another page (must be before any output from script)
@@ -45,6 +60,26 @@ function go_url($url, $add_param="") {
 	header("Location: ". con_url($url,$netscape));
  	exit;
 }
+
+function go_url_javascript ($url) {
+	echo "
+    <SCRIPT language=JavaScript>
+    <!--\n
+   		document.location = \"".$sess->url($to_go_url)."\";\n
+    // -->\n
+    </SCRIPT>";
+}
+
+// adds all items from source to target, but doesn't overwrite items
+function array_add ($source, &$target)
+{
+    if (is_array ($source)) {
+        reset ($source);
+        while (list ($k,$v) = each ($source)) 
+            if (!isset ($target[$k])) $target[$k] = $v;
+            else $target[] = $v;
+    }
+}   
 
 # returns server name with protocol and port
 function self_server() {
@@ -100,39 +135,40 @@ function add_vars($query_string="", $debug="") {
   else
     $varstring = $QUERY_STRING_UNESCAPED;
 
-if( $GLOBALS['debug'] )
-  echo "<br>varstring: ".$varstring;
+    $vars = explode("&",$varstring);
   
-  $a = explode("&",$varstring);
-  $i = 0;
+    while (list($temp,$var) = each ($vars)) {
+        $var = urldecode (DeBackslash($var));
+        $pos = strpos($var, "=");
+        if(!$pos)
+            continue;
 
-  while ($i < count ($a)) {
-    unset($index1); 
-    unset($index2); 
-    unset($lvalue); 
-    unset($value); 
-    $pos = strpos($a[$i], "=");
-    if($pos) {
-      $lvalue = substr($a[$i],0,$pos);
-      $value  = urldecode (DeBackslash(substr($a[$i],$pos+1)));
-    }  
-    if (!ERegI("^(.+)\[(.*)\]", $lvalue, $c))   // is it array variable[]
-      $GLOBALS[urldecode (DeBackslash($lvalue))]= $value;   # normal variable
+        $lvalue = substr($var,0,$pos);
+        $value  = substr($var,$pos+1);
+        $arrindex = strstr ($lvalue,'[');
+        if (!$arrindex) 
+            $GLOBALS[$lvalue]= $value;   # normal variable
     else {
-      $index1 = urldecode (DeBackslash($c[2]));
-      if (ERegI("^(.+)\[(.*)\]", $c[1], $d)) { // for double array variable[][]
-        $index2  = urldecode (DeBackslash($d[2]));
-        $varname = urldecode (DeBackslash($d[1]));  
-      } else 
-        $varname  = urldecode (DeBackslash($c[1]));  
-      if( isset($index2) ) 
-        $GLOBALS[$varname][$index2][$index1] = $value;
-       else 
-        $GLOBALS[$varname][$index1] = $value;
+            $lvalue = substr ($lvalue, 0, strpos ($lvalue,'['));
+            // are we inside some [] brackets?
+            $in = 0;
+            for ($i = 0; $i < strlen($arrindex); $i ++) {
+                if ($arrindex[$i] == '[') $in = 1;
+                if ($in) {
+                    $evalindex .= $arrindex[$i];
+                    if ($arrindex[$i] == ']') $in = 0;
+                }
+            }
+            $evalcode = '$'.$lvalue.$arrindex."=\$value;";
+            if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
+                global $$lvalue;
+                // make sure the array indexes are in quotes when there are unusual chars like .,
+                // e.g. [headline........] causes problems, should be ['headline.......']
+                eval ($evalcode);
+            }
+        }
     }
-    $i++;
-  }
-  return $i;
+    return count ($vars);
 }
 
 # function to double backslashes and apostrofs 
@@ -140,6 +176,7 @@ function quote($str) {
   return addslashes($str);  
 } 
  
+
 # function addslashes enhanced by array processing
 function AddslashesArray($val) {
   if (!is_array($val)) {
@@ -348,52 +385,6 @@ function MsgERR($txt){
   return "<div class=err>$txt</div>";
 }
 
-# Prints HTML start page tags (html begin, encoding, style sheet, but no title)
-function HtmlPageBegin() {
-  echo HTML_PAGE_BEGIN;
-}  
-
-# Displays page with message and link to $url
-#   url - where to go if user clicks on Back link on this message page
-#   msg - displayed message
-#   mode - items/admin/standalone for surrounding of message
-function MsgPage($url, $msg, $mode="standalone") {
-  global $sess, $auth, $slice_id;
-
-  if( !isset($sess) AND ($mode!="standalone")) {
-    require $GLOBALS[AA_INC_PATH] . "locauth.php3";
-    page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
-  }
-    
-  HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-  ?>
-  <title><?php echo L_MSG_PAGE ?></title>  
-  </head>
-  <body>
-
-  <?php
-
-  switch( $mode ) {
-    case "items":    // Message page on main page (index.php3) or such page
-      include $GLOBALS[AA_INC_PATH] . "navbar.php3";
-      include $GLOBALS[AA_INC_PATH] . "leftbar.php3";
-      break;
-    case "admin":    // Message page on admin pages (se_*.php3) or such page
-      include $GLOBALS[AA_INC_PATH] . "navbar.php3";
-      include $GLOBALS[AA_INC_PATH] . "leftbar_se.php3";
-      break;
-  }    
-
-  if( isset($msg) AND is_array($msg))
-    PrintArray($msg);
-   else 
-    echo "<P>$msg</p><br><br>";
-  echo "<a href=\"$url\">".L_BACK."</a>";
-  echo "</body></html>";
-  page_close();
-  exit;
-}
-
 # function for unpacking string in edit_fields and needed_fields in database to array
 function UnpackFieldsToArray($packed, $fields) {
   reset($fields);
@@ -440,7 +431,8 @@ function GetViewInfo($vid) {
 # function converts table from SQL query to array
 # $idcol specifies key column for array or "NoCoLuMn" for none
 function GetTable2Array($SQL, $db, $idcol="id") {
-  $db->query($SQL);
+  if ($GLOBALS[debug]) $db->dquery ($SQL);
+  else $db->query($SQL);
   if( $idcol == "NoCoLuMn") {
     while($db->next_record())
       $arr[] = $db->Record;
@@ -727,7 +719,6 @@ if (substr(PHP_VERSION, 0, 1) < "4") {
   }
 }
 
-
 # Parses the string xxx:yyyy (database stored func) to arr[fce]=xxx [param]=yyyy 
 function ParseFnc($s) {
   $pos = strpos($s,":");           
@@ -737,30 +728,8 @@ function ParseFnc($s) {
   } else
     $arr[fnc] = $s;
   return $arr;
-}  
-
-# Prints alias names as help for fulltext and compact format page
-function PrintAliasHelp($aliases) {
-  global $sess;
-  ?>
-  <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HLP ?></b></td></tr>
-  <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-  <?php
-  $count = 0;
-  while ( list( $ali,$v ) = each( $aliases ) ) {
-    # if it is possible point to alias editing page
-    $aliasedit = ( !$v["fld"] ? L_EDIT :
-      "<a href=\"". $sess->url(con_url("./se_inputform.php3", 
-                    "fid=".urlencode($v["fld"]))) ."\">". L_EDIT . "</a>");
-    echo "<tr><td nowrap>$ali</td><td>". $v[hlp] ."</td><td>$aliasedit</td></tr>";
-  }  
-  ?>  
-  </table>
-  </td></tr>
-  <?php
-}  
-
+}
+  
 # returns html safe code (used for preparing variable to print in form)
 function safe( $var ) {
   return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
@@ -794,26 +763,108 @@ function GetProfileProperty($property, $id=0) {
   if( isset($r_profile) AND isset($r_profile[$property]) )
     return $r_profile[$property][$id];
   return false;
-}       
+}
+       
+# Prints HTML start page tags (html begin, encoding, style sheet, but no title)
+function HtmlPageBegin() {
+  echo HTML_PAGE_BEGIN;
+}  
+
+# Displays page with message and link to $url
+#   url - where to go if user clicks on Back link on this message page
+#   msg - displayed message
+#   mode - items/admin/standalone for surrounding of message
+function MsgPage($url, $msg, $mode="standalone") {
+  global $sess, $auth, $slice_id;
+
+  if( !isset($sess) AND ($mode!="standalone")) {
+    require $GLOBALS[AA_INC_PATH] . "locauth.php3";
+    page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
+  }
+    
+  HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+  ?>
+  <title><?php echo L_MSG_PAGE ?></title>  
+  </head>
+  <body>
+
+  <?php
+
+  switch( $mode ) {
+    case "items":    // Message page on main page (index.php3) or such page
+      include $GLOBALS[AA_INC_PATH] . "navbar.php3";
+      include $GLOBALS[AA_INC_PATH] . "leftbar.php3";
+      break;
+    case "admin":    // Message page on admin pages (se_*.php3) or such page
+      include $GLOBALS[AA_INC_PATH] . "navbar.php3";
+      include $GLOBALS[AA_INC_PATH] . "leftbar_se.php3";
+      break;
+  }    
+
+  if( isset($msg) AND is_array($msg))
+    PrintArray($msg);
+   else 
+    echo "<P>$msg</p><br><br>";
+  echo "<a href=\"$url\">".L_BACK."</a>";
+  echo "</body></html>";
+  page_close();
+  exit;
+}
+
+# Prints alias names as help for fulltext and compact format page
+function PrintAliasHelp($aliases) {
+  global $sess;
+  ?>
+  <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HLP ?></b></td></tr>
+  <tr><td>
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
+  <?php
+  $count = 0;
+  while ( list( $ali,$v ) = each( $aliases ) ) {
+    # if it is possible point to alias editing page
+    $aliasedit = ( !$v["fld"] ? L_EDIT :
+      "<a href=\"". $sess->url(con_url("./se_inputform.php3", 
+                    "fid=".urlencode($v["fld"]))) ."\">". L_EDIT . "</a>");
+    echo "<tr><td nowrap>$ali</td><td>". $v[hlp] ."</td><td>$aliasedit</td></tr>";
+  }  
+  ?>  
+  </table>
+  </td></tr>
+  <?php
+}
+  
+/* creates a JavaScript variable modulesOptions, which allows to create another Module selectbox
+    without reprinting all the options */
 
 function PrintModuleSelection() {
   global $slice_id, $g_modules, $sess, $PHP_SELF;
 
   if( is_array($g_modules) AND (count($g_modules) > 1) ) {
+  
+    // create the modulesOptions content:
+    echo "<SCRIPT language=JAVASCRIPT>\n
+        <!--\n modulesOptions = ''\n";
+    reset($g_modules);
+    while(list($k, $v) = each($g_modules)) { 
+      echo "\t+'<option value=\"". htmlspecialchars($k)."\"";
+      if ( ($slice_id AND (string)$slice_id == (string)$k)) 
+        echo " selected";
+      echo ">". htmlspecialchars($v['name']) . "'\n";
+    }
+    if( !$slice_id )   // new slice
+      echo "\t+'<option value=\"new\" selected>". L_NEW_SLICE_HEAD + "'";
+    echo ";\n //-->\n </SCRIPT>";
+
+    // print the select box
     echo "<form name=nbform enctype=\"multipart/form-data\" method=post 
                 action=\"". $sess->url($PHP_SELF) ."\">
           <span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span>
-          <select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=").'"+this.options[this.selectedIndex].value\'>';	
-    reset($g_modules);
-    while(list($k, $v) = each($g_modules)) { 
-      echo "<option value=\"". htmlspecialchars($k)."\"";
-      if ( ($slice_id AND (string)$slice_id == (string)$k)) 
-        echo " selected";
-      echo "> ". htmlspecialchars($v['name']) ." </option>";
-    }
-    if( !$slice_id )   // new slice
-      echo '<option value="new" selected> '. L_NEW_SLICE_HEAD .'</option>';
-    echo "</select></form>\n";
+          <select name=slice_id onChange='document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=").'"+this.options[this.selectedIndex].value\'>'."
+          <SCRIPT language=javascript><!--\n
+                  document.writeln (modulesOptions);\n
+          //-->\n 
+          </SCRIPT>
+          </select></form>\n";
   } else
     echo "&nbsp;"; 
 }  

@@ -106,8 +106,12 @@ require $GLOBALS[AA_INC_PATH]."discussion.php3";
 
 if ($encap){require $GLOBALS[AA_INC_PATH]."locsessi.php3";}
 else {require $GLOBALS[AA_INC_PATH]."locsess.php3";} 
+
 page_open(array("sess" => "AA_SL_Session"));
+
 $sess->register(r_packed_state_vars); 
+$sess->register(slices);
+$sess->register(mapslices);
 
 $r_state_vars = unserialize($r_packed_state_vars);
 
@@ -118,28 +122,27 @@ $r_state_vars = unserialize($r_packed_state_vars);
 
 //$sess->register(item_ids);    
 
-
 //-----------------------------Functions definition--------------------------------------------------- 
 
-function Page_HTML_Begin($cp, $title="") {  ?>
-  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-  <HTML>
-  <HEAD>
-	  <TITLE><?php echo $title ?></TITLE>
-    <LINK rel=StyleSheet href="<?php echo ADM_SLICE_CSS ?>" type="text/css" title="SliceCS">
-  <?php  
-  if ($cp) 
-    echo '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset='. $cp. '">';
-  ?>
-  </HEAD>
-  <BODY>
-<?php        
+function Page_HTML_Begin($cp, $title="") {  
+    echo '
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+    <HTML>
+    <HEAD>
+    <TITLE>'.$title.'</TITLE>
+    <LINK rel=StyleSheet href="<?php echo ADM_SLICE_CSS ?>" type="text/css" title="SliceCS">';
+    if ($cp) 
+        echo '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset='. $cp. '">';
+    echo '
+    </HEAD>
+    <BODY>';
 }
 
 # print closing HTML tags for page
-function Page_HTML_End(){ ?>
-  </BODY>
-  </HTML><?php
+function Page_HTML_End(){ 
+    echo '
+    </BODY>
+    </HTML>';
 }
 
 function GetCategories($db,$p_slice_id){
@@ -234,9 +237,29 @@ function SubstituteAliases( $als, &$var ) {
     $var = str_replace ($k, $v, $var);
 }    
 
+function PutSearchLog ()
+{
+    global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, 
+        $searchlog;
+        
+    $httpquery = $QUERY_STRING_UNESCAPED.$REDIRECT_QUERY_STRING_UNESCAPED;
+    $httpquery = DeBackslash ($httpquery);
+    $httpquery = str_replace ("'", "\\'", $httpquery);
+    $db = new DB_AA;
+    $found_count = count ($GLOBALS[item_ids]);
+    list($usec, $sec) = explode(" ",microtime()); 
+    $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS[slice_starttime]); 
+    $user = $GLOBALS[HTTP_SERVER_VARS]['REMOTE_USER'];
+    $db->query (
+    "INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) 
+    VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");
+}
 
 //-----------------------------End of functions definition---------------------
 # $debugtimes[]=microtime();
+
+list($usec, $sec) = explode(" ",microtime()); 
+$slice_starttime = ((float)$usec + (float)$sec); 
 
 if ($encap) add_vars("");        # adds values from QUERY_STRING_UNESCAPED 
                                  #       and REDIRECT_STRING_UNESCAPED
@@ -289,7 +312,7 @@ $slice_info = GetSliceInfo($slice_id);
 if ($slice_info AND ($slice_info[deleted]<1)) {
   include $GLOBALS[AA_INC_PATH] . $slice_info[lang_file];  // language constants (used in searchform...)
 }
-else {
+else if ($slice_id || !$slices) {
   echo L_SLICE_INACCESSIBLE . " (ID: $slice_id)";
   ExitPage();
 }  
@@ -337,9 +360,25 @@ if( $bigsrch ) {  # big search form ------------------------------------------
   ExitPage();
 }
 
-# get alias list from database and possibly from url
-$aliases = GetAliasesFromFields($fields);
 GetAliasesFromUrl();
+$urlaliases = $aliases;
+
+# get alias list from database and possibly from url
+# if working with multi-slice, get aliases for all slices
+if (!is_array ($slices)) {
+    $aliases = GetAliasesFromFields($fields);
+    if (is_array ($urlaliases)) 
+        array_add ($urlaliases, $aliases);
+}
+else {
+    reset($slices);
+    while (list(,$slice) = each($slices)) {
+        list($fields,) = GetSliceFields ($slice);
+        $aliases[q_pack_id($slice)] = GetAliasesFromFields($fields,$als);
+        if (is_array ($urlaliases))
+            array_add ($urlaliases, $aliases[q_pack_id($slice)]);
+    }
+}
 
 # fulltext view ---------------------------------------------------------------
 if( $sh_itm OR $x ) {
@@ -418,7 +457,7 @@ if( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) { 
         $conds[$k] = false;
         continue;             # bad condition - ignore
       }
-      if( !isset($cond['value']) )
+      if( !isset($cond['value']) && count ($cond) == 1 )
         $conds[$k]['value'] = current($cond);
       if( !isset($cond['operator']) )
         $conds[$k]['operator'] = 'LIKE';
@@ -452,7 +491,7 @@ if( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) { 
    else 
     $sort[] = array ( 'publish_date....' => 'd' );
 
-  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, "" );
+  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, "", "ACTIVE", $slices, $mapslices );
 
   if( isset($item_ids) AND !is_array($item_ids))
     echo "<div>$item_ids</div>";
@@ -461,6 +500,7 @@ if( (isset($conds) AND is_array($conds)) OR isset($group_by) OR isset($sort)) { 
   $slice_info[category_sort] = false;      # do not sort by categories
 }
 elseif($easy_query) {     # posted by easy query form ----------------
+
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
                       "easy_query", "qry", "srch_relev")); # store in session
 
@@ -547,8 +587,8 @@ $debugtimes[]=microtime();*/
 
   # time order the fields in compact view
   $srt[] = array ( 'publish_date....' => (($timeorder == "rev") ? 'a' : 'd') );
-    
-  $item_ids=QueryIDs($fields, $slice_id, $cnds, $srt, $group_by );
+   
+  $item_ids=QueryIDs($fields, $slice_id, $cnds, $srt, $group_by, "ACTIVE", $slices, $mapslices );
 
 // p_arr_m($debugtimes);
 // echo "<br>old: ". (double)((double)($debugtimes[1]) - (double)($debugtimes[0]));
@@ -573,6 +613,8 @@ if( $ids_cnt > 0 ) {
 }  
 else 
   echo $slice_info['noitem_msg'] ? $slice_info['noitem_msg'] : ("<div>".L_NO_ITEM ."</div>");
+
+if ($searchlog) PutSearchLog ();
 
 ExitPage();
 

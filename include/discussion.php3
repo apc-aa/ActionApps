@@ -53,7 +53,6 @@ function GetImageSrc($img) {
 
 # get discussion content from database belong to item_id
 function GetDiscussionContent($item_id, $ids="", $vid="",$state=true, $order='timeorder', $html_flag=true, $clean_url="") {
-  global $db;
   $p_item_id = q_pack_id($item_id);
   $SQL= "SELECT *
            FROM discussion
@@ -61,7 +60,11 @@ function GetDiscussionContent($item_id, $ids="", $vid="",$state=true, $order='ti
    $SQL.=" ORDER BY date";
   if ($order == 'reverse timeorder')
     $SQL .=" DESC";
+  return GetDiscussionContentSQL ($SQL, $ids, $vid, $state, $html_flag, $clean_url);
+}
 
+function GetDiscussionContentSQL ($SQL, $ids, $vid, $state, $html_flag, $clean_url) {
+  global $db;
   $db->query($SQL);
   while($db->next_record()) {
     $d_id = unpack_id($db->f(id));
@@ -141,6 +144,7 @@ function GetDiscussionAliases() {
   $aliases["_#IP_ADDR#"] = GetAlias("f_h", "d_remote_addr...", L_D_REMOTE_ADDR_ALIAS);
   $aliases["_#CHECKBOX"] = GetAlias("f_h", "d_checkbox......", L_D_CHECKBOX_ALIAS);
   $aliases["_#TREEIMGS"] = GetAlias("f_h", "d_treeimages....", L_D_TREEIMGS_ALIAS);
+  $aliases["_#DITEM_ID"] = GetAlias("f_h", "d_item_id.......", L_D_ITEM_ID_ALIAS);
   $aliases["_#ITEM_ID#"] = GetAlias("f_h", "d_item_id.......", L_D_ITEM_ID_ALIAS);
   $aliases["_#DISC_ID#"] = GetAlias("f_h", "d_id............", L_D_ID_ALIAS);
   $aliases["_#URL_BODY"] = GetAlias("f_h", "d_url_fulltext..", L_D_URLBODY_ALIAS);

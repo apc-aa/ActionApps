@@ -30,7 +30,9 @@ class itemview{
   var $num_records;              # number of shown records 
   var $slice_info;               # record from slice database for current slice
   var $fields;                   # array of fields used in this slice
-  var $aliases;                  # array of alias definitions
+  var $aliases;                  # array of alias definitions. If used with multi-slice, 
+                                 # this variable contains an array of aliases for all slices
+                                 # aliases[slice_id0] are aliases for slice 0 etc.
   var $clean_url;                # url of slice page with session id and encap..
   var $group_fld;                # id of field for grouping
   var $disc;                     # array of discussion parameters (see apc-aa/view.php3)
@@ -106,6 +108,36 @@ class itemview{
     $out.= ' '. $this->slice_info['d_add_butt'];
     return $out;
   }
+  
+  // show list of discussion items --- useful as search form return value
+  
+  function get_disc_list(&$CurItem) {
+    $CurItem->setformat ($this->slice_info['d_top']);
+    $out = $CurItem->get_item();
+    if (is_array ($this->disc['disc_ids'])) {
+        $ids = $this->disc['disc_ids'];
+        $ids_sql = "";
+        reset ($ids);
+        while (list (,$id) = each ($ids)) {
+            if ($ids_sql != "") $ids_sql .= ",";
+            $ids_sql .= '"'.addslashes(q_pack_id($id)).'"';
+        }
+        $SQL = "SELECT * FROM discussion WHERE id IN ($ids_sql)";
+        if ($debug) echo $SQL;
+        $d_content = GetDiscussionContentSQL ($SQL, "",$this->disc['vid'],true,$this->disc['html_format'],$this->clean_url);       
+        if (is_array ($d_content)) {
+            reset ($d_content);
+            while (list ($id,$disc) = each ($d_content)) {
+                $CurItem->columns = $disc;   
+                $CurItem->setformat ($this->slice_info['d_compact']);
+                $out .= $CurItem->get_item();
+            }
+        }
+    }
+    $CurItem->setformat ($this->slice_info['d_bottom']);
+    $out .= $CurItem->get_item();
+    return $out;
+  }        
 
   // show discussion comments in the thread mode
   function get_disc_thread(&$CurItem) {
@@ -197,7 +229,7 @@ class itemview{
                                       $this->disc['vid'], true, 'timeorder',
                                       $this->disc['html_format'], $this->clean_url);
     $d_tree = GetDiscussionTree($d_content);
-    if ($this->disc['ids'] && is_array($this->disc['ids'])) {  // show selected cooments
+    if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array ($d_content)) {  // show selected cooments
       reset($d_content);
       while (list ($id,) = each($d_content)) {
         if ($outcome[$id])            // if the comment is already in the outcome => skip
@@ -290,6 +322,7 @@ class itemview{
       switch ($this->disc['type']) {
         case 'thread' : $out = $this->get_disc_thread($CurItem); break;
         case 'fulltext' : $out = $this->get_disc_fulltext($CurItem); break;
+        case 'list' : $out = $this->get_disc_list($CurItem); break;
         default: $out = $this->get_disc_add($CurItem); break;
       }
       return $out;
@@ -488,7 +521,7 @@ class itemview{
             $start_date = $content[$iid][$this->slice_info['calendar_start_date']][0][value];
             $end_date = $content[$iid][$this->slice_info['calendar_end_date']][0][value];
             if ($start_date > $max_cell_date || $end_date < $min_cell_date) 
-                echo "<h1>Some error in calendar view! 
+                if ($debug) echo "<h1>Some error in calendar view! 
                 $start_date &gt; $max_cell_date || $end_date &lt; $min_cell_date </h1>";
             if ($start_date < $min_cell_date) 
                 $start_date = $min_cell;
@@ -563,8 +596,10 @@ class itemview{
                     $event = $events[$ievent];
                     if ($event["iid"] && $event["start"]) {
                         $this->set_columns ($CurItem, $content, $event['iid']);
+                        $CurItem->setformat ($this->slice_info[aditional3]);
+                        $tdattribs = $CurItem->get_item();
                         $CurItem->setformat ($this->slice_info[odd_row_format]);
-                        $out .= "<td valign=top rowspan=".$event['span'].">"
+                        $out .= "<td valign=top rowspan=".$event['span']." $tdattribs>"
                             .$CurItem->get_item()."</td>";
                     }
                     else if (!$event["iid"]) 

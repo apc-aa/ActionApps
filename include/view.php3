@@ -70,16 +70,16 @@ function ParseSettings($set) {
 }  
 
 function ParseViewParameters($query_string="") {
-  global $cmd, $set, $vid, $als, $slice_id, $conds, $slices;
-  global $all_ids, $ids, $sel_ids, $add_disc, $sh_itm, $parent_id;  # used for discussions
+  global $cmd, $set, $vid, $als, $slice_id, $conds, $slices, $mapslices;
+  global $all_ids, $ids, $sel_ids, $add_disc, $sh_itm, $parent_id, $disc_ids, $disc_type;  # used for discussions
 
   add_vars($query_string);       # adds values from url (it's not automatical in SSIed script)
 
-  # Parse parameters
-
+  # Parse parameters 
   # if view in cmd[] is not specified ...
-  $cmd4view = ( (!$cmd[$vid] && strpos('x'.$query_string, 'cmd[]') ) ? $cmd[0] : $cmd[$vid]);
-  $command = ParseCommand($cmd4view, $GLOBALS['als']);
+  if (!$cmd[$vid])
+    $cmd[$vid] = $cmd[0];
+  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
 
   switch ($command[0]) {
     case 'v':  $vid = $command[1];
@@ -116,8 +116,9 @@ function ParseViewParameters($query_string="") {
                break;
   }
 
-  $set4view = ( (!$set[$vid] && strpos('x'.$query_string, 'set[]')) ? $set[0] : $set[$vid]);
-  $arr = ParseSettings($set4view);
+  if (!$set[$vid])
+      $set[$vid] = $set[0];
+  $arr = ParseSettings($set[$vid]);
 
   # the parameters for discussion comes (quite not standard way) from globals
   if( !$arr["all_ids"] )   $arr["all_ids"] = $all_ids;
@@ -126,11 +127,16 @@ function ParseViewParameters($query_string="") {
   if( !$arr["add_disc"] )  $arr["add_disc"]  = $add_disc;
   if( !$arr["sh_itm"] )    $arr["sh_itm"] = $sh_itm;
   if( !$arr["parent_id"] ) $arr["parent_id"] = $parent_id;
+  # IDs of discussion items for discussion list 
+  if( !$arr["disc_ids"] )  $arr["disc_ids"] = $disc_ids;
+  # used for discussion list view
+  if( !$arr["disc_type"] ) $arr["disc_type"] = $disc_type;
   
   $arr['als']=GetAliasesFromUrl(true);
   $arr['vid']=$vid;
   $arr['conds']=$conds;
   $arr['slices']=$slices;
+  $arr['mapslices']=$mapslices;
   $arr['param_conds'] = $param_conds; 
   $arr['item_ids'] = $item_ids;
   $arr['use_short_ids'] = $use_short_ids;
@@ -156,6 +162,7 @@ function GetViewConds($view_info, $param_conds) {
                     'value' => ($param_conds[3] ? $param_conds[3] : 
                                                   $view_info['cond3cond']),
                      $view_info['cond3field'] => 1 );
+
   return $conds;                   
 }                     
 
@@ -231,6 +238,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
   $als = $view_param["als"];
   $conds = $view_param["conds"];
   $slices = $view_param["slices"];
+  $mapslices = $view_param["mapslices"];
   $param_conds = $view_param["param_conds"];
   $item_ids = $view_param["item_ids"];
   $use_short_ids = $view_param["use_short_ids"];
@@ -291,13 +299,18 @@ function GetViewFromDB($view_param, &$cache_sid) {
     case 'discus': 
       // create array of discussion parameters
       $disc = array('ids'=> ($view_param["all_ids"] ? "" : $view_param["ids"]),
-                    'type'=> ($view_param["add_disc"] ? "adddisc" 
-                           : ( ($view_param["sel_ids"] || $view_param["all_ids"]) 
-                           ? "fulltext" : "thread")),
                     'item_id'=> $view_param["sh_itm"],
                     'vid'=> $vid,
                     'html_format' => ($view_info[flag] & DISCUS_HTML_FORMAT),
-                    'parent_id' => $view_param["parent_id"]);
+                    'parent_id' => $view_param["parent_id"],
+                    'disc_ids' => $view_param["disc_ids"]);
+      if ($view_param["disc_type"] == "list" || is_array ($view_param["disc_ids"]))
+          $disc['type'] = "list";
+      else if ($view_param["add_disc"])
+          $disc['type'] = "adddisc";
+      else if ($view_param["sel_ids"] || $view_param["all_ids"]) 
+          $disc['type'] = "fulltext";
+      else $disc['type'] = "thread";
       $aliases = GetDiscussionAliases();
   
       $format = GetDiscussionFormat($view_info);
@@ -355,7 +368,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
       if (! $item_ids ) {    # ids could be defined via cmd[]=x command
         $sort  = GetViewSort($view_info);
-        $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, "ACTIVE", $slices );
+        $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, "ACTIVE", $slices, $mapslices );
       }  
       $format = GetViewFormat($view_info);
       $format['calendar_month'] = $month;

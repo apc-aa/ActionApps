@@ -86,7 +86,34 @@ function GetWhereExp( $field, $operator, $querystring ) {
   }  
 }  
 
-function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", $slices="" ) {
+// -------------------------------------------------------------------------------------------
+
+// show info about non-existing fields in all given slices
+function ProoveFieldNames ($slices, $conds)
+{
+    global $conds_not_field_names;
+    $db = new DB_AA;
+    reset ($slices);
+    while (list(,$slice_id) = each ($slices)) {
+        $db->query("SELECT * FROM field WHERE slice_id='".q_pack_id($slice_id)."'");
+        while ($db->next_record())
+            $slicefields[$db->f("id")] = 1;
+        reset ($conds);
+        while (list (,$cond) = each ($conds)) {
+            reset ($cond);
+            while (list ($key) = each ($cond)) 
+                if (!$conds_not_field_names [$key] && !isset ($slicefields[$key]))
+                    echo "Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").<br>";
+        }
+    }
+}   
+
+// -------------------------------------------------------------------------------------------
+
+// called by QueryIDs
+// defaults: $fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", $slices="" 
+
+function QueryIDsBase($fields, $slice_id, $conds, $sort, $group_by, $type, $slices ) {
   # parameter format example:  
   # conds[0][fulltext........] = 1;   // returns id of items where word 'Prague'
   # conds[0][abstract........] = 1;   // is in fulltext, absract or keywords
@@ -109,7 +136,13 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
   global $db, 
     $debug,          # displays debug messages
   	$QueryIDsCount;  # size of the result
+  global $conds_not_field_names;
 
+    if ($GLOBALS[debugfields] || $debug) {
+        if ($slices) ProoveFieldNames ($slices, $conds);        
+        else ProoveFieldNames (array ($slice_id), $conds);
+    }
+    
 if( $debug ) {
   echo "<br>Conds:<br>";
   p_arr_m($conds);
@@ -135,10 +168,10 @@ if( $debug ) {
       $field_count = 0;
       $cond_flds   = '';
       while( list( $fid, $v) = each( $cond )) {
-        if( ($fid=='operator') OR ($fid=='value') )
+        if( $conds_not_field_names[$fid] )
           continue;           # it is not field_id parameters - skip it for now
           
-        if( !$fields[$fid] OR ($cond[$fid]=="")) 
+        if( !$fields[$fid] OR ($v=="")) 
           continue;            # bad field_id or not defined condition - skip
           
         if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
@@ -148,6 +181,7 @@ if( $debug ) {
             $ignore_expiry_date = true;
         } else {
           $cond_flds .= ( ($field_count++>0) ? ',' : "" ). "'$fid'";
+          // will not work with one condition for text and number fields
           $store = ($fields[$fid]['text_stored'] ? "text" : "number");
         }  
       }    
@@ -262,9 +296,10 @@ if( $debug ) {
   $SQL .= " WHERE ";                                         # slice ----------
   if( $slices ) {
       $slicesText = "";
-      for ($islice = 0; $islice < count($slices); ++$islice) {
-          if ($islice) $slicesText .= ",";
-          $slicesText .= "'".q_pack_id($slices[$islice])."'";
+      reset ($slices);
+      while (list (,$slice) = each ($slices)) {
+          if ($slicesText != "") $slicesText .= ",";
+          $slicesText .= "'".q_pack_id($slice)."'";
       }
       $SQL .= " item.slice_id IN ( $slicesText ) AND ";
   }
@@ -315,7 +350,230 @@ if( $debug ) {
   $QueryIDsCount = count($arr);
   return $arr;           
 }  
+
+// -------------------------------------------------------------------------------------------
+
+/* parses the conds from a multiple select box: e.g.
+    conds[1][value][0] = 'apple'
+    conds[1][value][1] = 'cherry'
+    conds[1][valuejoin] = 'AND'
+    
+    => creates two conds: conds[7] and conds[8] for example,
+        fill conds[7][value] = 'apple', conds[8][value] = 'cherry'
+        
+    with conds[1][valuejoin] = 'OR' only changes conds[1][value] to '"apple" OR "cherry"'
+    (c) Jakub, May 2002
+*/
+
+function ParseMultiSelectConds (&$conds) 
+{
+    if (!is_array ($conds)) return;
+    reset ($conds);
+    while (list ($icond, $cond) = each ($conds)) {
+        if (is_array ($cond['value'])) {
+            if (!$cond['valuejoin']) {
+                echo "ERROR in conds: when using [value][], you must use [valuejoin]='OR'|'AND' also!";
+                return;
+            }
+            if ($cond['valuejoin'] == 'OR') {
+                $values = "";
+                reset ($cond['value']);
+                while (list (,$val) = each ($cond['value'])) {
+                    if ($values != "") $values .= " OR ";
+                    $values .= '"'.addslashes ($val).'"';
+                }
+                unset ($conds[$icond]['valuejoin']);
+                $conds[$icond]['value'] = $values;
+            }
+            else if ($cond['valuejoin'] == 'AND') {
+                reset ($cond['value']);
+                while (list (,$val) = each ($cond['value'])) {
+                    $newcond = $cond;
+                    $newcond['value'] = $val;
+                    unset ($newcond['valuejoin']);
+                    $conds[] = $newcond;
+                }
+                unset ($conds[$icond]);
+            }
+            else echo "ERROR in conds: [valuejoin] must be set to 'OR' or 'AND'.";
+        }
+    }
+}            
+    
+// -------------------------------------------------------------------------------------------
   
+// maps the fields for multi-slice queries. All the rest is done by QueryIDsBase
+
+function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACTIVE", 
+    $slices="", $mapslices="" )
+{
+    ParseMultiSelectConds ($conds);
+
+    // if $slices is set and no $mapslices, i.e. the query goes through several slices
+    // which have same field names, it is all done within one query:
+    if (!is_array ($mapslices) || !is_array ($slices))
+        return QueryIDsBase($fields, $slice_id, $conds, $sort, $group_by, $type, $slices );
+        
+    reset ($slices);
+    while (list ($slice, $slice_id) = each ($slices)) {
+        $maps = $mapslices [$slice];
+        if (is_array ($maps)) {
+            unset ($newconds);
+            unset ($newsort);
+            if (is_array ($conds)) {
+                reset ($conds);
+                while (list ($icond, $cond) = each ($conds)) {
+                    reset ($cond);
+                    while (list ($src, $val) = each ($cond)) 
+                        $newconds[$icond][isset($maps[$src]) ? $maps[$src] : $src] = $val;
+                }
+            }
+            if (is_array ($sort)) {
+                reset ($sort);
+                while (list ($icond, $srt) = each ($sort)) {
+                    reset ($srt);
+                    while (list ($src, $val) = each ($srt)) 
+                        $newsort[$icond][isset($maps[$src]) ? $maps[$src] : $src] = $val;
+                }
+            }
+            $arr = QueryIDsBase($fields, $slice_id, $newconds, $newsort, $group_by, $type, "");
+        }
+        else $arr = QueryIDsBase($fields, $slice_id, $conds, $sort, $group_by, $type, "");
+        array_add ($arr, $retval);
+    }
+    return $retval;
+}
+
+
+// -------------------------------------------------------------------------------------------
+
+function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
+  # parameter format example:  
+  # conds[0][discussion][subject] = 1;   // discussion fields are preceded by [discussion]
+  # sort[0][category........]='a';    // order items by category ascending
+  
+    if (!$slice_id && !$slices) return;
+  
+    $fields = array ("date","subject","author","e_mail","body","state","flag","url_address",
+        "url_description", "remote_addr", "free1", "free2");
+  
+    global $db, 
+        $debug,          # displays debug messages
+  	    $QueryIDsCount;  # size of the result
+   
+    if( $debug ) {
+      echo "<br>Conds:<br>";
+      p_arr_m($conds);
+      echo "<br><br>Sort:<br>";
+      p_arr_m($sort);
+      echo "<br><br>Slices:<br>";
+      p_arr_m($slices);
+    }
+  
+    # parse conditions ----------------------------------
+    if (is_array($conds)) {
+        reset($conds); 
+        $tbl_count=0;
+        while( list( , $cond) = each( $conds )) {
+            if( !is_array($cond) OR !$cond['discussion']
+                              OR !$cond['operator'] OR ($cond['value']==""))
+              continue;             # bad condition - ignore
+    
+            # fill arrays according to this condition
+            reset($cond); 
+            while( list( $fid, $vv) = each( $cond )) 
+                if( $fid == 'discussion' ) {
+                    unset ($select_cond);
+                    while( list ($fid) = each ($vv)) {
+                        if( my_in_array ($fid,$fields) AND $cond['value'] > "" ) {
+                            $select_cond[] = GetWhereExp( "discussion.$fid",
+                                              $cond['operator'], $cond['value'] );
+                        }
+                    }
+                    if (is_array ($select_cond))
+                        $select_conds[] = join ($select_cond, " OR ");
+                }
+        }
+    }  
+/*
+  # parse sort order ----------------------------
+  if( !(isset($sort) AND is_array($sort)))
+    $select_order = 'item.publish_date DESC';   # default item order
+  else {
+    reset($sort);
+    $delim='';
+    while( list( , $srt) = each( $sort )) {
+      $fid = key($srt);
+      if( !$fields[$fid] )  # bad field_id - skip
+          continue;
+        
+      if( $fields[$fid]['in_item_tbl'] ) {   # field is stored in table 'item'
+        $select_order .= $delim . 'item.' . $fields[$fid]['in_item_tbl'];
+        if( stristr(current( $srt ), 'd'))
+          $select_order .= " DESC";
+        $delim=',';
+      } else {
+        if( !$sortable[ $fid ] ) {           # this field is not joined, yet
+          $tbl = 'c'.$tbl_count++;
+          # fill arrays to be able construce select command
+          $select_tabs[] = "LEFT JOIN content as $tbl 
+                                   ON ($tbl.item_id=item.id 
+                                   AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
+                        # mark this field as sortable (store without apostrofs)
+          $sortable[$fid] = $tbl;
+        }  
+
+        $store = ($fields[$fid]['text_stored'] ? "text" : "number");
+        # fill arrays according to this sort specification
+        $select_order .= $delim .$sortable[$fid]. ".$store";
+        if( stristr(current( $srt ), 'd'))
+          $select_order .= " DESC";
+        $delim=',';
+      }  
+    }
+  }      
+*/
+
+if( $debug ) {
+  echo "<br><br>select_conds:";
+  print_r($select_conds);
+  echo "<br><br>select_order:";
+  print_r($select_order);
+}  
+  
+    # construct query --------------------------
+    $SQL = "SELECT discussion.id 
+            FROM discussion INNER JOIN item ON item.id = discussion.item_id
+            WHERE ";
+    if( $slices ) {
+        $slicesText = "";
+        for ($islice = 0; $islice < count($slices); ++$islice) {
+            if ($islice) $slicesText .= ",";
+            $slicesText .= "'".q_pack_id($slices[$islice])."'";
+        }
+        $SQL .= " item.slice_id IN ( $slicesText )";
+    }
+    else if( $slice_id )
+        $SQL .= " item.slice_id = '". q_pack_id($slice_id) ."'";
+  
+    if( isset($select_conds) AND is_array($select_conds))      # conditions -----
+        $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
+
+    if( isset($select_order) )                                 # order ----------
+        $SQL .= " ORDER BY $select_order";
+
+    # get result --------------------------
+    if( $debug ) 
+        $db->dquery($SQL);
+    else 
+        $db->query($SQL);
+
+    while( $db->next_record() ) 
+        $arr[] = unpack_id($db->f(id));
+
+    return $arr;           
+}  
+
 
 // returns array of item ids matching the conditions in right order
   # items_cond - SQL string added to WHERE clause to item table query
