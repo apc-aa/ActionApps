@@ -85,7 +85,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
       $arr = explode( ",", $querystring );
       return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
     case 'ISNULL':
-      return ( " (($field IS NULL) OR ($field='0')) ");
+      return ( " (($field IS NULL) OR ($field='')) ");
     case 'NOTNULL':
       return ( " (($field IS NOT NULL) AND ($field<>'')) ");
     default:
