@@ -227,7 +227,7 @@ class inputform {
                 $foo = $profile->getProperty('predefine',$f['id']);
                 if( $foo AND !$GLOBALS[$varname]) {
                     $x                     = $profile->parseContentProperty($foo);
-                    $GLOBALS[$varname]     = $x[0];
+                    $GLOBALS[$varname]     = stripslashes($x[0]);  // it is quoted!!!
                     $GLOBALS[$htmlvarname] = $x[1];
                 }
 
@@ -235,14 +235,13 @@ class inputform {
                 if( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {
                       # get the multivalues
                     foreach( $GLOBALS[$varname] as $value ) {
-                        $field_value[] = array('value' => $value);
+                        $field_value[] = array('value' => stripslashes($value)); // it is quoted!!!
                     }
                 } else {
-                    $field_value[0]['value'] = $GLOBALS[$varname];
+                    $field_value[0]['value'] = stripslashes($GLOBALS[$varname]);  // it is quoted!!!
                 }
                 $field_html_flag = (((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
-            }
-            // Display the field
+            }            // Display the field
             $aainput = new aainputfield($field_value, $field_html_flag, $field_mode);
             $aainput->setFromField($f);
 
@@ -512,9 +511,10 @@ class aainputfield {
                                                       $this->param[2]);  // move_right
                                break;
             case 'anonym_mse':
-            case 'normal_mse': $selectsize = ($this->param[1] < 1) ? 5 :  $this->param[1];
+            case 'normal_mse': $selectsize  = ($this->param[1] < 1) ? 5 :  $this->param[1];
+                               $slice_field = $this->param[2];
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->inputMultiSelect($selectsize);
+                               $this->inputMultiSelect($selectsize,$slice_field);
                                break;
             case 'anonym_fil':
             case 'normal_fil': list($accepts, $text, $hlp) = $this->param;
@@ -982,15 +982,23 @@ class aainputfield {
     * Prints html tag <select multiple .. to 2-column table
     * for use within <form> and <table> tag
     */
-    function inputMultiSelect($size=6, $relation=false, $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $frombins=3, $conds="", $condsrw="") {
+    function inputMultiSelect($size=6, $slice_field="") {
+        $this->related($size, false, 'AMB', false, true, 3, '', '', MAX_RELATED_COUNT, $slice_field);
+    }
+
+    /**
+    * Prints html tag <select multiple .. to 2-column table
+    * for use within <form> and <table> tag
+    */
+    function related($size=6, $sid=false, $mode='AMB', $design=false, $movebuttons=true, $frombins=3, $conds="", $condsrw="", $minrows=MAX_RELATED_COUNT, $slice_field="") {
         list($name,$val,$add) = $this->prepareVars('multi');
         $size                 = get_if($size, 6);
         $frombins             = get_if($frombins, AA_BIN_ACTIVE | AA_BIN_PENDING );  // =3
-        if (!$relation) $this->fill_const_arr();
+        if (!$sid) $this->fill_const_arr('active', $slice_field);
 
         $this->field_name('plus');
         $ret ="<select name=\"$name\" size=\"$size\" multiple".getTriggers("select",$name).">";
-        $ret .= $this->get_options( $this->const_arr, false, false, 'all', ($relation ? false : !$this->required));
+        $ret .= $this->get_options( $this->const_arr, false, false, 'all', ($sid ? false : !$this->required));
         $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
         while( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
@@ -998,7 +1006,7 @@ class aainputfield {
         }
         $ret .= "</select>";
 
-        if( !$relation )  { // all selection in this box should be selected on submit
+        if( !$sid )  { // all selection in this box should be selected on submit
             $this->echovar( $ret );
         } else {
             $this->echoo('<table border="0" cellspacing="0"><tr>');
@@ -1019,7 +1027,7 @@ class aainputfield {
                  $this->echoo("</td>");
             }
             $this->echoo("</tr>\n <tr><td valign=\"bottom\"><center>
-              <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$relation\", \"$mode\", \"$design\", \"$frombins\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\" )'>
+              <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$frombins\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\" )'>
               &nbsp;&nbsp;");
 /*              <input type='button' value='". _m("Delete") ."' size='250'
                 onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
@@ -1097,18 +1105,19 @@ class aainputfield {
     * Prints html tag <input type=file .. to 2-column table
     * for use within <form> and <table> tag
     */
-    function inputFile($accepts="image/*", $text="", $hlp="") {
+    function inputFile($accepts="*/*", $text="", $hlp="") {
         list($name,$val,$add) = $this->prepareVars();
         $size=60;
-        $this->inputText(255,$size);
-        if ( $accepts ) {
-            $this->name       = $text;
-            $this->input_help = $hlp;
-            $this->field_name('plus');
-            $file_field_name = $name.'x';
-            $this->echovar( "<input type=\"file\" name=\"$file_field_name\" size=\"$size\" accept=\"$accepts\"".getTriggers("input",$file_field_name).">", 'file');
-            $this->helps('plus');
+        if ( !$accepts ) {
+            $accepts = '*/*';
         }
+        $this->inputText(255,$size);
+        $this->name       = $text;
+        $this->input_help = $hlp;
+        $this->field_name('plus');
+        $file_field_name = $name.'x';
+        $this->echovar( "<input type=\"file\" name=\"$file_field_name\" size=\"$size\" accept=\"$accepts\"".getTriggers("input",$file_field_name).">", 'file');
+        $this->helps('plus');
     }
 
     /**
@@ -1157,10 +1166,6 @@ class aainputfield {
         $out .= '</select>';
         $this->echovar( $out, 'presets' );
         $this->helps('plus');
-    }
-
-    function related($size, $sid, $mode, $design, $movebuttons=true, $frombins=3, $conds="", $condsrw="") {
-        $this->inputMultiSelect($size, $sid, MAX_RELATED_COUNT, $mode, $design, $movebuttons, $frombins, $conds, $condsrw);
     }
 
     /**
@@ -1346,15 +1351,6 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", 
     $input->print_result();
 }
 
-/** Prints html tag <select multiple .. to 2-column table
- *  for use within <form> and <table> tag
- */
-function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5, $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
-    $input = new aainputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-    $input->inputMultiSelect($size, $relation, $minrows, $mode, $design);
-    $input->print_result();
-}
-
 /** Print boxes allowing to choose constant in a hiearchical way */
 function FrmHierarchicalConstant($name, $txt, $value, $group_id, $levelCount, $boxWidth, $size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") {
     $input = new aainputfield($value, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
@@ -1402,10 +1398,6 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
     $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->textareaPreSelect($rows,$cols);
     $input->print_result();
-}
-
-function FrmRelated($name, $txt, $arr, $size, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="") {
-    FrmInputMultiSelect($name, $txt, $arr, "", $size, $sid, $needed, $hlp, $morehlp, MAX_RELATED_COUNT, $mode, $design);
 }
 
 /** Prints two boxes for multiple selection for use within <form> and <table> */
