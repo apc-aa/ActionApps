@@ -56,6 +56,8 @@ function GetWhereExp( $field, $operator, $querystring ) {
     }
   }               
 
+  $querystring =  (string) $querystring;   // to be able to do string operations
+
   switch( $operator ) {
     case 'LIKE':   
     case 'RLIKE':  
