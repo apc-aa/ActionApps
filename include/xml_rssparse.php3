@@ -31,6 +31,7 @@ http://www.apc.org/
 $module2abbrev = array(
 		"HTTP://WWW.W3.ORG/1999/02/22-RDF-SYNTAX-NS#"   => "RDF",
 		"HTTP://PURL.ORG/RSS/1.0/"                      => "RSS",
+        "HTTP://MY.NETSCAPE.COM/RDF/SIMPLE/0.9/"        => "RSS", //same items
 		"HTTP://PURL.ORG/DC/ELEMENTS/1.1/"              => "DC",
 		"HTTP://WWW.APC.ORG/RSS/AA-MODULE.HTML"         => "AA",
 		"HTTP://PURL.ORG/RSS/1.0/ITEM-IMAGES/"          => "IM",   // Unused
@@ -119,7 +120,12 @@ function startElement($parser, $name, $attrs) {
 		$item_uri = ""; break ;
 		
     case "^RDF:RDF^RSS:ITEM":                                               // item URI
-      $item_uri = attr2id($attrs["$RDF:ABOUT"]); break;
+//Some feeds e.g. http://www.heise.de/newsticker/heise.rdf leave blank!
+      $item_uri = 
+        ($attrs["$RDF:ABOUT"])  
+        ? attr2id($attrs["$RDF:ABOUT"])
+        : "";
+      break;
 
     case "^RDF:RDF^RSS:ITEM^CONTENT:ITEMS^RDF:BAG^RDF:LI^CONTENT:ITEM^CONTENT:FORMAT":    // format (html/plain) of fulltext
       $content_format = $attrs["$RDF:RESOURCE"]; break;
