@@ -90,6 +90,7 @@ class inputform {
     var $cancel_url;
     var $messages;
     var $result_mode;
+    var $formheading;
 
     var $template;        // if you want to display alternate form design,
                           // template holds view_id of such template
@@ -114,6 +115,7 @@ class inputform {
         $this->messages             = $settings['messages'];
         $this->result_mode          = $settings['result_mode'];  // if not supplied, standard form is used
         $this->template             = $settings['template'];
+        $this->formheading;	    = $settings['formheading'];
     }
 
     function printForm($content4id, $fields, $prifields, $edit, $slice_id) {
@@ -170,6 +172,9 @@ class inputform {
             // print tabs for form switching
             FrmTabs( $tabs, 'formtabs' );
         }
+  	if($this->formheading) {
+  		echo $this->formheading;
+  	}
 
 
         echo $out;
