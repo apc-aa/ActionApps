@@ -63,9 +63,12 @@ if (is_array ($cmd)) {
             $myview = GetTableView ($myviewid);
             $newkey = TableInsert ($myview["table"], $val, $myview["fields"]);
             unset ($cmd[$myviewid]["insert"]);
-            // show inserted record again
-            //if ($myview["type"] == "edit")
-            $cmd[$myviewid]["edit"][$newkey] = 1;
+            if ($newkey != "") {
+                // show inserted record again
+                //if ($myview["type"] == "edit")
+                $cmd[$myviewid]["edit"][$newkey] = 1;
+                $after_insert [$myviewid] = $newkey;
+            }
         }
         if ($com["delete"]) {
             $key = key ($com["delete"]);      
@@ -74,8 +77,14 @@ if (is_array ($cmd)) {
         }
     }
 }
+
+PrintArray($err);
   
 $script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
+
+// add currently inserted item to editable items
+if ($after_insert[$tview] && is_array ($tableview["restrict"]))
+    $tableview["restrict"][] = $after_insert[$tview];
 
 $tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."images/", $sess, "", "", "GetTableView");
 $err = $tabledit->view ($where);
