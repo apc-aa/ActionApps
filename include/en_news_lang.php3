@@ -572,6 +572,7 @@ define("L_STATE_FEEDABLE_UPDATE_LOCKED", "Feed & update & lock" );
 define("L_SITEM_ID_ALIAS",'alias for Short Item ID');
 define("L_MAP_VALUE","-- Value --");
 define("L_MAP_VALUE2","Value");
+define("L_ORDER", "Order");
 
 // ------------------------- New ----------------------------
 // not appended to other lang files
@@ -579,6 +580,9 @@ define("L_MAP_VALUE2","Value");
 
 /*
 $Log$
+Revision 1.45  2001/06/24 16:46:22  honzam
+new sort and search possibility in admin interface
+
 Revision 1.44  2001/06/21 14:15:44  honzam
 feeding improved - field value redefine possibility in se_mapping.php3
 

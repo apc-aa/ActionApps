@@ -27,6 +27,7 @@ require $GLOBALS[AA_INC_PATH] . "item.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
 require $GLOBALS[AA_INC_PATH] . "itemfunc.php3";
 require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
+require $GLOBALS[AA_INC_PATH] . "formutil.php3";
 
 function MoveItems($chb,$status) {
   global $db;
@@ -59,6 +60,7 @@ function SelectIconIf( $cond, $icon1, $alt1, $icon2, $alt2 ) {
   }  
   echo '<td><img src="'. $icon1 .'" width=24 border=0 alt="'. $alt1 .'"></td>'; 
 }
+# ----------------- function definition end -----------------------------------
 
 // if there was change to another slice - reset scrollers
 if(isset($r_slice_id)) {
@@ -78,6 +80,7 @@ if(isset($r_slice_id)) {
 $p_slice_id = q_pack_id($slice_id);
 
 $slice_info = GetSliceInfo($slice_id);
+$config_arr = unserialize( $slice_info["config"] );
 
 // $r_bin_state - controls display of editor pages. It should be:
 // app, appb, appc, hold, trash
@@ -91,6 +94,24 @@ if(!isset($r_bin_state)) {
 if(!isset($r_bin_show)) {
   $r_bin_show = "short";
   $sess->register(r_bin_show); 
+}
+
+// $r_admin_order, $r_admin_order - controls article ordering 
+// $r_admin_order contains field id
+// $r_admin_order_dir contains 'd' for descending order, 'a' for ascending
+if(!isset($r_admin_order)) {
+  $r_admin_order = ( $config_arr["admin_order"] ? 
+                     $config_arr["admin_order"] : "publish_date...." );
+  $r_admin_order_dir = ( $config_arr["admin_order_dir"] ? 
+                         $config_arr["admin_order_dir"] : "d" );
+  $sess->register(r_admin_order); 
+  $sess->register(r_admin_order_dir); 
+
+  // $r_admin_search, $r_admin_search_field - controls article filter
+  // $r_admin_search contains search string
+  // $r_admin_search_field contains field id
+  $sess->register(r_admin_search); 
+  $sess->register(r_admin_search_field); 
 }
 
 $perm_edit_all  = CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS);
@@ -167,6 +188,13 @@ switch( $action ) {  // script post parameter
         }
       }
     }        
+    break;
+  case "filter":  // edit the first one
+    $r_admin_order = ( $admin_order ? $admin_order : "publish_date...." );
+    $r_admin_order_dir = ( $admin_order_dir ? "d" : "a");
+    
+    $r_admin_search = $admin_search;
+    $r_admin_search_field = $admin_search_field;
     break;
 }
 
@@ -352,7 +380,15 @@ if (! $perm_edit_all )
   $conds[]=array( 'operator' => '=',
                   'value' => $auth->auth[uid],
                   'posted_by.......' => 1 );
-$sort[] = array ( 'publish_date....' => 'd' );
+                  
+# if user sets search condition
+if( $r_admin_search )
+  $conds[]=array( 'operator' => 'LIKE',
+                  'value' => $r_admin_search,
+                  $r_admin_search_field => 1 );
+
+# set user defined sort order
+$sort[] = array ( $r_admin_order => $r_admin_order_dir); 
 
 $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, $bin_condition);
 
@@ -396,7 +432,7 @@ if( count( $item_ids ) > 0 ) {
   $st->countPages( count( $item_ids ) );
 
   echo '</table><br>';
-  
+
 	if($st->pageCount() > 1)
     $st->pnavbar();
 }  
@@ -429,18 +465,49 @@ $markedaction["5-view"] = L_VIEW_FULLTEXT;
 echo "<center>
       <form name=markedform method=post action=\"". $sess->url($PHP_SELF)."\">
       <table border=0 cellspacing=0 class=login width=460>
-      <TR><TD align=center class=tablename width=436>".
+      <TR><TD align=center class=tablename>".
       L_CHANGE_MARKED ." &nbsp; <select name=markedaction>";
 
 reset($markedaction);
 while(list($k, $v) = each($markedaction)) 
   echo "<option value=\"". htmlspecialchars($k)."\"> ".
            htmlspecialchars($v) ." </option>";
-echo "</select>
+echo "</select></td><td align='right' class=tablename>
       <a href=\"javascript:MarkedActionGo()\" class=leftmenuy>".L_GO.
-      "</a></TD></TR>".
- "</table></form></center>";
+      "</a> </TD></TR>".
+ "</table></form>";
 
+ 
+# user definend sorting and filtering ---------------------------------------
+echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
+      <table width="460" border="0" cellspacing="0" cellpadding="0" 
+      class=leftmenu bgcolor="'. COLOR_TABBG .'">';
+
+reset( $fields );
+while( list ($k, $v ) = each( $fields ) ) {
+  $lookup_fields[$k] = $v[name];
+  if( $v[text_stored] )
+    $lookup_text_fields[$k] = $v[name];
+}
+    
+  #order
+echo "<tr>
+       <td class=leftmenuy><b>". L_ORDER ."</b></td>
+       <td class=leftmenuy>";
+FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order);
+echo "<input type='checkbox' name='admin_order_dir'". 
+     ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . L_DESCENDING. "</td>
+     <td rowspan=2 align='right' valign='middle'><a
+      href=\"javascript:document.filterform.submit()\" class=leftmenuy>". L_GO ."</a> </td></tr>";
+
+  # filter
+echo "<tr><td class=leftmenuy><b>". L_SEARCH ."</b></td>
+     <td>";
+FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
+echo "<input type='Text' name='admin_search' size=20
+      maxlength=254 value='$r_admin_search'></td></tr></table>
+      <input type=hidden name=action value='filter'></form></center>";
+ 
 echo L_ICON_LEGEND;
 echo L_SLICE_HINT;
 
@@ -458,6 +525,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.25  2001/06/24 16:46:22  honzam
+new sort and search possibility in admin interface
+
 Revision 1.24  2001/06/15 21:17:41  honzam
 fixed bug in manual feeding, fulltext f_b alias function improved
 

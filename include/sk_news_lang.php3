@@ -617,10 +617,13 @@ define("L_STATE_FEEDABLE_UPDATE_LOCKED", "KopÌrovaù obsah a zmeny nemeniteæne");
 define("L_SITEM_ID_ALIAS",'alias pro skr·tenÈ ËÌslo Ël·nku');
 define("L_MAP_VALUE","-- Hodnota --");
 define("L_MAP_VALUE2","Hodnota");
-
+define("L_ORDER", "Seradit");
 
 /*
 $Log$
+Revision 1.3  2001/06/24 16:46:22  honzam
+new sort and search possibility in admin interface
+
 Revision 1.2  2001/06/21 14:15:44  honzam
 feeding improved - field value redefine possibility in se_mapping.php3
 

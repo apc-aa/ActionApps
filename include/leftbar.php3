@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.8  2001/06/24 16:46:22  honzam
+new sort and search possibility in admin interface
+
 Revision 1.7  2001/05/29 19:14:58  honzam
 copyright + AA logo changed
 
@@ -98,5 +101,5 @@ added $Id $Log and $Copyright to some stray files
   echo "<tr><td><img src='../images/spacer.gif' width=5 height=1 border=0 alt=''><a href=\"javascript:SelectVis(false)\" class=leftmenuy>".L_UNSELECT_VISIBLE."</a></td></tr>";?>
   <tr><td height=110>&nbsp;</td></tr>
   <tr><td class=copymsg height=5>&nbsp;</td></tr>
-  <?php echo '<tr><td class=copymsg><small>'. L_COPYRIGHT .'</small></td></tr>';?>
+  <?php echo '<tr><td class=copymsg><small>'. L_COPYRIGHT .'</small><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></td></tr>';?>
 </table>

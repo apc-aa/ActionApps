@@ -138,7 +138,7 @@ define("L_CANCEL", "Zrušit");
 define("L_ACTION", "Akce");
 define("L_INSERT", "Vložit");
 define("L_NEW", "Nový");
-define("L_GO", "Jdi");
+define("L_GO", "OK");
 define("L_ADD", "Pøidat");
 define("L_USERS", "Uživatelé");
 define("L_GROUPS", "Skupiny");
@@ -570,9 +570,13 @@ define("L_STATE_FEEDABLE_UPDATE_LOCKED", "Kopírovat obsah a zmìny nemìnitelnì");
 define("L_SITEM_ID_ALIAS",'alias pro zkrácené èíslo èlánku');
 define("L_MAP_VALUE","-- Hodnota --");
 define("L_MAP_VALUE2","Hodnota");
+define("L_ORDER", "Seøadit");
 
 /*
 $Log$
+Revision 1.34  2001/06/24 16:46:22  honzam
+new sort and search possibility in admin interface
+
 Revision 1.33  2001/06/21 14:15:44  honzam
 feeding improved - field value redefine possibility in se_mapping.php3
 

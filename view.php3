@@ -20,8 +20,10 @@ http://www.apc.org/
 */
 
 #expected  vid       # id of view
-#optionaly cmd       # id of item to show (iid=i-23-7464674747-24 means view 
-                     # nuber 23 has to display item 74.. in format defined
+#optionaly cmd[]     # command to modify the view
+                     # cmd[23]=v-25 means: show view id 25 in place of id 23 
+                     # cmd[23]=i-24-7464674747 means view 
+                     # number 23 has to display item 74.. in format defined
                      # in view 24
                      # - given by url (not working yet)
 
@@ -113,12 +115,11 @@ $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 		 // open BD	
 
 # Parse parameters
-$command = ParseCommand($cmd);
+$command = ParseCommand($cmd[$vid]);
 switch ($command[0]) {
-  case 'i': if ($command[1] == $vid ) {
-              $vid = $command[3];
-              $item_ids[] = $command[2];
-            }
+  case 'v':  $vid = $command[1];
+  case 'i':  $vid = $command[1];
+             $item_ids[] = $command[2];
 }              
 
 # gets view data
@@ -184,6 +185,9 @@ switch( $view_info['type'] ) {
 
 /*
 $Log$
+Revision 1.3  2001/06/24 16:46:22  honzam
+new sort and search possibility in admin interface
+
 Revision 1.2  2001/05/23 23:04:54  honzam
 fixed bug of not updated list of item in Item manager after item edit
 
@@ -192,4 +196,3 @@ New View feature, new and improved search function (QueryIDs)
 
 */
 ?>
-
