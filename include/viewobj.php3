@@ -48,8 +48,8 @@ class view {
     function f($k=null) {
         if (!isset($this->fields)) {
           $db = getDB();
-          $db->query("SELECT view.*, slice.deleted FROM view, slice
-               WHERE slice.id=view.slice_id
+          $db->tquery("SELECT view.*, module.deleted FROM view, module
+               WHERE module.id=view.slice_id
                  AND view.id='".$this->id."'");
           if ($db->next_record())
             $this->fields = DBFields($db);
