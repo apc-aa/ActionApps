@@ -465,6 +465,8 @@ $tablelist = array( 'active_sessions' => "(
                          gb_header tinyint(4) default NULL,
                          gb_case varchar(15) default NULL,                       
                          javascript text,
+                         fileman_access varchar(20) default NULL,
+                         fileman_dir varchar(50) default NULL,                           
                          PRIMARY KEY (id)
                       )",
                       'slice_owner' => "(
@@ -568,9 +570,6 @@ $tablelist = array( 'active_sessions' => "(
                           PRIMARY KEY  (id),
                           UNIQUE KEY dir (dir)
                       )"
- 
-
-    
 );
                    
                    
