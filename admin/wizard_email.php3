@@ -85,6 +85,10 @@ function delete_email_template() {
 
 if (isset ($mail_count)) echo "<tr><td class=tabtxt>"._m("%1 email(s) were sent.", array ($mail_count))."</td></tr>";
 
+echo "<tr><td class=tabtxt>" . _m("Find some more info in %1the doc.",
+    array ("<a href=\"".$AA_INSTAL_PATH."doc/reader.html#wizard_email\">"))
+    ."</a></td></tr>";
+
 if (! $step) $step = 1;
 
 reset ($wizard_steps);

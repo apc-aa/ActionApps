@@ -21,6 +21,22 @@
 
     <revhistory>
       <revision>
+        <revnumber>1.6</revnumber>
+
+        <date>9.3.2003</date>
+
+        <revremark>Added the section Sending emails by wizard</revremark>
+      </revision>
+
+      <revision>
+        <revnumber>1.5</revnumber>
+
+        <date>8.3.2003</date>
+
+        <revremark>Updated Mailman section. Other minor changes.</revremark>
+      </revision>
+
+      <revision>
         <revnumber>1.4</revnumber>
 
         <date>6.3.2003</date>
@@ -101,7 +117,7 @@
   </sect1>
 
   <sect1>
-    <title>Central point: Slice</title>
+    <title>Reader Management Slice</title>
 
     <para>After a lot of discussing and unhappily also a lot of work to be
     thrown off, we have in Econnect decided the best approach to handle Reader
@@ -208,6 +224,25 @@
     <para>In the simplest cases, there will be one Reader management slice +
     one Alerts or Auth module. The Alerts or Auth module will always use
     (almost) directly the slice data.</para>
+
+    <sect2>
+      <title><anchor id="wizard_email" />Sending emails by wizard</title>
+
+      <para>On Reader Management slices there appears in the action select box
+      a new item: <quote>Send emails wizard</quote>. If you select some items
+      (readers) and choose this action, the window is divided in two frames
+      with a wizard in the right one. </para>
+
+      <para>The wizard is non-intrusive, meaning that no AA code was changed
+      to allow its function but it contains hints and links into AA pages. The
+      wizard steps include creating or editing the email template, sending an
+      example email to yourself and sending the email to all readers which you
+      selected before running the wizard. </para>
+
+      <para>Note: no email aliases are translated, thus if you use an email
+      template designed e.g. as alerts alert, you will receive email
+      containing <constant>_#FILTERS_</constant> etc. </para>
+    </sect2>
   </sect1>
 
   <sect1>
@@ -245,7 +280,7 @@
         <tgroup cols="2">
           <tbody>
             <row>
-              <entry>Alerts Settings</entry>
+              <entry>Settings</entry>
 
               <entry>Core settings for the Alerts module, see below.</entry>
             </row>
@@ -256,19 +291,23 @@
               <entry>Choose which selections you want to show and their order.
               Selections are defined in views of type Alerts Selection Set in
               the slices from which you want to send new items. Each selection
-              has a description and a set of the powerful
-              <constant>conds[]</constant> and <constant>sort[]</constant>
-              parameters, the same as are used with <constant>slice.php3</constant>
-              in search forms. Mind that if some item appears in several
-              selections, it will be repeated in the mail. Try to make
-              selections mutually exclusive. You can send an example email
-              from the Design page to yourself to see exactly what readers
-              receive. And you can manually send the daily, weekly or monthly
-              digest to all readers.</entry>
+              has a description and a set of the powerful <ulink url="???"><constant>conds[]</constant>
+              and <constant>sort[]</constant></ulink> parameters, the same as
+              are used with <constant>slice.php3</constant> in search forms.
+              Mind that if some item appears in several selections, it will be
+              repeated in the mail. Try to make selections mutually exclusive.</entry>
             </row>
 
             <row>
-              <entry>Sync With Reader Slice</entry>
+              <entry>Send emails</entry>
+
+              <entry>You can manually send the daily, weekly or monthly digest
+              to all readers. And you can send an example email to yourself to
+              see exactly what readers receive.</entry>
+            </row>
+
+            <row>
+              <entry>Reader Management</entry>
 
               <entry>Sets the Reader Management Slice which feeds this Alerts.
               Allows to add, delete and refresh the Alerts-specific fields to
@@ -362,47 +401,7 @@
       additional 9 letters parameter containing the <link
       linkend="access_code">access code</link>.</para>
 
-      <sect3>
-        <title>Example of welcome email</title>
-
-        <para><emphasis>Subject: </emphasis>Welcome to Econnect Alerts</para>
-
-        <para><emphasis>Email type:</emphasis> alerts welcome</para>
-
-        <para><emphasis>Body:</emphasis></para>
-
-        <para><screen>Somebody requested to receive regularly new items from our web site 
-&#60;a href=&#34;http://www.ecn.cz&#34;&#62;www.ecn.cz&#60;/a&#62;
-{switch({_#HOWOFTEN})instant:at the moment they are added
-:daily:once a day
-:weekly:once a week
-:monthly:once a month}.&#60;br&#62;
-&#60;br&#62;
-You will not receive any emails until you confirm your subscription.
-To confirm it or to change your personal info, please go to&#60;br&#62;
-&#60;a href=&#34;_#COLLFORM&#34;&#62;_#COLLFORM&#60;/a&#62;.&#60;br&#62;&#60;br&#62;
-Thank you for reading our alerts,&#60;br&#62;
-The Econnect team
-</screen></para>
-      </sect3>
-
-      <sect3>
-        <title>Example of alert email</title>
-
-        <para><emphasis>Subject: </emphasis><screen>{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}</screen></para>
-
-        <para><emphasis>Email type:</emphasis> alerts alert</para>
-
-        <para><emphasis>Body:</emphasis></para>
-
-        <para><screen>_#FILTERS_
-&#60;br&#62;&#60;hr&#62;
-To change your personal info, please go to&#60;br&#62;
-&#60;a href=&#34;_#COLLFORM&#34;&#62;_#COLLFORM&#60;/a&#62;.&#60;br&#62;&#60;br&#62;
-Thank you for reading our alerts,&#60;br&#62;
-The Econnect team
-</screen></para>
-      </sect3>
+      <para>An example of both email types is added by <constant>sql_update</constant>.</para>
 
       <sect3>
         <title>Tips</title>
@@ -420,13 +419,21 @@ The Econnect team
         <constant>f_c</constant> function and the values in the database are 0
         or 1. Thus give <quote>0</quote> and not <quote>no</quote> into the
         Search box.</para>
+
+        <para><emphasis>Filtering readers receiving a selection:</emphasis>
+        Add the Alerts Selections to Item Manager. Create an alias using the
+        function <constant>f_h</constant> with the parameter
+        <constant>,</constant> (comma). You will see the selection IDs
+        prefixed by <constant>f</constant>. Now you understand why you should
+        enter something like <quote>f45</quote> into the Search box.</para>
       </sect3>
 
       <sect3>
         <title>Step by step tutorial</title>
 
         <para>Here is a tutorial, describing in steps how you can try the
-        Alerts module.</para>
+        Alerts module. The result does not use Authorization, the personal
+        info is protected by a password.</para>
 
         <orderedlist>
           <listitem>
@@ -475,7 +482,7 @@ The Econnect team
           </listitem>
 
           <listitem>
-            <simpara>Create Alerts:</simpara>
+            <simpara>Create and set Alerts:</simpara>
 
             <orderedlist>
               <listitem>
@@ -486,45 +493,6 @@ The Econnect team
                 <simpara>Fill the name <quote>My Alerts</quote>. Fill the form
                 URL with some web folder to which you have access, e.g.
                 <constant>http://have_access_to/myalerts.shtml</constant></simpara>
-              </listitem>
-            </orderedlist>
-          </listitem>
-
-          <listitem>
-            <simpara>Design emails:</simpara>
-
-            <orderedlist>
-              <listitem>
-                <simpara>In the Alerts menu, click on Email templates and on
-                the Add icon</simpara>
-              </listitem>
-
-              <listitem>
-                <simpara>Create a new email with the name <quote>My Welcome</quote>
-                and fill the fields similar to the example above</simpara>
-              </listitem>
-
-              <listitem>
-                <simpara>Click again on Emails, Add and create a new email
-                with the name <quote>My Alert</quote> and with the type
-                <quote>alerts alert</quote> and fill the fields similar to the
-                example above</simpara>
-              </listitem>
-
-              <listitem>
-                <simpara>Click again on Emails, there should be the two emails
-                listed</simpara>
-              </listitem>
-            </orderedlist>
-          </listitem>
-
-          <listitem>
-            <simpara>Set Alerts:</simpara>
-
-            <orderedlist>
-              <listitem>
-                <simpara>Click on Settings and choose the email templates
-                </simpara>
               </listitem>
 
               <listitem>
@@ -610,7 +578,7 @@ The Econnect team
                 You should receive a digest of all items added in the last 24
                 hours to your favorite test slice. If there are no such items,
                 add some: click on My Selection 1, this moves you to your
-                favorite test slice. </simpara>
+                favorite test slice.</simpara>
               </listitem>
 
               <listitem>
@@ -726,11 +694,12 @@ The Econnect team
         <para>When you have created the constant group, create a field of type
         <quote>Auth Group</quote> and assign the constant group to it.</para>
 
-        <para>The Auth feature is set on and off using a new item in Slice
-        Settings, named <quote>Auth Group Field</quote>, with the name of the
-        field mentioned above. This setting is visible only in Reader
-        Management slices created from the Reader Management Minimal template
-        (<emphasis>exactly, only for slices of type <constant>ReaderManagement</constant></emphasis>).</para>
+        <para><anchor id="auth_field_group" />The Auth feature is set on and
+        off using a new item in Slice Settings, named <quote>Auth Group Field</quote>,
+        with the name of the field mentioned above. This setting is visible
+        only in Reader Management slices created from the Reader Management
+        Minimal template (<emphasis>exactly, only for slices of type
+        <constant>ReaderManagement</constant></emphasis>).</para>
 
         <para>Only when <quote>Auth Group Field</quote> is filled, the slice
         is synchronized with the auth_user/group tables.</para>
@@ -747,7 +716,7 @@ The Econnect team
     </sect2>
 
     <sect2>
-      <title>Mailman specific behaviour</title>
+      <title><anchor id="mailman" />Mailman specific behaviour</title>
 
       <para>You can manage mailing lists with the Mailman feature. The idea is
       to use a directory accessible both to PHP and to mailman. AA maintain
@@ -788,12 +757,35 @@ The Econnect team
         </listitem>
 
         <listitem>
-          <simpara><emphasis>(this step is not yet completely clear to me,
-          Marek will help me)</emphasis> set mailman cron so that it regularly
-          (e.g. every minute) updates the real mailing lists. You need to
-          create a Unix shell-script</simpara>
+          <simpara>set mailman cron so that it regularly (e.g. every minute)
+          updates the real mailing lists using a Unix shell-script like</simpara>
+
+          <screen>LISTSDIR=&#34;/var/www/html/maillists&#34;
+MMDIR=&#34;/var/mailman&#34;
+for LIST in `find $LISTSDIR/* -newer $MMDIR/data/.lastsync -printf &#34;%f\n&#34;`;
+    do
+        $MMDIR/bin/sync_members -f $LISTSDIR/$LIST -w=no -a=no $LIST
+    done
+touch $MMDIR/data/.lastsync</screen>
         </listitem>
       </orderedlist>
+
+      <sect3>
+        <title>Mailman: create list</title>
+
+        <para>Another convenience feature is the possibility to create new
+        mailing lists from the AA interface. For Reader management slices with
+        a field filled in Slice Settings - Mailman Lists Field there appears a
+        new option in the menu, <quote>Mailman: create list</quote>. You fill
+        the name of the new list, admin email and password. The list name is
+        added to the constant group used by the Mailman Lists Field and a
+        request row is added to the file <constant>.mailman</constant> in the
+        <constant>$MAILMAN_SYNCHRO_DIR</constant> directory. You should run
+        another Unix shell-script regularly which executes the requests.</para>
+
+        <para>Tip: If you enable users to subscribe to mailing lists in an
+        anonymous form, you must add the new checkbox to that form.</para>
+      </sect3>
     </sect2>
   </sect1>
 

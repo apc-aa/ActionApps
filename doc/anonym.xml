@@ -17,7 +17,26 @@
       </affiliation>
     </author>
 
+    <releaseinfo>$Id$</releaseinfo>
+
     <revhistory>
+      <revision>
+        <revnumber>1.3</revnumber>
+
+        <date>8.3.2003</date>
+
+        <revremark>Added the Filler and fillform section.</revremark>
+      </revision>
+
+      <revision>
+        <revnumber>1.2</revnumber>
+
+        <date>6.3.2003</date>
+
+        <revremark>Added tips and tricks based on the FAQ description of the
+        previous anonymous forms</revremark>
+      </revision>
+
       <revision>
         <revnumber>1.1</revnumber>
 
@@ -61,19 +80,30 @@
   </sect1>
 
   <sect1>
+    <title>Filler and fillform</title>
+
+    <para>Two scripts handle the anonymous forms. The first,
+    <constant>filler.php3</constant>, stores the info coming from the form
+    into the database. It also validates the data and prooves permissions to
+    edit or update the item. The second, <constant>fillform.php3</constant>,
+    refills the data into the form shown to the reader. It retrieves the data
+    from database or in some special cases directly from <constant>filler</constant>.</para>
+  </sect1>
+
+  <sect1>
     <title>Creating Anonymous Forms with the Wizard</title>
 
     <para>In the previous AA versions until version 2.4, the process of
     creating Anonymous forms was very simple: Copy the code of the
     <quote>Add item</quote> page with only a few necessary changes. But as the
     form now allows to edit items and to use several options for it, a new
-    wizard was created. This wizard creates the code for a complete form with
-    the SSI include of <constant>fillform.php3</constant> necessary to edit
-    items. Use some feature like <quote>Show source code</quote> in your
+    wizard was created. This wizard creates the HTML code for a complete form
+    with the SSI include of <constant>fillform.php3</constant> necessary to
+    edit items. Use some feature like <quote>Show source code</quote> in your
     browser to get the code. The resulting form differs depending on whether
     Anonymous editing is allowed or not.</para>
 
-    <para>You may change these settings sent in anonymous fields:</para>
+    <para>You may change these settings sent in hidden fields:</para>
 
     <table>
       <title>Some hidden fields in the anonymous form</title>
@@ -113,16 +143,14 @@
       <listitem>
         <simpara>The fields shown in AA but not shown in the anonymous form
         are mentioned in the <constant>notshown[v7377697463682e2e2e2e2e2e2e2e2e2e]</constant>
-        hidden variables. This is to allow to set these fields to default
-        values on posting and to store old values on updating.</simpara>
+        hidden variables. This allows to set these fields to default values on
+        posting and to store old values on updating.</simpara>
       </listitem>
 
       <listitem>
         <simpara>The setting <constant>use_post2shtml</constant> allows to use
-        the POST method for the form even though it is on a shtml page. The
-        values are stored in the database and restored by the scripts. This is
-        very useful as the GET method allows only for a restricted capacity
-        and shows the values in the URL.</simpara>
+        the POST method for the form even though it is on a shtml page. See
+        more info in the script <constant>post2shtml.php3</constant>.</simpara>
       </listitem>
     </itemizedlist>
   </sect1>
@@ -203,6 +231,43 @@
   </sect1>
 
   <sect1>
+    <title>Tips and tricks</title>
+
+    <itemizedlist>
+      <listitem>
+        <para>It is possible to send images and other files by the form
+        (unlike the anonymous posting in version prior 1.5)</para>
+      </listitem>
+
+      <listitem>
+        <para>It is possible to set values to a non-displayed field by just
+        adding a hidden field for such a field:<screen>&#60;input type=hidden name=&#34;v696d675f6865696768742e2e2e2e2e2e&#34; value=&#34;Anonymous author&#34;&#62;</screen><emphasis>Note:</emphasis>
+        This solution is easy and good working in many cases, but it is by no
+        means secure. Any experienced user can change the values of the hidden
+        fields so do not rely on such data. A better solution is to completely
+        omit such fields from the input form and set the default values for
+        the fields in &#34;Admin&#34; -&#62; &#34;Main setting - Fields&#34;
+        -&#62; &#34;Edit&#34; -&#62; &#34;Default&#34;. The values are than
+        set directly from the database. This solution is a little bit more
+        secure.</para>
+      </listitem>
+
+      <listitem>
+        <para>The inputs are validated as if they were typed in the standard
+        <constant>itemedit.php3</constant> form. When there are any invalid
+        data, the whole item is not updated. The javascript validation used in
+        <constant>itemedit.php3</constant> is also included in the form
+        created by the wizard</para>
+      </listitem>
+
+      <listitem>
+        <para>You can disable the standard AA validation by adding a hidden
+        field notvalidate in the form: <screen>&#60;input type=hidden name=&#34;notvalidate&#34; value=&#34;1&#34;&#62;</screen></para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1>
     <title>Reader management specifics</title>
 
     <para>Each reader has her or his own item in the Reader management slice.
@@ -227,9 +292,13 @@
     <title><anchor id="show_results" />Show results</title>
 
     <para>Sending the data to AA results in adding the data into database or
-    in an error. Some of the errors may be excluded in advance by Javascript,
-    which does not allow to send an errornous form. But some of them, like a
-    username being already used, can not.</para>
+    in an error. Some of the errors may be excluded in advance by Javascript
+    validation (function <constant>proove_fields</constant>). But some of
+    them, like a username being already used, can not.</para>
+
+    <para>By default, the <constant>fillform.php3</constant> script shows
+    standard error messages. They always appear at the place where
+    <constant>fillform.php3</constant> is SSI-included in your shtml page.</para>
 
     <para>You may create your own PHP script (see an example in
     <constant>doc/script/show_result.php3</constant>) and send its URL as a
@@ -237,15 +306,12 @@
     parameter to the <constant>fillform.php3</constant> SSI include created by
     the Wizard, e.g. <screen>&#60;!--#include virtual=&#34;/aaa/fillform.php3?show_result=http://ecn.cz/show_result.php3&#38;form=...&#34;--&#62;</screen>An
     array <constant>$result</constant> with the results will be sent to the
-    PHP script and you may show appropriate messages. If you do not send
-    <constant>show_result</constant>, the <constant>fillform.php3</constant>
-    script shows the standard messages. Mind the messages will appear on the
-    place where <constant>fillform.php3</constant> is SSI-included in your
-    shtml page.</para>
+    PHP script and you may print appropriate messages, see the example.
+    </para>
 
     <para>The <constant>$result</constant> array content is created at various
-    places in <constant>filler.php3</constant> as the <constant>$err[]</constant>
-    array. Look there for accurate info. At this moment the messages are:</para>
+    places in <constant>filler.php3</constant> array. Look there for accurate
+    info. At this moment the messages are:</para>
 
     <table>
       <title>Results from filler.php3</title>
