@@ -244,11 +244,13 @@ class item {
   var $aliases;        // array of usable aliases
   var $parameters;     // optional additional parameters - copied from itemview->parameters
 
-   // constructor
+  /** Constructor
+   *  Take a look at GetItemFromId() above, if you want to create item from id
+   */
   function item($content4id='', $aliases='', $clean_url='', $format='', $remove='', $param=false){
     // there was three other options, but now it was never used so I it was
     // removed: $item_content, $top and $bottom (honzam 2003-08-19)
-    $this->columns      = $content4id;
+    $this->set_data($content4id);
     $this->aliases      = $aliases;
     $this->clean_url    = $clean_url;
     $this->format       = $format;
@@ -267,19 +269,27 @@ class item {
       $this->parameters = $parameters;
   }
 
-
-  function getval($column, $what='value') {
-      if ( is_array($this->columns[$column]) )
-           return $this->columns[$column][0][$what];
-      else return false;
+  /** sets content (ItemContent object or older - content4id array) */
+  function set_data($content4id) {
+      $this->columns = ((strtolower(get_class($content4id))=='itemcontent') ?
+                       $content4id : new ItemContent($content4id));
   }
 
-  function getmultipleval($column) {
-      if ( is_array($this->columns[$column]) )
-           return $this->columns[$column];
-      else return false;
+  /** sets for defined field it's new value  */
+  function set_field_value($field, $value) {
+      $this->columns->setValue($field, $value);
   }
 
+
+  /** shortcut for ItemContent->getValue() */
+  function getval($column, $what='value') {  return $this->columns->getValue($column, $what); }
+
+  /** shortcut for ItemContent->getValues() */
+  function getvalues($column) { return $this->columns->getValues($column); }
+
+  function getContent()       { return $this->columns->getContent();  }
+  function getItemID()        { return $this->columns->getItemID();  }
+  function getSliceID()       { return $this->columns->getSliceID(); }
 
   function getbaseurl($redirect=false, $no_sess=false) {
       # redirecting to another page
@@ -398,23 +408,17 @@ class item {
   }
 
   function subst_alias( $text ) {
-    if (IsField($text))
-        return $this->getval($text);
-    else return  $this->unalias( $text );
+      return (IsField($text) ? $this->getval($text) : $this->unalias($text));
   }
 
   function subst_aliases( $var ) {
-    if( !is_array( $var ) )
-      return $this->subst_alias( $var );
-    reset( $var );
-    while( list($k,$v) = each($var) )
-      $ret[$k] = $this->subst_alias( $v );
-    return $ret;
-  }
-
-  /** sets for defined field it's new value  */
-  function set_field_value($field, $value) {
-      $this->columns[$field][0]['value'] = $value;
+      if( !is_array( $var ) ) {
+          return $this->subst_alias( $var );
+      }
+      foreach ( $var as $k => $v ) {
+         $ret[$k] = $this->subst_alias( $v );
+      }
+      return $ret;
   }
 
   # --------------- functions called for alias substitution -------------------
@@ -426,43 +430,37 @@ class item {
   # print due to html flag set (escape html special characters or just print)
   # param: delimeter - used to separate values if the field is multi
   function f_h($col, $param="") {
-    if( $param AND is_array($this->columns[$col])) {  # create list of values for multivalue fields
-      $param = $this->subst_alias( $param );
-      foreach( $this->columns[$col] as $v ) {
-        $res .= ($res ? $param : ''). DeHtml($v[value], $v[flag]); # add value separator just if field is filled
+      $values = $this->getvalues($col);
+      if ( $param AND $values) {  # create list of values for multivalue fields
+          $param = $this->subst_alias( $param );
+          foreach( $values as $v ) {
+              $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); # add value separator just if field is filled
+          }
+          return $res;
       }
-      return $res;
-    }
-    return DeHtml($this->columns[$col][0][value], $this->columns[$col][0][flag]);
+      return DeHtml($this->getval($col), $this->getval($col,'flag'));
   }
 
   # prints date in user defined format
   # param: date format like in PHP (like "m-d-Y")
   function f_d($col, $param="") {
-    $param = $this->subst_alias( $param );
-    if( $param=="" )
-      $param = "m/d/Y";
-    $dstr = date($param, $this->columns[$col][0][value]);
-    return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
+      $param = $this->subst_alias( $param );
+      if( $param=="" ) {
+          $param = "m/d/Y";
+      }
+      $dstr = date($param, $this->getval($col));
+      return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
   }
 
   # prints image scr (<img src=...) - NO_PICTURE for none
   # param: 0
   function f_i($col, $param="") {
-    return ( $this->columns[$col][0][value] ?
-      $this->columns[$col][0][value] :
-      NO_PICTURE_URL);
+      return get_if( $this->getval($col), NO_PICTURE_URL);
   }
 
   # expands and prints a string, if parameters are blank then expands field
   function f_y($col, $param="") {
-    global $debug;
-#    $debug = 1;
-    if ($param) {
-        return($this->unalias($param));
-    } else {
-        return($this->unalias($this->columns[$col][0][value]));
-    }
+      return $this->unalias( $param ? $param : $this->getval($col));
   }
 
   # prints height and width of image file or URL referenced in field
@@ -470,14 +468,14 @@ class item {
   function i_s($col, $param="") {
     if (! isField($col))
         huhe("Warning: i_s: $col is not a field, don't wrap it in { } ");
-    $f = $this->columns[$col][0]['value'];
+    $f = $this->getval($col);
     if (! $f) { return ""; }  # No picture, common don't warn (expanding inside switch)
     # Could speed up a little with a test for URLs in uploads directory here
-#PHP>4.0.5 supports URLs so no need to skip URLs
+    # PHP>4.0.5 supports URLs so no need to skip URLs
     $a = getimagesize($f);
-// No warning required, will be generated by getimagesize
-//    if (! $a)
-//        huhe("Warning: getimagesize couldn't get width from '$f'");
+    // No warning required, will be generated by getimagesize
+    //    if (! $a)
+    //        huhe("Warning: getimagesize couldn't get width from '$f'");
     return($a[3]);  #height="xxx" width="yyy"
   }
 
@@ -562,7 +560,7 @@ class item {
 
     # last parameter - condition field
     $url = $this->getitemurl($plink_only, $purl_field, $predirect, $pcondition, $pno_sess);
-    $flg = ( $this->columns[$p[3]] ? $this->getval($p[3],'flag') : true );
+    $flg = ( $this->columns->is_set($p[3]) ? $this->getval($p[3],'flag') : true );
     return $this->getahref($url,$ptxt,$paddition,$flg);
   }
 
@@ -598,8 +596,7 @@ class item {
       $p = ParamExplode($param);
       $stringToMatch_Raw = $p[0] ? $p[0] : $col;
       // can use either the 'headline......' format or "You static text here"
-      $stringToMatch = $this->columns[$stringToMatch_Raw][0][value] ?
-         $this->columns[$stringToMatch_Raw][0][value] : $stringToMatch_Raw;
+      $stringToMatch = get_if( $this->getval($stringToMatch_Raw), $stringToMatch_Raw);
 
       $fieldToMatch    = quote(     $p[2] ? $p[2] : BLURB_FIELD_TO_MATCH  );
       $fieldToReturn   = quote(     $p[3] ? $p[3] : BLURB_FIELD_TO_RETURN );
@@ -737,6 +734,7 @@ function RSS_restrict($txt, $len) {
               case 'javascript':  return str_replace("'", "\'", safe($text));
               case 'urlencode':   return urlencode($text);
               case 'striptags':   return strip_tags($text);
+              case 'asis':        return $text;    // do not DeHtml - good for search & replace in fields
               case '':            $param = $p[0];  // case 'some text:'
           }
       }
@@ -792,9 +790,9 @@ function RSS_restrict($txt, $len) {
             get_aa_url('modules/links/linkedit.php3?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
             get_aa_url('modules/links/linkedit.php3?lid='. $this->getval('id')) );
       case "link_go_categ":
-        $cat_names       = $this->columns['cat_name'];
-        $cat_ids         = $this->columns['cat_id'];
-        $cat_highlight   = $this->columns['cat_state'];
+        $cat_names       = $this->getvalues('cat_name');
+        $cat_ids         = $this->getvalues('cat_id');
+        $cat_highlight   = $this->getvalues('cat_state');
         if( !is_array($cat_names) )
           return "";
         while ( list($k, $cat) = each($cat_names) ) {
@@ -859,7 +857,7 @@ function RSS_restrict($txt, $len) {
         huhl("Field $col is defined with f_u and function '$fnc', but '$fnc' is not defined in apc-aa/include/usr_aliasfnc.php3");
         return "";
     }
-    return $fnc($this->columns, $col, $param);
+    return $fnc($this->columns->getContent(), $col, $param);
   }
 
   # display specified view
@@ -917,7 +915,7 @@ function RSS_restrict($txt, $len) {
     if( !$this->getval($col) ) {
         return $pelse ? $pbegin.$pelse : "";
     }
-    if( $this->columns[$p[1]] ) {
+    if ( $this->columns->is_set($p[1]) ) {
       $column = ($pfield ? $p[1] : $col);
       $txt = $this->getval($column);
       $flg = $this->getval($column,'flag');
@@ -953,13 +951,11 @@ function RSS_restrict($txt, $len) {
   }
 
   # live checkbox -- updates database immediately on clicking without reloading the page
-  function f_k ($col, $param = "")
-  {
+  function f_k ($col, $param = "") {
     global $AA_INSTAL_PATH;
-    $short_id = $this->columns["short_id........"][0]["value"];
+    $short_id = $this->getval("short_id........");
 
     if ($param == "") {
-    //    $short_id = $this->columns["short_id........"][0]["value"];
         $name = "live_checkbox[".$short_id."][$col]";
         $img = $this->getval($col) ? "on" : "off";
         return "<img width='16' height='16' name='$name' border='0'
@@ -972,18 +968,9 @@ function RSS_restrict($txt, $len) {
         $fncname = "show_fnc_".$params[0];
         $param2 = substr($param, strpos($param, ":")+1);
 
-        $content4id = $this->columns;
+        $content4id = $this->columns->getContent();
 
         $varname = "live_change[".$short_id."][$col]";
-        /*
-        echo "<pre>";
-        print_r($content4id);
-        echo "</pre>";
-        */
-/*        $out = $fncname($varname, "", $content4id[$col],
-                 $param2, $content4id[$col][0]['flag'] & FLAG_HTML, true );
-        $maxlevel=0; $level=0;
-        return new_unalias_recurent($out, "", $level, $maxlevel, null, null, null);*/
     }
   }
 
@@ -1059,7 +1046,7 @@ function RSS_restrict($txt, $len) {
     }
     $url_base = $this->getbaseurl();
 
-    $categs2print = $catseparator ? $this->getmultipleval($col) :
+    $categs2print = $catseparator ? $this->getvalues($col) :
                                     array(0=>array('value'=>$this->parameters['category_id'])); // current category
     $linklast     = $catseparator ? true : false;
 

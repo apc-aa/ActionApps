@@ -70,6 +70,10 @@ class ItemContent {
     function is_empty() {
         return !is_array($this->content);
     }
+    
+    function is_set($field_id) {
+        return is_array($this->content[$field_id]);
+    }
 
     function getContent() {
         return $this->content;
@@ -101,12 +105,12 @@ class ItemContent {
 
     /** Returns the value for a field. If it is a multi-value
     *   field, this is the first value. */
-    function getValue ($field_id) {
-        return $this->content[$field_id][0]["value"];
+    function getValue($field_id, $what='value') {
+        return ( is_array($this->content[$field_id]) ? $this->content[$field_id][0][$what] : false );
     }
 
-    function getValues ($field_id) {
-        return $this->content[$field_id];
+    function getValues($field_id) {
+        return ( is_array($this->content[$field_id]) ? $this->content[$field_id] : false );
     }
 
     /** Fills the name with dots to the standard 16 characters,
@@ -127,6 +131,10 @@ class ItemContent {
     function getPublishDate(){ return $this->getItemValue ("publish_date"); }
     function getExpiryDate() { return $this->getItemValue ("expiry_date"); }
 
+    function setValue($field_id,$val) {
+        $this->content[$field_id][0]['value'] = $val;
+    }
+
     function setItemValue ($field_name, $value) {
         $this->content[substr($field_name."...................",0,16)] =
             array (0 => array ("value" => $value));
@@ -139,6 +147,8 @@ class ItemContent {
     function setExpiryDate($value) { $this->setItemValue ("expiry_date", $value); }
 
     /*------------------------ */
+    
+    /** Special function - fills field by prepared array $v[]['value'] */
     function setFieldValue($field_id,$v) {
         $this->content[$field_id] = $v;
     }

@@ -204,7 +204,7 @@ class itemview {
         if (is_array ($d_content)) {
             reset ($d_content);
             while (list ($id,$disc) = each ($d_content)) {
-                $CurItem->columns = $disc;
+                $CurItem->set_data($disc);
                 $CurItem->setformat ($this->slice_info['d_compact']);
                 $out .= $CurItem->get_item();
             }
@@ -264,7 +264,7 @@ class itemview {
      $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
      $col["d_disc_url......"][0]['value'] = $this->clean_url ."&nocache=1&sh_itm=".$this->disc['item_id'];
      $col["d_disc_url......"][0]['flag'] = FLAG_HTML;   // do not change &->&amp;
-     $CurItem->columns = $col;
+     $CurItem->set_data($col);
      $out.= $CurItem->get_item() ;
 
      $out.= "</form>";
@@ -357,7 +357,7 @@ class itemview {
       $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
       $col["d_disc_url......"][0]['value'] = $this->clean_url . "&sh_itm=".$this->disc['item_id'];
       $col["d_disc_url......"][0]['flag'] = FLAG_HTML;   // do not change &->&amp;
-      $CurItem->columns = $col;
+      $CurItem->set_data($col);
     }
     // show a form for posting a comment
     $CurItem->setformat( $this->slice_info['d_form']);
@@ -384,7 +384,7 @@ class itemview {
      // hack for searching in multiple slices. This is not so nice part
      // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
      // used (filled) in slice.php3
-     $CurItem->columns = $content[$iid];
+     $CurItem->set_data($content[$iid]);
      // slice_id... in content is packed!!!
      $p_slice_id = addslashes($content[$iid]["slice_id........"][0]['value']);
      if (is_array ($this->aliases[$p_slice_id]))
