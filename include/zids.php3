@@ -182,7 +182,7 @@ class zids {
     function qqq_packedids($i=null) {
         if ($this->warnid($i,"qqq_packedids")) return null;
         switch ($this->type) {
-            case "p": return (isset($i) ? qqquote($this->a[$i]) : array_map("qqquote",$this->a));
+            case "p": return (isset($i) ? qqqquote($this->a[$i]) : array_map("qqqquote",$this->a));
             case "l": return (isset($i) ? qqq_pack_id($this->a[$i]) 
                 : array_map("qqq_pack_id",$this->a));
             case "t": return (isset($i) ? qqq_pack_id(id_t2l($this->a[$i]))
