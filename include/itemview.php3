@@ -127,13 +127,10 @@ class itemview {
   }
 
   function get_output_cached($view_type="") {
-    trace("+","get_output_cached",null); #$this);
-
     #create keystring from values, which exactly identifies resulting content
 
     if( $this->is_random() ) {                         # don't cache random item
         $res = $this->get_output($view_type);
-        trace("-");
         return $res;
     }
     if (isset($this->zids))
@@ -148,31 +145,28 @@ class itemview {
               ((isset($this->zids)) ? $this->zids->id(0) : "");
     $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  # negative used for displaying n-th group of items only
                                         $this->from_record+$this->num_records );
-    for( $i=$this->from_record; $i<$number_of_ids; $i++)
-        if (isset($this->zids))
+    for( $i=$this->from_record; $i<$number_of_ids; $i++) {
+        if (isset($this->zids)) {
             $keystr .= $this->zids->id($i);
-        $keystr .=serialize($this->disc);
-        $keystr .=serialize($this->aliases);
-
-        $keystr .= stringexpand_keystring();
-
-        if( !$GLOBALS['nocache'] && ($res = $GLOBALS['pagecache']->get($keystr)) ) {
-            trace("-");
-            return $res;
         }
+    }
+    $keystr .= serialize($this->disc);
+    $keystr .= serialize($this->aliases);
+    $keystr .= stringexpand_keystring();
 
-        $str2find_save = $GLOBALS['str2find_passon'];
-        $GLOBALS['str2find_passon'] = "";
-        #cache new value
-        $res = $this->get_output($view_type);
-
-        $str2find_this = ",slice_id=".unpack_id128($this->slice_info["id"]);
-        if (!strstr($GLOBALS['str2find_passon'],$str2find_this))
-            $GLOBALS['str2find_passon'] .= $str2find_this; // append our str2find
-        $GLOBALS['pagecache']->store($keystr, $res, $GLOBALS['str2find_passon']);
-        $GLOBALS['str2find_passon'] .= $str2find_save;
-        trace("-");
+    global $str2find_passon, $pagecache;
+    if( !$GLOBALS['nocache'] && ($res = $pagecache->get($keystr)) ) {
         return $res;
+    }
+
+    $str2find_save   = $str2find_passon;    // Save str2find from same level
+    $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
+    $res = $this->get_output($view_type);
+    $str2find_passon->add(unpack_id128($this->slice_info["id"]), 'slice_id');
+    $pagecache->store($keystr, $res, $str2find_passon);
+    $str2find_passon->add_str2find($str2find_save); // and append saved for above
+
+    return $res;
   }
 
   function get_disc_buttons($empty) {
@@ -228,7 +222,7 @@ class itemview {
 
     $cnt = 0;     // count of discussion comments
 
-    $out .= $this->slice_info['d_top'];         // top html code
+    $out .= $this->unaliasWithScroller($this->slice_info['d_top']);           // top html code
 
     if ($d_tree) {    // if not empty tree
       $CurItem->setformat( $this->slice_info['d_compact']);
@@ -258,7 +252,7 @@ class itemview {
 
     // buttons bar
      $CurItem->setformat($this->slice_info['d_bottom']);        // bottom html code
-     $col["d_buttons......."][0]['value'] = $this->get_disc_buttons($cnt==0);
+     $col["d_buttons......."][0]['value'] = $this->unaliasWithScroller($this->get_disc_buttons($cnt==0));
      $col["d_buttons......."][0]['flag'] = FLAG_HTML;
      $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
      $col["d_disc_url......"][0]['value'] = $this->clean_url ."&nocache=1&sh_itm=".$this->disc['item_id'];
