@@ -26,6 +26,12 @@ class DB_AA extends DB_Sql {
   var $User     = DB_USER;
   var $Password = DB_PASSWORD;
 
+  function tquery($SQL) {
+      if ($GLOBALS[debug])
+          return $this->dquery ($SQL);
+      else return $this->query ($SQL);
+  }
+
   function dquery($SQL) {
     echo "<br>$SQL";
 
