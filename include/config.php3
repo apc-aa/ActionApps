@@ -141,6 +141,18 @@ define("IMG_UPLOAD_DIR_MODE", 508);    # mkdir perms (508 = 0774 in octal, but
                                                    # not encapsulated slices
   */
 
+  # -- Comlink profile --- 
+  /*
+    define("COLOR_TABBG",     "#A8C8B0");          # background of tables
+    define("COLOR_TABTITBG",  "#589868");          # background of table titles
+    define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
+
+      # You can redefine the colors in styles too
+    define("ADMIN_CSS","admin-cml.css");               # style for admin interface
+    define("ADM_SLICE_CSS","adm_slice-cml.css");       # style for public view of 
+                                                   # not encapsulated slices
+  */
+
   # -- Econnects profile --- 
   /*
     define("COLOR_TABBG",   "#EBDABE");            # background of tables
@@ -157,6 +169,7 @@ require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
 # require ($GLOBALS[AA_INC_PATH] . "cz_common_lang.php3");  # Czech
 # require ($GLOBALS[AA_INC_PATH] . "es_common_lang.php3");  # Spanish
 # require ($GLOBALS[AA_INC_PATH] . "sk_common_lang.php3");  # Slovak
+# require ($GLOBALS[AA_INC_PATH] . "de_common_lang.php3");  # Deutsch
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG

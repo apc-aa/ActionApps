@@ -51,6 +51,7 @@ $DEFAULT_SEARCH_IN = array( headline=>L_SRCH_HEADLINE, abstract=>L_SRCH_ABSTRACT
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "es_news_lang.php3" => "es_news_lang.php3",
                          "cz_news_lang.php3" => "cz_news_lang.php3",
+                         "sk_news_lang.php3" => "sk_news_lang.php3",
                          "de_news_lang.php3" => "de_news_lang.php3");
   
 $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
@@ -378,6 +379,9 @@ require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
 
 /*
 $Log$
+Revision 1.21  2001/11/26 16:34:09  honzam
+Linked new lang files
+
 Revision 1.20  2001/11/07 16:30:38  udosw
 Included German language files -- UdoSW
 
