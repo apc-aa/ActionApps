@@ -246,7 +246,7 @@ function ModW_unalias( &$text, &$state ) {
   // just create variables and set initial values
   $maxlevel = 0;   
   $level = 0;
-  return new_unalias_recurent($text, "", $level, $maxlevel);
+  return new_unalias_recurent($text, "", $level, $maxlevel,$state[item]);
 #  return ModW_unalias_recurent( $text, $state, $level, $maxlevel );
 }
 

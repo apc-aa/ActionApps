@@ -200,12 +200,20 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
     # Look and see if its in the state variable in module site
     # note, this is ignored if apc_state isn't set, i.e. not in that module
+    # If found, unalias the value, then quote it, this expands 
+    # anything inside the value, and then makes sure any remaining quotes
+    # don't interfere with caller
     elseif (isset($GLOBALS['apc_state'][$out])) {
-	return QuoteColons($level, $maxlevel, $GLOBALS['apc_state'][$out]);
+	return QuoteColons($level, $maxlevel, 
+	    new_unalias_recurent($GLOBALS['apc_state'][$out],"",$level+1,
+		$maxlevel,$item,$itemview,$aliases));
     }
     # Pass these in URLs like als[foo]=bar, 
     # Note that 8 char aliases like als[foo12345] will expand with _#foo12345
     elseif (isset($als[$out])) {
+	return QuoteColons($level, $maxlevel, 
+	    new_unalias_recurent($als[$out],"",$level+1,
+		$maxlevel,$item,$itemview,$aliases));
 	return QuoteColons($level, $maxlevel, $als[$out]);
     }
     elseif (isset($aliases[$out])) {   # look for an alias (this is used by mail)
@@ -227,7 +235,7 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
                                         # used just for speed optimalization (QuoteColons)
     if ($debug) huhl("<br>Unaliasing:$level:'",$text,"'\n");
     while (ereg("(.*)[{]([^{}]+)[}](.*)",$text,$vars)) {
-	if ($debug) print("<listing>Expanding:$level:'$vars[2]'</listing>");
+	if ($debug) print("<listing>Expanding:".isset($item).":$level:'$vars[2]'</listing>");
 	$t1 = expand_bracketed($vars[2],$level+1,$maxlevel,$item,$itemview,$aliases);
 	if ($debug) print("<listing>Expanded:$level:'$t1'</listing>");
 	$text = $vars[1] . $t1 . $vars[3];
