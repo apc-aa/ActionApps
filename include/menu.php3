@@ -133,6 +133,7 @@ function get_aamenus ()
         "import"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"admin/se_import.php3?slice_id=$slice_id", "label"=>L_INNER_IMPORT),
         "n_import"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"admin/se_inter_import.php3?slice_id=$slice_id", "label"=>L_INTER_IMPORT),
         "n_export"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"admin/se_inter_export.php3?slice_id=$slice_id", "label"=>L_INTER_EXPORT),
+        "rssfeeds"=>array("cond"=>isSuperadmin(), "href"=>"admin/se_rssfeeds.php3?slice_id=$slice_id", "label"=>L_RSSFEEDS_MANAGER),
         "filters"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"admin/se_filters.php3?slice_id=$slice_id", "label"=>L_FILTERS),
         "mapping"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"admin/se_mapping.php3?slice_id=$slice_id", "label"=>L_MAP),
 

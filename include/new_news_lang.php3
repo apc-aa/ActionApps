@@ -336,4 +336,17 @@ define("L_ITEMS_PAGE", "Items Page");
 
 define("L_WI2_OFFER","Offer");
 define("L_WI2_SELECTED","Selected");
+
+define("L_RSSFEEDS_MANAGER","RSS Feeds");
+define("L_RSSFEEDS_ADMIN_TIT","Remote RSS Feed administration");
+define("L_RSSFEEDS_LIST","Current remote rssfeeds");
+define("L_RSSFEEDS_ADD_NEW","Add new rssfeed");
+define("L_RSSFEEDS_EDIT","Edit rssfeed data");
+define("L_RSSFEEDS_RSSFEED_NAME","RSS Feed name");
+define("L_RSSFEEDS_YOUR_RSSFEED","New rssfeed name");
+define("L_RSSFEEDS_SERVER_URL","URL of the feed");
+define("L_RSSFEEDS_SERVER_URL_EXAMPLE","e.g. http://www.someplace.com/rss/index.xml");
+define("L_RSSFEEDS_SEL_NONE","No selected rssfeed");
+define("L_RSSFEEDS_CONFIRM_DELETE","Are you sure you want to delete the rssfeed?");
+define("L_RSSFEEDS_RSSFEED_EMPTY","RSS Feed name must be filled");
 ?>

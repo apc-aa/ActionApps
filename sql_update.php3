@@ -526,6 +526,13 @@ $tablelist = array( 'active_sessions' => "(
                         KEY source_id (source_id),
                         KEY destination_id (destination_id)
                       )",
+                      'rssfeeds' => "(
+                        feed_id int(11) NOT NULL auto_increment,
+                        name varchar(150) NOT NULL default '',
+                        server_url varchar(200) NOT NULL default '',
+                        slice_id char(16) NOT NULL default '',
+						PRIMARY KEY (feed_id)
+                      )",
                       'site' => "(
                         id varchar(16) NOT NULL default '',
                         state_file varchar(255) NOT NULL default '',
@@ -977,8 +984,7 @@ if( !$update AND !$restore AND !$restore_now) {
      right names. Then it possibly updates common records (like default field 
      definitions, APC-wide constants and templates).</p>
   <p><font color="red">However, it is strongly recommended backup your current 
-  database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u aa_database_user -p --opt aadb &gt; ./aadb/aadb.sql</code></p>
-  <p><b>!!!Please remove or invalidate this script after use!!!</b></p>
+  database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u '.DB_USER.' -p --opt '.DB_NAME.' &gt; ./aadb/aadb.sql</code></p> or invalidate this script after use!!!</b></p>
 
   <form name=f action="' .$PHP_SELF .'">
   <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">

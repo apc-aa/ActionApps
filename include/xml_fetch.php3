@@ -18,7 +18,6 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
 #
 # Cross-Server Networking - xml_aa_rss fetch function
 #
@@ -44,14 +43,21 @@ function  xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timest
   $d["slice_id"] = $slice_id;
   $d["start_timestamp"] = $start_timestamp;
   $d["categories"] = $categories;
+  return http_fetch($url,$d);
+}
 
+//A generic fetching routing that takes an array of parameters (possibly empty)
+function http_fetch($url,$d) { 
+  global $debug;
   while (list($k,$v) = each($d))
     if (!$v)
       unset($d[$k]);
     else
       $d[$k] = $k."=".urlencode($v);
-
-  $url = $url."?".implode("&",$d);
+  if ($tl = implode("&",$d)) {
+	$url = $url."?".$tl;
+  }
+  if ($debug) print("http_fetch:$url\n");
   if (!($fp = fopen($url, "r"))) {
     writeLog("CSN","Unable to connect remote node $url");
     return false;
@@ -61,5 +67,4 @@ function  xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timest
 
  return $data;
 }
-
 ?>

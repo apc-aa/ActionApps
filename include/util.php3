@@ -293,6 +293,17 @@ function new_id ($seed="hugo"){
   return $foo;
 } 
 
+# Returns a unique id from a string, note that it will always return the same id from the same string so 
+# can be used to compare the hashes.
+function string2id ($str) {
+  $trialstr = $str;
+  do {
+   $foo=md5($trialstr);
+   $trialstr = $trialstr . " ";
+  } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
+  return $foo;
+}
+
 # returns packed md5 id, not quoted !!!
 function pack_id ($unpacked_id){
   return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
