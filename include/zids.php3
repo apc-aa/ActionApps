@@ -100,6 +100,18 @@ class zids {
                 . guesstype($this->a[o]));
     }
 
+    /** Grabs long ids from array as posted from manager.class checkboxes
+     *  $items[x767ab56353544242552637389a853673]=1
+     */
+    function set_from_item_arr($item_arr) {
+         $this->clear('l');
+         if ( isset($item_arr) AND is_array($item_arr) ) {
+             foreach ( $item_arr as $it_id => $foo ) {
+                 $this->a[] = substr($it_id,1);      // remove initial 'x'
+             }
+         }
+    }
+
     // removes all zids and resets
     function clear($inittype = 'z') {
         unset($this->a);
@@ -330,11 +342,11 @@ class zids {
     if ( $add_column )
         $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
     if ($this->use_short_ids())
-	    return "$column IN ("
+        return "$column IN ("
             . implode(",", array_map( "qquote", $this->shortids())) . ")";
     else
-	    return "$column IN ("
-	        . implode(",", $this->qqq_packedids()) . ") ";
+        return "$column IN ("
+            . implode(",", $this->qqq_packedids()) . ") ";
   }
 
 } #class ids
