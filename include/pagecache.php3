@@ -117,7 +117,7 @@ class PageCache  {
     $db = $this->db;
     $SQL = "DELETE FROM pagecache WHERE str2find LIKE '%". quote($cond) ."%'";
     $db->query($SQL);
-  }  
+  }
 
   # remove cached informations for all rows
   function invalidate() {

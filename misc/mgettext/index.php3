@@ -74,6 +74,12 @@ $lang_groups ["news"] =
 // _site_lang.php3 language files, used in the Site module           
 $lang_groups ["site"] = 
     array ("modules/site/");               
+// _links_lang.php3 language files, used in the Links module           
+$lang_groups ["links"] = 
+    array ("modules/links/",
+           "include/manager.class.php3",
+           "include/searchbar.class.php3",
+           "include/util.php3" );
 // _output_lang.php3 language files, used in the output, i.e. slice.php3 and view.php3    
 $lang_groups ["output"] =
     array ("./slice.php3",
@@ -116,7 +122,9 @@ $log_files = $destdir."log_??_".$old_group."_lang.php3";
 
 // directories from which to translate files (replace language constants by _m() calls)
 $translate_dirlist = array (".","include","admin","modules","modules/module_TEMPLATE",
-    "modules/jump", "modules/alerts", "misc/oldDb2db");
+    "modules/jump", "modules/alerts", "misc/oldDb2db", "modules/links");
+  
+    
 /*
 // special settings for converting the site module
 $old_group = "site";
