@@ -50,12 +50,12 @@ if( $update )
 
     $varset->add("fulltext_format", "quoted", $fulltext_format);
     $varset->add("fulltext_remove", "quoted", $fulltext_remove);
-    $db->query("UPDATE slices SET ". $varset->makeUPDATE() . "WHERE id='".q_pack_id($slice_id)."'");
-    $fulltext_format = dequote($fulltext_format);
-    if ($db->affected_rows() == 0) {
-     $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
-      break;
+    if( !$db->query("UPDATE slices SET ". $varset->makeUPDATE() . 
+                     "WHERE id='".q_pack_id($slice_id)."'")) {
+      $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
+      break;    # not necessary - we have set the halt_on_error
     }     
+    $fulltext_format = dequote($fulltext_format);
   }while(false);
   if( count($err) <= 1 )
     $Msg = MsgOK(L_FULLTEXT_OK);
@@ -116,6 +116,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.3  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.2  2000/08/03 12:49:22  kzajicek
 English editing
 

@@ -204,8 +204,10 @@ function pack_id ($unpacked_id){
 }
 
 # returns packed and quoted md5 id
-function q_pack_id ($unpacked_id){
+function q_pack_id ($unpacked_id, $debug=""){
+  if( $debug ) echo " unpacked: ". $unpacked_id;
   $foo = pack_id($unpacked_id);
+  if( $debug ) echo " foo: ". $foo;
   return (quote($foo));
 } 
   
@@ -325,6 +327,9 @@ if (substr(PHP_VERSION, 0, 1) < "4") {
 
 /*
 $Log$
+Revision 1.8  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.7  2000/08/23 12:29:58  honzam
 fixed security problem with inc parameter to slice.php3
 

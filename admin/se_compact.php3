@@ -63,11 +63,10 @@ if( $update )
     $varset->add("even_odd_differ", "number", $even_odd_differ ? 1 : 0);
     $varset->add("category_sort", "number", $category_sort ? 1 : 0);
 
-    $db->query("UPDATE slices SET ". $varset->makeUPDATE() . " WHERE id='".q_pack_id($slice_id)."'");
-
-    if ($db->affected_rows() == 0) {
-     $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
-      break;
+    if( !$db->query("UPDATE slices SET ". $varset->makeUPDATE() . " 
+                      WHERE id='".q_pack_id($slice_id)."'")) {
+      $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
+      break;   # not necessary - we have set the halt_on_error
     }     
   }while(false);
   if( count($err) <= 1 )
@@ -163,6 +162,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.4  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.3  2000/08/03 12:49:22  kzajicek
 English editing
 

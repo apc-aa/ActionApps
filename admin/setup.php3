@@ -187,7 +187,7 @@ switch ($phase) {
       ValidateInput("email", L_SETUP_EMAIL, &$email, &$err, false, "email");
    
       if( $password1 != $password2 ) {
-         $err[$password1] = MsgERR(L_BAD_RETYPED_PWD);
+         $err[$password1] = MsgErr(L_BAD_RETYPED_PWD);
       }
 
       if (count($err)) {        // Insufficient input data
@@ -259,6 +259,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.4  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.3  2000/08/14 12:37:11  kzajicek
 Added checking for empty groups with superadmin access
 

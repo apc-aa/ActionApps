@@ -51,7 +51,7 @@ if( $update )
     ValidateInput("user_surname", L_USER_SURNAME, &$user_surname, &$err, true, "text");
     ValidateInput("user_firstname", L_USER_FIRSTNAME, &$user_firstname, &$err, true, "text");
     if( $user_password1 != $user_password2 )
-      $err[$user_password2] = MsgERR(L_BAD_RETYPED_PWD);
+      $err[$user_password2] = MsgErr(L_BAD_RETYPED_PWD);
     if( count($err) > 1)
       break;
       
@@ -118,6 +118,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.3  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.2  2000/08/03 12:49:22  kzajicek
 English editing
 

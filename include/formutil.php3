@@ -34,7 +34,7 @@ function Needed( $condition=true ) {
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
-  echo "</td>\n  <td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"></td></tr>\n";
+  echo "</td>\n  <td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value='$val'></td></tr>\n";
 }
 
 # Prints two static text to 2-column table
@@ -132,7 +132,7 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 {
   if($variable=="" OR Chop($variable)=="")
     if( $needed ) {                     // NOT NULL
-      $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_NEED.")</div>";
+      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_NEED.")");
       return false;
     }
     else  return true;     
@@ -141,22 +141,22 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
     case "id":     if((string)$variable=="0" AND !$needed)
                      return true;     
                    if( !EReg("^[0-9a-f]{1,32}$",Chop($variable)))
-                   { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName</div>";
+                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
                    return true;
     case "number": if( !EReg("^[0-9]+$",Chop($variable)) || ($variable > 32767))
-                   { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName</div>";
+                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
                    return true;
     case "perms":  if( !(($Promenna=="editor") OR ($Promenna=="admin")))
-                   { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName</div>";
+                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
                    return true;
     case "email":  if( !EReg("^.+@.+\..+",Chop($variable)))
-                   { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName</div>";
+                   { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
                    return true;
@@ -164,18 +164,18 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
       $len = strlen($variable);
       if( ($len>=3) AND ($len<=32) )
       { if( !EReg("^[a-zA-Z0-9]*$",Chop($variable)))
-        { $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_LOG.")</div>";
+        { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOG.")");
           return false;
         }
         return true;
       }  
-      $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_LOGLEN.")</div>";                   
+      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");                   
       return false; 
     case "password":
       $len = strlen($variable);
       if( ($len>=5) AND ($len<=32) )
         return true;
-      $err["$variableName"] = "<div class=err>".L_ERR_IN." $inputName (".L_ERR_LOGLEN.")</div>";                   
+      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");                   
       return false; 
     case "url":
     case "all":    
@@ -191,6 +191,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.4  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.3  2000/08/29 11:29:58  honzam
 Better validation of id (1-32 chars) and password (any character).
 

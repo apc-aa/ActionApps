@@ -87,7 +87,7 @@ class datectrl {
   function ValidateDate($inputName, &$err)
   {
     if( $this->getdate()=="" )
-    { $err["$this->name"] = "<div class=err>".L_ERR_IN." $inputName</div>";
+    { $err["$this->name"] = MsgErr(L_ERR_IN." $inputName");
       return false;
     } return true;
   }  
@@ -141,8 +141,11 @@ class datectrl {
 }
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:27  madebeer
-Initial revision
+Revision 1.2  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
+Revision 1.1.1.1  2000/06/21 18:40:27  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:14  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

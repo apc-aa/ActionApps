@@ -111,15 +111,15 @@ if( $add || $update ) {
       $varset->add("res_persID", "unpacked", $res_persID);
 
       $SQL = "UPDATE slices SET ". $varset->makeUPDATE() . "WHERE id='$p_slice_id'";
-      $db->query($SQL);
-      if ($db->affected_rows() == 0)
-      { $err["DB"] = "<div class=err>Can't change slice</div>";
+      if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+        $err["DB"] = MsgErr("Can't change slice");
         break;
       }
     }
     else  // insert
     {
       $slice_id = new_id();
+//      $slice_id = 'Ecn.NNO.ekonomik';  
       $varset->add("id", "unpacked", $slice_id);
       $p_slice_id=q_pack_id($slice_id);
       $varset->add("created_by", "text", $auth->auth["uid"]);
@@ -141,9 +141,8 @@ if( $add || $update ) {
       $varset->add("search_default", "text", DEFAULT_SEARCH_DEFAULT);
       $varset->add("config", "text", DEFAULT_SLICE_CONFIG);
 
-      $db->query("INSERT INTO slices" . $varset->makeINSERT() );
-      if ($db->affected_rows() == 0)
-      { $err["DB"] .= "<div class=err>Can't add slice</div>";
+      if( !$db->query("INSERT INTO slices" . $varset->makeINSERT() )) {
+        $err["DB"] .= MsgErr("Can't add slice");
         break;
       }
       $r_config_type[$slice_id] = $slice_type;
@@ -297,6 +296,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.10  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.9  2000/08/17 15:14:32  honzam
 new possibility to redirect item displaying (for database changes see CHANGES)
 

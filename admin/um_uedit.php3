@@ -157,7 +157,7 @@ if( $add_submit OR ($submit_action == "update_submit"))
     ValidateInput("user_surname", L_USER_SURNAME, &$user_surname, &$err, true, "text");
     ValidateInput("user_firstname", L_USER_FIRSTNAME, &$user_firstname, &$err, true, "text");
     if( $user_password1 != $user_password2 )
-      $err[$user_password2] = MsgERR(L_BAD_RETYPED_PWD);
+      $err[$user_password2] = MsgErr(L_BAD_RETYPED_PWD);
     if( count($err) > 1)
       break;
 
@@ -392,6 +392,9 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.7  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.6  2000/08/03 12:49:22  kzajicek
 English editing
 

@@ -54,9 +54,8 @@ function FeedItemTo($item_id, $destination, $approved, $db, $tocategory=0) {
     if( (string)$tocategory != "0" )
       $varset->set("category_id", pack_id($tocategory) );    // to category setted in filters
     $insertSQL = "INSERT INTO items" . $varset->makeINSERT();
-    $db->query($insertSQL );
 //      $db->query("INSERT INTO fulltexts (ft_id, full_text) VALUES ('$q_p_new_id', '')");  // added to keep 1:1 relation between items and fulltexts - (why???)
-    if ($db->affected_rows() == 0)
+    if (!$db->query($insertSQL))   # not necessary - we have set the halt_on_error
       return false;
     return true;  
   }
@@ -118,6 +117,9 @@ function FeedItem($item_id, $db) {               //TODO  - category problem when
 }
 /*
 $Log$
+Revision 1.3  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.2  2000/07/07 21:28:17  honzam
 Both manual and automatical feeding bug fixed
 

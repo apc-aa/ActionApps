@@ -66,9 +66,8 @@ if ($all) {                                         // all_categories
   $catVS->add("to_approved", "number", $app);
   $catVS->add("to_category_id", "unpacked", $id);   // zero = the same category
   $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
-  $db->query($SQL);
-  if ($db->affected_rows() == 0) {
-    $err["DB"] .= "<div class=err>Can't add import from $val</div>";
+  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+    $err["DB"] .= MsgErr("Can't add import from $val");
   }
 } else if (isset($F) AND is_array($F)) {            // insert to categories
   reset($F);
@@ -85,22 +84,24 @@ if ($all) {                                         // all_categories
     $catVS->add("category_id", "unpacked", $from_cat);  
     $catVS->add("to_category_id", "unpacked", $to_cat);
     $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
-    $db->query($SQL);
-    if ($db->affected_rows() == 0)
-    { $err["DB"] .= "<div class=err>Can't add import from $val</div>";
+    if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+      $err["DB"] .= MsgErr("Can't add import from $val");
       break;
     }
   }
 }        
 
 if( count($err) <= 1 )
-  go_url( $sess->url(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(L_IMPORT_OK));
+  go_url( $sess->url(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOK(L_IMPORT_OK)));
 else
   MsgPage($sess->url(self_base()."se_import.php3"), $err);
 
 page_close();
 /*
 $Log$
+Revision 1.4  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.3  2000/07/17 15:20:11  kzajicek
 Replaced superfluous do..while(false) construct
 

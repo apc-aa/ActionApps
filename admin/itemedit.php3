@@ -159,7 +159,7 @@ if( $insert || $update )
         $dest_file = new_id().substr(strrchr($img_upload_name, "." ), 0 );
 
       if(!copy($img_upload,IMG_UPLOAD_PATH.$dest_file)){     // copy the file from the temp directory to the upload directory, and test for success
-        $err["Image"] = L_CANT_UPLOAD;          // error array (Init - just for initializing variable
+        $err["Image"] = MsgErr(L_CANT_UPLOAD);          // error array (Init - just for initializing variable
         break;
       }   
       $img_src = IMG_UPLOAD_URL.$dest_file;
@@ -199,9 +199,8 @@ if( $insert || $update )
     {
       $SQL = "UPDATE items SET ". $varset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
 //huh($SQL);
-      $db->query($SQL);
-      if ($db->affected_rows() == 0) {
-        $err["DB"] = "<div class=err>". L_ITEM_NOT_CHANGED ."</div>";
+      if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+        $err["DB"] = MsgErr( L_ITEM_NOT_CHANGED );
         break;
       }     
       $db->query("UPDATE fulltexts SET full_text = '". $full_text ."' WHERE ft_id='".q_pack_id($id)."'");
@@ -216,10 +215,9 @@ if( $insert || $update )
       $varset->add("created_by", "text", $auth->auth["uid"]);
       $varset->add("post_date", "quoted", $post_date);
   
-      $db->query("INSERT INTO items " . $varset->makeINSERT() );
-      if ($db->affected_rows() == 0) {
-        $err["DB"] .= "<div class=err>". L_CANT_ADD_ITEM ."</div>";
-        break;
+      if (!$db->query("INSERT INTO items " . $varset->makeINSERT() )) {
+        $err["DB"] .= MsgErr( L_CANT_ADD_ITEM );
+        break;   # not necessary - we have set the halt_on_error
       }   
       $SQL="INSERT INTO fulltexts (ft_id, full_text) 
             VALUES ('". q_pack_id($id) ."', '". $full_text ."')";
@@ -450,6 +448,9 @@ if( !$encap )
 page_close(); 
 /*
 $Log$
+Revision 1.9  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.8  2000/08/17 15:14:32  honzam
 new possibility to redirect item displaying (for database changes see CHANGES)
 

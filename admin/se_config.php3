@@ -49,9 +49,8 @@ if( $updateconfig ) {
   $wddx_packet = wddx_serialize_vars("admin_fields");
   $SQL = "UPDATE slices SET config=\"$wddx_packet\" where id='$p_slice_id'";
 //  huhw($SQL);
-  $db->query($SQL);
-  if ($db->affected_rows() == 0) 
-    $err["DB"] .= "<div class=err>Can't change configuration</div>";
+  if (!$db->query($SQL))    # not necessary - we have set the halt_on_error
+    $err["DB"] .= MsgErr("Can't change configuration");
 
   if( count($err) > 1 )
     MsgPage($sess->url(self_base()."se_config.php3"), $err);
@@ -157,6 +156,9 @@ function UpdateConfig(action) {
 <?php 
 /*
 $Log$
+Revision 1.3  2000/10/10 10:06:54  honzam
+Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+
 Revision 1.2  2000/08/03 12:49:22  kzajicek
 English editing
 
