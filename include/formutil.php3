@@ -1184,8 +1184,8 @@ function get_javascript_field_validation () {
     return "
         function validate (myform, txtfield, type, required, add) {
 			var ble;
-            var invalid_email = /(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)/;
-            var valid_email = /^.+@[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})$/;
+            var invalid_email = /(@.*@)|([.][.])|(@[.])|([.]@)|(^[.])/;
+            var valid_email = /^.+@[a-zA-Z0-9-.]+[.]([a-zA-Z]{2,3}|[0-9]{1,3})$/;
 
             if (type == 'pwd') {
                 myfield = myform[txtfield+'a'];

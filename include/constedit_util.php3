@@ -147,7 +147,7 @@ function createConstsJavaScript($group_id, $admin)
 function createConstsArray($group_id, $admin, &$consts)
 {
     global $get_method;
-	$dbc = new DB_AA;
+	$dbc = getDB();
 
 	$data = array ();
 	$dbc->query("SELECT * FROM constant WHERE group_id = '$group_id'");
@@ -167,7 +167,7 @@ function createConstsArray($group_id, $admin, &$consts)
 				.ff($dbc->f("short_id")).","
 				."false";
 	}
-
+    freeDB($dbc);
 	ksort ($data);
 
 	$path = "";
@@ -282,7 +282,8 @@ function printConstsArray (&$arr, $admin) {
 
 function hcUpdate ()
 {
-	global $db, $levelCount, $hide_value, $levelsHorizontal, $group_id, $p_slice_id;
+	global $levelCount, $hide_value, $levelsHorizontal, $group_id, $p_slice_id;
+    $db = getDB();
 
 	$db->query("SELECT * FROM constant_slice WHERE group_id = '$group_id'");
 	if ($levelCount) {
@@ -385,15 +386,16 @@ function hcUpdate ()
 			}
 		}
 	}
+    freeDB($db);
 }
 
 // Copy and rename constant groups in slice $slice_id so that they are not shared with other slices
 // WARNING: doesn't work when the group id contains a ":" ??
 // find new group_id by trying to add "_1", "_2", "_3", ... to the old one
-
 function CopyConstants ($slice_id)
 {
-    global $db, $err, $debug;
+    global $err, $debug;
+    $db = getDB();
 
     // max. length of the group_id field
     $max_group_id_len = 16;
@@ -411,9 +413,10 @@ function CopyConstants ($slice_id)
                 $group_ids[$group_id][$db->f("id")] = $shf;
         }
     }
-
-    if (!is_array ($group_ids))
+    if (!is_array ($group_ids)) {
+        freeDB($db);
         return true;
+    }
 
     reset ($group_ids);
     while (list ($old_id, $fields) = each ($group_ids)) {
@@ -439,6 +442,7 @@ function CopyConstants ($slice_id)
             array ("id")                              // id_columns
             )) {
     	    $err[] = "Could not copy constant group.";
+            freeDB($db);
             return false;
         }
 
@@ -450,8 +454,9 @@ function CopyConstants ($slice_id)
     		array ("short_id"),                       // omit_columns
             array ("id")                              // id_columns
             )) {
-    	    $err[] = "Could not copy constant group.";
-            return false;
+    	    $err[] = "Could not copy constant group."; 
+            freeDB($db);
+           return false;
         }
 
         // update fields
@@ -461,6 +466,7 @@ function CopyConstants ($slice_id)
                 .addslashes(str_replace ($old_id, $new_id, $shf))."'
                 WHERE id='$field_id' AND slice_id='$q_slice_id'")) {
                 $err[] = "Could not update fields.";
+                freeDB($db);
                 return false;
             }
         }
@@ -482,7 +488,7 @@ function CopyConstants ($slice_id)
 */
 function add_constant_group ($group_id, $items)
 {
-	global $db;
+    $db = getDB();
 
 	$db->query ("SELECT value FROM constant WHERE group_id = 'lt_groupNames'
 		AND value LIKE '".$group_id."%'");
@@ -515,6 +521,7 @@ function add_constant_group ($group_id, $items)
     		$db->query ($varset->makeINSERT ("constant"));
     	}
     }
+    freeDB($db);
 	return $unique_name;
 }
 
@@ -527,7 +534,7 @@ function add_constant_group ($group_id, $items)
 *   @param string $slice_id  unpacked slice ID
 *   @return bool  @c true if group was deleted, @c false otherwise	*/
 function delete_constant_group ($group_id, $slice_id = "") {
-	global $db;
+    $db = getDB();
 	$delete = true;
 	if ($slice_id) {
 		$db -> query ("
@@ -545,6 +552,7 @@ function delete_constant_group ($group_id, $slice_id = "") {
                   OR group_id='$group_id'");
 		$delete = $db->affected_rows();
 	}
+    freeDB($db);
 	return $delete;
 }
 
@@ -555,7 +563,7 @@ function delete_constant_group ($group_id, $slice_id = "") {
 *   @return bool true if the group existed
 */
 function refresh_constant_group ($group_id, $items) {
-    global $db;
+    $db = getDB();
 
 	$varset = new CVarset;
 
@@ -588,6 +596,6 @@ function refresh_constant_group ($group_id, $items) {
     		$db->query ($varset->makeINSERT ("constant"));
     	}
     }
-
+    freeDB($db);
     return $existed;
 }

@@ -1,4 +1,7 @@
-09/05/03 - now expands no_item text, may not catch all aliases (mitra)
+09/04/03 - fixed show_fnc_hco to do input_before
+(mitra)  - $db fixes to constedit_util itemfunc site/util admin/itemedit
+         - fixed invalid_email regexp use [.] instead of \\.
+         - now expands no_item text, may not catch all aliases
 08/27/03 - added stringexpand_ prefix for extending string expansion
 (mitra)  - replaced existing eb_functions for substr and fmod
          - added return_url to discedit.php3

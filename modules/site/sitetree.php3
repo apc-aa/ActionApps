@@ -382,7 +382,7 @@ class sitetree {
       exit;
     }
     reset( $positions );
-    while( list( , $pos) = each($positions) ) {
+    while( list($poskey, $pos) = each($positions) ) {
      if ($debugsite) huhl("Position",$pos);
      if($pos) {
       // There is a bug that introduced empty positions
@@ -417,8 +417,14 @@ class sitetree {
           }
         } // each choice
       } // haveBranches
-     } else { 
-       huhe("Warning: skipping Empty position in id=$id of tree=",$this);
+     } else {  // Empty $pos
+        if ($GLOBALS["sitefix"]) {
+            huhl("Before fix: poskey=$poskey val=",$current->po,"cur=", $current);
+            unset($current->po[$poskey]);
+            huhl("After fix: ",$current);
+        } else {
+           huhe("Warning: skipping Empty position in id=$id key $poskey of tree=",$this->tree[$id]);
+        }
      }
     } // each position
   } // function

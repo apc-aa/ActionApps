@@ -759,6 +759,7 @@ function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
 }
 
 function show_fnc_hco($varname, $field, $value, $param, $html) {
+  echo $field["input_before"];
   if (!empty($param))
     list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, $levelNames) = explode(':', $param);
 

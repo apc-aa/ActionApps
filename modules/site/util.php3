@@ -40,24 +40,23 @@ function ModW_HiddenRSpotId() {
 }
 
 function ModW_StoreTree( &$tree, $site_id ){
-  global $db;
   
   $p_site_id = q_pack_id($site_id);
   
   $data = serialize( $tree );
   $SQL = "UPDATE site SET structure='$data' WHERE id='$p_site_id'";
-  $db->query($SQL);
+  tryQuery($SQL);
 }  
 
 function ModW_GetTree( &$tree, $site_id ){
-  global $db;
-
+  $db = getDB();
   $p_site_id = q_pack_id($site_id);
 
   $SQL = "SELECT structure FROM site WHERE id='$p_site_id'";
   $db->query();
   if( $db->next_record() )
     $tree = unserialize( $db->f('structure') );
+  freeDB($db);
 }  
 
 // This function does nothing and is used when walking the tree fixing it
@@ -132,13 +131,15 @@ function ModW_PrintConditions($conds, $vars) {
 }
 
 function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
-  global $db, $sess, $PHP_SELF;
+  global $sess, $PHP_SELF;
   
+  $db = getDB();
   $SQL = " SELECT * FROM site_spot 
             WHERE site_id = '". q_pack_id($site_id). "'
               AND spot_id = '$spot_id'";
   $db->query($SQL);
   $content = safe($db->next_record() ? $db->f('content') : "");
+  freeDB($db);
   echo '<table align=left border=0 cellspacing=0 width="100%" class=tabtxt>';
   ModW_PrintVariables($tree->get('variables',$spot_id));
   if( ($vars=$tree->isOption($spot_id) ) )

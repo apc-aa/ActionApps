@@ -77,8 +77,9 @@ if($cancel) {
   else 
     go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
 }
-$db = new DB_AA;
+#$db = new DB_AA;
 
+# These aren't used here , would be better to create where used like $db!
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
 
