@@ -40,7 +40,7 @@ function go_url($url, $add_param="") {
 
 # returns server name with protocol and port
 function self_server() {
-  global $SERVER_NAME, $HTTPS, $SERVER_PORT;
+  global $HTTP_HOST, $SERVER_NAME, $HTTPS, $SERVER_PORT;
   if( isset($HTTPS) && $HTTPS == 'on' ){
     $PROTOCOL='https';
     if($SERVER_PORT != "443")
@@ -50,7 +50,12 @@ function self_server() {
 	  if($SERVER_PORT != "80")
       $port = ":$SERVER_PORT";
   }
-  return("$PROTOCOL://$SERVER_NAME$port");
+  // better to use HTTP_HOST - is we use SERVER_NAME and we try to open window
+  // by javascript, it is possible that the new window will be opened in other
+  // location than window.opener. That's  bad because accessing window.opener
+  // then leads to access denied javascript error (in IE at least)
+  $sname = ($HTTP_HOST ? $HTTP_HOST : $SERVER_NAME);
+  return("$PROTOCOL://$sname$port");
 }
 
 # returns server name with protocol, port and current directory of php script
@@ -769,11 +774,12 @@ function clean_email($line) {
 function GetProfileProperty($property, $id=0) {
   global $r_profile;
 
-  if( ($GLOBALS['slice_id'] == '7dade492ba449615c5672ebcb2a45875') OR
+/*  if( ($GLOBALS['slice_id'] == '7dade492ba449615c5672ebcb2a45875') OR
       ($GLOBALS['slice_id'] == '3a7e18c1249b899407e75e7f626db792')) {
     print_r($r_profile);
     echo "<br>$property, $id";
   }
+*/
 
   if( isset($r_profile) AND isset($r_profile[$property]) )
     return $r_profile[$property][$id];
@@ -782,6 +788,9 @@ function GetProfileProperty($property, $id=0) {
 
 /*
 $Log$
+Revision 1.30  2002/02/05 21:52:33  honzam
+fixed bug of not working param_wizard on some domains
+
 Revision 1.29  2002/01/10 13:56:58  honzam
 fixed bug in user profiles
 
