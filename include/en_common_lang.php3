@@ -115,6 +115,28 @@ define( "L_SLICE_HINT", '
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
+// offline filling --------------
+define( "L_OFFLINE_ERR_BEGIN",
+ '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+  <HTML>
+  <HEAD>
+  <LINK rel=StyleSheet href="./'.ADMIN_CSS.'" type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  </HEAD>
+  <BODY>');
+define( "L_OFFLINE_OK_BEGIN",L_OFFLINE_ERR_BEGIN);
+define( "L_OFFLINE_ERR_END","</body></html>");
+define( "L_OFFLINE_OK_END",L_OFFLINE_ERR_END);
+define( "L_NO_SLICE_ID","Slice ID not defined");
+define( "L_NO_SUCH_SLICE","Bad slice ID");
+define( "L_OFFLINE_ADMITED","You don't have permission to fill this slice off-line");
+define( "L_WDDX_DUPLICATED","Duplicated item send - skipped");
+define( "L_WDDX_BAD_PACKET","Wrong data (WDDX packet)");
+define( "L_WDDX_OK","Item OK - stored in database");
+define( "L_CAN_DELETE_WDDX_FILE","Now you can dalete local file. ");
+define( "L_DELETE_WDDX"," Delete ");
+
+
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
 // break year for short year description is 1950
 function userdate2sec ($dttm, $time="") {
@@ -134,8 +156,8 @@ function dateExample() {
                    
 /*
 $Log$
-Revision 1.14  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+Revision 1.15  2001/01/26 15:06:50  honzam
+Off-line filling - first version with WDDX (then we switch to APC RSS+)
 
 Revision 1.12  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x

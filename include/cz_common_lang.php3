@@ -105,26 +105,34 @@ define("L_APP_TYPE", "Typ webíku");
 define("L_SELECT_APP", "Zvol typ webíku");
 define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
-define( "L_ICON_LEGEND", '
-                  <br>
-                  <i>Legenda</i>
-                  <TABLE BORDER=1>
-                  <TR bgcolor="#FFCC66">
-                  <TD><img src="../images/hlight.gif" border=0 alt=""> Dùležité</TD>
-                  <TD COLSPAN=2><img src="../images/feed.gif" border=0 alt=""> Importováno</TD></TR>
-                  <TR>
-                  <TD><img src="../images/app.gif" border=0 alt=""> Aktuální</TD><TD>
-                  <img src="../images/hold.gif" border=0 alt=""> Zásobník</TD><TD>
-                  <img src="../images/trsh.gif" border=0 alt=""> Koš</TD></TR>
-                  <TR bgcolor="#FFCC66">
-                  <TD><img src="../images/less.gif" border=0 alt=""> Ménì detailù</TD>
-                  <TD COLSPAN=2><img src="../images/more.gif" border=0 alt=""> Více detailù</TD></TR>
-                  </TABLE>');
+define( "L_ICON_LEGEND", '');
                            
 define( "L_SLICE_HINT", '
                   <br>
                   Webík zahrnete do své *.shtml stránky pøidáním následující øádky v HTML kódu:
                   ');
+
+// offline filling --------------
+define( "L_OFFLINE_ERR_BEGIN",
+ '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+  <HTML>
+  <HEAD>
+  <LINK rel=StyleSheet href="./'.ADMIN_CSS.'" type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+  </HEAD>
+  <BODY>');
+define( "L_OFFLINE_OK_BEGIN",L_OFFLINE_ERR_BEGIN);
+define( "L_OFFLINE_ERR_END","</body></html>");
+define( "L_OFFLINE_OK_END",L_OFFLINE_ERR_END);
+define( "L_NO_SLICE_ID","Nebylo zadáno èíslo webíku");
+define( "L_NO_SUCH_SLICE","Špatné èíslo webíku");
+define( "L_OFFLINE_ADMITED","Tento webík má zakázáno plnìní off-line");
+define( "L_WDDX_DUPLICATED","Byl zaslán duplicitní èlánek - nevadí, pøeskoèen");
+define( "L_WDDX_BAD_PACKET","Chba v datech (WDDX)");
+define( "L_WDDX_OK","OK - èlánek vložen do databáze");
+define( "L_CAN_DELETE_WDDX_FILE","Zdá se že <b>vše probìhlo v poøádku</b>, mùžete klidnì 
+                                  smazat soubor z disku.");
+define( "L_DELETE_WDDX"," Smazat ");
                    
 // tranformation from english style datum (3/16/1999 or 3/16/99) to timestamp
 // break year for short year description is 1970
@@ -144,8 +152,8 @@ function dateExample() {
 
 /*
 $Log$
-Revision 1.13  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+Revision 1.14  2001/01/26 15:06:50  honzam
+Off-line filling - first version with WDDX (then we switch to APC RSS+)
 
 Revision 1.11  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x

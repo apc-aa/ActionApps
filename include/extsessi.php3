@@ -74,7 +74,8 @@ class AA_CT_Sql extends CT_Sql {	## Container Type for Session is SQL DB
 
 # skips terminating backslashes
 function DeBackslash($txt) {
-  return EReg_Replace("[\]*$", "", $txt);
+	return str_replace('\\', "", $txt);        // better for two places
+//  return EReg_Replace("[\]*$", "", $foo);
 }   
 
 class AA_SL_Session extends Session {
@@ -137,7 +138,11 @@ class AA_SL_Session extends Session {
       } else {
         $b[0] = DeBackslash($b[0]);
         $b[1] = DeBackslash($b[1]);
-        $GLOBALS[urldecode ($b [0])]= urldecode ($b [1]);
+        if($b[2])
+          $b[2] = "=". DeBackslash($b[2]);       // for cases variable contains "="
+        if($b[3])
+          $b[3] = "=". DeBackslash($b[3]);       // for cases variable contains "="
+        $GLOBALS[urldecode ($b [0])]= urldecode ($b [1].$b[2].$b[3]);
       }
       $i++;
     }
@@ -265,6 +270,9 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
+Revision 1.8  2001/01/26 15:06:50  honzam
+Off-line filling - first version with WDDX (then we switch to APC RSS+)
+
 Revision 1.7  2000/11/08 12:23:55  honzam
 Fixed problem with bad AA_SL_Sess id - bad copy QUERY_STRING to HTTP_GET_VARS
 

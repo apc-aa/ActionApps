@@ -38,6 +38,10 @@ class Cvariable {
     $this->value = $value;
 	}
   
+  function getValue() {
+    return $value;
+  }  
+
   function huh() {
     echo "$this->name($this->type) -> $this->value <br>\n";
   }
@@ -54,7 +58,13 @@ class Cvarset {
 	function clear() {
     $this->vars="";
 	}	
-  
+
+	# add variable to varset
+	function get($varname) {
+    $cv = $this->vars["$varname"];
+    return ( $cv ? $cv->getValue() : false);
+	}	
+    
 	# add variable to varset
 	function add($varname, $type="text", $value="") {
     $this->vars["$varname"]= new Cvariable($varname, $type, $value);
@@ -174,6 +184,9 @@ class Cvarset {
 }
 /*
 $Log$
+Revision 1.3  2001/01/26 15:06:50  honzam
+Off-line filling - first version with WDDX (then we switch to APC RSS+)
+
 Revision 1.2  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

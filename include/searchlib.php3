@@ -208,6 +208,96 @@ function GetItemAppIds($fields, $db, $p_slice_id, $conditions,
   return $arr;           
 }
 
+# ----------- Easy query
+
+function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
+                          $query, $relevance=false) {
+  $in = "";
+  $delim = "";
+  $field_no = 0;
+  
+  if( !isset($srch_fld) OR !is_array($srch_fld) OR !$query )
+    return false;                          # no fields to search - no results
+
+	$query = str_replace("\\", "\\\\", $query);
+	$query = str_replace("%", "\%", $query);
+	$query = str_replace("'", "\'", $query);
+
+  reset($srch_fld);
+  while( list( $fid, $val ) = each($srch_fld) ) {
+    if( !$fields[$fid] )    # bad condition - field not exist in this slice
+      continue;
+    $in .= $delim. "'$fid'";
+    $delim=',';
+    $field_no++;
+  }
+
+  if( $field_no == 0 )
+    return;
+    
+  # from date
+  if( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $from, $part))
+    $cond = " AND (publish_date >= '". mktime(0,0,0,$part[1],$part[2],$part[3]). "') ";
+  elseif( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $from, $part))
+    $cond = " AND (publish_date >= '". mktime(0,0,0,$part[1],$part[2],"20".$part[3]). "') ";
+
+  # to date     
+  if( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $to, $part))
+    $cond = " AND (publish_date <= '". mktime(0,0,0,$part[1],$part[2],$part[3]). "') ";
+  elseif( ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $to, $part))
+    $cond = " AND (publish_date <= '". mktime(0,0,0,$part[1],$part[2],"20".$part[3]). "') ";
+      
+  $distinct = ( $relevance ? "" : "DISTINCT" );
+    
+  $SQL = "SELECT $distinct id from item, content WHERE item.id=content.item_id
+            AND slice_id='$p_slice_id'
+            AND (field_id IN ( $in )) 
+            AND text like '%$query%'
+            AND status_code='1'
+            AND expiry_date > '". time() ."'
+            $cond 
+            ORDER BY publish_date DESC";
+
+//echo $SQL;
+
+  $db->query($SQL);
+
+  # search by relevance? (not at all - just count the fields, where the word appears)
+  if( $relevance ) {
+    $count=0;
+    if( $db->next_record() )      #preset first old id
+      $oldid = $db->f(id);
+      
+    while( $db->next_record() ) {
+      if( $oldid != $db->f(id)) {
+        $tmp[$count][] = unpack_id($db->f(id));
+        $oldid = $db->f(id);
+        $count=0;
+      }
+      else  {
+        $count++;
+      }  
+    }    
+    $tmp[$count][] = unpack_id($oldid);  # last value isn't stored
+
+//print_r($tmp);
+
+    # put the array one after one - first goes the best one
+    for( $i=$field_no; $i > 0; $i-- )
+      $ret = array_merge( $tmp[$i], $tmp[$i-1] );
+  } else {
+    while( $db->next_record() )
+      $ret[] = unpack_id($db->f(id));
+  }    
+    
+  return $ret;  
+    
+}
+
+  
+
+
+# ----------- Massive query string function
 
 # cuts quotations from begin and end
 function CutQuote($foo) {
@@ -261,6 +351,7 @@ function ExtSearch ($query,$p_slice_id,$debug=0) {
   # 1) query preparation
   if ($debug)
     echo "query-$query<br>" ;
+
   
 	if (!BracketsMatch($query))
  		return (L_BRACKETS_ERR . $query);
@@ -356,10 +447,10 @@ function ExtSearch ($query,$p_slice_id,$debug=0) {
   
 	for ($i=0;$i<count($field);$i++) {
 		if ($slicefield[$field[$i]["name"]]["table"]=='item')
-			$sql="SELECT id FROM item WHERE slice_id='".$p_slice_id."' AND ".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."'";
+			$sql="SELECT id FROM item WHERE slice_id='".$p_slice_id."' AND ".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."' order by publish_date desc";
 		else 
 			$sql="SELECT b.id FROM ".$slicefield[$field[$i]["name"]]["table"]." a,item b
-				WHERE b.id=a.item_id AND b.slice_id='".$p_slice_id."' AND a.".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."' AND a.field_id='".$field[$i]["name"]."'";
+				WHERE b.id=a.item_id AND b.slice_id='".$p_slice_id."' AND a.".$slicefield[$field[$i]["name"]]["field"]." ".$field[$i]["matchop"]." '".$field[$i]["value"]."' AND a.field_id='".$field[$i]["name"]."' order by b.publish_date desc";
 
 		$db->query($sql);
 		while ($db->next_record()) {
@@ -372,8 +463,7 @@ function ExtSearch ($query,$p_slice_id,$debug=0) {
       echo $sql."<br>";		
 	}
   
-  if ($debug) echo "<hr>";
-  if ($debug) echo p_arr_m ($possible)."<hr>";
+  if ($debug) echo "<hr>".p_arr_m ($possible)."<hr>";
   
   # search for ids matching all conditions
 	if (Is_Array($possible)) {
@@ -397,6 +487,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.6  2001/01/26 15:06:50  honzam
+Off-line filling - first version with WDDX (then we switch to APC RSS+)
+
 Revision 1.5  2001/01/22 17:32:49  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

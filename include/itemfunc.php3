@@ -62,7 +62,8 @@ function insert_fnc_qte($item_id, $field, $value, $param, $insert=true) {
   if( $insert ) {
     $varset->add("item_id", "unpacked", $item_id);
     $varset->add("field_id", "quoted", $field[id]);
-    $db->query("INSERT INTO content" . $varset->makeINSERT() );
+    $SQL =  "INSERT INTO content" . $varset->makeINSERT();
+    $db->query( $SQL );
   } else {
     $db->query("UPDATE content SET ". $varset->makeUPDATE() . " 
                  WHERE item_id='". q_pack_id($item_id). "' 
@@ -177,8 +178,8 @@ function show_fnc_nul($varname, $field, $content, $value, $param, $edit) {
 
 /*
 $Log$
-Revision 1.2  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
+Revision 1.3  2001/01/26 15:06:50  honzam
+Off-line filling - first version with WDDX (then we switch to APC RSS+)
 
 Revision 1.1  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
