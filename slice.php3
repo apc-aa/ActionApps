@@ -265,7 +265,8 @@ if( $bigsrch ) {  # big search form ------------------------------------------
   ExitPage();
 }
 
-$urlaliases = $aliases = GetAliasesFromUrl($als);
+$add_aliases = $aliases    = GetAliasesFromUrl($als);
+$add_aliases['_#SESSION_'] = GetAliasDef( 'f_s:'. $sess->id, '', _m('session id'));
 
 // if banner parameter supplied => set format
 ParseBannerParam($slice_info, $banner);
@@ -274,9 +275,7 @@ ParseBannerParam($slice_info, $banner);
 # if working with multi-slice, get aliases for all slices
 if (!is_array($slices)) {
     $aliases = GetAliasesFromFields($fields);
-    if (is_array($urlaliases)) {
-        array_add($urlaliases, $aliases);
-    }
+    array_add($add_aliases, $aliases);
 } else {
     foreach ( $slices as $slice) {
         list($fields) = GetSliceFields($slice);
@@ -284,9 +283,7 @@ if (!is_array($slices)) {
         // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
         // it is needed by itemview::set_column() (see include/itemview.php3)
         $aliases[q_pack_id($slice)] = GetAliasesFromFields($fields,$als);
-        if (is_array($urlaliases)) {
-            array_add($urlaliases, $aliases[q_pack_id($slice)]);
-        }
+        array_add($add_aliases, $aliases[q_pack_id($slice)]);
     }
 }
 
@@ -372,6 +369,24 @@ if (!$scr_go) { $scr_go = 1; }
 
 // $scrl comes from easy_scroller
 if ($scrl)    { $scr->update(); }
+
+/** Add scroller aliases - page number, listlen */
+$scr_aliases['_#PAGE_NO_'] = GetAliasDef( 'f_s:'. $scr->current,  '', _m('number of current page (on pagescroller)'));
+$scr_aliases['_#PAGE_LEN'] = GetAliasDef( 'f_s:'. $scr->metapage, '', _m('page length (number of items)'));
+// aliases array have two form (quite stupid - will be changed in future - TODO)
+// depending on listing for one slice or many slices
+if (!is_array($slices)) {
+    array_add($scr_aliases, $aliases);
+} else {
+    foreach ( $slices as $slice) {
+        // hack for searching in multiple slices. This is not so nice part
+        // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
+        // it is needed by itemview::set_column() (see include/itemview.php3)
+        array_add($scr_aliases, $aliases[q_pack_id($slice)]);
+    }
+}
+
+
 
 /* old version of automatiocaly created search form - not used in AA > 1.2
    $easy_query .. easy query form
