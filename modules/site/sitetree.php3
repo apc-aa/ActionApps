@@ -19,6 +19,21 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+/** Removes empty positions and normalizes keys to be from 0 to x with step of 1
+*/
+function normalize_arr(&$arr) {
+    $ret = false;
+    if ( isset($arr) AND is_array($arr) ) {
+        foreach ($arr as $v) {
+            if ( isset($v) ) {
+                $ret[] = $v;
+            }
+        }
+    }
+    return $ret;
+}
+
+
 # SiteTree and Spot class definition
 $SPOT_VAR_NAMES = array ('id' => 'id',        # translation from long variable
                          'name' => 'n',       # names to the current - shorter
@@ -84,6 +99,16 @@ class spot {
     return ( (!is_array($this->ch) OR (count($this->ch)<1)) AND (count($this->po)<2) );
   }
 
+  /** Check the positions (po) array and choices (ch) array,
+   *  and fixes possible problems
+   *     - removes empty positions (where they comwe from?)
+   *     - normalizes keys to be from 0 to .. with step of 1
+   */
+  function normalize() {
+      $this->po = normalize_arr($this->po);
+      $this->ch = normalize_arr($this->ch);
+  }
+
   function removeSpot( $spot_id ) {
     # search in options
     $priorsib = $this->id;
@@ -94,7 +119,7 @@ class spot {
           unset($this->ch[$k]);
           return $priorsib;   // Returning prior sibling
         }
-	$priorsib = $v;  // Used for where to move pointer to
+        $priorsib = $v;  // Used for where to move pointer to
       }
     }
     #search in sequence
@@ -105,78 +130,75 @@ class spot {
           unset($this->po[$k]);
           return $priorsib;   // Returning prior sibling
         }
-	$priorsib = $v;  // Used for where to move pointer to
+    $priorsib = $v;  // Used for where to move pointer to
       }
     }
     return false;
   }
 
   function moveUp( $spot_id ) {
-    # search in options
-    if( isset($this->ch) AND is_array($this->ch) ) {
-      reset($this->ch);
-      while( list($k,$v) = each($this->ch) ) {
-        if( $v == $spot_id ) {
-          if( $k>0 ) {
-            $this->ch[$k] = $this->ch[$k-1];
-            $this->ch[$k-1] = $v;
-            return true;
-          } else
-            break;
-        }
+      $this->normalize();  // just check, if there are no problems in this spot
+      // search in options
+      if( isset($this->ch) AND is_array($this->ch) ) {
+          foreach ( $this->ch as $k => $v) {
+              if( $v == $spot_id ) {
+                  if( $k==0 ) {
+                      return false;
+                  }
+                  $this->ch[$k]   = $this->ch[$k-1];
+                  $this->ch[$k-1] = $v;
+                  return true;
+              }
+          }
       }
-    }
-    #search in sequence
-    if( isset($this->po) AND is_array($this->po) ) {
-      reset($this->po);
-      while( list($k,$v) = each($this->po) ) {
-        if( $v == $spot_id ) {
-          if( $k>1 ) {    # can't move to the first position in sequence
-            $this->po[$k] = $this->po[$k-1];
-            $this->po[$k-1] = $v;
-            return true;
-          } else
-            break;
-        }
+      //search in sequence
+      if( isset($this->po) AND is_array($this->po) ) {
+          foreach ( $this->po as $k => $v) {
+              if( $v == $spot_id ) {
+                  if( $k<=1 ) {   // can't move to the first position in sequence
+                      return false;
+                  }
+                  $this->po[$k]   = $this->po[$k-1];
+                  $this->po[$k-1] = $v;
+                  return true;
+              }
+          }
       }
-    }
-    return false;
+      return false;
   }
 
   function moveDown( $spot_id ) {
-    # search in options
-    if( isset($this->ch) AND is_array($this->ch) ) {
-      $last = count($this->ch)-1;
-      reset($this->ch);
-      while( list($k,$v) = each($this->ch) ) {
-        if( $v == $spot_id ) {
-          if( $k<$last ) {
-            $this->ch[$k] = $this->ch[$k+1];
-            $this->ch[$k+1] = $v;
-            return true;
-          } else
-            break;
-        }
+      $this->normalize();  // just check, if there are no problems in this spot
+      // search in options
+      if( isset($this->ch) AND is_array($this->ch) ) {
+          $last = count($this->ch)-1;
+          foreach ( $this->ch as $k => $v) {
+              if( $v == $spot_id ) {
+                  if( $k==$last ) {
+                      return false;
+                  }
+                  $this->ch[$k]   = $this->ch[$k+1];
+                  $this->ch[$k+1] = $v;
+                  return true;
+              }
+          }
       }
-    }
-    #search in sequence
-    if( isset($this->po) AND is_array($this->po) ) {
-      $last = count($this->po)-1;
-      reset($this->po);
-      while( list($k,$v) = each($this->po) ) {
-        if( $v == $spot_id ) {
-          if( $k>0 AND $k<$last ) {    # can't move to the first position in sequence
-            $this->po[$k] = $this->po[$k+1];
-            $this->po[$k+1] = $v;
-            return true;
-          } else
-            break;
-        }
+      #search in sequence
+      if( isset($this->po) AND is_array($this->po) ) {
+          $last = count($this->po)-1;
+          foreach ( $this->po as $k => $v) {
+              if( $v == $spot_id ) {
+                  if( ($k==0) OR ($k==$last) ) {    # can't move to the first position in sequence
+                      return false;
+                  }
+                  $this->po[$k]   = $this->po[$k+1];
+                  $this->po[$k+1] = $v;
+                  return true;
+              }
+          }
       }
-    }
-    return false;
+      return false;
   }
-
 
   function Name() { return $this->n; }
   function Id() { return $this->id; }
