@@ -159,6 +159,7 @@ function GetTableView ($viewID) {
         "fields" => array (
             "description" => array (
                 "required" => true),
+            "editorial" => "",
             "showme" => array (
                 "default" => 1,
                 "view" => array ("readonly" => true),
