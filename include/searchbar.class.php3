@@ -139,6 +139,7 @@ class searchbar extends storable_class{
                 return;
             case 'clearsearch':
                 $this->resetSearchAndOrder();
+                $this->setDefaultOrder();
                 $this->bookmarks->setLastUsed();
                 return;
             case 'bookmarkgo':
@@ -161,6 +162,7 @@ class searchbar extends storable_class{
                 if ( $this->bookmarks->is_defined($srchbr_bookmark) ) {
                     $this->bookmarks->delete($srchbr_bookmark);
                     $this->resetSearchAndOrder();
+                    $this->setDefaultOrder();
                     $this->bookmarks->setLastUsed();
                 }
                 return;
@@ -173,12 +175,12 @@ class searchbar extends storable_class{
     /** Resets the searchbar (both - Search as well as Order)  */
     function resetSearchAndOrder() {
         unset($this->order_row);
-            for( $i=0; $i<count($this->search_row); $i++ ) {
-                if ($this->search_row[$i]['readonly'] != true) {
-                    unset($this->search_row[$i]);
-                }
+        for( $i=0; $i<count($this->search_row); $i++ ) {
+            if ($this->search_row[$i]['readonly'] != true) {
+                unset($this->search_row[$i]);
             }
-//            unset($this->search_row);
+        }
+        //            unset($this->search_row);
     }
 
     /** Set searchbar state from form */
@@ -262,12 +264,18 @@ class searchbar extends storable_class{
     }
 
     /** */
+    function setDefaultOrder() {
+        if (($this->order_row_count_min > 0) AND isset( $this->order_fields['publish_date....'])) {
+            $this->addOrder( array( 0=>array('publish_date....' => 'd')) );
+        }
+    }
+
+    /** */
     function setFromProfile(&$profile) {
         // admin_order is in 'publish_date....+' format
         $foo_order = GetSortArray( $profile->getProperty('admin_order') );
-
         if ( count($foo_order) < 1 ) {
-            $this->addOrder( array( 0=>array('publish_date....' => 'd')) );
+            $this->setDefaultOrder();
         } else {
             $this->addOrder( array( 0=>$foo_order ));
         }
