@@ -1,290 +1,293 @@
 <?php
-# $Id$
+/** $Id$
+ *
+ * Application wide configuration options
+ *
+ * This is the Action Application main configuration file. In fact, this file
+ * is a php script which is included into every php program, thus, php syntax
+ * is used. This basically means that this file defines constants in the form:
+ *        $name = "value";
+ *    or in the form
+ *        define("name", "value);
+ */
 
-# Application wide configuration options
-
-# This is the Action Application main configuration file. In fact, this file
-# is a php script which is included into every php program, thus, php
-# syntax is used. This basically means that this file defines constants
-# in the form
-#    $name = "value";
-# or in the form
-#    define("name", "value);
-
-# AA_BASE_PATH defines the AA directory. It must be an absolute
-# path. Normally this is the path to the directory where this file
-# (slice.php3) is in. Fill in the correct value between the quotes.
-# Make sure to terminate this path with a slash!
-# Example:
-# $AA_BASE_PATH = "/home/httpd/html/aa/";
-# AA_BASE_DIR is only used in this file so that a single change is required for multiple AA versions
+/** AA_SITE_PATH defines the webserver's home directory. It must be an absolute
+ *  path from the root. Make sure to terminate this path with a slash!
+ *  Fill in the correct value between the quotes.
+ *  It normaly looks like:
+ * $AA_SITE_PATH = "/home/httpd/html/";
+ */
 $AA_SITE_PATH = "/home/httpd/html/";
-$AA_BASE_DIR = "apc-aa/";
-$AA_BASE_PATH = $AA_SITE_PATH.$AA_BASE_DIR;
 
+
+/** AA_BASE_DIR defines AA directory under AA_SITE_PATH where is AA installed.
+ *  If you concaternate AA_SITE_PATH and AA_BASE_DIR, you should get absolute
+ *  path from root to AA directory (where file slice.php3 is in).
+ *  Make sure to terminate this path with a slash!
+ *  Example:
+ * $AA_BASE_DIR = "apc-aa/";
+ */
+$AA_BASE_DIR = "apc-aa/";      // AA_BASE_DIR is only used in this file so that
+                               // a single change is required for multiple AA
+                               // versions
+
+
+/** Domain in which you want to run AA admin interface - in which domain we can
+ *  find AA directory
+ *  Make sure to terminate this path with a slash!
+ *  Example:
+ * $AA_HTTP_DOMAIN = "http://aa.apc.org/";
+ */
 $AA_HTTP_DOMAIN = "http://my.domain.org/";
 
-$AA_INC_PATH = $AA_BASE_PATH."include/";        # do not change
 
-$_PHPLIB["libdir"] = $AA_INC_PATH.'phplib/';    # do not change
-                                                # PHPLib is the part of AA 
-                                                # since v >2.2.0. There is 
-                                                # no need to care about PHPLib
 
-# Server url relative path to base AA directory
-$AA_INSTAL_PATH = "/".$AA_BASE_DIR;
+/** ID of AA (any unique 32chars long hexadecimal number)
+ *  Please change this value to be unique - use any random hexadecimal number
+ *  You MUST set it before you run setup.php3 script - you can't change it later
+ *  bacause AA superadmin permission is joined with this number
+ */
+define("AA_ID", "990111222333444555666777888999A9");
 
-# URL of aa instalation (where are include, admin, images etc. subdirectories)
-# (there must be the slash at the end of string)
-define("AA_INSTAL_URL", $AA_HTTP_DOMAIN .$AA_BASE_DIR);
-
-# URL or URL path to call admin/edititem.php etc.
-# this is the variable to make _#EDITITEM alias, etc.
-$AA_INSTAL_EDIT_PATH = AA_INSTAL_URL;
-# if your site has problem set...
-#$AA_INSTAL_EDIT_PATH = "/".$AA_BASE_DIR;
-
-# URL of index of help files for AA
-#OLD define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
-define("DOCUMENTATION_URL", "http://apc-aa.sourceforge.net/apc-aa/doc");
-
-# Your Internet Domain
-define("DEFAULT_ORG_ID", "my.domain.org");
-
-# DB Access Configuration
-define("DB_HOST", "my.domain.org");
-#define("DB_HOST", "localhost");
-define("DB_NAME", "aadb");
-define("DB_USER", "aadbuser");
-define("DB_PASSWORD", "test.pw");
-
-# ID of AA (any unique 32chars long hexadecimal number)
-# Please change this value to be unique
+/** Organization name
+ *  It should be also world unique - it is important to have it unique mainly
+ *  if you plan exchange articles between servers
+ *  (@see http://apc-aa.sourceforge.net/faq/index.shtml#241)
+ */
 define("ORG_NAME","An APC Member");
-define("AA_ID", "000111222333444555666777888999A9");
 
-# Select permissions system (exactly one of "dummy", "ldap", "sql")
-define("PERM_LIB", "sql");
 
-# LDAP Configuration
-define("LDAP_HOST", "localhost");
-define("LDAP_BINDDN", "cn=aauser,ou=AA");
-define("LDAP_BINDPW", "somepasswd");  // password
-define("LDAP_BASEDN", "ou=AA");
-define("LDAP_PEOPLE", "ou=People,ou=AA");
-define("LDAP_GROUPS", "ou=AA");
-define("LDAP_ACLS", "ou=ACLs,ou=AA");
-define("LDAP_PORT", 389);            // standard LDAP port: 389
+/** DB Access Configuration */
+  define("DB_HOST", "my.domain.org"); // server on which the database (MySQL) is
+                                      // often you can use "localhost" here
+  define("DB_NAME",    "aadb");       // Name of database
+  define("DB_USER",    "aadbuser");   // User name for database access
+  define("DB_PASSWORD","test.pw");    // Database password
 
-# e-mail for bug reporting contact
+/** Permissions system settings
+ *  Select permission system (exactly one of "dummy", "ldap", "sql")
+ *  default is "sql" - all user permissions are stored in sql database.
+ *  You probably do not need to change this setting
+ */
+  define("PERM_LIB", "sql");
+
+  /** LDAP Configuration
+   *  You need to configure it only if you use "ldap" permission system
+   *  (@see PERM_LIB above)
+   */
+  // define("LDAP_HOST", "localhost");
+  // define("LDAP_BINDDN", "cn=aauser,ou=AA");
+  // define("LDAP_BINDPW", "somepasswd");  // password
+  // define("LDAP_BASEDN", "ou=AA");
+  // define("LDAP_PEOPLE", "ou=People,ou=AA");
+  // define("LDAP_GROUPS", "ou=AA");
+  // define("LDAP_ACLS", "ou=ACLs,ou=AA");
+  // define("LDAP_PORT", 389);            // standard LDAP port: 389
+
+/** Default language file
+ *  Language files are stored in include/lang/ directory. At this time you can
+ *  use any *_news_lang.php3, where '*' is one of cz, de, en, es, ja, ro, sk  
+ *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1180 )
+ */ 
+define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
+  
+/** e-mail for bug reporting contact */
 define("ERROR_REPORTING_EMAIL", "webmaster@my.domain.org");
 
-# set this directive to true, if you use MySQL
-# (uses LIMIT clause in SELECTs)
-define("OPTIMIZE_FOR_MYSQL", true);
+/** e-mail for Alerts management */
+define("ALERTS_EMAIL", "aaadmin@somewhere.com");
 
-# set this directive to 1 if you want to data-entry forms to have only
-# one column
-define("SINGLE_COLUMN_FORM", "0");
+/** File uploads settings
+ *  The directory for file uploads should be webserver writeable and it 
+ *  shouldn't be inside AA directory (for security reasons - PHP script upload) 
+ *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#fileupload )
+ *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1118 )
+ */
+  /**  max size of file in file/picture uploading */
+  define("IMG_UPLOAD_MAX_SIZE", "400000");    
+  /** url to image/file directory */ 
+  define("IMG_UPLOAD_URL", $AA_HTTP_DOMAIN."img_upload/");
+  /** path from server root to image/file directory */ 
+  define("IMG_UPLOAD_PATH", $AA_SITE_PATH."img_upload/");
+  /** mkdir perms - AA creates new directory for each slice in image/file upload
+   *  directory specified above. Each slice then have its own subdirectory.
+   *  Default is 508 (=0774 in octal, but octal value in constant don't work) */
+  define("IMG_UPLOAD_DIR_MODE", 508);
 
-# set this directive to true, if your php already auto-includes phplib
-# if it is 'false' and it should be true you'll get an error like:
-# Fatal error: DB_Sql is already a function or class in
-#/var/php/phplib/php/db_mysql.inc on line 12
+/** Maximum size of files included by {include(file)} inline alias */
+define("INCLUDE_FILE_MAX_SIZE", "400000");  
 
-define("PHPLIB_ALREADY_LOADED", false);
+//-----------------------------------------------------------------------------
+// Folloving section contains not so important config options and you will 
+// probably left it as it is 
 
-# number of shown pages links in scroller's navigation bar
+/** number of shown pages links in scroller's navigation bar */
 define("SCROLLER_LENGTH", 3);
 
-# Since v1.8 you can use short id for item identification (x instead of sh_itm)
-$USE_SHORT_URL = true;
+/** Select color profile for administation pages */
+  // WebNetworks profile (green - default)
+  define("COLOR_TABBG",     "#A8C8B0");           // background of tables
+  define("COLOR_TABTITBG",  "#589868");           // background of table titles
+  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
+                                  // you can redefine the colors in styles too
+  define("ADMIN_CSS",       "admin.css");         // style for admin interface
+  define("ADM_SLICE_CSS",   "adm_slice.css");     // style for public view of
+                                                  // not encapsulated slices
 
-# Would you like to display debug messagess?
-define("DEBUG_FLAG", true);
+  /* ## IGC profile ##
+  define("COLOR_TABBG",     "#A8C8B0");           // background of tables
+  define("COLOR_TABTITBG",  "#589868");           // background of table titles
+  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
+                                  // you can redefine the colors in styles too
+  define("ADMIN_CSS",       "admin-igc.css");     // style for admin interface
+  define("ADM_SLICE_CSS",   "adm_slice-igc.css"); // style for public view of
+                                                  // not encapsulated slices */
 
-# pages with items are cached - the caching system is quite smart - it caches
-# only unchanged pages. However, You can switch caching off.
-define( "ENABLE_PAGE_CACHE", true );
+  /* ## Comlink profile ##
+  define("COLOR_TABBG",     "#A8C8B0");           // background of tables
+  define("COLOR_TABTITBG",  "#589868");           // background of table titles
+  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
+                                  // you can redefine the colors in styles too
+  define("ADMIN_CSS",       "admin-cml.css");     // style for admin interface
+  define("ADM_SLICE_CSS",   "adm_slice-cml.css"); // style for public view of
+                                                  // not encapsulated slices */
+                                                 
+  /* ## Econnects profile ##
+  define("COLOR_TABBG",     "#EBDABE");           // background of tables
+  define("COLOR_TABTITBG",  "#584011");           // background of table titles
+  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
+                                  // you can redefine the colors in styles too
+  define("ADMIN_CSS",       "admin-ecn.css");     // style for admin interface
+  define("ADM_SLICE_CSS",   "adm_slice.css");     // style for public view of
+                                                  // not encapsulated slices */
 
-# CACHE_TTL defines the time in seconds the page will be stored in cache
-# (Time To Live) - in fact it can be infinity because of automatic cache
-# flushing on page change
-# Typically this is 600, i.e. 10 minutes, but 1 day (86400) makes for faster serving
-define("CACHE_TTL", 600 );
+/** Page cache setting
+ *  pages with items/views/slices/sites are automaticaly cached by AA 
+ *  The caching system is quite smart - it caches only unchanged pages. 
+ *  However, You can switch caching off. */
+  define( "ENABLE_PAGE_CACHE", true );
+    
+  /** CACHE_TTL defines the time in seconds the page will be stored in cache
+   *  (Time To Live) - in fact it can be infinity because of automatic cache
+   *  flushing on page change (but then there will be problem with item 
+   *  expiration). Typically this is 600, i.e. 10 minutes, but 1 day (86400) 
+   *  makes for faster serving */
+  define("CACHE_TTL", 600 );
+  
+  /** The frequency in which the cache is checked for old values (in seconds) */
+  define("CACHE_PURGE_FREQ", 1000);
+  
+/** Convertors - you can install it and then use
+ *  Just uncomment and fill the right path and convert option will be shown 
+ *  above any textarea in inputform, where you allow HTML               
+ */
+  // $CONV_HTMLFILTERS = array( ".doc" => "/usr/local/bin/wvHtml",
+  //                            ".pdf" => "/usr/local/bin/pdftohtml",
+  //                            ".xls" => "/usr/bin/xlhtml",
+  //                            ".ppt" => "/usr/bin/ppthtml",
+  //                            "iconv"=> "/usr/bin/iconv" );
+  // define(CONV_DEFAULTENCODING,'windows-1250');   // default output encoding
+  // define(CONV_SYSTEMENCODING,'utf-8');  
 
-# The frequency in which the cache is checked for old values (in seconds)
-define("CACHE_PURGE_FREQ", 1000);
-
-# If true, the expired items could be displayed by in specific query (good
-# for archive display). If false, expired items are never shown
+/** If true, the expired items could be displayed by in specific query 
+ *  (good for archive display). If false, expired items are never shown */
 define("ALLOW_DISPLAY_EXPIRED_ITEMS", true);
 
-# If you use Web.net's extended items table, uncomment this definition
-define("EXTENDED_ITEM_TABLE", "1");
+/** Maximum number of items, which can be related to some item */
+define( "MAX_RELATED_COUNT", 50 );
+
+/** set this directive to 1 if you want to data-entry forms to have only
+ *  one column */
+define("SINGLE_COLUMN_FORM", "0");
+
+/** Since v1.8 you can use short id for item identification 
+ *  (x instead of sh_itm) */
+$USE_SHORT_URL = true;
 
 if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
   echo "you must set AA_INC_PATH and other variables in config.php3 !";
 };
 
-# Maximum number of items, which can be related to some item
-define( "MAX_RELATED_COUNT", 50 );
 
-define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
+//-----------------------------------------------------------------------------
+// Following section just prepares some constants
+// You probably do not need to change this
 
-# settings for file uploads
-define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
-define("IMG_UPLOAD_URL", $AA_HTTP_DOMAIN."img_upload/");
-define("IMG_UPLOAD_PATH", $AA_SITE_PATH."img_upload/");
-define("IMG_UPLOAD_TYPE", "image/*");
-define("IMG_UPLOAD_DIR_MODE", 508);    # mkdir perms (508 = 0774 in octal, but
-                                       # octal value in constant don't work)
+$AA_BASE_PATH = $AA_SITE_PATH.$AA_BASE_DIR;     // do not change
+$AA_INC_PATH = $AA_BASE_PATH."include/";        // do not change
 
-# Select color profile for administation pages
+/** set this directive to true, if your php already auto-includes phplib
+ * if it is 'false' and it should be true you'll get an error like:
+ *       Fatal error: DB_Sql is already a function or class in
+ *                    /var/php/phplib/php/db_mysql.inc on line 12    */
+define("PHPLIB_ALREADY_LOADED", false);
 
-  # -- WebNetworks profile
-    define("COLOR_TABBG",     "#A8C8B0");          # background of tables
-    define("COLOR_TABTITBG",  "#589868");          # background of table titles
-    define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
+/** PHPLib is the part of AA since v >2.2.0. Do not need to care about PHPLib */
+$_PHPLIB["libdir"] = $AA_INC_PATH.'phplib/';    // do not change
 
-      # You can redefine the colors in styles too
-    define("ADMIN_CSS","admin.css");               # style for admin interface
-    define("ADM_SLICE_CSS","adm_slice.css");       # style for public view of 
-                                                   # not encapsulated slices
+/** Server url relative path to base AA directory */
+$AA_INSTAL_PATH = "/".$AA_BASE_DIR;             // do not change
 
-  # -- IGC profile --- 
-  /*
-    define("COLOR_TABBG",   "#A8C8B0");            # background of tables
-    define("COLOR_TABTITBG","#589868");            # background of table titles
-    define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
-      # You can redefine the colors in styles too
-    define("ADMIN_CSS","admin-igc.css");           # style for admin interface
-    define("ADM_SLICE_CSS","adm_slice-igc.css");   # style for public view of 
-                                                   # not encapsulated slices
-  */
+/** URL of aa instalation */
+define("AA_INSTAL_URL", $AA_HTTP_DOMAIN .$AA_BASE_DIR);    // do not change
 
-  # -- Comlink profile --- 
-  /*
-    define("COLOR_TABBG",     "#A8C8B0");          # background of tables
-    define("COLOR_TABTITBG",  "#589868");          # background of table titles
-    define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
+/** URL or URL path to call admin/edititem.php etc.
+ *  This is the variable to make _#EDITITEM alias, etc.
+ *  If your site has problem set...
+ *       $AA_INSTAL_EDIT_PATH = "/".$AA_BASE_DIR;       */
+$AA_INSTAL_EDIT_PATH = AA_INSTAL_URL;           // do not change
+ 
+/** URL of index of help files for AA */
+define("DOCUMENTATION_URL", "http://apc-aa.sourceforge.net/apc-aa/doc");
 
-      # You can redefine the colors in styles too
-    define("ADMIN_CSS","admin-cml.css");               # style for admin interface
-    define("ADM_SLICE_CSS","adm_slice-cml.css");       # style for public view of 
-                                                   # not encapsulated slices
-  */
-
-  # -- Econnects profile --- 
-  /*
-    define("COLOR_TABBG",   "#EBDABE");            # background of tables
-    define("COLOR_TABTITBG","#584011");            # background of table titles
-    define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
-      # You can redefine the colors in styles too
-    define("ADMIN_CSS","admin-ecn.css");           # style for admin interface
-    define("ADM_SLICE_CSS","adm_slice.css");       # style for public view of 
-                                                   # not encapsulated slices
-  */
-
-/*
-# Language: uncomment one language  file
-require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
-# require ($GLOBALS[AA_INC_PATH] . "cz_common_lang.php3");  # Czech
-# require ($GLOBALS[AA_INC_PATH] . "es_common_lang.php3");  # Spanish
-# require ($GLOBALS[AA_INC_PATH] . "sk_common_lang.php3");  # Slovak
-# require ($GLOBALS[AA_INC_PATH] . "de_common_lang.php3");  # Deutsch
-# require ($GLOBALS[AA_INC_PATH] . "ro_common_lang.php3");  # Romanian
-# require ($GLOBALS[AA_INC_PATH] . "ja_common_lang.php3");  # Japan
-*/
-
-// ------------------------------------------------------------------
-// developer SITE_CONFIG
-
-# Note: developers can put their site-specific config in SITE_CONFIG 
-# If you add an configuration option, please put in at 
-# //add new CONSTANTS here, even if you also put it in your SITE_CONFIG
-
-# Only the first define() has any effect.
-# Therefore, if constants are defined in SITE_CONFIG and also defined
-# in the //add new CONSTANTS section, the second definitions do not take hold.
-
-# we could use nested if-else if we test on something more than HTTP_HOST.
-# IGC uses virtual hosts, and ServerName sets the HTTP_HOST,
-# so I hope that HTTP_HOST will be enough.  It might be that we will
-# also need to test the path.
-
-switch ($HTTP_HOST) {
-  case "xaa.igc.apc.org": 
-#    echo "1 path";
-     $AA_INC_PATH = "/usr/local/http/xaa/include/";
-     // IGC tries things out in xaa.igc.apc.org,
-     // and this only modifies the database xaadb (sandbox)
-     // when we're ready, we copy all the files over to aa.igc.apc.org
-     // we use the same config-site.inc except for DB_NAME
-     define("DB_NAME", "xaadb");
-     define (SITE_CONFIG, "config-igc.inc"); break;
-  case "aa.igc.apc.org": 
-#    echo "2 path";
-     $AA_INC_PATH = "/usr/local/http/aa/include/";
-     define (SITE_CONFIG, "config-igc.inc"); break;
-  case "web.ecn.cz": 
-#    echo "3 path";
-     $AA_INC_PATH = "/usr/local/httpd/htdocs/aa/include/";
-#    $AA_INC_PATH = "/home/madebeer/public_html/include/";
-     define (SITE_CONFIG, "config-ecn.inc"); break;
-  // maybe ecn could make a name-based virtual host for honza malik ?
-  case "honzam.ecn.cz":
-#    echo "4 path";
-     $AA_INC_PATH = "/home/honzama/public_html/aa/include/";
-     define (SITE_CONFIG, "config-ecn.inc"); break;
+/** developer SITE_CONFIG
+ *  Note: developers can put their site-specific config in SITE_CONFIG
+ *  Only the first define() has any effect.
+ *  Therefore, if constants are defined in SITE_CONFIG and also defined
+ *  in the //add new CONSTANTS section, the second definitions do not take hold.
+ *
+ *  Switches here are based on SERVER_ADDR so that all virtual hosts
+ *  can be configured in one place
+ */
+  switch ($SERVER_ADDR) {
+    case "209.220.30.175";
+    case "209.220.30.171";
+      //$AA_INC_PATH = "/home/httpd/html/apc-aa/include/";
+      define (SITE_CONFIG, "config-cyborganic.inc"); break;
   }
 
-// Switches here are based on SERVER_ADDR so that all virtual hosts
-// can be configured in one place
-switch ($SERVER_ADDR) {
-  case "209.220.30.175";
-  case "209.220.30.171";
-     #$AA_INC_PATH = "/home/httpd/html/apc-aa/include/";
-     define (SITE_CONFIG, "config-cyborganic.inc"); break;
+  if (defined ("SITE_CONFIG")) {
+    // require does not work as expected inside control structures!
+    include ($AA_INC_PATH . SITE_CONFIG);
   }
-/*
-*/
+  
 
-if (defined ("SITE_CONFIG")) {
-  // require does not work as expected inside control structures!
-  include ($AA_INC_PATH . SITE_CONFIG);
-}
-// end SITE_CONFIG
-// ------------------------------------------------------------------
+/** Filemanager is special feature which allows you to modify static files right
+ *  inside AA admin interface.
+ *  It's not necessary to configure it here, if you don't plan to use it.
+ *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1106 )
+ *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#fileman )
+ */
+  /** mkdir perms, set by variable because constants don't work with octal 
+   *  values */
+  $FILEMAN_MODE_DIR = 0770;
+  /** create file perms */
+  $FILEMAN_MODE_FILE = 0664;
+  /** in this directory individual slice directories and directory "templates" 
+   *  are created  */
+  define("FILEMAN_BASE_DIR",$AA_SITE_PATH."apc-aa-files/");
+  /** URL path to the base directory */
+  define("FILEMAN_BASE_URL",$AA_HTTP_DOMAIN."apc-aa-files/");
+  /** time in seconds to allow to upload big files */
+  define("FILEMAN_UPLOAD_TIME_LIMIT", 600);
 
-// ------------------------------------------------------------------
-// FILE MANAGER CONFIG
-
-# mkdir perms, set by variable because constants don't work with octal values
-$FILEMAN_MODE_DIR = 0770;
-# create file perms
-$FILEMAN_MODE_FILE = 0664;
-# in this directory individual slice directories and directory "templates" are created
-define("FILEMAN_BASE_DIR",$AA_SITE_PATH."apc-aa-files/");
-# URL path to the base directory
-define("FILEMAN_BASE_URL",$AA_HTTP_DOMAIN."apc-aa-files/");
-# time in seconds to allow to upload big files
-define("FILEMAN_UPLOAD_TIME_LIMIT",600);
-
-// ------------------------------------------------------------------
-// ALERTS CONFIG
-
-// e-mail for Alerts management
-define("ALERTS_EMAIL", "aaadmin@somewhere.com");
-
-// ------------------------------------------------------------------
-// XMGETTEXT language files - this setting is needed only for AA developers
-// who want to run xmgettext (see misc/mgettext/index.php3). 
+/** XMGETTEXT language files - this setting is needed only for AA developers
+ *  who want to run xmgettext (see misc/mgettext/index.php3). */
 $XMGETTEXT_DESTINATION_DIR = "/www/php_rw/lang/";
 
-// ------------------------------------------------------------------
-// MAILMAN synchronization dir. In this directory are placed the
-// files with lists of email addresses which processes mailman.
-// The dir must exist, it is not created by the mailman.php3 script.
+/** MAILMAN synchronization dir. In this directory are placed the
+ * files with lists of email addresses which processes mailman.
+ * The dir must exist, it is not created by the mailman.php3 script. 
+ * ( @see http://apc-aa.sourceforge.net/faq/index.shtml#email )   */
 $MAILMAN_SYNCHRO_DIR = "/www/mailman/";
 ?>
