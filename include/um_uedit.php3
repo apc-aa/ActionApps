@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ require_once $GLOBALS["AA_INC_PATH"]."um_util.php3";
       ValidateInput("user_password1", _m("Password"), $user_password1, $err, true, "password");
       ValidateInput("user_password2", _m("Retype password"), $user_password2, $err, true, "password");
     }
-    ValidateInput("user_mail1", _m("E-mail")." 1", $user_mail1, $err, false, "email");
+    ValidateInput("user_mail1", _m("E-mail")." 1", $user_mail1, $err, true, "email");
     ValidateInput("user_mail2", _m("E-mail")." 2", $user_mail2, $err, false, "email");
     ValidateInput("user_mail3", _m("E-mail")." 3", $user_mail3, $err, false, "email");
     ValidateInput("user_surname", _m("Surname"), $user_surname, $err, true, "text");
@@ -54,9 +54,9 @@ require_once $GLOBALS["AA_INC_PATH"]."um_util.php3";
       if(!($newuserid = AddUser($userrecord)))
         $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
       if( count($err) <= 1 ) {
-      	if ($user_super) {	// set super admin privilege
-      	  AddPerm($newuserid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
-      	}
+        if ($user_super) {	// set super admin privilege
+          AddPerm($newuserid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
+        }
         $Msg = MsgOK(_m("User successfully added to permission system"));
         if (!$um_uedit_no_go_url)
           go_url( con_url($sess->url($PHP_SELF), 'UsrSrch=1&usr='. urlencode($user_login)), $Msg);
@@ -66,11 +66,11 @@ require_once $GLOBALS["AA_INC_PATH"]."um_util.php3";
       if(!ChangeUser($userrecord)) {
         $err["LDAP"] = MsgErr( _m("Can't change user") );
       } else {
-      	if ($user_super) {		// set or revoke super admin privilege
-      	  AddPerm($userrecord["uid"], AA_ID, "aa", $perms_roles["SUPER"]['id']);
-      	} else {
-      	  DelPerm($userrecord["uid"], AA_ID, "aa");
-      	}
+        if ($user_super) {		// set or revoke super admin privilege
+          AddPerm($userrecord["uid"], AA_ID, "aa", $perms_roles["SUPER"]['id']);
+        } else {
+          DelPerm($userrecord["uid"], AA_ID, "aa");
+        }
       }
     }
 
@@ -93,7 +93,7 @@ require_once $GLOBALS["AA_INC_PATH"]."um_util.php3";
 
     # Change module permissions if user wants
     ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles );
-    
+
     # Add new modules for this user
     AddUserModulePerms( $new_module, $new_module_role, $selected_user, $perms_roles);
 
