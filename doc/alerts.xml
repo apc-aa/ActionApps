@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
+<article>
+  <title>Alerts</title>
+
+  <articleinfo>
+    <date>5.4.2003</date>
+
+    <author>
+      <firstname>Jakub</firstname>
+
+      <surname>Adámek</surname>
+
+      <affiliation>
+        <orgname>Econnect</orgname>
+      </affiliation>
+    </author>
+
+    <releaseinfo>$Id$</releaseinfo>
+
+    <revhistory>
+      <revision>
+        <revnumber>1.0</revnumber>
+
+        <date>5.4.2003</date>
+
+        <revremark>Extracted from the <ulink role="html" url="reader.html">Reader
+        Management</ulink> document and enhanced.</revremark>
+      </revision>
+    </revhistory>
+  </articleinfo>
+
+  <note>
+    <para><emphasis>This file was created from the DocBook XML source. Please
+    do modifications in the source, not here.</emphasis></para>
+  </note>
+
+  <abstract>
+    <para>This document describes the Alerts module. It is necessary you
+    understand how readers are managed by the <ulink role="html"
+    url="reader.html">Reader Management slices</ulink> first.</para>
+  </abstract>
+
+  <sect1>
+    <title>Introduction</title>
+
+    <para>AA Alerts are designed to deliver new AA items to users by e-mail.
+    Slice Administrators choose the design and which kind of items from which
+    slices to include. Readers subscribe for receiving the news and select how
+    often: immediately when the news becomes Active (in the meaning of the
+    bins in Item Manager) or a daily, weekly or monthly digest.</para>
+
+    <para>Anonymous forms (see <ulink role="html" url="anonym.html">doc</ulink>)
+    allow users to change their subscriptions. Users are identified by e-mail
+    and they must confirm their e-mail address by a confirmation code received
+    by e-mail to make sure the address is working.</para>
+  </sect1>
+
+  <sect1>
+    <title>Email content</title>
+
+    <para>This section describes how are chosen the new items which appear in
+    the email.</para>
+
+    <para>One Alerts module is one email from the reader&#39;s point of view.
+    A set of Selections is assigned to the module. The Selections are defined
+    in views of type <quote>Alerts Selection Set</quote>.</para>
+
+    <sect2>
+      <title>View Type <quote>Alerts Selection Set</quote></title>
+
+      <para>You define this view in the slices, from which you want to send
+      new items. The first check box, <quote>Group by selections</quote>, will
+      be explained later. The view defines the Selections, which have a
+      description and a set of the powerful <ulink url="???"><constant>conds[]</constant>
+      and <constant>sort[]</constant></ulink> parameters, the same as are used
+      with <constant>slice.php3</constant> in search forms. You can e.g.
+      create one selection for each category. When you open an Alerts view,
+      there are always two empty pairs of boxes for two new Selections. If you
+      want to define more Selections, store the view settings and reopen it.</para>
+
+      <para>You can add Selections from several views and several slices to
+      one Alerts module. Readers may choose which selections they want to
+      receive. Some items may pass the <constant>conds[]</constant> conditions
+      of several Selections. If you check <quote>Group by selections</quote>,
+      the view is generated for each Selection and some items may appear
+      several times in the email. If you leave <quote>Group by selections</quote>
+      unchecked, first all items which pass the reader&#39;s Selections are
+      collected and the view is generated only once for all of them. </para>
+
+      <para>The setting <quote>Fulltext URL</quote> links to the page where is
+      an item viewed when the reader clicks on its headline in the email. Of
+      course if you do not add a linked headline to the view design, this
+      setting is not used.</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Alerts module</title>
+
+    <para>The Alerts module appears like other regular modules in the slice
+    select box. It offers these pages:</para>
+
+    <table>
+      <title>Alerts menu</title>
+
+      <tgroup cols="2">
+        <tbody>
+          <row>
+            <entry>Settings</entry>
+
+            <entry>Core settings for the Alerts module, see below.</entry>
+          </row>
+
+          <row>
+            <entry>Selections</entry>
+
+            <entry>Choose which selections you want to show and their order.
+            Selections are defined in views of type Alerts Selection Set in
+            the slices from which you want to send new items. Each selection
+            has a description and a set of the Mind that if some item appears
+            in several selections, it will be repeated in the mail. Try to
+            make selections mutually exclusive.</entry>
+          </row>
+
+          <row>
+            <entry>Send emails</entry>
+
+            <entry>You can manually send the digest to all readers. And you
+            can send an example email to yourself to see exactly what readers
+            receive.</entry>
+          </row>
+
+          <row>
+            <entry>Reader Management</entry>
+
+            <entry>Sets the Reader Management Slice which feeds this Alerts.
+            Allows to add, delete and refresh the Alerts-specific fields to
+            the slice. When you change the list on the Selections page, use
+            Sync to refresh the appropriate constant group in the Reader
+            Management Slice.</entry>
+          </row>
+
+          <row>
+            <entry>Email Templates</entry>
+
+            <entry>Allows to edit all email templates.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <para>The fields added by Sync with reader slice are:</para>
+
+    <table>
+      <title>Alerts specific fields</title>
+
+      <tgroup cols="2">
+        <tbody>
+          <row>
+            <entry>how often</entry>
+
+            <entry>How often the reader receives a digest: instant (each new
+            item in one e-mail), daily, weekly, monthly.</entry>
+          </row>
+
+          <row>
+            <entry>choose selections</entry>
+
+            <entry>Multiple checkboxes allowing to choose which selections
+            from the collection the reader wants to read. New parameters of
+            the Multiple Checkboxes field Input type allow to view them in a
+            table, see the Parameter Wizard.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <para>You may show <emphasis>how often</emphasis> or <emphasis>choose
+    selections </emphasis>in the anonymous forms or you may set defaults by
+    hidden fields.</para>
+
+    <para>The core settings in Alerts Admin - Settings include these special
+    fields:</para>
+
+    <table>
+      <title>Alerts Settings</title>
+
+      <tgroup cols="2">
+        <tbody>
+          <row>
+            <entry>form URL</entry>
+
+            <entry>The URL to your pages with the <quote>Change personal
+            details</quote> form. This URL is used to create the
+            <constant>_#COLLFORM</constant> alias.</entry>
+          </row>
+
+          <row>
+            <entry>welcome email</entry>
+
+            <entry>A link to the email template for a message sent to new
+            users on subscription. The edit icon on the right allows you to
+            jump to the email edit form.</entry>
+          </row>
+
+          <row>
+            <entry>alert email</entry>
+
+            <entry>A link to the email template of the alert sent instant /
+            daily / ... and containing new items.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <para>The email templates (welcome and alert) are stored in the common
+    table <constant>email</constant> and are defined using aliases and alias
+    functions. This allows a completely free design. The formatted new items
+    are added by the <constant>_#FILTERS_</constant> alias. If you want to
+    send different texts to readers with different <quote>how often</quote>,
+    use the <constant>switch</constant> function on the alias
+    <constant>_#HOWOFTEN</constant>. To allow readers to confirm their email
+    and change their personal settings, use the alias <constant>_#COLLFORM</constant>,
+    which is the URL you filled in Alerts Admin - Settings, with an additional
+    9 letters parameter containing the <link linkend="access_code">access code</link>.</para>
+
+    <para>An example of both email types is added by <constant>sql_update</constant>.</para>
+  </sect1>
+
+  <sect1>
+    <title>Sending emails</title>
+
+    <para>There are two ways of sending the emails: regularly by cron or
+    manually.</para>
+
+    <para>The cron items are added to the <constant>cron</constant> table
+    automatically by <constant>sql_update.php3</constant>. You must set up
+    cron on your server, <ulink url="http://apc-aa.sourceforge.net/faq#cron">see
+    FAQ</ulink>. There are four items for the four different frequencies
+    (instant, daily, weekly, monthly). The info when were which Alerts module
+    emails generated is stored in the table <constant>alerts_collection_howoften</constant>.
+    The emails are created so that readers see the HTML version in e-mail
+    clients supporting HTML and the text version in clients supporting text
+    only. The text form is created by deleting all HTML tags. Technically
+    speaking, it is a MIME multi-part/alternative message with a text part and
+    a HTML part. </para>
+
+    <para>If you want to send emails manually, use the <quote>Send emails</quote>
+    page in the Alerts module. </para>
+  </sect1>
+
+  <sect1>
+    <title>Step by step tutorial</title>
+
+    <para>Here is a tutorial, describing in steps how you can try the Alerts
+    module. The result does not use Authorization, the personal info is
+    protected by a password.</para>
+
+    <orderedlist>
+      <listitem>
+        <simpara>Update to the new AA version from CVS and run
+        <constant>sql_update.php3</constant></simpara>
+      </listitem>
+
+      <listitem>
+        <simpara>Create <quote>My Readers</quote>:</simpara>
+
+        <orderedlist>
+          <listitem>
+            <simpara>Create a new slice from the <quote>Reader Management
+            Minimal</quote> template with the name <quote>My Readers</quote></simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Set <quote>Allow anonymous posting</quote> to
+            <quote>Active</quote></simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Set <quote>Allow anonymous editing</quote> to
+            <quote>All items</quote></simpara>
+          </listitem>
+        </orderedlist>
+      </listitem>
+
+      <listitem>
+        <simpara>Create selections:</simpara>
+
+        <orderedlist>
+          <listitem>
+            <simpara>In your favorite test slice, create a view with type
+            <quote>Alerts Digest</quote>. Fill something intelligent into the
+            design, particularly the <quote>Odd Rows</quote> field</simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Fill the Selection 1 and 2 Description with
+            <quote>My Selection 1</quote> and 2. Do not fill
+            <constant>conds[]</constant>, you can play with them when you are
+            an Alerts-master</simpara>
+          </listitem>
+        </orderedlist>
+      </listitem>
+
+      <listitem>
+        <simpara>Create and set Alerts:</simpara>
+
+        <orderedlist>
+          <listitem>
+            <simpara>Create a new Alerts module</simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Fill the name <quote>My Alerts</quote>. Fill the form URL
+            with some web folder to which you have access, e.g.
+            <constant>http://have_access_to/myalerts.shtml</constant></simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Click on Selections and insert My Selection 1 and 2 into
+            the Alerts</simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Click on Sync with reader slice, change to My Readers</simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Click on Add or refresh fields. A message <quote>2
+            field(s) added</quote> appears.</simpara>
+          </listitem>
+        </orderedlist>
+      </listitem>
+
+      <listitem>
+        <simpara>Create the anonymous form:</simpara>
+
+        <orderedlist>
+          <listitem>
+            <simpara>Move to My Readers</simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>In Slice Admin - Fields uncheck Show for Username and
+            check Required for Email (<emphasis>this is not default because
+            the template serves both for Alerts combined with Auth and for
+            standalone Alerts</emphasis>)</simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Choose Slice Admin - Anonymous Form Wizard</simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Fill the URL similar to <constant>http://have_access_to/myalerts.shtml</constant></simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Uncheck all fields except of Email, Password, How often
+            and Selections</simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Click on Show form and copy the form HTML to the file
+            <constant>http://have_access_to/myalerts.shtml</constant></simpara>
+          </listitem>
+        </orderedlist>
+      </listitem>
+
+      <listitem>
+        <simpara>Subscribe to Alerts:</simpara>
+
+        <orderedlist>
+          <listitem>
+            <para>Go to the address <constant>http://have_access_to/myalerts.shtml</constant>
+            and fill in your email address, the password <quote>abcde</quote>,
+            how often <quote>daily</quote> and choose one of the filters</para>
+          </listitem>
+
+          <listitem>
+            <para>Click on Send, a message <quote>success: insert</quote>
+            appears. You may change your settings and use Send again.</para>
+          </listitem>
+
+          <listitem>
+            <para>Confirm your subscription: Click on the link received in the
+            Welcome email</para>
+          </listitem>
+        </orderedlist>
+      </listitem>
+
+      <listitem>
+        <simpara>Send alerts:</simpara>
+
+        <orderedlist>
+          <listitem>
+            <simpara>Go to My Alerts, Send emails. Choose <quote>daily</quote>
+            and click on <quote>Go!</quote> at <quote>Send example</quote>.
+            You should receive a digest of all items added in the last 24
+            hours to your favorite test slice. If there are no such items, add
+            some: click on My Selection 1, this moves you to your favorite
+            test slice.</simpara>
+          </listitem>
+
+          <listitem>
+            <simpara>Try the same with <quote>Send now alerts to all users</quote>.
+            Note this will store the time into the database and if you click
+            again on this button, no mail will be sent because no message was
+            added between the two runs.</simpara>
+          </listitem>
+        </orderedlist>
+      </listitem>
+
+      <listitem>
+        <simpara>Add items to your favorite test slice and test that you
+        receive them</simpara>
+      </listitem>
+    </orderedlist>
+  </sect1>
+
+  <sect1>
+    <title>Tips</title>
+
+    <para><emphasis>Alerts-only reader management: </emphasis>You do not need
+    the username, but the email is required. Change these Fields settings.
+    Perhaps you even do not need to password-protect the reader personal info.
+    Change also the <quote>Allow anonymous posting / editing</quote> slice
+    settings.</para>
+
+    <para><emphasis>Filtering readers who are not yet confirmed: </emphasis>Change
+    the design of the Item Manager in Slice Admin to show the alias
+    <constant>_#MAILCONF</constant>. This alias shows <quote>yes</quote> or
+    <quote>no</quote>. But it is created by the <constant>f_c</constant>
+    function and the values in the database are 0 or 1. Thus give
+    <quote>0</quote> and not <quote>no</quote> into the Search box.</para>
+
+    <para><emphasis>Filtering readers receiving a selection:</emphasis> Add
+    the Alerts Selections to Item Manager. Create an alias using the function
+    <constant>f_h</constant> with the parameter <constant>,</constant>
+    (comma). You will see the selection IDs prefixed by <constant>f</constant>.
+    Now you understand why you should enter something like <quote>f45</quote>
+    into the Search box.</para>
+  </sect1>
+</article>

@@ -76,6 +76,7 @@
     to edit their own info.</para>
 
     <para>See also: <ulink role="html" url="reader.html">doc/reader.html</ulink>,
+    <ulink role="html" url="alerts.html">doc/alerts.html</ulink>,
     doc/script/show_result.php3</para>
   </abstract>
 
@@ -282,7 +283,7 @@
       <listitem>
         <para>Be cautious when using two anonymous forms on one page. You must
         rename the form and the Javascript variables so that they do not
-        conflict with each other. </para>
+        conflict with each other.</para>
       </listitem>
     </itemizedlist>
   </sect1>
