@@ -882,5 +882,5 @@ cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen ) VALUES (
 ',  '</channel>
 </rss>
 ',  'publish_date....',  '0',  'headline........',  '0',
-'source..........',  \
+'source..........',  
 '>',  '',  '',  '<',  '',  '',  '<',  '',  '15' ) ;
