@@ -451,7 +451,12 @@ class MLXView
 		foreach( $tmptrans as $lang => $langfield)
 			$translations[(string)$lang] = $langfield;
 		return $translations;
-	}	
+	}
+	function getLangByIdx($idx) {
+		if($idx > count($this->language))
+			return false;
+		return $this->language[$idx];
+	}
 }
 class MLXEvents
 {

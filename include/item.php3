@@ -76,6 +76,9 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
   $aliases["_#RSS_DATE"] = GetAliasDef(  "f_r",            "SLICEdate",        _m("Date RSS information is generated, in RSS date format"));
   $aliases["_#SLI_NAME"] = GetAliasDef(  "f_e:slice_info", "name",             _m("Slice name"));
 
+  $aliases["_#MLX_LANG"] = GetAliasDef(  "f_e:mlx_lang",   MLX_CTRLIDFIELD,             _m("Current MLX language"));
+
+
   # database stored aliases
   while( list($k,$val) = each($fields) ) {
     if( $val[alias1] )
@@ -517,6 +520,11 @@ class item {
     return htmlspecialchars($this->getval($col));
   }
 
+  function mystripos($haystack, $needle) {
+      $sub = stristr($haystack, $needle);
+      return ($sub ? strlen($haystack)-strlen($sub) : strlen($haystack));
+  }
+
   /** Prints abstract ($col) or grabed fulltext text from field_id
    *  param: length:field_id:paragraph
    *         length    - max number of characters taken from field_id
@@ -529,25 +537,18 @@ class item {
    *                     first paragraph or at least stop at the end of sentence
    */
   function f_a($col, $param="") {
-      list(         , $field )               = ParamExplode($param);  // we need $field unexpanded
       list( $plength, $pfield, $pparagraph ) = $this->subst_aliases( ParamExplode($param) );
+      if ( !$pfield ) {
+          $pfield = $col;                // content is grabbed from current $col
+      }
       $value = $this->getval($col);
-      if ($value AND !($col == $field)) {  // special case - return whole field
+      if ($value AND ($col != $pfield)) {
           return DeHtml( $value, $this->getval($col,'flag') );
       }
-      $shorted_text = substr(get_if($value, $pfield), 0, $plength);    // pfield is already expanded!!!
-
-      // search the text for following ocurrences in the order!
-      $PARAGRAPH_ENDS = array( '</p>','<p>','<br>', "\n", "\r" );
       if ($pparagraph) {
-          foreach ( $PARAGRAPH_ENDS as $end_str ) {
-              $paraend = strpos(strtolower($shorted_text), $end_str, 10);  // we do not want to
-              if ( $paraend !== false ) {   // end_str found
-                  $shorted_text = substr($shorted_text, 0, $paraend);
-                  break;
-              }
-          }
-          if ($paraend===false) {      // no <BR>, <P>, ... found
+          $paraend      = min(my_stripos($value,"<p>"),my_stripos($value,"</p>"),my_stripos($value,"<br>"),my_stripos($value,"\n"),my_stripos($value,"\r"), $plength);
+          $shorted_text = substr($value, 0, $paraend);
+          if ($paraend==$plength) {      // no <BR>, <P>, ... found
               // try to find dot (first from the end)
               $dot = strrpos( $shorted_text,".");
               if ( $dot > $paraend/3 ) { // take at least one third of text
@@ -556,6 +557,8 @@ class item {
                   $shorted_text = substr($shorted_text, 0, $space);
               } // no dot, no space - leave the text plength long
           }
+      } else {
+          $shorted_text = substr($value, 0, $plength);
       }
       return strip_tags( $shorted_text );
   }
@@ -845,6 +848,19 @@ function RSS_restrict($txt, $len) {
         return (( (integer)$p[1] == (integer)($this->getval('short_id........')) ) ? '1' : '0');
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
+      case 'mlx_lang':    // print the current mlx language (the desired one instead of the lang_code...)
+        if(!$GLOBALS['mlxView']) {
+	  if( !is_array( $slice_info ) )
+            $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));
+          if(!$slice_info['MLX_SLICEDB_COLUMN'])
+            return _m("Not an MLX Slice -- no MLX Control Slice selected.");
+          $mlxView = new MLXView($slice_info['MLX_SLICEDB_COLUMN']);
+	} else 
+	  $mlxView = $GLOBALS['mlxView'];
+	if(!$mlxView)
+	  return "";
+        return $mlxView->getLangByIdx(0);		  
+        break;
       case 'addform':   // show link to inputform with special design defined in view (id in p[1])
         $add = "add=1";
       // drop through to default
