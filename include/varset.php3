@@ -33,18 +33,42 @@ class Cvariable {
   var $name;
   var $type;
   var $value;
+  /** Is it a key value? key values are used in UPDATE -> WHERE, INSERT -> VALUES.
+      See also makeINSERTorUPDATE. */
+  var $iskey;
 
 	# constructor
-	function Cvariable($name, $type, $value) {
+	function Cvariable($name, $type, $value, $iskey=false) {
     $this->name = $name;
     $this->type = $type;
     $this->value = $value;
+    $this->iskey = $iskey;
 	}
   
   function getValue() {
     return $this->value;
   }  
 
+  function getSQLValue() {
+      switch( $this->type )
+      {
+        case "number": if( $this->value == "")   // grrr: if $var=0 then $var=""!!!
+                         return "0";
+                       else 
+                         return $this->value;
+                       break;
+        case "unpacked":
+            return "'" . q_pack_id($this->value) ."'";
+            break;
+        case "quoted":
+            return "'" . $this->value ."'";
+            break;
+        case "date":
+        case "text":
+        default: return "'" . quote($this->value) ."'";
+      }
+  }
+  
   function huh() {
     echo "$this->name($this->type) -> $this->value <br>\n";
   }
@@ -59,19 +83,29 @@ class Cvarset {
 
 	# clears whole varset
 	function clear() {
-    $this->vars="";
+      $this->vars="";
 	}	
 
 	# get variable value
 	function get($varname) {
-    $cv = $this->vars["$varname"];
-    return ( $cv ? $cv->getValue() : false);
+      $cv = $this->vars["$varname"];
+      return ( $cv ? $cv->getValue() : false);
 	}	
     
 	# add variable to varset
 	function add($varname, $type="text", $value="") {
-    $this->vars["$varname"]= new Cvariable($varname, $type, $value);
+      $this->vars[$varname]= new Cvariable($varname, $type, $value);
 	}	
+
+  	# add key variable to varset (see Cvariable)
+	function addkey($varname, $type="text", $value="") {
+      $this->vars[$varname]= new Cvariable($varname, $type, $value, true);
+	}	
+    
+    # remove variable from varset
+    function remove($varname) {
+      unset ($this->vars[$varname]);
+    }
 
 	# set variable value
   function set($varname, $value, $type=""){
@@ -117,10 +151,12 @@ class Cvarset {
 	}	
 
   # makes SQL INSERT clause from varset
-  function makeINSERT()
+  function makeINSERT($tablename = "")
   {
     reset($this->vars);
-    $foo = "";
+    if ($tablename)
+        $foo = "INSERT INTO $tablename";
+    else $foo = "";
     $predznak = " ( ";
     while ( list( $varname, $variable ) = each($this->vars) )
     { 
@@ -131,57 +167,58 @@ class Cvarset {
     $predznak = " ) VALUES ( ";
     while ( list( $varname, $variable ) = each($this->vars) )
     { 
-      switch( $variable->type )
-      {
-        case "number": 
-          if( $variable->value == "" )
-            $foo .= $predznak . "0"; 
-           else 
-            $foo .= $predznak . $variable->value;
-          break;
-        case "unpacked":
-            $foo .= $predznak . " '". q_pack_id($variable->value) ."'";
-            break;
-        case "quoted":
-            $foo .= $predznak . " '". $variable->value ."'";
-            break;
-        case "text":
-        case "date":
-        default:       $foo .= $predznak . " '". quote($variable->value) ."'";
-      } 
+      $foo .= $predznak . $variable->getSQLValue();
       $predznak = ", ";
     }  
     return $foo . " ) " ;  
   }
 
   # makes SQL UPDATE clause from varset
-  function makeUPDATE()
+  function makeUPDATE($tablename = "")
   {
     reset($this->vars);
-    $foo = "";
-    $predznak = "";
     while ( list( $varname, $variable ) = each($this->vars) )
     { 
-      switch( $variable->type )
-      {
-        case "number": if( $variable->value == "")   // grrr: if $var=0 then $var=""!!!
-                         $foo .= $predznak . $varname . "= 0";
-                        else 
-                         $foo .= $predznak . $varname . "=" . $variable->value;
-                       break;
-        case "unpacked":
-            $foo .= $predznak . $varname . "='" . q_pack_id($variable->value) ."'";
-            break;
-        case "quoted":
-            $foo .= $predznak . $varname . "='" . $variable->value ."'";
-            break;
-        case "date":
-        case "text":
-        default:       $foo .= $predznak . $varname . "='" . quote($variable->value) ."'";
-      } 
-      $predznak = ", ";
+      if ($variable->iskey) 
+        $wheres[] = $varname ."=". $variable->getSQLValue();
+      $updates[] = $varname ."=". $variable->getSQLValue(); 
     }  
-    return " " . $foo ;  
+    if ($tablename) 
+        $retval = "UPDATE $tablename SET";
+    $retval .= " " . join (", ", $updates);
+    if (is_array ($wheres))
+        $retval .= " WHERE " . join (" AND ", $wheres);    
+    return $retval;
+  }
+  
+  function makeSELECT ($table)
+  {
+    reset ($this->vars);
+    while (list ($varname, $variable) = each ($this->vars)) {
+      if ($variable->iskey) 
+        $wheres[] = $varname ."=". $variable->getSQLValue();
+    }
+    if (!is_array ($wheres)) 
+      return "SELECT * FROM $table";
+    else return "SELECT * FROM $table WHERE ".join(" AND ",$wheres);
+  }
+      
+  /// This function looks into the given table and if the row exists
+  /// it is updated, if not then inserted. Add always all key fields
+  /// by addkey() to the varset before using this function.
+  
+  function makeINSERTorUPDATE($table)
+  {
+    global $db;
+    $sql = $this->makeSELECT($table);
+    $db->query ($sql);    
+    switch ($db->num_rows()) {
+        case 0: return $this->makeINSERT($table);
+        case 1: return $this->makeUPDATE($table);
+        default:
+             // Error: there are several rows with the same key variables
+            return "Error using makeINSERTorUPDATE: " . $db->num_rows(). " rows match the query $sql";
+    }
   }
   
   function huh($txt="") {
