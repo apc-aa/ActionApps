@@ -2,14 +2,14 @@ dn: ou=AA
 objectclass: top
 objectclass: organizationalUnit
 ou: AA
-description: Action Applications
+description: ActionApps
 
 dn: cn=aauser,ou=AA
 objectclass: top
 objectclass: person
-cn: aa
+cn: aauser
 sn: Toolkit
-description: Account used by AA to access LDAP DB
+description: Account used by ActionaApps to access LDAP DB
 
 dn: ou=People,ou=AA
 objectclass: top
@@ -21,4 +21,4 @@ dn: ou=ACLs,ou=AA
 objectclass: top
 objectclass: organizationalUnit
 ou: ACLs
-description: ACLs used by the Action Applications
+description: ACLs used by the ActionApps

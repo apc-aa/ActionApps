@@ -186,7 +186,7 @@ adding new entry ou=ACLs,ou=AA
 result should be similar to the ldif file you just used.
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE>% ldapsearch -L objectclass=\*
+<PRE>% ldapsearch -x -L objectclass=\*
 </PRE>
   <HR>
   </CODE></BLOCKQUOTE>If you get an error message or nothing, check the
@@ -213,7 +213,7 @@ it!
 <PRE>% ldappasswd -D "cn=root,ou=AA" -w password -t "cn=aauser,ou=AA" -H ssha
 New password:
 Re-enter new password:
-% ldapsearch -D "cn=root,ou=AA" -w password -L cn=aauser
+% ldapsearch -x -D "cn=root,ou=AA" -w password -L cn=aauser
 dn: cn=aauser,ou=AA
 objectclass: top
 objectclass: person
@@ -234,7 +234,7 @@ again so it is different from the root dn password.
 <P>Try to access the ldap server using your aauser account:
 <BLOCKQUOTE><CODE>
   <HR>
-<PRE>% ldapsearch -D "cn=aauser,ou=AA" -W -L objectclass=\*
+<PRE>% ldapsearch -x -D "cn=aauser,ou=AA" -W -L objectclass=\*
 Enter LDAP Password:
 </PRE>
   <HR>

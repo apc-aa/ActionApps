@@ -1,25 +1,25 @@
-attributetype ( 1.3.6.1.4.1.14335.2.2.1.1 NAME 'apcobjectid'
+attributetype ( 1.3.6.1.4.1.14335.2.2.1.1 NAME 'apcObjectID'
 	DESC 'ID of APC object'
-	EQUALITY caseExactOrderingMatch
+	EQUALITY caseIgnoreMatch
 	SUBSTR caseExactSubstringsMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
 	SINGLE-VALUE )
 
-attributetype ( 1.3.6.1.4.1.14335.2.2.1.2 NAME 'apcobjecttype'
+attributetype ( 1.3.6.1.4.1.14335.2.2.1.2 NAME 'apcObjectType'
 	DESC 'type of APC object'
-	EQUALITY caseExactOrderingMatch
+	EQUALITY caseIgnoreMatch
 	SUBSTR caseExactSubstringsMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
 	SINGLE-VALUE )
 
-attributetype ( 1.3.6.1.4.1.14335.2.2.1.3 NAME 'apcaci'
+attributetype ( 1.3.6.1.4.1.14335.2.2.1.3 NAME 'apcAci'
 	DESC 'APC users ACLs'
-	EQUALITY caseExactOrderingMatch
+	EQUALITY caseIgnoreMatch
 	SUBSTR caseExactSubstringsMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
 
-objectclass ( 1.3.6.1.4.1.14335.2.2.2.1 NAME 'apcacl'
+objectclass ( 1.3.6.1.4.1.14335.2.2.2.1 NAME 'apcAcl'
 	DESC 'APC ACLs object'
 	AUXILIARY
-	MAY ( apcobjectid $ apcobjecttype $ apcaci $ description) )
+	MAY ( apcObjectID $ apcObjectType $ apcAci ) )
 
