@@ -85,7 +85,7 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
 }
 
 if( ($submit_action == "usr_del") AND $selected_user ) {
-  DeleteUserComplete( $selected_user );
+  DelUser( $selected_user );    // default is to delete any references as well
   go_url( $sess->url($PHP_SELF) );
 }  
   
@@ -392,6 +392,10 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.5  2000/07/28 15:11:41  kzajicek
+Functions DeleteUserComplete and buggy DeleteGroupComlete are now
+obsolete, DelUser and DelGroup do the job.
+
 Revision 1.4  2000/07/27 18:42:40  kzajicek
 *** empty log message ***
 

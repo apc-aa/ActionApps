@@ -165,6 +165,8 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
   }
 }  
 
+// Returns users's permissions to specified slice
+// if $whole is true, then consider membership in groups 
 function GetSlicePerms( $user_id, $objID, $whole=true) {
   $slice_perms = GetIDPerms ($user_id, "slice", ($whole ? 0 : 1));
   $aa_perms = GetIDPerms ($user_id, "aa", ($whole ? 0 : 1));
@@ -209,79 +211,14 @@ function IfSlPerm($perm) {
   return CheckPerms( $auth->auth["uid"], "slice", $slice_id, $perm);
 }  
 
-// Deletes user from ldap permission system (including remove from groups and apcaci perms)
-function DeleteUserComplete($uid) {
-  if( !$uid )
-    return false;
-
-  # Delete user from all groups  
-  $groups = GetMembership($uid, 1);
-  if( isset($groups) AND is_array($groups)) {
-    reset($groups);
-    while(list(,$gid) = each($groups))
-      $x = DelGroupMember($gid,$uid) ? "1" : "0";
-  }
-
-  # Delete user's permissions to slices
-  $slices = GetIDPerms($uid, "slice", 1);
-  if( isset($slices) AND is_array($slices)) {
-    reset($slices);
-    while(list($sid) = each($slices))
-      $x .= DelPerm($uid,$sid,"slice") ? "3" : "2";
-  }
-
-  # Delete user's permissions to aa
-  $aa = GetIDPerms($uid, "aa", 1);
-  if( isset($aa) AND is_array($aa)) {
-    reset($aa);
-    while(list($aid) = each($aa))
-       $x .= DelPerm($uid,$aid,"aa") ? "5" : "4";
-  }
-  
-  # Delete user
-  $x .= DelUser($uid) ? "7" : "6";
-  return $x;
-}  
-
-// Deletes group from ldap permission system (including remove from others groups)
-function DeleteGroupComplete($gid) {
-  if( !$gid )
-    return false;
-
-  # Delete user from all groups  
-  $groups = GetMembership($uid, 1);
-  if( isset($groups) AND is_array($groups)) {
-    reset($groups);
-    while(list(,$gid) = each($groups))
-      $x = DelGroupMember($gid,$uid) ? "1" : "0";
-  }
-
-  # Delete user's permissions to slices
-  $slices = GetIDPerms($uid, "slice", 1);
-  if( isset($slices) AND is_array($slices)) {
-    reset($slices);
-    while(list($sid) = each($slices))
-      $x .= DelPerm($uid,$sid,"slice") ? "3" : "2";
-  }
-
-  # Delete user's permissions to aa
-  $aa = GetIDPerms($uid, "aa", 1);
-  if( isset($aa) AND is_array($aa)) {
-    reset($aa);
-    while(list($aid) = each($aa))
-       $x .= DelPerm($uid,$aid,"aa") ? "5" : "4";
-  }
-  
-  # Delete user
-  $x .= DelUser($uid) ? "7" : "6";
-  return $x;
-}  
-
-
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:43  madebeer
-Initial revision
+Revision 1.2  2000/07/28 15:11:41  kzajicek
+Functions DeleteUserComplete and buggy DeleteGroupComlete are now
+obsolete, DelUser and DelGroup do the job.
+
+Revision 1.1.1.1  2000/06/21 18:40:43  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:25  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
