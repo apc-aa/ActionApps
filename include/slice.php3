@@ -110,14 +110,6 @@ function LogItem($id, $column) {
   return false;
 }
 
-function GetSortArray( $sort ) {
-  if( substr($sort,-1) == '-' )
-    return array ( substr($sort,0,-1) => 'd' );
-  if( substr($sort,-1) == '+' )
-    return array ( substr($sort,0,-1) => 'a' );
-  return array ( $sort => 'a' );
-}
-
 function SubstituteAliases( $als, &$var ) {
   if( !isset( $als ) OR !is_array( $als ) )  # substitute url aliases in cmd
     return;
