@@ -23,32 +23,40 @@ if (!defined ("AA_FORMUTIL_INCLUDED"))
     define ("AA_FORMUTIL_INCLUDED", 1);
 else return;
 
-#
-# Form utility functions
-#
+/**
+* Form utility functions
+*/
 
 require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
 require $GLOBALS[AA_INC_PATH]."javascript.php3";
 
-# if $condition, shows star
+/**
+* if $condition, shows star
+*/
 function Needed( $condition=true ) {
   if( $condition )
     echo "&nbsp;*";
 }    
 
-# if $txt, shows help message
+/**
+* if $txt, shows help message
+*/
 function PrintHelp( $txt ) {
   if( $txt )
     echo "<div class=tabhlp>$txt</div>";
 }    
 
-# if $txt, shows link to more help
+/**
+* if $txt, shows link to more help
+*/
 function PrintMoreHelp( $txt ) {
   if( $txt )
     echo "&nbsp;<a href='$txt' target='_blank'>?</a>";
 }    
 
-# shows boxes allowing to choose constant in a hiearchical way
+/**
+*hows boxes allowing to choose constant in a hiearchical way
+*/
 function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $boxWidth, 
 	$size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") 
 {
@@ -76,7 +84,7 @@ function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $
 		    echo "<option>".htmlspecialchars($value[$i]['value'])."\n";
 	echo "<OPTION value='wIdThTor'>$widthTxt";
 	echo "</SELECT></TD></TR></TABLE>";
-	echo "<script language=javascript><!--\n
+	echo "<script language=\"javascript\" type=\"text/javascript\"><!--\n
 		hcInit();
 		hcDeleteLast ('$name');
         listboxes[listboxes.length] = 'document.inputform[\"$name\"]';
@@ -87,8 +95,10 @@ function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $
 	echo "</td></tr>\n";
 }
 
-# Prints html tag <input type=text .. to 2-column table
-# for use within <form> and <table> tag
+/**
+* Prints html tag <input type=text .. to 2-column table
+* for use within <form> and <table> tag
+*/
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
                       $hlp="", $morehlp="", $html=false) {
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
@@ -117,8 +127,10 @@ function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
   echo "</td></tr>\n";
 }
 
-# Prints two static text to 2-column table
-# for use within <table> tag
+/**
+* Prints two static text to 2-column table
+* for use within <table> tag
+*/
 function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=1 ){
   if( $safing ) {
     $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); $morehlp=safe($morehlp);
@@ -135,8 +147,10 @@ function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=
   echo "</td></tr>\n";
 }
 
-# Prints html tag <input type=password .. to 2-column table
-# for use within <form> and <table> tag
+/**
+* Prints html tag <input type=password .. to 2-column table
+* for use within <form> and <table> tag
+*/
 function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
   $name=safe($name); $txt=safe($txt); $val=safe($val);
 
@@ -148,8 +162,10 @@ function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
   echo "<td><input type=\"Password\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"></td></tr>\n";
 }
 
-# Prints html tag <input type=file .. to 2-column table
-# for use within <form> and <table> tag
+/**
+* Prints html tag <input type=file .. to 2-column table
+* for use within <form> and <table> tag
+*/
 function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
                       $hlp="", $morehlp="" ){
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
@@ -165,8 +181,10 @@ function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
   echo "</td></tr>\n";
 }
 
-# Prints html tag <textarea .. to 2-column table
-# for use within <form> and <table> tag
+/**
+* Prints html tag <textarea .. to 2-column table
+* for use within <form> and <table> tag
+*/
 function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
                      $hlp="", $morehlp="", $single="", $html=false, $showrich_href=false) {
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
@@ -174,7 +192,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
 
 	if ( $showrich_href ) {
 			$htmlrow .= '
-			<script language=javascript>
+			<script language="javascript" type="text/javascript">
 			function load_rich_edit ()
 			{ window.location.href = window.location.href+"&showrich=1"; }
 			</script>
@@ -203,11 +221,12 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
   echo "</td></tr>\n";
 }
 
-/*  Function: RawRichEditTextarea
-    Purpose: Shows a rich edit text area - Wysiwyg editor
-    Params:
-        $type = "class" | "iframe" (iframes are not completely implemented)
-        $doc_complet = do you edit complete documents or HTML fragments only? */
+/**
+* Shows a rich edit text area - Wysiwyg editor
+*
+* @param  $type = "class" | "iframe" (iframes are not completely implemented)
+* @param  $doc_complet = do you edit complete documents or HTML fragments only? 
+*/
 
 function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="class", $doc_complet=0) {
     if (!$BName || !$GLOBALS['BPlatform']) {
@@ -237,7 +256,7 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
 
 	if ($GLOBALS[debug]) echo $richedit;
     echo
-        "<script language=javascript>
+        "<script language=\"javascript\" type=\"text/javascript\">
         <!--
 		var edt$name"."_doc_complet = $doc_complet; 
         var edt = \"edt$name\"; 
@@ -247,13 +266,13 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
         var imgpath = '../misc/wysiwyg/images/'; 
         // -->
 	</script>
-    <script language=javascript src=\"../misc/wysiwyg/".$richedit.".js\">
+    <script language=\"javascript\"  type=\"text/javascript\" src=\"../misc/wysiwyg/".$richedit.".js\">
 	</script>
-    <script language=javascript src=\"../misc/wysiwyg/".$richedit.".html\">
+    <script language=\"javascript\" type=\"text/javascript\" src=\"../misc/wysiwyg/".$richedit.".html\">
 	</script>";
 
     echo "
-    <script language =javascript > 
+    <script language =\"javascript\"  type=\"text/javascript\">
         <!-- 
         edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100); 
         var edt$name"."_content = '$val';
@@ -268,9 +287,11 @@ function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="cl
     </script>";
 }
 
-# On browsers which do support it, loads a special rich text editor with many
-# advanced features based on triedit.dll 
-# On the other browsers, loads a normal text area
+/**
+* On browsers which do support it, loads a special rich text editor with many
+* advanced features based on triedit.dll 
+* On the other browsers, loads a normal text area
+*/
 
 function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class", $needed=false, 
                      $hlp="", $morehlp="", $single="", $html=false) {
@@ -304,8 +325,10 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class
     echo "</td></tr>\n";
 }
 
-# Prints html tag <input type=checkbox .. to 2-column table
-# for use within <form> and <table> tag
+/**
+* Prints html tag <input type=checkbox .. to 2-column table
+* for use within <form> and <table> tag
+*/
 function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, 
                     $add="", $colspan=1, $needed=false, $hlp="", $morehlp=""){
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
@@ -336,19 +359,23 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false,
   echo "</tr>\n";
 }
 
-# Prints html tag <input type=checkbox 
+/**
+* Prints html tag <input type=checkbox 
+*/
 function FrmChBoxEasy($name, $checked=true, $add="") {
   echo FrmChBoxEasyCode($name, $checked, $add);
 }
 function FrmChBoxEasyCode($name, $checked=true, $add="") {
-  $name=safe($name); # $add=safe($add); NO!!
+  $name=safe($name); // $add=safe($add); NO!!
 
   return "<input type=\"checkbox\" name=\"$name\" $add".
     ($checked ? " checked>" : ">");
 }
 
-# Prints html tag <select .. to 2-column table
-# for use within <form> and <table> tag
+/**
+* Prints html tag <select .. to 2-column table
+* for use within <form> and <table> tag
+*/
 function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
                         $hlp="", $morehlp="", $usevalue=false) {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
@@ -375,8 +402,10 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
   echo "</td></tr>\n";
 }  
 
-# Prints html tag <intup type=text ...> with <select ...> as presets to 2-column 
-# table for use within <form> and <table> tag
+/**
+* Prints html tag <intup type=text ...> with <select ...> as presets to 2-column 
+* table for use within <form> and <table> tag
+*/
 function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, 
                            $needed=false, $hlp="", $morehlp="", $adding=0,
 						   $secondfield="", $usevalue=false) {
@@ -420,9 +449,11 @@ function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25,
   echo "</td></tr>\n";
 }
 
-# Prints html tag <intup type=text ...> with <select ...> and buttons
-# form moving with items
-# to 2-column table for use within <form> and <table> tag
+/**
+* Prints html tag <intup type=text ...> with <select ...> and buttons
+* form moving with items
+* to 2-column table for use within <form> and <table> tag
+*/
 function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_size=25,
                             $select_size=6, $numbered=0, $needed=false, $hlp="", $morehlp="", $adding=0,
                             $secondfield="", $usevalue=false) {
@@ -568,7 +599,9 @@ function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_
   echo "</td></tr>\n";
 }
 
-# Prints two boxes for multiple selection for use within <form> and <table> tag
+/**
+* Prints two boxes for multiple selection for use within <form> and <table> tag
+*/
 function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
                    $needed=false, $wi2_offer, $wi2_selected, $hlp="", $morehlp="") {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
@@ -602,7 +635,7 @@ function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
 
   $option_no=0;
   while(list($k, $v) = each($selected)) {
-    echo "<option value=\"". htmlspecialchars($k)."\"> ".htmlspecialchars($v)." </option>\n";
+    echo "<option value=\"". htmlspecialchars($k)."\"> ".htmlspecialchars($arr[$k])." </option>\n";
     $onption_no++;
   }
   if ($option_no == 0) {
@@ -624,8 +657,10 @@ function FrmTwoBox($name, $txt, $arr, $val, $size=8, $selected,
       </tr>";
 }
 
-# Prints a radio group, html tags <input type="radio" .. to 2-column table
-# for use within <form> and <table> tag
+/**
+* Prints a radio group, html tags <input type="radio" .. to 2-column table
+* for use within <form> and <table> tag
+*/
 function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
                        $hlp="", $morehlp="", $linebreaks=false) {
   $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
@@ -649,33 +684,37 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
   echo "</td></tr>\n";
 }  
 
-# Prints html tag <input type="radio" .. to 2-column table
-# for use within <form> and <table> tag
+/**
+* Prints html tag <input type="radio" .. to 2-column table
+* for use within <form> and <table> tag
+*/
 function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
-                       $hlp="", $morehlp="") {
-  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
-
-  echo "<tr align=left><td class=tabtxt><b>$txt</b>";
-  Needed($needed);
-  echo "</td>\n <td>";
-  if (is_array ($arr)) {
-      reset($arr);
-      while(list($k, $v) = each($arr)) {
-        echo "<nobr><input type='checkbox' name='$name'
-                     value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
-        if ($selected[$k])
-          echo " checked";
-        echo ">".htmlspecialchars($v)."</nobr>";
-      }
-  }
-  PrintMoreHelp($morehlp);
-  PrintHelp($hlp);
-  echo "</td></tr>\n";
+                            $hlp="", $morehlp="") {
+    $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+    
+    echo "<tr align=left><td class=tabtxt><b>$txt</b>";
+    Needed($needed);
+    echo "</td>\n <td>";
+    if (is_array ($arr)) {
+        reset($arr);
+        while(list($k, $v) = each($arr)) {
+            echo "<nobr><input type='checkbox' name='$name'
+            value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
+            if ($selected[$k])
+            echo " checked";
+            echo ">".htmlspecialchars($v)."</nobr>";
+        }
+    }
+    PrintMoreHelp($morehlp);
+    PrintHelp($hlp);
+    echo "</td></tr>\n";
 }
 
 
-# Prints html tag <select multiple .. to 2-column table
-# for use within <form> and <table> tag
+/**
+* Prints html tag <select multiple .. to 2-column table
+* for use within <form> and <table> tag
+*/
 function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5, 
           $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
   $name=safe($name); $size=safe($size); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
@@ -694,20 +733,20 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
       $option_no++;
     }
   }  
-  # add blank rows if asked for
+  // add blank rows if asked for
   while( $option_no++ < $minrows )  // if no options, we must set width of <select> box
     echo '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
   
   echo "</select>";
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
-  if( $relation )       # all selection in this box should be selected on submit
+  if( $relation )       // all selection in this box should be selected on submit
     echo "<br><center>
           <input type='button' value='". L_ADD ."' onclick='OpenRelated(\"$name\", \"$relation\", \"$mode\", \"$design\" )'> 
           <input type='button' value='". L_DELETE ."' 
             onclick='document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].value=\"wIdThTor\";
                      document.inputform.elements[\"$name\"].options[document.inputform.elements[\"$name\"].selectedIndex].text=\"\";'> 
-          <SCRIPT Language='JavaScript'><!--
+          <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
              listboxes[listboxes.length] = 'document.inputform.elements[\"$name\"]'
             // -->
            </SCRIPT>          
@@ -719,13 +758,15 @@ function FrmRelated($name, $txt, $arr, $size, $sid, $mode, $design, $needed=fals
   FrmInputMultiSelect($name, $txt, $arr, "", $size=5, $sid, $needed, $hlp, $morehlp, MAX_RELATED_COUNT, $mode, $design);
 }  
 
-# Prints html tag <select .. 
+/**
+* Prints html tag <select .. 
+*/
 function FrmSelectEasy($name, $arr, $selected="", $add="") { 
   echo FrmSelectEasyCode ($name, $arr, $selected, $add);
 }
 
 function FrmSelectEasyCode($name, $arr, $selected="", $add="") { 
-  $name=safe($name); # safe($add) - NO! - do not safe it
+  $name=safe($name); // safe($add) - NO! - do not safe it
 
   $retval = "<select name=\"$name\" $add>\n";	
   reset($arr);
@@ -740,7 +781,7 @@ function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
 }  
 
 function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $morehelp="",  $rows=4, $cols=60) {
-		
+
   $name=safe($name); $val=safe($val); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
@@ -751,11 +792,11 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
   echo "<td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual".getTriggers("textarea",$name).">$val</textarea>
           <select name=\"foo_$name\"";
   echo "onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">";
-  
+
   reset($arr);
-  while(list($k, $v) = each($arr)) { 
+  while(list($k, $v) = each($arr)) {
     echo "<option value=\"". htmlspecialchars($k)."\"";
-    if ((string)$val == (string)$k) 
+    if ((string)$val == (string)$k)
       echo " selected";
     echo "> ". htmlspecialchars($v) ." </option>";
   }
@@ -766,26 +807,81 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
   echo "</td></tr>\n";
 }
 
-# Validate users input. Error is reported in $err array
-function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all") 
+
+/**
+* Prints buttons based on $buttons array. It also adds slice_id and session id
+*/
+function FrmInputButtons( $buttons, $sess=false, $slice_id=false, $valign='middle' ) {
+  echo '<tr><td align="center" valign="'.$valign.'">';
+  if( isset($buttons) AND is_array($buttons) ) {
+    // preparison: is the accesskey working?
+    detect_browser();
+    if ($BPlatform == "Macintosh") {
+      if ($BName == "MSIE" || ($BName == "Netscape" && $BVersion >= "6"))
+        $accesskey = "(ctrl+S)";
+    } else {
+      if ($BName == "MSIE" || ($BName == "Netscape" && $BVersion > "5"))
+        $accesskey = "(alt+S)";
+    };
+
+    reset($buttons);
+    while( list( $name, $properties ) = each($buttons) ) {
+      if( !is_array($properties) )
+        $name = $properties;
+      switch($name) {
+        case 'update':
+          echo '&nbsp;<input type="submit" name="update" accesskey="S" value="'. L_UPDATE ."  $accesskey". '">&nbsp;';
+          break;
+        case 'insert':
+          echo '&nbsp;<input type="submit" name="insert" accesskey="S" value="'. L_INSERT ."  $accesskey". '">&nbsp;';
+          break;
+        case 'cancel':
+          echo '&nbsp;<input type="submit" name="cancel" value="'. L_CANCEL .'">&nbsp;';
+          break;
+        case 'reset':
+          echo '&nbsp;<input type="reset" value="'. L_RESET .'">&nbsp;';
+          break;
+        default:
+          echo '&nbsp;<input type="'.  $properties['type'] .
+                          '" name="'.  $name .
+                          '" value="'. $properties['value'] .
+                          '" '. $properties['add'] . '>&nbsp;';
+      }
+    }
+  }
+
+  if( $sess )
+    $sess->hidden_session();
+  if( $slice_id )
+    echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
+
+  echo "</td></tr>";
+}
+
+
+
+/**
+* Validate users input. Error is reported in $err array
+*/
+function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all")
 {
   if($variable=="" OR Chop($variable)=="")
     if( $needed ) {                     // NOT NULL
       $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_NEED.")");
       return false;
     }
-    else  return true;     
+    else  return true;
   switch($type)
   {
     case "id":     if((string)$variable=="0" AND !$needed)
-                     return true;     
+                     return true;
                    if( !EReg("^[0-9a-f]{1,32}$",Chop($variable)))
                    { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
                    }
                    return true;
     case "alias":  if((string)$variable=="0" AND !$needed)
-                     return true;     
+                     return true;
                    if( !EReg("^_#[0-9_#a-zA-Z]{8}$",Chop($variable)))
                    { $err["$variableName"] = MsgErr(L_ERR_IN." $inputName");
                      return false;
@@ -814,9 +910,9 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
           return false;
         }
         return true;
-      }  
-      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");                   
-      return false; 
+      }
+      $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");
+      return false;
     case "password":
       $len = strlen($variable);
       if( ($len>=5) AND ($len<=32) )
@@ -829,13 +925,14 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
                      }
                      return true;
     case "url":
-    case "all":    
+    case "all":
     default:       return true;
-  }  
-} 
+  }
+}
 
-// used in tabledit.php3 and itemedit.php3
-
+/**
+* used in tabledit.php3 and itemedit.php3
+*/
 function get_javascript_field_validation () {
     return "
         function validate (txtfield, type, required) {
@@ -877,5 +974,4 @@ function get_javascript_field_validation () {
             else return true;
         }";
 }
-
 ?>
