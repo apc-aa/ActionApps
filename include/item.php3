@@ -1052,11 +1052,13 @@ function RSS_restrict($txt, $len) {
     if ( !$separator ) {
         $separator = ' &gt; ';
     }
-    $url_base = $this->getbaseurl();
+    $url_base = ''; //$this->getbaseurl();
+    $urlprm = ($urlprm ? '&'.$urlprm : '');
 
     $categs2print = $catseparator ? $this->getvalues($col) :
                                     array(0=>array('value'=>$this->parameters['category_id'])); // current category
     $linklast     = $catseparator ? true : false;
+
 
     if ( is_array($categs2print) ) {
         foreach ( $categs2print as $v ) {
@@ -1068,7 +1070,7 @@ function RSS_restrict($txt, $len) {
                 $last = $linklast ? '' : end($way);
                 foreach ( $way as $catid ) {
                     if($start_count-- > 0)  continue;
-                    $cat_url = con_url( $url_base, $urlprm.'&cat='.$catid );
+                    $cat_url = con_url( $url_base, 'cat='.$catid.$urlprm);
                     $ret .= ( ( $catid == $last ) ?  // do not make link for last category
                         $delimeter.$translate[$catid]['name'] :
                         $delimeter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
