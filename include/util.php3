@@ -82,8 +82,9 @@ $af_columns = array ( "id" => array( "field"=>"id", "type"=>"md5", "title"=>L_ID
 function go_url($url, $add_param="") {
   if( $add_param != "" )
     $url = con_url( $url, rawurlencode($add_param));
+  $netscape = (r=="") ? "r=1" : "r=".++$r;   // special parameter for Natscape to reload page
   header("Status: 302 Moved Temporarily");
-	header("Location: ". $url);
+	header("Location: ". con_url($url,$netscape));
  	exit;
 }
 
@@ -262,8 +263,11 @@ function UnpackFieldsToArray($packed, $fields) {
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:50  madebeer
-Initial revision
+Revision 1.2  2000/07/07 21:36:04  honzam
+Redirection to the same page now support Netscape (in go_url)
+
+Revision 1.1.1.1  2000/06/21 18:40:50  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:27  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
