@@ -19,15 +19,15 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#
-# Miscellaneous utility functions
-#
+//
+// Miscellaneous utility functions
+//
 
-require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
-require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
-require_once $GLOBALS["AA_INC_PATH"]."logs.php3";
-require_once $GLOBALS["AA_INC_PATH"]."go_url.php3";
+require_once $GLOBALS['AA_INC_PATH']."constants.php3";
+require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
+require_once $GLOBALS['AA_INC_PATH']."zids.php3";
+require_once $GLOBALS['AA_INC_PATH']."logs.php3";
+require_once $GLOBALS['AA_INC_PATH']."go_url.php3";
 
 function get_aa_url($href, $session=true) {
     global $AA_INSTAL_PATH, $sess;
@@ -35,15 +35,18 @@ function get_aa_url($href, $session=true) {
                                $AA_INSTAL_PATH.$href;
 }
 
-function get_admin_url($href) {
-    global $AA_INSTAL_PATH, $sess;
-    return is_object($sess) ? $sess->url($AA_INSTAL_PATH."admin/".$href) :
-                               $AA_INSTAL_PATH."admin/".$href;
+function get_admin_url($href, $session=true) {
+    return get_aa_url("admin/$href", $session);
 }
 
 /** returns url for $morehlp parameter in Frm* functions */
 function get_help_url($href, $anchor) {
     return $href."#".$anchor;
+}
+
+/** Get <a href> tag */
+function a_href($url, $txt) {
+    return "<a href=\"$url\">$txt</a>";
 }
 
 // Expand return_url, possibly adding a session to it
@@ -82,10 +85,10 @@ function my_in_array($needle, $array) {
 /** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
 function debuglog($text)
 {
-    $f = fopen ($GLOBALS["AA_INC_PATH"]."logs.txt","a");
+    $f = fopen($GLOBALS['AA_INC_PATH']."logs.txt","a");
     if ($f) {
-        fwrite ($f, date( "h:i:s j-m-y ")  . $text . "\n");
-        fclose ($f);
+        fwrite($f, date( "h:i:s j-m-y ")  . $text . "\n");
+        fclose($f);
     }
 }
 
@@ -105,16 +108,16 @@ function self_complete_url() {
     return self_server().$GLOBALS[REQUEST_URI];
 }
 
-# returns server name with protocol and port
+// returns server name with protocol and port
 function self_server() {
   global $HTTP_HOST, $SERVER_NAME, $HTTPS, $SERVER_PORT;
-  if( isset($HTTPS) && $HTTPS == 'on' ){
+  if ( isset($HTTPS) && $HTTPS == 'on' ){
     $PROTOCOL='https';
-    if($SERVER_PORT != "443")
+    if ($SERVER_PORT != "443")
       $port = ":$SERVER_PORT";
   } else {
     $PROTOCOL='http';
-      if($SERVER_PORT != "80")
+      if ($SERVER_PORT != "80")
       $port = ":$SERVER_PORT";
   }
   // better to use HTTP_HOST - if we use SERVER_NAME and we try to open window
@@ -125,7 +128,7 @@ function self_server() {
   return("$PROTOCOL://$sname$port");
 }
 
-# returns server name with protocol, port and current directory of php script
+// returns server name with protocol, port and current directory of php script
 function self_base() {
   global $PHP_SELF;
   return (self_server(). ereg_replace("/[^/]*$", "", $PHP_SELF) . "/");
@@ -137,12 +140,12 @@ function document_uri() {
     return get_if($_SERVER['DOCUMENT_URI'],$_SERVER['SCRIPT_URL']);
 }
 
-# returns server name with protocol, port and current directory of shtml file
+// returns server name with protocol, port and current directory of shtml file
 function shtml_base() {
   return (self_server(). ereg_replace("/[^/]*$", "", document_uri()) . "/");
 }
 
-# returns url of current shtml file
+// returns url of current shtml file
 function shtml_url() {
   return (self_server(). document_uri());
 }
@@ -163,20 +166,20 @@ function shtml_query_string() {
     return magic_strip($ret_string);
 }
 
-# skips terminating backslashes
+// skips terminating backslashes
 function DeBackslash($txt) {
     return str_replace('\\', "", $txt);        // better for two places
 }
 
-#explodes $param by ":". The "#:" means true ":" - don't separate
-# Returns array
+//explodes $param by ":". The "#:" means true ":" - don't separate
+// Returns array
 function ParamExplode($param) {
-  $a = str_replace ("#:", "__-__.", $param);    # dummy string
-  $b = str_replace ("://", "__-__2", $a);       # replace all <http>:// too
-  $c = str_replace (":", "##Sx",$b);            # Separation string is ##Sx
-  $d = str_replace ("__-__.", ":", $c);         # change "#:" to ":"
-  $e = str_replace ("__-__2", "://", $d);         # change back "://"
-  return explode( "##Sx", $e );
+  $a = str_replace("#:", "__-__.", $param);    // dummy string
+  $b = str_replace("://", "__-__2", $a);       // replace all <http>:// too
+  $c = str_replace(":", "##Sx",$b);            // Separation string is //#Sx
+  $d = str_replace("__-__.", ":", $c);         // change "#:" to ":"
+  $e = str_replace("__-__2", "://", $d);       // change back "://"
+  return explode("##Sx", $e);
 }
 
 function ParamImplode_replaceneeded($string) {
@@ -187,11 +190,6 @@ function ParamImplode_replaceneeded($string) {
 function ParamImplode($param) {
    $param = array_map("ParamImplode_replaceneeded", $param);
    return implode(":", $param);
-}
-
-/** stripslashes if magic quotes are set */
-function magic_strip($val) {
-    return !get_magic_quotes_gpc() ? $val : StripslashesArray($val);
 }
 
 /** Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
@@ -233,7 +231,7 @@ function NormalizeArrayIndex($arr) {
 /** Adds second array to the first one - values are appended to the array, if
  *  uses the same key (regardless if string or numeric!)
  *  Example:
- *    array_merge_append( $conds[0][value]=x, $conds[0][operator]=LIKE )
+ *    array_merge_append( $conds[0]['value']=x, $conds[0][operator]=LIKE )
  *    results in $conds[0] = array( 'value'=>'x', 'operator'=>'LIKE' )
  *  no PHP function do it ($a+$b nor array_merge()  array_merge_recursive())
  */
@@ -248,13 +246,13 @@ function array_merge_append(&$array, $newValues) {
     return $array;
 }
 
-# function to double backslashes and apostrofs
+// function to double backslashes and apostrofs
 function quote($str) {
   return addslashes($str);
 }
 
 
-# function addslashes enhanced by array processing
+// function addslashes enhanced by array processing
 function AddslashesArray($val) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -274,30 +272,30 @@ function StripslashesArray($val) {
     return $ret;
 }
 
-# function for processing posted or get variables
-# adds quotes, if magic_quotes are switched off
-# except of variables in $skip array (usefull for 'encap' for example)
+// function for processing posted or get variables
+// adds quotes, if magic_quotes are switched off
+// except of variables in $skip array (usefull for 'encap' for example)
 function QuoteVars($method="get", $skip='') {
 
-  if( get_magic_quotes_gpc() )
+  if ( get_magic_quotes_gpc() )
     return;
 
   $transfer = ( ($method == "get") ? "HTTP_GET_VARS" : "HTTP_POST_VARS");
-  if( !isset($GLOBALS[$transfer]) OR !is_array($GLOBALS[$transfer]))
+  if ( !isset($GLOBALS[$transfer]) OR !is_array($GLOBALS[$transfer]))
     return;
   reset( $GLOBALS[$transfer] );
-  while( list($varname,$value) = each( $GLOBALS[$transfer] ))
-    if( !is_array($skip) || !isset($skip[$varname]) )
+  while ( list($varname,$value) = each( $GLOBALS[$transfer] ))
+    if ( !is_array($skip) || !isset($skip[$varname]) )
       $GLOBALS[$varname] = AddslashesArray($value);
 }
 
-# function to reverse effect of "magic quotes"
+// function to reverse effect of "magic quotes"
 // not needed in MySQL and get_magic_quotes_gpc()==1
 function dequote($str) {
-        return $str;
+    return $str;
 }
 
-# prints content of a (multidimensional) array
+// prints content of a (multidimensional) array
 function p_arr_m($arr, $level = 0) {
    if ( !isset($arr) OR !is_array($arr)) {
      for ($i = 0; $i < $level; $i++) { echo "&nbsp;&nbsp;&nbsp;"; };
@@ -316,12 +314,12 @@ function p_arr_m($arr, $level = 0) {
    }
 }
 
-# debug function, prints hash size,  keys and values of hash
+// debug function, prints hash size,  keys and values of hash
 function p_arr($a,$name="given array") {
   p_arr_m($a);
 }
 
-# returns new unpacked md5 unique id, except these which can  force unexpected end of string
+// returns new unpacked md5 unique id, except these which can  force unexpected end of string
 function new_id($seed="hugo"){
     do {
        $foo=md5(uniqid($seed));
@@ -345,21 +343,21 @@ function string2id($str) {
     return $foo;
 }
 
-# returns packed md5 id, not quoted !!!
-# Note that pack_id is used in many places where it is NOT 128 bit ids.
+// returns packed md5 id, not quoted !!!
+// Note that pack_id is used in many places where it is NOT 128 bit ids.
 function pack_id ($unpacked_id){
     global $errcheck;
     // Give up tracking this, too many errors in Honza's code!
     /*
-    if ($errcheck && !preg_match("/^[0-9a-f]+$/", $unpacked_id)) # Note was + instead {32}
+    if ($errcheck && !preg_match("/^[0-9a-f]+$/", $unpacked_id)) // Note was + instead {32}
          huhe("Warning: trying to pack $unpacked_id.<br>\n");
     */
   return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
 }
 
-# returns unpacked md5 id
+// returns unpacked md5 id
 function unpack_id($packed_id){
-  if( (string)$packed_id == "0" )
+  if ( (string)$packed_id == "0" )
     return "0";
   $foo=bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
   return (string)$foo;
@@ -375,70 +373,70 @@ function now($step=false) {
         ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
 }
 
-# returns number of second since 1970 from date in MySQL format
+// returns number of second since 1970 from date in MySQL format
 function date2sec($dat) {
-  if( Ereg("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})", $dat, $d))
+  if ( Ereg("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})", $dat, $d))
     return MkTime($d[4], $d[5], $d[6], $d[2], $d[3], $d[1]);
   return 0;
 }
 
-# function which detects the browser
+// function which detects the browser
 function detect_browser() {
   global $HTTP_USER_AGENT, $BName, $BVersion, $BPlatform;
 
   // Browser
-  if(eregi("(msie) ([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  if (eregi("(msie) ([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
     { $BName = "MSIE"; $BVersion=$match[2]; }
-  elseif(eregi("(opera) ([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match) || eregi("(opera/)([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(opera) ([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match) || eregi("(opera/)([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match))
     { $BName = "Opera"; $BVersion=$match[2]; }
-  elseif(eregi("(konqueror)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(konqueror)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
     { $BName = "Konqueror"; $BVersion=$match[2]; }
-  elseif(eregi("(lynx)/([0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(lynx)/([0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2})",$HTTP_USER_AGENT,$match))
     { $BName = "Lynx"; $BVersion=$match[2]; }
-  elseif(eregi("(links) \(([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(links) \(([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
     { $BName = "Links"; $BVersion=$match[2]; }
-  elseif(eregi("(netscape6)/(6.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(netscape6)/(6.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
     { $BName = "Netscape"; $BVersion=$match[2]; }
-  elseif(eregi("Gecko/",$HTTP_USER_AGENT))
+  elseif (eregi("Gecko/",$HTTP_USER_AGENT))
     { $BName = "Mozilla"; $BVersion="6";}
-  elseif(eregi("mozilla/5",$HTTP_USER_AGENT))
+  elseif (eregi("mozilla/5",$HTTP_USER_AGENT))
     { $BName = "Netscape"; $BVersion="Unknown"; }
-  elseif(eregi("(mozilla)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(mozilla)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
     { $BName = "Netscape"; $BVersion=$match[2]; }
-  elseif(eregi("w3m",$HTTP_USER_AGENT))
+  elseif (eregi("w3m",$HTTP_USER_AGENT))
     { $BName = "w3m"; $BVersion="Unknown"; }
   else{$BName = "Unknown"; $BVersion="Unknown";}
 
   // System
-  if(eregi("win32",$HTTP_USER_AGENT))
+  if (eregi("win32",$HTTP_USER_AGENT))
     $BPlatform = "Windows";
-  elseif((eregi("(win)([0-9]{2})",$HTTP_USER_AGENT,$match)) || (eregi("(windows) ([0-9]{2})",$HTTP_USER_AGENT,$match)))
+  elseif ((eregi("(win)([0-9]{2})",$HTTP_USER_AGENT,$match)) || (eregi("(windows) ([0-9]{2})",$HTTP_USER_AGENT,$match)))
     $BPlatform = "Windows $match[2]";
-  elseif(eregi("(winnt)([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(winnt)([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
     $BPlatform = "Windows NT $match[2]";
-  elseif(eregi("(windows nt)( ){0,1}([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(windows nt)( ){0,1}([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
     $BPlatform = "Windows NT $match[3]";
-  elseif(eregi("linux",$HTTP_USER_AGENT))
+  elseif (eregi("linux",$HTTP_USER_AGENT))
     $BPlatform = "Linux";
-  elseif(eregi("mac",$HTTP_USER_AGENT))
+  elseif (eregi("mac",$HTTP_USER_AGENT))
     $BPlatform = "Macintosh";
-  elseif(eregi("(sunos) ([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(sunos) ([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
     $BPlatform = "SunOS $match[2]";
-  elseif(eregi("(beos) r([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(beos) r([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
     $BPlatform = "BeOS $match[2]";
-  elseif(eregi("freebsd",$HTTP_USER_AGENT))
+  elseif (eregi("freebsd",$HTTP_USER_AGENT))
     $BPlatform = "FreeBSD";
-  elseif(eregi("openbsd",$HTTP_USER_AGENT))
+  elseif (eregi("openbsd",$HTTP_USER_AGENT))
     $BPlatform = "OpenBSD";
-  elseif(eregi("irix",$HTTP_USER_AGENT))
+  elseif (eregi("irix",$HTTP_USER_AGENT))
     $BPlatform = "IRIX";
-  elseif(eregi("os/2",$HTTP_USER_AGENT))
+  elseif (eregi("os/2",$HTTP_USER_AGENT))
     $BPlatform = "OS/2";
-  elseif(eregi("plan9",$HTTP_USER_AGENT))
+  elseif (eregi("plan9",$HTTP_USER_AGENT))
     $BPlatform = "Plan9";
-  elseif(eregi("unix",$HTTP_USER_AGENT) || eregi("hp-ux",$HTTP_USER_AGENT))
+  elseif (eregi("unix",$HTTP_USER_AGENT) || eregi("hp-ux",$HTTP_USER_AGENT))
     $BPlatform = "Unix";
-  elseif(eregi("osf",$HTTP_USER_AGENT))
+  elseif (eregi("osf",$HTTP_USER_AGENT))
     $BPlatform = "OSF";
   else{$BPlatform = "Unknown";}
 
@@ -458,26 +456,26 @@ function debug() {
     echo "</pre>\n";
 }
 
-# debug function for printing debug messages
+// debug function for printing debug messages
 function huh($msg, $name="") {
-//  if(! $GLOBALS['debug'] )
+//  if (! $GLOBALS['debug'] )
 //    return;
-  if( @is_array($msg) OR @is_object($msg) ) {
+  if ( @is_array($msg) OR @is_object($msg) ) {
     echo "<br>\n$name";
     print_r($msg);
   } else
     echo "<br>\n$name$msg";
 }
 
-# debug function for printing debug messages escaping HTML
+// debug function for printing debug messages escaping HTML
 function huhw($msg) {
-  if(! $GLOBALS['debug'] )
+  if (! $GLOBALS['debug'] )
     return;
   echo "<br>\n". HTMLspecialChars($msg);
 }
 
-# Report only if errcheck is set, this is used to test for errors to speed debugging
-# Use to catch cases in the code which shouldn't exist, but are handled anyway.
+// Report only if errcheck is set, this is used to test for errors to speed debugging
+// Use to catch cases in the code which shouldn't exist, but are handled anyway.
 function huhe ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
     global $errcheck;
     if ($errcheck) {
@@ -501,8 +499,8 @@ function get_microtime() {
   return ((float)$usec + (float)$sec);
 }
 
-# Set a starting timestamp, if checking times, huhl can report
-# Debug function to print debug messages recursively - handles arrays
+// Set a starting timestamp, if checking times, huhl can report
+// Debug function to print debug messages recursively - handles arrays
 function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
     global $debugtimes,$debugtimestart;
     if (isset($a)) {
@@ -535,7 +533,7 @@ function huhsess($msg="") {
     huhl($msg,$sessvars);
 }
 
-#Prints all values from array
+//Prints all values from array
 function PrintArray($a) {
     if (is_array($a)) {
         while ( list( $key, $val ) = each( $a ) ) {
@@ -548,29 +546,29 @@ function PrintArray($a) {
     }
 }
 
-#Prepare OK Message
+//Prepare OK Message
 function MsgOK($txt){
   return "<div class=okmsg>$txt</div>";
 }
 
-#Prepare Err Message
+//Prepare Err Message
 function MsgERR($txt){
   return "<div class=err>$txt</div>";
 }
 
-# function for unpacking string in edit_fields and needed_fields in database to array
+// function for unpacking string in edit_fields and needed_fields in database to array
 function UnpackFieldsToArray($packed, $fields) {
   reset($fields);
   $i=0;
-  while( list($field,) = each($fields))
+  while ( list($field,) = each($fields))
     $arr[$field] = (substr($packed,$i++,1)=="y" ? true : false);
   return $arr;
 }
 
-# returns true, if specified input show func (name in $which) have constants
+// returns true, if specified input show func (name in $which) have constants
 function HaveConstants($which) {
     $inputtypes = inputShowFuncTypes();
-    foreach( $inputtypes as $key => $values) {
+    foreach ( $inputtypes as $key => $values) {
         if (substr($values['paramformat'], 4, 5) == "const") {
             if ($which == $key) { return true;}
         }
@@ -579,9 +577,9 @@ function HaveConstants($which) {
     return false;
 }
 
-# returns true if constants are from slice
+// returns true if constants are from slice
 function AreSliceConstants($name) {
-    if( substr($name,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    if ( substr($name,0,7) == "#sLiCe-" )  // prefix indicates select from items
         return true;
    else
         return false;
@@ -606,10 +604,10 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
     $fields = ($column==$keycolumn ? $column : "$keycolumn, $column");
 
     $db->tquery("SELECT $fields FROM constant WHERE group_id='$group' $order_by");
-    while($db->next_record()) {
+    while ($db->next_record()) {
         $key = $db->f($keycolumn);
         // generate unique keys by adding space
-        while( $already_key[$key] ) {
+        while ( $already_key[$key] ) {
             $key .= ' ';                   // add space in order we get unique keys
         }
         $already_key[$key] = true;       // mark the $key
@@ -619,7 +617,7 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
     return $arr;
 }
 
-# gets fields from main table of the module
+// gets fields from main table of the module
 function GetModuleInfo($module_id, $type) {
   global $MODULES;
   if (! $module_id ) return false;
@@ -635,13 +633,13 @@ function GetModuleInfo($module_id, $type) {
   return $ret;
 }
 
-# gets slice fields
+// gets slice fields
 function GetSliceInfo($slice_id) {
   return  GetModuleInfo($slice_id,'S');
 }
 
 /*Obsoleted - see viewobj.php3 (mitra)
-# gets view fields
+// gets view fields
 function GetViewInfo($vid) {
   global $db;
   $db->query("SELECT view.*, slice.deleted FROM view, slice
@@ -662,7 +660,7 @@ function GetViewInfo($vid) {
 function GetTable2Array($SQL, $key="id", $values='aa_all') {
     $db = getDB();
     $db->tquery($SQL);
-    while($db->next_record()) {
+    while ($db->next_record()) {
         if ($values == 'aa_all') {
             $val = $db->Record;
         } elseif ($values == 'aa_mark') {
@@ -688,15 +686,15 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
     return isset($arr) ? $arr : false;
 }
 
-# function returns two arrays - SliceFields (key is field_id)
-#                               Priorities  (field_id sorted by priority
-# See also sliceobj:slice->fields()
+// function returns two arrays - SliceFields (key is field_id)
+//                               Priorities  (field_id sorted by priority
+// See also sliceobj:slice->fields()
 function GetSliceFields($slice_id) {
   $p_slice_id = q_pack_id($slice_id);
   $db = getDB();
   $SQL = "SELECT * FROM field WHERE slice_id='$p_slice_id' ORDER BY input_pri";
   $db->query($SQL);
-  while($db->next_record()) {
+  while ($db->next_record()) {
     $fields[$db->f("id")] = $db->Record;
     $prifields[]=$db->f("id");
   }
@@ -704,10 +702,10 @@ function GetSliceFields($slice_id) {
   return array($fields, $prifields);
 }
 
-# create field id from type and number
+// create field id from type and number
 function CreateFieldId ($ftype, $no="0") {
-  if( (string)$no == "0" )
-    $no="";    # id for 0 is "xxxxx..........."
+  if ( (string)$no == "0" )
+    $no="";    // id for 0 is "xxxxx..........."
   return $ftype. substr("................$no", -(16-strlen($ftype)));
 }
 
@@ -717,7 +715,7 @@ function GetFieldType($id) {
     return ( $dot_pos === false ) ? $id : substr($id, 0, $dot_pos);
 }
 
-# get field number from id ('.', '0', '1', '12', ...)
+// get field number from id ('.', '0', '1', '12', ...)
 function GetFieldNo($id) {
   return (string) substr( strrchr($id,'.'), 1 );
 }
@@ -732,7 +730,7 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
     }
     $sel_in = $zids->sqlin( false );
     if ($zids->onetype() == "t") {
-        $settags = true;  # Used below
+        $settags = true;  // Used below
     }
     return array( $sel_in, $settags );
 }
@@ -755,15 +753,15 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
     $db = getDB();
 
-    # construct WHERE clause
+    // construct WHERE clause
     list($sel_in, $settags) = itemContent_getWhere($zids, $use_short_ids);
-    if(!$sel_in) { freeDB($db); trace("-"); return false; }
+    if (!$sel_in) { freeDB($db); trace("-"); return false; }
 
-    # get content from item table
+    // get content from item table
     $delim = "";
 
-    if( is_object($zids) ) {
-        if( $zids->onetype() == 's' )
+    if ( is_object($zids) ) {
+        if ( $zids->onetype() == 's' )
             $use_short_ids = true;
     }
 
@@ -774,7 +772,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     $db->tquery($SQL);
 
     $n_items = 0;
-    while( $db->next_record() ) {
+    while ( $db->next_record() ) {
         // proove permissions for password-read-protected slices
         $reading_permitted = $ignore_reading_password
            || ($db->f("reading_password") == "")
@@ -783,18 +781,18 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
         $n_items = $n_items+1;
         reset( $db->Record );
-        if( $use_short_ids ) {
+        if ( $use_short_ids ) {
             $foo_id = $db->f("short_id");
-            $translate[unpack_id128($db->f("id"))] = $db->f("short_id"); # id -> short_id
-            # WHERE for query to content table
+            $translate[unpack_id128($db->f("id"))] = $db->f("short_id"); // id -> short_id
+            // WHERE for query to content table
             $new_sel_in .= "$delim '". quote($db->f("id")) ."'";
             $delim = ",";
         } else
             $foo_id = unpack_id128($db->f("id"));
-        # Note that it stores into the $content[] array based on the id being used which
-        # could be either shortid or longid, but is NOT tagged id.
-        while( list( $key, $val ) = each( $db->Record )) {
-            if( EReg("^[0-9]*$", $key))
+        // Note that it stores into the $content[] array based on the id being used which
+        // could be either shortid or longid, but is NOT tagged id.
+        while ( list( $key, $val ) = each( $db->Record )) {
+            if ( EReg("^[0-9]*$", $key))
                 continue;
             $content[$foo_id][CreateFieldId($key)][] =
                array("value" => $reading_permitted ? $val
@@ -805,7 +803,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     // Skip the rest if no items found
     if ($n_items == 0) { freeDB($db); trace("-"); return null; }
 
-    # If its a tagged id, then set the "idtag..........." field
+    // If its a tagged id, then set the "idtag..........." field
     if ($settags) {
         $tags = $zids->gettags();
         while ( list($k,$v) = each($tags)) {
@@ -813,8 +811,8 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         }
     }
 
-    # construct WHERE query to content table if used short_ids
-    if( $use_short_ids) {
+    // construct WHERE query to content table if used short_ids
+    if ( $use_short_ids) {
         $sel_in = (count($translate) > 1) ?
                        " IN ( $new_sel_in ) " : " = $new_sel_in ";
     }
@@ -826,18 +824,18 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
                        " AND field_id = '$restrict_field' ";
     }
 
-    # get content from content table
+    // get content from content table
 
-    # feeding - don't worry about it - when fed item is updated, informations
-    # in content table is updated too
+    // feeding - don't worry about it - when fed item is updated, informations
+    // in content table is updated too
 
     $SQL = "SELECT * FROM content
              WHERE item_id $sel_in $restrict_cond
-             ORDER BY content.number"; # usable just for constants
+             ORDER BY content.number"; // usable just for constants
 
     $db->tquery($SQL);
 
-    while( $db->next_record() ) {
+    while ( $db->next_record() ) {
 
         $fooid = ($use_short_ids ? $translate[unpack_id128($db->f("item_id"))] :
                                    unpack_id128($db->f("item_id")) );
@@ -864,7 +862,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     return $content;   // Note null returned above if no items found
 }
 
-# fills content arr with current content of $sel_in items (comma separated short ids)
+// fills content arr with current content of $sel_in items (comma separated short ids)
 function GetItemContent_Short($ids) {
     GetItemContent($ids, true);
 }
@@ -881,15 +879,15 @@ function GetItemContentMinimal($zids, $fields2get=false) {
   $db = getDB();
   $columns = join(',',$fields2get);
 
-  # construct WHERE clause
+  // construct WHERE clause
   list($sel_in, $settags) = itemContent_getWhere($zids);
-  if($sel_in) {
-      # get content from item table
+  if ($sel_in) {
+      // get content from item table
       $delim = "";
       $SQL = "SELECT $columns FROM item WHERE id $sel_in";
       $db->tquery($SQL);
       $n_items = 0;
-      while( $db->next_record() ) {
+      while ( $db->next_record() ) {
           $n_items++;
           $foo_id = unpack_id128($db->f("id"));
           foreach ( $fields2get as $fld ) {
@@ -904,13 +902,13 @@ function GetItemContentMinimal($zids, $fields2get=false) {
 
 /** Fills Abstract data srtructure for Constants */
 function GetConstantContent( $zids ) {
-  if( !$zids ) return false;
+  if ( !$zids ) return false;
   $db = getDB();
 
   $SQL = 'SELECT * FROM constant WHERE short_id '. $zids->sqlin(false);
   $db->tquery( $SQL );
   $i=1;
-  while($db->next_record()) {
+  while ($db->next_record()) {
     $coid = $db->f('short_id');
     $content[$coid]["const_name"][]        = array( "value"=> $db->f("name") );
     $content[$coid]["const_value"][]       = array( "value"=> $db->f("value"),
@@ -933,11 +931,11 @@ function GetConstantContent( $zids ) {
 /** Just helper function for storing data from database to Abstract Data Structure */
 function StoreTable2Content(&$db, &$content, $SQL, $prefix, $id_field) {
     $db->tquery($SQL);
-    while( $db->next_record() ) {
+    while ( $db->next_record() ) {
         $foo_id = $db->f($id_field);
         reset( $db->Record );
-        while( list( $key, $val ) = each( $db->Record )) {
-            if( !is_int($key))
+        while ( list( $key, $val ) = each( $db->Record )) {
+            if ( !is_int($key))
                 $content[$foo_id][$prefix . $key][] = array('value' => $val);
         }
     }
@@ -948,7 +946,7 @@ function StoreTable2Content(&$db, &$content, $SQL, $prefix, $id_field) {
 function GetHeadlineFieldID($sid, $slice_field="headline.") {
   $db = getDB();
 
-  # get id of headline field
+  // get id of headline field
   $SQL = "SELECT id FROM field
            WHERE slice_id = '". q_pack_id( $sid ) ."'
              AND id LIKE '$slice_field%'
@@ -960,13 +958,13 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
 }
 
 // -------------------------------------------------------------------------------
-# returns group_id from $show_input_func string
+// returns group_id from $show_input_func string
 function GetCategoryGroupId($input_show_func) {
     $arr = explode( ":", $input_show_func);
     return $arr[1];
 }
 
-# find group_id for constants of the slice
+// find group_id for constants of the slice
 function GetCategoryGroup($slice_id, $field='') {
     global $db;
 
@@ -974,10 +972,10 @@ function GetCategoryGroup($slice_id, $field='') {
     $SQL  = "SELECT input_show_func FROM field
               WHERE slice_id='". q_pack_id($slice_id) ."'
                 AND $condition
-                ORDER BY id";  # first should be category........,
-                               # then category.......1, etc.
+                ORDER BY id";  // first should be category........,
+                               // then category.......1, etc.
     $db->tquery($SQL);
-    if( $db->next_record() ){
+    if ( $db->next_record() ){
         return GetCategoryGroupId($db->f('input_show_func'));
     } else {
         return false;
@@ -986,19 +984,19 @@ function GetCategoryGroup($slice_id, $field='') {
 
 // -------------------------------------------------------------------------------
 
-# returns field id of field which stores category (usually "category........")
+// returns field id of field which stores category (usually "category........")
 function GetCategoryFieldId( $fields ) {
   $no = 10000;
-  if( isset($fields) AND is_array($fields) ) {
+  if ( isset($fields) AND is_array($fields) ) {
     reset( $fields );
-    while( list( $k,$val ) = each( $fields ) ) {
-      if( substr($val[id], 0, 8) != "category" )
+    while ( list( $k,$val ) = each( $fields ) ) {
+      if ( substr($val[id], 0, 8) != "category" )
         continue;
       $last = GetFieldNo($val[id]);
       $no = min( $no, ( ($last=='') ? -1 : (integer)$last) );
     }
   }
-  if($no==10000)
+  if ($no==10000)
     return false;
   $no = ( ($no==-1) ? '.' : (string)$no);
   return CreateFieldId("category", $no);
@@ -1006,7 +1004,7 @@ function GetCategoryFieldId( $fields ) {
 
 // -------------------------------------------------------------------------------
 
-# get id from item short id
+// get id from item short id
 function GetId4Sid($sid) {
   global $db;
 
@@ -1014,14 +1012,14 @@ function GetId4Sid($sid) {
     return false;
   $SQL = "SELECT id FROM item WHERE short_id='$sid'";
   $db->query( $SQL );
-  if( $db->next_record() )
+  if ( $db->next_record() )
     return unpack_id128($db->f("id"));
   return false;
 }
 
 // -------------------------------------------------------------------------------
 
-# get short item id item short id
+// get short item id item short id
 function GetSid4Id($iid) {
   global $db;
 
@@ -1029,17 +1027,17 @@ function GetSid4Id($iid) {
     return false;
   $SQL = "SELECT short_id FROM item WHERE id='". q_pack_id($iid) ."'";
   $db->query( $SQL );
-  if( $db->next_record() )
+  if ( $db->next_record() )
     return $db->f("short_id");
   return false;
 }
 
 // -------------------------------------------------------------------------------
 
-# in_array and compact is available since PHP4
+// in_array and compact is available since PHP4
 if (substr(PHP_VERSION, 0, 1) < "4") {
   function in_array($needle,$haystack){
-    if (!is_array ($haystack)) return false;
+    if (!is_array($haystack)) return false;
     reset ($haystack);
     while (list (,$val) = each ($haystack))
         if ($val == $needle)
@@ -1048,10 +1046,10 @@ if (substr(PHP_VERSION, 0, 1) < "4") {
   }
 }
 
-# Parses the string xxx:yyyy (database stored func) to arr[fce]=xxx [param]=yyyy
+// Parses the string xxx:yyyy (database stored func) to arr[fce]=xxx [param]=yyyy
 function ParseFnc($s) {
   $pos = strpos($s,":");
-  if( $pos ) {
+  if ( $pos ) {
     $arr[fnc] = substr($s,0,$pos);
     $arr[param] = substr($s,$pos+1);
   } else
@@ -1059,7 +1057,7 @@ function ParseFnc($s) {
   return $arr;
 }
 
-# returns html safe code (used for preparing variable to print in form)
+// returns html safe code (used for preparing variable to print in form)
 function safe( $var ) {
   return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
 }
@@ -1069,10 +1067,10 @@ function richEditShowable () {
   global $BName, $BVersion, $BPlatform;
     global $showrich;
     detect_browser();
-  # Note that Macintosh IE 5.2 does not support either richedit or current iframe
-  # Mac Omniweb/4.1.1 detects as Netscape 4.5 and doesn't support either
+  // Note that Macintosh IE 5.2 does not support either richedit or current iframe
+  // Mac Omniweb/4.1.1 detects as Netscape 4.5 and doesn't support either
   return (($BName == "MSIE" && $BVersion >= "5.0" && $BPlatform != "Macintosh") || $showrich > "");
-  # Note that RawRichEditTextarea could force iframe for certain BPlatform
+  // Note that RawRichEditTextarea could force iframe for certain BPlatform
 }
 
 /** Is it valid e-mail */
@@ -1148,10 +1146,10 @@ function FrmHtmlPage($param='') {
     echo getHtmlPage($param);
 }
 
-# Displays page with message and link to $url
-#   url - where to go if user clicks on Back link on this message page
-#   msg - displayed message
-#   dummy - was used in past, now you should use MsgPageMenu from msgpage.php3
+// Displays page with message and link to $url
+//   url - where to go if user clicks on Back link on this message page
+//   msg - displayed message
+//   dummy - was used in past, now you should use MsgPageMenu from msgpage.php3
 function MsgPage($url, $msg, $dummy="standalone") {
   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
@@ -1159,7 +1157,7 @@ function MsgPage($url, $msg, $dummy="standalone") {
     </head>
   <body>";
 
-  if( isset($msg) AND is_array($msg))
+  if ( isset($msg) AND is_array($msg))
     PrintArray($msg);
    else
     echo "<P>$msg</p><br><br>";
@@ -1170,9 +1168,9 @@ function MsgPage($url, $msg, $dummy="standalone") {
 }
 
 
-# function returns true if $fld fits the field scheme (used in unaliasing)
+// function returns true if $fld fits the field scheme (used in unaliasing)
 function IsField($fld) {
-    if( !isset($GLOBALS['LINKS_FIELDS']) ) {
+    if ( !isset($GLOBALS['LINKS_FIELDS']) ) {
          $GLOBALS['LINKS_FIELDS'] = GetLinkFields();
          $GLOBALS['CATEGORY_FIELDS'] = GetCategoryFields();
          $GLOBALS['CONSTANT_FIELDS'] = GetConstantFields();
@@ -1208,7 +1206,7 @@ function CountHit($id) {
         $logarray = getLogEvents("COUNT_HIT", $from="", $to="", true, true);
         if ( isset($logarray) AND is_array($logarray) ) {
             reset($logarray);
-            while(list(,$log) = each($logarray)) {
+            while (list(,$log) = each($logarray)) {
                 $myid = $log["params"];
                 $zid->refill($myid);
                 switch ($zid->onetype()) {
@@ -1277,11 +1275,11 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = "", $id_co
 
     if ($GLOBALS[debug]) $rows = 0;
 
-    $data = GetTable2Array ("SELECT * FROM $table WHERE $where", "NoCoLuMn");
+    $data = GetTable2Array("SELECT * FROM $table WHERE $where", "NoCoLuMn");
 
     if ($GLOBALS[debug]) { echo "data: "; print_r ($data); echo "<br>"; }
 
-    if (!is_array ($data)) {
+    if (!is_array($data)) {
         return true;
     }
 
@@ -1354,13 +1352,13 @@ function filename ($filename) {
 /**
  * Transforms simplified version of conditions to the extended syntax
  * for example conds[0][headline........]='Hi' transforms into
- * conds[0][headline........]=1,conds[0][value]='Hi',conds[0][operator]=LIKE
+ * conds[0][headline........]=1,conds[0]['value']='Hi',conds[0][operator]=LIKE
  *
  * It also replaceS all united field conds
  *    like conds[0][headline........,abstract........]='Hi'
  * with its equivalents:
  *     conds[0][headline........]=1,conds[0][abstract........]=1,
- *     conds[0][value]='Hi',conds[0][operator]=LIKE
+ *     conds[0]['value']='Hi',conds[0][operator]=LIKE
  * (number of united field conds is unlimited and you can use it in simplified
  *  condition syntax as well as in extended condition syntax)
  *
@@ -1373,14 +1371,14 @@ function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE") {
         // In first step we remove conds with wrong syntax (like conds[xx]=yy)
         // and replace easy conds with extended syntax conds
         foreach ($conds as $k => $cond) {
-            if( !is_array($cond) ) {
+            if ( !is_array($cond) ) {
                 unset($conds[$k]);
                 continue;             // bad condition - ignore
             }
-            if( !isset($cond['value']) && (count($cond) == 1) ) {
+            if ( !isset($cond['value']) && (count($cond) == 1) ) {
                 $conds[$k]['value'] = reset($cond);
             }
-            if( !isset($cond['operator']) ) {
+            if ( !isset($cond['operator']) ) {
                 if ( is_array($defaultCondsOperator) ) {
                     if ( is_array($defaultCondsOperator[key($cond)] )) {
                         $conds[$k]['operator'] = get_if($defaultCondsOperator[key($cond)]['operator'], 'LIKE');
@@ -1409,10 +1407,10 @@ function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE") {
     }
 }
 
-function GetTimeZone () {
-    $d = getdate ();
-    return (mktime ($d[hours],$d[minutes],$d[seconds],$d[mon],$d[mday],$d[year])
-    - gmmktime ($d[hours],$d[minutes],$d[seconds],$d[mon],$d[mday],$d[year])) / 3600;
+function GetTimeZone() {
+    $d = getdate();
+    return (mktime ($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])
+        - gmmktime ($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])) / 3600;
 }
 
 /** generates random string of given length (useful as MD5 salt) */
@@ -1420,8 +1418,9 @@ function gensalt($saltlen)
 {
     srand((double) microtime() * 1000000);
     $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
-    for ($i = 0; $i < $saltlen; $i ++)
-        $salt .= $salt_chars [rand (0,strlen($salt_chars)-1)];
+    for ($i = 0; $i < $saltlen; $i++) {
+        $salt .= $salt_chars[rand(0,strlen($salt_chars)-1)];
+    }
     return $salt;
 }
 
@@ -1433,34 +1432,36 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
     endslash($destdir);
     if (!$GLOBALS[$varname]) return "No $varname?";
     if ($filename == "") {
-        # get filename and replace bad characters
+        // get filename and replace bad characters
         $filename = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$varname."_name"]);
     }
 
-    if( !is_dir( $destdir ))
+    if (!is_dir($destdir)) {
         return _m("Internal error. File upload: Dir does not exist?!");
-
-    if( file_exists("$destdir$filename") )
-        return _m("File with this name already exists.") . " $destdir$filename";
-
-    # copy the file from the temp directory to the upload directory, and test for success
-
-    # file uploads are handled differently in PHP >4.0.3
-    list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
-    if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
-        if (is_uploaded_file($GLOBALS[$varname]))
-            if( !move_uploaded_file($GLOBALS[$varname], "$destdir$filename"))
-                return sprintf(_m("Can't move image  %s to %s"),
-                    $GLOBALS[$varname],"$destdir$filename");
-            else if ($perms)
-                chmod ($destdir.$filename, $perms);
     }
-    else {   # for php 3.x and php <4.0.3
-        if (!copy($GLOBALS[$varname],"$destdir$filename"))
-                return sprintf(_m("Can't copy image  %s to %s"),
-                    $GLOBALS[$varname],"$destdir$filename");
-        else if ($perms)
-            chmod ($destdir.$filename, $perms);
+
+    if (file_exists("$destdir$filename")) {
+        return _m("File with this name already exists."). " $destdir$filename";
+    }
+
+    // copy the file from the temp directory to the upload directory, and test for success
+
+    // file uploads are handled differently in PHP >4.0.3
+    list($va,$vb,$vc) = explode(".",phpversion());   // this check work with all possibilities (I hope) -
+    if (($va*10000 + $vb *100 + $vc) >= 40003) {    // '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
+        if (is_uploaded_file($GLOBALS[$varname])) {
+            if (!move_uploaded_file($GLOBALS[$varname], "$destdir$filename")) {
+                return sprintf(_m("Can't move image  %s to %s"), $GLOBALS[$varname],"$destdir$filename");
+            } elseif ($perms) {
+                chmod ($destdir.$filename, $perms);
+            }
+        }
+    } else {   // for php 3.x and php <4.0.3
+        if (!copy($GLOBALS[$varname],"$destdir$filename")) {
+            return sprintf(_m("Can't copy image  %s to %s"), $GLOBALS[$varname],"$destdir$filename");
+        } elseif ($perms) {
+            chmod($destdir.$filename, $perms);
+        }
     }
     return "";
 }
@@ -1470,65 +1471,61 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
 // like PHP split, but additionally provides $escape_pattern to stand for occurences of $pattern,
 // e.g. split_escaped (":", "a#:b:c", "#:") returns array ("a:b","c")
 
-function split_escaped ($pattern, $string, $escape_pattern)
-{
+function split_escaped($pattern, $string, $escape_pattern) {
     $dummy = "~#$?_";
-    if (strstr ($string,$dummy)) { echo "INTERNAL ERROR."; return "INTERNAL ERROR"; }
-    $string = str_replace ($escape_pattern,$dummy,$string);
-    $strings = split ($pattern, $string);
-    reset ($strings);
-    while (list ($key,$val) = each ($strings))
-        $strings[$key] = str_replace ($dummy, $pattern, $val);
+    if (strstr($string, $dummy)) {
+        echo "INTERNAL ERROR."; return "INTERNAL ERROR";
+    }
+    $string  = str_replace($escape_pattern, $dummy, $string);
+    $strings = split($pattern, $string);
+    foreach ($strings as $key => $val) {
+        $strings[$key] = str_replace($dummy, $pattern, $val);
+    }
     return $strings;
 }
 
-function join_escaped ($pattern, $strings, $escape_pattern)
-{
-    if (!is_array ($strings))
-        $strings = array ($strings);
-    reset ($strings);
-    while (list (,$val) = each ($strings)) {
-        if ($retval) $retval .= $pattern;
-        $retval .= str_replace ($pattern, $escape_pattern, $val);
+function join_escaped($pattern, $strings, $escape_pattern) {
+    foreach ((array)$strings as $val) {
+        if ($retval) {
+            $retval .= $pattern;
+        }
+        $retval .= str_replace($pattern, $escape_pattern, $val);
     }
     return $retval;
 }
 
-function join_and_quote( $pattern, $strings )
-{
-    if (!is_array ($strings))
-        $strings = array ($strings);
-    foreach ($strings as $string) {
-        if ($retval) $retval .= $pattern;
-        $retval .= addslashes ($string);
+function join_and_quote( $pattern, $strings ) {
+    foreach ((array)$strings as $string) {
+        if ($retval) {
+            $retval .= $pattern;
+        }
+        $retval .= addslashes($string);
     }
     return $retval;
 }
 
-function stripslashes_magic ($str)
-{
-  if( get_magic_quotes_gpc() )
-    return stripslashes ($str);
-  else return $str;
+/** stripslashes if magic quotes are set */
+function magic_strip($val) {
+    return get_magic_quotes_gpc() ? StripslashesArray($val) : $val;
 }
 
-function addslashes_magic ($str)
-{
-  if( get_magic_quotes_gpc() )
-    return $str;
-  else return addslashes ($str);
+function magic_add($str) {
+    return (get_magic_quotes_gpc() ? $str : addslashes($str));
 }
 
-function isdigit ($c) {
+function isdigit($c) {
     return $c >= "0" && $c <= "9";
 }
-function isalpha ($c) {
+
+function isalpha($c) {
     return ($c >= "a" && $c <= "z") || ($c >= "A" && $c <= "Z");
 }
-function isalnum ($c) {
+
+function isalnum($c) {
     return ($c >= "0" && $c <= "9") || ($c >= "a" && $c <= "z") || ($c >= "A" && $c <= "Z");
 }
-function gfd_error ($x) {
+
+function gfd_error($x) {
     echo "Unrecognized date format charcacter $x";
     exit;
 }
@@ -1544,21 +1541,24 @@ function get_formatted_date ($datestring, $format) {
 
     // Split the date into parts consisting only of digits or only of letters
     for ($i = 0; $i < strlen ($datestring); $i++) {
-        if (isalpha ($datestring[$i]) && ($s == "" || isalpha($datestring[$i-1])))
+        if (isalpha($datestring[$i]) && ($s == "" || isalpha($datestring[$i-1]))) {
             $s .= $datestring[$i];
-        else if (isdigit ($datestring[$i]) && ($s == "" || isdigit($datestring[$i-1])))
+        } elseif (isdigit($datestring[$i]) && ($s == "" || isdigit($datestring[$i-1]))) {
             $s .= $datestring[$i];
-        else if ($s) {
+        } elseif ($s) {
             $dateparts[] = $s;
             $s = "";
         }
     }
-    if ($s) $dateparts[] = $s;
+    if ($s) {
+        $dateparts[] = $s;
+    }
 
     // Split the format into parts consisting of one letter
     for ($i = 0; $i < strlen ($format); $i++) {
-        if (isalpha ($format[$i]))
+        if (isalpha($format[$i])) {
             $formatparts[] = $format[$i];
+        }
     }
 
     $month_names = array ("January"=>1,"February"=>2,"March"=>3,"April"=>4,"May"=>5,"June"=>6,
@@ -1650,7 +1650,7 @@ function add_post2shtml_vars ($delete = true) {
 
     reset ($var_types);
     while (list (,$var_type) = each ($var_types)) {
-        if (is_array ($vars[$var_type])) {
+        if (is_array($vars[$var_type])) {
             reset ($vars[$var_type]);
             while (list ($var, $value) = each ($vars[$var_type])) {
                 global $$var;
@@ -1718,7 +1718,7 @@ function tryQuery($SQL) {
 function DBFields($db) {
     $a = array();
     while (list($key,$val,,) = each($db->Record)) {
-        if( EReg("^[0-9]*$", $key))
+        if ( EReg("^[0-9]*$", $key))
             continue;
         $a[$key] = $val;
     }

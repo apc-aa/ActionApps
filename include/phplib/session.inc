@@ -101,7 +101,7 @@ class Session {
           $id = isset($HTTP_COOKIE_VARS[$this->name]) ? $HTTP_COOKIE_VARS[$this->name] : "";
         break;
         default:
-          die("This has not been coded yet.");
+          die("This has not been coded yet. (session.inc: get_id)");
         break;
       }
     }
@@ -142,20 +142,15 @@ class Session {
   function put_id() {
     global $HTTP_COOKIE_VARS;
 
-    $this->name = $this->cookiename==""?$this->classname:$this->cookiename;
-
     switch ($this->mode) {
-      case "inline":
-        die("This has not been coded yet.");
-      break;
-
-      case "get":
-        die("This has not been coded yet.");
+      case "cookie":
+        $this->name = $this->cookiename == "" ? $this->classname : $this->cookiename;
+        SetCookie($this->name, "", 0, $this->cookie_path, $this->cookie_domain);
+        $HTTP_COOKIE_VARS[$this->name] = "";
       break;
 
       default:
-            SetCookie($this->name, "", 0, "/", $this->cookie_domain);
-            $HTTP_COOKIE_VARS[$this->name] = "";
+        // do nothing. We don't need to die for modes other than cookie here.
       break;
     }
   }
@@ -392,7 +387,7 @@ class Session {
       } else {
         header("Status: 302 Moved Temporarily");
         $this->get_id($sid);
-	$this->mode = $this->fallback_mode;
+    $this->mode = $this->fallback_mode;
         if( isset($HTTPS) && $HTTPS == 'on' ){
         ## You will need to fix suexec as well, if you use Apache and CGI PHP
           $PROTOCOL='https';

@@ -25,11 +25,6 @@ http://www.apc.org/
    by the function showMenu ($aamenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1).
 */
 
-if (!defined ("AA_MENU_INCLUDED"))
-    define("AA_MENU_INCLUDED","1");
-else return;
-
-
 // ----------------------------------------------------------------------------------------
 /* creates a JavaScript variable modulesOptions, which allows to create another Module selectbox
     without reprinting all the options */
@@ -37,7 +32,7 @@ else return;
 function PrintModuleSelection() {
   global $slice_id, $g_modules, $sess, $PHP_SELF, $db, $MODULES;
 
-  if( is_array($g_modules) AND (count($g_modules) > 1) ) {
+  if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
 
     // create the modulesOptions content:
     $permitted = GetUserSlices();
@@ -49,9 +44,9 @@ function PrintModuleSelection() {
         $slice_ids = "WHERE module.id IN (".substr($slice_ids,1).") ";
     }
     echo "
-    <SCRIPT language=JAVASCRIPT><!--
+    <SCRIPT language=\"javascript\" type=\"text/javascript\"><!--
         var modulesOptions = ''\n";
-    $db->query ("SELECT module.id, module.type, slice.type AS slice_type, module.name
+    $db->query("SELECT module.id, module.type, slice.type AS slice_type, module.name
         FROM module LEFT JOIN slice ON module.id=slice.id "
         .$slice_ids);
 
@@ -79,7 +74,7 @@ function PrintModuleSelection() {
     ksort ($modules);
     reset ($modules);
     while (list ($order, $mods) = each ($modules)) {  // for all module types
-        if( $display_modtypes ) {
+        if ( $display_modtypes ) {
             foreach ($module_types as $module_type)
                 if ($module_type[0] == $order)
                      echo $option_begin . '" class="sel_title">*** '.$module_type[1]." ***'\n";
@@ -94,7 +89,7 @@ function PrintModuleSelection() {
         }
     }
 
-    if( !$slice_id )   // new slice
+    if ( !$slice_id )   // new slice
       echo "\t+'<option value=\"new\" selected>". _m("New slice") + "'";
     echo ";
         document.write('<select name=slice_id onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
@@ -115,13 +110,13 @@ function PrintModuleSelection() {
            $showMain -- show the main menu (top navigation bar) ?
            $showSub -- show the submenu (left navigation bar) ?
 */
-function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
+function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
 {
-    global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad, $sess, $db;
+    global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad, $sess, $db, $auth;
     global $menu_function;
     global $debug;
     trace("+","showMenu",$smmenus);
-    #huhsess("Session Variables");
+    //huhsess("Session Variables");
     // load the main AA menu (see menu.php3)
     if ($smmenus == "aamenus") {
         // Menu functions are defined in include/menu.php3 or modules/*/menu.php3
@@ -132,104 +127,117 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     }
 
     // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
-    if ($activeMain == "aaadmin")
-        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".get_mgettext_lang()."_news_lang.php3");
+    if ($activeMain == "aaadmin") {
+        bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/".get_mgettext_lang()."_news_lang.php3");
+    }
 
-    trace("=","","useOnLoad=".$useOnLoad);
-    if( $useOnLoad )
-        echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
-    else
-        echo '<body background="'. COLOR_BACKGROUND .'">';
-
-    if ($debug) { echo "<p><font color=purple>showMenu:activeMain=$activeMain;activeSubmenu=$activeSubmenu;showMain=$showMain;showSub=$showSub:</font></p>";  }
-
-    if( !$slice_id )
+    if (!$slice_id) {
         $r_slice_headline = _m("New slice");
+    }
+    $nb_logo = '<a href="'. $AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>';
 
-    $nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$AA_INSTAL_PATH.'images/action.gif" width="106" height="73" border="0" title="'. aa_version() .'"></a>';
-
-    echo "<TABLE border=0 cellspacing=0 cellpadding=0 width='100%'><TR>";
-
-    trace("=","","showMain=".$showMain);
+    echo '
+<body'. ($useOnLoad ? ' OnLoad="InitPage()"' : ''). ' bgcolor="'. COLOR_BACKGROUND .'">
+  <table border="0" cellspacing="0" cellpadding="0" width="100%">
+    <tr>
+';
     if ($showMain) {
         // Show the Alerts and Reader management images in the header
-        if ($GLOBALS["g_modules"][$slice_id]["type"] == "Alerts") {
-            $title_img =
-            "<a href=\"".$AA_INSTAL_PATH."doc/reader.html\">
-            <img border=0 src=\"".$AA_INSTAL_PATH."images/alerts.gif\"
-                alt=\""._m("Alerts")."\"></a>";
-        }
-        else if ($GLOBALS["g_modules"][$slice_id]["type"] == "S") {
-            $slice_info = GetSliceInfo ($slice_id);
-            if ($slice_info ["type"] == "ReaderManagement")
-                $title_img =
-                "<a href=\"".$AA_INSTAL_PATH."doc/reader.html\">
-                 <img border=0 src=\"".$AA_INSTAL_PATH."images/readers.gif\"
-                 alt=\""._m("Reader management")."\"></a>";
-        }
-
-        echo "
-        <TD colspan=2>
-        <TABLE border=0 cellpadding=0 cellspacing=0 width='100%'>
-            <TR><TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=122 height=1></TD>
-                <TD width=99%><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" height=1></TD><TD></TD>
-            </TR>
-            <TR><TD rowspan=2 align=center class=nblogo>$nb_logo</td>
-                <TD colspan=2 height=43 align=center valign=middle class=slicehead>\n";
-
-        if ($title_img)
-            echo "<table><tr><td>$title_img&nbsp;</td>
-                <td width=\"0%\" class=slicehead>";
-        echo $smmenus[$activeMain]["title"]."  -  $r_slice_headline";
-        if ($title_img)
-            echo "</td><td>&nbsp;$title_img</td></tr></table>";
-        echo "
-        </TD>
-            </TR>
-            <form name=nbform enctype=\"multipart/form-data\" method=post
-                action=\"". $sess->url($PHP_SELF) ."\">
-            <TR><td align=center class=navbar>";
-        $first = true;
-        trace("=","","loop");
-        reset ($smmenus);
-        while (list ($aamenu,$aamenuprop) = each ($smmenus)) {
-            if ($aamenuprop["level"] == "main") {
-                if ($first) $first = false;
-                else echo " | ";
-                if (!isset ($aamenuprop["cond"])) $aamenuprop["cond"] = 1;
-                if ($aamenu == $activeMain)
-                    echo "<span class=nbactive>$aamenuprop[label]</span>\n";
-                else if ($slice_id && $aamenuprop["cond"]) {
-                     $href = $aamenuprop["exact_href"];
-                     if (!$href) $href = get_aa_url($aamenuprop["href"]);
-                     $href = con_url ($href, "slice_id=$slice_id");
-                     echo "<a href=\"$href\">"
-                         ."<span class=nbenable>$aamenuprop[label]</span></a>\n";
+        switch ( $GLOBALS["g_modules"][$slice_id]["type"] ) {
+            case 'Alerts':
+                $title_img = a_href($AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 62, 36));
+                break;
+            case 'S':
+                $slice_info = GetSliceInfo($slice_id);  // TODO - cache the sliceinfo()
+                if ($slice_info ["type"] == "ReaderManagement") {
+                    $title_img = a_href($AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
                 }
-                else echo "<span class=nbdisable>$aamenuprop[label]</span>\n";
+                break;
+        }
+        if (!$title_img) {
+            $title_img = GetAAImage('spacer.gif', '', 28, 36);
+        }
+        echo '
+        <td colspan=2>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td width="1%"><img src="'.$AA_INSTAL_PATH. 'images/spacer.gif" width=122 height=1></td>
+              <td><img src="'.$AA_INSTAL_PATH. 'images/spacer.gif" height=1></td>
+              <td><img src="'.$AA_INSTAL_PATH. 'images/spacer.gif" height=1></td>
+            </tr>
+            <tr>
+              <td width="1%" rowspan="2" align="center" class="nblogo">'.$nb_logo.'</td>
+              <td height="43" align="center" valign="middle" class="slicehead">'.
+                  $title_img .'&nbsp;'. $smmenus[$activeMain]['title']. "  -  $r_slice_headline".
+              '</td>
+              <td width="20%" align="right" class="navbar">
+                <form name="logoutform" method="post" action="'. get_admin_url('logout.php3').'">'.
+                  $auth->auth['uname'] .' <input type="submit" name="logout" value="'._m('logout').'">&nbsp;
+                </form>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" class="navbar">
+        ';
+        $delim = '';
+        foreach ($smmenus as $aamenu =>$aamenuprop) {
+            if ($aamenuprop["level"] == "main") {
+                echo $delim;
+                $delim = ' | ';
+                if (!isset($aamenuprop["cond"])) {
+                    $aamenuprop["cond"] = 1;
+                }
+                if ($aamenu == $activeMain) {
+                    echo "<span class=nbactive>$aamenuprop[label]</span>\n";
+                }
+                elseif ($slice_id AND $aamenuprop["cond"]) {
+                     $href = $aamenuprop["exact_href"];
+                     if (!$href) {
+                         $href = get_aa_url($aamenuprop["href"]);
+                     }
+                     $href = con_url($href, "slice_id=$slice_id");
+                     echo a_href($href, "<span class=nbenable>$aamenuprop[label]</span>");
+                } else {
+                    echo "<span class=nbdisable>$aamenuprop[label]</span>";
+                }
             }
         }
 
-        echo "</td><td align=center class=navbar align=right> &nbsp; ";
-        if( is_array($g_modules) AND (count($g_modules) > 1) )
+        echo '
+              </td>
+              <td width="20%" class=navbar valign="bottom">
+                <form name="nbform" enctype="multipart/form-data" method="post" action="'. $sess->url($PHP_SELF) .'" style="display:inline">
+                &nbsp; ';
+        if (is_array($g_modules) AND (count($g_modules) > 1)) {
             echo _m("Switch to:") ."&nbsp; ";
+        }
         echo "\n";
         PrintModuleSelection();
-        echo "</TD></TR></form></TABLE>
-        </TD></TR><TR>";
+        echo '
+                </form>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+      ';
     }
 
     if ($showSub) {
         $submenu = $smmenus[$activeMain]["submenu"];
         if ($submenu) {
-            echo "<TD valign=top>";
-            showSubmenu ($smmenus[$submenu], $activeSubmenu);
-            echo "</TD>";
+            echo "<td valign=top>";
+            showSubmenu($smmenus[$submenu], $activeSubmenu);
+            echo "</td>";
         }
     }
-    echo "
-        <TD align=left valign=top width='99%'>
-        <TABLE border=0 cellspacing=0 cellpadding=10 width='100%'><TR><TD align=left>\n";
+    echo '
+        <td align=left valign=top width="99%">
+          <table border=0 cellspacing=0 cellpadding=10 width="100%">
+            <tr>
+              <td align="left">
+              ';
     trace("-");
 }
 
