@@ -45,7 +45,8 @@ if (!get_magic_quotes_gpc()) {
 }
 
 # need config.php3 to set db access, and phplib, and probably other stuff
-$AA_INC_PATH = "/data/www/htdocs/aa.ecn.cz/aaa/include/"; 
+#$AA_INC_PATH = "/data/www/htdocs/aa.ecn.cz/aaa/include/"; 
+$AA_INC_PATH = "include/";
 #$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/"; 
 
 require $GLOBALS[AA_INC_PATH]."config.php3";
@@ -1189,6 +1190,9 @@ echo '<h2>Update OK</h2>
 
 /*
 $Log$
+Revision 1.14  2002/01/12 02:47:18  mitraearth
+Changed absolute path to AA_INC_PATH to a relative one.
+
 Revision 1.13  2002/01/09 18:25:36  honzam
 better indexes for item table, fixed RSS view
 
