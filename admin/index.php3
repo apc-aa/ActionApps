@@ -184,27 +184,34 @@ else
 #	view_selected=0			// no view action for selected item
 # Big switch to hide many things
 #	bodyonly=1
-#
-if ($bodyonly == "1")
-{
-	// if ....="1" is set, we keep the value.
-	// example: "&bodyonly=1&action_selected=1" will show action_selected....
-	if (!$navbar) 	$navbar = "0";			// no top navigator
-	if (!$leftbar ) $leftbar = "0";			// no left navigator
-	if (!$sort_filter ) 	$sort_filter = "0";	// no sort / no filter
-	if (!$action_selected )	$action_selected = "0";	// no action for selected (marked) item
-	if (!$feed_selected)	$feed_selected  = "0";
-	if (!$view_selected)	$view_selected  = "0";
+
+$sess->register("navbar");
+$sess->register("leftbar");
+$sess->register("sort_filter");
+$sess->register("action_selected");
+$sess->register("feed_selected");
+$sess->register("view_selected");
+$sess->register("bodyonly");
+
+if ($bodyonly == "1") {
+  // if ....="1" is set, we keep the value.
+  // example: "&bodyonly=1&action_selected=1" will show action_selected....
+  if (!$navbar) 	$navbar = "0";			// no top navigator
+  if (!$leftbar ) $leftbar = "0";			// no left navigator
+  if (!$sort_filter ) 	$sort_filter = "0";	// no sort / no filter
+  if (!$action_selected )	$action_selected = "0";	// no action for selected (marked) item
+  if (!$feed_selected)	$feed_selected  = "0";
+  if (!$view_selected)	$view_selected  = "0";
 }
 ######################################
 
 if ($action) {
-  switch( $action ) {  // script post parameter 
+  switch( $action ) {  // script post parameter
     case "app":
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
         MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
         exit;
-      }  
+      }
       MoveItems($chb,1);
       FeedAllItems($chb, $fields);    // Feed all checked items
       break;
@@ -212,14 +219,14 @@ if ($action) {
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
         MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
         exit;
-      }  
+      }
       MoveItems($chb,2);
       break;
     case "trash":
       if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH)) {
         MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
         exit;
-      }  
+      }
       MoveItems($chb,3);
       break;
     case "edit":  // edit the first one
@@ -400,7 +407,7 @@ function OpenFeedForm(){
 function CallLiveCheckbox (controlName) {
     myimg = document.itemsform[controlName];
     myimg.src = "<?php echo $AA_INSTAL_PATH ?>images/cb_2off.gif";
-    
+
     imgsrc = "<?php echo $AA_INSTAL_PATH ?>live_checkbox.php3?"
         +controlName+"=1&no_cache="+Math.random()+"&AA_CP_Session=<?php echo $AA_CP_Session ?>";
     setTimeout("ChangeImgSrc ('"+controlName+"','"+imgsrc+"')", 1);
@@ -409,7 +416,7 @@ function CallLiveCheckbox (controlName) {
 function ChangeImgSrc (imageName, newsrc) {
     document.itemsform [imageName].src = newsrc;
 }
-  
+
 // -->
 </SCRIPT>
 
