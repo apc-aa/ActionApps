@@ -758,6 +758,11 @@ function show_fnc_wi2($varname, $field, $value, $param, $html) {
 
   if (!empty($param))
     list($constgroup, $size, $wi2_offer, $wi2_selected) = explode(':', $param);
+  
+  // default size is 5 rows
+  if( !$size ) {
+      $size = 5;
+  }
 
   if( substr($param,0,7) == "#sLiCe-" ) {  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
@@ -1258,7 +1263,7 @@ function GetFormJavascript ($show_func_used, $js_proove_fields) {
 
     if ($javascript) $retval .= '
 
-    <script language="javascript" src="'.$AA_INSTAL_PATH.'javascript/fillform.js">
+    <script language="javascript" src="'.$GLOBALS['AA_INSTAL_PATH'].'javascript/fillform.js">
     </script>'."\n\n";
 
     return $retval;
@@ -1338,6 +1343,8 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
                 || GetProfileProperty('hide',$pri_field_id)
                 || ($action == "insert" && $notshown [$varname]);
 
+        list ($validate) = split (":", $f["input_validate"]);
+
         if ($setdefault) {
             $$varname = GetDefault($f);
             $$htmlvarname = GetDefaultHTML($f);
@@ -1351,8 +1358,6 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
             list ($show_func) = split (":", $f["input_show_func"]);
             $show_func_used [$show_func] = 1;
         }
-
-        list ($validate) = split (":", $f["input_validate"]);
 
         $js_proove_password_filled = $action != "edit"
             && $f["required"] && ! $oldcontent4id[$pri_field_id][0]["value"];
