@@ -445,7 +445,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
            $slices = array ($slice_id);
   }
 
-  if( is_array ($slices) && count($slices) >= 1 ) {
+  if( is_array($slices) AND (count($slices) >= 1) ) {
       reset ($slices);
       $slicesText = "";
       while (list (,$slice) = each ($slices)) {
@@ -657,91 +657,6 @@ if( $debug ) {
 }  
 
 
-// returns array of item ids matching the conditions in right order
-  # items_cond - SQL string added to WHERE clause to item table query
-function GetItemAppIds($fields, $db, $slice_id, $conditions, 
-                       $pubdate_order="DESC", $order_fld="", $order_dir="", 
-                       $items_cond="", $exact=true ) {
-
-  $p_slice_id = q_pack_id($slice_id);
-  
-  if( isset($conditions) AND is_array($conditions)) {
-    $set=0;
-    $where = "";
-    reset( $conditions );
-
-    while( list( $fid, $val ) = each($conditions) ) {
-      if( !$fields[$fid] )    // bad condition - field not exist
-        continue;
-
-# huh("list( $fid, $val )");
-//p_arr_m($fields);
-      if( $fields[$fid][in_item_tbl] )
-        $where .= " AND (". $fields[$fid][in_item_tbl] .
-                  ($exact ? "='$val')": " LIKE '%$val%')");
-       else {
-        $content_fld = ($fields[$fid][text_stored] ? "text" : "number");
-        $SQL="SELECT item_id FROM content, item 
-               WHERE content.item_id = item.id
-                 AND item.slice_id = '$p_slice_id'
-                 AND content.field_id = '". $fields[$fid][id] ."'
-                 AND ($content_fld". ($exact ? "='$val')": " LIKE '%$val%')");
-# huh( $SQL );
-        $db->query($SQL);
-        while( $db->next_record() ) {
-          $posible[unpack_id128($db->f(item_id))] .= '.';
-        }  
-        $set++;
-      }  
-    }
-
-# p_arr_m($posible);
-    
-# huh("WHERE: $where");
-//    if($where != "" )
-//      $where .= ")";
-  }    
-      
-  $de = getdate(time());
-  $item_SQL = "SELECT item.id as id FROM item ";
-  if( $order_fld AND !$fields[$order_fld][in_item_tbl] ) {
-    $order_content_fld = ($fields[$order_fld][text_stored] ? "text" : "number");
-    $item_SQL .= " LEFT JOIN content ON item.id=content.item_id ";
-    $add_where = " content.field_id='$order_fld' AND ";
-    
-#    $item_SQL .= " LEFT JOIN content ON item.id=content.item_id
-#                   LEFT JOIN constant ON content.$order_content_fld=constant.value ";
-  }                 
-  $item_SQL .= " WHERE $add_where (slice_id='$p_slice_id' AND ";
-  $item_SQL .= ( $items_cond ? $items_cond.")" : 
-                "publish_date <= '". mktime(23,59,59,$de[mon],$de[mday],$de[year]). "' AND ".  //if you change bounds, change it in table.php3 too
-                "expiry_date > '". mktime(0,0,0,$de[mon],$de[mday],$de[year]). "' AND ".             //if you change bounds, change it in table.php3 too
-                "status_code=1) "); // construct SQL query
-  $item_SQL .= $where;
-                
-
-  if( $order_fld AND !$fields[$order_fld][in_item_tbl] )
-    $item_SQL .= " ORDER BY content.$order_content_fld $order_dir, publish_date $pubdate_order";
-   else 
-    $item_SQL .= " ORDER BY " . ($order_fld ? "$order_fld $order_dir," : ""). " publish_date $pubdate_order";
-
-//  $item_SQL .= " LIMIT 0,100";
-
-# huh($item_SQL);
-  $db->query($item_SQL);     
-
-  if( $set ) {    # just for speed up the processing
-    while( $db->next_record() ) {
-      if( strlen($posible[$unid = unpack_id128($db->f(id))]) == $set)   #all conditions passed
-        $arr[] = $unid;
-    }
-  } else  {
-    while( $db->next_record() ) 
-      $arr[] = unpack_id128($db->f(id));
-  }    
-  
-  return $arr;           
-}
 
 # ----------- Easy query -------- parse query functions first
 
