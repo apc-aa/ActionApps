@@ -49,7 +49,7 @@ function  xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timest
   return http_fetch($url,$d);
 }
 
-//A generic fetching routing that takes an array of parameters (possibly empty)
+//A generic fetching routine that takes an array of parameters (possibly empty)
 function http_fetch($url,$d=null) { 
   global $debug;
   if (isset($d)) {
@@ -63,15 +63,18 @@ function http_fetch($url,$d=null) {
 	    $url = $url."?".$tl;
     }
   }
-  if ($debug) print("http_fetch:$url\n");
+  if ($GLOBALS[debugfeed] >= 8) print("http_fetch:$url\n");
+  /* This old version breaks on 4.3.1 and later, ends after first packet
   if (!($fp = fopen($url, "r"))) {
     writeLog("CSN","Unable to connect remote node $url");
     return false;
   }
- $data = fread($fp, 4000000);
- fclose($fp);
-
- return $data;
+  $data = fread($fp, 4000000);
+  fclose($fp);
+  */
+  // Replacement only works php >4.3.0
+  $data = file_get_contents($url);
+  return $data;
 }
 
 // Process one feed
@@ -100,13 +103,14 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
   } else {   // not FEEDTYPE_APC
     $feed["DebugName"] = "RSS Feed #$feed_id: $feed[name]: -> ".$l_slice->name();
 	if ($debugfeed >= 1) print("\n<br>$feed[DebugName]");
+    if ($debugfeed >= 8) huhl("onefeedFetchAndParse:url=",$feed[server_url]);
     $xml_data = http_fetch($feed[server_url]);
   }
   if (!$xml_data) {
   		if ($debugfeed >= 1) print("\n<br>$feed[DebugName]: no data returned");
 		return false;
   }
-
+  if ($debugfeed >= 8) huhl("Fetched data=",htmlspecialchars($xml_data));
   if (substr($xml_data,0,1) != "<") {
     writeLog("CSN","Feeding mode: $xml_data");
   	if ($debugfeed >= 1) print("\n<br>$feed[DebugName]:bad data returned: $xml_data");
@@ -116,7 +120,7 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed) {
   if (!( $feed["aa_rss"] = aa_rss_parse( $xml_data ))) {
     writeLog("CSN","Feeding mode: Unable to parse XML data");
     if ($debugfeed >= 1) 
-        print("\n<br>$feed[DebugName]:unparsable: $xml_data");
+        print("\n<br>$feed[DebugName]:unparsable: <hr>".htmlspecialchars($xml_data)."<hr>");
     return false;
   }
 

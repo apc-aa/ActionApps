@@ -52,7 +52,7 @@ $module2abbrev = array(
 // 4 - http://www.peerfear.org/rss/index.rss (Kevin Burton)
 // 5 - http://www.aaronsw.com/weblog/index.xml
 // 6 - 	
-		
+
 function decode($v) {
   return utf8_decode($v);
 }
@@ -81,7 +81,7 @@ function startElement($parser, $name, $attrs) {
   $cur_tag .= "^".nsName2abbrevname($name);
   $RDF = nsAbbrev2name("RDF");   // For matching with NameSpace expanded attributes
   
-  //print("\nCUR_TAG=$cur_tag");
+  if ($GLOBALS[debugfeed] >=8) print("\nStartElement:$cur_tag");
   switch ($cur_tag) {
     case "^RSS" :       // rss header, read version
         $rss_version = $attrs["VERSION"]; break;
@@ -148,6 +148,7 @@ function endElement($parser, $name) {
          $fielddata_uri, $fielddata, $fielddata_content_format,
          $fulltext_content;
 
+  if ($GLOBALS[debugfeed] >=8) print("\nendElement:$cur_tag");
   switch ($cur_tag) {
     case "^RDF:RDF":
       break;
@@ -255,6 +256,7 @@ function charD($parser, $data) {
   }
 }
 
+// Parse feed, return array or false on failure
 function aa_rss_parse($xml_data) {
   global $aa_rss;
   $aa_rss = array();   // Clear out, or will just append to previous parse!
@@ -268,6 +270,7 @@ function aa_rss_parse($xml_data) {
     print("\nXML_RSSPARSE:ERR:$err");
     return false;
   }
+  if ($GLOBALS[debugfeed] >=8) huhl("aa_rss_parse:Parsed ok array=",$aa_rss);
   xml_parser_free($xml_parser);
   return $aa_rss;
 }

@@ -1,5 +1,6 @@
 10/19/03 - Added mapping to RSS, 
 (mitra)    Added debugpermissions and associatioed reporting
+           Fixed bug with http fetching in php>4.3.0
 10/16/03 - 'Fixed bug in searchlib.php3 - multiple values joined by AND operator
 (marek)    were not enclosed in speech marks.
 09/30/03 - loop through multivalues in stringexpand:
