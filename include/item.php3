@@ -58,6 +58,13 @@ function GetAliasesFromFields($fields) {
   return($aliases);
 }  
 
+#explodes $param by ":". The "#:" means true ":" - dont separate
+function ParamExplode($param) {
+  $a = str_replace ("#:", "__-__.", $param);    # dummy string
+  $b = str_replace (":", "##Sx",$a);            # Separation string is ##Sx
+  $c = str_replace ("__-__.", ":", $b);         # change "#:" to ":"
+  return explode( "##Sx", $c );
+}  
 
 class item {    
   var $item_content;   # asociative array with names of columns and values from item table
@@ -150,7 +157,7 @@ class item {
   # param: length:field_id
   #    length - number of characters taken from field_id (like "80:full_text.......")
   function f_a($col, $param="") {
-    $p = explode(":",$param);
+    $p = ParamExplode($param);
     if ($this->columns[$col][0][value])
       return htmlspecialchars($this->columns[$col][0][value]);
     return htmlspecialchars(substr($this->columns[ $p[1] ][0][value], 0, $p[0] ) );
@@ -163,7 +170,7 @@ class item {
   #    redirect - url of another page which shows the content of item 
   #             - this page should contain SSI include ../slice.php3 too
   function f_f($col, $param="") { 
-    $p = explode(":",$param);
+    $p = ParamExplode($param);
     if( $p[0] AND $this->columns[ $p[0]][0][value] )       # link_only
       return ($this->columns[$col][0][value] ? 
                 $this->columns[$col][0][value] :
@@ -206,6 +213,15 @@ class item {
                    unpack_id( $this->columns["id.............."][0][value]));
   }                 
 
+  # prints "begin".$col."end" if $col="condition", else prints "none"
+  # param: condition:begin:end:none
+  function f_c($col, $param="") { 
+    $p = ParamExplode($param);
+    if( $this->columns[$col][0][value] != $p[0] )
+      return $p[1]. htmlspecialchars($this->columns[$col][0][value]) .$p[2];
+    return htmlspecialchars($p[3]); 
+  }
+  
   # ----------------- alias function definition end --------------------------
   
   // function shows full text navigation (back, home)
@@ -216,13 +232,20 @@ class item {
 
   function get_item() {
   // format string
-    $out = $this->format;
     $remove = $this->remove;
-    $out = $this->unalias($out, $remove);
+    $format = $this->top;
+    $out = $this->unalias($format, $remove);
+    $format = $this->format;
+    $out .= $this->unalias($format, $remove);
+    $format = $this->bottom;
+    $out .= $this->unalias($format, $remove);
     return $out;
   }  
 
   function unalias($out, $remove_string="") {
+    if( !$out )
+      return "";
+      
     $piece = explode("_#",$out);
     if( !is_array($piece))
       $piece = array($out);
@@ -291,6 +314,9 @@ class item {
 
 /*
 $Log$
+Revision 1.11  2001/04/17 21:32:08  honzam
+New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
+
 Revision 1.10  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

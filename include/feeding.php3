@@ -141,9 +141,9 @@ function FeedItemTo($item_id, $destination, $fields, $approved, $tocategory=0,
                                         # insert, invalidatecache, not feed
   
   # update relation table - stores where is what fed
-  $SQL = "INSERT INTO relation SET destination_id='$p_id',
-                                   source_id='$p_item_id',
-                                   flag = '". REL_FLAG_FEED ."'";  // feed bit
+  $SQL = "INSERT INTO relation ( destination_id, source_id,   flag )
+               VALUES ( '$p_id', '$p_item_id', '". REL_FLAG_FEED ."' )";
+
   $db->query($SQL);
 
   return true;
@@ -256,6 +256,9 @@ function DeleteItem($db, $id) {
 
 /*
 $Log$
+Revision 1.9  2001/04/17 21:32:08  honzam
+New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
+
 Revision 1.8  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support

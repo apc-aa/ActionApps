@@ -488,6 +488,7 @@ define("L_A_SLICE_TIT", L_SLICE_ADM);
 define("L_A_SLICE_ADD_HELP", "Nový webík mùžete vytvoøit na základì šablony, nebo zkopírovat nastavení z již existujícího webíku (vytvoøí se pøesná kopie vèetnì nastavení .");
 
 define("L_ALIAS_FUNC_A", "abstrakt");
+define("L_ALIAS_FUNC_C", "podmínka");
 define("L_ALIAS_FUNC_D", "datum");
 define("L_ALIAS_FUNC_E", "editace èlánku");
 define("L_ALIAS_FUNC_F", "odkaz na plný text");
@@ -546,6 +547,9 @@ define("L_CANT_CREATE_IMG_DIR","Nelze vytvoøit adresáø pro obrázky");
     
 /*
 $Log$
+Revision 1.27  2001/04/17 21:32:08  honzam
+New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
+
 Revision 1.26  2001/03/30 11:54:35  honzam
 offline filling bug and others small bugs fixed
 

@@ -18,28 +18,27 @@
 # this path with a slash!
 # Example:
 # $AA_INC_PATH = "/home/httpd/html/aa/include/";
-$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa2/include/"; 
+$AA_INC_PATH = "/raid/www/htdocs/work.ecn.cz/apc-aa/include/";
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
-define("AA_INSTAL_URL", "http://aa.ecn.cz/aa/");
+define("AA_INSTAL_URL", "http://work.ecn.cz/apc-aa/");
 
 # URL of index of help files for AA
 define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
 
 # Your Internet Domain
-define("DEFAULT_ORG_ID", "apc-aa.sourceforge.org");
+define("DEFAULT_ORG_ID", "ecn.cz");
 
 # DB Access Configuration
 define("DB_HOST", "localhost");
-define("DB_NAME", "aa-db");
-define("DB_USER", "aa-user");
-define("DB_PASSWORD", "somepasswd");
+define("DB_NAME", "aadbnew");
+define("DB_USER", "aauser");
+define("DB_PASSWORD", "wAmp1rSysteM");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
-define("AA_ID", "420224311780abcd420224311780abcd");
-#define("AA_ID", "000111222333444555666777888999A9");
+define("AA_ID", "1259251325687bcd420224311780abcd");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
 define("PERM_LIB", "ldap");
@@ -47,7 +46,7 @@ define("PERM_LIB", "ldap");
 # LDAP Configuration
 define("LDAP_HOST", "localhost");
 define("LDAP_BINDDN", "cn=aauser,ou=AA");
-define("LDAP_BINDPW", "somepasswd");  // password
+define("LDAP_BINDPW", "sklenycka");  // password
 define("LDAP_BASEDN", "ou=AA");
 define("LDAP_PEOPLE", "ou=People,ou=AA");
 define("LDAP_GROUPS", "ou=AA");
@@ -106,6 +105,7 @@ define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
 # Select color profile for administation pages
 
   # -- WebNetworks profile
+  /*
     define("COLOR_TABBG",     "#A8C8B0");          # background of tables
     define("COLOR_TABTITBG",  "#589868");          # background of table titles
     define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
@@ -114,6 +114,7 @@ define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
     define("ADMIN_CSS","admin.css");               # style for admin interface
     define("ADM_SLICE_CSS","adm_slice.css");       # style for public view of 
                                                    # not encapsulated slices
+  */
 
   # -- IGC profile --- 
   /*
@@ -127,14 +128,13 @@ define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
   */
 
   # -- Econnects profile --- 
-  /*
     define("COLOR_TABBG",   "#EBDABE");            # background of tables
     define("COLOR_TABTITBG","#584011");            # background of table titles
     define("COLOR_BACKGROUND","#F5F0E7");          # admin pages background
       # You can redefine the colors in styles too
     define("ADMIN_CSS","admin-ecn.css");           # style for admin interface
     define("ADM_SLICE_CSS","adm_slice.css");       # style for public view of 
-  */
+                                                   # not encapsulated slices
 
 # Language: uncomment one language  file
 require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English

@@ -109,6 +109,7 @@ $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "nul" => L_INPUT_INSERT_NUL*/);
                              
 $ALIAS_FUNC_TYPES = array ( "f_a" => L_ALIAS_FUNC_A,
+                            "f_c" => L_ALIAS_FUNC_C,
                             "f_d" => L_ALIAS_FUNC_D,
                             "f_e" => L_ALIAS_FUNC_E,
                             "f_f" => L_ALIAS_FUNC_F,
@@ -160,6 +161,9 @@ $VIEW_TYPES = array ( 'list'   => L_COMPACT_VIEW,
                       
 /*
 $Log$
+Revision 1.9  2001/04/17 21:32:08  honzam
+New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
+
 Revision 1.8  2001/03/30 11:54:35  honzam
 offline filling bug and others small bugs fixed
 
