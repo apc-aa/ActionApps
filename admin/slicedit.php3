@@ -33,11 +33,11 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 reset ($MODULES);
-while (list ($letter,$module) = each ($MODULES)) {
-    if ($create[$letter]) {
+while (list ($type,$module) = each ($MODULES)) {
+    if ($create[$type]) {
         $url = $sess->url($module["directory"] . "modedit.php3");
-        if( $template[$letter] )
-            $url = con_url( $url, "template%5B$letter%5D=". $template[$letter]);
+        if( $template[$type] )
+            $url = con_url( $url, "template%5B$type%5D=". $template[$type]);
         go_url( $url );
     }
 }

@@ -57,21 +57,21 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td class=tabtit><b>&nbsp;<?php echo L_A_MODULE?></b>
 <tr><td><table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php  reset ($MODULES);
-    while (list ($letter,$module) = each ($MODULES)) {
+    while (list ($type, $module) = each ($MODULES)) {
         if ($module["hide_create_module"]) continue;
         echo "<TR><TD class=tabtxt><B>".$module['name']."</B></TD><TD>";
         if ($module["show_templates"]) {
             echo "<SELECT name=\"template[$letter]\">";
             reset ($g_modules);
             while (list ($mid,$mod) = each ($g_modules)) {
-                if( $mod['type']==$letter )
+                if( $mod['type']==$type )
                     echo "<OPTION value=\"x$mid\">".$mod['name']."</OPTION>";
             }        
             echo "</SELECT>";
         } else
             echo "&nbsp;";
         echo "</TD><TD>
-            <INPUT TYPE=SUBMIT NAME='create[$letter]' value='".L_ADD."'></TD></TR>";
+            <INPUT TYPE=SUBMIT NAME='create[$type]' value='".L_ADD."'></TD></TR>";
     }
 ?>
 </table></td></tr>
