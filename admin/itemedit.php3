@@ -349,7 +349,7 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
 </table></td></tr>
 <tr><td align=center><?php
 if($edit || $update || ($insert && $added_to_db)) { ?>
-   <input type=submit name=update value="<?php echo L_POST ?>">
+   <input type=submit name=update accesskey=s value="<?php echo L_POST ?>">
   <?
 
   /*
