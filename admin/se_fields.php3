@@ -197,14 +197,16 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </tr>
 <tr><td colspan=7><hr></td></tr>
 <?php
-  reset($s_fields);
-  while( list(, $v) = each($s_fields)) {
-    $type = ( $v[in_item_tbl] ? "in_item_tbl" : "" );
-    if( $update ) # get values from form
-      ShowField($v[id], $name[$v[id]], $pri[$v[id]], $req[$v[id]], $shw[$v[id]], $type);
-    else  
-      ShowField($v[id], $v[name], $v[input_pri], $v[required], $v[input_show], $type);
-  }
+  if( isset($s_fields) and is_array($s_fields)) {
+    reset($s_fields);
+    while( list(, $v) = each($s_fields)) {
+      $type = ( $v[in_item_tbl] ? "in_item_tbl" : "" );
+      if( $update ) # get values from form
+        ShowField($v[id], $name[$v[id]], $pri[$v[id]], $req[$v[id]], $shw[$v[id]], $type);
+      else  
+        ShowField($v[id], $v[name], $v[input_pri], $v[required], $v[input_show], $type);
+    }
+  }  
     # one row for possible new field
   ShowField("New_Field", "", "1000", false, true, "new");
   
@@ -222,6 +224,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.14  2002/02/11 09:51:51  honzam
+fixed bug with warning message when no fields in slice
+
 Revision 1.13  2001/09/27 15:44:35  honzam
 Easiest left navigation bar editation
 
