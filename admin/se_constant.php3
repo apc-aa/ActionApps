@@ -28,10 +28,19 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+//require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
+if( $deleteGroup && $group_id && !$category )
+{
+    $db = new DB_AA;
+    $db->query ("DELETE FROM constant WHERE (group_id='lt_groupNames' AND name='$group_id')
+                OR group_id='$group_id'");
+    go_url( $sess->url(self_base() . "index.php3"));
+}
+  
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
   exit;
@@ -46,6 +55,20 @@ if( $categ OR $category ) {
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
+
+// Check permissions
+if (! $category && $group_id ) {
+    $SQL = "SELECT * FROM constant_slice INNER JOIN slice 
+    	ON constant_slice.slice_id = slice.id 
+    	WHERE group_id='$group_id'";
+    
+    $db->query ($SQL);
+      
+    if ($db->next_record() && !CheckPerms( $auth->auth["uid"], "slice", unpack_id($db->f("slice_id")), PS_FIELDS)) {
+        MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS_GROUP." (".$db->f("name").")", "admin");
+        exit;
+    }  
+}
 
 function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) {
   global $sess;
@@ -74,6 +97,35 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
   }  
   echo "</tr>\n";
 }
+
+function propagateChanges ($cid, $newvalue, $short=true)
+{
+	global $db, $group_id, $Msg;
+	$db->query ("SELECT value FROM constant WHERE ".
+		($short ? "short_id=$cid" : "id='$cid'"));
+	if (!$db->next_record()) return;
+	$oldvalue = addslashes($db->f("value"));
+	if ($oldvalue == $newvalue) return;
+	$db->query ("
+		SELECT item_id,field_id
+		FROM content, field WHERE field.id=content.field_id
+		AND (field.input_show_func LIKE '___:$group_id:%'
+        OR  field.input_show_func LIKE '___:$group_id')
+		AND content.text = '$oldvalue'");
+	$db1 = new DB_AA;
+	$cnt = 0;
+	while ($db->next_record()) {
+		++$cnt;
+		$db1->query ("
+			UPDATE content SET text='$newvalue'
+			WHERE item_id='".$db->f("item_id")."' 
+			AND field_id='".$db->f("field_id")."' 
+			AND text='$oldvalue'");
+	}
+	if ($cnt) $Msg .= $cnt . L_CONSTANT_ITEM_CHNG . "'$newvalue'<br>";
+}
+
+hcUpdate();
 
 if( $update )
 {
@@ -107,6 +159,25 @@ if( $update )
     if( count($err) > 1)
       break;
 
+	if ($group_id) {
+		 // if there is no group owner, promote this slice to owner
+		 $db->query ("SELECT * FROM constant_slice WHERE group_id='$group_id'");
+		 if (!$db->next_record()) $db->query ("
+			INSERT INTO constant_slice (slice_id,group_id,propagate)
+			VALUES ('$p_slice_id','$group_id',".($propagate_changes ? 1 : 0).");");
+		 else {
+		 	$db->query ("
+		 		UPDATE constant_slice SET propagate=".($propagate_changes ? 1 : 0)."
+			WHERE group_id = '$group_id'");
+			if ($new_owner_id) {
+				$db->query ("
+			  		UPDATE constant_slice SET slice_id='".addslashes(pack_id($new_owner_id))."'
+					WHERE group_id = '$group_id'");
+				$chown = 0;
+			}
+   		}
+	}	  
+
     # add new group to constant group list
     if ($add_new_group) {
       $SQL = "INSERT INTO constant SET id='". q_pack_id(new_id()) ."',
@@ -118,33 +189,49 @@ if( $update )
       $db->query($SQL);
     }  
   
-    # first delete old values
-    $SQL = "DELETE FROM constant WHERE group_id = '$group_id'";
-    $db->query($SQL);
-      
     reset($name);
-    while( list($key,$nam) = each($name) ) {
-      if( $nam == "" )   # remove this constant
-        continue;
-
-      $varset->clear();
-      $varset->set("id", substr($cid[$key],1), "unpacked" );  # remove beginning 'x'
-      $varset->set("group_id", $group_id, "quoted" );
-      $varset->set("name",  $name[$key], "quoted");
-      $varset->set("value", $value[$key], "quoted");
-      $varset->set("pri", ( $pri[$key] ? $pri[$key] : 1000), "number");
-      $varset->set("class", $class[$key], "quoted");
-      if( !$db->query("INSERT INTO constant " . $varset->makeINSERT() )) {
-        $err["DB"] .= MsgErr("Can't copy constant");
-        break;
-      }
+    while( list($key) = each($name) ) {
+		$p_cid = q_pack_id(substr($cid[$key],1));
+        // if name is empty, delete the constant
+        if ($name[$key] == "") {
+            if( !$db->query("
+                DELETE FROM constant WHERE id='$p_cid'")) {
+                $err["DB"] .= MsgErr("Can't delete constant");
+                break;
+            }
+            continue;
+        }
+		$varset->clear();
+		$varset->set("name",  $name[$key], "quoted");
+		$varset->set("value", $value[$key], "quoted");
+		$varset->set("pri", ( $pri[$key] ? $pri[$key] : 1000), "number");
+		$varset->set("class", $class[$key], "quoted");
+		$db->query ("SELECT * FROM constant WHERE id='$p_cid'");
+        if ($db->next_record()) {
+		    if ($propagate_changes) 
+                propagateChanges ($p_cid, $value[$key], false);
+		    if( !$db->query("
+				UPDATE constant SET " . $varset->makeUPDATE() ."
+				WHERE id='$p_cid'")) {
+	        	$err["DB"] .= MsgErr("Can't update constant");
+		        break;
+			}
+    	}
+		else {
+			$varset->set("id", substr($cid[$key],1), "unpacked" );  # remove beginning 'x'
+			$varset->set("group_id", $group_id, "quoted" );
+			if( !$db->query("INSERT INTO constant " . $varset->makeINSERT() )) {
+		        $err["DB"] .= MsgErr("Can't copy constant");
+        		break;
+      		}
+		}
     }
     
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
     
     if( count($err) <= 1 )
-      $Msg = MsgOK(L_CONSTANTS_OK);
+      $Msg .= MsgOK(L_CONSTANTS_OK);
   } while( 0 );           #in order we can use "break;" statement
 }    
 
@@ -162,7 +249,7 @@ if( $category ) {
   # lookup constants
 if( $group_id ) {
   $SQL = "SELECT id, name, value, class, pri FROM constant
-           WHERE group_id='$group_id' ORDER BY pri";
+           WHERE group_id='$group_id' ORDER BY pri, name";
   $s_constants = GetTable2Array($SQL, $db, "NoCoLuMn");
 }  
 
@@ -185,7 +272,15 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;  
 ?>
-<form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+<input type=hidden name="group_id" value="<?php echo $group_id ?>">
+<input type=hidden name="categ" value="<?php echo $categ ?>">
+<?php
+  // load the HIERARCHICAL EDITOR
+  if ($hierarch) {
+	  require $GLOBALS[AA_INC_PATH]."constedit.php3";
+  }
+?>
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HDR?></b>
 </td>
@@ -196,11 +291,45 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <td class=tabtxt><b><?php echo L_CONSTANT_GROUP ?></b></td>
  <td class=tabtxt colspan=3><?php
    echo ( $group_id ? safe($group_id) :
-         "<input type=\"Text\" name=\"new_group_id\" size=16 maxlength=16 value=\"".safe($new_group_id)."\">");?>
- </td>
-</tr>
-<tr><?php
+         "<input type=\"Text\" name=\"new_group_id\" size=16 maxlength=16 value=\"".safe($new_group_id)."\">");
+   echo "
+	 </td>
+</tr>";
+
+// Find the slice owner of this group
+
+$db->query ("
+	SELECT * FROM constant_slice INNER JOIN slice 
+	ON constant_slice.slice_id = slice.id 
+	WHERE group_id='$group_id'");
+if ($db->next_record()) $owner_id = unpack_id ($db->f("slice_id"));
+
 echo "
+<tr><td><b>".L_CONSTANT_OWNER."</b></td>
+<td colspan=3>";
+
+if (!$owner_id || !$group_id) 
+	echo L_CONSTANT_OWNER_HELP;
+	
+// display the select box to change group owner if requested ($chown)
+else if($chown AND is_array($g_slices) AND (count($g_slices) > 1) ) {
+    echo "<select name=new_owner_id>";
+    reset($g_slices);
+    while(list($k, $v) = each($g_slices)) { 
+      echo "<option value='". htmlspecialchars($k)."'".
+	  	 ($owner_id == $k ? " selected" : "").
+      	 "> ". htmlspecialchars($v);
+    }
+    echo "</select>\n";
+}
+else
+	echo $db->f("name")."&nbsp;&nbsp;&nbsp;&nbsp; 
+	<input type=submit name='chown' value='".L_CONSTANT_CHOWN."'>";
+	
+echo"</td></tr>
+<tr><td colspan=4><input type=checkbox name='propagate_changes'".($db->f("propagate") ? " checked" : "").">".L_CONSTANT_PROPAGATE."</td></tr>
+<tr><td colspan=4><input type=submit name='hierarch' value='".L_CONSTANT_HIERARCH_EDITOR."'></td></tr>
+<tr>
  <td class=tabtxt align=center><b>". L_CONSTANT_NAME ."</b><br>". L_CONSTANT_NAME_HLP ."</td>
  <td class=tabtxt align=center><b>". L_CONSTANT_VALUE ."</b><br>". L_CONSTANT_VALUE_HLP ."</td>
  <td class=tabtxt align=center><b>". L_CONSTANT_PRI ."</b><br>". L_CONSTANT_PRI_HLP ."</td>
@@ -223,78 +352,34 @@ if( $s_constants ) {
 
   # ten rows for possible new constants
 for( $j=0; $j<10; $j++) {
+/*
   if( $update ) # get values from form
-    ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $categ, $classes);
+    ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $categ, $classes, $ancestors[$i], $);
   else  
-    ShowConstant($i, "", "", "", 1000, "", $categ, $classes);
+*/    ShowConstant($i, "", "", "", 1000, "", $categ, $classes);
   $i++;
 }  
 
 echo '</table>
 <tr><td align="center">
   <input type=hidden name="update" value=1>
-  <input type=hidden name="group_id" value="'. $group_id .'">
-  <input type=hidden name="categ" value="'. $categ .'">
   <input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;
   <input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;
+  <input type=button value="'. L_CONST_DELETE .'" onclick="deleteWholeGroup();">&nbsp;&nbsp;
+  <input type=hidden name=deleteGroup value=0>
 </td></tr></table>
 </FORM>
+<SCRIPT language=javascript>
+<!--
+    function deleteWholeGroup() {
+        if (prompt ("'.L_CONST_DELETE_PROMPT.'","'.L_NO.'") == "'.L_YES.'") {
+            document.f.deleteGroup.value = 1;
+            document.f.submit();
+        }
+    }
+//-->
+</SCRIPT>
 </BODY>
 </HTML>';
 
-/*
-$Log$
-Revision 1.14  2001/09/27 15:44:35  honzam
-Easiest left navigation bar editation
-
-Revision 1.13  2001/05/27 21:23:35  honzam
-Parent categories sorted by name, now
-
-Revision 1.12  2001/05/21 13:52:31  honzam
-New "Field mapping" feature for internal slice to slice feeding
-
-Revision 1.11  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.10  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.9  2001/04/04 18:27:44  honzam
-Morehelp question mart in itemedit opens new window.
-
-Revision 1.8  2001/03/20 15:27:03  honzam
-Changes due to "slice delete" feature
-
-Revision 1.7  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.6  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.5  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-Revision 1.2  2001/01/08 13:31:58  honzam
-Small bugfixes
-
-Revision 1.1.1.1  2000/06/21 18:39:59  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:49  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.12  2000/06/12 19:58:24  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.11  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.10  2000/04/24 16:45:02  honzama
-New usermanagement interface.
-
-Revision 1.9  2000/03/22 09:36:43  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 page_close()?>
