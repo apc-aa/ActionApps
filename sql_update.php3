@@ -552,7 +552,16 @@ $tablelist = array( 'active_sessions' => "(
                          calendar_type varchar(100) default 'mon',
                          PRIMARY KEY (id),
                          KEY slice_id (slice_id)
-                      )");
+                      )",
+                      'wizard_welcome' => "(
+                          id int(11) NOT NULL auto_increment,
+                          description varchar(200) NOT NULL default '',
+                          email text,
+                          subject varchar(255) NOT NULL default '',
+                          mail_from varchar(255) NOT NULL default '_#ME_MAIL_',
+                          PRIMARY KEY (id)
+                      )"
+);
                    
                    
 $SQL_constants[] = "DELETE FROM constant WHERE group_id IN ('lt_codepages', 'lt_languages', 'AA_Core_Bins....')";
