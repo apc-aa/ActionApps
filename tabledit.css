@@ -1,5 +1,11 @@
 /* TABLE EDIT STYLES */
 
+.te_button_text {
+    font-size: xx-small;
+    font-weight : bold;
+    border : thin;
+}
+
 .te_no_item_msg {
     font-weight : bold;
 }
