@@ -460,7 +460,7 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
    else
     return;                              # wrong - there must be slice selected
 
-  $items = GetItemHeadlines($db, $sid, $value, "ids");
+  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids");
     
   FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid,
                       $field[required], $field[input_help], $field[input_morehlp]);
@@ -472,7 +472,7 @@ function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
     $sid = substr($constgroup, 7);
    else
     return;                              # wrong - there must be slice selected
-  $items = GetItemHeadlines($db, $sid, $value, "ids");
+  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids");
   FrmStaticText($field['name'], implode ("<br>", $items));
 }
 

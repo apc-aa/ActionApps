@@ -671,11 +671,13 @@ class item {
  
     switch( $param ) {
       case "disc":
-      # _#DISCEDIT used on admin page index.php3 for edit discussion comments
-      return con_url($sess->url("discedit.php3"),
+        # _#DISCEDIT used on admin page index.php3 for edit discussion comments
+        return con_url($sess->url("discedit.php3"),
           "item_id=".unpack_id( $this->getval('id..............')));
       case "itemcount":
       	return $GLOBALS['QueryIDsCount'];
+      case "safe":
+        return safe( $this->getval($col) ); 
       default:  
         return con_url($sess->url($admin_path."itemedit.php3"),
                    "encap=false&edit=1&id=".
