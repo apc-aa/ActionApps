@@ -160,6 +160,11 @@ function parseMath($text) {
 function parseLoop($out, &$item) {
     global $contentcache;
 
+    // alternative syntax {@field...} or {list:field...}
+    if ( (substr($out,0,5) == "list:") ) {
+        $out = '@'. substr($out,5);
+    }
+
     // @field........... - without parameters
     if (strpos($out, ":") == false) {
         $field = substr($out, 1);
@@ -532,7 +537,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         return $item->substitute_alias_and_remove($out);
     }
     // first char of alias is @ - make loop to view all values from field
-    elseif (substr($out,0,1) == "@") {
+    elseif ( (substr($out,0,1) == "@") OR (substr($out,0,5) == "list:")) {
         return parseLoop($out, $item);
     }
     // look for {const_*:} for changing viewing type of constants
