@@ -67,7 +67,6 @@ function FillVarsetData(&$varset) {
     $varset->add("description",   "quoted", $description);
     $varset->add("initiator",     "quoted", $initiator);
     $varset->add("url",           "quoted", $url);
-    $varset->add("rate",          "number", $rate);
     $varset->add("type",          "quoted", $type);
     $varset->add("org_city",      "quoted", $org_city);
     $varset->add("org_street",    "quoted", $org_street);
@@ -76,6 +75,10 @@ function FillVarsetData(&$varset) {
     $varset->add("org_fax",       "quoted", $org_fax);
     $varset->add("org_email",     "quoted", $org_email);
     $varset->add("note",          "quoted", $note);
+    // default setting for votes
+    $varset->add("rate",          "number", 4);
+    $varset->add("votes",         "number", 2);
+    $varset->add("plus_votes",    "number", 1);
 }
 
 function Regions2Db($inserted_id, $reg) {
