@@ -72,64 +72,76 @@ function default_fnc_variable($param) {
 # ----------------------- insert functions ------------------------------------
 
 function insert_fnc_qte($item_id, $field, $value, $param) {
-  global $varset, $itemvarset, $db, $slice_id ;
+    global $varset, $itemvarset, $db, $slice_id ;
+    
+    // if input function is 'selectbox with presets' and add2connstant flag is set,
+    // store filled value to constants
+    $fnc = ParseFnc($field[input_show_func]);   # input show function
+    if( $fnc AND ($fnc['fnc']=='pre') ) {
+        // get add2constant and constgroup (other parameters are irrelevant in here)
+        list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding,
+             $secondfield, $add2constant) = explode(':', $fnc['param']);
+        // add2constant is used in insert_fnc_qte - adds new value to constant table
+        if( $add2constant AND $constgroup AND (substr($constgroup,0,7) != "#sLiCe-") ) {
 
-  #huh( "insert_fnc_qte($item_id, $field, $value, $param)"); 
-  #p_arr_m($field);
-
-  # if input function is 'selectbox with presets' and add2connstant flag is set,
-  # store filled value to constants
-  $fnc = ParseFnc($field[input_show_func]);   # input show function
-  if( $fnc AND ($fnc['fnc']=='pre') ) {
-    # get add2constant and constgroup (other parameters are irrelevant in here)
-    list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding,
-         $secondfield, $add2constant) = explode(':', $fnc['param']);
-    # add2constant is used in insert_fnc_qte - adds new value to constant table
-    if( $add2constant AND $constgroup AND (substr($constgroup,0,7) != "#sLiCe-") ) {
-      # does this constant already exist?
-      $constgroup=quote($constgroup);
-      $SQL = "SELECT * FROM constant
-               WHERE group_id='$constgroup'
-                 AND value='". $value['value'] ."'";
-      $db->query($SQL);
-      if (!$db->next_record()) {
-        # constant is not in database yet => add it
-    		$varset->clear();
-    		$varset->set("name",  $value['value'], "quoted");
-  	  	$varset->set("value", $value['value'], "quoted");
-  		  $varset->set("pri",   1000, "number");
-        $varset->set("id", new_id(), "unpacked" );
-        $varset->set("group_id", $constgroup, "quoted" );
-        $db->query ("INSERT INTO constant " . $varset->makeINSERT() );
-      }
+            // does this constant already exist?
+            $constgroup=quote($constgroup);
+            $SQL = "SELECT * FROM constant
+                     WHERE group_id='$constgroup'
+                       AND value='". $value['value'] ."'";
+            $db->query($SQL);
+            if (!$db->next_record()) {
+                // constant is not in database yet => add it
+                
+                // first we have to get max priority in order we can add new constant
+                // with bigger number
+                $SQL = "SELECT max(pri) as max_pri FROM constant
+                        WHERE group_id='$constgroup'";
+                $db->query($SQL);
+                $new_pri = ($db->next_record() ? $db->f('max_pri') + 10 : 1000);
+                
+                // we have priority - we can add
+                $varset->clear();
+                $varset->set("name",  $value['value'], "quoted");
+                $varset->set("value", $value['value'], "quoted");
+                $varset->set("pri",   $new_pri, "number");
+                $varset->set("id", new_id(), "unpacked" );
+                $varset->set("group_id", $constgroup, "quoted" );
+                $db->query ("INSERT INTO constant " . $varset->makeINSERT() );
+            }
+        }
     }
-  }
+    
+    if( $field[in_item_tbl] ) {
+        // Mitra thinks that this might want to be 'expiry_date.....' ...
+        // ... which is not correct because in 'in_item_tbl' database field 
+        // we store REAL database field names from aadb.item table (honzam)
+        if( ($field[in_item_tbl] == 'expiry_date') && 
+            (date("Hi",$value['value']) == "0000") )
 
-  if( $field[in_item_tbl] ) {
-    // Mitra thinks that this might want to be 'expiry_date.....'
-    if( ($field[in_item_tbl] == 'expiry_date') && 
-        (date("Hi",$value['value']) == "0000") )
-      $value['value'] = mktime(23,59,59,date("m",$value['value']),date("d",$value['value']),date("Y",$value['value']));
-
-    #  $value['value'] += 86399;  # if time is not specified, take end of day 23:59:59 !!it is not working for daylight saving change days !!!
-    # field in item table
-    $itemvarset->add( $field[in_item_tbl], "quoted", $value['value']);
-    return;
-  }
-
-    # field in content table
-  $varset->clear();
-  if( $field[text_stored] ) 
-    $varset->add("text", "quoted", $value['value']);
-  else 
-    $varset->add("number", "quoted", $value['value']);
-  $varset->add("flag", "quoted", $value['flag']);
-
-    # insert item but new field
-  $varset->add("item_id", "unpacked", $item_id);
-  $varset->add("field_id", "quoted", $field[id]);
-  $SQL =  "INSERT INTO content" . $varset->makeINSERT();
-  $db->query( $SQL );
+        // $value['value'] += 86399;  
+        // if time is not specified, take end of day 23:59:59 
+        // !!it is not working for daylight saving change days !!!
+        $value['value'] = mktime(23,59,59,date("m",$value['value']),date("d",$value['value']),date("Y",$value['value']));
+        
+        // field in item table
+        $itemvarset->add( $field[in_item_tbl], "quoted", $value['value']);
+        return;
+    }
+    
+    // field in content table
+    $varset->clear();
+    if( $field[text_stored] ) 
+        $varset->add("text", "quoted", $value['value']);
+    else 
+        $varset->add("number", "quoted", $value['value']);
+    $varset->add("flag", "quoted", $value['flag']);
+    
+    // insert item but new field
+    $varset->add("item_id", "unpacked", $item_id);
+    $varset->add("field_id", "quoted", $field[id]);
+    $SQL =  "INSERT INTO content" . $varset->makeINSERT();
+    $db->query( $SQL );
 }
 
 function insert_fnc_dte($item_id, $field, $value, $param) {
@@ -663,7 +675,7 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
     }  
   }
 
-  # the status_code must be set in order we can use email_notify() 
+  # the status_code must be set in order we can use email_notify()
   # in StoreItem() function.
   if( !$insert AND !$content4id['status_code.....'][0]['value'] )
     $content4id['status_code.....'][0]['value'] = max(1,$oldcontent4id['status_code.....'][0]['value']);
@@ -672,29 +684,23 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
     $content4id["flags..........."][0]['value'] = $oldcontent4id["flags..........."][0]['value'];
 
   return $content4id;
-}                                             
-                                              
-function StoreItem( $id, $slice_id, $content4id, $fields, $insert, 
+}
+
+function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true ) {
   global $db, $varset, $itemvarset;
 
-  if (!is_object ($db)) $db = new DB_AA;  
+  if (!is_object ($db)) $db = new DB_AA;
   if (!is_object ($varset)) $varset = new CVarset();
   if (!is_object ($itemvarset)) $itemvarset = new CVarset();
 
-/*  if( $slice_id == '50443b7564df3ac6d5e40defaecb5a75') {
-    print_r($content4id);
-	print_r($fields);
-    exit;
-  }  
-*/
   if( !( $id AND isset($fields) AND is_array($fields)
         AND isset($content4id) AND is_array($content4id)) )
     return false;
 
-  // Note: $content4id is an associative array. 
-  //       they key is a field_id, like 'source..........' 
-  // The value is an array of values (usually just a single value, but still an array) 
+  // Note: $content4id is an associative array.
+  //       they key is a field_id, like 'source..........'
+  // The value is an array of values (usually just a single value, but still an array)
 
   if( !$insert ) {  # remove old content first (just in content table - item is updated)
     reset($content4id);
@@ -705,28 +711,26 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         $delim = ",";
       }
     }
-    if ( $in ) { # delete content just for displayed fields 
-      $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($id). "' 
+    if ( $in ) { # delete content just for displayed fields
+      $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($id). "'
                                     AND field_id IN ($in)";
       $db->query($SQL);
-    }  
-  }  
+    }
+  }
 
   reset($content4id);
   while(list($fid,$cont) = each($content4id)) {
-    //    echo "<h1>$fid : $cont</h1>";
-//    continue;
     $f = $fields[$fid];
     $fnc = ParseFnc($f[input_insert_func]);   # input insert function
     if( $fnc ) {                  # function to call
       $fncname = 'insert_fnc_' . $fnc[fnc];
-        # updates content table or fills $itemvarset 
-      if( !( isset($cont) AND is_array($cont)))    
+        # updates content table or fills $itemvarset
+      if( !( isset($cont) AND is_array($cont)))
         continue;
       reset($cont);               # it must serve multiple values for one field
       while(list(,$v) = each($cont)) {
           # add to content table or to itemvarset
-        $fncname($id, $f, $v, $fnc[param]); 
+        $fncname($id, $f, $v, $fnc[param]);
           # do not store multiple values if field is not marked as multiple
           # ERRORNOUS
         if( !$f[multiple]!=1 ) 
@@ -762,21 +766,9 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     FeedItem($id, $fields);
     
   // notifications 
- $status_id = 'status_code.....'; 
+  $status_id = 'status_code.....'; 
 
- $status_code = $content4id[$status_id][0]['value']; 
- // p_arr_m($arr,2); 
-   /* echo $arr;
- reset ($arr); 
- while ( list($u,$v) = each($arr)) { 
-    "echo u is $u : $v"; 
-    }*/ 
- // echo "done"; 
- //  exit;  
-  /*  while ( list(,$v) = each($status_array)) { 
-    $status_code = $v; 
-    echo "status is $status_code"; 
-    }*/ 
+  $status_code = $content4id[$status_id][0]['value']; 
 
   if( $insert ) {                               // new + 
     if ($status_code == '1')                      //    active 
