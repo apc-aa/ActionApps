@@ -27,6 +27,8 @@ http://www.apc.org/
 #optionaly bigsrch   // true, if this script have to show big search form
 #optionaly cat_id    // select only items in category with id cat_id
 #optionaly cat_name  // select only items in category with name cat_name
+#optionaly inc       // for dispalying another file instead of slice data 
+                     // (like static html file - inc=/contact.html)
 
 $encap = ( ($encap=="false") ? false : true );
 
@@ -197,6 +199,17 @@ function CompactView($where, $catsel=false) {
 //-----------------------------End of functions definition------------------------------------------ 
 
   if ($encap) $sess->add_vars(); ## adds values from QUERY_STRING_UNESCAPED  
+
+    # url posted command to display another file
+  if( $inc ) {                   # this section must be after $sess->add_vars()
+    $fp = @FOpen( $inc, "r");    #   if encapsulated
+    if( !$fp )
+      echo L_NO_SUCH_FILE ." $inc";
+     else
+      FPassThru($fp); 
+    exit;
+  }  
+
   $p_slice_id= q_pack_id($slice_id);
   $db = new DB_AA; 		 // open BD	
   $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
@@ -246,6 +259,7 @@ function CompactView($where, $catsel=false) {
     require $GLOBALS[AA_INC_PATH]."big_srch.php3";
   }
   elseif( $sh_itm ) {   // fulltext view
+echo "------$cni-------";
     $SQL= "SELECT items.*, fulltexts.full_text, categories.name as category 
              FROM items, fulltexts 
              LEFT JOIN categories ON categories.id=items.category_id 
@@ -307,7 +321,9 @@ function CompactView($where, $catsel=false) {
       }  
     }    
     //$debugtimes["callcompact"]=microtime();
+echo "------$cni-------";
     CompactView(pack_id($r_unpacked_where), (!$srch AND !$encap) );
+echo "------$cni-------";
     //$debugtimes[]=microtime();
   }
 ?>
@@ -323,6 +339,9 @@ function CompactView($where, $catsel=false) {
 //    p_arr_m($debugtimes);
 /*
 $Log$
+Revision 1.5  2000/08/17 15:09:11  honzam
+new inc parameter for displaying specified file instead of slice data
+
 Revision 1.4  2000/07/12 16:53:09  kzajicek
 No min-max games are necessary, scroller keeps us within boundaries.
 
