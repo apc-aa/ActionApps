@@ -1014,7 +1014,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
             // serve multiple values for one field
             reset($cont);
             while(list(,$v) = each($cont)) {
-huhl("SI:XYZZY:1017");
                 // file upload needs the $fields array, because it stores
                 // some other fields as thumbnails
                 if ($fnc["fnc"]=="fil")
