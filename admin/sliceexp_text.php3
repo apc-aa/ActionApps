@@ -34,6 +34,7 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "sliceobj.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "xml_serializer.php3";
 
 function getRecord (&$array, &$record) 
 {
@@ -45,7 +46,6 @@ function getRecord (&$array, &$record)
 // Export information about the slice
 function exportOneSliceStruct ($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file,$b_export_hex) {
 global $db, $sess;
-	
     // Mitra thinks this should be unpack_id128(stripslashes($slice_id))
 	$slice_id_bck = stripslashes(unpack_id128($slice_id));
 	
@@ -99,18 +99,6 @@ global $db, $sess;
 	fwrite($temp_file, "<slicedata gzip=\"".$b_export_gzip."\">\n$slice_data\n</slicedata>\n");
 }
 
-// Convert a neted PHP structure to an XML structure
-// Note it doesn't handle objects, just strings and arrays
-function xml_serialize($k,&$v,$i,$ii) {
-    $kk = preg_replace('/^([0-9])/',"NuMbEr\$1",$k); // Can't start with digit
-    if (is_string($v)) return "$i<$kk>".HTMLEntities($v)."$i</$kk>";
-    elseif (is_array($v)) {
-        while(list($k1,$v1) = each($v)) {
-            $o .= xml_serialize($k1,$v1,$i.$ii,$ii);
-        }
-        return "$i<$kk>$o$i</$kk>";
-    }
-}
 
 function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
 {
@@ -178,6 +166,7 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 
 	reset($export_slices);
 	while (list(,$slice_id_bck) = each($export_slices)) {
+        $slice_id = addslashes(pack_id128($slice_id_bck));
 
         $slice_name = sliceid2name($slice_id_bck);
 

@@ -84,7 +84,7 @@ class slices {
     // Create slices array from unpacked slice ids
     function slices($iarr) {
         $this->a = array();
-        reset $iarr;
+        reset($iarr);
         foreach($iarr as $unpackedsliceid) {
             $this->a[$unpackedsliceid] = new slice($unpackedsliceid);
         }

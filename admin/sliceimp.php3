@@ -36,7 +36,6 @@ require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 
-
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 	MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
 	exit;
@@ -61,7 +60,7 @@ function proove_ID ($slice)
 	if ((strlen($res)!=0)&&(strlen($res) != 16))	{
 		if ((strlen($res) != 16)||(strlen($res) != 32)) {
 			echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)",
-                array ($res, strlen ($res))."<br>\n";
+                array ($res, strlen ($res)))."<br>\n";
 		}
 		$res = pack_id($res);
 		if (strlen($res) == 16)	$slice["id"] = unpack_id($res);
@@ -77,8 +76,9 @@ function proove_ID ($slice)
 	$new_slice_ids[$slice["id"]]["new_id"]=new_id();
 		
 	$slice_id = addslashes(pack_id128($slice["id"]));
-	echo "$slice_id";
+	//echo "$slice_id";
 	$SQL = "SELECT * FROM slice WHERE id=\"$slice_id\"";
+
 	global $db;
 	$db->query($SQL);
 	if($db->next_record()) {
@@ -149,7 +149,7 @@ function import_slice (&$slice)
 		   $overwrite,
 		   $only_slice,
 		   $new_slice_ids;	
-		   
+
 	if ($only_slice) { // import slice definition ?
 		$IDconflict = !proove_ID($slice);
 		if (($IDconflict)&&($GLOBALS["Submit"]!=_m("Insert with new ids"))) {
@@ -196,17 +196,20 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 		   $data_overwrite,
 		   $only_data,
 		   $new_slice_ids;	
-
 	if ($only_data) { // import slice items ?   
 		list($fields,) = GetSliceFields($slice_id);
 	   	$cont = $content4id[$id];
 		reset($fields);
-		while (list($name,)=each($fields)) {
-			$newcont[$name]=addslashes($cont[$name]);
+		while (list($name,) = each($fields)) {
+          if (isset($cont[$name])) 
+            while(list($k,) = each($cont[$name])) {
+                $cont[$name][$k]["value"] = 
+                    addslashes($cont[$name][$k]["value"]);
+            }
 		}
 		$data_IDconflict = !proove_data_ID($id);
 		if (($data_IDconflict)&&($GLOBALS["Submit"]!=_m("Insert with new ids"))) {
-			$data_conflicts_ID[$id] = $newcont["headline........"][0]["value"];
+			$data_conflicts_ID[$id] = $cont["headline........"][0]["value"];
 			$Cancel = 0;
 			return false;
 		}		
@@ -225,7 +228,7 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 		else
 			$data_imported_list[] = $id." (id:".$id.")";
 		
-		$result = StoreItem($id, $slice_id, $newcont, $fields, $insert, true, $feed);
+		$result = StoreItem($id, $slice_id, $cont, $fields, $insert, true, $feed);
 		$Cancel = "OHYES";
 	}	
 }
@@ -236,6 +239,7 @@ if ($Cancel)
 $IDconflict = false;
 $slice_def_bck = $slice_def = stripslashes($slice_def);
 $imported_count = 0;
+
 
 // insert xml parser
 require_once "./sliceimp_xml.php3";
@@ -253,17 +257,16 @@ if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
     if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
         if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) 
             if( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file")) 
-                echo _m("Can't upload Image");
+                echo _m("Can't upload Import file");
         else if ($perms)
 	            chmod ($dirname.$dest_file, $perms);
     } 
     else {   # for php 3.x and php <4.0.3
         if (!copy($_FILES['slice_def_file']['tmp_name'],"$dirname$dest_file")) 
-            echo _m("Can't upload Image");
+            echo _m("Can't upload Import file");
         else if ($perms)
             chmod ($dirname.$dest_file, $perms);
     }  
-	
 	$fd = fopen ($dirname.$dest_file, "r");
 	$slice_def_bck = $slice_def = fread ($fd, filesize ($dirname.$dest_file));
 	fclose ($fd);
@@ -293,10 +296,7 @@ if ($data_conflicts_list) {
 
 if ($slice_def != "") {
 	$err = sliceimp_xml_parse ($slice_def);	
-	if ($err != "") {
-		MsgPage($sess->url(self_base())."index.php3", $err, "standalone");
-		exit;
-	}
+	if ($err != "") si_err($err);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -372,16 +372,17 @@ if ($IDconflict):?>
 
 <?php
 endif;
-if ($data_IDconflict): ?>
+if ($data_IDconflict): 
+?>
 
 <tr><td class=tabtxt>
 <b><?php echo sprintf (_m("<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>")) ?></b></p>
 <p align=center>
-<TEXTAREA NAME=data_conflicts_list ROWS=<?php echo count($data_conflicts_ID) ?> COLS=60>
+<TEXTAREA NAME=data_conflicts_list ROWS=<?php echo count($data_conflicts_ID) ?> COLS=90>
 <?php
 	reset($data_conflicts_ID);
 	while (list($c_id,$name)=each($data_conflicts_ID))
-		echo $name.":\t".$c_id." -> ".$c_id."\n";
+		echo substr($name,0,27).":\t".$c_id." -> ".$c_id."\n";
 ?>
 </TEXTAREA>
 <?php
@@ -416,10 +417,17 @@ endif;?>
 <br>
 	<?php if (!$IDconflict || !$data_IDconflict): ?>	
 		<?php echo _m("2) If you have exported data in browser's window, insert the exported text into the textarea below:") ?><p>
-	<?php endif; ?>
-	<TEXTAREA NAME="slice_def" ROWS = 10 COLS = 100><?php if ($IDconflict || $data_IDconflict) echo $slice_def_bck ?></TEXTAREA>
+	<?php endif; 
+?>
+	<TEXTAREA NAME="slice_def" ROWS = 10 COLS = 100><?php if ($IDconflict || $data_IDconflict) 
+// Be careful here, $slice_def_bck contains structures line 
+// <xxx>&lt;BR&gt;some content</xxx>
+// Which the browser will convert to <xxx><BR>some content</xxx> 
+// which is invalid XML. So, convert & to &amp; first, so pass through 
+// HTMLEntities, which browser will undo.
+echo HTMLEntities($slice_def_bck) ?></TEXTAREA>
 	<p>	
-<?php if (!$IDconflict || !$data_IDconflict): ?>	
+<?php if (!$IDconflict || !$data_IDconflict): ?> 
 <?php if (!$GLOBALS["Submit"]) { ?>
 	<?php echo _m("Here specify, what do you want to import:"); ?><p>
 	<input type=checkbox name=only_slice checked><?php echo _m("Import slice definition") ?><br>

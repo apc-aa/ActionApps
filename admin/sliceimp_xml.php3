@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 /*
-	Author: Jakub Adámek, Pavel Jisl
+	Author: Mitra (based on earlier versions by Jakub Adámek, Pavel Jisl)
 	
 # Slice Import - XML parsing function
 #
@@ -50,128 +50,77 @@ base 64 data from item_id (w/wo gzip)
 
 */
 
-function startElement($parser, $name, $attrs) {
-	global $curname,
-  	  	   $curid,
-		   $curdataid,
-		   $curdatagzip,
-		   $chardata,
-		   $gzipped,
-		   $expver;	
-	switch ($name) {
-		case "SLICEEXPORT":
-			reset ($attrs);
-			while (list($key, $val) = each($attrs)) {
-				switch ($key) {
-					case "VERSION": $expver = $val; break;
-				}	
-			}
-			break;	
-		case "SLICE": 		
-			$curid = ""; 
-			$curname = ""; 
-			$curdata = ""; 
-			reset ($attrs);
-			while (list($key,$val) = each($attrs)) {
-				switch ($key) {
-					case "ID": $curid = $val; break;
-					case "NAME": $curname = $val; break;
-				}
-			}
-			break;
-		case "SLICEDATA":
-			$gzipped = "";
-			while (list($key, $val) = each($attrs)) {
-				switch ($key) {
-					case "GZIP": $gzipped = $val; break;
-				}
-			}		
-			break;
-		case "DATA":
-			$curdataid = "";
-			$curdatagzip = "";
-			while (list($key, $val) = each($attrs)) {
-				switch ($key) {
-					case "ITEM_ID": $curdataid = $val; break;
-					case "GZIP": $curdatagzip = $val; break;
-				}	
-			}
-			break;		
-	}
-	$chardata = "";
+
+require_once $GLOBALS[AA_INC_PATH] . "xml_serializer.php3";
+
+function si_err($str) {
+    global $sess;
+    MsgPage($sess->url(self_base())."index.php3", $str, "standalone");
+    exit;
 }
 
-function endElement($parser, $name) {
-  global $curname,
-  		 $curid,
-     	 $curdataid,
-		 $curdatagzip,
-		 $chardata,
-		 $expver,
-		 $gzipped,
-		 $sess;
+// Create and parse data
+function sliceimp_xml_parse($xml_data,$dry_run=false) { 
+    $xu = new xml_unserializer();
+    $i = $xu->parse($xml_data);  // PHP data structure
+    $s = $i["SLICEEXPORT"][0];
+    if (! isset($s)) si_err(_m("\nERROR: File doesn't contain SLICEEXPORT"));
+    if ($s[VERSION] == "1.0") {
+            $sl = $s[SLICE][0];
+			$slice = unserialize (base64_decode($sl[DATA]));
+			if (!is_array($slice))
+                si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export."));
+			$slice["id"] = $sl[ID];
+			$slice["name"] = $sl[NAME];
+            if($dry_run) {
+                huhl("Would import slice=",$slice);
+            } else 
+			    import_slice ($slice);
+    }
+    else if ($s[VERSION] == "1.1") {
+      foreach($s[SLICE] as $sl) {
+        $sld=$sl[SLICEDATA][0];
+        if ($sld[CHARDATA]) { // Its an encoded serialized data
+    		$chardata = base64_decode($sld[CHARDATA]);
+	    	$chardata = $sld[GZIP]
+                  ? gzuncompress($chardata) : $chardata;
+    		$slice = unserialize ($chardata);
+        } elseif ($sld[slice]) {
+            $slice = $sld[slice];
+        }
+		if (!is_array($slice))
+            si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export."));
 
-  switch ($name) {
-  	case "SLICEDATA":
-			$chardata = base64_decode($chardata);
-			$chardata = $gzipped ? gzuncompress($chardata) : $chardata;
-			$slice = unserialize ($chardata);
-			if (!is_array($slice)) {
-				MsgPage($sess->url(self_base())."index.php3", _m("ERROR: Text is not OK. Check whether you copied it well from the Export."), "standalone");
-				exit;
-			}
-			$slice["id"] = $curid;
-			$slice["name"] = $curname;
-			import_slice ($slice);	
-		break;
-	case "DATA":
-			$chardata = base64_decode($chardata);
-			$chardata = $curdatagzip ? gzuncompress($chardata) : $chardata;
+		$slice["id"] = $sl[ID];
+		$slice["name"] = $sl[NAME];
+        if($dry_run) {
+               huhl("Would import slice=",$slice);
+        } else 
+			    import_slice ($slice);
+        if (is_array($sl[DATA])) 
+         foreach ($sl[DATA] as $sld) {
+          if (isset($sld[CHARDATA])) {
+			$chardata = base64_decode($sld[CHARDATA]);
+			$chardata = $sld[GZIP] 
+                ? gzuncompress($chardata) : $chardata;
 			$content4id = unserialize ($chardata);
-			if (!is_array($content4id)) {
-				MsgPage($sess->url(self_base())."index.php3", _m("ERROR: Text is not OK. Check whether you copied it well from the Export."), "standalone");
-				exit;
-			}
-			import_slice_data($curid, $curdataid, $content4id, true, true);
-		break;
-	case "SLICE":
-		if ($expver == "1.0") {
-			$slice = unserialize (base64_decode($chardata));
-			if (!is_array($slice)) {
-				MsgPage($sess->url(self_base())."index.php3", _m("ERROR: Text is not OK. Check whether you copied it well from the Export."), "standalone");
-				exit;
-			}
-			$slice["id"] = $curid;
-			$slice["name"] = $curname;
-			import_slice ($slice);
-		} else {
-		}
-	break;
-	case "SLICEEXPORT":
-	break;	
-  }
-  $chardata = "";
+          } else { // Its in XML
+            $content4id = $sld[item]; 
+          }
+          if (!is_array($content4id))
+             si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export."));
+          if($dry_run)
+            huhl("Would import data to ",$sld[ITEM_ID],$content4id);
+          else 
+    		import_slice_data($sl[ID], $sld[ITEM_ID], 
+                $content4id, true, true);
+        } // loop over each item 
+      } // loop over each slice
+    } // Version 1.1
+    else si_err(_m("ERROR: Unsupported version for import").$s[VERSION]);
 }
 
-function charD($parser, $data) {
-	global $chardata;
-	$chardata .= $data;
-}
 
-// creates xml parser
-function sliceimp_xml_parse($xml_data) {
-  $xml_parser = xml_parser_create();
-  xml_set_element_handler($xml_parser, "startElement", "endElement");
-  xml_set_character_data_handler($xml_parser,"charD");
-
-  if (!xml_parse($xml_parser, $xml_data, true))
-    return sprintf("XML parse error: %s at line %d",
-            xml_error_string(xml_get_error_code($xml_parser)),
-            xml_get_current_line_number($xml_parser));
-
-  xml_parser_free($xml_parser);
-  return "";
-}
 
 // creates SQL command for inserting
 function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_fields="", $add_values="")
@@ -202,7 +151,7 @@ function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_
 		}
 	}
 	
-	if ($add) {
+	if ($add_fields) {
 		$add = explode(",", $add_fields);
 		for ($i=0; $i<count($add); $i++) {
 			$dummy=explode("=",$add[$i]);

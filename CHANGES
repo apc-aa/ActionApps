@@ -1,3 +1,7 @@
+02/04/03 - fixed bug in sliceimp.xml (tested $add instead of $add_fields)
+         - fixed so displays Headlines of conflicting items
+         - added functionality to import and export XML
+         - fixed so conflict screen will still import from file, (textarea truncates)
 02/05/03 - changed almost all files by changing require to require_once, 
            deleting the "if (defined) return" constructs and changing
            GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"] (jakub)
