@@ -290,12 +290,11 @@ class tabledit {
                         $new_record = true;
                     else break;
     
-                $key = $new_record ? $new_key : GetKey ($this->cols, $db->Record);
+                $key = $new_record ? $GLOBALS[new_key] : GetKey ($this->cols, $db->Record);
     
                 $formname = "tv_".$this->viewID."_".$key;
-                $onsubmit = "return $fnname (\"$formname\");";
                 if ($this->view["type"] == "browse") {
-                    echo "<FORM name='$formname' method=post onSubmit='$onsubmit' action='".$this->getAction($gotoview2)."'>\n";
+                    echo "<FORM name='$formname' method=post action='".$this->getAction($gotoview2)."'>\n";
                     echo "<TR>";
                     $this->ShowButtons ($gotoview, $gotoview2, $new_record, $key, $fnname, $formname);
                 }
@@ -380,6 +379,7 @@ class tabledit {
             $this->setDefault ($column["caption"], $colname);
             $this->setDefault ($column["view"]["size"]["cols"], 40);
             $this->setDefault ($column["view"]["size"]["rows"], 4);
+            $this->setDefault ($column["view"]["html"], false);
         }
     }        
     
@@ -513,7 +513,7 @@ class tabledit {
             $type = $cview["type"];
             if (!$type) $type = $column["type"];                
         
-            $val = $new_record ? $column["default"] : htmlentities($record[$colname]);
+            $val = $new_record ? $column["default"] : $record[$colname];
             
             $rows = 5;
             $cols = 80;
@@ -522,23 +522,31 @@ class tabledit {
             if (!$readonly) {
                 switch ($type) {
                 case 'area':
-                case 'blob': echo "<textarea name=\"val[$colname]\""
-                    ." rows=\"".$cview["size"]["rows"]."\" cols=\"".$cview["size"]["cols"]."\">\n"
-                    .$val."</textarea>"; break;
+                case 'blob': 
+                    $val = str_replace ('"','&quot;',$val);
+                    echo "<textarea name=\"val[$colname]\""
+                        ." rows=\"".$cview["size"]["rows"]."\" cols=\"".$cview["size"]["cols"]."\">\n"
+                        .$val."</textarea>"; 
+                    break;
                 case 'select': FrmSelectEasy("val[$colname]", $cview["source"], $val); break;
                 case 'text':
-                default: echo "<INPUT type=\"text\" size=\"".$cview["size"]["cols"]."\" name=\"val[$colname]\"
-                    value='".str_replace("'","\"",$val)."'>"; 
+                default:
+                   $val = str_replace ('"','&quot;',$val);
+                   echo "<INPUT type=\"text\" size=\"".$cview["size"]["cols"]."\" name=\"val[$colname]\"
+                        value=\"".$val."\">"; 
                 }
             }
             else {
                 switch ($type) {
-                    case "select": $val = htmlentities($cview["source"][$record[$colname]]); break;
+                    case "select": $val = $cview["source"][$record[$colname]]; break;
                     case "date" :  $val = date($cview["format"], $val); break;
                 }
-                if (is_field_type_numerical ($column["type"]) && !$val)
+                if ($val) {
+                    if (!$cview["html"]) $val = htmlentities ($val);
+                }
+                else if (is_field_type_numerical ($column["type"]))
                     $val = $new_record ? "&nbsp;" : "0";
-                else if (!$val) $val = "&nbsp;";
+                else $val = "&nbsp;";
                 if ($cview["href_view"]) 
                     echo "<a href='".$this->getAction($cview["href_view"])
                         ."&cmd[".$cview["href_view"]."][edit]"
@@ -643,9 +651,11 @@ class tabledit {
 /*   $columns is array of columns, see "fields" in tableviews.php3
     appends ["type"] to each column, with column type
     appends ["primary"] to primary columns, if not exist, adds them with ["view"]["type"]=hide 
+    
+    if table has more than 1 primary key, send the chosen one in $primary
 */
 
-function GetColumnTypes ($table, $columns) {
+function GetColumnTypes ($table, $columns, $primary="") {
     global $db;
     //echo "TABLE $table";
     if (!$table) {
@@ -656,16 +666,20 @@ function GetColumnTypes ($table, $columns) {
     reset ($cols);
     while (list (,$col) = each ($cols)) {
         $cname = $col["name"];
-        if (isset ($columns[$col["name"]])) 
-            $columns[$col["name"]]["type"] = $col["type"];
-        if (strstr ($col["flags"], "primary_key")) {
+        if (!isset ($columns[$cname])) 
+            $columns[$cname]["view"]["type"] = "hide";
+        $columns[$cname]["type"] = $col["type"];
+        if (is_array ($primary))
+             $is_primary = my_in_array ($cname, $primary);
+        else $is_primary = strstr ($col["flags"], "primary_key");
+        if ($is_primary) {
             if (!isset ($columns[$cname]))
                 $columns[$cname]["view"]["type"] = "hide";              
             $type = is_field_type_numerical ($col["type"]) ? "number" : "text";
             $columns[$cname]["primary"] = $type;
         }
-        if (isset ($columns[$cname]))
-            $columns[$cname]["auto_increment"] = strstr ($col["flags"], "auto_increment");
+        if (strstr ($col["flags"], "auto_increment"))
+            $columns[$cname]["auto_increment"] = 1;
     }
     return $columns;
 }
@@ -718,14 +732,19 @@ function TableUpdate ($table, $key_value, $val, $columns, $error_msg="",  $be_ca
 
 // -----------------------------------------------------------------------------------
 
-// inserts a record and returns the key or "" if not successfull
-function TableInsert ($table, $val, $columns, $error_msg="", $be_cautious=1) {
+/* inserts a record and returns the key or "" if not successfull
+    params:
+        $primary = array (field1,field2,...) - if the table has more than 1 primary key, you   
+                 must send the correct one
+*/
+function TableInsert ($table, $val, $columns, $primary="", $error_msg="", $be_cautious=1) {
     global $db, $err;
-    $columns = GetColumnTypes ($table, $columns);
+    $columns = GetColumnTypes ($table, $columns, $primary);
     if (!ProoveVals ($table, $val, $columns)) { return ""; }
     $varset = new CVarset();
     reset ($columns);
     while (list ($colname, $col) = each ($columns)) {
+        $is_key = false;
         if ($col["primary"]) {
             if ($col["auto_increment"])
                 $auto_inc = true;

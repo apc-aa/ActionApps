@@ -61,7 +61,8 @@ if (is_array ($cmd)) {
         // WARNING: a bit hackish: after inserting an item, the command is changed to edit it
         if ($com["insert"]) {
             $myview = GetTableView ($myviewid);
-            $newkey = TableInsert ($myview["table"], $val, $myview["fields"], $myview["messages"]["error_insert"]);
+            $newkey = TableInsert ($myview["table"], $val, $myview["fields"], $myview["primary"],
+                $myview["messages"]["error_insert"]);
             unset ($cmd[$myviewid]["insert"]);
             if ($newkey != "") {
                 // show inserted record again

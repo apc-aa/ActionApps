@@ -55,6 +55,10 @@ http://www.apc.org/
    "search" => view the search form?, default: true for browse view, false for edit view
                the form is shown only if scroller is shown (i.e. there are more records than 
                what fits to one page) 
+   "primary" => array (field1,field2,..) If a table has more than 1 primary key,
+                you must set it here. If there is just 1 primary key,
+                it will be found automatically. If there is no primary key ...
+                the table can't be edited by TableEdit
 
    "fields"* => (array of many)
         "field_name"* => (array of)
@@ -73,6 +77,7 @@ http://www.apc.org/
                 "format" => required for "date", usable only on readonly field, PHP date() format
                 "readonly" => true | false  if not set, the default readonly is used   
                 "href_view" => applicable only with readonly=true, links the text to another table view
+                "html" => is it html and not plain text? applicable only with readonly fields, default: false
             "view_new_record" => the same as "view", applied only on empty new record
                                    if not filled, "view" is used instead
    "children" => (array of many) tables with relationship n:1 
@@ -208,16 +213,20 @@ function GetTableView ($viewID) {
     
     if ($viewID == "acf") {
         // filter select box        
-        $SQL = "SELECT slice.name, DF.description as fdesc, DF.id AS filterid FROM
+        $SQL = "SELECT slice.name, DF.description as fdesc, DF.id AS filterid, 
+                       view.id AS view_id, view.type as view_type FROM
                         slice INNER JOIN
                         view ON slice.id = view.slice_id INNER JOIN
                         alerts_digest_filter DF ON DF.vid = view.id";
         $SQL .= " ORDER BY slice.name, DF.description";  
         $db->tquery ($SQL);
         $filter_perms = FindAlertsFilterPermissions();
+        global $AA_CP_Session;
         while ($db->next_record()) {
             $txt = $db->f("name"). " - ". $db->f("fdesc");
-            $filters[$db->f("filterid")] = $txt;
+            $filters[$db->f("filterid")] = 
+                "<a href=\"se_view.php3?view_id=".$db->f("view_id")."&view_type=".$db->f("view_type")
+                ."&AA_CP_Session=$AA_CP_Session\">".HTMLEntities($txt)."</a>";
             if (!is_array ($filter_perms) || my_in_array ($db->f("filterid"), $filter_perms))
                 $new_filters[$db->f("filterid")] = $txt;
         }
@@ -241,6 +250,7 @@ function GetTableView ($viewID) {
                 "view" => array (
                     "readonly" => true,
                     "type" => "select",
+                    "html" => true,
                     "source" => $filters),
                 "view_new_record" => array (
                     "type" => "select",
