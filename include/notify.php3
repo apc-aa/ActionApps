@@ -62,6 +62,14 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
     die ("bad slice_id");
   }
 
+  // determine subject of message
+  $format['odd_row_format'] = $s;
+  $item_ids[] = $item_id;
+
+  $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 
+                            0, 1, '', "", 0);
+  $subject = $itemview->get_output_cached("view");
+
   // determine body of message
   $format['odd_row_format'] = $b;
   $item_ids[] = $item_id;
@@ -74,12 +82,15 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
   $SQL = "SELECT uid from email_notify where slice_id = '$p_slice_id' AND function = '$event'";
   $db->query($SQL);
 
+  $headers = "";
+  // Comment this out to send text mail
+  $headers = "Content-Type: text/html; charset=iso-8859-1\n";
   // loop through the users for the event
   while( $db->next_record() ){
     // unalias the text
    $email = $db->f('uid');
    // mail the text
-   mail($email, $s, $body);
+   mail($email, $subject, $body,$headers);
    // you cant output here, you are still in the headers section!
    // echo "DONE $email, $s, $body <BR>";
   }
