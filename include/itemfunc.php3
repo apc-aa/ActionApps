@@ -22,6 +22,7 @@ http://www.apc.org/
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."notify.php3";
+require $GLOBALS[AA_INC_PATH]."imagefunc.php3";
  
 # ----------------------- functions for default item values -------------------
 function default_fnc_now($param) {
@@ -68,7 +69,7 @@ function default_fnc_variable($param) {
   # this should be changed - we can't display any global variable to any sliceadmin
   return ($GLOBALS[$param]);
 }
-// End of Ram's Code
+// End of Rams Code
 # ----------------------- insert functions ------------------------------------
 
 function insert_fnc_qte($item_id, $field, $value, $param) {
@@ -225,13 +226,28 @@ function GetDestinationFileName($dirname, $uploaded_name) {
 }
   
   # File upload
-function insert_fnc_fil($item_id, $field, $value, $param) {
+function insert_fnc_fil($item_id, $field, $value, $param, $fields="") {
   global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR;
 
   $filevarname = "v".unpack_id($field[id])."x";
-     
+
+    
   # look if the uploaded picture exists
-  if(($GLOBALS[$filevarname] <> "none")&&($GLOBALS[$filevarname] <> "")) {
+  if($GLOBALS[$filevarname."_name"] != "none" && $GLOBALS[$filevarname."_name"] != "") {
+
+
+    $params=explode(":",$param);
+  
+  # look if type of file is allowed
+    if (substr($params[0],-1)=="*")
+	$file_type=substr($params[0],0,strpos($params[0],'/'));
+    else	
+	$file_type=$params[0];
+       # echo "uploaded type:".$GLOBALS[$filevarname."_type"].", allowed type:".$file_type;exit;
+  if (@strstr($GLOBALS[$filevarname."_type"],$file_type)==false && $params[0]!="")
+    return $err="type of uploaded file is not allowed";
+	  
+       
 
     # get filename and replace bad characters
     $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
@@ -263,15 +279,87 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
     }
 
     $dest_file = GetDestinationFileName($dirname, $dest_file);
-        
+    
     # copy the file from the temp directory to the upload directory, and test for success    
     $err = aa_move_uploaded_file ($filevarname, $dirname, $fileman_used ? $FILEMAN_MODE_FILE : 0, $dest_file);
     if ($err) return $err;
 
+    
+    
+    
+    //echo "type:"; echo $filevarname;
+    //print_r($GLOBALS);
+    
+    #do thumbnails if file type is supported by GD library
+    ######################################################
+    
+    $imageInfo=GetImageSize("$dirname/$dest_file");
+    $type_supported=GetSupportedTypes($imageInfo[2]);
+        
+    if ($type_supported && !is_array($type_supported))
+    {
+    
+    # resample image if max dimensions are sets
+    ###########################################
+    if ($params[1]!="" || $params[2]!="") 
+	ResampleImage("$dirname/$dest_file","$dirname/$dest_file",$params[1],$params[2]);
+    
+    # make thumbnails  if fields for are set
+    ########################################
+    
+//    echo $params[3];
+//    exit;
+    
+    if ($params[3]!="")
+	{
+	    #get ids of field store thumbnails
+	    $thumb_arr=explode("##",$params[3]);
+	    $num=1;
+	    	    	    
+	    reset($thumb_arr);
+	    while(list(,$fid) = each($thumb_arr)) 
+	    {	     
+		#copy thumbnail
+		
+			
+		$f=$fields[$fid];
+		$fncpar = ParseFnc($f[input_insert_func]);
+		$thumb_params=explode(":",$fncpar[param]);
+		//echo $thumb_params[0].$thumb_params[1];
+		$dest_file_tmb=substr($dest_file,0,strrpos($dest_file,"."))."_thumb$num".substr($dest_file,strrpos($dest_file,"."));
+		
+		if (ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb",$thumb_params[0],$thumb_params[1]))
+		    # store link to thumbnail 
+		    $val["value"] = "$dirurl/$dest_file_tmb";
+		else
+		    #if picture cannot be resampled or it is not necessary thumb fields will store path to original file
+		    $val["value"] = "$dirurl/$dest_file";
+		    
+		//exit;
+
+		insert_fnc_qte($item_id, $f, $val, "");
+		
+		$num++;
+		
+		
+    	    }
+	    
+	}
+	
+	
+    
+    }
+
     $value["value"] = "$dirurl/$dest_file";
+    
   }
   # store link to uploaded file or specified file URL if nothing was uploaded
-  insert_fnc_qte($item_id, $field, $value, "");
+  // print_r($value);exit;
+   insert_fnc_qte($item_id, $field, $value, "");
+   
+   #return array with fields was filled
+   
+   return $thumb_arr;
 }    
 
 function insert_fnc_nul($item_id, $field, $value, $param) {
@@ -632,6 +720,8 @@ function IsEditable($fieldcontent, $field) {
 function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=true ) {
   if( !isset($prifields) OR !is_array($prifields) )
     return false;
+  
+  // print_r($fields); exit;
   reset($prifields);
   while(list(,$pri_field_id) = each($prifields)) {
     $f = $fields[$pri_field_id];
@@ -655,8 +745,8 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
       $GLOBALS[$varname] = $x[0];
       $GLOBALS[$htmlvarname] = $x[1];
     }
-
-    if( isset($GLOBALS[$varname]) and is_array($GLOBALS[$varname]) ) {
+    
+        if( isset($GLOBALS[$varname]) and is_array($GLOBALS[$varname]) ) {
         # fill the multivalues    
       reset($GLOBALS[$varname]);
       $i=0;
@@ -683,7 +773,8 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
   if (!$insert)
     $content4id["flags..........."][0]['value'] = $oldcontent4id["flags..........."][0]['value'];
 
-  return $content4id;
+    
+  return $content4id; 
 }
 
 function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
@@ -721,7 +812,9 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
   reset($content4id);
   while(list($fid,$cont) = each($content4id)) {
     $f = $fields[$fid];
+    #print_r($f);
     $fnc = ParseFnc($f[input_insert_func]);   # input insert function
+    $fncpar = ParseFnc($f[input_insert_func]);   # input insert function parameters of field
     if( $fnc ) {                  # function to call
       $fncname = 'insert_fnc_' . $fnc[fnc];
         # updates content table or fills $itemvarset
@@ -729,16 +822,40 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         continue;
       reset($cont);               # it must serve multiple values for one field
       while(list(,$v) = each($cont)) {
-          # add to content table or to itemvarset
-        $fncname($id, $f, $v, $fnc[param]);
-          # do not store multiple values if field is not marked as multiple
+        
+        # add to content table or to itemvarset
+        if ($fnc[fnc]=="fil") #if function is file upload need send $fields array, 
+	    {    
+	      #function return array of fields that store thumbnails and will not by filled 
+		echo $fid;print_r($arr_stop);
+		echo $stop=false;
+	      
+	      if (is_array($arr_stop))
+	      {
+	      reset($arr_stop);
+	      while(list(,$v_stop)=each($arr_stop))
+		{	    
+		    if ($v_stop==$fid) $stop=true;
+		};
+	      };
+	      
+	    if (!$stop)
+		{  echo "tu";
+		   $arr_stop=$fncname($id, $f, $v, $fncpar[param],$fields);
+		}
+	    }
+	else
+	$fncname($id, $f, $v, $fncpar[param]);
+    //    print_r($fnc);
+	  # do not store multiple values if field is not marked as multiple
           # ERRORNOUS
         if( !$f[multiple]!=1 ) 
           continue;
       }
     }
   }
- 
+ //exit;
+   
     # update item table
   if( !$insert ) {
     $itemvarset->add("slice_id", "unpacked", $slice_id);
