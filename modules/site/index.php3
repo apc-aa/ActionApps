@@ -44,7 +44,7 @@ if( !isset($r_spot_id) ) {
 }
        
 if( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS);
+  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
   exit;
 }  
 
@@ -129,7 +129,7 @@ ModW_StoreTree( $tree, $module_id );
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<title><?php echo L_EDITOR_TITLE ?></title>
+<title><?php echo _m("Editor window - item manager") ?></title>
 </head> <?php
 
 # module specific navigation bar

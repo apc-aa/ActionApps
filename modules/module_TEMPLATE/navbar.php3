@@ -33,14 +33,14 @@ http://www.apc.org/
 # switching dropdown menu, ...
 
 if( !$module_id )
-  $r_slice_headline = L_NEW_SLICE_HEAD;
+  $r_slice_headline = _m("New slice");
   
 if( $editor_page )
-  $nb_context = L_CODE_MANAGER;
+  $nb_context = _m("Code&nbsp Manager");
  elseif( $settings_page )
-  $nb_context = L_SITE_SETTINGS;
+  $nb_context = _m("Module Settings");
  elseif( $usermng_page )
-  $nb_context = L_USER_MANAGEMENT;
+  $nb_context = _m("Users");
 
 # modules are in directory one level deeper than scripts in /admin/...
 # if the '/admin' is in path, this navbar is called just after swithing to 
@@ -48,24 +48,24 @@ if( $editor_page )
 $nb_backpath = ( (strpos($PHP_SELF, '/admin/') > 0 ) ? '' : '../' );
   
 $nb_manager = ( $editor_page ? 
-  '<span class=nbdisable>'. L_CODE_MANAGER .'</span>':
-  '<a href="'. $sess->url("index.php3"). '"><span class=nbenable>'. L_CODE_MANAGER .'</span></a>');
+  '<span class=nbdisable>'. _m("Code&nbsp Manager") .'</span>':
+  '<a href="'. $sess->url("index.php3"). '"><span class=nbenable>'. _m("Code&nbsp Manager") .'</span></a>');
 
 $nb_settings = ( ( $settings_page OR !IfSlPerm(PS_MODW_SETTINGS) ) ?
-  '<span class=nbdisable>'. L_SITE_SETTINGS .'</span>':
-  '<a href="'. $sess->url($MODULES[$g_modules[$module_id]['type']]['directory']. "slicedit.php3") .'"><span class=nbenable>'. L_SITE_SETTINGS .'</span></a>');
+  '<span class=nbdisable>'. _m("Module Settings") .'</span>':
+  '<a href="'. $sess->url($MODULES[$g_modules[$module_id]['type']]['directory']. "slicedit.php3") .'"><span class=nbenable>'. _m("Module Settings") .'</span></a>');
 
 $nb_view = (!$r_slice_view_url ?
   '<span class=nbenable>'. L_VIEW_SITE .'</span>' :
   " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". L_VIEW_SITE .'</span></a>');
 
-$nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
+$nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. _m("APC Action Applications") .'"></a>';
 
-$nb_go = '<span class=nbenable>'. L_GO .'</span>';
+$nb_go = '<span class=nbenable>'. _m("Go") .'</span>';
 
 $nb_usermng = ( (!IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
-  '<span class=nbdisable>'. L_USER_MANAGEMENT .'</span>' :
-  '<a href="'. $sess->url("um_uedit.php3") .'"><span class=nbenable>'. L_USER_MANAGEMENT .'</span></a>');
+  '<span class=nbdisable>'. _m("Users") .'</span>' :
+  '<a href="'. $sess->url("um_uedit.php3") .'"><span class=nbenable>'. _m("Users") .'</span></a>');
 
 echo "
 <TABLE border=0 cellpadding=0 cellspacing=0>
@@ -90,6 +90,9 @@ echo "</TD></TR></TABLE>";
 
 /*
 $Log$
+Revision 1.3  2003/01/17 10:38:34  jakubadamek
+BIG CHANGES due to moving AA to use mini-gettext
+
 Revision 1.2  2002/10/14 14:26:51  jakubadamek
 no message
 

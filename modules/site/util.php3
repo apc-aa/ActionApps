@@ -96,9 +96,9 @@ function ModW_PrintVariables( $vars ) {
   if( isset($vars) AND is_array($vars) ){
     reset( $vars);
     while( list($k,$v) = each($vars) )
-      echo "$v <span align=right><a href=\"". AAPage(0,"delvar=$k") ."\">".L_DELETE."</a></span><br>";
+      echo "$v <span align=right><a href=\"". AAPage(0,"delvar=$k") ."\">"._m("Delete")."</a></span><br>";
   }    
-  echo "<form name=fvar action=\"$PHP_SELF\"><input type='text' name='addvar' value='' size='20' maxlength='50'><span align=right><a href='javascript:document.fvar.submit()'>".L_ADD."</a></span>";
+  echo "<form name=fvar action=\"$PHP_SELF\"><input type='text' name='addvar' value='' size='20' maxlength='50'><span align=right><a href='javascript:document.fvar.submit()'>"._m("Add")."</a></span>";
   ModW_HiddenRSpotId();
   $sess->hidden_session();
   echo "</form></td></tr>";
@@ -112,11 +112,11 @@ function ModW_PrintConditions($conds, $vars) {
     $i=0;
     while( list($k, $v) = each($vars)) {
       if( $conds[$v] )
-        echo "$v = $conds[$v] <span align=right><a href=\"". AAPage(0,"delcond=$v") ."\">".L_DELETE."</a></span><br>";
+        echo "$v = $conds[$v] <span align=right><a href=\"". AAPage(0,"delcond=$v") ."\">"._m("Delete")."</a></span><br>";
        else {
         echo "<form name=fcond$i action=\"$PHP_SELF\">$k = <input type='text' name='addcond' value='' size='20' maxlength='50'>
                 <input type='hidden' name='addcondvar' value='$v'>
-             <span align=right><a href='javascript:document.fcond$i.submit()'>".L_ADD."</a></span>";
+             <span align=right><a href='javascript:document.fcond$i.submit()'>"._m("Add")."</a></span>";
         $sess->hidden_session();
 	ModW_HiddenRSpotId();
         echo "</form>";
@@ -144,7 +144,7 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
   ModW_HiddenRSpotId();
   FrmInputText('name', L_SPOT_NAME, $tree->get('name', $spot_id), 50, 50, true, false, false, false);
   echo "<tr><td align=center colspan=2><textarea name='content' rows=20 cols=80>$content</textarea><br><br>
-              <input type=submit name='". L_SUBMIT ."'>";
+              <input type=submit name='". _m("Submit") ."'>";
   $sess->hidden_session(); 
   echo "</td></tr>
       </form>

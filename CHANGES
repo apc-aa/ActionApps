@@ -1,36 +1,53 @@
-01/17/02 - Documentation - ref to GD (but no instructions) 
-	 -- and ref FAQ for developer CVS install
-	 - stringexpand: do unalias on results of expanding apc_state or als
-01/16/02 - added functions to module/site/site.php3 for site_* files (mitra)
-         -- ModW_id2item - convert id to item enabling aliases etc
-	 -- ModW_arr2str - convert array back to string
-	 -- ModW_str2arr - convert apc= parameter string to array
-	 -- pass apc_state[item] on to unaliasing 
-01/15/02 - fixed bugs in imagefunc.php3 (check for GD, removed debug messages)
+01/17/03 - changed all January dates here from /02 to /03 :-)) (jakub)
+01/17/03 - changed name loginform.html to loginform.inc, the name was nonsense (jakub)
+01/17/03 - BIG CHANGE: moved the complete AA to mgettext (jakub)
+            * see documentation in include/lang/readme.html and misc/mgettext/*
+            * Finished the scripts in misc/mgettext and include/mgettext.php3
+            * In almost every script: All language constants replaced by _m() calls
+            * All language files include/??_????_lang.php3 removed.
+            * Updated language files in include/lang.
+            * Added new item into config.php3: $XMGETTEXT_DESTINATION_DIR
+            * Updated doc/install-5.html
+            * Added menu item AA admin / xmgettext
+            * changed global variables in constants.php3 to function calls
+            * changed include/init_page.php3 to use mini-gettext
+            * changed slice.php3 to use the ??_output_lang.inc language file
+            * changed admin/param_wizard.php3 to use the ??_param_wizard.inc language file            
+01/17/03 - Documentation - ref to GD (but no instructions) 
+            -- and ref FAQ for developer CVS install
+         - stringexpand: do unalias on results of expanding apc_state or als
+01/16/03 - added functions to module/site/site.php3 for site_* files (mitra)
+           -- ModW_id2item - convert id to item enabling aliases etc
+           -- ModW_arr2str - convert array back to string
+           -- ModW_str2arr - convert apc= parameter string to array
+           -- pass apc_state[item] on to unaliasing 
+01/15/03 - fixed bugs in imagefunc.php3 (check for GD, removed debug messages)
          - fixed problem in Item Manager (search field works again)
-01/14/02 - new language file selectbox for site module (Site Admin - modedit)
-01/13/02 - added "add" as option to f_e for adding an item; 
+01/14/03 - hiding the slice select box for users with access to only one module (jakub)
+01/14/03 - new function GetUserEmails in perm_core.php3 (jakub)
+01/14/03 - new language file selectbox for site module (Site Admin - modedit)
+01/13/03 - added "add" as option to f_e for adding an item; 
            created parameter wizard for f_e
-01/12/02 - changed site module to go to prior sibling when deleting rather than 
+01/12/03 - changed site module to go to prior sibling when deleting rather than 
            parent
-01/12/02 - added default $item=null to new_unalias_recurent to allow calling 
+01/12/03 - added default $item=null to new_unalias_recurent to allow calling 
            from site module without warnings
-01/12/02 - fixed adding AA_CP_Session to url in site module AAPage where it is 
+01/12/03 - fixed adding AA_CP_Session to url in site module AAPage where it is 
            already there.
-01/12/02 - changes to allow _#EDITITEM to be used outside of admin interface
-01/12/02 - combined several ways of redirecting to a URL into common function 
+01/12/03 - changes to allow _#EDITITEM to be used outside of admin interface
+01/12/03 - combined several ways of redirecting to a URL into common function 
            go_return_or_url
-01/11/02 - Fixed item.php3:subst_alias, it relied on old bug of expanding bare 
+01/11/03 - Fixed item.php3:subst_alias, it relied on old bug of expanding bare 
            field name without { }
-01/11/02 - Changed typos of _#ITEMEDIT to _#EDITITEM
-01/11/02 - Changed a type $New_silce to $New_slice in init_page.php3
-01/11/02 - Added alias checking so {xx} will also check als[xx] 
+01/11/03 - Changed typos of _#ITEMEDIT to _#EDITITEM
+01/11/03 - Changed a type $New_silce to $New_slice in init_page.php3
+01/11/03 - Added alias checking so {xx} will also check als[xx] 
            (it will default to returning "{xx}" if not set)
-01/11/02 - Changed f_e to work in views outside of admin (appends slice_id 
+01/11/03 - Changed f_e to work in views outside of admin (appends slice_id 
            instead of session_id if no session id), takes a second parameter - 
            return url (not currently specifieable with wizzard), and defaults 
            to $PHP_SELF if running with no $sess.
-01/10/02 - fixed bad display of selected related items, when "Two Boxes" input 
+01/10/03 - fixed bad display of selected related items, when "Two Boxes" input 
            type is used (honzam)
          - {influde()} inline construct accepts "http://" includes, now (honzam)
          - fixed bug of bad number of parameters to new_unalias_recurent()
@@ -42,21 +59,21 @@
          - added missing "util.php3" include in "Module Settings" page 
            for 'site module' (modedit.php3) (honzam)
          - fixed bug of not displaying UserManagement pages in NN4.7 (honzam)
-01/10/02 - fixed javascript bugs preventing for example deletion of RSS feeds 
+01/10/03 - fixed javascript bugs preventing for example deletion of RSS feeds 
            on Mac IE, two bugs (mitra)
            -- if the index of a selection is -1 (not selected) you can't 
               retrieve a value
            -- you can't test against undefined, have to test against null.
-01/07/02 - move r_spot_id out of session variable and into URLs (mitra)
-01/06/02 - added "All" option to the scroller in item manager 
+01/07/03 - move r_spot_id out of session variable and into URLs (mitra)
+01/06/03 - added "All" option to the scroller in item manager 
            (sets listlen to 99999) (mitra)
-01/06/02 - changed cases of "action" to "akce" as form component name because 
+01/06/03 - changed cases of "action" to "akce" as form component name because 
            its a  property of "form". Bug shows up in Omniweb but not in IE 
            (fee_to.php3,index.php3 related_sel.php3) (mitra)
-01/05/02 - added utils.php3:huhl function for wrapping print_r (mitra)
+01/05/03 - added utils.php3:huhl function for wrapping print_r (mitra)
          - changed richEditShowable to return false for macintosh (Mac IE 5.2 
            does not support either class or iframe versions of RichTextEdit)
-01/3/02	 - merged string expansion into include/stringexpand.php3 including 
+01/03/03	 - merged string expansion into include/stringexpand.php3 including 
            (mitra)
            -- REMOVE strings from views are now applied to the RESULT, not 
               the first parse, this might be significant/bad idea
@@ -70,8 +87,8 @@
            -- modules/site/site.php3 uses new unalias which means
               ---  it requires switch({m}) instead of switch(m)
               ---  it supports the {math ...} and {include...} syntax
-01/2/02  - fixed bug in site/index.php3 where cache not invalidated when site updated
-12/30/02 - spelling correction in L_TOO_MUCH_RELATED all *news_lang.php3 still in english (mitra)
+01/02/03  - fixed bug in site/index.php3 where cache not invalidated when site updated
+12/30/02 - spelling correction in _m("There are too many related items. The number of related items is limited.") all *news_lang.php3 still in english (mitra)
 12/30/02 - warning comment on slice special case in item.php3 (mitra)
 12/29/02 - Added some comments in site/site and added simple example from sf.net (mitra)
 12/20/02 - fixed problem with LiveCheckbox (image path/mozilla refresh) (honzam)

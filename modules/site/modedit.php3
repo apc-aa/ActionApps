@@ -48,12 +48,12 @@ $module_id = $slice_id;
 
 if($template['W']) {        // add module
   if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_ADD, "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"), "standalone");
     exit;
   }
 } else {                    // edit module
   if(!CheckPerms( $auth->auth["uid"], "slice", $module_id, PS_MODW_SETTINGS)) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT, "standalone");
+    MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"), "standalone");
     exit;
   }
 }
@@ -189,19 +189,19 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   ModW_HiddenRSpotId();
-  FrmStaticText(L_ID, $module_id, false);
+  FrmStaticText(_m("Id"), $module_id, false);
   FrmInputText("name", L_SITE_NAME, $name, 99, 25, true);
   $include_cmd = "<!--#include virtual=\"${AA_INSTAL_PATH}modules/site/site.php3?site_id=$module_id\"-->";
   FrmInputText("slice_url", L_SITE_URL, $slice_url, 254, 25, false,
                L_SITE_URL_HLP1. "$include_cmd" );
-  FrmInputSelect("owner", L_OWNER, $slice_owners, $owner, false);
+  FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
   if( !$owner ) {
-    FrmInputText("new_owner", L_NEW_OWNER, $new_owner, 99, 25, false);
-    FrmInputText("new_owner_email", L_NEW_OWNER_EMAIL, $new_owner_email, 99, 25, false);
+    FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);
+    FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99, 25, false);
   }
   if( $superadmin )
-    FrmInputChBox("deleted", L_DELETED, $deleted);
-  FrmInputSelect("lang_file", L_LANG_FILE, $MODULES['W']['language_files'], $lang_file, false);
+    FrmInputChBox("deleted", _m("Deleted"), $deleted);
+  FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['W']['language_files'], $lang_file, false);
   FrmInputText("state_file", L_STATE_FILE, $state_file, 99, 25, false, L_SITE_STATE_FILE_HLP);
 ?>
 </table>
@@ -211,12 +211,12 @@ if( $template['W'] ) {
   echo "<input type=hidden name=\"add\" value=1>";        // action
 //  echo "<input type=hidden name=\"Add_slice\" value=1>";  // detects new slice
   echo "<input type=hidden name=\"template[W]\" value=\"". $template['W'] .'">';
-  echo "<input type=submit name=insert value=\"". L_INSERT .'">';
+  echo "<input type=submit name=insert value=\"". _m("Insert") .'">';
 } else {
   echo "<input type=hidden name=\"update\" value=1>";
-  echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=reset value="'. L_RESET .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
+  echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
+  echo '<input type=reset value="'. _m("Reset form") .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
 }
 ?>
 </td></tr></table>

@@ -93,14 +93,14 @@ else {
     }
 }
 
-echo '<H1><B>'.( !$jump_id ? L_A_JUMP_ADD : L_A_JUMP_EDT) . '</B></H1>';
+echo '<H1><B>'.( !$jump_id ? _m("Create new Jump module") : _m("Edit Jump module")) . '</B></H1>';
 
 // Show the select box to choose a module to edit
 if ($jump_id) {
     echo '
-    <form name=choose action="modedit.php3?AA_CP_Session='.$AA_CP_Session.'" method="post">
+    <form name=choose action="'.$sess->url("modedit.php3").'" method="post">
     <table border="0" cellspacing="0" cellpadding="3" align="center">
-         <tr><td class=tabtit><b>'.L_CHOOSE_JUMP.':</b></td>
+         <tr><td class=tabtit><b>'._m("Choose module to be edited").':</b></td>
             <td class=tabtit>
                 <select name="jump_id" onchange="document.forms.choose.submit();">';
                 reset ($jumps);
@@ -110,24 +110,24 @@ if ($jump_id) {
                     .">".htmlspecialchars($name);
     
                 echo '</select>&nbsp;
-                <input type=submit name="edit" value="'.L_EDIT.'">
+                <input type=submit name="edit" value="'._m("Edit").'">
             </td>
         </tr>
     </table></form>';
 }
 
 echo '
-<form name=f action="modedit.php3?AA_CP_Session='.$AA_CP_Session.'" method="post">
+<form name=f action="'.$sess->url("modedit.php3").'" method="post">
 <input type=hidden name="jump_id" value="'.$jump_id.'">';
 if ($edit) echo "<input type=hidden name='edit' value='1'>";
 echo '
 <table border="0" cellspacing="0" cellpadding="3" align="center">
-     <tr><td class=tabtxt><b>'.L_MODULE_NAME.':</b></td>
+     <tr><td class=tabtxt><b>'._m("Module name").':</b></td>
         <td class=tabtxt><input type=text name="jump_name" size=20 value="'.$jump_name.'"></td></tr>
-     <tr><td class=tabtxt><b>'.L_JUMP_TO.' (URL):</b></td>
+     <tr><td class=tabtxt><b>'._m("Jump to").' (URL):</b></td>
         <td class=tabtxt><input type=text name="jump_url" size=60 value="'.$jump_url.'"></td></tr>
-     <tr><td colspan=2 class=tabtxt>'.L_AA_RELATIVE.' <code>admin/se_constant.php3?group_id=something</code></td></tr>
-     <tr><td class=tabtxt><b>'.L_JUMP_SLICE.":</b></td>
+     <tr><td colspan=2 class=tabtxt>'._m("Type in an AA-relative path, e.g.").' <code>admin/se_constant.php3?group_id=something</code></td></tr>
+     <tr><td class=tabtxt><b>'._m("Jump to slice").":</b></td>
         <td class=tabtxt><select name=dest_id>";
 //        <option value=''>* * * Don't change slice * * *";
      if( is_array($g_modules) AND (count($g_modules) > 1) ) {
@@ -141,9 +141,9 @@ echo '
      else echo "<option>No module exists";
      echo "</select></td>
      </tr>
-     <tr><td class=tabtxt colspan=2>".L_MODULE_ID.": $jump_id</td></tr>
+     <tr><td class=tabtxt colspan=2>"._m("Module ID").": $jump_id</td></tr>
      <tr><td class=tabtxt colspan=2 align=center>
-        <input type=submit name='update' value='".($jump_id ? L_UPDATE : L_CREATE)."'>
+        <input type=submit name='update' value='".($jump_id ? _m("Update") : _m("Create"))."'>
      </td></tr>
 </table></form>";
 HTMLPageEnd();

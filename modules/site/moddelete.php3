@@ -67,7 +67,7 @@ $db->query("OPTIMIZE TABLE site_spot");
 
 page_close();                                // to save session variables
 go_url(con_url($sess->url($AA_INSTAL_PATH . "admin/slicedel.php3"),
-                                          "Msg=".rawurlencode(L_DELSLICE_OK)));
+                                          "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
 ?>
 

@@ -39,7 +39,7 @@ $p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
 # module. See /include/perm_core.php3 for more details
  
 if( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS);
+  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
   exit;
 }  
 
@@ -49,7 +49,7 @@ if( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<title><?php echo L_EDITOR_TITLE ?></title>
+<title><?php echo _m("Editor window - item manager") ?></title>
 </head> <?php
 
 require "navbar.php3"; # module specific navigation bar
@@ -68,6 +68,9 @@ exit;
 
 /*
 $Log$
+Revision 1.2  2003/01/17 10:38:34  jakubadamek
+BIG CHANGES due to moving AA to use mini-gettext
+
 Revision 1.1  2002/04/25 12:07:26  honzam
 initial version
 

@@ -40,7 +40,6 @@ else return;
 require $GLOBALS[AA_INC_PATH]."menu_util.php3";
 require $GLOBALS[AA_INC_PATH]."perm_core.php3";
 require $GLOBALS[AA_INC_PATH]."mgettext.php3";
-bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".substr(LANG_FILE,0,2)."_news_lang.inc");
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
@@ -49,31 +48,30 @@ function get_aamenus ()
 {
     global $r_slice_view_url,
            $auth,
-           $AA_INSTAL_PATH,
-           $AA_CP_Session;
+           $AA_INSTAL_PATH;
 
     $aamenus["view"] = array (
-        "label" => L_VIEW_SLICE,
+        "label" => _m("View site"),
         "exact_href"  => $r_slice_view_url,
         "cond"  => 1,
         "level" => "main");
 
     $aamenus["codemanager"] = array (
-        "label" => L_CODE_MANAGER,
-        "title" => L_CODE_MANAGER,
+        "label" => _m("Code&nbsp Manager"),
+        "title" => _m("Code&nbsp Manager"),
         "href"  => "modules/site/index.php3" . ($r_slot_id ? "?r_slot_id=$r_slot_id" : ""),
         "level" => "main");
 
     $aamenus["modadmin"] = array (
-        "label" => L_SITE_SETTINGS,
-        "title" => L_SITE_SETTINGS,
+        "label" => _m("Module Settings"),
+        "title" => _m("Module Settings"),
         "href"  => "modules/site/modedit.php3" . ($r_slot_id ? "?r_slot_id=$r_slot_id" : ""),
         "cond"  => IfSlPerm(PS_MODW_SETTINGS),
         "level" => "main");
 
     $aamenus["aaadmin"] = array (
-        "label" => L_AA_ADMIN2,
-        "title" => L_AA_ADMIN,
+        "label" => _m("AA"),
+        "title" => _m("AA Administration"),
         "href"  => "admin/um_uedit.php3",
         "cond"  => IfSlPerm(PS_NEW_USER),
         "level" => "main",
