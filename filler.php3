@@ -226,7 +226,7 @@ if ($embedded) {
   # update database
 if (!is_array ($err)) {
 	if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, 
-                          true, true ))     # insert, invalidatecache, feed
+                          true, true, $oldcontent4id ))     # insert, invalidatecache, feed
         $err["store"] = _m("Some error in store item.");
 }        
                           

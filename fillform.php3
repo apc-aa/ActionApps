@@ -15,6 +15,7 @@
  *             exactly 1 result.
  *      oldcontent4id
  *      show_result
+ *      use_http_auth
  *	
  *	This script contains two similar functions:
  *	
@@ -118,9 +119,6 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
 
-if ($use_http_auth)
-{ echo "REMOTE USER: ".$_SERVER["REMOTE_USER"]; exit; }
-
 add_vars();
 add_post2shtml_vars();
 
@@ -202,9 +200,24 @@ function safeChars ($str) {
 	is enough. */
 
 function fillForm () {
-    global $my_item_id, $lookup_conds, $slice_id, $oldcontent4id;
+    global $my_item_id, $lookup_conds, $slice_id, $oldcontent4id, $db;
     
-    if (is_array ($lookup_conds)) {
+    if ($GLOBALS["use_http_auth"]) {
+        if (! $slice_id)
+            echo "Error: You must send slice ID if you want use_http_auth!";
+        $db->query (
+            "SELECT item.id FROM content INNER JOIN item 
+             ON content.item_id = item.id
+             WHERE item.slice_id='".q_pack_id($slice_id)."'
+             AND content.field_id='headline........'
+             AND content.text='".addslashes($_SERVER["REMOTE_USER"])."'");
+        if ($db->num_rows() != 1)
+            return;
+        $db->next_record();
+        $my_item_id = unpack_id128 ($db->f("id"));
+    }
+
+    else if (is_array ($lookup_conds)) {
         list ($fields) = GetSliceFields ($slice_id);
         $zids = QueryZIDs($fields, $slice_id, $lookup_conds, "", "", "ALL");
         if ($zids->count() == 1) 
@@ -254,21 +267,23 @@ function fillFormWithContent ($oldcontent4id) {
 	if (is_array ($oldcontent4id)) {
 		reset ($oldcontent4id);
 		while (list ($field_id,$field_array) = each ($oldcontent4id)) {
-			reset ($field_array);
-			while (list (,$field) = each ($field_array)) {
-				$myvalue = safeChars ($field[value]);
-				//$control_id = $field_id;
-				$control_id = 'v'.unpack_id128($field_id);
-				// field password.......x is used to authenticate item edit
-				if (substr ($field_id, 0, 14) != "password......" 
-					&& $field_id != "id.............."
-					&& $field_id != "slice_id........"
-					&& $myvalue != "") {
-                    if (!$first) echo ",\n"; else $first = false;
-					echo "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','".
-					($field[flag] & FLAG_HTML ? "h" : "t")."',$timezone)";
-                }
-			}
+            if (is_array ($field_array)) {
+    			reset ($field_array);
+    			while (list (,$field) = each ($field_array)) {
+    				$myvalue = safeChars ($field[value]);
+    				//$control_id = $field_id;
+    				$control_id = 'v'.unpack_id128($field_id);
+    				// field password.......x is used to authenticate item edit
+    				if (substr ($field_id, 0, 14) != "password......" 
+    					&& $field_id != "id.............."
+    					&& $field_id != "slice_id........"
+    					&& $myvalue != "") {
+                        if (!$first) echo ",\n"; else $first = false;
+    					echo "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','".
+    					($field[flag] & FLAG_HTML ? "h" : "t")."',$timezone)";
+                    }
+    			}
+            }
 		}
 	}
 	
@@ -287,7 +302,7 @@ function fillFormWithContent ($oldcontent4id) {
 }
 
 if ($show_result)
-    readfile (con_url ($show_result, "result=".urlencode(serialize($result))));
+    @readfile (con_url ($show_result, "result=".urlencode(serialize($result))));
 
 if (isset($fillConds)) 
 	fillConds();
