@@ -103,22 +103,112 @@ class aaevent {
     function get_handlers() {
         // TODO - read the events from database instead of this static definition
         $this->handlers   = array();
-        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',
-                                          array('type'       => 'LINK_NEW',
-                                                'slice_type' => 'Links'));
-        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',
-                                          array('type'       => 'LINK_UPDATED',
-                                                'slice_type' => 'Links'));
-        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',
-                                          array('type'       => 'ITEM_UPDATED',
-                                                'slice'      => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',
-                                          array('type'       => 'ITEM_NEW',
-                                                'slice'      => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
+        $this->handlers[] = new aahandler('Event_ItemsBeforeDelete',    array('type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemsMoved',           array('type' => 'ITEMS_MOVED',           'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemBeforeUpdate',     array('type' => 'ITEM_BEFORE_UPDATE',    'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemBeforeInsert',     array('type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemAfterInsert',      array('type' => 'ITEM_NEW',              'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemAfterUpdate',      array('type' => 'ITEM_UPDATED',          'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ConstantBeforeUpdate', array('type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ConstantUpdated',      array('type' => 'CONSTANT_UPDATED',      'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',     array('type' => 'LINK_NEW',              'slice_type' => 'Links'));
+        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',     array('type' => 'LINK_UPDATED',          'slice_type' => 'Links'));
+        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',   array('type' => 'ITEM_UPDATED',     'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',   array('type' => 'ITEM_NEW',         'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
     }
 }
 
-/** Handlers */
+
+/** ------------- Handlers --------------*/
+
+/** Called after inserting a new item.
+*   $itemContent is sent by reference but for better performance only.
+*/
+function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
+    $item_id = $itemContent->getItemID();
+    AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
+    AlertsSendWelcome( $item_id, $slice_id, $itemContent );
+//    AlertsSendInstantAlert( $item_id, $slice_id );
+    MailmanCreateSynchroFiles ($slice_id);
+
+    // notifications
+    switch ($itemContent->getStatusCode()) {
+        case SC_ACTIVE:      email_notify($slice_id, 3, $item_id); break;
+        case SC_HOLDING_BIN: email_notify($slice_id, 1, $item_id); break;
+    }
+    return true;
+}
+
+/** Called after updating an existing item.
+*   $itemContent is sent by reference but for better performance only.
+*/
+function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
+    $item_id = $itemContent->getItemID();
+    AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
+//    AlertsSendInstantAlert( $item_id, $slice_id );
+    MailmanCreateSynchroFiles ($slice_id);
+
+    // notifications
+    switch ($itemContent->getStatusCode()) {
+        case SC_ACTIVE:      email_notify($slice_id, 4, $item_id); break;
+        case SC_HOLDING_BIN: email_notify($slice_id, 2, $item_id); break;
+    }
+    return true;
+}
+
+/** Called on updating an existing item.
+*   @param object $itemContent is sent by reference - you can change the data
+*/
+function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
+    $item_id = $itemContent->getItemID();
+    // Delete reader from Auth tables because if the username changes,
+    // AuthUpdateReaders can not recognize it.
+    AuthDeleteReaders( array( pack_id( $item_id)), $slice_id );
+    return true;
+}
+
+/** Called on inserting a new item.
+*   @param object $itemContent is sent by reference - you can change the data
+*/
+function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
+    return true;
+}
+
+/** Called on deleting several items.
+*   @param object $item_ids is sent by reference but for better performance only
+*/
+function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, &$item_ids, $foo, $foo2 ) {
+    /* It is not really necessary to delete the readers from Auth tables,
+       because they should be deleted on moving to Trash bin. But it is
+       perhaps better to make sure. */
+    AuthDeleteReaders( $item_ids, $slice_id );
+    MailmanCreateSynchroFiles ($slice_id);
+    return true;
+}
+
+/** Called after moving items to another bin (changing status code). */
+function Event_ItemsMoved( $type, $slice_id, $slice_type, &$item_ids, $new_status, $foo2 ) {
+    AuthUpdateReaders( $item_ids, $slice_id );
+    MailmanCreateSynchroFiles( $slice_id );
+}
+
+/** Called on propagating a change in a constant value.
+ *  @param string $newvalue, $oldvalue Both have added slashes (e.g. from a form).
+ *  @param string $constant_id Unpacked ID of constant from the constant table.
+ */
+function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
+    return true;
+};
+
+/** Called after propagating a change in a constant value.
+*   @param string $newvalue, $oldvalue Both have added slashes (e.g. from a form).
+*   @param string $constant_id Unpacked ID of constant from the constant table.
+*/
+function Event_ConstantUpdated( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
+    AuthChangeGroups ($constant_id, $oldvalue, $newvalue);
+    MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue );
+}
+
 
 /** Creates 'general' categories (if not created yet) when new link type belongs
  *  to 'global categories'. Then it modifies category set, where to assign link
@@ -238,17 +328,16 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 }
 
 /** Send email with answer to Dropin staff with the answer (from item)
- *  @param array  &$ret_params  - no return values
- *  @param object  $params      - ItemContent object with new values
+ *  @param object  &$ret_params  - ItemContent object with new values
  */
 function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     global $db;
 
-    $short_id = $params->getValue('short_id........');              // item's short_id is in params
-    $email    = trim($params->getValue('con_email......1'));
-    $otazka   = trim($params->getValue('abstract.......1'));
-    $odpoved  = trim($params->getValue('abstract.......2'));
-    $send     = trim($params->getValue('switch.........2'));
+    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
+    $email    = trim($ret_params->getValue('con_email......1'));
+    $otazka   = trim($ret_params->getValue('abstract.......1'));
+    $odpoved  = trim($ret_params->getValue('abstract.......2'));
+    $send     = trim($ret_params->getValue('switch.........2'));
 
     if ( $email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1')) ) {
         $item = GetItemFromId($short_id, true);

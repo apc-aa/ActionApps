@@ -30,7 +30,6 @@ require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."event_handler.php3";
 
 $where_used = true;
 
@@ -104,7 +103,7 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
 *   @param string $newvalue The new value with added slashes (e.g. from a form)
 */
 function propagateChanges ($cid, $newvalue, $short=true) {
-    global $db, $group_id, $Msg, $debug;
+    global $db, $group_id, $Msg, $debug, $event, $slice_id;
 
     $db->tquery( "SELECT id, value FROM constant WHERE ".
         ($short ? "short_id=$cid" : "id='$cid'"));
@@ -113,11 +112,11 @@ function propagateChanges ($cid, $newvalue, $short=true) {
     if ($oldvalue == $newvalue) return;
 
     $constant_id = unpack_id ($db->f("id"));
-    if (! Event_ItemsBeforePropagateConstantChanges (
-        $constant_id, $oldvalue, $newvalue))
-        return;
 
-    if ($oldvalue)
+    $event->comes('CONSTANT_BEFORE_UPDATE', $slice_id, 'S', $newvalue, $oldvalue, $constant_id);
+
+    if ($oldvalue) {
+        // we have to join also item table in order we make sure field is in right slice
         $db->tquery("
         SELECT item_id,field_id
           FROM content, item, field
@@ -127,6 +126,7 @@ function propagateChanges ($cid, $newvalue, $short=true) {
            AND (field.input_show_func LIKE '___:$group_id:%'
             OR  field.input_show_func LIKE '___:$group_id')
            AND content.text = '$oldvalue'");
+    }
     $db1 = new DB_AA;
     $cnt = 0;
     while ($db->next_record()) {
@@ -138,8 +138,8 @@ function propagateChanges ($cid, $newvalue, $short=true) {
             AND text='$oldvalue'");
     }
     if ($cnt) $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
-    Event_ItemsAfterPropagateConstantChanges (
-        $constant_id, $oldvalue, $newvalue);
+
+    $event->comes('CONSTANT_UPDATED', $slice_id, 'S', $newvalue, $oldvalue, $constant_id);
 }
 
 hcUpdate();
@@ -289,16 +289,28 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo "<H1><B>" . _m("Admin - Constants Setting") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
+
+  $form_buttons = array("update" => array( "type"=>"hidden", "value"=>"1"),
+                        "update",
+                        "cancel"=>array("url"=> ($return_url ? ($fid ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php3")),
+                        "delgroup" => array ("type" => "button",
+                                             "value" => _m("Delete whole group"),
+                                             "add" => 'onclick="deleteWholeGroup();"'),
+                        "deleteGroup" => array("value" => "0"),
+                        "group_id" => array ("value" => $group_id),
+                        "categ" => array ("value" => $categ),
+                        "return_url"=>array("value"=>$return_url),
+                        "fid"=>array("value"=>$fid));
+
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
-<input type=hidden name="group_id" value="<?php echo $group_id ?>">
-<input type=hidden name="categ" value="<?php echo $categ ?>">
 <?php
+
   // load the HIERARCHICAL EDITOR
   if ($hierarch) {
       require_once $GLOBALS["AA_INC_PATH"]."constedit.php3";
   }
-?>
+/*
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo _m("Constants")?></b>
 </td>
@@ -307,7 +319,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
  <td class=tabtxt><b><?php echo _m("Constant Group") ?></b></td>
- <td class=tabtxt colspan=3><?php
+ <td class=tabtxt colspan=3>*/
+
+ FrmTabCaption(_m("Constants"), '', '', $form_buttons, $sess, $slice_id);
+
+ echo "<td class=tabtxt><b>"._m("Constant Group") ."</b></td>
+ <td class=tabtxt colspan=3>";
+
    echo ( $group_id ? safe($group_id) :
          "<input type=\"Text\" name=\"new_group_id\" size=16 maxlength=16 value=\"".safe($new_group_id)."\">");
    echo "
@@ -320,7 +338,7 @@ if( $group_id && $where_used ) {
     $db->tquery("
         SELECT slice.name FROM slice, field
          WHERE slice.id = field.slice_id
-           AND field.input_show_func LIKE '%$group_id%'");
+           AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')");
     while( $db->next_record() ) {
         $using_slices .= $delim. $db->f('name');
         $delim = ', ';
@@ -403,14 +421,9 @@ for( $j=0; $j<10; $j++) {
 
 $lastIndex = $i-1;    // lastindex used in javascript (below) to get number of rows
 
-echo '</table>
-<tr><td align="center">
-  <input type=hidden name="update" value=1>
-  <input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;
-  <input type=submit name=cancel value="'. _m("Cancel") .'">&nbsp;&nbsp;
-  <input type=button value="'. _m("Delete whole group") .'" onclick="deleteWholeGroup();">&nbsp;&nbsp;
-  <input type=hidden name=deleteGroup value=0>
-</td></tr></table>
+FrmTabEnd($form_buttons, $sess, $slice_id);
+
+echo '
 </FORM>
 <SCRIPT language=javascript>
 <!--
