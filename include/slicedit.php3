@@ -72,7 +72,7 @@ if( $add || $update ) {
         ValidateInput("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post, $err, false, "number");
         ValidateInput("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill, $err, false, "number");
         ValidateInput("lang_file", L_LANG_FILE, $lang_file, $err, true, "text");
-        ValidateInput("fileman_access", L_FILEMAN_ACCESS, $fileman_access, $err, true, "text");
+        ValidateInput("fileman_access", L_FILEMAN_ACCESS, $fileman_access, $err, false, "text");
         ValidateInput("fileman_dir", L_FILEMAN_DIR, $fileman_dir, $err, false, "filename");
 
         if ($fileman_dir) {
