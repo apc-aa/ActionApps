@@ -149,7 +149,9 @@ class zids {
 
     # Count how many ids
     function count() {
-        return count($this->a);
+        if (is_array ($this->a))
+            return count($this->a);
+        else return 0;
     }
 
     # Quick check to warn if item doesn't exist
@@ -270,7 +272,9 @@ class zids {
     # Create a new zids, from a subset of the data,  with the same type 
     # Parameters are same as for "array_slice"
     function slice($offset, $length) {
-        return new zids(array_slice($this->a,$offset,$length),$this->type);
+        if (is_array ($this->a))
+            return new zids(array_slice($this->a,$offset,$length),$this->type);
+        else return new zids(null, $this->type);
     }
 
     # Return associative array, longid->tag;
