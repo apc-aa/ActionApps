@@ -1,8 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
- <TITLE>AA Installation: Installation steps</TITLE>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Installation of APC Action Applications: Installation of Other Packages needed by Action Applications</TITLE>
  <LINK HREF="install-4.html" REL=next>
  <LINK HREF="install-2.html" REL=previous>
  <LINK HREF="install.html#toc3" REL=contents>
@@ -12,267 +12,102 @@
 <A HREF="install-2.html">Previous</A>
 <A HREF="install.html#toc3">Contents</A>
 <HR>
-<H2><A NAME="s3">3. Installation steps</A></H2>
+<H2><A NAME="install_other"></A> <A NAME="s3">3. Installation of Other Packages needed by Action Applications</A></H2>
 
-<P>
-<P>
-<H2><A NAME="ss3.1">3.1 MySQL installation (RPM)</A>
+<H2><A NAME="ss3.1">3.1 Platform</A>
 </H2>
 
-<P>Skip this step if you have MySQL already running. 
+<P>The installation instructions given here are intended for use with RedHat
+Linux. We used version 6.0 and 6.2. This specifically means that the <EM>rpm</EM> 
+tool is
+used wherever possible. 
+<P><EM>If your system does not support the rpm tool</EM>,
+most procedures will be quite different from what is shown here. 
+You will probably have to do most installations by building the software
+itself. It is beyond the scope of this document to describe that although
+necessary configurations options will be mentioned.
 <P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# rpm -ivh MySQL-client-3.22.32-1.i386.rpm
-# rpm -ivh MySQL-3.22.32-1.i386.rpm
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Set the initial MySQL root password:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# /usr/bin/mysqladmin -u root password 'password1'
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Install development files:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# rpm -ivh MySQL-devel-3.22.32-1.i386.rpm
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>
-<H2><A NAME="ss3.2">3.2 OpenLDAP installation (RPM)</A>
+<H2><A NAME="ss3.2">3.2 MySQL database back end</A>
 </H2>
 
-<P>If you plan to use the LDAP permissions module, you need the LDAP
-server. Here is a quick installation guide for OpenLDAP. Detail
-inctructions can be found at the 
-<A HREF="http://www.openldap.org">OpenLDAP HomePage</A>. If you are already running a LDAP server,
-read this and next step and load listed entries into your server.
-<P>
-<H3>RPM install</H3>
+<P>Check if you have already MySQL 3.22.32 or newer installed:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% rpm -q MySQL
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>If it is not installed or if the version used is too old, install
+it.
+If you don't have a CD with MySQL RPM files, download it from 
+<A HREF="http://www.mysql.com/downloads/mysql.html">http://www.mysql.com/downloads/mysql.html</A>. (MySQL is
+<EM>not</EM> included in RedHat Linux.) Use the stable
+release version. Get files from the "standard binary RPMs" part: 
+"<EM>Server for ... systems</EM>", "<EM>Client programs for ... systems</EM>"
+and "<EM>Include files and libraries for development for ... systems</EM>".
+(The latter is needed re recompile php if this has to be done, see 
+below.)
+<P>As root, install the RPMs:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# rpm -Uv MySQL-3.22.32-1.i386.rpm
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
 
-<P>
+This command will install the MySQL database server, create some administrative
+tables and already start the server itself. It also creates a file in
+<CODE>/etc/rc.d/init.d/</CODE> and symbolic links in <CODE>/etc/rc.d/rc?.d/</CODE>
+so the server is started and stopped properly on system start and shutdown.
+<P>Also install the MySQL client tools and the development files:
 <BLOCKQUOTE><CODE>
+<HR>
 <PRE>
-# rpm -ivh openldap-1.2.9-1.rpm 
-# rpm -ivh openldap-servers-1.2.9-1.rpm
-# rpm -ivh openldap-devel-1.2.9-1.rpm 
+# rpm -Uv MySQL-client-3.22.32-1.i386.rpm
+# rpm -Uv MySQL-devel-3.22.32-1.i386.rpm 
 </PRE>
+<HR>
 </CODE></BLOCKQUOTE>
-<P>
-<H3>Customize configuration files</H3>
 
-<P>Edit the <B>/etc/slapd.conf</B> file - you can use the AA's
-doc/slapd.conf as a template. This file should not be world readable.
-<P>Decide your basedn (dc=ecn,dc=apc,dc=org is an example in the AA
-package), rootpw, directory where the LDAP databases will be stored.
-<P>Edit <B>ldap.conf</B> - BASE and HOST. This file is used by local LDAP
-clients (ldapmodify etc.).
-<P>
-<H3>Create the directory for the first LDAP database.</H3>
-
-<P>
+Since the server is now running, it can be accessed. It is a good idea to
+immediately set a password for the MySQL root user.
+Remind the password - better not use <EM>mysqlpass</EM> for obvious reasons.
+We will refer to this password as the <EM>mysql root password</EM>.
 <BLOCKQUOTE><CODE>
+<HR>
 <PRE>
-# mkdir /var/ldap/ecn.apc.org
+# mysqladmin -u root password 'mysqlpass'
 </PRE>
+<HR>
 </CODE></BLOCKQUOTE>
-<P>
-<H3>Setup logging</H3>
-
-<P>I recommend to define a separate file for logging in syslog.conf:
-<P>
-<PRE>
-local4.*                                     /var/log/ldaplog
-</PRE>
-<P>
-<H3>Start the OpenLDAP server:</H3>
-
-<P>
+<P>Then create your initial Action Applications database. To do this, you need the file
+<CODE>aadb.sql</CODE> from the Action Applications doc directory. It contains SQL commands
+which create the database. When queried for a password, use the
+mysql root password.
 <BLOCKQUOTE><CODE>
-<PRE>
-# /etc/rc.d/init.d/ldap start
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>
-<H3>Create initial LDAP database</H3>
-
-<P>To create the initial database, you can use the doc/LDIF.init
-example. It includes the root object, a AA Admins group, a personal
-account (karel) and an account for the AA scrips. Customize this file!
-(basedn, uid of your personal account). Then use ldapmodify, rootdn and rootpw defined in slapd.conf to add new entries into LDAP:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# ldapmodify -a -f doc/LDIF.init -D "cn=root,dc=ecn,dc=apc,dc=org" -W
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Test if you can search new entries:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# ldapsearch -L objectclass=\*
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Set password of your LDAP account:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" \
--W -t "uid=karel,dc=ecn,dc=apc,dc=org" -H ssha
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>In this example, LDIF.init has set the uid karel to be the superuser
-in the Action Applications.  The superuser can add slices and users.
-So remember this password for the action application login page.
-<P><I>ldappasswd can be used to convert the plaintext password in
-slapd.conf to an encrypted form (change passwd of arbitrary account in
-LDAP, search it using ldapsearch as root and then paste it into
-slapd.conf).</I>
-<P>Try to bind to LDAP using your account:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# ldapsearch -D "uid=karel,dc=ecn,dc=apc,dc=org" -W objectclass=\*
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>
-<H2><A NAME="ss3.3">3.3 OpenLDAP - AA specific configuration</A>
-</H2>
-
-<P>You need to include AA specific objectclasses into the schema used by
-your LDAP server, create ACL object for the AA aplication and an
-account used by the AA scripts to access LDAP.
-<P>Copy schema extensions from the AA doc directory:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# cp doc/slapd.oc.* /etc/ldap
-# cp doc/slapd.at.* /etc/ldap
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Modify slapd.conf to include these files (done in the
-doc/slapd.conf example).
-<P>Restart slapd to reread its config.
-<P>
-<P>Create the aalduser account and set its password (password4 in the
-LDIF.init example). This account should have permissions in slapd.conf
-to modify the LDAP database. You need only set the password if you used the LDIF.init and example slapd.conf.
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-# ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" \
--W -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Create the APCACL object (you are done if you used the LDIF.init
-example, otherwise customize it and use ldapadd or ldapmodify -a to
-add it into your LDAP).
-<P>
-<P>
-<H2><A NAME="ss3.4">3.4 Apache with PHP support</A>
-</H2>
-
-<P>Here is a overview how to build Apache with PHP:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-% cd /usr/local/src
-% tar xvzf apache_1.3.9.tar.gz
-% tar xvzf php-3.0.14.tar.gz
-% cd apache_1.3.9/
-% ./configure --prefix=/usr/local/httpd/
-% cd ../php-3.0.14/
-% ./configure --with-mysql=yes --with-apache=../apache_1.3.9 \
-   --enable-track-vars --enable-safe-mode --with-xml --with-ldap 
-% make 
-% make install
-% cd ../apache_1.3.9/
-% ./configure --prefix=/usr/local/httpd \
---enable-module=so \  (if you wand to use DSO)
---activate-module=src/modules/php3/libphp3.a
-% make
-% su
-# make install (or "make install-programs" if you want just to upgrade Apache binaries)
-# cd ../php-3.0.14/
-# cp php3.ini-dist /usr/local/lib/php3.ini
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Uncomment following lines in <B>/usr/local/httpd/conf/httpd.conf</B>:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-AddType application/x-httpd-php3 .php3
-
-AddType text/html .shtml
-
-AddHandler server-parsed .shtml
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Optionally add index.php3 to index files:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-DirectoryIndex index.html index.php3 
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Restart Apache and test the PHP functionality: in the htdocs directory
-create simple script test.php3:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
---- cut ---
-&lt;?php phpinfo() ?>
---- cut ---
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>and try to access with your browser ( http://localhost/test.php3).
-<P>
-<H2><A NAME="ss3.5">3.5 Install PHPLIB</A>
-</H2>
-
-<P>Extract the phplib-7.2.tar.gz, create a directory
-/usr/local/httpd/phplib and copy all files from phplib-7.2/php/* to
-this directory.
-<P>In <B>/usr/local/lib/php3.ini</B>, include this directory in the
-include_path variable.
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-include_path = /usr/local/httpd/phplib
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>You can also include this path in httpd.conf:
-<P>
-<BLOCKQUOTE><CODE>
-<PRE>
-&lt;Directory /usr/local/httpd/aa&gt;
-     php3_include_path "/usr/local/httpd/phplib"
-&lt;/Directory&gt;
-</PRE>
-</CODE></BLOCKQUOTE>
-<P>Restart Apache. You do not need to edit PHPLIB files, all
-class extensions are in AA scripts.
-<P>
-<P>
-<H2><A NAME="ss3.6">3.6 Create AA database in MySQL</A>
-</H2>
-
-<P>Use the template <B>aadb.sql</B> in AA doc directory:
-<P>
-<BLOCKQUOTE><CODE>
+<HR>
 <PRE>
 # mysql -u root -p
+Enter password: 
 mysql> CREATE DATABASE aadb;
+Query OK, 1 row affected (0.03 sec)
+
 mysql> QUIT
-#mysql -u root -p aadb &lt; doc/aadb.sql
+Bye
+# mysql -u root -p aadb &lt; doc/aadb.sql
+Enter Password:
+#
 </PRE>
+<HR>
 </CODE></BLOCKQUOTE>
-<P>Create a user in MySQL that will be able to access the new aadb database:
-<P>
+<P>Create a user in MySQL that will be able to access the new aadb database. 
+Again, you will need to provide a new password; below, it is <EM>password2</EM>.
+Use a different one and remind it. We will refer to this password as the
+<EM>aadbuser password</EM>.
 <BLOCKQUOTE><CODE>
+<HR>
 <PRE>
 # mysql -u root -p
 mysql> USE mysql;
@@ -280,26 +115,618 @@ mysql> GRANT SELECT,INSERT,UPDATE,DELETE
 ON aadb.* 
 TO aadbuser@localhost 
 IDENTIFIED BY 'password2';
+Query OK, 0 rows affected (0.05 sec)
+
 mysql> FLUSH PRIVILEGES;
 mysql> quit
 </PRE>
+<HR>
 </CODE></BLOCKQUOTE>
 <P>
-<H2><A NAME="ss3.7">3.7 Customize AA configuration file</A>
+<H2><A NAME="ss3.3">3.3 OpenLDAP</A>
 </H2>
 
-<P>Customize defines and global variables in <B>aa/include/config.php3</B>.
-This file should not be world readable!
+<H3>Package Installation</H3>
+
+<P>Note: You only need the OpenLDAP server if you decided to use LDAP as
+the permission system. The OpenLDAP server does not need to be on the same
+host as the Action Applications themselves are.
+<P>Check if you have already the OpenLDAP server installed:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% man slapd
+No manual entry for slapd
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+If the manual page appears, it is very likely you have the OpenLDAP server on
+the machine. (This check is preferred over the rpm way because the OpenLDAP
+rpm exists only for a short time so far and many machines probably have it
+installed without the rpm.)
+<P>OpenLDAP is included in RedHat Linux 6.1; releases prior to 6.1 don't have
+it. It is possible to install the rpms on any 6.x RedHat Linux though.
+<P>If you don't have the OpenLDAP server installed, and if you don't have
+the rpm's, get the rpm's from a 
+RedHat mirror site, for example from
+<A HREF="ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-1.2.9-6.i386.rpm">ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-1.2.9-6.i386.rpm</A>
+and
+<A HREF="ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-devel-1.2.9-6.i386.rpm">ftp://ftp.tu-chemnitz.de/pub/linux/redhat-updates/6.2/i386/openldap-devel-1.2.9-6.i386.rpm</A>
+and install them:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# rpm -Uv openldap-1.2.9-6.i386.rpm
+openldap-1.2.9-6
+# rpm -Uv openldap-devel-1.2.9-6.i386.rpm                
+openldap-devel-1.2.9-6
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
 <P>
+<H3>Setup: Configuration</H3>
+
+<P>If you didn't have an OpenLDAP server running, you will need to create the
+<CODE>/etc/openldap/slapd.conf</CODE> file - this is the server configuration file.
+Use the file <CODE>doc/slapd.conf</CODE> from the Action Applications distribution to create it.
+This file is well documented and contains hints about which spots need
+to be modified. <EM>The LDAP server will not work properly if you don't edit
+this file.</EM> You will need some basic data to fill in here; see at
+<A HREF="install-2.html#ldap_thoughts">LDAP basic info</A> for details.
+<P>The root dn password in this file can be trivial for now (leave it as it is,
+"password"), we will replace it
+shortly with a secure one. We refer to this password as the 
+<EM>ldap root dn</EM> password.
+<P>Also you need to copy some other files from the Action Applications doc directory to the 
+<CODE>/etc/openldap/</CODE> directory and change the file mode of the main
+configuration file:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# chmod 600 /etc/openldap/slapd.conf 
+# cp slapd.oc.netscape.conf slapd.at.netscape.conf slapd.oc.apc.conf slapd.at.apc.conf /etc/openldap/
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>Edit the file <CODE>/etc/openldap/ldap.conf</CODE>. After installation, it
+only contains comments. Put in two lines containing your base dn and
+the host where the ldap server runs:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+BASE    dc=ecn,dc=apc,dc=org
+HOST    localhost
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+(This file is used by the programs that <EM>access</EM> a ldap server, not
+by the server itself. It only affects accessing programs on the machine
+where the programs run.)
+<P>Create the directory where the LDAP database will live
+(again, replace the domain name with the one your base dn was
+derived from):
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# mkdir /var/lib/ldap/ecn.apc.org
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>
+<P>
+<H3>Start the ldap server</H3>
+
+<P>Try to start the ldap server and check messages from the messages
+logfile (normally <CODE>/var/log/messages</CODE>):
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# /etc/rc.d/init.d/ldap start
+Starting ldap:                                             [  OK  ]
+# tail /var/log/messages
+[...]
+Jul 17 11:01:28 ecn ldap: slapd startup succeeded
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>Make the ldap server start on system boots:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# chkconfig ldap on
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>
+<H3>Initial database creation</H3>
+
+<P>The OpenLDAP server needs an initial database before its first start. To
+create this database, you need a <EM>ldif</EM> format file which can be translated
+into the database by the ldapmodify command. There is an example ldif file,
+namely <CODE>LDIF.ini</CODE>, in the doc/ directory. Edit this file to suit your
+needs according to the following instructions.
+<P>The initial ldif file should contain five objects:
 <UL>
-<LI>Absolute path to the AA include directory</LI>
-<LI>Hostname of your MySQL server, the name of the database and
-username/password pair</LI>
-<LI>Change the id for your node (32 characters, only alfanumerical)</LI>
-<LI>Select the permission library of your choice</LI>
-<LI>Configure options specific for the selected permissions library</LI>
-<LI>Select language</LI>
+<LI>Your base object</LI>
+<LI>The Action Applications account object (used by Action Applications to access the ldap server)</LI>
+<LI>A group object for Action Applications administrators (superadmins)</LI>
+<LI>One initial superadmin account object which is the initial member 
+of the group of superadmins</LI>
+<LI>The Action Applications APCACL object (Action Applications access control storage object)
+of Action Applications administrators</LI>
 </UL>
+
+Objects are separated by blank lines. Each line consists of a keyword,
+followed by a colon, followed by a value. The first line of each object
+is the dn, thus the keyword is "dn". The other object lines are its
+attributes.
+<P>Edit these spots:
+<UL>
+<LI>Everywhere: replace
+all occurances of the
+example "dc=ecn,dc=apc,dc=org" base dn with your own one
+(hopefully your
+editor has a good search and replace function).</LI>
+<LI>root object (first block)
+<DL>
+<DT><B>o: Econnect</B><DD><P>Replace "Econnect" with your organization name.
+<DT><B>dc: ecn</B><DD><P>Replace "ecn" with your base dn domain name, but only the
+first word up to but not including the first dot.
+<DT><B>description</B><DD><P>Fill in a descriptive text describing your
+organization.
+</DL>
+</LI>
+<LI>Action Applications account object (second block)
+<P>No modifications
+</LI>
+<LI>Action Applications administrator (superadmin) group object (third block)
+<DL>
+<DT><B>member</B><DD><P>Fill in the dn of the personal initial member object
+(see below)
+</DL>
+</LI>
+<LI>Initial superadmin account object (forth block)
+<DL>
+<DT><B>dn</B><DD><P>Replace "uid=karel" with "uid=XXX" where XXX is a user id
+for the initial administrator group member
+(for example, use qour first name).
+<DT><B>cn</B><DD><P>Fill in the canonical name of the initial member.
+<DT><B>sn</B><DD><P>Fill in the surname of the initial member.
+<DT><B>uid</B><DD><P>Repeat the user id from above.
+<DT><B>mail</B><DD><P>Fill in an email address of the initial member.
+</DL>
+</LI>
+<LI>The APCACL object (Action Applications access control storage) (fifth block)
+For this object you need to invent a unique identifier. The 
+identifier should consist of 32 characters only containing
+characters from the set <EM>0123456789abcdef</EM>. This is your
+<EM>aa id</EM>. You will need it later again.
+<DL>
+<DT><B>dn</B><DD><P>Replace the string after "apcobjectid=" up to the next
+comma with your aa id.
+<DT><B>apcobjectid</B><DD><P>Replace the content with your aa id.
+<DT><B>description</B><DD><P>Put in "Action Applications at ..." where ... is your organization.
+</DL>
+</LI>
+</UL>
+<P>Having made these modifications, we can tell the ldap server to create
+the objects:
+<P>
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% ldapmodify -a -f ldiffile -D "cn=root,dc=ecn,dc=apc,dc=org" -w password
+adding new entry dc=ecn,dc=apc,dc=org
+
+adding new entry cn=aalduser,dc=ecn,dc=apc,dc=org
+
+adding new entry cn=Action Applications Admins,dc=ecn,dc=apc,dc=org
+
+adding new entry uid=moritz,dc=ecn,dc=apc,dc=org
+
+adding new entry apcobjectid=000111222333444555666777888999Action Applications,dc=ecn,dc=apc,dc=org
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>
+<P>If the server responds with an error message:
+<DL>
+<DT><B>ldap_add: Insufficient access</B><DD><P>Check the rootdn: entry in
+the slapd.conf file and what you typed after the -D switch
+to ldapmodify. They must match.
+<DT><B>ldap_add: Object class violation</B><DD><P>The objects in the ldif
+file are not consistent. Check if you accidently deleted lines
+from the file.
+</DL>
+<P>In order to check the server, search all the objects you just added. The 
+result should be similar to the ldif file you just used.
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% ldapsearch -L objectclass=\*
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+If you get an error message or nothing, check the 
+<CODE>/etc/openldap/ldap.conf</CODE> file for the BASE and HOST entries.
+<P>
+<H3>LDAP passwords</H3>
+
+<P>There are no less than three passwords we must maintain for the ldap
+server. We refer to them as the <EM>root dn password</EM>, which is used
+to access the LDAP root account; the 
+<EM>initial superadmin account password</EM>, which is used to access the
+initial Action Applications superadmin account; and the 
+<EM>aalduser account password</EM>, which the Action Applications use to 
+access the aalduser account and the LDAP server.
+<P>We should now set the root dn password in 
+<CODE>/etc/openldap/slapd.conf</CODE> as well as for the initial
+superadmin
+account password. To do this, first set the initial superadmin
+account password
+using ldappasswd, then make a query to the ldap server so we get an 
+encrypted version of the password back, and 
+copy and paste the encrypted password into the sldap.conf file.
+When you issue the following commands, the password given after the -w 
+switches must match the <EM>old</EM> root dn password which is still defined
+in clear text in <CODE>/etc/openldap/slapd.conf</CODE>. When prompted for the
+new password, enter the new root dn password you want to set. And remind it!
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -t "uid=moritz,dc=ecn,dc=apc,dc=org" -H ssha
+New password: 
+Re-enter new password: 
+% ldapsearch -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -L uid=moritz
+dn: uid=moritz,dc=ecn,dc=apc,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalperson
+objectclass: inetorgperson
+cn: Moritz Both
+sn: Both
+uid: moritz
+mail: moritz@aldebaran.de
+userpassword: {ssha}1KoDEQd/MrY+JPnFgotki5AZrCyfGZYr
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>If everything worked right, you get the line "userpassword" as shown.
+This is the encrypted version of the new root dn password you entered.
+Paste this string (including the "{ssha}") into the rootpw: line in
+<CODE>/etc/openldap/slapd.conf</CODE>. 
+After the next server restart, the old root dn password "password" 
+will no longer work,
+instead, you use the password you just entered.
+<P>If you want, you can change the password for the initial superadmin account 
+again
+so it is different from the root dn password.
+<P>Try to access the ldap server using your initial superadmin account:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% ldapsearch -D "uid=moritz,dc=ecn,dc=apc,dc=org" -W -L objectclass=\*
+Enter LDAP Password: 
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+You should get all the objects that are stored. In case of an error message,
+check the spelling of the command line... errors most likely have to do with
+spelling errors.
+<P><B>Finally</B>, set a aalduser account password.
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha -W
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>
+<P>
+<H2><A NAME="ss3.4">3.4 Installing the Apache Web Server</A>
+</H2>
+
+<P>Use the RPM that comes from RedHat. We have had success with the versions
+1.3.9 and 1.3.12. You need to install the "devel" packages, too.
+<P>To find out which version of apache httpd you have, use:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% httpd -v
+Server version: Apache/1.3.9 (Unix)  (Red Hat/Linux)
+Server built:   Apr  7 1999 17:17:41
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>To install the apache web server, use these commands. Not that in this 
+example, the apache itself was already installed, but the development
+package was missing (this is the default case for RedHat Linux).
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# rpm -Uv /mnt/cdrom/RedHat/RPMS/apache-1.3.9-7.i386.rpm 
+package apache-1.3.9-7 is already installed
+# rpm -Uv /mnt/cdrom/RedHat/RPMS/apache-devel-1.3.9-7.i386.rpm 
+apache-devel-1.3.9-7
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>Configuring the web server is a task for a later point in time because
+RPM will do part of this work.
+<P>
+<H2><A NAME="php_install"></A> <A NAME="ss3.5">3.5 PHP3</A>
+</H2>
+
+<H3>PHP3 installation</H3>
+
+<P>Hint: The use of PHP4 has not yet been tested.
+<P>php3 runs within the apache web server as a module. We need a version of
+php3 which includes support for <EM>two optional php modules</EM>, namely ldap
+and mysql. These modules provide access to ldap and mysql databases,
+respectively, from php3 programs. 
+(If you don't use ldap with the Action Applications, you will not need the
+ldap php support.)
+<P>There are many ways to install all this, and many can generate a lot of
+trouble. The cleanest and easiest way is, again, to use RPMs.
+<P>
+<H3>Testing php3 installation</H3>
+
+<P>First, create a test WWW page to find out the status of php3 support on
+your system. This can be done easily by executing this command (assuming
+<CODE>/home/httpd/heml</CODE> is your DocumentRoot directory:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+echo "&lt;?php phpinfo() ?>" > /home/httpd/html/test.php3
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+Access the page with a web browser (http://localhost/test.php3). 
+<UL>
+<LI>If you see the string <CODE>php phpinfo() ?</CODE>, you do not have
+php3 installed or at least it is not enabled.</LI>
+<LI>If you see a page beginning with <CODE>PHP Version</CODE>, you have a working
+php. Browse through the <CODE>Extensions</CODE> section. Look for an extension
+named <CODE>MySQL</CODE> and, if you are using the LDAP permission system, for one
+named <CODE>LDAP</CODE>. If both are there, you are lucky because the php setup
+id complete; otherwise, you must install the missing parts.</LI>
+</UL>
+<P>
+<H3>Installing PHP</H3>
+
+<P>Unfortunately, as of this writing, there is no mysql support for php which
+comes as an rpm made by RedHat. There are some mysql modules for php on
+the RedHat server, but they are all for older versions of php.
+<P>RedHat 6.1 and 6.2 above have a php rpm which is prepared for inclusion of 
+other php
+modules. The ldap module is provided. The mysql module is not provided,
+but it is possible to build the mysql module. The advantage of going this
+way is that you will have the RPMs which are easy to install on all your
+machines and that the RPM install scripts will manage necessary configuration
+file changes by themselves.  The disadvantage is that the RPM build process
+requires some more packages installed. This is described in the
+next section.
+<P>If you don't want to use RPMs, you must build PHP the traditional
+way. This is described in the sections following the next section.
+<P>
+<H3>Building the PHP RPMs including mysql</H3>
+
+<P>
+<OL>
+<LI> To build the PHP RPMs including the mysql support, 
+you need the following
+packages installed which you find at www.redhat.com:
+<UL>
+<LI>apache-devel</LI>
+<LI>imap-devel</LI>
+<LI>openldap-devel</LI>
+<LI>postgresql-devel</LI>
+<LI>MySQL-devel</LI>
+<LI>apache-devel (version 1.3.9 or newer)</LI>
+<LI>and there must be a general development environment.</LI>
+</UL>
+</LI>
+<LI> In order to build RPMs, you need an RPM build environment.
+For a quick setup of this, use the following commands:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% mkdir ~/rpmbuild ~/rpmbuild/RPMS ~/rpmbuild/SRPMS ~/rpmbuild/BUILD ~/rpmbuild/SOURCES ~/rpmbuild/SPECS; echo "%_topdir ${HOME}/rpmbuild" >~/.rpmmacros
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+</LI>
+<LI> You need the php source RPM from RedHat and install it (do not install
+it before you have the RPM build environment):
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% rpm -Uv php-3.0.15-2.src.rpm
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+In this example, the php source rpm version 3.0.15-2 was used.
+</LI>
+<LI>Edit the file <CODE>~/rpmbuild/SPECS/php.spec</CODE>. This file is
+the description used by rpm to build the php packages, and the mysql
+section is commented out (this is the reason for the fact that there is
+no mysql module for php on the RedHat server). You need to uncomment all
+lines which concern mysql, and you need to add a section describing the
+mysql package. There is a patch which does the right thing for the
+version 3.0.15-2; the patch can be found in the Action Applications doc directory as
+<CODE>php-spec.patch</CODE>. To apply this patch, copy it to the
+<CODE>~/rpmbuild/SPECS</CODE> directory and use this command:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% cd ~/rpmbuild/SPECS; patch &lt; php-spec.patch
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+</LI>
+<LI>Run the rpm build process:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% rpm -ba ~/rpmbuild/SPECS/php.spec
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+This will take some time. After everything is done, you will find all the
+RPMs in the directory <CODE>~/rpmbuild/RPMS/i386/</CODE>. 
+</LI>
+</OL>
+<P>If you had already
+php installed, better uninstall it before you install the new versions.
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# rpm --erase --nodeps php php-manual php-mysql php-ldap php-pgsql php-imap
+# rpm -iv php-3.0.15-2.i386.rpm php-manual-3.0.15-2.i386.rpm php-mysql-3.0.15-2.i386.rpm php-ldap-3.0.15-2.i386.rpm 
+php-3.0.15-2
+php-manual-3.0.15-2
+php-mysql-3.0.15-2
+php-ldap-3.0.15-2
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>On installation, RPM will edit the apache web server configurations file
+(<CODE>/etc/httpd/conf/httpd.conf</CODE>) and php initialization file
+(<CODE>/etc/httpd/php.ini</CODE>) automatically.
+<P>
+<H3>Building PHP3 without RPMs</H3>
+
+<P>If you don't want to use RPM for PHP3 installation, you can as well build
+it from the scratch. If you want to do this, you will need
+<UL>
+<LI>The PHP3 sources themselves. get them from 
+<A HREF="http://www.php.net/downloads.php">http://www.php.net/downloads.php</A>.</LI>
+<LI>The apache development files installed (apache-devel)</LI>
+<LI>The mysql development files installed (MySQL-devel)</LI>
+<LI>The openldap development files installed (openldap-devel) if you plan
+to use LDAP as the permission system.</LI>
+</UL>
+<P>Unpack the PHP3 distribution, change into that directory, configure and
+build. This example shows a build <EM>with</EM> the LDAP module; remove the
+<CODE>--with-ldap</CODE> if you don't use LDAP:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% tar xvfz php-3.0.16.tar.gz
+% cd php-3.0.16
+% ./configure -with-mysql=yes --with-apxs=/usr/sbin/apxs --enable-track-vars --enable-safe-mode --with-xml --with-ldap --with-config-file-path=/etc/httpd
+% make
+# make install
+/usr/sbin/apxs -i -a -n php3 libphp3.so
+cp libphp3.so /usr/lib/apache/libphp3.so
+chmod 755 /usr/lib/apache/libphp3.so
+[activating module `php3' in /etc/httpd/conf/httpd.conf]
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss3.6">3.6 Configuring the apache web server</A>
+</H2>
+
+<P>During the PHP3 installation using RPMs, most of the configuration
+work for the web server is already done. If you didn't use RPM to install
+PHP3, you might have to do the following steps. (It does no harm to
+double check if everything is configured correctly anyway.)
+<P>The configuration for the apache takes place in the file
+<CODE>/etc/httpd/conf/httpd.conf</CODE>.
+<P>You will need the statement <CODE>Options +Includes</CODE> there. This 
+enables the so-called <EM>server side includes</EM> (SSI) which are used by the
+page the users read (which contain the actual content). <B>This can be
+a security problem</B> because whoever can edit these pages can run
+any command on your web server. 
+(<EM>IncludesNOEXEC</EM> is not enough.)
+You might want to consider to enable this only for the directories where it
+is needed with <EM>&lt;Directory&gt;</EM> statements. See also the chapter
+on 
+<A HREF="install-6.html#security">security</A>
+.
+<P>In <CODE>/etc/httpd/conf/httpd.conf</CODE>, make sure these lines
+are not commented out:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+AddType application/x-httpd-php3 .php3
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+and
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+AddType text/html .shtml
+AddHandler server-parsed .shtml
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+"Commented out" means That they are prepended by a "#". Remove the leading 
+"#" from the lines if it is there.
+<P>Add <CODE>index.php3</CODE> to the tt/DirectoryIndex/ line:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+DirectoryIndex index.html index.shtml index.cgi index.php3
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>Restart the web server to reread the configuration files:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# /etc/rc.d/init.d/httpd restart
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>After these configuration steps, PHP should work. You can test this by
+browsing to your test page (
+<A HREF="http://localhost/test.php3">http://localhost/test.php3</A>) again.
+<P>
+<H2><A NAME="ss3.7">3.7 PHPLIB installation</A>
+</H2>
+
+<P>Get PHPLIB from 
+<A HREF="http://phplib.netuse.de/download/index.php3">http://phplib.netuse.de/download/index.php3</A>.
+Unpack it, create a directory <CODE>/home/httpd/phplib</CODE> and extract the 
+files from phplib's php directory to the new directory:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+% tar xvfz phplib-7.2b.tar.gz
+% su
+Password:
+# mkdir /home/httpd/phplib
+# cp phplib-7.2b/php/* /home/httpd/phplib/
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>You must add this directory to the line <CODE>include_path</CODE> in the
+<CODE>/etc/httpd/php.ini</CODE> file. Edit that file so the line looks like
+this:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+include_path    =  /home/httpd/phplib                 ; UNIX: "/path1:/path2"  Windows: "\path1;\path2"
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+
+(The stuff beginning with the ";" is a comment.)
+<P>
 <P>
 <HR>
 <A HREF="install-4.html">Next</A>

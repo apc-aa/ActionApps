@@ -1,28 +1,150 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
- <TITLE>AA Installation: Done?</TITLE>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Installation of APC Action Applications: Installation of Action Applications</TITLE>
+ <LINK HREF="install-5.html" REL=next>
  <LINK HREF="install-3.html" REL=previous>
  <LINK HREF="install.html#toc4" REL=contents>
 </HEAD>
 <BODY>
-Next
+<A HREF="install-5.html">Next</A>
 <A HREF="install-3.html">Previous</A>
 <A HREF="install.html#toc4">Contents</A>
 <HR>
-<H2><A NAME="s4">4. Done?</A></H2>
+<H2><A NAME="s4">4. Installation of Action Applications</A></H2>
 
-<P>Now you should be able to use AA - point your browser to
-http://localhost/aa/admin/sliceadd.php3
-<P>Login with your AA admin account.
-<P>You should see the page "Slice Administration - Add Slice"
-<P>Click on Add. In the next page fill the form with required values,
-Insert new slice.
-<P>Now you can create categories, new users, write new articles etc.
+<H2><A NAME="ss4.1">4.1 Installation</A>
+</H2>
+
+<P>Create a directory <CODE>aa</CODE> in your 
+httpdocs directory and copy most files from the Action Applications distribution there:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+# mkdir /home/httpd/html/aa
+# cd apc-aa-1.1.0
+# cp -R *.css *.php3 admin images include /home/httpd/html/aa
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+<P>
+<P>Edit <CODE>/home/httpd/html/aa/include/config.php3</CODE>. 
+This is the main Action Applications configuration
+file. It contains comments which explain everything there.
+Note that this file may not contain anything before the <CODE>&lt;?php</CODE> line
+at the top and after the <CODE>?&gt;</CODE> line at the bottom.
+<P><B>The file <CODE>/home/httpd/html/aa/include/config.php3</CODE> now contains
+passwords. It should therefore not be world readable. On the other hand,
+the http server must be able to read it. Read the chapter on
+<A HREF="install-6.html#security">security</A>
+ for a possible solution for this problem.</B>
+<P>Point your Web browser to 
+<A HREF="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/sliceadd.php3</A>. You should see the
+login page.
+<P>There is just one question open: What is login name and password of the 
+initial superadmin account (which you need to create the first slice)? 
+The answer depends on the permission system 
+you use.
+<P>
+<UL>
+<LI>If you are using the LDAP based permission system, the superadmin 
+account is the one you created when you edited the initial LDIF data file.
+At that time, you have also set a password for this account.</LI>
+<LI>If you are using the sql based permission system, there is no
+initial superadmin account so far. To create one, follow the instructions
+below.</LI>
+</UL>
+<P>
+<H2><A NAME="ss4.2">4.2 Creating a superadmin account</A>
+</H2>
+
+<P>Action Applications users who have the superadmin privilege may create new
+slices in addition to the rights any slice administrator has.
+<P>Creating a superadmin account will be necessary whenever you don't have
+one left.
+This is the case at installation time if you are using the
+sql based permission system, and in case you have accidently deleted
+the last superadmin account or accidently revoked the superadmin 
+privilege from the last superadmin account.
+To create a superadmin account, follow these steps.
+<UL>
+<LI>copy the file doc/doit.php3 to the include/ directory of the Action Applications.</LI>
+<LI>edit config.php3 and insert two lines right behind the 
+<CODE>&lt;?php</CODE> line at the top. Replace the quoted words with your own 
+choice of superadmin account name and password:
+<BLOCKQUOTE><CODE>
+<HR>
+<PRE>
+define (ADMIN_USER, "administrator");
+define (ADMIN_PASS, "password");
+</PRE>
+<HR>
+</CODE></BLOCKQUOTE>
+</LI>
+<LI>Point your web browser to 
+<A HREF="http://localhost/aa/include/doit.php3">http://localhost/aa/include/doit.php3</A>.
+The superadmin account is created in this step.</LI>
+<LI><B>Delete the <CODE>doit.php3</CODE> file from the include/ directory and
+remove the lines you added from <CODE>config.php3</CODE>!</B></LI>
+</UL>
+
+You should be able to log in now. Try the page to add a slice 
+<A HREF="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/sliceadd.php3</A>. Log in with your
+(new) superadmin account and read on in the next section to see how to
+start.
+<P>
+<H2><A NAME="ss4.3">4.3 Your first test slice</A>
+</H2>
+
+<H3>Creating the first test slice</H3>
+
+<P>After a successful login on 
+<A HREF="http://localhost/aa/admin/sliceadd.php3">http://localhost/aa/admin/sliceadd.php3</A>,
+you should see the <EM>Slice Administration - Add Slice</EM> page. Choose the
+slice type (see 
+<A HREF="install-1.html#slices">slices</A>
+ for details) and say <EM>Add</EM>.
+<P>Fill in the form. The fields shown here depend on the slice type, but some
+fields are there for every slice type. Especially fill in the following 
+fields:
+<UL>
+<LI>Headline - a title for the slice</LI>
+<LI>Short name - a short description of the slices contents</LI>
+<LI>Slice URL - the URL of a WWW page where you want to display the
+actual content; this is the place readers will access. The page
+does not need to exist at this time and it does not need to be
+within the action application directory tree</LI>
+<LI>Listing length - say 10</LI>
+<LI>Fulltext info abstract grab length - say 200.</LI>
+</UL>
+
+You may fill in the other fields, too.
+After
+selecting 
+<EM>insert</EM> at the page bottom the slice will be created.
+<P>Each slice can have a set of categories. New information items can belong
+to one or more categories. Create your first category by selecting 
+<EM>New</EM>. Enter the category name and hit OK. 
+<P>At this point in time, you have created a new slice and thus, a new
+action application. 
+<P>
+<H3>Adding the first information item to the test slice</H3>
+
+<P>Select <EM>Add Article</EM>. Fill in some information. Make sure to set the
+Expire date to a day in the future and hit <EM>insert</EM>.
+<P>The page you see after that tells you the HTML code which you must place
+into the page which is meant to display the content (the slice URL).
+<P>You might have got an idea how everything works now?
+<P>
+<P>
+<P>
+<P>
+<P>
+<P>
 <P>
 <HR>
-Next
+<A HREF="install-5.html">Next</A>
 <A HREF="install-3.html">Previous</A>
 <A HREF="install.html#toc4">Contents</A>
 </BODY>

@@ -1,8 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
 <HEAD>
- <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.7">
- <TITLE>AA Installation: What software will you need</TITLE>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Installation of APC Action Applications: Requirements / Preconditions / Suggested Environment</TITLE>
  <LINK HREF="install-3.html" REL=next>
  <LINK HREF="install-1.html" REL=previous>
  <LINK HREF="install.html#toc2" REL=contents>
@@ -12,77 +12,143 @@
 <A HREF="install-1.html">Previous</A>
 <A HREF="install.html#toc2">Contents</A>
 <HR>
-<H2><A NAME="s2">2. What software will you need</A></H2>
+<H2><A NAME="requirements"></A> <A NAME="s2">2. Requirements / Preconditions / Suggested Environment</A></H2>
 
-<P>You need these components to install AA: the AA package, a WWW server
-(Apache), the PHP scripting engine, the library PHPLIB, a SQL database
-server (MySQL) and optionally a LDAP server (OpenLDAP).
-<P>
-<H2><A NAME="ss2.1">2.1 AA</A>
+<H2><A NAME="ss2.1">2.1 Hardware Requirements</A>
 </H2>
 
-<P>Download and extract the AA package in your htdocs directory
-(e.g. /usr/local/httpd/htdocs/aa). You will need files in aa/doc
-subdirectory during the installation/configuration process.
+<P>The Action Applications can run on every computer which runs one of the supported operating
+systems. 
+<P>There is probably a minimum requirement in terms of processor
+speed and amount of memory. If the Action Applications run on a single computer (including
+the MySQL database back end), it should be no less than a 200 MHz 
+processor and 64 MByte of RAM.
 <P>
-<H2><A NAME="ss2.2">2.2 Apache</A>
+<H2><A NAME="ss2.2">2.2 Software Requirements</A>
 </H2>
 
-<P>Download the latest source tarball (e.g. apache_1.3.9.tar.gz). It is not
-necessary to recompile Apache, if you can load mod_php dynamically,
-but the Apache source includes XML files usefull to seamlessly compile
-PHP (3.0.14). I tested onle the static version.
-<P>
-<A HREF="http://www.apache.org/httpd.html">http://www.apache.org/httpd.html</A><P>
-<H2><A NAME="ss2.3">2.3 PHP3</A>
-</H2>
+<P>Note: There are instructions for the installation of all software modules
+but the operating system in the next chapter: 
+<A HREF="install-3.html#install_other">Installation of other packages needed by the Action Applications</A><H3>Operating System</H3>
 
-<P>The latest version of PHP (eg. php-3.0.14.tar.gz) is available at
-<A HREF="http://www.php.net/download-php.php3">http://www.php.net/download-php.php3</A>.
+<P>The primary supported operating system is GNU/Linux. However, the Action Applications should
+run on any unix or unix-like operating system which can run all the other
+software components. The Action Applications were developed
+and tested on <B>Red Hat Linux</B> 
+6.0 and 6.2, so it is recommended to use this OS.
+This installation guide has a strong focus on Red Hat Linux.
+<P>It is known that Action Applications also run on FreeBSD 2.2.7.
 <P>
-<H2><A NAME="ss2.4">2.4 PHPLIB</A>
-</H2>
+<H3>Database Server</H3>
 
-<P>Download the latest PHPLIB archive (eg. phplib-7.2.tar.gz) from 
-<A HREF="http://phplib.netuse.de/download/index.php3">http://phplib.netuse.de/download/index.php3</A>.
+<P>An SQL database server 
+is needed by the Action Applications in order to store all the information. 
+The only supported SQL server so far is the <B>MySQL</B> database server. The data
+is organized in several tables in the database. Action Applications need one logical database
+within the database server. The server can be used for other applications
+as well.
+<P>The database server does not need to be on the same machine as the other
+components are.
+<P>Action Applications need at least MySQL version 3.22.32. Older version may work but have not
+been tested, and they contain known security holes.
+<P>If you want to use a different database server than MySQL,
+for example, if you have 
+already a database server running, you will have to do some porting work.
+Action Applications were written with database back end portability in mind, and as little
+as possible MySQL specific functions were used. It is important that there
+is PHP support for the database server you want to use.
 <P>
-<H2><A NAME="ss2.5">2.5 MySQL</A>
-</H2>
+<H3>Permission System</H3>
 
-<P>MySQL can be downloaded from 
-<A HREF="http://www.mysql.org/download.html">http://www.mysql.org/download.html</A>.
-<P>RPM packages:
+<P>If you want to use LDAP as the permission system,
+you should use the <B>OpenLDAP</B> server software. Other LDAP servers should
+work, too, but the Action Applications have been tested with OpenLDAP only.
+<P>If you have already an OpenLDAP server running, you may skip the rest of
+this section.
 <P>
+<A NAME="ldap_thoughts"></A> 
+Using LDAP, some thoughts about the LDAP database organization should be
+wasted. An LDAP database is an hierarchically 
+structured system of objects, each member of one or more certain classes.
+Every object in your database has its place in the potentially
+global LDAP hierarchy. Each object has a unique name, the so called
+<EM>distinguished name</EM>, or short <EM>dn</EM>. The dn consists of the full "path"
+from the global LDAP name space to the object, similar to names in the
+domain name system.
+<P>In order to set up the LDAP server for Action Applications, you need to figure out some
+information you want to use:
 <UL>
-<LI>MySQL-3.22.32-1.i386.rpm</LI>
-<LI>MySQL-client-3.22.32-1.i386.rpm</LI>
-<LI>MySQL-devel-3.22.32-1.i386.rpm (to recompile PHP MySQL support)</LI>
+<LI>Your base dn. This is the common part all your LDAP objects will have
+in their dn, describing the "path" from the global LDAP name space to your
+organization. It is recommended that you use a domain name you own for 
+that. (You could also use a geographical category, but this is not 
+described here.) A domain name can be described in a LDAP dn using the
+<EM>dc</EM> attribute. For example, the base dn for a possible domain name
+<EM>ecn.apc.org</EM> would be <CODE>dc=ecn,dc=apc,dc=org</CODE>.</LI>
+<LI>Your LDAP administrative account. OpenLDAP's built-in access
+control needs a <EM>root</EM> object which has all privileges. Once it exists,
+the root object can be used to modify the data stored in the LDAP database.
+Like every object in the database, the root object needs a dn. It is 
+recommended that you use the canonical name <EM>root</EM>. Following the
+example above, this gives us a root object dn of 
+<CODE>cn=root,dc=ecn,dc=apc,dc=org</CODE>.</LI>
 </UL>
-<P>(Versions prior 3.22.32 contain possible security holes, upgrade to
-latest versions is recommended.)
+<P>Note: As with the database server,
+the OpenLDAP server does not necessarily need to be running on the same
+machine as the Action Applications.
+<P>If you are <EM>not</EM> using LDAP as the permission system basis, permission
+information will be stored within the SQL database.
 <P>
-<H2><A NAME="ss2.6">2.6 OpenLDAP (optional)</A>
+<H3>WWW (http) Server</H3>
+
+<P>The Action Applications have been developed and tested with the 
+<B>apache</B> http server. Other http servers might work, too, but there are some
+things to consider:
+<UL>
+<LI>The Action Application relay on a feature in the apache http server
+which allows to pass GET parameters (query strings) to scripts which are
+run from a SSI (server side include) command in a page.
+It is known that the
+Microsoft Internet Information Server, for example, does not do that.</LI>
+<LI>The apache http server can be configured to load PHP as a 
+<EM>module</EM>. This speeds things up a lot because the PHP interpreter does
+not have to be loaded every time a PHP script runs. Action Applications
+work in CGI mode as well, though. </LI>
+</UL>
+<P>
+<H3>PHP</H3>
+
+<P>Action Applications are written in PHP3. The minimum version to use
+should be PHP 3.0.7 but this has not been tested; we know they work with
+PHP 3.0.12 and newer up to 3.0.16. PHP4 has not been tested, either.
+<P>PHP can be build as a <EM>module for the apache http server</EM> or as a
+<EM>standalone program</EM>. The first way is preferred for performance
+reasons.
+<P>Your PHP needs optional modules: 
+<UL>
+<LI>A module is needed to access your SQL database. For example,
+if you are using 
+MySQL as the database, you need the MySQL module for PHP.</LI>
+<LI>If you are using LDAP as the permission system, you need the
+LDAP module for PHP.</LI>
+</UL>
+<P>The modules can be 
+<UL>
+<LI><EM>compiled into PHP</EM> or</LI>
+<LI><EM>loaded at run time</EM>.</LI>
+</UL>
+<P>Both ways are described in the 
+<A HREF="install-3.html#php_install">PHP installation section</A>.
+<P>
+<H2><A NAME="ss2.3">2.3 Know-How Requirements</A>
 </H2>
 
-<P>OpenLDAP (e.g. openldap-1.2.9.tgz) is available at 
-<A HREF="http://www.openldap.org/software/download/">http://www.openldap.org/software/download/</A><P>RPM version is available in RedHat's contrib archive at 
-<A HREF="ftp://contrib.redhat.com/contrib/libc6/i386/">ftp://contrib.redhat.com/contrib/libc6/i386/</A>. 
+<P>To install the Action Applications, you will need some basic unix skills. You should have
+installed programs before and be familiar with administration of your
+system.
 <P>
-<UL>
-<LI>openldap-1.2.9-1.rpm </LI>
-<LI>openldap-servers-1.2.9-1.rpm</LI>
-<LI>openldap-devel-1.2.9-1.rpm (to build PHP with LDAP support)</LI>
-</UL>
-<P>The RPMs are built without threads and with kerberos support, if you
-want other options, use either source RPM or original source
-distribution.
-<P>Since RedHat 6.2 is OpenLDAP part of the distribution:
-<P>
-<UL>
-<LI>openldap-1.2.9-6.rpm </LI>
-<LI>openldap-devel-1.2.9-6.rpm (to build PHP with LDAP support)</LI>
-</UL>
-<P>
+<H3>Other Preconditions</H3>
+
 <HR>
 <A HREF="install-3.html">Next</A>
 <A HREF="install-1.html">Previous</A>
