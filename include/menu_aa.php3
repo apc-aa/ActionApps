@@ -56,6 +56,7 @@ $aamenus["aaadmin_submenu"] = array (
     "aafinder" => array ("label"=>_m("AA finder"), "cond"=>IsSuperadmin(), "href"=>"admin/aafinder.php3"),
     "xmgettext" => array("label"=>"xmgettext", "cond"=>IsSuperadmin(), "exact_href"=>"../misc/mgettext/index.php3"),
     "testrss" => array("label"=>_m("RSS test"), "cond"=>IsSuperadmin(), "href"=>"admin/xmlclient.php3?debugfeed=4"),
+#    "summarize" => array("label"=>_m("Summarize"), "cond"=>IsSuperadmin(), "href"=>"admin/summarize.php3"),
 ));
 
 ?>
