@@ -40,6 +40,22 @@ set_time_limit(600);
 
 //$debug = 1;
 
+$reserved_ids = array ( 
+  "disc_app........", 
+  "disc_count......",
+  "display_count...",
+  "edited_by.......",
+  "expiry_date.....",
+  "flags...........",
+  "headline........",
+  "highlight.......",
+  "last_edit.......",
+  "posted_by.......",
+  "post_date.......",
+  "publish_date....",
+  "slice_id........",
+  "status_code.....");
+
 $maintain_fields = array (
     "slice" => array (
             "primary" => "id",  // primary key
@@ -147,7 +163,7 @@ function ChangeFieldID ($old_id, $new_id)
 //                echo $cont." ";
                 if (strstr ($cont, $old_id)) {
                     $cont = str_replace ($old_id, $new_id, $cont);
-                    $varset->set ($field, $cont, "quoted");
+                    $varset->set ($field, $cont, "text");
                 }
             }
             if ($varset->vars) {
@@ -186,11 +202,17 @@ if ($update && $new_id_text && $p_slice_id) {
         for ($i = 0; $i < 16 - strlen($new_id_text) - strlen($new_id_number); ++$i)
             $new_id .= ".";
         $new_id .= $new_id_number;
-        // proove the field does not exist
-        $db->query ("SELECT id FROM field WHERE slice_id='$p_slice_id' AND id='$new_id'");
-        if ($old_id != $new_id && strlen ($new_id) == 16 && !$db->next_record()) {
-            $nchanges ++;
-            ChangeFieldID ($old_id, $new_id);
+        if ($old_id != $new_id && strlen ($new_id) == 16) {      
+            if (my_in_array ($new_id, $reserved_ids)) $err[] = L_RESERVED_ID." ($new_id).";
+            else {
+                // proove the field does not exist
+                $db->query ("SELECT id FROM field WHERE slice_id='$p_slice_id' AND id='$new_id'");
+                if ($db->next_record()) $err[] = L_ID_EXISTS." ($new_id).";
+            }
+            if (count($err) <= 1 ) {
+                $nchanges ++;
+                ChangeFieldID ($old_id, $new_id);
+            }
         }
     }
 }
@@ -223,7 +245,8 @@ echo "
 <tr><td class=tabtit align=center><br>".L_CHANGE_FROM.": <select name='old_id'>";
 reset ($s_fields);
 while (list (,$field) = each ($s_fields)) 
-    echo "<option value='$field[id]'>$field[id]";
+    if (!my_in_array ($field["id"], $reserved_ids))
+        echo "<option value='$field[id]'>$field[id]";
 echo "</select> ".L_TO." <select name='new_id_text'>";
 $db->query ("SELECT id FROM field 
              WHERE slice_id='AA_Core_Fields..'");
@@ -252,7 +275,7 @@ echo "</select><br><br>
 <?php 
     reset ($s_fields);
     while (list (,$field) = each ($s_fields)) {
-        echo "
+        if (!my_in_array ($field["id"], $reserved_ids)) echo "
         <tr>
         <td class=tabtxt align=left>&nbsp;&nbsp;$field[id]&nbsp;&nbsp;</td>
         <td class=tabtxt>&nbsp;&nbsp;<b>$field[name]&nbsp;&nbsp;</b></td></tr>";
