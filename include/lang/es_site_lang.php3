@@ -51,7 +51,7 @@ $_m["View site"]
 
 # modules/site/menu.php3, row 56, 57
 $_m["Code&nbsp Manager"]
-  = "";
+  = "Código&nbsp;del&nbsp;sitio";
 
 # modules/site/menu.php3, row 62, 63
 $_m["Module Settings"]
@@ -83,7 +83,7 @@ $_m["You have not permissions to add slice"]
 
 # modules/site/modedit.php3, row 56
 $_m["You have not permissions to edit this slice"]
-  = "";
+  = "Ud. no tiene permisos para editar este canal";
 
 # modules/site/modedit.php3, row 72, 204
 $_m["State file"]
@@ -119,7 +119,7 @@ $_m["URL"]
 
 # modules/site/modedit.php3, row 195
 $_m["The file will probably contain just the following include:"]
-  = "";
+  = "Este archivo probablemente sólo contendrá la siguente linea de código:";
 
 # modules/site/modedit.php3, row 196
 $_m["Owner"]
@@ -143,7 +143,7 @@ $_m["Used Language File"]
 
 # modules/site/modedit.php3, row 204
 $_m["Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."]
-  = "";
+  = "Archivo de control del sito - debe estar en la carpeta modules/site/sites. El nombre que especifique será precedido por 'site_', de modo que si escribe por ejemplo 'apc.php', el archivo será modules/site/sites/site_apc.php.";
 
 # modules/site/modedit.php3, row 213
 $_m["Insert"]
@@ -151,38 +151,38 @@ $_m["Insert"]
 
 # modules/site/modedit.php3, row 216
 $_m["Update"]
-  = "";
+  = "Actualizar";
 
 # modules/site/modedit.php3, row 217
 $_m["Reset form"]
-  = "";
+  = "Deshacer cambios";
 
 # modules/site/modedit.php3, row 218
 $_m["Cancel"]
-  = "";
+  = "Cancelar";
 
 # modules/site/util.php3, row 95
 $_m["Spot&nbsp;variables"]
-  = "";
+  = "Variables&nbsp;nodo";
 
 # modules/site/util.php3, row 99, 115
 $_m["Delete"]
-  = "";
+  = "Borrar";
 
 # modules/site/util.php3, row 101, 119
 $_m["Add"]
-  = "";
+  = "Añadir";
 
 # modules/site/util.php3, row 109
 $_m["Spot&nbsp;conditions"]
-  = "";
+  = "Condiciones&nbsp;nodo";
 
 # modules/site/util.php3, row 145
 $_m["Spot name"]
-  = "";
+  = "Nombr del nodo";
 
 # modules/site/util.php3, row 147
 $_m["Submit"]
-  = "";
+  = "Enviar";
 
 ?>

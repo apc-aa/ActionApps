@@ -2645,7 +2645,7 @@ $_m["Select Box"]
 
 # include/constants.php3, row 233
 $_m["Select Box with Presets"]
-  = "Caja Selección con Preselección";
+  = "Campo de texto con Preselección";
 
 # include/constants.php3, row 234
 $_m["Radio Button"]
@@ -3435,7 +3435,7 @@ $_m["Delete Password"]
 
 # include/itemfunc.php3, row 833
 $_m["not set"]
-  = "no marcado";
+  = "no asignado";
 
 # include/init_page.php3, row 153
 $_m["You do not have permission to edit items in the slice"]
