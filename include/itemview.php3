@@ -124,7 +124,7 @@ class itemview{
         }
         $SQL = "SELECT * FROM discussion WHERE id IN ($ids_sql)";
         if ($debug) echo $SQL;
-        $d_content = GetDiscussionContentSQL ($SQL, "",$this->disc['vid'],true,$this->disc['html_format'],$this->clean_url);       
+        $d_content = GetDiscussionContentSQL ($SQL, "", "",$this->disc['vid'],true,$this->disc['html_format'],$this->clean_url);       
         if (is_array ($d_content)) {
             reset ($d_content);
             while (list ($id,$disc) = each ($d_content)) {

@@ -60,10 +60,10 @@ function GetDiscussionContent($item_id, $ids="", $vid="",$state=true, $order='ti
    $SQL.=" ORDER BY date";
   if ($order == 'reverse timeorder')
     $SQL .=" DESC";
-  return GetDiscussionContentSQL ($SQL, $ids, $vid, $state, $html_flag, $clean_url);
+  return GetDiscussionContentSQL ($SQL, $item_id, $ids, $vid, $state, $html_flag, $clean_url);
 }
 
-function GetDiscussionContentSQL ($SQL, $ids, $vid, $state, $html_flag, $clean_url) {
+function GetDiscussionContentSQL ($SQL, $item_id, $ids, $vid, $state, $html_flag, $clean_url) {
   global $db;
   $db->query($SQL);
   while($db->next_record()) {
