@@ -43,6 +43,7 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'directory' => $AA_INSTAL_PATH ."admin/"),
                   'W' => array( 'table' => 'site',
                                 'name' => 'Site',
+                                'show_templates' => 1,  # show list of sites on 'create new' - used as templates
                                 'directory' => $AA_INSTAL_PATH ."modules/site/"),
                   'A' => array( 'table' => 'module', # this module doesn't have any special info yet
                                 'name' => 'MySQL Auth',

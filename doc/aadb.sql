@@ -1,3 +1,4 @@
+# 10/24/02 - added default cron entries
 # 08/20/02 - renewed everything from database
 # 08/20/02 - added tables alerts_collection, alerts_collection_filter, 
 #            alerts_digest_filter, alerts_user, alerts_user_filter, 
@@ -709,11 +710,11 @@ CREATE TABLE searchlog (
 
 DROP TABLE IF EXISTS site;
 CREATE TABLE site (
-   id varchar(16) NOT NULL,
-   start_spot int(11),
-   structure text,
-   flag int(11),
-   PRIMARY KEY (id)
+  id varchar(16) NOT NULL,
+  state_file varchar(255) NOT NULL,
+  structure text,
+  flag int(11),
+  PRIMARY KEY (id)
 );
 
 # --------------------------------------------------------
@@ -1151,7 +1152,7 @@ INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehl
 
 
 # --------------------------------------------------------
-# Templete slices
+# Template slices
 
 INSERT INTO slice (id, name, owner, deleted, created_by, created_at, export_to_all, type, template, fulltext_format_top, fulltext_format, fulltext_format_bottom, odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, category_top, category_format, category_bottom, category_sort, config, slice_url, d_expiry_limit, d_listlen, lang_file, fulltext_remove, compact_remove, email_sub_enable, exclude_from_dir, notify_sh_offer, notify_sh_accept, notify_sh_remove, notify_holding_item_s, notify_holding_item_b, notify_holding_item_edit_s, notify_holding_item_edit_b, notify_active_item_edit_s, notify_active_item_edit_b, notify_active_item_s, notify_active_item_b, noitem_msg, admin_format_top, admin_format, admin_format_bottom, admin_remove, permit_anonymous_post, permit_offline_fill, aditional, flag, vid, gb_direction, group_by, gb_header, gb_case) VALUES( 'News_EN_tmpl....', 'News (EN) Template', 'AA_Core.........', '0', '', '975157733', '0', 'News_EN_tmpl....', '1', '', '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT> <BR><B>_#PUB_DATE</B> <BR><img src=\"_#IMAGESRC\" width=\"_#IMGWIDTH\" height=\"_#IMG_HGHT\">_#FULLTEXT ', '','<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font><font color=#FF0000><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font><font color=#808080 size=-1><br>_#PLACE###(_#LINK_SRC) - </font><font color=black size=-1>_#ABSTRACT<br></font><br>', '', '0', '<br>', '<br>', '', '<p>_#CATEGORY</p>', '', '1', '', 'http://aa.ecn.cz', '5000', '10000', 'en_news_lang.php3', '()', '()', '1', '0', '', '', '', '', '', '', '', '', '', '', '', 'No item found', '<tr class=tablename><td width=30>&nbsp;</td><td>Click on Headline to Edit</td><td>Date</td></tr>', '<tr class=tabtxt><td width=30><input type=checkbox name="chb[x_#ITEM_ID#]" value="1"></td><td><a href="_#EDITITEM">_#HEADLINE</a></td><td>_#PUB_DATE</td></tr>', '', '', '1', '1', '', '0', '0', NULL, NULL, NULL, NULL);
 
@@ -1194,4 +1195,22 @@ INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, 
 INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'rss', 'rss', '<!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN" "<http://my.netscape.com/publish/formats/rss-0.91.dtd>http://my.netscape.com/publish/formats/rss-0.91.dtd"> <rss version="0.91"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>', NULL, ' <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>', NULL, '</channel></rss>>', NULL, NULL, 'publish_date....', 0, 'headline........', 0, NULL, NULL, NULL, NULL, 'source..........', '', '', '', '<', '', '', '<', '', 15, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NO ITEM FOUND', NULL, NULL, NULL, NULL, 'mon');
 INSERT INTO view (id, slice_id, name, type, before, even, odd, even_odd_differ, after, remove_string, group_title, order1, o1_direction, order2, o2_direction, group_by1, g1_direction, group_by2, g2_direction, cond1field, cond1op, cond1cond, cond2field, cond2op, cond2cond, cond3field, cond3op, cond3cond, listlen, scroller, selected_item, modification, parameter, img1, img2, img3, img4, flag, aditional, aditional2, aditional3, aditional4, aditional5, aditional6, noitem_msg, group_bottom, field1, field2, field3, calendar_type) VALUES ('', 'AA_Core_Fields..', 'Calendar', 'calendar', '<table border=1>\r\n<tr><td>Mon</td><td>Tue</td><td>Wen</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr>', NULL, '_#STARTDAT-_#END_DATE <b>_#HEADLINE</b>', 1, '</table>', '', '<td><font size=+2><A href=\"calendar.shtml?vid=319&cmd[319]=c-1-_#CV_TST_2-2-_#CV_TST_1&month=_#CV_NUM_M&year=_#CV_NUM_Y&day=_#CV_NUM_D\"><B>_#CV_NUM_D</B></A></font></td>', '', 0, '', 0, NULL, NULL, NULL, NULL, 'publish_date....', '<', '', '', '<', '', '', '<', '', 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<td><font size=+2>_#CV_NUM_D</font></td>', '', 'bgcolor=\"_#COLOR___\"', NULL, NULL, NULL, 'There are no events in this month.', '', 'start_date.....1', 'end_date.......1', NULL, 'mon_table');
 
-REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner FROM slice;
+
+# --------------------------------------------------------
+# Templete modules
+
+REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner, 0 FROM slice;
+
+# Site module template
+INSERT INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'http://domain.org/index.shtml', 'en_site_lang.php3', 1000000000, '', '', 0);
+INSERT INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', 'template.php3', 'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}', 0);
+
+
+# --------------------------------------------------------
+# Shedule default cron tasks
+
+INSERT INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (1, '*',          '1', '*', '*', '*', 'misc/alerts/alerts.php3', 'howoften=daily&lang=en', NULL);   # Email alerts - daily delivery
+INSERT INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (2, '*',          '1', '*', '*', '1', 'misc/alerts/alerts.php3', 'howoften=weekly&lang=en', NULL);  # Email alerts - weekly delivery
+INSERT INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (3, '*',          '1', '1', '*', '*', 'misc/alerts/alerts.php3', 'howoften=monthly&lang=en', NULL); # Email alerts - monthly delivery
+INSERT INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (4, '*',          '1', '*', '*', '*', 'misc/alerts/admin_mails.php3', '', NULL);                    # Email alerts - remove unconfirmed subscriptions ,...
+INSERT INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (5, '8,23,38,53', '*', '*', '*', '*', 'admin/xmlclient.php3', '', NULL);                            # run Inter Node Feeding - Cross Server Networking

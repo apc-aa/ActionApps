@@ -58,4 +58,34 @@ define("L_ADD", "Add");
 define("L_SPOT_CONDITIONS", "Spot&nbsp;conditions");
 define("L_SPOT_NAME", "Spot name");
 define("L_SUBMIT", "Change");
+
+define("L_SWITCH_TO", "Switch to:");
+define("L_VIEW_SLICE", "View site");
+define("L_AA_ADMIN2", "AA");
+define("L_A_SITE_EDT", "Edit Site");
+define("L_A_SITE_ADD", "Add Site");
+define("L_ERR_IN", "Error in");
+define("L_ERR_NEED", "it must be filled");
+define("L_SITES_HDR", "Site");
+define("L_A_SITE_TIT", "Site Admin");
+define("L_SITE_NAME", "Name");
+define("L_SITE_URL", "URL");
+define("L_OWNER", "Owner");
+define("L_NEW_OWNER", "New Owner");
+define("L_NEW_OWNER_EMAIL", "New Owner's E-mail");
+define("L_DELETED", "Deleted");
+define("L_STATE_FILE", "State file");
+define("L_SLICE_NAME", "Name");
+define("L_SLICE_URL", "URL");
+define("L_EDIT", "Edit");
+define("L_DELETE", "Delete");
+define("L_UPDATE", "Update");
+define("L_RESET", "Reset form");
+define("L_CANCEL", "Cancel");
+define("L_INSERT", "Insert");
+define("L_NEW", "New");
+define("L_GO", "Go");
+define("L_ADD", "Add");
+define("L_ID", "Id");
+
 ?> 

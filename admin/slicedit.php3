@@ -34,8 +34,12 @@ if($cancel)
 
 reset ($MODULES);
 while (list ($letter,$module) = each ($MODULES)) {
-    if ($create[$letter]) 
-        go_url($sess->url($module["directory"] . "modedit.php3"));
+    if ($create[$letter]) {
+        $url = $sess->url($module["directory"] . "modedit.php3");
+        if( $template[$letter] )
+            $url = con_url( $url, "template%5B$letter%5D=". $template[$letter]);
+        go_url( $url );
+    }
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable

@@ -42,7 +42,7 @@ define("PS_DELETE_ITEMS", "B");     # slice (module)  # administrator #  S      
 define("PS_CATEGORY", "C");         # slice (module)  # administrator #  S       # change slice categories
 define("PS_FEEDING", "D");          # slice (module)  # administrator #  S       # change properties
 define("PS_EDIT", "E");             # slice (module)  # administrator #  S       # set slice properties
-define("PS_MODW_SETTINGS", "E");    #                                     W      #
+define("PS_MODW_SETTINGS", "E");    #                                     W      # set site module properties
 define("PS_FIELDS", "F");           # slice (module)  # administrator #  S       # edit fields defauts
 define("PS_CONFIG", "H");           # slice (module)  # administrator #  S       # configure slice (show/hide columns in admin interface ...)
 define("PS_ADD_USER", "I");         # slice (module)  # administrator #  S       # add existing user to slice
