@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1250"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
 <article>
@@ -10,7 +10,7 @@
     <author>
       <firstname>Jakub</firstname>
 
-      <surname>Adámek</surname>
+      <surname>AdĂˇmek</surname>
 
       <affiliation>
         <orgname>Econnect</orgname>
@@ -388,6 +388,14 @@
             her email by using the URL sent in an email, <constant>fillform</constant>
             adds a message <quote>email_confirmed =&#62; OK</quote>. This
             message is added only when the email has not yet been confirmed.</entry>
+          </row>
+
+          <row>
+            <entry>unsubscribed</entry>
+
+            <entry>Added by <constant>fillform.php3</constant> on Reader
+            management slices: When the reader unsubscribes from Alerts (which
+            is achieved by setting How often to an empty value).</entry>
           </row>
         </tbody>
       </tgroup>

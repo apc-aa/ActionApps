@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1250"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
 <article>
@@ -10,7 +10,7 @@
     <author>
       <firstname>Jakub</firstname>
 
-      <surname>Adámek</surname>
+      <surname>AdĂˇmek</surname>
 
       <affiliation>
         <orgname>Econnect</orgname>
@@ -20,6 +20,14 @@
     <releaseinfo>$Id$</releaseinfo>
 
     <revhistory>
+      <revision>
+        <revnumber>1.1</revnumber>
+
+        <date>18.4.2003</date>
+
+        <revremark>Updated the Step by step tutorial. Added a tip about links.</revremark>
+      </revision>
+
       <revision>
         <revnumber>1.0</revnumber>
 
@@ -87,7 +95,7 @@
       the view is generated for each Selection and some items may appear
       several times in the email. If you leave <quote>Group by selections</quote>
       unchecked, first all items which pass the reader&#39;s Selections are
-      collected and the view is generated only once for all of them. </para>
+      collected and the view is generated only once for all of them.</para>
 
       <para>The setting <quote>Fulltext URL</quote> links to the page where is
       an item viewed when the reader clicks on its headline in the email. Of
@@ -245,18 +253,21 @@
     clients supporting HTML and the text version in clients supporting text
     only. The text form is created by deleting all HTML tags. Technically
     speaking, it is a MIME multi-part/alternative message with a text part and
-    a HTML part. </para>
+    a HTML part.</para>
 
     <para>If you want to send emails manually, use the <quote>Send emails</quote>
-    page in the Alerts module. </para>
+    page in the Alerts module.</para>
   </sect1>
 
   <sect1>
     <title>Step by step tutorial</title>
 
     <para>Here is a tutorial, describing in steps how you can try the Alerts
-    module. The result does not use Authorization, the personal info is
-    protected by a password.</para>
+    module. </para>
+
+    <para>WARNING: The result does not use Authorization, the personal info is
+    protected by a password. You should use other settings on several places
+    when using Authorization. </para>
 
     <orderedlist>
       <listitem>
@@ -275,12 +286,14 @@
 
           <listitem>
             <simpara>Set <quote>Allow anonymous posting</quote> to
-            <quote>Active</quote></simpara>
+            <quote>Active</quote> </simpara>
           </listitem>
 
           <listitem>
             <simpara>Set <quote>Allow anonymous editing</quote> to
-            <quote>All items</quote></simpara>
+            <quote>Authorized by a password field</quote>
+            <emphasis>(with Authorization, use <quote>Readers, authorized by
+            HTTP auth</quote>)</emphasis></simpara>
           </listitem>
         </orderedlist>
       </listitem>
@@ -292,7 +305,8 @@
           <listitem>
             <simpara>In your favorite test slice, create a view with type
             <quote>Alerts Digest</quote>. Fill something intelligent into the
-            design, particularly the <quote>Odd Rows</quote> field</simpara>
+            design, particularly the <quote>Odd Rows</quote> field. Fill also
+            the <quote>Fulltext URL</quote> field.</simpara>
           </listitem>
 
           <listitem>
@@ -324,12 +338,23 @@
           </listitem>
 
           <listitem>
-            <simpara>Click on Sync with reader slice, change to My Readers</simpara>
+            <simpara>Click on Reader management, change to My Readers</simpara>
           </listitem>
 
           <listitem>
             <simpara>Click on Add or refresh fields. A message <quote>2
             field(s) added</quote> appears.</simpara>
+          </listitem>
+        </orderedlist>
+      </listitem>
+
+      <listitem>
+        <para>Copy show_results.php3</para>
+
+        <orderedlist>
+          <listitem>
+            <simpara>Copy the script from <constant>doc/script/show_result.php3</constant>
+            to the same location where you created myalerts.shtml. </simpara>
           </listitem>
         </orderedlist>
       </listitem>
@@ -344,9 +369,9 @@
 
           <listitem>
             <simpara>In Slice Admin - Fields uncheck Show for Username and
-            check Required for Email (<emphasis>this is not default because
-            the template serves both for Alerts combined with Auth and for
-            standalone Alerts</emphasis>)</simpara>
+            check Required for Email. Perhaps also uncheck Required for
+            Password. <emphasis>(With Authorization, do nothing, the defaults
+            are OK)</emphasis></simpara>
           </listitem>
 
           <listitem>
@@ -354,7 +379,13 @@
           </listitem>
 
           <listitem>
-            <simpara>Fill the URL similar to <constant>http://have_access_to/myalerts.shtml</constant></simpara>
+            <simpara>Fill the OK and Error URL with the same URL described
+            above, similar to <constant>http://have_access_to/myalerts.shtml</constant></simpara>
+          </listitem>
+
+          <listitem>
+            <para>Fill the URL of yours show_result.php3 and check the box
+            <quote>Use a PHP script ...</quote></para>
           </listitem>
 
           <listitem>
@@ -380,13 +411,12 @@
           </listitem>
 
           <listitem>
-            <para>Click on Send, a message <quote>success: insert</quote>
-            appears. You may change your settings and use Send again.</para>
+            <para>Click on Send, a message appears.</para>
           </listitem>
 
           <listitem>
-            <para>Confirm your subscription: Click on the link received in the
-            Welcome email</para>
+            <para>Check email and confirm your subscription: Click on the link
+            received in the Welcome email</para>
           </listitem>
         </orderedlist>
       </listitem>
@@ -400,8 +430,8 @@
             and click on <quote>Go!</quote> at <quote>Send example</quote>.
             You should receive a digest of all items added in the last 24
             hours to your favorite test slice. If there are no such items, add
-            some: click on My Selection 1, this moves you to your favorite
-            test slice.</simpara>
+            some: go to Selections, click on My Selection 1, this moves you to
+            your favorite test slice.</simpara>
           </listitem>
 
           <listitem>
@@ -442,5 +472,11 @@
     (comma). You will see the selection IDs prefixed by <constant>f</constant>.
     Now you understand why you should enter something like <quote>f45</quote>
     into the Search box.</para>
+
+    <para><emphasis>Links between Alerts and the related slices. </emphasis>Several
+    links help to jump quickly between the modules. In Alerts, on page Reader
+    management, you can click on the slice name. On page Selections, there are
+    links to all selections and to all slices containing these selections.
+    There are backward links also: On the Item Manager page.</para>
   </sect1>
 </article>
