@@ -163,6 +163,7 @@ function parseLoop($out, &$item) {
     // @field........... - without parameters
     if (strpos($out, ":") == false) {
         $field = substr($out, 1);
+        $separator = ", "; // default separator
     } else { // with parameters
         // get field name
         $field = substr($out, 1, strpos($out, ":") - strpos($out, "@")-1);
@@ -177,9 +178,6 @@ function parseLoop($out, &$item) {
             $field = substr($field, 0, strpos($field, "("));
             $group_id = getConstantsGroupID($item->columns["slice_id........"][0]["value"], $field);
         }
-    }
-    if (!$separator) {
-        $separator = ", "; // default separator
     }
     $val = $item->getmultipleval($field);
     if (!is_array($val)) {
