@@ -298,4 +298,53 @@ define("L_RESERVED_ID","This ID is reserved");
 define("L_ID_EXISTS","This ID is already used");
 define("L_EDIT_WIZARD_TEMPLATE","Wizard Templates");
 
+/* E-MAIL ALERTS */
+
+define("L_ALERTS_VIEW","E-mail Alerts");
+define("L_V_MAXLISTLEN","Max number of items");
+define("L_FILTER","Filter");
+define("L_DESCRIPTION","Description");
+define("L_SORT","Sort");
+define("L_CONGRAT_ALERTS","Congratulations! Your subscription to E-mail Alerts is finished. You can change your settings on ");
+define("L_WRONG_CODE","The code given is not OK. Please try it again. Don't write any spaces.");
+define("L_ALERTS_CONFIRM_TIT","Subscribe to E-mail Alerts");
+define("L_ALERTS_PASSWORD","Your e-mail address is used as login. If you don't use password, leave that box empty. If you have forgotten your password, click here and we will send it to your e-mail."); 
+define("L_ALERTS_SEND_PASSWD","Send password");
+define("L_ALERTS_LOGIN_TIT","Login to Alerts sending");
+define("L_SEND_PASSWD_BODY1","Your login info for AA Alerts is");
+define("L_EMAIL","e-mail");
+define("L_PASSWORD","password");
+define("L_SEND_PASSWD_BODY2","Enjoy AA Alerts!");
+define("L_SEND_PASSWD_SUBJECT","Password to Alerts");
+define("L_EMAIL_NOT_FOUND","This email is not registered with Alerts.");
+define("L_EMPTY_PASSWD", "You don't have any password, leave the box empty.");
+define("L_OK_PASSWD","OK. Password was sent.");
+define("L_ALERTS_USER_FILTER_TIT","AA Alerts");
+define("L_USERINFO","User info");
+define("L_SUBSCRIPTIONS","Subscriptions");
+define("L_FIRST_NAME","First name");
+define("L_LAST_NAME","Last name");
+define("L_CHANGE_PASSWORD","Change password");
+define("L_RETYPE_PASSWORD","Retype password");
+define("L_CHANGE","Change");
+define("L_NEW_PASSWORD","New password");
+define("L_PASSWORDS_DIFFER","Passwords differ. Please try again.");
+define("L_WRONG_PASSWORD","Wrong password.");
+define("L_WELCOME","Welcome");
+define("L_URL_PAGES","Link to web (start with http://)");
+define("L_DAILY","daily");
+define("L_WEEKLY","weekly");
+define("L_MONTHLY","monthly");
+define("L_UNSUBSCRIBE","unsubscribe");
+define("L_DIGEST","Digest");
+define("L_FILTER","Filter");
+define("L_HOWOFTEN","How often");       
+define("L_NOT_SUBSCRIBED","not subscribed");
+define("L_NEW_USER_SUBSCRIBE","New user? Subscribe!");
+define("L_ALERTS_SUBSCRIBE_TIT","Subscribe to AA Alerts");
+define("L_ALERTS_SUBSCRIBE_HINT","We will send an e-mail message to the address given. Follow the instructions in it to complete your subscription.");
+
+/* END OF E-MAIL ALERTS */
+
+define("CHARSET", "iso-8859-1");
 ?>

@@ -23,6 +23,7 @@ http://www.apc.org/
 # config file identifier
 # must correspond with this file name
 define("LANG_FILE", "cz_news_lang.php3");
+define("CHARSET", "windows-1250");
 
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
