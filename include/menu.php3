@@ -33,134 +33,163 @@ http://www.apc.org/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
+if (!defined("AA_MENU_INCLUDED"))
+      define("AA_MENU_INCLUDED",1);
+else return;
+
 require $GLOBALS[AA_INC_PATH]."menu_util.php3";
 require $GLOBALS[AA_INC_PATH]."perm_core.php3";
 
-$aamenus["view"] = array (
-    "label" => L_VIEW_SLICE, 
-    "exact_href"  => $r_slice_view_url,
-    "cond"  => 1,
-    "level" => "main");    
+// I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
+$aamenus = "aamenus";
+
+function get_aamenus ()
+{
+    global $r_slice_view_url,
+           $auth,
+           $slice_id,
+           $r_bin_state, 
+           $item_bin_cnt, 
+           $item_bin_cnt_exp, 
+           $item_bin_cnt_pend, 
+           $apple_design, 
+           $AA_INSTAL_PATH, 
+           $AA_CP_Session;    
+
+    $aamenus["view"] = array (
+        "label" => L_VIEW_SLICE, 
+        "exact_href"  => $r_slice_view_url,
+        "cond"  => 1,
+        "level" => "main");    
+        
+    $aamenus["additem"] = array (
+        "label" => L_ADD_NEW_ITEM,
+        "href"  => "itemedit.php3?encap=false&add=1",
+        "level" => "main");
+        
+    $aamenus["itemmanager"] = array (
+        "label" => L_ARTICLE_MANAGER, 
+        "title" => L_ARTICLE_MANAGER,
+        "href"  => "index.php3?Tab=app",
+        "level" => "main",
+        "submenu" => "itemmanager_submenu");
+        
+    $aamenus["sliceadmin"] = array (
+        "label" => L_SLICE_ADMIN2,
+        "title" => L_SLICE_ADMIN,
+        "href"  => "slicedit.php3",
+        "cond"  => IfSlPerm(PS_EDIT),
+        "level" => "main",
+        "submenu"=>"sliceadmin_submenu");    
+        
+    $aamenus["aaadmin"] = array (
+        "label" => L_AA_ADMIN2,
+        "title" => L_AA_ADMIN,
+        "href"  => "um_uedit.php3",
+        "cond"  => IfSlPerm(PS_NEW_USER),
+        "level" => "main",
+        "submenu"=>"aaadmin_submenu");    
+     
+    /*  Second-level (left) menu description:
+        bottom_td       empty space under the menu
+        items           array of menu items in form item_id => properties
+                        if item_id is "headerxxx", shows a header, 
+                            be careful that xxx be always a different number
+                        if item_id is "line", shows a line
+            label       to be shown
+            cond        if not satisfied, don't show the label linked  
+                        slice_id is included in the cond automatically
+            href        link, relative to aa/admin/
+            exact_href  link, absolute (use either exact_href or href, not both)
+            show_always don't include slice_id in cond
+    */
     
-$aamenus["additem"] = array (
-    "label" => L_ADD_NEW_ITEM,
-    "href"  => "itemedit.php3?encap=false&add=1",
-    "level" => "main");
+    $aamenus ["sliceadmin_submenu"] = array (
+        "bottom_td"=>50, 
+        "level"=>"submenu",
+        
+        "items"=>array (
     
-$aamenus["itemmanager"] = array (
-    "label" => L_ARTICLE_MANAGER, 
-    "title" => L_ARTICLE_MANAGER,
-    "href"  => "index.php3?Tab=app",
-    "level" => "main",
-    "submenu" => "itemmanager_submenu");
+        "header1" => L_MAIN_SET,
+        "main" => array ("label"=>L_SLICE_SET, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"slicedit.php3?slice_id=$slice_id", "show_always"=>1), 
+        "category" => array("label"=>L_CATEGORY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY), "href"=> "se_constant.php3"),
+        "fields" => array ("label"=>L_FIELDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fields.php3?slice_id=$slice_id"), 
+        "notify" => array ("label"=>L_NOTIFY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"se_notify.php3?slice_id=$slice_id"), 
     
-$aamenus["sliceadmin"] = array (
-    "label" => L_SLICE_ADMIN2,
-    "title" => L_SLICE_ADMIN,
-    "href"  => "slicedit.php3",
-    "cond"  => IfSlPerm(PS_EDIT),
-    "level" => "main",
-    "submenu"=>"sliceadmin_submenu");    
+        "header2" => L_PERMISSIONS,
+        "addusers"=> array ("label"=>L_PERM_ASSIGN, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ADD_USER), "href"=> "se_users.php3?adduser=1&slice_id=$slice_id"),
+        "users"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS), "href"=>"se_users.php3?slice_id=$slice_id", "label"=>L_PERM_CHANGE),
     
-$aamenus["aaadmin"] = array (
-    "label" => L_AA_ADMIN2,
-    "title" => L_AA_ADMIN,
-    "href"  => "um_uedit.php3",
-    "cond"  => IfSlPerm(PS_NEW_USER),
-    "level" => "main",
-    "submenu"=>"aaadmin_submenu");    
- 
-/*  Second-level (left) menu description:
-    bottom_td       empty space under the menu
-    items           array of menu items in form item_id => properties
-                    if item_id is "headerxxx", shows a header, 
-                        be careful that xxx be always a different number
-                    if item_id is "line", shows a line
-        label       to be shown
-        cond        if not satisfied, don't show the label linked  
-                    slice_id is included in the cond automatically
-        href        link, relative to aa/admin/
-        exact_href  link, absolute (use either exact_href or href, not both)
-        show_always don't include slice_id in cond
-*/
-
-$aamenus ["sliceadmin_submenu"] = array (
-    "bottom_td"=>50, 
-    "level"=>"submenu",
+        "header3" => L_DESIGN,
+        "compact"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_COMPACT), "href"=>"se_compact.php3?slice_id=$slice_id", "label"=>L_COMPACT),
+        "fulltext"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"se_fulltext.php3?slice_id=$slice_id", "label"=>L_FULLTEXT),
+        "views"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"se_views.php3?slice_id=$slice_id", "label"=>L_VIEWS),
+        "config"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CONFIG), "href"=>"se_admin.php3?slice_id=$slice_id", "label"=>L_SLICE_CONFIG),
     
-    "items"=>array (
-
-    "header1" => L_MAIN_SET,
-    "main" => array ("label"=>L_SLICE_SET, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"slicedit.php3?slice_id=$slice_id", "show_always"=>1), 
-    "category" => array("label"=>L_CATEGORY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY), "href"=> "se_constant.php3"),
-    "fields" => array ("label"=>L_FIELDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fields.php3?slice_id=$slice_id"), 
-    "notify" => array ("label"=>L_NOTIFY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"se_notify.php3?slice_id=$slice_id"), 
-
-    "header2" => L_PERMISSIONS,
-    "addusers"=> array ("label"=>L_PERM_ASSIGN, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ADD_USER), "href"=> "se_users.php3?adduser=1&slice_id=$slice_id"),
-    "users"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_USERS), "href"=>"se_users.php3?slice_id=$slice_id", "label"=>L_PERM_CHANGE),
-
-    "header3" => L_DESIGN,
-    "compact"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_COMPACT), "href"=>"se_compact.php3?slice_id=$slice_id", "label"=>L_COMPACT),
-    "fulltext"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"se_fulltext.php3?slice_id=$slice_id", "label"=>L_FULLTEXT),
-    "views"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"se_views.php3?slice_id=$slice_id", "label"=>L_VIEWS),
-    "config"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CONFIG), "href"=>"se_admin.php3?slice_id=$slice_id", "label"=>L_SLICE_CONFIG),
-    "alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"alerts_collections.php3", "label"=>L_ALERTS_COLLECTIONS),
-
-    "header4" => L_FEEDING,
-    "nodes"=>array("cond"=>isSuperadmin(), "href"=>"se_nodes.php3?slice_id=$slice_id", "label"=>L_NODES_MANAGER),
-    "import"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_import.php3?slice_id=$slice_id", "label"=>L_INNER_IMPORT),
-    "n_import"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_inter_import.php3?slice_id=$slice_id", "label"=>L_INTER_IMPORT),
-    "n_export"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_inter_export.php3?slice_id=$slice_id", "label"=>L_INTER_EXPORT),
-    "filters"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_filters.php3?slice_id=$slice_id", "label"=>L_FILTERS),   
-    "mapping"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_mapping.php3?slice_id=$slice_id", "label"=>L_MAP),
-
-    "header5" => L_MISC,
-    "field_ids" => array ("label"=>L_FIELD_IDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fieldid.php3?slice_id=$slice_id"),    
-    "javascript" => array ("label"=>L_F_JAVASCRIPT, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_javascript.php3")
-    ,"fileman" => array ("label"=>L_FILEMAN, "cond"=>FilemanPerms ($auth, $slice_id), "href"=>"fileman.php3")
-));
-
-$aamenus["itemmanager_submenu"] = array(
-    "bottom_td"=>200,
-    "level"=>"submenu",
-    "items"=> array(
+        "header4" => L_FEEDING,
+        "nodes"=>array("cond"=>isSuperadmin(), "href"=>"se_nodes.php3?slice_id=$slice_id", "label"=>L_NODES_MANAGER),
+        "import"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_import.php3?slice_id=$slice_id", "label"=>L_INNER_IMPORT),
+        "n_import"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_inter_import.php3?slice_id=$slice_id", "label"=>L_INTER_IMPORT),
+        "n_export"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_inter_export.php3?slice_id=$slice_id", "label"=>L_INTER_EXPORT),
+        "filters"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_filters.php3?slice_id=$slice_id", "label"=>L_FILTERS),   
+        "mapping"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"se_mapping.php3?slice_id=$slice_id", "label"=>L_MAP),
     
-    "header1"=>L_OTHER_ARTICLES,
-    "item1"=>array ("cond"=> $r_bin_state != "app", "href"=>"index.php3?Tab=app", "label"=>L_ACTIVE_BIN." (".($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).")"),
-    "item2"=>array ("show"=>!$apple_design, "cond" => $r_bin_state != "appb", "href"=>"index.php3?Tab=appb", "label"=>L_ACTIVE_BIN_PENDING_MENU." ($item_bin_cnt_pend)"),
-    "item3"=>array ("show"=>!$apple_design, "cond" => $r_bin_state != "appc", "href"=>"index.php3?Tab=appc", "label"=>L_ACTIVE_BIN_EXPIRED_MENU." ($item_bin_cnt_exp)"),
-    "item4"=>array ("cond"=> $r_bin_state != "hold", "href"=>"index.php3?Tab=hold", "label"=>L_HOLDING_BIN." ($item_bin_cnt[2])"),
-    "item5"=>array ("cond"=> $r_bin_state != "trash", "href"=>"index.php3?Tab=trash", "label"=>L_TRASH_BIN." ($item_bin_cnt[3])"),
-    "header2" => L_MISC,
-    "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"index.php3?Delete=trash", "label"=>L_DELETE_TRASH),
-    "line" => "",
-    "item7"=>array ("cond"=>1, "exact_href"=>"javascript:SelectVis(true)", "label"=>L_SELECT_VISIBLE),
-    "item8"=>array ("cond"=>1, "exact_href"=>"javascript:SelectVis(false)", "label"=>L_UNSELECT_VISIBLE)
-));
-
-$aamenus["aaadmin_submenu"] = array (
-    "bottom_td" => 300,    
-    "level" => "submenu",
-    "items" => array (
+        "header5" => L_MISC,
+        "field_ids" => array ("label"=>L_FIELD_IDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_fieldid.php3?slice_id=$slice_id"),    
+        "javascript" => array ("label"=>L_F_JAVASCRIPT, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"se_javascript.php3")
+        ,"fileman" => array ("label"=>L_FILEMAN, "cond"=>FilemanPerms ($auth, $slice_id), "href"=>"fileman.php3")
+    ));
     
-    "header0" => L_MODULES,
-    "sliceadd" => array ("label" => L_ADD_MODULE, "cond"=>IfSlPerm(PS_ADD), "href"=>"sliceadd.php3"),
-    "slicewiz" => array ("label" => L_ADD_SLICE_WIZ, "cond"=>IfSlPerm(PS_ADD), "href"=>"slicewiz.php3"),
-    "slicedel" => array ("label" => L_DELETE_MODULE, "cond"=>IsSuperadmin(), "href"=>"slicedel.php3"),
-    "jumpedit" => array ("label"=>L_EDIT_JUMP, "cond"=>IfSlPerm(PS_ADD), "exact_href" => $AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1&AA_CP_Session=$AA_CP_Session"),
-/*    "delete" => array ("label" => L_DELETE_TRASH, "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"index.php3?Delete=trash"),*/
-    "header1"=>L_USERS,
-    "u_edit" => array ("href"=>"um_uedit.php3", "cond"=>1, "label"=>L_EDIT_USER),
-    "u_new" => array ("href"=>"um_uedit.php3?usr_new=1", "cond"=>1, "label"=>L_NEW_USER),
-    "header2"=>L_GROUPS,
-    "g_edit" => array ("href"=>"um_gedit.php3", "cond"=>1, "label"=>L_EDIT_GROUP),
-    "g_new" => array ("href"=>"um_gedit.php3?grp_new=1", "cond"=>1, "label"=>L_NEW_GROUP),
-    "header5"=>L_EXPIMP_SET,
-    "sliceexp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceexp.php3", "label"=>L_EXPORT_SLICE), 
-    "sliceimp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceimp.php3", "label"=>L_IMPORT_SLICE),
-    "header70"=>L_MISC,
-    "te_wizard_welcome" => array ("label"=>L_EDIT_WIZARD_WELCOME, "cond"=>IsSuperadmin(), "href"=>"te_wizard_welcome.php3"),
-    "te_wizard_template" => array ("label"=>L_EDIT_WIZARD_TEMPLATE, "cond"=>IsSuperadmin(), "href"=>"te_wizard_template.php3")
-));
+    $aamenus["itemmanager_submenu"] = array(
+        "bottom_td"=>200,
+        "level"=>"submenu",
+        "items"=> array(
+        "header1"=>L_OTHER_ARTICLES,
+        "item1"=>array ("cond"=> $r_bin_state != "app", "href"=>"index.php3?Tab=app", "label"=>L_ACTIVE_BIN." (".($item_bin_cnt[1]-$item_bin_cnt_exp-$item_bin_cnt_pend).")"),
+        "item2"=>array ("show"=>!$apple_design, "cond" => $r_bin_state != "appb", "href"=>"index.php3?Tab=appb", "label"=>L_ACTIVE_BIN_PENDING_MENU." ($item_bin_cnt_pend)"),
+        "item3"=>array ("show"=>!$apple_design, "cond" => $r_bin_state != "appc", "href"=>"index.php3?Tab=appc", "label"=>L_ACTIVE_BIN_EXPIRED_MENU." ($item_bin_cnt_exp)"),
+        "item4"=>array ("cond"=> $r_bin_state != "hold", "href"=>"index.php3?Tab=hold", "label"=>L_HOLDING_BIN." ($item_bin_cnt[2])"),
+        "item5"=>array ("cond"=> $r_bin_state != "trash", "href"=>"index.php3?Tab=trash", "label"=>L_TRASH_BIN." ($item_bin_cnt[3])"),
+        "header2" => L_MISC,
+        "item6"=>array ("cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"index.php3?Delete=trash", "label"=>L_DELETE_TRASH),
+        "line" => "",
+        "item7"=>array ("cond"=>1, "exact_href"=>"javascript:SelectVis(true)", "label"=>L_SELECT_VISIBLE),
+        "item8"=>array ("cond"=>1, "exact_href"=>"javascript:SelectVis(false)", "label"=>L_UNSELECT_VISIBLE)
+    ));
+    
+    $aamenus["aaadmin_submenu"] = array (
+        "bottom_td" => 300,    
+        "level" => "submenu",
+        "items" => array (
+        
+        "header0" => L_MODULES,
+        "sliceadd" => array ("label" => L_ADD_MODULE, "cond"=>IfSlPerm(PS_ADD), "href"=>"sliceadd.php3"),
+        "slicewiz" => array ("label" => L_ADD_SLICE_WIZ, "cond"=>IfSlPerm(PS_ADD), "href"=>"slicewiz.php3"),
+        "slicedel" => array ("label" => L_DELETE_MODULE, "cond"=>IsSuperadmin(), "href"=>"slicedel.php3"),
+        "jumpedit" => array ("label"=>L_EDIT_JUMP, "cond"=>IfSlPerm(PS_ADD), "exact_href" => $AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1&AA_CP_Session=$AA_CP_Session"),
+    /*    "delete" => array ("label" => L_DELETE_TRASH, "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"index.php3?Delete=trash"),*/
+
+        "header1"=>L_USERS,
+        "u_edit" => array ("href"=>"um_uedit.php3", "cond"=>1, "label"=>L_EDIT_USER),
+        "u_new" => array ("href"=>"um_uedit.php3?usr_new=1", "cond"=>1, "label"=>L_NEW_USER),
+        
+        "header2"=>L_GROUPS,
+        "g_edit" => array ("href"=>"um_gedit.php3", "cond"=>1, "label"=>L_EDIT_GROUP),
+        "g_new" => array ("href"=>"um_gedit.php3?grp_new=1", "cond"=>1, "label"=>L_NEW_GROUP),
+        
+        "header5"=>L_EXPIMP_SET,
+        "sliceexp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceexp.php3", "label"=>L_EXPORT_SLICE), 
+        "sliceimp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"sliceimp.php3", "label"=>L_IMPORT_SLICE),
+
+        "header6"=>L_ALERTS,
+        "alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"alerts_collections.php3", "label"=>L_ALERTS_COLLECTIONS),
+        "te_alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"tabledit.php3?set[tview]=ac", "label"=>L_TE_ALERTS_COLLECTIONS),        
+        
+        "header70"=>L_MISC,
+        "te_wizard_welcome" => array ("label"=>L_EDIT_WIZARD_WELCOME, "cond"=>IsSuperadmin(), "href"=>"tabledit.php3?set[tview]=ww"),
+        "te_wizard_template" => array ("label"=>L_EDIT_WIZARD_TEMPLATE, "cond"=>IsSuperadmin(), "href"=>"tabledit.php3?set[tview]=wt")
+    ));
+    
+    return $aamenus;
+}
 ?>

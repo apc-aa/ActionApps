@@ -31,11 +31,22 @@ else return;
 
 // ----------------------------------------------------------------------------------------
 //                                SHOW MENU
-    
+
+/* PARAMS: $smmenus -- array with menu information, see menu.php3 for an example
+           $activeMain -- selected item in main (top) menu
+           $activeSubmenu -- selected item in sub (left) menu
+           $showMain -- show the main menu (top navigation bar) ?
+           $showSub -- show the submenu (left navigation bar) ?
+*/             
 function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
 {
     global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad;
     global $debug;
+    
+    // load the main AA menu (see menu.php3)
+    if ($smmenus == "aamenus")
+        $smmenus = get_aamenus();
+         
     if ($debug) { echo "<p><font color=purple>showMenu:activeMain=$activeMain;activeSubmenu=$activeSubmenu;showMain=$showMain;showSub=$showSub:</font></p>";  }
     if( $useOnLoad )
         echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
