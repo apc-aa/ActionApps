@@ -122,6 +122,9 @@ function ParseViewParameters($query_string="") {
                break;
     case 'o':  // the same as x, but no hit for item is added
     case 'x':  $vid = $command[1];
+               if ( $command[2] == 'url' ) {
+                   $command[2] = $x;
+               }
   	           $zids = new zids(array_slice($command,2));
 //               for( $i=2; $i<count($command); $i++)
 //                 $item_ids[] = $command[$i];
