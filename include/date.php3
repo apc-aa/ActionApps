@@ -84,12 +84,12 @@ class datectrl {
 	}
 
   # check if date is valid  
-  function ValidateDate($inputName, &$err)
-  {
-    if( $this->getdate()=="" )
-    { $err["$this->name"] = MsgErr(L_ERR_IN." $inputName");
+  function ValidateDate($inputName, &$err, $needed=true)  {
+    if( $this->getdate()=="" AND $needed ) {
+      $err["$this->name"] = MsgErr(L_ERR_IN." $inputName");
       return false;
-    } return true;
+    } 
+    return true;
   }  
                    
 	# print select box for day
@@ -141,6 +141,9 @@ class datectrl {
 }
 /*
 $Log$
+Revision 1.3  2000/11/15 16:16:22  honzam
+Date in Validate date can be set as not required
+
 Revision 1.2  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 
