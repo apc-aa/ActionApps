@@ -50,7 +50,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <center>
 <form method=post action="<?php echo $sess->url("slicedit.php3") ?>">
 <?php
-    require $GLOBALS[AA_INC_PATH]."sliceadd.php3";
+    require $GLOBALS["AA_INC_PATH"]."sliceadd.php3";
 
     FrmInputRadio ("wiz[copyviews]", L_COPY_VIEWS, array (1=>L_YES,0=>L_NO), 1);
     FrmInputRadio ("wiz[constants]", L_CATEGO_CONST, 
