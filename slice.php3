@@ -24,6 +24,7 @@ http://www.apc.org/
 #optionaly sh_itm    // if specified - selected item is shown in full text
 #optionaly x         // the same as sh_itm, but short_id is used instead
                      // implemented for shorter item url (see _#SITEM_ID alias)
+#optionaly o         // the same as x but the hit is not counted
 #optionaly srch      // true if this script have to show search results
 #optionaly highlight // when true, shows only highlighted items in compact view
 #optionaly bigsrch   // NOT SUPPORTED IN AA v 1.5+
@@ -179,6 +180,11 @@ if (!$slice_id && is_array($slices)) {
     $slice_id = current($slices);
 }
 
+// if someone breaks <!--#include virtual=""... into two rows, then slice_id
+// (or other variables) could contain \n. Should be fixed more generaly -
+// We will do it during rewrite AA to $_GET[] variable handling (probably)
+$slice_id=trim($slice_id);
+
 $p_slice_id= q_pack_id($slice_id);
 
 require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
@@ -275,12 +281,19 @@ else {
 }
 
 # fulltext view ---------------------------------------------------------------
-if( $sh_itm OR $x ) {
+if( $sh_itm OR $x OR $o ) {
 //  $r_state_vars = StoreVariables(array("sh_itm")); # store in session
-  if($sh_itm)
-    LogItem($sh_itm, "id");
+  if ( !$x AND $o ) {
+      $x = $o;
+      $count_hit=false;
+  } else {
+      $count_hit=true;
+  }
+
+  if ($sh_itm)
+    LogItem($sh_itm, "id", $count_hit);
    else
-    $sh_itm = LogItem($x,"short_id");
+    $sh_itm = LogItem($x,"short_id", $count_hit);
 
   if (!isset ($hideFulltext)) {
       $itemview = new itemview($slice_info, $fields, $aliases, new zids($sh_itm,"l"),

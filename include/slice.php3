@@ -95,10 +95,10 @@ function RestoreVariables() {
 }
 
 # two purpose function - it loggs item view and it translates short_id to id
-function LogItem($id, $column) {
+function LogItem($id, $column, $count_hit=true) {
   global $db;
 
-  CountHit($id);
+  if ( $count_hit ) CountHit($id);
 
   if( $column == "id" )
     return $id;
