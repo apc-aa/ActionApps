@@ -1,4 +1,5 @@
-01/05/03 - updated fileman.php3 and admin/test.php3 to check for missing 
+05/01/03 - integrated summarize.php3 into menus and styles etc
+05/01/03 - updated fileman.php3 and admin/test.php3 to check for missing 
            fileman directory - still has UI and other bugs
 04/28/03 - introduced AA_BASE_DIR into config.php3 
 (mitra)  - se_inputform.php3 can be called with onlyupdate and parameters 

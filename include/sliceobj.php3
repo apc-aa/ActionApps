@@ -95,6 +95,9 @@ class slice {
         return $this->unpackedid;
     }
 
+    function packed_id() {
+        return pack_id128($this->unpackedid);
+    }
     // Return an id in a form that can be passed to sql, (needs outer quotes)
     function sql_id() {
         return addslashes(pack_id128($this->unpackedid));

@@ -41,41 +41,50 @@ if (0) {
     huhl(GetTable2Array("SELECT * FROM slice LIMIT 1",NoCoLuMn,1));
 }
 
+// These parameters effect how slices compare to each other
 $scoreUnshown = 10;
 $scoreAddOrMiss = 50;
 
-if ($debugsummarize) huhl("Starting summarize");
-$db = getDB();
-$SQL = "SELECT id FROM slice ORDER BY created_at";
-$db -> tquery($SQL);
-while ($db->next_record()) {
-    $sliceids[] = unpack_id($db->f("id"));
+HtmlPageBegin();
+?>
+ <TITLE><?php echo _m("Summarize slice differences");?></TITLE>
+</HEAD>
+
+<?php
+    require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+    showMenu($aamenus, "aaadmin","summarize");
+  
+    echo "<H1><B>" . _m("AA - Summarize") . "</B></H1>";
+    PrintArray($err);
+    echo $Msg;  
+    initSummarize();
+    $nocache=1;
+    sliceshortcuts(1);
+    mapslices();
+    HtmlPageEnd();
+    page_close();
+
+function initSummarize() {
+    global $sao,$slicetablefields;
+    $db = getDB();
+    $SQL = "SELECT id FROM slice ORDER BY created_at";
+    $db -> tquery($SQL);
+    while ($db->next_record()) {
+        $sliceids[] = unpack_id($db->f("id"));
+    }
+    $slicearr = new slices($sliceids);
+    $sao=$slicearr->objarr();
+    $SQL = "SELECT * FROM slice";
+    $slicetablefields = GetTable2Array($SQL,"id",1);
+    freeDB($db);
 }
-if ($debugsummarize) huhl($sliceids);
-
-$slicearr = new slices($sliceids);
-if ($debugsummarize) huhl($slicearr);
-
-$sao=$slicearr->objarr();
-//$score = compareSlices($sao["c17f7dc366af4d932aa45d41ddbdd4e5"],$sao["4e6577735f454e5f746d706c2e2e2e2e"],1);
-//print("<li>Compare score=$score</li>\n");
-//print("Nearest = ". nearestSlice($sao["c17f7dc366af4d932aa45d41ddbdd4e5"],$sliceids) );
-$ignored_sliceids = array( unpack_id128("AA_Core_Fields.."),
-unpack_id128("News_EN_tmpl...."),
-unpack_id128("ReaderManagement"));
-$CoreFields = $sao[unpack_id128("AA_Core_Fields..")]->fields();
-
-//huhl("Test pack",$ignored_sliceids[1],":::",pack_id128($ignored_sliceids[1]));
-
-if ($msg) { print("<p>".$msg."</p>"); }   // Typically include HTML 
-$nocache=1;
-sliceshortcuts(1);
-mapslices();
-
-freeDB($db);
 
 function ignored_slice($si) {
     global $ignored_sliceids;
+    if (!$ignored_sliceids) 
+        $ignored_sliceids = array( unpack_id128("AA_Core_Fields.."),
+            unpack_id128("News_EN_tmpl...."),
+            unpack_id128("ReaderManagement"));
     return !  (array_search($si,$ignored_sliceids) === false);
 }
 function sliceshortcuts($ign) {
@@ -137,11 +146,13 @@ function nearestSlice($st,$possmodels) {
     return $sm_min;
 }
 function compareSlices($st,$sm,$pr) {
-    global $scoreAddOrMiss,$CoreFields;
+    global $scoreAddOrMiss,$sao;
+    $CoreFields = $sao[unpack_id128("AA_Core_Fields..")]->fields();
     $score = 0;
     $ft = $st->fields();
     $fm = $sm->fields();
     if ($pr) print("<ul>\n");
+    $score += compareSliceTableFields($st,$sm,$pr);
     reset($ft[0]);
     while (list($ftn,$fta) = each($ft[0])) {
         if (! $fm[0][$ftn]) {
@@ -192,7 +203,7 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
         $score++;
       }
       if ($opened) { 
-        $u1 = "temp_se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
+        $u1 = "se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
         print("<li><a href=\"" . $u1
         . "&change_id=" . $st->unpacked_id()
         . $fixert ."\">Fix this slice</a>");
@@ -206,6 +217,59 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
     }
     //huhl("Adding score for field = $score");
     return $score;
+}
+function compareSliceTableFields($st,$sm,$pr) {
+    global $slicetablefields;
+#    global $scoreUnshown,$AA_CP_Session;
+    $score = 0;
+    $opened = 0;
+    $ft = $slicetablefields[$st->packed_id()];
+    $fm = $slicetablefields[$sm->packed_id()];
+      $fixer="";
+      reset($ft);
+      while(list($ftk,$ftv) = each($ft)) {
+        $hf = 0;
+        $unp = 0;
+        if (($ftk == "id") || ($ftk == "name") || ($ftk == "created_at")
+            || ($ftk == "created_by"))
+             continue;    // Fields we expect to be different
+        if (EReg("format",$ftk)) { $hf = 1; }
+        if ($ftk == "owner") { $unp=1; }
+        if( EReg("^[0-9]*$", $ftk))
+            continue;
+        if ($ftv == $fm[$ftk]) continue; // They match
+        if (!$opened && $pr) { print("<li>slice fields differ<ul>\n"); $opened = 1; }
+        if($pr) {
+            print("<li>$ftk: " . qenc($fm[$ftk],$hf,$unp,"red")
+                . " -> " . qenc($ftv,$hf,$unp,"purple")
+                . "</li>\n");
+            $fixert .= "&$ftk=" . urlencode($fm[$ftk]);
+            $fixerm .= "&$ftk=" . urlencode($ftv);
+        }
+        $score++;
+      } //while
+      if ($opened) { 
+        print("<li>Will fix to allow editing</li>");
+//        $u1 = "se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
+//        print("<li><a href=\"" . $u1
+//        . "&change_id=" . $st->unpacked_id()
+//        . $fixert ."\">Fix this slice</a>");
+//        if (!ignored_slice($sm->unpacked_id())) {
+//            print("<li>or <a href=\"" . $u1
+//            . "&change_id=" . $sm->unpacked_id()
+//            . $fixerm ."\">Fix slice '". $sm->name() . "'</a>");
+//        }
+        print("</ul></li>\n"); 
+      }
+    //huhl("Adding score for field = $score");
+    return $score;
+}
+function qenc($val,$htmlformat,$unp,$color) {
+    return ("<FONT color=\"$color\">"
+        . ( $htmlformat ? htmlentities($val)
+            : ($unp ? unpack_id128($val) : $val))
+        . "</font>"
+    );
 }
 
 ?>
