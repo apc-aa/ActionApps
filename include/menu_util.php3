@@ -234,16 +234,12 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     trace("-");
 }
 
-// ----------------------------------------------------------------------------------------
-//                                SHOW SUBMENU
-
-function showSubmenu (&$aamenu, $active)
-{
+function showSubMenuRows( $aamenuitems ) {
     global $AA_INSTAL_PATH, $slice_id,$debug;
-    if ($debug) { echo "<p><font color=purple>showSubmenu:active=$active</font></p>\n"; }
-    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">'."\n";
 
-    $aamenuitems = $aamenu["items"];
+    if ( !isset($aamenuitems) OR !is_array($aamenuitems) )
+       return;
+
     reset ($aamenuitems);
     while (list ($itemshow, $item) = each ($aamenuitems)) {
         if (substr($itemshow,0,4) == "text")
@@ -257,6 +253,15 @@ function showSubmenu (&$aamenu, $active)
             echo '<tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
         else {
             echo '<tr><td width="122" valign="TOP">&nbsp;';
+            if ( $item["function"] ) {
+                // call some function to get menu items
+                // it is better mainly for left submenus for which we need
+                // database access - if we use function, it is called only if
+                // submenu should be displayed.
+                $function = $item["function"];
+                showSubMenuRows( $function( $item["func_param"] ) );
+                continue;
+            }
             if (!isset ($item["cond"])) $item["cond"] = 1;
             if ($itemshow == $active)
                 echo "<span class=leftmenua>".$item["label"]."</span>\n";
@@ -271,9 +276,26 @@ function showSubmenu (&$aamenu, $active)
             echo "</td></tr>\n";
         }
     }
+}
+
+// ----------------------------------------------------------------------------------------
+//                                SHOW SUBMENU
+
+function showSubmenu (&$aamenu, $active)
+{
+    global $debug;
+    if ($debug) { echo "<p><font color=purple>showSubmenu:active=$active</font></p>\n"; }
+    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">'."\n";
+
+    $aamenuitems = $aamenu["items"];
+    showSubMenuRows( $aamenuitems );
 
     echo '<tr><td class=leftmenu>&nbsp;</td></tr>
           <tr><td class=leftmenu height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
           <tr><td class=copymsg ><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
           </table>'."\n";
+}
+
+function CreateMetuItem( $label, $href, $cond = true ) {
+    return array( 'label' => $label, 'href' => $href, 'cond' => $cond );
 }
