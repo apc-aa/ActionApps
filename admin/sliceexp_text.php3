@@ -41,7 +41,7 @@ function getRecord (&$array, &$record)
 		if (!is_integer($key)) $array[$key] = $val;
 }	
 
-function exportOneSliceStruct ($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file) {
+function exportOneSliceStruct ($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file,$b_export_hex) {
 global $db, $sess;
 	
 	$slice_id_bck = stripslashes(unpack_id128($slice_id));
@@ -85,13 +85,30 @@ global $db, $sess;
 	
 		$slice["fields"][] = $new;
 	}
-    $slice_data = serialize($slice);
-	$slice_data = $b_export_gzip ? gzcompress($slice_data) : $slice_data;
-	$slice_data = HTMLEntities(base64_encode($slice_data));
+        if ($b_export_hex) {
+            $slice_data = serialize($slice);
+        	$slice_data = $b_export_gzip ? gzcompress($slice_data) : $slice_data;
+	        $slice_data = HTMLEntities(base64_encode($slice_data));
+        } else {
+            $slice_data = xml_serialize("slice",$slice,"\n","    ");
+        }
+
 	fwrite($temp_file, "<slicedata gzip=\"".$b_export_gzip."\">\n$slice_data\n</slicedata>\n");	
 }
 
-function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date) 
+// Convert a PHP array to an XML structure
+// A logical extension of this would be to make it nest
+function xml_serialize($k,$v,$i,$ii) {
+    if (is_string($v)) return "$i<$k>".HTMLEntities($v)."$i</$k>";
+    elseif (is_array($v)) {
+        while(list($k1,$v1) = each($v)) {
+            $o .= xml_serialize($k1,$v1,$i.$ii,$ii);
+        }
+        return "$i<$k>$o$i</$k>";
+    }
+}
+
+function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
 {
     $slice_id2 = unpack_id128($slice_id);
     list($fields,) = GetSliceFields($slice_id2);
@@ -116,9 +133,13 @@ function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_sp
 		for ($i=0; $i<$item_count; $i++) {
 		   $content = GetItemContent($item_ids[$i]);
 		   fwrite($temp_file, "<data item_id=\"$item_ids[$i]\" gzip=\"$b_export_gzip\">\n");
-		   $e_temp = serialize($content);
-		   $e_temp = $b_export_gzip ? gzcompress($e_temp) : $e_temp;	
-		   $e_temp = HTMLEntities(base64_encode($e_temp));
+           if ($b_export_hex) {
+    		   $e_temp = serialize($content);
+       		   $e_temp = $b_export_gzip ? gzcompress($e_temp) : $e_temp;	
+	    	   $e_temp = HTMLEntities(base64_encode($e_temp));
+           } else {
+                $e_temp = xml_serialize("item",$content,"\n","    ");
+           }
 		   fwrite($temp_file, "$e_temp\n</data>\n");
 		   unset($myids);
 		   unset($e_temp);
@@ -126,10 +147,10 @@ function exportOneSliceData ($slice_id, $b_export_gzip, $temp_file, $b_export_sp
 	}	
 }
 
-function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date) 
+// Generate the output and write to a temporary file
+function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
 {
 	global $db;
-
 	$temp_file = tmpfile();
 	
 	fwrite($temp_file, "<sliceexport version=\"1.1\">\n");
@@ -174,11 +195,11 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 		
 		if ($b_export_struct) {
 		// export of slice structure
-			exportOneSliceStruct($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file);	
+			exportOneSliceStruct($slice_id, $b_export_type, $SliceID, $b_export_gzip, $temp_file,$b_export_hex);	
 		}
 		if ($b_export_data) {		  
 		// export of slice data
-		  exportOneSliceData($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date);
+		  exportOneSliceData($slice_id, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex);
 		}
 		fwrite($temp_file, "</slice>\n");
 	}	
@@ -187,13 +208,13 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $Sl
 	return $temp_file;
 }
 	
-function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date) 
+function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
 // Export data to file:
 //   Opens browser's dialog to write file to disk...
 {	
 	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
 	
-	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date);
+	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex);
 	
 	rewind($temp_file);
 		
@@ -207,20 +228,20 @@ function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices,
 	fclose($temp_file);
 }
 					
-function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date) 
+function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) 
 // Export data to text area in browser's window ...
 {		
 
 	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
 	
-	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date);
+	$temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex);
 	
 	rewind($temp_file);
 	
 	echo "
 		<tr><td class = tabtxt>
 		<FORM>
-		<b>".  _m("Save this text. You may use it to import the slices into any ActionApps:") ."</b>
+		<p><b>".  _m("Save this text. You may use it to import the slices into any ActionApps:") ."</b>
 		</P>
 		<TEXTAREA COLS = 80 ROWS = 20>";
 

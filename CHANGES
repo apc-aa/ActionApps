@@ -1,3 +1,5 @@
+02/04/03 - added Hex checkbox to Slice Export (default), uncheck to get XML
+02/04/03 - fixed bug in discussion views (mitra)
 02/04/03 - fixed new_id to skip ids ending in space (honza, via mitra)
 02/04/03 - added sliceobj.php3 to start encapsulating slice db manipulation (mitra)
          - fixed bug with error handling in xmlclient.php3
