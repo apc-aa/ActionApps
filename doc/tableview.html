@@ -45,141 +45,154 @@
 <h2>Table View Grammar</h2>
 <a name="tableview"></a> 
 <table width="105%" border="1">
-  <tr> 
-    <td width="12%"><b>Attribute</b></td>
-    <td width="21%"><b>Values</b></td>
-    <td width="56%"><b>Description</b></td>
-    <td width="11%"><b>Default</b></td>
-  </tr>
-  <tr> 
-    <td width="12%">table</td>
-    <td width="21%">&nbsp;</td>
-    <td width="56%">required: table name</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">type</td>
-    <td width="21%"><code>edit | browse</code></td>
-    <td width="56%">required: browse / edit view type</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">attrs</td>
-    <td width="21%"><code>table</code> =&gt; </td>
-    <td width="56%">additional attributes for data TABLE</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">&nbsp;</td>
-    <td width="21%"><code>table_search</code> =&gt;</td>
-    <td width="56%">additional attributes for search TABLE</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">addrecord</td>
-    <td width="21%"><code>true | false</code></td>
-    <td width="56%">show an empty record, applies only with readonly views</td>
-    <td width="11%">true</td>
-  </tr>
-  <tr> 
-    <td width="12%">gotoview</td>
-    <td width="21%">view ID</td>
-    <td width="56%">which view to show after clicking on Edit or Insert (Browse 
-      view)<br>
-      or after clicking on Cancel (Edit view)</td>
-    <td width="11%">stay in the same view</td>
-  </tr>
-  <tr> 
-    <td width="12%">listlen</td>
-    <td width="21%">&nbsp;</td>
-    <td width="56%">number of records to be shown at once</td>
-    <td width="11%">15</td>
-  </tr>
-  <tr> 
-    <td width="12%">orderby</td>
-    <td width="21%">&nbsp;</td>
-    <td width="56%">field to sort by</td>
-    <td width="11%">unsorted</td>
-  </tr>
-  <tr> 
-    <td width="12%">oderdir</td>
-    <td width="21%"><code>a | d</code></td>
-    <td width="56%">sort direction ascending / descending</td>
-    <td width="11%">a</td>
-  </tr>
-  <tr> 
-    <td width="12%">messages</td>
-    <td width="21%"><code>no_item </code>=&gt;</td>
-    <td width="56%">message to be shown when no items pass the WHERE SQL clause</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">&nbsp;</td>
-    <td width="21%"><code>error_insert </code>=&gt;</td>
-    <td width="56%">when insert fails</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">&nbsp;</td>
-    <td width="21%"><code>error_update </code>=&gt;</td>
-    <td width="56%">when update fails</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">&nbsp;</td>
-    <td width="21%"><code>error_delete </code>=&gt;</td>
-    <td width="56%">when delete fails</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">readonly</td>
-    <td width="21%"><code>true | false</code></td>
-    <td width="56%">default for all fields</td>
-    <td width="11%">true</td>
-  </tr>
-  <tr> 
-    <td width="12%">where</td>
-    <td width="21%">&nbsp;</td>
-    <td width="56%">SQL WHERE condition</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">search</td>
-    <td width="21%"><code>true | false</code></td>
-    <td width="56%">view the search form</td>
-    <td width="11%"><code>true</code> for browse, <code>false</code> for edit</td>
-  </tr>
-  <tr> 
-    <td width="12%">primary</td>
-    <td width="21%"><code>array</code> (field1, field2, ...)</td>
-    <td width="56%">If a table has more than 1 primary key,<br>
-      you must set it here. If there is just 1 primary key,<br>
-      it will be found automatically. If there is no primary key ...<br>
-      the table can't be edited by TableEdit.</td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">fields</td>
-    <td width="21%"><code>array</code> (field_alias1 =&gt; field1_params, ...)</td>
-    <td width="56%">field_alias may be the real database field name or an alias, 
-      field_params is an array of parameters for each field, see <a href="#fieldparams">below</a></td>
-    <td width="11%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td>join</td>
-    <td><code>array</code> (table_name1 =&gt; join1_params, ...)</td>
-    <td>allows to view joined records from several tables as it were one record. 
-      table_name must be the real database table name, join_params defines the 
-      join conditions, see <a href="#join">below</a></td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">children</td>
-    <td width="21%"><code>array</code> (child_view_id1 =&gt; table1_params, ...)</td>
-    <td width="56%">shows records from tables with relationship n:1, child_view_id 
-      is view ID of a view showing a child table, params are described <a href="#child">below</a></td>
-    <td width="11%">&nbsp;</td>
-  </tr>
+    <tr> 
+        <td width="8%"><b>Attribute</b></td>
+        <td width="38%"><b>Values</b></td>
+        <td width="46%"><b>Description</b></td>
+        <td width="8%"><b>Default</b></td>
+    </tr>
+    <tr> 
+        <td width="8%">table</td>
+        <td width="38%">&nbsp;</td>
+        <td width="46%">required: table name</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">type</td>
+        <td width="38%"><code>edit | browse</code></td>
+        <td width="46%">required: browse / edit view type</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">attrs</td>
+        <td width="38%"><code>table</code> =&gt; </td>
+        <td width="46%">additional attributes for data TABLE</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">&nbsp;</td>
+        <td width="38%"><code>table_search</code> =&gt;</td>
+        <td width="46%">additional attributes for search TABLE</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">addrecord</td>
+        <td width="38%"><code>true | false</code></td>
+        <td width="46%">show an empty record, applies only with readonly views</td>
+        <td width="8%">true</td>
+    </tr>
+    <tr> 
+        <td width="8%">gotoview</td>
+        <td width="38%">view ID</td>
+        <td width="46%">which view to show after clicking on Edit or Insert (Browse 
+            view)<br>
+            or after clicking on Cancel (Edit view)</td>
+        <td width="8%">stay in the same view</td>
+    </tr>
+    <tr> 
+        <td width="8%">listlen</td>
+        <td width="38%">&nbsp;</td>
+        <td width="46%">number of records to be shown at once</td>
+        <td width="8%">15</td>
+    </tr>
+    <tr> 
+        <td width="8%">orderby</td>
+        <td width="38%">&nbsp;</td>
+        <td width="46%">field to sort by</td>
+        <td width="8%">unsorted</td>
+    </tr>
+    <tr> 
+        <td width="8%">oderdir</td>
+        <td width="38%"><code>a | d</code></td>
+        <td width="46%">sort direction ascending / descending</td>
+        <td width="8%">a</td>
+    </tr>
+    <tr> 
+        <td width="8%">messages</td>
+        <td width="38%"><code>no_item </code>=&gt;</td>
+        <td width="46%">message to be shown when no items pass the WHERE SQL clause</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">&nbsp;</td>
+        <td width="38%"><code>error_insert </code>=&gt;</td>
+        <td width="46%">when insert fails</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">&nbsp;</td>
+        <td width="38%"><code>error_update </code>=&gt;</td>
+        <td width="46%">when update fails</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">&nbsp;</td>
+        <td width="38%"><code>error_delete </code>=&gt;</td>
+        <td width="46%">when delete fails</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">readonly</td>
+        <td width="38%"><code>true | false</code></td>
+        <td width="46%">default for all fields</td>
+        <td width="8%">true</td>
+    </tr>
+    <tr> 
+        <td width="8%">where</td>
+        <td width="38%">&nbsp;</td>
+        <td width="46%">SQL WHERE condition</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">search</td>
+        <td width="38%"><code>true | false</code></td>
+        <td width="46%">view the search form</td>
+        <td width="8%"><code>true</code> for browse, <code>false</code> for edit</td>
+    </tr>
+    <tr> 
+        <td width="8%">primary</td>
+        <td width="38%"><code>array</code> (field1, field2, ...)</td>
+        <td width="46%">If a table has more than 1 primary key,<br>
+            you must set it here. If there is just 1 primary key,<br>
+            it will be found automatically. If there is no primary key ...<br>
+            the table can't be edited by TableEdit.</td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td>triggers</td>
+        <td><code>array</code> (&quot;BeforeDelete&quot;=&gt;fn1, <br> &quot;AfterInsert&quot;=&gt;fn2, 
+            &quot;BeforeUpdate&quot;=&gt;fn3, ...)</td>
+        <td>calls the function fn1($varset) etc. before or after the operation. 
+            The parameter $varset is a CVarset instance used in the operation. 
+            The Before- triggers must return <code>true</code> if the operation 
+            is allowed, otherwise it isn't fired</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">fields</td>
+        <td width="38%"><code>array</code> (field_alias1 =&gt; field1_params, 
+            ...)</td>
+        <td width="46%">field_alias may be the real database field name or an 
+            alias, field_params is an array of parameters for each field, see 
+            <a href="#fieldparams">below</a></td>
+        <td width="8%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td>join</td>
+        <td><code>array</code> (table_name1 =&gt; join1_params, ...)</td>
+        <td>allows to view joined records from several tables as it were one record. 
+            table_name must be the real database table name, join_params defines 
+            the join conditions, see <a href="#join">below</a></td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="8%">children</td>
+        <td width="38%"><code>array</code> (child_view_id1 =&gt; table1_params, 
+            ...)</td>
+        <td width="46%">shows records from tables with relationship n:1, child_view_id 
+            is view ID of a view showing a child table, params are described <a href="#child">below</a></td>
+        <td width="8%">&nbsp;</td>
+    </tr>
 </table>
 <h3>Buttons</h3>
 <p>You usually don't need to set buttons. The defaults are set depending on other 
@@ -245,78 +258,84 @@
 <h2>Field Parameters Grammar</h2>
 <a name="fieldparams"></a>
 <table width="100%" border="1">
-  <tr> 
-    <td width="12%"><b>Attribute</b></td>
-    <td width="17%"><b>Values</b></td>
-    <td width="54%"><b>Description</b></td>
-    <td width="8%"><b>Default</b></td>
-  </tr>
-  <tr> 
-    <td>table</td>
-    <td>&nbsp;</td>
-    <td>table owning this field</td>
-    <td>table of the Table View </td>
-  </tr>
-  <tr> 
-    <td>field</td>
-    <td>&nbsp;</td>
-    <td>database field name</td>
-    <td>field alias</td>
-  </tr>
-  <tr> 
-    <td>caption</td>
-    <td>&nbsp;</td>
-    <td>column caption, in Edit view linked to sort items by this column</td>
-    <td>field alias</td>
-  </tr>
-  <tr> 
-    <td>hint</td>
-    <td>&nbsp;</td>
-    <td>hint to be shown under the caption</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr> 
-    <td>validate</td>
-    <td><code>number | email | filename</code></td>
-    <td>validation type</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr> 
-    <td>validate_min</td>
-    <td>&nbsp;</td>
-    <td>used with validate=number, bounds the value entered</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr> 
-    <td>validate_max</td>
-    <td>&nbsp;</td>
-    <td>-&quot;-</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr> 
-    <td>default</td>
-    <td>&nbsp;</td>
-    <td>default value (for new records)</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr> 
-    <td>required</td>
-    <td><code>true | false</code></td>
-    <td>required fields must be filled</td>
-    <td>false</td>
-  </tr>
-  <tr> 
-    <td>view</td>
-    <td>&nbsp;</td>
-    <td>array with field view definition, see below</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr> 
-    <td>view_new_record</td>
-    <td>&nbsp;</td>
-    <td>array with field view definition, applied on new records, see <a href="fieldview">below</a></td>
-    <td>the same parameters as for all other records </td>
-  </tr>
+    <tr> 
+        <td width="12%"><b>Attribute</b></td>
+        <td width="17%"><b>Values</b></td>
+        <td width="54%"><b>Description</b></td>
+        <td width="8%"><b>Default</b></td>
+    </tr>
+    <tr> 
+        <td>table</td>
+        <td>&nbsp;</td>
+        <td>table owning this field</td>
+        <td>table of the Table View </td>
+    </tr>
+    <tr> 
+        <td>field</td>
+        <td>&nbsp;</td>
+        <td>database field name</td>
+        <td>field alias</td>
+    </tr>
+    <tr> 
+        <td>caption</td>
+        <td>&nbsp;</td>
+        <td>column caption, in Edit view linked to sort items by this column</td>
+        <td>field alias</td>
+    </tr>
+    <tr> 
+        <td>hint</td>
+        <td>&nbsp;</td>
+        <td>hint to be shown under the caption</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td>colspan_hint</td>
+        <td>&nbsp;</td>
+        <td>hint to be shown on a new row under both the caption and the value</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td>validate</td>
+        <td><code>number | email | filename</code></td>
+        <td>validation type, <code>number</code> means a positive integer</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td>validate_min</td>
+        <td>&nbsp;</td>
+        <td>used with validate=number, bounds the value entered</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td>validate_max</td>
+        <td>&nbsp;</td>
+        <td>-&quot;-</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td>default</td>
+        <td>&nbsp;</td>
+        <td>default value (for new records)</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td>required</td>
+        <td><code>true | false</code></td>
+        <td>required fields must be filled</td>
+        <td>false</td>
+    </tr>
+    <tr> 
+        <td>view</td>
+        <td>&nbsp;</td>
+        <td>array with field view definition, see below</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td>view_new_record</td>
+        <td>&nbsp;</td>
+        <td>array with field view definition, applied on new records, see <a href="fieldview">below</a></td>
+        <td>the same parameters as for all other records </td>
+    </tr>
 </table>
 <h2>Field View Grammar</h2>
 <a name="fieldview"></a>

@@ -22,15 +22,18 @@
 <p>Array (viewID =&gt; viewCmd), where viewCmd in turn is an array with the following 
   possible parts:</p>
 <dl>
-  <dt>viewCmd[&quot;update&quot;][$key] = 1</dt>
-  <dd>insert or update the record identified by $key</dd>
-  <dt>viewCmd[&quot;run_delete_all&quot;] = 1</dt>
-  <dd>delete all checked records</dd>
-  <dt>viewCmd[&quot;delete_all&quot;][$key] = 1</dt>
-  <dd>delete this record, if viewCmd[&quot;run_delete_all&quot;] == 1</dd>
-  <dt>viewCmd[&quot;edit&quot;][$key] = 1</dt>
-  <dd>show only this record. Used with Edit views. If the &quot;where&quot; restrictions 
-    do not include this record, nothing is shown.</dd>
+    <dt>viewCmd[&quot;show_new&quot;] = 1</dt>
+    <dd>show only a new record form (no other records)</dd>
+    <dt></dt>
+    <dt>viewCmd[&quot;update&quot;][$key] = 1</dt>
+    <dd>insert or update the record identified by $key</dd>
+    <dt>viewCmd[&quot;run_delete_all&quot;] = 1</dt>
+    <dd>delete all checked records</dd>
+    <dt>viewCmd[&quot;delete_all&quot;][$key] = 1</dt>
+    <dd>delete this record, if viewCmd[&quot;run_delete_all&quot;] == 1</dd>
+    <dt>viewCmd[&quot;edit&quot;][$key] = 1</dt>
+    <dd>show only this record. Used with Edit views. If the &quot;where&quot; 
+        restrictions do not include this record, nothing is shown.</dd>
 </dl>
 <h3>array val</h3>
 <p>Values of all records on the screen (record_key =&gt; recordVal), where record_key 
