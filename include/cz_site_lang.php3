@@ -38,4 +38,25 @@ define("HTML_PAGE_BEGIN",
 // not appended to other lang files
 //define("", "");
 
-?>
+define("L_ERR_BAD_START_SPOT", "Starting spot not found");
+define("L_NO_PS_EDIT_ITEMS", "You haven't permission to edit this site");
+define("L_EDITOR_TITLE", "APC ActionApps - Site editor");
+define("L_ADD_SPOT", "Add&nbsp;spot");
+define("L_ADD_CHOICE", "Add&nbsp;choice");
+define("L_DELETE_SPOT", "Delete&nbsp;spot");
+define("L_MOVEUP_SPOT", "Move&nbsp;up");
+define("L_MOVEDOWN_SPOT", "Move&nbsp;down");
+define("L_NEW_SLICE_HEAD", "New site");
+define("L_CODE_MANAGER", "Code&nbsp Manager");
+define("L_SITE_SETTINGS", "Module Settings");
+define("L_USER_MANAGEMENT", "AA");
+define("L_VIEW_SITE", "View site");
+define("L_LOGO", "APC ActionApps Logo");
+define("L_GO", "Go");
+define("L_SPOT_VARIABLES", "Spot&nbsp;variables");
+define("L_DELETE", "Delete");
+define("L_ADD", "Add");
+define("L_SPOT_CONDITIONS", "Spot&nbsp;conditions");
+define("L_SPOT_NAME", "Spot name");
+define("L_SUBMIT", "Change");
+?> 
