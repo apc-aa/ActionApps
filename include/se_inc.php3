@@ -20,15 +20,18 @@ http://www.apc.org/
 */
 
  if( $useOnLoad )
-   echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'" link="#D20000" vlink="#D20000">';
+   echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
   else
-   echo '<body background="'. COLOR_BACKGROUND .'" link="#D20000" vlink="#D20000">';
+   echo '<body background="'. COLOR_BACKGROUND .'">';
 
 $settings_page = true;
 require $GLOBALS[AA_INC_PATH] . "navbar.php3";
 require $GLOBALS[AA_INC_PATH] . "leftbar_se.php3";
 /*
 $Log$
+Revision 1.3  2001/12/20 00:26:00  honzam
+Cosmetic changes in page layout
+
 Revision 1.2  2001/02/26 17:22:30  honzam
 color profiles, itemmanager interface changes
 

@@ -20,15 +20,18 @@ http://www.apc.org/
 */
 
  if( $useOnLoad )
-   echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'" link="#D20000" vlink="#D20000">';
+   echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
   else
-   echo '<body background="'. COLOR_BACKGROUND .'" link="#D20000" vlink="#D20000">';
+   echo '<body background="'. COLOR_BACKGROUND .'">';
 
 $usermng_page = true;
 require $GLOBALS[AA_INC_PATH] . "navbar.php3";
 
 /*
 $Log$
+Revision 1.4  2001/12/20 00:26:00  honzam
+Cosmetic changes in page layout
+
 Revision 1.3  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 

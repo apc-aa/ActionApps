@@ -52,7 +52,7 @@ require ("$GLOBALS[AA_INC_PATH]" . DEFAULT_LANG_INCLUDE);
 function HtmlStart() {
    echo L_SETUP_PAGE_BEGIN;
    echo "<title>" . L_SETUP_TITLE . "</title></head>\n";
-   echo "<body bgcolor=\"". COLOR_BACKGROUND ."\" link=\"#D20000\" vlink=\"#D20000\">\n";
+   echo "<body bgcolor=\"". COLOR_BACKGROUND ."\">\n";
    echo "<center>\n";
    echo "<h1>" . L_SETUP_H1 . "</h1>\n";
 }
@@ -277,6 +277,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.9  2001/12/20 00:26:01  honzam
+Cosmetic changes in page layout
+
 Revision 1.8  2001/12/18 11:37:39  honzam
 scripts are now "magic_quotes" independent - no matter how it is set
 
