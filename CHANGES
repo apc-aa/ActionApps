@@ -1,9 +1,15 @@
+02/20/05 - Added MLX mini view to display list of alternative translations for an article
+(mimo)     {mlx_view:view format in html} mini view of translations available for this article
+                                          does substitutions %lang, %itemid
+           e.g. {mlx_view:<a href='?x-_#SITEMID_-&mlx=%lang'>%lang</a>}
+         - Fixed a problem in MLXGetText I had already fixed in 1.15
+         - Finalised reverse relation thing below  
 02/18/05 - fixed a bug with mutual/reverse related items:
 (mimo)     when adding a new reverse relation it used to keep an empty
            text content, so one reverse relation were 2 entries in the
-           target content. The fix deletes 0 text relations from the target
+           target content. The fix deletes '' text relations from the target
            content.
-         - minor mlx fixes 
+         - minor mlx fixes
 02/11/05 - other LDAP fixes for its new version - updated documentation
 (honzam)  and configuration (thanks to Jiri Reischig)
          - e-mail is now marked as "required" on setup screen
