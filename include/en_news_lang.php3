@@ -373,6 +373,7 @@ define("L_INPUT_DEFAULT_UID", "User ID");
 define("L_INPUT_DEFAULT_NOW", "Now");
 
 define("L_INPUT_SHOW_TXT","Text Area");
+define("L_INPUT_SHOW_EDT","Rich Edit Text Area");
 define("L_INPUT_SHOW_FLD","Text Field");
 define("L_INPUT_SHOW_SEL","Select Box");
 define("L_INPUT_SHOW_RIO","Radio Button");
@@ -755,14 +756,19 @@ define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 
 define("L_PARAM_WIZARD_LINK", "Wizard with help");
+define("L_SHOW_RICH", "Show this field as a rich text editor (use only after having installed the necessary components!)");
 
 // ------------------------- New ----------------------------
 // not appended to other lang files
 //define("", "");
+define("L_MAP_JOIN","-- Joined fields --");
 
 
 /*
 $Log$
+Revision 1.54  2001/12/18 12:14:20  honzam
+new WYSIWYG richtext editor for inputform (IE5+), new possibility to join fields when fields are fed to another slice
+
 Revision 1.53  2001/11/29 08:40:09  mitraearth
 Provides help when using the Nodes screen to configre inter-node feeding
 It informs of the correect values to tell the superadmin of the other node.
