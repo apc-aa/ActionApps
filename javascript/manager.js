@@ -1,13 +1,14 @@
-//  Fills 'akce' hidden field and submits the form
-function SubmitItems(act) {
-    document.itemsform.akce.value = act
-    document.itemsform.submit()
-}
-
+//  Fills 'akce' hidden field and submits the form or opens popup window
 function MarkedActionGo() {
     var ms = document.itemsform.markedaction_select;
     if( ms.options[ms.selectedIndex].value &&  (ms.options[ms.selectedIndex].value != 'nothing') ) {
-        SubmitItems(ms.options[ms.selectedIndex].value);
+        document.itemsform.akce.value = ms.options[ms.selectedIndex].value
+        // markedactionur is global variable defined in manager.class.php3
+        if( markedactionurl[ms.selectedIndex] != null ) {
+            OpenWindowTop(markedactionurl[ms.selectedIndex]);
+        } else {
+            document.itemsform.submit()
+        }
     }
 }
 
@@ -25,4 +26,11 @@ function SelectVis() {
     }
 }
 
+var popupwindow;
+
+function OpenWindowTop(url) {
+    if( popupwindow != null )
+        popupwindow.close();    // in order to popupwindow go on top after open
+    popupwindow = open(url,'popup','scrollbars')
+}
 

@@ -27,17 +27,18 @@ function MoveSelectedTo(fromsbx, totxt, toval)
   
   idx = eval(fromsbx).selectedIndex;
   if( idx < 0 )
-      return
-  if( eval(fromsbx).options[idx].text == '..' )
-      return
-  
-  catid = eval(fromsbx).options[idx].value;
+      catid = downcat[level];
+  else if( eval(fromsbx).options[idx].text == '..' )
+      catid = downcat[level];
+  else
+      catid = eval(fromsbx).options[idx].value;
   
   for( var j=1; j<=level; j++) {
     tmp += delim + a[downcat[j]];
     delim = " > ";
   }  
-  tmp += delim + a[catid];  // highlighted option
+  if( catid != downcat[level])
+    tmp += delim + a[catid];  // highlighted option
   eval(totxt).value = tmp;
   eval(toval).value = catid;
 }
@@ -212,10 +213,12 @@ function HaveSubcategories(catid) {
 // Changes selected category
 function ChangeSelectedCat( catid, sbx, pathid, cat_id_fld) { 
     var curcat;
+    var cattxt="";
     if( !catid ) {  // get highlighted category (probably dblclicking tree traveling)
         if( sbx.selectedIndex < 0 )
             return;
-        catid = sbx.options[sbx.selectedIndex].value;
+        catid  = sbx.options[sbx.selectedIndex].value;
+        cattxt = sbx.options[sbx.selectedIndex].text;
     }
 
     if( pathid ) {
@@ -228,7 +231,7 @@ function ChangeSelectedCat( catid, sbx, pathid, cat_id_fld) {
         // if the catid is not currently selected category, we have to add 
         // specified category (probably highlighted in selectbox for dblclicking
         // tree traveling)
-        if( catid != curcat ) {
+        if( (catid != curcat) && (cattxt != '..') ) {
             tmp += (j==1 ? '': path_delimeter) + '<a href="javascript:GoToCategoryID(' +catid+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[catid] + '</a>';  // path_delimeter - global javascript variable
         }
 //        tmp += eval(from).options[i].text    
