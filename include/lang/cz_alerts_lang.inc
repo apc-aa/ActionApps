@@ -303,5 +303,4 @@ $_m["Order"]
 # c:/apache/htdocs/aa_jakub/misc/alerts/util.php3, row 239
 $_m["Add filter"]
   = "Pøidat filtr";
-
 ?>

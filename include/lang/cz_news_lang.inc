@@ -159,7 +159,7 @@ $_m["description"]
 
 # c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 116, 259
 $_m["standard"]
-  = "standartní";
+  = "standardní";
 
 # c:/apache/htdocs/aa_jakub/include/tableviews.php3, row 121, 262, 599
 $_m["no"]
@@ -300,4 +300,12 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
 $_m["For help see FAQ: "]
   = "Nápovìdu najdete ve FAQu: ";
 
+$_m["No record matches your search condition."]
+  = "Žádný záznam neodpovídá vyhledávací podmínce.";
+  
+$_m["Search"] 
+  = "Vyhledat";
+
+$_m["collection"]
+  = "kolekce";
 ?>
