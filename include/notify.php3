@@ -80,13 +80,18 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
    $email = $db->f('uid');
    // mail the text
    mail($email, $s, $body);
-   echo "DONE $email, $s, $body <BR>";
+   // you cant output here, you are still in the headers section!
+   // echo "DONE $email, $s, $body <BR>";
   }
 
 }
 
 /*
 $Log$
+Revision 1.4  2002/01/18 02:28:06  mitraearth
+Removed the DONE line from notify.php3 since it mucks up the page when
+an item update is done since notify.php3 is run before headers are sent
+
 Revision 1.3  2001/12/21 11:44:56  honzam
 fixed bug of includes in e-mail notify
 

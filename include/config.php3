@@ -18,28 +18,30 @@
 # this path with a slash!
 # Example:
 # $AA_INC_PATH = "/home/httpd/html/aa/include/";
-$AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa/include/"; 
+$AA_INC_PATH = "/www/Earth/apc-aa/include/"; 
 
 # URL of aa instalation (where are include, admin, images etc. subdirectories)
 # (there must be the slash at the end of string)
-define("AA_INSTAL_URL", "http://aa.ecn.cz/apc-aa/");
+define("AA_INSTAL_URL", "http://stagingearth.path.net/apc-aa/");
 
 # URL of index of help files for AA
-define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
+#OLD define("DOCUMENTATION_URL", "http://aa.ecn.cz/aaa/doc/index.html");
+define("DOCUMENTATION_URL", "http://apc-aa.sourceforge.net/apc-aa/doc");
 
 # Your Internet Domain
-define("DEFAULT_ORG_ID", "apc-aa.sourceforge.org");
+define("DEFAULT_ORG_ID", "earth.path.net");
 
 # DB Access Configuration
-define("DB_HOST", "localhost");
-define("DB_NAME", "aa-db");
-define("DB_USER", "aa-user");
-define("DB_PASSWORD", "somepasswd");
+define("DB_HOST", "xanadu.cyborganic.org");
+#define("DB_HOST", "xanatoo");
+define("DB_NAME", "aadb");
+define("DB_USER", "aadbuser");
+define("DB_PASSWORD", "test.pw");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
-define("AA_ID", "420224311780abcd420224311780abcd");
-define("ORG_NAME","APC on SourceForge");
+define("AA_ID", "999224311780abcd420224311780abcd");
+define("ORG_NAME","Mitra Internet Consulting");
 #define("AA_ID", "000111222333444555666777888999A9");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
@@ -56,7 +58,7 @@ define("LDAP_ACLS", "ou=ACLs,ou=AA");
 define("LDAP_PORT", 389);            // standard LDAP port: 389
 
 # e-mail for bug reporting contact
-define("ERROR_REPORTING_EMAIL", "technical@ecn.cz");
+define("ERROR_REPORTING_EMAIL", "mitra@earth.path.net");
 
 # set this directive to true, if you use MySQL 
 # (uses LIMIT clause in SELECTs)
@@ -212,6 +214,17 @@ switch ($HTTP_HOST) {
      $AA_INC_PATH = "/home/honzama/public_html/aa/include/";
      define (SITE_CONFIG, "config-ecn.inc"); break;
   }
+
+// Switches here are based on SERVER_ADDR so that all virtual hosts
+// can be configured in one place
+switch ($SERVER_ADDR) {
+  case "209.220.30.175";
+  case "209.220.30.171";
+     #$AA_INC_PATH = "/home/httpd/html/apc-aa/include/";
+     define (SITE_CONFIG, "config-cyborganic.inc"); break;
+  }
+/*
+*/
 
 if (defined ("SITE_CONFIG")) {
   // require does not work as expected inside control structures!
