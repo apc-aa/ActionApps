@@ -122,7 +122,7 @@ function AddUser($user, $flags = 0) {
 
 // deletes an user in LDAP permission system
 // $user_id is DN
-function DelUser ($user_id, $flags = 2) {
+function DelUser ($user_id, $flags = 3) {
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -685,6 +685,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.8  2000/08/09 15:13:24  kzajicek
+Fixed incorrect default for  in DelUser
+
 Revision 1.7  2000/08/01 13:04:44  kzajicek
 OpenLDAP search did not work well when apcaci was not the last attribute.
 ldap_mod_del is now used only when there will be no apcaci value in the entry.

@@ -341,7 +341,7 @@ function AddUser($user, $flags = 0) {
 
 // deletes an user in permission system
 // $user_id is DN
-function DelUser ($user_id, $flags = 2) {
+function DelUser ($user_id, $flags = 3) {
 
   $db  = new DB_AA;
 
@@ -621,6 +621,9 @@ function A2sql_update ($table, $keyField, $aData) {
 
 /*
 $Log$
+Revision 1.11  2000/08/09 15:13:24  kzajicek
+Fixed incorrect default for  in DelUser
+
 Revision 1.10  2000/08/07 18:36:22  kzajicek
 Prototype needed in the first run
 
