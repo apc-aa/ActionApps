@@ -505,6 +505,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {dequote:already expanded and quoted string}
     # {fnctn:xxx:yyyy}   - expand $eb_functions[fnctn]
     # {unpacked_id.....}
+    # {mlx_view:view format in html} mini view of translatiosn available for this article
+    #                                does substitutions %lang, %itemid
     # {xxxx}
     #   - looks for a field xxxx
     #   - or in $GLOBALS[apc_state][xxxx]
@@ -600,28 +602,6 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                 return "";
             }
             break;
-          case "eval":
-            // commented out. The code bellow allows users to display database passwords, ... Honza 2004-11-18
-            return '"{include:eval" disabled in the AA code - it is not secure - see include/stringexpand.php3 for more comments';
-
-/*
-            $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
-            if ($filedes = @fopen ($filename, "r")) {
-                $fileout = "";
-                while (!feof ($filedes))
-                    $fileout .= fgets($filedes, 4096);
-                fclose($filedes);
-            } else {
-                if ($errcheck) huhl("Unable to read from file $filename");
-                return "";
-            }
-            $fileout = trim($fileout," <??>\n\r\t\0b");
-//            huhl("$fileout");
-            ob_start();
-            eval($fileout);
-            $fileout = ob_get_clean();
-            break;
-*/
           default:
             if ($errcheck) huhl("Trying to expand include, but no valid hint in $out");
             return("");
@@ -731,6 +711,12 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         $value = getConstantValue($group_id, $what, $item->getval($parts[0]));
 
         return QuoteColons($level, $maxlevel, $value);
+    }elseif (substr($out,0,8) == "mlx_view") {
+        if(!$GLOBALS['mlxView'])
+           return "$out";
+        //$param = array_map('DeQuoteColons',ParamExplode($parts[2]));
+        return $GLOBALS['mlxView']->getTranslations($item->getval('id..............'),
+          $item->getval('slice_id........'),array_map('DeQuoteColons',ParamExplode($parts[2])));
     }
      // Put the braces back around the text and quote them if we can't match
     else {
