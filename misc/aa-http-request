@@ -1,9 +1,32 @@
 #!/bin/sh
 TMPFILE=/tmp/aa.$$
-HOST=localhost.localdomain
-(
-touch $TMPFILE
-sleep 1;
-echo "GET /apc-aa/admin/xmlclient.php3";
-while true; do sleep 5; test -f $TMPFILE || break; done
-) | (telnet $HOST 80; rm -f $TMPFILE)
+#HOST=localhost.localdomain
+HOST=stagingearth.path.net
+#Set LYNX or PERL to absolute path of lynx or perl if you have either 
+#of them.  If neither are set, then it will try telnet, which will not 
+#work if your server uses virtual hosts
+
+LYNX=/usr/local/bin/lynx
+PERL=/usr/bin/perl
+
+if [ -x "${LYNX:=}" ]
+then
+	# try lynx
+	/usr/local/bin/lynx -source http://${HOST}/apc-aa/admin/xmlclient.php3
+else 
+if [ -x "${PERL:=}" ]
+then
+	#or you can try perl directly,
+	$PERL -MLWP::Simple -e "get 'http://$HOST/apc-aa/admin/xmlclient.php3'"
+else
+	# If you use virtual hosts, this won't work
+	(
+	touch $TMPFILE
+	sleep 1;
+	echo "GET /apc-aa/admin/xmlclient.php3";
+	while true; do sleep 5; test -f $TMPFILE || break; done
+	) | (telnet $HOST 80; rm -f $TMPFILE)
+fi
+fi
+
+
