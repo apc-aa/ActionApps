@@ -146,16 +146,16 @@ if( $add_submit OR ($submit_action == "update_submit"))
     # Procces user data ---------------------
     if(($submit_action == "update_submit") AND ($user_password1 == "nOnEwpAsswD") AND ($user_password2 == "nOnEwpAsswD"))
       $passwd_stay=true;
-    ValidateInput("user_login", L_USER_LOGIN, &$user_login, &$err, ($add_submit ? true : false), "login");
+    ValidateInput("user_login", L_USER_LOGIN, $user_login, $err, ($add_submit ? true : false), "login");
     if( !$passwd_stay ) {
-      ValidateInput("user_password1", L_USER_PASSWORD1, &$user_password1, &$err, true, "password");
-      ValidateInput("user_password2", L_USER_PASSWORD2, &$user_password2, &$err, true, "password");
+      ValidateInput("user_password1", L_USER_PASSWORD1, $user_password1, $err, true, "password");
+      ValidateInput("user_password2", L_USER_PASSWORD2, $user_password2, $err, true, "password");
     }
-    ValidateInput("user_mail1", L_USER_MAIL." 1", &$user_mail1, &$err, false, "email");
-    ValidateInput("user_mail2", L_USER_MAIL." 2", &$user_mail2, &$err, false, "email");
-    ValidateInput("user_mail3", L_USER_MAIL." 3", &$user_mail3, &$err, false, "email");
-    ValidateInput("user_surname", L_USER_SURNAME, &$user_surname, &$err, true, "text");
-    ValidateInput("user_firstname", L_USER_FIRSTNAME, &$user_firstname, &$err, true, "text");
+    ValidateInput("user_mail1", L_USER_MAIL." 1", $user_mail1, $err, false, "email");
+    ValidateInput("user_mail2", L_USER_MAIL." 2", $user_mail2, $err, false, "email");
+    ValidateInput("user_mail3", L_USER_MAIL." 3", $user_mail3, $err, false, "email");
+    ValidateInput("user_surname", L_USER_SURNAME, $user_surname, $err, true, "text");
+    ValidateInput("user_firstname", L_USER_FIRSTNAME, $user_firstname, $err, true, "text");
     if( $user_password1 != $user_password2 )
       $err[$user_password2] = MsgErr(L_BAD_RETYPED_PWD);
     if( count($err) > 1)

@@ -50,11 +50,11 @@ if( $update )
 {
   do
   {
-    ValidateInput("fulltext_format_top", L_FULLTEXT_FORMAT_TOP, &$fulltext_format_top, &$err, false, "text");
-    ValidateInput("fulltext_format", L_FULLTEXT_FORMAT, &$fulltext_format, &$err, true, "text");
-    ValidateInput("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, &$fulltext_format_bottom, &$err, false, "text");
-    ValidateInput("fulltext_remove", L_FULLTEXT_REMOVE, &$fulltext_remove, &$err, false, "text");
-    ValidateInput("discus_sel", L_DISCUS_SEL, $discus_sel, &$err, true, "text");
+    ValidateInput("fulltext_format_top", L_FULLTEXT_FORMAT_TOP, $fulltext_format_top, $err, false, "text");
+    ValidateInput("fulltext_format", L_FULLTEXT_FORMAT, $fulltext_format, $err, true, "text");
+    ValidateInput("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, $fulltext_format_bottom, $err, false, "text");
+    ValidateInput("fulltext_remove", L_FULLTEXT_REMOVE, $fulltext_remove, $err, false, "text");
+    ValidateInput("discus_sel", L_DISCUS_SEL, $discus_sel, $err, true, "text");
 
     if( count($err) > 1)
       break;

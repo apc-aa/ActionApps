@@ -50,10 +50,10 @@ if( $update )
 {
   do
   {
-    ValidateInput("admin_format_top", L_ADMIN_FORMAT_TOP, &$admin_format_top, &$err, false, "text");
-    ValidateInput("admin_format", L_ADMIN_FORMAT, &$admin_format, &$err, true, "text");
-    ValidateInput("admin_format_bottom", L_ADMIN_FORMAT_BOTTOM, &$admin_format_bottom, &$err, false, "text");
-    ValidateInput("admin_remove", L_ADMIN_REMOVE, &$admin_remove, &$err, false, "text");
+    ValidateInput("admin_format_top", L_ADMIN_FORMAT_TOP, $admin_format_top, $err, false, "text");
+    ValidateInput("admin_format", L_ADMIN_FORMAT, $admin_format, $err, true, "text");
+    ValidateInput("admin_format_bottom", L_ADMIN_FORMAT_BOTTOM, $admin_format_bottom, $err, false, "text");
+    ValidateInput("admin_remove", L_ADMIN_REMOVE, $admin_remove, $err, false, "text");
     if( count($err) > 1)
       break;
 

@@ -39,12 +39,15 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) { 
   // Overrides GPC variables 
-  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-  $$k = Myaddslashes($v); 
-  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-  $$k = Myaddslashes($v); 
-  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-  $$k = Myaddslashes($v); 
+  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+      $$k = Myaddslashes($v); 
+  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+      $$k = Myaddslashes($v); 
+  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+      $$k = Myaddslashes($v); 
 }
 
 require "./include/config.php3";

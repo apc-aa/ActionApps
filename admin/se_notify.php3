@@ -79,7 +79,7 @@ $superadmin = IsSuperadmin();
 if( $update ) {
 
   //validate input
-  //  ValidateInput("name", L_SLICE_NAME, &$name, &$err, true, "text");
+  //  ValidateInput("name", L_SLICE_NAME, $name, $err, true, "text");
 
   // check to make sure we passed our validation cleanly
   if( count($err) > 1)

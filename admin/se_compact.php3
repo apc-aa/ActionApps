@@ -50,17 +50,17 @@ if( $update )
 {
   do
   {
-    ValidateInput("odd_row_format", L_ODD_ROW_FORMAT, &$odd_row_format, &$err, true, "text");
-    ValidateInput("compact_top", L_COMPACT_TOP, &$compact_top, &$err, false, "text");
-    ValidateInput("compact_bottom", L_COMPACT_BOTTOM, &$compact_bottom, &$err, false, "text");
-    ValidateInput("compact_remove", L_COMPACT_REMOVE, &$compact_remove, &$err, false, "text");
-    ValidateInput("noitem_msg", L_NOITEM_MSG, &$noitem_msg, &$err, false, "text");
+    ValidateInput("odd_row_format", L_ODD_ROW_FORMAT, $odd_row_format, $err, true, "text");
+    ValidateInput("compact_top", L_COMPACT_TOP, $compact_top, $err, false, "text");
+    ValidateInput("compact_bottom", L_COMPACT_BOTTOM, $compact_bottom, $err, false, "text");
+    ValidateInput("compact_remove", L_COMPACT_REMOVE, $compact_remove, $err, false, "text");
+    ValidateInput("noitem_msg", L_NOITEM_MSG, $noitem_msg, $err, false, "text");
     if( $even_odd_differ )
-      ValidateInput("even_row_format", L_EVEN_ROW_FORMAT, &$even_row_format, &$err, true, "text");
+      ValidateInput("even_row_format", L_EVEN_ROW_FORMAT, $even_row_format, $err, true, "text");
     if( $group_by ) {
-      ValidateInput("category_top", L_CATEGORY_TOP, &$category_top, &$err, false, "text");
-      ValidateInput("category_format", L_CATEGORY_FORMAT, &$category_format, &$err, true, "text");
-      ValidateInput("category_bottom", L_CATEGORY_BOTTOM, &$category_bottom, &$err, false, "text");
+      ValidateInput("category_top", L_CATEGORY_TOP, $category_top, $err, false, "text");
+      ValidateInput("category_format", L_CATEGORY_FORMAT, $category_format, $err, true, "text");
+      ValidateInput("category_bottom", L_CATEGORY_BOTTOM, $category_bottom, $err, false, "text");
     }  
     if( count($err) > 1)
       break;

@@ -63,8 +63,8 @@ $superadmin = IsSuperadmin();
 if( $add || $update ) {
   do {
     if( !$owner ) {  # insert new owner
-      ValidateInput("new_owner", L_NEW_OWNER, &$new_owner, &$err, true, "text");
-      ValidateInput("new_owner_email", L_NEW_OWNER_EMAIL, &$new_owner_email, &$err, true, "email");
+      ValidateInput("new_owner", L_NEW_OWNER, $new_owner, $err, true, "text");
+      ValidateInput("new_owner_email", L_NEW_OWNER_EMAIL, $new_owner_email, $err, true, "email");
 
       if( count($err) > 1)
         break;
@@ -83,13 +83,13 @@ if( $add || $update ) {
       $varset->clear();
     }  
 
-    ValidateInput("name", L_SLICE_NAME, &$name, &$err, true, "text");
-    ValidateInput("owner", L_OWNER, &$owner, &$err, false, "id");
-    ValidateInput("slice_url", L_SLICE_URL, &$slice_url, &$err, false, "url");
-    ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, &$err, true, "number");
-    ValidateInput("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post, &$err, false, "number");
-    ValidateInput("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill, &$err, false, "number");
-    ValidateInput("lang_file", L_LANG_FILE, $lang_file, &$err, true, "text");
+    ValidateInput("name", L_SLICE_NAME, $name, $err, true, "text");
+    ValidateInput("owner", L_OWNER, $owner, $err, false, "id");
+    ValidateInput("slice_url", L_SLICE_URL, $slice_url, $err, false, "url");
+    ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, $err, true, "number");
+    ValidateInput("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post, $err, false, "number");
+    ValidateInput("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill, $err, false, "number");
+    ValidateInput("lang_file", L_LANG_FILE, $lang_file, $err, true, "text");
 
     if( count($err) > 1)
       break;

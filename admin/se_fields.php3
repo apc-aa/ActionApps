@@ -96,8 +96,8 @@ if( $update )
       if( $key == "New_Field" )
         continue;
       $prior = $pri[$key];
-      ValidateInput("val", L_FIELD, $val, &$err, true, "text");
-      ValidateInput("prior", L_FIELD_PRIORITY, $prior, &$err, true, "number");
+      ValidateInput("val", L_FIELD, $val, $err, true, "text");
+      ValidateInput("prior", L_FIELD_PRIORITY, $prior, $err, true, "number");
     }
       
     if( count($err) > 1)

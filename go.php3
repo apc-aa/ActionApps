@@ -37,12 +37,15 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) { 
   // Overrides GPC variables 
-  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-  $$k = Myaddslashes($v); 
-  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-  $$k = Myaddslashes($v); 
-  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-  $$k = Myaddslashes($v); 
+  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+      $$k = Myaddslashes($v); 
+  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+      $$k = Myaddslashes($v); 
+  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+      $$k = Myaddslashes($v); 
 }
 
 require "./include/config.php3";
@@ -94,6 +97,9 @@ go_url(con_url($url,"sh_itm=$item"));
 
 /*
 $Log$
+Revision 1.3  2002/06/17 22:09:19  honzam
+removed call-time passed-by-reference variables in function calls; better variable handling if magic_qoutes are not set (no more warning displayed)
+
 Revision 1.2  2001/12/18 11:37:38  honzam
 scripts are now "magic_quotes" independent - no matter how it is set
 

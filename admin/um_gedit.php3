@@ -121,8 +121,8 @@ if( $add_submit OR ($submit_action == "update_submit"))
 {
   do  {
     # Procces group data ---------------------
-    ValidateInput("group_name", L_GROUP_NAME, &$group_name, &$err, ($add_submit ? true : false), "text");
-    ValidateInput("group_description", L_GROUP_DESCRIPTION, &$group_description, &$err, false, "text");
+    ValidateInput("group_name", L_GROUP_NAME, $group_name, $err, ($add_submit ? true : false), "text");
+    ValidateInput("group_description", L_GROUP_DESCRIPTION, $group_description, $err, false, "text");
     if( count($err) > 1)
       break;
 

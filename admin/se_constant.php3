@@ -149,13 +149,13 @@ if( $update ) {
       $prior = $pri[$key];
       $val =   $value[$key];
       $cid[$key] = ( ($cid[$key]=="") ? "x".new_id() : $cid[$key] );  # unpacked, with beginning 'x' for string indexing array
-      ValidateInput("nam", L_CONSTANT_NAME, $nam, &$err, false, "text");   // if not filled it will be deleted
-      ValidateInput("val", L_CONSTANT_VALUE, $val, &$err, false, "text");
-      ValidateInput("prior", L_CONSTANT_PRIORITY, $prior, &$err, false, "number");
+      ValidateInput("nam", L_CONSTANT_NAME, $nam, $err, false, "text");   // if not filled it will be deleted
+      ValidateInput("val", L_CONSTANT_VALUE, $val, $err, false, "text");
+      ValidateInput("prior", L_CONSTANT_PRIORITY, $prior, $err, false, "number");
     }
       
     if( !$group_id ) {  # new constant group  
-      ValidateInput("new_group_id", L_CONSTANT_GROUP, $new_group_id, &$err, true, "text");
+      ValidateInput("new_group_id", L_CONSTANT_GROUP, $new_group_id, $err, true, "text");
       if( count($err) > 1)
         break;
       $SQL = "SELECT * FROM constant WHERE group_id = '$new_group_id'";

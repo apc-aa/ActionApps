@@ -390,7 +390,6 @@ if( $open_preview )
 
 $editor_page = true;
 ######## add by setu 2002-0206 #######
-global $navbar, $leftbar;
 if ($navbar != "0") {
   require $GLOBALS[AA_INC_PATH] . "navbar.php3";
 }
@@ -563,7 +562,6 @@ echo "</select></td><td align='right' class=tablename>
 
 ######## add by setu 2002-0206 #######
 # user definend sorting and filtering ---------------------------------------
-global $sort_filter;
 if ($sort_filter != "0") {
   # echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
   #if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";

@@ -33,12 +33,15 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) { 
   // Overrides GPC variables 
-  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-  $$k = Myaddslashes($v); 
-  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-  $$k = Myaddslashes($v); 
-  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-  $$k = Myaddslashes($v); 
+  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+      $$k = Myaddslashes($v); 
+  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+      $$k = Myaddslashes($v); 
+  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+      $$k = Myaddslashes($v); 
 }
 
 require ("../include/config.php3");
@@ -195,14 +198,14 @@ switch ($phase) {
          break;
       }
    
-      ValidateInput("login", L_SETUP_LOGIN, &$login, &$err, true, "login");
-      ValidateInput("password1", L_SETUP_PWD1, &$password1,
-                    &$err, true, "password");
-      ValidateInput("password2", L_SETUP_PWD2, &$password2,
-                    &$err, true, "password");
-      ValidateInput("fname", L_SETUP_FNAME, &$fname, &$err, true, "all");
-      ValidateInput("lname", L_SETUP_LNAME, &$lname, &$err, true, "all");
-      ValidateInput("email", L_SETUP_EMAIL, &$email, &$err, false, "email");
+      ValidateInput("login", L_SETUP_LOGIN, $login, $err, true, "login");
+      ValidateInput("password1", L_SETUP_PWD1, $password1,
+                    $err, true, "password");
+      ValidateInput("password2", L_SETUP_PWD2, $password2,
+                    $err, true, "password");
+      ValidateInput("fname", L_SETUP_FNAME, $fname, $err, true, "all");
+      ValidateInput("lname", L_SETUP_LNAME, $lname, $err, true, "all");
+      ValidateInput("email", L_SETUP_EMAIL, $email, $err, false, "email");
    
       if( $password1 != $password2 ) {
          $err[$password1] = MsgErr(L_BAD_RETYPED_PWD);

@@ -60,21 +60,21 @@ if( $del ) {
 
 if( $update ) {
   do {
-    ValidateInput("input_before", L_INPUT_BEFORE, $input_before, &$err, false, "text");
-    ValidateInput("input_help", L_INPUT_HELP, $input_help, &$err, false, "text");
-    ValidateInput("input_morehlp", L_INPUT_MOREHLP, $input_morehlp, &$err, false, "text");
-    ValidateInput("input_default", L_INPUT_DEFAULT, $input_default, &$err, false, "text");
-    ValidateInput("input_show_func", L_INPUT_SHOW_FUNC, $input_show_func_f, &$err, false, "text");
+    ValidateInput("input_before", L_INPUT_BEFORE, $input_before, $err, false, "text");
+    ValidateInput("input_help", L_INPUT_HELP, $input_help, $err, false, "text");
+    ValidateInput("input_morehlp", L_INPUT_MOREHLP, $input_morehlp, $err, false, "text");
+    ValidateInput("input_default", L_INPUT_DEFAULT, $input_default, $err, false, "text");
+    ValidateInput("input_show_func", L_INPUT_SHOW_FUNC, $input_show_func_f, $err, false, "text");
 
-    ValidateInput("alias1", L_ALIAS1, $alias1, &$err, false, "alias");
-    ValidateInput("alias1_help", L_ALIAS_HLP ."1", $alias1_help, &$err, false, "text");
-    ValidateInput("alias1_func", L_ALIAS_FUNC ."1", $alias1_func, &$err, false, "text");
-    ValidateInput("alias2", L_ALIAS2, $alias2, &$err, false, "alias");
-    ValidateInput("alias2_help", L_ALIAS_HLP ."2", $alias2_help, &$err, false, "text");
-    ValidateInput("alias2_func", L_ALIAS_FUNC ."2", $alias2_func, &$err, false, "text");
-    ValidateInput("alias3", L_ALIAS3, $alias3, &$err, false, "alias");
-    ValidateInput("alias3_help", L_ALIAS_HLP ."3", $alias3_help, &$err, false, "text");
-    ValidateInput("alias3_func", L_ALIAS_FUNC ."3", $alias3_func, &$err, false, "text");
+    ValidateInput("alias1", L_ALIAS1, $alias1, $err, false, "alias");
+    ValidateInput("alias1_help", L_ALIAS_HLP ."1", $alias1_help, $err, false, "text");
+    ValidateInput("alias1_func", L_ALIAS_FUNC ."1", $alias1_func, $err, false, "text");
+    ValidateInput("alias2", L_ALIAS2, $alias2, $err, false, "alias");
+    ValidateInput("alias2_help", L_ALIAS_HLP ."2", $alias2_help, $err, false, "text");
+    ValidateInput("alias2_func", L_ALIAS_FUNC ."2", $alias2_func, $err, false, "text");
+    ValidateInput("alias3", L_ALIAS3, $alias3, $err, false, "alias");
+    ValidateInput("alias3_help", L_ALIAS_HLP ."3", $alias3_help, $err, false, "text");
+    ValidateInput("alias3_func", L_ALIAS_FUNC ."3", $alias3_func, $err, false, "text");
       
     if( count($err) > 1)
       break;

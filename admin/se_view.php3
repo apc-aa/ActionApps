@@ -90,7 +90,7 @@ if( $update )
     reset($VIEW_FIELDS);
     while(list($k, $v) = each($VIEW_FIELDS)) {
       if( $v["validate"] AND $VIEW_TYPES[$view_type][$k] )
-        ValidateInput($k, $VIEW_TYPES[$view_type][$k], &$$k, &$err, false, $v["validate"]);
+        ValidateInput($k, $VIEW_TYPES[$view_type][$k], $$k, $err, false, $v["validate"]);
     }  
     if( count($err) > 1)
       break;

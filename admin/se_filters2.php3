@@ -39,7 +39,7 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
   exit;
 }  
 
-function ParseIdA($param,$app) {
+function ParseIdA($param,&$app) {
    if (ERegI("([0-9a-f]{1,32}|0)-([01])", $param, $parse)) {  // slice_id or 0 
       $app = $parse[2];
       return $parse[1];
@@ -60,7 +60,7 @@ if ($feed_id) {
     $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");
 
     if ($all) {                           // all categories
-      $to_id = ParseIdA($C, &$app);
+      $to_id = ParseIdA($C, $app);
       while (list($id, ) = each($ext_categs)) {
         $ext_categs[$id][target_category_id] = $to_id;
         $ext_categs[$id][approved] = $app;
@@ -73,7 +73,7 @@ if ($feed_id) {
       }
 
       while (list($index,$id ) = each($F)) {
-        $from_cat = ParseIdA($id, &$app);
+        $from_cat = ParseIdA($id, $app);
         $ext_categs[$from_cat][target_category_id] = $T[$index];
         $ext_categs[$from_cat][approved] = $app;
       }
@@ -105,7 +105,7 @@ $db->query("DELETE FROM feeds WHERE to_id = '$p_slice_id' " .
            "AND from_id = '$p_import_id'");
 
 if ($all) {                                         // all_categories
-  $id = ParseIdA($C, &$app);
+  $id = ParseIdA($C, $app);
   $catVS->clear();
   $catVS->add("to_id", "unpacked", $slice_id);
   $catVS->add("from_id", "unpacked", $import_id);
@@ -119,7 +119,7 @@ if ($all) {                                         // all_categories
 } else if (isset($F) AND is_array($F)) {            // insert to categories
   reset($F);
   while( list($index,$val) = each($F) ) {
-    $from_cat = ParseIdA($val, &$app);
+    $from_cat = ParseIdA($val, $app);
     $to_cat = $T[$index];
     if( $to_cat == "0" )
       $to_cat = $from_cat;

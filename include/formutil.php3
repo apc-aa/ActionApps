@@ -595,7 +595,7 @@ function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $
 }
 
 # Validate users input. Error is reported in $err array
-function ValidateInput($variableName, $inputName, $variable, $err, $needed=false, $type="all") 
+function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all") 
 {
   if($variable=="" OR Chop($variable)=="")
     if( $needed ) {                     // NOT NULL

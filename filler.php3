@@ -43,12 +43,15 @@ function Myaddslashes($val, $n=1) {
  
 if (!get_magic_quotes_gpc()) { 
   // Overrides GPC variables 
-  for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-  $$k = Myaddslashes($v); 
-  for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-  $$k = Myaddslashes($v); 
-  for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-  $$k = Myaddslashes($v); 
+  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
+      $$k = Myaddslashes($v); 
+  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
+      $$k = Myaddslashes($v); 
+  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
+      $$k = Myaddslashes($v); 
 }
 
 require "./include/config.php3";
@@ -139,11 +142,11 @@ while(list(,$pri_field_id) = each($prifields)) {
         case 'email':  
         case 'number':  
         case 'id':  
-          ValidateInput($varname, $f[name], $$varname, &$err,
+          ValidateInput($varname, $f[name], $$varname, $err,
                         $f[required] ? 1 : 0, $f[input_validate]);
           break;
         case 'date':  
-          $datectrl_name->ValidateDate($f[name], &$err);
+          $datectrl_name->ValidateDate($f[name], $err);
           break;
         case 'bool':  
           $$varname = ($$varname ? 1 : 0);

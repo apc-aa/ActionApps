@@ -133,7 +133,7 @@ if( isset($prifields) AND is_array($prifields) ) {
           case 'email':  
           case 'number':  
           case 'id':  
-            ValidateInput($varname, $f[name], $$varname, &$err,
+            ValidateInput($varname, $f[name], $$varname, $err,
                           $f[required] ? 1 : 0, $f[input_validate]);
             break;
           case 'date':  
@@ -141,7 +141,7 @@ if( isset($prifields) AND is_array($prifields) ) {
             $foo_datectrl_name->update();                   # updates datectrl
             if( $$varname != "")                            # loaded from defaults
               $foo_datectrl_name->setdate_int($$varname);
-            $foo_datectrl_name->ValidateDate($f[name], &$err);
+            $foo_datectrl_name->ValidateDate($f[name], $err);
             $$varname = $foo_datectrl_name->get_date();  # write to var
             break;
           case 'bool':  
@@ -150,7 +150,7 @@ if( isset($prifields) AND is_array($prifields) ) {
 	  case 'user':
 	    // this is under development.... setu, 2002-0301
 	    // value can be modified by $$varname = "new value";
-	    $$varname = usr_validate($varname, $f[name], $$varname, &$err, $f, $fields);
+	    $$varname = usr_validate($varname, $f[name], $$varname, $err, $f, $fields);
 ##	echo "ItemEdit- user value=".$$varname."<br>";
 	    break;
 

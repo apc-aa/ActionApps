@@ -45,13 +45,13 @@ $varset = new Cvarset();
 
 if ($update) {
   #update discussion table
-    ValidateInput("subject", L_D_SUBJECT, &$subject, &$err, true, "text");
-    ValidateInput("author", L_D_AUTHOR, &$author, &$err, true, "text");
-    ValidateInput("e_mail", L_D_EMAIL, &$e_mail, &$err, false, "text");
-    ValidateInput("body", L_D_BODY, &$body, &$err, false, "text");
-    ValidateInput("url_address", L_D_URL_ADDRESS, &$url_address, &$err, false, "url");
-    ValidateInput("url_description", L_D_URL_DES, &$url_description, &$err, false, "text");
-    ValidateInput("remote_addr", L_D_REMOTE_ADDR, &$remote_addr, &$err, true, "text");
+    ValidateInput("subject", L_D_SUBJECT, $subject, $err, true, "text");
+    ValidateInput("author", L_D_AUTHOR, $author, $err, true, "text");
+    ValidateInput("e_mail", L_D_EMAIL, $e_mail, $err, false, "text");
+    ValidateInput("body", L_D_BODY, $body, $err, false, "text");
+    ValidateInput("url_address", L_D_URL_ADDRESS, $url_address, $err, false, "url");
+    ValidateInput("url_description", L_D_URL_DES, $url_description, $err, false, "text");
+    ValidateInput("remote_addr", L_D_REMOTE_ADDR, $remote_addr, $err, true, "text");
 
     if (count($err)<=1) {
       $varset->add("subject", "quoted", $subject);
