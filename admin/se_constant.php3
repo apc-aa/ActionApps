@@ -37,13 +37,13 @@ if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
+  MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
   exit;
 }  
 
 if( $categ OR $category ) {
   if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY)) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_CATEGORY, "admin");
+    MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_CATEGORY, "admin");
     exit;
   }  
 }
@@ -78,7 +78,7 @@ if (! $category && $group_id ) {
     myQuery ($db, $SQL);
       
     if ($db->next_record() && !CheckPerms( $auth->auth["uid"], "slice", unpack_id($db->f("slice_id")), PS_FIELDS)) {
-        MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS_GROUP." (".$db->f("name").")", "admin");
+        MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_FIELDS_GROUP." (".$db->f("name").")", "admin");
         exit;
     }  
 }
@@ -131,8 +131,8 @@ function propagateChanges ($cid, $newvalue, $short=true)
 		++$cnt;
 		myQuery ($db1, "
 			UPDATE content SET text='$newvalue'
-			WHERE item_id='".$db->f("item_id")."' 
-			AND field_id='".$db->f("field_id")."' 
+			WHERE item_id='".addslashes($db->f("item_id"))."' 
+			AND field_id='".addslashes($db->f("field_id"))."' 
 			AND text='$oldvalue'");
 	}
 	if ($cnt) $Msg .= $cnt . L_CONSTANT_ITEM_CHNG . "'$newvalue'<br>";
