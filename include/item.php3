@@ -163,7 +163,7 @@ function sess_return_url($url) {
 //
 // make_return_url
 //function make_return_url($prifix="&return_url=")
-function make_return_url($prifix,$r1) {
+function make_return_url($prifix,$r1="") {
   // prifix will be "&return_url=" or "?return_url=",
   // if null, it uses "&return_url="
   if (!$prifix) $prifix = "&return_url=";
