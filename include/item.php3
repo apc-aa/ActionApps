@@ -36,9 +36,16 @@ function DeHtml($txt, $flag) {
   return ( ($flag & FLAG_HTML) ? $txt : txt2html($txt) );
 }
 
-function GetAliasesFromFields($fields, $additional="") {
-  if( !( isset($fields) AND is_array($fields)) )
+function GetAliasesFromFields($fields, $additional="", $type='') {
+  if( !( isset($fields) AND is_array($fields)) AND ($type != 'justids') )
     return false;
+
+  #add additional aliases
+  if( is_array( $additional ) ) {
+      reset ($additional);
+      while (list($k,$v) = each($additional))
+          $aliases[$k] = $v;
+  }
 
   #  Standard aliases
   $aliases["_#ID_COUNT"] = array("fce" => "f_e:itemcount",
@@ -53,6 +60,10 @@ function GetAliasesFromFields($fields, $additional="") {
   $aliases["_#SITEM_ID"] = array("fce" => "f_h",
                                  "param" => "short_id........",
                                  "hlp" => _m("alias for Short Item ID"));
+
+  if( $type == 'justids')   // it is enough for view of urls
+      return $aliases;
+                                 
   $aliases["_#EDITITEM"] = array("fce" => "f_e",
                                  "param" => "id..............",
                                  "hlp" => _m("alias used on admin page index.php3 for itemedit url"));
@@ -99,13 +110,6 @@ function GetAliasesFromFields($fields, $additional="") {
                                      "fld" => $k);
   }
 
-  #add additional aliases
-  if( is_array( $additional ) ) {
-      reset ($additional);
-      while (list($k,$v) = each($additional))
-          $aliases[$k] = $v;
-  }
-
   return($aliases);
 }
 
@@ -131,7 +135,16 @@ function GetConstantAliases( $additional="" ) {
                                  "hlp" => _m("Constant number"));
   $aliases["_#CONST_ID"] = array("fce" => "f_n",
                                  "param" => "const_id........",
-                                 "hlp" => _m("Constant unique id"));
+                                 "hlp" => _m("Constant unique id (32-haxadecimal characters)"));
+  $aliases["_#SHORT_ID"] = array("fce" => "f_t",
+                                 "param" => "const_short_id..",
+                                 "hlp" => _m("Constant unique short id (autoincremented from '1' for each constant in the system)"));
+  $aliases["_#DESCRIPT"] = array("fce" => "f_t",
+                                 "param" => "const_descr.....",
+                                 "hlp" => _m("Constant description"));
+  $aliases["_#LEVEL##_"] = array("fce" => "f_t",
+                                 "param" => "const_level.....",
+                                 "hlp" => _m("Constant level (used for hierachical constants)"));
 
   # add additoinal aliases
   if( isset( $additional ) AND is_array( $additional ) ) {
@@ -655,6 +668,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
     // code to keep compatibility with older version
     // which was working without $AA_INSTAL_EDIT_PATH
     $admin_path = ($AA_INSTAL_EDIT_PATH ? $AA_INSTAL_EDIT_PATH . "admin/" : "");
+
     switch( $p[0]) {
       case "disc":
         # _#DISCEDIT used on admin page index.php3 for edit discussion comments
@@ -670,6 +684,8 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
         return safe($this->getval($col));
       case "javascript":                       # In javascript we need escape apostroph 
         return str_replace( "'", "\'", safe($this->getval($col)) );
+      case "urlencode":
+        return urlencode($this->getval($col));
       case "slice_info":
         if( !is_array( $slice_info ) )
           $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));
