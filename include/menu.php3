@@ -137,6 +137,7 @@ function get_aamenus ()
         "mapping"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING), "href"=>"admin/se_mapping.php3?slice_id=$slice_id", "label"=>L_MAP),
     
         "header6"=>L_ALERTS,
+        "te_alerts_admin" => array("cond"=>IsSuperadmin(), "href" => "admin/tabledit.php3?set_tview=alerts_admin", "label" => _m("Admin")),
         "te_alerts_collections"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=ac", "label"=>L_ALERTS_COLLECTIONS),        
         "te_alerts_users"=>array("cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=au", "label"=>L_ALERTS_USERS),      
         "alerts_ui"=>array("cond"=>1, "exact_href"=>$AA_INSTAL_PATH."misc/alerts?lang=".get_mgettext_lang(), "label"=>L_ALERTS_UI),
