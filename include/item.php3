@@ -77,7 +77,7 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
   $aliases["_#SLI_NAME"] = GetAliasDef(  "f_e:slice_info", "name",             _m("Slice name"));
 
   $aliases["_#MLX_LANG"] = GetAliasDef(  "f_e:mlx_lang",   MLX_CTRLIDFIELD,             _m("Current MLX language"));
-
+  $aliases["_#MLX_DIR_"] = GetAliasDef(  "f_e:mlx_dir",   MLX_CTRLIDFIELD,             _m("HTML markup direction tag (e.g. DIR=RTL)"));
 
   # database stored aliases
   while( list($k,$val) = each($fields) ) {
@@ -850,8 +850,13 @@ function RSS_restrict($txt, $len) {
         return perm_username( $this->getval($col) );
       case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
         if(!$GLOBALS[mlxView]) 
-	  return "MLX no global set: this shouldnt happen".__FILE__.",".__LINE__;
-        return $GLOBALS[mlxView]->getLangByIdx(0);		  
+	  return "MLX no global mlxView set: this shouldnt happen in:".__FILE__.",".__LINE__;
+        return $GLOBALS[mlxView]->getCurrentLang();
+        break;
+      case 'mlx_dir':    // print the current mlx language html markup dir tag 
+      			 //(the article's 'real' one!)
+	$mlx_dir = $GLOBALS[mlxScriptsTable][$this->getval('lang_code.......')];
+        return ($mlx_dir?" DIR=".$mlx_dir['DIR']." ":"");
         break;
       case 'addform':   // show link to inputform with special design defined in view (id in p[1])
         $add = "add=1";

@@ -1,6 +1,6 @@
 <?
 // MLX MultiLingual eXtension for APC ActionApps
-// ver.: 0.2
+// ver.: 0.3
 // http://mimo.gn.apc.org/mlx
 // mimo/at/gn.apc.org
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -60,6 +60,8 @@ define ('MLX_HTML_TABFT',"\n"
 ."    </table>\n"
 ."  </td>\n"
 ."</tr>\n");
+
+define('MLX_NOTRANSLATION','eMpTy');
 
 function __mlx_dbg($v,$label="")
 {
@@ -344,15 +346,16 @@ class MLXView
 	//                  ONLY -> show only items available in this language (like conds[lc]=lang)
 	//                  ALL  -> show all articles regardless of language (like without MLX)
 	var $mode = "MLX";
-	var $supported_modes = array("MLX","ONLY","ALL");
+	
 	///@param mlx is the thing set in the URL
 	///@param slice_id is a fallback in case mlx is missing
 	function MLXView($mlx,$slice_id=0) {
+		$supported_modes = array("MLX","ONLY","ALL");
 		if($mlx) {
 			$arr = explode("-",$mlx);
 			foreach($arr as $av) {
 				$av = strtoupper($av);
-				if(in_array($av,$this->supported_modes))
+				if(in_array($av,$supported_modes))
 					$this->mode = $av;
 				else
 					$this->language[] = $av;
@@ -567,6 +570,7 @@ class MLXView
 			return false;
 		return $this->language[$idx];
 	}
+	function getCurrentLang() { return $this->language[0]; }
 }
 class MLXEvents
 {
@@ -613,5 +617,195 @@ class MLXEvents
 //		echo "</pre>";
 	}
 };
+class MLXGetText
+{
+	var $domains = array();
+	var $currentDomain;
+	var $currentDomainRef;
+	//var $currentSlice = 0;
+	function MLXGetText() { 
+		$ca = array('global');
+		$this->setdomain($ca);
+	}
+	function translate(&$args,$lang,$slice_id=0) {
+//		__mlx_dbg($args,"translate args");
+//		__mlx_dbg($slice_id,"translate slice");
+		$retval = $this->currentDomainRef[$lang][$args[0]];
+		if(($this->currentDomainRef['mode'] && 1) 
+			&& ($lang == $this->currentDomainRef['defaultLang'])) {
+			if($retval == MLX_NOTRANSLATION)
+				$retval = $args[0];
+			else if(!$retval) { 
+				$this->addtext($args);
+				$this->currentDomainRef[$lang][$args[0]] = MLX_NOTRANSLATION;
+			}
+		}
+		if(!$retval)
+			$retval = $args[0];
+		$count = 1;
+		while($param = next($args)) {
+			$retval = str_replace("%$count",$param,$retval);
+			$count++;
+		}
+		return $retval;
+	}
+	function command(&$args,$slice_id=0) {
+//		__mlx_dbg($args,"command args");
+//		__mlx_dbg($slice_id,"command slice");
+		call_user_func_array(array(&$this,
+              	  	$args[0]),array(&$args,&$slice_id));
+		return "";
+	}
+	///\param slice_id 	unpacked id of slice containing translations
+	///\param lang 		language to add to for MLXGetText
+	///\param domain 	domain to add this slice to (default=global)
+	
+	///\param mode 		mode=learn automatically add items for
+	///			unknown texts (also set nocache=1, and be in default language)
+	function addslice(&$args,$slice_id=0) {
+		//xdebug_start_profiling();
+		list(,$slice2add,$lang,$domain,$mode) = $args;
+		$scda = array($domain);
+		$this->setdomain($scda);
+		if($this->currentDomainRef['slices'][$slice2add])
+			return $slice2add;
+		$mode = ($mode=='learn'?1:0);
+		$isModeActive = ($mode && 1);
+		$this->currentDomainRef['mode'] = $mode;
+		$this->currentDomainRef['slices'][$slice2add] = array();
+		list($fields,) = GetSliceFields($slice2add);
+		//__mlx_dbg($fields);
+		$lang = strtoupper($lang);
+		foreach($fields as $fname=>$fdata) {
+//			__mlx_dbg($fdata[name]);
+			if($fname == 'headline........') {
+				if($this->currentDomainRef['defaultLang'] 
+					&& $this->currentDomainRef['defaultLang'] != $fdata[name]) {
+					if($GLOBALS[errcheck]) huhl('MLXGetText mixing different default languages in one domain: $domain');
+				}
+				$this->currentDomainRef['defaultLang'] = $fdata[name];
+			}
+			if($fdata[name] == $lang) {
+				$langField = $fname;
+				break;
+			}
+		}
+		$isDefLang = ($langField == 'headline........');
+		if($isDefLang && !$isModeActive) 
+			return; //default language, nonactive mode
+		if($isModeActive)
+			$this->currentDomainRef['slices'][$slice2add]['fields'] = $fields;
+		$db = getDB();	
+		$sql = "SELECT  c1.item_id,c1.field_id,c1.text FROM `content` AS c1" //`field_id`,`text`c2.field_id,c2.text
+				." LEFT JOIN `item` AS c2 ON ("
+				." c2.id=c1.item_id )"
+				." WHERE ( c2.slice_id='".q_pack_id($slice2add)."'"
+				." AND c2.status_code=1"
+				." AND ( c1.field_id='headline........'"
+				.(!$isDefLang?" OR c1.field_id='".$langField."'":"")
+				."))";
+    		$db->tquery($sql);
+		while( $db->next_record() ) {
+			list($item_id,$field_id,$text) = $db->Record;
+			$item_id = unpack_id128($item_id);
+			$refSlice = &$this->currentDomainRef[$lang];
+			if($field_id == 'headline........') {
+				if($refSlice[$item_id]) {
+					$refSlice[$text] = $refSlice[$item_id];
+					unset($refSlice[$item_id]);
+				} else {
+					if($isDefLang)
+						$refSlice[$text] = MLX_NOTRANSLATION;
+					else
+						$refSlice[$item_id] = $text;
+				}
+			} else if($field_id == $langField) {
+				if($refSlice[$item_id]) {
+					if($isModeActive)
+						$refSlice[$refSlice[$item_id]] = $text;
+					else {
+						if($text != '')
+							$refSlice[$refSlice[$item_id]] = $text;
+					}
+					unset($refSlice[$item_id]);
+				} else 
+					$refSlice[$item_id] = $text;
+			}
+		} 
+		freeDB($db);
+//		__mlx_dbg($current);
+//		__mlx_dbg($this->domains);
+	}
+	function setdomain(&$args,$slice_id=0) {
+		if( $args[0] ) // make sure we stay in a domain
+			$this->currentDomain = $args[0];
+		$this->currentDomainRef = &$this->domains[$this->currentDomain];
+	}
+	function debug(&$args,$slice_id=0) {
+		__mlx_dbg($this->domains);
+	}
+	/// we are adding the item to the last slice added
+	/// this could also be used for manually adding items
+	function addtext(&$args,$slice_id=0) {
+		global $event;
+		$old_varset = $GLOBALS[varset];
+		$old_itemvarset = $GLOBALS[itemvarset];
+		if(!is_callable('StoreItem')) {
+			require_once('itemfunc.php3');
+		}
+		$sliceid = end(array_keys($this->currentDomainRef['slices']));
+		if(!$sliceid)
+			return;
+		__mlx_dbg($sliceid);
+		if($GLOBALS[mlxdbg])
+			huhl("MLX adding translateable item for <b>".$args[0]."</b> to $sliceid");
+		$GLOBALS[debugsi] = 1;
+		$content4id['headline........'][0]['value'] = $args[0];
+		$content4id['publish_date....'][0]['value'] = time();
+		StoreItem( new_id(), $sliceid, $content4id, 
+			$this->currentDomainRef['slices'][$sliceid]['fields'], 
+			true,true,false);
+		$GLOBALS[varset] = $old_varset;
+		$GLOBALS[itemvarset] = $old_itemvarset;
+	}
+};
+function stringexpand__m() { //the second _ is not pretty here, but is in {_:
+	$arg_list = func_get_args();
+	if(!$GLOBALS[mlxGetText]) {
+		if($errcheck) huhl("mlxGetText not initialised");
+		return DeQuoteColons($arg_list[0]);
+	}
+	if(!$GLOBALS[mlxView]) {
+		if($errcheck) 
+			huhl("MLX no global mlxView set: this shouldnt happen in: ".__FILE__.",".__LINE__);
+		return  DeQuoteColons($arg_list[0]);
+	}
+	return $GLOBALS[mlxGetText]->translate($arg_list,$GLOBALS[mlxView]->getLangByIdx(0));
+}
+function stringexpand_mlx() {
+	$arg_list = func_get_args();
+	if(!$GLOBALS[mlxGetText])
+		$GLOBALS[mlxGetText] = new MLXGetText;
+	if($errcheck) huhl("mlxGetText initialised");
+	return $GLOBALS[mlxGetText]->command($arg_list);
+}
 
+/*
+    // mlx addition 
+    elseif( substr($out, 0, 4) == "mlx:" ) { // mlx commands
+    	//unpack_id128($itemview->slice_info['id']
+    	if(!$GLOBALS[mlxGetText])
+    		$GLOBALS[mlxGetText] = new MLXGetText;
+	if($errcheck) huhl("mlxGetText initialised");
+	$parts = ParamExplode(substr($out,4));
+    	return $GLOBALS[mlxGetText]->command($parts,($item?$item->f_n('slice_id........'):0));
+    } // do gettext like stuff
+    elseif( substr($out, 0, 2) == "_:" ) {
+    	if(!$GLOBALS[mlxGetText]) {
+    		if($errcheck) huhl("mlxGetText not initialised");
+    		return DeQuoteColons(substr($out,2));
+    	}
+    	return $GLOBALS[mlxGetText]->translate(substr($out,2),$item->columns);
+    }
+*/
 ?>

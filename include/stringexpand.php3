@@ -450,25 +450,6 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                 return "";
             }
             break;
-          case "filter":
-            $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
-            if ($filedes = @fopen ($filename, "r")) {
-              $fileout = "";
-              while (!feof ($filedes)) {
-                $fileout .= fgets($filedes, 4096);
-              }
-              fclose($filedes);
-              for($i=2;$i < count($parts);$i++) {
-              	if(method_exists($GLOBALS[filter],$parts[$i])) {
-              	  call_user_func_array(array(&$GLOBALS[filter],
-              	  	$parts[$i]),array(&$fileout,&$parts));
-              	} else if ($errcheck) huhl("No such method: ".$parts[$i]);
-              }
-	    }else {
-                if ($errcheck) huhl("Unable to read from file $filename");
-                return "";
-            }
-	    break;
           case "readfile": //simple support for reading static html (use at own risk)
             $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
             if ($filedes = @fopen ($filename, "r")) {
@@ -538,7 +519,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     // if you don't use this then the field will be quoted to protect syntactical characters
     elseif( substr($out, 0, 8) == "dequote:" ) {
         return DeQuoteColons(substr($out,8));
-    }
+    } 
     // OK - its not a known fixed string, look in various places for the whole string
     if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) && $GLOBALS[eb_functions][$parts[1]]) {
         $fnctn = $GLOBALS[eb_functions][$parts[1]];
@@ -564,6 +545,9 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             case 2: $ebres=$fnctn($parts[0],$parts[1]); break;
             case 3: $ebres=$fnctn($parts[0],$parts[1],$parts[2]); break;
             case 4: $ebres=$fnctn($parts[0],$parts[1],$parts[2],$parts[3]); break;
+            case 5: $ebres=$fnctn($parts[0],$parts[1],$parts[2],$parts[3],$parts[4]); break;
+            default:
+		$ebres = call_user_func_array($fnctn,array(&$parts));
           }
         }
         return QuoteColons($level,$maxlevel,$ebres);
