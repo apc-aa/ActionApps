@@ -16,18 +16,26 @@ if (! $example_email) {
     $example_email = $me["mail"][0];
 }
 
-if ($send_example_email) 
-    $mail_count = send_mail_from_table ($email_template, $example_email);
-
-if ($send_emails) {
+if ($send_example_email || $send_emails) {
     reset ($chb);
     $emails = "";
     $itemContent = new ItemContent;
     while (list ($item_xid) = each ($chb)) {
         $itemContent->setByItemID (substr ($item_xid, 1));
-        $emails[] = $itemContent->getValue (FIELDID_EMAIL);
+        $to = $itemContent->getValue (FIELDID_EMAIL);
+        
+        list($fields) = GetSliceFields ($slice_id);
+        $aliases = GetAliasesFromFields($fields);
+        $item = new Item ("", $itemContent->getContent(), $aliases, "", "" ,"");
+    
+        if ($send_example_email)    
+            $to = $example_email;
+
+        $mail_count += send_mail_from_table_inner ($email_template, $to, $item);
+
+        if ($send_example_email)
+            break;
     }
-    $mail_count = send_mail_from_table ($email_template, $emails);
 }
 
 $wizard_steps[1] = array (
@@ -37,7 +45,9 @@ $wizard_steps[1] = array (
     "desc" => ! is_array ($chb)
         ? "<b>"._m("You can not proceed until you select at least one reader!")."</b> " 
         . _m("Find readers using the Search conditions in Item Manager.")
-        : "");
+        : "",
+    "aa_href" => "admin/index.php3"    
+    );
 $wizard_steps[] = array (
     "brief" => _m("Create or edit email template"),
     "desc" => _m("Use Slice Admin / Email templates to create or edit an email template."),
@@ -47,7 +57,8 @@ $wizard_steps[] = array (
     "brief" => _m("Choose email template"),
     "inner" => 1,
     "desc" =>  FrmSelectEasyCode ("email_template", $email_templates, $email_template)
-        ."<br>". _m("If you have just created the template, click on 'Step' and the template appears in the select box."));
+        ._m("You can use all field aliases like in any view."),
+     );
 $wizard_steps[] = array (
     "brief" => _m("Send example email to"),
     "inner" => 1,

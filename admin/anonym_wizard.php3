@@ -50,84 +50,7 @@ $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
 $s_fields = GetTable2Array($SQL, $db);
 
 // Either ShowAnonymousForm or the rest of the file is used. Never both.         
-if ($show_form) ShowAnonymousForm();
-
-// -----------------------------------------------------------------------------
-// This is the form created
-
-function ShowAnonymousForm () {
-    global $s_fields, $show, $form_url,
-        $show_func_used, $js_proove_fields, $fields, $prifields, $slice_id, $db;
-    
-    $db->query ("SELECT permit_anonymous_edit, type FROM slice 
-        WHERE id='".q_pack_id($slice_id)."'");
-    $db->next_record();
-    $form_type = $db->f("permit_anonymous_edit");
-        
-    foreach ($s_fields as $field)
-        if ($field["input_show"] && !$show[$field["id"]])
-            $notshown ["v".unpack_id($field["id"])] = 1;
-
-    ValidateContent4Id (&$err, $slice_id, "edit", 0, false, $notshown);
-    
-    if ( $show_func_used ['fil'])  # uses fileupload?
-        $html_form_type = ' enctype="multipart/form-data"';
-
-    if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) 
-         echo
-    '<!--#include virtual="'.$GLOBALS["AA_INSTAL_PATH"]
-        .'fillform.php3?form=inputform&notrun=1&slice_id='.$slice_id.'"-->';
-    
-    echo '    
-    <FORM name="inputform"'.$html_form_type.' method="post" '
-    .'action="'.AA_INSTAL_URL.'filler.php3"'
-    .getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()"))
-    .'>
-    
-    <input type="hidden" name="err_url" value="'.$form_url.'">
-    <input type="hidden" name="ok_url" value="'.$form_url.'">';
-    
-    if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) echo '
-    <input type="hidden" name="my_item_id" value="">';
-       
-    echo '
-    <input type="hidden" name="slice_id" value="'.$slice_id.'">
-    <input type="hidden" name="use_post2shtml" value="1">
-    ';
-    
-    foreach ($s_fields as $field)
-        if ($field["input_show"] && !$show[$field["id"]])
-            echo '
-    <input type="hidden" name="notshown[v'.unpack_id ($field["id"]).']" value="1"> '
-                .'<!--'.$field["name"].'-->';
-
-    echo "\n";
-    echo GetFormJavascript ($show_func_used, $js_proove_fields);
-
-    // Destroy the ? help links at each field
-    reset ($fields);
-    while (list ($field) = each ($fields)) 
-        $fields[$field]["input_morehlp"] = "";
-    
-    // Show all fields
-    echo 
-    '<TABLE border="0" cellspacing="0" cellpadding="4" align="center" class="tabtxt">
-    ';
-    ShowForm("", $fields, $prifields, 0, $show);
-    echo '
-    <tr><td colspan="10" align="center" class="tabtit">
-        <input type="submit" name="send" value="'._m("Send").'"></td></tr>
-    </TABLE></FORM>';
-    
-    if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) echo '    
-    <SCRIPT language="JavaScript">
-    <!-- 
-        if (typeof (fillform_fields) != "undefined")
-            fillForm();
-    // -->
-    </SCRIPT>';
-    exit;
-}  
+//if ($show_form) ShowAnonymousForm();
 
 // -----------------------------------------------------------------------------
 // This is the page in which you choose the form type and fields
@@ -146,7 +69,7 @@ PrintArray($err);
 echo $Msg;  
 
 echo '
-<form method="post" action="'.$sess->url($PHP_SELF).'">
+<form method="post" action="'.$sess->url($PHP_SELF).'#form_content">
 <input type="hidden" name="slice_id" value="'.$slice_id.'">
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
 <tr><td class=tabtit><b>&nbsp;'._m("Settings").'</b></td></tr>';
@@ -159,12 +82,41 @@ if ($slice_info["permit_anonymous_edit"] == ANONYMOUS_EDIT_NOT_ALLOWED)
     $warning = _m("You did not permit anonymous editing in slice settings. A form
         allowing only anonymous posting will be shown.");
         
-if ($warning) echo '
-<tr><td class=tabtxt><b>&nbsp;'.$warning.'</b><hr></td></tr>';        
+if (! $form_url) $form_url = "http://FILL_YOUR_URL.shtml";        
+if (! $ok_url)   $ok_url = "http://THANK_YOU.shtml";
+if (! $err_url)  $err_url = "http://ERROR_OCCURED.shtml";
+if (! $show_result) $show_result = "http://SHOW_RESULT.php3";
+        
+if ($show_form) {        
+    list ($fields) = GetSliceFields ($slice_id);
+    reset ($fields);    
+    while (list ($fid) = each($fields))
+        if (substr ($fid,0,14) == "password......") {
+            if ($show[$fid] && $slice_info["permit_anonymous_edit"] !=
+                ANONYMOUS_EDIT_PASSWORD)
+                $warning .= _m("Warning: You want to show password, but you did not set
+                    'Authorized by a password field' in Settings - Anonymous editing.");
+            break;
+        }
+}
+        
 echo '
-<tr><td class=tabtxt>&nbsp;<b>'._m("URL where the form will be shown").':<br>&nbsp;
-    <input type=text name=form_url size=60 value="http://FILL_YOUR_URL.shtml">
-    </b></td></tr>
+<tr><td class=tabtxt>
+    &nbsp;<a href="'.$AA_INSTAL_PATH.'doc/anonym.html#wizard">'
+        .GetAAImage ("help100_simple.gif", _m("Help"))
+        .'<b>'._m("Help - Documentation").'</b></a><br>
+    &nbsp;<b>'._m("URLs shown after the form was sent").':</b><br>
+    <table border=0 cellspacing=0 cellpadding=0>
+    <tr><td>&nbsp;</td><td><b>'._m("OK page").':&nbsp;</b></td>
+        <td><input type=text name=ok_url size=50 value="'.$ok_url.'"></td></tr>
+    <tr><td>&nbsp;</td><td><b>'._m("Error page").':&nbsp;</b></td>
+        <td><input type=text name=err_url size=50 value="'.$err_url.'"></td></tr>
+    </table>
+    &nbsp;<input type=checkbox name=use_show_result'
+        .($use_show_result ? " checked" : "").'>
+    <B>'._m("Use a PHP script to show the result on the OK and Error pages:").'</B><br>
+    &nbsp;<input type=text name=show_result size=60 value="'.$show_result.'">
+    </td></tr>
 <tr><td class=tabtit>&nbsp;<b>'._m("Fields").'</b></td></tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
@@ -177,15 +129,20 @@ echo '
 <tr><td class=tabtxt colspan="4"><hr></td></tr>';
 
 if( is_array($s_fields)) {
-    foreach ($s_fields as $field)
-        if ($field["input_show"]) 
-        echo '
-        <tr><td class=tabtxt><b>'.$field["name"].'</b></td>
-            <td class=tabtxt>'.$field["id"].'</td>
-            <td class=tabtxt align=center>
-                <input type=checkbox name="show['.$field["id"].']" checked></td>
-            <td class=tabtxt>v'.unpack_id($field["id"]).'</td>
-        </tr>';
+    foreach ($s_fields as $field) {
+        if ($field["input_show"]) {
+            echo '
+            <tr><td class=tabtxt><b>'.$field["name"].'</b></td>
+                <td class=tabtxt>'.$field["id"].'</td>
+                <td class=tabtxt align=center>
+                    <input type=checkbox name="show['.$field["id"].']"';
+            if (! $show || $show[$field["id"]])
+                echo " checked";
+            echo "></td>
+                <td class=tabtxt>v".unpack_id($field["id"])."</td>
+            </tr>";
+        }
+    }
 }
 
 echo '
@@ -197,8 +154,22 @@ echo '
 <tr><td align="center">
     <input type=submit name=show_form value="'._m("Show Form").'">&nbsp;&nbsp;
     <input type=submit name=cancel value="'._m("Cancel").'">
-</td></tr></table>
-</FORM>';
+</td></tr>
+';
+
+if ($warning) echo '
+<tr><td class=tabtxt><b>&nbsp;'.$warning.'</b><hr></td></tr>';        
+
+if ($show_form) {
+    echo '<tr><td><a id="form_content"></a><textarea cols="70" rows="30">';
+    require $GLOBALS["AA_BASE_PATH"]."post2shtml.php3";
+    $form_content = file (AA_INSTAL_URL
+        ."admin/anonym_wizard2.php3?post2shtml_id=$post2shtml_id&slice_id=$slice_id");
+    echo HTMLEntities (join ("", $form_content));
+    echo "\n</textarea></td></tr>\n";
+}
+
+echo "</table></FORM>";
 HtmlPageEnd();
 page_close();
 ?>
