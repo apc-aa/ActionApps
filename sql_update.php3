@@ -147,7 +147,7 @@ $tablelist = array( 'active_sessions' => "(
                          collectionid int(11) default NULL,
                          PRIMARY KEY  (id),
                          UNIQUE KEY user_filter (userid,filterid),
-                         KEY alerts_collection (userid,collectionid)
+                         UNIQUE KEY alerts_collection (userid,collectionid)
                       )", 
                       'constant' => "(
                          id char(16) NOT NULL,
