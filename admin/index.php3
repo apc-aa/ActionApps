@@ -80,7 +80,7 @@ function IsActionPerm($action) {
 function CountItemsInBins() {
     global $p_slice_id;
     $db = getDB();
-    $now = now();
+    $now = now('step');
 
     $ret['folder1'] = $ret['folder2'] = $ret['folder3'] = $ret['expired'] = $ret['pending'] = 0;
     $db->tquery("SELECT status_code, count(*) as cnt FROM item
