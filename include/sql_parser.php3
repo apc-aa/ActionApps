@@ -137,17 +137,12 @@ function eatWhiteSpaces($input, $i, $length) {
 }
 
 function isSpecial($c) {
-	# if StrPos returns 0, so it is false or zero?
-	$s = SPECIAL;
-	if ($s[0]==$c) return TRUE;
-	else return StrPos(SPECIAL, $c);
+	return strchr (SPECIAL, $c);
 }
 
 // functions isOperator a resolveOperator works together
 function isOperator($c) {
-	$o = OPERATOR;
-	if ($o[0]==$c) return TRUE;
-	else return StrPos(OPERATOR, $c);
+	return strchr (OPERATOR, $c);
 }
 
 function resolveOperator($op) {
@@ -157,21 +152,21 @@ function resolveOperator($op) {
 }
 
 function isWhite($c) {
-	$w = WHITE;
-	if ($w[0]==$c) return TRUE;
-	else return StrPos(WHITE, $c);
+	return strchr (WHITE, $c);
 }
 
 function isLeftParenthesis($c) {
-	$p = LEFT_PARENTHESES;
-	if ($p[0]==$c) return TRUE;
-	else return StrPos(LEFT_PARENTHESES, $c);
+	return strchr (LEFT_PARENTHESES, $c);
 }
 
 function isRightParenthesis($c) {
-	$p = RIGHT_PARENTHESES;
-	if ($p[0]==$c) return TRUE;
-	else return StrPos(RIGHT_PARENTHESES, $c);
+	return strchr (RIGHT_PARENTHESES, $c);
+}
+
+function isLetter ($c) {
+    return ($c >= "A" && $c <= "Z")
+        || ($c >= "a" && $c <= "z")
+        || (ord ($c) >= 128);
 }
 
 // there if $input[$i-1]==QUOT (or APOS) on begin
@@ -188,7 +183,16 @@ function tillTheEndingQuotApos($input, $i, $length, $ending) {
 
 function tillTheFirstSpecial($input, $i, $length) {
 	$tok="";
-	while ( ($i<$length) && !isSpecial($input[$i]) ) {
+    while ($i < $length
+        && (!isSpecial($input[$i]) 
+            // changed by Jakub, November 2002
+            // don't break on space, apostrophe, minus sign in the middle of words
+            || (strchr (" '-", $input[$i]) 
+                && $i != 0 
+                && isLetter ($input[$i-1])
+                && $i != $length - 1
+                && isLetter ($input[$i+1]))))
+    {
 		$tok = $tok . $input[$i];
 		$i++;
 	}
