@@ -30,15 +30,18 @@ http://www.apc.org/
 // -------------------------------------------------------------------------------------------
 
 /** Checks if the field is 'link description field' and not field used for
- *  relation
+ *  relation, which is not allowed for 'unasigned' liks type
  */
-function IsLinkDataField($field) {
-    return (substr($field, 0, 12) =='links_links.') OR
-           (substr($field, 0, 14) =='links_regions.') OR
-           (substr($field, 0, 15) =='links_link_reg.') OR
-           (substr($field, 0, 16) =='links_languages.') OR
-           (substr($field, 0, 16) =='links_link_lang.') OR
-           (substr($field, 0, 14) =='links_changes.');
+function IsFieldSupported($field_info, $v, $param) {
+    $field = $field_info['field'];
+      // param is 'type' for this function   
+    return ( ($param != 'unasigned' ) OR 
+             ( (substr($field, 0, 12) =='links_links.') OR
+               (substr($field, 0, 14) =='links_regions.') OR
+               (substr($field, 0, 15) =='links_link_reg.') OR
+               (substr($field, 0, 16) =='links_languages.') OR
+               (substr($field, 0, 16) =='links_link_lang.') OR
+               (substr($field, 0, 14) =='links_changes.') ) );
 }
 
 
@@ -79,81 +82,21 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
 
   global $debug;                 # displays debug messages
   global $nocache;               # do not use cache, if set
-  global $LinksIDsCount;
   global $LINKS_FIELDS;          # link fields definitions
 
-  $db = new DB_AA;
+  if( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-  if( $use_cache AND !$nocache ) {
-    #create keystring from values, which exactly identifies resulting content
-    $keystr = $cat_path . $subcat.
-              serialize($conds).
-              serialize($sort).
-              $type;
-
-    if( $res = $GLOBALS[pagecache]->get($keystr)) {
-      $arr = unserialize($res);
-      $LinksIDsCount = count($arr);
-      if( $debug )
-        echo "<br>Cache HIT - return $LinksIDsCount IDs<br>";
-      return $arr;
-    }
+  $keystr = $cat_path . $subcat. serialize($conds). serialize($sort). $type;
+  $cache_condition = $use_cache AND !$nocache;
+  if ( $res = CachedSearch( $cache_condition, $keystr )) {
+      return $res;
   }
-
-if( $debug ) {
-  echo "<br>Conds:"; print_r($conds);
-  echo "<br>--";
-  echo "<br>Sort:"; print_r($sort);
-  echo "<br>--";
-}
-
   ParseEasyConds($conds, $LINKS_FIELDS);
+  if( $debug ) huhl( "<br>Conds after ParseEasyConds():", $conds, "<br>--");
 
-if( $debug ) {
-  echo "<br>Conds:"; print_r($conds);
-  echo "<br>--";
-}
+  $where_sql    = MakeSQLConditions($LINKS_FIELDS, $conds, $join_tables, 'IsFieldSupported', $type);
+  $order_by_sql = MakeSQLOrderBy(   $LINKS_FIELDS, $sort,  $join_tables, 'IsFieldSupported', $type);
 
-  # parse conditions ----------------------------------
-  if( isset($conds) AND is_array($conds)) {
-      reset($conds);
-      while( list( , $cond) = each( $conds )) {
-          if( !isset($cond) OR !is_array($cond) )
-              continue;                              // bad condition
-          reset($cond);
-          while( list( $fid, $v) = each( $cond )) {
-              $finfo = $LINKS_FIELDS[$fid];
-              if ( !isset($finfo) OR !is_array($finfo) )
-                  continue;                         // fid is not field
-              if ( ($type=='unasigned') AND !IsLinkDataField($finfo['field']) )
-                  continue;             // we take care about link table fields
-                                        // only, if we want to search in unasigned
-              $link_conds[] = GetWhereExp( $finfo['field'],
-                                          $cond['operator'], $cond['value'] );
-              if( $finfo['table'] )
-                  $join_tables[$finfo['table']] = true;
-          }
-      }
-  }
-
-  # parse sort order ----------------------------
-  if( isset($sort) AND is_array($sort)) {
-      reset($sort);
-      while( list( , $srt) = each( $sort )) {
-          if( !isset($srt) OR !is_array($srt) )
-              continue;                              // bad sort order
-          $fid = key($srt);
-          $finfo = $LINKS_FIELDS[$fid];
-          if( !$finfo OR !is_array($finfo))  # bad field_id - skip
-              continue;
-          if ( ($type=='unasigned') AND !IsLinkDataField($finfo['field']) )
-              continue;             // we take care about link table fields
-                                    // only, if we want to search in unasigned
-
-          $link_order[] = $finfo['field'] .
-                          (stristr(current( $srt ), 'd') ? " DESC" : "");
-      }
-  }
 
 /*- Aktivní
 - Návrhy na zm_nu (jak od správc_, tak od vn_jích uivatel_  kritériem tohoto a následujícího foldru je, zda ji jsou vid_t na webu nebo nejsou)
@@ -216,27 +159,10 @@ if( $debug ) {
                                       " AND (links_links.folder = $folder) " :
                                       " AND (links_links.folder < 2) " );
     }
+    $SQL .=  $where_sql . $order_by_sql;
 
-    if( isset($link_conds) AND is_array($link_conds) )
-        $SQL .= ' AND ' . join(' AND ', $link_conds );
-
-    if( isset($link_order) AND is_array($link_order) )
-        $SQL .= ' ORDER BY '. join(', ', $link_order );
-
-  # get result --------------------------
-    $db->tquery($SQL);
-
-    while( $db->next_record() )
-      $arr[] = $db->f('id');
-
-  $LinksIDsCount = count($arr);
-
-  $zids = new zids($arr,"s");
-
-  if( $use_cache AND !$nocache )
-    $GLOBALS['pagecache']->store($keystr, serialize($zids), "cat_path=$cat_path");
-
-  return $zids;
+    # get result --------------------------
+    return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr, "cat_path=$cat_path");
 }
 
 
@@ -274,9 +200,9 @@ function Links_QueryCatZIDs($cat_path, $conds, $sort="", $subcat=false, $type="a
 
     if( $res = $GLOBALS[pagecache]->get($keystr)) {
       $arr = unserialize($res);
-      $LinksIDsCount = count($arr);
+      $QueryIDsCount = count($arr);
       if( $debug )
-        echo "<br>Cache HIT - return $LinksIDsCount IDs<br>";
+        echo "<br>Cache HIT - return $QueryIDsCount IDs<br>";
       return $arr;
     }
   }
@@ -401,7 +327,7 @@ if( $debug ) {
     while( $db->next_record() )
       $arr[] = $db->f('id');
 
-  $LinksIDsCount = count($arr);
+  $QueryIDsCount = count($arr);
 
   $zids = new zids($arr,"s");
 

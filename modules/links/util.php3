@@ -240,22 +240,6 @@ function Links_Category2SliceID($cid) {
 }
 
 /**
- * Just helper function for storing data from database to Abstract Data Structure
- */
-function StoreTable2Content(&$db, &$content, $SQL, $prefix, $id_field) {
-    $db->tquery($SQL);
-    while( $db->next_record() ) {
-        $foo_id = $db->f($id_field);
-        reset( $db->Record );
-        while( list( $key, $val ) = each( $db->Record )) {
-            if( !is_int($key))
-                $content[$foo_id][$prefix . $key][] = array('value' => $val);
-        }
-    }
-}
-
-
-/**
  * Loads data from database for given link ids (called in itemview class)
  * and stores it in the 'Abstract Data Structure' for use with 'item' class
  *

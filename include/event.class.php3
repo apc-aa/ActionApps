@@ -79,9 +79,11 @@ class aaevent {
      *  @param mixed  &$ret_params - event parameters which could be modified
      *                               by handler
      *  @param mixed  $params      - event parameters - static different for
-     *                               each event $type
+     *                               each event $type (mainly new values)
+     *  @param mixed  $params2     - event parameters - static different for
+     *                               each event $type (mainly old values)
      */
-    function comes($type, $slice, $slice_type, &$ret_params, $params='') {
+    function comes($type, $slice, $slice_type, &$ret_params, $params='', $params2='') {
         unset($this->returns);
         if ( $this->handlers == 'not_filled' )
             $this->get_handlers();
@@ -92,7 +94,7 @@ class aaevent {
 
             // matches and function begins with 'Event_' - security check
             if ( $function AND (substr($function, 0, 6) == 'Event_') ) {
-                $this->returns[] = $function($type, $slice, $slice_type, &$ret_params, $params);
+                $this->returns[] = $function($type, $slice, $slice_type, &$ret_params, $params, $params2);
             }
         }
     }
@@ -122,7 +124,7 @@ class aaevent {
  *                                array[] = category_id
  *  @param string  $params      - global category name or false
  */
-function Event_LinkNew( $type, $slice, $slice_type, &$ret_params, $params) {
+function Event_LinkNew( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     global $db, $LINK_TYPE_CONSTANTS;
 
     // quite Econnectonous code
@@ -219,15 +221,22 @@ function Event_LinkNew( $type, $slice, $slice_type, &$ret_params, $params) {
 
 /** Send email with answer to Dropin staff with the answer (from item)
  *  @param array  &$ret_params  - no return values
- *  @param string  $params      -
+ *  @param object  $params      - ItemContent object with new values
  */
-function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params) {
+function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     global $db;
 
-    $short_id = $params;              // item's short_id is in params
-
-    $item = GetItemFromId($short_id, true);
-    return send_mail_from_table_inner (8, 'malik@seznam.cz', $item) > 0 ;
+    $short_id = $params->getValue('short_id........');              // item's short_id is in params
+    $email    = trim($params->getValue('con_email......1'));
+    $otazka   = trim($params->getValue('abstract.......1'));
+    $odpoved  = trim($params->getValue('abstract.......2'));
+    $send     = trim($params->getValue('switch.........2'));
+    
+    if ( $email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1')) ) { 
+        $item = GetItemFromId($short_id, true);        
+        return send_mail_from_table_inner (8, $email, $item) > 0 ;
+    }
+    return false;
 }
 
 
