@@ -372,6 +372,7 @@ define("L_INPUT_DEFAULT_TXT", "Text");
 define("L_INPUT_DEFAULT_DTE", "Date");
 define("L_INPUT_DEFAULT_UID", "User ID");
 define("L_INPUT_DEFAULT_NOW", "Now");
+define("L_INPUT_DEFAULT_VAR", "Variable"); # Added by Ram on 5th March 2002
 
 define("L_INPUT_SHOW_TXT","Text Area");
 define("L_INPUT_SHOW_EDT","Rich Edit Text Area");

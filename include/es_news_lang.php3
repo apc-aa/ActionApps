@@ -338,6 +338,7 @@ define("L_ACTIVE_BIN_PENDING", "Pendientes");
 define("L_ACTIVE_BIN_EXPIRED_MENU", "Caducados");
 define("L_ACTIVE_BIN_PENDING_MENU", "Pendientes");
 
+
 define("L_FIELD_PRIORITY", "Prioridad");
 define("L_FIELD_TYPE", "Tipo");
 define("L_CONSTANTS", "Constantes");
@@ -371,6 +372,7 @@ define("L_INPUT_DEFAULT_TXT", "Texto");
 define("L_INPUT_DEFAULT_DTE", "Fecha");
 define("L_INPUT_DEFAULT_UID", "Id Usuario");
 define("L_INPUT_DEFAULT_NOW", "Ahora");
+define("L_INPUT_DEFAULT_VAR", "Variable"); # Added by Ram on 5th March 2002
 
 define("L_INPUT_SHOW_TXT","Area texto");
 define("L_INPUT_SHOW_EDT","Rich Edit Text Area");

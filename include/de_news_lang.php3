@@ -386,6 +386,7 @@ define("L_INPUT_DEFAULT_TXT", "Text");
 define("L_INPUT_DEFAULT_DTE", "Datum");
 define("L_INPUT_DEFAULT_UID", "Benutzer ID");
 define("L_INPUT_DEFAULT_NOW", "Jetzt");
+define("L_INPUT_DEFAULT_VAR", "Variabel"); # Added by Ram on 5th March 2002
 
 define("L_INPUT_SHOW_TXT","Textfeld");
 define("L_INPUT_SHOW_FLD","Eingabezeile");
