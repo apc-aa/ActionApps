@@ -377,3 +377,84 @@ function hcUpdate ()
 	}
 }
 
+// Copy and rename constant groups in slice $slice_id so that they are not shared with other slices
+// WARNING: doesn't work when the group id contains a ":" ??
+// find new group_id by trying to add "_1", "_2", "_3", ... to the old one
+
+function CopyConstants ($slice_id)
+{ 
+    global $db, $err, $debug;
+ 
+    // max. length of the group_id field 
+    $max_group_id_len = 16;
+    $q_slice_id = q_pack_id ($slice_id);
+    
+    $db->query ("SELECT name FROM constant WHERE group_id='lt_groupNames'");
+    while ($db->next_record())
+        $group_list[] = $db->f("name");
+    $db->query ("SELECT id, input_show_func FROM field WHERE slice_id ='$q_slice_id'");    while ($db->next_record()) {
+        $shf = $db->f("input_show_func");
+        if (strlen ($shf) > 4) {
+            list (,$group_id) = split (":",$shf);
+            if (my_in_array ($group_id, $group_list)) 
+                $group_ids[$group_id][$db->f("id")] = $shf;
+        }
+    }
+    
+    if (!is_array ($group_ids))
+        return true;
+            
+    reset ($group_ids);
+    while (list ($old_id, $fields) = each ($group_ids)) {
+    
+        // find new id by trying to add "_1", "_2", "_3", ... to the old one
+        $new_id = $old_id;
+        for ($i = 1; my_in_array ($new_id, $group_list); $i ++) {
+            $postfix = "_".$i;
+            $new_id = substr ($old_id,0,
+                min (strlen($old_id)+strlen($postfix), $max_group_id_len) - strlen($postfix))
+                . $postfix;
+        }
+        $group_list[] = $new_id;
+        
+        if ($debug) echo "Changing $old_id to $new_id.<br>";
+        
+        // copy group name in table constant
+      	if (!CopyTableRows (
+    		"constant", 
+    		"group_id='lt_groupNames' AND name='$old_id'", 
+    		array ("name"=>$new_id,"value"=>$new_id), // set_columns
+    		array ("short_id"),                       // omit_columns
+            array ("id")                              // id_columns
+            )) {
+    	    $err[] = "Could not copy constant group.";
+            return false;
+        }
+
+        // copy group values in table constant
+      	if (!CopyTableRows (
+    		"constant", 
+    		"group_id='$old_id'", 
+    		array ("group_id"=>$new_id),              // set_columns
+    		array ("short_id"),                       // omit_columns
+            array ("id")                              // id_columns
+            )) {
+    	    $err[] = "Could not copy constant group.";
+            return false;
+        }
+        
+        // update fields
+        reset ($fields);
+        while (list ($field_id, $shf) = each ($fields)) {
+            if (!$db->query ("UPDATE field SET input_show_func = '"
+                .addslashes(str_replace ($old_id, $new_id, $shf))."'
+                WHERE id='$field_id' AND slice_id='$q_slice_id'")) {
+                $err[] = "Could not update fields.";
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
