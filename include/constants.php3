@@ -500,6 +500,7 @@ function getViewTypes () {
                           "odd" => _m("Odd Rows") ,
                           "even" => _m("Even Rows") ,
                           "after" => _m("Bottom HTML") ,
+                          "remove_string" => _m("Remove strings") ,
                           "parameter" => _m("Constant Group") ,
                           "order1" => _m("Sort primary") ,
                           "o1_direction" => " " ,
