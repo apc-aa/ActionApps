@@ -83,10 +83,6 @@ if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
   echo "you must set AA_INC_PATH and other variables in config.php3 !";
 };
 
-# Language: uncomment one language file
-require ($AA_INC_PATH . "en_common_lang.php3");  # English
-# require ($AA_INC_PATH . "cz_common_lang.php3");  # Czech
-
 # The folloging items have to be changed or added if you create new
 # action applications. For a first time installation, you don't need
 # to care about them.
