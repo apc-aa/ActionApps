@@ -116,12 +116,13 @@ function send2mailList () {
     $db->query ("SELECT content.text FROM 
                  content INNER JOIN item ON item.id = content.item_id INNER JOIN
                  field ON content.field_id = field.id
+                 AND field.slice_id = item.slice_id
                  WHERE item.id='".q_pack_id($d_item_id)."'
                  AND field.name = 'DiscussionMailList'"); 
     if ($db->next_record()) {
         list ($vid, $maillist, $subject, $from, $reply_to, $errors_to) = split_escaped (":", $db->f("text"), "#:");
         
-        $db->query("SELECT * FROM view WHERE id='$vid'");
+        $db->query("SELECT * FROM view WHERE id=$vid");
         if ($db->next_record()) {
             $view_info = $db->Record;
             $html = $view_info[flag] & DISCUS_HTML_FORMAT;
