@@ -32,6 +32,14 @@ $AA_BASE_DIR = "apc-aa/";      // AA_BASE_DIR is only used in this file so that
                                // versions
 
 
+/** AA_INSTAL_PATH is server url relative path to base AA directory
+ *  You need to change this option only if your AA directory accessible through
+ *  Apache webserver differ from AA_BASE_DIR (for example if you install AA to
+ *  apc-aa-2.6.0 directory and then create defgine aa -> apc-aa-2.6.0 in Apache.
+ */
+$AA_INSTAL_PATH = "/".$AA_BASE_DIR;  // you can left it as it is
+
+
 /** Domain in which you want to run AA admin interface - in which domain we can
  *  find AA directory
  *  Make sure to terminate this path with a slash!
@@ -86,11 +94,11 @@ define("ORG_NAME","An APC Member");
 
 /** Default language file
  *  Language files are stored in include/lang/ directory. At this time you can
- *  use any *_news_lang.php3, where '*' is one of cz, de, en, es, ja, ro, sk  
+ *  use any *_news_lang.php3, where '*' is one of cz, de, en, es, ja, ro, sk
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1180 )
- */ 
+ */
 define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
-  
+
 /** e-mail for bug reporting contact */
 define("ERROR_REPORTING_EMAIL", "webmaster@my.domain.org");
 
@@ -98,28 +106,28 @@ define("ERROR_REPORTING_EMAIL", "webmaster@my.domain.org");
 define("ALERTS_EMAIL", "aaadmin@somewhere.com");
 
 /** File uploads settings
- *  The directory for file uploads should be webserver writeable and it 
- *  shouldn't be inside AA directory (for security reasons - PHP script upload) 
+ *  The directory for file uploads should be webserver writeable and it
+ *  shouldn't be inside AA directory (for security reasons - PHP script upload)
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#fileupload )
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1118 )
  */
   /**  max size of file in file/picture uploading */
-  define("IMG_UPLOAD_MAX_SIZE", "400000");    
-  /** url to image/file directory */ 
+  define("IMG_UPLOAD_MAX_SIZE", "400000");
+  /** url to image/file directory */
   define("IMG_UPLOAD_URL", $AA_HTTP_DOMAIN."img_upload/");
-  /** path from server root to image/file directory */ 
+  /** path from server root to image/file directory */
   define("IMG_UPLOAD_PATH", $AA_SITE_PATH."img_upload/");
   /** mkdir perms - AA creates new directory for each slice in image/file upload
    *  directory specified above. Each slice then have its own subdirectory.
-   *  Default is 508 (=0774 in octal, but octal value in constant don't work) */
-  define("IMG_UPLOAD_DIR_MODE", 508);
+   *  Default is 774 */
+  define("IMG_UPLOAD_DIR_MODE",  octdec('0774'));
 
 /** Maximum size of files included by {include(file)} inline alias */
-define("INCLUDE_FILE_MAX_SIZE", "400000");  
+define("INCLUDE_FILE_MAX_SIZE", "400000");
 
 //-----------------------------------------------------------------------------
-// Folloving section contains not so important config options and you will 
-// probably left it as it is 
+// Folloving section contains not so important config options and you will
+// probably left it as it is
 
 /** number of shown pages links in scroller's navigation bar */
 define("SCROLLER_LENGTH", 3);
@@ -151,7 +159,7 @@ define("SCROLLER_LENGTH", 3);
   define("ADMIN_CSS",       "admin-cml.css");     // style for admin interface
   define("ADM_SLICE_CSS",   "adm_slice-cml.css"); // style for public view of
                                                   // not encapsulated slices */
-                                                 
+
   /* ## Econnects profile ##
   define("COLOR_TABBG",     "#EBDABE");           // background of tables
   define("COLOR_TABTITBG",  "#584011");           // background of table titles
@@ -162,24 +170,24 @@ define("SCROLLER_LENGTH", 3);
                                                   // not encapsulated slices */
 
 /** Page cache setting
- *  pages with items/views/slices/sites are automaticaly cached by AA 
- *  The caching system is quite smart - it caches only unchanged pages. 
+ *  pages with items/views/slices/sites are automaticaly cached by AA
+ *  The caching system is quite smart - it caches only unchanged pages.
  *  However, You can switch caching off. */
   define( "ENABLE_PAGE_CACHE", true );
-    
+
   /** CACHE_TTL defines the time in seconds the page will be stored in cache
    *  (Time To Live) - in fact it can be infinity because of automatic cache
-   *  flushing on page change (but then there will be problem with item 
-   *  expiration). Typically this is 600, i.e. 10 minutes, but 1 day (86400) 
+   *  flushing on page change (but then there will be problem with item
+   *  expiration). Typically this is 600, i.e. 10 minutes, but 1 day (86400)
    *  makes for faster serving */
   define("CACHE_TTL", 600 );
-  
+
   /** The frequency in which the cache is checked for old values (in seconds) */
   define("CACHE_PURGE_FREQ", 1000);
-  
+
 /** Convertors - you can install it and then use
- *  Just uncomment and fill the right path and convert option will be shown 
- *  above any textarea in inputform, where you allow HTML               
+ *  Just uncomment and fill the right path and convert option will be shown
+ *  above any textarea in inputform, where you allow HTML
  */
   // $CONV_HTMLFILTERS = array( ".doc" => "/usr/local/bin/wvHtml",
   //                            ".pdf" => "/usr/local/bin/pdftohtml",
@@ -187,9 +195,9 @@ define("SCROLLER_LENGTH", 3);
   //                            ".ppt" => "/usr/bin/ppthtml",
   //                            "iconv"=> "/usr/bin/iconv" );
   // define(CONV_DEFAULTENCODING,'windows-1250');   // default output encoding
-  // define(CONV_SYSTEMENCODING,'utf-8');  
+  // define(CONV_SYSTEMENCODING,'utf-8');
 
-/** If true, the expired items could be displayed by in specific query 
+/** If true, the expired items could be displayed by in specific query
  *  (good for archive display). If false, expired items are never shown */
 define("ALLOW_DISPLAY_EXPIRED_ITEMS", true);
 
@@ -200,7 +208,7 @@ define( "MAX_RELATED_COUNT", 50 );
  *  one column */
 define("SINGLE_COLUMN_FORM", "0");
 
-/** Since v1.8 you can use short id for item identification 
+/** Since v1.8 you can use short id for item identification
  *  (x instead of sh_itm) */
 $USE_SHORT_URL = true;
 
@@ -225,18 +233,15 @@ define("PHPLIB_ALREADY_LOADED", false);
 /** PHPLib is the part of AA since v >2.2.0. Do not need to care about PHPLib */
 $_PHPLIB["libdir"] = $AA_INC_PATH.'phplib/';    // do not change
 
-/** Server url relative path to base AA directory */
-$AA_INSTAL_PATH = "/".$AA_BASE_DIR;             // do not change
-
 /** URL of aa instalation */
-define("AA_INSTAL_URL", $AA_HTTP_DOMAIN .$AA_BASE_DIR);    // do not change
+define("AA_INSTAL_URL", $AA_HTTP_DOMAIN, substr($AA_INSTAL_PATH,1));    // do not change
 
 /** URL or URL path to call admin/edititem.php etc.
  *  This is the variable to make _#EDITITEM alias, etc.
  *  If your site has problem set...
  *       $AA_INSTAL_EDIT_PATH = "/".$AA_BASE_DIR;       */
 $AA_INSTAL_EDIT_PATH = AA_INSTAL_URL;           // do not change
- 
+
 /** URL of index of help files for AA */
 define("DOCUMENTATION_URL", "http://apc-aa.sourceforge.net/apc-aa/doc");
 
@@ -260,7 +265,7 @@ define("DOCUMENTATION_URL", "http://apc-aa.sourceforge.net/apc-aa/doc");
     // require does not work as expected inside control structures!
     include ($AA_INC_PATH . SITE_CONFIG);
   }
-  
+
 
 /** Filemanager is special feature which allows you to modify static files right
  *  inside AA admin interface.
@@ -268,12 +273,12 @@ define("DOCUMENTATION_URL", "http://apc-aa.sourceforge.net/apc-aa/doc");
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1106 )
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#fileman )
  */
-  /** mkdir perms, set by variable because constants don't work with octal 
+  /** mkdir perms, set by variable because constants don't work with octal
    *  values */
   $FILEMAN_MODE_DIR = 0770;
   /** create file perms */
   $FILEMAN_MODE_FILE = 0664;
-  /** in this directory individual slice directories and directory "templates" 
+  /** in this directory individual slice directories and directory "templates"
    *  are created  */
   define("FILEMAN_BASE_DIR",$AA_SITE_PATH."apc-aa-files/");
   /** URL path to the base directory */
@@ -287,7 +292,7 @@ $XMGETTEXT_DESTINATION_DIR = "/www/php_rw/lang/";
 
 /** MAILMAN synchronization dir. In this directory are placed the
  * files with lists of email addresses which processes mailman.
- * The dir must exist, it is not created by the mailman.php3 script. 
+ * The dir must exist, it is not created by the mailman.php3 script.
  * ( @see http://apc-aa.sourceforge.net/faq/index.shtml#email )   */
 $MAILMAN_SYNCHRO_DIR = "/www/mailman/";
 ?>
