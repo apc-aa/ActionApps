@@ -612,8 +612,9 @@ if ($action_selected != "0")
 if($st->pageCount() > 1 || $action_selected != "0") {
     if ($st->pageCount() > 1) {
         echo "</td></tr><tr height=3><td></td></tr>
-            <tr><td align=center class=tabtxt>";
+            <tr><td class=tabtxt><b>".L_ITEMS_PAGE.":&nbsp;&nbsp;";
         $st->pnavbar();
+        echo "</b>";
     }
     echo "</td></tr></table></td></tr>";
 }
