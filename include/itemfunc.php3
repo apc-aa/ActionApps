@@ -161,8 +161,18 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
       $dest_file = new_id().substr(strrchr($dest_file, "." ), 0 );
 
     # copy the file from the temp directory to the upload directory, and test for success    
-    if(!copy($GLOBALS[$filevarname],"$dirname/$dest_file")) {
-      return L_CANT_UPLOAD;
+
+    # file uploads are handled differently in PHP >4.0.3
+    if( ereg( "[4-9]\.[0-9]\.[3-9].*", phpversion()) ) {
+      if (is_uploaded_file($GLOBALS[$filevarname])) {
+        if( !move_uploaded_file($GLOBALS[$filevarname], "$dirname/$dest_file")) {
+          return L_CANT_UPLOAD;
+        }  
+      }
+    } else {   # for php 3.x and php <4.0.3
+      if(!copy($GLOBALS[$filevarname],"$dirname/$dest_file")) {
+        return L_CANT_UPLOAD;
+      }  
     }  
     $value["value"] = "$dirurl/$dest_file";
   }
@@ -276,9 +286,12 @@ function show_fnc_mse($varname, $field, $value, $param, $html) {
   if( $selectsize < 1 )   # default size
     $selectsize = 5;
       
-  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+  if( substr($param,0,7) == "#sLiCe-" ) {  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
-   else 
+    #add blank selection for not required field
+    if( !$field[required] )
+      $arr[''] = " ";
+   } else 
     $arr = GetConstants($constgroup, $db);
 
   # fill selected array from value
@@ -302,9 +315,12 @@ function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
 
 function show_fnc_sel($varname, $field, $value, $param, $html) {
   global $db;
-  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+  if( substr($param,0,7) == "#sLiCe-" ) {  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($param, 7) );
-   else 
+    #add blank selection for not required field
+    if( !$field[required] )
+      $arr[''] = " ";
+  } else 
     $arr = GetConstants($param, $db);
   echo $field[input_before];
   FrmInputSelect($varname, $field[name], $arr, $value[0][value],
@@ -575,6 +591,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.16  2001/12/18 09:50:14  honzam
+added empty row to selectbox for selectin no related item, if the field is not required. Fixed file upload for PHP>4.0.3
+
 Revision 1.15  2001/09/27 16:02:23  honzam
 Filename in file upload correction, New related stories support, New "Preselect" input option
 
