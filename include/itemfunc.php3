@@ -164,10 +164,11 @@ function GetDestinationFileName($dirname, $uploaded_name) {
 }
   
   # File upload
-/*
 function insert_fnc_fil($item_id, $field, $value, $param) {
+  global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR;
+
   $filevarname = "v".unpack_id($field[id])."x";
-    
+     
   # look if the uploaded picture exists
   if(($GLOBALS[$filevarname] <> "none")&&($GLOBALS[$filevarname] <> "")) {
 
@@ -189,6 +190,7 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
             $fileman_used = true;
         }
     }
+    
     if (!$dirname) {
         # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
         $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
@@ -198,56 +200,13 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
           if( !mkdir( $dirname, IMG_UPLOAD_DIR_MODE ) )
             return L_CANT_CREATE_IMG_DIR;
     }
-        
+
     $dest_file = GetDestinationFileName($dirname, $dest_file);
         
     # copy the file from the temp directory to the upload directory, and test for success    
     $err = aa_move_uploaded_file ($filevarname, $dirname, $fileman_used ? $FILEMAN_MODE_FILE : 0, $dest_file);
     if ($err) return $err;
 
-    $value["value"] = "$dirurl/$dest_file";
-  }
-  # store link to uploaded file or specified file URL if nothing was uploaded
-  insert_fnc_qte($item_id, $field, $value, "");
-}    
-*/
-
-function insert_fnc_fil($item_id, $field, $value, $param) {
-  $varname = 'v'.unpack_id($field[id]);
-  $filevarname = $varname."x";
-    
-  # look if the uploaded picture exists
-  if(($GLOBALS[$filevarname] <> "none")&&($GLOBALS[$filevarname] <> "")) {
-    # get filename and replace bad characters
-    $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
-
-    # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
-    $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
-    $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
-
-    if( !is_dir( $dirname ))
-      if( !mkdir( $dirname, IMG_UPLOAD_DIR_MODE ) ){
-        return L_CANT_CREATE_IMG_DIR;
-      }    
-
-    if( file_exists("$dirname/$dest_file") )
-      $dest_file = new_id().substr(strrchr($dest_file, "." ), 0 );
-
-    # copy the file from the temp directory to the upload directory, and test for success    
-
-    # file uploads are handled differently in PHP >4.0.3
-    list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
-    if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
-      if (is_uploaded_file($GLOBALS[$filevarname])) {
-        if( !move_uploaded_file($GLOBALS[$filevarname], "$dirname/$dest_file")) {
-          return L_CANT_UPLOAD;
-        }  
-      }
-    } else {   # for php 3.x and php <4.0.3
-      if(!copy($GLOBALS[$filevarname],"$dirname/$dest_file")) {
-        return L_CANT_UPLOAD;
-      }  
-    }  
     $value["value"] = "$dirurl/$dest_file";
   }
   # store link to uploaded file or specified file URL if nothing was uploaded
