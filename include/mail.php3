@@ -70,8 +70,8 @@ function html2text ($html) {
 
     // Strip diacritics
     $strip_diacritics = array (
-    "áäèïéìåòóöøšúùüıÁÄÈÏÉÌÅÒÓÖØŠÚÙÜİ",
-    "aacdeelnoorstuuuyzAACDEELNOORSTUUUYZ");
+    "áäèïéìíåòóöøšúùüıÁÄÈÏÉÌÍÅÒÓÖØŠÚÙÜİ",
+    "aacdeeilnoorstuuuyzAACDEEILNOORSTUUUYZ");
     
     for ($i = 0; $i < strlen($strip_diacritics[0]); $i ++) {
         $search[] = $strip_diacritics[0][$i];
@@ -96,37 +96,37 @@ function html2text ($html) {
         $html .= preg_replace ("'$ahref(.*)</[ \t]*a[ \t]*>'si", 
             "\\2 {\\1}", $html_ahref . $html_part);
     }
-            
-    // strip HTML tags - borrowed from PHP manual user comments
-    $search = array (
-                 "'<hr>'si",
-                 "'<br>'si",
-                 "'</p>'si",
-                 "'<script[^>]*?>.*?</script>'si",  // Strip out javascript
-                 "'<[\/\!]*?[^<>]*?>'si",           // Strip out html tags
-                 "'([\r\n])[ \t]+'",                // Strip out leading white space
-                 "'&(quot|#34);'i",                 // Replace html entities
-                 "'&(amp|#38);'i",
-                 "'&(lt|#60);'i",
-                 "'&(gt|#62);'i",
-                 "'&(nbsp|#160);'i",
-                 "'&#(\d+);'e");                    // evaluate as php
-
-    $replace = array (
-                  "\n------------------------------------------------------------\n",
-                  "\n",
-                  "\n",
-                  "",
-                  "",
-                  "\\1",
-                  "\"",
-                  "&",
-                  "<",
-                  ">",
-                  " ",
-                  "chr(\\1)");
-
-    return preg_replace ($search, $replace, $html);
+    
+    $search_replace = array (
+        // Strip out leading white space
+        "'[\r\n][ \t]+'" => "",
+        "'[\r\n]*'"      => "",
+        "'<hr>'si"       => "\n------------------------------------------------------------\n",
+        "'</tr>'si"      => "\n",
+        "'</table>'si"   => "\n",
+        // If the previous commands added too much whitespace, delete it
+        "'\\n\\n\\n+'si" => "\n\n",
+        "'<br>'si"       => "\n",
+        "'</p>'si"       => "\n\n",
+        "'</h[1-9]>'si"  => "\n\n",
+        // Strip out javascript
+        "'<script[^>]*?>.*?</script>'si" => "",
+        // Strip out html tags
+        "'<[\/\!]*?[^<>]*?>'si"          => "",
+        // Replace html entities
+        "'&(quot|#34);'i" => '"',                 
+        "'&(amp|#38);'i"  => '&',
+        "'&(lt|#60);'i"   => '<',
+        "'&(gt|#62);'i"   => '>',
+        "'&(nbsp|#160);'i"=> ' ',
+        // evaluate as php
+        "'&#(\d+);'e"     => "chr(\\1)");                    
+        
+    reset ($search_replace);
+    while (list ($search, $replace) = each ($search_replace)) 
+        $html = preg_replace ($search, $replace, $html);
+        
+    return $html;
 }
 
 // -----------------------------------------------------------------------------
@@ -188,7 +188,7 @@ function send_mail_from_table_inner ($mail_id, $to, &$item) {
     
     if ($tos[0] == "jakubadamek@ecn.cz")
         $record["body"] .= "<br>Text version is:<hr>" . 
-            HtmlEntities(html2text ($record["body"]));
+            nl2br(HtmlEntities(html2text ($record["body"])));
     
     $mail = new HtmlMail;
     if ($record["html"])
