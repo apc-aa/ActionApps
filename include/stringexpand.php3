@@ -27,10 +27,6 @@ http://www.apc.org/
 
 # Code by Mitra based on code in existing other files
 
-if (!defined ("STRINGEXPAND_INCLUDED"))
-     define ("STRINGEXPAND_INCLUDED",1);
-else return;
-
 require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
 require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
 require_once $GLOBALS["AA_INC_PATH"]."perm_core.php3";   // needed for GetAuthData();
@@ -100,6 +96,18 @@ function stringexpand_user($field='') {
             return get_if($auth_user_info[$auth_user]->getValue($field), "");
     }
 }
+
+/** Replace inputform field alias with the real core for the field, which is
+ *  stored already in the pagecache
+ *  @param $parameters - field id and other modifiers to the field
+ */
+function stringexpand_inputvar($field) {
+    global $contentcache;
+    $arg_list = func_get_args();   // must be asssigned to the variable
+    // replace inputform field
+    return $contentcache->get('inputvar:'. join(':',$arg_list));
+}
+
 
 /** Expands {formbreak:xxxxxx} alias - split of inputform into parts
  *  @param $part_name - name of the part (like 'Related Articles').
@@ -316,7 +324,8 @@ function stringexpand_item($item_id,$field) {
 }
 
 /** Expand URL by adding session,
-    also handle special cases like {sessurl:hidden} */
+ *  also handle special cases like {sessurl:hidden}
+ */
 function stringexpand_sessurl($url) {
     global $sess;
     switch ($url) {
@@ -328,12 +337,52 @@ function stringexpand_sessurl($url) {
     }
 }
 
-# Expand a single, syntax element.
+
+/** Return array of substitution pairs for dictionary, based on given dictionary
+ *  slice, format string which defines the format and possible slice codnitions.
+ *   [biom] => <a href="http://biom.cz">_#KEYWORD_</a>, ...
+ */
+function getDictReplacePairs($dictionary, $format, $conds='') {
+    // return array of pairs: [biom] => <a href="http://biom.cz">_#KEYWORD_</a>
+    $replace_pairs = array();
+
+    // conds string could contain also sort[] - if so, use conds also as $sort
+    // parameter (the sort is grabbed form the string then)
+    $sort     = (strpos( $conds, 'sort') !== false ) ? $conds : '';
+
+    /** 'keywords........' field could contain multiple values. In this case we
+     *  have to create pair for each of the word. The _#KEYWORD_ alias is then
+     *  used in format string
+     */
+    $kw_item  = GetFormatedItems( $dictionary, "{@keywords........:##}_AA_DeLiM_$format", false, AA_BIN_ACTIVE, $conds, $sort);
+    // above is little hack - we need keyword pair, but we want to call
+    // GetFormatedItems only once (for speedup), so we create one string with
+    // delimeter:
+    //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
+    foreach ( $kw_item as $kw_string ) {
+        list($keywords, $link) = explode('_AA_DeLiM_', $kw_string,2);
+        $kw_array              = explode('##', $keywords);
+        foreach ( (array)$kw_array as $kw ) {
+            $replace_pairs[$kw] = str_replace('_#KEYWORD_', $kw, $link);
+        }
+    }
+    return $replace_pairs;
+}
+
+/** Uses one slice ($dictionary) and replace any word which matches a word in
+ *  dictionary by the text specified in $format
+ */
+function stringexpand_dictionary($dictionaries, $text, $format, $conds='') {
+    global $contentcache;
+    $replace_pairs = $contentcache->get_result("getDictReplacePairs", array($dictionaries, $format, $conds));
+    return strtr($text,$replace_pairs);
+}
+
+
+/** Expand a single, syntax element */
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
-    global $als,$debug,$errcheck,$contentcache;
-
-//    print_r($itemview);
+    global $als,$debug,$errcheck;
 
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
@@ -346,7 +395,6 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # {include:file} or {include:file:http}
     # {include:file:fileman|site}
     # {include:file:readfile[:str_replace:<search>[;<search1>;..]:<replace>[:<replace1>;..]:<trim-to-tag>:<trim-from-tag>[:filter_func]]}
-    # {include:file:eval} use at own risk!!
     # {scroller.....}
     # {#comments}
     # {debug}
@@ -368,7 +416,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     #
     # all parameters could contain aliases (like "{any _#HEADLINE text}"),
     # which are processed before expanding the function
-    if( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$", $out, $parts) ) {
+    if ( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$", $out, $parts) ) {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
       if ($parts[1] && ! isField($parts[1]))
@@ -381,19 +429,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       # replace switches
       return QuoteColons($level, $maxlevel, parseSwitch( substr($out,7) ));
       # QuoteColons used to mark colons, which is not parameter separators.
-          }
-/* now caught by stringexpand_user
-    elseif( substr($out, 0, 5) == "user:" ) {
-      # replace user auth informations
-      return QuoteColons($level, $maxlevel, parseUser( substr($out,5) ));
-      # QuoteColons used to mark colons, which is not parameter separators.
-          }
-*/
-    elseif( substr($out, 0, 9) == "inputvar:" ) {
-      # replace inputform field
-      return QuoteColons($level, $maxlevel, $contentcache->get($out));
-      # QuoteColons used to mark colons, which is not parameter separators.
-          }
+    }
     elseif( substr($out, 0, 5) == "math(" ) {
       # replace math
       return QuoteColons($level, $maxlevel,
@@ -401,7 +437,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             new_unalias_recurent(substr($out,5),"",0,
                         $maxlevel,$item,$itemview,$aliases)) );
 
-          }
+    }
     elseif( substr($out, 0, 8) == "include(" ) {
       # include file
       if( !($pos = strpos($out,')')) )
@@ -464,7 +500,11 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                 return "";
             }
             break;
-          case "eval": //risky, dont use!!
+          case "eval":
+            // commented out. The code bellow allows users to display database passwords, ... Honza 2004-11-18
+            return '"{include:eval" disabled in the AA code - it is not secure - see include/stringexpand.php3 for more comments';
+
+/*
             $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
             if ($filedes = @fopen ($filename, "r")) {
                 $fileout = "";
@@ -481,6 +521,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             eval($fileout);
             $fileout = ob_get_clean();
             break;
+*/
           default:
             if ($errcheck) huhl("Trying to expand include, but no valid hint in $out");
             return("");
@@ -490,68 +531,56 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
     elseif( ereg("^scroller:?([^}]*)$", $out, $parts)) {
         if (!isset($itemview) OR ($itemview->num_records<0) ) {   #negative is for n-th grou display
-                return "Scroller not valid without a view, or for group display"; }
+            return "Scroller not valid without a view, or for group display";
+        }
         $viewScr = new view_scroller($itemview->slice_info['vid'],
-                                   $itemview->clean_url,
-                                   $itemview->num_records,
-                                   $itemview->idcount(),
-                                   $itemview->from_record);
+                                     $itemview->clean_url,
+                                     $itemview->num_records,
+                                     $itemview->idcount(),
+                                     $itemview->from_record);
         list( $begin, $end, $add, $nopage ) = ParamExplode($parts[1]);
         return $viewScr->get( $begin, $end, $add, $nopage );
     }
-    elseif( substr($out, 0, 1) == "#" )
-      # remove comments
-      return "";
+    // remove comments
+    elseif ( substr($out, 0, 1) == "#" ) {
+        return "";
+    }
     elseif( substr($out, 0,5) == "debug" ) {
-        # Note don't rely on the behavior of {debug} its changed by programmers for testing!
-#        if (isset($item)) huhl("item=",$item);
+        // Note don't rely on the behavior of {debug} its changed by programmers for testing!
         if (isset($GLOBALS["apc_state"])) huhl("apc_state=",$GLOBALS["apc_state"]);
-        if (isset($itemview)) huhl("itemview=",$itemview);
-        if (isset($aliases)) huhl("aliases=",$aliases);
-        if (isset($als)) huhl("als=",$als);
+        if (isset($itemview))             huhl("itemview=",$itemview);
+        if (isset($aliases))              huhl("aliases=",$aliases);
+        if (isset($als))                  huhl("als=",$als);
         huhl("globals=",$GLOBALS);
         return "";
     }
-    elseif ( substr($out, 0,10) == "view.php3?" )
-        return QuoteColons($level, $maxlevel,
-            GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
-            # view do not use colons as separators => dequote before callig
+    elseif ( substr($out, 0,10) == "view.php3?" ) {
+        // view do not use colons as separators => dequote before callig
+        return QuoteColons($level, $maxlevel, GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
+    }
     // This is a little hack to enable a field to contain expandable { ... } functions
     // if you don't use this then the field will be quoted to protect syntactical characters
-    elseif( substr($out, 0, 8) == "dequote:" ) {
+    elseif ( substr($out, 0, 8) == "dequote:" ) {
         return DeQuoteColons(substr($out,8));
-    } 
-    // OK - its not a known fixed string, look in various places for the whole string
-    if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) && $GLOBALS[eb_functions][$parts[1]]) {
-        $fnctn = $GLOBALS[eb_functions][$parts[1]];
-        $parts = ParamExplode($parts[2]);
-        switch(count($parts)) {
-          case 0: $ebres=$fnctn(); break;
-          case 1: $ebres=$fnctn($parts[0]); break;
-          case 2: $ebres=$fnctn($parts[0],$parts[1]); break;
-          case 3: $ebres=$fnctn($parts[0],$parts[1],$parts[2]); break;
-          case 4: $ebres=$fnctn($parts[0],$parts[1],$parts[2],$parts[3]); break;
-        }
-        return QuoteColons($level,$maxlevel,$ebres);
     }
-    if( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts)
-      && is_callable("stringexpand_".$parts[1])) {
-        $fnctn = "stringexpand_".$parts[1];
-        if(!$parts[2]) {
-           $ebres=$fnctn();
-        } else {
-          $parts = ParamExplode($parts[2]);
-          switch(count($parts)) {
-            case 1: $ebres=$fnctn($parts[0]); break;
-            case 2: $ebres=$fnctn($parts[0],$parts[1]); break;
-            case 3: $ebres=$fnctn($parts[0],$parts[1],$parts[2]); break;
-            case 4: $ebres=$fnctn($parts[0],$parts[1],$parts[2],$parts[3]); break;
-            case 5: $ebres=$fnctn($parts[0],$parts[1],$parts[2],$parts[3],$parts[4]); break;
-            default:
-		$ebres = call_user_func_array($fnctn,array(&$parts));
-          }
+    // OK - its not a known fixed string, look in various places for the whole string
+    if ( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) ) {
+        if ( $GLOBALS['eb_functions'][$parts[1]] ) {          // eb functions - call allowed php functions directly
+            $fnctn = $GLOBALS['eb_functions'][$parts[1]];
+        } elseif ( is_callable("stringexpand_".$parts[1])) {  // custom stringexpand functions
+            $fnctn = "stringexpand_".$parts[1];
         }
-        return QuoteColons($level,$maxlevel,$ebres);
+        // return result only if matches stringexpand_ or eb functions
+        if ( $fnctn ) {
+            if (!$parts[2]) {
+                $ebres = $fnctn();
+            } else {
+                $param = ParamExplode($parts[2]);
+                $ebres = call_user_func_array($fnctn, (array)$param);
+            }
+            return QuoteColons($level, $maxlevel, $ebres);
+        }
+        // else - continue
     }
     if (isset($item) ) {
         if (($out == "unpacked_id.....") || ($out == "id..............")) {
@@ -569,9 +598,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # anything inside the value, and then makes sure any remaining quotes
     # don't interfere with caller
     if (isset($GLOBALS['apc_state'][$out])) {
-        return QuoteColons($level, $maxlevel,
-            new_unalias_recurent($GLOBALS['apc_state'][$out],"",$level+1,
-                $maxlevel,$item,$itemview,$aliases));
+        return QuoteColons($level, $maxlevel, new_unalias_recurent($GLOBALS['apc_state'][$out],"",$level+1,$maxlevel,$item,$itemview,$aliases));
     }
     # Pass these in URLs like als[foo]=bar,
     # Note that 8 char aliases like als[foo12345] will expand with _#foo12345
