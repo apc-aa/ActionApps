@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -24,11 +24,11 @@ http://www.apc.org/
 # Author and Maintainer: Mitra mitra@mitra.biz
 #
 # And yes, I'll move the docs to phpDocumentor as soon as someone explains how
-# to use it! 
+# to use it!
 #
-# It is intended - and you are welcome - to extend this to be more 
-# comprehensive.  It is a requirement that the routines here are inverses 
-# of each other, i.e. 
+# It is intended - and you are welcome - to extend this to be more
+# comprehensive.  It is a requirement that the routines here are inverses
+# of each other, i.e.
 
 
 if (!defined("AA_XML_SERIALIZER_INCLUDED"))
@@ -37,7 +37,7 @@ else return;
 
 // Convert a PHP array to an XML structure
 // A logical extension of this would be to make it nest
-// if $a is set, then output is of form <k $a>....</k>, 
+// if $a is set, then output is of form <k $a>....</k>,
 // otherwise it is of form <t tname="k">.....</t>
 // note that it can be set to ""
 function xml_serialize($k,&$v,$i,$ii,$a=null) {
@@ -47,7 +47,7 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
     if (is_null($v)) {
         return "$i<$start />";
     }
-    elseif (is_string($v) || is_integer($v) || is_real($v) || is_bool($v)) { 
+    elseif (is_string($v) || is_integer($v) || is_real($v) || is_bool($v)) {
         #if ($debug) print "STRING";
         // if contains stuff other than printable ascii and CRLF then hex it
         if (preg_match('/[\000-\011\013-\014\016-\037\200-\377]/',$v))
@@ -66,14 +66,14 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
             return $v->xml_serialize($k,$i,$ii,$a);
         else
             print("ERROR: Can't serialize an Object");
-    } else { 
+    } else {
         print("What is $k, if it isn't String, array or object=");
         print_r($v);
     }
 }
 
-// A class to unserialize from XML to a PHP structure, 
-// Note this matches the xml_serializer above, 
+// A class to unserialize from XML to a PHP structure,
+// Note this matches the xml_serializer above,
 class xml_unserializer {
     var $stack;          // stack of items above oen being worked on
     var $chardata;          // Current string of CDATA
@@ -82,16 +82,18 @@ class xml_unserializer {
     var $debug;          // set to true to debug this
     var $parser;
     var $namestack;
+    var $codingstack;
     var $name;      // Name of the current array
 
     function xml_unserializer() {
-        $this->stack = array();
-        $this->namestack = array();
-        $this->chardata = "";
-        $this->top = null;
-        $this->coding = "";
-        $this->debug = false;
-        $this->parser = xml_parser_create();
+        $this->stack       = array();
+        $this->namestack   = array();
+        $this->codingstack = array();
+        $this->chardata    = "";
+        $this->top         = null;
+        $this->coding      = "";
+        $this->debug       = false;
+        $this->parser      = xml_parser_create();
         xml_set_object($this->parser, $this);
         xml_set_element_handler($this->parser, "startElement", "endElement");
         xml_set_character_data_handler($this->parser,"charD");
@@ -116,20 +118,20 @@ class xml_unserializer {
             unset($attrs["CODING"]);
         } else {
             $this->coding = "";
-        } 
-        if (($name == "T" || is_callable($name . "_xml_unserialize")) 
-             && isset($attrs["TNAME"])) {  
+        }
+        if (($name == "T" || is_callable($name . "_xml_unserialize"))
+             && isset($attrs["TNAME"])) {
             $this->name = $attrs["TNAME"];
             unset($attrs["TNAME"]);
         } else {
             $this->name = $name;
         }
-        if (isset($attrs) && count($attrs)) { 
-            $this->top = $attrs; 
-        } 
+        if (isset($attrs) && count($attrs)) {
+            $this->top = $attrs;
+        }
         else $this->top = null;
         $this->chardata = "";
-#        if ($debugimport) huhl("START:$name: els=",$this->stack,"Top=",$this->top); 
+#        if ($debugimport) huhl("START:$name: els=",$this->stack,"Top=",$this->top);
     }
 
     // End Element, two choices, either data, or attributes.
@@ -137,34 +139,34 @@ class xml_unserializer {
         if ($this->debug) { huhl("\n:end='".$name."'",$this); }
         switch ($this->coding) {
           case "bin2hex": $this->chardata = pack_id($this->chardata); break;
-          case "serialize": 
-          case "serializezip": 
+          case "serialize":
+          case "serializezip":
                 $c = base64_decode($this->chardata);
-                if ($this->coding == "serializegzip") 
+                if ($this->coding == "serializegzip")
                     $c = gzuncompress($c);
                 $this->top = unserialize($c);
-                $this->chardata = ""; 
+                $this->chardata = "";
                 break;
           default:
     #       $this->chardata = preg_replace("/^\s+/",'',$this->chardata);
     // Strip trailing whitespace, note this occurs in parent stack
             $this->chardata = preg_replace("/\s+$/",'',$this->chardata);
-        }   
+        }
         $n = $this->name;
         if (isset($this->top)) { // Already seen children or attrs
-            $t = $this->top; 
+            $t = $this->top;
             $this->top = array_pop($this->stack);
             $this->name = array_pop($this->namestack);
             $this->coding= array_pop($this->codingstack);
-            if ($this->chardata) { 
-                $t["CHARDATA"] = $this->chardata; 
+            if ($this->chardata) {
+                $t["CHARDATA"] = $this->chardata;
                 $this->chardata = "";
             }
             if (is_callable($name."_xml_unserialize")) {
                 $f=$name."_xml_unserialize";
                 $this->top[$n] = $f($n,$t);
                 #print("Unparsing object $name as name $n");
-            } elseif ($n == $name) { 
+            } elseif ($n == $name) {
                 // Cant assume its a structure export, import as array
                 $this->top[$n][] = $t;
                 #print("Unserialized stuff from somewhere $n []");
