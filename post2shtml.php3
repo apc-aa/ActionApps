@@ -50,6 +50,7 @@ http://www.apc.org/
 
 require_once "include/config.php3";
 require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; 
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 
 store_vars ();
 
@@ -88,16 +89,6 @@ function store_vars ()
         header("Location: $shtml_page");
     }
     else $GLOBALS["post2shtml_id"] = $id;
-}    
-
-if (!function_exists ("new_id")) {
-    # returns new unpacked md5 unique id, except these which can  force unexpected end of string  
-    function new_id ($seed="hugo"){
-      do {
-       $foo=md5(uniqid($seed));
-      } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
-      return $foo;
-    } 
 }    
 
 function md5_array (&$array) {
