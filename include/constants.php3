@@ -108,7 +108,8 @@ $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "ru_news_lang.php3" => "ru_news_lang.php3",
                          "vn_news_lang.php3" => "vn_news_lang.php3",
                          "ja_news_lang.php3" => "ja_news_lang.php3",
-                         "hr_news_lang.php3" => "hr_news_lang.php3"
+                         "hr_news_lang.php3" => "hr_news_lang.php3",
+                         "fr_news_lang.php3" => "fr_news_lang.php3"
                         );
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -124,6 +125,7 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
                             "sk" => "windows-1250",
                             "ja" => "EUC-JP",
                             "hr" => "windows-1250",
+                            "fr" => "iso-8859-1"
                             );
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -138,7 +140,8 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "vn" => "Vietnamese",
                          "sk" => "Slovenština",
                          "ja" => "Japanian",
-                         "hr" => "Hrvatski"
+                         "hr" => "Hrvatski",
+                         "fr" => "Français"
                          );
 
 /** Standard Reader Management field IDs defined in Reader Minimal Template */
