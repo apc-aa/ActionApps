@@ -83,6 +83,11 @@ function ParseSettings($set) {
   return $ret;
 }
 
+/** Checks if the condition is in right format - is valid */
+function CheckConditionCommand($field, $value) {
+    return ($field && ($value != 'AAnoCONDITION'));
+}
+
 function ParseViewParameters($query_string="") {
   global $cmd, $set, $vid, $als, $slice_id, $conds, $slices, $mapslices, $debug;
 
@@ -127,19 +132,21 @@ function ParseViewParameters($query_string="") {
                  CountHit($s_or_l_ids[0]);
                }
                break;
-    case 'c':  if( $command[1] && ($command[2] != 'AAnoCONDITION'))
+    case 'c':  if( CheckConditionCommand($command[1], $command[2]) )
                  $param_conds[$command[1]] = stripslashes($command[2]);
-               if( $command[3] && ($command[4] != 'AAnoCONDITION'))
+               if( CheckConditionCommand($command[3], $command[4]) )
                  $param_conds[$command[3]] = stripslashes($command[4]);
-               if( $command[5] && ($command[6] != 'AAnoCONDITION'))
+               if( CheckConditionCommand($command[5], $command[6]) )
                  $param_conds[$command[5]] = stripslashes($command[6]);
                break;
     case 'd':  $i=1;
                while( $command[$i] ) {
-                 $v_conds[]=array( 'operator' => $command[$i+1],
-                                 'value' => stripslashes($command[$i+2]),
-                                 $command[$i] => 1 );
-                 $i += 3;
+                   if( CheckConditionCommand($command[$i], $command[$i+2]) ) {
+                       $v_conds[]=array( 'operator' => $command[$i+1],
+                                         'value' => stripslashes($command[$i+2]),
+                                          $command[$i] => 1 );
+                   }
+                   $i += 3;
                }
                break;
   }
