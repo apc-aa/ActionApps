@@ -498,17 +498,19 @@ function add_constant_group ($group_id, $items)
 	$db->query ($varset->makeINSERT ("constant"));
 	
 	$priority = 100;
-	reset ($items);
-	while (list ($value, $name) = each ($items)) {
-		$varset->clear();
-		$varset->add ("value", "text", $value);
-		$varset->add ("name", "text", $name);
-		$varset->add ("pri", "number", $priority);
-		$priority += 100;
-		$varset->add ("id", "unpacked", new_id());
-		$varset->add ("group_id", "text", $unique_name);
-		$db->query ($varset->makeINSERT ("constant"));
-	}
+    if (is_array ($items)) {
+    	reset ($items);
+    	while (list ($value, $name) = each ($items)) {
+    		$varset->clear();
+    		$varset->add ("value", "text", $value);
+    		$varset->add ("name", "text", $name);
+    		$varset->add ("pri", "number", $priority);
+    		$priority += 100;
+    		$varset->add ("id", "unpacked", new_id());
+    		$varset->add ("group_id", "text", $unique_name);
+    		$db->query ($varset->makeINSERT ("constant"));
+    	}
+    }
 	return $unique_name;
 }
 
@@ -543,4 +545,45 @@ function delete_constant_group ($group_id, $slice_id = "") {
 }
 		
 // -------------------------------------------------------------------
-		
+
+/** Refreshes a constant group: replaces old members with the new. 
+*   If the group does not exist, it is created. 
+*   @return bool true if the group existed
+*/		
+function refresh_constant_group ($group_id, $items) {
+    global $db;
+
+	$varset = new CVarset;
+	
+    $db->query ("SELECT * FROM constant WHERE group_id='lt_groupNames'
+        AND name='$group_id'");
+    if (!$db->next_record()) {
+        $existed = false;
+    	$varset->add ("group_id", "text", "lt_groupNames");
+    	$varset->add ("value","text",$group_id);
+    	$varset->add ("name","text",$group_id);
+    	$varset->add ("id", "unpacked", new_id());
+    	$db->query ($varset->makeINSERT ("constant"));
+    }    
+    else {
+        $existed = true;
+        $db->query ("DELETE FROM constant WHERE group_id='$group_id'");
+    }
+
+	$priority = 100;
+    if (is_array ($items)) {
+    	reset ($items);
+    	while (list ($value, $name) = each ($items)) {
+    		$varset->clear();
+    		$varset->add ("value", "text", $value);
+    		$varset->add ("name", "text", $name);
+    		$varset->add ("pri", "number", $priority);
+    		$priority += 100;
+    		$varset->add ("id", "unpacked", new_id());
+    		$varset->add ("group_id", "text", $group_id);
+    		$db->query ($varset->makeINSERT ("constant"));
+    	}
+    }
+    
+    return $existed;
+}    
