@@ -195,11 +195,10 @@ if ($db->next_record()) {
 }
 $id = unpack_id($db->f("id"));  // correct ids
 
-if( $template['Links'] )            // set new name for new module
-  $name = "";
-
-//print_r($GLOBALS);
-
+if( $template['Links'] ) {           // set new name and owner for NEW module
+    $name = "";
+    $owner = "";
+}
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
