@@ -14,6 +14,7 @@
   $self = substr ($self, 0, $i);
 
   header("Status: 302 Moved Temporarily");
-  header("Location: $self/modules/alerts/uc_tabledit.php3?set_tview=auc&confirm_id=$id");
+  header("Location: $self/misc/alerts/confirm.php3?id=$id&lang=$l&ss=$ss"); 
+//  header("Location: $self/modules/alerts/uc_tabledit.php3?set_tview=auc&confirm_id=$id");
 ?>
  

@@ -40,7 +40,7 @@ function AlertsUser ($session) {
     if ($db->next_record()) {
         $GLOBALS["email"] = $db->f("email");
         $GLOBALS["lang"] = $db->f("lang");
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$GLOBALS["lang"]."_alerts_lang.inc");
+        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$GLOBALS["lang"]."_alerts_lang.php3");
         if ($db->f("sessiontime") > time() - 600) {
             $db->query("UPDATE alerts_user SET sessiontime=".time());
             return $db->Record;
@@ -177,7 +177,7 @@ function print_js_options_filters ($user=true)
     $db2->query("SELECT slice.name, DF.description as fdesc, DF.id AS filterid FROM
     slice INNER JOIN
     view ON slice.id = view.slice_id INNER JOIN
-    alerts_digest_filter DF ON DF.vid = view.id
+    alerts_filter DF ON DF.vid = view.id
     ORDER BY slice.name, DF.description");
     
     $jsfilters = "<SCRIPT LANGUAGE=javascript>

@@ -37,7 +37,7 @@ $db = new DB_AA;
 
 // -------------------------------------------------------------------------------------
 /*  Function: create_filter_text
-    Purpose:  finds and formats items, writes the result into alerts_digest_filter.$ho
+    Purpose:  finds and formats items, writes the result into alerts_filter.$ho
     WARNING:  the function does not check when were the items sent last time, call it only once a day / week / month
     Parameters: $ho = how often (daily / weekly / monthly)
 */
@@ -52,7 +52,7 @@ function create_filter_text ($ho)
     // first I create a hierarchical array $slices and than use it instead of the recordset
             
     $db->query("SELECT DF.conds, view.slice_id, DF.id AS filterid, DF.vid, slice.name AS slicename, slice.lang_file, DF.last_$ho
-        FROM alerts_digest_filter DF INNER JOIN
+        FROM alerts_filter DF INNER JOIN
              view ON view.id = DF.vid INNER JOIN
              slice ON slice.id = view.slice_id
         ORDER BY view.slice_id, DF.vid");
@@ -70,7 +70,7 @@ function create_filter_text ($ho)
         list($fields) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);       
         // set language
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$slice["lang"]."_alerts_lang.inc");
+        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$slice["lang"]."_alerts_lang.php3");
         
         reset ($slice["views"]);
         while (list ($vid, $view) = each ($slice["views"])) {                      
@@ -108,7 +108,7 @@ function create_filter_text ($ho)
                 while ($db->next_record())
                     $all_ids[] = $db->f("id");
                 if (!$debug) 
-                    $db->query("UPDATE alerts_digest_filter 
+                    $db->query("UPDATE alerts_filter 
                                  SET last_$ho = $now 
                                  WHERE id = $fid");
                     
@@ -133,7 +133,7 @@ function create_filter_text ($ho)
                 
                 if ($debug && $items_text) echo "<hr>Items text:<br><br>$items_text<br><br><hr>";
                 
-                $db->query("UPDATE alerts_digest_filter 
+                $db->query("UPDATE alerts_filter 
                              SET text_$ho = '".addslashes ($items_text)."'
                              WHERE id = $fid");  
             }
@@ -150,7 +150,7 @@ function create_collection_contents ()
     $db->query("
         SELECT AC.id, ADF.description, slice.name FROM alerts_collection AC
         INNER JOIN alerts_collection_filter ACF ON AC.id = ACF.collectionid
-        INNER JOIN alerts_digest_filter ADF ON ADF.id = ACF.filterid
+        INNER JOIN alerts_filter ADF ON ADF.id = ACF.filterid
         INNER JOIN view ON view.id = ADF.vid
         INNER JOIN slice ON slice.id = view.slice_id
         ORDER BY AC.id, ACF.myindex");
@@ -177,7 +177,7 @@ function send_emails ($ho)
         
     $db->query("SELECT * FROM alerts_user WHERE confirm=''");
     while ($db->next_record()) {
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$db->f("lang")."_alerts_lang.inc");
+        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$db->f("lang")."_alerts_lang.php3");
         $howoften_digest = array (
             "daily"=>_m("AA Alerts - daily digest of "),
             "weekly"=>_m("AA Alerts - weekly digest of "),
@@ -187,7 +187,7 @@ function send_emails ($ho)
             SELECT C.*, CF.collectionid, CF.myindex, DF.text_$ho FROM 
             alerts_collection C INNER JOIN
             alerts_collection_filter CF ON C.id = CF.collectionid INNER JOIN 
-            alerts_digest_filter DF ON CF.filterid = DF.id INNER JOIN 
+            alerts_filter DF ON CF.filterid = DF.id INNER JOIN 
             alerts_user_filter UF ON UF.collectionid = C.id
             WHERE UF.userid = ".$db->f("id")."
               AND DF.text_$ho <> ''
@@ -245,7 +245,7 @@ function initialize_filters ()
     $weekly = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon], $now[mday]-7, $now[year]);
     $monthly = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon]-1, $now[mday], $now[year]);
     $db->query("
-        UPDATE alerts_digest_filter 
+        UPDATE alerts_filter 
         SET last_daily = $daily,
             last_weekly = $weekly,
             last_monthly = $monthly

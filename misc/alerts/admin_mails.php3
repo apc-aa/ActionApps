@@ -68,7 +68,7 @@ function send_mail_confirm () {
             ." OR sessiontime = 0)");
     echo ($db->num_rows() + 0)." mails sent<br>";
     while ($db->next_record()) {
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$db->f("lang")."_alerts_lang.inc");
+        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$db->f("lang")."_alerts_lang.php3");
         $to  = email_address ($db->f("firstname")." ".$db->f("lastname"), $db->f("email"));    
         $subject = _m ("Please confirm your subscription");
         $url = AA_INSTAL_URL."misc/alerts/confirm.php3?id=".$db->f("confirm")."&lang=".$db->f("lang")."&ss=$ss";

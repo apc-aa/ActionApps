@@ -39,11 +39,11 @@ if (!is_object ($db)) $db = new DB_AA;
 
 if (!$collectionid) { echo _m("Jump to this page from a Collection Edit page"); exit; }
 if ($formlang)
-    bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_news_lang.inc");
+    bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_news_lang.php3");
     
 $db->query("
     SELECT DF.* FROM alerts_collection_filter CF INNER JOIN
-    alerts_digest_filter DF on CF.filterid = DF.id
+    alerts_filter DF on CF.filterid = DF.id
     WHERE CF.collectionid = $collectionid
     ORDER BY CF.myindex");
 while ($db->next_record()) 

@@ -37,7 +37,7 @@ $db = new DB_AA;
 $user = AlertsUser ($alerts_session);
 if ($signout) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&lang=$lang&ss=$ss");
 if (!$user) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&Msg="._m("Your session has expired. Please login again."));
-else bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$user["lang"]."_alerts_lang.inc");
+else bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$user["lang"]."_alerts_lang.php3");
 
 /* ----------------------------------------------------------------------------------------
                           PROCESS FORM DATA -- UPDATE DATABASE
@@ -173,7 +173,7 @@ $db->query("
     SELECT DISTINCT slice.id AS sliceid, slice.name, slice.slice_url, 
         DF.description, DF.id AS filterid, DF.showme
     FROM view INNER JOIN 
-    alerts_digest_filter DF ON view.id = DF.vid INNER JOIN 
+    alerts_filter DF ON view.id = DF.vid INNER JOIN 
     slice ON slice.id = view.slice_id
     WHERE view.type = 'digest' 
     ORDER BY slice.name");
@@ -187,6 +187,7 @@ while ($db->next_record()) {
 }
 
 $db->query("SELECT * FROM alerts_user_filter WHERE userid=$user[id]");
+if (is_array ($digests))
 while ($db->next_record()) {
     reset ($digests);
     while (list ($vid) = each ($digests)) {
@@ -208,7 +209,7 @@ $SQL = "SELECT C.id AS cid, C.description AS cdesc,
     
     FROM alerts_collection C INNER JOIN
     alerts_collection_filter CF ON C.id = CF.collectionid INNER JOIN
-    alerts_digest_filter DF ON CF.filterid = DF.id INNER JOIN
+    alerts_filter DF ON CF.filterid = DF.id INNER JOIN
     view ON DF.vid = view.id INNER JOIN
     slice ON view.slice_id = slice.id INNER JOIN
     alerts_user_filter UF ON UF.collectionid = C.id
@@ -235,25 +236,27 @@ $howoften_options = get_howoften_options ();
 $howoften_options["0"] = _m("unsubscribe");
 
 echo get_form();
-reset ($digests);
-if ($show_filters)
-while (list (,$digest) = each ($digests)) {
-    if ($digest["url"]) $viewurl = "<a href=\"$digest[url]\">$digest[name]</a>";
-    else $viewurl = $digest["name"];
-    
-    reset ($digest["filters"]);
-    while (list ($filterid,$filter) = each ($digest["filters"])) {
-        if ($filter["howoften"]) {
-            echo $table_header; 
-            $table_header = "";
-            echo "$ac_trstart<TD class=tabtxt>$viewurl -- $filter[description]</TD>
-                <TD class=tabtxt>";
-            FrmSelectEasy("howoften[f][".$filter[user_filter_id]."]", $howoften_options, $filter["howoften"]); 
-            echo "</TD>$ac_trend";
+if (is_array ($digests)) {
+    reset ($digests);
+    if ($show_filters)
+    while (list (,$digest) = each ($digests)) {
+        if ($digest["url"]) $viewurl = "<a href=\"$digest[url]\">$digest[name]</a>";
+        else $viewurl = $digest["name"];
+        
+        reset ($digest["filters"]);
+        while (list ($filterid,$filter) = each ($digest["filters"])) {
+            if ($filter["howoften"]) {
+                echo $table_header; 
+                $table_header = "";
+                echo "$ac_trstart<TD class=tabtxt>$viewurl -- $filter[description]</TD>
+                    <TD class=tabtxt>";
+                FrmSelectEasy("howoften[f][".$filter[user_filter_id]."]", $howoften_options, $filter["howoften"]); 
+                echo "</TD>$ac_trend";
+            }
         }
     }
 }
-
+    
 unset ($howoften_options["0"]);
 echo "</FORM>";
 
@@ -290,12 +293,14 @@ echo "</FORM>";
 
 echo get_form();
 $filters = array ();
-reset ($digests);
-while (list ($slice_id,$digest) = each ($digests)) {    
-    reset ($digest["filters"]);
-    while (list ($filterid,$filter) = each ($digest["filters"])) 
-        if (!$filter["howoften"] && $filter["showme"]) 
-            $filters[$filterid] = $digest["name"]." -- ".$filter["description"];
+if (is_array ($digests)) {
+    reset ($digests);
+    while (list ($slice_id,$digest) = each ($digests)) {    
+        reset ($digest["filters"]);
+        while (list ($filterid,$filter) = each ($digest["filters"])) 
+            if (!$filter["howoften"] && $filter["showme"]) 
+                $filters[$filterid] = $digest["name"]." -- ".$filter["description"];
+    }
 }
 
 if ($show_filters)
