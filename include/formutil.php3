@@ -699,11 +699,13 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
     
     $name=safe($name);
 
-    reset($arr);
-    while(list($k, $v) = each($arr)) 
-        $records[] = getRadioButtonTag($k, $v, $name, $selected);
-    
-    printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp, $ncols, $move_right);
+    if (is_array ($arr)) {
+        reset($arr);
+        while(list($k, $v) = each($arr)) 
+            $records[] = getRadioButtonTag($k, $v, $name, $selected);
+        
+        printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp, $ncols, $move_right);
+    }
 }
 
 /// Used in FrmInputMultiChBox
@@ -725,11 +727,13 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
     
     $name=safe($name);
 
-    reset($arr);
-    while(list($k, $v) = each($arr)) 
-        $records[] = getOneChBoxTag($k, $v, $name, $selected);
-    
-    printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp, $ncols, $move_right);
+    if (is_array ($arr)) {
+        reset($arr);
+        while(list($k, $v) = each($arr)) 
+            $records[] = getOneChBoxTag($k, $v, $name, $selected);
+        
+        printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp, $ncols, $move_right);
+    }
 }
 
 

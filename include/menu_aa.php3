@@ -48,7 +48,7 @@ $aamenus["aaadmin_submenu"] = array (
     "sliceimp"=>array("cond"=>IfSlPerm(PS_ADD), "href"=>"admin/sliceimp.php3", "label"=>_m("Import")),
 
     "header7"=>_m("Wizard"),
-    "te_wizard_welcome" => array ("label"=>_m("Welcomes"), "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set_tview=ww"),
+    "te_wizard_welcome" => array ("label"=>_m("Welcomes"), "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set_tview=email"),
     "te_wizard_template" => array ("label"=>_m("Templates"), "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set_tview=wt"),
 
     "header8"=>_m("Misc"),

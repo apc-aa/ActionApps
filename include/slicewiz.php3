@@ -1,12 +1,5 @@
 <?php
-
-function resolve_email_aliases ($aliases, $text) {
-    $retval = $text;
-    reset ($aliases);
-    while (list ($alias, $value) = each ($aliases))
-        $retval = str_replace ($alias, $value, $retval);
-    return $retval;
-}
+require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
 
 /*  Assigns user privileges and sends a welcome email, if the email address is filled.
     Returns error description or empty string. */
@@ -20,8 +13,8 @@ function add_user_and_welcome ($welcome_id, $user_login, $slice_id, $role) {
         return _m("User not found");              
         
     reset ($userinfo);
-    $GLOBALS[UsrAdd] = key ($userinfo);
-    $GLOBALS[role] = $role;
+    $GLOBALS["UsrAdd"] = key ($userinfo);
+    $GLOBALS["role"] = $role;
     ChangeRole (); // in include/se_users.php3                
     
     // 2. Send a welcome email message
@@ -43,19 +36,8 @@ function add_user_and_welcome ($welcome_id, $user_login, $slice_id, $role) {
         "_#ME_MAIL_" => $me["mail"][0],
         "_#ME_NAME_" => $me["cn"]);
 
-    $db->tquery ("SELECT * FROM wizard_welcome WHERE id=$welcome_id");
-    if (!$db->next_record()) return _m("Internal error");
-    $mail_subject = resolve_email_aliases($aliases, $db->f("subject"));
-    $mail_body = resolve_email_aliases($aliases, $db->f("email"));
-    $mail_from = resolve_email_aliases($aliases, $db->f("mail_from"));
-
-    if ($GLOBALS[debug]) {            
-        echo "<h1>$mail_subject</h1>";
-        echo $mail_body;
-    }
-
-    if (!mail ($me["mail"][0], $mail_subject." "._m("sent to")." $user[mail]", $mail_body, "From: $mail_from")
-        || !mail ( $user["mail"], $mail_subject, $mail_body, "From: $mail_from"))
+    if (send_mail_from_table ($welcome_id, array ($me["mail"][0], $user["mail"]), $aliases)
+        != 2)
         return _m("Error mailing");
 }
 ?>

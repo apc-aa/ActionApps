@@ -1055,7 +1055,10 @@ function is_field_type_numerical ($field_type) {
 *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
 *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
 */
-function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $id_columns = array()) {
+function CopyTableRows ($table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
+    if (!$omit_columns) $omit_columns = array();
+    if (!$id_columns) $id_columns = array();
+
     if ($GLOBALS[debug]) {
         echo "CopyTableRows: SELECT * FROM $table WHERE $where<br>
         set_columns = ";
@@ -1428,6 +1431,7 @@ function get_email_types () {
     return array (
         "alerts welcome" => _m("alerts welcome"),
         "alerts alert" => _m("alerts alert"),
+        "slice wizard welcome" => _m("slice wizard welcome"),
     );
 }
 
@@ -1473,5 +1477,26 @@ function DBFields($db) {
         $a[$key] = $val;
     }
     return $a;
+}
+
+function ShowWizardFrames ($aa_url, $wizard_url, $title, $noframes_html="") {
+    require $GLOBALS["AA_BASE_PATH"]."post2shtml.php3";
+    global $post2shtml_id;
+    echo 
+'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+<head>
+    <title>'.$title.'</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
+</head>
+
+<frameset cols="80%,*" frameborder="YES" border="1" framespacing="0">
+    <frame src="'.$aa_url.'&called_from_wizard=1" name="aaFrame">
+    <frame src="'.con_url ($wizard_url,"post2shtml_id=$post2shtml_id").'" name="wizardFrame">
+</frameset>
+<noframes><body>
+'.$noframes_html.'
+</body></noframes>
+</html>';
 }
 ?>

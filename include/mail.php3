@@ -25,7 +25,7 @@ if (!defined ("aa_mail_included"))
      define ("aa_mail_included", 1);
 else return;
 
-#require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
 require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -153,9 +153,9 @@ function mail_html_text_body ($message, $charset, $use_base64) {
 * First resolves the aliases, working even with the {} inline commands.
 *
 * @param $mail_id   id from the email table
-*        $to        email address
+*        $to        email address or an array of email addresses
 *        $aliases   (optional) array of alias => text
-* @return true on success, false on failure
+* @return count of successfully sent emails
 */
 
 function send_mail_from_table ($mail_id, $to, $aliases="") 
@@ -193,21 +193,36 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
         */    
     }
     
-    if ($GLOBALS["EMAILS_INTO_TABLE"]) {
-        $db->query ("
-            INSERT INTO email_sent (email_id, send_to, subject, headers, body, created_at)
-            VALUES ($mail_id, '".addslashes($to)."', '".addslashes($record["subject"])."',
-               '".addslashes(get_email_headers($record, ""))."',
-               '".addslashes($record["body"])."', ".time().")");
-        return true;
+    if (! is_array ($to)) 
+        $tos = array ($to);
+    else $tos = $to;
+    
+    $sent = 0;
+    
+    foreach ($tos as $to) {
+        if (! $to)
+            continue;
+            
+        if ($GLOBALS["EMAILS_INTO_TABLE"]) {
+            if ($db->query ("
+                INSERT INTO email_sent (email_id, send_to, subject, headers, body, created_at)
+                VALUES ($mail_id, '".addslashes($to)."', '".addslashes($record["subject"])."',
+                   '".addslashes(get_email_headers($record, ""))."',
+                   '".addslashes($record["body"])."', ".time().")"))
+                $sent ++;
+        }
+        
+        else {
+            if ($record["html"])
+                if (mail_html_text ($to, $record["subject"], $record["body"],
+                     get_email_headers($record, ""), $LANGUAGE_CHARSETS [$record["lang"]]))
+                    $sent ++;
+            else if (mail ($to, $record["subject"], $record["body"], get_email_headers($record)))
+                    $sent ++;
+        }
     }
     
-    else {
-        if ($record["html"])
-            return mail_html_text ($to, $record["subject"], $record["body"],
-                 get_email_headers($record, ""), $LANGUAGE_CHARSETS [$record["lang"]]);
-        else return mail ($to, $record["subject"], $record["body"], get_email_headers($record));
-    }
+    return $sent;
 }
     
 function get_email_headers ($record, $default)

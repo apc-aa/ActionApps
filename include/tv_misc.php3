@@ -65,7 +65,7 @@ function GetMiscTableView ($viewID, $processForm = false) {
         "gotoview" => "ww_edit");
         
     if ($viewID == "ww_edit") {
-        $retval = GetTableView ("ww");
+        $retval = GetMiscTableView ("ww");
         $retval["type"] = "edit";
         $retval["attrs"] = $attrs_edit;
         $retval["readonly"] = false;

@@ -139,8 +139,17 @@ function get_aamenus ()
         "javascript" => array ("label"=>_m("Field Triggers"), "cond"=>IfSlPerm(PS_FIELDS), "href"=>"admin/se_javascript.php3"),
         "fileman" => array ("label"=>_m("File Manager"), "cond"=>FilemanPerms ($auth, $slice_id), "href"=>"admin/fileman.php3"),
         "anonym_wizard" => array ("label"=>_m("Anonymous Form Wizard"), "cond"=>IfSlPerm(PS_FIELDS), "href"=>"admin/anonym_wizard.php3"),
+		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
+			"href" => "admin/tabledit.php3?set_tview=email", "label"=>_m("Email templates")),
     ));
-
+/*    
+    $slice_info = GetSliceInfo ($slice_id);
+    if ($slice_info ["mailman_field_lists"]) 
+        $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = array (
+            "cond"=>IfSlPerm(PS_FIELDS),
+            "href"=>"admin/mailman_create_list.php3",
+            "label"=>_m("Mailman: create list"));
+*/
     $aamenus["itemmanager_submenu"] = array(
         "bottom_td"=>200,
         "level"=>"submenu",

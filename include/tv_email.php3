@@ -40,6 +40,18 @@ function ShowEmailAliases () {
             "_#COLLFORM" => _m("Collection Form URL (set in Alerts Admin - Settings)"),
         ));
 
+    // these aliases are used in include/slicewiz.php3        
+    $ali[] = array (
+        "group" => _m("Aliases for Slice Wizard Welcome"),
+        "aliases" => array (
+            "_#SLICNAME" => _m("Slice name"),
+            "_#NAME____" => _m("New user name"),            
+            "_#LOGIN___" => _m("New user login name"),
+            "_#ROLE____" => _m("New user role (editor / admin)"),
+            "_#ME_NAME_" => _m("My name"),
+            "_#ME_MAIL_" => _m("My email"),
+         ));
+
     echo "<TABLE border=0 cellspacing=0 cellpadding=0>";
     reset ($ali);
     while (list (, $aligroup) = each ($ali)) {

@@ -212,7 +212,8 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false,
 */
 function ShowColumnValueReadOnly ($cview, $show_val, $val, $name="") {
     if ($name)
-        echo "<INPUT type=\"hidden\" name=\"$name\" value=\"".$val."\">\n";       
+        echo "<INPUT type=\"hidden\" name=\"$name\" value=\"".
+            str_replace ('"', '&quot;',$val)."\">\n";       
     if ($show_val) {
         if (!$cview["html"]) $show_val = htmlspecialchars ($show_val);
     }
