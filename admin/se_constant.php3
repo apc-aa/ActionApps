@@ -177,7 +177,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php 
   $xx = ($slice_id!="");
-  $show = Array("main"=>true, "config"=>$xx, "category"=>($xx && !$categ), "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>($xx && !$categ), "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
                 "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
@@ -244,6 +244,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.8  2001/03/20 15:27:03  honzam
+Changes due to "slice delete" feature
+
 Revision 1.7  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

@@ -83,6 +83,7 @@ if( $update ) {
     $varset->add("input_help", "quoted", $input_help);
     $varset->add("input_morehlp", "quoted", $input_morehlp);
     $varset->add("input_default", "quoted", "$input_default_f:$input_default");
+    $varset->add("multiple", "quoted", ($input_show_func=="mch") ? 1 : 0);
 
     $varset->add("alias1", "quoted", $alias1);
     $varset->add("alias1_help", "quoted", $alias1_help);
@@ -95,15 +96,19 @@ if( $update ) {
     $varset->add("alias3_func", "quoted", "$alias3_func_f:$alias3_func");
 
     switch( $input_show_func_f ) {
+      case "fil":
       case "txt":
       case "dte": $isf = "$input_show_func_f:$input_show_func";
                   break;
+      case "mch":
       case "rio":
       case "sel": $isf = "$input_show_func_f:$input_show_func_c";
                   break;
       default: $isf = "$input_show_func_f";
     }  
     $varset->add("input_show_func", "quoted", "$isf");
+    $varset->add("input_validate", "quoted", "$input_validate");
+    $varset->add("feed", "quoted", "$feed");
     $varset->add("input_insert_func", "quoted", $input_insert_func);
     $varset->add("html_default", "number", ($html_default ? 1 : 0));
     $varset->add("html_show", "number", ($html_show ? 1 : 0));
@@ -173,6 +178,7 @@ if( !$update ) {      # load defaults
   $html_show = $fld[html_show];
   $text_stored = $fld[text_stored];
   $input_validate = $fld[input_validate];
+  $feed = $fld[feed];
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -190,7 +196,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php 
   $xx = ($slice_id!="");
-  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
                 "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
@@ -283,6 +289,14 @@ echo "
       <div class=tabhlp>". L_INPUT_BEFORE_HLP ."</div>
       </td>
      </tr>
+     <tr><td colspan=4><hr></td></tr>
+     <tr>
+      <td class=tabtxt><b>". L_FEED_STATE ."</b></td>
+      <td class=tabtxt colspan=3>";
+        FrmSelectEasy("feed", $INPUT_FEED_MODES, $feed);
+      echo "<div class=tabhlp>". L_INPUT_FEED_MODES_HLP ."</div>
+      </td>
+     </tr>  
     </table>
    </td>
   </tr>  
@@ -383,6 +397,9 @@ echo "
 
 /*
 $Log$
+Revision 1.6  2001/03/20 15:27:03  honzam
+Changes due to "slice delete" feature
+
 Revision 1.5  2001/02/26 17:26:08  honzam
 color profiles
 

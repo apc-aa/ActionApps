@@ -105,7 +105,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php 
   $xx = ($slice_id!="");
-  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>false, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
+  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>false, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
                 "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
@@ -157,6 +157,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.6  2001/03/20 15:27:03  honzam
+Changes due to "slice delete" feature
+
 Revision 1.5  2001/02/26 17:26:08  honzam
 color profiles
 

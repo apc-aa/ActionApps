@@ -44,7 +44,7 @@ $p_slice_id = q_pack_id($slice_id);
 if( $r_fields )
   $fields = $r_fields;
 else
-  list($fields,) = GetSliceFields($p_slice_id);
+  list($fields,) = GetSliceFields($slice_id);
 
 if( $update )
 {
@@ -145,7 +145,7 @@ function EnableClick(cond,what) {
 <?php
   $xx = ($slice_id!="");
   $useOnLoad = true;
-  $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>false, "fulltext"=>$xx, 
+  $show = Array("main"=>true, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>false, "fulltext"=>$xx, 
                 "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
@@ -193,6 +193,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.11  2001/03/20 15:27:03  honzam
+Changes due to "slice delete" feature
+
 Revision 1.10  2001/02/26 17:26:08  honzam
 color profiles
 
