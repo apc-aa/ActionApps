@@ -5,6 +5,8 @@
          - added stringexpand_sessurl 
          - turned off warning about packing empty strings, too many bugs!
          - allowed c-OR-1-aaa-2-bbbb in param_conds and conds[0]
+         - added admin/view.php3, like view.php3 but inside admin i/f
+         - added editbrief.php3, change specific fields of specific items
 02/26/04 - fixed rss to ignore unparsable dates (and use Now) 
          - rss2.0 dates still need handling in xml_fetch
 02/16/04 - uploaded new developer's version of AA (unstable yet). Changes:
