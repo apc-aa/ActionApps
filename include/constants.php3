@@ -103,6 +103,7 @@ $FIELD_FIELDS_NUM = array( "input_pri", "required", "feed", "multiple",
 $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
                               "dte" => L_INPUT_DEFAULT_DTE, 
                               "uid" => L_INPUT_DEFAULT_UID,
+                              "log" => L_INPUT_DEFAULT_LOG,
                               "now" => L_INPUT_DEFAULT_NOW,
 			      "variable" =>L_INPUT_DEFAULT_VAR);
 
@@ -172,6 +173,7 @@ $INPUT_INSERT_TYPES = array ("qte" => L_INPUT_INSERT_QTE,
                              "boo" => L_INPUT_INSERT_BOO,
                              "fil" => L_INPUT_INSERT_FIL,
                              "uid" => L_INPUT_INSERT_UID, 
+                             "log" => L_INPUT_INSERT_LOG, 
                              "ids" => L_INPUT_INSERT_IDS, 
                              "now" => L_INPUT_INSERT_NOW
                            /*"dte" => L_INPUT_INSERT_DTE, 

@@ -178,20 +178,13 @@ if( !$update ) {      # load defaults
   $input_default_f = substr($fld[input_default],0,3);
   $input_default = substr($fld[input_default],4);
   $input_show_func_f = substr($fld[input_show_func],0,3);
-  switch( $input_show_func_f ) {
-    case "txt":
-    case "edt":
-    case "fld":
-    case "dte":
-    case "fil": $input_show_func = substr($fld[input_show_func],4);
+
+  switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
+    case "fnc:param": 
+      $input_show_func = substr($fld[input_show_func],4);
                 break;
-    case "pre":
-    case "sel": 
-    case "wi2":
-    case "iso":
-    case "hco":
-    case "tpr":
-    case "mse": $pos = strpos($fld[input_show_func], ":", 4);
+    case "fnc:const:param": 
+      $pos = strpos($fld[input_show_func], ":", 4);
                 if( !$pos ) {     #there is no third parameter (= Parameters)  
                   $input_show_func_c = substr($fld[input_show_func],4);
                   $input_show_func = '';
@@ -200,7 +193,9 @@ if( !$update ) {      # load defaults
                   $input_show_func = substr($fld[input_show_func],$pos+1);
                 }  
                 break;
-    default:    $input_show_func_c = substr($fld[input_show_func],4);
+    case "fnc": 
+    default: 
+      $input_show_func_c = substr($fld[input_show_func],4);
   }  
   
   $input_insert_func = $fld[input_insert_func];

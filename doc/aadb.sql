@@ -1,8 +1,10 @@
-# 20/08/02 - renewed everything from database
-# 20/08/02 - added tables alerts_collection, alerts_collection_filter, alerts_digest_filter, alerts_user, alerts_user_filter
-# 20/08/02 - added column moved2active to table item
-# xx/07/02 - added columns fileman_access and fileman_dir to table slice
-# 21/06/02 - added column javascript to table slice
+# 08/20/02 - renewed everything from database
+# 08/20/02 - added tables alerts_collection, alerts_collection_filter, 
+#            alerts_digest_filter, alerts_user, alerts_user_filter, 
+#            cron, searchlog, wizard_template, wizard_welcome
+# 08/20/02 - added column moved2active to table item
+# 07/xx/02 - added columns fileman_access and fileman_dir to table slice
+# 06/21/02 - added column javascript to table slice
 # 04/22/02 - added constant_slice, jump, mysql_auth_group, mysql_auth_user, 
 #            mysql_auth_user_group, mysql_auth_userinfo tables
 #          - added some columns to constant, module, slice and view table  
@@ -41,7 +43,7 @@
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `active_sessions`
+# Table structure for table `active_sessions`
 #
 
 DROP TABLE IF EXISTS active_sessions;
@@ -52,11 +54,11 @@ CREATE TABLE active_sessions (
   changed varchar(14) NOT NULL default '',
   PRIMARY KEY  (name,sid),
   KEY changed (changed)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `alerts_collection`
+# Table structure for table `alerts_collection`
 #
 
 DROP TABLE IF EXISTS alerts_collection;
@@ -65,11 +67,11 @@ CREATE TABLE alerts_collection (
   description text NOT NULL,
   showme tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `alerts_collection_filter`
+# Table structure for table `alerts_collection_filter`
 #
 
 DROP TABLE IF EXISTS alerts_collection_filter;
@@ -78,11 +80,11 @@ CREATE TABLE alerts_collection_filter (
   filterid int(11) NOT NULL default '0',
   myindex tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (collectionid,filterid)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `alerts_digest_filter`
+# Table structure for table `alerts_digest_filter`
 #
 
 DROP TABLE IF EXISTS alerts_digest_filter;
@@ -99,11 +101,11 @@ CREATE TABLE alerts_digest_filter (
   text_weekly text NOT NULL,
   text_monthly text NOT NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `alerts_user`
+# Table structure for table `alerts_user`
 #
 
 DROP TABLE IF EXISTS alerts_user;
@@ -117,11 +119,11 @@ CREATE TABLE alerts_user (
   sessiontime int(10) NOT NULL default '0',
   confirm varchar(20) NOT NULL default '',
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `alerts_user_filter`
+# Table structure for table `alerts_user_filter`
 #
 
 DROP TABLE IF EXISTS alerts_user_filter;
@@ -134,32 +136,32 @@ CREATE TABLE alerts_user_filter (
   PRIMARY KEY  (id),
   UNIQUE KEY user_filter (userid,filterid),
   KEY alerts_collection (userid,collectionid)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `constant`
+# Table structure for table `constant`
 #
 
 DROP TABLE IF EXISTS constant;
 CREATE TABLE constant (
-  id varchar(16) NOT NULL default '',
-  group_id varchar(16) NOT NULL default '',
-  name varchar(150) NOT NULL default '',
-  value varchar(255) NOT NULL default '',
-  class varchar(16) default NULL,
+  id char(16) NOT NULL default '',
+  group_id char(16) NOT NULL default '',
+  name char(150) NOT NULL default '',
+  value char(255) NOT NULL default '',
+  class char(16) default NULL,
   pri smallint(5) NOT NULL default '100',
-  ancestors varchar(160) default NULL,
-  description varchar(250) default NULL,
+  ancestors char(160) default NULL,
+  description char(250) default NULL,
   short_id int(11) NOT NULL auto_increment,
   PRIMARY KEY  (id),
   KEY group_id (group_id),
   KEY short_id (short_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `constant_slice`
+# Table structure for table `constant_slice`
 #
 
 DROP TABLE IF EXISTS constant_slice;
@@ -172,11 +174,11 @@ CREATE TABLE constant_slice (
   hidevalue tinyint(1) NOT NULL default '0',
   hierarch tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (group_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `content`
+# Table structure for table `content`
 #
 
 DROP TABLE IF EXISTS content;
@@ -188,11 +190,11 @@ CREATE TABLE content (
   flag smallint(6) default NULL,
   KEY item_id (item_id,field_id,text(16)),
   KEY text (text(10))
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `cron`
+# Table structure for table `cron`
 #
 
 DROP TABLE IF EXISTS cron;
@@ -207,13 +209,12 @@ CREATE TABLE cron (
   script varchar(100) default NULL,
   params varchar(200) default NULL,
   last_run bigint(30) default NULL,
-  PRIMARY KEY  (id),
-  UNIQUE KEY id (id)
-) TYPE=MyISAM;
+  PRIMARY KEY  (id)
+  );
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `db_sequence`
+# Table structure for table `db_sequence`
 #
 
 DROP TABLE IF EXISTS db_sequence;
@@ -221,11 +222,11 @@ CREATE TABLE db_sequence (
   seq_name varchar(127) NOT NULL default '',
   nextid int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (seq_name)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `discussion`
+# Table structure for table `discussion`
 #
 
 DROP TABLE IF EXISTS discussion;
@@ -246,11 +247,11 @@ CREATE TABLE discussion (
   free1 text,
   free2 text,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `ef_categories`
+# Table structure for table `ef_categories`
 #
 
 DROP TABLE IF EXISTS ef_categories;
@@ -262,11 +263,11 @@ CREATE TABLE ef_categories (
   target_category_id varchar(16) NOT NULL default '',
   approved int(11) NOT NULL default '0',
   PRIMARY KEY  (category_id,feed_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `ef_permissions`
+# Table structure for table `ef_permissions`
 #
 
 DROP TABLE IF EXISTS ef_permissions;
@@ -275,11 +276,11 @@ CREATE TABLE ef_permissions (
   node varchar(150) NOT NULL default '',
   user varchar(50) NOT NULL default '',
   PRIMARY KEY  (slice_id,node,user)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `email_auto_user`
+# Table structure for table `email_auto_user`
 #
 
 DROP TABLE IF EXISTS email_auto_user;
@@ -291,11 +292,11 @@ CREATE TABLE email_auto_user (
   confirmed smallint(5) NOT NULL default '0',
   confirm_key char(16) default NULL,
   PRIMARY KEY  (uid)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `email_notify`
+# Table structure for table `email_notify`
 #
 
 DROP TABLE IF EXISTS email_notify;
@@ -305,11 +306,11 @@ CREATE TABLE email_notify (
   function smallint(5) NOT NULL default '0',
   PRIMARY KEY  (slice_id,uid,function),
   KEY slice_id (slice_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `external_feeds`
+# Table structure for table `external_feeds`
 #
 
 DROP TABLE IF EXISTS external_feeds;
@@ -322,11 +323,11 @@ CREATE TABLE external_feeds (
   newest_item varchar(40) NOT NULL default '',
   remote_slice_name varchar(200) NOT NULL default '',
   PRIMARY KEY  (feed_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `feedmap`
+# Table structure for table `feedmap`
 #
 
 DROP TABLE IF EXISTS feedmap;
@@ -339,11 +340,11 @@ CREATE TABLE feedmap (
   value mediumtext,
   from_field_name varchar(255) NOT NULL default '',
   KEY from_slice_id (from_slice_id,to_slice_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `feedperms`
+# Table structure for table `feedperms`
 #
 
 DROP TABLE IF EXISTS feedperms;
@@ -351,11 +352,11 @@ CREATE TABLE feedperms (
   from_id varchar(16) NOT NULL default '',
   to_id varchar(16) NOT NULL default '',
   flag int(11) default NULL
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `feeds`
+# Table structure for table `feeds`
 #
 
 DROP TABLE IF EXISTS feeds;
@@ -367,11 +368,11 @@ CREATE TABLE feeds (
   to_approved smallint(5) default NULL,
   to_category_id varchar(16) default NULL,
   KEY from_id (from_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `field`
+# Table structure for table `field`
 #
 
 DROP TABLE IF EXISTS field;
@@ -385,7 +386,7 @@ CREATE TABLE field (
   input_morehlp text,
   input_default mediumtext,
   required smallint(5) default NULL,
-  feed smallint(5) default NULL,
+  feed smallint(5) default NULL,           # three state Feedable=0/Unfeedable=1/Feedable-Unchangeable=2
   multiple smallint(5) default NULL,
   input_show_func varchar(255) default NULL,
   content_id varchar(16) default NULL,
@@ -417,11 +418,11 @@ CREATE TABLE field (
   input_show smallint(5) default NULL,
   text_stored smallint(5) default '1',
   KEY slice_id (slice_id,id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `groups`
+# Table structure for table `groups`
 #
 
 DROP TABLE IF EXISTS groups;
@@ -429,41 +430,41 @@ CREATE TABLE groups (
   name varchar(32) NOT NULL default '',
   description varchar(255) NOT NULL default '',
   PRIMARY KEY  (name)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `item`
+# Table structure for table `item`
 #
 
 DROP TABLE IF EXISTS item;
 CREATE TABLE item (
-  id varchar(16) NOT NULL default '',
-  short_id int(11) NOT NULL auto_increment,
-  slice_id varchar(16) NOT NULL default '',
+  id char(16) NOT NULL default '',
+  short_id int(11) NOT NULL auto_increment,        # used for short url link
+  slice_id char(16) NOT NULL default '',
   status_code smallint(5) NOT NULL default '0',
   post_date bigint(20) NOT NULL default '0',
   publish_date bigint(20) default NULL,
   expiry_date bigint(20) default NULL,
   highlight smallint(5) default NULL,
-  posted_by varchar(60) default NULL,
-  edited_by varchar(60) default NULL,
+  posted_by char(60) default NULL,
+  edited_by char(60) default NULL,
   last_edit bigint(20) default NULL,
-  display_count int(11) NOT NULL default '0',
-  flags varchar(30) default NULL,
-  disc_count int(11) default '0',
-  disc_app int(11) default '0',
-  externally_fed varchar(150) NOT NULL default '',
+  display_count int(11) NOT NULL default '0',     # log information of how many times it was displayed
+  flags char(30) default NULL,                    # item flags for future ussage
+  disc_count int(11) default '0',                 # number of discuss comments for this item
+  disc_app int(11) default '0',                   # number of approved discuss comments
+  externally_fed char(150) NOT NULL default '',   
   moved2active int(10) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY short_id (short_id),
   KEY slice_id_2 (slice_id,status_code,publish_date),
   KEY expiry_date (expiry_date)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `jump`
+# Table structure for table `jump`
 #
 
 DROP TABLE IF EXISTS jump;
@@ -472,11 +473,11 @@ CREATE TABLE jump (
   destination varchar(255) default NULL,
   dest_slice_id varchar(16) default NULL,
   PRIMARY KEY  (slice_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `log`
+# Table structure for table `log`
 #
 
 DROP TABLE IF EXISTS log;
@@ -488,11 +489,11 @@ CREATE TABLE log (
   params char(128) default NULL,
   PRIMARY KEY  (id),
   KEY time (time)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `membership`
+# Table structure for table `membership`
 #
 
 DROP TABLE IF EXISTS membership;
@@ -502,31 +503,33 @@ CREATE TABLE membership (
   last_mod timestamp(14) NOT NULL,
   PRIMARY KEY  (groupid,memberid),
   KEY memberid (memberid)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
-#
-# Struktura tabulky `module`
-#
+# --------------------------------------------------------
+# Table structure for table 'module'
+# Module table is generalized version of slice table. The module is slice, 
+# but the module could be also poll, petition or one of other module types we 
+# will program in future
 
 DROP TABLE IF EXISTS module;
 CREATE TABLE module (
-  id varchar(16) NOT NULL default '',
-  name varchar(100) NOT NULL default '',
-  deleted smallint(5) default NULL,
-  type varchar(16) default 'S',
-  slice_url varchar(255) default NULL,
-  lang_file varchar(50) default NULL,
+  id char(16) NOT NULL default '',       # id reffers to id in table slice or another module table
+  name char(100) NOT NULL default '',    # name to be displayed in module swithing menu in admin interface. From historical reasons it duplicates slice.name for modules of 'slice' ('S') type
+  deleted smallint(5) default NULL,      # boolean value to mark deleted modules. From historical reasons it duplicates slice.deleted for modules of 'slice' ('S') type
+  type char(16) default 'S',             # module type - 'S' for slice, 'P' for polls (see $MODULES variable in /include/constants.php3
+  slice_url char(255) default NULL,
+  lang_file char(50) default NULL,
   created_at bigint(20) NOT NULL default '0',
-  created_by varchar(255) NOT NULL default '',
-  owner varchar(16) NOT NULL default '',
+  created_by char(255) NOT NULL default '',
+  owner char(16) NOT NULL default '',
   flag int(11) default '0',
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `mysql_auth_group`
+# Table structure for table `mysql_auth_group`
 #
 
 DROP TABLE IF EXISTS mysql_auth_group;
@@ -534,11 +537,11 @@ CREATE TABLE mysql_auth_group (
   slice_id varchar(16) NOT NULL default '',
   groupparent varchar(30) NOT NULL default '',
   groups varchar(30) NOT NULL default ''
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `mysql_auth_user`
+# Table structure for table `mysql_auth_user`
 #
 
 DROP TABLE IF EXISTS mysql_auth_user;
@@ -548,11 +551,11 @@ CREATE TABLE mysql_auth_user (
   passwd char(30) NOT NULL default '',
   PRIMARY KEY  (uid),
   UNIQUE KEY username (username)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `mysql_auth_user_group`
+# Table structure for table `mysql_auth_user_group`
 #
 
 DROP TABLE IF EXISTS mysql_auth_user_group;
@@ -560,11 +563,11 @@ CREATE TABLE mysql_auth_user_group (
   username char(30) NOT NULL default '',
   groups char(30) NOT NULL default '',
   PRIMARY KEY  (username,groups)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `mysql_auth_userinfo`
+# Table structure for table `mysql_auth_userinfo`
 #
 
 DROP TABLE IF EXISTS mysql_auth_userinfo;
@@ -576,16 +579,16 @@ CREATE TABLE mysql_auth_userinfo (
   organisation varchar(50) default NULL,
   start_date bigint(20) default NULL,
   renewal_date bigint(20) default NULL,
-  email varchar(50) default 'admin@ein.org.uk',
+  email varchar(50) default '',
   membership_type varchar(50) default NULL,
   status_code smallint(5) default '2',
   todo varchar(250) default NULL,
   PRIMARY KEY  (uid)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `nodes`
+# Table structure for table `nodes`
 #
 
 DROP TABLE IF EXISTS nodes;
@@ -594,12 +597,19 @@ CREATE TABLE nodes (
   server_url varchar(200) NOT NULL default '',
   password varchar(50) NOT NULL default '',
   PRIMARY KEY  (name)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `offline`
+# Table structure for table `offline`
 #
+
+# --------------------------------------------------------
+# Table structure for table 'offline' 
+# This table holds information about items, which is off-line filled
+# (such items have no identificating id before feed, so it must be created for
+# them; The identification of off-line filled items are done with digest - md5
+# of whole item content (prvent from multiple uploading of the same item))
 
 DROP TABLE IF EXISTS offline;
 CREATE TABLE offline (
@@ -608,11 +618,11 @@ CREATE TABLE offline (
   flag int(11) default NULL,
   PRIMARY KEY  (id),
   KEY digest (digest)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `pagecache`
+# Table structure for table `pagecache`
 #
 
 DROP TABLE IF EXISTS pagecache;
@@ -624,11 +634,11 @@ CREATE TABLE pagecache (
   flag int(11) default NULL,
   PRIMARY KEY  (id),
   KEY stored (stored)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `perms`
+# Table structure for table `perms`
 #
 
 DROP TABLE IF EXISTS perms;
@@ -640,28 +650,31 @@ CREATE TABLE perms (
   last_mod timestamp(14) NOT NULL,
   PRIMARY KEY  (objectid,userid,object_type),
   KEY userid (userid)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `profile`
+# Table structure for table `profile`
+# Table used for storing user profiles (user preferences in admin interface)
 #
 
 DROP TABLE IF EXISTS profile;
 CREATE TABLE profile (
   id int(11) NOT NULL auto_increment,
-  slice_id varchar(16) NOT NULL default '',
-  uid varchar(60) NOT NULL default '*',
-  property varchar(20) NOT NULL default '',
-  selector varchar(255) default NULL,
-  value text,
+   slice_id varchar(16) NOT NULL,
+   uid varchar(60) DEFAULT '*' NOT NULL,   # user id (number for SQL permission system, uid=... string for LDAP permissions. '*' stands for default user setting
+   property varchar(20) NOT NULL,          # one of: listlen, admin_search, admin_order, hide, hide&fill, fill, predefine
+   selector varchar(255),                  # field_id if needed
+   value text,                             # value of property
   PRIMARY KEY  (id),
   KEY slice_user_id (slice_id,uid)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `relation`
+# Table structure for table `relation`
+# Table used for storing relations between items (could hold feeding info,
+# discussion threads, list of related items ...)
 #
 
 DROP TABLE IF EXISTS relation;
@@ -671,11 +684,11 @@ CREATE TABLE relation (
   flag int(11) default NULL,
   KEY source_id (source_id),
   KEY destination_id (destination_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `searchlog`
+# Table structure for table `searchlog`
 #
 
 DROP TABLE IF EXISTS searchlog;
@@ -688,11 +701,38 @@ CREATE TABLE searchlog (
   user text,
   additional1 text,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+);
+
+# --------------------------------------------------------
+# Table structure for table 'site'
+# main table for "site" module
+
+DROP TABLE IF EXISTS site;
+CREATE TABLE site (
+   id varchar(16) NOT NULL,
+   start_spot int(11),
+   structure text,
+   flag int(11),
+   PRIMARY KEY (id)
+);
+
+# --------------------------------------------------------
+# Table structure for table 'site_spot'
+
+DROP TABLE IF EXISTS site_spot;
+CREATE TABLE site_spot (
+  id int(11) NOT NULL auto_increment,
+  spot_id int(11) NOT NULL default '0',
+  site_id varchar(16) NOT NULL default '',
+  content mediumtext NOT NULL,
+  flag bigint(20) default NULL,
+  PRIMARY KEY (id),
+  KEY spot(site_id,spot_id)
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `slice`
+# Table structure for table `slice`
 #
 
 DROP TABLE IF EXISTS slice;
@@ -738,13 +778,13 @@ CREATE TABLE slice (
   notify_active_item_edit_b mediumtext,
   notify_active_item_s mediumtext,
   notify_active_item_b mediumtext,
-  noitem_msg mediumtext,
+  noitem_msg mediumtext,                           # html text shown if no item found
   admin_format_top text,
   admin_format text,
   admin_format_bottom text,
   admin_remove text,
-  permit_anonymous_post smallint(5) default NULL,
-  permit_offline_fill smallint(5) default NULL,
+  permit_anonymous_post smallint(5) default NULL,  # 0 - forbidden, 1 - allowed to approved, 2 - allowed to holding bin
+  permit_offline_fill smallint(5) default NULL,    # 0 - forbidden, 1 - allowed to approved, 2 - allowed to holding bin
   aditional text,
   flag int(11) NOT NULL default '0',
   vid int(11) default '0',
@@ -752,15 +792,15 @@ CREATE TABLE slice (
   group_by varchar(16) default NULL,
   gb_header tinyint(4) default NULL,
   gb_case varchar(15) default NULL,
-  javascript text,
+  javascript text,                                 # field triggers in JavaScript
   fileman_access varchar(20) default NULL,
   fileman_dir varchar(50) default NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `slice_owner`
+# Table structure for table `slice_owner`
 #
 
 DROP TABLE IF EXISTS slice_owner;
@@ -769,11 +809,11 @@ CREATE TABLE slice_owner (
   name char(80) NOT NULL default '',
   email char(80) NOT NULL default '',
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `subscriptions`
+# Table structure for table `subscriptions`
 #
 
 DROP TABLE IF EXISTS subscriptions;
@@ -785,11 +825,11 @@ CREATE TABLE subscriptions (
   frequency smallint(5) NOT NULL default '0',
   last_post bigint(20) NOT NULL default '0',
   KEY uid (uid,frequency)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `users`
+# Table structure for table `users`
 #
 
 DROP TABLE IF EXISTS users;
@@ -809,19 +849,19 @@ CREATE TABLE users (
   KEY mail (mail),
   KEY name (name),
   KEY sn (sn)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `view`
+# Table structure for table `view`
 #
 
 DROP TABLE IF EXISTS view;
 CREATE TABLE view (
   id int(10) unsigned NOT NULL auto_increment,
   slice_id varchar(16) NOT NULL default '',
-  name varchar(50) default NULL,
-  type varchar(10) default NULL,
+  name varchar(50) default NULL,               # name of view
+  type varchar(10) default NULL,               # type of view (fulltext, digest, rss, ...)
   before text,
   even text,
   odd text,
@@ -862,7 +902,7 @@ CREATE TABLE view (
   aditional4 text,
   aditional5 text,
   aditional6 text,
-  noitem_msg text,
+  noitem_msg text,                    # html text shown if no item found
   group_bottom text,
   field1 varchar(16) default NULL,
   field2 varchar(16) default NULL,
@@ -870,11 +910,11 @@ CREATE TABLE view (
   calendar_type varchar(100) default 'mon',
   PRIMARY KEY  (id),
   KEY slice_id (slice_id)
-) TYPE=MyISAM;
+);
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `wizard_template`
+# Table structure for table `wizard_template`
 #
 
 DROP TABLE IF EXISTS wizard_template;
@@ -884,11 +924,11 @@ CREATE TABLE wizard_template (
   description varchar(255) NOT NULL default '',
   PRIMARY KEY  (id),
   UNIQUE KEY dir (dir)
-) TYPE=MyISAM COMMENT='List of templates for the New Slice Wizard';
+) COMMENT='List of templates for the New Slice Wizard';
 # --------------------------------------------------------
 
 #
-# Struktura tabulky `wizard_welcome`
+# Table structure for table `wizard_welcome`
 #
 
 DROP TABLE IF EXISTS wizard_welcome;
@@ -899,7 +939,7 @@ CREATE TABLE wizard_welcome (
   subject varchar(255) NOT NULL default '',
   mail_from varchar(255) NOT NULL default '_#ME_MAIL_',
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+);
 
 # --------------------------------------------------------
 

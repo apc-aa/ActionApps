@@ -98,6 +98,9 @@ define("L_PARAM_WIZARD_INPUT_pre_PAR4_EXAMPLE","0");
 define("L_PARAM_WIZARD_INPUT_pre_PAR5_NAME","secondfield");
 define("L_PARAM_WIZARD_INPUT_pre_PAR5_DESC","field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)");
 define("L_PARAM_WIZARD_INPUT_pre_PAR5_EXAMPLE","source_href.....");
+define("L_PARAM_WIZARD_INPUT_pre_PAR6_NAME","add2constant");
+define("L_PARAM_WIZARD_INPUT_pre_PAR6_DESC","if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)");
+define("L_PARAM_WIZARD_INPUT_pre_PAR6_EXAMPLE","0");
 
 define("L_PARAM_WIZARD_INPUT_tpr_NAME","Text Area with Presets");
 define("L_PARAM_WIZARD_INPUT_tpr_DESC","Text area with values names list. When you choose a name from the list, the appropriate value is printed in the text area");

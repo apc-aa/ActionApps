@@ -33,50 +33,10 @@ require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require $GLOBALS[AA_INC_PATH]."um_util.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
-
-# Functions definitions ----------------------------------------
-
-# Prints html tag <select ..
-function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
-  if( $substract=="" )                 // $substract list of values not shovn in <select> even if in $arr
-    $substract = array();
-  if( $type == "short" )               // 1-row listbox
-    echo "<select name=\"$name\">";
-   else                                // 8-row listbox
-    echo "<select name=\"$name\" size=8>";
-  if( isset($arr) AND is_array($arr)) {
-    reset($arr);
-    while(list($k, $v) = each($arr)) {
-      if( ($v[name] != "") AND ($substract[$k] == "") ) {
-        $option_exist = true;
-        echo "<option value=\"". htmlspecialchars($k)."\"";
-        if ((string)$selected == (string)$k)
-          echo " selected";
-        echo "> ". htmlspecialchars($v[name]) ." </option>";
-      }
-    }
-    if( !$option_exist )  // if no options, we must set width of <select> box
-      echo '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>';
-  }
-  echo "</select>\n";
-}
-
-function GetFiltered($type, $filter, $to_much, $none) {
-  switch( $type ) {
-    case "U": $list = FindUsers($filter); break;
-    case "G": $list = FindGroups($filter); break;
-  }
-  if( !is_array($list) ) {
-    unset($list);
-    $list["n"][name] = (( $list == "too much" ) ? $to_much : $none);
-  }
-  return $list;
-}
-
-# End functions definitions ----------------------------------------
 
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
   MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_NEW_USER, "admin");
@@ -116,61 +76,15 @@ if( $selected_group ) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-# Process submited form ----------------------------------------
 
-if( $add_submit OR ($submit_action == "update_submit"))
-{
-  do  {
-    # Procces group data ---------------------
-    ValidateInput("group_name", L_GROUP_NAME, $group_name, $err, ($add_submit ? true : false), "text");
-    ValidateInput("group_description", L_GROUP_DESCRIPTION, $group_description, $err, false, "text");
-    if( count($err) > 1)
-      break;
+# Process submited form -------------------------------------------------------
 
-    $grouprecord["description"] = $group_description;
-    $grouprecord["name"] = $group_name;
-//  $grouprecord["owner"] = ...;           // not used, for now
+if( $add_submit OR ($submit_action == "update_submit")) {
 
-    if( $add_submit ) {
-      if(!($newgroupid = AddGroup($grouprecord)))
-        $err["LDAP"] = MsgErr( L_ERR_GROUP_ADD );
-      if( count($err) <= 1 ) {
-	if ($group_super) {	// set super admin privilege
-	  AddPerm($newgroupid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
-	}
-        $Msg = MsgOK(L_NEWGROUP_OK);
-        go_url( con_url($sess->url($PHP_SELF), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);
-      }
-    } else {
-      $grouprecord["uid"] = $selected_group;
-      if(!ChangeGroup($grouprecord))
-        $err["LDAP"] = MsgErr( L_ERR_GROUP_CHANGE );
-      if ($group_super) {		// set or revoke super admin privilege
-	AddPerm($grouprecord["uid"], AA_ID, "aa", $perms_roles["SUPER"]['id']);
-      } else {
-	DelPerm($grouprecord["uid"], AA_ID, "aa");
-      }
-    }
+  # all the actions are in following require (we reuse this part of code for
+  # slice wizard ...
+  require $GLOBALS[AA_INC_PATH]."um_gedit.php3";
 
-    # Procces users data ---------------------
-    //posted_users contains comma delimeted list of selected users of group
-    if ($posted_users) {
-       $assigned_users = explode(",",$posted_users); 
-    }
-    
-    if (isset($sel_users) AND is_array($sel_users) AND ($sel_users["n"]=="")) {
-      reset($sel_users);
-      while( list($foo_uid,) = each($sel_users))  // first remove all members
-        DelGroupMember ($selected_group, $foo_uid);
-    }
-    if (isset($assigned_users)) {
-      reset($assigned_users);
-      while( list(,$foo_uid) = each($assigned_users)){  // then we add specified users to group
-        $foo_uid = urldecode($foo_uid);                 // we use urldecode in order to use comma as separator
-        AddGroupMember ($selected_group, $foo_uid);
-      }
-    }
-  } while(false);
   if (count($err) <= 1) {
     $Msg = MsgOK(L_NEWGROUP_OK);
     go_url( con_url($sess->url($PHP_SELF), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
@@ -197,6 +111,22 @@ function RealyDelete() {
     document.f2.submit()
   }  
 }
+
+  // function changes content of role listbox for new module, when user selects another module to be added
+  function SetRole(no) {
+    var idx=document.f.elements['new_module['+no+']'].selectedIndex;
+    var roles;
+    // which roles is defined for the module
+    roles = ( idx > 0 ) ? mod[mod_types.charCodeAt(idx-1)] : new Array('                     ');
+    // clear selectbox
+    for( i=(document.f.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
+      document.f.elements['new_module_role['+no+']'].options[i] = null
+    }
+    // fill selectbox from the right slice
+    for( i=0; i<roles.length ; i++) {
+      document.f.elements['new_module_role['+no+']'].options[i] = new Option(roles[i], roles[i])
+    }
+  }
 // -->
 </SCRIPT>
 </HEAD>
@@ -314,6 +244,11 @@ if( !$add_submit AND !$grp_new) {?>
   echo '    </td>
         </tr>
       </table></td></tr>';
+
+  # User - permissions -----------------------------------------
+
+  $mod_types = PrintModulePermModificator($selected_group);   # shared with um_gedit.php3
+
 }  
       
 echo '<tr><td align="center">';
@@ -329,11 +264,8 @@ echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 echo '<input type=hidden name=selected_group value="'.$selected_group.'">&nbsp;&nbsp;';
 echo '<input type=hidden name=posted_users value=0>';  // to this variable store assigned users (by javascript)
 echo '<input type=hidden name=submit_action value=0>';  // to this variable store "add_submit" or "update_submit" (by javascript)
-?>
-  </td></tr></table>
-</FORM>
-</BODY>
-</HTML>
-<?php page_close()
-?>
+echo '</td></tr></table></FORM>';
 
+PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
+
+page_close(); ?>
