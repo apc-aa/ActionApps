@@ -321,89 +321,98 @@
 <h2>Field View Grammar</h2>
 <a name="fieldview"></a>
 <table width="100%" border="1">
-  <tr> 
-    <td width="12%"><b>Attribute</b></td>
-    <td width="20%"><b>Values</b></td>
-    <td width="55%"><b>Description</b></td>
-    <td width="13%"><b>Default</b></td>
-  </tr>
-  <tr> 
-    <td width="12%">type</td>
-    <td width="20%"><code>hide | select | checkbox | text | area | date | userdef</code></td>
-    <td width="55%">
-      <p>hidden | select box | text edit box | text area | date special | user 
-        defined function</p>
-      <p>Date <span lang="en-us">works on a timestamp stored </span>i<span lang="en-us">n 
-        a numeric field in database. It </span>is <span lang="en-us">printed </span>formatted 
-        with &quot;format&quot; and <span lang="en-us">users </span>may<span lang="en-us"> 
-        change it</span> by typing a<span lang="en-us">nother</span> value in 
-        the same format. <span lang="en-us">When using &quot;default&quot; in 
-        Field Parameters, give the numerical timestamp value.</span></p>
-      <p>Checkbox is currently implemented as a select box with options Yes and 
-        No. </p>
-      <p>User defined function is always used only to print the field value, always 
-        shown readonly.</p>
-    </td>
-    <td width="13%">depends on database field type</td>
-  </tr>
-  <tr>
-    <td width="12%">size</td>
-    <td width="20%"><code>array (&quot;cols&quot;</code> =&gt; c, <code>&quot;rows&quot;</code> 
-      =&gt; r)</td>
-    <td width="55%"> used with &quot;text edit box&quot; (only &quot;cols&quot;) 
-      and &quot;text area&quot; (both &quot;cols&quot; and &quot;rows&quot;) types, 
-      replace &quot;c&quot; with number of columns, &quot;r&quot; with number 
-      of rows</td>
-    <td width="13%">c = 40, r = 4</td>
-  </tr>
-  <tr> 
-    <td width="12%">function</td>
-    <td width="20%">&nbsp;</td>
-    <td width="55%">required for &quot;userdef&quot; type, name of function which<br>
-      takes field value as the only parameter</td>
-    <td width="13%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">source</td>
-    <td width="20%">&nbsp;</td>
-    <td width="55%">required for &quot;select&quot; type, array of (&quot;value&quot;=&gt;&quot;option&quot;)</td>
-    <td width="13%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">format</td>
-    <td width="20%">&nbsp;</td>
-    <td width="55%">required for &quot;date&quot;, PHP date() format</td>
-    <td width="13%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">readonly</td>
-    <td width="20%"><code>true | false</code></td>
-    <td width="55%">if false, shows only the field value instead of form controls</td>
-    <td width="13%">global table view &quot;readonly&quot;, for &quot;userdef&quot; 
-      type always <code>true</code> </td>
-  </tr>
-  <tr> 
-    <td width="12%">href_view</td>
-    <td width="20%">&nbsp;</td>
-    <td width="55%">applied only on readonly fields, links the text to another 
-      table view, shows the record identified by this field there</td>
-    <td width="13%">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td width="12%">html</td>
-    <td width="20%"><code>true | false</code></td>
-    <td width="55%">applied only on readonly fields, show as HTML or as plain 
-      text</td>
-    <td width="13%"><code>false</code></td>
-  </tr>
-  <tr> 
-    <td width="12%">unpacked</td>
-    <td width="20%"><code>true <span lang="en-us">| false</span></code></td>
-    <td width="55%"><span lang="en-us">useful for packed IDs: show the value 
-    unpacked, store it packed. When using &quot;default&quot; in Field Parameters, give 
-    the&nbsp; packed unquoted value.</span></td>
-    <td width="13%"><code><span lang="en-us">false</span></code></td>
-  </tr>
+    <tr> 
+        <td width="12%"><b>Attribute</b></td>
+        <td width="20%"><b>Values</b></td>
+        <td width="55%"><b>Description</b></td>
+        <td width="13%"><b>Default</b></td>
+    </tr>
+    <tr> 
+        <td width="12%">type</td>
+        <td width="20%"><code>hide | select | checkbox | text | area | date | 
+            userdef</code></td>
+        <td width="55%"> <p>hidden | select box | text edit box | text area | 
+                date special | user defined function</p>
+            <p>Date <span lang="en-us">works on a timestamp stored </span>i<span lang="en-us">n 
+                a numeric field in database. It </span>is <span lang="en-us">printed 
+                </span>formatted with &quot;format&quot; and <span lang="en-us">users 
+                </span>may<span lang="en-us"> change it</span> by typing a<span lang="en-us">nother</span> 
+                value in the same format. <span lang="en-us">When using &quot;default&quot; 
+                in Field Parameters, give the numerical timestamp value.</span></p>
+            <p>Checkbox is currently implemented as a select box with options 
+                Yes and No. </p>
+            <p>User defined function is always used only to print the field value, 
+                always shown readonly.</p></td>
+        <td width="13%">depends on database field type</td>
+    </tr>
+    <tr> 
+        <td width="12%">size</td>
+        <td width="20%"><code>array (&quot;cols&quot;</code> =&gt; c, <code>&quot;rows&quot;</code> 
+            =&gt; r)</td>
+        <td width="55%"> used with &quot;text edit box&quot; (only &quot;cols&quot;) 
+            and &quot;text area&quot; (both &quot;cols&quot; and &quot;rows&quot;) 
+            types, replace &quot;c&quot; with number of columns, &quot;r&quot; 
+            with number of rows</td>
+        <td width="13%">c = 40, r = 4</td>
+    </tr>
+    <tr> 
+        <td>maxlen</td>
+        <td>number</td>
+        <td>applied on readonly fields: if the length of the field value exceeds 
+            this number, only the first <em>maxlen</em> characters are printed 
+            followed by dots ...</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="12%">function</td>
+        <td width="20%">&nbsp;</td>
+        <td width="55%">required for &quot;userdef&quot; type, name of function 
+            which<br>
+            takes field value as the only parameter</td>
+        <td width="13%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="12%">source</td>
+        <td width="20%">&nbsp;</td>
+        <td width="55%">required for &quot;select&quot; type, array of (&quot;value&quot;=&gt;&quot;option&quot;)</td>
+        <td width="13%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="12%">format</td>
+        <td width="20%">&nbsp;</td>
+        <td width="55%">required for &quot;date&quot;, PHP date() format</td>
+        <td width="13%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="12%">readonly</td>
+        <td width="20%"><code>true | false</code></td>
+        <td width="55%">if false, shows only the field value instead of form controls</td>
+        <td width="13%">global table view &quot;readonly&quot;, for &quot;userdef&quot; 
+            type always <code>true</code> </td>
+    </tr>
+    <tr> 
+        <td width="12%">href_view</td>
+        <td width="20%">&nbsp;</td>
+        <td width="55%"><p>readonly fields: links the text to another table view, 
+                allowing to edit the record identified by this field </p>
+            <p>read-write fields: shows a linked Edit icon with the same meaning</p></td>
+        <td width="13%">&nbsp;</td>
+    </tr>
+    <tr> 
+        <td width="12%">html</td>
+        <td width="20%"><code>true | false</code></td>
+        <td width="55%">applied only on readonly fields, show as HTML or as plain 
+            text</td>
+        <td width="13%"><code>false</code></td>
+    </tr>
+    <tr> 
+        <td width="12%">unpacked</td>
+        <td width="20%"><code>true <span lang="en-us">| false</span></code></td>
+        <td width="55%"><span lang="en-us">useful for packed IDs: show the value 
+            unpacked, store it packed. When using &quot;default&quot; in Field 
+            Parameters, give the&nbsp; packed unquoted value.</span></td>
+        <td width="13%"><code><span lang="en-us">false</span></code></td>
+    </tr>
 </table>
 <h2>Join Grammar</h2>
 <p>If you want to view fields from several tables in one record, the tables must 

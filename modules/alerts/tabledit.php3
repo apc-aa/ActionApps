@@ -19,25 +19,38 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// (c) Econnect, Jakub Adamek, December 2002
+// DOCUMENTATION: doc/tabledit.html, doc/tabledit_developer.html, doc/tableview.html
+
 /* Shows a Table View, allowing to edit, delete, update fields of a table
    Params:
        $set_tview -- required, name of the table view
 */
 
+require "../../include/config.php3";
+require $GLOBALS[AA_INC_PATH]."constants.php3";
+require $GLOBALS[AA_INC_PATH]."locsess.php3";
+require $GLOBALS[AA_INC_PATH]."tabledit.php3";
+require $GLOBALS[AA_INC_PATH]."tv_common.php3";
+require $GLOBALS[AA_INC_PATH]."util.php3";
+require "tableviews.php3";
+
+if ($cmd["modedit"]["update"]) 
+    ProcessFormData ("GetAlertsTableView", $val, $cmd);
+
 $directory_depth = "../";
 require "$directory_depth../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."tabledit.php3";
-require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+if (!$new_module)
+    require $MODULES[$g_modules[$slice_id]['type']]['menu'];   
 
 // ----------------------------------------------------------------------------------------
+
+set_collectionid();
 
 $sess->register("tview");
 if ($set_tview) $tview = $set_tview;
 
-require $GLOBALS[AA_INC_PATH]."tv_common.php3";
-require "tableviews.php3";
-
-$tableview = GetTableView($tview);
+$tableview = GetAlertsTableView($tview);
 
 if (!is_array ($tableview)) { MsgPage ($sess->url(self_base()."index.php3"), "Bad Table view ID: ".$tview); exit; }
 if (! $tableview["cond"] )  { MsgPage ($sess->url(self_base()."index.php3"), L_NO_PS_ADD, "standalone"); exit; }
@@ -46,9 +59,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 echo '<LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.'/tabledit.css" type="text/css"  title="TableEditCSS">';
 echo "<TITLE>".$tableview["title"]."</TITLE></HEAD>";
-showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
+
+// called before menu because of Item Manager
+ProcessFormData ("GetAlertsTableView", $val, $cmd);
+if (!$new_module)
+    showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
 echo "<TABLE width='100%'><TR valign=center><TD>";
-echo "<H1><B>" . $tableview["caption"] . "</B></H1>";
+echo "<H1>" . $tableview["caption"] . "</H1>";
 if ($tableview["children"]) {
     echo "</TD><TD>";
     reset ($tableview["children"]);
@@ -61,10 +78,17 @@ PrintArray($err);
 echo $Msg;
 $script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
 
-$tabledit = new tabledit ($tview, $script, $cmd, $val, $tableview, $AA_INSTAL_PATH."images/", $sess, "GetTableView");
-$err = $tabledit->view ($where);
+$tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."images/", $sess, "GetAlertsTableView");
+$err = $tabledit->view ();
+
+if (!$err && $tview == "acf") {
+    require "design.php3";
+    ShowCollectionAddOns();
+}
 
 if ($err) echo "<b>$err</b>";
-HTMLPageEnd();
+if ($new_module)
+    echo "</BODY></HTML>";
+else HTMLPageEnd();
 page_close ();
 ?>

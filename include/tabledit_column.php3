@@ -34,7 +34,7 @@ http://www.apc.org/
 * @return nothing
 */                    
 
-function ColumnFunctions ($cview, &$val, $function, $name="") 
+function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false) 
 {
     global $err;
     
@@ -96,9 +96,15 @@ function ColumnFunctions ($cview, &$val, $function, $name="")
     
         switch ($function) {
         case 'show':
+            // show ****** for undefined values in select box, but not for new records
+            if (!isset ($cview["source"][$val]) && !$new_record)
+                $cview["source"][$val] = "*******";            
             FrmSelectEasy($name, $cview["source"], $val); 
             break;
         case 'show_ro':           
+            // show ****** for undefined values in select box, but not for new records
+            if (!isset ($cview["source"][$val]) && !$new_record)
+                $cview["source"][$val] = "*******";            
             ShowColumnValueReadOnly ($cview, $cview["source"][$val], $name);
             break;
         }
@@ -183,12 +189,15 @@ function ShowColumnValueReadOnly ($cview, $val, $name="") {
     if ($name)
         echo "<INPUT type=\"hidden\" name=\"$name\" value=\"".$val."\">\n";       
     if ($val) {
-        if (!$cview["html"]) $val = htmlentities ($val);
+        if (!$cview["html"]) $val = htmlspecialchars ($val);
     }
     else if ($val == 0 && is_field_type_numerical ($cview["dbtype"]) 
         && $cview["type"] != "date")
         $val = "0";
     else $val = "&nbsp;";
+    
+    if ($cview["maxlen"] && strlen ($val) > $cview["maxlen"])
+        $val = substr ($val, 0, $cview["maxlen"])." ...";
 
     echo $val;
 }    

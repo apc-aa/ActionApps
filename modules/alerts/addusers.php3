@@ -125,7 +125,8 @@ function add_email ($email, $firstname, $lastname)
     $db->query ("SELECT id, firstname, lastname FROM alerts_user WHERE email='$email'");
     if ($db->next_record()) {
         $userid = $db->f("id");
-        if ($db->f("firstname") != $firstname || $db->f("lastname") != $lastname)
+        if (($firstname || $lastname)
+            && ($db->f("firstname") != $firstname || $db->f("lastname") != $lastname))
             $err[] = email_address ("$firstname $lastname", $email)." "._m("is already in the database with another name: ").$db->f("firstname")." ".$db->f("lastname");
     }
     else {
@@ -138,6 +139,7 @@ function add_email ($email, $firstname, $lastname)
     }
 
     $ok = add_user_collection (array (
+        "email" => $email,
         "userid" => $userid,
         "allfilters" => 1,
         "howoften" => $add["howoften"]),

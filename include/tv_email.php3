@@ -73,10 +73,19 @@ function GetEmailTableView ($viewID, $processForm = false)
             "html" => array (
                 "caption" => _m("use HTML"),
                 "default" => 1,
-                "view" => array ("type" => "checkbox"))
+                "view" => array ("type" => "checkbox")),
+            "owner_module_id" => array (
+                "caption" => _m("owner"),
+                "default" => pack_id ($GLOBALS["slice_id"]),
+                "view" => array ("type"=>"select","source"=>SelectModule(),"unpacked"=>true),
+            )
         ));
     }
 
+    // ------------------------------------------------------------------------------------
+    // email: this view browses emails, it is currently used in Alerts module
+    //        but may be added anywhere else
+    
     if ($viewID == "email") {
         global $LANGUAGE_CHARSETS, $LANGUAGE_NAMES;
         reset ($LANGUAGE_CHARSETS);
@@ -94,16 +103,18 @@ function GetEmailTableView ($viewID, $processForm = false)
         "buttons_left" => array ("delete_checkbox"=>1,"edit"=>1),
         "gotoview" => "email_edit",
         "cond" => 1,
-        "submenu" => "email",
         "where" => GetEmailWhere(),        
         "fields" => array (
             "description" => array (
                 "caption" => _m("description")),
             "subject" => array (
-                "caption" => _m("subject")),
+                "caption" => _m("subject"), "view"=>array("maxlen"=>50)),
             "body" => array (
                 "caption" => _m("body"),
-                "view" => array ("type" => "text", "size" => array ("rows"=>8))),
+                "view" => array (
+                    "maxlen" => 100,
+                    "type" => "text", 
+                    "size" => array ("rows"=>8))),
             "header_from" => array (
                 "caption" => _m("from")),
             "reply_to" => array (
@@ -111,13 +122,7 @@ function GetEmailTableView ($viewID, $processForm = false)
             "errors_to" => array (
                 "caption" => _m("errors to")),
             "sender" => array (
-                "caption" => _m("sender")),
-            "lang" => array (
-                "caption" => _m("language (charset)"),
-                "view" => array ("type" => "select", "source" => $mylangs)),
-            "html" => array (
-                "caption" => _m("use HTML"),
-                "view" => array ("type" => "checkbox"))
+                "caption" => _m("sender"))
         ));
     }
 }            
@@ -139,5 +144,5 @@ function GetEmailWhere () {
     }
     return $retval;
 }
-
+   
 ?>

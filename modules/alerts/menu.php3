@@ -46,14 +46,14 @@ bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".substr(LANG_FILE,0,2)."_aler
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
 
+set_collectionid();
+
 function get_aamenus ()
 {
     global $r_slice_view_url,
            $auth,
            $AA_INSTAL_PATH,
            $AA_CP_Session;
-
-    $collectionid = 1;
 
     $aamenus["addusers"] = array (
         "label" => _m("Add Users"),
@@ -101,7 +101,10 @@ function get_aamenus ()
             "label"=>_m("Design")),
         "settings"=>array ("cond"=>IfSlPerm(PS_USERS), 
             "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
-                .urlencode ($GLOBALS["slice_id"])."]=1", "label"=>_m("Settings"))
+                .$GLOBALS["slice_id"]."]=1", "label"=>_m("Settings")),
+        "header2" => _m("Common"),
+		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
+			"href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Emails"))
     ));
         
     global $db, $collectionid;

@@ -33,20 +33,23 @@ $directory_depth = "../";
 require "../../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $MODULES[$g_modules[$slice_id]['type']]['menu'];   
-require "cf_common.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Collection Form Wizard") ."</TITLE>
 </HEAD>";
+
+set_collectionid();
 
 showMenu ($aamenus, "admin", "formwizard");
 
 if (!is_object ($db)) $db = new DB_AA;
 
 if (!$collectionid) {
-    $db->query("SELECT id, description FROM alerts_collection WHERE showme=1");
+    $db->query("SELECT AC.id, name FROM alerts_collection AC
+        INNER JOIN module ON module.id = AC.moduleid
+        WHERE showme=1");
     while ($db->next_record()) 
-        $collections [$db->f("id")] = $db->f("description");
+        $collections [$db->f("id")] = $db->f("name");
     
     echo "<FORM name=choose_collection ACTION=cf_wizard.php3 METHOD=post>\n";
     echo "<INPUT TYPE=hidden NAME=AA_CP_Session VALUE='$AA_CP_Session'>\n";
@@ -61,8 +64,11 @@ if (!$collectionid) {
     exit;
 }
 
-if ($formlang)
-    bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_news_lang.inc");
+if ($formlang) 
+    bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_alerts_lang.inc");
+
+// after bind_mgettext_domain!
+require "cf_common.php3";
     
 // create the Choose Filters code
 $db->query ("
@@ -76,38 +82,32 @@ while ($db->next_record())
         
 $cf_fields["filters"] = array ("code"=>$filters, "label"=>_m("Choose Filters"));        
 
-$db->query ("SELECT * FROM alerts_collection WHERE id=$collectionid");
+if (get_howoften_options ($collectionprop["fix_howoften"]))
+    unset ($cf_fields["howoften"]);
+
+$db->query ("SELECT AC.id, name, slice_url FROM alerts_collection AC 
+    INNER JOIN module ON AC.moduleid = module.id
+    WHERE AC.id=$collectionid");
 if (!$db->next_record()) { echo "Error: collection id $collectionid not found."; exit; }
-$cf_url = $db->f("url");
+$cf_url = $db->f("slice_url");
 
 echo "
 <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABBG." align='center'>
 <TR><TD class=tabtxt>";
-echo "<h1>"._m("Collection Form Wizard for")." ".$db->f("description")."</h1>";
-echo _m(
-    "This Wizard helps to create Collection Forms, i.e. forms, where users subscribe 
-     or change their subscription to a Collection. The Wizard creates the rough HTML
-     form code, which you can change to your particular design.<br><br>\n
-     Add the code to the .shtml page either directly or by including a file. Add the following 
-     SSI includes after it:")
-     ."<br><code>"
-     .HTMLEntities ("<!--#include virtual=\"".$AA_INSTAL_PATH."misc/alerts/cf_filler.php3?cid=$collectionid\"-->")."<br>\n"
-     .HTMLEntities ("<!--#include virtual=\"".$AA_INSTAL_PATH."misc/alerts/cf_fillform.php3?cid=$collectionid\"-->")
-     ."<br></code>"
-     ._m("The table below shows fields which you may want to appear in your form. Some of them 
-     are required (marked by asterix *).<BR><BR>\n
-     After you have created the form, jump to it: ")."<a target=_blank href='$cf_url'>$cf_url</a>\n";
+echo "<h1>"._m("Collection Form Wizard for")." ".$db->f("name")."</h1>";
+echo "<FORM name='collection_form_wizard' METHOD=post ACTION='cf_wizard.php3#formcode'>";
+echo _m("Form language").": ".$cf_fields["lang"]["code"]."<br>";
+echo _m("After you have created the form, jump to it: ")."<a target=_blank href='$cf_url'>$cf_url</a>\n";
 echo "<BR><BR>
-<FORM name='collection_form_wizard' METHOD=post ACTION='cf_wizard.php3#formcode'>
     <INPUT TYPE=hidden NAME='AA_CP_Session' VALUE='$AA_CP_Session'>
     <INPUT TYPE=hidden NAME='collectionid' VALUE=$collectionid>";
 
 $formaction = $AA_INSTAL_PATH."post2shtml.php3?shtml_page=".$cf_url;    
-echo "<b>"._m("form language").":</b> ".$cf_fields["lang"]["code"]."<br><br>";
         
-echo "
-<TABLE border=1>
-<TR><TD class=tabtxt><B>"._m("show")."</B></TD><TD class=tabtxt colspan=2><b>"._m("example")."</b></TD></TR>";
+echo _m("Choose form fields. The required ones are marked by asterix *:")."
+<BR>
+<TABLE border=0>\n";
+//<TR><TD class=tabtxt><B>"._m("show")."</B></TD><TD class=tabtxt colspan=2><b>"._m("example")."</b></TD></TR>";
     
 $formcode = "<FORM name=\"cf$collectionid\" action=\"$formaction\" method=\"post\" 
     onsubmit=\"return validate();\">
@@ -124,26 +124,28 @@ while (list ($fname, $fprop) = each ($cf_fields)) {
     if ($fprop["hidewizard"])
         continue;
     echo "<TR>";
+
+    if (is_array ($show))
+        $showme = $fprop["checkbox"] ? $show[$fprop["checkbox"]] : $show[$fname];
+    else $showme = true;
+
     $rowspan --;
     if ($rowspan == 0) {
         $rowspan = $fprop["rowspan"];
         echo "<TD rowspan=$rowspan>";
         if ($fprop["required"]) {
             echo "*";
-            $show[$fname] = true;
+            $showme = true;
         }
-        else {
-            if (!$showme) $show[$fname] = true;
-            FrmChBoxEasy ("show[$fname]", $show[$fname]);
-        }
+        else FrmChBoxEasy ("show[$fname]", $showme);
         echo "</TD>\n";
     }
-    $row = "  <TD><B>$fprop[label]:</B></TD>\n  <TD>$fprop[code]</TD></TR>\n";
+    $row = "  <TD><B>$fprop[label]</B></TD>\n";
     echo $row;
     
-    $showme = $fprop["checkbox"] ? $show[$fprop["checkbox"]] : $show[$fname];
     if ($showme)
-        $formcode .= "<TR>\n".$row;
+        $formcode .= "<TR>\n".$row
+                  ."  <TD>$fprop[code]</TD></TR>\n";
 }
 $formcode .= "
 <TR><TD colspan=2><INPUT type=\"submit\" value=\""._m("OK")."\"></TD></TR>

@@ -156,7 +156,15 @@ class tabledit {
     // shows one table form    
     function view ($where = "1") {
         global $db;
-    
+
+        /*
+        echo "<table width='100%'><tr><td width='50%'>&nbsp;</td><td align=right class=tabtxt><span class=te_help_link>";
+        if ($this->type == "browse") 
+            echo _m("This is a Browse view in TableEdit. ");
+        else echo _m("This is an Edit view in TableEdit. ");
+        echo "<a href='http://aa.ecn.cz/aaa/doc/tabledit_user.html'>"
+            ._m ("Do you need Help?")."</a></span></td></tr></table>";
+        */
         $this->SetViewDefaults();    
         $where = $this->GetWhere ($where);
         
@@ -496,8 +504,9 @@ class tabledit {
         $searchimage = "<a href='javascript:document.".$formname.".submit()'>"
             ."<img src='".$this->imagepath."search.gif' alt='"._m("Search")."' border=0></a>";
 
-        echo "<FORM name='".$formname."' method=post action='".$this->getAction($this->gotoview2())."'>
-              <TABLE ".$this->view["attrs"]["table_search"]." class=te_search_table><TR>$td"
+        echo "<TABLE ".$this->view["attrs"]["table_search"]." class=te_search_table>
+              <FORM name='".$formname."' method=post action='".$this->getAction($this->gotoview2())."'>
+              <TR>$td"
             .$searchimage.'&nbsp;'
             ._m("search").": $tdd"
             ."$td";
@@ -514,7 +523,7 @@ class tabledit {
             ."$td<INPUT name='cmd[".$this->viewID."][search][where]' type=text size=50 "
                 ."value=\"".stripslashes_magic($srch[where])."\">$tdd"
             ."$td<INPUT type=submit name='go' value='"._m("Go")."'>$tdd</TR>"; */
-        echo "</TABLE></FORM>";
+        echo "</FORM></TABLE>";
     }
 
     // -----------------------------------------------------------------------------------
@@ -592,12 +601,8 @@ class tabledit {
             
             $name = str_replace ("\"", "\\\"", "val[$key][$alias]");
             
-            // show ****** for undefined values in select box
-            if ($cview["type"] == "select" && ! isset ($cview["source"][$val]) && !$new_record)
-                $cview["source"][$val] = "*******";
-            
             // in tabledit_column.php3
-            ColumnFunctions ($cview, $val, "show", $name);
+            ColumnFunctions ($cview, $val, "show", $name, $new_record);
         
             if ($visible) {
                 if ($href) {

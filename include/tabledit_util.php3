@@ -551,7 +551,7 @@ function GetEditedKey ($tview) {
     if (!is_array ($edit)) {
         global $tabledit_cmd;
         $edit = $tabledit_cmd[$tview]["edit"];
-        if (!is_array ($edit)) { echo "Error calling GetEditKey ($tview)"; exit; }
+        if (!is_array ($edit)) { echo "Error calling GetEditedKey ($tview)"; exit; }
     }        
     reset ($edit);
     return key($edit);

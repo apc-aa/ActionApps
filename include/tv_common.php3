@@ -63,4 +63,29 @@ function CreateWhereFromList ($column, $list, $type="number") {
     }
 }
 
+/**     
+    @return array (unpacked module id => module name), e.g. to create a selectbox
+    @param $all if you want all modules, otherwise only permitted are returned */
+function SelectModule ($all = false) {
+    global $db, $auth;
+    if (IsSuperadmin() || $all) 
+        $where = 1;
+    else {
+        $myslices = GetUsersSlices( $auth->auth["uid"] );
+        reset ($myslices);
+        while (list ($my_slice_id, $perms) = each ($myslices)) 
+            if (strchr ($perms, PS_FULLTEXT))
+                $restrict_slices[] = q_pack_id($my_slice_id);
+        if (is_array ($restrict_slices)) 
+            $where = "id IN ('".join("','",$restrict_slices)."')";
+        else $where = 0;
+    }
+    
+    $db->query ("SELECT id, name FROM module
+        WHERE $where AND type IN ('Alerts','Auth')");
+    while ($db->next_record()) 
+        $retval[unpack_id($db->f("id"))] = $db->f("name");
+    return $retval;
+}
+
 ?>

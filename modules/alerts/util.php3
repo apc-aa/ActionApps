@@ -23,21 +23,39 @@ if (!defined ("AA_ALERTS_UTIL_INCLUDED"))
      define  ("AA_ALERTS_UTIL_INCLUDED", 1);
 else return;
 
+require $GLOBALS["AA_INC_PATH"]."mail.php3";
+
 if (!is_object ($db))   
     $db=new DB_AA;
 
-if (!$new_module) {
-    $db->query ("SELECT id FROM alerts_collection WHERE moduleid='".q_pack_id($slice_id)."'");
-    if ($db->next_record())
-        $collectionid = $db->f("id");    
-    else { echo "Can't find collection for $slice_id. Bailing out."; exit; }
+function set_collectionid () {    
+    global $collectionid, $collectionprop,
+        $db, $new_module, $slice_id;
+    
+    if (!$new_module) {
+        if (!$slice_id) { echo "Error: no slice ID"; exit; }
+        $db->query ("SELECT * FROM alerts_collection WHERE moduleid='".q_pack_id($slice_id)."'");
+        if ($db->next_record()) {
+            $collectionid = $db->f("id");    
+            $collectionprop = $db->Record;
+        }
+        else { echo "Can't find collection for $slice_id. Bailing out."; exit; }
+    }
 }
 
 function get_howoften_options () {
     return array (
+    "instant" => _m("instant"),
     "daily"=>_m("daily"),
     "weekly"=>_m("weekly"),
     "monthly"=>_m("monthly"));
+}
+
+function get_bin_names () {
+    return array (
+        1=>get_bin_name(1), 
+        2=>get_bin_name(2), 
+        3=>get_bin_name(3));
 }
 
 function get_bin_name ($status_code) {
@@ -53,11 +71,23 @@ function get_bin_name ($status_code) {
     }
 }
  
-function new_user_id ()
-{ return new_numeric_id (32767); }
+function new_user_id () { 
+    global $db;
+    do { 
+        $new_id = new_numeric_id (32767);
+        $db->query ("SELECT id FROM alerts_user WHERE id = $new_id");        
+    } while ($db->next_record());
+    return $new_id;
+}
 
-function new_collection_id()
-{ return new_numeric_id (32767); } 
+function new_collection_id() {
+    global $db;
+    do { 
+        $new_id = new_numeric_id (32767);
+        $db->query ("SELECT id FROM alerts_collection WHERE id = $new_id");        
+    } while ($db->next_record());
+    return $new_id;
+} 
     
 function new_numeric_id ($max) {
     list($usec, $sec) = explode(' ', microtime());
@@ -73,7 +103,7 @@ function new_user_confirm ()
 
 function add_user ($info) 
 {        
-    global $db;
+    global $db, $slice_id;
     // insert new user
     $varset = new CVarset;
     $userid = new_user_id();
@@ -82,12 +112,18 @@ function add_user ($info)
     $varset->add ("firstname", "quoted", $info["firstname"]);
     $varset->add ("lastname", "quoted", $info["lastname"]);
     $varset->add ("lang", "text", $info["lang"]);        
+    $varset->add ("owner_module_id", "unpacked", $slice_id);
     $db->query ($varset->makeINSERT("alerts_user"));
     return $userid;
 }
 
 // ----------------------------------------------------------------------------------------
     
+/** 
+*   @param $info    array (field => value), it should contain fields
+*                    "userid","allfilters","howoften","email" 
+*   @param $confirmed   add the user confirmed? if no, the confirmation email is sent,
+*                        if yes, no email is sent */    
 function add_user_collection ($info, $collection_record, $confirmed=false, $override=false) 
 {  
     global $db;
@@ -110,7 +146,8 @@ function add_user_collection ($info, $collection_record, $confirmed=false, $over
     }
     else {
         $varset->add ("status_code", "number", $collection_record ["notconfirmed_status_code"]);
-        $varset->add ("confirm", "text", new_user_confirm());
+        $confirm = new_user_confirm();
+        $varset->add ("confirm", "text", $confirm);
     }
 
     $db->query ($varset->makeSELECT ("alerts_user_collection")); 
@@ -126,7 +163,15 @@ function add_user_collection ($info, $collection_record, $confirmed=false, $over
     }
     else {
         $db->query ($varset->makeINSERT ("alerts_user_collection"));
-        return ture;
+        if (!$confirmed) {
+            $alias["_#HOWOFTEN"] = $info["howoften"];
+            $confirmurl = AA_INSTAL_URL."ac.php3?id=$confirm";
+            $alias["_#CONFIRM_"] = "<a href=\"$confirmurl\">$confirmurl</a>";
+            if (!send_mail_from_table ($collection_record ["emailid_welcome"],
+                $info["email"], $alias))
+                echo "SOME ERROR WHEN SENDING MAIL TO $info[email].";                
+        }
+        return true;
     }
 }
 
@@ -506,16 +551,16 @@ function copy_user_collection ($userid, $cid)
 function alerts_email_headers ($record, $default)
 {
     $headers = array (
-        "From" => "from",
+        "From" => "header_from",
         "Reply-To" => "reply_to",
         "Errors-To" => "errors_to",
         "Sender" => "sender");
     reset ($headers);
     while (list ($header, $field) = each ($headers)) {
-        if ($record["mail_$field"])
-            $retval .= $header.": ".$record["mail_$field"]."\r\n";
-        else if ($default["mail_$field"])
-            $retval .= $header.": ".$default["mail_$field"]."\r\n";
+        if ($record["$field"])
+            $retval .= $header.": ".$record["$field"]."\r\n";
+        else if ($default["$field"])
+            $retval .= $header.": ".$default["$field"]."\r\n";
     }
     return $retval;
 }
