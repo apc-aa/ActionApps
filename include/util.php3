@@ -94,7 +94,10 @@ if( $GLOBALS['debug'] )
   $i = 0;
 
   while ($i < count ($a)) {
-    unset($index1, $index2, $lvalue, $value);
+    unset($index1); 
+    unset($index2); 
+    unset($lvalue); 
+    unset($value); 
     $pos = strpos($a[$i], "=");
     if($pos) {
       $lvalue = substr($a[$i],0,$pos);
@@ -119,26 +122,34 @@ if( $GLOBALS['debug'] )
   return $i;
 }
 
-
 # function to double backslashes and apostrofs 
 function quote($str) {
   return addslashes($str);  
 } 
  
-# function for processing posted or getteg variables
+# function addslashes enhanced by array processing
+function AddslashesArray($val) {
+  if (!is_array($val)) {
+    return addslashes($val);
+  }  
+  for (reset($val); list($k, $v) = each($val); )
+    $ret[$k] = Myaddslashes($v);
+  return $ret;
+}    
+
+# function for processing posted or get variables
 # adds quotes, if magic_quotes are switched off
 function QuoteVars($method="get") {
   
   if( get_magic_quotes_gpc() )
     return;
     
-  $transfer = ( ($method == "get") ? "HTTP_GET_VARS" 
-                                  : "HTTP_POST_VARS");
+  $transfer = ( ($method == "get") ? "HTTP_GET_VARS" : "HTTP_POST_VARS");
   if( !isset($GLOBALS[$transfer]) OR !is_array($GLOBALS[$transfer]))
     return;
   reset( $GLOBALS[$transfer] );
   while( list($varname,$value) = each( $GLOBALS[$transfer] ))
-    $GLOBALS[$varname] = addslashes($value);
+    $GLOBALS[$varname] = AddslashesArray($value);
 }  
 
 # function for extracting variables from $r_hidden session field
@@ -227,6 +238,72 @@ function date2sec($dat) {
     return MkTime($d[4], $d[5], $d[6], $d[2], $d[3], $d[1]);
   return 0;  
 }
+
+# function which detects the browser
+function detect_browser() { 
+  global $HTTP_USER_AGENT, $BName, $BVersion, $BPlatform; 
+
+  // Browser 
+  if(eregi("(msie) ([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
+    { $BName = "MSIE "; $BVersion=$match[2]; }
+  elseif(eregi("(opera) ([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match) || eregi("(opera/)([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match)) 
+    { $BName = "Opera"; $BVersion=$match[2]; }
+  elseif(eregi("(konqueror)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
+    { $BName = "Konqueror"; $BVersion=$match[2]; }
+  elseif(eregi("(lynx)/([0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2})",$HTTP_USER_AGENT,$match)) 
+    { $BName = "Lynx "; $BVersion=$match[2]; }
+  elseif(eregi("(links) \(([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
+    { $BName = "Links "; $BVersion=$match[2]; }
+  elseif(eregi("(netscape6)/(6.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
+    { $BName = "Netscape "; $BVersion=$match[2]; }
+  elseif(eregi("mozilla/5",$HTTP_USER_AGENT)) 
+    { $BName = "Netscape"; $BVersion="Unknown"; }
+  elseif(eregi("(mozilla)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match)) 
+    { $BName = "Netscape "; $BVersion=$match[2]; }
+  elseif(eregi("w3m",$HTTP_USER_AGENT)) 
+    { $BName = "w3m"; $BVersion="Unknown"; }
+  else{$BName = "Unknown"; $BVersion="Unknown";} 
+  
+  // System 
+  if(eregi("win32",$HTTP_USER_AGENT)) 
+    $BPlatform = "Windows"; 
+  elseif((eregi("(win)([0-9]{2})",$HTTP_USER_AGENT,$match)) || (eregi("(windows) ([0-9]{2})",$HTTP_USER_AGENT,$match))) 
+    $BPlatform = "Windows $match[2]"; 
+  elseif(eregi("(winnt)([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) 
+    $BPlatform = "Windows NT $match[2]"; 
+  elseif(eregi("(windows nt)( ){0,1}([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) 
+    $BPlatform = "Windows NT $match[3]"; 
+  elseif(eregi("linux",$HTTP_USER_AGENT)) 
+    $BPlatform = "Linux"; 
+  elseif(eregi("mac",$HTTP_USER_AGENT)) 
+    $BPlatform = "Macintosh"; 
+  elseif(eregi("(sunos) ([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) 
+    $BPlatform = "SunOS $match[2]"; 
+  elseif(eregi("(beos) r([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) 
+    $BPlatform = "BeOS $match[2]"; 
+  elseif(eregi("freebsd",$HTTP_USER_AGENT)) 
+    $BPlatform = "FreeBSD"; 
+  elseif(eregi("openbsd",$HTTP_USER_AGENT)) 
+    $BPlatform = "OpenBSD"; 
+  elseif(eregi("irix",$HTTP_USER_AGENT)) 
+    $BPlatform = "IRIX"; 
+  elseif(eregi("os/2",$HTTP_USER_AGENT)) 
+    $BPlatform = "OS/2"; 
+  elseif(eregi("plan9",$HTTP_USER_AGENT)) 
+    $BPlatform = "Plan9"; 
+  elseif(eregi("unix",$HTTP_USER_AGENT) || eregi("hp-ux",$HTTP_USER_AGENT)) 
+    $BPlatform = "Unix"; 
+  elseif(eregi("osf",$HTTP_USER_AGENT)) 
+    $BPlatform = "OSF"; 
+  else{$BPlatform = "Unknown";} 
+/*   
+  echo $HTTP_USER_AGENT; 
+  echo $BName; 
+  echo $BVersion; 
+  echo $BPlatform; 
+*/
+} 
+
  
 # debug function for printing debug messages
 function huh($msg) {
@@ -649,9 +726,45 @@ function safe( $var ) {
   return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
 }  
 
+// is the browser able to show rich edit box? (using triedit.dll)
+function richEditShowable () {
+  global $BName, $BVersion; 
+	global $showrich;
+	detect_browser();
+  return (($BName == "MSIE " && $BVersion >= "5.0") || $showrich > "");
+}
+
+function clean_email($line) { 
+  // consider using imap_rfc822_parse_adrlist 
+  // file://localhost/usr/local/doc/php/function.imap-rfc822-parse-adrlist.html 
+  //string ereg_replace (string pattern, string replacement, string string); 
+
+  $patterns = array ('/^\s+/', '/\s+$/'); 
+  $replace  = array ('', ''); 
+  return preg_replace ($patterns, $replace, $line); 
+  /*  $line = ereg_replace ('^\s+','', $line); 
+    $line = ereg_replace ('\s+$','',$line); 
+    return $line; 
+  */ 
+}
+
+function GetProfileProperty($property, $id='_NoIdeeee.') {
+  global $r_profile;
+  if( $id=='_NoIdeeee.' ) {
+    if( isset($r_profile) AND isset($r_profile[$property]) AND isset($r_profile[$property][$id]))
+      return $r_profile[$property][$id];
+     else 
+      return false;
+  } elseif( isset($r_profile) AND isset($r_profile[$property]) )
+    return $r_profile[$property];
+  return false;
+}       
 
 /*
 $Log$
+Revision 1.28  2001/12/18 16:27:28  honzam
+new WYSIWYG richtext editor for inputform (IE5+), new possibility to join fields when fields are fed to another slice, new notification e-mail possibility (notify new item in slice, bins, ...)
+
 Revision 1.27  2001/11/26 11:03:43  honzam
 sort slice/constant in listbox by name
 

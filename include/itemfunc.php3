@@ -214,6 +214,23 @@ function show_fnc_freeze_txt($varname, $field, $value, $param, $html) {
   FrmStaticText($field[name], $value[0][value]);
 }
 
+function show_fnc_edt($varname, $field, $value, $param, $html){
+  echo $field[input_before];
+  $rows      = ($param ? $param : 4);
+  $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
+	$list_fnc_edt [] = $field[name];
+  FrmRichEditTextarea($varname, $field[name], $value[0][value], 
+   $rows, 60, $field[required], $field[input_help], $field[input_morehlp], 
+   false, $htmlstate );
+	global $list_fnc_edt;
+	$list_fnc_edt[] = $varname;
+}
+
+function show_fnc_freeze_edt($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], $value[0][value]);
+}
+
 function show_fnc_fld($varname, $field, $value, $param, $html) {
    echo $field[input_before];
    $maxlength = 255;
@@ -315,10 +332,10 @@ function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
 
 function show_fnc_sel($varname, $field, $value, $param, $html) {
   global $db;
-  if( substr($param,0,7) == "#sLiCe-" ) {  # prefix indicates select from items
+  if( substr($param,0,7) == "#sLiCe-" ) { # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($param, 7) );
     #add blank selection for not required field
-    if( !$field[required] )
+    if( !$field[required] )          
       $arr[''] = " ";
   } else 
     $arr = GetConstants($param, $db);
@@ -425,7 +442,11 @@ function show_fnc_freeze_nul($varname, $field, $value, $param, $html) {
 # -----------------------------------------------------------------------------
 
 function IsEditable($fieldcontent, $field) {
-  return (!($fieldcontent[0][flag] & FLAG_FREEZE) AND $field[input_show]);
+  return (!($fieldcontent[0][flag] & FLAG_FREEZE) 
+       AND $field[input_show] 
+       AND !GetProfileProperty('hide',$field['id'])
+       AND !GetProfileProperty('hide&fill',$field['id'])
+       AND !GetProfileProperty('fill',$field['id']));
 }  
   
 function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=true ) {
@@ -441,6 +462,19 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
 
     $varname = 'v'. unpack_id($pri_field_id); # "v" prefix - database field var
     $htmlvarname = $varname."html";
+    
+    # if there are predefined values in user profile, fill it. 
+    # Fill it only if $insert (new item). Otherwise left there filled value
+
+    $profile_value = $GLOBALS['r_profile']['hide&fill'][$f['id']];
+    if( !$profile_value )
+      $profile_value = $GLOBALS['r_profile']['fill'][$f['id']];
+  
+    if( $profile_value ) {
+      $x = GetFromProfile($profile_value);
+      $GLOBALS[$varname] = $x[0];
+      $GLOBALS[$htmlvarname] = $x[1];
+    }
 
     if( isset($GLOBALS[$varname]) and is_array($GLOBALS[$varname]) ) {
         # fill the multivalues    
@@ -471,6 +505,10 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         AND isset($content4id) AND is_array($content4id)) )
     return false;
 
+  // Note: $content4id is an associative array. 
+  //       they key is a field_id, like 'source..........' 
+  // The value is an array of values (usually just a single value, but still an array) 
+
   if( !$insert ) {  # remove old content first (just in content table - item is updated)
     reset($content4id);
     $delim="";
@@ -489,6 +527,8 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
 
   reset($content4id);
   while(list($fid,$cont) = each($content4id)) {
+    //    echo "<h1>$fid : $cont</h1>";
+//    continue;
     $f = $fields[$fid];
     $fnc = ParseFnc($f[input_insert_func]);   # input insert function
     if( $fnc ) {                  # function to call
@@ -530,6 +570,38 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
   if( $feed )
     FeedItem($id, $fields);
 
+  // notifications 
+ $status_id = 'status_code.....'; 
+
+ $status_code = $content4id[$status_id][0][value]; 
+ // p_arr_m($arr,2); 
+   /* echo $arr;
+ reset ($arr); 
+ while ( list($u,$v) = each($arr)) { 
+    "echo u is $u : $v"; 
+    }*/ 
+ // echo "done"; 
+ //  exit;  
+  /*  while ( list(,$v) = each($status_array)) { 
+    $status_code = $v; 
+    echo "status is $status_code"; 
+    }*/ 
+
+  if( $insert ) {                               // new + 
+    if ($status_code == '1')                      //    active 
+      email_notify($slice_id, 3, $id);            // notify function 3) 
+  	elseif($status_code == '2')                   // holding bin   
+	    email_notify($slice_id, 1, $id);            // notify function 1 
+    else 
+      die ('unknown case for status_code '. $status_code); 
+  } else {                                     // changed + 
+    if ($status_code == '1')                     //    active 
+      email_notify($slice_id, 4, $id);           // = notify-function 4 
+  	elseif ($status_code == '2')                 // hodling bin 
+	    email_notify($slice_id, 2, $id);           // =  notify-function 2 
+	  else 
+      die ('unknown case for status_code'); 
+  }
   return true;
 }
 
@@ -546,10 +618,24 @@ function GetDefaultHTML($f) {
   return (($f[html_default]>0) ? FLAG_HTML : 0);
 }  
 
+function GetFromProfile($value) {
+  # profile value format:  <html_flag>:<default_fnc_* function>:<parameter>
+  $fnc = ParseFnc(substr($value,2));  # all default should have fnc:param format
+  if( $fnc ) {                        # call function
+    $fncname = 'default_fnc_' . $fnc[fnc];
+    $x= array( $fncname($fnc[param]), ($value[0] == '1') );
+    return $x;
+  } else
+    return array();
+}
+
 function ShowForm($content4id, $fields, $prifields, $edit) {
   if( !isset($prifields) OR !is_array($prifields) )
     return MsgErr(L_NO_FIELDS);
 
+	global $list_fnc_edt;
+	$list_fnc_edt = array();
+		
 	reset($prifields);
 	while(list(,$pri_field_id) = each($prifields)) {
     $f = $fields[$pri_field_id];
@@ -559,18 +645,30 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
     $htmlvarname = $varname."html";
 
     if( !IsEditable($content4id[$pri_field_id], $f) ) # if fed as unchangeable 
-      $show_fnc_prefix = 'show_fnc_freeze_';            # display it only
+      $show_fnc_prefix = 'show_fnc_freeze_';          # display it only
      else 
       $show_fnc_prefix = 'show_fnc_';
 
-	  if( !$f[input_show] )        # if set to not show - don't show
+	  if( !$f[input_show]                      # if set to not show - don't show
+        OR $GLOBALS['r_profile']['hide'][$f['id']]
+        OR $GLOBALS['r_profile']['hide&fill'][$f['id']] )
 	    continue;
-
+      
 	  $fnc = ParseFnc($f[input_show_func]);   # input show function
 	  if( $fnc ) {                     # call function
 	    $fncname = $show_fnc_prefix . $fnc[fnc];
 	      # updates content table or fills $itemvarset 
       if( !$edit ) {
+        # insert or new reload of form after error in inserting
+        
+        # first get values from profile, if there are some predefined value
+        if( $GLOBALS['r_profile']['predefine'][$f['id']] AND !$GLOBALS[$varname]) {
+          $x = GetFromProfile($GLOBALS['r_profile']['predefine'][$f['id']]);
+          $GLOBALS[$varname] = $x[0];
+          $GLOBALS[$htmlvarname] = $x[1];
+        }
+          
+        # get values from form (values are filled when error on form ocures 
         if( $f[multiple] AND isset($GLOBALS[$varname])
                          AND is_array($GLOBALS[$varname]) ) {
               # get the multivalues    
@@ -586,13 +684,27 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
                  $fnc[param], $content4id[$pri_field_id][0][flag] & FLAG_HTML );
     }
 	}
+	
+	if (richEditShowable()) {
+		echo '	
+		<script language="JavaScript">
+		<!--
+			function saveRichEdits () {';
+			reset ($list_fnc_edt);
+			while (list(,$name) = each($list_fnc_edt)) {
+				echo "document.inputform.$name.value = get_text('edt$name');";
+			}
+			echo '
+			}
+		// -->
+		</script>';
+	}
 }	
-
 
 /*
 $Log$
-Revision 1.16  2001/12/18 09:50:14  honzam
-added empty row to selectbox for selectin no related item, if the field is not required. Fixed file upload for PHP>4.0.3
+Revision 1.17  2001/12/18 16:27:05  honzam
+new WYSIWYG richtext editor for inputform (IE5+), new possibility to join fields when fields are fed to another slice, new notification e-mail possibility (notify new item in slice, bins, ...)
 
 Revision 1.15  2001/09/27 16:02:23  honzam
 Filename in file upload correction, New related stories support, New "Preselect" input option
