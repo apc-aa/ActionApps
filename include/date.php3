@@ -24,6 +24,9 @@ if (!defined ("DATE_INCLUDED"))
 	define ("DATE_INCLUDED",1);
 else return;
 
+// javascript.php3 defines getTriggers, which is used by Add / Edit item page
+require $GLOBALS[AA_INC_PATH]."javascript.php3";
+
 #
 #	Date form element
 #
@@ -124,7 +127,7 @@ class datectrl {
 		for($i = 1; $i <= 31; $i++)
 			$ret .= "<option value=\"$i\"". 
               (($i == $sel) ? " selected" : "") . ">$i</option>";
-		return "<select name=\"tdctr_" . $this->name . "_day\">$ret</select>";
+		return "<select name=\"tdctr_" . $this->name . "_day\"".getTriggers("select",$this->name).">$ret</select>";
 	}	
 
 	# print select box for month
@@ -136,7 +139,7 @@ class datectrl {
 			$ret .= "<option value=\"$i\"". (($i == $sel) ? " selected" : "") . ">".
              $L_MONTH[$i] ."</option>";
 		}
-		return "<select name=\"tdctr_" . $this->name . "_month\">$ret</select>";
+		return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">$ret</select>";
 	}	
 
 	# print select box for year
@@ -147,7 +150,7 @@ class datectrl {
 			$ret .= "<option value=\"$i\"" . (($i == $this->year) ? " selected":""). 
 			       ">$i</option>";
 		}
-    return "<select name=\"tdctr_" . $this->name . "_year\">$ret</select>";
+    return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">$ret</select>";
 	}	
 
 	# print select box for time
@@ -168,7 +171,7 @@ class datectrl {
               if( ($this->display_time == 1) AND ($timestr == "00:00") )
                 $timestr = "";
               return "<input type=text name=\"tdctr_". $this->name ."_time\" 
-                     value=\"". safe($timestr). "\" size=8 maxlength=8>";
+                     value=\"". safe($timestr). "\" size=8 maxlength=8".getTriggers("input",$this->name).">";
     }                 
     return "";  
 	}	
