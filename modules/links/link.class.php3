@@ -380,6 +380,7 @@ class assignmentset {
      */
     function remove_duplicity() {
         if ( !isset($this->assignments) ) return;
+        debug('remove_duplicity begin:', $this->assignments);
         $already_assigned = array();
         foreach ( $this->assignments as $k => $ass ) {
             // first we check, if the assignment is valid (is category exists)
@@ -408,6 +409,7 @@ class assignmentset {
         debug('remove_duplicity remove:', $remove);
         debug('remove_duplicity already_assigned:', $already_assigned);
         $this->remove($remove);
+        debug('remove_duplicity end:', $this->assignments);
     }
 
     /** Set specified caregory assignment as base */
@@ -539,6 +541,7 @@ debug('assignmentset.change: nearly done', $this->assignments);
         $this->remove_nolinks();   // remove assignments to nolinks categories
         $base = $this->define_base();
         $this->fix_assignments($base);
+debug('assignmentset.change: completely done', $this->assignments);
     }
 
     function generalize($general) {
