@@ -92,6 +92,7 @@ define("L_EDIT_GROUP", "Editace Skupiny");
 
 // application not specific strings
 define("L_ALLCTGS", "Všechny kategorie");
+define("L_BAD_INC", "Špatný parametr inc - soubor mùže být v tomtéž adresáøi, kde je .shtml soubor - smi obsahovat jen znaky a cisla");
 define("L_NO_SUCH_FILE", "Soubor nenalezen");
 define("L_SELECT_CATEGORY", "Zvol Kategorii ");
 define("L_NO_ITEM", "Nenalezena žádná zpráva");
@@ -149,6 +150,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.8  2000/08/23 12:29:57  honzam
+fixed security problem with inc parameter to slice.php3
+
 Revision 1.7  2000/08/17 15:17:55  honzam
 new possibility to redirect item displaying (for database changes see CHANGES)
 

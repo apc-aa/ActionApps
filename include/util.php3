@@ -89,16 +89,31 @@ function go_url($url, $add_param="") {
  	exit;
 }
 
+# returns server name with protocol and port
+function self_server() {
+  global $SERVER_NAME, $HTTPS, $SERVER_PORT;
+  if( isset($HTTPS) && $HTTPS == 'on' ){
+    $PROTOCOL='https';
+    if($SERVER_PORT != "443")
+      $port = ":$SERVER_PORT";
+  } else {
+    $PROTOCOL='http';
+	  if($SERVER_PORT != "80")
+      $port = ":$SERVER_PORT";
+  }
+  return("$PROTOCOL://$SERVER_NAME$port");
+}
+
+# returns server name with protocol, port and current directory of php script
 function self_base () {
-    global $SERVER_NAME, $HTTPS, $PHP_SELF, $SERVER_PORT;
-    if( isset($HTTPS) && $HTTPS == 'on' ){
-        $PROTOCOL='https';
-	if($SERVER_PORT != "443") $port = ":$SERVER_PORT";
-    } else {
-        $PROTOCOL='http';
-	if($SERVER_PORT != "80") $port = ":$SERVER_PORT";
-    }
-    return("$PROTOCOL://$SERVER_NAME$port" . ereg_replace("/[^/]*$", "", $PHP_SELF) . "/");
+  global $PHP_SELF;
+  return (self_server(). ereg_replace("/[^/]*$", "", $PHP_SELF) . "/");
+}
+
+# returns server name with protocol, port and current directory of shtml file
+function shtml_base() {
+  global $DOCUMENT_URI;
+  return (self_server(). ereg_replace("/[^/]*$", "", $DOCUMENT_URI) . "/");
 }
 
 # function to double backslashes and apostrofs 
@@ -310,6 +325,9 @@ if (substr(PHP_VERSION, 0, 1) < "4") {
 
 /*
 $Log$
+Revision 1.7  2000/08/23 12:29:58  honzam
+fixed security problem with inc parameter to slice.php3
+
 Revision 1.6  2000/08/17 15:17:55  honzam
 new possibility to redirect item displaying (for database changes see CHANGES)
 

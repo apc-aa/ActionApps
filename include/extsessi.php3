@@ -140,7 +140,7 @@ class AA_SL_Session extends Session {
     }
 
     # the same for $REDIRECT_QUERY_STRING_UNESCAPED
-    #  --- necessary for PHP4 ---      
+    #  - necessary for cgi version compiled with --enable-force-cgi-redirect      
     $a = explode ("\\\&",$REDIRECT_QUERY_STRING_UNESCAPED);
     for( $j = 0; $j < count($a); $j++) {
       $b = explode ('=', $a [$j]);
@@ -246,6 +246,9 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
+Revision 1.5  2000/08/23 12:29:58  honzam
+fixed security problem with inc parameter to slice.php3
+
 Revision 1.4  2000/08/22 12:30:06  honzam
 fixed problem with lost session id AA_SL_Session in cgi (PHP4) instalation.
 

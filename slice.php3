@@ -203,12 +203,18 @@ function CompactView($where, $catsel=false) {
 
     # url posted command to display another file
   if( $inc ) {                   # this section must be after $sess->add_vars()
-    $fp = @FOpen( $inc, "r");    #   if encapsulated
-    if( !$fp )
-      echo L_NO_SUCH_FILE ." $inc";
-     else
-      FPassThru($fp); 
-    exit;
+    if( !eregi("^([0-9a-z_])+(\.[0-9a-z]*)?$", $inc) ) {
+      echo L_BAD_INC. " $inc";
+      page_close();
+      exit;
+    } else {  
+      $fp = @fopen( shtml_base().$inc, "r");    #   if encapsulated
+      if( !$fp )
+        echo L_NO_SUCH_FILE ." $inc";
+       else
+        FPassThru($fp); 
+      exit;
+    }  
   }  
 
   $p_slice_id= q_pack_id($slice_id);
@@ -335,6 +341,9 @@ function CompactView($where, $catsel=false) {
 //    p_arr_m($debugtimes);
 /*
 $Log$
+Revision 1.8  2000/08/23 12:29:57  honzam
+fixed security problem with inc parameter to slice.php3
+
 Revision 1.7  2000/08/22 12:30:06  honzam
 fixed problem with lost session id AA_SL_Session in cgi (PHP4) instalation.
 
