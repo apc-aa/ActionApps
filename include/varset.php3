@@ -92,6 +92,11 @@ class Cvarset {
       return ( $cv ? $cv->getValue() : false);
 	}	
     
+    function getSQLvalue ($varname) {
+        $cv = $this->vars[$varname];
+        return ( $cv ? $cv->getSQLvalue() : false);
+    }
+    
 	# add variable to varset
 	function add($varname, $type="text", $value="") {
       $this->vars[$varname]= new Cvariable($varname, $type, $value);
