@@ -697,6 +697,9 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
           $delim = ', ';
         }
         return $ret;
+      case 'selected':  // returns true, if current item is the selected one
+                        // (given by set[]=selected-454343 view.php3 parameter)
+        return (( (integer)$p[1] == (integer)($this->getval('short_id........')) ) ? '1' : '0');
       case "add":
     	$add="add=1";
 	// drop through to default
@@ -835,7 +838,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
   {
     global $AA_INSTAL_PATH;
     $short_id = $this->columns["short_id........"][0]["value"];
-    
+
     if ($param == "") {
     //    $short_id = $this->columns["short_id........"][0]["value"];
         $name = "live_checkbox[".$short_id."][$col]";
@@ -846,12 +849,12 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
                  alt='".($this->getval($col) ? _m("on") : _m("off"))."'>";
     } else {
         $params = ParamExplode($param);
-        
+
         $fncname = "show_fnc_".$params[0];
         $param2 = substr($param, strpos($param, ":")+1);
 
-        $content4id = $this->columns;        
-        
+        $content4id = $this->columns;
+
         $varname = "live_change[".$short_id."][$col]";
         /*
         echo "<pre>";

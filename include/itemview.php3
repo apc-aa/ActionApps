@@ -86,6 +86,10 @@ class itemview {
                         GetCategoryFieldId($fields) : $slice_info['group_by']);
 
     $this->aliases = $aliases;
+    // add special alias, which is = 1 for selected item (given by
+    // set[34]=selected-43535 view.php3 parameter
+    if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] )
+        $this->aliases['_#SELECTED'] = array('fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>"");
     $this->fields = $fields;
     $this->zids = $zids;
     $this->from_record = $from;      # number or text "random[:<weight_field>]"
