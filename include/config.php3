@@ -252,4 +252,3 @@ define("FILEMAN_UPLOAD_TIME_LIMIT",600);
 // e-mail for Alerts management
 define("ALERTS_EMAIL", "aaadmin@somewhere.com");
 ?>
-
