@@ -87,27 +87,37 @@ H1, .tablename {
 
 .leftmenu  {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: x-small;
-	font-weight : bold;
+  font-size: 8pt;
   color: #4A4A4A;
+}
+
+TD.leftmenu {
+  font-weight: bold;
 }
 
 .leftmenuy  {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: x-small;
-  color: #4A4A4A;
+  font-size: 8pt;
+	font-weigth: normal;
+  color: #000000;
 }
 
 .leftmenun  {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: x-small;
+  font-size: 8pt;
+	font-weigth: normal;
   color: #4A4A4A;
 }
 
-.ipreview, .iid, .ipostdate, .ihedline, .icategory, .ifeedtit, .ifeed, .navbar, .headline {
+.ipreview, .iid, .ipostdate, .icategory, .ifeedtit, .ifeed, .navbar, .headline {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 8pt;
   color: #4A4A4A;
+}
+
+.iheadline {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
 }
 
 .inoutertd {
