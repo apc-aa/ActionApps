@@ -144,7 +144,7 @@ function fillConds () {
 	}
 	
 	if (is_array ($dateConds)) {
-        $timezone = (mktime (0,0,0,1,1,98) - gmmktime (0,0,0,1,1,98)) / 3600;
+        $timezone = getTimeZone();
 		reset ($dateConds);
 		while (list($i,$dateField) = each ($dateConds)) {
 			if (isset ($conds[$i][value]) && $conds[$i][value]) 
@@ -197,7 +197,7 @@ function fillForm () {
 	
     $oldcontent = GetItemContent($my_item_id);
     $oldcontent4id = $oldcontent[$my_item_id];   
-    $timezone = (mktime (0,0,0,1,1,98) - gmmktime (0,0,0,1,1,98)) / 3600;
+    $timezone = getTimeZone();
 
 	echo "
     var fillform_fields = new Array (\n";
