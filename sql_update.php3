@@ -692,6 +692,17 @@ $tablelist = array( 'active_sessions' => "(
                         slice_id char(16) NOT NULL default '',
 						PRIMARY KEY (feed_id)
                       )",
+                      'searchlog' => "(
+                      id int(11) NOT NULL auto_increment,
+                      date int(14) default NULL,
+                      query text,
+                      found_count int(11) default NULL, 
+                      search_time int(11) default NULL,
+                      user text,
+                      additional1 text,
+                      PRIMARY KEY  (id),
+                      KEY date (date)
+                      )",
                       'site' => "(
                         id varchar(16) NOT NULL default '',
                         state_file varchar(255) NOT NULL default '',
