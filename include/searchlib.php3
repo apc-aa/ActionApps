@@ -75,6 +75,8 @@ function GetWhereExp( $field, $operator, $querystring ) {
     case 'BETWEEN': 
       $arr = explode( ",", $querystring );
       return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
+    case 'ISNULL': 
+      return ( " ($field IS NULL) ");
     default:
       $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ? 
                                  substr( $querystring, 1, -1 ) : $querystring ;
@@ -102,8 +104,9 @@ function QueryIDs($fields, $slice_id, $conds, $sort="", $group_by="", $type="ACT
 
   # select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
-  global $db, $debug,   
-  	$QueryIDsCount;  // size of the result
+  global $db, 
+    $debug,          # displays debug messages
+  	$QueryIDsCount;  # size of the result
 
 if( $debug ) {
   echo "<br>Conds:<br>";
@@ -147,13 +150,16 @@ if( $debug ) {
       if( $cond_flds != '' ) {
         $tbl = 'c'.$tbl_count++;
         # fill arrays to be able construct select command
-        $select_tables[] = "LEFT JOIN content as $tbl ON $tbl.item_id=item.id";          
         $select_conds[] = GetWhereExp( "$tbl.$store",
                                           $cond['operator'], $cond['value'] );
-        if ($field_count>1) 
-          $select_join[] = "$tbl.field_id IN ($cond_flds)";
-         else {
-          $select_join[] = "$tbl.field_id=$cond_flds";
+        if ($field_count>1) {
+          $select_tabs[] = "LEFT JOIN content as $tbl 
+                                   ON ($tbl.item_id=item.id 
+                                   AND ($tbl.field_id IN ($cond_flds) OR $tbl.field_id is NULL))";
+        } else {
+          $select_tabs[] = "LEFT JOIN content as $tbl 
+                                   ON ($tbl.item_id=item.id 
+                                   AND ($tbl.field_id=$cond_flds OR $tbl.field_id is NULL))";
                       # mark this field as sortable (store without apostrofs)
           $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  
         }  
@@ -181,8 +187,9 @@ if( $debug ) {
         if( !$sortable[ $fid ] ) {           # this field is not joined, yet
           $tbl = 'c'.$tbl_count++;
           # fill arrays to be able construce select command
-          $select_tables[] = "LEFT JOIN content as $tbl ON $tbl.item_id=item.id";          
-          $select_join[] = "$tbl.field_id='$fid'";
+          $select_tabs[] = "LEFT JOIN content as $tbl 
+                                   ON ($tbl.item_id=item.id 
+                                   AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
                         # mark this field as sortable (store without apostrofs)
           $sortable[$fid] = $tbl;
         }  
@@ -217,8 +224,9 @@ if( $debug ) echo "<br>OK<br>";
         if( !$sortable[ $fid ] ) {           # this field is not joined, yet
           $tbl = 'c'.$tbl_count++;
           # fill arrays to be able construce select command
-          $select_tables[] = "LEFT JOIN content as $tbl ON $tbl.item_id=item.id";          
-          $select_join[] = "$tbl.field_id='$fid'";
+          $select_tabs[] = "LEFT JOIN content as $tbl 
+                                   ON ($tbl.item_id=item.id 
+                                   AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
                         # mark this field as sortable (store without apostrofs)
           $sortable[$fid] = $tbl;
         }  
@@ -232,10 +240,8 @@ if( $debug ) echo "<br>OK<br>";
   }      
 
 if( $debug ) {
-  echo "<br><br>select_tables:";
-  print_r($select_tables);
-  echo "<br><br>select_join:";
-  print_r($select_join);
+  echo "<br><br>select_tabs:";
+  print_r($select_tabs);
   echo "<br><br>select_conds:";
   print_r($select_conds);
   echo "<br><br>select_order:";
@@ -246,8 +252,8 @@ if( $debug ) {
   
   # construct query --------------------------
   $SQL = "SELECT DISTINCT item.id FROM item ";
-  if( isset($select_tables) AND is_array($select_tables))
-    $SQL .= " ". implode (" ", $select_tables);
+  if( isset($select_tabs) AND is_array($select_tabs))
+    $SQL .= " ". implode (" ", $select_tabs);
 
   $SQL .= " WHERE ";                                         # slice ----------
   if( $slice_id )
@@ -276,9 +282,6 @@ if( $debug ) {
     default:        $SQL .= ' 1=1 ';    # default = ALL - no specific condition
   }  
   
-  if( isset($select_join) AND is_array($select_join))        # join -----------
-    $SQL .= " AND ". implode (" AND ", $select_join);
-    
   if( isset($select_conds) AND is_array($select_conds))      # conditions -----
     $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
 
@@ -288,22 +291,16 @@ if( $debug ) {
   if( isset($select_group) )                                 # group by -------
     $SQL .= " GROUP BY $select_group";
 
-if( $debug ) {
- huh($SQL);
-}
-
-
   # get result --------------------------
-if( $debug ) 
-  $db->dquery($SQL);
- else 
-  $db->query($SQL);
+  if( $debug ) 
+    $db->dquery($SQL);
+  else 
+    $db->query($SQL);
 
   while( $db->next_record() ) 
     $arr[] = unpack_id($db->f(id));
 
   $QueryIDsCount = count($arr);
-//p_arr_m($arr);
   return $arr;           
 }  
   
@@ -833,6 +830,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.24  2002/01/10 14:08:09  honzam
+sorting and querying blank fields now fixed (bug 492331)
+
 Revision 1.23  2001/12/18 12:15:59  honzam
 new alias for displaying matched items count (_#ID_COUNT)
 
