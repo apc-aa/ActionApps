@@ -95,7 +95,6 @@ require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
 function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
@@ -119,7 +118,7 @@ function UseShowResult($txt,$url) {
  */
 function SendErrorPage($txt) {
   if( !$GLOBALS["err_url"] ) {
-    if ($GLOBALS[debugfill]) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$GLOBALS["err_url"] ); 
+    if ($GLOBALS[debugfill]) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$GLOBALS["err_url"] );
     echo HtmlPageBegin("");
     echo "</head><body>";
     if( is_array( $txt ) ) {
@@ -138,7 +137,7 @@ function SendErrorPage($txt) {
         if ($GLOBALS[debugfill]) huhl("Show result with url=",$GLOBALS["err_url"], " txt=",$txt);
         UseShowResult ($txt,$GLOBALS["err_url"]);
     }
-  } 
+  }
 }
 
 /**
@@ -158,7 +157,7 @@ function SendOkPage($txt) {
 }
 
 #$debugfill=1;
-if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER"); 
+if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER");
 
 # init used objects
 #if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
@@ -210,8 +209,8 @@ $oldcontent4id = $foocontent4id->getContentQuoted();
 if (! $insert && is_array ($notshown)) {
     reset ($notshown);
     while (list ($vfield_id) = each ($notshown))
-        $field_ids[] = $vfield_id;
-    $zids = new zids($field_ids);
+        $field_ids[] = substr($vfield_id,1);  // remove first 'v'
+    $zids = new zids($field_ids,'l');
     for ($i = 0; $i < $zids->count(); $i ++) {
         $field_id = $zids->packedids ($i);
         $content4id [$field_id] = $oldcontent4id [$field_id];
@@ -248,7 +247,7 @@ if ($insert) {
         $permok = true;
         break;
     case ANONYMOUS_EDIT_PASSWORD:
-      if ($debugfill) huhl("Checking Password"); 
+      if ($debugfill) huhl("Checking Password");
         $permok = false;
         reset ($fields);
         while (list ($fid) = each($fields))
@@ -259,11 +258,11 @@ if ($insert) {
               if ($debugfill) huhl("Checking password field=$fid = new=$password old=$old_password text_password=$text_password crypt=$crypt_password");
                 $permok = (
                            // Old check, based on text_password flag
-                  ($text_password 
+                  ($text_password
                    ? ($password == $old_password)
                    : ($crypt_password == $old_password))
                   // Heuristic based on if old looks encrypted
-                  || ( (substr($old_password,0,2) != 'xx') 
+                  || ( (substr($old_password,0,2) != 'xx')
                        && ($old_password == $password)));
                 if ($debugfill) huhl("permok=$permok");
                 break;
