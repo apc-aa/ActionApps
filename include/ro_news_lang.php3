@@ -23,7 +23,7 @@ http://www.apc.org/
 
 # config file identifier
 # must correspond with this file name
-define("CONFIG_FILE", "ro_news_lang.php3");
+define("LANG_FILE", "ro_news_lang.php3");
 
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -45,7 +45,7 @@ define("HTML_PAGE_BEGIN",
  '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML>
   <HEAD>
-  <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
+  <LINK rel=StyleSheet href="'.AA_INSTAL_URL.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">');
     
 # aa toolkit specific labels
@@ -728,28 +728,6 @@ define("L_E_EXPORT_SWITCH_BACKUP", "Exportă la alt ActionApps");
 define("L_E_EXPORT_IDLENGTH", "Identificatorul trebuie să fie de lungimea 16 caractere, nu ");
 define("L_E_EXPORT_TEXT_LABEL", "Salvaţi acest text. Îl ve-ţi putea utiliza să importaţi secţiunile în orice ActionApps:");
 define("L_E_EXPORT_LIST", "Selectaţi secţiunile pe care VREŢI să le exportaţi:");
-
-define("L_E_IMPORT_TITLE", "Import structură secţiune");
-define("L_E_IMPORT_SEND", "Trimite structura secţiunilor");
-define("L_E_IMPORT_MEMO", "Importul structurii secţiunilor se face în modul următor:<br>"
-			."Inseraţi textul exportat în chenar şi apăsaţi Trimite. <br>"
-			."Structura secţiunii cu definiţiile cîmurilor va fi citită şi adăugată la ActionApps.");
-define("L_E_IMPORT_OPEN_ERROR","Eroare necunoscută la deschiderea fişierului.");
-define("L_E_IMPORT_WRONG_FILE","EROARE: Textul nu este în regulă. Verificaţi dacă l-aţi copiat bine de la Export.");
-define("L_E_IMPORT_WRONG_ID","EROARE: ");
-define("L_E_IMPORT_OVERWRITE", "Suprascrie");
-define("L_E_IMPORT_IDLENGTH", "Identificatorul trebuie să fie de lungimea 16 caractere, nu ");
-
-define("L_E_IMPORT_IDCONFLICT", 
-			"Nişte secţiuni cu aceste ID-uri deja există. Schimbaţi ID-urile din partea dreaptă a săgeţii.<br> "
-			."Folosiţi numai caractere hexadecimale 0-9,a-f. "
-			."Dacă faceţi ceva greşit (număr caractere greşit, caractere eronate, sau dacă schimbaţi ID-ul din stînga săgeţii), "
-			."acel ID va fi considerat neschimbat.</p>"
-			."Dacă alegeţi SUPRASCRIE, secţiunile cu acelaşi ID vor fi suprascrise şi cele noi adăugate. <br>"
-			."Dacă alegeţi TRIMITE, secţiunile cu conflict de ID vor fi ignorate şi cele noi adăugate.");
-define ("L_E_IMPORT_COUNT", "Număr de secţiuni importate: %d.");			
-define ("L_E_IMPORT_ADDED", "Adăugat unde:");
-define ("L_E_IMPORT_OVERWRITTEN", "Suprascris unde:");
 
 define("L_PARAM_WIZARD_LINK", "Vrăjitor cu ajutor");
 

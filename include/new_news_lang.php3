@@ -41,7 +41,7 @@ define("L_ITEM_NOT_EXISTS","Item with this ID does not exist.");
 define("L_NO_PS_FIELDS_GROUP", "You have not permissions to change fields settings for the slice owning this group");
 define("L_NO_PS_CATEGORY_GROUP", "You have not permissions to change category settings for the slice owning this group");
 define("L_CONSTANTS_HIER_EDT","Constants - Hiearchical editor");
-define("L_CONSTANT_OWNER_HELP", "Owner becomes whoever first updates values.");
+define("L_CONSTANT_OWNER_HELP", "Whoever first updates values becomes owner.");
 
 define ("L_CONSTANT_ITEM_CHNG"," items changed to new value ");
 
@@ -117,6 +117,78 @@ define('L_V_D_ALL_BUTTON','HTML code for "Show all" button');
 define('L_V_D_NEW_BUTTON','HTML code for "Add" button');
 
 define('L_INPUT_SHOW_TPR','Textarea with Presets');
+
+define('L_AA_ADMIN','AA Administration');
+define('L_SLICE_ADMIN','Slice Administration');
+define('L_AA_ADMIN2','AA');
+define('L_SLICE_ADMIN2','Slice Admin');
+define('L_ARTICLE_MANAGER2','Item Manager');
+define('L_MODULES', 'Slices / Modules');
+define ('L_ADD_MODULE', "Create new");
+define ('L_DELETE_MODULE', "Delete");
+define ('L_A_MODULE_ADD', 'Create New Slice / Module');
+define ('L_A_SLICE', 'Slice');
+define ('L_A_MODULE', 'Module');
+
+define('L_MODULE_NAME','Module name');
+define('L_JUMP_TO','Jump to');
+define('L_AA_RELATIVE','Type in an AA-relative path, e.g.');
+define('L_JUMP_SLICE','Jump to slice');
+define('L_A_JUMP_EDT','Edit Jump module');
+define('L_A_JUMP_ADD','Create new Jump module');
+define('L_EDIT_JUMP','Edit Jump');
+define('L_MODULE_ID','Module ID');
+define('L_UPDATE','Update');
+define('L_CREATE','Create');
+
+define("L_E_IMPORT_TITLE", "Import exported data (slice structure and content)");
+define("L_E_IMPORT_MEMO", "The import of the slices structure and content is done this way:<br>"
+			."Insert the exported text into the frame and click on Send. <br>"
+			."The slices structure with fields and its content definitions will be read and added to the ActionApps.");
+define("L_E_IMPORT_OPEN_ERROR","Unknown failur when opening the file.");
+define("L_E_IMPORT_WRONG_FILE","ERROR: Text is not OK. Check whether you copied it well from the Export.");
+define("L_E_IMPORT_WRONG_ID","ERROR: ");
+define("L_E_IMPORT_INSERT", "Insert");
+define("L_E_IMPORT_OVERWRITE", "Overwrite");
+define("L_E_IMPORT_INSERT_AS_NEW","Insert with new ids");
+define("L_E_IMPORT_SEND","Send the slice structure and data");
+define("L_E_IMPORT_IDLENGTH", "The identificator should be 32 characters long, not ");
+
+define("L_E_IMPORT_IDCONFLICT", 
+			"Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> "
+			."Use only hexadecimal characters 0-9,a-f. "
+			."If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), "
+			."that ID will be considered unchanged.</p>");
+define ("L_E_IMPORT_COUNT", "Count of imported slices: %d.");			
+define("L_E_IMPORT_DATA_IDCONFLICT", 
+			"<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> "
+			."Use only hexadecimal characters 0-9,a-f. </p>");
+define("L_E_IMPORT_CONFLICT_INFO","<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>"
+			."If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>"
+			."And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>");
+define("L_E_IMPORT_IMPORT_SLICE","Import slice definition");		
+define("L_E_IMPORT_IMPORT_ITEMS","Import slice items");		
+		
+define ("L_E_IMPORT_DATA_COUNT", "Count of imported stories: %d.");			
+define ("L_E_IMPORT_ADDED", "Added were:");
+define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
+define ("L_CHOOSE_JUMP", "Choose module to be edited");
+
+define ("L_A_FIELD_IDS_TIT", "Admin - change Field IDs");
+define ("L_FIELD_IDS", "Change field IDs");
+define ("L_FIELD_IDS_CHANGED", "field IDs were changed");
+define ("L_V_MONTH_LIST", "Month list (separated by ,)");
+define ("L_F_JAVASCRIPT", "Field Javascript");
+define ("L_FIELD_ALIASES", "Aliases");
+
+define('L_CONSTANT_WHERE_USED', 'Where are these constants used?');
 define('L_CONSTANT_USED','Constants used in slice');
 
+define('L_CHANGE_FROM','Change from');
+define('L_TO', 'to');
+define('L_FIELD_ID_HELP',
+    'This page allows to change field IDs. It is a bit dangerous operation and may last long. 
+    You need to do it only in special cases, like using search form for multiple slices. <br><br>
+    Choose a field ID to be changed and the new name and number, the dots ..... will be 
+    added automatically.<br>');
 ?>

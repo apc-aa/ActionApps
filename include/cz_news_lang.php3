@@ -22,7 +22,7 @@ http://www.apc.org/
 
 # config file identifier
 # must correspond with this file name
-define("CONFIG_FILE", "cz_news_lang.php3");
+define("LANG_FILE", "cz_news_lang.php3");
 
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -44,8 +44,7 @@ define("HTML_PAGE_BEGIN",
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML XMLNS:XS>
   <HEAD>
-  <LINK rel=StyleSheet href="../'. ADMIN_CSS .'" 
-        type="text/css" title="CPAdminCSS">
+  <LINK rel=StyleSheet href="'.AA_INSTAL_URL.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
                
 # aa toolkit specific labels
@@ -729,27 +728,6 @@ define("L_E_EXPORT_SWITCH_BACKUP", "Export do jiného Toolkitu");
 define("L_E_EXPORT_IDLENGTH", "Délka identifikátoru musí být 16 znaků, a ne ");
 define("L_E_EXPORT_TEXT_LABEL", "Tento text si někde uložte. Můžete ho použít pro naimportování šablony do Toolkitu:");
 define("L_E_EXPORT_LIST", "Označte webíky, které CHCETE exportovat:");
-
-define("L_E_IMPORT_TITLE", "Import struktury webíků");
-define("L_E_IMPORT_SEND", "Odeslat strukturu webíků");
-define("L_E_IMPORT_MEMO", "Import struktury webíku proběhne takto:<br>"
-			."Vložte exportovaný text do rámečku a stiskněte tlačítko Odeslat.<br>"
-			."Struktura webíku s definicemi políček se načte a přidá do Toolkitu.");
-define("L_E_IMPORT_OPEN_ERROR","Neznámá chyba při otevírání souboru.");
-define("L_E_IMPORT_WRONG_FILE","CHYBA: Text není v pořádku. Zkontrolujte, že jste ho správně zkopírovali z Exportu.");
-define("L_E_IMPORT_WRONG_ID","CHYBA: ");
-define("L_E_IMPORT_OVERWRITE", "Přepsat");
-define("L_E_IMPORT_IDLENGTH", "Délka identifikátoru musí být 32 znaků, a ne ");
-
-define("L_E_IMPORT_IDCONFLICT", "Webíky s některými ID již existují. Změňte ID na pravé straně šipky.<br> "
-			."Používejte pouze hexadecimální znaky 0-9,a-f. "
-			."Pokud uděláte něco špatně (špatný počet znaků, špatné znaky, nebo změníte ID vlevo od šipky), "
-			."bude příslušné ID považováno za nezměněné.</p>"
-			."Pokud zvolíte PŘEPSAT, přepíší se všechny šablony s nezměněným ID a nové se přidají. <br>"
-			."Pokud zvolíte ODESLAT, šablony s konfliktem ID se budou ignorovat a nové se přidají.");
-define ("L_E_IMPORT_COUNT", "Počet importovaných šablon: %d.");			
-define ("L_E_IMPORT_ADDED", "Přidány byly:");
-define ("L_E_IMPORT_OVERWRITTEN", "Přepsány byly:");
 
 define("L_PARAM_WIZARD_LINK", "Průvodce s nápovědou");
 define("L_SHOW_RICH", "Zobraz toto pole v rich text editoru (použijte až po nainstalování potřebných komponent!)");

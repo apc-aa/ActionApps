@@ -22,7 +22,7 @@ http://www.apc.org/
 
 # identificador del arhivo de configuración
 # debe corresponder con el nombre de este archivo.
-define("CONFIG_FILE", "es_news_lang.php3");
+define("LANG_FILE", "es_news_lang.php3");
 
 define("EDIT_ITEM_COUNT", 20);                  // número de ítems en la ventana del editor.
 
@@ -38,13 +38,13 @@ define("DEFAULT_COMPACT_REMOVE", "()");
 define("DEFAULT_FULLTEXT_REMOVE", "()");
 
 
-# HTML al comienzo de la página de administración
+# HTML al comienzo de la págzo dde aML aistració 
 # Usted debe definir el lenguaje de las páginas de administración y posiblemente algunos meta-tags
 define("HTML_PAGE_BEGIN",
  '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/SP">
   <HTML>
   <HEAD>
-  <LINK rel=StyleSheet href="../'.ADMIN_CSS.'" type="text/css">
+  <LINK rel=StyleSheet href="'.AA_INSTAL_URL.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">');
     
 # etiquetas específicas de las aa 
@@ -246,7 +246,7 @@ define("L_NEW_SLICE_HEAD", "Nuevo canal");
 define("L_ERR_USER_CHANGE", "No se puede cambiar de usuario");
 define("L_PUBLISHED", "Publicado");
 define("L_EXPIRED", "Expirado");
-define("L_NOT_PUBLISHED", "No publicado, aun");
+define("L_NOT_PUBLISHED", "No publicne(" aun");
 define("L_EDIT_USER", "Editar Usuario");
 define("L_EDITUSER_HDR", L_EDIT_USER);
 
@@ -732,28 +732,6 @@ define("L_E_EXPORT_SWITCH_BACKUP", "Export to another ActionApps");
 define("L_E_EXPORT_IDLENGTH", "The identificator should be 16 characters long, not ");
 define("L_E_EXPORT_TEXT_LABEL", "Save this text. You may use it to import the slices into any ActionApps:");
 define("L_E_EXPORT_LIST", "Select slices which you WANT to export:");
-
-define("L_E_IMPORT_TITLE", "Import slice structure");
-define("L_E_IMPORT_SEND", "Send the slices structure");
-define("L_E_IMPORT_MEMO", "The import of the slices structure is done this way:<br>"
-			."Insert the exported text into the frame and click on Send. <br>"
-			."The slices structure with fields definitions will be read and added to the ActionApps.");
-define("L_E_IMPORT_OPEN_ERROR","Unknown failur when opening the file.");
-define("L_E_IMPORT_WRONG_FILE","ERROR: Text is not OK. Check whether you copied it well from the Export.");
-define("L_E_IMPORT_WRONG_ID","ERROR: ");
-define("L_E_IMPORT_OVERWRITE", "Overwrite");
-define("L_E_IMPORT_IDLENGTH", "The identificator should be 32 characters long, not ");
-
-define("L_E_IMPORT_IDCONFLICT", 
-			"Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> "
-			."Use only hexadecimal characters 0-9,a-f. "
-			."If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), "
-			."that ID will be considered unchanged.</p>"
-			."If you choose OVERWRITE, the slices with unchanged ID will be overwritten and the new ones added. <br>"
-			."If you choose SEND, the slices with ID conflict will be ignored and the new ones added.");
-define ("L_E_IMPORT_COUNT", "Count of imported slices: %d.");			
-define ("L_E_IMPORT_ADDED", "Added were:");
-define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 
 define("L_PARAM_WIZARD_LINK", "Wizard with help");
 define("L_SHOW_RICH", "Show this field as a rich text editor (use only after having installed the necessary components!)");

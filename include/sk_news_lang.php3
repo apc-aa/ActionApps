@@ -22,7 +22,7 @@ http://www.apc.org/
 
 # config file identifier
 # must correspond with this file name
-define("CONFIG_FILE", "sk_news_lang.php3");
+define("LANG_FILE", "sk_news_lang.php3");
 
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -43,8 +43,7 @@ define("HTML_PAGE_BEGIN",
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML>
   <HEAD>
-  <LINK rel=StyleSheet href="../'. ADMIN_CSS .'" 
-        type="text/css" title="CPAdminCSS">
+  <LINK rel=StyleSheet href="'.AA_INSTAL_URL.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
                
 # aa toolkit specific labels
@@ -732,28 +731,8 @@ define("L_E_EXPORT_IDLENGTH", "Dlžka identifikátora musí byt 16 znakov, a nie ")
 define("L_E_EXPORT_TEXT_LABEL", "Tento text si niekde uložte. Môžete ho použit pro import šablóny do Toolkitu:");
 define("L_E_EXPORT_LIST", "Oznacte moduly, ktoré CHCETE exportovat:");
 
-define("L_E_IMPORT_TITLE", "Import štruktúry modulov");
-define("L_E_IMPORT_SEND", "Odoslat štruktúru modulov");
-define("L_E_IMPORT_MEMO", "Import štruktúry modulu probehne takto:<br>"
-			."Vložte exportovaný text do rámika a stlacte tlačítko Odeslat.<br>"
-			."Štruktúra modulu s definíciami polí sa nacíta a pridá do Toolkitu.");
-define("L_E_IMPORT_OPEN_ERROR","Neznáma chyba pri otevávaní súboru.");
-define("L_E_IMPORT_WRONG_FILE","CHYBA: Text nie je v poriadku. Skontrolujte, ci ste ho správne skopírovali z Exportu.");
-define("L_E_IMPORT_WRONG_ID","CHYBA: ");
-define("L_E_IMPORT_OVERWRITE", "Prepísat");
-define("L_E_IMPORT_IDLENGTH", "Dlžka identifikátora musí byt 32 znakov, a nie ");
-
-define("L_E_IMPORT_IDCONFLICT", "Moduly s niektorými ID už existujú. Zmente ID na pravej strane šípky.<br> "
-			."Používajte len hexadecimálne znaky 0-9,a-f. "
-			."Ak urobíte nieco chybne (chybný pocet znakov, chybné znaky, alebo zmeníte ID vlavo od šípky), "
-			."bude príslušné ID považované za nezmenené.</p>"
-			."Ak zvolíte PREPÍSAT, prepíšu sa všetky šablóny s nezmeneným ID a nové se pridajú. <br>"
-			."Ak zvolíte ODOSLAT, šablóny s konfliktom ID sa budoú ignorovat a nové se pridajú.");
-define ("L_E_IMPORT_COUNT", "Počet importovaných šablón: %d.");			
-define ("L_E_IMPORT_ADDED", "Pridané boli:");
 define("L_SHOW_RICH", "Zobraz toto pole v rich text editore (pouijte sa po nainštalování potrebných komponentov!)");
 define("L_MAP_JOIN","-- Spojenie polí --");
-define ("L_E_IMPORT_OVERWRITTEN", "Prepísané boli:");
 
 define("L_PARAM_WIZARD_LINK", "Sprievodca s nápovedou");
 

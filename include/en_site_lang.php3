@@ -22,7 +22,7 @@ http://www.apc.org/
 
 # config file identifier
 # must correspond with this file name
-define("CONFIG_FILE", "en_site_lang.php3");
+define("LANG_FILE", "en_site_lang.php3");
 
 # HTML begin of admin page
 # You should set language of admin pages and possibly any meta tags
@@ -40,6 +40,9 @@ define("HTML_PAGE_BEGIN",
 
 /*
 $Log$
+Revision 1.2  2002/05/30 22:52:39  honzam
+changed language file identification, new lang constants
+
 Revision 1.1  2002/04/25 12:07:24  honzam
 initial version
 
