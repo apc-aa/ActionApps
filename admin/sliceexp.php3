@@ -35,6 +35,7 @@ http://www.apc.org/
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require "../include/init_page.php3";
+require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require "./sliceexp_text.php3";
 
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
@@ -112,7 +113,7 @@ function b_export_date_onchange(vstup)
 		  sl_count += (x.options[i].selected ? 1 : 0);
 		};
 		if (sl_count == 0) {
-		  alert (<?  echo '"'.L_E_EXPORT_MUST_SELECT.'"' ?>);
+		  alert (<?php  echo '"'.L_E_EXPORT_MUST_SELECT.'"' ?>);
 		  return false;
 		}
 		else {

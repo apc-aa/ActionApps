@@ -401,8 +401,8 @@ else {
  
 if($edit || $update || ($insert && $added_to_db)) { ?>
    <input type=submit name=update accesskey=S value="<?php echo L_POST." $accesskey" ?>">
-  <?
-  if ((!($post_preview==0)) or (!(isset($post_preview)))) {	 
+  <?php
+  if ((!($post_preview==0)) or (!(isset($post_preview)))) {
     echo "<input type=submit name=upd_preview value='".L_POST_PREV."'>";
   }
   ?>

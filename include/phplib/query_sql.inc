@@ -40,7 +40,7 @@ Here is an example:
 
 file: insert.php3
 ------------------
-<?
+<?php
 ## gets data from my form and inserts it into db
 
 require("prepend.inc"); ## here the classes are loaded and configured
@@ -52,7 +52,7 @@ echo "Values inserted";
 
 file: insert2.php3
 -------------------
-<?
+<?php
 ## gets data from my form and inserts it into db with a new INDEX
 ## myindex is defined as INT AUTO_INCREMENT PRIMARY KEY
 ## (this is mysql, in oracle you have to define a trigger)

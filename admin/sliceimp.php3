@@ -387,14 +387,14 @@ if ($data_IDconflict): ?>
 endif;
 if($IDconflict || $data_IDconflict): ?>
 	</P>	
-<?	echo L_E_IMPORT_CONFLICT_INFO ?>
+<?php	echo L_E_IMPORT_CONFLICT_INFO ?>
 	<p align=center>
-<? if ($only_slice)	 {?>
+<?php if ($only_slice)	 {?>
 	<input type=hidden name=only_slice value=1>
-<? };
+<?php };
 	if($only_data) { ?>
 	<input type=hidden name=only_data value=1>
-<? }; ?>			
+<?php }; ?>
 	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_OVERWRITE ?>">
 	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_INSERT ?>">
 	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_INSERT_AS_NEW ?>">
@@ -403,29 +403,29 @@ if($IDconflict || $data_IDconflict): ?>
 	</td></tr>
 <?php
 endif;?>
-	<? if (!$IDconflict || !$data_IDconflict): ?>
+	<?php if (!$IDconflict || !$data_IDconflict): ?>
 <tr><td class=tabtit align=center>
 <br>
-		<? echo L_E_IMPORT_FILE_SELECT ?><p>
+		<?php echo L_E_IMPORT_FILE_SELECT ?><p>
 		<input type="file" name="slice_def_file" size="60">
-<!--		<p><input type="submit" name="file_submit" value="<? echo L_E_IMPORT_FILE_SEND; ?>">  -->
+<!--		<p><input type="submit" name="file_submit" value="<?php echo L_E_IMPORT_FILE_SEND; ?>">  -->
 	</td></tr>	
-	<? endif; ?>
+	<?php endif; ?>
 <tr><td class=tabtit align=center>
 <br>
-	<? if (!$IDconflict || !$data_IDconflict): ?>	
-		<? echo L_E_IMPORT_MEMO ?><p>
-	<? endif; ?>
+	<?php if (!$IDconflict || !$data_IDconflict): ?>	
+		<?php echo L_E_IMPORT_MEMO ?><p>
+	<?php endif; ?>
 	<TEXTAREA NAME="slice_def" ROWS = 10 COLS = 100><?php if ($IDconflict || $data_IDconflict) echo $slice_def_bck ?></TEXTAREA>
 	<p>	
 <?php if (!$IDconflict || !$data_IDconflict): ?>	
-<? if (!$GLOBALS["Submit"]) { ?>
-	<? echo L_E_IMPORT_SELECT_WHAT; ?><p>
+<?php if (!$GLOBALS["Submit"]) { ?>
+	<?php echo L_E_IMPORT_SELECT_WHAT; ?><p>
 	<input type=checkbox name=only_slice checked><?php echo L_E_IMPORT_IMPORT_SLICE ?><br>
 	<input type=checkbox name=only_data checked><?php echo L_E_IMPORT_IMPORT_ITEMS ?><br><br>	
 	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_SEND ?>">
 	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo L_CANCEL ?>">
-<? } ?>	
+<?php } ?>	
 <?php
 endif;
 endif; //if ($cancel || $coflicts_list)?>
@@ -433,7 +433,7 @@ endif; //if ($cancel || $coflicts_list)?>
 </tr></td>
 </table>
 
-<?PHP
+<?php
 HtmlPageEnd();
 page_close();
 ?>

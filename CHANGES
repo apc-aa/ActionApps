@@ -1,10 +1,25 @@
+11/15/02 - display control variables (like navbar, sort_filter) are in sessions
+         - new input type "two boxes"
+         - fixed problem of IsSuperuser() function - it didn't use cached values
+         - javascripts moved to new directory - it allows better security 
+           settings for include directory
+         - fixed {switch()..} bug - default option works, 
+                                  - empty variable condition works
+         - added "empty" class for empty cells in calendar view
+         - better handling of Word pasted text
 11/14/02 - added Item Edit javascript validation, alt+S accesskey
-11/14/02 - improved Item Manager design
-11/07/02 - added doc/param_wizar_list.php3 to provide a complete list of 
+         - improved Item Manager design
+11/13/02 - returned item ids are cached in QueryIDs function, which should
+           improve slice.php3 speed and scrolling speed
+         - added support for module deletion
+         - fixed problems with aa menus in modules
+         - fixed problem with html/plaintext setting on returned itemedit page
+11/07/02 - added doc/param_wizar_list.php3 to provide a complete list of
            field types and alias functions
-11/07/02 - sql_parser updated so that in a search form spaces, hyphens and apostrophes
-           between two letters don't get special meaning.
-           I.e. "south-west" remains "south-west", but "south -west" becomes "south AND NOT west"
+11/07/02 - sql_parser updated so that in a search form spaces, hyphens and 
+           apostrophes between two letters don't get special meaning.
+           I.e. "south-west" remains "south-west", but "south -west" becomes
+           "south AND NOT west"
 11/02/02 - constants could be sorted by click on column name on constants admin 
            page
          - cosmetic changes in design

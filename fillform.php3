@@ -62,7 +62,7 @@ http://www.apc.org/
 	if (!isset ($form)) $form = "f";
 ?>
 
-<?
+<?php
 $encap = ( ($encap=="false") ? false : true );
 
 require "./include/config.php3";

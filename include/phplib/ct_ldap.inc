@@ -1,4 +1,4 @@
-<?
+<?php
 ##
 ## Copyright (c) 1999-2000 Sascha Schumann <sascha@schumann.cx>
 ##

@@ -39,7 +39,7 @@ function cmp($a,$b) {
 <hr color="#CC3300" width="100%" size="1" noshade align="center">
 <span class=bodytext><b>Tip:</b> In order to search through this long list please use CTRL-F
  on your keyboard and type in the word or phrase you are looking for.</span><p>
-<?
+<?php
 createConstsArray ($group_id, true, $myconsts);
 eval ('$data = '.$myconsts.';');
 echo "<UL>";

@@ -56,7 +56,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_A_MODULE?></b>
 <tr><td><table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?  reset ($MODULES);
+<?php  reset ($MODULES);
     while (list ($letter,$module) = each ($MODULES)) {
         if ($module["hide_create_module"]) continue;
         echo "<TR><TD class=tabtxt><B>".$module['name']."</B></TD><TD>";
