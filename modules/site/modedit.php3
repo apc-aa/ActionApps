@@ -95,6 +95,8 @@ if( $add || $update ) {
       }
     } else { // insert (add)
       $varset->clear();
+            // prepare varset variables for setFromArray() function
+      $varset->addArray(array('id','structure','state_file'), array('flag'));
 
       $p_template_id = ( $template['W'] ? 
               q_pack_id(substr($template['W'],1)) : 'SiteTemplate....' );

@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -30,12 +30,12 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
 
   if( count($err) > 1)
     return false;
-    
+
   $owner = new_id();
   $varset->set("id", $owner, "unpacked");
   $varset->set("name", $new_owner, "text");
   $varset->set("email", $new_owner_email, "text");
-   
+
     # create new owner
   if( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
     $err["DB"] .= MsgErr("Can't add owner");
@@ -43,7 +43,7 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
   }
   $varset->clear();
   return $owner;
-}  
+}
 
 # Validate all fields needed for module table (name, slice_url, lang_file, owner)
 function ValidateModuleFields( $name, $slice_url, $lang_file, $owner, &$err ) {
@@ -51,7 +51,7 @@ function ValidateModuleFields( $name, $slice_url, $lang_file, $owner, &$err ) {
   ValidateInput("owner", L_OWNER, $owner, $err, false, "id");
   ValidateInput("slice_url", L_SLICE_URL, $slice_url, $err, false, "url");
   ValidateInput("lang_file", L_LANG_FILE, $lang_file, $err, true, "text");
-}  
+}
 
 # Updates or inserts all necessary fields to module table
 function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
@@ -63,7 +63,7 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
     $varset->add("slice_url", "quoted", $slice_url);
     $varset->add("lang_file", "quoted", $lang_file);
     $varset->add("owner", "unpacked", $owner);
-    if( $superadmin ) 
+    if( $superadmin )
       $varset->add("deleted", "number", $deleted);
 
     $SQL = "UPDATE module SET ". $varset->makeUPDATE() . " WHERE id='$p_module_id'";
@@ -71,7 +71,7 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
       $err["DB"] = MsgErr("Can't change module");
       return false;
     }
-    
+
     $GLOBALS['r_slice_headline'] = stripslashes($name);
     $GLOBALS['r_lang_file'][$module_id] = stripslashes($lang_file);
     $GLOBALS['r_slice_view_url'] = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
@@ -87,7 +87,7 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
     $varset->set("deleted", $deleted, "number");
     $varset->set("lang_file", $lang_file, "quoted");
     $varset->set("type", $type, "quoted");
- 
+
     if( !$db->query("INSERT INTO module" . $varset->makeINSERT() )) {
       $err["DB"] .= MsgErr("Can't add module");
       return false;
@@ -97,7 +97,7 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
     AddPermObject($module_id, "slice");    // no special permission added - only superuser can access
   }
   return $module_id;
-}  
+}
 
 # fills variables from module and owners table
 function GetModuleFields( $source_id, $db ) {
@@ -115,12 +115,31 @@ function GetModuleFields( $source_id, $db ) {
   if ($db->next_record())
     return array( $db->f('name'),
                   $db->f('slice_url'),
-                  $db->f('lang_file'), 
-                  unpack_id($db->f('owner')), 
+                  $db->f('lang_file'),
+                  unpack_id($db->f('owner')),
                   $db->f('deleted'),
                   $slice_owners );
   return false;
-}                  
+}
+
+
+# check if module can be deleted
+function ExitIfCantDelete( $del, $db ) {
+  $p_del = q_pack_id($del);
+  $SQL = "SELECT deleted FROM module WHERE id='$p_del'";
+  $db->query($SQL);
+  if( !$db->next_record() )
+    go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". L_NO_SUCH_MODULE);
+  if( $db->f(deleted) < 1 )
+    go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". L_NO_DELETED_MODULE);
+}
+
+# delete module from module table
+function DeleteModule( $del, $db ) {
+  $p_del = q_pack_id($del);
+  $SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_del'";
+  $db->query($SQL);
+}
 
 
 ?>

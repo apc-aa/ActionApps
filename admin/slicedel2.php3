@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -18,16 +18,18 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-# expected $delslice - unpacked id of slice to delete
+# expected $del - unpacked id of slice to delete
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require $GLOBALS[AA_INC_PATH] . "msgpage.php3";
+require $GLOBALS[AA_INC_PATH] . "modutils.php3";
+
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if($delslice) {  
+if($del) {
   if(!IsSuperadmin()) {
     MsgPage($sess->url(self_base())."index.php3", L_NO_PS_DEL, "admin");
     exit;
@@ -38,58 +40,53 @@ if($delslice) {
 }
 
 $err["Init"] = "";      // error array (Init - just for initializing variable
+$p_del = q_pack_id($del);
 
-$p_delslice = q_pack_id($delslice);
+# check if module can be deleted
+ExitIfCantDelete( $del, $db );
 
-# check if slice can be deleted
-$SQL = "SELECT deleted FROM slice WHERE id='$p_delslice'";
-$db->query($SQL);
-if( !$db->next_record() )
-  go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". L_NO_SUCH_SLICE);
-if( $db->f(deleted) < 1 )
-  go_url($sess->url(self_base() . "slicedel.php3"), "Msg=". L_NO_DELETED_SLICE);
+# delete module (from common module table)
+DeleteModule( $del, $db );
 
-# delete slice ----------------------------------------------------------------
-$SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_delslice'";
-$db->query($SQL);
-
-$SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_delslice'";
+# delete all module specific tables
+$SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_del'";
 $db->query($SQL);
 
 # delete fields
-$SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_delslice'";
+$SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_del'";
 $db->query($SQL);
 
 # delete items
-$db2  = new DB_AA;         
-$SQL = "SELECT id FROM item WHERE slice_id='$p_delslice'";
+$db2  = new DB_AA;
+$SQL = "SELECT id FROM item WHERE slice_id='$p_del'";
 $db->query($SQL);
-while( $db->next_record() ) 
+while( $db->next_record() )
   DeleteItem($db2, unpack_id($db->f(id))); # deletes from content, offline and
                                            # relation tables
 
 # delete items
-$SQL = "DELETE LOW_PRIORITY FROM item WHERE slice_id='$p_delslice'";
+$SQL = "DELETE LOW_PRIORITY FROM item WHERE slice_id='$p_del'";
 $db->query($SQL);
 
 # delete feedmap
-$SQL = "DELETE LOW_PRIORITY FROM feedmap WHERE from_slice_id='$p_delslice'
-                                            OR to_slice_id='$p_delslice'";
+$SQL = "DELETE LOW_PRIORITY FROM feedmap WHERE from_slice_id='$p_del'
+                                            OR to_slice_id='$p_del'";
 $db->query($SQL);
 
 # delete feedprms
-$SQL = "DELETE LOW_PRIORITY FROM feedperms WHERE from_id='$p_delslice'
-                                            OR to_id='$p_delslice'";
+$SQL = "DELETE LOW_PRIORITY FROM feedperms WHERE from_id='$p_del'
+                                            OR to_id='$p_del'";
 $db->query($SQL);
 
 # delete email_notify
-$SQL = "DELETE LOW_PRIORITY FROM email_notify WHERE slice_id='$p_delslice'";
+$SQL = "DELETE LOW_PRIORITY FROM email_notify WHERE slice_id='$p_del'";
 $db->query($SQL);
 
 # delete slice from permission system -----------------------------------------
-DelPermObject($delslice, "slice");
+DelPermObject($del, "slice");
 
 # optimize tables -------------------------------------------------------------
+$db->query("OPTIMIZE TABLE module");
 $db->query("OPTIMIZE TABLE slice");
 $db->query("OPTIMIZE TABLE field");
 $db->query("OPTIMIZE TABLE content");
@@ -101,7 +98,7 @@ $db->query("OPTIMIZE TABLE email_notify");
 $db->query("OPTIMIZE TABLE relation");
 
 page_close();                                // to save session variables
-go_url(con_url($sess->url(self_base() . "slicedel.php3"), 
+go_url(con_url($sess->url(self_base() . "slicedel.php3"),
                                           "Msg=".rawurlencode(L_DELSLICE_OK)));
 
 ?>
