@@ -259,7 +259,7 @@ if (!is_array ($slices)) {
 else {
     reset($slices);
     while (list(,$slice) = each($slices)) {
-        list($fields,) = GetSliceFields ($slice);
+        list($fields) = GetSliceFields ($slice);
         $aliases[q_pack_id($slice)] = GetAliasesFromFields($fields,$als);
         if (is_array ($urlaliases))
             array_add ($urlaliases, $aliases[q_pack_id($slice)]);
