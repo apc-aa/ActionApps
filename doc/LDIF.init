@@ -1,14 +1,23 @@
-dn: dc=ecn,dc=apc,dc=org
+dn: ou=AA
 objectclass: top
-objectclass: organization
-objectclass: dcObject
-o: Econnect
-dc: ecn
-description: Easy Connection Network
+objectclass: organizationalUnit
+ou: AA
+description: Action Applications
 
-dn: cn=aalduser,dc=ecn,dc=apc,dc=org
+dn: cn=aauser,ou=AA
 objectclass: top
 objectclass: person
 cn: aa
 sn: Toolkit
 description: Account used by AA to access LDAP DB
+dn: ou=People,ou=AA
+objectclass: top
+objectclass: organizationalUnit
+ou: People
+description: AA's users
+
+dn: ou=ACLs,ou=AA
+objectclass: top
+objectclass: organizationalUnit
+ou: ACLs
+description: ACLs used by the Action Applications

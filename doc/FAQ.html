@@ -13,6 +13,8 @@
 <a href="#aalanguage">How to create aa in alternate language?</a><br><br>
 <a href="#aaslices">What are the 'Action Aplication Core' and 'News (EN) Template' slices?</a><br><br>
 <a href="#feeding">How works the internal feeding?</a><br><br>
+<a href="#aliases">How to create new alias function?</a><br><br>
+<a href="#parent">How to link parent item?</a><br><br>
 
 <a name="newaa"></a>
 <h3>How to create new Action Aplication</h3>
@@ -288,6 +290,42 @@ Depending on <i>field</i> table flags, the flags for <i>content</i> table are se
   items (= fed items from this item) and the appropriate fields are updated too. 
   (or is there other solution?)</p>
 <br><br>
+
+<a name="aliases"></a>
+<h3>How to create new alias function?</h3>
+<p>   If you find no alias function is good enough for you, you can write your 
+own. function. The alias functions are stored in include/item.php3 file and its
+names begins with f_ and they are three letters long (just like f_a()).</p>
+<p>   All you have to do for new function is:
+<ol>
+  <li>Write your own function in item.php3 (say f_9()).<br>
+    <br>
+  </li>
+  <li>Add this function to alias function array $ALIAS_FUNC_TYPES 
+      in include/constants.php3.<br>
+    <br>
+  </li>
+  <li>Assign name to this function in en_news_lang.php3, cz_news_lang.php3, ...
+      (just like define(&quot;L_ALIAS_FUNC_9&quot;, &quot;my_func&quot;); )
+<br>
+    <br>
+  </li>
+  <br>
+</ol>
+<br>
+
+<a name="parent"></a>
+<h3>How to link parent item?</h3>
+
+<p>Add<br>
+<br>
+<code>
+&lt;a href="/apc-aa/go.php3?sh_itm=_#ITEM_ID#&amp;type=fed"&gt;fed from&lt;/a&gt;
+</code><br><br>
+or such link to your index (or fulltext) design (Admin -> Design -> Index -> Odd Rows). This will point to fulltext of parent item or to the fulltext of the same item, if the item is not fed.</p>
+
+
+<br>
 <a href="index.html">Other documentation</a><br>
 
 </body>
