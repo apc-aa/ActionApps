@@ -90,7 +90,7 @@ function store_digest_filters ()
     global $view_id, $filters, $err;
     $db = getDB ();
     if (!$view_id) {
-   		$db->query("SELECT LAST_INSERT_ID() AS last_vid FROM view");
+        $db->query("SELECT LAST_INSERT_ID() AS last_vid FROM view");
         $db->next_record();
         $view_id = $db->f("last_vid");
     }
@@ -207,8 +207,7 @@ if( $update )
 {
   do
   {
-    reset($VIEW_FIELDS);
-    while(list($k, $v) = each($VIEW_FIELDS)) {
+    foreach($VIEW_FIELDS as $k => $v) {
       if( $v["validate"] AND $VIEW_TYPES[$view_type][$k] )
         ValidateInput($k, $VIEW_TYPES[$view_type][$k], $$k, $err, false, $v["validate"]);
     }
@@ -219,8 +218,7 @@ if( $update )
     $varset->add("name", "quoted", $name);
     $varset->add("type", "quoted", $view_type);
 
-    reset($VIEW_FIELDS);
-    while(list($k, $v) = each($VIEW_FIELDS)) {
+    foreach($VIEW_FIELDS as $k => $v) {
       if( $VIEW_TYPES[$view_type][$k] ) {
         $varset->add($k, $v["insert"], (($v["type"]=="bool") ? ($$k ? 1 : 0)
                                                                       : $$k));
@@ -240,12 +238,12 @@ if( $update )
     }
     $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
-    reset($VIEW_TYPES[$view_type]);
-    while(list($k, $v) = each($VIEW_TYPES[$view_type]))
+    foreach($VIEW_TYPES[$view_type] as $k => $v) {
       if (substr ($k,0,strlen("function:")) == "function:") {
         $show_fn = "store_".substr($k,strlen("function:"));
         $show_fn ();
       }
+    }
 
     go_url( $back_url );
   }while(false);
@@ -259,24 +257,27 @@ if( !$update ) {  # set variables from database
     $SQL= " SELECT * FROM view WHERE id='$view_id'";
   elseif( $new_templ AND $view_view)   # new view from template
     $SQL= " SELECT * FROM view WHERE id='$view_view'";
+  elseif( $view_type == 'inputform') {         # new view - inputform
+    $vw_data['odd'] = GetInputFormTemplate(); # get current input form template
+    $SQL = false;
+  }
   elseif( $view_type )         # new view - get default values from view table -
                                #            take first view of the same type
     $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
   else         # error - someone swith the slice or so
     go_url($back_url);
 
-  $db->query($SQL);
-
-  if ($db->next_record()) {
-    $vw_data = $db->Record;
-    if( $new_templ )           # if we create view from template - get view type
-      $view_type = $db->f(type);
-  } else
-    $vw_data = array( "listlen" => 10 );   # default values
-
+  if ( $SQL ) {
+      $db->query($SQL);
+      if ($db->next_record()) {
+        $vw_data = $db->Record;
+        if( $new_templ )           # if we create view from template - get view type
+          $view_type = $db->f(type);
+      } else
+        $vw_data = array( "listlen" => 10 );   # default values
+  }
 } else {        # updating - load data into vw_data array
-  reset($VIEW_FIELDS);
-  while(list($k, $v) = each($VIEW_FIELDS)) {
+  foreach($VIEW_FIELDS as $k => $v) {
     if( $VIEW_TYPES[$view_type][$k] )
       $vw_data[$k] = $$k;
   }
@@ -322,7 +323,7 @@ echo "<TITLE>". _m("Admin - design View") ."</TITLE>
         // property .disabled supported only in MSIE 4.0+
       }
       // -->
-      </SCRIPT>
+F      </SCRIPT>
     </HEAD>";
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
@@ -341,13 +342,18 @@ echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";
 PrintArray($err);
 echo $Msg;
 
+$form_buttons = array( 'update',
+                        'cancel'=>array("url"=>"se_views.php3"),
+                        'view_id'   => array('value'=> $view_id),
+                        'view_type' => array('value'=> $view_type),
+                      );
+
 // Print View Form ----------
 echo "<form name=f method=post action='$PHP_SELF'>";
-FrmTabCaption( _m("Defined Views") );
+FrmTabCaption( _m("Defined Views"), '', '', $form_buttons, $sess, $slice_id);
 FrmStaticText(_m("Id"), $view_id );
 
-reset($VIEW_TYPES[$view_type]);
-while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
+foreach($VIEW_TYPES[$view_type] as $k => $v) {
     if (substr ($k,0,strlen("function:")) == "function:") {
         $show_fn = "show_".substr($k,strlen("function:"));
         $show_fn ();
@@ -368,46 +374,42 @@ while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
     }
 
     switch( $input ) {
-        case "field":   FrmInputText($k, $label, $value, 254, 50, false, $help, DOCUMENTATION_URL); break;
-        case "area":    FrmTextarea($k, $label, $value, 4, 50, false, $help, DOCUMENTATION_URL); break;
-        case "areabig": FrmTextarea($k, $label, $value, 15, 80, false, $help, DOCUMENTATION_URL); break;
-        case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type][modification], $value, false, $help, DOCUMENTATION_URL); break;
-        case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help, DOCUMENTATION_URL); break;
-        case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help, DOCUMENTATION_URL); break;
-        case "op":      FrmInputSelect($k, $label, $lookup_op, $value, false, $help, DOCUMENTATION_URL); break;
-        case "chbox":   FrmInputChBox($k, $label, $value, true); break;
-        case "cond":    ConditionFrm($k, $label, $value); break;
-        case "order":   OrderFrm($k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
+        case "field":   FrmInputText(  $k, $label, $value, 254, 50, false, $help); break;
+        case "area":    FrmTextarea(   $k, $label, $value,   4, 50, false, $help); break;
+        case "areabig": FrmTextarea(   $k, $label, $value,  15, 80, false, $help); break;
+        case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type][modification], $value, false, $help); break;
+        case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help); break;
+        case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help); break;
+        case "op":      FrmInputSelect($k, $label, $lookup_op, $value, false, $help); break;
+        case "chbox":   FrmInputChBox( $k, $label, $value); break;
+        case "cond":    ConditionFrm(  $k, $label, $value); break;
+        case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
         case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]["value"], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
         case "none":    break;
     }
 }
-echo "</table></td></tr>";
+
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
-    case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases());
-    case 'discus':      PrintAliasHelp(GetDiscussionAliases());    break;
+    case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases(), false, false , $form_buttons, $sess, $slice_id);
+    case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons, $sess, $slice_id);    break;
     case 'field':       if( $r_fields )
                             $fields = $r_fields;
                         else
                             list($fields,) = GetSliceFields($slice_id);
-                        PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']),$fields);
+                        PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']),$fields, false, $form_buttons, $sess, $slice_id);
                         break;
-    case 'justids':     PrintAliasHelp(GetAliasesFromFields('','','justids'));
+    case 'justids':     PrintAliasHelp(GetAliasesFromFields('','','justids'), false, false, $form_buttons, $sess, $slice_id);
                         break;
     case 'links':
     case 'categories':
-    case 'const':       PrintAliasHelp(GetAliases4Type( $VIEW_TYPES_INFO[$view_type]['aliases'] ));
+    case 'const':       PrintAliasHelp(GetAliases4Type( $VIEW_TYPES_INFO[$view_type]['aliases'] ), false, false, $form_buttons, $sess, $slice_id);
                         break;
     case 'none':        break;
 }
 
-FrmInputButtons( array( 'update',
-                        'cancel',
-                        'view_id'   => array('value'=> $view_id),
-                        'view_type' => array('value'=> $view_type),
-                      ), $sess, $slice_id );
-echo "</table></FORM><br>";
+FrmTabEnd();
+echo "</FORM><br>";
 
 
 if( $view_id ) {
