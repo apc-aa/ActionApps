@@ -1,4 +1,6 @@
-01/23/03 - fixed zids.guesstype to allow for buggy shorter ids (14 or 15 char)
+01/23/03 - stringexpand - fixed bug in math
+01/23/03 - commented out insecure default_fnc_variable (mitra)
+         - fixed zids.guesstype to allow for buggy shorter ids (14 or 15 char) 
          - fixed new_id to only return 16 char ids in future
 01/22/03 - fixed buggy shortids() function in zids.php3 (honzam)
 01/22/03 - fixed typo sliceedit -> slicedit (mitra)

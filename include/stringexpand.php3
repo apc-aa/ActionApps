@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 # ----------------------------------------------------------------------------
-#                         itemview class
+#                         stringexpand
 #
 # Note that this is NOT defined as a class, and is called within several other classes
 # ----------------------------------------------------------------------------
@@ -63,6 +63,7 @@ function ParamExplode($param) {
     return "";
   }
 
+  # text = [ decimals [ # dec_point [ thousands_sep ]]] )  
   function parseMath($text)
   {
   	$variable = strtok($text,")");
@@ -82,7 +83,7 @@ function ParamExplode($param) {
             $val = calculate ($val); // defined in math.php3
 			
 			$format=explode("#",$variable);
-			$val=number_format($val, $format[0], $format[1], $format[2]);
+			$val = number_format($val, $format[0], $format[1], $format[2]);
 			
 			$ret.=$val;
 			$key=true;
@@ -145,7 +146,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 	  }
     elseif( substr($out, 0, 5) == "math(" ) { #TODO REMOVE item
       # replace math
-      return QuoteColons($level, $maxlevel, $item->parseMath( substr($out,5) ));
+      return QuoteColons($level, $maxlevel, parseMath( substr($out,5) ));
       # QuoteColons used to mark colons, which is not parameter separators.  
 	  }
     elseif( substr($out, 0, 8) == "include(" ) {
