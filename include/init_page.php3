@@ -150,7 +150,7 @@ $perm_slices = GetUserSlices();
 
 if( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_login ) {
     MsgPage($sess->url(self_base())."index.php3",
-        _m("You do not have permission to edit items in the slice").": ".slice2name($slice_id),"standalone");
+        _m("You do not have permission to edit items in the slice").": ".sliceid2name($slice_id),"standalone");
     exit;
 }
 
