@@ -284,7 +284,8 @@ $GLOBALS[eb_functions] = array (
 function stringexpand_testexpfnctn($var) {
     return "Just testing it".$var;
 }
-function stringexpand_fmod($x,$y) { return fmod($x,$y); }
+function stringexpand_fmod($x,$y)   { return fmod($x,$y); }
+function stringexpand_cookie($name) { return $_COOKIE[$name]; }
 
 function stringexpand_substr($string,$start,$length=999999999) {
     return substr($string,$start,$length);
@@ -301,6 +302,12 @@ function stringexpand_sessurl($url) {
         default: 
             return $sess->url($url);
     }
+}
+
+function stringexpand_item($item_id,$field) {
+    $zid  = new zids($item_id);
+    $item = GetItemFromId($zid);
+    return ( $item ? $item->subst_alias($field) : '');
 }
 
 # Expand a single, syntax element.
@@ -561,7 +568,6 @@ function expandFilenameWithHttp($parturl) {
       $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()),
                                DeQuoteColons($parturl));
            # filename do not use colons as separators => dequote before callig
-
       if( !$filename || trim($filename)=="" )
         return "";
 
