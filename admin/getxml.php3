@@ -93,7 +93,10 @@ $XML_BEGIN = '<'.'?xml version="1.0" encoding="UTF-8"?'. ">\n".
   * another conversion class for it
   */
 function code($v, $html=true) {
-    static $encoder = new ConvertCharset;
+    static $encoder;
+    if ( !$encoder ) {
+        $encoder = new ConvertCharset;
+    }
     if ( $html ) {
         $v = htmlspecialchars($v);
     }
@@ -113,7 +116,7 @@ function Error($str) {
 function CheckNameAndPassword( $node_name, $password ) {
     global $db;
     $db->query("SELECT password FROM nodes WHERE name='$node_name'");
-    return ($db->next_record() AND ($db->f('password') == $password);
+    return ($db->next_record() AND ($db->f('password') == $password));
 }
 
 /** Find correct feeding slices */
@@ -216,8 +219,10 @@ function GetXMLFieldData($slice_id,&$slice_fields, $field_id, &$content4id) {
 }
 
 /** Get one item */
-function GetXMLItem($slice_id,$item_id, &$content4id, &$item_categs, &$slice_fields) {
+function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
     global $FORMATS, $MAP_DC2AA;
+    static $value2const_id;
+
 
     // create RSS elements
     $title       = GetBaseFieldContent($slice_fields,"headline", $content4id);
@@ -249,10 +254,19 @@ function GetXMLItem($slice_id,$item_id, &$content4id, &$item_categs, &$slice_fie
     }
 
     // create item's categories
-    if ($item_categs && is_array($item_categs)) {
+    $item_categs = $content4id[GetBaseFieldId($slice_fields, "category")];
+    if (is_array($item_categs)) {
+        // get constants array from database ('val'=>'packed id')
+        if ( !isset($value2const_id[$slice_id]) ) {
+            // get and store it for later usage (it is static variable
+            $value2const_id[$slice_id] = GetConstants( GetCategoryGroup($slice_id), '', 'value', 'id');
+        }
         $xml_items.="\t<aa:categories><rdf:Bag>\n";
-        foreach ($item_categs as $k) {
-            $xml_items .="\t\t<rdf:li rdf:resource=\"".AA_INSTAL_URL."cat/$k\"/>\n";
+        foreach ($item_categs as $k => $v) {
+            $p_cat_id = $value2const_id[$slice_id][$v['value']];
+            if ( $p_cat_id ) {
+                $xml_items .="\t\t<rdf:li rdf:resource=\"".AA_INSTAL_URL."cat/".unpack_id128($p_cat_id)."\"/>\n";
+            }
         }
         $xml_items.="\t</rdf:Bag></aa:categories>\n";
     }
@@ -270,7 +284,10 @@ function GetXMLItem($slice_id,$item_id, &$content4id, &$item_categs, &$slice_fie
 
     // create AA field data elements
     //  $f = array("headline", "abstract", "link_only", "hl_href", "full_text" ,"category", "slice_id");
-    $f = array("full_text" ,"category", "slice_id");
+    //  $f = array("full_text" ,"category", "slice_id");
+    //  now we will send also category field (there could be (in special case)
+    //  also values, which arn't in category definition (csv filled items, fed, ...)
+    $f = array("full_text", "slice_id");
 
     foreach ( $f as $k => $v) {        // create array of elements, which will be skipped
         $rss[GetBaseFieldId($slice_fields,$v)] = $v;
@@ -288,9 +305,9 @@ function GetXMLItem($slice_id,$item_id, &$content4id, &$item_categs, &$slice_fie
     return $xml_items;
 }
 
-function CreateXMLItems($slice_id, &$items_ids, &$content, &$slice_fields, &$items_categs) {
+function CreateXMLItems($slice_id, &$items_ids, &$content, &$slice_fields) {
     foreach ($items_ids as $id)  {
-        echo GetXMLItem($slice_id, $id, $content[$id], $items_categs[$id], $slice_fields);
+        echo GetXMLItem($slice_id, $id, $content[$id], $slice_fields);
     }
 }
 
@@ -303,18 +320,45 @@ function GetXMLItemsRefs(&$items_ids) {
     return $out;
 }
 
-// Get all item categories belongs to $categories
-function GetItemCategories(&$categs, &$content_vals) {
-    if (!$content_vals || !is_array($content_vals)) {
-        return;
+/** Takes array of item ids and returns only the item ids which belongs to any
+ *  of specified categories
+ */
+function RestrictIdsByCategory( &$ids, &$categories, $slice_id, &$content, $cat_field ) {
+    $new_ids = array();
+    if ( !is_array($ids) OR !is_array($categories) ) {
+        return $new_ids;                              // empty array
     }
-    foreach ( $content_vals => $v ) {
-        if ($cat_id = $categs[$v['value']]) {
-            $cat_ids[] = $cat_id;
+
+    $consts = GetGroupConstants($slice_id);      // get categories belongs to $slice_id
+
+    // create array of requested categories ids indexed by value
+    foreach ( $categories as $cat ) {
+        // special category used in AA>= 2.8 - if provided, all items are
+        // returned and sent. The filtering is done on destination side.
+        if ( $cat == UNPACKED_AA_OTHER_CATEGOR ) {
+            return $ids;
+        }
+        if ($consts[$cat]) {
+            $translate_val2id[$consts[$cat]['value']] = $cat;
         }
     }
-    return $cat_ids;
+
+
+    // find out all items, which belongs to requested categories - restrict
+    foreach ( $ids as $k => $id ) {                   // for all items
+        $item_categories = $content[$id][$cat_field];
+        if ( is_array($item_categories) ) {           // test all categories
+            foreach ( $item_categories as $v ) {
+                if ($translate_val2id[$v['value']]) {
+                    $new_ids[] = $id;
+                    break;                            // next item
+                }
+            }
+        }
+    }
+    return $new_ids;
 }
+
 
 //------------------------------------------------------------------------------
 
@@ -381,30 +425,14 @@ if (!$slice_id) {
     if ($ids) {
         $content = GetItemContent($ids);     // get the content of all items
 
-        if ($categories && $cat_field) {     // if slice has no category field or has no categories, send
-            // all items
-            $consts = GetGroupConstants($slice_id, $slice_fields);      // get categories belongs to $slice_id
-
-            // create array of requested categories ids indexed by value
-            foreach ( explode(" ",$categories) as $cat ) {
-                if ($consts[$cat]) {
-                    $categs[$consts[$cat]['value']] = $cat;
-                }
-            }
-
-            // find out all items, which belongs to requested categories
-            foreach ( $ids as $k => $id ) {
-
-                // commented out - why to send all items without category definned if we want
-                // just categories specified by $categories? - Honza
-                //  if (!($cat_vals = $content[$id][$cat_field][0]['value']))  // get category of the item => if empty
-                //     continue;                                              // send the item;
-                if (!($items_categs[$id] = GetItemCategories($categs,$content[$id][$cat_field]))) {
-                    // if the item categories are not in the set of requested
-                    // categories => skip the item
-                    unset($ids[$k]);
-                }
-            }
+        // if caller do not provide category[] array (where specified which
+        // categories he wants) or slice has no category field, we send all
+        // items. (in AA >=2.8 category[] array is sent with special
+        // UNPACKED_AA_OTHER_CATEGOR which means "send all items")
+        if ($categories && $cat_field) {
+            // if we provide categories array, restrict the ids
+            // special UNPACKED_AA_OTHER_CATEGOR category is just like joker
+            $ids = RestrictIdsByCategory( $ids, explode(" ",$categories), $slice_id, $content, $cat_field );
         }
         $xml_items_refs = GetXMLItemsRefs($ids);
     }
@@ -418,7 +446,7 @@ echo $xml_fields;
 echo $xml_categories;
 
 if ($slice_id && $ids) {        // feeding mode
-    CreateXMLItems($slice_id, $ids, $content, $slice_fields, $items_categs);
+    CreateXMLItems($slice_id, $ids, $content, $slice_fields);
 }
 
 echo "</rdf:RDF>"

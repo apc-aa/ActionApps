@@ -8,7 +8,7 @@
  **/
 
 define (CONVERT_TABLES_DIR, $GLOBALS["AA_INC_PATH"]."ConvertTables/");
-define (DEBUG_MODE, 1);
+define (DEBUG_MODE, -1);
 
 /**
  * -- You should know about... --
@@ -366,6 +366,7 @@ class ConvertCharset {
         /** Check are there all variables **/
          if ($StringToChange == "") {
                 print $this->DebugOutput(0, 3, "\$StringToChange");
+                return "";
          }
          elseif ($FromCharset == "") {
                 print $this->DebugOutput(0, 3, "\$FromCharset");
