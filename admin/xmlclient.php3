@@ -66,6 +66,7 @@ require $GLOBALS[AA_INC_PATH]."xml_rssparse.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 require $GLOBALS[AA_INC_PATH]."notify.php3";
+require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
 //---------------------------------------------------------
 
@@ -236,6 +237,7 @@ function map1field($value,$item,$channel) {
 
 // Figure out if item alreaady imported into this slice
 // Id's are unpacked
+// Note that this could be replaced by feeding.php3:IsItemFed which is more complex and would use orig id
 function itemIsDuplicate($item_id,$slice_id) {
 	global $debugfeed, $db;
 	  // Only store items that have an id which is not already contained in the items table for this slice
@@ -250,9 +252,9 @@ function itemIsDuplicate($item_id,$slice_id) {
 }
 
 // stores items to the table item
-function updateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_slice_fields, &$ext_categs, &$l_categs) {
+function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_slice_fields, &$ext_categs, &$l_categs) {
   global $db, $varset, $itemvarset, $default_rss_map, $debugfeed;
-  if ($debugfeed >= 8) print("\n<br>updateItems");
+  if ($debugfeed >= 8) print("\n<br>xmlUpdateItems");
 
 	if (!($channel = $aa_rss[channels][$r_slice_id])) {
       while (list (,$channel) = each($aa_rss[channels])) {
@@ -261,7 +263,10 @@ function updateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_sl
 	}
 	
   while (list($item_id,) = each($aa_rss[items])) {
-  	if (itemIsDuplicate($item_id,$l_slice_id)) {
+    $new_item_id = string2id($item_id . $l_slice_id);
+	
+  	if (itemIsDuplicate($new_item_id,$l_slice_id)) {
+	//if (ItemIsFed($item_id,$l_slice_id)) {     // Alternative more complex 
 		if ($debugfeed >= 4) print("\n<br>skipping duplicate: ".$aa_rss[items][$item_id][title]);
 		continue;
 	}
@@ -326,12 +331,15 @@ function updateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_sl
       } //switch
     } //while each($map)
 	if ($debugfeed >= 3) print("\n<br>      " . $content4id['headline........'][0][value]);
-	if ($debugfeed >= 8) { print("\n<br>updateItems:content4id="); print_r($content4id); }
+	if ($debugfeed >= 8) { print("\n<br>xmlUpdateItems:content4id="); print_r($content4id); }
 
-   StoreItem( $item_id, $l_slice_id, $content4id, $l_slice_fields, true, true, false );
+   
+   StoreItem( $new_item_id, $l_slice_id, $content4id, $l_slice_fields, true, true, false );
                                                     # insert, invalidatecache, not feed
     // set the item to be recevied from remote node (todo - set via content4id)
-	$SQL = "UPDATE item SET externally_fed='".quote($feed[name])."' WHERE id='".q_pack_id($item_id)."'";
+	$SQL = "UPDATE item SET externally_fed='".quote($feed[name])."' WHERE id='".q_pack_id($new_item_id)."'";
+	// Update relation table to show where came from
+	AddRelationFeed($new_item_id,$item_id);
 	
 	if ($debugfeed >= 8) print("\n<br>$SQL");
     $db->query($SQL);
@@ -399,7 +407,7 @@ function onefeed($feed_id,$feed) {
   // update items
   if (isset($aa_rss[items])) {
     if ($debugfeed >= 8) print("\n<br>onefeed: there are some items to update");
-    updateItems($feed_id, $feed, $aa_rss, $l_slice_id, $r_slice_id, $l_slice_fields, $ext_categs, $l_categs,$feed_type);
+    xmlUpdateItems($feed_id, $feed, $aa_rss, $l_slice_id, $r_slice_id, $l_slice_fields, $ext_categs, $l_categs,$feed_type);
 	if ($feed[feed_type] == FEEDTYPE_APC) {
 	    //update the newest item
 		$SQL = "UPDATE external_feeds SET newest_item='".$aa_rss[channels][$r_slice_id][timestamp]."' WHERE feed_id='$feed_id'";

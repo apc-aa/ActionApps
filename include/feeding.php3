@@ -88,9 +88,9 @@ function IsItemFed($item_id, $destination) {
   $p_destination = q_pack_id($destination);
 
   $base_id = GetBaseItem($item_id);
-  $p_base_id = q_pack_id($base_id);
+  $p_base_id = q_pack_id($base_id); // Trace back to the original id
 
-  // if item comes from $destination slice
+  // if item comes from $destination slice (i.e. $destination slice contains base record)
   $db->query("SELECT slice_id FROM item WHERE id='$p_base_id'");
   if ($db->next_record())
     if (unpack_id($db->f(slice_id)) == $destination)
@@ -102,13 +102,13 @@ function IsItemFed($item_id, $destination) {
              AND item.slice_id = '$p_destination'
              AND flag & ". REL_FLAG_FEED;
   $db->query($SQL);
-  while ($db->next_record() )
+  while ($db->next_record() ) // Build an array of source id's
     $sources[] = unpack_id($db->f(source_id));
 
   if (!isset($sources) || !is_array($sources))
-    return;
+    return false; // this was set to "return", mitra changed to return false
 
-  while (list(,$source_id) = each($sources))
+  while (list(,$source_id) = each($sources)) // Test array for containing an item fed from same baseid
     if ($base_id ==  GetBaseItem($source_id))
       return true;
 
@@ -176,7 +176,6 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
   if (isItemFed($item_id, $destination)) # don't feed if the item is already fed.
     return false;
 
-  $p_item_id = q_pack_id($item_id);
   $p_destination = q_pack_id($destination);
 
   list($fields_to,) = GetSliceFields($destination);
@@ -200,7 +199,6 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
   $varset = new Cvarset;
   $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
   $id = new_id();
-  $p_id = q_pack_id($id);
 
   # prepare new4id array before call StoreItem function
   while(list($newfld,$newfldname) = each($fields_to)) {
@@ -247,13 +245,19 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
 
   StoreItem( $id, $destination, $new4id, $fields_to, true, true, false );
                                         # insert, invalidatecache, not feed
-
-  # update relation table - stores where is what fed
-  $SQL = "INSERT INTO relation ( destination_id, source_id,   flag )
-               VALUES ( '$p_id', '$p_item_id', '". REL_FLAG_FEED ."' )";
-  $db->query($SQL);
+  AddRelationFeed($id,$item_id); // Add to relation table
 
   return $id;
+}
+
+function AddRelationFeed ( $dest_id, $source_id) {
+   global $db;
+	$p_dest_id = q_pack_id($dest_id);
+	$p_source_id = q_pack_id($source_id);
+  # update relation table - stores where is what fed
+  $SQL = "INSERT INTO relation ( destination_id, source_id,   flag )
+               VALUES ( '$p_id', '$p_source_id', '". REL_FLAG_FEED ."' )";
+  $db->query($SQL);
 }
 
 // Return feeding tree where items should be fed.
