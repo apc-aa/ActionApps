@@ -114,6 +114,18 @@ if ($perms = GetObjectsPerms(AA_ID, "aa")) {
    }
 }
 
+// Consider only non-empty superadmin groups
+
+if (isset($supergroups)) {
+   while (list($key,$value) = each ($supergroups)) {
+      $members = GetGroupMembers($key);
+      if (count($members)) {
+         $nonemptysupergroups[] = $value;
+      }
+   }
+   $supergroups = $nonemptysupergroups;
+}
+
 HtmlStart();
 
 switch ($phase) {
@@ -209,7 +221,7 @@ switch ($phase) {
       
       AddPerm($superid, AA_ID, "aa", $perms_roles_id["SUPER"]);
       
-      // Check whether it was succefful
+      // Check whether succefful
       
       $perms = GetObjectsPerms(AA_ID, "aa");
 
@@ -247,6 +259,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.3  2000/08/14 12:37:11  kzajicek
+Added checking for empty groups with superadmin access
+
 Revision 1.2  2000/08/11 17:20:44  kzajicek
 Removed debug section
 
