@@ -925,10 +925,10 @@ class item {
     $short_id = $this->columns["short_id........"][0]["value"];
     $name = "live_checkbox[".$short_id."][$col]";
     $img = $this->getval($col) ? "on" : "off";
-    return "<a href='#' onClick='CallLiveCheckbox (\"$name\");'>
-    <img width='16' height='16' name='$name' border='0'
-    src='".$AA_INSTAL_PATH."images/cb_".$img.".gif' 
-    alt='".($this->getval($col) ? _m("on") : _m("off"))."'></a>";
+    return "<img width='16' height='16' name='$name' border='0'
+                 onClick='javascript:CallLiveCheckbox (\"$name\");'
+                 src='".$AA_INSTAL_PATH."images/cb_".$img.".gif' 
+                 alt='".($this->getval($col) ? _m("on") : _m("off"))."'>";
   }
   
   # transformation function - transforms strings to another strings
