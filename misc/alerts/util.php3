@@ -19,10 +19,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-$howoften_options = array (
+function get_howoften_options () {
+    return array (
     "daily"=>_m("daily"),
     "weekly"=>_m("weekly"),
     "monthly"=>_m("monthly"));
+}
 
 // ----------------------------------------------------------------------------------------
 
@@ -58,28 +60,34 @@ function email_address ($name, $email) {
 /*  Function: alerts_subscribe
     Purpose:  Adds new user to alerts and sends him e-mail to confirm. 
 */
-function alerts_subscribe ($email, $password="", $firstname="", $lastname="")
+function alerts_subscribe ($email, $password="", $firstname="", $lastname="", $lang="en")
 {
-    global $Err;
+    global $Err, $ALERTS_SUBSCRIPTION_COLLECTION;
 
     if (!$email) return;
 
     $db = new DB_AA;
     $varset = new CVarset();
-    $db->query ("SELECT * FROM alerts_user WHERE email='".addslashes($email)."'");
-    if ($db->num_rows())
-        return _m("ERROR: user already exists");
-           
+
     $confirm = gensalt(20);
-    
     $varset->add("email", "quoted", $email);
-    $varset->add("password", "quoted", $password);
-    $varset->add("firstname", "quoted", $firstname);
-    $varset->add("lastname", "quoted", $lastname);
     $varset->add("confirm", "text", $confirm);
-    
-    $SQL = "INSERT INTO alerts_user ".$varset->makeINSERT();
-    if (!$db->query ($SQL)) return _m("ERROR adding user to alerts_user");
+
+    $db->query ("SELECT * FROM alerts_user WHERE email='$email'");
+    if ($db->num_rows() == 0) {   
+        $varset->add("password", "quoted", $password ? md5 ($password) : "");
+        $varset->add("firstname", "quoted", $firstname);
+        $varset->add("lastname", "quoted", $lastname);
+        $varset->add("lang", "text", $lang);
+        
+        $SQL = "INSERT INTO alerts_user ".$varset->makeINSERT();
+        if (!$db->query ($SQL)) return _m("ERROR adding user to alerts_user");
+    }    
+    else {
+        $varset->add("password","text","");
+        $SQL = "UPDATE alerts_user SET ".$varset->makeUPDATE()." WHERE email='$email'";
+        if (!$db->query ($SQL)) return _m("ERROR updating user in alerts_user");
+    }        
 
     $subject = _m("Welcome to APC e-mail alerts");   
     $url = AA_INSTAL_URL."misc/alerts/confirm.php3";
@@ -94,7 +102,9 @@ function alerts_subscribe ($email, $password="", $firstname="", $lastname="")
         , array ("<p align=center><a href='$url'>$url</a></p>"
                 ,"<p>$confirm</p>"));
         
-    $headers = "From: ".ALERTS_EMAIL."\n";    
+    $db->query ("select * from alerts_collection where description='$ALERTS_SUBSCRIPTION_COLLECTION'");
+    $db->next_record();   
+    $headers = alerts_email_headers ($db->Record, "");
     $to  = email_address ($firstname." ".$lastname, $email);
 
     mail_html_text ($to, $subject, $message, $headers, CHARSET, 0); 
@@ -130,14 +140,14 @@ function print_addfilter ($label, $collection, $index, $class="tabtit")
   
 function print_add_collection ($user=false)
 {
-    global $ac_trstart, $ac_trend, $howoften_options;
+    global $ac_trstart, $ac_trend;
     
     echo $ac_trstart.'<td class=tabtit colspan=2>'.'<b>'._m("Create new collection").':&nbsp;</b>
       <input type="text" name="cdesc[new]" value="'._m("New collection").'">&nbsp;&nbsp;';
 
     $button_add = '<input type="submit" name="change[-1]" value="'._m("Create").'">';
     if ($user) {
-        FrmSelectEasy("howoften[c][new]", $howoften_options);
+        FrmSelectEasy("howoften[c][new]", get_howoften_options());
         echo "&nbsp;&nbsp;";
     }
     else echo $button_add;    
@@ -165,8 +175,7 @@ function print_js_options_filters ($user=true)
         var options_filters = '<OPTION value=\"-1\">"._m("Choose a filter")."'";
         while ($db2->next_record()) {
             $jsfilters .= "+'<OPTION value=\"".$db2->f("filterid")."\">";
-            if (!$user)
-                $jsfilters .= $db2->f("filterid").". ";
+            //if (!$user) $jsfilters .= $db2->f("filterid").". ";
             $jsfilters .= $db2->f("name")." -- ".$db2->f("fdesc")."'\n";
         }
         $jsfilters .= "
@@ -179,7 +188,8 @@ function print_js_options_filters ($user=true)
   
 function print_edit_collections ($SQL, $script, $user=false)
 {
-    global $ac_trstart, $ac_trend, $sess, $howoften_options;
+    global $ac_trstart, $ac_trend, $sess;
+    $howoften_options = get_howoften_options();
 
     $db = new DB_AA;
     $db->query ($SQL);
@@ -204,7 +214,7 @@ function print_edit_collections ($SQL, $script, $user=false)
             ._m("Collection").': </b><input type="text" name="cdesc['.$cid.']" value="'.$collection["cdesc"].'" size="30">&nbsp;&nbsp;';
         if ($user) {
             echo '<b>'._m("How often").':</b> ';
-            $howoften_options[0] = _m("unsubscribe");
+            $howoften_options[-1] = _m("unsubscribe");
             FrmSelectEasy("howoften[c][$cid]", $howoften_options, $collection["ho"]);
         }
         else echo "<b>ID: $cid</b>&nbsp;&nbsp;".$button_update.'&nbsp;&nbsp;'.$button_delete;
@@ -214,7 +224,7 @@ function print_edit_collections ($SQL, $script, $user=false)
         $irow = 1;
         while (list ($fid, $filter) = each ($collection["filters"])) {
             echo $ac_trstart.'<td class=tabtxt>'._m("Filter").':&nbsp;&nbsp;<b>';
-            if (!$user) echo "$fid. ";
+            //if (!$user) echo "$fid. ";
             echo $filter["name"].' -- '.$filter["fdesc"].'</b></td>'
                 .'<td class=tabtxt>'._m("Order").':&nbsp;'
                 .'<input type="text" name="order['.$cid.']['.$fid.']" value="'.$irow.'" size="1"></td>'.$ac_trend;
@@ -237,7 +247,8 @@ function print_edit_collections ($SQL, $script, $user=false)
 
 function update_collection ($db, $cid, $cdesc, $order, $addfilter, $howoften="")
 {   
-    global $howoften_options, $user;
+    global $user;
+    $howoften_options = get_howoften_options();
 
     if ($cdesc)
         $db->tquery ("UPDATE alerts_collection SET description='$cdesc' WHERE id=$cid");
@@ -302,9 +313,9 @@ function update_collection ($db, $cid, $cdesc, $order, $addfilter, $howoften="")
 // -----------------------------------------------------------------------------------
 
 // $add_showme sets showme for new collections (1 for admin interface, 0 for public interface)    
-function execute_edit_collections ($add_showme)
+function execute_edit_collections ($add_showme, $user=false)
 {
-    global $debug, $change, $addorder, $addfilter, $cdesc, $delete, $order, $howoften, $user;   
+    global $debug, $change, $addorder, $addfilter, $cdesc, $delete, $order, $howoften;   
     $db = new DB_AA; 
 
     if ($debug) {
@@ -313,22 +324,27 @@ function execute_edit_collections ($add_showme)
         print_r ($addfilter); echo "<br>";
         echo "cdesc[-1] ".$cdesc["new"];
     }
+    
+    $varset = new CVarset();
 
     if (is_array ($change)) {
         reset ($change);
         while (list ($cid) = each ($change)) {        
             // add new collection
             if ($cid == -1) {
-                $db->tquery ("INSERT INTO alerts_collection (description, showme) VALUES('".$cdesc["new"]."', $add_showme)");
+                $varset->add ("description","quoted",$cdesc["new"]);
+                $varset->add ("showme", "number", $add_showme);
+                $db->tquery ("INSERT INTO alerts_collection ".$varset->makeINSERT());
+                
                 $newcid = get_last_insert_id ($db, "alerts_collection");
-                if (isset ($howoften["c"]["new"])) 
+                if ($howoften["c"]["new"]) 
                     $db->tquery ("INSERT INTO alerts_user_filter
                          (userid,collectionid,howoften)
                          VALUES (".$user["id"].", $newcid, '".$howoften["c"]["new"]."');");
             }
             else $newcid = $cid;
             
-            copy_user_collection ($user["id"], $newcid);
+            if ($user) $newcid = copy_user_collection ($user["id"], $newcid);
             update_collection ($db, $newcid, $cdesc[$cid], $order[$cid], $addfilter[$cid], $howoften["c"][$cid]);
         }
     }
@@ -365,4 +381,22 @@ function copy_user_collection ($userid, $cid)
     else return $cid;
 }
 
+// -----------------------------------------------------------------------------------
+
+function alerts_email_headers ($record, $default)
+{
+    $headers = array (
+        "From" => "from",
+        "Reply-To" => "reply_to",
+        "Errors-To" => "errors_to",
+        "Sender" => "sender");
+    reset ($headers);
+    while (list ($header, $field) = each ($headers)) {
+        if ($record["mail_$field"])
+            $retval .= $header.": ".$record["mail_$field"]."\r\n";
+        else if ($default["mail_$field"])
+            $retval .= $header.": ".$default["mail_$field"]."\r\n";
+    }
+    return $retval;
+}
 ?>

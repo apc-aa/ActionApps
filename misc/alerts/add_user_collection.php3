@@ -61,6 +61,7 @@ $db->next_record();
 $userid = $db->f("id");
 $confirm = $db->f("confirm");
 
+$howoften_options = get_howoften_options();
 if (!$howoften_options [$howoften]) error (_m("Howoften set wrong"));
 
 if (!is_array ($collectionid))

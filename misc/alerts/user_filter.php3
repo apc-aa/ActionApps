@@ -37,6 +37,7 @@ $db = new DB_AA;
 
 $user = AlertsUser ($alerts_session);
 if (!$user) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&Msg="._m("Your session has expired. Please login again."));
+else bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$user["lang"]."_alerts_lang.inc");
 
 /* ----------------------------------------------------------------------------------------
                           PROCESS FORM DATA -- UPDATE DATABASE
@@ -44,7 +45,8 @@ if (!$user) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&Msg="._m("Your 
 
 function process_data ()
 {
-    global $change_user, $chuser, $change_password, $Err, $howoften, $filter, $howoften_options, $db, $user, $addpredefcol, $add;
+    global $change_user, $chuser, $change_password, $Err, $howoften, $filter, $db, $user, $addpredefcol, $add;
+    $howoften_options = get_howoften_options();
     
     if ($change_user) {
         $db->query ("UPDATE alerts_user 
@@ -56,7 +58,7 @@ function process_data ()
     else if ($change_password) {
         if ($chuser["password"] == $chuser["password2"]) {
             $db->query ("UPDATE alerts_user 
-                SET password='$chuser[password]'
+                SET password='".addslashes(md5($chuser["password"]))."'
                 WHERE id=$user[id]");
             $user = AlertsUser ($alerts_session);
         }
@@ -86,7 +88,7 @@ function process_data ()
             }
         }
         
-        execute_edit_collections (0);
+        execute_edit_collections (0, $user);
     }
 }
 
@@ -95,12 +97,18 @@ process_data();
 /* ----------------------------------------------------------------------------------------
                                       SHOW PAGE
    ---------------------------------------------------------------------------------------- */      
-      
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+echo '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
+  <HTML>
+  <HEAD>
+  <LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
+  <meta http-equiv="Content-Type" content="text/html; charset='.$LANGUAGE_CHARSETS[get_mgettext_lang()].'">';
+
 echo "<TITLE>". _m("AA Alerts") ."</TITLE>
 </HEAD>
 <BODY>
     <FORM NAME=login ACTION='user_filter.php3' METHOD=post>
+    <input type=hidden name='lang' value='$lang'>
     <input type=hidden name='alerts_session' value='$alerts_session'>
     <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABTITBG." align='center'>$ac_trstart<TD>";
     
@@ -110,11 +118,11 @@ PrintArray ($Err);
 echo "
    <h2>"._m("AA Alerts")."</h2>";
 
-echo "<p><b>"._m("Welcome").", ";
 if ($user["firstname"]) 
-     echo $user["firstname"]." ".$user["lastname"];
-else echo $user["email"];
-echo "</b></p>";
+     $welcome = $user["firstname"]." ".$user["lastname"];
+else $welcome = $user["email"];
+      
+echo "<p><b>"._m("Welcome, %1", array ($welcome))."</b></p>";
 
 echo "
 </TD>$ac_trend
@@ -209,6 +217,7 @@ $table_header = "
    $ac_trstart<td class=tabtit><b>"._m("Filter")."</b></td>
    <td class=tabtit><b>"._m("How often")."</b></td>$ac_trend";
 
+$howoften_options = get_howoften_options ();
 $howoften_options["0"] = _m("unsubscribe");
 
 reset ($digests);
@@ -230,6 +239,8 @@ while (list (,$digest) = each ($digests)) {
     }
 }
 
+unset ($howoften_options["0"]);
+
 // -------------------------------------------------------------------------------    
 
 // Predefined collections
@@ -240,8 +251,6 @@ $db->tquery ("SELECT description, id FROM alerts_collection
               WHERE showme = 1
               ORDER BY description");
 
-$howoften_options[0] = _m("not subscribed");
-               
 if ($db->num_rows()) {
     echo "$ac_trstart<td colspan=1><b>"._m("Add predefined collection")."</b></td>
            <td class=tabtit><b>"._m("How often")."</b></td>$ac_trend";

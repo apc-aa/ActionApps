@@ -32,19 +32,11 @@ require "./lang.php3";
 
 if ($send_passwd && $email) {
     $db = new DB_AA;
-    $db->query ("SELECT password FROM alerts_user WHERE email='$email'");
+    $db->query ("SELECT * FROM alerts_user WHERE email='$email'");
     if ($db->num_rows() == 0) $Err[] = _m("This email is not registered with Alerts.");
     else {
         $db->next_record();
-        $passwd = $db->f("password");
-        if (!$passwd) $passwd = _m("You don't have any password, leave the box empty.");
-        
-        mail ($email, _m("Password to Alerts"), 
-            _m("Your login info for AA Alerts is (%1):\n
-                e-mail: %2\n
-                password: %3\n
-                Enjoy AA Alerts!", AA_INSTAL_URL."misc/alerts", $email, $passwd),
-            $headers = "From: ".ALERTS_EMAIL);
+        alerts_subscribe ($email, "");
         $Msg = _m("OK. Password was sent.");
     }
 }
@@ -52,15 +44,15 @@ if ($send_passwd && $email) {
 else if ($email) {
     $db = new DB_AA;
     $db->query ("SELECT id, password FROM alerts_user WHERE email='$email'");
-    if ($db->num_rows() == 0) $Err[] = _m("This email address is not registered with Alerts.");
+    if ($db->num_rows() == 0) $Err[] = _m("This email is not registered with Alerts.");
     else {
         $db->next_record();
-        if ($password == $db->f("password")) {
+        if ($db->f("password") == "" || (md5($password) == $db->f("password"))) {
             $alerts_session = new_id ();
             $db->query ("UPDATE alerts_user 
                 SET session='$alerts_session', sessiontime=".time()." 
                 WHERE id = ".$db->f("id"));
-            go_url (AA_INSTAL_URL."misc/alerts/user_filter.php3?alerts_session=$alerts_session");
+            go_url (AA_INSTAL_URL."misc/alerts/user_filter.php3?alerts_session=$alerts_session&lang=$lang");
             exit;
         }
         else $Err[] = _m("Wrong password.");
@@ -82,15 +74,16 @@ echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
 
     echo "
     <FORM NAME=login ACTION='index.php3' METHOD=post>
+       <input type=hidden name=lang value=\"$lang\">
        <p align=right><a href='subscribe.php3?lang=$lang'><font size=+1><b>"._m("New user? Subscribe!")."</b></font></a></p>
        <table width='440' border='0' cellspacing='0' cellpadding='10' bgcolor=".COLOR_TABTITBG." align='center'>
-         <TR><TD class=tabtxt><B>E-mail:</B></TD>
+         <TR><TD class=tabtxt><B>"._m("E-mail").":</B></TD>
             <TD class=tabtxt><INPUT TYPE=text NAME=email VALUE='$email' SIZE=50></TD></TR>
-         <TR><TD class=tabtxt><B>Password:</B></TD>
+         <TR><TD class=tabtxt><B>"._m("Password").":</B></TD>
             <TD class=tabtxt><INPUT TYPE=password NAME=password></TD></TR>
        </table> 
        <p align=center><INPUT TYPE=SUBMIT VALUE='"._m("Login")."'></p>";
-       echo _m("Login by your e-mail address. If you don't use password, leave that box empty. If you have forgotten your password, click here and we will send it to your e-mail.")." <p align=center><INPUT TYPE=SUBMIT NAME='send_passwd' VALUE='"._m("Send password")."'></p>
+       echo _m("Login by your e-mail address. If you don't use password, leave that box empty. If you forgot your password, click here and we will send a new confirmation e-mail to you.")." <p align=center><INPUT TYPE=SUBMIT NAME='send_passwd' VALUE='"._m("Send password")."'></p>
     </FORM>";
 
 echo "</TD></TR></TABLE>

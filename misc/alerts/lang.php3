@@ -30,7 +30,7 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 
 if (!$lang) $lang = "en";
-set_mgettext_domain ($lang);
+bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$lang."_alerts_lang.inc");
 // common language constants
 require $GLOBALS[AA_INC_PATH].$lang."_news_lang.php3";
 

@@ -33,11 +33,6 @@ require $GLOBALS[AA_INC_PATH]."searchlib.php3";
 
 //$debug = 1;
 
-$howoften_digest = array (
-    "daily"=>_m("AA Alerts - daily digest of "),
-    "weekly"=>_m("AA Alerts - weekly digest of "),
-    "monthly"=>_m("AA Alerts - monthly digest of "));        
-      
 $db = new DB_AA;
 
 // -------------------------------------------------------------------------------------
@@ -49,7 +44,8 @@ $db = new DB_AA;
 
 function create_filter_text ($ho)
 {
-    global $debug, $howoften_options, $db, $conds, $sort;
+    global $debug, $db, $conds, $sort;
+    $howoften_options = get_howoften_options();
     
     echo "<h1>$ho</h1>";
 
@@ -63,7 +59,7 @@ function create_filter_text ($ho)
     
     while ($db->next_record()) {
         $slices[$db->f("slice_id")]["name"] = $db->f("slicename");
-        $slices[$db->f("slice_id")]["lang_file"] = $db->f("lang_file");
+        $slices[$db->f("slice_id")]["lang"] = substr ($db->f("lang_file"),0,2);
         $slices[$db->f("slice_id")]["views"][$db->f("vid")]["filters"][$db->f("filterid")] = 
             array ("conds"=>$db->f("conds"), "last"=>$db->f("last_$ho"));
     }
@@ -74,7 +70,7 @@ function create_filter_text ($ho)
         list($fields,) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);       
         // set language
-        set_mgettext_domain ($db->f("lang_file"));
+        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$slice["lang"]."_alerts_lang.inc");
         
         reset ($slice["views"]);
         while (list ($vid, $view) = each ($slice["views"])) {                      
@@ -144,14 +140,24 @@ function create_filter_text ($ho)
     
 function send_emails ($ho)
 {
-    global $debug, $db, $conds;
+    global $debug, $db, $conds, $ALERTS_DEFAULT_COLLECTION, $LANGUAGE_CHARSETS;
             
     $dbtexts = new DB_AA;
+
+    $db->query ("SELECT * FROM alerts_collection WHERE description = '$ALERTS_DEFAULT_COLLECTION'");
+    $db->next_record();
+    $default_collection = $db->Record;
         
     $db->query ("SELECT * FROM alerts_user WHERE confirm=''");
     while ($db->next_record()) {
+        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$db->f("lang")."_alerts_lang.inc");
+        $howoften_digest = array (
+            "daily"=>_m("AA Alerts - daily digest of "),
+            "weekly"=>_m("AA Alerts - weekly digest of "),
+            "monthly"=>_m("AA Alerts - monthly digest of "));        
+      
         $dbtexts->tquery ("
-            SELECT C.description, CF.collectionid, CF.myindex, DF.text_$ho FROM 
+            SELECT C.*, CF.collectionid, CF.myindex, DF.text_$ho FROM 
             alerts_collection C INNER JOIN
             alerts_collection_filter CF ON C.id = CF.collectionid INNER JOIN 
             alerts_digest_filter DF ON CF.filterid = DF.id INNER JOIN 
@@ -161,16 +167,17 @@ function send_emails ($ho)
               AND UF.howoften = '$ho'");
             
         while ($dbtexts->next_record()) {
-            $colls[$dbtexts->f("collectionid")]["desc"] = $dbtexts->f("description");
+            $colls[$dbtexts->f("collectionid")] = array (
+                "desc" => $dbtexts->f("description"),
+                "headers" => alerts_email_headers ($dbtexts->Record, $default_collection));
             $colls[$dbtexts->f("collectionid")]["filters"][$dbtexts->f("myindex")] = $dbtexts->f("text_$ho");
         }
         
         $email = email_address ($db->f("firstname")." ".$db->f("lastname"), $db->f("email"));
-        $url = AA_INSTAL_URL."misc/alerts?show_email=".$db->f("email");
-        $headers = "From: ".ALERTS_EMAIL."\n";    
+        $url = AA_INSTAL_URL."misc/alerts?show_email=".$db->f("email")."&lang=".$db->f("lang");
         $footer = "-----------------------------------------------------------------------<br>"
             . _m("You can change your subscriptions on %1.", array ("<a href='$url'>$url</a>."));
-
+            
         if (is_array ($colls)) {
             reset ($colls);
             while (list ($cid, $collection) = each ($colls)) {
@@ -179,7 +186,13 @@ function send_emails ($ho)
                 while (list (,$text) = each ($collection["filters"]))
                     $mailbody .= $text;           
                 $mailbody .= $footer;
-                mail_html_text ($email, $GLOBALS[howoften_digest][$ho] . $collection["desc"], $mailbody, $headers, _m("CHARSET"), 0);
+                mail_html_text (
+                    $email, 
+                    $howoften_digest[$ho] . $collection["desc"], 
+                    $mailbody, 
+                    $collection["headers"], 
+                    $LANGUAGE_CHARSETS[get_mgettext_lang()], 
+                    0);
                 $email_count ++;
             }
         }
@@ -207,8 +220,7 @@ function initialize_filters ()
 
 // -------------------------------------------------------------------------------------
 
-#reset ($howoften_options);
-#while (list ($ho) = each ($howoften_options)) {
+$howoften_options = get_howoften_options();
 
 if ($howoften_options[$howoften]) {
     initialize_filters();
