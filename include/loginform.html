@@ -19,7 +19,7 @@ echo LOGIN_PAGE_BEGIN ?>
   <td><?php echo L_USERNAME ?></td>
   <td><input type="text" name="username"
   value="<?php if (isset($this->auth["uname"])) 
-                     print $this->auth["uname"]; ?>"
+                     htmlspecialchars(print $this->auth["uname"]); ?>"
   size=16 maxlength=32><br><small><?php echo L_LOGINNAME_TIP ?></small></td>
  </tr>
  <tr valign=top align=left>

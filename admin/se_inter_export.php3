@@ -140,7 +140,7 @@ function Cancel() {
         </SELECT>
       </td></tr>
       <tr><td colspan=2><?php echo L_EXPORT_NAME; ?>
-          <input type="text" name="user_name" size=40 value="<?php echo $user_name?>" >
+          <input type="text" name="user_name" size=40 value="<?php echo safe($user_name)?>" >
       </td></tr>
       <input type="hidden" name="mode" value="insert">
       <tr><td colspan="2" align=center >
@@ -155,10 +155,4 @@ function Cancel() {
 </HTML>
 <?php
 page_close()
-/*
-$Log$
-Revision 1.1  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-*/
 ?>

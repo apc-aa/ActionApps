@@ -166,13 +166,13 @@ function Cancel() {
                                                    L_NODES_EDIT) ?>
     </td></tr>
     <tr><td><?php echo L_NODES_NODE_NAME ?></td>
-        <td><input type="text" name="node_name" size=40 value="<?php echo $node_name?>" ><br><?php echo L_NODES_YOUR_NODE?>: "<?php echo ORG_NAME ?>"
+        <td><input type="text" name="node_name" size=40 value="<?php echo safe($node_name)?>" ><br><?php echo L_NODES_YOUR_NODE?>: "<?php echo ORG_NAME ?>"
     <tr><td><?php echo L_NODES_SERVER_URL ?></td>
-         <td><input type="text" name="server_url" size=40 value="<?php echo $server_url?>" ><br><?php echo L_NODES_YOUR_GETXML?>: "<?php echo AA_INSTAL_URL ?>admin/getxml.php3"
+         <td><input type="text" name="server_url" size=40 value="<?php echo safe($server_url)?>" ><br><?php echo L_NODES_YOUR_GETXML?>: "<?php echo AA_INSTAL_URL ?>admin/getxml.php3"
     <tr><td><?php echo L_NODES_PASWORD ?></td>
-         <td><input type="text" name="password" size=40 value="<?php echo $password?>" >
-    <input type="hidden" name="mode" value="<?php echo $new_mode ?>">
-    <input type="hidden" name="old_node_name" value="<?php echo $old_node_name ?>">
+         <td><input type="text" name="password" size=40 value="<?php echo safe($password)?>" >
+    <input type="hidden" name="mode" value="<?php echo safe($new_mode) ?>">
+    <input type="hidden" name="old_node_name" value="<?php echo safe($old_node_name) ?>">
     <input type="hidden" name="sel_node_name">
 
     <tr><td colspan=2 align="center"><input type="submit" value="<?php echo L_SUBMIT ?>" >
@@ -186,14 +186,4 @@ function Cancel() {
 </HTML>
 <?php
 page_close()
-/*
-$Log$
-Revision 1.2  2001/11/29 08:40:08  mitraearth
-Provides help when using the Nodes screen to configre inter-node feeding
-It informs of the correect values to tell the superadmin of the other node.
-
-Revision 1.1  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-*/
 ?>

@@ -51,12 +51,12 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
         <td width="30%" class=tabtxt><b><?php echo L_USERS ?></b></td>
-        <td width="40%"><input type=Text name=usr value=<?php echo $usr?>></td>
+        <td width="40%"><input type=Text name=usr value=<?php echo safe($usr)?>></td>
         <td width="30%"><input type=submit name="UsrSrch" value=<?php echo L_SEARCH?>></td>
 </tr>
 <tr>
         <td class=tabtxt><b><?php echo L_GROUPS ?></b></td>
-        <td><input type=Text name=grp value=<?php echo $grp?>></td>
+        <td><input type=Text name=grp value=<?php echo safe($grp)?>></td>
         <td><input type=submit name="GrpSrch" value=<?php echo L_SEARCH?>></td>
 </tr>
 </table></tr></td> <?php 
@@ -117,44 +117,6 @@ if ($GrpSrch || $UsrSrch) {
   </table></tr></td>
 <?php
 }
-/*
-$Log$
-Revision 1.6  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.5  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.4  2000/07/27 14:26:55  kzajicek
-Higher privileges are now necessary to change permissions
-of other users (sooner was equality adequate).
-
-Revision 1.3  2000/07/27 13:57:09  kzajicek
-Fixed typo in variable name
-
-Revision 1.2  2000/07/17 12:27:51  kzajicek
-Language changes
-
-Revision 1.1.1.1  2000/06/21 18:40:04  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:52  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.11  2000/06/12 19:58:25  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.10  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.9  2000/04/24 16:45:03  honzama
-New usermanagement interface.
-
-Revision 1.8  2000/03/22 09:36:44  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
 <tr><td align="center">
 <input type=hidden name="slice_id" value="<?php echo $slice_id ?>">

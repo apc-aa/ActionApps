@@ -224,7 +224,7 @@ echo "<tr><td class=leftmenuy><b>". L_SEARCH ."</b></td>
      <td>";
 FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_r_admin_search_field);
 echo "<input type='Text' name='admin_search' size=20
-      maxlength=254 value='$r_r_admin_search'></td></tr></table>
+      maxlength=254 value=\"". safe($r_r_admin_search). "\"></td></tr></table>
       <input type=hidden name=action value='filter'><br><br>
       <input type=button value='". L_BACK ."' onclick='window.close()'>
       </form></center>
@@ -233,20 +233,4 @@ echo "<input type='Text' name='admin_search' size=20
 
   $$st_name = $st;   // to save the right scroller 
   page_close();
-
-/*
-$Log$
-Revision 1.4  2001/12/21 11:44:56  honzam
-fixed bug of includes in e-mail notify
-
-Revision 1.3  2001/11/26 11:03:43  honzam
-sort slice/constant in listbox by name
-
-Revision 1.2  2001/10/05 10:51:29  honzam
-Slice import/export allows backup of more slices, bugfixes
-
-Revision 1.1  2001/09/27 16:06:40  honzam
-New related stories support
-
-*/
 ?>

@@ -64,37 +64,6 @@ http://www.apc.org/
       $sel_users = $groups_user;
   }
 
-/*
-$Log$
-Revision 1.3  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.2  2001/02/26 17:22:30  honzam
-color profiles, itemmanager interface changes
-
-Revision 1.1.1.1  2000/06/21 18:40:49  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:27  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.5  2000/06/12 19:58:37  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.4  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.3  2000/03/29 15:54:47  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.2  2000/03/22 09:38:40  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
-
 ?>
 <!-- Select user form -->
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
@@ -104,7 +73,7 @@ config.inc
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
      <tr>
     	<td>&nbsp;</td>
-    	<td><input type=Text name=usr value="<?php echo $usr?>"></td>
+    	<td><input type=Text name=usr value="<?php echo safe($usr)?>"></td>
     	<td><input type=submit name="UsrSrch" value="<?php echo L_SEARCH?>"></td>
      </tr>
      <tr>

@@ -259,7 +259,7 @@ function RealyDelete() {
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
             <td>&nbsp;</td>
-            <td><input type=Text name=usr value="<?php echo $rusr?>"></td>
+            <td><input type=Text name=usr value="<?php echo safe($rusr)?>"></td>
             <td><input type=submit value="<?php echo L_SEARCH?>">
           <input type=hidden name="UsrSrch" value=1></td>
      </tr>
@@ -355,7 +355,7 @@ if( !$add_submit AND !$usr_new) {?>
   echo '<tr><td width=190 align=center>'. L_ALL_GROUPS .'</td>
                   <td width=60>&nbsp;</td>
                   <td width=190 align=center>'. L_USERS_GROUPS .'</td></tr>
-        <tr><td><input type=Text name=grp1_flt value="'. $grp1_flt .'">
+        <tr><td><input type=Text name=grp1_flt value="'. safe($grp1_flt) .'">
                 <input type=submit name="grp1_submit" value="'. L_SEARCH .'"></td>
                   <td>&nbsp;</td>
                   <td>&nbsp;</td></tr>
@@ -390,61 +390,5 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 </BODY>
 </HTML>
 <?php page_close()
-/*
-$Log$
-Revision 1.10  2001/05/18 13:50:09  honzam
-better Message Page handling (not so much)
-
-Revision 1.9  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.8  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.7  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
-
-Revision 1.6  2000/08/03 12:49:22  kzajicek
-English editing
-
-Revision 1.5  2000/07/28 15:11:41  kzajicek
-Functions DeleteUserComplete and buggy DeleteGroupComlete are now
-obsolete, DelUser and DelGroup do the job.
-
-Revision 1.4  2000/07/27 18:42:40  kzajicek
-*** empty log message ***
-
-Revision 1.3  2000/07/27 18:17:21  kzajicek
-Added superadmin settings in User/Group management
-
-Revision 1.2  2000/07/21 14:47:43  kzajicek
-Admin needs to see login names, not IDs (DB specific)
-
-Revision 1.1.1.1  2000/06/21 18:40:07  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:57  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.8  2000/06/12 19:58:25  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.7  2000/05/30 09:11:49  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.6  2000/04/28 09:48:13  honzama
-Small bug in user/group search fixed.
-
-Revision 1.5  2000/04/24 16:45:03  honzama
-New usermanagement interface.
-
-Revision 1.4  2000/03/29 14:34:12  honzama
-Better Netscape Navigator support in javascripts.
-
-Revision 1.3  2000/03/22 09:36:44  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
 
