@@ -358,6 +358,16 @@ $VIEW_TYPES['discus'] = array( 'name' => L_DISCUSSION_VIEW,
                               "remove_string" => L_D_FORM
                               );
 
+// discussion to mail 
+$VIEW_TYPES['disc2mail'] = array( 'name' => L_DISCUSSION_2_MAIL,
+                              "aditional" => L_V_MAIL_FROM,
+                              "aditional2" => L_V_MAIL_REPLY_TO,
+                              "aditional3" => L_V_MAIL_ERRORS_TO,
+                              "aditional4" => L_V_MAIL_SENDER,
+                              "aditional5" => L_V_MAIL_SUBJECT,
+                              "even" => L_V_MAIL_BODY
+                              );
+
 /*  TODO
 $VIEW_TYPES['seetoo'] = array( 'name' => L_RELATED_VIEW,
                               "before" => L_V_BEFORE ,
@@ -507,7 +517,8 @@ $VIEW_TYPES_INFO['discus'] = array('modification'=>array('21'=>'timeorder',
                                    'aditional2'=>array('default'=>'<input type=button name=sel_ids value="' .L_D_SHOW_SELECTED. '" onClick=showSelectedComments() class="discbuttons">'),
                                    'aditional3'=>array('default'=>'<input type=button name=all_ids value="' .L_D_SHOW_ALL. '" onClick=showAllComments() class="discbuttons">'),
                                    'aditional4'=>array('default'=>'<input type=button name=add_disc value="' .L_D_ADD_NEW. '" onClick=showAddComments() class="discbuttons">'),
-                                   'aliases' => 'field');
+                                   'aliases' => 'discus');
+$VIEW_TYPES_INFO['discus2mail'] = array ('aliases' => 'discus2mail');                                   
 $VIEW_TYPES_INFO['seetoo'] = array('modification'=>array('31'=>'related', 
                                                          '32'=>'keyword with OR',
                                                          '33'=>'keyword with AND' ),
