@@ -93,7 +93,7 @@ function GetAuthData() {
 *                   'permission'
 *                   'role'
 */
-function stringexpand_user($field) {
+function stringexpand_user($field='') {
     global $auth_user_info, $cache_nostore, $auth, $slice_id, $perms_roles;
     // this GLOBAL :-( variable is message for pagecache to NOT store views (or
     // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
@@ -375,13 +375,13 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
           }
 */
     elseif( substr($out, 0, 9) == "inputvar:" ) {
-        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out");
       # replace inputform field
       return QuoteColons($level, $maxlevel, $contentcache->get($out));
       # QuoteColons used to mark colons, which is not parameter separators.
           }
     elseif( substr($out, 0, 5) == "math(" ) {
-        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out");
       # replace math
       return QuoteColons($level, $maxlevel,
         parseMath( # Need to unalias in case expression contains _#XXX or ( )
@@ -390,7 +390,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
           }
     elseif( substr($out, 0, 8) == "include(" ) {
-        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out");
       # include file
       if( !($pos = strpos($out,')')) )
         return "";
@@ -399,7 +399,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         # QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( substr($out, 0, 8) == "include:") {
-        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out");
         #include file, first parameter is filename, second is hints on where to find it
         $parts = ParamExplode(substr($out,8));
         if (! ($fn = $parts[0]))
@@ -448,7 +448,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         # QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( ereg("^scroller:?([^}]*)$", $out, $parts)) {
-        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out"); 
+        if ($GLOBALS[debugmitra]) huhl("Try expanding:$out");
         if (!isset($itemview) OR ($itemview->num_records<0) ) {   #negative is for n-th grou display
                 return "Scroller not valid without a view, or for group display"; }
         $viewScr = new view_scroller($itemview->slice_info['vid'],
