@@ -1,3 +1,5 @@
+10/14/04 - new {include:file:readfile} reads file contents, file is relative to
+           $_SERVER["DOCUMENT_ROOT"]
 10/11/04 - Added script support, mlx.php has its own mappings table which indicates
            what kind of DIR to use for controls in the Add/Edit Item
            This gets passed through a global mlxFormControlExtra to formutil

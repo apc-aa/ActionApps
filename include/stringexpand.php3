@@ -308,10 +308,6 @@ function stringexpand_substr($string,$start,$length=999999999) {
     return substr($string,$start,$length);
 }
 
-function stringexpand_str_replace($search,$replace,$string) {
-    return str_replace($search,$replace,$string);
-}
-
 function stringexpand_item($item_id,$field) {
     $zid  = new zids($item_id);
     $item = GetItemFromId($zid);
@@ -442,6 +438,18 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                 }
             }
             $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $parts[0];
+            if ($filedes = @fopen ($filename, "r")) {
+                $fileout = "";
+                while (!feof ($filedes))
+                    $fileout .= fgets($filedes, 4096);
+                fclose($filedes);
+            } else {
+                if ($errcheck) huhl("Unable to read from file $filename");
+                return "";
+            }
+            break;
+          case "readfile": //simple support for reading static html (use at own risk)
+            $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
             if ($filedes = @fopen ($filename, "r")) {
                 $fileout = "";
                 while (!feof ($filedes))
