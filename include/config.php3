@@ -204,17 +204,17 @@ define("SINGLE_COLUMN_FORM", "0");
  *  (x instead of sh_itm) */
 $USE_SHORT_URL = true;
 
-if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
-  echo "you must set AA_INC_PATH and other variables in config.php3 !";
-};
-
-
 //-----------------------------------------------------------------------------
 // Following section just prepares some constants
 // You probably do not need to change this
 
 $AA_BASE_PATH = $AA_SITE_PATH.$AA_BASE_DIR;     // do not change
 $AA_INC_PATH = $AA_BASE_PATH."include/";        // do not change
+
+if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
+  echo "you must set AA_INC_PATH and other variables in config.php3 !";
+};
+
 
 /** set this directive to true, if your php already auto-includes phplib
  * if it is 'false' and it should be true you'll get an error like:
