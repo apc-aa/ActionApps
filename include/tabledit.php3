@@ -345,7 +345,12 @@ class tabledit {
             $this->setDefault ($column["caption"], $colname);
             $this->setDefault ($column["view"]["readonly"], 
                 $this->view["readonly"] || $column["view"]["type"] == "userdef");
-            $this->setDefault ($column["view"]["size"]["cols"], 40);
+			$cols = 40;
+			if ($column["len"]) 
+				$cols = $column["len"];
+			if ($column["view"]["type"] == "date") 
+				$cols = strlen (date ($column["view"]["format"], "31.12.1970"));
+            $this->setDefault ($column["view"]["size"]["cols"], $cols);
             $this->setDefault ($column["view"]["size"]["rows"], 4);
             $this->setDefault ($column["view"]["html"], false);
         }
@@ -487,9 +492,6 @@ class tabledit {
             if ($type == "date" && $val)
                 $val = date($cview["format"], $val); 
             
-            $rows = 5;
-            $cols = 80;
-            
             echo $td;
             if (!$cview["readonly"]) {
 
@@ -506,8 +508,10 @@ class tabledit {
                 case 'text':
                 default:
                    $val = str_replace ('"','&quot;',$val);
-                   echo "<INPUT type=\"text\" size=\"".$cview["size"]["cols"]."\" name=\"val[$key][$colname]\"
+				    $maxlen = $column["len"] ? "maxlength=$column[len]" : "";
+                    echo "<INPUT type=\"text\" $maxlen size=\"".$cview["size"]["cols"]."\" name=\"val[$key][$colname]\"
                         value=\"".$val."\">"; 
+				    break;
                 }
             }
             else { // READ ONLY
@@ -521,7 +525,7 @@ class tabledit {
                 if ($val) {
                     if (!$cview["html"]) $val = htmlentities ($val);
                 }
-                else if (is_field_type_numerical ($column["type"]) 
+                else if ($val != "" && is_field_type_numerical ($column["type"]) 
                     && $type != "date" && !$new_record)
                     $val = "0";
                 else $val = "&nbsp;";
@@ -872,6 +876,10 @@ function GetColumnTypes ($table, $columns, $primary="") {
         }
         if (strstr ($col["flags"], "auto_increment"))
             $columns[$cname]["auto_increment"] = 1;
+        if (strstr ($col["flags"], "not_null"))
+            $columns[$cname]["not_null"] = 1;
+		if ($col["len"])
+			$columns[$cname]["len"] = $col["len"];
     }
     return $columns;
 }
@@ -908,8 +916,11 @@ function TableUpdate ($table, $key_value, $val, $columns, $error_msg="",  $be_ca
             $value = $val[$colname];
             if (get_magic_quotes_gpc()) 
                 $value = stripslashes ($value);
-            if (is_field_type_numerical ($col["type"]))
+            if (is_field_type_numerical ($col["type"])) {
+				if ($value == "" && !$col["not_null"])
+					$value = "NULL";
                  $varset->set($colname,$value,"number");
+			}
             else $varset->set($colname,$value,"text");         
         }
     }
@@ -974,9 +985,11 @@ function TableInsert ($table, $val, $columns, $primary="", $error_msg="", $be_ca
 function ProcessFormattedDates (&$vals, $columns) {
     if (is_array ($vals)) {
         reset ($vals);
-        while (list ($col, $val) = each ($vals)) {
+		while (list ($key, $key_vals) = each ($vals)) {
+	        while (list ($col, $val) = each ($key_vals)) {
             if ($columns[$col]["view"]["type"] == "date")  
-                $vals[$col] = get_formatted_date ($val, $columns[$col]["view"]["format"]);
+        	        $vals[$key][$col] = get_formatted_date ($val, $columns[$col]["view"]["format"]);
+        	}
         }
     }
 }
