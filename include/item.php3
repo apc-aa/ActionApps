@@ -137,6 +137,35 @@ function ParamExplode($param) {
   $c = str_replace ("__-__.", ":", $b);         # change "#:" to ":"
   return explode( "##Sx", $c );
 }  
+ 
+# helper function for f_e
+# this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
+# added by setu@gwtech.org 2002-0211
+//
+// make_return_url
+//function make_return_url($prifix="&return_url=")
+function make_return_url($prifix)
+{
+        // prifix will be "&return_url=" or "?return_url=",
+        // if null, it uses "&return_url="
+        if (!$prifix) $prifix = "&return_url=";
+ 
+//        global $PHP_SELF;
+        global $return_url;
+ 
+        if ($return_url)
+        {
+                return $prifix . urlencode($return_url);
+        }
+        else
+        {
+                // code changed to keep program works with original APC-AA behavior
+                // this got problem, when we used this in "ItemManager design"
+                // return $PHP_SELF; -- this was original code by ram.
+                // chage by setu@gwtech.org.
+                return "";
+        }
+}
 
 class item {    
   var $item_content;   # asociative array with names of columns and values from item table
@@ -457,23 +486,37 @@ function RSS_restrict($txt, $len) {
                            $this->columns[$col][0][value],$p[1],$this->columns[$col][0]['flag']);
   }
 
+
   # _#ITEMEDIT used on admin page index.php3 for itemedit url
   # param: 0
   function f_e($col, $param="") { 
     global $sess;
+    global $AA_INSTAL_EDIT_PATH;
+ 
+    // code to keep compatibility with older version
+    // which was working without $AA_INSTALL_EDIT_PATH
+    if ($AA_INSTAL_EDIT_PATH)
+      $admin_path = $AA_INSTAL_EDIT_PATH . "admin/";
+    else
+      $admin_path = "";
+ 
     switch( $param ) {
       case "disc":
         # _#DISCEDIT used on admin page index.php3 for edit discussion comments
         return con_url($sess->url("discedit.php3"),
           "item_id=".unpack_id( $this->columns["id.............."][0][value]));
       case "itemcount":
-      	return $GLOBALS['QueryIDsCount'];
-      default:  
-        return con_url($sess->url("itemedit.php3"),
+        return $GLOBALS['QueryIDsCount'];
+      default:
+//      return con_url($sess->url("itemedit.php3"),
+//      return con_url($sess->url("../admin/itemedit.php3"),
+        return con_url($sess->url($admin_path."itemedit.php3"),
                    "encap=false&edit=1&id=".
-                   unpack_id( $this->columns["id.............."][0][value]));
+//                 unpack_id( $this->columns["id.............."][0][value]));
+                   unpack_id( $this->columns["id.............."][0][value]).
+		   make_return_url("&return_url=") );	// it return "" if return_url is not defined.
     }
-  }                 
+  }
 
   # prints "begin".$col."end" if $col="condition", else prints "none"
   # if no cond_col specified - $col is used
@@ -663,6 +706,13 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.35  2002/02/12 09:53:44  mitraearth
+_#ITEMEDIT alias can return a path for "itemedit.php3"
+If $AA_INSTAL_EDIT_PATH is defined in include/config.php3,
+it will return value : $AA_INSTAL_EDIT_PATH."admin/edititem.php3" with the query string.
+If it is not defined, it returns the same value as the older version.
+it returns "edititem.php3" with the query string.
+
 Revision 1.34  2002/02/05 21:48:05  honzam
 new transformation alias function f_x, fixed blurb f_q alias function
 
