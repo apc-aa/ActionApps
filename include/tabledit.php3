@@ -507,7 +507,8 @@ class tabledit {
             if ($this->view["type"] == "edit") {
                 echo "<TR>$td<b>".$column["caption"]."</b><br>\n";
                 if ($column["hint"])
-                    echo "<font class=\"te_hint\">".$column["hint"]."</font></TD>\n";
+                    echo "<font class=\"te_hint\">".$column["hint"]."</font>";
+                echo "</TD>\n";
 			}
         
             $type = $cview["type"];
@@ -523,7 +524,8 @@ class tabledit {
                 switch ($type) {
                 case 'area':
                 case 'blob': 
-                    $val = str_replace ('"','&quot;',$val);
+                    $val = str_replace ('<','&lt;',$val);
+                    $val = str_replace ('>','&gt;',$val);
                     echo "<textarea name=\"val[$colname]\""
                         ." rows=\"".$cview["size"]["rows"]."\" cols=\"".$cview["size"]["cols"]."\">\n"
                         .$val."</textarea>"; 
