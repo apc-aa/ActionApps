@@ -1,3 +1,8 @@
+02/04/03 - added sliceobj.php3 to start encapsulating slice db manipulation
+         - fixed bug with error handling in xmlclient.php3
+         - updated install-4.html to show no more aadb.sql
+         - added % operator to math
+         - support empty format string to math
 02/01/03 - removed "Edit" from uneditable aliases in se_view (mitra)
          - added _#ITEMINDX and f_e:itemindex  for item number within a view 
          - added _#ADD_ITEM standard alias, for putting on views to jump to add item (uses f_e)

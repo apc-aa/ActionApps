@@ -62,7 +62,7 @@ when doing the login, then "touch ~/.cvspass" and try again.</i>
   <code>
   <HR>
   </CODE></BLOCKQUOTE>
-This will create directory /home/httpd/apc-aa-2.2.0, which you can rename to apc-aa or whatever is convenient for you.</P>
+This will create directory /home/httpd/apc-aa-2.2.0, which you can rename to apc-aa or whatever is convenient for you.<p></P>
 <P>If you have no shell access on the machine, then you can download this code, and FTP it into a directory on your web site</P>
 <P>If you want Action Apps available to all domains, then add this line in the 
   global context with the other Aliases, otherwise you can add it to each Virtual 
@@ -92,16 +92,15 @@ href="install-6.html#security">security</A> for a possible solution for this pro
 <h2><a name=ss4.2>4.2 Creating the database</a></h2>
 <p>There are two options depending on whether you have shell access, or are
 running on an ISP's setup.</p>
-<h3<a name=ss4.2.1>4.2.1 No shell access: Asking the ISP</a></h3>
+<h3><a name=ss4.2.1>4.2.1 No shell access: Asking the ISP</a></h3>
 <p>Ask the ISP to: 
 <blockquote>
 Create a mysql database called "aadb", and a mysql user with permission to 
  CREATE,DROP,ALTER,SELECT,INSERT,UPDATE,DELETE  on this database. 
 They should know what this means, and understand it presents no security implications.
 </blockquote>
-Once the database and account are created, point your Web browser to http://localhost/apc-aa/admin/sql_update.php3.  If there are any error messages (which will show up in bold) these are typically because the ISP has failed to give you one of the database permissions requested above, or has set up authentication for the database wrongly.
-<h3<a name=ss4.2.2>4.2.2 Shell access: creating it yourself</h3>
-</blockquote>
+<h3><a name=ss4.2.2></a>4.2.2 Shell access: creating it yourself</h3>
+
 <p>Then create your initial Action Applications database. When queried for a password, use the mysql root password. </p>
 <blockquote> 
   <hr>
@@ -135,7 +134,6 @@ Query OK, 0 rows affected (0.05 sec)
 mysql&gt; FLUSH PRIVILEGES;
 mysql&gt; quit
 </code></pre>
-  <hr>
 </blockquote>
 
 
@@ -143,25 +141,19 @@ mysql&gt; quit
 
 
 
-To do this, you need 
-  the file <code>aadb.sql</code> from the Action Applications doc directory. It 
-  contains SQL commands which create the database. 
-<blockquote> 
-  <hr>
-  <pre><code>#  mysql -u root -p
-# cd /home/httpd/html/apc-aa<br># mysql -u root -p aadb &lt; doc/aadb.sql
-Enter Password:
-#
-</code></pre>
-  <hr>
-</blockquote>
-<P>
-<H2><A name=ss4.3>4.3 Creating a superadmin account</A> </H2>
+<P> 
+<H2><A name=ss4.3>4.3 Initializing the database and creating a superadmin account</A> 
+</H2>
+<P>&nbsp;
+Once the database and account are created, point your Web browser to <a href="http://localhost/apc-aa/admin/sql_update.php3">http://localhost/apc-aa/admin/sql_update.php3</a>. 
+If there are any error messages (which will show up in bold) these are typically 
+because the ISP has failed to give you one of the database permissions requested 
+above, or has set up authentication for the database wrongly. 
 <P>Point your Web browser to <a
-href="http://localhost/apc-aa/admin/setup.php3">http://localhost/apc-aa/admin/setup.php3</a>.
-  You should see a page with two buttons &quot;Init&quot; and &quot;Recover&quot;,
-  click &quot;Init&quot; and you should receive a form where you can enter the
-  information for the SuperAdmin account.
+href="http://localhost/apc-aa/admin/setup.php3">http://localhost/apc-aa/admin/setup.php3</a>. 
+  You should see a page with two buttons &quot;Init&quot; and &quot;Recover&quot;, 
+  click &quot;Init&quot; and you should receive a form where you can enter the 
+  information for the SuperAdmin account. 
 <P>If you don't get the form, just the same screen again, then check your php settings
   if &quot;register_globals = On&quot; as described in <a href="install-3.html#ss3.7">3.7</a>.
 <p>

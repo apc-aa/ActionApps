@@ -393,7 +393,6 @@ class itemview{
       $this->from_record = 0;  
     }
 
-    #huhl("XYZZY: get_output mid: view_type=$view_type");
     switch ( $view_type ) {
       case "fulltext":  
         $iid = $this->zids->short_or_longids(0);  # unpacked or short id

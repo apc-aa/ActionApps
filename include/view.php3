@@ -119,7 +119,6 @@ function ParseViewParameters($query_string="") {
                break;
     case 'x':  $vid = $command[1];
   		$zids = new zids(array_slice($command,2));
-		#huhl("XYZZY: ParseViewParameters: zids=",$zids);
 //               for( $i=2; $i<count($command); $i++)
 //                 $item_ids[] = $command[$i];
 // This is bizarre code, just incrementing the first item, left as it is
@@ -131,7 +130,6 @@ function ParseViewParameters($query_string="") {
 			$li = $zids->longids();
 			CountHit($li[0],'id');
 		  }
-		#huhl("XYZZY: ParseViewParameters end X");
                break;
     case 'c':  if( $command[1] && ($command[2] != 'AAnoCONDITION')) 
                  $param_conds[$command[1]] = stripslashes($command[2]);

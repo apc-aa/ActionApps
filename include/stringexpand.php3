@@ -55,7 +55,8 @@ function ParamExplode($param) {
         return $twos[$i];
       }
       $val = trim($twos[$i]);
-      if( !$val OR ereg($val, $variable) ) {    # Note that variable, might be expanded {headline.......} or {m}
+      # Note you can't use !$val, since this will match a pattern of exactly "0"
+      if( ($val=="") OR ereg($val, $variable) ) {    # Note that variable, might be expanded {headline.......} or {m}
         return $twos[$i+1];
       }
       $i+=2;
@@ -66,26 +67,25 @@ function ParamExplode($param) {
   # text = [ decimals [ # dec_point [ thousands_sep ]]] )  
   function parseMath($text)
   {
-    global $debug;
-  	$variable = strtok($text,")");
+    // get format string, need to add and remove # to
+    // allow for empty string
+  	$variable = substr(strtok("#".$text,")"),1);
     $twos = ParamExplode( strtok("") );
-	//print_r ($twos);
-	$i=0;$key=true;
+	$i=0;
+    $key=true;
 	while( $i < count($twos) ) {
      $val = trim($twos[$i]);
-	
 	  if ($key)
 	  	{
 			if ($val) $ret.=str_replace("#:","",$val); $key=false;
 		}
-	  else
-	  	{	#$val=str_replace ("{", "", $val);
+	  	else {	#$val=str_replace ("{", "", $val);
 			#$val=str_replace ("}", "", $val);
-            if ($debug) huhl("Math on: '$val'");
             $val = calculate ($val); // defined in math.php3
-			$format=explode("#",$variable);
-			$val = number_format($val, $format[0], $format[1], $format[2]);
-			
+            if ($variable) {
+    			$format=explode("#",$variable);
+	    		$val = number_format($val, $format[0], $format[1], $format[2]);
+            }
 			$ret.=$val;
 			$key=true;
 		}
@@ -152,7 +152,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
       return QuoteColons($level, $maxlevel, parseSwitch( substr($out,7) ));
       # QuoteColons used to mark colons, which is not parameter separators.
           }
-    elseif( substr($out, 0, 5) == "math(" ) { #TODO REMOVE item
+    elseif( substr($out, 0, 5) == "math(" ) { 
       # replace math
       return QuoteColons($level, $maxlevel,
         parseMath( # Need to unalias in case expression contains _#XXX or ( )

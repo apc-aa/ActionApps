@@ -67,6 +67,7 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 require $GLOBALS[AA_INC_PATH]."notify.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require $GLOBALS[AA_INC_PATH]."sliceobj.php3";
 
 //---------------------------------------------------------
 
@@ -347,9 +348,12 @@ function xmlUpdateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l
 
 }
 
+// Process one feed
 function onefeed($feed_id,$feed) {
   global $debugfeed, $db; 
+// Can use l_slice_id (older) or l_slice (newer)
   $l_slice_id = unpack_id128($feed[slice_id]);
+  $l_slice = new slice($l_slice_id);
   $r_slice_id = unpack_id128($feed[remote_slice_id]);
   set_time_limit(240); // Allow 4 minutes per feed
   if ($feed[feed_type] == FEEDTYPE_APC) {
@@ -366,28 +370,30 @@ function onefeed($feed_id,$feed) {
   }
 
   if ($feed[feed_type] == FEEDTYPE_APC) {
-	if ($debugfeed >= 1) print("\n<br>APC Feed: $feed_id: $feed[name] : $feed[remote_slice_name]");
+    $feed["DebugName"] = "APC Feed #$feed_id: $feed[name] : $feed[remote_slice_name] -> $l_slice->name()";
+	if ($debugfeed >= 1) print($feed["DebugName"]);
 	$xml_data = xml_fetch( $feed[server_url], ORG_NAME, $feed[password],
             $feed[user_id], $r_slice_id, $feed[newest_item], implode(" ",$cat_ids));
   } else {   // not FEEDTYPE_APC
-	if ($debugfeed >= 1) print("\n<br>RSS Feed: $feed_id: $feed[name]");
+    $feed["DebugName"] = "RSS Feed #$feed_id: $feed[name]: -> $l_slice->name()";
+	if ($debugfeed >= 1) print("\n<br>$feed[DebugName]");
     $xml_data = http_fetch($feed[server_url]);
   }
   if (!$xml_data) {
-  		if ($debugfeed >= 1) print("\n<br>$feed[name]: no data returned");
+  		if ($debugfeed >= 1) print("\n<br>$feed[DebugName]: no data returned");
 		return;
   }
 
   if (substr($xml_data,0,1) != "<") {
     writeLog("CSN","Feeding mode: $xml_data");
-  	if ($debugfeed >= 1) print("\n<br>$feed[name]:bad data returned: $xml_data");
+  	if ($debugfeed >= 1) print("\n<br>$feed[DebugName]:bad data returned: $xml_data");
     return;
   }
 
   if (!( $aa_rss = aa_rss_parse( $xml_data ))) {
     writeLog("CSN","Feeding mode: Unable to parse XML data");
-  	if ($debugfeed >= 1) print("\n<br>$feed[name]:unparsable: $xml_data");
-    continue;
+  	if ($debugfeed >= 1) print("\n<br>$feed[DebugName]:unparsable: $aa_rss: $xml_data");
+    return;
   }
 
   if ($debugfeed >= 8) { print("\n<br>onefeed: aa_rss="); print_r($aa_rss); }
@@ -429,7 +435,7 @@ function apcfeeds() {
 	if ($debugfeed >= 8) print("\n<br>$SQL");
 	$db->query($SQL);
 	
-	$feeds="";
+	$feeds=array();
 	while ($db->next_record()) {
 		$fi = $db->f(feed_id);
    		$feeds[$fi] = $db->Record;
@@ -446,7 +452,7 @@ function rssfeeds() {
 	if ($debugfeed >= 8) print("\n<br>$SQL");
 	$db->query($SQL);
 
-	$rssfeeds="";
+	$rssfeeds=array();
 	while ($db->next_record()) {
    		$fi = $db->f(feed_id);
    		$rssfeeds[$fi] = $db->Record;

@@ -57,6 +57,8 @@ if (!defined("AA_IDS_INCLUDED"))
      define ("AA_IDS_INCLUDED",1);
 else return;
 
+require_once $GLOBALS[AA_INC_PATH]."util.php3";  // quote
+
 class zids {
         var $a; # Array of ids of type specified in $t
             # Note encapsulation broken in itemview which sets this directly

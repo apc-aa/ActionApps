@@ -186,7 +186,6 @@ echo "<table border=0 cellspacing=0 class=login width=460>
 echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
 '<table width="460" border="0" cellspacing="0" cellpadding="2" bgcolor="#F5F0E7">';
 
-#huhl("XYZZY:related_sel:zids=",$zids);                         
 if( isset($zids) && ($zids->count() > 0) ) {
   if( $design )
     $aliases = GetAliasesFromFields($fields);
