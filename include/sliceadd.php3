@@ -84,7 +84,7 @@ if( isset( $templates ) AND is_array( $templates ) AND
     echo '</select></td><td>';
     if ($wizard)
          echo '<input type="radio" name="template_slice_radio" value="slice" checked>';
-    else echo '<input type="SUBMIT" name="template_slice_sel[slice]" value="'.L_ADD.'"';
+    else echo '<input type="SUBMIT" name="template_slice_sel[slice]" value="'.L_ADD.'">';
     echo '<input type="hidden" name="Add_slice" value="1">
         </td></tr>';
   } else
