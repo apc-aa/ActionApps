@@ -109,7 +109,6 @@ if( !$require_default_lang AND isset($r_lang_file) AND is_array($r_lang_file) AN
   include $GLOBALS[AA_INC_PATH] . DEFAULT_LANG_INCLUDE ;
 }
 
-
 require $GLOBALS[AA_INC_PATH] . "util.php3"; // must be after language include because of lang constants in util.php3
 
 if( $slice_id )

@@ -21,6 +21,7 @@ http://www.apc.org/
 
 // defines the left submenu for menu AA Admin (AA)
 
+global $sess;
 $aamenus["aaadmin_submenu"] = array (
     "bottom_td" => 300,
     "level" => "submenu",
@@ -30,7 +31,8 @@ $aamenus["aaadmin_submenu"] = array (
     "sliceadd" => array ("label" => L_ADD_MODULE, "cond"=>IfSlPerm(PS_ADD), "href"=>"admin/sliceadd.php3"),
     "slicewiz" => array ("label" => L_ADD_SLICE_WIZ, "cond"=>IfSlPerm(PS_ADD), "href"=>"admin/slicewiz.php3"),
     "slicedel" => array ("label" => L_DELETE_MODULE, "cond"=>IsSuperadmin(), "href"=>"admin/slicedel.php3"),
-    "jumpedit" => array ("label"=>L_EDIT_JUMP, "cond"=>IfSlPerm(PS_ADD), "exact_href" => $AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1&AA_CP_Session=$AA_CP_Session"),
+    "jumpedit" => array ("label"=>L_EDIT_JUMP, "cond"=>IfSlPerm(PS_ADD), "exact_href" => 
+        $sess->url($AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1")),
 /*    "delete" => array ("label" => L_DELETE_TRASH, "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php3?Delete=trash"),*/
 
     "header1"=>L_USERS,

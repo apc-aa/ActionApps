@@ -262,8 +262,9 @@ function IsSuperadmin() {
   return $r_superuser[AA_ID];
 }
 
-// Permissions for the on-line file manager
-
+/** Permissions for the on-line file manager
+* (c) Jakub Adamek, Econnect, +-July 2002
+*/
 function FilemanPerms ($auth, $slice_id) {
     global $sess;
     // Sets the fileman_dir var:
@@ -292,24 +293,29 @@ function FilemanPerms ($auth, $slice_id) {
 }
 
 /** get email permissions
+* (c) Jakub Adamek, Econnect, December 2002
 *
-* @param $user_id OPTIONAL, default is current user   
+* @param $type      OPTIONAL emails type, see get_email_types() in util.php3.
+                    If not specified, all types are included.                    
+* @param $user_id   OPTIONAL, default is current user   
 * @return array (email id => description)
 */
-function GetUserEmails ($user_id = "current") {
+function GetUserEmails ($type = "", $user_id = "current") {
     global $auth, $db;
     if ($user_id == "current")
         $user_id = $auth->auth["uid"];
     $slices = GetUsersSlices ($user_id);
+    $where = "WHERE 1";
+    if ($type) $where .= " AND type='$type'";
     if ($slices == "all")
-        $where = "";
+        ;
     else if (!is_array ($slices) || count ($slices) == 0)
         return array ();
     else {                
         reset ($slices);
         while (list ($slice) = each ($slices)) 
             $slice_ids[] = q_pack_id ($slice);
-        $where = "WHERE owner_module_id IN ('".join ("','", $slice_ids)."')";
+        $where .= " AND owner_module_id IN ('".join ("','", $slice_ids)."')";
     }
     $db->query ("SELECT * FROM email ".$where);
     while ($db->next_record())

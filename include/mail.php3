@@ -19,6 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// (c) Jakub Adámek, Econnect, December 2002
+
 if (!defined ("aa_mail_included"))
      define ("aa_mail_included", 1);
 else return;
@@ -136,7 +138,7 @@ function mail_html_text_body ($message, $charset, $use_base64) {
 * Sends email from the table "email" to the address given.
 * First resolves the aliases, working even with the {} inline commands.
 *
-* @param $mail_id   id from the mail table
+* @param $mail_id   id from the email table
 *        $to        email address
 *        $aliases   (optional) array of alias => text
 * @return true on success, false on failure

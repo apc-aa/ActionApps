@@ -117,6 +117,7 @@ function get_aamenus ()
         "category" => array("label"=>L_CATEGORY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CATEGORY), "href"=>"admin/se_constant.php3?category=1"),
         "fields" => array ("label"=>L_FIELDS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS), "href"=>"admin/se_fields.php3?slice_id=$slice_id"),
         "notify" => array ("label"=>L_NOTIFY, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT), "href"=>"admin/se_notify.php3?slice_id=$slice_id"),
+        "te_emails" => array ("label"=>L_EMAILS, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT), "href"=>"admin/tabledit.php3?set_tview=email&slice_id=$slice_id"), 
 
         "header2" => L_PERMISSIONS,
         "addusers"=> array ("label"=>L_PERM_ASSIGN, "cond"=>CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ADD_USER), "href"=>"admin/se_users.php3?adduser=1&slice_id=$slice_id"),

@@ -946,7 +946,7 @@ function get_javascript_field_validation () {
             var err = '';
 
             if (val == '' && required)
-                err = '"._m("This field is required.")."';
+                err = '"._m("This field is required (marked by *).")."';
 
             else if (val == '')
                 return true;

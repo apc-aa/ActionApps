@@ -146,7 +146,10 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
             }
         }
         
-        echo "</td><TD class=navbar align=right><span class=nbdisable> &nbsp;". L_SWITCH_TO ."&nbsp; </span></TD>
+        echo "</td><TD class=navbar align=right><span class=nbdisable> &nbsp;";
+        if( is_array($g_modules) AND (count($g_modules) > 1) ) 
+            echo L_SWITCH_TO ."&nbsp; ";
+        echo "</span></TD>
         <TD class=navbar>\n";
         PrintModuleSelection();
         echo "</TD></TR></form></TABLE>
