@@ -66,10 +66,11 @@ require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 
 store_vars ();
 
+// Store variables, set $GLOBALS[post2shtml_id] or generate Location header
 function store_vars () 
 {
-    global $db, $shtml_page;
-    if (!is_object ($db)) $db = new DB_AA;
+    global $shtml_page;
+    if ($GLOBALS[debugfill]) huhl("post2html:store_vars:$shtml_page:");
 
     $vars = array (
         "post" => &$GLOBALS["HTTP_POST_VARS"],
@@ -90,14 +91,16 @@ function store_vars ()
     $vars = addslashes (serialize ($vars));
      
     $id = new_id();    
+    $db = getDB();
     $db->query("
         INSERT INTO post2shtml (id, vars, time) 
         VALUES ('$id', '$vars', ".time().")");
-
+    freeDB($db);
     if ($shtml_page) {
         header("Status: 302 Moved Temporarily");
         $shtml_page = stripslashes ($shtml_page);
         $shtml_page .= (strchr ($shtml_page,"?") ? "&" : "?") . "post2shtml_id=$id";
+        if ($debugfill) huhl("post2shtml:Location=$shtml_page");
         header("Location: $shtml_page");
     }
     else $GLOBALS["post2shtml_id"] = $id;

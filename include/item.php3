@@ -498,7 +498,6 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
 
   # returns fulltext of the blurb
   function f_q($col, $param="") {
-    global $db3;
       /* Usually this is called with no parameters.
 	 Optional parameters for f_q are:
 	 [0] stringToMatch is by default $col
@@ -557,8 +556,11 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
                      c2.field_id    = '$fieldToReturn' AND
                      c1.text        = '$stringToMatch'";
       }
-      $db3->tquery($SQL);
-      return ( $db3->next_record() ? $db3->f('text') : "" );
+      $db = getDB();
+      $db->tquery($SQL);
+       $res =( $db->next_record() ? $db->f('text') : "" ); 
+      freeDB($db);
+      return $res;
     }
 
 

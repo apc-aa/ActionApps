@@ -289,6 +289,7 @@ while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
   switch ( $VIEW_FIELDS[$k]["input"] ) {
     case "field":   FrmInputText($k, $v, $value, 254, 50, false, "", DOCUMENTATION_URL); break;
     case "area":    FrmTextarea($k, $v, $value, 4, 50, false, "", DOCUMENTATION_URL); break;
+    case "areabig":    FrmTextarea($k, $v, $value, 15, 80, false, "", DOCUMENTATION_URL); break;
     case "seltype": FrmInputSelect($k, $v, $VIEW_TYPES_INFO[$view_type][modification], $value, false, "", DOCUMENTATION_URL); break;
     case "selfld":  FrmInputSelect($k, $v, $lookup_fields, $value, false, "", DOCUMENTATION_URL); break;
     case "selgrp":  FrmInputSelect($k, $v, $lookup_groups, $value, false, "", DOCUMENTATION_URL); break;

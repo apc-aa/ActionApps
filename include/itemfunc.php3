@@ -938,7 +938,8 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true, $oldcontent4id="" ) 
 {
     global $db, $varset, $itemvarset;
-    $debugsi=0; // $GLOBALS[debug];
+    $debugsi=$GLOBALS[debugsi]; 
+
     if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id"); 
     if (!is_object ($db)) $db = new DB_AA;
     if (!is_object ($varset)) $varset = new CVarset();

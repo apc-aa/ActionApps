@@ -54,6 +54,8 @@ http://www.apc.org/
  */
 //$GLOBALS[debug]=0; $GLOBALS[errcheck] =1;
 
+$debugfill=$GLOBALS[debugfill];
+
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -96,14 +98,16 @@ require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
     
-function UseShowResult($txt) {
+function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
     $GLOBALS["HTTP_POST_VARS"]["result"] = $txt;
     // allows fillform to use this data 
     $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = 
         StripslashesArray ($GLOBALS["content4id"]);            
-    $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
-    require_once "post2shtml.php3";
+    if (!$url) huhe("Warning: no Url on anonymous form (could be  ok_url or err_url missing");
+    $GLOBALS["shtml_page"] = $url;
+    if ($GLOBALS[debugfill]) huhl("Filler:UseShowResult");
+    require_once "post2shtml.php3"; // Beware this doesn't just define functions!
     exit;
 }
 
@@ -128,7 +132,7 @@ function SendErrorPage($txt) {
     else if (! $GLOBALS["use_post2shtml"]) 
        go_url( con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000)));
     
-    else UseShowResult ($txt);
+    else UseShowResult ($txt,$GLOBALS["err_url"]);
 }  
 
 /**
@@ -136,16 +140,20 @@ function SendErrorPage($txt) {
  * redirects to the specified URL, else returns to the calling page.
  */
 function SendOkPage($txt) {
+    global $debugfill;
+    if ($debugfill) huhl("Filler:SendOkPage:",$txt);
     if( ! $GLOBALS["ok_url"] )
         go_url($GLOBALS[HTTP_REFERER]);    
         
     else if (! $GLOBALS["use_post2shtml"]) 
         go_url($GLOBALS["ok_url"]);
     
-    else UseShowResult ($txt);
+    else UseShowResult($txt,$GLOBALS["ok_url"]);
 }  
 
+
 # init used objects
+#if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
 if( !$slice_id ) SendErrorPage(array ("fatal"=>_m("Slice ID not defined"))); 
 
 $p_slice_id = q_pack_id($slice_id);
@@ -170,13 +178,13 @@ ValidateContent4Id ($err_valid, $slice_id, $insert ? "insert" : "update", $my_it
 if( !(isset($prifields) AND is_array($prifields)) )
 SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
 
-if (count ($err_valid) > 1) {
-    unset ($err_valid["Init"]);
+if (count($err_valid) > 1) {
+    unset($err_valid["Init"]);
     $zids = new zids();
-    reset ($err_valid);
+    reset($err_valid);
     while (list ($field_zid, $msg) = each ($err_valid)) {
-        $zids->refill ($field_zid);
-        $result["validate"][$zids->packedids (0)] = $msg;
+        $zids->refill($field_zid);
+        $result["validate"][$zids->packedids(0)] = $msg;
     }
 }
 
@@ -242,11 +250,25 @@ else if (!is_array ($result)) {
         $result["permissions"] = _m("You are not allowed to update this item.");
 }
 
-if( is_array ($result)) SendErrorPage( $result ); 
+if ($debugfill) huhl("result=",$result);
 
+// See doc/anonym.html for structure of $result, which is intended 
+// for fillform.php3 to interpret and display
+
+
+#if ($debugfill) huhl("content4id=",$content4id);
+if ($debugfill) huhl("Going to Store Item");
+if( is_array ($result)) 
+    SendErrorPage( $result ); 
  # update database
 else if (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, 
-          true, true, $oldcontent4id ))      # insert, invalidatecache, feed
+          true, true, $oldcontent4id )) { # insert, invalidatecache, feed
+    if ($debugfill) huhl("Filler: sending error");
     SendErrorPage ( array ("store" => _m("Some error in store item.")));
-else SendOkPage ( array ("success" => $insert ? "insert" : "update" ));    
+  }
+  else {
+    if ($debugfill) huhl("Filler: Sending ok");
+    SendOkPage ( array ("success" => $insert ? "insert" : "update" ));    
+  }
+
 ?>

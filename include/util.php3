@@ -1405,16 +1405,17 @@ function setdefault (&$var, $default) {
  * @author Jakub Adamek, Econnect, December 2002
  */
 function add_post2shtml_vars ($delete = true) {
-    global $db, $post2shtml_id;
-    global $debug;
+    global $post2shtml_id;
+    global $debugfill;
     add_vars();
     if (!$post2shtml_id) return;
-    if (!is_object ($db)) $db = new DB_AA;
+    $db = getDB();
     $db->query("SELECT * FROM post2shtml WHERE id='$post2shtml_id'");
     $db->next_record();
     $vars = unserialize ($db->f("vars"));
     if ($delete)
         $db->query("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
+    freeDB($db);
     $var_types = array ("post","get","files","cookie");
 
     reset ($var_types);
@@ -1423,8 +1424,8 @@ function add_post2shtml_vars ($delete = true) {
             reset ($vars[$var_type]);
             while (list ($var, $value) = each ($vars[$var_type])) {
                 global $$var;
+                if ($debugfill) huhl("add_post2shtml_vars:$$var=",$value);
                 $$var = $value;
-                if ($debug) { echo "<b>$var</b> = "; print_r ($value); echo "<br>\n"; }
             }
         }
     }    
