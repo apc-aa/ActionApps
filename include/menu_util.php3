@@ -47,20 +47,24 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
     if ($smmenus == "aamenus")
         $smmenus = get_aamenus();
          
-    if ($debug) { echo "<p><font color=purple>showMenu:activeMain=$activeMain;activeSubmenu=$activeSubmenu;showMain=$showMain;showSub=$showSub:</font></p>";  }
     if( $useOnLoad )
         echo '<body OnLoad="InitPage()" background="'. COLOR_BACKGROUND .'">';
     else
         echo '<body background="'. COLOR_BACKGROUND .'">';
+
+    if ($debug) { echo "<p><font color=purple>showMenu:activeMain=$activeMain;activeSubmenu=$activeSubmenu;showMain=$showMain;showSub=$showSub:</font></p>";  }
    
     if( !$slice_id )
         $r_slice_headline = L_NEW_SLICE_HEAD;
 
     $nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$AA_INSTAL_PATH.'images/action.gif" width="106" height="73" border="0" alt="'. L_LOGO .'"></a>';
 
+    echo "<TABLE border=0 cellspacing=0 cellpadding=0><TR>";
+
     if ($showMain) {
         echo "
-        <TABLE border=0 cellpadding=0 cellspacing=0>
+        <TD colspan=2>
+        <TABLE border=0 cellpadding=0 cellspacing=0 width=800>
             <TR><TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=122 height=1></TD>
                 <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=300 height=1></TD>
                 <TD><IMG src=\"$AA_INSTAL_PATH"."images/spacer.gif\" width=267 height=1></TD>
@@ -90,14 +94,21 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
         
         echo "</td><TD valign=center class=navbar>";
         PrintModuleSelection();
-        echo "</TD></TR></TABLE>";
+        echo "</TD></TR></TABLE>
+        </TD></TR><TR>";
     }
-
+    
     if ($showSub) {
         $submenu = $smmenus[$activeMain]["submenu"];
-        if ($submenu)
+        if ($submenu) {
+            echo "<TD>";
             showSubmenu ($smmenus[$submenu], $activeSubmenu);
+            echo "</TD>";
+        }
     }
+    echo "
+        <TD align=left valign=top>
+        <TABLE border=0 cellspacing=0 cellpadding=10><TR><TD align=left>";
 }   
 
 // ----------------------------------------------------------------------------------------
@@ -134,8 +145,8 @@ function showSubmenu (&$aamenu, $active)
         }
     }
   
-    echo '<tr><td>&nbsp;</td></tr>
-          <tr><td height="'.$aamenu["bottom_td"].'">
-          <tr><td class=copymsg ><small>'. L_COPYRIGHT .'</small>
-          </td></tr></table>';
+    echo '<tr><td class=leftmenu>&nbsp;</td></tr>
+          <tr><td class=leftmenu height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
+          <tr><td class=copymsg ><small>'. L_COPYRIGHT .'</small></td></tr>
+          </table>';
 }
