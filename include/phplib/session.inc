@@ -329,6 +329,7 @@ class Session {
     eval(sprintf(";%s",$vals));
   }
 
+/* Commented out duplicate further down in this file
   ##
   ## Garbage collection
   ##
@@ -337,7 +338,7 @@ class Session {
   function gc() {
       $this->that->ac_gc($this->gc_time, $this->name);
   }
-
+*/
   ##
   ## Variable precedence functions
   ##
@@ -464,7 +465,6 @@ class Session {
       $this->that->ac_gc($this->gc_time, $this->name);
     }
   }
-
 
   ##
   ## Initialization
