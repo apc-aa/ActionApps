@@ -951,7 +951,7 @@ $SQL_view_templates[] = "REPLACE INTO wizard_welcome (id, description, email, su
 
 $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner, 0 FROM slice";
 $SQL_update_modules[] = "REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'http://domain.org/index.shtml', 'en_site_lang.php3', 1000000000, '', '', 0)";
-$SQL_update_modules[] = "REPLACE INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', 'template.php3', 'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}', 0)";
+$SQL_update_modules[] = "REPLACE INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', 'template.php3', '".'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}'."', 0)";
 
 $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (1, '*',          '1', '*', '*', '*', 'misc/alerts/alerts.php3', 'howoften=daily&lang=en', NULL)";  
 $SQL_alerts[] = "REPLACE INTO cron (id, minutes, hours, mday, mon, wday, script, params, last_run) VALUES (2, '*',          '1', '*', '*', '1', 'misc/alerts/alerts.php3', 'howoften=weekly&lang=en', NULL)"; 
