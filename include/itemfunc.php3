@@ -1275,7 +1275,18 @@ function GetFormJavascript ($show_func_used, $js_proove_fields) {
         } else {
           inputbox.value=value;
         }
-      }';
+      }
+
+      // This script invokes Word/Excel convertor (used in textareas on inputform)
+      // You must have the convertor it installed
+      // @param string aa_instal_path - relative path to AA on server (like"/apc-aa/")
+      // @param string textarea_id    - textarea fomr id (like "v66756c6c5f746578742e2e2e2e2e2e31")
+      function CallConvertor(aa_instal_path, textarea_id) {
+        page = aa_instal_path + "misc/msconvert/index.php?inputid=" + textarea_id;
+        conv = window.open(page,"convwindow","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
+        conv.focus();
+      }
+      ';
 
     $retval .= $js_proove_fields;
 
