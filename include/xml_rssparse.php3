@@ -272,8 +272,8 @@ function aa_rss_parse($xml_data) {
     $err = sprintf("XML parse error: %s at line %d",
             xml_error_string(xml_get_error_code($xml_parser)),
             xml_get_current_line_number($xml_parser));
-			print("\nXML_RSSPARSE:ERR:$err");
-return $err;
+    print("\nXML_RSSPARSE:ERR:$err");
+    return false;
   }
   xml_parser_free($xml_parser);
   return $aa_rss;

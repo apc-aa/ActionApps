@@ -370,12 +370,12 @@ function onefeed($feed_id,$feed) {
   }
 
   if ($feed[feed_type] == FEEDTYPE_APC) {
-    $feed["DebugName"] = "APC Feed #$feed_id: $feed[name] : $feed[remote_slice_name] -> $l_slice->name()";
+    $feed["DebugName"] = "APC Feed #$feed_id: $feed[name] : $feed[remote_slice_name] -> ".$l_slice->name();
 	if ($debugfeed >= 1) print($feed["DebugName"]);
 	$xml_data = xml_fetch( $feed[server_url], ORG_NAME, $feed[password],
             $feed[user_id], $r_slice_id, $feed[newest_item], implode(" ",$cat_ids));
   } else {   // not FEEDTYPE_APC
-    $feed["DebugName"] = "RSS Feed #$feed_id: $feed[name]: -> $l_slice->name()";
+    $feed["DebugName"] = "RSS Feed #$feed_id: $feed[name]: -> ".$l_slice->name();
 	if ($debugfeed >= 1) print("\n<br>$feed[DebugName]");
     $xml_data = http_fetch($feed[server_url]);
   }
@@ -392,11 +392,13 @@ function onefeed($feed_id,$feed) {
 
   if (!( $aa_rss = aa_rss_parse( $xml_data ))) {
     writeLog("CSN","Feeding mode: Unable to parse XML data");
-  	if ($debugfeed >= 1) print("\n<br>$feed[DebugName]:unparsable: $aa_rss: $xml_data");
+    if ($debugfeed >= 1) 
+        print("\n<br>$feed[DebugName]:unparsable: $xml_data");
     return;
   }
 
-  if ($debugfeed >= 8) { print("\n<br>onefeed: aa_rss="); print_r($aa_rss); }
+#  if ($debugfeed >= 8) { print("\n<br>onefeed: aa_rss="); print_r($aa_rss); }
+  if ($debugfeed >= 8) { print("\n<br>onefeed: done aa_rss"); }
 
   $l_categs = GetGroupConstants( $l_slice_id );        // get all categories belong to slice
   if ($feed[feed_type] == FEEDTYPE_APC) {
@@ -417,10 +419,10 @@ function onefeed($feed_id,$feed) {
 	if ($feed[feed_type] == FEEDTYPE_APC) {
 	    //update the newest item
 		$SQL = "UPDATE external_feeds SET newest_item='".$aa_rss[channels][$r_slice_id][timestamp]."' WHERE feed_id='$feed_id'";
-	    if ($debugfeed >= 8) print("\n<br>$SQL");
-    	$db->query($SQL);
+    	$db->tquery($SQL);
 	}
   }
+ if ($debugfeed >= 8) print("\n<br>onefeed: done");
 }
 
 

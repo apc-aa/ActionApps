@@ -61,6 +61,7 @@ class slice {
             foreach ($fields as $f) 
                 if (!isset($this->$f))
                     $fieldsreq[] = $f;
+	if (isset($fieldsreq)) {
         $SQL = "SELECT ".implode(",",$fieldsreq).
             " FROM slice WHERE id = '".q_pack_id($this->id) . "'";
         $db3->tquery($SQL);
@@ -73,6 +74,7 @@ class slice {
             foreach ($fieldsreq as $f)
                 $this->$f = $db3->f($f);
         }
+	}
     }
 
     function name() {
