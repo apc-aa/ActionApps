@@ -112,13 +112,13 @@ class AA_SL_Session extends Session {
   function add_vars() {
      global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
         if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
-           $a = split ("\\\&",$REDIRECT_QUERY_STRING_UNESCAPED);
+           $a = explode("\\\&",$REDIRECT_QUERY_STRING_UNESCAPED);
         } else {
-           $a = split ("\\\&",$QUERY_STRING_UNESCAPED);
+           $a = explode ("\&",$QUERY_STRING_UNESCAPED);
         }
         $i = 0;
         while ($i < count ($a)) {
-           $b = split ('=', $a [$i]);
+           $b = explode ('=', $a [$i]);
            if (ERegI("^(.+)\\\\\\[(.*)\\\\\\]", $b[0], $c)) {  // for array variable
               // I do not know exactly, why there is
               // so much '\' but '\\\\\\[' means '\['
@@ -132,15 +132,21 @@ class AA_SL_Session extends Session {
   }
   
   function expand_getvars() {
-  global $QUERY_STRING_UNESCAPED, $HTTP_GET_VARS;   
-    $a = split ("\\\&",$QUERY_STRING_UNESCAPED);
-    $i = 0;
-     while ($i < count ($a)) 
-      {
-       $b = split ('=', $a [$i]);
-       $HTTP_GET_VARS[urldecode ($b [0])]= urldecode ($b [1]);
-       $i++;
-      }
+  global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $HTTP_GET_VARS;   
+    $a = explode ("\&",$QUERY_STRING_UNESCAPED);
+    for( $i=0 ; $i < count($a); $i++) {
+      $b = explode ('=', $a [$i]);
+      $HTTP_GET_VARS[urldecode ($b [0])]= urldecode ($b [1]);
+    }
+
+    # the same for $REDIRECT_QUERY_STRING_UNESCAPED
+    #  --- necessary for PHP4 ---      
+    $a = explode ("\\\&",$REDIRECT_QUERY_STRING_UNESCAPED);
+    for( $j = 0; $j < count($a); $j++) {
+      $b = explode ('=', $a [$j]);
+      $HTTP_GET_VARS[urldecode ($b [0])]= urldecode ($b [1]);
+      $i++;
+    }
     return $i;
   }
   
@@ -240,6 +246,9 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
+Revision 1.4  2000/08/22 12:30:06  honzam
+fixed problem with lost session id AA_SL_Session in cgi (PHP4) instalation.
+
 Revision 1.3  2000/08/07 15:27:45  kzajicek
 Added missing semicolon in global statement
 

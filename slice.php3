@@ -198,7 +198,8 @@ function CompactView($where, $catsel=false) {
 
 //-----------------------------End of functions definition------------------------------------------ 
 
-  if ($encap) $sess->add_vars(); ## adds values from QUERY_STRING_UNESCAPED  
+  if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
+                                 #       and REDIRECT_STRING_UNESCAPED
 
     # url posted command to display another file
   if( $inc ) {                   # this section must be after $sess->add_vars()
@@ -290,14 +291,12 @@ function CompactView($where, $catsel=false) {
     }
     else {
       if( $cat_id ) {         // optional parameter cat_id
-//huh("catid");    
         $r_category = ( $cat_id == "all" ? "" : $cat_id );
         $r_highlight = $highlight;
         $r_unpacked_where = unpack_id(MakeWhere($p_slice_id, $r_category, $r_highlight));
         $scr->current = 1;
       }  
       elseif ( $cat_name ) {  // optional parameter cat_name
-//huh("catname");    
         $SQL = "SELECT categories.id FROM categories, catbinds 
                   WHERE categories.id=catbinds.category_id 
                     AND catbinds.slice_id = '$p_slice_id'
@@ -336,6 +335,9 @@ function CompactView($where, $catsel=false) {
 //    p_arr_m($debugtimes);
 /*
 $Log$
+Revision 1.7  2000/08/22 12:30:06  honzam
+fixed problem with lost session id AA_SL_Session in cgi (PHP4) instalation.
+
 Revision 1.6  2000/08/19 11:53:31  kzajicek
 Removed debugging output ()
 
