@@ -1,4 +1,4 @@
-<?php  
+<?php
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -139,14 +139,14 @@ function ResolvePerms($perms) {
   global $perms_roles;
 
   reset($perms_roles);
-  while( list(, $arr) = each($perms_roles)) 
+  while( list(, $arr) = each($perms_roles))
     $perms = str_replace($arr['id'], $arr['perm'], $perms);
   return $perms;
-}  
+}
 
 // save all permissions for specified user to session variable
 function CachePermissions($user_id) {
-  global $permission_uid, $permission_to, $sess, 
+  global $permission_uid, $permission_to, $sess,
          $perms_roles, $r_superuser;
 
   $sess->register(permission_uid);
@@ -160,19 +160,19 @@ function CachePermissions($user_id) {
     $permission_to["slice"] = array();
   if( !is_array($permission_to["aa"]) )
     $permission_to["aa"] = array();
-  
-  # Resolve all permission (convert roles into perms) 
-  reset($permission_to["slice"]); 
-  while( list($key,$val) = each($permission_to["slice"]) ) 
-    $permission_to["slice"][$key] = ResolvePerms($val);       
 
-  reset($permission_to["aa"]); 
+  # Resolve all permission (convert roles into perms)
+  reset($permission_to["slice"]);
+  while( list($key,$val) = each($permission_to["slice"]) )
+    $permission_to["slice"][$key] = ResolvePerms($val);
+
+  reset($permission_to["aa"]);
   while( list($key,$val) = each($permission_to["aa"]) ) {
     if( IsPerm($val, $perms_roles['SUPER']['id']) )
       $r_superuser[$key] = true;
-    $permission_to["aa"][$key] = ResolvePerms($val);       
-  }  
-}  
+    $permission_to["aa"][$key] = ResolvePerms($val);
+  }
+}
 
 // function check, if specified $perm is in $perms list
 function IsPerm($perms, $perm){
@@ -185,27 +185,27 @@ function IsPerm($perms, $perm){
 function CheckPerms( $user_id, $objType, $objID, $perm) {
   global $permission_uid, $permission_to;
 
-  if($permission_uid != $user_id) 
+  if($permission_uid != $user_id)
     CachePermissions($user_id);
-    
+
   switch($objType) {
-    case "aa":  
+    case "aa":
       return IsPerm($permission_to["aa"][$objID], $perm);
-    case "slice": 
+    case "slice":
       return IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
     default: return false;
   }
-}  
+}
 
 // Returns users's permissions to specified slice
-// if $whole is true, then consider membership in groups 
+// if $whole is true, then consider membership in groups
 function GetSlicePerms( $user_id, $objID, $whole=true) {
   $slice_perms = GetIDPerms ($user_id, "slice", ($whole ? 0 : 1));
   $aa_perms = GetIDPerms ($user_id, "aa", ($whole ? 0 : 1));
   return JoinAA_SlicePerm($slice_perms[$objID], $aa_perms[AA_ID]);
-}  
-                                    
-// function returns "E" if both permission are equal, "G" if perms1 
+}
+
+// function returns "E" if both permission are equal, "G" if perms1
 //  are more powerfull than perm2, "L" if perm2 are more powerful than perm1
 function ComparePerms($perms1, $perms2) {
   $perms1 = ResolvePerms($perms1);
@@ -216,9 +216,9 @@ function ComparePerms($perms1, $perms2) {
       return "E";       // perms are equal
      else
       return "L";
-  } else 
-    return "G";    
-}    
+  } else
+    return "G";
+}
 
 // Resolves precedence issues between slice-specific permissions
 // and global access rigths (rights to object aa).
@@ -230,37 +230,37 @@ function JoinAA_SlicePerm($slice_perm, $aa_perm) {
   } else {
     return ($slice_perm ? $slice_perm : $aa_perm);
   }
-}  
+}
 
 function GetUsersSlices( $user_id ) {
   global $permission_uid, $permission_to;
 
-  if($permission_uid != $user_id) 
+  if($permission_uid != $user_id)
     CachePermissions($user_id);
-    
+
   if( IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) )
     return "all";
 
   return  $permission_to["slice"];
-}  
+}
 
 // shortcut for slice permission checking
 function IfSlPerm($perm) {
   global $auth, $slice_id;
   return CheckPerms( $auth->auth["uid"], "slice", $slice_id, $perm);
-}  
+}
 
 // Checks if logged user is superadmin
 function IsSuperadmin() {
-  global $auth, $r_superuser;
+  global $auth, $r_superuser, $permission_uid;
     # check all superadmin's global permissions
-  if($permission_uid != $auth->auth["uid"]) 
+  if($permission_uid != $auth->auth["uid"])
     CachePermissions($auth->auth["uid"]);
   return $r_superuser[AA_ID];
 }
 
 // Permissions for the on-line file manager
-    
+
 function FilemanPerms ($auth, $slice_id) {
     global $sess;
     // Sets the fileman_dir var:
