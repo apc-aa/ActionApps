@@ -25,20 +25,27 @@ http://www.apc.org/
     back a cookie with the given acknowlegement.
 
     Params: live_checkbox[short_id][field_id]=action
-            ack=acknowledgement identification
     
     where 
         short_id is the item short ID
         field_id is the field ID (like "highlight......")
         action is one of on, off and decides whether the checkbox should be switched on or off
 */
-            
-require "include/config.php3";
+
+function f () {
+$image_path = "http://localhost/aa_jakub/images/";
+header ("Content-Type: image/gif");
+readfile ($image_path.'cb_on.gif');
+exit;
+}
+         
+$directory_depth = "include/";           
+require "include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 
-if ($encap) require $GLOBALS[AA_INC_PATH]."locsessi.php3";
-else require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
+$image_path = "http://localhost/aa_jakub/images/";
+//$image_path = $AA_INSTAL_PATH."images/";
 
 reset ($live_checkbox);
 list ($short_id, $ar) = each ($live_checkbox);
@@ -47,28 +54,42 @@ list ($field_id, $action) = each ($ar);
 
 $db = new DB_AA;
 $db->query ("SELECT id, slice_id FROM item WHERE short_id = $short_id");
-
-setcookie ( $ack, "1", time() + 60 );
-header ("Content-Type: image/gif");
-
 if ($db->next_record()) {
     $item_id = unpack_id ($db->f("id"));
     $slice_id = unpack_id ($db->f("slice_id")); 
-    
-    $content4id[$field_id][0]["value"] = $action == "on" ? 1 : 0;
-    list($fields) = GetSliceFields ($slice_id);   
-    
-    StoreItem ($item_id,
-               $slice_id,
-               $content4id,
-               $fields,
-               false,
-               true,
-               false);
-   
-    echo "OK";            
 }
-else           
-    echo "KO";
+else failed();
 
+if (!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT)) 
+    failed ();
+
+header ("Content-Type: image/gif");
+
+$content4ids = GetItemContent (array ($item_id));
+reset ($content4ids);
+$content4id = current ($content4ids);
+$action = ! ($content4id[$field_id][0]["value"]);
+$content4id = array ($field_id => array (0 => array ("value" => $action)));
+list($fields) = GetSliceFields ($slice_id);   
+    
+StoreItem ($item_id,
+           $slice_id,
+           $content4id,
+           $fields,
+           false,
+           true,
+           false);
+
+readfile ($image_path.'cb_'.($action ? "on" : "off").'.gif');
+page_close();
+exit;
+
+// ------------------------------------------------------------------------------------
+
+function failed () {   
+    global $image_path; 
+    readfile ($image_path.'cb_failed.gif');
+    page_close();
+    exit;
+}    
 ?>
