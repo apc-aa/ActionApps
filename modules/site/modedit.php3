@@ -35,6 +35,7 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."modutils.php3";
+require "./util.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -76,10 +77,10 @@ if( $add || $update ) {
       break;
 
     # write all fields needed for module table        
-    $module_id = WriteModuleFields( ($update && $module_id) ? $module_id : false, 
+    $module_id = WriteModuleFields( ($update && $module_id) ? $module_id : false,
                                     $db, $varset, $superadmin, $auth,
                                    'W', $name, $slice_url, $lang_file, $owner, $deleted );
-    if( !$module_id ) 
+    if( !$module_id )   // error?
       break;
     $slice_id = $module_id;
     
@@ -119,7 +120,7 @@ if( $add || $update ) {
       }
 
          # copy spots
-      $db2  = new DB_AA;         
+      $db2  = new DB_AA;
       $SQL = "SELECT * FROM site_spot WHERE site_id='$p_template_id'";
       $db->query($SQL);
       while( $db->next_record() ) {
@@ -127,15 +128,15 @@ if( $add || $update ) {
         $varset->set("site_id", $module_id, "unpacked" );
         $varset->set("spot_id", $db->f('spot_id'), "number" );
         $varset->set("content ", $db->f('content'), "text" );
-        $varset->set("flag", $slice_id, "number" );
+        $varset->set("flag", "", "number" );
         $SQL = "INSERT INTO site_spot " . $varset->makeINSERT();
         if( !$db2->query($SQL)) {
-          $err["DB"] .= MsgErr("Can't copy fields");
+          $err["DB"] .= MsgErr("Can't copy site_spots");
           break;
         }
       }
     }
-    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
+    $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed -
     $cache->invalidate();  # invalidate old cached values - all
   }while(false);
 

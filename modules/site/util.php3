@@ -24,13 +24,13 @@ http://www.apc.org/
 function AAPage($url=0, $add=0) {
   global $sess, $PHP_SELF,$r_spot_id;
   if (!$url)
-    $url = con_url($PHP_SELF,"r_spot_id=$r_spot_id");
+    $url = con_url($PHP_SELF,"spot_id=$r_spot_id");
   return $sess->url( $add ? con_url($url , $add ) : $url );
 }  
 
 function ModW_HiddenRSpotId() {
 	global $r_spot_id;
-	print("<input type='hidden' name='r_spot_id' value='$r_spot_id'>");
+	print("<input type='hidden' name='spot_id' value='$r_spot_id'>");
 }
 
 function ModW_StoreTree( &$tree, $site_id ){

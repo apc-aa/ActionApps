@@ -50,6 +50,10 @@ if( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
   exit;
 }  
 
+# form send us spot id (prevents 'Back' browser problems, ...)
+if( isset($spot_id) )
+  $r_spot_id = $spot_id;
+
 # switch to another spot, if the spot is in this site
 if( isset($go_sid) )
   $r_spot_id = $go_sid;
@@ -79,9 +83,9 @@ $tree->addChoice( 1, 'choice 1' );
 $tree->addInSequence( 0, 'third' );
 $tree->addInSequence( 2, 'quatro' );
 */
-if ($debug) print("<p>Action=$action; r_spot_id=$r_spot_id</p>");
+if ($debug) print("<p>Action=$akce; r_spot_id=$r_spot_id</p>");
 
-switch( $action ) {
+switch( $akce ) {
   case 's': $tree->addInSequence( $r_spot_id, 'spot' ); break;
   case 'c': $tree->addChoice( $r_spot_id, 'option' ); break;
   case 'r': $parent = $tree->get( 'parent', $r_spot_id );
@@ -135,11 +139,11 @@ showMenu ($aamenus, "codemanager");
 
 echo '<br>
 <table border=0 cellspacing=0 class=login width="95%"><TR><TD width=200>
-  <a href="'. $sess->url(AAPage(0,"action=s")).'">'. L_ADD_SPOT .'</a> 
-  <a href="'. $sess->url(AAPage(0,"action=c")).'">'. L_ADD_CHOICE .'</a>
-  <a href="'. $sess->url(AAPage(0,"action=r")).'">'. L_DELETE_SPOT .'</a>
-  <a href="'. $sess->url(AAPage(0,"action=u")).'">'. L_MOVEUP_SPOT .'</a>
-  <a href="'. $sess->url(AAPage(0,"action=d")).'">'. L_MOVEDOWN_SPOT .'</a>
+  <a href="'. $sess->url(AAPage(0,"akce=s")).'">'. L_ADD_SPOT .'</a> 
+  <a href="'. $sess->url(AAPage(0,"akce=c")).'">'. L_ADD_CHOICE .'</a>
+  <a href="'. $sess->url(AAPage(0,"akce=r")).'">'. L_DELETE_SPOT .'</a>
+  <a href="'. $sess->url(AAPage(0,"akce=u")).'">'. L_MOVEUP_SPOT .'</a>
+  <a href="'. $sess->url(AAPage(0,"akce=d")).'">'. L_MOVEDOWN_SPOT .'</a>
   <br>';
 
 # show tree
@@ -150,7 +154,7 @@ echo '</td><td valign="top">';
 ModW_ShowSpot($tree, $module_id, $r_spot_id);
 
 echo '</td></tr></table>';
-if ($debug) print("<p>Action=$action; r_spot_id=$r_spot_id</p>");
+if ($debug) print("<p>Action=$akce; r_spot_id=$r_spot_id</p>");
 echo ' </body>
 </html>';
 
