@@ -224,12 +224,7 @@ if( $add || $update ) {
 
     if( count($err) <= 1 )
     {
-        page_close();                                // to save session variables
-        $netscape = (($r=="") ? "r=1" : "r=".++$r);   // special parameter for Natscape to reload page
-        // added by Setu, 2002-0227
-        if ($return_url)   // after work for action, if return_url is there, we go to the page.
-            go_url(urldecode($return_url));
-        go_url($sess->url(self_base() . "slicedit.php3?$netscape"));
+    	go_return_or_url($sess->url(self_base() . "sliceedit.php3"),0,0);
     }
 }
 

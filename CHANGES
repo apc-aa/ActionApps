@@ -1,3 +1,8 @@
+01/12/02 - changed site module to go to prior sibling when deleting rather than parent
+01/12/02 - added default $item=null to new_unalias_recurent to allow calling from site module without warnings
+01/12/02 - fixed adding AA_CP_Session to url in site module AAPage where it is already there.
+01/12/02 - changes to allow _#EDITITEM to be used outside of admin interface
+01/12/02 - combined several ways of redirecting to a URL into common function go_return_or_url
 01/11/02 - Fixed item.php3:subst_alias, it relied on old bug of expanding bare field name without { }
 1/11/02 - Changed typos of _#ITEMEDIT to _#EDITITEM
 1/11/02 - Changed a type $New_silce to $New_slice in init_page.php3

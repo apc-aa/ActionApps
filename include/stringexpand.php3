@@ -186,6 +186,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 	if (isset($GLOBALS["apc_state"])) huhl("apc_state=",$GLOBALS["apc_state"]);
 	if (isset($itemview)) huhl("itemview=",$itemview);
 	if (isset($aliases)) huhl("aliases=",$aliases);
+	if (isset($als)) huhl("als=",$als);
 	#huhl("globals=",$GLOBALS);
 	print("</listing><br>"); 
     }
@@ -220,11 +221,11 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 # string substitution wherever its occurring. 
 # Differences .... 
 #   - remove is applied to the entire result, not the parts! 
-function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item, $itemview="", $aliases="" ) {
+function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $itemview=null, $aliases=null ) {
     global $debug;
     $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
                                         # used just for speed optimalization (QuoteColons)
-    if ($debug) huhl("<br>Unaliasing:'",$text,"'\n");
+    if ($debug) huhl("<br>Unaliasing:$level:'",$text,"'\n");
     while (ereg("(.*)[{]([^{}]+)[}](.*)",$text,$vars)) {
 	if ($debug) print("<listing>Expanding:$level:'$vars[2]'</listing>");
 	$t1 = expand_bracketed($vars[2],$level+1,$maxlevel,$item,$itemview,$aliases);

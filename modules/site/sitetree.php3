@@ -86,13 +86,15 @@ class spot {
 
   function removeSpot( $spot_id ) {
     # search in options
+    $priorsib = $this->id;
     if( isset($this->ch) AND is_array($this->ch) ) {
       reset($this->ch);
       while( list($k,$v) = each($this->ch) ) {
         if( $v == $spot_id ) {
           unset($this->ch[$k]);
-          return true;
-        }  
+          return $priorsib;   // Returning prior sibling
+        }
+	$priorsib = $v;  // Used for where to move pointer to
       }
     }  
     #search in sequence
@@ -101,10 +103,12 @@ class spot {
       while( list($k,$v) = each($this->po) ) {
         if( $v == $spot_id ) {
           unset($this->po[$k]);
-          return true;
+          return $priorsib;   // Returning prior sibling
         }  
+	$priorsib = $v;  // Used for where to move pointer to
       }
     }  
+    return false;
   }
 
   function moveUp( $spot_id ) {
@@ -200,7 +204,7 @@ class spot {
 };
 
 class sitetree {
-  var $tree;
+  var $tree; // Array of spots
   var $start_id;
   
   function sitetree( $spot=false ) {
@@ -219,7 +223,7 @@ class sitetree {
     } else
       $parent = $where;
 
-    $parent_spot->addInSequence($new_id);
+    $parent_spot->addInSequence($new_id);  # Note this is going to the spot, not recursing
 
     $this->tree[$new_id] = new spot( $new_id, $name, $conditions, $variables, $parent, $flag );
     return true;
@@ -250,9 +254,9 @@ class sitetree {
       $parent =& $this->tree[$parent_id];
       if( !$parent )
         return false;
-      if( $parent->removeSpot($spot_id)) {
+      if( $priorsib = $parent->removeSpot($spot_id)) {
         unset($this->tree[$spot_id]);
-        return true;
+        return $priorsib;
       }
     }
     return false;
@@ -338,6 +342,7 @@ class sitetree {
     return false;
   }  
   
+  // Find the spot from the tree, and then do a get on the spot.
   function get( $what, $id ) {
     $s =& $this->tree[$id];
     return $s ? $s->get($what) : false;

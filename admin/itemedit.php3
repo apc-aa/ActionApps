@@ -77,13 +77,8 @@ if($cancel) {
     } else
       go_url( $r_slice_view_url );
   }
-  else if ($return_url)
-    echo '<SCRIPT Language="JavaScript"><!--
-            document.location = "'. $return_url.'";
-            // -->
-           </SCRIPT>';
-  else
-    go_url( con_url($sess->url(self_base() .  "index.php3"), "slice_id=$slice_id"));
+  else 
+    go_return_or_url(self_base() . "index.php3",1,1,"slice_id=$slice_id");
 }
 $db = new DB_AA;
 
@@ -199,7 +194,6 @@ if( ($insert || $update) AND (count($err)<=1)
 
   if( count($err) <= 1) {
     page_close();
-
     if( $anonymous )  // anonymous login
       if( $encap ) {
         echo '<SCRIPT Language="JavaScript"><!--
@@ -211,14 +205,7 @@ if( ($insert || $update) AND (count($err)<=1)
     elseif( $ins_preview OR $upd_preview )
       go_url( con_url($sess->url(self_base() .  "preview.php3"), "slice_id=$slice_id&sh_itm=$id"));
     else  {
-      if ($return_url) {
-        echo '<SCRIPT Language="JavaScript"><!--
-              document.location = "'. $return_url.'";
-              // -->
-              </SCRIPT>';
-      } else {
-        go_url( $sess->url(self_base() . "index.php3"));
-      }
+      go_return_or_url(self_base() . "index.php3",1,1);
     }
   }
 }
@@ -422,7 +409,7 @@ if($edit || $update || ($insert && $added_to_db)) { ?>
    <input type=submit name=ins_preview value="<?php echo L_INSERT_PREV ?>"><?php
 }
 $cancel_url = ($anonymous  ? $r_slice_view_url :
-              ($return_url ? $return_url :
+              ($return_url ? expand_return_url(1) :
                              con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id")));
 ?>
 &nbsp;<input type=button name=cancel value="<?php echo L_CANCEL ?>" onclick="document.location='<?php echo $cancel_url ?>'">

@@ -79,6 +79,7 @@ function go_url($url, $add_param="") {
  	exit;
 }
 
+// Note this doesn't appear to be used (mitra)
 function go_url_javascript ($to_go_url) {
 	echo "
     <SCRIPT language=JavaScript>
@@ -87,6 +88,39 @@ function go_url_javascript ($to_go_url) {
     // -->\n
     </SCRIPT>";
 }
+
+// Expand return_url, possibly adding a session to it
+function expand_return_url ($addsess) {
+	global $return_url, $sess;
+	$r1 = $return_url;    # return_url is encoded in calling URL, but decoded by PHP before global is set
+#	$r1 = urldecode($return_url);
+	if ($addsess && isset($sess))
+		return $sess->url($r1);
+	else	return $r1;
+}
+// This function goes to either $return_url if set, or to $url
+// if $usejs is set, then it will use inline Javascript, its not clear why this is done 
+//    sometimes (item.php3) but not others.
+// if $addsess is set, then any session variable will be added, to the return_url case to allow for quicker 2nd access
+//    session is always added to the other case
+// if $add_param are set, then they are added to the cases EXCEPT return_url
+function go_return_or_url($url,$usejs,$addsess,$add_param="") {
+	global $return_url,$sess;
+      if ($return_url) {
+	if ($usejs) {
+		echo '<SCRIPT Language="JavaScript"><!--
+              		document.location = "'. expand_return_url($addsess) .'";
+	              // -->
+        	      </SCRIPT>';
+	} else {
+		go_url(expand_return_url($addsess));
+	}
+      } else {
+	if ($url) go_url($sess->url($url),$add_param);
+	// Note if no $url or $return_url then drops through - this is used in index.php3
+      }
+}
+
 
 // adds all items from source to target, but doesn't overwrite items
 function array_add ($source, &$target)

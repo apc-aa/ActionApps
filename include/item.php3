@@ -145,7 +145,7 @@ function GetConstantAliases( $additional="" ) {
 //
 // make_return_url
 # global function to get return_url
-# this funciton may replaced by extension of $sess as a method $sess->return_url().
+# this function may replaced by extension of $sess as a method $sess->return_url().
 function sess_return_url($url) {
   global $sess;
   global $return_url;
@@ -153,7 +153,7 @@ function sess_return_url($url) {
   if (!$return_url)   # return for standard APC-AA behavier
     return $sess->url($url);
   else                # decode and return $return_url
-    return urldecode($return_url);
+    return expand_return_url(1);
 }
 
 
@@ -168,14 +168,16 @@ function make_return_url($prifix,$r1="") {
   // if null, it uses "&return_url="
   if (!$prifix) $prifix = "&return_url=";
  
-  // global $PHP_SELF;
-  global $return_url;
+  global $return_url, $REQUEST_URI;
   if ($r1) 
-	return $prifix . urlencode($return_url);
+	return $prifix . urlencode($r1);
   elseif ($return_url)
 	return $prifix . urlencode($return_url);
-  elseif (!$sess)    # If there is no $sess, then we need a return url, default to self
-	return $PHP_SELF;
+  elseif (!$sess) {   # If there is no $sess, then we need a return url, default to self, including parameters
+			# but remove any left over AA_CP_Session, it will be re-added if needed
+	$r2 = ereg("(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)",$REQUEST_URI,$parts);
+	return $prifix . urlencode($parts[1].$parts[2].$parts[3]);
+  }
   else 
 	return "";
 }
@@ -704,13 +706,12 @@ class item {
   # param: 0
   function f_e($col, $param="") { 
     global $sess, $slice_info;
-    global $AA_INSTAL_EDIT_PATH;
+    global $AA_INSTAL_EDIT_PATH,$AA_CP_Session;
  
     $p = ParamExplode($param);  # 0 = disc|itemcount|safe|slice_info  #2 = return_url
     // code to keep compatibility with older version
-    // which was working without $AA_INSTALL_EDIT_PATH
+    // which was working without $AA_INSTAL_EDIT_PATH
     $admin_path = ($AA_INSTAL_EDIT_PATH ? $AA_INSTAL_EDIT_PATH . "admin/" : "");
- 
     switch( $p[0]) {
       case "disc":
         # _#DISCEDIT used on admin page index.php3 for edit discussion comments
@@ -724,13 +725,15 @@ class item {
         if( !is_array( $slice_info ) )
           $slice_info = GetSliceInfo(unpack_id( $this->getval('slice_id........')));
         return $slice_info[$col]; 
-      default:  
+      default:  {
 	// If Session is set, then append session id, otherwise append slice_id and it will prompt userid
           return con_url(
-		isset($sess) ? $sess->url($admin_path ."itemedit.php3") : ($admin_path . "itemedit.php3"),
+		isset($sess) ? $sess->url($admin_path ."itemedit.php3") 
+		: ($admin_path . "itemedit.php3" . ((isset($AA_CP_Session)) ? ("?AA_CP_Session=" . $AA_CP_Session) : "" )),
 		"encap=false&edit=1&id=". unpack_id( $this->getval('id..............') ).
 		  (isset($sess) ? "" : ("&change_id=". unpack_id($this->getval('slice_id........')))).
              		   make_return_url("&return_url=",$p[1]) );	// it return "" if return_url is not defined.
+	}
     }
   }                 
 

@@ -24,8 +24,14 @@ http://www.apc.org/
 function AAPage($url=0, $add=0) {
   global $sess, $PHP_SELF,$r_spot_id;
   if (!$url)
-    $url = con_url($PHP_SELF,"spot_id=$r_spot_id");
-  return $sess->url( $add ? con_url($url , $add ) : $url );
+    $url = con_url($PHP_SELF,"spot_id=$r_spot_id");   // Always used this way
+  if ($add) 
+	$url = con_url($url, $add);
+# Don't add AA_CP_Session if already there (it isn't in PHP_SELF)
+  if (ereg("AA_CP_Session",$url))
+	return $url;
+  else
+	return $sess->url($url);
 }  
 
 function ModW_HiddenRSpotId() {

@@ -88,8 +88,8 @@ switch( $akce ) {
   case 's': $tree->addInSequence( $r_spot_id, 'spot' ); break;
   case 'c': $tree->addChoice( $r_spot_id, 'option' ); break;
   case 'r': $parent = $tree->get( 'parent', $r_spot_id );
-            if( $tree->removeSpot( $r_spot_id ) ) {
-              $r_spot_id = $parent;
+            if( $priorsib = $tree->removeSpot( $r_spot_id ) ) {
+              $r_spot_id = $priorsib; // was set to $parent;
             }
             break;
   case 'u': $tree->move( $r_spot_id, 'moveUp' ); break;
@@ -138,11 +138,11 @@ showMenu ($aamenus, "codemanager");
 
 echo '<br>
 <table border=0 cellspacing=0 class=login width="95%"><TR><TD width=200>
-  <a href="'. $sess->url(AAPage(0,"akce=s")).'">'. L_ADD_SPOT .'</a> 
-  <a href="'. $sess->url(AAPage(0,"akce=c")).'">'. L_ADD_CHOICE .'</a>
-  <a href="'. $sess->url(AAPage(0,"akce=r")).'">'. L_DELETE_SPOT .'</a>
-  <a href="'. $sess->url(AAPage(0,"akce=u")).'">'. L_MOVEUP_SPOT .'</a>
-  <a href="'. $sess->url(AAPage(0,"akce=d")).'">'. L_MOVEDOWN_SPOT .'</a>
+  <a href="'. AAPage(0,"akce=s").'">'. L_ADD_SPOT .'</a> 
+  <a href="'. AAPage(0,"akce=c").'">'. L_ADD_CHOICE .'</a>
+  <a href="'. AAPage(0,"akce=r").'">'. L_DELETE_SPOT .'</a>
+  <a href="'. AAPage(0,"akce=u").'">'. L_MOVEUP_SPOT .'</a>
+  <a href="'. AAPage(0,"akce=d").'">'. L_MOVEDOWN_SPOT .'</a>
   <br>';
 
 # show tree

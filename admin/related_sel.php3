@@ -234,7 +234,7 @@ else
 echo '<input type=hidden name=akce value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
 echo '</form>';
 
-# user definend sorting and filtering ---------------------------------------
+# user defined sorting and filtering ---------------------------------------
 echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
       <table width="460" border="0" cellspacing="0" cellpadding="0" 
       class=leftmenu bgcolor="'. COLOR_TABBG .'">';

@@ -273,11 +273,9 @@ if ($akce) {
       $r_admin_search_field = $admin_search_field;
       break;
   }
-  if ($return_url) { // after work for action, if return_url is there, we go to the page.
-  	go_url(urldecode($return_url));
-  	// Never come back....
-  	exit();
-  }
+  // If we are just doing stuff for the action, then should go to return_url if present
+  // rather than staying here on index.php3
+  go_return_or_url("",0,0); // Note this exits if return_url present
 
 } // end if ($akce)
 
@@ -503,7 +501,7 @@ $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
 echo "<center>";
 echo "$Msg <br>";
 
-# user definend sorting and filtering 
+# user defined sorting and filtering 
 if ($sort_filter != "0") {
       # echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
       #if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";
