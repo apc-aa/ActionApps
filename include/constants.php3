@@ -238,7 +238,7 @@ function inputShowFuncTypes () {
         "wi2" => GetInputShowFuncTypesDef( _m("Two Boxes"),                   true,  'fnc:const:param' ),
         "fil" => GetInputShowFuncTypesDef( _m("File Upload"),                 false, 'fnc:param' ),
       # "isi" => GetInputShowFuncTypesDef( _m("Related Item Select Box"),     true,  'fnc:const:param' ),
-        "iso" => GetInputShowFuncTypesDef( _m("Related Item Window"),         true,' fnc:const:param' ),
+        "iso" => GetInputShowFuncTypesDef( _m("Related Item Window"),         true,  'fnc:const:param' ),
         "nul" => GetInputShowFuncTypesDef( _m("Do not show"),                 false, 'fnc' ),
         "hco" => GetInputShowFuncTypesDef( _m("Hierachical constants"),       false, 'fnc:const:param'),
         "pwd" => GetInputShowFuncTypesDef( _m("Password and Change password"),false, 'fnc:param' ),
@@ -302,7 +302,7 @@ function getViewFields() {
     $VIEW_FIELDS["before"]          = GetViewFieldDef("text",  "quoted", "text",  "area"   );
     $VIEW_FIELDS["even"]            = GetViewFieldDef("text",  "quoted", "text",  "area"   );
     $VIEW_FIELDS["even_odd_differ"] = GetViewFieldDef("",      "quoted", "bool",  "chbox"  );
-    $VIEW_FIELDS["odd"]             = GetViewFieldDef("text",  "quoted", "text",  "area"   );
+    $VIEW_FIELDS["odd"]             = GetViewFieldDef("text",  "quoted", "text",  "areabig");
     $VIEW_FIELDS["after"]           = GetViewFieldDef("text",  "quoted", "text",  "area"   );
     $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text",  "quoted", "text",  "order"  );
     $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
