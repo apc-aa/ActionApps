@@ -131,7 +131,7 @@ function GetConstantAliases( $additional="" ) {
   return($aliases);
 }  
 
-#explodes $param by ":". The "#:" means true ":" - dont separate
+#explodes $param by ":". The "#:" means true ":" - don't separate
 function ParamExplode($param) {
   $a = str_replace ("#:", "__-__.", $param);    # dummy string
   $b = str_replace ("://", "__-__2", $a);       # replace all <http>:// too
@@ -140,6 +140,18 @@ function ParamExplode($param) {
   $e = str_replace ("__-__2", "://", $d);         # change back "://"
   return explode( "##Sx", $e );
 }  
+
+# Substitutes all colons with special AA string and back depending on unalias nesting.
+# Used to mark colons, which is not parameter separators.
+function QuoteColons($level, $maxlevel, $text) {
+  if( $level > 1 )                  # there is no need to substitute on level 1
+    return str_replace(":", "_AA_CoLoN_", $text);
+
+  #level 0 - return from unalias - change all back to ':'
+  if( ($level == 0) AND ($maxlevel > 1) )  # maxlevel - just for speed optimalization
+    return str_replace("_AA_CoLoN_", ":", $text);
+  return $text;
+}
 
 # helper function for f_e
 # this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
@@ -314,10 +326,14 @@ class item {
     return $clear_output . $this->remove_strings($out,$remove_arr);
   }  
 
-  
-  function unalias( &$text, $remove="", $level=0 ) {
+  # we can't call unalias() function recurently because of referenced variable 
+  # maxlevel (can't have implicit value), that's why we introduce unalias_recurent()
+  function unalias_recurent( &$text, $remove, $level, &$maxlevel ) {
+    $maxlevel = max($maxlevel, $level); # stores maximum deep of nesting {}
+                                        # used just for speed optimalization (QuoteColons)
+
     $parts_start[0] = 0;      # three variables used to identify the parts
-    $parts_end   = array();   # of output string, where we have to aply 
+    $parts_end   = array();   # of output string, where we have to apply
     $parts_count = 0;         # "remove strings"
     
     $pos = strcspn( $text, "{}" );
@@ -327,7 +343,10 @@ class item {
       $text = substr( $text,$pos+1 );           # remove processed text
                                                 # from $text is removed {...} on return
         # $remove is not needed in deeper levels - we use remove strings just on base level (0)
-      $substitution = $this->unalias( $text, "", $level+1 ); 
+      $substitution = $this->unalias_recurent( $text, "", $level+1, $maxlevel );
+        # QuoteColons substitutes all colons with special AA string.
+        # Used to mark colons, which is not parameter separators.
+
       if( $substitution != "" ) {   # brackets produced some output, so we have 
                               # to mark the previous section as removestringable
         $parts_end[$parts_count++] = strlen($out);
@@ -352,11 +371,13 @@ class item {
       # call function (called by function reference (pointer))
       # like f_d("start_date......", "m-d")
       $fce = $parts[2];
-      return $this->$fce($parts[1], $parts[3]);
+      return QuoteColons($level, $maxlevel, $this->$fce($parts[1], $parts[3]));
+      # QuoteColons used to mark colons, which is not parameter separators.
     } 
     elseif( substr($out, 0, 7) == "switch(" ) {
       # replace switches
-      return $this->parseSwitch( substr($out,7) );
+      return QuoteColons($level, $maxlevel, $this->parseSwitch( substr($out,7) ));
+      # QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( substr($out, 0, 8) == "include(" ) {
       # include file
@@ -366,13 +387,15 @@ class item {
       $fp = fopen( self_server().'/'. $filename, 'r' );
       $fileout = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
       fclose( $fp );
-      return $fileout;
+      return QuoteColons($level, $maxlevel, $fileout);
+      # QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( substr($out, 0, 1) == "#" )
       # remove comments
       return "";
     elseif( IsField($out) )
-      return $this->getval($out);
+      return QuoteColons($level, $maxlevel, $this->getval($out));
+      # QuoteColons used to mark colons, which is not parameter separators.
     else {
       # replace aliases
       $remove_arr = explode( "##", $remove );
@@ -384,8 +407,15 @@ class item {
       }                   
       $txt = substr($out,$parts_start[$i]);         # remaining string
       $clear_output .= $this->substitute_alias_and_remove( $txt, $remove_arr );
-      return ( ($level==0) ? $clear_output : '{'.$clear_output.'}');
+      return QuoteColons($level, $maxlevel, ($level==0) ? $clear_output : '{'.$clear_output.'}');
     }
+  }
+
+  function unalias( &$text, $remove="" ) {
+    // just create variables and set initial values
+    $maxlevel = 0;   
+    $level = 0;
+    return $this->unalias_recurent( $text, $remove, $level, $maxlevel );
   }
 
   function subst_alias( $text ) {
@@ -400,7 +430,6 @@ class item {
       $ret[$k] = $this->subst_alias( $v );
     return $ret;  
   }
-
 
   # --------------- functions called for alias substitution -------------------
 
