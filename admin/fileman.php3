@@ -68,7 +68,7 @@ fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset);
 // One file page
 if ($cmd == 'edit' || $cmd == 'createfile') {
     $fe_path = $basedir;
-    $fe_script = "fileman.php3?AA_CP_Session=$AA_CP_Session";
+    $fe_script = $sess->url("fileman.php3");
     $fe_wwwpath = FILEMAN_BASE_URL;
     require $GLOBALS[AA_INC_PATH]."filedit.php3";
     page_close ();
@@ -94,7 +94,7 @@ echo $Msg;
 
 echo $fileman_js;
 
-echo "<form name='fileman' enctype='multipart/form-data' method='post' action='fileman.php3?AA_CP_Session=$AA_CP_Session'>
+echo "<form name='fileman' enctype='multipart/form-data' method='post' action='".$sess->url("fileman.php3")."'>
 <input type=hidden name=cmd>
 <input type=hidden name='fmset[directory]' value='$directory'>";
 
@@ -136,7 +136,7 @@ while (list ($sortk,$col) = each ($sortable_columns)) {
         $img = "";
     }
         
-    echo "<td><a href='fileman.php3?AA_CP_Session=$AA_CP_Session&sort_key=$sortk$so&fmset[directory]=$directory'>" . formatAction($col[label].$img) . "</a></td>";
+    echo "<td><a href='".$sess->url("fileman.php3?sort_key=$sortk$so&fmset[directory]=$directory")."'>" . formatAction($col[label].$img) . "</a></td>";
 }
 if (!$sort_order)
     $sort_order = $sortable_columns[$sort_key]["sort"];

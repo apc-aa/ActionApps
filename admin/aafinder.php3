@@ -69,9 +69,9 @@ if ($go_findview && $findview) {
     echo $db->num_rows()." matching views found:<br>";
     while ($db->next_record()) 
         echo $db->f("id")." (".$db->f("name").") "
-                ."<a href=\"se_view.php3?view_id=".$db->f("id")."&view_type=".$db->f("type")
-                ."&change_id=".unpack_id($db->f("slice_id"))
-                ."&AA_CP_Session=$AA_CP_Session\">"._m("Jump")."</a><br>";
+                ."<a href=\"".$sess->url("se_view.php3?view_id=".$db->f("id")."&view_type=".$db->f("type")
+                ."&change_id=".unpack_id($db->f("slice_id")))
+                ."\">"._m("Jump")."</a><br>";
 }
 
 if ($go_findslice && $findslice) {
@@ -102,20 +102,20 @@ if ($go_findslice && $findslice) {
     echo $db->num_rows()." matching slices found:<br>";
     while ($db->next_record()) 
         echo $db->f("name")." "
-                ."<a href=\"se_fulltext.php3?change_id=".unpack_id ($db->f("id"))
-                ."&AA_CP_Session=$AA_CP_Session\">"._m("Jump")."</a><br>";
+                ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id ($db->f("id")))
+                ."\">"._m("Jump")."</a><br>";
 }
     
 // ------------------------------------------------------------------------------------------
 // SHOW THE PAGE
     
-echo '<FORM name="f_findview" action="aafinder.php3?AA_CP_Session='.$AA_CP_Session.'" method="post">';
+echo '<FORM name="f_findview" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Find all VIEWS containing in any field the string:").'</b><br> 
     <input type="text" name="findview" value="'.$findview.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findview" value="'._m("Go!").'">';
 echo '</FORM><BR>';
 
-echo '<FORM name="f_findslice" action="aafinder.php3?AA_CP_Session='.$AA_CP_Session.'" method="post">';
+echo '<FORM name="f_findslice" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Find all SLICES containing in any field the string:").'</b><br> 
     <input type="text" name="findslice" value="'.$findslice.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findslice" value="'._m("Go!").'">';

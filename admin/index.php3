@@ -408,8 +408,8 @@ function CallLiveCheckbox (controlName) {
     myimg = document.itemsform[controlName];
     myimg.src = "<?php echo $AA_INSTAL_PATH ?>images/cb_2off.gif";
 
-    imgsrc = "<?php echo $AA_INSTAL_PATH ?>live_checkbox.php3?"
-        +controlName+"=1&no_cache="+Math.random()+"&AA_CP_Session=<?php echo $AA_CP_Session ?>";
+    imgsrc = "<?php echo $sess->url ($AA_INSTAL_PATH."live_checkbox.php3") 
+        ?>&"+controlName+"=1&no_cache="+Math.random();
     setTimeout("ChangeImgSrc ('"+controlName+"','"+imgsrc+"')", 1);
 }
 
