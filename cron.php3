@@ -1,5 +1,27 @@
 <?php
-//$Id$
+/**
+ * PHP cron: reads items from database and runs them. The item format is UNIX-cron-like. 
+ * 
+ * DOCUMENTATION: See cron.php3 documentation in {@link http://apc-aa.sourceforge.net/faq/#401 FAQ pages}.
+ * 
+ * UNIX Cron documentation:
+ *<pre>
+ * Field          Allowed Values
+ * -----          --------------
+ * Minute         0-59
+ * Hour           0-23
+ * Day of Month   1-31
+ * Month          1-12, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, 
+ *                nov, dec
+ * Day of Week    0-7, sun, mon, tue, wed, thu, fri, sat (0 and 7 are "sun")
+ * </pre>
+ * A field may be an asterisk (*), which indicates all values in the range are acceptable. Ranges of numbers are allowed, i.e. "2-5" or "8-11", and lists of numbers are allowed, i.e. "1,3,5" or "1,3,8-11". Step values can be represented as a sequence, i.e. "0-59/15", "1-31/3", or "* /2". 
+ *
+ *  @package UserOutput
+ *  @version $Id$
+ *  @author Jakub Adamek <jakubadamek@seznam.cz>
+ *  @copyright Econnect, Jakub Adamek, February 2002
+*/
 /* 
 Copyright (C) 2002 Association for Progressive Communications 
 http://www.apc.org/
@@ -19,30 +41,21 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* PHP cron: reads items from database and runs them. The item format is UNIX-cron-like. 
-   (c) Econnect, Jakub Adamek, February 2002
-   DOCUMENTATION: See cron.php3 documentation in FAQ pages.
-
-UNIX Cron documentation:
-
-Field          Allowed Values
------          --------------
-Minute         0-59
-Hour           0-23
-Day of Month   1-31
-Month          1-12, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, 
-               nov, dec
-Day of Week    0-7, sun, mon, tue, wed, thu, fri, sat (0 and 7 are "sun")
-
-A field may be an asterisk (*), which indicates all values in the range are acceptable. Ranges of numbers are allowed, i.e. "2-5" or "8-11", and lists of numbers are allowed, i.e. "1,3,5" or "1,3,8-11". Step values can be represented as a sequence, i.e. "0-59/15", "1-31/3", or "* /2". 
-*/
-
+/** APC-AA configuration file */
 require "./include/config.php3";
+/** Main include file for using session management function on page */
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
+/** Defines class for inserting and updating database fields */
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 
-// you may call cron with specified timestamp to simulate the behavior 
 
+/** 
+ * Runs the items from the cron table if their time has come.
+ * You may call cron with specified timestamp to simulate the behavior.
+ * DOCUMENTATION: See cron.php3 documentation in {@link http://apc-aa.sourceforge.net/faq/#401 FAQ pages}.
+ * @param int $time the UNIX timestamp to simulate behaviour on a given date 
+ *                  - if omitted, uses the current time
+ */
 function cron ($time = 0) {
 
     global $debug;

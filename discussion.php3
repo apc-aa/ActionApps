@@ -1,5 +1,11 @@
 <?php
-//$Id$
+/**
+ * View discussions, parse search conditions (conds[discussion] array)
+ * @package UserOutput
+ * @version $Id$
+ * @author 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+*/
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
@@ -19,9 +25,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// view discussions, parse search conditions (conds[discussion] array)
-
-# handle with PHP magic quotes - quote the variables if quoting is set off
+/** 
+ * Handle with PHP magic quotes - quote the variables if quoting is set off 
+ * @param mixed $val the variable or array to quote (add slashes)
+ * @return mixed the quoted variables (with added slashes)
+ */
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -44,7 +52,9 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v); 
 }
 
-
+/**
+ * PutSearchLog
+ */
 function PutSearchLog ()
 {
     global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $HTTP_REMOTE_USER,
@@ -64,14 +74,23 @@ function PutSearchLog ()
     VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
 }
 
+/** APC-AA configuration file */
 require "./include/config.php3";
+/** Defines simplified class for page scroller */
 require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
+/** Set of usefull functions used on most pages */
 require $GLOBALS[AA_INC_PATH]."util.php3";
+/**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
 require $GLOBALS[AA_INC_PATH]."item.php3";
+/** parses view settings, gets view data and other functions */
 require $GLOBALS[AA_INC_PATH]."view.php3";
+/** discussion utility functions */
 require $GLOBALS[AA_INC_PATH]."discussion.php3";
+/** defines PageCache class used for caching informations into database */
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+/** functions for searching and filtering items */
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
+/** Main include file for using session management function on page */
 require $GLOBALS[AA_INC_PATH]."locsessi.php3";    # DB_AA object definition
 
 add_vars();

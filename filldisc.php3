@@ -1,5 +1,27 @@
 <?php 
-//$Id$
+/**
+ * filldisc.php3 - writes a discussion item into the discussion table
+ * expected parameters (usually from a HTML form):
+ *          $d_item_id
+ *          $d_parent_id
+ *          $d_subject
+ *          $d_author
+ *          $d_e_mail
+ *          $d_body
+ *          $d_state
+ *          $d_flag
+ *          $d_free1
+ *          $d_free2
+ *          $d_url_address
+ *          $d_url_description
+ * 
+ * date and remote address(IP) of client is set by script.
+ *
+ * @package UserInput
+ * @version $Id$
+ * @author 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+*/
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
@@ -19,25 +41,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# filldisc.php3 - writes one discussion items into discussion table
 
-# expected
-#          $d_item_id
-#          $d_parent_id
-#          $d_subject
-#          $d_author
-#          $d_e_mail
-#          $d_body
-#          $d_state
-#          $d_flag
-#          $d_free1
-#          $d_free2
-#          $d_url_address
-#          $d_url_description
-  
-# date and remote address(IP) of client is set by script.
-
-# handle with PHP magic quotes - quote the variables if quoting is set off
+/** 
+ * Handle with PHP magic quotes - quote the variables if quoting is set off 
+ * @param mixed $val the variable or array to quote (add slashes)
+ * @return mixed the quoted variables (with added slashes)
+ */
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -60,13 +69,21 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v); 
 }
 
+/** APC-AA configuration file */
 require "./include/config.php3";
+/** Main include file for using session management function on a page */
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
+/** Set of useful functions used on most pages */
 require $GLOBALS[AA_INC_PATH]."util.php3";
+/** Defines class for inserting and updating database fields */
 require $GLOBALS[AA_INC_PATH]."varset.php3";
+/** discussion utility functions */
 require $GLOBALS[AA_INC_PATH]."discussion.php3";
+/** defines PageCache class used for caching informations into database */
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+/** defines class that prints the items (news, discussions, calendar...) */
 require $GLOBALS[AA_INC_PATH]."itemview.php3";
+/**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
 require $GLOBALS[AA_INC_PATH]."item.php3";
 
 $err["Init"] = "";       // error array (Init - just for initializing variable)

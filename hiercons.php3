@@ -1,5 +1,18 @@
 <?php
-//$Id$
+/**
+ * Script for hierarchical constants
+ *
+ * params: 
+ *  $varname - name of the select box with selected constants, defaults to "hiercons"
+ *  $param - like in Field Input Type "hierarchical constants" but preceded with "group_name:"
+ *          minimum is just "group_name"
+ *  $lang_file - name of language file to be used, defaults to "en_news_lang.php3"
+ *
+ * @package UserOutput
+ * @version $Id$
+ * @author 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+*/
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
@@ -19,21 +32,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# script for hierarchical constants
-/* params: 
-    $varname - name of the select box with selected constants, defaults to "hiercons"
-    $param - like in Field Input Type "hierarchical constants" but preceded with "group_name:"
-            minimum is just "group_name"
-    $lang_file - name of language file to be used, defaults to "en_news_lang.php3"
-*/
-
+/** APC-AA constant definitions */
 require "./include/constants.php3";
 if (!$lang_file || !$LANGUAGE_FILES[$lang_file]) 
     $lang_file = "en_news_lang.php3";
 require "./include/$lang_file";
-
+/** APC-AA configuration file */
 require "./include/config.php3";
+/** Main include file for using session management function on a page */
 require "./include/locsess.php3";
+/** Set of useful functions used on most pages */
 require "./include/util.php3";
 require "./include/formutil.php3";
 require "./include/itemfunc.php3";

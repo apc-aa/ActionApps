@@ -1,5 +1,19 @@
 <?php
-//$Id$
+/**
+ * Does what??
+ *
+ * Parameters:
+ * <pre>
+ * expected  type      // = fed  - go to item, where the item is fed from
+ * expected  sh_itm    // id of item
+ * optionaly url       // show found item on url (if not specified, the url is
+ *                     // taken from slice
+ * </pre>
+ * @package UserOutput
+ * @version $Id$
+ * @author Honza Malik <honza.malik@ecn.cz>
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+*/                      
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
@@ -19,13 +33,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# Parameters:
-# expected  type      // = fed  - go to item, where the item is fed from
-# expected  sh_itm    // id of item
-# optionaly url       // show found item on url (if not specified, the url is
-                      // taken from slice
-
-# handle with PHP magic quotes - quote the variables if quoting is set off
+/** 
+ * Handle with PHP magic quotes - quote the variables if quoting is set off 
+ * @param mixed $val the variable or array to quote (add slashes)
+ * @return mixed the quoted variables (with added slashes)
+ */
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -48,8 +60,11 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v); 
 }
 
+/** APC-AA configuration file */
 require "./include/config.php3";
+/** Set of useful functions used on most pages */
 require $GLOBALS[AA_INC_PATH]. "util.php3";
+/** Main include file for using session management function on a page */
 require $GLOBALS[AA_INC_PATH]. "locsess.php3";
 
 if( !$sh_itm )
@@ -97,6 +112,9 @@ go_url(con_url($url,"sh_itm=$item"));
 
 /*
 $Log$
+Revision 1.4  2002/12/18 13:32:14  drifta
+Just changes in comments - moving to phpdoc style.
+
 Revision 1.3  2002/06/17 22:09:19  honzam
 removed call-time passed-by-reference variables in function calls; better variable handling if magic_qoutes are not set (no more warning displayed)
 

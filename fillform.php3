@@ -1,5 +1,49 @@
 <?php 
-// $Id$
+/* 
+ *  Uses a combination of JavaScript and PHP to fill values in anonymous posting
+ *  forms and searchforms.	
+ *	
+ *	Params:
+ *		my_item_id .. long ID of the item
+ *		fillConds=1 .. generates the fillConds code (otherwise, generate fillForm code)
+ *		notrun=1 .. doesn't run the JavaScript function
+ *		form=formname .. look for the controls in the form formname. If not set, will use 'f'.
+ *	
+ *	This script contains two similar functions:
+ *	
+ *	fillForm is used on anonymous posting forms
+ *	fillConds is used on search forms 
+ *
+ *	<h1>Function fillForm</h1>
+ *	
+ *   Prints a JavaScript function which refills form fields with values from database
+ *   
+ *   you must supply the var $my_item_id with the item id, and that item must have
+ *   ITEM_FLAG_ANONYMOUS_EDITABLE set
+ *   
+ *   Works well with HTML - Plain text radio buttons and with Dates represented by 3 select boxes
+ *   
+ *   <h1>Function fillConds</h1>
+ *
+ *   Prints a JavaScript function which refills form fields with name conds[][] with 
+ *	 previous values
+ *
+ *   uses the array conds and function setControlOrAADate - see fillformutils to get a feel
+ *   about which form control types are supported (most of them are)
+ *
+ *   special feature: array dateConds may contain names of textfields which are 
+ *   dates represented by 3 select boxes in the way of AA. E.g. by fillConds:
+ *
+ *   dateConds[3]="mydate" means:
+ *   
+ *   conds[3][value] is a date in some strtotime format, mydate_day is the select
+ *   box cotaining day, mydate_month contains month, mydate_year contains year 
+ *   
+ * @package UserInput
+ * @version $Id$
+ * @author Jakub Adamek <jakubadamek@seznam.cz>
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+*/ 
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
@@ -19,64 +63,31 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* 
-	Created by Jakub Adamek, January 2002
-	
-	Params:
-		my_item_id .. long ID of the item
-		fillConds=1 .. generates the fillConds code (otherwise, generate fillForm code)
-		notrun=1 .. doesn't run the JavaScript function
-		form=formname .. look for the controls in the form formname. If not set, will use 'f'.
-	
-	This script contains two similar functions:
-	
-	fillForm is used on anonymous posting forms
-	fillConds is used on search forms 
+if (!isset ($form)) $form = "f";
 
-	<h1>Function fillForm</h1>
-	
-   Prints a JavaScript function which refills form fields with values from database
-   
-   you must supply the var $my_item_id with the item id, and that item must have
-   ITEM_FLAG_ANONYMOUS_EDITABLE set
-   
-   Works well with HTML - Plain text radio buttons and with Dates represented by 3 select boxes
-   
-   <h1>Function fillConds</h1>
-
-   Prints a JavaScript function which refills form fields with name conds[][] with 
-	 previous values
-
-   uses the array conds and function setControlOrAADate - see fillformutils to get a feel
-   about which form control types are supported (most of them are)
-
-   special feature: array dateConds may contain names of textfields which are 
-   dates represented by 3 select boxes in the way of AA. E.g. by fillConds:
-
-   dateConds[3]="mydate" means:
-   
-   conds[3][value] is a date in some strtotime format, mydate_day is the select
-   box cotaining day, mydate_month contains month, mydate_year contains year 
-   
-*/
-
-	if (!isset ($form)) $form = "f";
-?>
-
-<?php
 $encap = ( ($encap=="false") ? false : true );
 
+/** APC-AA configuration file */
 require "./include/config.php3";
+/** Defines simplified class for page scroller */
 require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
+/** Set of useful functions used on most pages */
 require $GLOBALS[AA_INC_PATH]."util.php3";
+/**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
 require $GLOBALS[AA_INC_PATH]."item.php3";
+/** parses view settings, gets view data and other functions */
 require $GLOBALS[AA_INC_PATH]."view.php3";
+/** defines PageCache class used for caching informations into database */
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+/** functions for searching and filtering items */
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
+/** discussion utility functions */
 require $GLOBALS[AA_INC_PATH]."discussion.php3";
+/** Defines class for inserting and updating database fields */
 require $GLOBALS[AA_INC_PATH]."varset.php3";
-
+/** Main include file for using session management function on an encapsulated (.shtml) page */
 if ($encap) require $GLOBALS[AA_INC_PATH]."locsessi.php3";
+/** Main include file for using session management function on a page */
 else require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
 
 page_open(array("sess" => "AA_SL_Session"));
@@ -102,16 +113,13 @@ $varset = new Cvarset();
 $itemvarset = new Cvarset();
 
 add_vars();
-?>
 
-<?php 
-/* gives JavaScript filling the AA date 3 selectboxes
+
+/* * * * * * * * * * * FILL CONDS * * * * * * * * * */
+/** gives JavaScript filling the AA date 3 selectboxes
 	params: $mydate .. UNIX timestamp
 			$dateField .. field name
 */
-
-/* * * * * * * * * * * FILL CONDS * * * * * * * * * */
-
 function fillConds () {
 	global $form, $conds, $dateConds;
     global $conds_not_field_names;  

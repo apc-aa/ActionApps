@@ -1,6 +1,15 @@
 <?php
-  # Shortcut for alerts/index.php3 to make the URL shorter
-  # Params: $id = confirmation ID, $l = language, $ss = stylesheet URL
+/**
+ * Shortcut for alerts/index.php3 to make the URL shorter
+ * URL params: $id = confirmation ID, $l = language, $ss = stylesheet URL
+ * 
+ * @package UserOutput
+ * @version $Id$
+ * @author 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+*/
+/** redirect */
+
   $self = $HTTP_SERVER_VARS['PHP_SELF'];
   $i = strlen ($self) - 1;
   while ($self[$i] != "/") $i --;

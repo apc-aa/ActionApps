@@ -1,5 +1,23 @@
 <?php
-//$Id$
+/**
+ * Script for submitting items anonymously, without accessing the admin interface
+ *
+ * Parameters (usually from a HTML form):
+ * <pre>
+ *   slice_id     - id of slice into which the item is added
+ *   notvalidate  - if true, data input validation is skipped
+ *   ok_url       - url where to go, if item is successfully sored in database
+ *   err_url      - url where to go, if item is not sored in database (due to
+ *                  validation of data, ...)
+ *   force_status_code - you may add this to force to change the status code
+ *                       but the new status code must always be higher than bin2fill
+ *                       setting (you can't add to the Active bin, for example)
+ * </pre>
+ * @package UserInput
+ * @version $Id$
+ * @author 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+*/
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
@@ -19,19 +37,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# script for anonymous filling
-
-# Parameters:
-#   slice_id     - id of slice into which the item is added
-#   notvalidate  - if true, data input validation is skipped
-#   ok_url       - url where to go, if item is successfully sored in database
-#   err_url      - url where to go, if item is not sored in database (due to
-#                  validation of data, ...)
-#   force_status_code - you may add this to force to change the status code
-#                       but the new status code must always be higher than bin2fill
-#                       setting (you can't add to the Active bin, for example)
-
-# handle with PHP magic quotes - quote the variables if quoting is set off
+/** 
+ * Handle with PHP magic quotes - quote the variables if quoting is set off 
+ * @param mixed $val the variable or array to quote (add slashes)
+ * @return mixed the quoted variables (with added slashes)
+ */
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -54,17 +64,31 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v); 
 }
 
+/** APC-AA configuration file */
 require "./include/config.php3";
+/** Main include file for using session management function on a page */
 require $GLOBALS[AA_INC_PATH]."locsess.php3";
+/** Set of useful functions used on most pages */
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
+/** Defines class for inserting and updating database fields */
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
+/** utility for notifying people of events by email */
 require $GLOBALS[AA_INC_PATH]."notify.php3";
+/** defines PageCache class used for caching informations into database */
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+/** date helper functions */
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
+/**
+ * Outputs a notification page when an error occurs.
+ * If the err_url parameter is passed, redirects to the specified URL,
+ * and passes $txt as the URL parameter named "err".
+ * else generates an error page with the $txt message.
+ * @param string $txt error message to print
+ */
 function SendErrorPage($txt) {
   if( $GLOBALS["err_url"] ) {
     go_url( con_url($GLOBALS["err_url"], "err=".substr(serialize($txt),0,200)));
@@ -78,6 +102,11 @@ function SendErrorPage($txt) {
   exit;
 }  
 
+/**
+ * Loads a page if posting is successful. If the ok_url parameter is passed,  
+ * redirects to the specified URL, else returns to the calling page.
+ * @param string $txt looks like it isn't used?!
+ */
 function SendOkPage($txt) {
   if( $GLOBALS["ok_url"] )
     go_url($GLOBALS["ok_url"]);
