@@ -162,50 +162,56 @@ function DeBackslash($txt) {
 function add_vars($query_string="", $debug="") {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
 
-    $vars = explode("&",$varstring);
-  
-    while (list($temp,$var) = each ($vars)) {
-        $var = urldecode (DeBackslash($var));
-        $pos = strpos($var, "=");
-        if(!$pos)
-            continue;
-
-        $lvalue = substr($var,0,$pos);
-        $value  = substr($var,$pos+1);
-        $arrindex = strstr ($lvalue,'[');
-        if (!$arrindex) {
-            $GLOBALS[$lvalue]= $value;   # normal variable
-            continue;
-        }    
-        
-        # array variable
-        unset($indexes);
-        $lindex = "";
-        $lvalue = substr ($lvalue, 0, strpos ($lvalue,'['));
-        // are we inside some [] brackets?
-        
-        while( strpos('x'.$arrindex, '[')==1 AND          # correct array index
-               ($end = strpos($arrindex, ']'))) {         #  = no == !!
-            $indexes[] = substr( $arrindex, 1, $end-1 );  # extract just index
-            $arrindex = substr( $arrindex, $end+1 );      # next index
+    // there is problem (at least with $QUERY_STRING_UNESCAPED), when 
+    // param=a%26a is returned as param=a\\&a and not param=a%26a
+    // taht's why we can escape \\& string
+    $vars = split_escaped ('&', $varstring, '\\\\&');
+    
+    if( isset($vars) AND is_array($vars) ) {
+        reset($vars);
+        while (list($temp,$var) = each ($vars)) {
+            $var = urldecode (DeBackslash($var));
+            $pos = strpos($var, "=");
+            if(!$pos)
+                continue;
+    
+            $lvalue = substr($var,0,$pos);
+            $value  = substr($var,$pos+1);
+            $arrindex = strstr ($lvalue,'[');
+            if (!$arrindex) {
+                $GLOBALS[$lvalue]= $value;   # normal variable
+                continue;
+            }    
+            
+            # array variable
+            unset($indexes);
+            $lindex = "";
+            $lvalue = substr ($lvalue, 0, strpos ($lvalue,'['));
+            // are we inside some [] brackets?
+            
+            while( strpos('x'.$arrindex, '[')==1 AND          # correct array index
+                   ($end = strpos($arrindex, ']'))) {         #  = no == !!
+                $indexes[] = substr( $arrindex, 1, $end-1 );  # extract just index
+                $arrindex = substr( $arrindex, $end+1 );      # next index
+            }
+            reset($indexes);
+            while( list(,$v) = each($indexes) ) {
+                # add apostrophs for textual indexed
+                $first = substr($v,0,1);                      # first letter
+                if( $first!='"' AND 
+                    $first!="'" AND 
+                    strlen($v) != strspn($v,'0123456789') )   # [] and [12] allowed
+                    $lindex .= "['$v']";
+                 else
+                    $lindex .= "[$v]";
+            }
+            $evalcode = '$'.$lvalue.$lindex."=\$value;";
+            if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
+                global $$lvalue;
+                eval ($evalcode);
+            }
         }
-        reset($indexes);
-        while( list(,$v) = each($indexes) ) {
-            # add apostrophs for textual indexed
-            $first = substr($v,0,1);                      # first letter
-            if( $first!='"' AND 
-                $first!="'" AND 
-                strlen($v) != strspn($v,'0123456789') )   # [] and [12] allowed
-                $lindex .= "['$v']";
-             else
-                $lindex .= "[$v]";
-        }
-        $evalcode = '$'.$lvalue.$lindex."=\$value;";
-        if ($in == 0 && ereg ("[A-Z0-9_.]*", $lvalue)) {
-            global $$lvalue;
-            eval ($evalcode);
-        }
-    }
+    }    
     return count ($vars);
 }
 
