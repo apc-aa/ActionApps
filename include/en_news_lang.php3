@@ -316,8 +316,8 @@ define("L_ADMIN", "Admin");
 define("L_NO_PS_NEW_USER", "No permission to create new user");
 define("L_ALL_GROUPS", "All Groups");
 define("L_USERS_GROUPS", "User's Groups");
-define("L_REALY_DELETE_USER", "Are you sure to delete selected user from whole permission system?");
-define("L_REALY_DELETE_GROUP", "Are you sure to delete selected group from whole permission system?");
+define("L_REALY_DELETE_USER", "Are you sure you want to delete selected user from whole permission system?");
+define("L_REALY_DELETE_GROUP", "Are you sure you want to delete selected group from whole permission system?");
 define("L_TOO_MUCH_GROUPS", "Too much groups found.");
 define("L_NO_GROUPS", "No groups found");
 define("L_GROUP_NAME", "Name");
@@ -345,7 +345,7 @@ define("L_FIELD_PRIORITY", "Priority");
 define("L_FIELD_TYPE", "Type");
 define("L_CONSTANTS", "Constants");
 define("L_DEFAULT", "Default");
-define("L_DELETE_FIELD", "Do you realy want to delete this field from this slice?");
+define("L_DELETE_FIELD", "Do you really want to delete this field from this slice?");
 define("L_FEEDED", "Fed");
 define("L_HTML_DEFAULT", "HTML coded as default");
 define("L_HTML_SHOW", "Show 'HTML' / 'plain text' option");
@@ -366,7 +366,7 @@ define("", "");
 define("L_FIELD_DELETE_OK", "Field delete OK");
 
 define("L_WARNING_NOT_CHANGE","<p>WARNING: Do not change this setting if you are not sure what you do!</p>");
-define("L_INPUT_SHOW_FUNC_F_HLP","Function used for displaying in inputform. For some types you can use parameters, which follows.");
+define("L_INPUT_SHOW_FUNC_F_HLP","Function used for displaying in inputform. For some types you can use parameters, which follow.");
 define("L_INPUT_SHOW_FUNC_C_HLP","Constants used with Select or Radio input function.");
 define("L_INPUT_SHOW_FUNC_HLP","If input-type is Text Area, this is number of rows.");
 define("L_INPUT_DEFAULT_F_HLP","Which function should be used as default:<BR>Now - default is current date<BR>User ID - current user ID<BR>Text - default is text in Parameter field<br>Date - as default is used current date plus <Parameter> number of days");
@@ -479,7 +479,7 @@ define("L_A_SLICE_ADD_HELP", "To create the new Slice, please choose a template.
         The new slice will inherit the template's default fields.  
         You can also choose a non-template slice to base the new slice on, 
         if it has the fields you want."); 
-define("L_REMOVE_HLP", "Removes epmty brackets etc. Use ## as delimeter.");
+define("L_REMOVE_HLP", "Removes empty brackets etc. Use ## as delimeter.");
 
 define("L_COMPACT_HELP", "Use these boxes ( and the tags listed below ) to control what appears on summary page");
 define("L_A_FULLTEXT_HELP", "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item");
@@ -489,9 +489,9 @@ define("L_PLAIN_TEXT", "Plain text");
 define("L_A_DELSLICE", "Admin - Delete Slice");
 define("L_DELSLICE_TIT", L_A_DELSLICE);
 define("L_DELSLICE_HDR", "Select slice to delete");
-define("L_DEL_SLICE_HLP","<p>You can delete only slices, which is matched as &quot;<b>deleted</b>&quot; on &quot;<b>". L_SLICE_SET ."</b>&quot; page.</p>");
+define("L_DEL_SLICE_HLP","<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>". L_SLICE_SET ."</b>&quot; page.</p>");
 define("L_A_DELSLICE", L_DELSLICE_TIT);
-define("L_DELETE_SLICE", "Do you realy want to delete this slice and all its fields and all its items?");
+define("L_DELETE_SLICE", "Do you really want to delete this slice and all its fields and all its items?");
 define("L_NO_SLICE_TO_DELETE", "No slice marked for deletion");
 define("L_NO_SUCH_SLICE", "Bad slice id");
 define("L_NO_DELETED_SLICE", "Slice is not marked for deletion");
@@ -501,7 +501,7 @@ define("L_FEED_STATE", "Feeding mode");
 define( "L_STATE_FEEDABLE", "Feed" );
 define( "L_STATE_UNFEEDABLE", "Do not feed" );
 define( "L_STATE_FEEDNOCHANGE", "Feed locked" );
-define( "L_INPUT_FEED_MODES_HLP", "Should be the content of this field copied to another slice if it is fed?");
+define( "L_INPUT_FEED_MODES_HLP", "Should the content of this field be copied to another slice if it is fed?");
 
 // not appended to other lang files
 //define("", "");
@@ -510,6 +510,9 @@ define( "L_INPUT_FEED_MODES_HLP", "Should be the content of this field copied to
 
 /*
 $Log$
+Revision 1.34  2001/03/30 06:17:44  keb
+Spelling and minor grammar corrections to english text constant strings.
+
 Revision 1.33  2001/03/20 16:10:37  honzam
 Standardized content management for items - filler, itemedit, offline, feeding
 Better feeding support
