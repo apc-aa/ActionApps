@@ -58,26 +58,28 @@ function GetHidden($itemform_id) {
 }
 */
 
-function CloseDialog($zid = null, $openervar = null) {
+function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null) {
     global $tsp; // defined in constants.php3
     // Used for adding item to another slice from itemedit's popup.
     $js = '';
     if ($zid) {               // id of new item defined
         // now we need to fill $item in order we can display item headline
-        $content = new ItemContent($zid);
-        $slice   = new slice($content->getSliceID());
-        $aliases = $slice->aliases();
+        $content  = new ItemContent($zid);
+        $slice    = new slice($content->getSliceID());
+        $aliases  = $slice->aliases();
         DefineBaseAliases($aliases, $content->getSliceID());  // _#JS_HEAD, ...
-        $item    = new item($content->getContent(),$aliases);
-        $item->setformat( "SelectRelations('$openervar','".$tps['AMB']['A']['tag']."','".$tps['AMB']['A']['prefix']."','".$tps['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
+        $item     = new item($content->getContent(),$aliases);
+        $function = $insert ? 'SelectRelations' : 'UpdateRelations';
+        $item->setformat( "$function('$openervar','".$tps['AMB']['A']['tag']."','".$tps['AMB']['A']['prefix']."','".$tps['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
 
         $js = ' // variables for related selection
                 var maxcount = '. MAX_RELATED_COUNT .';
                 var relmessage = "'._m("There are too many related items. The number of related items is limited.") .'";
-                '. $item->get_item() . '
-                window.close();';
+                '. $item->get_item() ."\n";
     }
-    FrmHtmlPage(array('body'=> getFrmJavascriptFile('javascript/manager.js').  // for SelectRelations
+    $js .= ($url2go ? "document.location = '$url2go';\n" : "window.close();\n");
+
+    FrmHtmlPage(array('body'=> getFrmJavascriptFile('javascript/inputform.js').  // for SelectRelations
                                getFrmJavascript($js)));
 }
 
@@ -100,8 +102,9 @@ QuoteVars("post", array('encap'=>1) );  # if magicquotes are not set, quote vari
 //     only this script accepts r_hidden variable
 //     - if it don't match - unset($r_hidden) (see init_page.pgp3)
 
-if ( $ins_preview ) { $insert = true; }
-if ( $upd_preview ) { $update = true; }
+if ( $ins_preview ) { $insert = true; $preview=true; }
+if ( $upd_preview ) { $update = true; $preview=true; }
+
 
 $add = !( $update OR $cancel OR $insert OR $edit );
 
@@ -162,15 +165,18 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
 
     if (count($err) <= 1) {
         page_close();
+        if ( $preview ) {
+            $preview_url = con_url(get_admin_url("preview.php3"), "slice_id=$slice_id&sh_itm=$id&return_url=$return_url");
+        }
         if ($anonymous) { // anonymous login
             go_url( $r_slice_view_url, '', $encap );
-        } elseif ($ins_preview OR $upd_preview) {
-            go_url( con_url($sess->url(self_base() .  "preview.php3"), "slice_id=$slice_id&sh_itm=$id"));
         } elseif ($return_url=='close_dialog') {
             // Used for adding item to another slice from itemedit's popup.
-            CloseDialog(new zids($id, 'l'), $openervar);
+            CloseDialog(new zids($id, 'l'), $openervar, $insert, $preview_url);
             page_close();
             exit;
+        } elseif ($preview) {
+            go_url( $preview_url );
         } else {
             go_return_or_url(self_base() . "index.php3",1,1);
         }
