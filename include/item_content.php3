@@ -59,11 +59,12 @@ class ItemContent {
         $this->content = $content4id;
     }
 
-    // Set by unpacked item ID
+    // Set by item ID (zid or unpacked or short)
     function setByItemID ($item_id, $ignore_reading_password = false) {
         if ( !$item_id ) return false;
-        $this->content = GetItemContent($item_id, false, $ignore_reading_password);
-        $this->content = is_array($this->content) ? reset($this->content) : null;
+        $zid           = ((get_class($item_id)=='zids') ? $item_id : new zids($item_id));
+        $content       = GetItemContent($zid);
+        $this->content = is_array($content) ? reset($content) : null;
     }
 
     function is_empty() {

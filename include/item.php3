@@ -25,6 +25,7 @@ if( file_exists( $GLOBALS["AA_INC_PATH"]."usr_aliasfnc.php3" ) ) {
 
 require_once $GLOBALS["AA_INC_PATH"]. "math.php3";
 require_once $GLOBALS["AA_INC_PATH"]. "stringexpand.php3";
+require_once $GLOBALS["AA_INC_PATH"]. "item_content.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/links/constants.php3";
 
 if ( !is_object($contentcache) ) {
@@ -223,15 +224,14 @@ function Inputform_url($add, $iid, $sid, $ret_url, $vid='') {
 
 /** Creates item object just from item id and fills all necessary structures
  * @param         id        - an item id, unpacked or short
+ *                          - could be also ZID - then $use_short_ids is ignored
  * @param boolean short_ids - indicating type of $ids (default is false => unpacked)
  */
-function GetItemFromId($id, $use_short_ids=false) {
-   if (isset($id) && ($id != "-")) {
-        $content = GetItemContent($id, $use_short_ids);
-        $slice_id = unpack_id128($content[$id]["slice_id........"][0]['value']);
-        list($fields,) = GetSliceFields($slice_id);
-        $aliases = GetAliasesFromFields($fields);
-        return new item($content[$id],$aliases);
+function GetItemFromId($id, $use_short_ids='aa_guess') {
+    if (isset($id) && ($id != "-")) {
+        $content = new ItemContent($id);
+        $slice   = new slice($content->getSliceID());
+        return new item($content->getContent(),$slice->aliases());
     }
     return false;
 }
