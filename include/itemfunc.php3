@@ -172,10 +172,10 @@ function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
     $varset->clear();
     if( $field["text_stored"] ) {
         // do not store empty values in content table for text_stored fields
-        if ( !$value['value'] ) {
-            return false;
-        }
+        // if ( !$value['value'] ) { return false; }    // can't do it, conditions do not work then (ecn joblist)
         $varset->add("text", "quoted", $value['value']);
+        // set "TEXT stored" flag
+        $varset->add("flag", "number", (int)$value['flag'] | FLAG_TEXT_STORED );
         if (is_numeric($additional["order"])) {
             $varset->add("number", "quoted", $additional["order"]);
         } else {
@@ -183,16 +183,14 @@ function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
         }
     } else {
         $varset->add("number", "quoted", $value['value']);
+        // clear "TEXT stored" flag
+        $varset->add("flag",   "number", (int)$value['flag'] & ~FLAG_TEXT_STORED );
     }
-    $varset->add("flag", "quoted", $value['flag']);
-//    echo "<br>aditional: $additional <br />";;
 
     // insert item but new field
     $varset->add("item_id", "unpacked", $item_id);
     $varset->add("field_id", "quoted", $field["id"]);
     $SQL =  "INSERT INTO content" . $varset->makeINSERT();
-
-//    huhl("<br>aditional:", $additional, $SQL);
 
     $db = getDB();
     $db->tquery( $SQL );

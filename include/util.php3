@@ -835,15 +835,19 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     $db->tquery($SQL);
 
     while( $db->next_record() ) {
-        if ($use_short_ids)
-             $fooid = $translate[unpack_id128($db->f("item_id"))];
-        else $fooid = unpack_id128($db->f("item_id"));
 
-        $content[$fooid][$db->f("field_id")][] =
-            $item_permitted [$db->f("item_id")]
-            ? array( "value"=>( ($db->f("text")=="") ? $db->f("number") : $db->f("text")),
-                     "flag"=> $db->f("flag") )
-            : array( "value" => _m("Error: Missing Reading Password"));
+        $fooid = ($use_short_ids ? $translate[unpack_id128($db->f("item_id"))] :
+                                   unpack_id128($db->f("item_id")) );
+
+        if ( !$item_permitted[$db->f("item_id")] ) {
+            $content[$fooid][$db->f("field_id")][0] = array( "value" => _m("Error: Missing Reading Password"));
+            continue;
+        }
+
+        // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
+        $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
+        $content[$fooid][$db->f("field_id")][] = array( "value" => $db->f($db_field),
+                                                        "flag"  => $db->f("flag") );
     }
 
     // slice_id... and id... is packed  - add unpacked variant now

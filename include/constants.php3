@@ -282,12 +282,12 @@ $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "8"   => LOG_EVENTS_);
 
 /** content table flags */
-define( "FLAG_HTML",    1 );   // content is in HTML
-define( "FLAG_FEED",    2 );   // item is fed
-define( "FLAG_FREEZE",  4 );   // content can't be changed
-define( "FLAG_OFFLINE", 8 );   // off-line filled
-define( "FLAG_UPDATE", 16 );   // content should be updated if source is changed
-                               //   (after feeding)
+define( "FLAG_HTML",         1 );   // content is in HTML
+define( "FLAG_FEED",         2 );   // item is fed
+define( "FLAG_FREEZE",       4 );   // content can't be changed
+define( "FLAG_OFFLINE",      8 );   // off-line filled
+define( "FLAG_UPDATE",      16 );   // content should be updated if source is changed (after feeding)
+define( "FLAG_TEXT_STORED", 64 );   // value is stored in the text field (and not number field of content table) (added 05/15/2004)
 
 /** item table flags (numbers - just to be compatible with content table) */
 define( "ITEM_FLAG_FEED",                2 );   // item is fed
