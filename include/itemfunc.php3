@@ -106,6 +106,7 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
   }
 
   if( $field[in_item_tbl] ) {
+    // Mitra thinks that this might want to be 'expiry_date.....'
     if( ($field[in_item_tbl] == 'expiry_date') && 
         (date("Hi",$value['value']) == "0000") )
       $value['value'] = mktime(23,59,59,date("m",$value['value']),date("d",$value['value']),date("Y",$value['value']));
