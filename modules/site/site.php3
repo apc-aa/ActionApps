@@ -73,7 +73,9 @@ trace("=","site.php3","precachecheck");
 
 # create keystring from values, which exactly identifies resulting content
 # 25June03 - Mitra - added post2shtml into here, maybe should add all URL?
-$key_str = $apc_state['state'].":".$site_id.":".$post2shtml_id;
+# 25Sept03 - Honza - all apc_state is serialized instead of just 
+#      $apc_state['state'] (we store browser agent in state in kormidlo.cz)
+$key_str = serialize($apc_state).":".$site_id.":".$post2shtml_id;
 if( is_array($slices4cache) && !$nocache && ($res = $GLOBALS[pagecache]->get($key_str)) ) {
   echo $res;
   if( $debug ) {

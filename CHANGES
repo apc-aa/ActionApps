@@ -1,5 +1,27 @@
-notuploaded - fixed bug in importing slices when used hex coding
-(mitra) 
+09/29/03 - related items now are displayed in user defined order (user can
+(honzam)   easily move related items up and down by arrows - it must be allowed
+           in "Field-setting -> Intut type"
+         - feeding improvements:
+           1) Through VALUE (in 'Mapping' page) you can specify not only new
+              value, but you can write there also any AA expression, which is
+              unaliased - example:
+              <a href="{source_href.....}">{source..........}</a>
+           2) You can specify, which items should be fed and which not. It is
+              done by 1) (probably {switch()..} statement) for status_code.....
+              field (1=Active, 2=Holding, 3=Trash, 4=Do not fed)
+         - discussions under item can be posted to a mail (probably
+           mailinglist). It is not new, but now you can use e-mail template for
+           it (just like in Alerts) and use any discussion alias
+           (like _#SUBJECT_) in e-mail's body or subject. Setting is the same
+           as with view, but the template number is prefixed by "t" letter
+           (like: t21:our-l@list.org.cz).
+           Older approach (through discussion view) is deprecated.
+         - cache content identifier for site module is extended to whole $apc
+           variable (not only state), so you can use browser identification
+           in $apc, now
+         - hitCount is not updated so offten (for better database perfomance)
+??/??/?? - notuploaded - fixed bug in importing slices when used hex coding
+(mitra)
 09/25/03 - Changes to summarize and related changes to se_inputform
 09/23/03 - added possibility to get constant name (and other informations) from
 (honzam)   constants value in unaliasing. The syntax is
