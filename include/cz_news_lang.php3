@@ -263,6 +263,7 @@ define("L_FLT_FROM", "Z");
 define("L_FLT_TO", "Do");
 define("L_FLT_CATEGORIES", "Kategorie");
 define("L_ALL_CATEGORIES", "Všechny kategorie");
+define("L_FLT_NONE", "Není vybrána žádná vstupní kategorie!");
 define("L_THE_SAME", "-- stejná --");
 
 define("L_IMP_EXPORT_Y", "Zasílání povoleno");
@@ -543,6 +544,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.5  2000/07/17 13:40:11  kzajicek
+Alert box when no input category selected
+
 Revision 1.4  2000/07/17 12:29:56  kzajicek
 Language changes
 

@@ -136,19 +136,22 @@ function DisableClick(cond,what) {
 
 function UpdateFilters(slice_id, import_id) {
   var url = "<?php echo $sess->url(self_base() . "se_filters2.php3")?>"
+  var done = 0
   url += "&slice_id=" + slice_id
   url += "&import_id=" + import_id
   if((typeof document.f.all_categories == 'undefined') ||   // no import cats
      (ChBoxState('document.f.all_categories'))) {
+    done = 1
     if( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
       url += "&all=1&C=" + escape(SelectValue('document.f.categ_0'))
       url += "-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
     } else {
       url += "&all=1&C=0-" + (ChBoxState('document.f.approved_0') ? 1 : 0)
     }
-  }else{
+  } else {
     for (var i = 1; i <= <?php echo $imp_count?>; i++) {
       if(ChBoxState('document.f.chbox_'+i)) {
+        done = 1
         if ( <?php echo (( isset($to_categories) AND is_array($to_categories)) ? 1 : 0 ) ?> ) {
            url += "&T%5B%5D=" + escape(SelectValue('document.f.categ_'+i))
         } else {
@@ -159,7 +162,11 @@ function UpdateFilters(slice_id, import_id) {
       }  
     }    
   }  
-  document.location=url
+  if (done == 0) {
+    alert ( "<?php echo L_FLT_NONE ?>" )
+  } else {
+    document.location=url
+  }
 }  
 // -->
 </SCRIPT>
@@ -240,6 +247,9 @@ while($db->next_record()) {
 }  
 /*
 $Log$
+Revision 1.3  2000/07/17 13:40:11  kzajicek
+Alert box when no input category selected
+
 Revision 1.2  2000/07/14 14:09:04  kzajicek
 Fixed faulty behaviour caused by nonexistent in or out categories.
 

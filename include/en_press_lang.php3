@@ -246,6 +246,7 @@ define("L_FLT_TO", "To");
 define("L_FLT_APPROVED", "Approved");
 define("L_FLT_CATEGORIES", "Categories");
 define("L_ALL_CATEGORIES", "All Categories");
+define("L_FLT_NONE", "No From category selected!");
 define("L_THE_SAME", "-- The same --");
 define("L_IMP_EXPORT_Y", "Export enable");
 define("L_IMP_EXPORT_N", "Export disable");
@@ -527,6 +528,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.6  2000/07/17 13:40:11  kzajicek
+Alert box when no input category selected
+
 Revision 1.5  2000/07/17 12:29:56  kzajicek
 Language changes
 
