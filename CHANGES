@@ -1,3 +1,7 @@
+12/25/03 - allow setting status_code in filler.php3
+(mitra)  - safer password checking in filler without text_password
+         - more improvements to summarize copy field etc
+         - created admin/console.php3 (commented in include/menu_aa.php3)
 12/05/03 - allowed for contenttype parameter to set text/xml (mitra)
 12/04/03 - fixed mime type of RSS view (mitra)
 12/03/03 - fixed bug in filler.php3 - not shown fields with apostrph now works

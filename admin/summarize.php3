@@ -119,13 +119,13 @@ function editslicefields($sid) {
 }
 
 function url_slicefieldcopy($field) {
-    global $AA_CP_Session;
-    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid&slicefieldcopy=$field\"> -> </a>";
+    global $AA_CP_Session,$nearest;
+    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$nearest&slicefieldcopy=$field\"> -> </a>";
 }
 
 function url_copyfield($field) {
-    global $AA_CP_Session;
-    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid&copyfield=$field\"> Copy Field </a>";
+    global $AA_CP_Session,$nearest;
+    return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$nearest&copyfield=$field\"> Copy Field </a>";
 }
 function url_showfield($field) {
     global $AA_CP_Session;
@@ -390,6 +390,7 @@ function setnr() {
  $nr[$calendar] = $newstemplate;
  $nr[$blog] = $newstemplate;
  $nr[$faq] = $blog;
+ $nr["074f14863bd4cd348baf901f762d7a9b"] = $directory;
 // Events
  $nr["aefcbfdbe065cf09d6dd51753c7c0a97"] = $blogfaq;
  $nr["6b509741ed05cbd59f9a708ed817996a"] = $calendar;
