@@ -50,10 +50,19 @@ require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 if (!FilemanPerms($auth, $slice_id)) 
     MsgPageMenu ("index.php3", _m("No permissions for file manager."), "admin:fileman");
 
+// FILEMAN_BASE_DIR defined in config.php3
+if (!is_dir (FILEMAN_BASE_DIR))
+    MsgPageMenu ("index.php3", 
+    _m("Unable to run File Manager")." '" . FILEMAN_BASE_DIR . "' "
+    ._m("doesn't exist"), "admin:fileman");
+
 $basedir = FILEMAN_BASE_DIR.$fileman_dir;
 
 if (!is_dir ($basedir) && !file_exists ($basedir))
-    mkdir ($basedir, $FILEMAN_MODE_DIR);
+    if (!mkdir ($basedir, $FILEMAN_MODE_DIR))
+        MsgPageMenu("index.php3", 
+        _m("Unable to mkdir")." '".$basedir."'", "admin:fileman");
+
   
 if (IsSuperadmin()) {
     $basedir = FILEMAN_BASE_DIR;

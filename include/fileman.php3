@@ -178,7 +178,7 @@ function get_file_array ($path, $dirname) {
 
 function file_table ($path, $dirname)
 {
-    global $AA_CP_Session;
+    global $sess;
     global $directory;
 
     $files = get_file_array ($path, $dirname);
