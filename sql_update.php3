@@ -220,6 +220,7 @@ $SQL_create_tmp_tables[] = "
      to_slice_id char(16) NOT NULL,
      to_field_id char(16) NOT NULL,
      flag int(11),
+     value mediumtext,
      KEY from_slice_id (from_slice_id, to_slice_id)
   )";
   
@@ -907,6 +908,9 @@ echo '<h2>Update OK</h2>';
 
 /*
 $Log$
+Revision 1.7  2001/08/21 18:12:51  honzam
+fixed bug of missing value field in feedmap table
+
 Revision 1.6  2001/07/09 18:02:57  honzam
 removed not used database credentials
 
