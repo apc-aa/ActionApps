@@ -65,10 +65,13 @@ Function:
 return the query string variable( as specified in the field settings) as default value
 */      
 // Begin Ram's Code
+/*
+  this should be changed - we can't display any global variable to any sliceadmin
+  code commented out until fixed to display just the variables needed.
 function default_fnc_variable($param) {
-  # this should be changed - we can't display any global variable to any sliceadmin
   return ($GLOBALS[$param]);
 }
+*/
 // End of Rams Code
 # ----------------------- insert functions ------------------------------------
 
@@ -628,8 +631,22 @@ function show_fnc_freeze_tpr($varname, $field, $value, $param, $html) {
   FrmStaticText($field['name'], $value[0]['value']);
 }
 
+# Easy to redefine this functionality by changing the array below
+# prefix is what goes in the selection box in "Edit Item", 
+# tag is what goes on the front of the id as stored in the database
+# str is the string to display in the Related Items window
+# Note that A M B are hard-coded in the Related Items Window param wizard, 
+# but any letters can be used, i.e. this table can be extended.
+# Next step might be to extend parameter recognition to load this table
+# Retaining backward compatability with "[AMB]+" recognition
+    global $tp;
+    $tp = array (
+      A => array ( prefix => '>> ', tag => 'x', str => _m("Add") ),
+      M => array ( prefix => '<> ', tag => 'y', str => _m("Add&nbsp;Mutual") ),
+      B => array ( prefix => '<< ', tag => 'z', str => _m("Backward") ) );
+
 function show_fnc_iso($varname, $field, $value, $param, $html) {
-  global $db;
+  global $db, $debug, $tp;
 
   if (!empty($param))
     list($constgroup, $selectsize, $mode, $design) = explode(':', $param);
@@ -642,10 +659,8 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
    else
     return;                              # wrong - there must be slice selected
 
-  # hard coded tag prefixes, see also in related_sel.php3
-  $tagprefix = array("x" => '>> ', 'y' => '<> ', 'z' => '<< ');
 
-  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids",$tagprefix);
+  $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids",$tp);
   FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid, $mode,
           $design, $field[required], $field[input_help], $field[input_morehlp]);
 }

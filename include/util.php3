@@ -455,14 +455,14 @@ function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
 		print("<listing>");
 		print_r($a);
 		if (isset($b)) print_r($b);
-		if (isset($c)) print($c);
-		if (isset($d)) print($d);
-		if (isset($e)) print($e);
-		if (isset($f)) print($f);
-		if (isset($g)) print($g);
-		if (isset($h)) print($h);
-		if (isset($i)) print($i);
-		if (isset($j)) print($j);
+		if (isset($c)) print_r($c);
+		if (isset($d)) print_r($d);
+		if (isset($e)) print_r($e);
+		if (isset($f)) print_r($f);
+		if (isset($g)) print_r($g);
+		if (isset($h)) print_r($h);
+		if (isset($i)) print_r($i);
+		if (isset($j)) print_r($j);
 		print("</listing>\n");
 	}
 }
@@ -688,8 +688,9 @@ function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
 
 # fills array by headlines of items in specified slice (unpacked_id => headline)
 # $tagprefix is array as defined in itemfunc.php3
-function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $zids="", 
-    $type="all", $tagprefix=null) {
+function GetItemHeadlines( $db, $sid="", $slice_field="headline........", 
+    $zids="", $type="all", $tagprefix=null) {
+    global $debug;
   $psid = q_pack_id( $sid );
   $time_now = time();
   if ($slice_field=="") $slice_field="headline.";

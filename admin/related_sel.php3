@@ -100,23 +100,11 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
                                              ?>" );
   }    
 
-  // See also tagprefix in itemfunc.php3
-  function SelectRelation(item_id, headline) {
+function SelectRelations(tag, prefix, taggedid, headline) {
     AddSelectOption( 'window.opener.document.inputform.elements["<?php echo $var_id ?>"]', 
-                     '>> ' + headline, item_id ) // item_id begins with foo 'x'
+                prefix + headline, taggedid); 
   }
 
-  function SelectRelation2Way(item_id, headline) {
-    AddSelectOption( 'window.opener.document.inputform.elements["<?php echo $var_id ?>"]', 
-                     '<> ' + headline, ReplaceFirstChar( item_id , 'y' ))
-  }                                             // item_id begins with foo 'y'
-                                                // which flags 2way relation  
-
-  function SelectRelationBack(item_id, headline) {
-    AddSelectOption( 'window.opener.document.inputform.elements["<?php echo $var_id ?>"]', 
-                     '<< ' + headline, ReplaceFirstChar( item_id , 'z' ))
-  }                                             // item_id begins with foo 'z'
-                                                // which flags backward relation  
 // -->
 </SCRIPT>
 </head> <?php
@@ -150,18 +138,14 @@ $sort[] = array ( $r_r_admin_order => $r_r_admin_order_dir);
 
 $zids=QueryZIDs($fields, $r_sid, $conds, $sort, "", $bin_condition);
 
+global $tp;  # Defined in itemfunc.php3
+
 # mode - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
 if( !$mode )
   $mode='AMB';
 for( $i=0; $i<strlen($mode); $i++) {
-  switch( substr($mode,$i,1) ) {
-    case 'A': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelation('x_#ITEM_ID_','_#HEADLINE')\">". _m("Add") ."</a>&nbsp;";
-              break;
-    case 'M': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelation2Way('x_#ITEM_ID_','_#HEADLINE')\">". _m("Add&nbsp;mutual") ."</a>&nbsp;";
-              break;
-    case 'B': $mode_string .= "&nbsp;<a href=\"javascript:SelectRelationBack('x_#ITEM_ID_','_#HEADLINE')\">". _m("Backward") ."</a>&nbsp;";
-              break;
-  }
+    $m1 = substr($mode,$i,1);
+    $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('".$tp[$m1][tag]."','".$tp[$m1][prefix]."','".$tp[$m1][tag]."_#ITEM_ID_','_#HEADLINE')\">". $tp[$m1][str] ."</a>&nbsp;";
 }   
 
 

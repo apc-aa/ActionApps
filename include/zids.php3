@@ -233,7 +233,7 @@ class zids {
         if ($this->type != "t") return false;
         $tags = array();
         while ( list(,$v) = each($this->a)) {
-            if (ereg("(.*)([0-9a-f]{24..32})",$v,$parts))
+            if (preg_match('/^(.*?)([0-9a-f]{24,32})$/',$v,$parts))
                 $tags[$parts[2]] = $parts[1]; # Note can be empty
             else
                 print("Cant parse tagged id '$v' - tell Mitra");
@@ -242,7 +242,7 @@ class zids {
     }
 
     # Restore tags in array, by looking for ids in zids2
-    # Return resulting array
+    # Return resulting new zids
     # Reasonably efficent, only loops through each array once
     function retag($zids) {
         if ($debug) huhl("Retagging zids=",$zids);
@@ -298,7 +298,7 @@ function guesstype($str) {
 # This version is ONLY for 128 bit ids.
 function pack_id128($unpacked_id){
     global $errcheck;
-    if ($errcheck && !preg_match("/^[0-9a-f]{24..32}$/", $unpacked_id)) # Note was + instead {32}
+    if ($errcheck && !preg_match("/^[0-9a-f]{24,32}$/", $unpacked_id)) # Note was + instead {32}
         huhe("Warning: trying to pack $unpacked_id.<br>\n");
   return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
 }
@@ -308,7 +308,7 @@ function unpack_id128($packed_id){
   if( (string)$packed_id == "0" )
     return "0";
   $foo=bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
-  if ($errcheck && !preg_match("/^[0-9a-f]{24..32}$/", $foo)) # Note was + instead {32}
+  if ($errcheck && !preg_match("/^[0-9a-f]{24,32}$/", $foo)) # Note was + instead {32}
     huhe("Warning: unpacked id to $foo..<br>\n");
   return (string)$foo;
 }
@@ -339,7 +339,7 @@ function id_t2l(&$str) {
             return null;
         }
         #TODO: Look online for quicker way to substr last 32 chars - mitra
-        if (ereg("(.*)([0-9a-f]{32})",$str,$parts))
+        if (preg_match('/^(.*?)([0-9a-f]{24,32})$/',$str,$parts))
                 return $parts[2];
         print("Unable to parse tagged id '$str' - tell mitra");
 }
