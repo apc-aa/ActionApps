@@ -295,6 +295,11 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   FrmStaticText(L_ID, $slice_id);
   FrmInputText("name", L_SLICE_NAME, $name, 99, 25, true);
   FrmInputText("slice_url", L_SLICE_URL, $slice_url, 254, 25, false);
+  $ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
+  echo "<TR><TD colspan=2>" . L_SLICE_HINT . "<BR><pre>" . 
+       "&lt;!--#include virtual=&quot;" . $ssiuri .
+     "?slice_id=" . $slice_id . "&quot;--&gt;</pre></TD></TR>";
+
   FrmInputSelect("owner", L_OWNER, $slice_owners, $owner, false);
   if( !$owner ) {
     FrmInputText("new_owner", L_NEW_OWNER, $new_owner, 99, 25, false);
@@ -324,6 +329,10 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.16  2001/02/26 12:22:30  madebeer
+moved hint on .shtml to slicedit
+changed default item manager design
+
 Revision 1.15  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 

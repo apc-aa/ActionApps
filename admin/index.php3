@@ -381,22 +381,17 @@ echo '<input type=hidden name=feed2slice value="">';  // array of comma delimete
 echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
 echo '</form></center>';
 
-echo L_ICON_LEGEND;
-echo L_SLICE_HINT;
-
-$ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
-
-echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
-     "?slice_id=" . $slice_id . "&quot;--&gt;</pre>
-
-  </body>
-</html>";
+  echo L_ICON_LEGEND . "</body></html>";
 
   $$st_name = $st;   // to save the right scroller 
   page_close();
 
 /*
 $Log$
+Revision 1.16  2001/02/26 12:22:30  madebeer
+moved hint on .shtml to slicedit
+changed default item manager design
+
 Revision 1.15  2001/02/25 08:33:40  madebeer
 fixed some table formats, cleaned up admin headlines
 
