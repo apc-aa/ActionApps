@@ -1236,7 +1236,7 @@ function gfd_error ($x) {
     i.e. "2.3.2002" is parsed the same as "2/3/2002" or even "2;3#2002". */
 function get_formatted_date ($datestring, $format) {
     // don't work with empty string
-    if (!$datestring) return 0;
+    if (!$datestring) return "";
     
     // Split the date into parts consisting only of digits or only of letters
     for ($i = 0; $i < strlen ($datestring); $i++) {
