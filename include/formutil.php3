@@ -674,7 +674,7 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
         return true;
       $err["$variableName"] = MsgErr(L_ERR_IN." $inputName (".L_ERR_LOGLEN.")");                   
       return false; 
-    case "filename": if( !EReg("^[0-9a-zA-Z_]*$", $variable)) {
+    case "filename": if( !EReg("^[0-9a-zA-Z_]+$", $variable)) {
                        $err[$variableName] = MsgErr(L_ERR_IN." $inputName");
                        return false;
                      }
