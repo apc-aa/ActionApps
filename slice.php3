@@ -231,8 +231,7 @@ if( !$slice_info[even_odd_differ] )
   $slice_info[even_row_format] = "";
 
 if (!$encap)
-  Page_HTML_Begin("iso-8859-1", $slice_info[name] );  // TODO codepage
-
+  Page_HTML_Begin(DEFAULT_CODEPAGE, $slice_info[name] );  // TODO codepage
 
 # big search form -------------------------------------------------------------
 
@@ -454,6 +453,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.22  2001/06/05 08:59:23  honzam
+default codepage for slice not hard-coded now - moved to *_common_lang
+
 Revision 1.21  2001/06/03 15:51:59  honzam
 new short_id for item (and new x parameter to slice.php3 script) for shorter item urls
 

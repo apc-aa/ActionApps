@@ -1,260 +1,137 @@
 td {font-size: 12;} 
-
 td.scroller {background: #a0a0a0;} 
-
 td.scrhead {font-weight: bold;} 
 
-
-
 body { margin-left: 4px;
-
        background: #F5F0E7;
-
 }
-
-
 
 SELECT {  
-
   font-family: Arial, Helvetica, sans;
-
   font-size: 10pt;
-
  }
-
-
 
 INPUT, TEXTAREA {  
-
   font-family: Arial, Helvetica, sans;
-
   font-size: small;
-
  }
-
-
 
 TEXTAREA {  
-
   font-family: Arial, Helvetica, sans;
-
   font-size: small;
-
  }
-
  
-
 H1 {
-
   font-family: Arial, Helvetica, sans;
-
   font-size: medium;
-
   margin-left: 20px;  
-
 }
-
-
 
 .navbar {
-
 	font-family: Arial, Helvetica, sans;
-
 	font-size: small;
-
   background: #EBDABE;
-
 	color: #584011;
-
 }
-
-
 
 .nbmenu {
-
 	font-family: Arial, Helvetica, sans;
-
 	font-size: small;
-
   background: #F5F0E7;
-
 	color: #584011;
-
 }
-
-
 
 .nbenable {
-
 	font-family: Arial, Helvetica, sans;
-
 	font-size: small;
-
   background: #F5F0E7;
-
 	color: #4A4A4A;
-
 }
-
-
 
 .nbdisable {
-
 	font-family: Arial, Helvetica, sans;
-
 	font-size: small;
-
   background: #F5F0E7;
-
 	color: #EBDABE;
-
 }
-
-
 
 .example {
-
 	font-family: Courier, sans-serif;
-
 	font-size: small;
-
 }
-
-
 
 .slicehead {
-
 	font-family: Arial, Helvetica, sans;
-
 	font-size : 13pt;
-
 	color: #584011;
-
 	font-weight : bold;
-
   background: #EBDABE;
-
 }
-
-
 
 .leftmenu  {
-
   font-family: Arial, Helvetica, sans;
-
   font-size: small;
-
   color: #4A4A4A;
-
 }
-
-
 
 .leftmenuy  {
-
   font-family: Arial, Helvetica, sans;
-
   font-size: small;
-
   color: #4A4A4A;
-
   text-decoration: none;
-
 }
-
-
 
 .leftmenun  {
-
 	font-family: Arial, Helvetica, sans;
-
 	font-size: small;
-
 	color: #F5F0E7;
-
 	text-decoration: none;
-
 }
-
-
 
 .tabtit {
-
   font-family: Arial, Helvetica, sans;
-
   font-size: small;
-
   color: #FFFFFF;
-
 }
-
-
 
 .tabtxt {
-
   font-family: Arial, Helvetica, sans;
-
   font-size: small;
-
 }
-
-
 
 .tabhlp {
-
   font-family: Arial, Helvetica, sans;
-
   font-size: small;
-
 }
-
-
 
 .taberr {
-
   color: red;
-
 }
-
-
 
 .notpubl {
-
   color: blue;
-
 }
-
-
 
 .expired {
-
   color: red;
-
 }
-
-
-
 
 
 .err {
-
   font-family: Arial, Helvetica, sans;
-
   font-size: small;
-
   color: red;
-
 }
-
-
 
 .okmsg {
-
   font-family: Arial, Helvetica, sans;
-
   font-size: small;
-
   color: green;
-
 }
 
+.copymsg {
+       background: #213F21;
+       font-family: Verdana, Arial, Helvetica, sans-serif;
+       font-size: 8pt;
+       color: #999999;
+}

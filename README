@@ -5,10 +5,47 @@ APC Action Applications
 Action Applications (under the GPL) provide easy automated publishing for
 non-profit WWW sites and 'Usenet-like' sharing of articles between sites.
 
-This software is not ready for use yet. It is being actively developed.
+News
+====
+06/04/2001 - stable v1.8.0 of APC ActionApps released
+
+Features
+========
+- Complete web publishing system: no HTML skills required 
+- Fully online service: all you need is a web browser 
+- Article manager: all features packed into one browser-based control panel 
+- Configurable output: make ActionApps look like your web site 
+- Moderation tools: share the load of posting articles online 
+- Content Pooling: Swap content with other ActionApps users on same server 
+- Classify articles using built-in categories (or create your own) 
+- Search engine included 
+- Multilingual support: English, Spanish and Czech included (easy to add new languages) 
+
+
+Main new features from v1.6 
+===========================
+- item can be categorised to more than one category 
+- it is posible to create more than two slice views 
+- it is possible to display more slices on one page 
+- new databse migrating script for easy insall & reinstall 
+- shorter item urls (ids) 
+- item view statictics 
+- spanish language support 
+- multiple image uploading to one item 
+- annonymous posting of items improved 
+- feeding and feed field mapping 
+- color profiles 
+- many bug fixed 
+
+Update
+======
+To upgrade database form v >1.5 use /sql_update.php3 script.
+
 
 Contact
 =======
+See http://www.apc.org/actionapps/ for more info about APC-AA
+
 See http://sourceforge.net/projects/apc-aa/ for 
 
   list of developers
@@ -19,8 +56,11 @@ See http://sourceforge.net/projects/apc-aa/ for
   support manager for help with installation
 
 $Log$
-Revision 1.1  2000/06/21 18:39:48  madebeer
-Initial revision
+Revision 1.2  2001/06/05 08:59:23  honzam
+default codepage for slice not hard-coded now - moved to *_common_lang
+
+Revision 1.1.1.1  2000/06/21 18:39:48  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1  2000/06/14 16:10:45  madebeer
 added packing files

@@ -1,3 +1,9 @@
+06/05/01 - default codepage for slice not hardcoded now - moved to *_common_lang
+         - minor changes in design (new logo and some colors)
+         - updated README to reflect v1.8
+--------------------
+06/04/01 - v1.8.0
+--------------------
 06/01/01 - multiple categories (multiple values at all) for item now works
          - new item view statistics field (displayed_count) in item table 
            (normal field, so you can view it, sort by it, make conditions ...)

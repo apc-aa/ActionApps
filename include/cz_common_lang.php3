@@ -141,6 +141,10 @@ define( "L_DELETE_WDDX"," Smazat ");
 define( "L_COPYRIGHT", 'Copyright (C) 2001 the 
 						<a href="http://www.apc.org">Association for Progressive  Communications (APC)</a>'); 
                    
+define("DEFAULT_CODEPAGE","windows-1250");
+
+
+
 // tranformation from english style datum (3/16/1999 or 3/16/99) to timestamp
 // break year for short year description is 1970
 function userdate2sec ($dttm, $time="") {
@@ -159,6 +163,9 @@ function dateExample() {
 
 /*
 $Log$
+Revision 1.17  2001/06/05 08:58:02  honzam
+default codepage for slice not hard-coded now - moved to *_common_lang
+
 Revision 1.16  2001/05/29 21:05:07  honzam
 copyright + new logo
 

@@ -146,6 +146,10 @@ define( "L_COPYRIGHT", 'Copyright (C) 2001 the
 						under the 
 						<a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>'); 
 
+define("DEFAULT_CODEPAGE","iso-8859-1");
+
+
+            
 // transformación de estilo de fecha (3/16/1999 o 3/16/99) a formato de mySQL 
 function userdate2sec ($dttm, $time="") {
   if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $dttm, $part))
@@ -164,6 +168,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.4  2001/06/05 08:58:02  honzam
+default codepage for slice not hard-coded now - moved to *_common_lang
+
 Revision 1.3  2001/05/29 21:05:07  honzam
 copyright + new logo
 

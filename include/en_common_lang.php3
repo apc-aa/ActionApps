@@ -142,6 +142,9 @@ define( "L_COPYRIGHT", 'Copyright (C) 2001 the
 						under the 
 						<a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>'); 
 
+define("DEFAULT_CODEPAGE","iso-8859-1");
+
+            
 # ------------------- New constants (not in other lang files ------------------
 
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
@@ -163,6 +166,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.19  2001/06/05 08:58:02  honzam
+default codepage for slice not hard-coded now - moved to *_common_lang
+
 Revision 1.18  2001/05/29 21:05:07  honzam
 copyright + new logo
 
