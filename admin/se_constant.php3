@@ -298,13 +298,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
                                              "value" => _m("Delete whole group"),
                                              "add" => 'onclick="deleteWholeGroup();"'),
                         "deleteGroup" => array("value" => "0"),
-                        "group_id" => array ("value" => $group_id),
-                        "categ" => array ("value" => $categ),
                         "return_url"=>array("value"=>$return_url),
                         "fid"=>array("value"=>$fid));
 
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+ <input type=hidden name="group_id" value="<?php echo $group_id; /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
+ <input type=hidden name="categ" value="<?php echo $categ;       /* the same as above for group_id */ ?>">
 <?php
 
   // load the HIERARCHICAL EDITOR
