@@ -4663,8 +4663,8 @@ $_m["Please try again!"]
   = "Vã rog încercaþi din nou!";
 
 # include/loginform.inc, row 54
-$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>."]
-  = "Dacã sunteþi sigur cã aþi introdus parola corectã, trimiteþi un e-mail la <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>.";
+$_m["If you are sure you have typed the correct password, please e-mail <a href=\"mailto:%1\">%1</a>."]
+  = "Dacã sunteþi sigur cã aþi introdus parola corectã, trimiteþi un e-mail la <a href=\"mailto:%1\">%1</a>.";
 
 # include/menu.php3, row 59
 # include/.#menu.php3.1.32, row 57

@@ -4625,8 +4625,8 @@ $_m["Please try again!"]
   = "¡Intente otra vez!";
 
 # include/loginform.inc, row 54
-$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>."]
-  = "Si Usted está seguro que tecleo bien su clave de acceso, por favor contacte a <a href=mailto:pep@colnodo.org.co>pep@colnodo.org.co</a>.";
+$_m["If you are sure you have typed the correct password, please e-mail <a href=\"mailto:%1\">%1</a>."]
+  = "Si Usted está seguro que tecleo bien su clave de acceso, por favor contacte a <a href=\"mailto:%1\">%1</a>.";
 
 # include/menu.php3, row 59
 # include/.#menu.php3.1.32, row 57

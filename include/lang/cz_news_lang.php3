@@ -4659,11 +4659,11 @@ $_m["Please try again!"]
   = "Zkuste to znovu, prosÌm!<br>Please try again!";
 
 # include/loginform.inc, row 54
-$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>."]
+$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>."]
   = "Pokud jste si jisti, ûe zad·v·te spr·vnÈ jmÈno a heslo, obraùte se prosÌm \n\n"
-   ."     na <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.\n\n"
+   ."     na <a href=\"mailto:%1\">%1</a>.\n\n"
    ."     <br>If you are sure you have typed the correct password, please e-mail \n\n"
-   ."     <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.";
+   ."     <a href=\"mailto:%1\">%1</a>.";
 
 # include/menu.php3, row 59
 # include/.#menu.php3.1.32, row 57

@@ -3,9 +3,9 @@ bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".DEFAULT_LANG_INCLUDE);
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 
 // we are inside the function - so the variables defined in constants.php3 are
-// not global - we need $LANGUAGE_CHARSETS for HTMLPageBegin() 
+// not global - we need $LANGUAGE_CHARSETS for HTMLPageBegin()
 $GLOBALS["LANGUAGE_CHARSETS"] = $LANGUAGE_CHARSETS;
-HTMLPageBegin(); 
+HTMLPageBegin();
 
  ?>
   <title>Login form</title>
@@ -19,14 +19,14 @@ HTMLPageBegin();
 </center>
 <?php
  $qs= eregi_replace( "\&relogin=true","",$this->url());
- $qs= eregi_replace( "relogin=true","",$qs);  
-?> 
+ $qs= eregi_replace( "relogin=true","",$qs);
+?>
 <form action="<?php echo $qs ?>" method=post>
 <center><table border=0 bgcolor="<?php echo COLOR_TABBG ?>" cellspacing=0 cellpadding=4>
  <tr valign=top align=left>
   <td><?php echo _m("Username:") ?></td>
   <td><input type="text" name="username"
-  value="<?php if (isset($this->auth["uname"])) 
+  value="<?php if (isset($this->auth["uname"]))
                      htmlspecialchars(print $this->auth["uname"]); ?>"
   size=16 maxlength=32><br><small><?php echo _m("Type your username or mail") ?></small></td>
  </tr>
@@ -46,12 +46,12 @@ HTMLPageBegin();
  <table>
   <tr align=center>
    <td><font color=red><b><?php echo _m("Either your username or your password is not valid.") ?></b></font></td>
-  </tr>   
-  <tr align=center>  
+  </tr>
+  <tr align=center>
    <td><?php echo _m("Please try again!") ?></td>
   </tr>
-  <tr align=center>   
-   <td><?php echo _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>.") ?></td>
+  <tr align=center>
+   <td><?php echo _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>.", array(ERROR_REPORTING_EMAIL)) ?></td>
   </tr>
  </table>
 
