@@ -25,20 +25,57 @@ http://www.apc.org/
 
 # Write log entry
 function writeLog($event, $params="" ) {
-  global $db, $auth, $LOG_EVENTS;
+    global $db, $auth, $LOG_EVENTS;
   
-  $params = addslashes($params);
+    $params = addslashes($params);
   
-  $SQL = "INSERT into log SET time='". time() ."', 
-                              user='". $auth->auth["uid"] ."',
-                              type='$event',
-                              params='$params'";
-  $db->query($SQL);
+    $SQL = "INSERT into log SET time='". time() ."', 
+                                user='". $auth->auth["uid"] ."',
+                                type='$event',
+                                params='$params'";
+    $db->query($SQL);
 }
 
-function getLogEvents($event, $from="", $to="", $group_by_param=false) {
-
+# get events from log
+# event - type of event
+# from - events from date
+# to - events to date
+# group_by_params - if true, returns events grouped by params and their count as count
+# delete_old_logs - 
+function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_old_logs=false) {
+	global $db;
+	
+	$time = time();
+	
+    // if "to" isn't set, we use time of query, because of saving log entries
+    // written in (and after) query
+	if ($to == "") { $to = $time; }
+	
+	if ($group_by_param) {
+	    $SQL = "SELECT *,COUNT(*) AS count FROM log WHERE type='$event'";
+	    if ($from) { $SQL .= " AND time >= '$from'"; }
+	    if ($to) { $SQL .= " AND time <= '$to'";}
+	    $SQL .= " GROUP BY params";
+	} else {
+	    $SQL = "SELECT * FROM log WHERE type='$event'";
+	    if ($from) { $SQL .= " AND time >= '$from'"; }
+	    if ($to) { $SQL .= " AND time <= '$to'"; }
+	    // $SQL .= "ORDER BY TIME";
+	}
+	
+	$return = GetTable2Array($SQL, $db);
+	
+    // remove old log entries from table
+	if ($delete_old_logs) {
+	    $SQL = "DELETE FROM log WHERE type='$event'";
+	    if ($from) { $SQL .= " AND time >= '$from'"; }
+	    if ($to) { $SQL .= " AND time <= '$to'"; }
+	    $db->query($SQL);
+    }
+		
+	return $return;
+	
 }
-    
+
 
 ?>
