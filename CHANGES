@@ -1,3 +1,33 @@
+04/01/02 - added language constants for profiles, notifications.
+         - updated some aliases functions
+         - new hidefulltext parameter for slice (good for discussion)
+12/18/01 - scripts are now "magic_quotes" independent - no matter how it is set
+         - new user profile feature
+         - new possibility to join fields when fields are fed to another slice
+         - new alias for displaying matched items count _#ID_COUNT
+         - new WYSIWYG richtext editor for inputform (IE5+)
+         - new notification e-mail possibility (notify new item in slice, bins)
+         - fixed bug of not displayed items in admin interface (bug in scroller)
+         - database conversion script (v1.2.x -- 1.5+) /misc/oldDb2Db
+         - added possibility to fill multiple values to one field by offline 
+           filling
+         - added empty row to selectbox for selectin no related item, if the 
+           field is not required (in inputform)
+         - fixed file upload problem in PHP >= 4.0.3  
+         - new import functions for importing CSV files (/misc/file2slice/)
+12/12/01 - better item table flags setting
+         - better handling newlines in discussion.php3 and f_h alias function
+         - bugfix in f_b alias function
+         - fixed bug of not allowed empty group in LDAP
+         - added possibility to quote queries in c- command in view.php3
+         - better permission setting for discussions administration
+--------------------
+12/05/01 - v2.0.1
+--------------------
+11/26/01 - als parameter parsed in cmd parameter for view.php3
+         - No session add option for itemlink in alias
+         - IE6.0 center bug fix
+         - sort slice/constant in listbox by name
 10/26/01 - new tab2slice_php scripts for data import (thanks to Udo)
 10/24/01 - new parameter wizard for function aliases and input type parameters
          - fixed bug of two listed slices in slice export 
