@@ -217,6 +217,11 @@ function send_mail_from_table_inner($mail_id, $to, $item, $aliases = null) {
             continue;
         }
 
+        // 2 minutes for each 20 e-mails
+        if ( ($sent % 20) == 0 ) {
+            set_time_limit( 120 );
+        }
+
         if (! $GLOBALS["EMAILS_INTO_TABLE"]) {
             #huhl("Sending mail $to");
             if ($mail->send( array($to) )) {
