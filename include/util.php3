@@ -28,7 +28,7 @@ $item_fields_text = array("id", "master_id", "slice_id", "category_id", "languag
 $item_fields_num  = array("status_code", "link_only", "html_formatted", "highlight" );
 
   // list of fields in packed array of shown fields in itemedit.php3
-$itemedit_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_download=>L_IMG_DOWNLOAD );
+$itemedit_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>L_CATEGORY_ID, img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_upload=>L_IMG_UPLOAD );
 
   // list of fields in packed array of shown fields in big_srch.php3
 $shown_search_fields = array( slice=>L_SRCH_SLICE, category=>L_SRCH_CATEGORY, author=>L_SRCH_AUTHOR, language=>L_SRCH_LANGUAGE, from=>L_SRCH_FROM, to=>L_SRCH_TO, headline=>L_SRCH_HEADLINE, abstract=>L_SRCH_ABSTRACT, full_text=>L_SRCH_FULL_TEXT, edit_note=>L_SRCH_EDIT_NOTE);
@@ -263,6 +263,9 @@ function UnpackFieldsToArray($packed, $fields) {
 
 /*
 $Log$
+Revision 1.3  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
 Revision 1.2  2000/07/07 21:36:04  honzam
 Redirection to the same page now support Netscape (in go_url)
 

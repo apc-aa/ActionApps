@@ -143,16 +143,16 @@ if( $insert || $update )
     if( count($err) > 1)
       break;
 
-    if(($img_download <> "none")&&($img_download <> "")){        // see if the file exists downloaded picture;
-      $dest_file = $img_download_name;
-      if( file_exists(IMG_DOWNLOAD_PATH.$img_download_name) )
-        $dest_file = new_id().substr(strrchr($img_download_name, "." ), 0 );
+    if(($img_upload <> "none")&&($img_upload <> "")){        // see if the uploaded picture exists
+      $dest_file = $img_upload_name;
+      if( file_exists(IMG_UPLOAD_PATH.$img_upload_name) )
+        $dest_file = new_id().substr(strrchr($img_upload_name, "." ), 0 );
 
-      if(!copy($img_download,IMG_DOWNLOAD_PATH.$dest_file)){     // copy the file from the temp directory to the upload directory, and test for success
+      if(!copy($img_upload,IMG_UPLOAD_PATH.$dest_file)){     // copy the file from the temp directory to the upload directory, and test for success
         $err["Image"] = L_CANT_UPLOAD;          // error array (Init - just for initializing variable
         break;
       }   
-      $img_src = IMG_DOWNLOAD_URL.$dest_file;
+      $img_src = IMG_UPLOAD_URL.$dest_file;
     }
   
     if( count($err) > 1)
@@ -287,8 +287,11 @@ echo $Msg;
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:57  madebeer
-Initial revision
+Revision 1.2  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
+Revision 1.1.1.1  2000/06/21 18:39:57  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:46  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -390,8 +393,8 @@ also added Id and Log keywords to all .php3 and .inc files
     FrmInputText("img_width", L_IMG_WIDTH, safe($img_width), 254, 60, $needed[img_width]);
   if($show[img_height])
     FrmInputText("img_height", L_IMG_HEIGHT, safe($img_height), 254, 60, $needed[img_height]);
-  if($show[img_download])
-    FrmInputFile("img_download", L_IMG_DOWNLOAD, 40, $needed[img_download]);
+  if($show[img_upload])
+    FrmInputFile("img_upload", L_IMG_UPLOAD, 40, $needed[img_upload]);
   if($show[posted_by])
     FrmInputText("posted_by", L_POSTED_BY, safe($posted_by), 254, 60, $needed[posted_by]);
   if($show[e_posted_by])
@@ -438,7 +441,7 @@ also added Id and Log keywords to all .php3 and .inc files
   <input type=hidden name=last_edit value="<?php echo $last_edit ?>">
   <input type=hidden name=slice_id value="<?php echo $slice_id ?>">
   <input type=hidden name=anonymous value="<?php echo (($free OR $anonymous) ? true : "") ?>">
-  <input type=hidden name="MAX_FILE_SIZE" value="<?php echo IMAGE_DOWNLOAD_MAX_SIZE ?>">
+  <input type=hidden name="MAX_FILE_SIZE" value="<?php echo IMG_UPLOAD_MAX_SIZE ?>">
   </td>
 </tr>
 </table></td></tr>

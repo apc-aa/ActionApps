@@ -24,9 +24,9 @@ http://www.apc.org/
 # must correspond with fileneme in $ActionAppConfig[xxx][file]!!
 define("CONFIG_FILE", "en_press_lang.php3");
 
-define("IMAGE_DOWNLOAD_MAX_SIZE", "400000");    // max size of file in picture downloading
-define("IMG_DOWNLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
-define("IMG_DOWNLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
+define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
+define("IMG_UPLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
+define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
 define("EDITOR_GRAB_LEN", 200);                 // not used, i think
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -167,7 +167,7 @@ define("L_CREATED_BY","Written by");
 define("L_LASTEDIT","Last edited by");
 define("L_AT","at");   
 define("L_EDIT_NOTE","Editor's note"); 
-define("L_IMG_DOWNLOAD","Picture upload"); 
+define("L_IMG_UPLOAD","Picture upload"); 
 
 # aa toolkit specific labels
 define("L_HLP_HEADLINE",'alias for Title');
@@ -525,6 +525,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.4  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
 Revision 1.3  2000/07/07 21:40:36  honzam
 Better words
 

@@ -32,9 +32,9 @@ define("HTML_PAGE_BEGIN",
         type="text/css" title="CPAdminCSS">
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
                
-define("IMAGE_DOWNLOAD_MAX_SIZE", "400000");    // max size of file in picture downloading
-define("IMG_DOWNLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
-define("IMG_DOWNLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
+define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
+define("IMG_UPLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
+define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
 define("EDITOR_GRAB_LEN", 200);                 // not used, i think
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -168,7 +168,7 @@ define("L_CREATED_BY","Autor");
 define("L_LASTEDIT","Naposled editoval");
 define("L_AT","dne");   
 define("L_EDIT_NOTE","Poznámka editora"); 
-define("L_IMG_DOWNLOAD","Uložení obrázku"); 
+define("L_IMG_UPLOAD","Uložení obrázku"); 
 define("L_CANT_UPLOAD","Obrázek nelze uložit"); 
 
 # toolkit aplication dependent labels
@@ -540,6 +540,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
 
 /*
 $Log$
+Revision 1.3  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
 Revision 1.2  2000/07/03 15:00:14  honzam
 Five table admin interface. 'New slice expiry date bug' fixed.
 
