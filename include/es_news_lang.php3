@@ -376,6 +376,7 @@ define("L_INPUT_SHOW_RIO","Botón selección");
 define("L_INPUT_SHOW_DTE","Fecha");
 define("L_INPUT_SHOW_CHB","Selección");
 define("L_INPUT_SHOW_MCH", "Selección múltiple");
+define("L_INPUT_SHOW_MSE", "Caja selección múltiple");
 define("L_INPUT_SHOW_FIL","Archivo");
 define("L_INPUT_SHOW_NUL","No muestre");
                               
@@ -573,6 +574,9 @@ define("L_SITEM_ID_ALIAS",'alias para el "short" Id del ítem');
 
 /*
 $Log$
+Revision 1.5  2001/06/12 16:07:22  honzam
+new feeding modes -  "Feed & update" and "Feed & update & lock"
+
 Revision 1.4  2001/06/03 16:00:49  honzam
 multiple categories (multiple values at all) for item now works
 

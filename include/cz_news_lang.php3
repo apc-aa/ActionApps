@@ -377,6 +377,7 @@ define("L_INPUT_SHOW_RIO","Radio Button");
 define("L_INPUT_SHOW_DTE","Date");
 define("L_INPUT_SHOW_CHB","Check Box");
 define("L_INPUT_SHOW_MCH", "Multiple Checkboxes");
+define("L_INPUT_SHOW_MSE", "Multiple Selectbox");
 define("L_INPUT_SHOW_FIL","File Upload");
 define("L_INPUT_SHOW_NUL","Do not show");
                               
@@ -570,6 +571,9 @@ define("L_SITEM_ID_ALIAS",'alias pro zkrácené èíslo èlánku');
 
 /*
 $Log$
+Revision 1.32  2001/06/12 16:07:22  honzam
+new feeding modes -  "Feed & update" and "Feed & update & lock"
+
 Revision 1.31  2001/06/03 16:00:49  honzam
 multiple categories (multiple values at all) for item now works
 

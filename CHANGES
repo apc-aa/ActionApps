@@ -3,6 +3,7 @@
          - fixed bug in LDAP install documentation
 06/11/01 - feeding improved - new feeding mode "Feed & update" and 
            "Feed & update & lock"
+06/08/01 - new slovak language support sk_*_lang.php3 (by Norbert Brazda)
 06/07/01 - fixed bug of not displayed top and bottom html code for fulltext
 06/05/01 - default codepage for slice not hardcoded now - moved to *_common_lang
          - minor changes in design (new logo and some colors)

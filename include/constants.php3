@@ -88,6 +88,7 @@ $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
                                 "dte" => L_INPUT_SHOW_DTE, 
                                 "chb" => L_INPUT_SHOW_CHB, 
                                 "mch" => L_INPUT_SHOW_MCH,
+                                "mse" => L_INPUT_SHOW_MSE,
                                 "fil" => L_INPUT_SHOW_FIL,
                                 "nul" => L_INPUT_SHOW_NUL);
                               
@@ -140,18 +141,24 @@ define( "FLAG_HTML", 1 );
 define( "FLAG_FEED", 2 );
 define( "FLAG_FREEZE", 4 );
 define( "FLAG_OFFLINE", 8 );
+define( "FLAG_UPDATE", 16 );
 
 # states of feed field of field table
 define( "STATE_FEEDABLE", 0 );
 define( "STATE_UNFEEDABLE", 1 );
 define( "STATE_FEEDNOCHANGE", 2 );
+define( "STATE_FEEDABLE_UPDATE",3);
+define( "STATE_FEEDABLE_UPDATE_LOCKED",4);
 
 # relation table flags
 define( "REL_FLAG_FEED", 2 );    # 2 - just to be compatible with content table
 
 $INPUT_FEED_MODES = array ( STATE_FEEDABLE => L_STATE_FEEDABLE,
                             STATE_UNFEEDABLE => L_STATE_UNFEEDABLE,
-                            STATE_FEEDNOCHANGE => L_STATE_FEEDNOCHANGE);
+                            STATE_FEEDNOCHANGE => L_STATE_FEEDNOCHANGE,
+                            STATE_FEEDABLE_UPDATE => L_STATE_FEEDABLE_UPDATE,
+                            STATE_FEEDABLE_UPDATE_LOCKED => L_STATE_FEEDABLE_UPDATE_LOCKED
+                          );
 
 # se_views.php3 - view field definition
 $VIEW_FIELDS["name"]            = array( "validate"=>"text", "insert"=>"quoted", "type"=>"text", "input"=>"field" );
@@ -366,6 +373,9 @@ $VIEW_TYPES_INFO['script'] = array('aliases' => 'field');
                       
 /*
 $Log$
+Revision 1.13  2001/06/12 16:07:22  honzam
+new feeding modes -  "Feed & update" and "Feed & update & lock"
+
 Revision 1.12  2001/06/03 16:00:49  honzam
 multiple categories (multiple values at all) for item now works
 
