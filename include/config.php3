@@ -247,5 +247,9 @@ define("FILEMAN_BASE_URL","http://work.ecn.cz/apc-aa/wizard/");
 define("FILEMAN_UPLOAD_TIME_LIMIT",600);
 
 // ------------------------------------------------------------------
+// ALERTS CONFIG
 
+// e-mail for Alerts management
+define("ALERTS_EMAIL", "aaadmin@somewhere.com");
 ?>
+
