@@ -518,11 +518,14 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
     }
   }
 
-  if(!$perm) {
-    $r=@ldap_mod_del($ds, $basedn, $old);
-  } else {
+  if($perm) {
     $new["apcaci"][] = "$id:$perm";
+  }
+  
+  if (count($new) > 0) {
     $r=@ldap_mod_replace($ds, $basedn, $new);
+  } else {
+    $r=@ldap_mod_del($ds, $basedn, $old);
   }
   
   ldap_close($ds);
@@ -682,6 +685,10 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.7  2000/08/01 13:04:44  kzajicek
+OpenLDAP search did not work well when apcaci was not the last attribute.
+ldap_mod_del is now used only when there will be no apcaci value in the entry.
+
 Revision 1.6  2000/07/28 14:46:32  kzajicek
 GroupAdd now returns group_id on success and false on error.
 
