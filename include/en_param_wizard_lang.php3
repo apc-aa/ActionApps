@@ -46,6 +46,13 @@ define("L_PARAM_WIZARD_INPUT_txt_DESC","Text area with 60 columns");
 define("L_PARAM_WIZARD_INPUT_txt_PAR0_NAME","row count");
 define("L_PARAM_WIZARD_INPUT_txt_PAR0_DESC","");
 define("L_PARAM_WIZARD_INPUT_txt_PAR0_EXAMPLE","20");
+define("L_PARAM_WIZARD_INPUT_edt_NAME","Rich Edit Area");
+define("L_PARAM_WIZARD_INPUT_edt_DESC","Rich edit text area with 60 columns. This operates the same way as Text Area in browsers which don't support the Microsoft TriEdit library. In IE 5.0 and higher and in Netscape 4.76 and higher (after installing the necessary features) it uses the TriEdit to provide an incredibly powerful HTML editor.<br><br>
+The code for this editor is taken from the Wysiwyg open project (http://www.unica.edu/uicfreesoft/) and changed to fullfill our needs. See http://www.unica.edu/uicfreesoft/wysiwyg_web_edit/Readme_english.txt on details how to prepare Netscape.<br><br>
+The javascript code needed to provide the editor is saved in two HTML files, so that the user doesn't have to load it every time she reloads the Itemedit web page.");
+define("L_PARAM_WIZARD_INPUT_edt_PAR0_NAME","row count");
+define("L_PARAM_WIZARD_INPUT_edt_PAR0_DESC","");
+define("L_PARAM_WIZARD_INPUT_edt_PAR0_EXAMPLE","20");
 define("L_PARAM_WIZARD_INPUT_fld_NAME","Text Field");
 define("L_PARAM_WIZARD_INPUT_fld_DESC","A text field.");
 define("L_PARAM_WIZARD_INPUT_fld_PAR0_NAME","max characters");
@@ -243,6 +250,9 @@ define("L_PARAM_WIZARD_FUNC_F_V_PAR0_EXAMPLE","vid=4&amp;cmd[23]=v-25");
 
 /*
 $Log$
+Revision 1.3  2001/12/18 11:49:26  honzam
+new WYSIWYG richtext editor for inputform (IE5+)
+
 Revision 1.2  2001/11/26 11:07:30  honzam
 No session add option for itemlink in alias
 

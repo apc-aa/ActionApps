@@ -103,6 +103,7 @@ if( $update ) {
       case "fld":
       case "fil":
       case "txt":
+			case "edt":
       case "dte": $isf = "$input_show_func_f:$input_show_func";
                   break;
       case "mch":
@@ -188,6 +189,7 @@ if( !$update ) {      # load defaults
   $input_show_func_f = substr($fld[input_show_func],0,3);
   switch( $input_show_func_f ) {
     case "txt":
+		case "edt":
     case "fld":
     case "dte":
     case "fil": $input_show_func = substr($fld[input_show_func],4);
@@ -413,6 +415,9 @@ endfor;
 
 /*
 $Log$
+Revision 1.18  2001/12/18 11:49:27  honzam
+new WYSIWYG richtext editor for inputform (IE5+)
+
 Revision 1.17  2001/11/26 11:03:43  honzam
 sort slice/constant in listbox by name
 

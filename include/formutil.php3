@@ -122,17 +122,27 @@ function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
 # Prints html tag <textarea .. to 2-column table
 # for use within <form> and <table> tag
 function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
-                     $hlp="", $morehlp="", $single="", $html=false) {
+                     $hlp="", $morehlp="", $single="", $html=false, $showrich_href=false) {
   $name=safe($name); $txt=safe($txt); $val=safe($val); $hlp=safe($hlp); 
   $morehlp=safe($morehlp);
 
+	if ( $showrich_href ) {
+			$htmlrow .= '
+			<script language=javascript>
+			function load_rich_edit ()
+			{ window.location.href = window.location.href+"&showrich=1"; }
+			</script>
+			<a href="javascript:load_rich_edit();">'.L_SHOW_RICH.'</a><br>';
+	}
+
   if( $html ){
     $htmlvar = $name."html";
-    $htmlrow = "<input type='radio' name='$htmlvar' value='h'".
+    $htmlrow .= "<input type='radio' name='$htmlvar' value='h'".
               (( $html==1 ) ? " checked>" : ">" ). L_HTML."</input>
               <input type='radio' name='$htmlvar' value='t'".
               (( $html==2 ) ? " checked>" : ">" ). L_PLAIN_TEXT."</input><br>";
   }    
+
   if( $single )
     $colspan = "colspan=2";
 
@@ -147,6 +157,70 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
   echo "</td></tr>\n";
 }
 
+# On browsers which do support it, loads a special rich text editor with many
+# advanced features based on triedit.dll
+# On the other browsers, loads a normal text area
+function FrmRichEditTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
+                     $hlp="", $morehlp="", $single="", $html=false) {
+  global $BName; 
+  if (! richEditShowable()) {
+		FrmTextarea($name, $txt, $val, $rows, $cols, $needed, $hlp, $morehlp, $single, $html, $BName != "MSIE ");
+		return;
+	}
+
+  $name=safe($name); $txt=safe($txt); $hlp=safe($hlp); 
+  $morehlp=safe($morehlp);
+
+  if( $single )
+    $colspan = "colspan=2";
+
+  echo "<tr><td class=tabtxt $colspan><b>$txt</b>";
+  Needed($needed);
+  echo "</td>\n";
+  if (SINGLE_COLUMN_FORM OR $single)
+    echo "</tr><tr>";
+	$val = str_replace('"','&quot;',str_replace("'","&#039",str_replace("\n","",str_replace("\r","",$val))));
+  echo "<td $colspan>$htmlrow";
+/*
+	$nom_editor = "edt$name";
+	$idi_edit = 'eng';
+	$editor_height = 150;
+	$editor_width= 700;
+	$document_complet = 0;
+	$content_inicial = "$val";
+	include "../misc/wysiwyg/wysiwyg_web_edit.php3";
+*/
+	$scriptStart = "<script language=javascript src=\"". AA_INSTAL_URL. "misc/wysiwyg/richedt_";
+	echo $scriptStart . ($BName == "MSIE " ? "ie.js\">" : "ns.js\">").
+	"</script>
+	<script>
+		var edt$name"."_doc_complet = 0;
+ 		var edt = \"edt$name\";
+	</script>";
+	echo $scriptStart . ($BName == "MSIE " ? "ie.html\">" : "ns.html\">");
+    echo "</script>";
+
+echo "<script language =javascript >
+ edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100);
+ function edt$name"."_inicial(){ ".
+ ($BName == "MSIE "
+	? "if( document[\"edt$name\"]){ 
+  	   obj_editor = document.edt$name;
+		   document.edt$name.DocumentHTML = \"$val\";"
+  : "if( window[\"PropertyAccessor\"] && window[\"edt$name\"]){ 
+ 		   obj_editor = edt$name;
+ 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",\"$val\");").
+ 	"    clearInterval(edt$name"."_timerID);
+    } 
+    return true;
+ } 
+ </script>	";
+	echo "<input type=hidden name=\"$name\" value=\"$val\">\n";
+		
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}
 
 # Prints html tag <input type=checkbox .. to 2-column table
 # for use within <form> and <table> tag
@@ -463,7 +537,11 @@ function ValidateInput($variableName, $inputName, $variable, $err, $needed=false
 
 /*
 $Log$
+Revision 1.19  2001/12/18 11:49:26  honzam
+new WYSIWYG richtext editor for inputform (IE5+)
+
 Revision 1.18  2001/11/29 08:37:27  mitraearth
+
 Fix a bug where tables get centered instead of left aligned in IE6
 
 Revision 1.17  2001/10/24 16:48:10  honzam

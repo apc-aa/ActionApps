@@ -42,7 +42,7 @@ define("DEFAULT_FULLTEXT_REMOVE", "()");
 # You should set language of admin pages and possibly any meta tags
 define("HTML_PAGE_BEGIN", 
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
-  <HTML>
+  <HTML XMLNS:XS>
   <HEAD>
   <LINK rel=StyleSheet href="../'. ADMIN_CSS .'" 
         type="text/css" title="CPAdminCSS">
@@ -374,6 +374,7 @@ define("L_INPUT_DEFAULT_UID", "User ID");
 define("L_INPUT_DEFAULT_NOW", "Now");
 
 define("L_INPUT_SHOW_TXT","Text Area");
+define("L_INPUT_SHOW_EDT","Rich Edit Text Area");
 define("L_INPUT_SHOW_FLD","Text Field");
 define("L_INPUT_SHOW_SEL","Select Box");
 define("L_INPUT_SHOW_RIO","Radio Button");
@@ -458,8 +459,8 @@ define("L_TOP_HLP", "HTML kód, který se zobrazí pøed kódem webíku");
 define("L_FORMAT_HLP", "Sem patøí HTML kód v kombinaci s aliasy uvedenými dole na stránce
                      <br>Aliasy budou v okamžiku zobrazování na web nahrazeny skuteènými hodnotami z databáze");
 define("L_BOTTOM_HLP", "HTML kód, který se zobrazí za vlasním kódem webíku");
-define("L_EVEN_ROW_HLP", "TIP: Rozlišením sudých a lichých záznamù lze docílit napøíklad odlièení øádkù jinými barvami pozadí
-                         <br>první tøeba zelený, druhý žlutý, atd.");
+define("L_EVEN_ROW_HLP", "TIP: Rozlišením sudých a lichých záznamù lze docílit napøíklad odlišení øádkù jinými barvami pozadí
+                         - první tøeba zelený, druhý žlutý, atd.");
 
 define("L_SLICE_URL", "URL webíku");
 define( "L_BRACKETS_ERR", "Brackets doesn't match in query: ");
@@ -476,7 +477,7 @@ define("L_DELSLICE_TIT", L_A_DELSLICE);
 define("L_DELSLICE_HDR", "Vyber webík pro smazání");
 define("L_DEL_SLICE_HLP","<p>Lze vymazat jen webíky, které byly oznaèeny pro vymazání na stránce &quot;<b>". L_SLICE_SET ."</b>&quot;</p>");
 define("L_A_DELSLICE", L_DELSLICE_TIT);
-define("L_DELETE_SLICE", "Opravdy chcete vymazat tento webík a všechny jeho zprávy?");
+define("L_DELETE_SLICE", "Opravdu chcete vymazat tento webík a všechny jeho zprávy?");
 define("L_NO_SLICE_TO_DELETE", "Žádný webík nebyl oznaèen za vymazaný");
 define("L_NO_SUCH_SLICE", "Špatné èíslo webíku");
 define("L_NO_DELETED_SLICE", "Webík není oznaèen za vymazaný");
@@ -752,9 +753,13 @@ define ("L_E_IMPORT_OVERWRITTEN", "Pøepsány byly:");
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 
 define("L_PARAM_WIZARD_LINK", "Prùvodce s nápovìdou");
+define("L_SHOW_RICH", "Zobraz toto pole v rich text editoru (použijte až po nainstalování potøebných komponent!)");
 
 /*
 $Log$
+Revision 1.42  2001/12/18 11:49:26  honzam
+new WYSIWYG richtext editor for inputform (IE5+)
+
 Revision 1.41  2001/11/29 08:40:08  mitraearth
 Provides help when using the Nodes screen to configre inter-node feeding
 It informs of the correect values to tell the superadmin of the other node.

@@ -373,6 +373,7 @@ define("L_INPUT_DEFAULT_UID", "Id Usuario");
 define("L_INPUT_DEFAULT_NOW", "Ahora");
 
 define("L_INPUT_SHOW_TXT","Area texto");
+define("L_INPUT_SHOW_EDT","Rich Edit Text Area");
 define("L_INPUT_SHOW_FLD","Campo texto");
 define("L_INPUT_SHOW_SEL","Caja Selección");
 define("L_INPUT_SHOW_RIO","Botón selección");
@@ -755,8 +756,13 @@ define ("L_E_IMPORT_OVERWRITTEN", "Overwritten were:");
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 
 define("L_PARAM_WIZARD_LINK", "Wizard with help");
+define("L_SHOW_RICH", "Show this field as a rich text editor (use only after having installed the necessary components!)");
+
 /*
 $Log$
+Revision 1.15  2001/12/18 11:49:26  honzam
+new WYSIWYG richtext editor for inputform (IE5+)
+
 Revision 1.14  2001/11/29 08:40:09  mitraearth
 Provides help when using the Nodes screen to configre inter-node feeding
 It informs of the correect values to tell the superadmin of the other node.

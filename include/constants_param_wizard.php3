@@ -60,6 +60,13 @@ $INPUT_TYPES = array ("name"=>L_PARAM_WIZARD_INPUT_NAME,
 		"desc"=>L_PARAM_WIZARD_INPUT_txt_PAR0_DESC,
 		"type"=>"INT",
 		"example"=>L_PARAM_WIZARD_INPUT_txt_PAR0_EXAMPLE))),
+"edt"=>array("name"=>L_PARAM_WIZARD_INPUT_edt_NAME,
+	"desc"=>L_PARAM_WIZARD_INPUT_edt_DESC,
+	"params"=>array(
+		array("name"=>L_PARAM_WIZARD_INPUT_edt_PAR0_NAME,
+		"desc"=>L_PARAM_WIZARD_INPUT_edt_PAR0_DESC,
+		"type"=>"INT",
+		"example"=>L_PARAM_WIZARD_INPUT_edt_PAR0_EXAMPLE))),
 "fld"=>array("name"=>L_PARAM_WIZARD_INPUT_fld_NAME,
 	"desc"=>L_PARAM_WIZARD_INPUT_fld_DESC,
 	"params"=>array(
@@ -315,6 +322,9 @@ $FIELD_FUNCTIONS = array ("name"=>L_PARAM_WIZARD_FUNC_NAME,
 
 /*
 $Log$
+Revision 1.3  2001/12/18 11:49:26  honzam
+new WYSIWYG richtext editor for inputform (IE5+)
+
 Revision 1.2  2001/11/26 11:07:30  honzam
 No session add option for itemlink in alias
 

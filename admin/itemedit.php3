@@ -37,6 +37,7 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
+require $GLOBALS[AA_INC_PATH]."notify.php3";
 
 if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED 
                                #       and REDIRECT_STRING_UNESCAPED - from url
@@ -192,7 +193,10 @@ if($edit) {
 
 if( !$encap ) {
   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-  echo '
+	echo '
+		<style>
+		#body_white_color { color: #000000; }
+		</style>
     <title>'.( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT). '</title>
     <script Language="JavaScript"><!--    
       function SelectAllInBox( listbox ) {
@@ -209,9 +213,11 @@ if( !$encap ) {
       
       // before submit the form we need to select all selections in some 
       // listboxes (2window, relation) in order the rows are sent for processing
-      function BeforeSumbit() {
+      function BeforeSubmit() {
         for(var i = 0; i < listboxes.length; i++) 
-          SelectAllInBox( listboxes[i] );
+          SelectAllInBox( listboxes[i] );';
+			  if ( richEditShowable() )	echo 'saveRichEdits();';
+				echo '
         return true;  
       }    
     
@@ -223,19 +229,23 @@ if( !$encap ) {
       }  
       
     // -->
-    </script>
+    </script>';
+/*		// load the rich editor module:
+	  if (richEditShowable ())
+			echo '<?import namespace="XS" implementation="htmlEditor.htc" />';*/
+		echo '
     </head>
-  <body>
+  <body id="body_white_color">
    <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
 }       
 PrintArray($err);
 echo $Msg;  
 
 ?>
-<form name=inputform onsubmit="BeforeSumbit()" enctype="multipart/form-data" method=post action="<?php echo  ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF ?>">
+<form name=inputform onsubmit="BeforeSubmit()" enctype="multipart/form-data" method=post action="<?php echo  ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF ?>">
 
 <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_ITEM_HDR?></b>
+<tr><td class=tabtit align="center"><b>&nbsp;<?php echo L_ITEM_HDR?></b>
 </td>
 </tr>
 <tr><td>
@@ -294,6 +304,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.27  2001/12/18 11:49:26  honzam
+new WYSIWYG richtext editor for inputform (IE5+)
+
 Revision 1.26  2001/11/26 11:04:48  honzam
 IE6.0 center bug fig
 
