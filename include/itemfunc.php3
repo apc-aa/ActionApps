@@ -56,6 +56,9 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
   #p_arr_m($field);
 
   if( $field[in_item_tbl] ) {
+    if( ($field[in_item_tbl] == 'expiry_date') && 
+        (date("Hi",$value[value]) == "0000") )
+      $value[value] += 86399;  # if time is not specified, take end of day 23:59  
     # field in item table
     $itemvarset->add( $field[in_item_tbl], "quoted", $value[value]);
     return;
@@ -482,6 +485,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.14  2001/08/03 10:09:30  honzam
+if no time in expiry date is specified, the end of day is stored
+
 Revision 1.13  2001/07/09 09:28:44  honzam
 New supported User defined alias functions in include/usr_aliasfnc.php3 file
 

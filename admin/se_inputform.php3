@@ -131,7 +131,7 @@ if( $update ) {
 
     if( count($err) <= 1 ) {
       $Msg = MsgOK(L_FIELDS_OK);
-//      go_url( $sess->url($PHP_SELF) ); 
+      go_url( $sess->url("./se_fields.php3") );  # back to field page
     }    
   } while( 0 );           #in order we can use "break;" statement
 } 
@@ -410,6 +410,9 @@ echo "
 
 /*
 $Log$
+Revision 1.14  2001/08/03 10:09:30  honzam
+if no time in expiry date is specified, the end of day is stored
+
 Revision 1.13  2001/06/21 14:15:45  honzam
 feeding improved - field value redefine possibility in se_mapping.php3
 
