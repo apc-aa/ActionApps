@@ -1,3 +1,10 @@
+--------------------
+09/14/00 - v1.2.0
+--------------------
+08/29/00 - better validation of id (1-32 chars) and password (any character)
+08/23/00 - fixed security problem with inc parameter to slice.php3
+08/22/00 - fixed problem with lost session id AA_SL_Session in cgi mode (PHP4) 
+08/18/00 - new installation documentation
 08/17/00 - new option to present items on their own pages with possible
            variant design. Alias _#HDLN_URL now points to External link 
            (if link_only=true) or to the "Show on URL" value (if specified) or 
