@@ -1,0 +1,299 @@
+td.scroller {background: #a0a0a0;} 
+
+.scrhead {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  color: #4A4A4A;
+} 
+
+BODY { 
+/*  margin-left: 4px; */
+  background: #ffffff;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+/**	color: #FFFFFF; */
+  color: #000000;
+}
+
+B {
+  font-weight: normal;
+}
+
+.login { 
+	background: #A8C8B0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	color: #000000;
+}
+
+
+
+CENTER TABLE.login {
+  width: 80%;
+}
+
+CENTER TABLE.login TD {
+  background: #009966;
+}
+
+/* TABLE.login {
+ width: 80%;
+} */
+
+FORM table {
+  width: 80%;
+}
+
+FORM center table {
+  width: 20%;
+}
+
+TD table {
+  width: 100%;
+}
+
+TR.tabtxt TD {
+	border-bottom: 1px solid #589868;
+}
+
+/* FORM TABLE TR TD TABLE TR TD {
+	border-bottom: 1px solid black;
+} */
+
+SELECT {  
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 10pt;	
+}
+
+SELECT.tabtxt {  
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  background: #FFFFFF;
+}
+
+
+TD, INPUT, TEXTAREA {  
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+	vertical-align: top;
+}
+
+TD.tablename {
+  vertical-align: middle;
+	text-align: center;
+}
+ 
+H1 {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: medium;
+  margin-left: 20px;  
+ /* color: #FFFFFF; */
+  color: #000000;
+}
+
+.navbar {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	background: #A8C8B0; 
+	color: #FFFFFF;
+	vertical-align: middle;
+}
+
+.nbviewlp {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+  background: #584011;
+	color: #F5F0E7;
+}
+
+.nblogo {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight : bold;
+  background: #FFFFFF;
+	color: #FFFFFF;
+  text-decoration: none;
+}
+
+.nbmenu {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+  background: #F5F0E7;
+	color: #584011;
+}
+
+.nbenable {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+/*  background: #EBDABE;  don't change the background colour*/
+	#color: #000000;
+}
+
+.nbdisable {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+/*   background: #EBDABE; */
+	color: #4A4A4A;
+	vertical-align: middle;
+}
+
+.example {
+	font-family: Courier, sans-serif;
+	font-size: 8pt;
+}
+
+.slicesubhead {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : 8pt;
+	color: #EEEEEE;
+	font-weight : bold;
+	background: #589868;
+}
+
+.slicehead {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : 13pt;
+	color: #FFFFFF;
+	font-weight: bold;
+	background: #589868;
+	width: 100%;
+	vertical-align: middle;
+}
+
+.leftmenu  {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+/*	font-weight : bold; */
+	background: #A8C8B0;
+	color: #4A4A4A;
+}
+
+TD.leftmenu {
+  font-weight: bold;
+}
+
+.leftmenuy  {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+/*  font-size: x-small; */
+  font-size: 8pt;
+  background: #A8C8B0;
+	font-weigth: normal;
+  color: #000000;
+}
+
+.leftmenun  {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+/*	font-size: x-small; */
+  background: #A8C8B0;
+  color: #4A4A4A;
+}
+
+.subwindow  {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: x-small;
+	font-weight : bold;
+	background: #A8C8B0;
+	color: #4A4A4A;
+}
+
+.windowtitle {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: x-small;
+	font-weight : bold;
+	background: #589868;
+	color: #FFFFFF;
+}
+
+.ipreview, .iid, .ipostdate, .ihedline, .icategory, .ifeedtit, .ifeed {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  color: #4A4A4A;
+  background: #A8C8B0;
+}
+
+.inoutertd {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: #FFFFFF;
+}
+
+.tablename {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  font-weight: bold; 
+  color: #FFFFFF;
+  background: #589868;
+}
+
+.tablename .leftmenuy {
+  font-weight: normal;
+  background: #589868;
+}
+
+/*
+TABLE {
+  width: 80%;
+}
+
+TD.leftmenuy {
+  width: 80%
+}
+*/
+
+/* TD.tabtit {
+  border-bottom: 1pt solid black;
+} */
+
+.tabtit {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: #FFFFFF;
+	background: #589868;
+}
+
+.tabtxt {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+	background: #A8C8B0;
+	color: #4A4A4A;
+}
+
+.tabhlp {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: #4A4A4A;
+  background: #A8C8B0;
+}
+
+.taberr {
+  color: red;
+}
+
+.notpubl {
+  color: blue;
+}
+
+.expired {
+  color: red;
+}
+
+
+.err {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: red;
+}
+
+.okmsg {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: green;
+}
+
+
+.copymsg {
+/*       background: #213F21; */
+       font-family: Verdana, Arial, Helvetica, sans-serif;
+       font-size: 8pt;
+       color: #999999;
+}
