@@ -88,7 +88,8 @@ class zids {
         } elseif ($initial) {  # Single id
                 $this->a[] = $initial;
         } else {
-         return;  # Empty $zids;
+           $this->$type=$inittype;    # Prepare for zids
+           return;                    # Empty $zids;
         }
 
         if ($this->type == "z") 
@@ -96,6 +97,18 @@ class zids {
         elseif ($this->type != guesstype($this->a[0]))
             huhe("Warning: zids created type=$this->type but id $this->a[0] looks like type="
                 . guesstype($this->a[o]));
+    }
+
+    // removes all zids and resets
+    function clear($inittype = 'z') {
+        unset($this->a);
+        $this->type = $inittype;
+    }
+
+    // adds new id (the type must be already set (from init))
+    function add($id) {
+        if( $id )
+            $this->a[]=$id;
     }
 
     // Debugging function to print zids, don't rely on the output format, its only for debuging
@@ -109,6 +122,7 @@ class zids {
         #TODO - handle other types than single character types
         return $this->type;
     }
+
     # Count how many ids
     function count() {
         return count($this->a);
@@ -117,7 +131,7 @@ class zids {
     # Quick check to warn if item doesn't exist
     function warnid($i=null,$warnstr="") {
         #huhl("zids:$warnstr:$i",$this);
-        if (isset($i) and !(isset($this->a[$i]))) {
+        if( (isset($i) and !(isset($this->a[$i]))) ) {
             huhe("Warning: zids: $warnstr, item $i doesn't exist, returning null");
             return true;
         }
@@ -133,7 +147,8 @@ class zids {
                         : array_map("unpack_id128", $this->a));
         case "t":  return (isset($i) ? id_t2l($this->a[$i]) : array_map("id_t2l", $this->a));
         default:
-        print("ERROR: can't handle type $this->type conversion to longids - ask mitra");
+        print("ERROR - zids:longids(): can't handle type $this->type conversion to longids - ask mitra");
+        $this->printobj();
         return false;  #TODO - handle other types
         }
     }
@@ -146,7 +161,7 @@ class zids {
             case "t": return (isset($i) ? pack_id128(id_t2l($this->a[$i])) 
                                 : array_map("pack_id128", $this->longids()));
         default:
-            print("ERROR: can't handle type $this->type conversion to packedds - ask mitra");   
+            print("ERROR - zids:packedids(): can't handle type $this->type conversion to packedds - ask mitra");   
             return false;
         }
     }
@@ -163,7 +178,7 @@ class zids {
             case "t": return (isset($i) ? q_pack_id(id_t2l($this->a[$i])) 
                                 : array_map("q_pack_id", $this->longids()));
         default:
-            print("ERROR: can't handle type $this->type conversion to packedds - ask mitra");
+            print("ERROR - zids:q_packedids(): can't handle type $this->type conversion to packedds - ask mitra");
             return false;
         }
     }
@@ -178,7 +193,7 @@ class zids {
             case "t": return (isset($i) ? qq_pack_id(id_t2l($this->a[$i]))
                 : array_map("qq_pack_id", $this->longids()));
         default:
-            print("ERROR: can't handle type $this->type conversion to packedds - ask mitra");   
+            print("ERROR - zids:qq_packedids(): can't handle type $this->type conversion to packedds - ask mitra");   
             return false;
         }
     }
@@ -193,7 +208,7 @@ class zids {
             case "t": return (isset($i) ? qqq_pack_id(id_t2l($this->a[$i]))
                 : array_map("qqq_pack_id", $this->longids()));
         default:
-            print("ERROR: can't handle type $this->type conversion to packedds - ask mitra");   
+            print("ERROR - zids:qqq_packedids(): can't handle type $this->type conversion to packedds - ask mitra");   
             return false;
         }
     }
@@ -203,7 +218,7 @@ class zids {
         switch($this->type) {
             case "s":  return (isset($i) ? $this->a[$i] : $this->a);
         default:
-            print("ERROR: can't handle type $this->type conversion to shortids - ask mitra");
+            print("ERROR - zids:shortids(): can't handle type $this->type conversion to shortids - ask mitra");
             return false;
         }
     }
@@ -306,7 +321,7 @@ function pack_id128($unpacked_id){
     global $errcheck;
     if ($errcheck && !preg_match("/^[0-9a-f]{24,32}$/", $unpacked_id)) # Note was + instead {32}
         huhe("Warning: trying to pack $unpacked_id.<br>\n");
-  return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
+  return ((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id)));
 }
 
 # returns unpacked md5 id
