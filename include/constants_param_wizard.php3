@@ -189,7 +189,11 @@ $FIELD_FUNCTIONS = array ("name"=>L_PARAM_WIZARD_FUNC_NAME,
 		array("name"=>L_PARAM_WIZARD_FUNC_F_F_PAR1_NAME,
 		"desc"=>L_PARAM_WIZARD_FUNC_F_F_PAR1_DESC,
 		"type"=>"STR",
-		"example"=>L_PARAM_WIZARD_FUNC_F_F_PAR1_EXAMPLE))),
+		"example"=>L_PARAM_WIZARD_FUNC_F_F_PAR1_EXAMPLE),
+		array("name"=>L_PARAM_WIZARD_FUNC_F_F_PAR2_NAME,
+		"desc"=>L_PARAM_WIZARD_FUNC_F_F_PAR2_DESC,
+		"type"=>"BOOL",
+		"example"=>L_PARAM_WIZARD_FUNC_F_F_PAR2_EXAMPLE))),
 "f_b"=>array("name"=>L_PARAM_WIZARD_FUNC_F_B_NAME,
 	"desc"=>L_PARAM_WIZARD_FUNC_F_B_DESC,
 	"params"=>array(
@@ -216,7 +220,11 @@ $FIELD_FUNCTIONS = array ("name"=>L_PARAM_WIZARD_FUNC_NAME,
 		array("name"=>L_PARAM_WIZARD_FUNC_F_B_PAR5_NAME,
 		"desc"=>L_PARAM_WIZARD_FUNC_F_B_PAR5_DESC,
 		"type"=>"STR",
-		"example"=>L_PARAM_WIZARD_FUNC_F_B_PAR5_EXAMPLE))),
+		"example"=>L_PARAM_WIZARD_FUNC_F_B_PAR5_EXAMPLE),
+		array("name"=>L_PARAM_WIZARD_FUNC_F_B_PAR6_NAME,
+		"desc"=>L_PARAM_WIZARD_FUNC_F_B_PAR6_DESC,
+		"type"=>"BOOL",
+		"example"=>L_PARAM_WIZARD_FUNC_F_B_PAR6_EXAMPLE))),
 "f_t"=>array("name"=>L_PARAM_WIZARD_FUNC_F_T_NAME,
 	"desc"=>L_PARAM_WIZARD_FUNC_F_T_DESC),
 "f_s"=>array("name"=>L_PARAM_WIZARD_FUNC_F_S_NAME,
@@ -307,6 +315,9 @@ $FIELD_FUNCTIONS = array ("name"=>L_PARAM_WIZARD_FUNC_NAME,
 
 /*
 $Log$
+Revision 1.2  2001/11/26 11:07:30  honzam
+No session add option for itemlink in alias
+
 Revision 1.1  2001/10/24 18:44:10  honzam
 new parameter wizard for function aliases and input type parameters
 

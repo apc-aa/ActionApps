@@ -165,7 +165,7 @@ class item {
   }
   
   # get item url - take in mind: item_id, external links and redirection
-  function getitemurl($extern, $extern_url, $redirect,$condition=true) {
+  function getitemurl($extern, $extern_url, $redirect,$condition=true, $no_sess=false) {
     if( $extern AND $this->columns[$extern][0][value] )       # link_only
       return ($this->columns[$extern_url][0][value] ? 
                 $this->columns[$extern_url][0][value] :
@@ -176,12 +176,16 @@ class item {
     $url_param = ( $GLOBALS['USE_SHORT_URL'] ? 
             "x=".$this->columns["short_id........"][0][value] :
             "sh_itm=".unpack_id($this->columns["id.............."][0][value]));
-            
 
-    if( $redirect )      # redirecting to another page 
-      return con_url( $redirect, $url_param );
-     else 
-      return con_url( $this->clean_url, $url_param );     # show on this page
+       # redirecting to another page 
+    $url_base = ($redirect ? $redirect : $this->clean_url );
+
+    if( $no_sess ) {                     #remove session id
+      $pos = strpos($url_base, '?');
+      if($pos)
+        $url_base = substr($url_base,0,$pos);
+    }    
+    return con_url( $url_base, $url_param );
   }    
 
   # get link from url and text
@@ -273,9 +277,10 @@ class item {
   #    link_only field id (like "link_only.......")
   #    redirect - url of another page which shows the content of item 
   #             - this page should contain SSI include ../slice.php3 too
+  #    no_sess  - if true, it does not add session id to url
   function f_f($col, $param="") { 
     $p = ParamExplode($param);
-    return $this->getitemurl($p[0], $col, $p[1]);
+    return $this->getitemurl($p[0], $col, $p[1], 1, $p[2]);
   }    
 
   # prints text with link to fulltext (hedline url)
@@ -288,12 +293,13 @@ class item {
   #    txt           - if txt is field_id content is shown as link, else txt
   #    condition_fld - field id - if no content of this field, no link
   #    addition      - additional parameter to <a tag (like target=_blank)
+  #    no_sess  - if true, it does not add session id to url
   function f_b($col, $param="") { 
-    list ($link_only, $url_field, $redirect, $txt, $condition, $addition) = ParamExplode($param);
+    list ($link_only, $url_field, $redirect, $txt, $condition, $addition, $no_sess) = ParamExplode($param);
 //p_arr_m(  $this->columns );
 
     # last parameter - condition field
-    $url = $this->getitemurl($link_only, $url_field, $redirect, $this->columns[$condition][0][value]);
+    $url = $this->getitemurl($link_only, $url_field, $redirect, $this->columns[$condition][0][value], $no_sess);
       
     if ( $this->columns[$txt] ) 
   		$txt = $this->columns[$txt][0][value];
@@ -623,6 +629,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.29  2001/11/26 11:07:30  honzam
+No session add option for itemlink in alias
+
 Revision 1.28  2001/10/24 18:44:10  honzam
 new parameter wizard for function aliases and input type parameters
 

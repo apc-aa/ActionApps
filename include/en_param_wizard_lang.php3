@@ -148,6 +148,9 @@ define("L_PARAM_WIZARD_FUNC_F_F_PAR0_EXAMPLE","link_only.......");
 define("L_PARAM_WIZARD_FUNC_F_F_PAR1_NAME","redirect");
 define("L_PARAM_WIZARD_FUNC_F_F_PAR1_DESC","The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior).");
 define("L_PARAM_WIZARD_FUNC_F_F_PAR1_EXAMPLE","http#://www.ecn.cz/articles/solar.shtml");
+define("L_PARAM_WIZARD_FUNC_F_F_PAR2_NAME","no session id");
+define("L_PARAM_WIZARD_FUNC_F_F_PAR2_DESC","If 1, the session id (AA_SL_Session=...) is not added to url");
+define("L_PARAM_WIZARD_FUNC_F_F_PAR2_EXAMPLE","1");
 define("L_PARAM_WIZARD_FUNC_F_B_NAME","extended fulltext link");
 define("L_PARAM_WIZARD_FUNC_F_B_DESC","Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>.");
 define("L_PARAM_WIZARD_FUNC_F_B_PAR0_NAME","link only");
@@ -168,6 +171,9 @@ define("L_PARAM_WIZARD_FUNC_F_B_PAR4_EXAMPLE","full_text.......");
 define("L_PARAM_WIZARD_FUNC_F_B_PAR5_NAME","tag addition");
 define("L_PARAM_WIZARD_FUNC_F_B_PAR5_DESC","additional text to the \"\\<a\\>\" tag");
 define("L_PARAM_WIZARD_FUNC_F_B_PAR5_EXAMPLE","target=_blank");
+define("L_PARAM_WIZARD_FUNC_F_F_PAR6_NAME","no session id");
+define("L_PARAM_WIZARD_FUNC_F_F_PAR6_DESC","If 1, the session id (AA_SL_Session=...) is not added to url");
+define("L_PARAM_WIZARD_FUNC_F_F_PAR6_EXAMPLE","1");
 define("L_PARAM_WIZARD_FUNC_F_T_NAME","print HTML");
 define("L_PARAM_WIZARD_FUNC_F_T_DESC","prints <i>the field</i> content depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)");
 define("L_PARAM_WIZARD_FUNC_F_S_NAME","default");
@@ -237,6 +243,9 @@ define("L_PARAM_WIZARD_FUNC_F_V_PAR0_EXAMPLE","vid=4&amp;cmd[23]=v-25");
 
 /*
 $Log$
+Revision 1.2  2001/11/26 11:07:30  honzam
+No session add option for itemlink in alias
+
 Revision 1.1  2001/10/24 18:44:10  honzam
 new parameter wizard for function aliases and input type parameters
 
