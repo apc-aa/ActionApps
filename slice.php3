@@ -297,7 +297,6 @@ else {               //compact view -------------------------------------------
   else 
     echo "<div>". L_NO_ITEM ."</div>";
 }
-echo "conditions are: r_cat $r_category cat_name $cat_name cat_d $cat_id conditions $conditions";
 ?>
  <br>
 <?php 
@@ -311,6 +310,9 @@ page_close();
 #    p_arr_m( $debugtimes);
 /*
 $Log$
+Revision 1.15  2001/03/07 14:34:56  honzam
+no message
+
 Revision 1.14  2001/02/23 11:18:03  madebeer
 interface improvements merged from wn branch
 
