@@ -317,12 +317,13 @@ function p_arr($a,$name="given array") {
 
 # returns new unpacked md5 unique id, except these which can  force unexpected end of string  
 function new_id ($seed="hugo"){
-  do {
-   $foo=md5(uniqid($seed));
-  } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
-  return $foo;
+    do {
+       $foo=md5(uniqid($seed));
+    } while (ereg("(00|27)",$foo) || (substr($foo,30,2)=='20'));  
+      // '00' is end of string, '27' is ' and packed '20' is space, 
+      // which is removed by MySQL
+    return $foo;
 } 
-
 # Returns a unique id from a string, note that it will always return the same id from the same string so 
 # can be used to compare the hashes.
 function string2id ($str) {
