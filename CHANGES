@@ -1,3 +1,6 @@
+11/16/00 - changed admin leftbar menu order and labels
+         - changed default article editor field order & fields
+         - improved some of the english labels
 11/15/00 - fixed problem with required Start date and End date 
          - fixed bug of bad viewed item in itemedit
          - fixed problem with annonymous posted item on encapsulated (SSI) page
