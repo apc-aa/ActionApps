@@ -449,8 +449,9 @@ class tabledit {
         $tdd = "</span></TD>";
         
         echo "<FORM name='search_".$this->viewID."' method=post action='".$this->getAction($this->gotoview2())."'>
-              <TABLE ".$this->view["attrs"]["table_search"]." class=te_search_table>"
-            ."<TR>$td"._m("Search").": $tdd"
+              <TABLE ".$this->view["attrs"]["table_search"]." class=te_search_table><TR>$td"
+            .'<image border="0" src="'.$this->imagepath.'search.gif" alt="'._m("search").'">&nbsp;'
+            ._m("search").": $tdd"
             ."$td";
         reset ($this->cols);
         while (list ($colname,$column) = each ($this->cols)) 
@@ -1120,7 +1121,9 @@ function PrintJavaScript_Validate () {
     
     echo "
     <script language=javascript>
-    <!--
+    <!--"
+        . get_javascript_field_validation ()."
+        
         function validate_number (txtfield, minval, maxval, required) {
             if (!validate (txtfield, 'number', required))
                 return false;
@@ -1128,39 +1131,6 @@ function PrintJavaScript_Validate () {
             var err = '';
             if (val > maxval || val < minval) 
                 err = '"._m("Wrong value: a number between %1 and %2 is expected.",array("'+minval+'","'+maxval+'"))."';
-            if (err != '') {
-                alert (err);
-                txtfield.focus();
-                return false;
-            }
-            else return true;
-        }
-        
-        function validate (txtfield, type, required) {
-            var invalid_email = /(@.*@)|(\.\.)|(@\.)|(\.@)|(^\.)/; 
-            var valid_email = /^.+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?)$/; 
-            
-            var val = txtfield.value;
-            var err = '';
-            
-            if (val == '' && required)
-                err = '"._m("This field is required.")."';
-            
-            else switch (type) {
-            case 'number': 
-                if (!val.match (/^[0-9]+$/)) 
-                    err = '"._m("Not a valid integer number.")."';
-                break;
-            case 'filename':
-                if (!val.match (/^[0-9a-zA-Z_]+$/)) 
-                    err = '"._m("Not a valid file name.")."';
-                break;
-            case 'email': 
-                if (val.match(invalid_email) || !val.match(valid_email)) 
-                    err = '"._m("Not a valid email address.")."';
-                break;
-            }
-            
             if (err != '') {
                 alert (err);
                 txtfield.focus();
