@@ -401,8 +401,11 @@ else {
   // ***** SORT *****
   
   # order the fields in compact view 
-  if( $order ) 
-    list ($order, $orderdirection) = GetSortArray ($order);  
+  if( $order ) {
+    $order = GetSortArray ($order);
+    reset ($order);
+    list ($order, $orderdirection) = each ($order);
+  }  
     
   if ($debug) 
     echo "Group by: $group_by. Slice_info[category_sort] $slice_info[category_sort] slice_info[group_by] $slice_info[group_by]";
