@@ -457,7 +457,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
           $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,
                                              $conds, $sort,
                                              $slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
-                                             $defaultCondsOperator,$GLOBALS['nocache']);
+                                             $defaultCondsOperator,$GLOBALS['nocache'],
+					     "vid=$vid t=full i=".serialize($zids3));
           $zids->a = $zids3->a;
           $zids->type = $zids3->type;
         }
@@ -615,10 +616,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,
                 $conds, $sort,
                 $slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
-                $defaultCondsOperator,$GLOBALS['nocache']);
+                $defaultCondsOperator,$GLOBALS['nocache'],"vid=$vid t=list");
     }
     //end mlx stuff
-
     # Note this zids2 is always packed ids, so lost tag information
     if ($debug) huhl("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count : 0)." IDS");
     if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {

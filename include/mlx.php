@@ -387,7 +387,7 @@ class MLXView
 	// prioritised translation
 	function postQueryZIDs(&$zidsObj,$ctrlSliceID,$slice_id, $conds, $sort, 
 		$group_by,$type, $slices, $neverAllItems, $restrict_zids,
-		$defaultCondsOperator,$nocache) 
+		$defaultCondsOperator,$nocache,$cachekeyextra="") 
 	{
 		global $pagecache, $QueryIDsCount, $debug;
 		
@@ -395,23 +395,23 @@ class MLXView
 			return;
 		if($zidsObj->count() == 0)
 			return;
-		$translations = $this->getPrioTranslationFields($ctrlSliceID);
+		
 		#create keystring from values, which exactly identifies resulting content
 		$keystr = $this->mode.serialize($this->language).$ctrlSliceID.$slice_id
 			. serialize($conds). serialize($sort)
 			. $group_by. $type. serialize($slices). $neverAllItems
 			. ((isset($restrict_zids) && is_object($restrict_zids)) ? 
 				serialize($restrict_zids) : "")
-			. $defaultCondsOperator . $translations;
+			. $defaultCondsOperator . $cachekeyextra;
 		
 		$cachestr = "slice_id=$ctrlSliceID";
 		if ( $res = CachedSearch( !$nocache, $keystr, $cachestr )) {
 			if(MLX_TRACE)
-				__mlx_trace("using cache");
+				__mlx_trace("using cache for $keystr");
 			$zidsObj->refill( $res->a );
 			return;
 		}
-		
+		$translations = $this->getPrioTranslationFields($ctrlSliceID);
 		$arr = array();
 		foreach($zidsObj->a as $packedid) {
 			$arr[(string)$packedid] = 1; 
