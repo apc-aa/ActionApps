@@ -189,7 +189,7 @@ class zids {
     function shortids($i=null) {
         if ($this->warnid($i,"shortids")) return null;
         switch($this->type) {
-            case "s":  return (isset($i) ? $this->a[i] : $this->a);
+            case "s":  return (isset($i) ? $this->a[$i] : $this->a);
         default:
             print("ERROR: can't handle type $this->type conversion to shortids - ask mitra");
             return false;
@@ -266,13 +266,15 @@ class zids {
 
   # Return appropriate SQL for including in WHERE clause
   # Note that some code still does this by hand, 
-  function sqlin() {
+  function sqlin( $add_column = true ) {
     if ($this->count() == 0) return "";
+    if ( $add_column )
+        $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" ); 
     if ($this->use_short_ids())
-	    return "item.short_id IN ("
+	    return "$column IN ("
             . implode(",", array_map( "qquote", $this->shortids())) . ")";
     else
-	    return "item.id IN ("
+	    return "$column IN ("
 	        . implode(",", $this->qqq_packedids()) . ") ";
   }
 
