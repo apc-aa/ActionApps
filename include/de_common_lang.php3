@@ -160,8 +160,8 @@ function dateExample() {
                    
 /*
 $Log$
-Revision 1.2  2001/11/07 22:23:25  udosw
-Bugfix to include parametr wizard language file.
+Revision 1.3  2001/11/07 22:26:33  udosw
+Another bugfic (CR/LF)s (Sorry)
 
 Revision 1.1  2001/11/07 16:04:55  udosw
 German translation (partly) by UdoSW
