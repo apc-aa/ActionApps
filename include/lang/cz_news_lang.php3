@@ -2,7 +2,7 @@
 # $Id$
 # Language: CZ
 # This file was created automatically by the Mini GetText environment
-# on 4.11.2003 13:21
+# on 17.2.2004 13:43
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -11,8 +11,6 @@
 $mgettext_lang = "cz";
 
 # Unused messages
-$_m["There are too many related items. The number of related items is limited."]
-  = "Je vybráno pøíliš mnoho souvisejících èlánkù.";
 $_m["Add&nbsp;mutual"]
   = "Vzájemnì";
 $_m["Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters."]
@@ -75,45 +73,62 @@ $_m["To include the slice in your webpage add the following to your shtml code:"
   = "Pro zahrnutí webíku do webu pøidejte do shtml kódu:";
 $_m["Alias pro IP address of author's computer"]
   = "Alias pro IP adresu autorova poèítaèe";
+$_m["No permission"]
+  = "Neoprávnìné";
+$_m["You have not permissions to move items"]
+  = "Nemáte právo pøesouvat zprávy";
+$_m["Pending"]
+  = "Aktuální - Pøipravené";
+$_m["Expired"]
+  = "Vypršeno";
+$_m["in"]
+  = "v";
+$_m["Send email wizard"]
+  = "Prùvodce posláním emailu";
+$_m["Select related items"]
+  = "Vıbìr souvisejících èlánkù";
+$_m["Change current permissions"]
+  = "Zmìna souèasnıch práv";
+$_m["Module"]
+  = "Modul";
+$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>."]
+  = "Pokud jste si jisti, e zadáváte správné jméno a heslo, obrate se prosím \n\n"
+   ."     na <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.\n\n"
+   ."     <br>If you are sure you have typed the correct password, please e-mail \n\n"
+   ."     <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.";
+$_m["Show this field as a rich text editor (use only after having installed the necessary components!)"]
+  = "Zobraz toto pole v rich text editoru (pouijte a po nainstalování potøebnıch komponent!)";
+$_m["Can't upload Image"]
+  = "Soubor (obrázek) nelze uloit";
 # End of unused messages
 
-# ./diff.txt, row 59, 68
-# ./filler.php3, row 208
-# ./.#filler.php3.1.26, row 208
-$_m["Anonymous posting not admitted."]
-  = "Anonymní pøidávání není povoleno.";
-
-# ./filler.php3, row 157
+# ./filler.php3, row 164
 # ./offline.php3, row 82
-# ./.#filler.php3.1.26, row 157
 $_m["Slice ID not defined"]
   = "ID webíku není definováno";
 
-# ./filler.php3, row 162
+# ./filler.php3, row 169
 # ./offline.php3, row 94
-# ./.#filler.php3.1.26, row 162
 $_m["Bad slice ID"]
   = "Chybné ID webíku";
 
-# ./filler.php3, row 179
-# ./.#filler.php3.1.26, row 179
+# ./filler.php3, row 189
 # admin/se_inputform.php3, row 205
-# include/itemfunc.php3, row 1165
-# include/.#itemfunc.php3.1.77, row 1099
-# include/.#itemfunc.php3.1.80, row 1098
-# include/.#itemfunc.php3.1.82, row 1103
-# include/.#itemfunc.php3.1.88, row 1131
-# include/.#itemfunc.php3.1.95, row 1139
+# include/formutil.php3, row 187
+# include/itemfunc.php3, row 733
+# include/itemfunc.bak, row 1352
 $_m["No fields defined for this slice"]
   = "V tomto webíku nejsou definována ádná pole (co je divné)";
 
-# ./filler.php3, row 247
-# ./.#filler.php3.1.26, row 247
+# ./filler.php3, row 223
+$_m["Anonymous posting not admitted."]
+  = "Anonymní pøidávání není povoleno.";
+
+# ./filler.php3, row 274
 $_m["You are not allowed to update this item."]
   = "Nemáte právo upravovat tuto zprávu.";
 
-# ./filler.php3, row 264
-# ./.#filler.php3.1.26, row 264
+# ./filler.php3, row 291
 $_m["Some error in store item."]
   = "Nìjaká chyba pøi ukládání zprávy.";
 
@@ -141,79 +156,155 @@ $_m["Now you can dalete local file. "]
 $_m[" Delete "]
   = " Odstranit ";
 
-# admin/slicedel.php3, row 34
-# admin/slicedel2.php3, row 34, 38
-$_m["You don't have permissions to delete slice."]
-  = "Nemáte práva k odstranìní webíku.";
+# admin/se_inter_import2.php3, row 30
+# admin/se_filters.php3, row 36
+# admin/se_filters2.php3, row 39
+# admin/se_import.php3, row 33
+# admin/se_import2.php3, row 32
+# admin/se_inter_export.php3, row 28
+# admin/se_inter_import.php3, row 32
+# admin/se_inter_import3.php3, row 32
+# admin/se_mapping.php3, row 30
+# admin/se_mapping2.php3, row 35
+# admin/se_rssfeeds.php3, row 38
+$_m["You have not permissions to change feeding setting"]
+  = "Nemáte právo mìnit nastavení vımìny zpráv";
 
-# admin/slicedel.php3, row 45
-# admin/discedit.php3, row 159
-# admin/se_fields.php3, row 75, 77
-# admin/se_views.php3, row 67
-# admin/.#se_fields.php3.1.27, row 75, 77
-# include/formutil.php3, row 861
-# include/menu_aa.php3, row 33
-# include/profile.php3, row 72
-# include/.#formutil.php3.1.58, row 825
-# include/formutil.bak, row 849
-# include/formutil.php3.old, row 849
-$_m["Delete"]
-  = "Smazat";
+# admin/se_inter_import2.php3, row 45, 61
+$_m["Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."]
+  = "Nepodaøilo se navázat spojení nebo pøijmout data. Kontaktuje administrátora";
 
-# admin/slicedel.php3, row 50, 68
-$_m["Admin - Delete Slice"]
-  = "Správa webíku - Vymazání webíku";
+# admin/se_inter_import2.php3, row 52
+$_m["No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."]
+  = "ádné dostupné webíky. Nemáte práva pøijímat data z tohoto uzlu. Kontaktujte administrátora vzdáleného webíku a zkontrolujte, e obdrel vaše správné uivatelské jméno.";
 
-# admin/slicedel.php3, row 70
-$_m["<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>"]
-  = "<p>Lze vymazat jen webíky, které byly oznaèeny pro vymazání na stránce &quot;<b>Webík</b>&quot;</p>";
+# admin/se_inter_import2.php3, row 53
+$_m["Invalid password for the node name:"]
+  = "Neplatné heslo pro uzel: ";
 
-# admin/slicedel.php3, row 74
-$_m["Select slice to delete"]
-  = "Vyber webík pro smazání";
+# admin/se_inter_import2.php3, row 53
+$_m["Contact the administrator of the local node."]
+  = "Kontaktujte administrátora lokálního uzlu.";
 
-# admin/slicedel.php3, row 88
-$_m["No slice marked for deletion"]
-  = "ádnı webík nebyl oznaèen za vymazanı";
+# admin/se_inter_import2.php3, row 71, 94, 100
+# admin/se_inter_import.php3, row 61, 103, 112
+$_m["Inter node import settings"]
+  = "Správa pøijímanıch webíkù";
 
-# admin/slicedel.php3, row 93
-# admin/anonym_wizard.php3, row 162
-# admin/discedit2.php3, row 122
-# admin/itemedit.php3, row 238
-# admin/se_admin.php3, row 141
-# admin/se_compact.php3, row 234
-# admin/se_constant.php3, row 410
-# admin/se_fieldid.php3, row 265
-# admin/se_fields.php3, row 237
-# admin/se_fulltext.php3, row 163
-# admin/se_inputform.php3, row 487
-# admin/se_javascript.php3, row 82
-# admin/se_newuser.php3, row 117
-# admin/se_notify.php3, row 263
-# admin/se_rssfeeds.php3, row 205
-# admin/se_search.php3, row 155
-# admin/sliceadd.php3, row 92
-# admin/slicedit.php3, row 196
-# admin/um_uedit.php3, row 306
-# admin/slicewiz.php3, row 99
-# admin/um_gedit.php3, row 265
-# admin/.#se_fields.php3.1.27, row 235
-# admin/.#se_view.php3.1.40, row 389
-# include/formutil.php3, row 997
-# include/.#formutil.php3.1.58, row 959
-# include/formutil.bak, row 983
-# include/formutil.php3.old, row 983
-$_m["Cancel"]
-  = "Storno";
+# admin/se_inter_import2.php3, row 103
+$_m["List of available slices from the node "]
+  = "Seznam dostupnıch webíkù z uzlu ";
+
+# admin/se_view.php3, row 58
+$_m["Group by selections"]
+  = "Seskupit dle vıbìrù";
+
+# admin/se_view.php3, row 61
+$_m["Yes. Write sort[] to the conds[] field for each Selection."]
+  = "Ano. Zpravy v jednotlivıch vıbìrech seøadíte pøidáním sort[]";
+
+# admin/se_view.php3, row 64
+$_m["No. Use this sort[]:"]
+  = "Ne. Pro seøazení celkového vıpisu pouijte následující sort[]";
+
+# admin/se_view.php3, row 77
+$_m["Alerts Selection"]
+  = "Zasílání - vıbìr";
+
+# admin/se_view.php3, row 77
+# admin/um_gedit.php3, row 242
+# admin/se_inputform.php3, row 460
+# include/constants.php3, row 235
+# include/constedit.php3, row 48
+# include/um_gedit.php3, row 25
+$_m["Description"]
+  = "Popis";
+
+# admin/se_view.php3, row 82
+$_m["If you need more selections, use 'Update' and on next Edit two empty boxes appear."]
+  = "Další dvì prázné monosti se vám objeví po odeslání formuláøe.";
+
+# admin/se_view.php3, row 122, 230
+# admin/se_admin.php3, row 70
+# admin/se_compact.php3, row 88
+# admin/se_fulltext.php3, row 75
+# admin/write_mail.php3, row 182
+# admin/sliceimp_xml.php3, row 261
+$_m["Can't change slice settings"]
+  = "Nepodaøilo se zmìnit nastavení webíku";
+
+# admin/se_view.php3, row 136, 137
+# admin/se_compact.php3, row 213
+# admin/se_profile.php3, row 130
+$_m["Ascending"]
+  = "Vzestupnì";
+
+# admin/se_view.php3, row 136, 137
+# admin/se_compact.php3, row 213
+# admin/se_profile.php3, row 130
+# include/searchbar.class.php3, row 397
+$_m["Descending"]
+  = "Sestupnì";
+
+# admin/se_view.php3, row 137
+# admin/se_compact.php3, row 213
+$_m["Ascending by Priority"]
+  = "Vzestupnì dle Øazení";
+
+# admin/se_view.php3, row 137
+# admin/se_compact.php3, row 213
+$_m["Descending by Priority"]
+  = "Sestupnì dle Øazení";
+
+# admin/se_view.php3, row 184
+# admin/se_views.php3, row 35
+$_m["You do not have permission to change views"]
+  = "Nemáte právo mìnit pohledy";
+
+# admin/se_view.php3, row 235
+# admin/sliceimp_xml.php3, row 267
+$_m["Can't insert into view."]
+  = "Nemohu vloit do view.";
+
+# admin/se_view.php3, row 252
+$_m["View successfully changed"]
+  = "Pohled byl úspìšnì zmìnìn";
+
+# admin/se_view.php3, row 315, 341
+# admin/se_views.php3, row 78, 112
+$_m["Admin - design View"]
+  = "Správa webíku - definice Pohledu";
+
+# admin/se_view.php3, row 353
+# admin/se_views.php3, row 125
+$_m["Defined Views"]
+  = "Definované pohledy";
+
+# admin/se_view.php3, row 354
+# admin/se_fieldid.php3, row 278
+# admin/se_fields.php3, row 215
+# admin/slicedit.php3, row 129
+# admin/anonym_wizard.php3, row 144
+# include/constants.php3, row 234
+# include/tableviews.php3, row 121, 135
+$_m["Id"]
+  = "";
+
+# admin/se_view.php3, row 417
+# admin/se_views.php3, row 196
+# admin/slicedit.php3, row 134
+$_m["<br>To include slice in your webpage type next line \n"
+   ."                         to your shtml code: "]
+  = "<br>Webík zahrnete do své *.shtml stránky pøidáním \n"
+   ."                             následující øádky v HTML kódu: ";
 
 # admin/aafinder.php3, row 23
-# admin/tabledit.php3, row 56
 # include/sliceadd.php3, row 27
 # include/slicedit.php3, row 32
 $_m["You have not permissions to add slice"]
   = "Nemáte právo pøidávat webík";
 
-# admin/aafinder.php3, row 29, 31
+# admin/aafinder.php3, row 29, 31, 116
 # include/menu_aa.php3, row 56
 $_m["AA finder"]
   = "AA vyhledávaè";
@@ -222,134 +313,18 @@ $_m["AA finder"]
 $_m["Jump"]
   = "Skokan";
 
-# admin/aafinder.php3, row 117
+# admin/aafinder.php3, row 119
 $_m["Find all VIEWS containing in any field the string:"]
   = "Najdi všechny POHLEDY obsahující v kterémkoli poli text:";
 
-# admin/aafinder.php3, row 119, 125
-# admin/wizard_email.php3, row 67, 72
+# admin/aafinder.php3, row 121, 127
+# admin/wizard_email.php3, row 66, 71
 $_m["Go!"]
   = "Jeï!";
 
-# admin/aafinder.php3, row 123
+# admin/aafinder.php3, row 125
 $_m["Find all SLICES containing in any field the string:"]
   = "Najdi všechny WEBÍKY obsahující v kterémkoli poli text:";
-
-# admin/anonym_wizard.php3, row 41
-# admin/mailman_create_list.php3, row 51
-# admin/se_constant.php3, row 41
-# admin/se_fieldid.php3, row 131
-# admin/se_fields.php3, row 34
-# admin/se_inputform.php3, row 44
-# admin/se_javascript.php3, row 37
-# admin/.#se_fields.php3.1.27, row 34
-$_m["You have not permissions to change fields settings"]
-  = "Nemáte právo mìnit nastavení poloek";
-
-# admin/anonym_wizard.php3, row 65, 71
-$_m["Admin - Anonymous Form Wizard"]
-  = "Správa webíku - Prùvodce Anonymním Formuláøem";
-
-# admin/anonym_wizard.php3, row 80
-$_m["Settings"]
-  = "Nastavení";
-
-# admin/anonym_wizard.php3, row 85
-$_m["WARNING: You did not permit anonymous posting in slice settings."]
-  = "POZOR: Nepovolili jste anonymní zasílání v nastavení webíku.";
-
-# admin/anonym_wizard.php3, row 88
-$_m["You did not permit anonymous editing in slice settings. A form\n"
-   ."        allowing only anonymous posting will be shown."]
-  = "Nepovolili jste anonymní editování v nastavení webíku. Bude zobrazen\n"
-   ."    formuláø povolující pouze anonymní vkládání.";
-
-# admin/anonym_wizard.php3, row 103
-$_m["Warning: You want to show password, but you did not set\n"
-   ."                    'Authorized by a password field' in Settings - Anonymous editing."]
-  = "POZOR: Chcete zobrazit heslo, ale nenastavili jste 'Autorizované heslem'\n"
-   ."     v nastavení webíku - Anonymní upravování.";
-
-# admin/anonym_wizard.php3, row 111
-$_m["Help"]
-  = "Nápovìda";
-
-# admin/anonym_wizard.php3, row 112
-$_m["Help - Documentation"]
-  = "Nápovìda - Dokumentace";
-
-# admin/anonym_wizard.php3, row 113
-$_m["URLs shown after the form was sent"]
-  = "URL zobrazená po odeslání formuláøe";
-
-# admin/anonym_wizard.php3, row 115
-$_m["OK page"]
-  = "OK stránka";
-
-# admin/anonym_wizard.php3, row 117
-$_m["Error page"]
-  = "Chybová stránka";
-
-# admin/anonym_wizard.php3, row 122
-$_m["Use a PHP script to show the result on the OK and Error pages:"]
-  = "Pouít PHP skript k zobrazení vısledkù na OK a Chybové stránce:";
-
-# admin/anonym_wizard.php3, row 125
-# admin/se_fields.php3, row 200
-# admin/.#se_fields.php3.1.27, row 198
-# include/menu.php3, row 119
-# include/.#menu.php3.1.32, row 116
-$_m["Fields"]
-  = "Políèka";
-
-# admin/anonym_wizard.php3, row 129
-# admin/se_fieldid.php3, row 273
-# admin/se_fields.php3, row 102, 206
-# admin/se_inputform.php3, row 302
-# admin/se_profile.php3, row 188
-# admin/se_search.php3, row 121, 138
-# admin/.#se_fields.php3.1.27, row 102, 204
-$_m["Field"]
-  = "Poloka";
-
-# admin/anonym_wizard.php3, row 130
-# admin/se_fieldid.php3, row 272
-# admin/se_fields.php3, row 207
-# admin/se_inputform.php3, row 304
-# admin/se_view.php3, row 347
-# admin/slicedit.php3, row 124
-# admin/.#se_fields.php3.1.27, row 205
-# admin/.#se_view.php3.1.40, row 325
-# include/constants.php3, row 210
-# include/tableviews.php3, row 121, 135
-# include/.#constants.php3.1.77, row 210
-$_m["Id"]
-  = "";
-
-# admin/anonym_wizard.php3, row 131
-# admin/se_fields.php3, row 210
-# admin/se_search.php3, row 121, 139
-# admin/.#se_fields.php3.1.27, row 208
-$_m["Show"]
-  = "Zobrazit";
-
-# admin/anonym_wizard.php3, row 132
-$_m["Field Id in Form"]
-  = "Id políèka ve formuláøi";
-
-# admin/anonym_wizard.php3, row 156
-$_m["Only fields marked as \"Show\" on the \"Fields\" page\n"
-   ."         are offered on this page."]
-  = "Na této stránce jsou nabízena pouze políèka \n\n"
-   ."    se zatrhnutım \"Zobrazit\" na stránce \"Políèka\"";
-
-# admin/anonym_wizard.php3, row 160
-$_m["Show Form"]
-  = "Zobraz formuláø";
-
-# admin/anonym_wizard.php3, row 161
-$_m["Show Not So Nice"]
-  = "";
 
 # admin/discedit.php3, row 50
 $_m["You don't have permissions to edit all items."]
@@ -369,7 +344,7 @@ $_m["Item: "]
   = "Èlánek: ";
 
 # admin/discedit.php3, row 118
-# admin/slicedit.php3, row 125
+# admin/slicedit.php3, row 130
 # include/modutils.php3, row 50
 # include/slicedit.php3, row 68
 $_m["Title"]
@@ -377,23 +352,18 @@ $_m["Title"]
 
 # admin/discedit.php3, row 120
 # admin/discedit2.php3, row 49, 108
-# admin/se_users.php3, row 77
+# admin/se_users.php3, row 85
 # admin/se_users_add.php3, row 36
 $_m["Author"]
   = "Autor";
 
 # admin/discedit.php3, row 122
-# include/constants.php3, row 229
-# include/.#constants.php3.1.61, row 200
-# include/.#constants.php3.1.62, row 202
-# include/.#constants.php3.1.63, row 204
-# include/.#constants.php3.1.65, row 204
-# include/.#constants_param_wizard.php3.1.34, row 339
-# include/.#constants.php3.1.77, row 229
+# include/constants.php3, row 253
 $_m["Date"]
   = "Datum";
 
 # admin/discedit.php3, row 124
+# admin/related_sel.php3, row 89
 $_m["Actions"]
   = "Akce";
 
@@ -401,21 +371,23 @@ $_m["Actions"]
 $_m["No discussion comments"]
   = "ádné diskusní pøíspìvky";
 
+# admin/discedit.php3, row 159
+# admin/se_fields.php3, row 75, 77
+# admin/se_views.php3, row 67
+# admin/slicedel.php3, row 45
+# include/searchbar.class.php3, row 439
+# include/formutil.php3, row 983
+# include/profile.php3, row 33
+# include/menu_aa.php3, row 33
+$_m["Delete"]
+  = "Smazat";
+
 # admin/discedit.php3, row 161
 # admin/prev_navigation.php3, row 29
 # admin/se_fields.php3, row 73
 # admin/se_views.php3, row 66
-# admin/.#se_fields.php3.1.27, row 73
+# include/formutil.php3, row 1823
 # include/filedit.php3, row 115
-# include/util.php3.marphy, row 1046
-# include/util.php3, row 1167
-# include/.#util.php3.1.100, row 1006
-# include/.#util.php3.1.106, row 1047
-# include/.#util.php3.1.108, row 1047
-# include/util.bak, row 1061
-# include/.#util.php3.1.111, row 1047
-# include/.#util.php3.1.116, row 1070
-# include/.#util.php3.1.123, row 1126
 $_m["Edit"]
   = "Editace";
 
@@ -432,16 +404,16 @@ $_m["You do not have permission to edit items in this slice"]
   = "Nemáte právo upravovat zprávy v tomto webíku";
 
 # admin/discedit2.php3, row 48, 107
+# admin/write_mail.php3, row 163, 271
 $_m["Subject"]
   = "Pøedmìt";
 
 # admin/discedit2.php3, row 50, 109
 # admin/se_newuser.php3, row 49, 107
 # admin/setup.php3, row 91, 226
-# admin/um_uedit.php3, row 258
-# admin/slicewiz.php3, row 82
+# admin/slicewiz.php3, row 79
+# admin/um_uedit.php3, row 267
 # include/um_uedit.php3, row 33, 34, 35
-# include/.#constants_param_wizard.php3.1.34, row 146
 $_m["E-mail"]
   = "";
 
@@ -474,84 +446,64 @@ $_m["Edit comment"]
   = "Editace pøíspìvku";
 
 # admin/discedit2.php3, row 120
-# admin/itemedit.php3, row 222
-# admin/se_admin.php3, row 140
-# admin/se_compact.php3, row 233
-# admin/se_constant.php3, row 409
-# admin/se_fieldid.php3, row 264
-# admin/se_fields.php3, row 236
-# admin/se_fulltext.php3, row 162
-# admin/se_inputform.php3, row 486
-# admin/se_javascript.php3, row 81
-# admin/se_notify.php3, row 261
+# admin/se_filters.php3, row 250
+# admin/se_import.php3, row 120
+# admin/se_mapping.php3, row 196
 # admin/se_search.php3, row 154
-# admin/slicedit.php3, row 194
-# admin/um_uedit.php3, row 303
-# admin/um_gedit.php3, row 262
-# admin/.#se_fields.php3.1.27, row 234
-# admin/.#se_view.php3.1.40, row 388
-# include/formutil.php3, row 991
-# include/.#formutil.php3.1.58, row 953
-# include/formutil.bak, row 977
-# include/formutil.php3.old, row 977
+# admin/um_gedit.php3, row 229
+# admin/um_uedit.php3, row 333
+# include/searchbar.class.php3, row 437
+# include/formutil.php3, row 1703
 $_m["Update"]
   = "Zmìnit";
 
 # admin/discedit2.php3, row 121
-# admin/itemedit.php3, row 227
-# admin/se_notify.php3, row 262
-# admin/slicedit.php3, row 195
-# include/formutil.php3, row 1000
-# include/.#formutil.php3.1.58, row 962
-# include/formutil.bak, row 986
-# include/formutil.php3.old, row 986
+# include/formutil.php3, row 165, 1742
 $_m["Reset form"]
   = "Vymazat formuláø";
 
-# admin/feed_to.php3, row 27
+# admin/discedit2.php3, row 122
+# admin/se_newuser.php3, row 117
+# admin/se_search.php3, row 155
+# admin/sliceimp.php3, row 484
+# admin/constants_sel.php3, row 190
+# include/formutil.php3, row 170, 1735
+$_m["Cancel"]
+  = "Storno";
+
+# admin/feed_to.php3, row 49
 $_m["Export Item to Selected Slice"]
   = "Pøedat zprávu do webíku";
 
-# admin/feed_to.php3, row 32
+# admin/feed_to.php3, row 55
 $_m["Export selected items to selected slice"]
   = "Pøedat vybrané zprávy do zvolenıch webíku";
 
-# admin/feed_to.php3, row 35
-# admin/slicedit.php3, row 118
+# admin/feed_to.php3, row 58
+# admin/slicedit.php3, row 127
 # include/constants.php3, row 56
-# include/menu.php3, row 115
-# include/menu_util.php3, row 72
-# include/sliceadd.php3, row 46, 77
-# include/.#constants.php3.1.62, row 42
-# include/.#constants.php3.1.63, row 42
-# include/.#constants.php3.1.65, row 42
-# include/.#menu.php3.1.32, row 112
-# include/.#constants.php3.1.77, row 56
+# include/menu_util.php3, row 65
+# include/menu.php3, row 119
+# include/sliceadd.php3, row 54, 82
 $_m["Slice"]
   = "Webík";
 
-# admin/feed_to.php3, row 36
-# admin/index.php3, row 617
-# admin/.#index.php3.1.73, row 613
-# include/menu_aa.php3, row 47
-$_m["Export"]
-  = "Vımìna zpráv";
+# admin/feed_to.php3, row 59
+$_m["Holding bin"]
+  = "Zásobník";
 
-# admin/feed_to.php3, row 37
-# admin/index.php3, row 436
-# admin/se_filters.php3, row 266
+# admin/feed_to.php3, row 60
+# admin/se_filters.php3, row 272
 # admin/slicedit.php3, row 34
-# admin/.#index.php3.1.73, row 433
-# include/menu.php3, row 165
-# include/.#menu.php3.1.32, row 160
+# include/menu.php3, row 169
 $_m["Active"]
   = "Aktuální";
 
-# admin/feed_to.php3, row 53
-$_m["No permission"]
-  = "Neoprávnìné";
+# admin/feed_to.php3, row 61
+$_m["Do not export to this slice"]
+  = "Neexportovat do webíku";
 
-# admin/feed_to.php3, row 58
+# admin/feed_to.php3, row 79
 $_m["No permission to set feeding for any slice"]
   = "Nemáte právo nastavit vımìnu zpráv s ádnım webíkem";
 
@@ -561,20 +513,19 @@ $_m["No permissions for file manager."]
 
 # admin/fileman.php3, row 56
 $_m["Unable to run File Manager"]
-  = "";
+  = "Nelze spustit Spravce souborù";
 
 # admin/fileman.php3, row 57
 $_m["doesn't exist"]
-  = "";
+  = "neexistuje";
 
 # admin/fileman.php3, row 64
 $_m["Unable to mkdir"]
-  = "";
+  = "Nelze vytvoøit adresáø";
 
 # admin/fileman.php3, row 90, 96
+# include/menu.php3, row 150
 # include/filedit.php3, row 63, 69
-# include/menu.php3, row 146
-# include/.#menu.php3.1.32, row 141
 $_m["File Manager"]
   = "Správce Souborù";
 
@@ -589,7 +540,7 @@ $_m["Unselect all"]
 
 # admin/fileman.php3, row 160
 $_m["Delete selected"]
-  = "";
+  = "Vymazat vybrané";
 
 # admin/fileman.php3, row 199
 $_m["Create new file"]
@@ -607,196 +558,2294 @@ $_m["Copy template dir"]
 $_m["Create new directory"]
   = "Vytvoø novı adresáø";
 
-# admin/index.php3, row 165
-# admin/.#index.php3.1.73, row 162
+# admin/index.php3, row 129
 $_m["You do not have permission to edit items in the slice:"]
   = "Nemáte právo editovat èlánky ve webíku:";
 
-# admin/index.php3, row 221, 226, 230
-# admin/.#index.php3.1.73, row 218, 223, 227
-$_m["You have not permissions to move items"]
-  = "Nemáte právo pøesouvat zprávy";
+# admin/index.php3, row 157
+$_m["Move to Active"]
+  = "Vystavit";
 
-# admin/index.php3, row 281
-# admin/wizard_email.php3, row 79, 95
-# admin/.#index.php3.1.73, row 278
-$_m["Send Emails Wizard"]
-  = "Prùvodce Posláním Emailu";
+# admin/index.php3, row 161
+$_m["Move to Holding bin"]
+  = "Poslat do zásobníku";
 
-# admin/index.php3, row 310
-# admin/.#index.php3.1.73, row 307
-$_m["You have not permissions to remove items"]
-  = "Nemáte právo mazat zprávy";
+# admin/index.php3, row 165
+$_m["Move to Trash"]
+  = "Poslat do koše";
 
-# admin/index.php3, row 351
-# admin/related_sel.php3, row 86
-# admin/.#index.php3.1.73, row 348
-$_m["Editor window - item manager"]
-  = "Správa zpráv";
+# admin/index.php3, row 169
+# include/menu_aa.php3, row 47
+$_m["Export"]
+  = "Vımìna zpráv";
 
-# admin/index.php3, row 441
-# admin/.#index.php3.1.73, row 438
-$_m["Pending"]
-  = "Aktuální - Pøipravené";
+# admin/index.php3, row 173
+$_m["Preview"]
+  = "Zobraz zprávu";
 
-# admin/index.php3, row 446
-# admin/.#index.php3.1.73, row 443
-$_m["Expired"]
-  = "Vypršeno";
+# admin/index.php3, row 178
+$_m["Send email"]
+  = "Poslat e-mail";
 
-# admin/index.php3, row 451
-# admin/slicedit.php3, row 35
-# admin/.#index.php3.1.73, row 448
-# include/menu.php3, row 171
-# include/.#menu.php3.1.32, row 166
-$_m["Hold bin"]
-  = "Zásobník";
+# admin/index.php3, row 196
+$_m["APC ActionApps - Reader Manager"]
+  = "APC ActionApps - Správce ètenáøù";
 
-# admin/index.php3, row 456
-# admin/.#index.php3.1.73, row 453
-# include/menu.php3, row 173
-# include/.#menu.php3.1.32, row 168
-$_m["Trash bin"]
-  = "Koš";
+# admin/index.php3, row 197
+$_m["APC ActionApps - Item Manager"]
+  = "APC ActionApps - Správce zpráv";
 
-# admin/index.php3, row 531, 535
-# admin/related_sel.php3, row 252
+# admin/itemedit.php3, row 146
+$_m["Error: no fields."]
+  = "Chyba: ádné políèko.";
+
+# admin/itemedit.php3, row 155
+$_m["Bad item ID"]
+  = "Špatné èíslo zprávy";
+
+# admin/itemedit.php3, row 171
+# include/menu.php3, row 65
+$_m["Add Item"]
+  = "Pøidat zprávu";
+
+# admin/itemedit.php3, row 171
+$_m["Edit Item"]
+  = "Upravit zprávu";
+
+# admin/prev_navigation.php3, row 31
+# admin/constants_sel.php3, row 167, 189
+# include/formutil.php3, row 61
+# include/itemfunc.bak, row 856
+$_m["OK"]
+  = "";
+
+# admin/related_sel.php3, row 89
+$_m["Publish date"]
+  = "Datum vystavení";
+
+# admin/related_sel.php3, row 89
+$_m["Headline"]
+  = "Nadpis";
+
+# admin/related_sel.php3, row 135
+$_m["Editor window - item manager, related selection window"]
+  = "APC ActionApps - Vıbìr souvisejících èlánkù";
+
+# admin/related_sel.php3, row 178
+$_m["There are too many related items. The number of related items is limited."]
+  = "Je vybráno pøíliš mnoho souvisejících èlánkù.";
+
+# admin/related_sel.php3, row 202
+# admin/se_users_add.php3, row 48
+# include/item.php3, row 1090
+# include/util.php3, row 1129
+# include/msgpage.php3, row 72
+$_m["Back"]
+  = "Zpìt";
+
+# admin/se_admin.php3, row 36
+$_m["You have no permission to set configuration parameters of this slice"]
+  = "Nemáte právo nastavovat configuraèní parametry tohoto webíku";
+
+# admin/se_admin.php3, row 54, 130
+# admin/se_compact.php3, row 55, 198
+# include/constants.php3, row 385, 425, 442, 486, 514, 540, 562, 601, 625, 648, 677
+# include/tableviews.php3, row 151
+$_m["Top HTML"]
+  = "Horní HTML kód";
+
+# admin/se_admin.php3, row 55, 132
+$_m["Item format"]
+  = "HTML kód pro zobrazení zprávy";
+
+# admin/se_admin.php3, row 56, 134
+# admin/se_compact.php3, row 56, 205
+# include/constants.php3, row 389, 427, 444, 489, 516, 542, 565, 605, 627, 652, 681
+# include/tableviews.php3, row 153
+$_m["Bottom HTML"]
+  = "Spodní HTML kód";
+
+# admin/se_admin.php3, row 57, 136
+# admin/se_compact.php3, row 57, 224
+# admin/se_fulltext.php3, row 57, 152
+# include/constants.php3, row 390, 428, 566, 606, 628, 653, 682, 709
+$_m["Remove strings"]
+  = "Odstraòované øetìzce";
+
+# admin/se_admin.php3, row 58, 138
+# include/constants.php3, row 418, 438, 509, 531, 557, 588, 616, 643, 672, 701
+$_m["HTML code for \"No item found\" message"]
+  = "HTML kód místo \"Nenalezena ádná zpráva\"";
+
+# admin/se_admin.php3, row 81
+$_m["Admin fields update successful"]
+  = "Vzheld administrativních stánek úspìšnì zmìnìn";
+
+# admin/se_admin.php3, row 100, 117
+$_m["Admin - design Item Manager view"]
+  = "Správa webíku - Vzhled Administrace";
+
+# admin/se_admin.php3, row 123
+# admin/se_compact.php3, row 183
+# admin/se_fulltext.php3, row 138
+# admin/se_inputform.php3, row 94, 343
+$_m["Default"]
+  = "Implicitní";
+
+# admin/se_admin.php3, row 128
+$_m["Listing of items in Admin interface"]
+  = "Vıpis zpráv v administrativních stránkách";
+
+# admin/se_admin.php3, row 131
+# admin/se_compact.php3, row 199, 219
+# admin/se_fulltext.php3, row 147
+$_m["HTML code which appears at the top of slice area"]
+  = "HTML kód, kterı se zobrazí pøed kódem webíku";
+
+# admin/se_admin.php3, row 133
+# admin/se_compact.php3, row 201, 221
+# admin/se_fulltext.php3, row 149
+$_m["Put here the HTML code combined with aliases form bottom of this page\n"
+   ."                     <br>The aliase will be substituted by real values from database when it will be posted to page"]
+  = "Sem patøí HTML kód v kombinaci s aliasy uvedenımi dole na stránce\n"
+   ."                     <br>Aliasy budou v okamiku zobrazování na web nahrazeny skuteènımi hodnotami z databáze";
+
+# admin/se_admin.php3, row 135
+# admin/se_compact.php3, row 206, 223
+# admin/se_fulltext.php3, row 151
+$_m["HTML code which appears at the bottom of slice area"]
+  = "HTML kód, kterı se zobrazí za vlasním kódem webíku";
+
+# admin/se_admin.php3, row 137
+# admin/se_compact.php3, row 225
+# admin/se_fulltext.php3, row 153
+$_m["Removes empty brackets etc. Use ## as delimeter."]
+  = "Odstraní prázdné závorky atd. Pouijte ## jako oddìlovaè.";
+
+# admin/se_admin.php3, row 139
+$_m["Code to be printed when no item is filled (or user have no permission to any item in the slice)"]
+  = "Text zobrazenı není-li vloena ádná zpráva (nebo uivatel nemá právo ádnou zprávu editovat)";
+
+# admin/se_compact.php3, row 37
+$_m["You have not permissions to change compact view formatting"]
+  = "Nemáte právo mìnit vzhled pøehledu zpráv";
+
+# admin/se_compact.php3, row 54, 200
+# include/constants.php3, row 386, 426, 487, 515, 541, 602, 649, 678
+$_m["Odd Rows"]
+  = "Lichı záznam";
+
+# admin/se_compact.php3, row 58, 226
+$_m["'No item found' message"]
+  = "Hláška 'Nenalezena ádná zpráva'";
+
+# admin/se_compact.php3, row 60, 203
+# include/constants.php3, row 388, 488, 604, 651, 680
+$_m["Even Rows"]
+  = "Sudı záznam";
+
+# admin/se_compact.php3, row 62, 218
+$_m["Category top HTML"]
+  = "Horní HTML kód pro kategorii";
+
+# admin/se_compact.php3, row 63, 220
+$_m["Category Headline"]
+  = "Nadpis kategorie";
+
+# admin/se_compact.php3, row 64, 222
+$_m["Category bottom HTML"]
+  = "Spodní HTML kód pro kategorii";
+
+# admin/se_compact.php3, row 96
+$_m["Design of compact design successfully changed"]
+  = "Vzhled pøehledu zpráv byl úspìšnì zmìnìm";
+
+# admin/se_compact.php3, row 136, 175
+# admin/se_newuser.php3, row 82
+$_m["Admin - design Index view"]
+  = "Správa webíku - Vzhled pøehledu zpráv";
+
+# admin/se_compact.php3, row 175
+$_m["Use these boxes ( and the tags listed below ) to control what appears on summary page"]
+  = "Na této stránce lze nastavit, co se objeví na stránce pøehledu zpráv";
+
+# admin/se_compact.php3, row 189
+$_m["HTML code for index view"]
+  = "HTML kód pro pøehled zpráv";
+
+# admin/se_compact.php3, row 202
+# include/constants.php3, row 387, 510, 603, 650, 679
+$_m["Use different HTML code for even rows"]
+  = "Odlišnı HTML kód pro sudé záznamy";
+
+# admin/se_compact.php3, row 204
+$_m["You can define different code for odd and ever rows\n"
+   ."                         <br>first red, second black, for example"]
+  = "TIP: Rozlišením sudıch a lichıch záznamù lze docílit napøíklad odlišení øádkù jinımi barvami pozadí\n"
+   ."                         - první tøeba zelenı, druhı lutı, atd.";
+
+# admin/se_compact.php3, row 207
+# include/constants.php3, row 401, 495, 611, 658, 687
+$_m["Group by"]
+  = "Seskupit dle";
+
+# admin/se_compact.php3, row 212
+$_m["Whole text"]
+  = "Celı text";
+
+# admin/se_compact.php3, row 212
+$_m["1st letter"]
+  = "1. písmeno";
+
+# admin/se_compact.php3, row 212, 212
+$_m["letters"]
+  = "písmena";
+
+# admin/se_compact.php3, row 215
+$_m["'by Priority' is usable just for fields using constants (like category)"]
+  = "'dle Øazení' lze pouít jen pro pole pouívající konstant (kategorie) - tam take najdete hodnoty pro 'Øazení'";
+
+# admin/se_compact.php3, row 227
+$_m["message to show in place of slice.php3, if no item matches the query"]
+  = "zpráva, která se objeví pøi nenalezení ádného odpovídajícího èlánku";
+
+# admin/se_constant.php3, row 40
+# admin/se_fieldid.php3, row 131
+# admin/se_fields.php3, row 34
+# admin/se_javascript.php3, row 37
+# admin/se_inputform.php3, row 44
+# admin/anonym_wizard.php3, row 41
+# admin/mailman_create_list.php3, row 51
+$_m["You have not permissions to change fields settings"]
+  = "Nemáte právo mìnit nastavení poloek";
+
+# admin/se_constant.php3, row 46
+$_m["You have not permissions to change category settings"]
+  = "Nemáte právo mìnit nastavení kategorií";
+
+# admin/se_constant.php3, row 68
+$_m["You have not permissions to change fields settings for the slice owning this group"]
+  = "Nemáte administrátorská práva k webíku, kterı vlastní tuto skupinu hodnot";
+
+# admin/se_constant.php3, row 140
+$_m[" items changed to new value "]
+  = " èlánkù bylo zmìnìno na novou hodnotu ";
+
+# admin/se_constant.php3, row 156, 392
+# admin/um_gedit.php3, row 241
+# include/constants.php3, row 228
+# include/constedit.php3, row 37
+# include/fileman.php3, row 24
+# include/um_gedit.php3, row 24
+# include/tableviews.php3, row 122, 138
+$_m["Name"]
+  = "Jméno";
+
+# admin/se_constant.php3, row 157, 393
+# admin/se_profile.php3, row 195
+# admin/se_mapping.php3, row 218
+# include/constants.php3, row 229
+# include/constedit.php3, row 40
+$_m["Value"]
+  = "Hodnota";
+
+# admin/se_constant.php3, row 158, 394
+# admin/se_fields.php3, row 103, 216
+# include/constants.php3, row 230
+# include/constedit.php3, row 46
+$_m["Priority"]
+  = "Øazení";
+
+# admin/se_constant.php3, row 165, 326
+# include/constants.php3, row 490
+$_m["Constant Group"]
+  = "Skupina hodnot";
+
+# admin/se_constant.php3, row 171
+$_m["This constant group already exists"]
+  = "Tato skupina hodnot ji existuje";
+
+# admin/se_constant.php3, row 252
+$_m["Constants update successful"]
+  = "Zmìna hodnot úspìšnì provedena";
+
+# admin/se_constant.php3, row 262
+$_m["No category field defined in this slice.<br>Add category field to this slice first (see Field page)."]
+  = "Pole kategorie není v tomto webíku definováno.<br>  Pøidejte pole kategorie do webíku na stránce Políèka.";
+
+# admin/se_constant.php3, row 283, 289
+$_m["Admin - Constants Setting"]
+  = "Správa webíku - Nastavení hodnot";
+
+# admin/se_constant.php3, row 297
+$_m["Delete whole group"]
+  = "Smazat celou skupinu";
+
+# admin/se_constant.php3, row 324
+# admin/se_inputform.php3, row 319
+$_m["Constants"]
+  = "Hodnoty";
+
+# admin/se_constant.php3, row 347
+$_m["Constants used in slice"]
+  = "Hodnoty pouity v";
+
+# admin/se_constant.php3, row 361
+$_m["Constant group owner - slice"]
+  = "Vlastník skupiny - webík";
+
+# admin/se_constant.php3, row 365
+$_m["Whoever first updates values becomes owner."]
+  = "Vlastníkem se stane první webík, kterı upraví hodnoty.";
+
+# admin/se_constant.php3, row 380
+$_m["Change owner"]
+  = "Zmìnit vlastníka";
+
+# admin/se_constant.php3, row 386
+$_m["Propagate changes into current items"]
+  = "Propagovat zmìny do stávajících èlánkù";
+
+# admin/se_constant.php3, row 388
+$_m["Where are these constants used?"]
+  = "Kde jsou konstanty pouity?";
+
+# admin/se_constant.php3, row 390
+$_m["Edit in Hierarchical editor (allows to create constant hierarchy)"]
+  = "Editovat v Hierarchickém editoru (umoòuje urèit hierarchii hodnot)";
+
+# admin/se_constant.php3, row 392
+# include/constedit.php3, row 37
+$_m["shown&nbsp;on&nbsp;inputpage"]
+  = "zobrazeno&nbsp;ve&nbsp;vstupním&nbsp;formuláøi";
+
+# admin/se_constant.php3, row 393
+# include/constedit.php3, row 40
+$_m["stored&nbsp;in&nbsp;database"]
+  = "uloeno&nbsp;v&nbsp;databázi";
+
+# admin/se_constant.php3, row 394
+# include/constedit.php3, row 46
+$_m["constant&nbsp;order"]
+  = "Poøadí&nbsp;hodnot";
+
+# admin/se_constant.php3, row 395
+# include/fileman.php3, row 81, 88
+$_m["Parent"]
+  = "Nadkategorie";
+
+# admin/se_constant.php3, row 395
+$_m["categories&nbsp;only"]
+  = "jen&nbsp;pro&nbsp;kategorie";
+
+# admin/se_constant.php3, row 431
+$_m["Are you sure you want to PERMANENTLY DELETE this group? Type yes or no."]
+  = "Jste si jisti, e chcete PERMANENTNÌ SMAZAT tuto skupinu? Napište ano èi ne.";
+
+# admin/se_constant.php3, row 431
+# admin/write_mail.php3, row 278
+# admin/slicewiz.php3, row 58
+# include/tabledit_column.php3, row 150, 153
+# include/tableviews.php3, row 164
+$_m["no"]
+  = "ne";
+
+# admin/se_constant.php3, row 431
+# admin/write_mail.php3, row 278
+# admin/slicewiz.php3, row 58
+# include/tabledit_column.php3, row 150, 153
+# include/tableviews.php3, row 164
+$_m["yes"]
+  = "ano";
+
+# admin/se_fieldid.php3, row 204
+$_m["This ID is reserved"]
+  = "Toto ID je rezerováno";
+
+# admin/se_fieldid.php3, row 209
+$_m["This ID is already used"]
+  = "Toto ID je ji pouito";
+
+# admin/se_fieldid.php3, row 228, 235, 242
+$_m["Admin - change Field IDs"]
+  = "Správa webíku - Zmìna ID políèka";
+
+# admin/se_fieldid.php3, row 238
+$_m["field IDs were changed"]
+  = "ID políèka bylo zmìnìno";
+
+# admin/se_fieldid.php3, row 244
+$_m["This page allows to change field IDs. It is a bit dangerous operation and may last long.\n"
+   ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
+   ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
+   ."    added automatically.<br>"]
+  = "Tato stránka umoòuje zmìnit identifikátory jednotlivıch políèek. \n"
+   ."     Je to pomìrnì nebezpeèná operace a mùe trvat dlouho. Je dost \n"
+   ."     pravdìpodobné, e tuto operaci nikdy nevyuijete - pouívá se jen \n"
+   ."     ve vıjimeènıch pøípadech (nastavení formuláøe pro vyhledávání ve více \n"
+   ."     webících.<br><br>\n"
+   ."     Vyberte ID políèka, které chcete zmìnit a potom nové ID a èíslo. Teèky \n"
+   ."     budou automaticky doplnìny.<br>";
+
+# admin/se_fieldid.php3, row 245
+$_m["Change from"]
+  = "Zmìnit z";
+
+# admin/se_fieldid.php3, row 250
+# admin/sliceexp.php3, row 180
+$_m["to"]
+  = "do";
+
+# admin/se_fieldid.php3, row 264
+# admin/se_fields.php3, row 211
+# admin/anonym_wizard.php3, row 136
+# include/menu.php3, row 123
+$_m["Fields"]
+  = "Políèka";
+
+# admin/se_fieldid.php3, row 279
+# admin/se_fields.php3, row 102, 214
+# admin/se_profile.php3, row 193
+# admin/se_search.php3, row 121, 138
+# admin/anonym_wizard.php3, row 143
+$_m["Field"]
+  = "Poloka";
+
+# admin/se_fields.php3, row 169
+# admin/se_inputform.php3, row 176
+$_m["Fields update successful"]
+  = "Nastavení poloek úspìšnì zmìnìno";
+
+# admin/se_fields.php3, row 184, 200
+# admin/se_inputform.php3, row 253, 288
+$_m["Admin - configure Fields"]
+  = "Správa webíku - Nastavení polí";
+
+# admin/se_fields.php3, row 217
+$_m["Required"]
+  = "Povinná";
+
+# admin/se_fields.php3, row 218
+# admin/se_search.php3, row 121, 139
+# admin/anonym_wizard.php3, row 145
+$_m["Show"]
+  = "Zobrazit";
+
+# admin/se_fields.php3, row 220
+$_m["Aliases"]
+  = "Aliasy";
+
+# admin/se_filters.php3, row 67
+# admin/se_mapping.php3, row 85
+$_m["There are no imported slices"]
+  = "Není nastaven ádnı webík, ze kterého se mají pøijímat zprávy";
+
+# admin/se_filters.php3, row 86
+$_m["-- The same --"]
+  = "-- stejná --";
+
+# admin/se_filters.php3, row 146, 245
+$_m["Admin - Content Pooling - Filters"]
+  = "Správa webíku - Filtry pro vımìnu zpráv";
+
+# admin/se_filters.php3, row 258
+$_m["Content Pooling - Configure Filters"]
+  = "Nastavení filtrù pro pøíjem zpráv";
+
+# admin/se_filters.php3, row 261
+$_m["Filter for imported slice"]
+  = "Filtr pro pøíjem zpráv z webíku";
+
+# admin/se_filters.php3, row 265
+$_m["Categories"]
+  = "Kategorie";
+
+# admin/se_filters.php3, row 270
+# admin/se_mapping.php3, row 217
+# admin/se_csv_import2.php3, row 222
+$_m["From"]
+  = "Z";
+
+# admin/se_filters.php3, row 271
+# admin/se_mapping.php3, row 216
+# admin/se_csv_import2.php3, row 221
+$_m["To"]
+  = "Do";
+
+# admin/se_filters.php3, row 283
+$_m["All Categories"]
+  = "Všechny kategorie";
+
+# admin/se_filters.php3, row 290, 308
+$_m["No category defined"]
+  = "Kategorie nebyly definovány";
+
+# admin/se_filters.php3, row 337, 337
+# include/manager.class.php3, row 379
+$_m["Select all"]
+  = "Vybrat vše";
+
+# admin/se_filters2.php3, row 143
+# admin/se_import2.php3, row 129, 131
+$_m["Content Pooling update successful"]
+  = "Nastavení vımìny zpráv úspìšnì zmìnìno";
+
+# admin/se_fulltext.php3, row 37
+$_m["You have not permissions to change fulltext formatting"]
+  = "Nemáte právo mìnit vzhled vıpisu zprávy";
+
+# admin/se_fulltext.php3, row 54, 146
+$_m["Top HTML code"]
+  = "Horní HTML kód";
+
+# admin/se_fulltext.php3, row 55, 148
+$_m["Fulltext HTML code"]
+  = "HTML kód textu zprávy";
+
+# admin/se_fulltext.php3, row 56, 150
+$_m["Bottom HTML code"]
+  = "Spodní HTML kód";
+
+# admin/se_fulltext.php3, row 58, 154
+$_m["Show discussion"]
+  = "Zobrazit diskusi";
+
+# admin/se_fulltext.php3, row 86
+$_m["Fulltext format update successful"]
+  = "Vzhled textu zprávy byl úspìšnì zmìnìn";
+
+# admin/se_fulltext.php3, row 105
+$_m[" -- Empty -- "]
+  = " -- ádná -- ";
+
+# admin/se_fulltext.php3, row 114, 130
+$_m["Admin - design Fulltext view"]
+  = "Správa webíku - Vzhled jedné zprávy";
+
+# admin/se_fulltext.php3, row 130
+$_m["Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"]
+  = "Na této stránce lze nastavit, co se objeví na stránce pøi prohlíení tìla zprávy";
+
+# admin/se_fulltext.php3, row 144
+$_m["HTML code for fulltext view"]
+  = "HTML kód pro zobrazení zprávy";
+
+# admin/se_fulltext.php3, row 155
+$_m["Use HTML tags"]
+  = "Diskusi formátovat v HTML";
+
+# admin/se_import.php3, row 79
+# admin/sliceadd.php3, row 49
+# admin/slicedit.php3, row 102
+# include/menu.php3, row 78
+$_m["Slice Administration"]
+  = "Administrace webíku";
+
+# admin/se_import.php3, row 116
+$_m["Admin - configure Content Pooling"]
+  = "Správa webíku - Vımìna zpráv";
+
+# admin/se_import.php3, row 132
+$_m["Enable export to slice:"]
+  = "Povolit zasílání zpráv do webíku:";
+
+# admin/se_import.php3, row 135
+$_m["Export disable"]
+  = "Zasílání zakázáno";
+
+# admin/se_import.php3, row 137
+$_m["Export enable"]
+  = "Zasílání povoleno";
+
+# admin/se_import.php3, row 168
+$_m["Enable export to any slice"]
+  = "Povol exportovat zprávy do všech webíkù";
+
+# admin/se_import.php3, row 172
+$_m["Import from slice:"]
+  = "Pøijímat zprávy z:";
+
+# admin/se_import.php3, row 181
+$_m["Do not import"]
+  = "Nepøijímat";
+
+# admin/se_import.php3, row 183
+# include/menu_aa.php3, row 48
+$_m["Import"]
+  = "Pøijímat";
+
+# admin/se_inter_export.php3, row 64, 96, 104
+$_m["Inter node export settings"]
+  = "Správa povolení zasílání webíkù";
+
+# admin/se_inter_export.php3, row 106
+$_m["Existing exports of the slice "]
+  = "Seznam uzlù a uivatelù, kam bude zasílán webík ";
+
+# admin/se_inter_export.php3, row 127
+$_m["Insert new item"]
+  = "Pøidejte uzel a uivatele";
+
+# admin/se_inter_export.php3, row 129
+$_m["Remote Nodes"]
+  = "Seznam uzlù";
+
+# admin/se_inter_export.php3, row 140
+$_m["User name"]
+  = "Jméno uivatele";
+
+# admin/se_inter_import.php3, row 106
+$_m["Create new feed from node"]
+  = "Pøidej vımìnu z uzlem ...";
+
+# admin/se_inter_import.php3, row 119
+$_m["Existing remote imports into the slice "]
+  = "Seznam pøijímanıch webíkù do webíku ";
+
+# admin/se_inter_import.php3, row 127
+$_m["Missing!!!"]
+  = "";
+
+# admin/se_inter_import.php3, row 140
+$_m["All remote nodes"]
+  = "Seznam uzlù";
+
+# admin/se_profile.php3, row 36
+# admin/se_users.php3, row 34
+# admin/usermng.php3, row 35
+$_m["You have not permissions to manage users"]
+  = "Nemáte právo ke správì uivatelù";
+
+# admin/se_profile.php3, row 51
+$_m["Rule deleted"]
+  = "Pravidlo úspìšnì vymazáno";
+
+# admin/se_profile.php3, row 63, 70, 77, 84, 93
+$_m["Rule added"]
+  = "Pravidlo pøidáno";
+
+# admin/se_profile.php3, row 99
+$_m["Error: Can't add rule"]
+  = "Chyba pøi pøidávání nového pravidla";
+
+# admin/se_profile.php3, row 119
+$_m["Item number"]
+  = "Poèet zpráv";
+
+# admin/se_profile.php3, row 120
+$_m["Input view ID"]
+  = "Pohled pro vstup";
+
+# admin/se_profile.php3, row 121
+$_m["Item filter"]
+  = "Filtr zpráv";
+
+# admin/se_profile.php3, row 122
+$_m["Item order"]
+  = "Øazení";
+
+# admin/se_profile.php3, row 123
+$_m["Hide field"]
+  = "Skrıt políèko";
+
+# admin/se_profile.php3, row 124
+$_m["Hide and Fill"]
+  = "Skrıt a vyplnit";
+
+# admin/se_profile.php3, row 125
+$_m["Fill field"]
+  = "Vyplnit políèko";
+
+# admin/se_profile.php3, row 126
+$_m["Predefine field"]
+  = "Pøednastavit políèíko";
+
+# admin/se_profile.php3, row 127
+$_m["Stored query"]
+  = "Uloenı filtr";
+
+# admin/se_profile.php3, row 134, 163
+$_m["Admin - user Profiles"]
+  = "Správa webíku - Uivatelské profily";
+
+# admin/se_profile.php3, row 170
+$_m["Rules"]
+  = "Nastavená pravidla";
+
+# admin/se_profile.php3, row 181
+$_m["No rule is set"]
+  = "ádné pravidlo nebylo definováno";
+
+# admin/se_profile.php3, row 185
+$_m["Add Rule"]
+  = "Pøidat pravidlo";
+
+# admin/se_profile.php3, row 192
+$_m["Rule"]
+  = "Pravidlo";
+
+# admin/se_profile.php3, row 194
+# admin/se_inputform.php3, row 105, 441
+$_m["Function"]
+  = "Funkce";
+
+# admin/se_profile.php3, row 196
+# include/formutil.php3, row 601, 618
+$_m["HTML"]
+  = "";
+
+# admin/se_profile.php3, row 202
+$_m["number of item displayed in Item Manager"]
+  = "poèet zpráv zobrazenıch v administraci";
+
+# admin/se_profile.php3, row 203
+$_m["id of view used for item input"]
+  = "id pohledu pouitého pro vstupní formuláø";
+
+# admin/se_profile.php3, row 204
+$_m["preset \"Search\" in Itme Manager"]
+  = "pøednastavení \"Hledání\" v administraci";
+
+# admin/se_profile.php3, row 205
+$_m["preset \"Order\" in Itme Manager"]
+  = "pøednastavení \"Seøadit\" v administraci";
+
+# admin/se_profile.php3, row 206
+$_m["hide the field in inputform"]
+  = "skıt políèko ve vstupním foruláøi";
+
+# admin/se_profile.php3, row 207
+$_m["hide the field in inputform and fill it by the value"]
+  = "skıt políèko ve vstupním foruláøi a vyplnit je danou hodnotou";
+
+# admin/se_profile.php3, row 208
+$_m["fill the field in inputform by the value"]
+  = "vyplnit políèko ve vstupním foruláøi vdy danou hodnotou";
+
+# admin/se_profile.php3, row 209
+$_m["predefine value of the field in inputform"]
+  = "pøednastavit hodnotu do políèka ve vstupním formuláøi";
+
+# admin/se_inter_import3.php3, row 49
+$_m["The import was already created"]
+  = "Pøíjem z webíku byl ji vytvoøen";
+
+# admin/se_inter_import3.php3, row 106
+$_m["The import was successfully created"]
+  = "Pøíjem z webíku úspìšnì vytvoøen";
+
+# admin/se_javascript.php3, row 62, 69
+# include/menu.php3, row 149
+$_m["Field Triggers"]
+  = "Javascript pro políèka";
+
+# admin/se_javascript.php3, row 75
+$_m["JavaScript for fields"]
+  = "JavaScript pro políèka";
+
+# admin/se_javascript.php3, row 80
+$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
+  = "Vlote kód v JavaScriptu. Bude zahrnut na stránce Pøidat / Upravit zprávu (itemedit.php3).";
+
+# admin/se_javascript.php3, row 90
+$_m["Available fields and triggers"]
+  = "Dostupná políèka a triggery";
+
+# admin/se_javascript.php3, row 103
+$_m["Field IDs"]
+  = "ID políèek";
+
+# admin/se_javascript.php3, row 110
+$_m["Triggers"]
+  = "Triggery";
+
+# admin/se_javascript.php3, row 111
+$_m["Write trigger functions like"]
+  = "Pište triggery jako napø.";
+
+# admin/se_javascript.php3, row 111
+$_m["see FAQ</a> for more details and examples"]
+  = "ètìte FAQ</a> s dalšími detaily a pøíklady";
+
+# admin/se_javascript.php3, row 113
+$_m["Field Type"]
+  = "Typ Políèka";
+
+# admin/se_javascript.php3, row 113
+$_m["Triggers Available -- see some JavaScript help for when a trigger is run"]
+  = "Dostupné Triggery -- v dokumentaci JavaScriptu zjistíte, kdy je kterı spouštìn";
+
+# admin/se_mapping.php3, row 110, 110, 234
+# admin/se_mapping2.php3, row 60
+$_m["-- Not map --"]
+  = "-- Nemapovat --";
+
+# admin/se_mapping.php3, row 111, 111, 229
+# admin/se_mapping2.php3, row 63
+$_m["-- Value --"]
+  = "-- Hodnota --";
+
+# admin/se_mapping.php3, row 112, 112, 232
+# admin/se_mapping2.php3, row 66
+$_m["-- Joined fields --"]
+  = "-- Spojení polí --";
+
+# admin/se_mapping.php3, row 113, 113, 242
+# admin/se_mapping2.php3, row 69
+$_m["-- RSS field or expr --"]
+  = "-- vıraz pro RSS --";
+
+# admin/se_mapping.php3, row 204
+$_m["Content Pooling - Fields' mapping"]
+  = "Vımìna zpráv - mapování polí";
+
+# admin/se_mapping.php3, row 207
+$_m["Mapping from slice"]
+  = "Mapování z webíku";
+
+# admin/se_mapping.php3, row 211
+$_m["Fields' mapping"]
+  = "Mapování polí";
+
+# admin/se_mapping2.php3, row 108
+$_m["Fields' mapping update succesful"]
+  = "Nastavení mapování polí úspì¹nì zmìnìno";
+
+# admin/se_newuser.php3, row 35
+# admin/um_gedit.php3, row 44
+# admin/um_uedit.php3, row 46
+$_m["No permission to create new user"]
+  = "Nemáte právo vytvoøit uivatele";
+
+# admin/se_newuser.php3, row 46, 102
+# admin/setup.php3, row 86, 219
+# admin/slicewiz.php3, row 74
+# admin/um_uedit.php3, row 258, 261
+# include/um_uedit.php3, row 28
+$_m["Login name"]
+  = "Uivatelské jméno";
+
+# admin/se_newuser.php3, row 47, 103
+# admin/se_nodes.php3, row 181
+# admin/setup.php3, row 87, 220
+# admin/slicewiz.php3, row 75
+# admin/um_uedit.php3, row 263
+# include/um_uedit.php3, row 30
+$_m["Password"]
+  = "Heslo";
+
+# admin/se_newuser.php3, row 48, 104
+# admin/slicewiz.php3, row 76
+# admin/um_uedit.php3, row 264
+# include/um_uedit.php3, row 31
+$_m["Retype password"]
+  = "Potvrdit heslo";
+
+# admin/se_newuser.php3, row 52, 106
+# admin/slicewiz.php3, row 78
+# admin/um_uedit.php3, row 266
+# include/um_uedit.php3, row 36
+$_m["Surname"]
+  = "Pøíjmení";
+
+# admin/se_newuser.php3, row 53, 105
+# admin/setup.php3, row 89, 224
+# admin/slicewiz.php3, row 77
+# admin/um_uedit.php3, row 265
+# include/um_uedit.php3, row 37
+$_m["First name"]
+  = "Jméno";
+
+# admin/se_newuser.php3, row 55
+# admin/setup.php3, row 229
+# include/um_uedit.php3, row 39
+$_m["Retyped password is not the same as the first one"]
+  = "Vyplnìná hesla si neodpovídají";
+
+# admin/se_newuser.php3, row 69
+# admin/setup.php3, row 255
+# include/um_uedit.php3, row 55
+$_m["It is impossible to add user to permission system"]
+  = "Nepodaøilo se pøidat uivatele do systému - chyba LDAP";
+
+# admin/se_newuser.php3, row 72
+# admin/um_uedit.php3, row 114
+# include/um_uedit.php3, row 60
+$_m["User successfully added to permission system"]
+  = "Uivatel byl úspìšnì pøidán do systému";
+
 # admin/se_newuser.php3, row 74
-# admin/se_users_add.php3, row 55, 60
-# admin/um_uedit.php3, row 277
-# admin/um_gedit.php3, row 236
-# admin/.#index.php3.1.73, row 527, 531
-# include/searchbar.class.php3, row 216, 217
+# admin/se_users_add.php3, row 63, 68
+# admin/um_gedit.php3, row 259
+# admin/um_uedit.php3, row 287
+# include/searchbar.class.php3, row 337, 404
 # include/tabledit.php3, row 510
 $_m["Search"]
   = "Vyhledat";
 
-# admin/index.php3, row 539
-# admin/.#index.php3.1.73, row 535
-$_m["in"]
-  = "v";
+# admin/se_newuser.php3, row 90
+$_m["New user in permission system"]
+  = "Novı uivatel v systému";
 
-# admin/index.php3, row 547, 548
-# admin/related_sel.php3, row 243
-# admin/.#index.php3.1.73, row 543, 544
-# include/searchbar.class.php3, row 255, 256
-$_m["Order"]
-  = "Seøadit";
+# admin/se_newuser.php3, row 96
+# admin/um_uedit.php3, row 247
+$_m["New user"]
+  = "Novı uivatel";
 
-# admin/index.php3, row 551
-# admin/related_sel.php3, row 247
-# admin/se_compact.php3, row 209
-# admin/se_profile.php3, row 125
-# admin/se_view.php3, row 136, 137
-# admin/.#index.php3.1.73, row 547
-# admin/.#se_view.php3.1.40, row 140
-# include/searchbar.class.php3, row 262
-$_m["Descending"]
-  = "Sestupnì";
+# admin/se_newuser.php3, row 116
+# admin/sliceadd.php3, row 79
+# admin/um_gedit.php3, row 222
+# admin/um_uedit.php3, row 324
+# include/formutil.php3, row 56, 978
+# include/itemfunc.bak, row 851
+# include/profile.php3, row 95
+# include/sliceadd.php3, row 74, 96
+$_m["Add"]
+  = "Pøidat";
 
-# admin/index.php3, row 571
-# admin/related_sel.php3, row 224
-# admin/.#index.php3.1.73, row 567
-# include/manager.class.php3, row 108
-# include/.#view.php3.1.53, row 327
-# include/.#view.php3.1.56, row 330
-# include/.#view.php3.1.66, row 372
-# include/view.php3-, row 381
-# include/.#view.php3.1.72, row 382
-$_m["No item found"]
-  = "ádná zpráva";
+# admin/se_nodes.php3, row 35
+$_m["You have not permissions to manage nodes"]
+  = "Nemáte práva pro správu uzlù";
 
-# admin/index.php3, row 607
-# admin/.#index.php3.1.73, row 603
-$_m["Move to Active"]
-  = "Vystavit";
+# admin/se_nodes.php3, row 90, 142, 153
+$_m["Remote node administration"]
+  = "Správa uzlù";
 
-# admin/index.php3, row 611
-# admin/.#index.php3.1.73, row 607
-$_m["Move to Holding bin"]
-  = "Poslat do zásobníku";
+# admin/se_nodes.php3, row 155
+$_m["Known remote nodes"]
+  = "Seznam uzlù";
 
-# admin/index.php3, row 615
-# admin/.#index.php3.1.73, row 611
-$_m["Move to Trash"]
-  = "Poslat do koše";
+# admin/se_nodes.php3, row 174
+$_m["Add new node"]
+  = "Pøidání uzlu";
 
-# admin/index.php3, row 619
-# admin/.#index.php3.1.73, row 615
-$_m["Preview"]
-  = "Zobraz zprávu";
+# admin/se_nodes.php3, row 174
+$_m["Edit node data"]
+  = "Editace uzlu";
 
-# admin/index.php3, row 621
-# admin/.#index.php3.1.73, row 617
-$_m["Send email wizard"]
-  = "Prùvodce posláním emailu";
+# admin/se_nodes.php3, row 177
+$_m["Node name"]
+  = "Jméno uzlu ";
 
-# admin/index.php3, row 625
-# admin/se_filters.php3, row 331, 331
-# admin/.#index.php3.1.73, row 621
-# include/manager.class.php3, row 330
-$_m["Select all"]
-  = "Vybrat vše";
+# admin/se_nodes.php3, row 178
+$_m["Your node name"]
+  = "Jméno uzlu";
 
-# admin/index.php3, row 630
-# admin/.#index.php3.1.73, row 626
-# include/manager.class.php3, row 335
-$_m["Selected items"]
-  = "Zmìnit vybrané";
+# admin/se_nodes.php3, row 179
+$_m["URL of the getxml.php3"]
+  = "URL souboru getxml.php3";
 
-# admin/index.php3, row 636
-# admin/related_sel.php3, row 249
-# admin/.#index.php3.1.73, row 632
-# include/manager.class.php3, row 337
-$_m["Go"]
-  = "Jeï";
+# admin/se_nodes.php3, row 180
+$_m["Your getxml is"]
+  = "Vaše getxml je";
 
-# admin/index.php3, row 643
-# admin/.#index.php3.1.73, row 639
-# include/manager.class.php3, row 352
-$_m["Items Page"]
-  = "Stránka s èlánky";
+# admin/se_notify.php3, row 64
+# include/slicedit.php3, row 27
+$_m["You have not permissions to edit this slice"]
+  = "Nemáte právo upravovat tento webík";
 
-# admin/itemedit.php3, row 137
-$_m["Error: no fields."]
-  = "Chyba: ádné políèko.";
+# admin/se_notify.php3, row 216, 220, 233
+$_m["Email Notifications of Events"]
+  = "E-mailová upozornìní na události";
 
-# admin/itemedit.php3, row 146
-$_m["Bad item ID"]
-  = "Špatné èíslo zprávy";
+# admin/se_notify.php3, row 246
+$_m["<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
+  = "<h4>Nová zpráva v Zásobníku</h4> Kdokoliv mùe bıt informován o tom, e pøibyla nová zpráva do zásobníku. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou.";
 
-# admin/itemedit.php3, row 166, 169
-# include/menu.php3, row 65
-# include/.#menu.php3.1.32, row 63
-$_m["Add Item"]
-  = "Pøidat zprávu";
+# admin/se_notify.php3, row 247, 252, 257, 262
+$_m["Email addresses, one per line"]
+  = "E-mailová adresa (jedna na øádek)";
 
-# admin/itemedit.php3, row 166, 169
-$_m["Edit Item"]
-  = "Upravit zprávu";
+# admin/se_notify.php3, row 248, 253, 258, 263
+$_m["Subject of the Email message"]
+  = "Pøedmìt e-mailu (Subject)";
 
-# admin/itemedit.php3, row 224
-$_m["Update & View"]
-  = "Poslat a prohlédnout";
+# admin/se_notify.php3, row 249, 254, 259, 264
+$_m["Body of the Email message"]
+  = "Vlastní e-mailová zpráva";
 
-# admin/itemedit.php3, row 226
-$_m["Insert as new"]
-  = "Vloit jako novı";
+# admin/se_notify.php3, row 251
+$_m["<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
+  = "<h4>Zpráva v Zásobníku byla zmìnìna</h4> Kdokoliv mùe bıt informován o tom, e byla zmìnìna zpráva v zásobníku. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou.";
 
-# admin/itemedit.php3, row 231
-# admin/se_inputform.php3, row 367
-# admin/slicedit.php3, row 191
+# admin/se_notify.php3, row 256
+$_m["<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
+  = "<h4>Nová zpráva mezi Aktuálními</h4> Kdokoliv mùe bıt informován o tom, e pøibyla nová zpráva na web. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou.";
+
+# admin/se_notify.php3, row 261
+$_m["<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
+  = "<h4>Aktuální zpráva zmìnìna</h4> Kdokoliv mùe bıt informován o tom, e byla zmìnìna vystavená zpráva. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou.";
+
+# admin/write_mail.php3, row 93
+$_m["View Recipients"]
+  = "Zobraz pøíjemce";
+
+# admin/write_mail.php3, row 102
+$_m["User mail"]
+  = "Testovací e-mailová adresa";
+
+# admin/write_mail.php3, row 164, 272
+$_m["Body"]
+  = "Text";
+
+# admin/write_mail.php3, row 165, 273
+$_m["From (email)"]
+  = "";
+
+# admin/write_mail.php3, row 166, 274
+$_m["Reply to (email)"]
+  = "";
+
+# admin/write_mail.php3, row 167, 275
+$_m["Errors to (email)"]
+  = "";
+
+# admin/write_mail.php3, row 168, 276
+$_m["Sender (email)"]
+  = "Odesílatel (email)";
+
+# admin/write_mail.php3, row 169, 277
+$_m["Language (charset)"]
+  = "Jazyk (charset)";
+
+# admin/write_mail.php3, row 170, 278
+$_m["Use HTML"]
+  = "Pouít HTML";
+
+# admin/write_mail.php3, row 191
+$_m["No user or template set"]
+  = "Nebyl vybrán ádnı uivatel (nebo nebyla nalezena šablova e-mailu, co je divné)";
+
+# admin/write_mail.php3, row 197
+$_m["Email sucessfully sent (Users: %1, Valid emails: %2, Emails sent: %3)"]
+  = "E-mail byl odeslán (uivatelù: %1, Platnıch e-mailovıch adres: %2, Odeslanıch e-mailù: %3)";
+
+# admin/write_mail.php3, row 211
+$_m["Can't delete email template"]
+  = "Nelze vymazat šablonu e-mailu";
+
+# admin/write_mail.php3, row 222
+$_m["Write email to users"]
+  = "Hromadnı e-mail uivatelùm";
+
+# admin/write_mail.php3, row 227
+$_m["Bulk Email Wizard"]
+  = "Zaslání hromadného e-mailu";
+
+# admin/write_mail.php3, row 237
+$_m["Recipients"]
+  = "Pøíjemci";
+
+# admin/write_mail.php3, row 237
+$_m["Stored searches for "]
+  = "Uloené filtry pro ";
+
+# admin/write_mail.php3, row 239
+$_m["Selected users"]
+  = "Vybraní uivatelé";
+
+# admin/write_mail.php3, row 241
+$_m["Group Name"]
+  = "Jméno skupiny";
+
+# admin/write_mail.php3, row 241
+$_m["Created by"]
+  = "Vytvoøil";
+
+# admin/write_mail.php3, row 242
+$_m["Created on"]
+  = "Vytvoøeno";
+
+# admin/write_mail.php3, row 242
+$_m["Last updated"]
+  = "Naposledy aktualizováno";
+
+# admin/write_mail.php3, row 242
+$_m["Last used"]
+  = "Naposledy pouito";
+
+# admin/write_mail.php3, row 252
+$_m["Test email address"]
+  = "E-mailová adresa pro testování";
+
+# admin/write_mail.php3, row 269
+$_m["Write the email"]
+  = "Napište e-mail";
+
+# admin/write_mail.php3, row 280
+# admin/anonym_wizard2.php3, row 121
+$_m["Send"]
+  = "Pošli";
+
+# admin/write_mail.php3, row 282
+# admin/usershow.php3, row 76
+$_m["Close"]
+  = "Zavøít";
+
+# admin/se_search.php3, row 33
+$_m["You have not permissions to change search settings"]
+  = "Nemáte právo mìnit nastavení vyhledávání";
+
+# admin/se_search.php3, row 91
+$_m["Search fields update successful"]
+  = "Nastavení vyhledávacího formuláøe úspìšnì zmìnìno";
+
+# admin/se_search.php3, row 104, 110
+$_m["Admin - design Search Page"]
+  = "Správa webíku - Vyhledávací formuláø";
+
+# admin/se_search.php3, row 116
+$_m["Search form criteria"]
+  = "Vyhledávací kritéria";
+
+# admin/se_search.php3, row 133
+$_m["Search in fields"]
+  = "Vyhledávat v polokách";
+
+# admin/se_search.php3, row 140
+$_m["Default settings"]
+  = "Standardni nastavení";
+
+# admin/se_users.php3, row 87
+# admin/se_users_add.php3, row 39
+# admin/slicewiz.php3, row 73
+$_m["Editor"]
+  = "";
+
+# admin/se_users.php3, row 89
+# admin/se_users_add.php3, row 42
+$_m["Administrator"]
+  = "Administrátor";
+
+# admin/se_users.php3, row 91
+# include/um_util.php3, row 74, 128
+$_m["Revoke"]
+  = "Odstranit";
+
+# admin/se_users.php3, row 93, 159
+$_m["Profile"]
+  = "Profil";
+
+# admin/se_users.php3, row 103, 109
+$_m["Admin - Permissions"]
+  = "Správa webíku - Pøístupová práva";
+
+# admin/se_users.php3, row 121
+$_m["Change current permisions"]
+  = "Zmìna práv uivatelù";
+
+# admin/se_users.php3, row 158
+$_m["Default user profile"]
+  = "Spoleènı profil";
+
+# admin/se_users_add.php3, row 58
+$_m["Search user or group"]
+  = "Hledej uivatele nebo skupinu";
+
+# admin/se_users_add.php3, row 61
+# admin/um_gedit.php3, row 247
+# admin/um_uedit.php3, row 171
+# admin/usermng.php3, row 61
+# include/menu_aa.php3, row 38
+# include/um_usrch.php3, row 71
+$_m["Users"]
+  = "Uivatelé";
+
+# admin/se_users_add.php3, row 66
+# admin/um_gedit.php3, row 144
+# admin/um_uedit.php3, row 277
+# include/menu_aa.php3, row 42
+# include/um_gsrch.php3, row 36
+$_m["Groups"]
+  = "Skupiny";
+
+# admin/se_users_add.php3, row 78
+# include/um_util.php3, row 94
+$_m["Assign new permissions"]
+  = "Pøiøazení novıch práv";
+
+# admin/se_users_add.php3, row 114
+# admin/um_gedit.php3, row 67, 73
+# admin/um_uedit.php3, row 62, 76, 97
+# include/um_gsrch.php3, row 26
+# include/um_usrch.php3, row 35, 44, 62
+$_m["Too many users or groups found."]
+  = "Nalezeno pøíliš mnoho uivatelù èi skupin.";
+
+# admin/se_users_add.php3, row 114
+$_m["Try to be more specific."]
+  = "Zkuste zadat pøesnìjší údaje.";
+
+# admin/se_users_add.php3, row 116
+# admin/um_gedit.php3, row 67
+# admin/um_uedit.php3, row 62, 76
+# include/um_gsrch.php3, row 29
+# include/um_usrch.php3, row 35, 44
+$_m["No user (group) found"]
+  = "Uivatel (skupina) nenalezena";
+
+# admin/se_users_add.php3, row 139
+$_m["List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query"]
+  = "Délka seznamu je max. 5 uivatelù.<br>Pokud nìjakı uivatel není v sezanmu, zkuste pøesnìjší dotaz";
+
+# admin/se_views.php3, row 52
+$_m["View successfully deleted"]
+  = "Pohled by úspìšnì smazán";
+
+# admin/se_views.php3, row 144
+$_m["Create new view"]
+  = "Vytvoøit novı pohled";
+
+# admin/se_views.php3, row 147
+$_m["by&nbsp;type:"]
+  = "dle&nbsp;typu:";
+
+# admin/se_views.php3, row 155, 175
+$_m["New"]
+  = "Novı";
+
+# admin/se_views.php3, row 160
+$_m["by&nbsp;template:"]
+  = "dle&nbsp;šablony:";
+
+# admin/setup.php3, row 58, 61
+$_m["AA Setup"]
+  = "Instalace AA";
+
+# admin/setup.php3, row 65
+$_m["This script can't be used on a configured system."]
+  = "Skript nelze pouít na nakonfigurovaném systému.";
+
+# admin/setup.php3, row 81
+# admin/um_uedit.php3, row 270
+$_m["Superadmin account"]
+  = "Superadmin";
+
+# admin/setup.php3, row 88, 222
+# include/formutil.php3, row 1167
+$_m["Retype Password"]
+  = "Zopakujte heslo";
+
+# admin/setup.php3, row 90, 225
+$_m["Last name"]
+  = "Pøíjmení";
+
+# admin/setup.php3, row 105
+$_m["Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>"]
+  = "Dobrı den! Pouijte tento skript k vytvoøení superuivatelského úètù.<p>Pokud instalujete novou kopii AA, stisknìte <strong>Init</strong>.</p>";
+
+# admin/setup.php3, row 106
+$_m["If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>"]
+  = "Pokud jste smazali superuivatelskı úèet omylem, stisknìte <b>Obnovit</b>.<br>";
+
+# admin/setup.php3, row 135
+$_m["Database is not configured correctly or the database is empty.<br>\n"
+   ."             Check please the database credentials in <b>include/config.php3</b>\n"
+   ."             file <br>or run <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
+   ."             which creates AA tables for you."]
+  = "";
+
+# admin/setup.php3, row 149
+# admin/um_uedit.php3, row 193
+# include/perm_sql.php3, row 178, 598
+# include/perm_emailsql.php3, row 164, 327, 334, 586
+# include/um_usrch.php3, row 80
+$_m["User"]
+  = "Uivatel";
+
+# admin/setup.php3, row 173
+$_m[" Init "]
+  = " Inicializuj ";
+
+# admin/setup.php3, row 182
+$_m["Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>"]
+  = "";
+
+# admin/setup.php3, row 187
+$_m["Recover"]
+  = "Obnovit";
+
+# admin/setup.php3, row 197
+$_m["Can't delete invalid permission."]
+  = "Nemohu smazat chybné nastavení.";
+
+# admin/setup.php3, row 199
+$_m["Invalid permission deleted (no such user/group): "]
+  = "Chybné nastavení smazáno (neexistuje tento uivatel/skupina): ";
+
+# admin/setup.php3, row 212
+# admin/mailman_create_list.php3, row 140
+$_m["Create"]
+  = "Vytvoø";
+
+# admin/setup.php3, row 268
+$_m["Congratulations! The account was created."]
+  = "Blahopøejeme! Úèet byl vytvoøen.";
+
+# admin/setup.php3, row 270
+$_m["Use this account to login and add your first slice:"]
+  = "Pouijte tento úèet k pøihlášení a vytvoøte první webík:";
+
+# admin/setup.php3, row 271
+# admin/slicedit.php3, row 111
+$_m["Add Slice"]
+  = "Správa webíku - Pøidání webíku";
+
+# admin/setup.php3, row 274
+$_m["Can't assign super access permission."]
+  = "Nemohu pøidat superuivatelské právo.";
+
+# admin/sliceadd.php3, row 52
+$_m["Create New Slice / Module"]
+  = "Vytvoøit novı Webík / Modul";
+
+# admin/sliceadd.php3, row 68
+$_m["Modules"]
+  = "Moduly";
+
+# admin/slicedel.php3, row 34
+# admin/slicedel2.php3, row 34, 38
+$_m["You don't have permissions to delete slice."]
+  = "Nemáte práva k odstranìní webíku.";
+
+# admin/slicedel.php3, row 50, 68
+$_m["Admin - Delete Slice"]
+  = "Správa webíku - Vymazání webíku";
+
+# admin/slicedel.php3, row 70
+$_m["<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>"]
+  = "<p>Lze vymazat jen webíky, které byly oznaèeny pro vymazání na stránce &quot;<b>Webík</b>&quot;</p>";
+
+# admin/slicedel.php3, row 72
+$_m["Select slice to delete"]
+  = "Vyber webík pro smazání";
+
+# admin/slicedel.php3, row 82
+$_m["No slice marked for deletion"]
+  = "ádnı webík nebyl oznaèen za vymazanı";
+
+# admin/slicedel2.php3, row 65
+$_m["Slice successfully deleted, tables are optimized"]
+  = "Webík byl vymazán, tabulky byly optimalizovány";
+
+# admin/slicedit.php3, row 33, 38
+$_m["Not allowed"]
+  = "Zakázáno";
+
+# admin/slicedit.php3, row 35
+# include/menu.php3, row 175
+$_m["Hold bin"]
+  = "Zásobník";
+
+# admin/slicedit.php3, row 39
+$_m["All items"]
+  = "Všechny èlánky";
+
+# admin/slicedit.php3, row 40
+$_m["Only items posted anonymously"]
+  = "Pouze èlánky poslané anonymnì";
+
+# admin/slicedit.php3, row 41
+$_m["-\"- and not edited in AA"]
+  = "-\"- a neupravené v AA";
+
+# admin/slicedit.php3, row 42
+$_m["Authorized by a password field"]
+  = "Autorizované heslem";
+
+# admin/slicedit.php3, row 43
+$_m["Readers, authorized by HTTP auth"]
+  = "Ètenáøi, autorizovaní pomocí HTTP";
+
+# admin/slicedit.php3, row 88
+# include/modutils.php3, row 107
+$_m["Select owner"]
+  = "Vyber vlastníka";
+
+# admin/slicedit.php3, row 111
+$_m["Admin - Slice settings"]
+  = "Správa webíku - Úprava webíku";
+
+# admin/slicedit.php3, row 132
+# include/modutils.php3, row 52
+# include/slicedit.php3, row 70
+$_m["URL of .shtml page (often leave blank)"]
+  = "URL webíku";
+
+# admin/slicedit.php3, row 138
+# include/modutils.php3, row 51
+# include/slicedit.php3, row 69
+$_m["Owner"]
+  = "Vlastník";
+
+# admin/slicedit.php3, row 140
+# include/modutils.php3, row 28
+# include/slicedit.php3, row 49
+$_m["New Owner"]
+  = "Novı vlastník";
+
+# admin/slicedit.php3, row 141
+# include/modutils.php3, row 29
+# include/slicedit.php3, row 50
+$_m["New Owner's E-mail"]
+  = "E-mail nového vlastníka";
+
+# admin/slicedit.php3, row 143
+# include/constants.php3, row 417, 508, 530, 556, 587, 642, 671, 700
+# include/slicedit.php3, row 71
+$_m["Listing length"]
+  = "Poèet vypisovanıch zpráv";
+
+# admin/slicedit.php3, row 145
+# include/sliceadd.php3, row 64
+$_m["Template"]
+  = "Šablona";
+
+# admin/slicedit.php3, row 146
+$_m["Deleted"]
+  = "Vymazán";
+
+# admin/slicedit.php3, row 148
+# include/slicedit.php3, row 72
+$_m["Allow anonymous posting of items"]
+  = "Anonymní vkládání";
+
+# admin/slicedit.php3, row 150
+# include/slicedit.php3, row 73
+$_m["Allow anonymous editing of items"]
+  = "Anonymní upravování";
+
+# admin/slicedit.php3, row 152
+# include/slicedit.php3, row 74
+$_m["Allow off-line item filling"]
+  = "Off-line plnìní";
+
+# admin/slicedit.php3, row 154
+$_m["Language"]
+  = "Jazyk";
+
+# admin/slicedit.php3, row 156
+# include/slicedit.php3, row 76
+$_m["File Manager Access"]
+  = "Pøístup ke Správci Souborù";
+
+# admin/slicedit.php3, row 157
+# include/slicedit.php3, row 77
+$_m["File Manager Directory"]
+  = "Adresáø pro Správce Souborù";
+
+# admin/slicedit.php3, row 171
+$_m["Auth Group Field"]
+  = "Políèko s Auth Skupinami";
+
+# admin/slicedit.php3, row 173
+$_m["Mailman Lists Field"]
+  = "Políèko se Seznamy Mailmana";
+
+# admin/slicedit.php3, row 177
+$_m["Password for Reading"]
+  = "Heslo pro Ètení";
+
+# admin/sliceexp.php3, row 44
+# admin/sliceimp.php3, row 41
+$_m["You are not allowed to export / import slices"]
+  = "Nemáte právo exportovat / importovat webíky";
+
+# admin/sliceexp.php3, row 63, 145, 149
+$_m["Export slice structure"]
+  = "Export struktury webíku";
+
+# admin/sliceexp.php3, row 94, 99
+$_m["Date export error"]
+  = "Chyba pøi exportování data";
+
+# admin/sliceexp.php3, row 108
+$_m["The identificator should be 16 characters long, not "]
+  = "Délka identifikátoru musí bıt 16 znakù, a ne ";
+
+# admin/sliceexp.php3, row 124
+$_m["You must select one or more slices to backup"]
+  = "Musíte vybrat nìjaké webíky pro zálohování";
+
+# admin/sliceexp.php3, row 166
+$_m["Choose, if you want export slices structure, data or both."]
+  = "Zvolte, chcete-li exportovat strukturu webíku, data nebo obojí.";
+
+# admin/sliceexp.php3, row 167
+$_m["Export structure"]
+  = "Export struktury";
+
+# admin/sliceexp.php3, row 168
+$_m["Export data"]
+  = "Export dat";
+
+# admin/sliceexp.php3, row 169
+$_m["Export views"]
+  = "Export pohledù";
+
+# admin/sliceexp.php3, row 172
+$_m["Use compression"]
+  = "Komprimovat";
+
+# admin/sliceexp.php3, row 174
+$_m["HEX output"]
+  = "HEX vıstup";
+
+# admin/sliceexp.php3, row 175
+$_m["Store exported data in file"]
+  = "Uloit exportovaná data do souboru";
+
+# admin/sliceexp.php3, row 178
+$_m["Export data from specified dates: "]
+  = "Export dat z urèitıch dnù: ";
+
+# admin/sliceexp.php3, row 179
+$_m["From "]
+  = "Od ";
+
+# admin/sliceexp.php3, row 186
+$_m["Choose one of two export kinds:"]
+  = "Vyberte si jeden ze dvou zpùsobù exportu:";
+
+# admin/sliceexp.php3, row 192
+$_m["When exporting \"to Backup\" you may choose more slices at once."]
+  = "Pøi exportu \"do Backupu\" si mùete vybrat nìkolik šablon najednou.";
+
+# admin/sliceexp.php3, row 193
+$_m["Select slices which you WANT to export:"]
+  = "Oznaète webíky, které CHCETE exportovat:";
+
+# admin/sliceexp.php3, row 209
+$_m["When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator."]
+  = "Pøi exportu \"do jiného Toolkitu\" se bude exportovat pouze aktuální šablona a vy pro ni zvolíte novı identifikátor.";
+
+# admin/sliceexp.php3, row 210
+$_m["Choose a new slice identificator exactly 16 characters long: "]
+  = "Zvolte novı identifikátor šablony o délce pøesnì 16 znakù: ";
+
+# admin/sliceexp_text.php3, row 65, 174, 183, 198, 207
+$_m["Export to Backup"]
+  = "Export do Backupu";
+
+# admin/sliceexp_text.php3, row 67
+$_m["Wrong slice ID length: "]
+  = "Chybná délka ID webíku: ";
+
+# admin/sliceexp_text.php3, row 200
+$_m["Wrong slice ID length:"]
+  = "Chybná délka ID webíku:";
+
+# admin/sliceexp_text.php3, row 263
+$_m["Save this text. You may use it to import the slices into any ActionApps:"]
+  = "Tento text si nìkde ulote. Mùete ho pouít pro naimportování šablony do Toolkitu:";
+
+# admin/sliceimp.php3, row 64
+$_m["Slice_ID (%1) has wrong length (%2, should be 32)"]
+  = "ID webíku (%1) má špatnou délku (%2, má bıt 32)";
+
+# admin/sliceimp.php3, row 88, 128
+# admin/sliceimp_xml.php3, row 238
+$_m["Overwrite"]
+  = "Pøepsat";
+
+# admin/sliceimp.php3, row 157, 162, 222, 228
+# admin/sliceimp_xml.php3, row 201, 234, 248
+$_m["Insert with new ids"]
+  = "Vloit s novımi ID";
+
+# admin/sliceimp.php3, row 277, 283
+$_m["Can't upload Import file"]
+  = "Nemohu nahrát importovanı soubor";
+
+# admin/sliceimp.php3, row 331, 343
+$_m["Import exported data (slice structure and content)"]
+  = "";
+
+# admin/sliceimp.php3, row 345
+$_m["Import exported data"]
+  = "";
+
+# admin/sliceimp.php3, row 350
+$_m["Count of imported slices: %d."]
+  = "";
+
+# admin/sliceimp.php3, row 352, 367
+$_m["Added were:"]
+  = "Pøidán byl:";
+
+# admin/sliceimp.php3, row 358, 373
+$_m["Overwritten were:"]
+  = "Pøepsán byl:";
+
+# admin/sliceimp.php3, row 364
+$_m["Count of imported stories: %d."]
+  = "Poèet importovanıch èlánkù: %d.";
+
+# admin/sliceimp.php3, row 379
+$_m["Failed were:"]
+  = "";
+
+# admin/sliceimp.php3, row 392
+$_m["Here you can import exported data to toolkit. You can use two types of import:"]
+  = "";
+
+# admin/sliceimp.php3, row 397
+$_m["Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"]
+  = "";
+
+# admin/sliceimp.php3, row 411
+$_m["<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>"]
+  = "";
+
+# admin/sliceimp.php3, row 425
+$_m["<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>"]
+  = "";
+
+# admin/sliceimp.php3, row 438
+$_m["<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>"]
+  = "";
+
+# admin/sliceimp.php3, row 457
+$_m["1) If you have exported data in file, insert it's name here (eg. D:\\data\\apc_aa_slice.aaxml):"]
+  = "";
+
+# admin/sliceimp.php3, row 465
+$_m["2) If you have exported data in browser's window, insert the exported text into the textarea below:"]
+  = "";
+
+# admin/sliceimp.php3, row 478
+$_m["Here specify, what do you want to import:"]
+  = "";
+
+# admin/sliceimp.php3, row 479
+$_m["Import slice definition"]
+  = "";
+
+# admin/sliceimp.php3, row 480
+$_m["Import slice items"]
+  = "";
+
+# admin/sliceimp.php3, row 481
+$_m["Import into this slice - whatever file says"]
+  = "";
+
+# admin/sliceimp.php3, row 483
+$_m["Send the slice structure and data"]
+  = "";
+
+# admin/sliceimp_xml.php3, row 122
+$_m["\n"
+   ."ERROR: File doesn't contain SLICEEXPORT"]
+  = "";
+
+# admin/sliceimp_xml.php3, row 132, 153, 176
+$_m["ERROR: Text is not OK. Check whether you copied it well from the Export."]
+  = "";
+
+# admin/sliceimp_xml.php3, row 188
+$_m["ERROR: Unsupported version for import"]
+  = "";
+
 # admin/sliceimp_xml.php3, row 233
-# include/formutil.php3, row 994
-# include/.#formutil.php3.1.58, row 956
-# include/formutil.bak, row 980
-# include/formutil.php3.old, row 980
+# admin/se_inputform.php3, row 370
+# include/formutil.php3, row 1717
 $_m["Insert"]
   = "Vloit";
 
-# admin/itemedit.php3, row 232
-$_m["Insert & View"]
-  = "Vloit & Prohlédnout";
+# admin/sliceimp_xml.php3, row 256
+$_m["<br>Overwriting view %1"]
+  = "";
+
+# admin/slicewiz.php3, row 45, 48
+$_m["Add Slice Wizard"]
+  = "Prùvodce Pøidáním Webíku";
+
+# admin/slicewiz.php3, row 58
+$_m["Copy Views"]
+  = "Kopíruj Pohledy";
+
+# admin/slicewiz.php3, row 59
+$_m["Categories/Constants"]
+  = "Kategorie/Konstanty";
+
+# admin/slicewiz.php3, row 60
+$_m["Share with Template"]
+  = "Sdílet se Šablonou";
+
+# admin/slicewiz.php3, row 60
+$_m["Copy from Template"]
+  = "Kopírovat ze Šablony";
+
+# admin/slicewiz.php3, row 69
+$_m["[Optional] Create New User"]
+  = "[Nepovinné] Vyvoøit Nového Uivatele";
+
+# admin/slicewiz.php3, row 72
+$_m["Level of Access"]
+  = "Úroveò pøístupu";
+
+# admin/slicewiz.php3, row 73
+# include/constants.php3, row 811
+$_m["Slice Administrator"]
+  = "Administrátor Webíku.";
+
+# admin/slicewiz.php3, row 84
+$_m["Do Not Email Welcome"]
+  = "Neposílej vítací email.";
+
+# admin/slicewiz.php3, row 86
+$_m["Email Welcome"]
+  = "Pošli vítací email.";
+
+# admin/slicewiz.php3, row 96
+$_m["Go: Add Slice"]
+  = "Jeï: Pøidej Webík";
+
+# admin/tabledit.php3, row 56
+$_m["You have not permissions to this page"]
+  = "Nemáte právo pøistupovat k této stránce";
+
+# admin/um_gedit.php3, row 60
+# admin/um_uedit.php3, row 68, 71, 85
+# include/um_usrch.php3, row 36, 39, 51
+$_m["Too much groups found."]
+  = "Nalezeno pøíliš moc skupin.";
+
+# admin/um_gedit.php3, row 60
+# admin/um_uedit.php3, row 68, 71
+# include/um_usrch.php3, row 36, 39
+$_m["No groups found"]
+  = "Skupina nenalezena";
+
+# admin/um_gedit.php3, row 91
+# include/um_gedit.php3, row 40
+$_m["Group successfully added to permission system"]
+  = "Skupina byla úspìšnì pøidána";
+
+# admin/um_gedit.php3, row 101
+$_m["User management - Groups"]
+  = "Správa uivatelù - Skupiny";
+
+# admin/um_gedit.php3, row 140
+# include/menu_aa.php3, row 44
+$_m["New Group"]
+  = "Nová skupina";
+
+# admin/um_gedit.php3, row 140
+# include/menu_aa.php3, row 43
+$_m["Edit Group"]
+  = "Editace skupiny";
+
+# admin/um_gedit.php3, row 170
+# include/constants.php3, row 231
+# include/perm_sql.php3, row 145, 469
+# include/perm_emailsql.php3, row 142, 457
+# include/um_gsrch.php3, row 45
+$_m["Group"]
+  = "Skupina";
+
+# admin/um_gedit.php3, row 207
+$_m["Edit group"]
+  = "Editace skupiny";
+
+# admin/um_gedit.php3, row 209
+$_m["New group"]
+  = "Nová skupina";
+
+# admin/um_gedit.php3, row 240
+$_m["Group Id"]
+  = "ID skupiny";
+
+# admin/um_gedit.php3, row 243
+$_m["Superadmin group"]
+  = "Administrativní skupina";
+
+# admin/um_gedit.php3, row 255
+$_m["All Users"]
+  = "Všichni uivatelé";
+
+# admin/um_gedit.php3, row 257
+$_m["Group's Users"]
+  = "Uivatelé ve skupinì";
+
+# admin/um_uedit.php3, row 124
+$_m["User management - Users"]
+  = "Správa uivatelù - Uivalelé";
+
+# admin/um_uedit.php3, row 164
+# include/menu_aa.php3, row 40
+$_m["New User"]
+  = "Novı uivatel";
+
+# admin/um_uedit.php3, row 164, 245
+# include/menu_aa.php3, row 39
+$_m["Edit User"]
+  = "Editace uivatele";
+
+# admin/um_uedit.php3, row 259
+$_m["User Id"]
+  = "Id uivatele";
+
+# admin/um_uedit.php3, row 283
+$_m["All Groups"]
+  = "Všechny skupiny";
+
+# admin/um_uedit.php3, row 285
+$_m["User's Groups"]
+  = "Uivatelovy skupiny";
+
+# admin/usermng.php3, row 54
+$_m["Admin - User Management"]
+  = "Správa webíku - Uivatelé";
+
+# admin/se_rssfeeds.php3, row 113, 161, 168
+$_m["Remote RSS Feed administration"]
+  = "Správa RSS kanálù";
+
+# admin/se_rssfeeds.php3, row 170
+$_m["Current remote rssfeeds"]
+  = "Nastavené RSS kanály";
+
+# admin/se_rssfeeds.php3, row 189
+$_m["Add new rssfeed"]
+  = "Pøidat RSS kanál";
+
+# admin/se_rssfeeds.php3, row 189
+$_m["Edit rssfeed data"]
+  = "Editovat RSS kanál";
+
+# admin/se_rssfeeds.php3, row 191
+$_m["RSS Feed name"]
+  = "Jméno RSS kanálu";
+
+# admin/se_rssfeeds.php3, row 192
+$_m["New rssfeed name"]
+  = "Novı RSS kanál";
+
+# admin/se_rssfeeds.php3, row 193
+$_m["URL of the feed"]
+  = "URL RSS kanálu";
+
+# admin/se_rssfeeds.php3, row 194
+$_m["e.g. http://www.someplace.com/rss/index.xml"]
+  = "napø: http://www.someplace.com/rss/index.xml";
+
+# admin/se_inputform.php3, row 59
+$_m["Field delete OK"]
+  = "Pole odstranìno";
+
+# admin/se_inputform.php3, row 91, 405
+$_m["Before HTML code"]
+  = "HTML kód pøed tímto polem";
+
+# admin/se_inputform.php3, row 92, 393
+$_m["Help for this field"]
+  = "Nápovìda";
+
+# admin/se_inputform.php3, row 93, 399
+$_m["More help"]
+  = "Více informací";
+
+# admin/se_inputform.php3, row 95
+$_m["Input show function"]
+  = "Zobrazovací funkce";
+
+# admin/se_inputform.php3, row 97
+$_m["Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING."]
+  = "Alias musí bıt vdy _# + 8 VELKİCH písmen, napø. _#MUJALIAS.";
+
+# admin/se_inputform.php3, row 101, 430
+$_m["Alias"]
+  = "";
+
+# admin/se_inputform.php3, row 291
+$_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
+  = "<p>POZOR: Tato nastavení by mìl mìnit jen ten, kdo ví co dìlá!</p>";
+
+# admin/se_inputform.php3, row 306
+$_m["Field properties"]
+  = "Vlastnosti políèka";
+
+# admin/se_inputform.php3, row 312
+$_m["Input type"]
+  = "Typ Vstupu";
+
+# admin/se_inputform.php3, row 316
+$_m["Input field type in Add / Edit item."]
+  = "Typ políèka v Pøidat / Upravit zprávu.";
+
+# admin/se_inputform.php3, row 321
+$_m["Edit|Use as new|New"]
+  = "Upravit|Upravit kopii|Nová skupina";
+
+# admin/se_inputform.php3, row 322
+$_m["Choose a Constant Group or a Slice."]
+  = "Vyberte Skupinu Konstant nebo Webík.";
+
+# admin/se_inputform.php3, row 335, 348, 361, 376, 452
+$_m["Parameters"]
+  = "Parametry";
+
+# admin/se_inputform.php3, row 337, 350, 363, 378, 450
+# admin/se_csv_import2.php3, row 247
+$_m["Help: Parameter Wizard"]
+  = "Nápovìda: Prùvodce Parametry";
+
+# admin/se_inputform.php3, row 346
+$_m["How to generate the default value"]
+  = "Jak vytvoøit implicitní hodnotu";
+
+# admin/se_inputform.php3, row 356
+$_m["Validate"]
+  = "Zkontrolovat";
+
+# admin/se_inputform.php3, row 374
+$_m["Defines how value is stored in database."]
+  = "Urèuje zpùsob uloení hodnoty v databázi";
+
+# admin/se_inputform.php3, row 387
+$_m["Show 'HTML' / 'plain text' option"]
+  = "Zobrazit volbu 'HTML' / 'prostı text'";
+
+# admin/se_inputform.php3, row 389
+$_m["'HTML' as default"]
+  = "'HTML' implicitnì";
+
+# admin/se_inputform.php3, row 395
+$_m["Shown help for this field"]
+  = "Nápovìda zobrazená pro toto pole ve vstupním formuláøi";
+
+# admin/se_inputform.php3, row 401
+$_m["Text shown after user click on '?' in input form"]
+  = "Nápovìda, která se zobrazí po stisku '?' ve vstupním formuláøi";
+
+# admin/se_inputform.php3, row 407
+$_m["Code shown in input form before this field"]
+  = "HTML kód, kterı se zobrazí ve vstupním formuláøi pøed tímto polem";
+
+# admin/se_inputform.php3, row 412
+$_m["Feeding mode"]
+  = "Sdílení tohoto pole";
+
+# admin/se_inputform.php3, row 415
+$_m["Should the content of this field be copied to another slice if it is fed?"]
+  = "Má se kopírovat obsah tohoto políèka do dalších webíkù pøi vımìnì zpráv mezi webíky?";
+
+# admin/se_inputform.php3, row 418
+$_m["ALIASES used in views to print field content"]
+  = "ALIASy pouité v pohledech k zobrazení obsahu políèka";
+
+# admin/se_inputform.php3, row 437
+$_m["_# + 8 UPPERCASE letters or _"]
+  = "_# + 8 VELKİCH písmen nebo _";
+
+# admin/constants_sel.php3, row 70
+$_m["Editor window - item manager"]
+  = "Správa zpráv";
+
+# admin/constants_sel.php3, row 70
+$_m["select constants window"]
+  = "Filtrování dle konstant";
+
+# admin/constants_sel.php3, row 173
+$_m["Select constants"]
+  = "Vyber konstanty";
+
+# admin/se_csv_import.php3, row 61
+$_m["You have not permissions to import files"]
+  = "Nemáte právo importovat soubory";
+
+# admin/se_csv_import.php3, row 66
+$_m["Missing slice"]
+  = "Webík nenalezen";
+
+# admin/se_csv_import.php3, row 78
+$_m["Cannot open output file:"]
+  = "Nelze otevøít vıstupní soubor:";
+
+# admin/se_csv_import.php3, row 81
+$_m["Cannot open input file:"]
+  = "Nelze otevøít vstupní soubor:";
+
+# admin/se_csv_import.php3, row 86, 92
+$_m["Cannot write to file"]
+  = "Do souboru nelze zapisovat";
+
+# admin/se_csv_import.php3, row 112
+# include/itemfunc.php3, row 351
+# include/itemfunc.bak, row 336
+$_m["Can't create directory for image uploads"]
+  = "Nelze vytvoøit adresáø pro obrázky";
+
+# admin/se_csv_import.php3, row 147
+# admin/se_csv_import2.php3, row 152
+$_m["Admin - Import .CSV file"]
+  = "Správa webíku - Naètení .csv souboru";
+
+# admin/se_csv_import.php3, row 159
+$_m["Admin - Import CSV (1/2) - Source data"]
+  = "Správa webíku - Naètení .csv (1/2) - Vstupní data";
+
+# admin/se_csv_import.php3, row 165
+$_m["Cannot open a file for preview"]
+  = "Nelze otevøít soubor pro náhled";
+
+# admin/se_csv_import.php3, row 167
+$_m["File preview"]
+  = "Náhled souboru";
+
+# admin/se_csv_import.php3, row 197
+$_m["CSV format settings"]
+  = "Nastaveni CSV formátu";
+
+# admin/se_csv_import.php3, row 221
+$_m["Source of CSV data"]
+  = "Zdroj CSV dat";
+
+# admin/se_csv_import2.php3, row 40
+$_m["You have not permissions to setting "]
+  = "Nemáte právo pro nastavení";
+
+# admin/se_csv_import2.php3, row 48
+$_m["File for import does not exists:"]
+  = "Vstupní soubor neexistuje";
+
+# admin/se_csv_import2.php3, row 52
+$_m["Invalid additional parameters for import"]
+  = "Chybné dodateèné parametry pro import";
+
+# admin/se_csv_import2.php3, row 104
+$_m["Cannot store item to DB"]
+  = "Zprávu nelze uloit do databáze";
+
+# admin/se_csv_import2.php3, row 106
+$_m["Item:"]
+  = "Zpráva:";
+
+# admin/se_csv_import2.php3, row 109
+$_m["Transformation error:"]
+  = "Chyba pøi transformaci:";
+
+# admin/se_csv_import2.php3, row 112
+$_m["inserted"]
+  = "vloena";
+
+# admin/se_csv_import2.php3, row 113
+$_m["updated"]
+  = "obnovena";
+
+# admin/se_csv_import2.php3, row 114
+$_m["not stored"]
+  = "neuloena";
+
+# admin/se_csv_import2.php3, row 116
+$_m["Ok: Item "]
+  = "OK: Zpráva ";
+
+# admin/se_csv_import2.php3, row 128
+# include/import_util.php3, row 312
+$_m["Ok : file deleted "]
+  = "OK: soubor vymazán ";
+
+# admin/se_csv_import2.php3, row 130
+# include/import_util.php3, row 314
+$_m["Error: Cannot delete file"]
+  = "Error: Nelze vymazat soubor";
+
+# admin/se_csv_import2.php3, row 133
+$_m["Added to slice"]
+  = "Pøidáno do webíku";
+
+# admin/se_csv_import2.php3, row 180
+$_m["Admin - Import CSV (2/2) - Mapping and Actions"]
+  = "Správa webíku - Naètení .csv (2/2) - Mapování";
+
+# admin/se_csv_import2.php3, row 190
+$_m["Mapping preview"]
+  = "Náhled mapování";
+
+# admin/se_csv_import2.php3, row 217
+$_m["Mapping settings"]
+  = "Nastavení mapování";
+
+# admin/se_csv_import2.php3, row 223
+$_m["Action"]
+  = "Akce";
+
+# admin/se_csv_import2.php3, row 224
+$_m["Html"]
+  = "";
+
+# admin/se_csv_import2.php3, row 225
+$_m["Action parameters"]
+  = "Parametry akce";
+
+# admin/se_csv_import2.php3, row 226
+$_m["Parameter wizard"]
+  = "Prùvodce Parametry";
+
+# admin/se_csv_import2.php3, row 266
+$_m["Map item id from"]
+  = "ID zprávy namapuj z";
+
+# admin/se_csv_import2.php3, row 271
+$_m["If the item id is already in the slice:"]
+  = "Pokud zpráva s danım ID ji ve webíku je:";
+
+# admin/se_csv_import2.php3, row 274
+$_m["Update the item"]
+  = "Obnov zprávu";
+
+# admin/se_csv_import2.php3, row 278
+$_m["Store the item with new id"]
+  = "Ulo zprávu pod novım ID";
+
+# admin/se_csv_import2.php3, row 282
+$_m["Do not store the item"]
+  = "Pøeskoè danou zprávu (neukládat)";
+
+# admin/anonym_wizard.php3, row 65, 71
+$_m["Admin - Anonymous Form Wizard"]
+  = "Správa webíku - Prùvodce Anonymním Formuláøem";
+
+# admin/anonym_wizard.php3, row 76
+$_m["Show Form"]
+  = "Zobraz formuláø";
+
+# admin/anonym_wizard.php3, row 78
+$_m["Show Not So Nice"]
+  = "";
+
+# admin/anonym_wizard.php3, row 90
+$_m["Settings"]
+  = "Nastavení";
+
+# admin/anonym_wizard.php3, row 95
+$_m["WARNING: You did not permit anonymous posting in slice settings."]
+  = "POZOR: Nepovolili jste anonymní zasílání v nastavení webíku.";
+
+# admin/anonym_wizard.php3, row 98
+$_m["You did not permit anonymous editing in slice settings. A form\n"
+   ."        allowing only anonymous posting will be shown."]
+  = "Nepovolili jste anonymní editování v nastavení webíku. Bude zobrazen\n"
+   ."    formuláø povolující pouze anonymní vkládání.";
+
+# admin/anonym_wizard.php3, row 113
+$_m["Warning: You want to show password, but you did not set\n"
+   ."                    'Authorized by a password field' in Settings - Anonymous editing."]
+  = "POZOR: Chcete zobrazit heslo, ale nenastavili jste 'Autorizované heslem'\n"
+   ."     v nastavení webíku - Anonymní upravování.";
+
+# admin/anonym_wizard.php3, row 121
+$_m["Help"]
+  = "Nápovìda";
+
+# admin/anonym_wizard.php3, row 122
+$_m["Help - Documentation"]
+  = "Nápovìda - Dokumentace";
+
+# admin/anonym_wizard.php3, row 123
+$_m["URLs shown after the form was sent"]
+  = "URL zobrazená po odeslání formuláøe";
+
+# admin/anonym_wizard.php3, row 125
+$_m["OK page"]
+  = "OK stránka";
+
+# admin/anonym_wizard.php3, row 127
+$_m["Error page"]
+  = "Chybová stránka";
+
+# admin/anonym_wizard.php3, row 132
+$_m["Use a PHP script to show the result on the OK and Error pages:"]
+  = "Pouít PHP skript k zobrazení vısledkù na OK a Chybové stránce:";
+
+# admin/anonym_wizard.php3, row 146
+$_m["Field Id in Form"]
+  = "Id políèka ve formuláøi";
+
+# admin/anonym_wizard.php3, row 170
+$_m["Only fields marked as \"Show\" on the \"Fields\" page\n"
+   ."         are offered on this page."]
+  = "Na této stránce jsou nabízena pouze políèka \n\n"
+   ."    se zatrhnutım \"Zobrazit\" na stránce \"Políèka\"";
+
+# admin/usershow.php3, row 85
+$_m["Show selected users"]
+  = "Zobraz vybrané uivatele";
+
+# admin/wizard_email.php3, row 42
+$_m["Select readers<br><i>%1 reader(s) selected</i>"]
+  = "Zvolte ètenáøe<br><i>zvoleno %1 ètenáøù</i>";
+
+# admin/wizard_email.php3, row 43
+$_m["Select readers"]
+  = "Zvolte ètenáøe";
+
+# admin/wizard_email.php3, row 45
+$_m["You can not proceed until you select at least one reader!"]
+  = "Nemùete pokraèovat dokud nezvolíte alespoò jednoho ètenáøe!";
+
+# admin/wizard_email.php3, row 46
+$_m["Find readers using the Search conditions in Item Manager."]
+  = "Najdìte ètenáøe pouitím Vyhledat ve Správì zpráv.";
+
+# admin/wizard_email.php3, row 51
+$_m["Create or edit email template"]
+  = "Vytvoøit nebo upravit šablonu emailu";
+
+# admin/wizard_email.php3, row 52
+$_m["Use Slice Admin / Email templates to create or edit an email template."]
+  = "Pouijte Nastavení / Šablony emailù pro vytvoøení nebo úpravu šablony emailu.";
+
+# admin/wizard_email.php3, row 56
+$_m["Choose email template"]
+  = "Zvolte šablonu emailu";
+
+# admin/wizard_email.php3, row 59
+$_m["You can use all field aliases like in any view."]
+  = "Mùete pouít všechny aliasy políèek jako v kterémkoli pohledu.";
+
+# admin/wizard_email.php3, row 62
+$_m["Send example email to"]
+  = "Poslat vzor emailu na";
+
+# admin/wizard_email.php3, row 68
+# include/menu.php3, row 202
+$_m["Send emails"]
+  = "Poslat emaily";
+
+# admin/wizard_email.php3, row 70
+$_m["This will send emails to all readers selected in Step 1."]
+  = "Tímto pošlete emaily všem ètenáøùm zvolenım v Kroku 1.";
+
+# admin/wizard_email.php3, row 73
+$_m["Delete the email template"]
+  = "Smazat šablonu emailu";
+
+# admin/wizard_email.php3, row 75
+$_m["If this was a one-off template, delete it."]
+  = "Pokud jste vytvoøili šablonu pro jedno pouití, smate ji.";
+
+# admin/wizard_email.php3, row 78, 94
+$_m["Send Emails Wizard"]
+  = "Prùvodce Posláním Emailu";
+
+# admin/wizard_email.php3, row 96
+$_m["%1 email(s) were sent."]
+  = "%1 emailù posláno.";
+
+# admin/wizard_email.php3, row 98
+$_m["Find some more info in %1the doc."]
+  = "Najdìte více informací v %1dokumentaci.";
+
+# admin/wizard_email.php3, row 113
+$_m["Step"]
+  = "Krok";
+
+# admin/wizard_email.php3, row 120
+$_m["Close the wizard"]
+  = "Zavøít prùvodce";
 
 # admin/mailman_create_list.php3, row 57, 63
 $_m["Admin - Create Mailman List"]
@@ -839,1999 +2888,6 @@ $_m["Admin email"]
 $_m["Admin password"]
   = "Heslo Administrátora";
 
-# admin/mailman_create_list.php3, row 140
-# admin/setup.php3, row 212
-$_m["Create"]
-  = "Vytvoø";
-
-# admin/prev_navigation.php3, row 31
-# include/itemfunc.php3, row 728
-# include/.#itemfunc.php3.1.77, row 703
-# include/.#itemfunc.php3.1.80, row 703
-# include/.#itemfunc.php3.1.82, row 703
-# include/.#itemfunc.php3.1.88, row 708
-# include/.#itemfunc.php3.1.95, row 717
-$_m["OK"]
-  = "";
-
-# admin/related_sel.php3, row 120
-$_m["Select related items"]
-  = "Vıbìr souvisejících èlánkù";
-
-# admin/related_sel.php3, row 259
-# include/item.php3, row 1076
-# include/msgpage.php3, row 72
-# include/util.php3.marphy, row 1027
-# include/util.php3, row 1148
-# include/.#util.php3.1.100, row 987
-# include/.#util.php3.1.106, row 1028
-# include/.#util.php3.1.108, row 1028
-# include/util.bak, row 1042
-# include/.#item.php3.1.83, row 888
-# include/.#util.php3.1.111, row 1028
-# include/.#item.php3.1.85, row 891
-# include/.#util.php3.1.116, row 1051
-# include/.#item.php3.1.95, row 921
-# include/.#util.php3.1.123, row 1107
-# include/.#item.php3.1.99, row 997
-# include/.#item.php3.1.103, row 1010
-$_m["Back"]
-  = "Zpìt";
-
-# admin/se_admin.php3, row 36
-$_m["You have no permission to set configuration parameters of this slice"]
-  = "Nemáte právo nastavovat configuraèní parametry tohoto webíku";
-
-# admin/se_admin.php3, row 54, 124
-# admin/se_compact.php3, row 55, 194
-# include/constants.php3, row 361, 401, 418, 462, 490, 516, 538, 577, 601, 624, 653
-# include/tableviews.php3, row 151
-# include/.#constants.php3.1.61, row 341, 380, 397, 441, 454, 479, 500, 534, 557
-# include/.#constants.php3.1.62, row 343, 382, 399, 443, 456, 481, 502, 536, 560
-# include/.#constants.php3.1.63, row 356, 395, 412, 456, 469, 494, 515, 558, 582
-# include/.#constants.php3.1.65, row 356, 395, 412, 456, 469, 494, 515, 556, 580
-# include/.#constants.php3.1.77, row 361, 401, 418, 462, 490, 516, 538, 577, 601, 624, 653
-$_m["Top HTML"]
-  = "Horní HTML kód";
-
-# admin/se_admin.php3, row 55, 126
-$_m["Item format"]
-  = "HTML kód pro zobrazení zprávy";
-
-# admin/se_admin.php3, row 56, 128
-# admin/se_compact.php3, row 56, 201
-# include/constants.php3, row 365, 403, 420, 465, 492, 518, 541, 581, 603, 628, 657
-# include/tableviews.php3, row 153
-# include/.#constants.php3.1.61, row 345, 382, 399, 444, 456, 481, 503, 538, 559
-# include/.#constants.php3.1.62, row 347, 384, 401, 446, 458, 483, 505, 540, 562
-# include/.#constants.php3.1.63, row 360, 397, 414, 459, 471, 496, 518, 562, 584
-# include/.#constants.php3.1.65, row 360, 397, 414, 459, 471, 496, 518, 560, 582
-# include/.#constants.php3.1.77, row 365, 403, 420, 465, 492, 518, 541, 581, 603, 628, 657
-$_m["Bottom HTML"]
-  = "Spodní HTML kód";
-
-# admin/se_admin.php3, row 57, 130
-# admin/se_compact.php3, row 57, 220
-# admin/se_fulltext.php3, row 57, 148
-# include/constants.php3, row 366, 404, 542, 582, 604, 629, 658
-# include/.#constants.php3.1.61, row 346, 383, 504, 539, 560
-# include/.#constants.php3.1.62, row 348, 385, 506, 541, 563
-# include/.#constants.php3.1.63, row 361, 398, 519, 563, 585
-# include/.#constants.php3.1.65, row 361, 398, 519, 561, 583
-# include/.#constants.php3.1.77, row 366, 404, 542, 582, 604, 629, 658
-$_m["Remove strings"]
-  = "Odstraòované øetìzce";
-
-# admin/se_admin.php3, row 67
-# admin/se_compact.php3, row 88
-# admin/se_fulltext.php3, row 75
-# admin/se_view.php3, row 122, 232
-# admin/sliceimp_xml.php3, row 261
-# admin/.#se_view.php3.1.40, row 122, 215
-$_m["Can't change slice settings"]
-  = "Nepodaøilo se zmìnit nastavení webíku";
-
-# admin/se_admin.php3, row 78
-$_m["Admin fields update successful"]
-  = "Vzheld administrativních stánek úspìšnì zmìnìn";
-
-# admin/se_admin.php3, row 96, 112
-$_m["Admin - design Item Manager view"]
-  = "Správa webíku - Vzhled Administrace";
-
-# admin/se_admin.php3, row 118
-$_m["Listing of items in Admin interface"]
-  = "Vıpis zpráv v administrativních stránkách";
-
-# admin/se_admin.php3, row 125
-# admin/se_compact.php3, row 195, 215
-# admin/se_fulltext.php3, row 143
-$_m["HTML code which appears at the top of slice area"]
-  = "HTML kód, kterı se zobrazí pøed kódem webíku";
-
-# admin/se_admin.php3, row 127
-# admin/se_compact.php3, row 197, 217
-# admin/se_fulltext.php3, row 145
-$_m["Put here the HTML code combined with aliases form bottom of this page\n"
-   ."                     <br>The aliase will be substituted by real values from database when it will be posted to page"]
-  = "Sem patøí HTML kód v kombinaci s aliasy uvedenımi dole na stránce\n"
-   ."                     <br>Aliasy budou v okamiku zobrazování na web nahrazeny skuteènımi hodnotami z databáze";
-
-# admin/se_admin.php3, row 129
-# admin/se_compact.php3, row 202, 219
-# admin/se_fulltext.php3, row 147
-$_m["HTML code which appears at the bottom of slice area"]
-  = "HTML kód, kterı se zobrazí za vlasním kódem webíku";
-
-# admin/se_admin.php3, row 131
-# admin/se_compact.php3, row 221
-# admin/se_fulltext.php3, row 149
-$_m["Removes empty brackets etc. Use ## as delimeter."]
-  = "Odstraní prázdné závorky atd. Pouijte ## jako oddìlovaè.";
-
-# admin/se_admin.php3, row 142
-# admin/se_compact.php3, row 235
-# admin/se_fulltext.php3, row 164
-# admin/se_inputform.php3, row 94, 340
-$_m["Default"]
-  = "Implicitní";
-
-# admin/se_compact.php3, row 37
-$_m["You have not permissions to change compact view formatting"]
-  = "Nemáte právo mìnit vzhled pøehledu zpráv";
-
-# admin/se_compact.php3, row 54, 196
-# include/constants.php3, row 362, 402, 463, 491, 517, 578, 625, 654
-# include/.#constants.php3.1.61, row 342, 381, 442, 455, 480, 535
-# include/.#constants.php3.1.62, row 344, 383, 444, 457, 482, 537
-# include/.#constants.php3.1.63, row 357, 396, 457, 470, 495, 559
-# include/.#constants.php3.1.65, row 357, 396, 457, 470, 495, 557
-# include/.#constants.php3.1.77, row 362, 402, 463, 491, 517, 578, 625, 654
-$_m["Odd Rows"]
-  = "Lichı záznam";
-
-# admin/se_compact.php3, row 58, 222
-$_m["'No item found' message"]
-  = "Hláška 'Nenalezena ádná zpráva'";
-
-# admin/se_compact.php3, row 60, 199
-# include/constants.php3, row 364, 464, 580, 627, 656
-# include/.#constants.php3.1.61, row 344, 443, 537
-# include/.#constants.php3.1.62, row 346, 445, 539
-# include/.#constants.php3.1.63, row 359, 458, 561
-# include/.#constants.php3.1.65, row 359, 458, 559
-# include/.#constants.php3.1.77, row 364, 464, 580, 627, 656
-$_m["Even Rows"]
-  = "Sudı záznam";
-
-# admin/se_compact.php3, row 62, 214
-$_m["Category top HTML"]
-  = "Horní HTML kód pro kategorii";
-
-# admin/se_compact.php3, row 63, 216
-$_m["Category Headline"]
-  = "Nadpis kategorie";
-
-# admin/se_compact.php3, row 64, 218
-$_m["Category bottom HTML"]
-  = "Spodní HTML kód pro kategorii";
-
-# admin/se_compact.php3, row 96
-$_m["Design of compact design successfully changed"]
-  = "Vzhled pøehledu zpráv byl úspìšnì zmìnìm";
-
-# admin/se_compact.php3, row 136, 175
-# admin/se_newuser.php3, row 82
-$_m["Admin - design Index view"]
-  = "Správa webíku - Vzhled pøehledu zpráv";
-
-# admin/se_compact.php3, row 175
-$_m["Use these boxes ( and the tags listed below ) to control what appears on summary page"]
-  = "Na této stránce lze nastavit, co se objeví na stránce pøehledu zpráv";
-
-# admin/se_compact.php3, row 181
-$_m["HTML code for index view"]
-  = "HTML kód pro pøehled zpráv";
-
-# admin/se_compact.php3, row 198
-# include/constants.php3, row 363, 486, 579, 626, 655
-# include/.#constants.php3.1.61, row 343, 449, 536
-# include/.#constants.php3.1.62, row 345, 451, 538
-# include/.#constants.php3.1.63, row 358, 464, 560
-# include/.#constants.php3.1.65, row 358, 464, 558
-# include/.#constants.php3.1.77, row 363, 486, 579, 626, 655
-$_m["Use different HTML code for even rows"]
-  = "Odlišnı HTML kód pro sudé záznamy";
-
-# admin/se_compact.php3, row 200
-$_m["You can define different code for odd and ever rows\n"
-   ."                         <br>first red, second black, for example"]
-  = "TIP: Rozlišením sudıch a lichıch záznamù lze docílit napøíklad odlišení øádkù jinımi barvami pozadí\n"
-   ."                         - první tøeba zelenı, druhı lutı, atd.";
-
-# admin/se_compact.php3, row 203
-# include/constants.php3, row 377, 471, 587, 634, 663
-# include/.#constants.php3.1.61, row 357, 544
-# include/.#constants.php3.1.62, row 359, 546
-# include/.#constants.php3.1.63, row 372, 568
-# include/.#constants.php3.1.65, row 372, 566
-# include/.#constants.php3.1.77, row 377, 471, 587, 634, 663
-$_m["Group by"]
-  = "Seskupit dle";
-
-# admin/se_compact.php3, row 208
-$_m["Whole text"]
-  = "Celı text";
-
-# admin/se_compact.php3, row 208
-$_m["1st letter"]
-  = "1. písmeno";
-
-# admin/se_compact.php3, row 208, 208
-$_m["letters"]
-  = "písmena";
-
-# admin/se_compact.php3, row 209
-# admin/se_profile.php3, row 125
-# admin/se_view.php3, row 136, 137
-# admin/.#se_view.php3.1.40, row 140
-$_m["Ascending"]
-  = "Vzestupnì";
-
-# admin/se_compact.php3, row 209
-# admin/se_view.php3, row 137
-# admin/.#se_view.php3.1.40, row 140
-$_m["Ascending by Priority"]
-  = "Vzestupnì dle Øazení";
-
-# admin/se_compact.php3, row 209
-# admin/se_view.php3, row 137
-# admin/.#se_view.php3.1.40, row 140
-$_m["Descending by Priority"]
-  = "Sestupnì dle Øazení";
-
-# admin/se_compact.php3, row 211
-$_m["'by Priority' is usable just for fields using constants (like category)"]
-  = "'dle Øazení' lze pouít jen pro pole pouívající konstant (kategorie) - tam take najdete hodnoty pro 'Øazení'";
-
-# admin/se_compact.php3, row 223
-$_m["message to show in place of slice.php3, if no item matches the query"]
-  = "zpráva, která se objeví pøi nenalezení ádného odpovídajícího èlánku";
-
-# admin/se_constant.php3, row 47
-$_m["You have not permissions to change category settings"]
-  = "Nemáte právo mìnit nastavení kategorií";
-
-# admin/se_constant.php3, row 69
-$_m["You have not permissions to change fields settings for the slice owning this group"]
-  = "Nemáte administrátorská práva k webíku, kterı vlastní tuto skupinu hodnot";
-
-# admin/se_constant.php3, row 140
-$_m[" items changed to new value "]
-  = " èlánkù bylo zmìnìno na novou hodnotu ";
-
-# admin/se_constant.php3, row 156, 374
-# admin/um_gedit.php3, row 218
-# include/constants.php3, row 204
-# include/constedit.php3, row 37
-# include/fileman.php3, row 24
-# include/tableviews.php3, row 122, 138
-# include/um_gedit.php3, row 24
-# include/.#constants.php3.1.77, row 204
-$_m["Name"]
-  = "Jméno";
-
-# admin/se_constant.php3, row 157, 375
-# admin/se_mapping.php3, row 213
-# admin/se_profile.php3, row 190
-# include/constants.php3, row 205
-# include/constedit.php3, row 40
-# include/.#constants.php3.1.77, row 205
-$_m["Value"]
-  = "Hodnota";
-
-# admin/se_constant.php3, row 158, 376
-# admin/se_fields.php3, row 103, 208
-# admin/.#se_fields.php3.1.27, row 103, 206
-# include/constants.php3, row 206
-# include/constedit.php3, row 46
-# include/.#constants.php3.1.77, row 206
-$_m["Priority"]
-  = "Øazení";
-
-# admin/se_constant.php3, row 165, 309
-# include/constants.php3, row 466
-# include/.#constants.php3.1.61, row 446
-# include/.#constants.php3.1.62, row 448
-# include/.#constants.php3.1.63, row 461
-# include/.#constants.php3.1.65, row 461
-# include/.#constants.php3.1.77, row 466
-$_m["Constant Group"]
-  = "Skupina hodnot";
-
-# admin/se_constant.php3, row 171
-$_m["This constant group already exists"]
-  = "Tato skupina hodnot ji existuje";
-
-# admin/se_constant.php3, row 252
-$_m["Constants update successful"]
-  = "Zmìna hodnot úspìšnì provedena";
-
-# admin/se_constant.php3, row 262
-$_m["No category field defined in this slice.<br>Add category field to this slice first (see Field page)."]
-  = "Pole kategorie není v tomto webíku definováno.<br>  Pøidejte pole kategorie do webíku na stránce Políèka.";
-
-# admin/se_constant.php3, row 283, 289
-$_m["Admin - Constants Setting"]
-  = "Správa webíku - Nastavení hodnot";
-
-# admin/se_constant.php3, row 303
-# admin/se_inputform.php3, row 316
-$_m["Constants"]
-  = "Hodnoty";
-
-# admin/se_constant.php3, row 329
-$_m["Constants used in slice"]
-  = "Hodnoty pouity v";
-
-# admin/se_constant.php3, row 343
-$_m["Constant group owner - slice"]
-  = "Vlastník skupiny - webík";
-
-# admin/se_constant.php3, row 347
-$_m["Whoever first updates values becomes owner."]
-  = "Vlastníkem se stane první webík, kterı upraví hodnoty.";
-
-# admin/se_constant.php3, row 362
-$_m["Change owner"]
-  = "Zmìnit vlastníka";
-
-# admin/se_constant.php3, row 368
-$_m["Propagate changes into current items"]
-  = "Propagovat zmìny do stávajících èlánkù";
-
-# admin/se_constant.php3, row 370
-$_m["Where are these constants used?"]
-  = "Kde jsou konstanty pouity?";
-
-# admin/se_constant.php3, row 372
-$_m["Edit in Hierarchical editor (allows to create constant hierarchy)"]
-  = "Editovat v Hierarchickém editoru (umoòuje urèit hierarchii hodnot)";
-
-# admin/se_constant.php3, row 374
-# include/constedit.php3, row 37
-$_m["shown&nbsp;on&nbsp;inputpage"]
-  = "zobrazeno&nbsp;ve&nbsp;vstupním&nbsp;formuláøi";
-
-# admin/se_constant.php3, row 375
-# include/constedit.php3, row 40
-$_m["stored&nbsp;in&nbsp;database"]
-  = "uloeno&nbsp;v&nbsp;databázi";
-
-# admin/se_constant.php3, row 376
-# include/constedit.php3, row 46
-$_m["constant&nbsp;order"]
-  = "Poøadí&nbsp;hodnot";
-
-# admin/se_constant.php3, row 377
-# include/fileman.php3, row 81, 88
-$_m["Parent"]
-  = "Nadkategorie";
-
-# admin/se_constant.php3, row 377
-$_m["categories&nbsp;only"]
-  = "jen&nbsp;pro&nbsp;kategorie";
-
-# admin/se_constant.php3, row 411
-$_m["Delete whole group"]
-  = "Smazat celou skupinu";
-
-# admin/se_constant.php3, row 418
-$_m["Are you sure you want to PERMANENTLY DELETE this group? Type yes or no."]
-  = "Jste si jisti, e chcete PERMANENTNÌ SMAZAT tuto skupinu? Napište ano èi ne.";
-
-# admin/se_constant.php3, row 418
-# admin/slicewiz.php3, row 58
-# include/tabledit_column.php3, row 150, 153
-# include/tableviews.php3, row 164
-$_m["no"]
-  = "ne";
-
-# admin/se_constant.php3, row 418
-# admin/slicewiz.php3, row 58
-# include/tabledit_column.php3, row 150, 153
-# include/tableviews.php3, row 164
-$_m["yes"]
-  = "ano";
-
-# admin/se_fieldid.php3, row 204
-$_m["This ID is reserved"]
-  = "Toto ID je rezerováno";
-
-# admin/se_fieldid.php3, row 209
-$_m["This ID is already used"]
-  = "Toto ID je ji pouito";
-
-# admin/se_fieldid.php3, row 228, 235
-$_m["Admin - change Field IDs"]
-  = "Správa webíku - Zmìna ID políèka";
-
-# admin/se_fieldid.php3, row 238
-$_m["field IDs were changed"]
-  = "ID políèka bylo zmìnìno";
-
-# admin/se_fieldid.php3, row 243
-$_m["This page allows to change field IDs. It is a bit dangerous operation and may last long.\n"
-   ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
-   ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
-   ."    added automatically.<br>"]
-  = "Tato stránka umoòuje zmìnit identifikátory jednotlivıch políèek. \n"
-   ."     Je to pomìrnì nebezpeèná operace a mùe trvat dlouho. Je dost \n"
-   ."     pravdìpodobné, e tuto operaci nikdy nevyuijete - pouívá se jen \n"
-   ."     ve vıjimeènıch pøípadech (nastavení formuláøe pro vyhledávání ve více \n"
-   ."     webících.<br><br>\n"
-   ."     Vyberte ID políèka, které chcete zmìnit a potom nové ID a èíslo. Teèky \n"
-   ."     budou automaticky doplnìny.<br>";
-
-# admin/se_fieldid.php3, row 244
-$_m["Change from"]
-  = "Zmìnit z";
-
-# admin/se_fieldid.php3, row 249
-# admin/sliceexp.php3, row 176
-$_m["to"]
-  = "do";
-
-# admin/se_fields.php3, row 163
-# admin/se_inputform.php3, row 176
-# admin/.#se_fields.php3.1.27, row 161
-$_m["Fields update successful"]
-  = "Nastavení poloek úspìšnì zmìnìno";
-
-# admin/se_fields.php3, row 178, 194
-# admin/se_inputform.php3, row 253, 287
-# admin/.#se_fields.php3.1.27, row 176, 192
-$_m["Admin - configure Fields"]
-  = "Správa webíku - Nastavení polí";
-
-# admin/se_fields.php3, row 209
-# admin/.#se_fields.php3.1.27, row 207
-$_m["Required"]
-  = "Povinná";
-
-# admin/se_fields.php3, row 212
-# admin/.#se_fields.php3.1.27, row 210
-$_m["Aliases"]
-  = "Aliasy";
-
-# admin/se_filters.php3, row 36
-# admin/se_filters2.php3, row 39
-# admin/se_import.php3, row 33
-# admin/se_import2.php3, row 32
-# admin/se_inter_export.php3, row 28
-# admin/se_inter_import.php3, row 32
-# admin/se_inter_import2.php3, row 30
-# admin/se_inter_import3.php3, row 32
-# admin/se_mapping.php3, row 30
-# admin/se_mapping2.php3, row 35
-# admin/se_rssfeeds.php3, row 38
-$_m["You have not permissions to change feeding setting"]
-  = "Nemáte právo mìnit nastavení vımìny zpráv";
-
-# admin/se_filters.php3, row 67
-# admin/se_mapping.php3, row 85
-$_m["There are no imported slices"]
-  = "Není nastaven ádnı webík, ze kterého se mají pøijímat zprávy";
-
-# admin/se_filters.php3, row 86
-$_m["-- The same --"]
-  = "-- stejná --";
-
-# admin/se_filters.php3, row 146, 245
-$_m["Admin - Content Pooling - Filters"]
-  = "Správa webíku - Filtry pro vımìnu zpráv";
-
-# admin/se_filters.php3, row 252
-$_m["Content Pooling - Configure Filters"]
-  = "Nastavení filtrù pro pøíjem zpráv";
-
-# admin/se_filters.php3, row 256
-$_m["Filter for imported slice"]
-  = "Filtr pro pøíjem zpráv z webíku";
-
-# admin/se_filters.php3, row 260
-$_m["Categories"]
-  = "Kategorie";
-
-# admin/se_filters.php3, row 264
-# admin/se_mapping.php3, row 212
-# admin/se_csv_import2.php3, row 222
-$_m["From"]
-  = "Z";
-
-# admin/se_filters.php3, row 265
-# admin/se_mapping.php3, row 211
-# admin/se_csv_import2.php3, row 221
-$_m["To"]
-  = "Do";
-
-# admin/se_filters.php3, row 277
-$_m["All Categories"]
-  = "Všechny kategorie";
-
-# admin/se_filters.php3, row 284, 302
-$_m["No category defined"]
-  = "Kategorie nebyly definovány";
-
-# admin/se_filters2.php3, row 143
-# admin/se_import2.php3, row 129, 131
-$_m["Content Pooling update successful"]
-  = "Nastavení vımìny zpráv úspìšnì zmìnìno";
-
-# admin/se_fulltext.php3, row 37
-$_m["You have not permissions to change fulltext formatting"]
-  = "Nemáte právo mìnit vzhled vıpisu zprávy";
-
-# admin/se_fulltext.php3, row 54, 142
-$_m["Top HTML code"]
-  = "Horní HTML kód";
-
-# admin/se_fulltext.php3, row 55, 144
-$_m["Fulltext HTML code"]
-  = "HTML kód textu zprávy";
-
-# admin/se_fulltext.php3, row 56, 146
-$_m["Bottom HTML code"]
-  = "Spodní HTML kód";
-
-# admin/se_fulltext.php3, row 58, 150
-$_m["Show discussion"]
-  = "Zobrazit diskusi";
-
-# admin/se_fulltext.php3, row 86
-$_m["Fulltext format update successful"]
-  = "Vzhled textu zprávy byl úspìšnì zmìnìn";
-
-# admin/se_fulltext.php3, row 105
-$_m[" -- Empty -- "]
-  = " -- ádná -- ";
-
-# admin/se_fulltext.php3, row 114, 130
-$_m["Admin - design Fulltext view"]
-  = "Správa webíku - Vzhled jedné zprávy";
-
-# admin/se_fulltext.php3, row 130
-$_m["Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"]
-  = "Na této stránce lze nastavit, co se objeví na stránce pøi prohlíení tìla zprávy";
-
-# admin/se_fulltext.php3, row 136
-$_m["HTML code for fulltext view"]
-  = "HTML kód pro zobrazení zprávy";
-
-# admin/se_fulltext.php3, row 151
-$_m["Use HTML tags"]
-  = "Diskusi formátovat v HTML";
-
-# admin/se_import.php3, row 79
-# admin/sliceadd.php3, row 49
-# admin/slicedit.php3, row 102
-# include/menu.php3, row 78
-# include/.#menu.php3.1.32, row 76
-$_m["Slice Administration"]
-  = "Administrace webíku";
-
-# admin/se_import.php3, row 116
-$_m["Admin - configure Content Pooling"]
-  = "Správa webíku - Vımìna zpráv";
-
-# admin/se_import.php3, row 122
-$_m["Enable export to slice:"]
-  = "Povolit zasílání zpráv do webíku:";
-
-# admin/se_import.php3, row 126
-$_m["Export disable"]
-  = "Zasílání zakázáno";
-
-# admin/se_import.php3, row 128
-$_m["Export enable"]
-  = "Zasílání povoleno";
-
-# admin/se_import.php3, row 159
-$_m["Enable export to any slice"]
-  = "Povol exportovat zprávy do všech webíkù";
-
-# admin/se_import.php3, row 164
-$_m["Import from slice:"]
-  = "Pøijímat zprávy z:";
-
-# admin/se_import.php3, row 168
-$_m["Do not import"]
-  = "Nepøijímat";
-
-# admin/se_import.php3, row 170
-# include/menu_aa.php3, row 48
-$_m["Import"]
-  = "Pøijímat";
-
-# admin/se_inputform.php3, row 59
-$_m["Field delete OK"]
-  = "Pole odstranìno";
-
-# admin/se_inputform.php3, row 91, 402
-$_m["Before HTML code"]
-  = "HTML kód pøed tímto polem";
-
-# admin/se_inputform.php3, row 92, 390
-$_m["Help for this field"]
-  = "Nápovìda";
-
-# admin/se_inputform.php3, row 93, 396
-$_m["More help"]
-  = "Více informací";
-
-# admin/se_inputform.php3, row 95
-$_m["Input show function"]
-  = "Zobrazovací funkce";
-
-# admin/se_inputform.php3, row 97
-$_m["Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING."]
-  = "Alias musí bıt vdy _# + 8 VELKİCH písmen, napø. _#MUJALIAS.";
-
-# admin/se_inputform.php3, row 101, 435
-$_m["Alias"]
-  = "";
-
-# admin/se_inputform.php3, row 105, 446
-# admin/se_profile.php3, row 189
-# include/.#constants_param_wizard.php3.1.34, row 475
-$_m["Function"]
-  = "Funkce";
-
-# admin/se_inputform.php3, row 290
-$_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
-  = "<p>POZOR: Tato nastavení by mìl mìnit jen ten, kdo ví co dìlá!</p>";
-
-# admin/se_inputform.php3, row 296
-$_m["Field properties"]
-  = "Vlastnosti políèka";
-
-# admin/se_inputform.php3, row 309
-$_m["Input type"]
-  = "Typ Vstupu";
-
-# admin/se_inputform.php3, row 313
-$_m["Input field type in Add / Edit item."]
-  = "Typ políèka v Pøidat / Upravit zprávu.";
-
-# admin/se_inputform.php3, row 318
-$_m["Edit|Use as new|New"]
-  = "Upravit|Upravit kopii|Nová skupina";
-
-# admin/se_inputform.php3, row 319
-$_m["Choose a Constant Group or a Slice."]
-  = "Vyberte Skupinu Konstant nebo Webík.";
-
-# admin/se_inputform.php3, row 332, 345, 358, 373, 458
-$_m["Parameters"]
-  = "Parametry";
-
-# admin/se_inputform.php3, row 334, 347, 360, 375, 456
-# admin/se_csv_import2.php3, row 247
-$_m["Help: Parameter Wizard"]
-  = "Nápovìda: Prùvodce Parametry";
-
-# admin/se_inputform.php3, row 343
-$_m["How to generate the default value"]
-  = "Jak vytvoøit implicitní hodnotu";
-
-# admin/se_inputform.php3, row 353
-$_m["Validate"]
-  = "Zkontrolovat";
-
-# admin/se_inputform.php3, row 371
-$_m["Defines how value is stored in database."]
-  = "Urèuje zpùsob uloení hodnoty v databázi";
-
-# admin/se_inputform.php3, row 384
-$_m["Show 'HTML' / 'plain text' option"]
-  = "Zobrazit volbu 'HTML' / 'prostı text'";
-
-# admin/se_inputform.php3, row 386
-$_m["'HTML' as default"]
-  = "'HTML' implicitnì";
-
-# admin/se_inputform.php3, row 392
-$_m["Shown help for this field"]
-  = "Nápovìda zobrazená pro toto pole ve vstupním formuláøi";
-
-# admin/se_inputform.php3, row 398
-$_m["Text shown after user click on '?' in input form"]
-  = "Nápovìda, která se zobrazí po stisku '?' ve vstupním formuláøi";
-
-# admin/se_inputform.php3, row 404
-$_m["Code shown in input form before this field"]
-  = "HTML kód, kterı se zobrazí ve vstupním formuláøi pøed tímto polem";
-
-# admin/se_inputform.php3, row 409
-$_m["Feeding mode"]
-  = "Sdílení tohoto pole";
-
-# admin/se_inputform.php3, row 412
-$_m["Should the content of this field be copied to another slice if it is fed?"]
-  = "Má se kopírovat obsah tohoto políèka do dalších webíkù pøi vımìnì zpráv mezi webíky?";
-
-# admin/se_inputform.php3, row 419
-$_m["ALIASES used in views to print field content"]
-  = "ALIASy pouité v pohledech k zobrazení obsahu políèka";
-
-# admin/se_inputform.php3, row 442
-$_m["_# + 8 UPPERCASE letters or _"]
-  = "_# + 8 VELKİCH písmen nebo _";
-
-# admin/se_inputform.php3, row 466
-# admin/se_view.php3, row 77
-# admin/um_gedit.php3, row 219
-# admin/.#se_view.php3.1.40, row 77
-# include/constants.php3, row 211
-# include/constedit.php3, row 48
-# include/um_gedit.php3, row 25
-# include/.#constants.php3.1.77, row 211
-$_m["Description"]
-  = "Popis";
-
-# admin/se_inter_export.php3, row 64, 99, 106
-$_m["Inter node export settings"]
-  = "Správa povolení zasílání webíkù";
-
-# admin/se_inter_export.php3, row 109
-$_m["Existing exports of the slice "]
-  = "Seznam uzlù a uivatelù, kam bude zasílán webík ";
-
-# admin/se_inter_export.php3, row 131
-$_m["Insert new item"]
-  = "Pøidejte uzel a uivatele";
-
-# admin/se_inter_export.php3, row 132
-$_m["Remote Nodes"]
-  = "Seznam uzlù";
-
-# admin/se_inter_export.php3, row 143
-$_m["User name"]
-  = "Jméno uivatele";
-
-# admin/se_inter_import.php3, row 69, 111, 117
-# admin/se_inter_import2.php3, row 71, 94, 100
-$_m["Inter node import settings"]
-  = "Správa pøijímanıch webíkù";
-
-# admin/se_inter_import.php3, row 120
-$_m["Existing remote imports into the slice "]
-  = "Seznam pøijímanıch webíkù do webíku ";
-
-# admin/se_inter_import.php3, row 138
-$_m["All remote nodes"]
-  = "Seznam uzlù";
-
-# admin/se_inter_import2.php3, row 45, 61
-$_m["Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."]
-  = "Nepodaøilo se navázat spojení nebo pøijmout data. Kontaktuje administrátora";
-
-# admin/se_inter_import2.php3, row 52
-$_m["No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."]
-  = "ádné dostupné webíky. Nemáte práva pøijímat data z tohoto uzlu. Kontaktujte administrátora vzdáleného webíku a zkontrolujte, e obdrel vaše správné uivatelské jméno.";
-
-# admin/se_inter_import2.php3, row 53
-$_m["Invalid password for the node name:"]
-  = "Neplatné heslo pro uzel: ";
-
-# admin/se_inter_import2.php3, row 53
-$_m["Contact the administrator of the local node."]
-  = "Kontaktujte administrátora lokálního uzlu.";
-
-# admin/se_inter_import2.php3, row 103
-$_m["List of available slices from the node "]
-  = "Seznam dostupnıch webíkù z uzlu ";
-
-# admin/se_inter_import3.php3, row 49
-$_m["The import was already created"]
-  = "Pøíjem z webíku byl ji vytvoøen";
-
-# admin/se_inter_import3.php3, row 106
-$_m["The import was successfully created"]
-  = "Pøíjem z webíku úspìšnì vytvoøen";
-
-# admin/se_javascript.php3, row 62, 69
-# include/menu.php3, row 145
-# include/.#menu.php3.1.32, row 140
-$_m["Field Triggers"]
-  = "Javascript pro políèka";
-
-# admin/se_javascript.php3, row 75
-$_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
-  = "Vlote kód v JavaScriptu. Bude zahrnut na stránce Pøidat / Upravit zprávu (itemedit.php3).";
-
-# admin/se_javascript.php3, row 93
-$_m["Field IDs"]
-  = "ID políèek";
-
-# admin/se_javascript.php3, row 100
-$_m["Triggers"]
-  = "Triggery";
-
-# admin/se_javascript.php3, row 101
-$_m["Write trigger functions like"]
-  = "Pište triggery jako napø.";
-
-# admin/se_javascript.php3, row 101
-$_m["see FAQ</a> for more details and examples"]
-  = "ètìte FAQ</a> s dalšími detaily a pøíklady";
-
-# admin/se_javascript.php3, row 103
-$_m["Field Type"]
-  = "Typ Políèka";
-
-# admin/se_javascript.php3, row 103
-$_m["Triggers Available -- see some JavaScript help for when a trigger is run"]
-  = "Dostupné Triggery -- v dokumentaci JavaScriptu zjistíte, kdy je kterı spouštìn";
-
-# admin/se_mapping.php3, row 110, 110, 229
-# admin/se_mapping2.php3, row 60
-$_m["-- Not map --"]
-  = "-- Nemapovat --";
-
-# admin/se_mapping.php3, row 111, 111, 224
-# admin/se_mapping2.php3, row 63
-$_m["-- Value --"]
-  = "-- Hodnota --";
-
-# admin/se_mapping.php3, row 112, 112, 227
-# admin/se_mapping2.php3, row 66
-$_m["-- Joined fields --"]
-  = "-- Spojení polí --";
-
-# admin/se_mapping.php3, row 113, 113, 237
-# admin/se_mapping2.php3, row 69
-$_m["-- RSS field or expr --"]
-  = "";
-
-# admin/se_mapping.php3, row 196
-$_m["Content Pooling - Fields' mapping"]
-  = "Vımìna zpráv - mapování polí";
-
-# admin/se_mapping.php3, row 201
-$_m["Mapping from slice"]
-  = "Mapování z webíku";
-
-# admin/se_mapping.php3, row 207
-$_m["Fields' mapping"]
-  = "Mapování polí";
-
-# admin/se_mapping2.php3, row 108
-$_m["Fields' mapping update succesful"]
-  = "Nastavení mapování polí úspì¹nì zmìnìno";
-
-# admin/se_newuser.php3, row 35
-# admin/um_uedit.php3, row 46
-# admin/um_gedit.php3, row 44
-$_m["No permission to create new user"]
-  = "Nemáte právo vytvoøit uivatele";
-
-# admin/se_newuser.php3, row 46, 102
-# admin/setup.php3, row 86, 219
-# admin/um_uedit.php3, row 249, 252
-# admin/slicewiz.php3, row 77
-# include/um_uedit.php3, row 28
-# include/.#constants_param_wizard.php3.1.34, row 84, 113
-$_m["Login name"]
-  = "Uivatelské jméno";
-
-# admin/se_newuser.php3, row 47, 103
-# admin/se_nodes.php3, row 175
-# admin/setup.php3, row 87, 220
-# admin/um_uedit.php3, row 254
-# admin/slicewiz.php3, row 78
-# include/um_uedit.php3, row 30
-$_m["Password"]
-  = "Heslo";
-
-# admin/se_newuser.php3, row 48, 104
-# admin/um_uedit.php3, row 255
-# admin/slicewiz.php3, row 79
-# include/um_uedit.php3, row 31
-$_m["Retype password"]
-  = "Potvrdit heslo";
-
-# admin/se_newuser.php3, row 52, 106
-# admin/um_uedit.php3, row 257
-# admin/slicewiz.php3, row 81
-# include/um_uedit.php3, row 36
-$_m["Surname"]
-  = "Pøíjmení";
-
-# admin/se_newuser.php3, row 53, 105
-# admin/setup.php3, row 89, 224
-# admin/um_uedit.php3, row 256
-# admin/slicewiz.php3, row 80
-# include/um_uedit.php3, row 37
-$_m["First name"]
-  = "Jméno";
-
-# admin/se_newuser.php3, row 55
-# admin/setup.php3, row 229
-# include/um_uedit.php3, row 39
-$_m["Retyped password is not the same as the first one"]
-  = "Vyplnìná hesla si neodpovídají";
-
-# admin/se_newuser.php3, row 69
-# admin/setup.php3, row 255
-# include/um_uedit.php3, row 55
-$_m["It is impossible to add user to permission system"]
-  = "Nepodaøilo se pøidat uivatele do systému - chyba LDAP";
-
-# admin/se_newuser.php3, row 72
-# admin/um_uedit.php3, row 114
-# include/um_uedit.php3, row 60
-$_m["User successfully added to permission system"]
-  = "Uivatel byl úspìšnì pøidán do systému";
-
-# admin/se_newuser.php3, row 90
-$_m["New user in permission system"]
-  = "Novı uivatel v systému";
-
-# admin/se_newuser.php3, row 96
-# admin/um_uedit.php3, row 238
-$_m["New user"]
-  = "Novı uivatel";
-
-# admin/se_newuser.php3, row 116
-# admin/sliceadd.php3, row 81
-# admin/um_uedit.php3, row 300
-# admin/um_gedit.php3, row 259
-# include/formutil.php3, row 860
-# include/itemfunc.php3, row 723
-# include/profile.php3, row 130
-# include/sliceadd.php3, row 69, 91
-# include/.#formutil.php3.1.58, row 824
-# include/.#itemfunc.php3.1.77, row 698
-# include/.#itemfunc.php3.1.80, row 698
-# include/.#itemfunc.php3.1.82, row 698
-# include/.#itemfunc.php3.1.88, row 703
-# include/formutil.bak, row 848
-# include/formutil.php3.old, row 848
-# include/.#itemfunc.php3.1.95, row 712
-$_m["Add"]
-  = "Pøidat";
-
-# admin/se_nodes.php3, row 35
-$_m["You have not permissions to manage nodes"]
-  = "Nemáte práva pro správu uzlù";
-
-# admin/se_nodes.php3, row 90, 142, 148
-$_m["Remote node administration"]
-  = "Správa uzlù";
-
-# admin/se_nodes.php3, row 151
-$_m["Known remote nodes"]
-  = "Seznam uzlù";
-
-# admin/se_nodes.php3, row 168
-$_m["Add new node"]
-  = "Pøidání uzlu";
-
-# admin/se_nodes.php3, row 169
-$_m["Edit node data"]
-  = "Editace uzlu";
-
-# admin/se_nodes.php3, row 171
-$_m["Node name"]
-  = "Jméno uzlu ";
-
-# admin/se_nodes.php3, row 172
-$_m["Your node name"]
-  = "Jméno uzlu";
-
-# admin/se_nodes.php3, row 173
-$_m["URL of the getxml.php3"]
-  = "URL souboru getxml.php3";
-
-# admin/se_nodes.php3, row 174
-$_m["Your getxml is"]
-  = "Vaše getxml je";
-
-# admin/se_notify.php3, row 64
-# include/slicedit.php3, row 27
-$_m["You have not permissions to edit this slice"]
-  = "Nemáte právo upravovat tento webík";
-
-# admin/se_notify.php3, row 216, 220, 228
-$_m["Email Notifications of Events"]
-  = "E-mailová upozornìní na události";
-
-# admin/se_notify.php3, row 236
-$_m["<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
-  = "<h4>Nová zpráva v Zásobníku</h4> Kdokoliv mùe bıt informován o tom, e pøibyla nová zpráva do zásobníku. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou.";
-
-# admin/se_notify.php3, row 237, 242, 247, 252
-$_m["Email addresses, one per line"]
-  = "E-mailová adresa (jedna na øádek)";
-
-# admin/se_notify.php3, row 238, 243, 248, 253
-$_m["Subject of the Email message"]
-  = "Pøedmìt e-mailu (Subject)";
-
-# admin/se_notify.php3, row 239, 244, 249, 254
-$_m["Body of the Email message"]
-  = "Vlastní e-mailová zpráva";
-
-# admin/se_notify.php3, row 241
-$_m["<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
-  = "<h4>Zpráva v Zásobníku byla zmìnìna</h4> Kdokoliv mùe bıt informován o tom, e byla zmìnìna zpráva v zásobníku. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou.";
-
-# admin/se_notify.php3, row 246
-$_m["<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
-  = "<h4>Nová zpráva mezi Aktuálními</h4> Kdokoliv mùe bıt informován o tom, e pøibyla nová zpráva na web. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou.";
-
-# admin/se_notify.php3, row 251
-$_m["<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
-  = "<h4>Aktuální zpráva zmìnìna</h4> Kdokoliv mùe bıt informován o tom, e byla zmìnìna vystavená zpráva. Adresy pøíjemcù napište níe, do následujících políèek pak vyplòte, jak má vypadat e-mail, kterı pak uivatelé dostanou.";
-
-# admin/se_profile.php3, row 36
-# admin/se_users.php3, row 34
-# admin/usermng.php3, row 35
-$_m["You have not permissions to manage users"]
-  = "Nemáte právo ke správì uivatelù";
-
-# admin/se_profile.php3, row 51
-$_m["Rule deleted"]
-  = "Pravidlo úspìšnì vymazáno";
-
-# admin/se_profile.php3, row 61, 68, 75, 82, 91
-$_m["Rule added"]
-  = "Pravidlo pøidáno";
-
-# admin/se_profile.php3, row 97
-$_m["Error: Can't add rule"]
-  = "Chyba pøi pøidávání nového pravidla";
-
-# admin/se_profile.php3, row 117
-$_m["Item number"]
-  = "Poèet zpráv";
-
-# admin/se_profile.php3, row 118
-$_m["Item filter"]
-  = "Filtr zpráv";
-
-# admin/se_profile.php3, row 119
-$_m["Item order"]
-  = "Øazení";
-
-# admin/se_profile.php3, row 120
-$_m["Hide field"]
-  = "Skrıt políèko";
-
-# admin/se_profile.php3, row 121
-$_m["Hide and Fill"]
-  = "Skrıt a vyplnit";
-
-# admin/se_profile.php3, row 122
-$_m["Fill field"]
-  = "Vyplnit políèko";
-
-# admin/se_profile.php3, row 123
-$_m["Predefine field"]
-  = "Pøednastavit políèíko";
-
-# admin/se_profile.php3, row 129, 158
-$_m["Admin - user Profiles"]
-  = "Správa webíku - Uivatelské profily";
-
-# admin/se_profile.php3, row 165
-$_m["Rules"]
-  = "Nastavená pravidla";
-
-# admin/se_profile.php3, row 176
-$_m["No rule is set"]
-  = "ádné pravidlo nebylo definováno";
-
-# admin/se_profile.php3, row 180
-$_m["Add Rule"]
-  = "Pøidat pravidlo";
-
-# admin/se_profile.php3, row 187
-$_m["Rule"]
-  = "Pravidlo";
-
-# admin/se_profile.php3, row 191
-# include/formutil.php3, row 124, 245
-# include/.#formutil.php3.1.58, row 118, 224
-# include/formutil.bak, row 120, 241
-# include/formutil.php3.old, row 120, 241
-$_m["HTML"]
-  = "";
-
-# admin/se_profile.php3, row 197
-$_m["number of item displayed in Item Manager"]
-  = "poèet zpráv zobrazenıch v administraci";
-
-# admin/se_profile.php3, row 198
-$_m["preset \"Search\" in Itme Manager"]
-  = "pøednastavení \"Hledání\" v administraci";
-
-# admin/se_profile.php3, row 199
-$_m["preset \"Order\" in Itme Manager"]
-  = "pøednastavení \"Seøadit\" v administraci";
-
-# admin/se_profile.php3, row 200
-$_m["hide the field in inputform"]
-  = "skıt políèko ve vstupním foruláøi";
-
-# admin/se_profile.php3, row 201
-$_m["hide the field in inputform and fill it by the value"]
-  = "skıt políèko ve vstupním foruláøi a vyplnit je danou hodnotou";
-
-# admin/se_profile.php3, row 202
-$_m["fill the field in inputform by the value"]
-  = "vyplnit políèko ve vstupním foruláøi vdy danou hodnotou";
-
-# admin/se_profile.php3, row 203
-$_m["predefine value of the field in inputform"]
-  = "pøednastavit hodnotu do políèka ve vstupním formuláøi";
-
-# admin/se_rssfeeds.php3, row 113, 165, 171
-$_m["Remote RSS Feed administration"]
-  = "";
-
-# admin/se_rssfeeds.php3, row 174
-$_m["Current remote rssfeeds"]
-  = "";
-
-# admin/se_rssfeeds.php3, row 193
-$_m["Add new rssfeed"]
-  = "";
-
-# admin/se_rssfeeds.php3, row 194
-$_m["Edit rssfeed data"]
-  = "";
-
-# admin/se_rssfeeds.php3, row 196
-$_m["RSS Feed name"]
-  = "";
-
-# admin/se_rssfeeds.php3, row 197
-$_m["New rssfeed name"]
-  = "";
-
-# admin/se_rssfeeds.php3, row 198
-$_m["URL of the feed"]
-  = "";
-
-# admin/se_rssfeeds.php3, row 199
-$_m["e.g. http://www.someplace.com/rss/index.xml"]
-  = "";
-
-# admin/se_rssfeeds.php3, row 204
-$_m["Submit"]
-  = "Poslat";
-
-# admin/se_search.php3, row 33
-$_m["You have not permissions to change search settings"]
-  = "Nemáte právo mìnit nastavení vyhledávání";
-
-# admin/se_search.php3, row 91
-$_m["Search fields update successful"]
-  = "Nastavení vyhledávacího formuláøe úspìšnì zmìnìno";
-
-# admin/se_search.php3, row 104, 110
-$_m["Admin - design Search Page"]
-  = "Správa webíku - Vyhledávací formuláø";
-
-# admin/se_search.php3, row 116
-$_m["Search form criteria"]
-  = "Vyhledávací kritéria";
-
-# admin/se_search.php3, row 133
-$_m["Search in fields"]
-  = "Vyhledávat v polokách";
-
-# admin/se_search.php3, row 140
-$_m["Default settings"]
-  = "Standardni nastavení";
-
-# admin/se_users.php3, row 80
-# admin/se_users_add.php3, row 39
-# admin/slicewiz.php3, row 76
-$_m["Editor"]
-  = "";
-
-# admin/se_users.php3, row 85
-# admin/se_users_add.php3, row 42
-$_m["Administrator"]
-  = "Administrátor";
-
-# admin/se_users.php3, row 88
-# include/um_util.php3, row 71, 120
-$_m["Revoke"]
-  = "Odstranit";
-
-# admin/se_users.php3, row 89
-# admin/setup.php3, row 149
-# admin/um_uedit.php3, row 189
-# include/perm_emailsql.php3, row 164, 327, 334, 586
-# include/perm_sql.php3, row 176, 347, 596
-# include/um_usrch.php3, row 80
-# include/.#perm_ldap.php3.1.20, row 701
-# include/.#perm_ldap.php3.1.21, row 700
-# include/perm_ldap.php3, row 704
-$_m["User"]
-  = "Uivatel";
-
-# admin/se_users.php3, row 90, 154
-$_m["Profile"]
-  = "Profil";
-
-# admin/se_users.php3, row 100, 106
-$_m["Admin - Permissions"]
-  = "Správa webíku - Pøístupová práva";
-
-# admin/se_users.php3, row 120
-$_m["Change current permissions"]
-  = "Zmìna souèasnıch práv";
-
-# admin/se_users.php3, row 153
-$_m["Default user profile"]
-  = "Spoleènı profil";
-
-# admin/se_users_add.php3, row 49
-$_m["Search user or group"]
-  = "Hledej uivatele nebo skupinu";
-
-# admin/se_users_add.php3, row 53
-# admin/um_uedit.php3, row 171
-# admin/um_gedit.php3, row 225
-# admin/usermng.php3, row 61
-# include/menu_aa.php3, row 38
-# include/um_usrch.php3, row 71
-$_m["Users"]
-  = "Uivatelé";
-
-# admin/se_users_add.php3, row 58
-# admin/um_uedit.php3, row 269
-# admin/um_gedit.php3, row 147
-# include/menu_aa.php3, row 42
-# include/um_gsrch.php3, row 36
-$_m["Groups"]
-  = "Skupiny";
-
-# admin/se_users_add.php3, row 69
-# include/um_util.php3, row 87
-$_m["Assign new permissions"]
-  = "Pøiøazení novıch práv";
-
-# admin/se_users_add.php3, row 103
-# admin/um_uedit.php3, row 62, 76, 97
-# admin/um_gedit.php3, row 67, 73
-# include/um_gsrch.php3, row 26
-# include/um_usrch.php3, row 35, 44, 62
-$_m["Too many users or groups found."]
-  = "Nalezeno pøíliš mnoho uivatelù èi skupin.";
-
-# admin/se_users_add.php3, row 103
-$_m["Try to be more specific."]
-  = "Zkuste zadat pøesnìjší údaje.";
-
-# admin/se_users_add.php3, row 105
-# admin/um_uedit.php3, row 62, 76
-# admin/um_gedit.php3, row 67
-# include/um_gsrch.php3, row 29
-# include/um_usrch.php3, row 35, 44
-$_m["No user (group) found"]
-  = "Uivatel (skupina) nenalezena";
-
-# admin/se_users_add.php3, row 126
-$_m["List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query"]
-  = "Délka seznamu je max. 5 uivatelù.<br>Pokud nìjakı uivatel není v sezanmu, zkuste pøesnìjší dotaz";
-
-# admin/se_view.php3, row 58
-# admin/.#se_view.php3.1.40, row 58
-$_m["Group by selections"]
-  = "";
-
-# admin/se_view.php3, row 61
-# admin/.#se_view.php3.1.40, row 61
-$_m["Yes. Write sort[] to the conds[] field for each Selection."]
-  = "";
-
-# admin/se_view.php3, row 64
-# admin/.#se_view.php3.1.40, row 64
-$_m["No. Use this sort[]:"]
-  = "";
-
-# admin/se_view.php3, row 77
-# admin/.#se_view.php3.1.40, row 77
-$_m["Alerts Selection"]
-  = "Zasílání - vıbìr";
-
-# admin/se_view.php3, row 82
-# admin/.#se_view.php3.1.40, row 82
-$_m["If you need more selections, use 'Update' and on next Edit two empty boxes appear."]
-  = "";
-
-# admin/se_view.php3, row 184
-# admin/se_views.php3, row 35
-# admin/.#se_view.php3.1.40, row 177
-$_m["You do not have permission to change views"]
-  = "Nemáte právo mìnit pohledy";
-
-# admin/se_view.php3, row 237
-# admin/sliceimp_xml.php3, row 267
-# admin/.#se_view.php3.1.40, row 220
-$_m["Can't insert into view."]
-  = "Nemohu vloit do view.";
-
-# admin/se_view.php3, row 254
-# admin/.#se_view.php3.1.40, row 237
-$_m["View successfully changed"]
-  = "Pohled byl úspìšnì zmìnìn";
-
-# admin/se_view.php3, row 314, 340
-# admin/se_views.php3, row 78, 112
-# admin/.#se_view.php3.1.40, row 294, 312
-$_m["Admin - design View"]
-  = "Správa webíku - definice Pohledu";
-
-# admin/se_view.php3, row 346
-# admin/se_views.php3, row 117
-# admin/.#se_view.php3.1.40, row 319
-$_m["Defined Views"]
-  = "Definované pohledy";
-
-# admin/se_view.php3, row 415
-# admin/se_views.php3, row 197
-# admin/slicedit.php3, row 129
-# admin/.#se_view.php3.1.40, row 394
-$_m["<br>To include slice in your webpage type next line \n"
-   ."                         to your shtml code: "]
-  = "<br>Webík zahrnete do své *.shtml stránky pøidáním \n"
-   ."                             následující øádky v HTML kódu: ";
-
-# admin/se_views.php3, row 52
-$_m["View successfully deleted"]
-  = "Pohled by úspìšnì smazán";
-
-# admin/se_views.php3, row 144
-$_m["Create new view"]
-  = "Vytvoøit novı pohled";
-
-# admin/se_views.php3, row 149
-$_m["by&nbsp;type:"]
-  = "dle&nbsp;typu:";
-
-# admin/se_views.php3, row 157, 177
-$_m["New"]
-  = "Novı";
-
-# admin/se_views.php3, row 162
-$_m["by&nbsp;template:"]
-  = "dle&nbsp;šablony:";
-
-# admin/setup.php3, row 58, 61
-$_m["AA Setup"]
-  = "Instalace AA";
-
-# admin/setup.php3, row 65
-$_m["This script can't be used on a configured system."]
-  = "Skript nelze pouít na nakonfigurovaném systému.";
-
-# admin/setup.php3, row 81
-# admin/um_uedit.php3, row 261
-$_m["Superadmin account"]
-  = "Superadmin";
-
-# admin/setup.php3, row 88, 222
-$_m["Retype Password"]
-  = "Zopakujte heslo";
-
-# admin/setup.php3, row 90, 225
-$_m["Last name"]
-  = "Pøíjmení";
-
-# admin/setup.php3, row 105
-$_m["Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>"]
-  = "Dobrı den! Pouijte tento skript k vytvoøení superuivatelského úètù.<p>Pokud instalujete novou kopii AA, stisknìte <strong>Init</strong>.</p>";
-
-# admin/setup.php3, row 106
-$_m["If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>"]
-  = "Pokud jste smazali superuivatelskı úèet omylem, stisknìte <b>Obnovit</b>.<br>";
-
-# admin/setup.php3, row 135
-$_m["Database is not configured correctly or the database is empty.<br>\n"
-   ."             Check please the database credentials in <b>include/config.php3</b>\n"
-   ."             file <br>or run <a href=\"../sql_update.php3\">sql_update.php3</a> script,\n"
-   ."             which creates AA tables for you."]
-  = "";
-
-# admin/setup.php3, row 173
-$_m[" Init "]
-  = " Inicializuj ";
-
-# admin/setup.php3, row 182
-$_m["Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>"]
-  = "";
-
-# admin/setup.php3, row 187
-$_m["Recover"]
-  = "Obnovit";
-
-# admin/setup.php3, row 197
-$_m["Can't delete invalid permission."]
-  = "Nemohu smazat chybné nastavení.";
-
-# admin/setup.php3, row 199
-$_m["Invalid permission deleted (no such user/group): "]
-  = "Chybné nastavení smazáno (neexistuje tento uivatel/skupina): ";
-
-# admin/setup.php3, row 268
-$_m["Congratulations! The account was created."]
-  = "Blahopøejeme! Úèet byl vytvoøen.";
-
-# admin/setup.php3, row 270
-$_m["Use this account to login and add your first slice:"]
-  = "Pouijte tento úèet k pøihlášení a vytvoøte první webík:";
-
-# admin/setup.php3, row 271
-# admin/slicedit.php3, row 111
-$_m["Add Slice"]
-  = "Správa webíku - Pøidání webíku";
-
-# admin/setup.php3, row 274
-$_m["Can't assign super access permission."]
-  = "Nemohu pøidat superuivatelské právo.";
-
-# admin/sliceadd.php3, row 52
-$_m["Create New Slice / Module"]
-  = "Vytvoøit novı Webík / Modul";
-
-# admin/sliceadd.php3, row 69
-$_m["Module"]
-  = "Modul";
-
-# admin/sliceexp.php3, row 43
-# admin/sliceimp.php3, row 40
-$_m["You are not allowed to export / import slices"]
-  = "Nemáte právo exportovat / importovat webíky";
-
-# admin/sliceexp.php3, row 62, 144
-$_m["Export slice structure"]
-  = "Export struktury webíku";
-
-# admin/sliceexp.php3, row 93, 98
-$_m["Date export error"]
-  = "Chyba pøi exportování data";
-
-# admin/sliceexp.php3, row 107
-$_m["The identificator should be 16 characters long, not "]
-  = "Délka identifikátoru musí bıt 16 znakù, a ne ";
-
-# admin/sliceexp.php3, row 123
-$_m["You must select one or more slices to backup"]
-  = "Musíte vybrat nìjaké webíky pro zálohování";
-
-# admin/sliceexp.php3, row 162
-$_m["Choose, if you want export slices structure, data or both."]
-  = "Zvolte, chcete-li exportovat strukturu webíku, data nebo obojí.";
-
-# admin/sliceexp.php3, row 163
-$_m["Export structure"]
-  = "Export struktury";
-
-# admin/sliceexp.php3, row 164
-$_m["Export data"]
-  = "Export dat";
-
-# admin/sliceexp.php3, row 165
-$_m["Export views"]
-  = "Export pohledù";
-
-# admin/sliceexp.php3, row 168
-$_m["Use compression"]
-  = "Komprimovat";
-
-# admin/sliceexp.php3, row 170
-$_m["HEX output"]
-  = "HEX vıstup";
-
-# admin/sliceexp.php3, row 171
-$_m["Store exported data in file"]
-  = "Uloit exportovaná data do souboru";
-
-# admin/sliceexp.php3, row 174
-$_m["Export data from specified dates: "]
-  = "Export dat z urèitıch dnù: ";
-
-# admin/sliceexp.php3, row 175
-$_m["From "]
-  = "Od ";
-
-# admin/sliceexp.php3, row 185
-$_m["Choose one of two export kinds:"]
-  = "Vyberte si jeden ze dvou zpùsobù exportu:";
-
-# admin/sliceexp.php3, row 192
-$_m["When exporting \"to Backup\" you may choose more slices at once."]
-  = "Pøi exportu \"do Backupu\" si mùete vybrat nìkolik šablon najednou.";
-
-# admin/sliceexp.php3, row 193
-$_m["Select slices which you WANT to export:"]
-  = "Oznaète webíky, které CHCETE exportovat:";
-
-# admin/sliceexp.php3, row 209
-$_m["When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator."]
-  = "Pøi exportu \"do jiného Toolkitu\" se bude exportovat pouze aktuální šablona a vy pro ni zvolíte novı identifikátor.";
-
-# admin/sliceexp.php3, row 210
-$_m["Choose a new slice identificator exactly 16 characters long: "]
-  = "Zvolte novı identifikátor šablony o délce pøesnì 16 znakù: ";
-
-# admin/slicedel2.php3, row 65
-$_m["Slice successfully deleted, tables are optimized"]
-  = "Webík byl vymazán, tabulky byly optimalizovány";
-
-# admin/slicedit.php3, row 33, 38
-$_m["Not allowed"]
-  = "Zakázáno";
-
-# admin/slicedit.php3, row 39
-$_m["All items"]
-  = "Všechny èlánky";
-
-# admin/slicedit.php3, row 40
-$_m["Only items posted anonymously"]
-  = "Pouze èlánky poslané anonymnì";
-
-# admin/slicedit.php3, row 41
-$_m["-\"- and not edited in AA"]
-  = "-\"- a neupravené v AA";
-
-# admin/slicedit.php3, row 42
-$_m["Authorized by a password field"]
-  = "Autorizované heslem";
-
-# admin/slicedit.php3, row 43
-$_m["Readers, authorized by HTTP auth"]
-  = "Ètenáøi, autorizovaní pomocí HTTP";
-
-# admin/slicedit.php3, row 88
-# include/modutils.php3, row 107
-$_m["Select owner"]
-  = "Vyber vlastníka";
-
-# admin/slicedit.php3, row 111
-$_m["Admin - Slice settings"]
-  = "Správa webíku - Úprava webíku";
-
-# admin/slicedit.php3, row 127
-# include/modutils.php3, row 52
-# include/slicedit.php3, row 70
-$_m["URL of .shtml page (often leave blank)"]
-  = "URL webíku";
-
-# admin/slicedit.php3, row 133
-# include/modutils.php3, row 51
-# include/slicedit.php3, row 69
-$_m["Owner"]
-  = "Vlastník";
-
-# admin/slicedit.php3, row 135
-# include/modutils.php3, row 28
-# include/slicedit.php3, row 49
-$_m["New Owner"]
-  = "Novı vlastník";
-
-# admin/slicedit.php3, row 136
-# include/modutils.php3, row 29
-# include/slicedit.php3, row 50
-$_m["New Owner's E-mail"]
-  = "E-mail nového vlastníka";
-
-# admin/slicedit.php3, row 138
-# include/constants.php3, row 393, 484, 506, 532, 563, 618, 647, 676
-# include/slicedit.php3, row 71
-# include/.#constants.php3.1.61, row 373, 448, 470, 495, 526, 574
-# include/.#constants.php3.1.62, row 375, 450, 472, 497, 528, 577
-# include/.#constants.php3.1.63, row 388, 463, 485, 510, 541, 599
-# include/.#constants.php3.1.65, row 388, 463, 485, 510, 541, 597
-# include/.#constants.php3.1.77, row 393, 484, 506, 532, 563, 618, 647, 676
-$_m["Listing length"]
-  = "Poèet vypisovanıch zpráv";
-
-# admin/slicedit.php3, row 140
-# include/sliceadd.php3, row 59
-$_m["Template"]
-  = "Šablona";
-
-# admin/slicedit.php3, row 141
-$_m["Deleted"]
-  = "Vymazán";
-
-# admin/slicedit.php3, row 143
-# include/slicedit.php3, row 72
-$_m["Allow anonymous posting of items"]
-  = "Anonymní vkládání";
-
-# admin/slicedit.php3, row 145
-# include/slicedit.php3, row 73
-$_m["Allow anonymous editing of items"]
-  = "Anonymní upravování";
-
-# admin/slicedit.php3, row 147
-# include/slicedit.php3, row 74
-$_m["Allow off-line item filling"]
-  = "Off-line plnìní";
-
-# admin/slicedit.php3, row 149
-$_m["Language"]
-  = "Jazyk";
-
-# admin/slicedit.php3, row 151
-# include/slicedit.php3, row 76
-$_m["File Manager Access"]
-  = "Pøístup ke Správci Souborù";
-
-# admin/slicedit.php3, row 152
-# include/slicedit.php3, row 77
-$_m["File Manager Directory"]
-  = "Adresáø pro Správce Souborù";
-
-# admin/slicedit.php3, row 166
-$_m["Auth Group Field"]
-  = "Políèko s Auth Skupinami";
-
-# admin/slicedit.php3, row 168
-$_m["Mailman Lists Field"]
-  = "Políèko se Seznamy Mailmana";
-
-# admin/slicedit.php3, row 172
-$_m["Password for Reading"]
-  = "Heslo pro Ètení";
-
-# admin/um_uedit.php3, row 68, 71, 85
-# admin/um_gedit.php3, row 60
-# include/um_usrch.php3, row 36, 39, 51
-$_m["Too much groups found."]
-  = "Nalezeno pøíliš moc skupin.";
-
-# admin/um_uedit.php3, row 68, 71
-# admin/um_gedit.php3, row 60
-# include/um_usrch.php3, row 36, 39
-$_m["No groups found"]
-  = "Skupina nenalezena";
-
-# admin/um_uedit.php3, row 124
-$_m["User management - Users"]
-  = "Správa uivatelù - Uivalelé";
-
-# admin/um_uedit.php3, row 164
-# include/menu_aa.php3, row 40
-$_m["New User"]
-  = "Novı uivatel";
-
-# admin/um_uedit.php3, row 164, 236
-# include/menu_aa.php3, row 39
-$_m["Edit User"]
-  = "Editace uivatele";
-
-# admin/um_uedit.php3, row 250
-$_m["User Id"]
-  = "";
-
-# admin/um_uedit.php3, row 273
-$_m["All Groups"]
-  = "Všechny skupiny";
-
-# admin/um_uedit.php3, row 275
-$_m["User's Groups"]
-  = "Uivatelovy skupiny";
-
-# admin/sliceexp_text.php3, row 65, 174, 183, 198, 207
-$_m["Export to Backup"]
-  = "Export do Backupu";
-
-# admin/sliceexp_text.php3, row 67
-$_m["Wrong slice ID length: "]
-  = "Chybná délka ID webíku: ";
-
-# admin/sliceexp_text.php3, row 200
-$_m["Wrong slice ID length:"]
-  = "Chybná délka ID webíku:";
-
-# admin/sliceexp_text.php3, row 263
-$_m["Save this text. You may use it to import the slices into any ActionApps:"]
-  = "Tento text si nìkde ulote. Mùete ho pouít pro naimportování šablony do Toolkitu:";
-
-# admin/sliceimp.php3, row 63
-$_m["Slice_ID (%1) has wrong length (%2, should be 32)"]
-  = "ID webíku (%1) má špatnou délku (%2, má bıt 32)";
-
-# admin/sliceimp.php3, row 87, 127
-# admin/sliceimp_xml.php3, row 238
-$_m["Overwrite"]
-  = "Pøepsat";
-
-# admin/sliceimp.php3, row 156, 161, 221, 227
-# admin/sliceimp_xml.php3, row 201, 234, 248
-$_m["Insert with new ids"]
-  = "Vloit s novımi ID";
-
-# admin/sliceimp.php3, row 276, 282
-$_m["Can't upload Import file"]
-  = "Nemohu nahrát importovanı soubor";
-
-# admin/sliceimp.php3, row 330, 342
-$_m["Import exported data (slice structure and content)"]
-  = "";
-
-# admin/sliceimp.php3, row 348
-$_m["Count of imported slices: %d."]
-  = "";
-
-# admin/sliceimp.php3, row 350, 365
-$_m["Added were:"]
-  = "Pøidán byl:";
-
-# admin/sliceimp.php3, row 356, 371
-$_m["Overwritten were:"]
-  = "Pøepsán byl:";
-
-# admin/sliceimp.php3, row 362
-$_m["Count of imported stories: %d."]
-  = "Poèet importovanıch èlánkù: %d.";
-
-# admin/sliceimp.php3, row 377
-$_m["Failed were:"]
-  = "";
-
-# admin/sliceimp.php3, row 390
-$_m["Here you can import exported data to toolkit. You can use two types of import:"]
-  = "";
-
-# admin/sliceimp.php3, row 395
-$_m["Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"]
-  = "";
-
-# admin/sliceimp.php3, row 409
-$_m["<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>"]
-  = "";
-
-# admin/sliceimp.php3, row 423
-$_m["<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>"]
-  = "";
-
-# admin/sliceimp.php3, row 436
-$_m["<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>"]
-  = "";
-
-# admin/sliceimp.php3, row 455
-$_m["1) If you have exported data in file, insert it's name here (eg. D:\\data\\apc_aa_slice.aaxml):"]
-  = "";
-
-# admin/sliceimp.php3, row 463
-$_m["2) If you have exported data in browser's window, insert the exported text into the textarea below:"]
-  = "";
-
-# admin/sliceimp.php3, row 476
-$_m["Here specify, what do you want to import:"]
-  = "";
-
-# admin/sliceimp.php3, row 477
-$_m["Import slice definition"]
-  = "";
-
-# admin/sliceimp.php3, row 478
-$_m["Import slice items"]
-  = "";
-
-# admin/sliceimp.php3, row 479
-$_m["Import into this slice - whatever file says"]
-  = "";
-
-# admin/sliceimp_xml.php3, row 122
-$_m["\n"
-   ."ERROR: File doesn't contain SLICEEXPORT"]
-  = "";
-
-# admin/sliceimp_xml.php3, row 132, 153, 176
-$_m["ERROR: Text is not OK. Check whether you copied it well from the Export."]
-  = "";
-
-# admin/sliceimp_xml.php3, row 188
-$_m["ERROR: Unsupported version for import"]
-  = "";
-
-# admin/sliceimp_xml.php3, row 256
-$_m["<br>Overwriting view %1"]
-  = "";
-
-# admin/slicewiz.php3, row 45, 48
-$_m["Add Slice Wizard"]
-  = "Prùvodce Pøidáním Webíku";
-
-# admin/slicewiz.php3, row 58
-$_m["Copy Views"]
-  = "Kopíruj Pohledy";
-
-# admin/slicewiz.php3, row 59
-$_m["Categories/Constants"]
-  = "Kategorie/Konstanty";
-
-# admin/slicewiz.php3, row 60
-$_m["Share with Template"]
-  = "Sdílet se Šablonou";
-
-# admin/slicewiz.php3, row 60
-$_m["Copy from Template"]
-  = "Kopírovat ze Šablony";
-
-# admin/slicewiz.php3, row 69
-$_m["[Optional] Create New User"]
-  = "[Nepovinné] Vyvoøit Nového Uivatele";
-
-# admin/slicewiz.php3, row 75
-$_m["Level of Access"]
-  = "Úroveò pøístupu";
-
-# admin/slicewiz.php3, row 76
-# include/constants.php3, row 762
-# include/.#constants.php3.1.61, row 648
-# include/.#constants.php3.1.62, row 651
-# include/.#constants.php3.1.63, row 673
-# include/.#constants.php3.1.65, row 673
-# include/.#constants.php3.1.77, row 762
-$_m["Slice Administrator"]
-  = "Administrátor Webíku.";
-
-# admin/slicewiz.php3, row 87
-$_m["Do Not Email Welcome"]
-  = "Neposílej vítací email.";
-
-# admin/slicewiz.php3, row 89
-$_m["Email Welcome"]
-  = "Pošli vítací email.";
-
-# admin/slicewiz.php3, row 98
-$_m["Go: Add Slice"]
-  = "Jeï: Pøidej Webík";
-
-# admin/um_gedit.php3, row 91
-# include/um_gedit.php3, row 40
-$_m["Group successfully added to permission system"]
-  = "Skupina byla úspìšnì pøidána";
-
-# admin/um_gedit.php3, row 101
-$_m["User management - Groups"]
-  = "Správa uivatelù - Skupiny";
-
-# admin/um_gedit.php3, row 140
-# include/menu_aa.php3, row 44
-$_m["New Group"]
-  = "Nová skupina";
-
-# admin/um_gedit.php3, row 140
-# include/menu_aa.php3, row 43
-$_m["Edit Group"]
-  = "Editace skupiny";
-
-# admin/um_gedit.php3, row 165
-# include/constants.php3, row 207
-# include/perm_emailsql.php3, row 142, 457
-# include/perm_sql.php3, row 145, 467
-# include/um_gsrch.php3, row 45
-# include/.#perm_ldap.php3.1.20, row 696
-# include/.#perm_ldap.php3.1.21, row 695
-# include/perm_ldap.php3, row 699
-# include/.#constants.php3.1.77, row 207
-$_m["Group"]
-  = "Skupina";
-
-# admin/um_gedit.php3, row 204
-$_m["Edit group"]
-  = "Editace skupiny";
-
-# admin/um_gedit.php3, row 206
-$_m["New group"]
-  = "Nová skupina";
-
-# admin/um_gedit.php3, row 217
-$_m["Group Id"]
-  = "ID skupiny";
-
-# admin/um_gedit.php3, row 220
-$_m["Superadmin group"]
-  = "Administrativní skupina";
-
-# admin/um_gedit.php3, row 232
-$_m["All Users"]
-  = "Všichni uivatelé";
-
-# admin/um_gedit.php3, row 234
-$_m["Group's Users"]
-  = "Uivatelé ve skupinì";
-
-# admin/usermng.php3, row 54
-$_m["Admin - User Management"]
-  = "Správa webíku - Uivatelé";
-
-# admin/wizard_email.php3, row 43
-$_m["Select readers<br><i>%1 reader(s) selected</i>"]
-  = "Zvolte ètenáøe<br><i>zvoleno %1 ètenáøù</i>";
-
-# admin/wizard_email.php3, row 44
-$_m["Select readers"]
-  = "Zvolte ètenáøe";
-
-# admin/wizard_email.php3, row 46
-$_m["You can not proceed until you select at least one reader!"]
-  = "Nemùete pokraèovat dokud nezvolíte alespoò jednoho ètenáøe!";
-
-# admin/wizard_email.php3, row 47
-$_m["Find readers using the Search conditions in Item Manager."]
-  = "Najdìte ètenáøe pouitím Vyhledat ve Správì zpráv.";
-
-# admin/wizard_email.php3, row 52
-$_m["Create or edit email template"]
-  = "Vytvoøit nebo upravit šablonu emailu";
-
-# admin/wizard_email.php3, row 53
-$_m["Use Slice Admin / Email templates to create or edit an email template."]
-  = "Pouijte Nastavení / Šablony emailù pro vytvoøení nebo úpravu šablony emailu.";
-
-# admin/wizard_email.php3, row 57
-$_m["Choose email template"]
-  = "Zvolte šablonu emailu";
-
-# admin/wizard_email.php3, row 60
-$_m["You can use all field aliases like in any view."]
-  = "Mùete pouít všechny aliasy políèek jako v kterémkoli pohledu.";
-
-# admin/wizard_email.php3, row 63
-$_m["Send example email to"]
-  = "Poslat vzor emailu na";
-
-# admin/wizard_email.php3, row 69
-$_m["Send emails"]
-  = "Poslat emaily";
-
-# admin/wizard_email.php3, row 71
-$_m["This will send emails to all readers selected in Step 1."]
-  = "Tímto pošlete emaily všem ètenáøùm zvolenım v Kroku 1.";
-
-# admin/wizard_email.php3, row 74
-$_m["Delete the email template"]
-  = "Smazat šablonu emailu";
-
-# admin/wizard_email.php3, row 76
-$_m["If this was a one-off template, delete it."]
-  = "Pokud jste vytvoøili šablonu pro jedno pouití, smate ji.";
-
-# admin/wizard_email.php3, row 97
-$_m["%1 email(s) were sent."]
-  = "%1 emailù posláno.";
-
-# admin/wizard_email.php3, row 99
-$_m["Find some more info in %1the doc."]
-  = "Najdìte více informací v %1dokumentaci.";
-
-# admin/wizard_email.php3, row 114
-$_m["Step"]
-  = "Krok";
-
-# admin/wizard_email.php3, row 121
-$_m["Close the wizard"]
-  = "Zavøít prùvodce";
-
-# admin/anonym_wizard2.php3, row 121
-$_m["Send"]
-  = "Pošli";
-
 # admin/summarize.php3, row 50
 $_m["Summarize slice differences"]
   = "";
@@ -2840,1038 +2896,714 @@ $_m["Summarize slice differences"]
 $_m["AA - Summarize"]
   = "";
 
-# admin/se_csv_import.php3, row 61
-# admin/se_csv_import3.php3.old, row 46
-$_m["You have not permissions to import files"]
+# admin/console.php3, row 47
+$_m["Console"]
   = "";
 
-# admin/se_csv_import.php3, row 66
-$_m["Missing slice"]
+# admin/console.php3, row 54
+$_m["AA - Administration Console"]
   = "";
 
-# admin/se_csv_import.php3, row 78
-$_m["Cannot open output file:"]
-  = "";
+# include/searchbar.class.php3, row 342
+$_m["And"]
+  = "A";
 
-# admin/se_csv_import.php3, row 81
-$_m["Cannot open input file:"]
-  = "";
+# include/searchbar.class.php3, row 351, 487, 496
+$_m["begins with"]
+  = "zaèíná";
 
-# admin/se_csv_import.php3, row 86, 92, 165
-$_m["Cannot write to file"]
-  = "";
+# include/searchbar.class.php3, row 352, 487, 496
+$_m["contains"]
+  = "obsahuje";
 
-# admin/se_csv_import.php3, row 112
-# include/itemfunc.php3, row 347
-# include/.#itemfunc.php3.1.77, row 323
-# include/.#itemfunc.php3.1.80, row 323
-# include/.#itemfunc.php3.1.82, row 323
-# include/.#itemfunc.php3.1.88, row 332
-# include/.#itemfunc.php3.1.95, row 336
-$_m["Can't create directory for image uploads"]
-  = "Nelze vytvoøit adresáø pro obrázky";
+# include/searchbar.class.php3, row 353, 487, 496
+$_m["is"]
+  = "je";
 
-# admin/se_csv_import.php3, row 141
-# admin/se_csv_import2.php3, row 152
-$_m["Admin - Import .CSV file"]
-  = "";
+# include/searchbar.class.php3, row 389
+$_m["Order"]
+  = "Seøadit";
 
-# admin/se_csv_import.php3, row 153
-$_m["Admin - Import CSV (1/2) - Source data"]
-  = "";
+# include/searchbar.class.php3, row 405
+$_m["Clear"]
+  = "Vyèistit";
 
-# admin/se_csv_import.php3, row 162
-$_m["Cannot create a temporary file"]
-  = "";
+# include/searchbar.class.php3, row 408
+$_m["Stored search name"]
+  = "Jméno filtru";
 
-# admin/se_csv_import.php3, row 176
-$_m["Cannot open a file for preview"]
-  = "";
+# include/searchbar.class.php3, row 409
+$_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
+  = "Uloit globálnì? Filtr mùete uloit tak, e bude viditelnı pro všechny uivatele tohoto webíku (globálnì), èi pouze jako váš osobní filtr.";
 
-# admin/se_csv_import.php3, row 178
-$_m["File preview"]
-  = "";
+# include/searchbar.class.php3, row 409
+$_m["Store"]
+  = "Uloit";
 
-# admin/se_csv_import.php3, row 213
-$_m["CSV format settings"]
-  = "";
+# include/searchbar.class.php3, row 431
+$_m["Stored searches"]
+  = "Uloené filtry";
 
-# admin/se_csv_import.php3, row 237
-$_m["Source of CSV data"]
-  = "";
+# include/searchbar.class.php3, row 434
+$_m["View"]
+  = "Filtruj";
 
-# admin/se_csv_import2.php3, row 40
-$_m["You have not permissions to setting "]
-  = "";
+# include/searchbar.class.php3, row 438
+$_m["Enter new name"]
+  = "Zadej nové jméno";
 
-# admin/se_csv_import2.php3, row 48
-$_m["File for import does not exists:"]
-  = "";
+# include/searchbar.class.php3, row 438
+$_m["Rename"]
+  = "Pøejmenovat";
 
-# admin/se_csv_import2.php3, row 52
-# admin/se_csv_import3.php3.old, row 63
-$_m["Invalid additional parameters for import"]
-  = "";
+$_m["Are you sure to refine current search?"]
+  = "Opravdu chcete pøedefinovat vybranı filtr?";
 
-# admin/se_csv_import2.php3, row 104
-$_m["Cannot store item to DB"]
-  = "";
+# include/searchbar.class.php3, row 439
+$_m["Are you sure to delete selected search?"]
+  = "Opravdu smazat vybranı filtr?";
 
-# admin/se_csv_import2.php3, row 106
-$_m["Item:"]
-  = "";
+# include/searchbar.class.php3, row 496
+$_m["select ..."]
+  = "vyber ...";
 
-# admin/se_csv_import2.php3, row 109
-$_m["Transformation error:"]
-  = "";
-
-# admin/se_csv_import2.php3, row 112
-$_m["inserted"]
-  = "";
-
-# admin/se_csv_import2.php3, row 113
-$_m["updated"]
-  = "";
-
-# admin/se_csv_import2.php3, row 114
-$_m["not stored"]
-  = "";
-
-# admin/se_csv_import2.php3, row 116
-$_m["Ok: Item "]
-  = "";
-
-# admin/se_csv_import2.php3, row 128
-# include/import_util.php3, row 312
-$_m["Ok : file deleted "]
-  = "";
-
-# admin/se_csv_import2.php3, row 130
-# include/import_util.php3, row 314
-$_m["Error: Cannot delete file"]
-  = "";
-
-# admin/se_csv_import2.php3, row 133
-$_m["Added to slice"]
-  = "";
-
-# admin/se_csv_import2.php3, row 180
-$_m["Admin - Import CSV (2/2) - Mapping and Actions"]
-  = "";
-
-# admin/se_csv_import2.php3, row 190
-$_m["Mapping preview"]
-  = "";
-
-# admin/se_csv_import2.php3, row 217
-$_m["Mapping settings"]
-  = "";
-
-# admin/se_csv_import2.php3, row 223
-$_m["Action"]
-  = "";
-
-# admin/se_csv_import2.php3, row 224
-$_m["Html"]
-  = "";
-
-# admin/se_csv_import2.php3, row 225
-$_m["Action parameters"]
-  = "";
-
-# admin/se_csv_import2.php3, row 226
-$_m["Parameter wizard"]
-  = "";
-
-# admin/se_csv_import2.php3, row 266
-$_m["Map item id from"]
-  = "";
-
-# admin/se_csv_import2.php3, row 271
-$_m["If the item id is already in the slice:"]
-  = "";
-
-# admin/se_csv_import2.php3, row 274
-$_m["Update the item"]
-  = "";
-
-# admin/se_csv_import2.php3, row 278
-$_m["Store the item with new id"]
-  = "";
-
-# admin/se_csv_import2.php3, row 282
-$_m["Do not store the item"]
-  = "";
-
-# admin/se_csv_import3.php3.old, row 60
-$_m["File for import does not exists"]
-  = "";
-
-# admin/se_csv_import3.php3.old, row 90
-$_m["Admin - Import data - Preview"]
-  = "";
-
-# admin/se_csv_import3.php3.old, row 99
-# include/.#constants_param_wizard.php3.1.34, row 673
-$_m[""]
-  = "";
-
-# admin/se_csv_import3.php3.old, row 177
-$_m["Transformation error"]
-  = "";
-
-# admin/se_csv_import3.php3.old, row 179
-$_m["Added: "]
-  = "";
-
-# admin/se_csv_import3.php3.old, row 179
-$_m[" items to slice: "]
-  = "";
+# include/searchbar.class.php3, row 676
+$_m["Select one..."]
+  = "vyber ...";
 
 # include/constants.php3, row 70
-# include/.#constants.php3.1.62, row 55
-# include/.#constants.php3.1.63, row 55
-# include/.#constants.php3.1.65, row 55
-# include/.#constants.php3.1.77, row 70
 $_m["MySQL Auth"]
   = "";
 
 # include/constants.php3, row 75
-# include/.#constants.php3.1.62, row 60
-# include/.#constants.php3.1.63, row 60
-# include/.#constants.php3.1.65, row 60
-# include/.#constants.php3.1.77, row 75
 $_m["Jump inside AA control panel"]
   = "Skok uvnitø administrace";
 
 # include/constants.php3, row 79
-# include/.#constants.php3.1.62, row 64
-# include/.#constants.php3.1.63, row 64
-# include/.#constants.php3.1.65, row 64
-# include/.#constants.php3.1.77, row 79
 $_m["Polls for AA"]
   = "Anketa v AA";
 
 # include/constants.php3, row 84
-# include/menu.php3, row 190
-# include/menu_util.php3, row 66, 167
-# include/.#constants.php3.1.62, row 69
-# include/.#constants.php3.1.63, row 69
-# include/.#constants.php3.1.65, row 69
-# include/.#menu.php3.1.32, row 184
-# include/.#constants.php3.1.77, row 84
+# include/menu_util.php3, row 59, 160
+# include/menu.php3, row 196
 $_m["Alerts"]
   = "Zasílání";
 
 # include/constants.php3, row 93
-# include/menu_util.php3, row 68
-# include/.#constants.php3.1.62, row 78
-# include/.#constants.php3.1.63, row 78
-# include/.#constants.php3.1.65, row 78
-# include/.#constants.php3.1.77, row 93
+# include/menu_util.php3, row 61
 $_m["Links"]
   = "Správa odkazù";
 
-# include/constants.php3, row 203
-# include/.#constants.php3.1.77, row 203
+# include/constants.php3, row 227
 $_m["Short Id"]
-  = "";
+  = "ID (krátké)";
 
-# include/constants.php3, row 208
-# include/.#constants.php3.1.77, row 208
+# include/constants.php3, row 232
 $_m["Class"]
-  = "";
+  = "Tøída";
 
-# include/constants.php3, row 212
-# include/constedit_util.php3, row 99
-# include/.#constants.php3.1.77, row 212
+# include/constants.php3, row 236
+# include/constedit_util.php3, row 98
 $_m["Level"]
   = "Úroveò";
 
-# include/constants.php3, row 222
-# include/.#constants.php3.1.61, row 179
-# include/.#constants.php3.1.62, row 181
-# include/.#constants.php3.1.63, row 183
-# include/.#constants.php3.1.65, row 183
-# include/.#constants_param_wizard.php3.1.34, row 231
-# include/.#constants.php3.1.77, row 222
+# include/constants.php3, row 246
 $_m["Text Area"]
   = "";
 
-# include/constants.php3, row 223
-# include/.#constants.php3.1.61, row 182
-# include/.#constants.php3.1.62, row 184
-# include/.#constants.php3.1.63, row 186
-# include/.#constants.php3.1.65, row 186
-# include/.#constants.php3.1.77, row 223
+# include/constants.php3, row 247
 $_m["Textarea with Presets"]
   = "";
 
-# include/constants.php3, row 224
-# include/.#constants.php3.1.61, row 185
-# include/.#constants.php3.1.62, row 187
-# include/.#constants.php3.1.63, row 189
-# include/.#constants.php3.1.65, row 189
-# include/.#constants.php3.1.77, row 224
+# include/constants.php3, row 248
 $_m["Rich Edit Text Area"]
   = "";
 
-# include/constants.php3, row 225
-# include/.#constants.php3.1.61, row 188
-# include/.#constants.php3.1.62, row 190
-# include/.#constants.php3.1.63, row 192
-# include/.#constants.php3.1.65, row 192
-# include/.#constants_param_wizard.php3.1.34, row 255
-# include/.#constants.php3.1.77, row 225
+# include/constants.php3, row 249
 $_m["Text Field"]
   = "";
 
-# include/constants.php3, row 226
-# include/.#constants_param_wizard.php3.1.34, row 283
-# include/.#constants.php3.1.77, row 226
+# include/constants.php3, row 250
 $_m["Text Field with Presets"]
   = "";
 
-# include/constants.php3, row 227
-# include/.#constants.php3.1.61, row 191
-# include/.#constants.php3.1.62, row 193
-# include/.#constants.php3.1.63, row 195
-# include/.#constants.php3.1.65, row 195
-# include/.#constants_param_wizard.php3.1.34, row 267
-# include/.#constants.php3.1.77, row 227
+# include/constants.php3, row 251
 $_m["Select Box"]
   = "";
 
-# include/constants.php3, row 228
-# include/.#constants.php3.1.61, row 197
-# include/.#constants.php3.1.62, row 199
-# include/.#constants.php3.1.63, row 201
-# include/.#constants.php3.1.65, row 201
-# include/.#constants_param_wizard.php3.1.34, row 327
-# include/.#constants.php3.1.77, row 228
+# include/constants.php3, row 252
 $_m["Radio Button"]
   = "";
 
-# include/constants.php3, row 230
-# include/.#constants.php3.1.61, row 203
-# include/.#constants.php3.1.62, row 205
-# include/.#constants.php3.1.63, row 207
-# include/.#constants.php3.1.65, row 207
-# include/.#constants.php3.1.77, row 230
+# include/constants.php3, row 254
 $_m["Check Box"]
   = "";
 
-# include/constants.php3, row 231
-# include/.#constants.php3.1.61, row 206
-# include/.#constants.php3.1.62, row 208
-# include/.#constants.php3.1.63, row 210
-# include/.#constants.php3.1.65, row 210
-# include/.#constants_param_wizard.php3.1.34, row 362
-# include/.#constants.php3.1.77, row 231
+# include/constants.php3, row 255
 $_m["Multiple Checkboxes"]
   = "";
 
-# include/constants.php3, row 232
-# include/.#constants.php3.1.61, row 209
-# include/.#constants.php3.1.62, row 211
-# include/.#constants.php3.1.63, row 213
-# include/.#constants.php3.1.65, row 213
-# include/.#constants_param_wizard.php3.1.34, row 374
-# include/.#constants.php3.1.77, row 232
+# include/constants.php3, row 256
 $_m["Multiple Selectbox"]
   = "";
 
-# include/constants.php3, row 233
-# include/.#constants.php3.1.61, row 212
-# include/.#constants.php3.1.62, row 214
-# include/.#constants.php3.1.63, row 216
-# include/.#constants.php3.1.65, row 216
-# include/.#constants.php3.1.77, row 233
+# include/constants.php3, row 257
 $_m["Two Boxes"]
   = "";
 
-# include/constants.php3, row 234
-# include/.#constants.php3.1.61, row 215
-# include/.#constants.php3.1.62, row 217
-# include/.#constants.php3.1.63, row 219
-# include/.#constants.php3.1.65, row 219
-# include/.#constants.php3.1.77, row 234
+# include/constants.php3, row 258
 $_m["File Upload"]
   = "";
 
-# include/constants.php3, row 236
-# include/.#constants.php3.1.61, row 221
-# include/.#constants.php3.1.62, row 223
-# include/.#constants.php3.1.63, row 225
-# include/.#constants.php3.1.65, row 225
-# include/.#constants_param_wizard.php3.1.34, row 398
-# include/.#constants.php3.1.77, row 236
+# include/constants.php3, row 260
 $_m["Related Item Window"]
   = "";
 
-# include/constants.php3, row 237
-# include/.#constants.php3.1.61, row 224
-# include/.#constants.php3.1.62, row 226
-# include/.#constants.php3.1.63, row 228
-# include/.#constants.php3.1.65, row 228
-# include/.#constants_param_wizard.php3.1.34, row 470
-# include/.#constants.php3.1.77, row 237
+# include/constants.php3, row 261
 $_m["Do not show"]
   = "Nezobrazuj";
 
-# include/constants.php3, row 238
-# include/.#constants.php3.1.61, row 227
-# include/.#constants.php3.1.62, row 229
-# include/.#constants.php3.1.63, row 231
-# include/.#constants.php3.1.65, row 231
-# include/.#constants.php3.1.77, row 238
+# include/constants.php3, row 262
 $_m["Hierachical constants"]
   = "Hierachie konstant";
 
-# include/constants.php3, row 239
-# include/.#constants.php3.1.61, row 230
-# include/.#constants.php3.1.62, row 232
-# include/.#constants.php3.1.63, row 234
-# include/.#constants.php3.1.65, row 234
-# include/.#constants.php3.1.77, row 239
+# include/constants.php3, row 263
 $_m["Password and Change password"]
   = "Heslo a Zmìnit heslo";
 
-# include/constants.php3, row 240
-# include/.#constants.php3.1.61, row 233
-# include/.#constants.php3.1.62, row 235
-# include/.#constants.php3.1.63, row 237
-# include/.#constants.php3.1.65, row 237
-# include/.#constants_param_wizard.php3.1.34, row 431
-# include/.#constants.php3.1.77, row 240
+# include/constants.php3, row 264
 $_m["Hidden field"]
   = "Skryté pole";
 
-# include/constants.php3, row 278
-# include/.#constants.php3.1.61, row 273
-# include/.#constants.php3.1.62, row 275
-# include/.#constants.php3.1.63, row 277
-# include/.#constants.php3.1.65, row 277
-# include/.#constants.php3.1.77, row 278
+# include/constants.php3, row 302
 $_m["Feed"]
   = "Kopírovat obsah";
 
-# include/constants.php3, row 279
-# include/.#constants.php3.1.61, row 274
-# include/.#constants.php3.1.62, row 276
-# include/.#constants.php3.1.63, row 278
-# include/.#constants.php3.1.65, row 278
-# include/.#constants.php3.1.77, row 279
+# include/constants.php3, row 303
 $_m["Do not feed"]
   = "Nekopirovat";
 
-# include/constants.php3, row 280
-# include/.#constants.php3.1.61, row 275
-# include/.#constants.php3.1.62, row 277
-# include/.#constants.php3.1.63, row 279
-# include/.#constants.php3.1.65, row 279
-# include/.#constants.php3.1.77, row 280
+# include/constants.php3, row 304
 $_m["Feed locked"]
   = "Kopírovat nemìnitelnì";
 
-# include/constants.php3, row 281
-# include/.#constants.php3.1.61, row 276
-# include/.#constants.php3.1.62, row 278
-# include/.#constants.php3.1.63, row 280
-# include/.#constants.php3.1.65, row 280
-# include/.#constants.php3.1.77, row 281
+# include/constants.php3, row 305
 $_m["Feed & update"]
   = "Kopírovat obsah a zmìny";
 
-# include/constants.php3, row 282
-# include/.#constants.php3.1.61, row 277
-# include/.#constants.php3.1.62, row 279
-# include/.#constants.php3.1.63, row 281
-# include/.#constants.php3.1.65, row 281
-# include/.#constants.php3.1.77, row 282
+# include/constants.php3, row 306
 $_m["Feed & update & lock"]
   = "Kopírovat obsah a zmìny nemìnitelnì";
 
-# include/constants.php3, row 342
-# include/.#constants.php3.1.61, row 333
-# include/.#constants.php3.1.62, row 335
-# include/.#constants.php3.1.63, row 337
-# include/.#constants.php3.1.65, row 337
-# include/.#constants.php3.1.77, row 342
+# include/constants.php3, row 366
 $_m["Month List"]
   = "Mìsíc - seznam";
 
-# include/constants.php3, row 342
-# include/.#constants.php3.1.61, row 333
-# include/.#constants.php3.1.62, row 335
-# include/.#constants.php3.1.63, row 337
-# include/.#constants.php3.1.65, row 337
-# include/.#constants.php3.1.77, row 342
+# include/constants.php3, row 366
 $_m["Month Table"]
   = "Mìsíc - tabulka";
 
-# include/constants.php3, row 360
-# include/.#constants.php3.1.61, row 340
-# include/.#constants.php3.1.62, row 342
-# include/.#constants.php3.1.63, row 355
-# include/.#constants.php3.1.65, row 355
-# include/.#constants.php3.1.77, row 360
+# include/constants.php3, row 384
 $_m["Item listing"]
   = "Pøehled";
 
-# include/constants.php3, row 373, 467, 493, 519, 543, 583, 605, 630, 659
-# include/.#constants.php3.1.61, row 353, 447, 457, 482, 505, 540, 561
-# include/.#constants.php3.1.62, row 355, 449, 459, 484, 507, 542, 564
-# include/.#constants.php3.1.63, row 368, 462, 472, 497, 520, 564, 586
-# include/.#constants.php3.1.65, row 368, 462, 472, 497, 520, 562, 584
-# include/.#constants.php3.1.77, row 373, 467, 493, 519, 543, 583, 605, 630, 659
+# include/constants.php3, row 397, 491, 517, 543, 567, 607, 629, 654, 683
 $_m["Sort primary"]
   = "Seøadit";
 
-# include/constants.php3, row 375, 469, 495, 521, 545, 585, 607, 632, 661
-# include/.#constants.php3.1.61, row 355, 459, 484, 507, 542, 563
-# include/.#constants.php3.1.62, row 357, 461, 486, 509, 544, 566
-# include/.#constants.php3.1.63, row 370, 474, 499, 522, 566, 588
-# include/.#constants.php3.1.65, row 370, 474, 499, 522, 564, 586
-# include/.#constants.php3.1.77, row 375, 469, 495, 521, 545, 585, 607, 632, 661
+# include/constants.php3, row 399, 493, 519, 545, 569, 609, 631, 656, 685
 $_m["Sort secondary"]
   = "Seøadit druhotnì";
 
-# include/constants.php3, row 381, 473, 589, 636, 665
-# include/.#constants.php3.1.61, row 361, 546
-# include/.#constants.php3.1.62, row 363, 548
-# include/.#constants.php3.1.63, row 376, 570
-# include/.#constants.php3.1.65, row 376, 568
-# include/.#constants.php3.1.77, row 381, 473, 589, 636, 665
+# include/constants.php3, row 405, 497, 613, 660, 689
 $_m["Group title format"]
   = "Nadpis skupiny";
 
-# include/constants.php3, row 382, 474, 590, 637, 666
-# include/.#constants.php3.1.61, row 362, 547
-# include/.#constants.php3.1.62, row 364, 549
-# include/.#constants.php3.1.63, row 377, 571
-# include/.#constants.php3.1.65, row 377, 569
-# include/.#constants.php3.1.77, row 382, 474, 590, 637, 666
+# include/constants.php3, row 406, 498, 614, 661, 690
 $_m["Group bottom format"]
   = "Spodní kód skupiny";
 
-# include/constants.php3, row 384, 405, 475, 497, 523, 554, 609, 638, 667
-# include/.#constants.php3.1.61, row 364, 385, 461, 486, 517, 565
-# include/.#constants.php3.1.62, row 366, 387, 463, 488, 519, 568
-# include/.#constants.php3.1.63, row 379, 400, 476, 501, 532, 590
-# include/.#constants.php3.1.65, row 379, 400, 476, 501, 532, 588
-# include/.#constants.php3.1.77, row 384, 405, 475, 497, 523, 554, 609, 638, 667
+# include/constants.php3, row 408, 429, 499, 521, 547, 578, 633, 662, 691
 $_m["Condition 1"]
   = "Podmínka 1";
 
-# include/constants.php3, row 387, 408, 478, 500, 526, 557, 612, 641, 670
-# include/.#constants.php3.1.61, row 367, 388, 464, 489, 520, 568
-# include/.#constants.php3.1.62, row 369, 390, 466, 491, 522, 571
-# include/.#constants.php3.1.63, row 382, 403, 479, 504, 535, 593
-# include/.#constants.php3.1.65, row 382, 403, 479, 504, 535, 591
-# include/.#constants.php3.1.77, row 387, 408, 478, 500, 526, 557, 612, 641, 670
+# include/constants.php3, row 411, 432, 502, 524, 550, 581, 636, 665, 694
 $_m["Condition 2"]
   = "Podmínka 2";
 
-# include/constants.php3, row 390, 411, 481, 503, 529, 560, 615, 644, 673
-# include/.#constants.php3.1.61, row 370, 391, 467, 492, 523, 571
-# include/.#constants.php3.1.62, row 372, 393, 469, 494, 525, 574
-# include/.#constants.php3.1.63, row 385, 406, 482, 507, 538, 596
-# include/.#constants.php3.1.65, row 385, 406, 482, 507, 538, 594
-# include/.#constants.php3.1.77, row 390, 411, 481, 503, 529, 560, 615, 644, 673
+# include/constants.php3, row 414, 435, 505, 527, 553, 584, 639, 668, 697
 $_m["Condition 3"]
   = "Podmínka 3";
 
-# include/constants.php3, row 394, 414, 485, 507, 533, 564, 592, 619, 648, 677
-# include/.#constants.php3.1.61, row 374, 394, 471, 496, 527, 549, 575
-# include/.#constants.php3.1.62, row 376, 396, 473, 498, 529, 578
-# include/.#constants.php3.1.63, row 389, 409, 486, 511, 542, 600
-# include/.#constants.php3.1.65, row 389, 409, 486, 511, 542, 598
-# include/.#constants.php3.1.77, row 394, 414, 485, 507, 533, 564, 592, 619, 648, 677
-$_m["HTML code for \"No item found\" message"]
-  = "HTML kód místo \"Nenalezena ádná zpráva\"";
-
-# include/constants.php3, row 400
-# include/.#constants.php3.1.61, row 379
-# include/.#constants.php3.1.62, row 381
-# include/.#constants.php3.1.63, row 394
-# include/.#constants.php3.1.65, row 394
-# include/.#constants.php3.1.77, row 400
+# include/constants.php3, row 424
 $_m["Fulltext view"]
   = "Èlánek";
 
-# include/constants.php3, row 417
-# include/.#constants.php3.1.61, row 396
-# include/.#constants.php3.1.62, row 398
-# include/.#constants.php3.1.63, row 411
-# include/.#constants.php3.1.65, row 411
-# include/.#constants.php3.1.77, row 417
+# include/constants.php3, row 441
 $_m["Discussion"]
   = "Diskuse";
 
-# include/constants.php3, row 419
-# include/.#constants.php3.1.61, row 398
-# include/.#constants.php3.1.62, row 400
-# include/.#constants.php3.1.63, row 413
-# include/.#constants.php3.1.65, row 413
-# include/.#constants.php3.1.77, row 419
+# include/constants.php3, row 443
 $_m["HTML code for index view of the comment"]
   = "HTML kód pro pøehledové zobrazení pøíspìvku";
 
-# include/constants.php3, row 421
-# include/.#constants.php3.1.61, row 400
-# include/.#constants.php3.1.62, row 402
-# include/.#constants.php3.1.63, row 415
-# include/.#constants.php3.1.65, row 415
-# include/.#constants.php3.1.77, row 421
+# include/constants.php3, row 445
 $_m["HTML code for \"Show selected\" button"]
   = "HTML kód pro tlaèítko \"Show selected\"";
 
-# include/constants.php3, row 422
-# include/.#constants.php3.1.61, row 401
-# include/.#constants.php3.1.62, row 403
-# include/.#constants.php3.1.63, row 416
-# include/.#constants.php3.1.65, row 416
-# include/.#constants.php3.1.77, row 422
+# include/constants.php3, row 446
 $_m["HTML code for \"Show all\" button"]
   = "HTML kód pro tlaèítko \"Show all\"";
 
-# include/constants.php3, row 423
-# include/.#constants.php3.1.61, row 402
-# include/.#constants.php3.1.62, row 404
-# include/.#constants.php3.1.63, row 417
-# include/.#constants.php3.1.65, row 417
-# include/.#constants.php3.1.77, row 423
+# include/constants.php3, row 447
 $_m["HTML code for \"Add\" button"]
   = "HTML kód pro tlaèítko \"Add\"";
 
-# include/constants.php3, row 424
-# include/.#constants.php3.1.61, row 403
-# include/.#constants.php3.1.62, row 405
-# include/.#constants.php3.1.63, row 418
-# include/.#constants.php3.1.65, row 418
-# include/.#constants.php3.1.77, row 424
+# include/constants.php3, row 448
 $_m["Show images"]
   = "Zobrazit obrázky";
 
-# include/constants.php3, row 425
-# include/.#constants.php3.1.61, row 404
-# include/.#constants.php3.1.62, row 406
-# include/.#constants.php3.1.63, row 419
-# include/.#constants.php3.1.65, row 419
-# include/.#constants.php3.1.77, row 425
+# include/constants.php3, row 449
 $_m["Order by"]
   = "Seøadit";
 
-# include/constants.php3, row 426
-# include/.#constants.php3.1.61, row 405
-# include/.#constants.php3.1.62, row 407
-# include/.#constants.php3.1.63, row 420
-# include/.#constants.php3.1.65, row 420
-# include/.#constants.php3.1.77, row 426
+# include/constants.php3, row 450
 $_m["View image 1"]
   = "Obrázek 1";
 
-# include/constants.php3, row 427
-# include/.#constants.php3.1.61, row 406
-# include/.#constants.php3.1.62, row 408
-# include/.#constants.php3.1.63, row 421
-# include/.#constants.php3.1.65, row 421
-# include/.#constants.php3.1.77, row 427
+# include/constants.php3, row 451
 $_m["View image 2"]
   = "Obrázek 2";
 
-# include/constants.php3, row 428
-# include/.#constants.php3.1.61, row 407
-# include/.#constants.php3.1.62, row 409
-# include/.#constants.php3.1.63, row 422
-# include/.#constants.php3.1.65, row 422
-# include/.#constants.php3.1.77, row 428
+# include/constants.php3, row 452
 $_m["View image 3"]
   = "Obrázek 3";
 
-# include/constants.php3, row 429
-# include/.#constants.php3.1.61, row 408
-# include/.#constants.php3.1.62, row 410
-# include/.#constants.php3.1.63, row 423
-# include/.#constants.php3.1.65, row 423
-# include/.#constants.php3.1.77, row 429
+# include/constants.php3, row 453
 $_m["View image 4"]
   = "Obrázek 4";
 
-# include/constants.php3, row 430
-# include/.#constants.php3.1.61, row 409
-# include/.#constants.php3.1.62, row 411
-# include/.#constants.php3.1.63, row 424
-# include/.#constants.php3.1.65, row 424
-# include/.#constants.php3.1.77, row 430
+# include/constants.php3, row 454
 $_m["HTML code for fulltext view of the comment"]
   = "HTML kód pro plné znìní pøíspìvku";
 
-# include/constants.php3, row 431
-# include/.#constants.php3.1.61, row 410
-# include/.#constants.php3.1.62, row 412
-# include/.#constants.php3.1.63, row 425
-# include/.#constants.php3.1.65, row 425
-# include/.#constants.php3.1.77, row 431
+# include/constants.php3, row 455
 $_m["HTML code for space before comment"]
   = "HTML kód pro mezeru pøed poznámkou";
 
-# include/constants.php3, row 432
-# include/.#constants.php3.1.61, row 411
-# include/.#constants.php3.1.62, row 413
-# include/.#constants.php3.1.63, row 426
-# include/.#constants.php3.1.65, row 426
-# include/.#constants.php3.1.77, row 432
+# include/constants.php3, row 456
 $_m["HTML code of the form for posting comment"]
   = "HTML kód formuláøe pro poslání pøíspìvku";
 
-# include/constants.php3, row 436
-# include/.#constants.php3.1.61, row 415
-# include/.#constants.php3.1.62, row 417
-# include/.#constants.php3.1.63, row 430
-# include/.#constants.php3.1.65, row 430
-# include/.#constants.php3.1.77, row 436
+# include/constants.php3, row 460
 $_m["Discussion To Mail"]
   = "Diskuze Emailem";
 
-# include/constants.php3, row 437
-# include/.#constants.php3.1.61, row 416
-# include/.#constants.php3.1.62, row 418
-# include/.#constants.php3.1.63, row 431
-# include/.#constants.php3.1.65, row 431
-# include/.#constants.php3.1.77, row 437
+# include/constants.php3, row 461
 $_m["From: (email header)"]
   = "From: (hlavièka emailu)";
 
-# include/constants.php3, row 438
-# include/.#constants.php3.1.61, row 417
-# include/.#constants.php3.1.62, row 419
-# include/.#constants.php3.1.63, row 432
-# include/.#constants.php3.1.65, row 432
-# include/.#constants.php3.1.77, row 438
+# include/constants.php3, row 462
 $_m["Reply-To:"]
   = "";
 
-# include/constants.php3, row 439
-# include/.#constants.php3.1.61, row 418
-# include/.#constants.php3.1.62, row 420
-# include/.#constants.php3.1.63, row 433
-# include/.#constants.php3.1.65, row 433
-# include/.#constants.php3.1.77, row 439
+# include/constants.php3, row 463
 $_m["Errors-To:"]
   = "";
 
-# include/constants.php3, row 440
-# include/.#constants.php3.1.61, row 419
-# include/.#constants.php3.1.62, row 421
-# include/.#constants.php3.1.63, row 434
-# include/.#constants.php3.1.65, row 434
-# include/.#constants.php3.1.77, row 440
+# include/constants.php3, row 464
 $_m["Sender:"]
   = "";
 
-# include/constants.php3, row 441
-# include/.#constants.php3.1.61, row 420
-# include/.#constants.php3.1.62, row 422
-# include/.#constants.php3.1.63, row 435
-# include/.#constants.php3.1.65, row 435
-# include/.#constants.php3.1.77, row 441
+# include/constants.php3, row 465
 $_m["Mail Subject:"]
   = "Pøedmìt emailu:";
 
-# include/constants.php3, row 442
-# include/.#constants.php3.1.61, row 421
-# include/.#constants.php3.1.62, row 423
-# include/.#constants.php3.1.63, row 436
-# include/.#constants.php3.1.65, row 436
-# include/.#constants.php3.1.77, row 442
+# include/constants.php3, row 466
 $_m["Mail Body:"]
   = "Tìlo emailu:";
 
-# include/constants.php3, row 461
-# include/.#constants.php3.1.61, row 440
-# include/.#constants.php3.1.62, row 442
-# include/.#constants.php3.1.63, row 455
-# include/.#constants.php3.1.65, row 455
-# include/.#constants.php3.1.77, row 461
+# include/constants.php3, row 485
 $_m["View of Constants"]
   = "Zobrazení konstant";
 
-# include/constants.php3, row 489
-# include/.#constants.php3.1.61, row 453
-# include/.#constants.php3.1.62, row 455
-# include/.#constants.php3.1.63, row 468
-# include/.#constants.php3.1.65, row 468
-# include/.#constants.php3.1.77, row 489
+# include/constants.php3, row 513
 $_m["RSS exchange"]
   = "Vımìna zpráv RSS";
 
-# include/constants.php3, row 510
-# include/.#constants.php3.1.61, row 473
-# include/.#constants.php3.1.62, row 475
-# include/.#constants.php3.1.63, row 488
-# include/.#constants.php3.1.65, row 488
-# include/.#constants.php3.1.77, row 510
+# include/constants.php3, row 534
 $_m["Static page"]
   = "Statická stránka";
 
-# include/constants.php3, row 511
-# include/.#constants.php3.1.61, row 474
-# include/.#constants.php3.1.62, row 476
-# include/.#constants.php3.1.63, row 489
-# include/.#constants.php3.1.65, row 489
-# include/.#constants.php3.1.77, row 511
+# include/constants.php3, row 535
 $_m["HTML code"]
   = "HTML kód";
 
-# include/constants.php3, row 515
-# include/.#constants.php3.1.61, row 478
-# include/.#constants.php3.1.62, row 480
-# include/.#constants.php3.1.63, row 493
-# include/.#constants.php3.1.65, row 493
-# include/.#constants.php3.1.77, row 515
+# include/constants.php3, row 539
 $_m["Javascript item exchange"]
   = "Javscript";
 
-# include/constants.php3, row 536
-# include/.#constants.php3.1.61, row 498
-# include/.#constants.php3.1.62, row 500
-# include/.#constants.php3.1.63, row 513
-# include/.#constants.php3.1.65, row 513
-# include/.#constants.php3.1.77, row 536
+# include/constants.php3, row 560
 $_m["Calendar"]
   = "Kalendáø";
 
-# include/constants.php3, row 537
-# include/.#constants.php3.1.61, row 499
-# include/.#constants.php3.1.62, row 501
-# include/.#constants.php3.1.63, row 514
-# include/.#constants.php3.1.65, row 514
-# include/.#constants.php3.1.77, row 537
+# include/constants.php3, row 561
 $_m["Calendar Type"]
   = "Typ kalendáøe";
 
-# include/constants.php3, row 539
-# include/.#constants.php3.1.61, row 501
-# include/.#constants.php3.1.62, row 503
-# include/.#constants.php3.1.63, row 516
-# include/.#constants.php3.1.65, row 516
-# include/.#constants.php3.1.77, row 539
+# include/constants.php3, row 563
 $_m["Additional attribs to the TD event tag"]
   = "Další atributy do TD tagu pro událost";
 
-# include/constants.php3, row 540
-# include/.#constants.php3.1.61, row 502
-# include/.#constants.php3.1.62, row 504
-# include/.#constants.php3.1.63, row 517
-# include/.#constants.php3.1.65, row 517
-# include/.#constants.php3.1.77, row 540
+# include/constants.php3, row 564
 $_m["Event format"]
   = "Kód události";
 
-# include/constants.php3, row 547
-# include/.#constants.php3.1.61, row 509
-# include/.#constants.php3.1.62, row 511
-# include/.#constants.php3.1.63, row 524
-# include/.#constants.php3.1.65, row 524
-# include/.#constants.php3.1.77, row 547
+# include/constants.php3, row 571
 $_m["Start date field"]
   = "Políèko zaèátku události";
 
-# include/constants.php3, row 548
-# include/.#constants.php3.1.61, row 510
-# include/.#constants.php3.1.62, row 512
-# include/.#constants.php3.1.63, row 525
-# include/.#constants.php3.1.65, row 525
-# include/.#constants.php3.1.77, row 548
+# include/constants.php3, row 572
 $_m["End date field"]
   = "Políèko konce události";
 
-# include/constants.php3, row 549
-# include/.#constants.php3.1.61, row 511
-# include/.#constants.php3.1.62, row 513
-# include/.#constants.php3.1.63, row 526
-# include/.#constants.php3.1.65, row 526
-# include/.#constants.php3.1.77, row 549
+# include/constants.php3, row 573
 $_m["Day cell top format"]
   = "Horní kód buòky s datem";
 
-# include/constants.php3, row 550
-# include/.#constants.php3.1.61, row 512
-# include/.#constants.php3.1.62, row 514
-# include/.#constants.php3.1.63, row 527
-# include/.#constants.php3.1.65, row 527
-# include/.#constants.php3.1.77, row 550
+# include/constants.php3, row 574
 $_m["Day cell bottom format"]
   = "Dolní kód buòky s datem";
 
-# include/constants.php3, row 551
-# include/.#constants.php3.1.61, row 513
-# include/.#constants.php3.1.62, row 515
-# include/.#constants.php3.1.63, row 528
-# include/.#constants.php3.1.65, row 528
-# include/.#constants.php3.1.77, row 551
+# include/constants.php3, row 575
 $_m["Use other header for empty cells"]
   = "Pouít jinı nadpis pro prázdné buòky";
 
-# include/constants.php3, row 552
-# include/.#constants.php3.1.61, row 514
-# include/.#constants.php3.1.62, row 516
-# include/.#constants.php3.1.63, row 529
-# include/.#constants.php3.1.65, row 529
-# include/.#constants.php3.1.77, row 552
+# include/constants.php3, row 576
 $_m["Empty day cell top format"]
   = "Horní kód pro prázdné datum";
 
-# include/constants.php3, row 553
-# include/.#constants.php3.1.61, row 515
-# include/.#constants.php3.1.62, row 517
-# include/.#constants.php3.1.63, row 530
-# include/.#constants.php3.1.65, row 530
-# include/.#constants.php3.1.77, row 553
+# include/constants.php3, row 577
 $_m["Empty day cell bottom format"]
   = "Spodní kód pro prázdné datum";
 
-# include/constants.php3, row 570
-# include/.#constants.php3.1.61, row 532
-# include/.#constants.php3.1.62, row 534
-# include/.#constants.php3.1.63, row 547
-# include/.#constants.php3.1.65, row 547
-# include/.#constants.php3.1.77, row 570
+# include/constants.php3, row 594
 $_m["Alerts Selection Set"]
   = "Zasílání - vıbìry";
 
-# include/constants.php3, row 573
-# include/.#constants.php3.1.63, row 554
-# include/.#constants.php3.1.65, row 553
-# include/.#constants.php3.1.77, row 573
+# include/constants.php3, row 597
 $_m["Fulltext URL"]
-  = "";
+  = "URL fulltextu";
 
-# include/constants.php3, row 576
-# include/.#constants.php3.1.77, row 576
+# include/constants.php3, row 600
 $_m["Link to the .shtml page used\n"
    ."                                 to create headline links."]
-  = "";
+  = "Odkaz na .shtml stránku, kterı bude pouit pro odkazy na èlánky";
 
-# include/constants.php3, row 591
-# include/.#constants.php3.1.61, row 548
-# include/.#constants.php3.1.77, row 591
+# include/constants.php3, row 615
 $_m["Max number of items"]
   = "Max poèet èlánkù";
 
-# include/constants.php3, row 600
-# include/.#constants.php3.1.61, row 556
-# include/.#constants.php3.1.62, row 559
-# include/.#constants.php3.1.63, row 581
-# include/.#constants.php3.1.65, row 579
-# include/.#constants.php3.1.77, row 600
+# include/constants.php3, row 624
 $_m["URL listing"]
-  = "";
+  = "Pøehled URL";
 
-# include/constants.php3, row 602
-# include/.#constants.php3.1.61, row 558
-# include/.#constants.php3.1.62, row 561
-# include/.#constants.php3.1.63, row 583
-# include/.#constants.php3.1.65, row 581
-# include/.#constants.php3.1.77, row 602
+# include/constants.php3, row 626
 $_m["Row HTML"]
   = "HTML pro øádek";
 
-# include/constants.php3, row 623
-# include/.#constants.php3.1.77, row 623
+# include/constants.php3, row 647
 $_m["Link listing"]
-  = "";
+  = "Vıpis odkazù (Kormidlo)";
 
-# include/constants.php3, row 652
-# include/.#constants.php3.1.77, row 652
+# include/constants.php3, row 676
 $_m["Category listing"]
-  = "";
+  = "Vıpis kategorií (Kormidlo)";
 
 # include/constants.php3, row 704
+$_m["Input Form"]
+  = "Vstupní formuláø";
+
+# include/constants.php3, row 706
+$_m["New item form template"]
+  = "Nová šablona pro vstupní formuláø";
+
+# include/constants.php3, row 707
+$_m["Use different template for editing"]
+  = "Pouít jinı formuláø pro editaci zprávy";
+
+# include/constants.php3, row 708
+$_m["Edit item form template"]
+  = "Šablona pro Editaèní formuláø";
+
+# include/constants.php3, row 737
 # include/discussion.php3, row 128, 173
-# include/.#constants.php3.1.61, row 600
-# include/.#constants.php3.1.62, row 603
-# include/.#constants.php3.1.63, row 625
-# include/.#constants.php3.1.65, row 623
-# include/.#constants.php3.1.77, row 704
 $_m["Show selected"]
   = "Zobraz vybrané";
 
-# include/constants.php3, row 705
+# include/constants.php3, row 738
 # include/discussion.php3, row 129, 175
-# include/.#constants.php3.1.61, row 601
-# include/.#constants.php3.1.62, row 604
-# include/.#constants.php3.1.63, row 626
-# include/.#constants.php3.1.65, row 624
-# include/.#constants.php3.1.77, row 705
 $_m["Show all"]
   = "Zobraz vše";
 
-# include/constants.php3, row 706
-# include/constedit_util.php3, row 91
+# include/constants.php3, row 739
+# include/constedit_util.php3, row 90
 # include/discussion.php3, row 131, 177
-# include/.#constants.php3.1.61, row 602
-# include/.#constants.php3.1.62, row 605
-# include/.#constants.php3.1.63, row 627
-# include/.#constants.php3.1.65, row 625
-# include/.#constants.php3.1.77, row 706
 $_m["Add new"]
   = "Pøidej novı";
 
-# include/constants.php3, row 726
-# include/.#constants.php3.1.61, row 619
-# include/.#constants.php3.1.62, row 622
-# include/.#constants.php3.1.63, row 644
-# include/.#constants.php3.1.65, row 642
-# include/.#constants.php3.1.77, row 726
+# include/constants.php3, row 759
 $_m["Calendar: Time stamp at 0:00 of processed cell"]
   = "Kalendáø: Time stamp v 0:00 pøíslušného data";
 
-# include/constants.php3, row 727
-# include/.#constants.php3.1.61, row 620
-# include/.#constants.php3.1.62, row 623
-# include/.#constants.php3.1.63, row 645
-# include/.#constants.php3.1.65, row 643
-# include/.#constants.php3.1.77, row 727
+# include/constants.php3, row 760
 $_m["Calendar: Time stamp at 24:00 of processed cell"]
   = "Kalendáø: Time stamp v 24:00 pøíslušného data";
 
-# include/constants.php3, row 728
-# include/.#constants.php3.1.61, row 621
-# include/.#constants.php3.1.62, row 624
-# include/.#constants.php3.1.63, row 646
-# include/.#constants.php3.1.65, row 644
-# include/.#constants.php3.1.77, row 728
+# include/constants.php3, row 761
 $_m["Calendar: Day in month of processed cell"]
   = "Kalendáø: Den v mìsíci pøíslušného data";
 
-# include/constants.php3, row 729
-# include/.#constants.php3.1.61, row 622
-# include/.#constants.php3.1.62, row 625
-# include/.#constants.php3.1.63, row 647
-# include/.#constants.php3.1.65, row 645
-# include/.#constants.php3.1.77, row 729
+# include/constants.php3, row 762
 $_m["Calendar: Month number of processed cell"]
   = "Kalendáø: Èíslo mìsíce pøíslušného data";
 
-# include/constants.php3, row 730
-# include/.#constants.php3.1.61, row 623
-# include/.#constants.php3.1.62, row 626
-# include/.#constants.php3.1.63, row 648
-# include/.#constants.php3.1.65, row 646
-# include/.#constants.php3.1.77, row 730
+# include/constants.php3, row 763
 $_m["Calendar: Year number of processed cell"]
   = "Kalendáø: Rok pøíslušného data";
 
-# include/constants.php3, row 760
-# include/.#constants.php3.1.61, row 646
-# include/.#constants.php3.1.62, row 649
-# include/.#constants.php3.1.63, row 671
-# include/.#constants.php3.1.65, row 671
-# include/.#constants.php3.1.77, row 760
+# include/constants.php3, row 809
 $_m["Superadmin"]
+  = "";
+
+# include/item.php3, row 58
+$_m["number of found items"]
+  = "poèet nalezenıch èlánkù";
+
+# include/item.php3, row 59
+$_m["index of item within view"]
+  = "poøadí èlánku v rámci pohledu";
+
+# include/item.php3, row 60
+$_m["alias for Item ID"]
+  = "alias pro èíslo èlánku";
+
+# include/item.php3, row 61
+$_m["alias for Short Item ID"]
+  = "alias pro zkrácené èíslo èlánku";
+
+# include/item.php3, row 68, 69
+$_m["alias used on admin page index.php3 for itemedit url"]
+  = "alias pouívanı v administrativních stránkách index.php3 pro URL itemedit.php3";
+
+# include/item.php3, row 70
+$_m["Alias used on admin page index.php3 for edit discussion url"]
+  = "Alias pouívanı v administrativních stránkách index.php3 pro URL discedit.php3";
+
+# include/item.php3, row 71
+$_m["Title of Slice for RSS"]
+  = "Jméno webíku pro RSS";
+
+# include/item.php3, row 72
+$_m["Link to the Slice for RSS"]
+  = "Odkaz na webík pro RSS";
+
+# include/item.php3, row 73
+$_m["Short description (owner and name) of slice for RSS"]
+  = "Krátkı popisek (vlastník a jméno) webíku pro RSS";
+
+# include/item.php3, row 74
+$_m["Date RSS information is generated, in RSS date format"]
+  = "Datum v RSS pøehledu je generováno v datovém formátu RSS";
+
+# include/item.php3, row 75
+# include/tv_email.php3, row 49
+$_m["Slice name"]
+  = "Název webíku";
+
+# include/item.php3, row 108
+$_m["Constant name"]
+  = "Jméno";
+
+# include/item.php3, row 109
+$_m["Constant value"]
+  = "Hodnota";
+
+# include/item.php3, row 110
+$_m["Constant priority"]
+  = "Øazení";
+
+# include/item.php3, row 111
+$_m["Constant group id"]
+  = "Skupina hodnot";
+
+# include/item.php3, row 112
+$_m["Category class (for categories only)"]
+  = "Nadkategorie (pouitelné jen pro kategorie)";
+
+# include/item.php3, row 113
+$_m["Constant number"]
+  = "Poøadové èíslo hodnoty";
+
+# include/item.php3, row 114
+$_m["Constant unique id (32-haxadecimal characters)"]
+  = "Jedineèné ID (32 hexa znakù)";
+
+# include/item.php3, row 115
+$_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
+  = "Krátké jedineèné ID (poèítadlo od '1' pro všechny konstanty)";
+
+# include/item.php3, row 116
+$_m["Constant description"]
+  = "Popis konstanty";
+
+# include/item.php3, row 117
+$_m["Constant level (used for hierachical constants)"]
+  = "Úroveò konstanty (pouito v hierarchickıch)";
+
+# include/item.php3, row 149
+$_m["Alias for %1"]
+  = "Alias pro %1";
+
+# include/item.php3, row 965
+$_m["on"]
+  = "zap";
+
+# include/item.php3, row 965
+$_m["off"]
+  = "vyp";
+
+# include/item.php3, row 1091
+$_m["Home"]
+  = "Domù";
+
+# include/util.php3, row 722, 762
+$_m["Error: Missing Reading Password"]
+  = "Chyba: Schází Heslo pro Ètení";
+
+# include/util.php3, row 1121
+# include/msgpage.php3, row 52
+$_m["Toolkit news message"]
+  = "Zpráva aplikace";
+
+# include/util.php3, row 1381
+$_m["Internal error. File upload: Dir does not exist?!"]
+  = "Interní chyba pøi uploadu souboru: Adresáø neexistuje?!";
+
+# include/util.php3, row 1384
+$_m["File with this name already exists."]
+  = "Soubor s tímto názvem u existuje.";
+
+# include/util.php3, row 1393
+$_m["Can't move image  %s to %s"]
+  = "Nelze pøesunout obrázek %s na %s";
+
+# include/util.php3, row 1400
+$_m["Can't copy image  %s to %s"]
+  = "Nelze zkopírovat obrázek %s na %s";
+
+# include/util.php3, row 1608
+$_m["alerts alert"]
+  = "zasílání zpráv - zpráva";
+
+# include/util.php3, row 1609
+$_m["alerts welcome"]
+  = "zasílání zpráv - vítejte";
+
+# include/util.php3, row 1610
+$_m["slice wizard welcome"]
+  = "uvítání z prùvodce pøidáním webíku";
+
+# include/util.php3, row 1611
+$_m["other"]
+  = "jiné";
+
+# include/util.php3, row 1618
+$_m["January"]
+  = "Leden";
+
+# include/util.php3, row 1618
+$_m["February"]
+  = "Únor";
+
+# include/util.php3, row 1618
+$_m["March"]
+  = "Bøezen";
+
+# include/util.php3, row 1618
+$_m["April"]
+  = "Duben";
+
+# include/util.php3, row 1618
+$_m["May"]
+  = "Kvìten";
+
+# include/util.php3, row 1618
+$_m["June"]
+  = "Èerven";
+
+# include/util.php3, row 1619
+$_m["July"]
+  = "Èervenec";
+
+# include/util.php3, row 1619
+$_m["August"]
+  = "Srpen";
+
+# include/util.php3, row 1619
+$_m["September"]
+  = "Záøí";
+
+# include/util.php3, row 1619
+$_m["October"]
+  = "Øíjen";
+
+# include/util.php3, row 1619
+$_m["November"]
+  = "Listopad";
+
+# include/util.php3, row 1619
+$_m["December"]
+  = "Prosinec";
+
+# include/menu_util.php3, row 60
+$_m["Jump inside control panel"]
+  = "Skok uvnitø administrace";
+
+# include/menu_util.php3, row 62
+$_m["MySQL Auth (old version)"]
+  = "";
+
+# include/menu_util.php3, row 63
+$_m["Polls"]
+  = "Ankety";
+
+# include/menu_util.php3, row 64
+$_m["Site"]
+  = "";
+
+# include/menu_util.php3, row 66
+$_m["Reader Management Slice"]
+  = "Webík Správa Ètenáøù";
+
+# include/menu_util.php3, row 98, 147
+$_m["New slice"]
+  = "Novı webík";
+
+# include/menu_util.php3, row 149
+$_m["APC Action Applications"]
+  = "APC toolkit";
+
+# include/menu_util.php3, row 168
+$_m["Reader management"]
+  = "Správa ètenáøù";
+
+# include/menu_util.php3, row 215
+$_m["Switch to:"]
+  = "Webík:";
+
+# include/menu_util.php3, row 298
+$_m["Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>"]
   = "";
 
 # include/constedit.php3, row 23
@@ -3907,124 +3639,170 @@ $_m["Levels horizontal"]
   = "Úrovnì horizontálnì";
 
 # include/constedit.php3, row 63
-# include/.#constants_param_wizard.php3.1.34, row 206
 $_m["Level count"]
   = "Poèet úrovní";
 
-# include/constedit_util.php3, row 92, 97
+# include/formutil.php3, row 57
+# include/itemfunc.bak, row 852
+$_m["Add&nbsp;Mutual"]
+  = "Pøidat&nbsp;Vzájemnì";
+
+# include/formutil.php3, row 58
+# include/itemfunc.bak, row 853
+$_m["Backward"]
+  = "Zpìtnì";
+
+# include/formutil.php3, row 60
+# include/itemfunc.bak, row 855
+$_m["Good"]
+  = "Dobré";
+
+# include/formutil.php3, row 62
+# include/itemfunc.bak, row 857
+$_m["Bad"]
+  = "Špatné";
+
+# include/formutil.php3, row 162
+$_m["Update & View"]
+  = "Poslat a prohlédnout";
+
+# include/formutil.php3, row 164
+$_m["Insert as new"]
+  = "Vloit jako novı";
+
+# include/formutil.php3, row 168
+$_m["Insert & View"]
+  = "Vloit & Prohlédnout";
+
+# include/formutil.php3, row 438
+# include/itemfunc.bak, row 470
+$_m["set"]
+  = "zapnuto";
+
+# include/formutil.php3, row 438
+# include/itemfunc.bak, row 470
+$_m["unset"]
+  = "vypnuto";
+
+# include/formutil.php3, row 515
+$_m["Unable to find tagprefix table %1"]
+  = "";
+
+# include/formutil.php3, row 581
+$_m["import"]
+  = "naèíst";
+
+# include/formutil.php3, row 593
+$_m["Edit in HTMLArea"]
+  = "Zobraz Editor";
+
+# include/formutil.php3, row 603, 620
+$_m["Plain text"]
+  = "Prostı text";
+
+# include/formutil.php3, row 1128
+$_m["Offer"]
+  = "Nabídnout";
+
+# include/formutil.php3, row 1129
+$_m["Selected"]
+  = "Vybrané";
+
+# include/formutil.php3, row 1166
+# include/itemfunc.bak, row 989, 1038
+$_m["Change Password"]
+  = "Zmìna Hesla";
+
+# include/formutil.php3, row 1168
+# include/itemfunc.bak, row 991, 1040
+$_m["Delete Password"]
+  = "Smazat Heslo";
+
+# include/formutil.php3, row 1176
+# include/itemfunc.bak, row 997
+$_m["not set"]
+  = "nenastaveno";
+
+# include/formutil.php3, row 1552
+$_m["Remove"]
+  = "Odstranit";
+
+# include/formutil.php3, row 1749
+$_m["Submit"]
+  = "Poslat";
+
+# include/formutil.php3, row 1811
+$_m["Use these aliases for database fields"]
+  = "Pouij následující aliasy databázovıch polí";
+
+# include/formutil.php3, row 1844, 1858, 1865, 1870, 1875, 1880, 1888, 1893, 1900, 1904, 1911, 1951
+# include/date.php3, row 116
+$_m["Error in"]
+  = "Chyba v";
+
+# include/formutil.php3, row 1844
+$_m["it must be filled"]
+  = "musí bıt vyplnìno";
+
+# include/formutil.php3, row 1888
+$_m["you should use a-z, A-Z and 0-9 characters"]
+  = "pouijte znaky a-z, A-Z a 0-9";
+
+# include/formutil.php3, row 1893, 1900
+$_m["it must by 5 - 32 characters long"]
+  = "musí bıt dlouhé 5 - 32 znakù";
+
+# include/formutil.php3, row 1904
+$_m["only 0-9 A-Z a-z . _ and - are allowed"]
+  = "pouze 0-9 A-Z a-z . _ a - jsou povolené";
+
+# include/formutil.php3, row 1930
+$_m["Error in parameters for UNIQUE validation: field ID is not 16 but %1 chars long: "]
+  = "Chyba v parametrech pro UNIKÁTNÍ validaci: ID políèka je dlouhé %1 místo 16 znakù: ";
+
+# include/formutil.php3, row 1952
+$_m["this value is already used, choose another one"]
+  = "tato hodnota je u pouita, zvolte jinou";
+
+# include/formutil.php3, row 1994
+$_m["This field is required."]
+  = "Políèko je povinné.";
+
+# include/formutil.php3, row 1995
+$_m["This field is required (marked by *)."]
+  = "Políèko je povinné (oznaèeno *).";
+
+# include/formutil.php3, row 2004
+$_m["Not a valid integer number."]
+  = "Není platné celé èíslo.";
+
+# include/formutil.php3, row 2008
+$_m["Not a valid file name."]
+  = "Není platnı název souboru.";
+
+# include/formutil.php3, row 2012
+$_m["Not a valid email address."]
+  = "Není platnı email.";
+
+# include/formutil.php3, row 2016
+$_m["The two password copies differ."]
+  = "Kopie hesla se liší.";
+
+# include/constedit_util.php3, row 91, 96
 $_m["Select"]
   = "Zvolit";
 
-# include/date.php3, row 116
-# include/formutil.php3, row 1064, 1078, 1085, 1090, 1095, 1100, 1108, 1113, 1120, 1124, 1131, 1171
-# include/.#formutil.php3.1.58, row 1003, 1017, 1024, 1029, 1034, 1039, 1047, 1052, 1059, 1063, 1070, 1096
-# include/.#date.php3.1.20, row 116
-# include/formutil.bak, row 1050, 1064, 1071, 1076, 1081, 1086, 1094, 1099, 1106, 1110, 1117, 1157
-# include/formutil.php3.old, row 1050, 1064, 1071, 1076, 1081, 1086, 1094, 1099, 1106, 1110, 1117, 1157
-$_m["Error in"]
-  = "Chyba v";
+# include/sliceobj.php3, row 50
+$_m["WARNING: slice: %s doesn't look like an unpacked id"]
+  = "POZOR: webík: %s nevypadá jako rozbalené id";
 
-# include/discussion.php3, row 137
-$_m["Alias for subject of the discussion comment"]
-  = "Alias pro pøedmìt pøíspìvku";
+# include/slice.php3, row 56
+$_m["Select Category "]
+  = "Zvolte Kategorii ";
 
-# include/discussion.php3, row 138
-$_m["Alias for text of the discussion comment"]
-  = "";
-
-# include/discussion.php3, row 139
-$_m["Alias for written by"]
-  = "";
-
-# include/discussion.php3, row 140
-$_m["Alias for author's e-mail"]
-  = "Alias pro e-mail autora";
-
-# include/discussion.php3, row 141
-$_m["Alias for url address of author's www site"]
-  = "Alias pro adresu WWW stránek autora ";
-
-# include/discussion.php3, row 142
-$_m["Alias for description of author's www site"]
-  = "Alias for popis WWW stránek autora";
-
-# include/discussion.php3, row 143
-$_m["Alias for publish date"]
-  = "Alias pro datum a èas poslání pøíspìvku";
-
-# include/discussion.php3, row 144
-$_m["Alias for IP address of author's computer"]
-  = "";
-
-# include/item.php3, row 69
-$_m["Short description (owner and name) of slice for RSS"]
-  = "Krátkı popisek (vlastník a jméno) webíku pro RSS";
-
-# include/item.php3, row 70
-$_m["Date RSS information is generated, in RSS date format"]
-  = "Datum v RSS pøehledu je generováno v datovém formátu RSS";
-
-# include/item.php3, row 71
-# include/tv_email.php3, row 49
-$_m["Slice name"]
-  = "Název webíku";
-
-# include/item.php3, row 104
-$_m["Constant name"]
-  = "Jméno";
-
-# include/item.php3, row 105
-$_m["Constant value"]
-  = "Hodnota";
-
-# include/item.php3, row 106
-$_m["Constant priority"]
-  = "Øazení";
-
-# include/item.php3, row 107
-$_m["Constant group id"]
-  = "Skupina hodnot";
-
-# include/item.php3, row 108
-$_m["Category class (for categories only)"]
-  = "Nadkategorie (pouitelné jen pro kategorie)";
-
-# include/item.php3, row 109
-$_m["Constant number"]
-  = "Poøadové èíslo hodnoty";
-
-# include/item.php3, row 110
-$_m["Constant unique id (32-haxadecimal characters)"]
-  = "Jedineèné ID (32 hexa znakù)";
-
-# include/item.php3, row 111
-$_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
-  = "Krátké jedineèné ID (poèítadlo od '1' pro všechny konstanty)";
-
-# include/item.php3, row 112
-$_m["Constant description"]
-  = "Popis konstanty";
-
-# include/item.php3, row 113
-$_m["Constant level (used for hierachical constants)"]
-  = "Úroveò konstanty (pouito v hierarchickıch)";
-
-# include/item.php3, row 863
-$_m["on"]
-  = "zap";
-
-# include/item.php3, row 863
-$_m["off"]
-  = "vyp";
-
-# include/item.php3, row 917
-$_m["Home"]
-  = "Domù";
-
-# include/date.php3, row 116
-# include/formutil.php3, row 1069, 1083, 1090, 1095, 1100, 1105, 1113, 1118, 1125, 1129, 1136, 1176
-$_m["Error in"]
-  = "Chyba v";
+# include/slice.php3, row 58
+$_m["All categories"]
+  = "Všechny kategorie";
 
 # include/loginform.inc, row 16
 $_m["Welcome!"]
@@ -4049,7 +3827,7 @@ $_m["Password:"]
   = "Heslo<br>(Password):";
 
 # include/loginform.inc, row 48
-# include/init_page.php3, row 113
+# include/init_page.php3, row 114
 $_m["Either your username or your password is not valid."]
   = "Buï jméno nebo heslo nejsou v poøádku.";
 
@@ -4058,45 +3836,45 @@ $_m["Please try again!"]
   = "Zkuste to znovu, prosím!<br>Please try again!";
 
 # include/loginform.inc, row 54
-$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:technical@ecn.cz>technical@ecn.cz</a>."]
+$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>."]
   = "Pokud jste si jisti, e zadáváte správné jméno a heslo, obrate se prosím \n\n"
-   ."     na <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.\n\n"
+   ."     na <a href=\"mailto:%1\">%1</a>.\n\n"
    ."     <br>If you are sure you have typed the correct password, please e-mail \n\n"
-   ."     <a href=mailto:actionapps@ecn.cz>actionapps@ecn.cz</a>.";
+   ."     <a href=\"mailto:%1\">%1</a>.";
 
-# include/discussion.php3, row 136
+# include/discussion.php3, row 137
 $_m["Alias for subject of the discussion comment"]
   = "Alias pro pøedmìt pøíspìvku";
 
-# include/discussion.php3, row 137
-$_m["Alias for text of the discussion comment"]
-  = "";
-
 # include/discussion.php3, row 138
-$_m["Alias for written by"]
-  = "";
+$_m["Alias for text of the discussion comment"]
+  = "Alias pro diskusní pøíspìvek";
 
 # include/discussion.php3, row 139
+$_m["Alias for written by"]
+  = "Alias pro autora diskusního pøíspìvku";
+
+# include/discussion.php3, row 140
 $_m["Alias for author's e-mail"]
   = "Alias pro e-mail autora";
 
-# include/discussion.php3, row 140
+# include/discussion.php3, row 141
 $_m["Alias for url address of author's www site"]
   = "Alias pro adresu WWW stránek autora ";
 
-# include/discussion.php3, row 141
+# include/discussion.php3, row 142
 $_m["Alias for description of author's www site"]
   = "Alias for popis WWW stránek autora";
 
-# include/discussion.php3, row 142
+# include/discussion.php3, row 143
 $_m["Alias for publish date"]
   = "Alias pro datum a èas poslání pøíspìvku";
 
-# include/discussion.php3, row 143
-$_m["Alias pro IP address of author's computer"]
-  = "Alias pro IP adresu autorova poèítaèe";
-
 # include/discussion.php3, row 144
+$_m["Alias for IP address of author's computer"]
+  = "Alias pro IP adresu pisatele";
+
+# include/discussion.php3, row 145
 $_m["Alias for checkbox used for choosing discussion comment"]
   = "Alias pro checkbox pro vybrání pøíspìvku";
 
@@ -4162,8 +3940,194 @@ $_m["Previous"]
 $_m["Next"]
   = "Další";
 
+# include/actions.php3, row 76
+$_m["No slice selected"]
+  = "Nebyl vybrán ádnı webík";
+
+# include/actions.php3, row 107
+$_m["You have not permissions to remove items"]
+  = "Nemáte právo mazat zprávy";
+
+# include/menu.php3, row 56
+$_m["View site"]
+  = "Zobraz";
+
+# include/menu.php3, row 70, 71, 135
+$_m["Item Manager"]
+  = "Správa zpráv";
+
+# include/menu.php3, row 77
+$_m["Slice Admin"]
+  = "Nastavení";
+
+# include/menu.php3, row 86
+$_m["AA"]
+  = "";
+
+# include/menu.php3, row 87
+$_m["AA Administration"]
+  = "Administrace AA Toolkitu";
+
+# include/menu.php3, row 118
+$_m["Main settings"]
+  = "Hlavní nastavení";
+
+# include/menu.php3, row 122
+$_m["Category"]
+  = "Kategorie";
+
+# include/menu.php3, row 124
+$_m["Email Notification"]
+  = "Upozornìní e-mailem";
+
+# include/menu.php3, row 127
+# include/um_util.php3, row 65, 73
+$_m["Permissions"]
+  = "Nastavení práv";
+
+# include/menu.php3, row 128
+$_m["Assign"]
+  = "Pøidat";
+
+# include/menu.php3, row 129
+$_m["Change"]
+  = "Zmìnit";
+
+# include/menu.php3, row 131
+$_m["Design"]
+  = "Vzhled";
+
+# include/menu.php3, row 132
+$_m["Index"]
+  = "Pøehled zpráv";
+
+# include/menu.php3, row 133
+$_m["Fulltext"]
+  = "Celá zpráva";
+
+# include/menu.php3, row 134
+$_m["Views"]
+  = "Pohledy";
+
+# include/menu.php3, row 137
+$_m["Content Pooling"]
+  = "Vımìna zpráv";
+
+# include/menu.php3, row 138
+$_m["Nodes"]
+  = "Uzly";
+
+# include/menu.php3, row 139
+$_m["Inner Node Feeding"]
+  = "Lokální vımìna";
+
+# include/menu.php3, row 140
+$_m["Inter Node Import"]
+  = "Pøíjem z uzlù";
+
+# include/menu.php3, row 141
+$_m["Inter Node Export"]
+  = "Zasílání do uzlù";
+
+# include/menu.php3, row 142
+$_m["RSS Feeds"]
+  = "RSS kanály";
+
+# include/menu.php3, row 143
+$_m["Filters"]
+  = "Filtry";
+
+# include/menu.php3, row 144
+$_m["Mapping"]
+  = "Mapování";
+
+# include/menu.php3, row 145
+$_m["Import CSV"]
+  = "";
+
+# include/menu.php3, row 147, 178
+# include/menu_aa.php3, row 54
+$_m["Misc"]
+  = "Rùzné";
+
+# include/menu.php3, row 148
+$_m["Change field IDs"]
+  = "Zmìna ID políèka";
+
+# include/menu.php3, row 151
+$_m["Anonymous Form Wizard"]
+  = "Prùvodce Anonymním Formuláøem";
+
+# include/menu.php3, row 152
+# include/tv_email.php3, row 146
+$_m["Email templates"]
+  = "Šablony emailù";
+
+# include/menu.php3, row 161
+$_m["Mailman: create list"]
+  = "Mailman: vytvoøit seznam";
+
+# include/menu.php3, row 167
+$_m["Folders"]
+  = "Ostatní zprávy";
+
+# include/menu.php3, row 171
+$_m["... pending"]
+  = "... pøipravené";
+
+# include/menu.php3, row 173
+$_m["... expired"]
+  = "... expirované";
+
+# include/menu.php3, row 177
+$_m["Trash bin"]
+  = "Koš";
+
+# include/menu.php3, row 180
+$_m["Are You sure to empty trash?"]
+  = "Opravdu chcete vymazat zprávy z koše?";
+
+# include/menu.php3, row 182
+$_m["Empty trash"]
+  = "Vysypat koš";
+
+# include/menu.php3, row 197
+$_m["List of Alerts modules using this slice as Reader Management."]
+  = "Seznam modulù Zasílání, které pouívají tento webík jako Správu Ètenáøù";
+
+# include/menu.php3, row 199
+$_m["Bulk Emails"]
+  = "Hromadnı e-mail";
+
+# include/menu.php3, row 199
+$_m["Send bulk email to selected users or to users in Stored searches"]
+  = "Zaslat hromadnı e-mail vybranım uivatelùm";
+
+# include/menu.php3, row 213
+$_m["Alerts Sent"]
+  = "Zasíláno pøes";
+
+# include/menu.php3, row 214
+$_m["List of Alerts modules sending items from this slice."]
+  = "Seznam modulù Zasílání, které posílají èlánky z tohoto webíku.";
+
+# include/manager.class.php3, row 122
+$_m["No item found"]
+  = "ádná zpráva";
+
+# include/manager.class.php3, row 384
+$_m["Selected items"]
+  = "Zmìnit vybrané";
+
+# include/manager.class.php3, row 391
+$_m["Go"]
+  = "Jeï";
+
+# include/manager.class.php3, row 407
+$_m["Items Page"]
+  = "Stránka s èlánky";
+
 # include/filedit.php3, row 69
-# include/.#constants_param_wizard.php3.1.34, row 382
 $_m["File"]
   = "Soubor";
 
@@ -4299,693 +4263,17 @@ $_m["Files with the same names as some in the template already exist. Please cha
 $_m["Are you sure you want to delete the selected files and folders?"]
   = "Jste si jisti, e chcete smazat zvolené soubory a adresáøe?";
 
-# include/formutil.php3, row 126, 247
-# include/.#formutil.php3.1.58, row 120, 226
-# include/formutil.bak, row 122, 243
-# include/formutil.php3.old, row 122, 243
-$_m["Plain text"]
-  = "Prostı text";
+# include/scroller.php3, row 219
+$_m["All"]
+  = "Vše";
 
-# include/formutil.php3, row 226
-# include/.#formutil.php3.1.58, row 218
-# include/formutil.bak, row 222
-# include/formutil.php3.old, row 222
-$_m["Show this field as a rich text editor (use only after having installed the necessary components!)"]
-  = "Zobraz toto pole v rich text editoru (pouijte a po nainstalování potøebnıch komponent!)";
-
-# include/formutil.php3, row 241
-# include/formutil.bak, row 237
-# include/formutil.php3.old, row 237
-$_m["import"]
-  = "";
-
-# include/formutil.php3, row 642
-# include/.#formutil.php3.1.58, row 614
-# include/formutil.bak, row 638
-# include/formutil.php3.old, row 638
-$_m["Remove"]
-  = "Odstranit";
-
-# include/formutil.php3, row 659
-# include/.#formutil.php3.1.58, row 631
-# include/formutil.bak, row 655
-# include/formutil.php3.old, row 655
-$_m["Offer"]
-  = "Nabídnout";
-
-# include/formutil.php3, row 660
-# include/.#formutil.php3.1.58, row 632
-# include/formutil.bak, row 656
-# include/formutil.php3.old, row 656
-# include/.#constants_param_wizard.php3.1.34, row 428
-$_m["Selected"]
-  = "Vybrané";
-
-# include/formutil.php3, row 1064
-# include/.#formutil.php3.1.58, row 1003
-# include/formutil.bak, row 1050
-# include/formutil.php3.old, row 1050
-$_m["it must be filled"]
-  = "musí bıt vyplnìno";
-
-# include/formutil.php3, row 1108
-# include/.#formutil.php3.1.58, row 1047
-# include/formutil.bak, row 1094
-# include/formutil.php3.old, row 1094
-$_m["you should use a-z, A-Z and 0-9 characters"]
-  = "pouijte znaky a-z, A-Z a 0-9";
-
-# include/formutil.php3, row 1113, 1120
-# include/.#formutil.php3.1.58, row 1052, 1059
-# include/formutil.bak, row 1099, 1106
-# include/formutil.php3.old, row 1099, 1106
-$_m["it must by 5 - 32 characters long"]
-  = "musí bıt dlouhé 5 - 32 znakù";
-
-# include/formutil.php3, row 1124
-# include/.#formutil.php3.1.58, row 1063
-# include/formutil.bak, row 1110
-# include/formutil.php3.old, row 1110
-$_m["only 0-9 A-Z a-z . _ and - are allowed"]
-  = "pouze 0-9 A-Z a-z . _ a - jsou povolené";
-
-# include/formutil.php3, row 1150
-# include/.#formutil.php3.1.58, row 1082
-# include/formutil.bak, row 1136
-# include/formutil.php3.old, row 1136
-$_m["Error in parameters for UNIQUE validation: field ID is not 16 but %1 chars long: "]
-  = "Chyba v parametrech pro UNIKÁTNÍ validaci: ID políèka je dlouhé %1 místo 16 znakù: ";
-
-# include/formutil.php3, row 1172
-# include/.#formutil.php3.1.58, row 1097
-# include/formutil.bak, row 1158
-# include/formutil.php3.old, row 1158
-$_m["this value is already used, choose another one"]
-  = "tato hodnota je u pouita, zvolte jinou";
-
-# include/formutil.php3, row 1214
-# include/.#formutil.php3.1.58, row 1137
-# include/formutil.bak, row 1199
-# include/formutil.php3.old, row 1199
-$_m["This field is required."]
-  = "Políèko je povinné.";
-
-# include/formutil.php3, row 1215
-# include/.#formutil.php3.1.58, row 1138
-# include/formutil.bak, row 1200
-# include/formutil.php3.old, row 1200
-$_m["This field is required (marked by *)."]
-  = "Políèko je povinné (oznaèeno *).";
-
-# include/formutil.php3, row 1224
-# include/.#formutil.php3.1.58, row 1147
-# include/formutil.bak, row 1209
-# include/formutil.php3.old, row 1209
-$_m["Not a valid integer number."]
-  = "Není platné celé èíslo.";
-
-# include/formutil.php3, row 1228
-# include/.#formutil.php3.1.58, row 1151
-# include/formutil.bak, row 1213
-# include/formutil.php3.old, row 1213
-$_m["Not a valid file name."]
-  = "Není platnı název souboru.";
-
-# include/formutil.php3, row 1232
-# include/.#formutil.php3.1.58, row 1155
-# include/formutil.bak, row 1217
-# include/formutil.php3.old, row 1217
-$_m["Not a valid email address."]
-  = "Není platnı email.";
-
-# include/formutil.php3, row 1236
-# include/.#formutil.php3.1.58, row 1159
-# include/formutil.bak, row 1221
-# include/formutil.php3.old, row 1221
-$_m["The two password copies differ."]
-  = "Kopie hesla se liší.";
-
-# include/imagefunc.php3, row 54
-$_m["Cannot copy %1 to %2"]
-  = "";
-
-# include/imagefunc.php3, row 105
-$_m["ResampleImage unable to %1"]
-  = "";
-
-# include/imagefunc.php3, row 120
-$_m["Type not supported for resize"]
-  = "Typ není podporován pro zmìnu velikosti";
-
-# include/init_page.php3, row 114
-# include/loginform.inc, row 48
-# include/.#init_page.php3.1.47, row 113
-$_m["Either your username or your password is not valid."]
-  = "Buï jméno nebo heslo nejsou v poøádku.";
-
-# include/init_page.php3, row 153
-# include/.#init_page.php3.1.47, row 153
-$_m["You do not have permission to edit items in the slice"]
-  = "Nemáte právo upravovat zprávy v tomto webíku";
-
-# include/init_page.php3, row 177
-# include/.#init_page.php3.1.47, row 177
-$_m["No slice found for you"]
-  = "Nebyl nalezen ádnı webík, ke kterému máte pøístup";
-
-# include/item.php3, row 58
-# include/.#item.php3.1.83, row 53
-# include/.#item.php3.1.85, row 53
-# include/.#item.php3.1.95, row 54
-# include/.#item.php3.1.99, row 58
-# include/.#item.php3.1.103, row 58
-$_m["number of found items"]
-  = "poèet nalezenıch èlánkù";
-
-# include/item.php3, row 59
-# include/.#item.php3.1.83, row 56
-# include/.#item.php3.1.85, row 56
-# include/.#item.php3.1.95, row 55
-# include/.#item.php3.1.99, row 59
-# include/.#item.php3.1.103, row 59
-$_m["index of item within view"]
-  = "poøadí èlánku v rámci pohledu";
-
-# include/item.php3, row 60
-# include/.#item.php3.1.83, row 59
-# include/.#item.php3.1.85, row 59
-# include/.#item.php3.1.95, row 56
-# include/.#item.php3.1.99, row 60
-# include/.#item.php3.1.103, row 60
-$_m["alias for Item ID"]
-  = "alias pro èíslo èlánku";
-
-# include/item.php3, row 61
-# include/.#item.php3.1.83, row 62
-# include/.#item.php3.1.85, row 62
-# include/.#item.php3.1.95, row 57
-# include/.#item.php3.1.99, row 61
-# include/.#item.php3.1.103, row 61
-$_m["alias for Short Item ID"]
-  = "alias pro zkrácené èíslo èlánku";
-
-# include/item.php3, row 68, 69
-# include/.#item.php3.1.83, row 69, 72
-# include/.#item.php3.1.85, row 69, 72
-# include/.#item.php3.1.95, row 64, 65
-# include/.#item.php3.1.99, row 68, 69
-# include/.#item.php3.1.103, row 68, 69
-$_m["alias used on admin page index.php3 for itemedit url"]
-  = "alias pouívanı v administrativních stránkách index.php3 pro URL itemedit.php3";
-
-# include/item.php3, row 70
-# include/.#item.php3.1.83, row 75
-# include/.#item.php3.1.85, row 75
-# include/.#item.php3.1.95, row 66
-# include/.#item.php3.1.99, row 70
-# include/.#item.php3.1.103, row 70
-$_m["Alias used on admin page index.php3 for edit discussion url"]
-  = "Alias pouívanı v administrativních stránkách index.php3 pro URL discedit.php3";
-
-# include/item.php3, row 71
-# include/.#item.php3.1.83, row 78
-# include/.#item.php3.1.85, row 78
-# include/.#item.php3.1.95, row 67
-# include/.#item.php3.1.99, row 71
-# include/.#item.php3.1.103, row 71
-$_m["Title of Slice for RSS"]
-  = "Jméno webíku pro RSS";
-
-# include/item.php3, row 72
-# include/.#item.php3.1.83, row 81
-# include/.#item.php3.1.85, row 81
-# include/.#item.php3.1.95, row 68
-# include/.#item.php3.1.99, row 72
-# include/.#item.php3.1.103, row 72
-$_m["Link to the Slice for RSS"]
-  = "Odkaz na webík pro RSS";
-
-# include/item.php3, row 73
-# include/.#item.php3.1.83, row 84
-# include/.#item.php3.1.85, row 84
-# include/.#item.php3.1.95, row 69
-# include/.#item.php3.1.99, row 73
-# include/.#item.php3.1.103, row 73
-$_m["Short description (owner and name) of slice for RSS"]
-  = "Krátkı popisek (vlastník a jméno) webíku pro RSS";
-
-# include/item.php3, row 74
-# include/.#item.php3.1.83, row 87
-# include/.#item.php3.1.85, row 87
-# include/.#item.php3.1.95, row 70
-# include/.#item.php3.1.99, row 74
-# include/.#item.php3.1.103, row 74
-$_m["Date RSS information is generated, in RSS date format"]
-  = "Datum v RSS pøehledu je generováno v datovém formátu RSS";
-
-# include/item.php3, row 75
-# include/tv_email.php3, row 49
-# include/.#item.php3.1.83, row 90
-# include/.#item.php3.1.85, row 90
-# include/.#item.php3.1.95, row 71
-# include/.#item.php3.1.99, row 75
-# include/.#item.php3.1.103, row 75
-$_m["Slice name"]
-  = "Název webíku";
-
-# include/item.php3, row 108
-# include/.#item.php3.1.83, row 120
-# include/.#item.php3.1.85, row 120
-# include/.#item.php3.1.95, row 104
-# include/.#item.php3.1.99, row 108
-# include/.#item.php3.1.103, row 108
-$_m["Constant name"]
-  = "Jméno";
-
-# include/item.php3, row 109
-# include/.#item.php3.1.83, row 123
-# include/.#item.php3.1.85, row 123
-# include/.#item.php3.1.95, row 105
-# include/.#item.php3.1.99, row 109
-# include/.#item.php3.1.103, row 109
-$_m["Constant value"]
-  = "Hodnota";
-
-# include/item.php3, row 110
-# include/.#item.php3.1.83, row 126
-# include/.#item.php3.1.85, row 126
-# include/.#item.php3.1.95, row 106
-# include/.#item.php3.1.99, row 110
-# include/.#item.php3.1.103, row 110
-$_m["Constant priority"]
-  = "Øazení";
-
-# include/item.php3, row 111
-# include/.#item.php3.1.83, row 129
-# include/.#item.php3.1.85, row 129
-# include/.#item.php3.1.95, row 107
-# include/.#item.php3.1.99, row 111
-# include/.#item.php3.1.103, row 111
-$_m["Constant group id"]
-  = "Skupina hodnot";
-
-# include/item.php3, row 112
-# include/.#item.php3.1.83, row 132
-# include/.#item.php3.1.85, row 132
-# include/.#item.php3.1.95, row 108
-# include/.#item.php3.1.99, row 112
-# include/.#item.php3.1.103, row 112
-$_m["Category class (for categories only)"]
-  = "Nadkategorie (pouitelné jen pro kategorie)";
-
-# include/item.php3, row 113
-# include/.#item.php3.1.83, row 135
-# include/.#item.php3.1.85, row 135
-# include/.#item.php3.1.95, row 109
-# include/.#item.php3.1.99, row 113
-# include/.#item.php3.1.103, row 113
-$_m["Constant number"]
-  = "Poøadové èíslo hodnoty";
-
-# include/item.php3, row 114
-# include/.#item.php3.1.83, row 138
-# include/.#item.php3.1.85, row 138
-# include/.#item.php3.1.95, row 110
-# include/.#item.php3.1.99, row 114
-# include/.#item.php3.1.103, row 114
-$_m["Constant unique id (32-haxadecimal characters)"]
-  = "Jedineèné ID (32 hexa znakù)";
-
-# include/item.php3, row 115
-# include/.#item.php3.1.83, row 141
-# include/.#item.php3.1.85, row 141
-# include/.#item.php3.1.95, row 111
-# include/.#item.php3.1.99, row 115
-# include/.#item.php3.1.103, row 115
-$_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
-  = "Krátké jedineèné ID (poèítadlo od '1' pro všechny konstanty)";
-
-# include/item.php3, row 116
-# include/.#item.php3.1.83, row 144
-# include/.#item.php3.1.85, row 144
-# include/.#item.php3.1.95, row 112
-# include/.#item.php3.1.99, row 116
-# include/.#item.php3.1.103, row 116
-$_m["Constant description"]
-  = "Popis konstanty";
-
-# include/item.php3, row 117
-# include/.#item.php3.1.83, row 147
-# include/.#item.php3.1.85, row 147
-# include/.#item.php3.1.95, row 113
-# include/.#item.php3.1.99, row 117
-# include/.#item.php3.1.103, row 117
-$_m["Constant level (used for hierachical constants)"]
-  = "Úroveò konstanty (pouito v hierarchickıch)";
-
-# include/item.php3, row 149
-$_m["Alias for %1"]
-  = "";
-
-# include/item.php3, row 951
-# include/.#item.php3.1.83, row 853
-# include/.#item.php3.1.85, row 856
-# include/.#item.php3.1.95, row 868
-# include/.#item.php3.1.99, row 890
-# include/.#item.php3.1.103, row 904
-$_m["on"]
-  = "zap";
-
-# include/item.php3, row 951
-# include/.#item.php3.1.83, row 853
-# include/.#item.php3.1.85, row 856
-# include/.#item.php3.1.95, row 868
-# include/.#item.php3.1.99, row 890
-# include/.#item.php3.1.103, row 904
-$_m["off"]
-  = "vyp";
-
-# include/item.php3, row 1077
-# include/.#item.php3.1.83, row 889
-# include/.#item.php3.1.85, row 892
-# include/.#item.php3.1.95, row 922
-# include/.#item.php3.1.99, row 998
-# include/.#item.php3.1.103, row 1011
-$_m["Home"]
-  = "Domù";
-
-# include/itemfunc.php3, row 465
-# include/.#itemfunc.php3.1.77, row 434
-# include/.#itemfunc.php3.1.80, row 434
-# include/.#itemfunc.php3.1.82, row 434
-# include/.#itemfunc.php3.1.88, row 445
-# include/.#itemfunc.php3.1.95, row 454
-$_m["set"]
-  = "zapnuto";
-
-# include/itemfunc.php3, row 465
-# include/.#itemfunc.php3.1.77, row 434
-# include/.#itemfunc.php3.1.80, row 434
-# include/.#itemfunc.php3.1.82, row 434
-# include/.#itemfunc.php3.1.88, row 445
-# include/.#itemfunc.php3.1.95, row 454
-$_m["unset"]
-  = "vypnuto";
-
-# include/itemfunc.php3, row 724
-# include/.#itemfunc.php3.1.77, row 699
-# include/.#itemfunc.php3.1.80, row 699
-# include/.#itemfunc.php3.1.82, row 699
-# include/.#itemfunc.php3.1.88, row 704
-# include/.#itemfunc.php3.1.95, row 713
-$_m["Add&nbsp;Mutual"]
-  = "Pøidat&nbsp;Vzájemnì";
-
-# include/itemfunc.php3, row 725
-# include/.#itemfunc.php3.1.77, row 700
-# include/.#itemfunc.php3.1.80, row 700
-# include/.#itemfunc.php3.1.82, row 700
-# include/.#itemfunc.php3.1.88, row 705
-# include/.#itemfunc.php3.1.95, row 714
-$_m["Backward"]
-  = "Zpìtnì";
-
-# include/itemfunc.php3, row 727
-# include/.#itemfunc.php3.1.77, row 702
-# include/.#itemfunc.php3.1.80, row 702
-# include/.#itemfunc.php3.1.82, row 702
-# include/.#itemfunc.php3.1.88, row 707
-# include/.#itemfunc.php3.1.95, row 716
-$_m["Good"]
-  = "Dobré";
-
-# include/itemfunc.php3, row 729
-# include/.#itemfunc.php3.1.77, row 704
-# include/.#itemfunc.php3.1.80, row 704
-# include/.#itemfunc.php3.1.82, row 704
-# include/.#itemfunc.php3.1.88, row 709
-# include/.#itemfunc.php3.1.95, row 718
-$_m["Bad"]
-  = "Špatné";
-
-# include/itemfunc.php3, row 835, 860
-# include/.#itemfunc.php3.1.77, row 805, 830
-# include/.#itemfunc.php3.1.80, row 805, 830
-# include/.#itemfunc.php3.1.82, row 810, 835
-# include/.#itemfunc.php3.1.88, row 813, 838
-# include/.#itemfunc.php3.1.95, row 822, 847
-$_m["Change Password"]
-  = "Zmìna Hesla";
-
-# include/itemfunc.php3, row 836, 861
-# include/.#itemfunc.php3.1.77, row 806, 831
-# include/.#itemfunc.php3.1.80, row 806, 831
-# include/.#itemfunc.php3.1.82, row 811, 836
-# include/.#itemfunc.php3.1.88, row 814, 839
-# include/.#itemfunc.php3.1.95, row 823, 848
-$_m["Retype New Password"]
-  = "Zopakujte Nové Heslo";
-
-# include/itemfunc.php3, row 837, 862
-# include/.#itemfunc.php3.1.77, row 807, 832
-# include/.#itemfunc.php3.1.80, row 807, 832
-# include/.#itemfunc.php3.1.82, row 812, 837
-# include/.#itemfunc.php3.1.88, row 815, 840
-# include/.#itemfunc.php3.1.95, row 824, 849
-$_m["Delete Password"]
-  = "Smazat Heslo";
-
-# include/itemfunc.php3, row 842
-# include/.#itemfunc.php3.1.77, row 812
-# include/.#itemfunc.php3.1.80, row 812
-# include/.#itemfunc.php3.1.82, row 817
-# include/.#itemfunc.php3.1.88, row 820
-# include/.#itemfunc.php3.1.95, row 829
-$_m["not set"]
-  = "nenastaveno";
-
-# include/itemview.php3, row 288
-# include/.#itemview.php3.1.22, row 260
-# include/.#itemview.php3.1.26, row 266
-# include/.#itemview.php3.1.33, row 272
-# include/.#itemview.php3.1.37, row 288
+# include/itemview.php3, row 287
 $_m["No comment was selected"]
   = "Nebyl vybrán ádnı pøíspìvek";
 
-# include/loginform.inc, row 16
-$_m["Welcome!"]
-  = "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.6";
-
-# include/loginform.inc, row 18
-$_m["Welcome! Please identify yourself with a username and a password:"]
-  = "<br><br>\n\n"
-   ."     <br>Vítejte! Pøihlašte se prosím Vaším jménem a heslem\n\n"
-   ."     <br>(Welcome! Log in by your name and password):";
-
-# include/loginform.inc, row 27
-$_m["Username:"]
-  = "Uivatelské jméno<br>(User name):  ";
-
-# include/loginform.inc, row 31
-$_m["Type your username or mail"]
-  = " ";
-
-# include/loginform.inc, row 34
-$_m["Password:"]
-  = "Heslo<br>(Password):";
-
-# include/loginform.inc, row 51
-$_m["Please try again!"]
-  = "Zkuste to znovu, prosím!<br>Please try again!";
-
-# include/loginform.inc, row 54
-$_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>."]
-  = "Pokud jste si jisti, e zadáváte správné jméno a heslo, obrate se prosím \n\n"
-   ."     na <a href=\"mailto:%1\">%1</a>.\n\n"
-   ."     <br>If you are sure you have typed the correct password, please e-mail \n\n"
-   ."     <a href=\"mailto:%1\">%1</a>.";
-
-# include/menu.php3, row 59
-# include/.#menu.php3.1.32, row 57
-$_m["View site"]
-  = "Zobraz";
-
-# include/menu.php3, row 70, 71, 131
-# include/.#menu.php3.1.32, row 68, 69, 128
-$_m["Item Manager"]
-  = "Správa zpráv";
-
-# include/menu.php3, row 77
-# include/.#menu.php3.1.32, row 75
-$_m["Slice Admin"]
-  = "Nastavení";
-
-# include/menu.php3, row 86
-# include/.#menu.php3.1.32, row 83
-$_m["AA"]
-  = "";
-
-# include/menu.php3, row 87
-# include/.#menu.php3.1.32, row 84
-$_m["AA Administration"]
-  = "Administrace AA Toolkitu";
-
-# include/menu.php3, row 114
-# include/.#menu.php3.1.32, row 111
-$_m["Main settings"]
-  = "Hlavní nastavení";
-
-# include/menu.php3, row 118
-# include/.#menu.php3.1.32, row 115
-$_m["Category"]
-  = "Kategorie";
-
-# include/menu.php3, row 120
-# include/.#menu.php3.1.32, row 117
-$_m["Email Notification"]
-  = "Upozornìní e-mailem";
-
-# include/menu.php3, row 123
-# include/um_util.php3, row 64, 70
-# include/.#menu.php3.1.32, row 120
-$_m["Permissions"]
-  = "Nastavení práv";
-
-# include/menu.php3, row 124
-# include/.#menu.php3.1.32, row 121
-$_m["Assign"]
-  = "Pøidat";
-
-# include/menu.php3, row 125
-# include/.#menu.php3.1.32, row 122
-$_m["Change"]
-  = "Zmìnit";
-
-# include/menu.php3, row 127
-# include/.#menu.php3.1.32, row 124
-$_m["Design"]
-  = "Vzhled";
-
-# include/menu.php3, row 128
-# include/.#menu.php3.1.32, row 125
-$_m["Index"]
-  = "Pøehled zpráv";
-
-# include/menu.php3, row 129
-# include/.#menu.php3.1.32, row 126
-$_m["Fulltext"]
-  = "Celá zpráva";
-
-# include/menu.php3, row 130
-# include/.#menu.php3.1.32, row 127
-$_m["Views"]
-  = "Pohledy";
-
-# include/menu.php3, row 133
-# include/.#menu.php3.1.32, row 130
-$_m["Content Pooling"]
-  = "Vımìna zpráv";
-
-# include/menu.php3, row 134
-# include/.#menu.php3.1.32, row 131
-$_m["Nodes"]
-  = "Uzly";
-
-# include/menu.php3, row 135
-# include/.#menu.php3.1.32, row 132
-$_m["Inner Node Feeding"]
-  = "Lokální vımìna";
-
-# include/menu.php3, row 136
-# include/.#menu.php3.1.32, row 133
-$_m["Inter Node Import"]
-  = "Pøíjem z uzlù";
-
-# include/menu.php3, row 137
-# include/.#menu.php3.1.32, row 134
-$_m["Inter Node Export"]
-  = "Zasílání do uzlù";
-
-# include/menu.php3, row 138
-# include/.#menu.php3.1.32, row 135
-$_m["RSS Feeds"]
-  = "";
-
-# include/menu.php3, row 139
-# include/.#menu.php3.1.32, row 136
-$_m["Filters"]
-  = "Filtry";
-
-# include/menu.php3, row 140
-# include/.#menu.php3.1.32, row 137
-$_m["Mapping"]
-  = "Mapování";
-
-# include/menu.php3, row 141
-$_m["Import CSV"]
-  = "";
-
-# include/menu.php3, row 143, 174
-# include/menu_aa.php3, row 54
-# include/.#menu.php3.1.32, row 138, 169
-$_m["Misc"]
-  = "Rùzné";
-
-# include/menu.php3, row 144
-# include/.#menu.php3.1.32, row 139
-$_m["Change field IDs"]
-  = "Zmìna ID políèka";
-
-# include/menu.php3, row 147
-# include/.#menu.php3.1.32, row 142
-$_m["Anonymous Form Wizard"]
-  = "Prùvodce Anonymním Formuláøem";
-
-# include/menu.php3, row 148
-# include/tv_email.php3, row 152
-# include/.#menu.php3.1.32, row 144
-$_m["Email templates"]
-  = "Šablony emailù";
-
-# include/menu.php3, row 157
-# include/.#menu.php3.1.32, row 152
-$_m["Mailman: create list"]
-  = "Mailman: vytvoøit seznam";
-
-# include/menu.php3, row 163
-# include/.#menu.php3.1.32, row 158
-$_m["Folders"]
-  = "Ostatní zprávy";
-
-# include/menu.php3, row 167
-# include/.#menu.php3.1.32, row 162
-$_m["... pending"]
-  = "... pøipravené";
-
-# include/menu.php3, row 169
-# include/.#menu.php3.1.32, row 164
-$_m["... expired"]
-  = "... expirované";
-
-# include/menu.php3, row 176
-# include/.#menu.php3.1.32, row 171
-$_m["Empty trash"]
-  = "Vysypat koš";
-
-# include/menu.php3, row 191
-# include/.#menu.php3.1.32, row 185
-$_m["List of Alerts modules using this slice as Reader Management."]
-  = "Seznam modulù Zasílání, které pouívají tento webík jako Správu Ètenáøù";
-
-# include/menu.php3, row 200
-# include/.#menu.php3.1.32, row 194
-$_m["Alerts Sent"]
-  = "Zasíláno pøes";
-
-# include/menu.php3, row 201
-# include/.#menu.php3.1.32, row 195
-$_m["List of Alerts modules sending items from this slice."]
-  = "Seznam modulù Zasílání, které posílají èlánky z tohoto webíku.";
+# include/itemfunc.bak, row 990, 1039
+$_m["Retype New Password"]
+  = "Zopakujte Nové Heslo";
 
 # include/menu_aa.php3, row 30
 $_m["Slices / Modules"]
@@ -5032,46 +4320,6 @@ $_m["RSS test"]
 $_m["Summarize"]
   = "";
 
-# include/menu_util.php3, row 67
-$_m["Jump inside control panel"]
-  = "Skok uvnitø administrace";
-
-# include/menu_util.php3, row 69
-$_m["MySQL Auth (old version)"]
-  = "";
-
-# include/menu_util.php3, row 70
-$_m["Polls"]
-  = "Ankety";
-
-# include/menu_util.php3, row 71
-$_m["Site"]
-  = "";
-
-# include/menu_util.php3, row 73
-$_m["Reader Management Slice"]
-  = "Webík Správa Ètenáøù";
-
-# include/menu_util.php3, row 105, 154
-$_m["New slice"]
-  = "Novı webík";
-
-# include/menu_util.php3, row 156
-$_m["APC Action Applications"]
-  = "APC toolkit";
-
-# include/menu_util.php3, row 175
-$_m["Reader management"]
-  = "Správa ètenáøù";
-
-# include/menu_util.php3, row 222
-$_m["Switch to:"]
-  = "Webík:";
-
-# include/menu_util.php3, row 300
-$_m["Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>"]
-  = "";
-
 # include/modutils.php3, row 53
 # include/slicedit.php3, row 75
 $_m["Used Language File"]
@@ -5085,314 +4333,32 @@ $_m["No such module."]
 $_m["No module flagged for deletion."]
   = "ádnı modul není oznaèen pro smazaní.";
 
-# include/msgpage.php3, row 52
-# include/util.php3.marphy, row 1019
-# include/util.php3, row 1140
-# include/.#util.php3.1.100, row 979
-# include/.#util.php3.1.106, row 1020
-# include/.#util.php3.1.108, row 1020
-# include/util.bak, row 1034
-# include/.#util.php3.1.111, row 1020
-# include/.#util.php3.1.116, row 1043
-# include/.#util.php3.1.123, row 1099
-$_m["Toolkit news message"]
-  = "Zpráva aplikace";
+# include/init_page.php3, row 153
+$_m["You do not have permission to edit items in the slice"]
+  = "Nemáte právo upravovat zprávy v tomto webíku";
 
-# include/util.php3.marphy, row 703, 744
-# include/util.php3, row 746, 787
-# include/.#util.php3.1.100, row 665, 708
-# include/.#util.php3.1.106, row 704, 745
-# include/.#util.php3.1.108, row 704, 745
-# include/util.bak, row 714, 755
-# include/.#util.php3.1.111, row 704, 745
-# include/.#util.php3.1.116, row 721, 762
-# include/.#util.php3.1.123, row 727, 768
-$_m["Error: Missing Reading Password"]
-  = "Chyba: Schází Heslo pro Ètení";
+# include/init_page.php3, row 177
+$_m["No slice found for you"]
+  = "Nebyl nalezen ádnı webík, ke kterému máte pøístup";
 
-# include/util.php3.marphy, row 1037
-# include/util.php3, row 1158
-# include/.#util.php3.1.100, row 997
-# include/.#util.php3.1.106, row 1038
-# include/.#util.php3.1.108, row 1038
-# include/util.bak, row 1052
-# include/.#util.php3.1.111, row 1038
-# include/.#util.php3.1.116, row 1061
-# include/.#util.php3.1.123, row 1117
-$_m["Use these aliases for database fields"]
-  = "Pouij následující aliasy databázovıch polí";
-
-# include/util.php3.marphy, row 1285
-# include/util.php3, row 1422
-# include/.#util.php3.1.100, row 1209
-# include/.#util.php3.1.106, row 1254
-# include/.#util.php3.1.108, row 1288
-# include/util.bak, row 1302
-# include/.#util.php3.1.111, row 1287
-# include/.#util.php3.1.116, row 1316
-# include/.#util.php3.1.123, row 1380
-$_m["Internal error. File upload: Dir does not exist?!"]
-  = "Interní chyba pøi uploadu souboru: Adresáø neexistuje?!";
-
-# include/util.php3.marphy, row 1288
-# include/util.php3, row 1425
-# include/.#util.php3.1.100, row 1212
-# include/.#util.php3.1.106, row 1257
-# include/.#util.php3.1.108, row 1291
-# include/util.bak, row 1305
-# include/.#util.php3.1.111, row 1290
-# include/.#util.php3.1.116, row 1319
-# include/.#util.php3.1.123, row 1383
-$_m["File with this name already exists."]
-  = "Soubor s tímto názvem u existuje.";
-
-# include/util.php3.marphy, row 1297, 1303
-# include/.#util.php3.1.100, row 1221, 1227
-# include/.#util.php3.1.106, row 1266, 1272
-# include/.#util.php3.1.108, row 1300, 1306
-# include/util.bak, row 1314, 1320
-# include/.#util.php3.1.111, row 1299, 1305
-# include/.#util.php3.1.116, row 1328, 1334
-$_m["Can't upload Image"]
-  = "Soubor (obrázek) nelze uloit";
-
-# include/util.php3.marphy, row 1510
-# include/util.php3, row 1649
-# include/.#util.php3.1.100, row 1434
-# include/.#util.php3.1.106, row 1479
-# include/.#util.php3.1.108, row 1513
-# include/util.bak, row 1527
-# include/.#util.php3.1.111, row 1512
-# include/.#util.php3.1.116, row 1541
-# include/.#util.php3.1.123, row 1607
-$_m["alerts alert"]
-  = "zasílání zpráv - zpráva";
-
-# include/util.php3.marphy, row 1511
-# include/util.php3, row 1650
-# include/.#util.php3.1.100, row 1435
-# include/.#util.php3.1.106, row 1480
-# include/.#util.php3.1.108, row 1514
-# include/util.bak, row 1528
-# include/.#util.php3.1.111, row 1513
-# include/.#util.php3.1.116, row 1542
-# include/.#util.php3.1.123, row 1608
-$_m["alerts welcome"]
-  = "zasílání zpráv - vítejte";
-
-# include/util.php3.marphy, row 1512
-# include/util.php3, row 1651
-# include/.#util.php3.1.100, row 1436
-# include/.#util.php3.1.106, row 1481
-# include/.#util.php3.1.108, row 1515
-# include/util.bak, row 1529
-# include/.#util.php3.1.111, row 1514
-# include/.#util.php3.1.116, row 1543
-# include/.#util.php3.1.123, row 1609
-$_m["slice wizard welcome"]
-  = "uvítání z prùvodce pøidáním webíku";
-
-# include/util.php3.marphy, row 1513
-# include/util.php3, row 1652
-# include/.#util.php3.1.106, row 1482
-# include/.#util.php3.1.108, row 1516
-# include/util.bak, row 1530
-# include/.#util.php3.1.111, row 1515
-# include/.#util.php3.1.116, row 1544
-# include/.#util.php3.1.123, row 1610
-$_m["other"]
-  = "jiné";
-
-# include/util.php3.marphy, row 1520
-# include/util.php3, row 1659
-# include/.#util.php3.1.100, row 1443
-# include/.#util.php3.1.106, row 1489
-# include/.#util.php3.1.108, row 1523
-# include/util.bak, row 1537
-# include/.#util.php3.1.111, row 1522
-# include/.#util.php3.1.116, row 1551
-# include/.#util.php3.1.123, row 1617
-$_m["January"]
-  = "Leden";
-
-# include/util.php3.marphy, row 1520
-# include/util.php3, row 1659
-# include/.#util.php3.1.100, row 1443
-# include/.#util.php3.1.106, row 1489
-# include/.#util.php3.1.108, row 1523
-# include/util.bak, row 1537
-# include/.#util.php3.1.111, row 1522
-# include/.#util.php3.1.116, row 1551
-# include/.#util.php3.1.123, row 1617
-$_m["February"]
-  = "Únor";
-
-# include/util.php3.marphy, row 1520
-# include/util.php3, row 1659
-# include/.#util.php3.1.100, row 1443
-# include/.#util.php3.1.106, row 1489
-# include/.#util.php3.1.108, row 1523
-# include/util.bak, row 1537
-# include/.#util.php3.1.111, row 1522
-# include/.#util.php3.1.116, row 1551
-# include/.#util.php3.1.123, row 1617
-$_m["March"]
-  = "Bøezen";
-
-# include/util.php3.marphy, row 1520
-# include/util.php3, row 1659
-# include/.#util.php3.1.100, row 1443
-# include/.#util.php3.1.106, row 1489
-# include/.#util.php3.1.108, row 1523
-# include/util.bak, row 1537
-# include/.#util.php3.1.111, row 1522
-# include/.#util.php3.1.116, row 1551
-# include/.#util.php3.1.123, row 1617
-$_m["April"]
-  = "Duben";
-
-# include/util.php3.marphy, row 1520
-# include/util.php3, row 1659
-# include/.#util.php3.1.100, row 1443
-# include/.#util.php3.1.106, row 1489
-# include/.#util.php3.1.108, row 1523
-# include/util.bak, row 1537
-# include/.#util.php3.1.111, row 1522
-# include/.#util.php3.1.116, row 1551
-# include/.#util.php3.1.123, row 1617
-$_m["May"]
-  = "Kvìten";
-
-# include/util.php3.marphy, row 1520
-# include/util.php3, row 1659
-# include/.#util.php3.1.100, row 1443
-# include/.#util.php3.1.106, row 1489
-# include/.#util.php3.1.108, row 1523
-# include/util.bak, row 1537
-# include/.#util.php3.1.111, row 1522
-# include/.#util.php3.1.116, row 1551
-# include/.#util.php3.1.123, row 1617
-$_m["June"]
-  = "Èerven";
-
-# include/util.php3.marphy, row 1521
-# include/util.php3, row 1660
-# include/.#util.php3.1.100, row 1444
-# include/.#util.php3.1.106, row 1490
-# include/.#util.php3.1.108, row 1524
-# include/util.bak, row 1538
-# include/.#util.php3.1.111, row 1523
-# include/.#util.php3.1.116, row 1552
-# include/.#util.php3.1.123, row 1618
-$_m["July"]
-  = "Èervenec";
-
-# include/util.php3.marphy, row 1521
-# include/util.php3, row 1660
-# include/.#util.php3.1.100, row 1444
-# include/.#util.php3.1.106, row 1490
-# include/.#util.php3.1.108, row 1524
-# include/util.bak, row 1538
-# include/.#util.php3.1.111, row 1523
-# include/.#util.php3.1.116, row 1552
-# include/.#util.php3.1.123, row 1618
-$_m["August"]
-  = "Srpen";
-
-# include/util.php3.marphy, row 1521
-# include/util.php3, row 1660
-# include/.#util.php3.1.100, row 1444
-# include/.#util.php3.1.106, row 1490
-# include/.#util.php3.1.108, row 1524
-# include/util.bak, row 1538
-# include/.#util.php3.1.111, row 1523
-# include/.#util.php3.1.116, row 1552
-# include/.#util.php3.1.123, row 1618
-$_m["September"]
-  = "Záøí";
-
-# include/util.php3.marphy, row 1521
-# include/util.php3, row 1660
-# include/.#util.php3.1.100, row 1444
-# include/.#util.php3.1.106, row 1490
-# include/.#util.php3.1.108, row 1524
-# include/util.bak, row 1538
-# include/.#util.php3.1.111, row 1523
-# include/.#util.php3.1.116, row 1552
-# include/.#util.php3.1.123, row 1618
-$_m["October"]
-  = "Øíjen";
-
-# include/util.php3.marphy, row 1521
-# include/util.php3, row 1660
-# include/.#util.php3.1.100, row 1444
-# include/.#util.php3.1.106, row 1490
-# include/.#util.php3.1.108, row 1524
-# include/util.bak, row 1538
-# include/.#util.php3.1.111, row 1523
-# include/.#util.php3.1.116, row 1552
-# include/.#util.php3.1.123, row 1618
-$_m["November"]
-  = "Listopad";
-
-# include/util.php3.marphy, row 1521
-# include/util.php3, row 1660
-# include/.#util.php3.1.100, row 1444
-# include/.#util.php3.1.106, row 1490
-# include/.#util.php3.1.108, row 1524
-# include/util.bak, row 1538
-# include/.#util.php3.1.111, row 1523
-# include/.#util.php3.1.116, row 1552
-# include/.#util.php3.1.123, row 1618
-$_m["December"]
-  = "Prosinec";
-
-# include/scroller.php3, row 217
-$_m["All"]
-  = "Vše";
-
-# include/searchbar.class.php3, row 221
-$_m["And"]
-  = "A";
-
-# include/searchbar.class.php3, row 308
-$_m["contains"]
-  = "obsahuje";
-
-# include/searchbar.class.php3, row 308
-$_m["begins with"]
-  = "zaèíná";
-
-# include/searchbar.class.php3, row 308
-$_m["is"]
-  = "je";
-
-# include/slice.php3, row 56
-$_m["Select Category "]
-  = "Zvolte Kategorii ";
-
-# include/slice.php3, row 58
-$_m["All categories"]
-  = "Všechny kategorie";
-
-# include/sliceadd.php3, row 54
+# include/sliceadd.php3, row 59
 $_m["To create the new Slice, please choose a template.\n"
    ."        The new slice will inherit the template's default fields.  \n"
    ."        You can also choose a non-template slice to base the new slice on, \n"
    ."        if it has the fields you want."]
   = "Novı webík mùete vytvoøit na základì šablony, nebo zkopírovat nastavení z ji existujícího webíku (vytvoøí se pøesná kopie vèetnì nastavení .";
 
-# include/sliceadd.php3, row 72
+# include/sliceadd.php3, row 77
 $_m["No templates"]
   = "ádná šablona";
 
-# include/sliceadd.php3, row 95
+# include/sliceadd.php3, row 100
 $_m["No slices"]
   = "ádnı webík";
 
 # include/slicedit.php3, row 81
 $_m["This File Manager Directory is already used by another slice."]
-  = "";
+  = "Tento Adresáø pro správu souborù je ji vyuíván v jiném webíku.";
 
 # include/slicedit.php3, row 207
 $_m["Error when copying constants."]
@@ -5405,10 +4371,6 @@ $_m["Error when copying views."]
 # include/slicedit.php3, row 224
 $_m["Internal error when changing user role."]
   = "Interní chyba pøi zmìnì role uivatele.";
-
-# include/sliceobj.php3, row 49
-$_m["WARNING: slice: %s doesn't look like an unpacked id"]
-  = "POZOR: webík: %s nevypadá jako rozbalené id";
 
 # include/slicewiz.php3, row 13
 $_m["User not found"]
@@ -5443,7 +4405,6 @@ $_m["search"]
   = "vyhledat";
 
 # include/tabledit.php3, row 619, 708
-# include/.#constants_param_wizard.php3.1.34, row 573
 $_m["edit"]
   = "upravit";
 
@@ -5478,6 +4439,162 @@ $_m["browse"]
 # include/tabledit.php3, row 803
 $_m["Are you sure you want to permanently DELETE all the checked records?"]
   = "Jste si jisti, e chcete navdy SMAZAT všechny oznaèené záznamy?";
+
+# include/tv_email.php3, row 29
+$_m["Aliases for Alerts Alert"]
+  = "Aliasy pro zprávu ze Zasílání";
+
+# include/tv_email.php3, row 31
+$_m["complete filter text"]
+  = "úplnı text vıbìrù";
+
+# include/tv_email.php3, row 32, 40
+$_m["howoften"]
+  = "jak èasto";
+
+# include/tv_email.php3, row 33
+$_m["Anonym Form URL (set in Alerts Admin - Settings)"]
+  = "URL anonymního formuláøe (nastaveno v Nastavení Zasílání)";
+
+# include/tv_email.php3, row 34
+$_m["Unsubscribe Form URL"]
+  = "URL pro odhlášení (unsubscribe)";
+
+# include/tv_email.php3, row 38
+$_m["Aliases for Alerts Welcome"]
+  = "Aliasy pro uvítání v Zasílání";
+
+# include/tv_email.php3, row 41
+$_m["Collection Form URL (set in Alerts Admin - Settings)"]
+  = "URL formuláøe s nastavením Zasílání";
+
+# include/tv_email.php3, row 42
+$_m["email confirmed"]
+  = "email potvrzen";
+
+# include/tv_email.php3, row 47
+$_m["Aliases for Slice Wizard Welcome"]
+  = "Aliasy pro uvítání z Prùvodce pøidáním webíku";
+
+# include/tv_email.php3, row 50
+$_m["New user name"]
+  = "Jméno nového uivatele";
+
+# include/tv_email.php3, row 51
+$_m["New user login name"]
+  = "Login nového uivatele";
+
+# include/tv_email.php3, row 52
+$_m["New user role (editor / admin)"]
+  = "Role nového uivatele (editor / admin)";
+
+# include/tv_email.php3, row 53
+$_m["My name"]
+  = "Moje jméno";
+
+# include/tv_email.php3, row 54
+$_m["My email"]
+  = "Mùj email";
+
+# include/tv_email.php3, row 85
+$_m["Email template"]
+  = "Šablona emailu";
+
+# include/tv_email.php3, row 95, 154
+$_m["description"]
+  = "popis";
+
+# include/tv_email.php3, row 98
+$_m["email type"]
+  = "typ emailu";
+
+# include/tv_email.php3, row 102, 156
+$_m["subject"]
+  = "pøedmìt";
+
+# include/tv_email.php3, row 106, 158
+$_m["body"]
+  = "tìlo";
+
+# include/tv_email.php3, row 110
+$_m["from (email)"]
+  = "od (email)";
+
+# include/tv_email.php3, row 112
+$_m["reply to (email)"]
+  = "";
+
+# include/tv_email.php3, row 114
+$_m["errors to (email)"]
+  = "";
+
+# include/tv_email.php3, row 116
+$_m["sender (email)"]
+  = "";
+
+# include/tv_email.php3, row 118
+$_m["language (charset)"]
+  = "jazyk (znaková sada)";
+
+# include/tv_email.php3, row 122
+$_m["use HTML"]
+  = "pouít HTML";
+
+# include/tv_email.php3, row 126
+$_m["owner"]
+  = "vlastník";
+
+# include/tv_email.php3, row 164
+$_m["from"]
+  = "od";
+
+# include/tv_email.php3, row 166
+$_m["reply to"]
+  = "";
+
+# include/tv_email.php3, row 168
+$_m["errors to"]
+  = "";
+
+# include/tv_email.php3, row 170
+$_m["sender"]
+  = "";
+
+# include/um_gedit.php3, row 35
+$_m["It is impossible to add group to permission system"]
+  = "Nelze pøidat skupinu do systému";
+
+# include/um_gedit.php3, row 46
+$_m["Can't change group"]
+  = "Nelze zmìnit skupinu";
+
+# include/um_uedit.php3, row 67
+$_m["Can't change user"]
+  = "Nelze zmìnit data uivatele - LDAP Error";
+
+# include/um_util.php3, row 72
+$_m["Object"]
+  = "Objekt";
+
+# include/tv_misc.php3, row 54, 55
+$_m["Wizard Welcomes"]
+  = "Uvítání z Prùvodce";
+
+# include/tv_misc.php3, row 61
+$_m["mail body"]
+  = "tìlo zprávy";
+
+# include/tv_misc.php3, row 63
+$_m["From: mail header"]
+  = "From: hlavièka mailu";
+
+# include/tv_misc.php3, row 85, 86
+$_m["Wizard Templates"]
+  = "Šablony Prùvodce";
+
+# include/tv_misc.php3, row 110
+$_m["For help see FAQ: "]
+  = "Nápovìdu najdete ve FAQu: ";
 
 # include/tabledit_util.php3, row 64, 374
 $_m["Insert was successfull."]
@@ -5530,7 +4647,7 @@ $_m["last delete not confirmed"]
 # include/tableviews.php3, row 100
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            to superadmins.\n"
-   ."            You can delete not confirmed users after a number of days and / or send them an email \n"
+   ."            You can delete not confirmed users after a number of days and / or send them an email\n"
    ."            demanding them to do confirmation\n"
    ."            after a smaller number of days. To switch either of the actions off,\n"
    ."            set number of days to 0. The two last fields are for your information only.<br>\n"
@@ -5584,1521 +4701,20 @@ $_m["Answer HTML"]
 $_m["Params"]
   = "Parametry";
 
-# include/tv_email.php3, row 29
-$_m["Aliases for Alerts Alert"]
-  = "Aliasy pro zprávu ze Zasílání";
+# include/imagefunc.php3, row 54
+$_m["Cannot copy %1 to %2"]
+  = "Nelze zkopírovat %1 do %2";
 
-# include/tv_email.php3, row 31
-$_m["complete filter text"]
-  = "úplnı text vıbìrù";
-
-# include/tv_email.php3, row 32, 40
-$_m["howoften"]
-  = "jak èasto";
-
-# include/tv_email.php3, row 33
-$_m["Anonym Form URL (set in Alerts Admin - Settings)"]
-  = "";
-
-# include/tv_email.php3, row 34
-$_m["Unsubscribe Form URL"]
-  = "";
-
-# include/tv_email.php3, row 38
-$_m["Aliases for Alerts Welcome"]
-  = "Aliasy pro uvítání v Zasílání";
-
-# include/tv_email.php3, row 41
-$_m["Collection Form URL (set in Alerts Admin - Settings)"]
-  = "URL formuláøe s nastavením Zasílání";
-
-# include/tv_email.php3, row 42
-$_m["email confirmed"]
-  = "email potvrzen";
-
-# include/tv_email.php3, row 47
-$_m["Aliases for Slice Wizard Welcome"]
-  = "Aliasy pro uvítání z Prùvodce pøidáním webíku";
-
-# include/tv_email.php3, row 50
-$_m["New user name"]
-  = "Jméno nového uivatele";
-
-# include/tv_email.php3, row 51
-$_m["New user login name"]
-  = "Login nového uivatele";
-
-# include/tv_email.php3, row 52
-$_m["New user role (editor / admin)"]
-  = "Role nového uivatele (editor / admin)";
-
-# include/tv_email.php3, row 53
-$_m["My name"]
-  = "Moje jméno";
-
-# include/tv_email.php3, row 54
-$_m["My email"]
-  = "Mùj email";
-
-# include/tv_email.php3, row 88
-$_m["Email template"]
-  = "Šablona emailu";
-
-# include/tv_email.php3, row 98, 160
-$_m["description"]
-  = "popis";
-
-# include/tv_email.php3, row 101
-$_m["email type"]
-  = "typ emailu";
-
-# include/tv_email.php3, row 105, 162
-$_m["subject"]
-  = "pøedmìt";
-
-# include/tv_email.php3, row 109, 164
-$_m["body"]
-  = "tìlo";
-
-# include/tv_email.php3, row 113
-$_m["from (email)"]
-  = "od (email)";
-
-# include/tv_email.php3, row 115
-$_m["reply to (email)"]
-  = "";
-
-# include/tv_email.php3, row 117
-$_m["errors to (email)"]
-  = "";
-
-# include/tv_email.php3, row 119
-$_m["sender (email)"]
-  = "";
-
-# include/tv_email.php3, row 121
-$_m["language (charset)"]
-  = "jazyk (znaková sada)";
-
-# include/tv_email.php3, row 125
-$_m["use HTML"]
-  = "pouít HTML";
-
-# include/tv_email.php3, row 129
-$_m["owner"]
-  = "vlastník";
-
-# include/tv_email.php3, row 170
-$_m["from"]
-  = "od";
-
-# include/tv_email.php3, row 172
-$_m["reply to"]
-  = "";
-
-# include/tv_email.php3, row 174
-$_m["errors to"]
-  = "";
-
-# include/tv_email.php3, row 176
-$_m["sender"]
-  = "";
-
-# include/tv_misc.php3, row 54, 55
-$_m["Wizard Welcomes"]
-  = "Uvítání z Prùvodce";
-
-# include/tv_misc.php3, row 61
-$_m["mail body"]
-  = "tìlo zprávy";
-
-# include/tv_misc.php3, row 63
-$_m["From: mail header"]
-  = "From: hlavièka mailu";
-
-# include/tv_misc.php3, row 85, 86
-$_m["Wizard Templates"]
-  = "Šablony Prùvodce";
-
-# include/tv_misc.php3, row 110
-$_m["For help see FAQ: "]
-  = "Nápovìdu najdete ve FAQu: ";
-
-# include/um_gedit.php3, row 35
-$_m["It is impossible to add group to permission system"]
-  = "Nelze pøidat skupinu do systému";
-
-# include/um_gedit.php3, row 46
-$_m["Can't change group"]
-  = "Nelze zmìnit skupinu";
-
-# include/um_uedit.php3, row 67
-$_m["Can't change user"]
-  = "Nelze zmìnit data uivatele - LDAP Error";
-
-# include/um_util.php3, row 69
-$_m["Object"]
-  = "Objekt";
-
-# include/util.php3, row 1434
-# include/.#util.php3.1.123, row 1392
-$_m["Can't move image  %s to %s"]
-  = "";
-
-# include/util.php3, row 1441
-# include/.#util.php3.1.123, row 1399
-$_m["Can't copy image  %s to %s"]
-  = "";
-
-# include/.#perm_core.php3.1.22, row 439
-$_m["anonym"]
-  = "";
-
-# include/.#constants.php3.1.61, row 194
-# include/.#constants.php3.1.62, row 196
-# include/.#constants.php3.1.63, row 198
-# include/.#constants.php3.1.65, row 198
-$_m["Select Box with Presets"]
-  = "";
-
-# include/.#constants.php3.1.63, row 550
-$_m["Group by selections (some items \n"
-   ."                                         may be shown several times)"]
-  = "";
-
-# include/.#constants.php3.1.63, row 557
-$_m["Link to the .shtml page used\n"
-   ."                                        to create headline links."]
-  = "";
-
-# include/.#constants.php3.1.65, row 549
-$_m["Group by selections (some items may be shown several times)"]
-  = "";
-
-# include/.#constants.php3.1.65, row 555
-$_m["Link to the .shtml page used to create headline links."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 54
-$_m["Insert Function"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 56
-$_m["Text = don't modify"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 57
-$_m["Does not modify the value."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 59
-$_m["Boolean = store 0 or 1"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 61
-$_m["File = uploaded file"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 62
-$_m["Stores the uploaded file and a link to it, parameters only apply if type is image/something."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 64
-$_m["Mime types accepted"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 65
-$_m["Only files of matching mime types will be accepted"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 68
-$_m["Maximum image width"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 71
-$_m["Maximum image height"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 72
-$_m["The image will be resampled to be within these limits, while retaining aspect ratio."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 75
-$_m["Other fields"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 76
-$_m["List of other fields to receive this image, separated by ##"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 81
-$_m["User ID = always store current user ID"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 86
-$_m["Item IDs"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 88
-$_m["Now = always store current time"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 89
-$_m["Inserts the current time, no matter what the user sets."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 91, 190, 435
-$_m["Password and Change Password"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 94
-$_m["Stores value from a 'Password and Change Password' field type.\n"
-   ."           First prooves the new password matches the retyped new password,\n"
-   ."           and if so, MD5-encrypts the new password and stores it."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 103
-$_m["Default Value Type"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 105
-$_m["Text from 'Parameter'"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 106
-$_m["Text"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 108
-$_m["Date + 'Parameter' days"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 109
-$_m["Number of days"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 111
-$_m["User ID"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 115
-$_m["Now, i.e. current date"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 117
-$_m["Variable"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 118
-$_m["A dangerous function. Do not use."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 120
-$_m["Random string"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 121
-$_m["Random alphanumeric [A-Z0-9] string."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 123
-$_m["String length"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 126
-$_m["Field to check"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 128
-$_m["If you need a unique code, you must send the field ID,\n"
-   ."                  the function will then look into this field to ensure uniqueness."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 131, 183
-$_m["Slice only"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 133, 185
-$_m["Do you want to check for uniqueness this slice only\n"
-   ."                  or all slices?"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 140
-$_m["Input Validate Type"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 142
-$_m["No validation"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 144
-$_m["URL"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 148
-$_m["Number = positive integer number"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 150
-$_m["Id = 1-32 hexadecimal digits [0-9a-f]"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 152
-$_m["Date = store as date"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 154
-$_m["Bool = store as bool"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 156
-$_m["User = does nothing ???"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 158
-$_m["Unique = proove uniqueness"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 160
-$_m["Validates only if the value is not yet used. Useful e.g.\n"
-   ."        for emails or user names."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 162, 179
-$_m["Field ID"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 163, 180
-$_m["Field in which to look for matching values."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 166
-$_m["Scope"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 170
-$_m["<b>1</b> = This slice only.\n"
-   ."                <b>2</b> = All slices.<br>\n"
-   ."                <b>0</b> = Username, special: Checks uniqueness in reader management\n"
-   ."                slices and in the permission system. Always uses field ID %1"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 176
-$_m["Unique e-mail"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 177
-$_m["Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 194
-$_m["Validates the passwords do not differ when changing password.\n"
-   ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
-   ."        because the insert\n"
-   ."        function does the validation again before inserting the new password.</i>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 201
-$_m["Input Type"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 203
-$_m["Hierarchical constants"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 204
-$_m["A view with level boxes allows to choose constants."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 207
-$_m["Count of level boxes"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 210
-$_m["Box width"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 211
-$_m["Width in characters"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 214
-$_m["Size of target"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 215
-$_m["Lines in the target select box"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 218
-$_m["Horizontal"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 219
-$_m["Show levels horizontally"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 222
-$_m["First selectable"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 223
-$_m["First level which will have a Select button"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 226
-$_m["Level names"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 227
-$_m["Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 229
-$_m["Top level~Second level~Keyword"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 232
-$_m["Text area with 60 columns"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 234, 242
-$_m["row count"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 239
-$_m["Rich Edit Area"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 240
-$_m["Rich edit text area. This operates the same way as Text Area in browsers which don't support the Microsoft TriEdit library. In IE 5.0 and higher and in Netscape 4.76 and higher (after installing the necessary features) it uses the TriEdit to provide an incredibly powerful HTML editor.<br><br>\n"
-   ."Another possibility is to use the <b>iframe</b> version which should work in IE on Windows and Mac (set the 3rd parameter to \"iframe\").<br><br>\n"
-   ."The code for this editor is taken from the Wysiwyg open project (http://www.unica.edu/uicfreesoft/) and changed to fullfill our needs. See http://www.unica.edu/uicfreesoft/wysiwyg_web_edit/Readme_english.txt on details how to prepare Netscape.<br><br>\n"
-   ."The javascript code needed to provide the editor is saved in two HTML files, so that the user doesn't have to load it every time she reloads the Itemedit web page."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 246
-$_m["column count"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 250, 570
-$_m["type"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 251
-$_m["type: class (default) / iframe"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 253
-$_m["class"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 256
-$_m["A text field."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 258, 286
-$_m["max characters"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 259
-$_m["max count of characters entered (maxlength parameter)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 262, 290
-$_m["width"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 263
-$_m["width of the field in characters (size parameter)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 268
-$_m["A selectbox field with a values list.<br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice, usually with the f_v alias function)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 270, 294
-$_m["slice field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 271, 295
-$_m["field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 273, 297, 682
-$_m["category........"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 274, 298
-$_m["use name"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 275, 299
-$_m["if set (=1), then the name of selected constant is used, insted of the value. Default is 0"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 278
-$_m["show all"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 279
-$_m["used only for slices - if set (=1), then all items are shown (including expired and pending ones)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 284
-$_m["Text field with values names list. When you choose a name from the list, the appropriate value is printed in the text field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 287
-$_m["max count of characteres entered in the text field (maxlength parameter)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 291
-$_m["width of the text field in characters (size parameter)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 302
-$_m["adding"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 303
-$_m["adding the selected items to input field comma separated"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 306
-$_m["secondfield"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 307
-$_m["field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 309, 635
-$_m["source_href....."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 310
-$_m["add2constant"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 311
-$_m["if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 315
-$_m["Text Area with Presets"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 316
-$_m["Text area with values names list. When you choose a name from the list, the appropriate value is printed in the text area"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 318
-$_m["rows"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 319
-$_m["Textarea rows"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 322
-$_m["cols"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 323
-$_m["Text area columns"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 328
-$_m["Radio button group - the user may choose one value of the list. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 330, 365
-$_m["Columns"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 331, 366
-$_m["Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 334, 369
-$_m["Move right"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 335, 370
-$_m["Should the function move right or down to the next value?"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 340
-$_m["you can choose an interval from which the year will be offered"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 342
-$_m["Starting Year"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 343
-$_m["The (relative) start of the year interval"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 346
-$_m["Ending Year"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 347
-$_m["The (relative) end of the year interval"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 350
-$_m["Relative"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 351
-$_m["If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 354
-$_m["Show time"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 355
-$_m["show the time box? (1 means Yes, undefined means No)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 359
-$_m["Checkbox"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 360
-$_m["The field value will be represented by a checkbox."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 363
-$_m["Multiple choice checkbox group. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 375
-$_m["Multiple choice select box. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 377, 401, 417
-$_m["Row count"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 383
-$_m["File upload - a text field with the file find button"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 385
-$_m["Allowed file types"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 388
-$_m["image/*"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 389
-$_m["Label"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 390
-$_m["To be printed before the file upload field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 392
-$_m["File: "]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 393
-$_m["Hint"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 394
-$_m["appears beneath the file upload field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 396
-$_m["You can select a file ..."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 399
-$_m["List of items connected with the active one - by using the buttons Add and Delete you show a window, where you can search in the items list"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 402
-$_m["Row count in the list"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 405
-$_m["Buttons to show"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 406
-$_m["Defines, which buttons to show in item selection:<br>A - 'Add'<br>M - 'Add Mutual<br>B - 'Backward'.<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 408
-$_m["AMB"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 409
-$_m["Admin design"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 410
-$_m["If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 414
-$_m["Two Windows"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 415
-$_m["Two Windows. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 421
-$_m["Title of \"Offer\" selectbox"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 424
-$_m["Our offer"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 425
-$_m["Title of \"Selected\" selectbox"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 432
-$_m["The field value will be shown as &lt;input type='hidden'. You will probably set this filed by javascript trigger used on any other field."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 440
-$_m["Password input boxes allowing to send password (for password-protected items)\n"
-   ."        and to change password (including the \"Retype password\" box).<br><br>\n"
-   ."        When a user fills new password, it is checked against the retyped password,\n"
-   ."        MD5-encrypted so that nobody may learn it and stored in the database.<br><br>\n"
-   ."        If the field is not Required, shows a 'Delete Password' checkbox."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 442
-$_m["Field size"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 443
-$_m["Size of the three fields"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 446
-$_m["Label for Change Password"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 447
-$_m["Replaces the default 'Change Password'"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 449
-$_m["Change your password"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 450
-$_m["Label for Retype New Password"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 451
-$_m["Replaces the default \"Retype New Password\""]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 453
-$_m["Retype the new password"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 454
-$_m["Label for Delete Password"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 455
-$_m["Replaces the default \"Delete Password\""]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 457
-$_m["Delete password (set to empty)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 458
-$_m["Help for Change Password"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 459
-$_m["Help text under the Change Password box (default: no text)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 461
-$_m["To change password, enter the new password here and below"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 462
-$_m["Help for Retype New Password"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 463
-$_m["Help text under the Retype New Password box (default: no text)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 466
-$_m["Retype the new password exactly the same as you entered into \"Change Password\"."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 471
-$_m["This option hides the input field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 476
-$_m["How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 478
-$_m["null function"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 479
-$_m["prints nothing"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 480
-$_m["abstract"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 481
-$_m["prints abstract (if exists) or the beginning of the <b>fulltext</b>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 483
-$_m["length"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 484
-$_m["number of characters from the <b>fulltext</b> field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 487
-$_m["fulltext"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 488
-$_m["field id of fulltext field (like full_text.......)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 490, 517, 694
-$_m["full_text......."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 491
-$_m["paragraph"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 492
-$_m["take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\) if shorter then <b>length</b>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 495
-$_m["extended fulltext link"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 496
-$_m["Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 498, 581
-$_m["link only"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 499
-$_m["field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 501, 584
-$_m["link_only......."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 502
-$_m["url_field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 503
-$_m["field id if field, where external URL is stored (like hl_href.........)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 505
-$_m["hl_href........."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 506, 585
-$_m["redirect"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 507, 586
-$_m["The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 509, 588
-$_m["http#://www.ecn.cz/articles/solar.shtml"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 510
-$_m["text"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 511
-$_m["The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 514
-$_m["condition field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 515
-$_m["when the specified field hasn't any content, no link is printed, but only the <b>text</b>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 518, 655
-$_m["tag addition"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 519, 656
-$_m["additional text to the \"\\<a\\>\" tag"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 521, 658
-$_m["target=_blank"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 522, 589
-$_m["no session id"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 523, 590
-$_m["If 1, the session id (AA_SL_Session=...) is not added to url"]
+# include/imagefunc.php3, row 105
+$_m["ResampleImage unable to %1"]
   = "";
 
-# include/.#constants_param_wizard.php3.1.34, row 526, 529
-$_m["condition"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 527
-$_m["This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 530
-$_m["you may use \"!\" to reverse (negate) the condition"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 533, 639
-$_m["begin"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 534
-$_m["text to print before <i>field</i>, if condition is true"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 536
-$_m["Yes"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 537
-$_m["end"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 538
-$_m["text to print after <i>field</i>, if condition is true"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 541
-$_m["else"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 542
-$_m["text to print when condition is not satisfied"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 544
-$_m["No"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 545
-$_m["cond_field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 546
-$_m["field to compare with the <b>condition</b> - if not filled, <i>field</i> is used"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 549
-$_m["skip_the_field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 550
-$_m["if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 554
-$_m["This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 555
-$_m["1:Yes::No::1"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 556
-$_m["When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 557
-$_m["!:Email#:&nbsp;"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 558
-$_m["Print image height attribute, if <i>the field</i> is filled, nothing otherwise."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 559
-$_m["!:height="]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 560
-$_m["date"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 561
-$_m["prints date in a user defined format"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 563
-$_m["format"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 564
-$_m["PHP-like format - see <a href=\"http://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 566
-$_m["m-d-Y"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 567
-$_m["edit item"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 568
-$_m["_#EDITITEM used on admin page index.php3 for itemedit url"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 571
-$_m["disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 574
-$_m["return url"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 575
-$_m["Return url being called from, usually leave blank and allow default"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 577
-$_m["/mysite.shtml"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 578
-$_m["fulltext link"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 579
-$_m["Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\""]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 582
-$_m["field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 593
-$_m["image height"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 594
-$_m["An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". "]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 595
-$_m["print HTML multiple"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 596
-$_m["prints <i>the field</i> content depending on the html flag (escape html special characters or just print)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 598
-$_m["delimiter"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 599
-$_m["if specified, a field with multiple values is displayed with the values delimited by it"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 602
-$_m["image src"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 603
-$_m["prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. "]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 604
-$_m["image size"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 605
-$_m["prints <i>the field</i> as image width (height='xxx' width='yyy') empty string if cant work out, does not special case URLs from uploads directory, might do later! "]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 606
-$_m["expanded string"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 607
-$_m["expands the string in the parameter"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 609
-$_m["string to expand"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 610
-$_m["if specified then this string is expanded, if not specified then expands the contents of the field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 613
-$_m["substring with case change"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 614
-$_m["prints a part of <i>the field</i>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 616
-$_m["start"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 617
-$_m["position of substring start (0=first, 1=second, -1=last,-2=two from end)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 620
-$_m["count"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 621
-$_m["count of characters (0=until the end)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 624
-$_m["case"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 625
-$_m["upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 628
-$_m["Auto Update Checkbox"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 629
-$_m["linked field"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 630
-$_m["prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 632
-$_m["link URL"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 636
-$_m["e-mail or link"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 637
-$_m["mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag adition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 640
-$_m["text before the link"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 642
-$_m["e-mail"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 643
-$_m["field/text"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 644
-$_m["if this parameter is a field id, the field's content is used, else it is used verbatim"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 647
-$_m["else_field/text"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 648
-$_m["if <i>the field</i> is empty, only this text (or field content) is printed"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 651
-$_m["linktype"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 652
-$_m["mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 654
-$_m["href"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 659
-$_m["'New' sign"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 660
-$_m["prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 662
-$_m["time"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 663
-$_m["Time in minutes from current time."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 665
-$_m["1440"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 666
-$_m["newer text"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 667
-$_m["Text to be printed, if the date in <i>the filed</i> is newer than <i>current_time</i> - <b>time</b>."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 669
-$_m["NEW"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 670
-$_m["older text"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 671
-$_m["Text to be printed, if the date in <i>the filed</i> is older than <i>current_time</i> - <b>time</b>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 674
-$_m["id"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 675
-$_m["prints unpacked id (use it, if you watn to show 'item id' or 'slice id')"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 676
-$_m["text (blurb) from another slice"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 677
-$_m["prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specifield by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 679
-$_m["stringToMatch"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 680
-$_m["By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 683
-$_m["blurbSliceId"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 684
-$_m["unpacked slice id of the slice where the blurb text is stored"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 686
-$_m["41415f436f72655f4669656c64732e2e"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 687
-$_m["fieldToMatch"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 688
-$_m["field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 690
-$_m["headline........"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 691
-$_m["fieldToReturn"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 692
-$_m["field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 695
-$_m["RSS tag"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 696
-$_m["serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 697, 700, 794
-$_m["default"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 698
-$_m["prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 701
-$_m["default value"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 703
-$_m["javascript: window.alert('No source url specified')"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 704
-$_m["print HTML"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 705
-$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 707
-$_m["unalias string"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 708
-$_m["if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 710
-$_m["<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 711
-$_m["transformation"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 712
-$_m["Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_1</b>:<b>return_value_1</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 714, 722, 730, 738, 746, 754, 762, 770, 778, 786
-$_m["content"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 715, 723, 731, 739, 747, 755, 763, 771, 779, 787
-$_m["string for comparison with <i>the field</i> for following return value"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 718, 726, 734, 742, 750, 758, 766, 774, 782, 790
-$_m["return value"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 719, 727, 735, 743, 751, 759, 767, 775, 783, 791
-$_m["string to return if previous content matches - You can use field_id too"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 721, 729, 737, 745, 753, 761, 769, 777, 785, 793
-$_m["Environment"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 795
-$_m["if no content matches, use this string as return value"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 798
-$_m["user function"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 799
-$_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 801
-$_m["function"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 802
-$_m["name of the function in the include/usr_aliasfnc.php3 file"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 804
-$_m["usr_start_end_date_cz"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 805
-$_m["parameter"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 806
-$_m["a parameter passed to the function"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 809
-$_m["view"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 810
-$_m["allows to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows to display any view in place of the alias. It can be used for 'related stories' table or for dislaying content of related slice."]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 812
-$_m["complex parameter"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 813
-$_m["this parameter is the same as we use in view.php3 url parameter - see the FAQ"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 815
-$_m["vid=4&amp;cmd[23]=v-25"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 816
-$_m["image width"]
-  = "";
-
-# include/.#constants_param_wizard.php3.1.34, row 817
-$_m["An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". "]
-  = "";
+# include/imagefunc.php3, row 120
+$_m["Type not supported for resize"]
+  = "Typ není podporován pro zmìnu velikosti";
 
 # include/import_util.php3, row 320
 $_m["Error: Invalid directory"]
-  = "";
+  = "Error: Neplatnı adresáø";
 
 ?>

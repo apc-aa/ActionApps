@@ -2,7 +2,7 @@
 # $Id$
 # Language: EN
 # This file was created automatically by the Mini GetText environment
-# on 4.11.2003 13:25
+# on 17.2.2004 13:54
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -145,7 +145,7 @@ $_m["Now = always store current time"]
 $_m["Inserts the current time, no matter what the user sets."]
   = "";
 
-# include/constants_param_wizard.php3, row 91, 190, 443
+# include/constants_param_wizard.php3, row 91, 190, 465
 $_m["Password and Change Password"]
   = "";
 
@@ -391,8 +391,8 @@ $_m["Rich edit text area. This operates the same way as Text Area in browsers wh
 $_m["column count"]
   = "";
 
-# include/constants_param_wizard.php3, row 250, 578
-# doc/param_wizard_list.php3, row 95
+# include/constants_param_wizard.php3, row 250, 600
+# doc/param_wizard_list.php3, row 96
 $_m["type"]
   = "";
 
@@ -444,7 +444,7 @@ $_m["slice field"]
 $_m["field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)"]
   = "";
 
-# include/constants_param_wizard.php3, row 273, 297, 698
+# include/constants_param_wizard.php3, row 273, 297, 720
 $_m["category........"]
   = "";
 
@@ -496,7 +496,7 @@ $_m["secondfield"]
 $_m["field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"]
   = "";
 
-# include/constants_param_wizard.php3, row 309, 647
+# include/constants_param_wizard.php3, row 309, 669
 $_m["source_href....."]
   = "";
 
@@ -620,7 +620,7 @@ $_m["Multiple Selectbox"]
 $_m["Multiple choice select box. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
   = "";
 
-# include/constants_param_wizard.php3, row 377, 401, 425
+# include/constants_param_wizard.php3, row 377, 401, 447
 $_m["Row count"]
   = "";
 
@@ -712,39 +712,63 @@ $_m["Show move buttons"]
 $_m["Show buttons for moving items up and down"]
   = "";
 
-# include/constants_param_wizard.php3, row 422
-$_m["Two Windows"]
+# include/constants_param_wizard.php3, row 421
+$_m["Show headlines from selected bins"]
   = "";
 
-# include/constants_param_wizard.php3, row 423
-$_m["Two Windows. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
-  = "";
-
-# include/constants_param_wizard.php3, row 429
-$_m["Title of \"Offer\" selectbox"]
-  = "";
-
-# include/constants_param_wizard.php3, row 432
-$_m["Our offer"]
+# include/constants_param_wizard.php3, row 430
+$_m["To show headlines in related window from selected bins.<br>Use this values for bins:<br>active bin - '%1'<br>expired bin - '%2'<br>pending bin - '%3'<br>holding bin - '%4'<br>trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Valuefor this combination is counted like 1+2+4&nbsp;=&nbsp;7"]
   = "";
 
 # include/constants_param_wizard.php3, row 433
+$_m["Filtering conditions - unchangeable"]
+  = "";
+
+# include/constants_param_wizard.php3, row 434
+$_m["Conditions for filtering items in related items window. This conds user can't change."]
+  = "";
+
+# include/constants_param_wizard.php3, row 437
+$_m["Filtering conditions - changeable"]
+  = "";
+
+# include/constants_param_wizard.php3, row 438
+$_m["Conditions for filtering items in related items window. This conds user can change."]
+  = "";
+
+# include/constants_param_wizard.php3, row 444
+$_m["Two Windows"]
+  = "";
+
+# include/constants_param_wizard.php3, row 445
+$_m["Two Windows. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"]
+  = "";
+
+# include/constants_param_wizard.php3, row 451
+$_m["Title of \"Offer\" selectbox"]
+  = "";
+
+# include/constants_param_wizard.php3, row 454
+$_m["Our offer"]
+  = "";
+
+# include/constants_param_wizard.php3, row 455
 $_m["Title of \"Selected\" selectbox"]
   = "";
 
-# include/constants_param_wizard.php3, row 436
+# include/constants_param_wizard.php3, row 458
 $_m["Selected"]
   = "";
 
-# include/constants_param_wizard.php3, row 439
+# include/constants_param_wizard.php3, row 461
 $_m["Hidden field"]
   = "";
 
-# include/constants_param_wizard.php3, row 440
+# include/constants_param_wizard.php3, row 462
 $_m["The field value will be shown as &lt;input type='hidden'. You will probably set this filed by javascript trigger used on any other field."]
   = "";
 
-# include/constants_param_wizard.php3, row 448
+# include/constants_param_wizard.php3, row 470
 $_m["Password input boxes allowing to send password (for password-protected items)\n"
    ."        and to change password (including the \"Retype password\" box).<br><br>\n"
    ."        When a user fills new password, it is checked against the retyped password,\n"
@@ -752,823 +776,838 @@ $_m["Password input boxes allowing to send password (for password-protected item
    ."        If the field is not Required, shows a 'Delete Password' checkbox."]
   = "";
 
-# include/constants_param_wizard.php3, row 450
+# include/constants_param_wizard.php3, row 472
 $_m["Field size"]
   = "";
 
-# include/constants_param_wizard.php3, row 451
+# include/constants_param_wizard.php3, row 473
 $_m["Size of the three fields"]
   = "";
 
-# include/constants_param_wizard.php3, row 454
+# include/constants_param_wizard.php3, row 476
 $_m["Label for Change Password"]
   = "";
 
-# include/constants_param_wizard.php3, row 455
+# include/constants_param_wizard.php3, row 477
 $_m["Replaces the default 'Change Password'"]
   = "";
 
-# include/constants_param_wizard.php3, row 457
+# include/constants_param_wizard.php3, row 479
 $_m["Change your password"]
   = "";
 
-# include/constants_param_wizard.php3, row 458
+# include/constants_param_wizard.php3, row 480
 $_m["Label for Retype New Password"]
   = "";
 
-# include/constants_param_wizard.php3, row 459
+# include/constants_param_wizard.php3, row 481
 $_m["Replaces the default \"Retype New Password\""]
   = "";
 
-# include/constants_param_wizard.php3, row 461
+# include/constants_param_wizard.php3, row 483
 $_m["Retype the new password"]
   = "";
 
-# include/constants_param_wizard.php3, row 462
+# include/constants_param_wizard.php3, row 484
 $_m["Label for Delete Password"]
   = "";
 
-# include/constants_param_wizard.php3, row 463
+# include/constants_param_wizard.php3, row 485
 $_m["Replaces the default \"Delete Password\""]
   = "";
 
-# include/constants_param_wizard.php3, row 465
+# include/constants_param_wizard.php3, row 487
 $_m["Delete password (set to empty)"]
   = "";
 
-# include/constants_param_wizard.php3, row 466
+# include/constants_param_wizard.php3, row 488
 $_m["Help for Change Password"]
   = "";
 
-# include/constants_param_wizard.php3, row 467
+# include/constants_param_wizard.php3, row 489
 $_m["Help text under the Change Password box (default: no text)"]
   = "";
 
-# include/constants_param_wizard.php3, row 469
+# include/constants_param_wizard.php3, row 491
 $_m["To change password, enter the new password here and below"]
   = "";
 
-# include/constants_param_wizard.php3, row 470
+# include/constants_param_wizard.php3, row 492
 $_m["Help for Retype New Password"]
   = "";
 
-# include/constants_param_wizard.php3, row 471
+# include/constants_param_wizard.php3, row 493
 $_m["Help text under the Retype New Password box (default: no text)"]
   = "";
 
-# include/constants_param_wizard.php3, row 474
+# include/constants_param_wizard.php3, row 496
 $_m["Retype the new password exactly the same as you entered into \"Change Password\"."]
   = "";
 
-# include/constants_param_wizard.php3, row 478
+# include/constants_param_wizard.php3, row 500
 $_m["Do not show"]
   = "";
 
-# include/constants_param_wizard.php3, row 479
+# include/constants_param_wizard.php3, row 501
 $_m["This option hides the input field"]
   = "";
 
-# include/constants_param_wizard.php3, row 483
+# include/constants_param_wizard.php3, row 505
 $_m["Function"]
   = "";
 
-# include/constants_param_wizard.php3, row 484
+# include/constants_param_wizard.php3, row 506
 $_m["How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen."]
   = "";
 
-# include/constants_param_wizard.php3, row 486
+# include/constants_param_wizard.php3, row 508
 $_m["null function"]
   = "";
 
-# include/constants_param_wizard.php3, row 487
+# include/constants_param_wizard.php3, row 509
 $_m["prints nothing"]
   = "";
 
-# include/constants_param_wizard.php3, row 488
+# include/constants_param_wizard.php3, row 510
 $_m["abstract"]
   = "";
 
-# include/constants_param_wizard.php3, row 489
+# include/constants_param_wizard.php3, row 511
 $_m["prints abstract (if exists) or the beginning of the <b>fulltext</b>"]
   = "";
 
-# include/constants_param_wizard.php3, row 491
+# include/constants_param_wizard.php3, row 513
 $_m["length"]
   = "";
 
-# include/constants_param_wizard.php3, row 492
+# include/constants_param_wizard.php3, row 514
 $_m["number of characters from the <b>fulltext</b> field"]
   = "";
 
-# include/constants_param_wizard.php3, row 495
+# include/constants_param_wizard.php3, row 517
 $_m["fulltext"]
   = "";
 
-# include/constants_param_wizard.php3, row 496
+# include/constants_param_wizard.php3, row 518
 $_m["field id of fulltext field (like full_text.......)"]
   = "";
 
-# include/constants_param_wizard.php3, row 498, 525, 710
+# include/constants_param_wizard.php3, row 520, 547, 732
 $_m["full_text......."]
   = "";
 
-# include/constants_param_wizard.php3, row 499
+# include/constants_param_wizard.php3, row 521
 $_m["paragraph"]
   = "";
 
-# include/constants_param_wizard.php3, row 500
+# include/constants_param_wizard.php3, row 522
 $_m["take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\) if shorter then <b>length</b>"]
   = "";
 
-# include/constants_param_wizard.php3, row 503
+# include/constants_param_wizard.php3, row 525
 $_m["extended fulltext link"]
   = "";
 
-# include/constants_param_wizard.php3, row 504
+# include/constants_param_wizard.php3, row 526
 $_m["Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>."]
   = "";
 
-# include/constants_param_wizard.php3, row 506, 589
+# include/constants_param_wizard.php3, row 528, 611
 $_m["link only"]
   = "";
 
-# include/constants_param_wizard.php3, row 507
+# include/constants_param_wizard.php3, row 529
 $_m["field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
   = "";
 
-# include/constants_param_wizard.php3, row 509, 592
+# include/constants_param_wizard.php3, row 531, 614
 $_m["link_only......."]
   = "";
 
-# include/constants_param_wizard.php3, row 510
+# include/constants_param_wizard.php3, row 532
 $_m["url_field"]
   = "";
 
-# include/constants_param_wizard.php3, row 511
+# include/constants_param_wizard.php3, row 533
 $_m["field id if field, where external URL is stored (like hl_href.........)"]
   = "";
 
-# include/constants_param_wizard.php3, row 513
+# include/constants_param_wizard.php3, row 535
 $_m["hl_href........."]
   = "";
 
-# include/constants_param_wizard.php3, row 514, 593
+# include/constants_param_wizard.php3, row 536, 615
 $_m["redirect"]
   = "";
 
-# include/constants_param_wizard.php3, row 515, 594
+# include/constants_param_wizard.php3, row 537, 616
 $_m["The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php3.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)."]
   = "";
 
-# include/constants_param_wizard.php3, row 517, 596
+# include/constants_param_wizard.php3, row 539, 618
 $_m["http#://www.ecn.cz/articles/solar.shtml"]
   = "";
 
-# include/constants_param_wizard.php3, row 518
+# include/constants_param_wizard.php3, row 540
 $_m["text"]
   = "";
 
-# include/constants_param_wizard.php3, row 519
+# include/constants_param_wizard.php3, row 541
 $_m["The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim"]
   = "";
 
-# include/constants_param_wizard.php3, row 522
+# include/constants_param_wizard.php3, row 544
 $_m["condition field"]
   = "";
 
-# include/constants_param_wizard.php3, row 523
+# include/constants_param_wizard.php3, row 545
 $_m["when the specified field hasn't any content, no link is printed, but only the <b>text</b>"]
   = "";
 
-# include/constants_param_wizard.php3, row 526, 667
+# include/constants_param_wizard.php3, row 548, 689
 $_m["tag addition"]
   = "";
 
-# include/constants_param_wizard.php3, row 527, 668
+# include/constants_param_wizard.php3, row 549, 690
 $_m["additional text to the \"\\<a\\>\" tag"]
   = "";
 
-# include/constants_param_wizard.php3, row 529, 670
+# include/constants_param_wizard.php3, row 551, 692
 $_m["target=_blank"]
   = "";
 
-# include/constants_param_wizard.php3, row 530, 597
+# include/constants_param_wizard.php3, row 552, 619
 $_m["no session id"]
   = "";
 
-# include/constants_param_wizard.php3, row 531, 598
+# include/constants_param_wizard.php3, row 553, 620
 $_m["If 1, the session id (AA_SL_Session=...) is not added to url"]
   = "";
 
-# include/constants_param_wizard.php3, row 534, 537
+# include/constants_param_wizard.php3, row 556, 559
 $_m["condition"]
   = "";
 
-# include/constants_param_wizard.php3, row 535
+# include/constants_param_wizard.php3, row 557
 $_m["This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it."]
   = "";
 
-# include/constants_param_wizard.php3, row 538
+# include/constants_param_wizard.php3, row 560
 $_m["you may use \"!\" to reverse (negate) the condition"]
   = "";
 
-# include/constants_param_wizard.php3, row 541, 651
+# include/constants_param_wizard.php3, row 563, 673
 $_m["begin"]
   = "";
 
-# include/constants_param_wizard.php3, row 542
+# include/constants_param_wizard.php3, row 564
 $_m["text to print before <i>field</i>, if condition is true"]
   = "";
 
-# include/constants_param_wizard.php3, row 544
+# include/constants_param_wizard.php3, row 566
 $_m["Yes"]
   = "";
 
-# include/constants_param_wizard.php3, row 545
+# include/constants_param_wizard.php3, row 567
 $_m["end"]
   = "";
 
-# include/constants_param_wizard.php3, row 546
+# include/constants_param_wizard.php3, row 568
 $_m["text to print after <i>field</i>, if condition is true"]
   = "";
 
-# include/constants_param_wizard.php3, row 549
+# include/constants_param_wizard.php3, row 571
 $_m["else"]
   = "";
 
-# include/constants_param_wizard.php3, row 550
+# include/constants_param_wizard.php3, row 572
 $_m["text to print when condition is not satisfied"]
   = "";
 
-# include/constants_param_wizard.php3, row 552
+# include/constants_param_wizard.php3, row 574
 $_m["No"]
   = "";
 
-# include/constants_param_wizard.php3, row 553
+# include/constants_param_wizard.php3, row 575
 $_m["cond_field"]
   = "";
 
-# include/constants_param_wizard.php3, row 554
+# include/constants_param_wizard.php3, row 576
 $_m["field to compare with the <b>condition</b> - if not filled, <i>field</i> is used"]
   = "";
 
-# include/constants_param_wizard.php3, row 557
+# include/constants_param_wizard.php3, row 579
 $_m["skip_the_field"]
   = "";
 
-# include/constants_param_wizard.php3, row 558
+# include/constants_param_wizard.php3, row 580
 $_m["if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)"]
   = "";
 
-# include/constants_param_wizard.php3, row 562
+# include/constants_param_wizard.php3, row 584
 $_m["This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content"]
   = "";
 
-# include/constants_param_wizard.php3, row 563
+# include/constants_param_wizard.php3, row 585
 $_m["1:Yes::No::1"]
   = "";
 
-# include/constants_param_wizard.php3, row 564
+# include/constants_param_wizard.php3, row 586
 $_m["When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing"]
   = "";
 
-# include/constants_param_wizard.php3, row 565
+# include/constants_param_wizard.php3, row 587
 $_m["!:Email#:&nbsp;"]
   = "";
 
-# include/constants_param_wizard.php3, row 566
+# include/constants_param_wizard.php3, row 588
 $_m["Print image height attribute, if <i>the field</i> is filled, nothing otherwise."]
   = "";
 
-# include/constants_param_wizard.php3, row 567
+# include/constants_param_wizard.php3, row 589
 $_m["!:height="]
   = "";
 
-# include/constants_param_wizard.php3, row 568
+# include/constants_param_wizard.php3, row 590
 $_m["date"]
   = "";
 
-# include/constants_param_wizard.php3, row 569
+# include/constants_param_wizard.php3, row 591
 $_m["prints date in a user defined format"]
   = "";
 
-# include/constants_param_wizard.php3, row 571
+# include/constants_param_wizard.php3, row 593
 $_m["format"]
   = "";
 
-# include/constants_param_wizard.php3, row 572
+# include/constants_param_wizard.php3, row 594
 $_m["PHP-like format - see <a href=\"http://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>"]
   = "";
 
-# include/constants_param_wizard.php3, row 574
+# include/constants_param_wizard.php3, row 596
 $_m["m-d-Y"]
   = "";
 
-# include/constants_param_wizard.php3, row 575
+# include/constants_param_wizard.php3, row 597
 $_m["edit item"]
   = "";
 
-# include/constants_param_wizard.php3, row 576
+# include/constants_param_wizard.php3, row 598
 $_m["_#EDITITEM used on admin page index.php3 for itemedit url"]
   = "";
 
-# include/constants_param_wizard.php3, row 579
+# include/constants_param_wizard.php3, row 601
 $_m["disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item"]
   = "";
 
-# include/constants_param_wizard.php3, row 581
+# include/constants_param_wizard.php3, row 603
 $_m["edit"]
   = "";
 
-# include/constants_param_wizard.php3, row 582
+# include/constants_param_wizard.php3, row 604
 $_m["return url"]
   = "";
 
-# include/constants_param_wizard.php3, row 583
+# include/constants_param_wizard.php3, row 605
 $_m["Return url being called from, usually leave blank and allow default"]
   = "";
 
-# include/constants_param_wizard.php3, row 585
+# include/constants_param_wizard.php3, row 607
 $_m["/mysite.shtml"]
   = "";
 
-# include/constants_param_wizard.php3, row 586
+# include/constants_param_wizard.php3, row 608
 $_m["fulltext link"]
   = "";
 
-# include/constants_param_wizard.php3, row 587
+# include/constants_param_wizard.php3, row 609
 $_m["Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\""]
   = "";
 
-# include/constants_param_wizard.php3, row 590
+# include/constants_param_wizard.php3, row 612
 $_m["field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)."]
   = "";
 
-# include/constants_param_wizard.php3, row 601
+# include/constants_param_wizard.php3, row 623
 $_m["image height"]
   = "";
 
-# include/constants_param_wizard.php3, row 602
+# include/constants_param_wizard.php3, row 624
 $_m["An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". "]
   = "";
 
-# include/constants_param_wizard.php3, row 603
+# include/constants_param_wizard.php3, row 625
 $_m["print HTML multiple"]
   = "";
 
-# include/constants_param_wizard.php3, row 604
+# include/constants_param_wizard.php3, row 626
 $_m["prints <i>the field</i> content depending on the html flag (escape html special characters or just print)"]
   = "";
 
-# include/constants_param_wizard.php3, row 606
+# include/constants_param_wizard.php3, row 628
 $_m["delimiter"]
   = "";
 
-# include/constants_param_wizard.php3, row 607
+# include/constants_param_wizard.php3, row 629
 $_m["if specified, a field with multiple values is displayed with the values delimited by it"]
   = "";
 
-# include/constants_param_wizard.php3, row 610
+# include/constants_param_wizard.php3, row 632
 $_m["image src"]
   = "";
 
-# include/constants_param_wizard.php3, row 611
+# include/constants_param_wizard.php3, row 633
 $_m["prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. "]
   = "";
 
-# include/constants_param_wizard.php3, row 612
+# include/constants_param_wizard.php3, row 634
 $_m["image size"]
   = "";
 
-# include/constants_param_wizard.php3, row 613
+# include/constants_param_wizard.php3, row 635
 $_m["prints <i>the field</i> as image width (height='xxx' width='yyy') empty string if cant work out, does not special case URLs from uploads directory, might do later! "]
   = "";
 
-# include/constants_param_wizard.php3, row 614
+# include/constants_param_wizard.php3, row 636
 $_m["expanded string"]
   = "";
 
-# include/constants_param_wizard.php3, row 615
+# include/constants_param_wizard.php3, row 637
 $_m["expands the string in the parameter"]
   = "";
 
-# include/constants_param_wizard.php3, row 617
+# include/constants_param_wizard.php3, row 639
 $_m["string to expand"]
   = "";
 
-# include/constants_param_wizard.php3, row 618
+# include/constants_param_wizard.php3, row 640
 $_m["if specified then this string is expanded, if not specified then expands the contents of the field"]
   = "";
 
-# include/constants_param_wizard.php3, row 621
+# include/constants_param_wizard.php3, row 643
 $_m["substring with case change"]
   = "";
 
-# include/constants_param_wizard.php3, row 622
+# include/constants_param_wizard.php3, row 644
 $_m["prints a part of <i>the field</i>"]
   = "";
 
-# include/constants_param_wizard.php3, row 624
+# include/constants_param_wizard.php3, row 646
 $_m["start"]
   = "";
 
-# include/constants_param_wizard.php3, row 625
+# include/constants_param_wizard.php3, row 647
 $_m["position of substring start (0=first, 1=second, -1=last,-2=two from end)"]
   = "";
 
-# include/constants_param_wizard.php3, row 628
+# include/constants_param_wizard.php3, row 650
 $_m["count"]
   = "";
 
-# include/constants_param_wizard.php3, row 629
+# include/constants_param_wizard.php3, row 651
 $_m["count of characters (0=until the end)"]
   = "";
 
-# include/constants_param_wizard.php3, row 632
+# include/constants_param_wizard.php3, row 654
 $_m["case"]
   = "";
 
-# include/constants_param_wizard.php3, row 633
+# include/constants_param_wizard.php3, row 655
 $_m["upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change"]
   = "";
 
-# include/constants_param_wizard.php3, row 636
+# include/constants_param_wizard.php3, row 658
 $_m["add string"]
   = "";
 
-# include/constants_param_wizard.php3, row 637
+# include/constants_param_wizard.php3, row 659
 $_m["if string is shorted, <i>add string</i> is appended to the string (probably something like [...])"]
   = "";
 
-# include/constants_param_wizard.php3, row 640
+# include/constants_param_wizard.php3, row 662
 $_m["Auto Update Checkbox"]
   = "";
 
-# include/constants_param_wizard.php3, row 641
+# include/constants_param_wizard.php3, row 663
 $_m["linked field"]
   = "";
 
-# include/constants_param_wizard.php3, row 642
+# include/constants_param_wizard.php3, row 664
 $_m["prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>"]
   = "";
 
-# include/constants_param_wizard.php3, row 644
+# include/constants_param_wizard.php3, row 666
 $_m["link URL"]
   = "";
 
-# include/constants_param_wizard.php3, row 648
+# include/constants_param_wizard.php3, row 670
 $_m["e-mail or link"]
   = "";
 
-# include/constants_param_wizard.php3, row 649
+# include/constants_param_wizard.php3, row 671
 $_m["mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag adition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>."]
   = "";
 
-# include/constants_param_wizard.php3, row 652
+# include/constants_param_wizard.php3, row 674
 $_m["text before the link"]
   = "";
 
-# include/constants_param_wizard.php3, row 654
+# include/constants_param_wizard.php3, row 676
 $_m["e-mail"]
   = "";
 
-# include/constants_param_wizard.php3, row 655
+# include/constants_param_wizard.php3, row 677
 $_m["field/text"]
   = "";
 
-# include/constants_param_wizard.php3, row 656
+# include/constants_param_wizard.php3, row 678
 $_m["if this parameter is a field id, the field's content is used, else it is used verbatim"]
   = "";
 
-# include/constants_param_wizard.php3, row 659
+# include/constants_param_wizard.php3, row 681
 $_m["else_field/text"]
   = "";
 
-# include/constants_param_wizard.php3, row 660
+# include/constants_param_wizard.php3, row 682
 $_m["if <i>the field</i> is empty, only this text (or field content) is printed"]
   = "";
 
-# include/constants_param_wizard.php3, row 663
+# include/constants_param_wizard.php3, row 685
 $_m["linktype"]
   = "";
 
-# include/constants_param_wizard.php3, row 664
+# include/constants_param_wizard.php3, row 686
 $_m["mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter"]
   = "";
 
-# include/constants_param_wizard.php3, row 666
+# include/constants_param_wizard.php3, row 688
 $_m["href"]
   = "";
 
-# include/constants_param_wizard.php3, row 671
+# include/constants_param_wizard.php3, row 693
 $_m["hide email"]
   = "";
 
-# include/constants_param_wizard.php3, row 672
+# include/constants_param_wizard.php3, row 694
 $_m["if 1 then hide email from spam robots. Default is 0."]
   = "";
 
-# include/constants_param_wizard.php3, row 675
+# include/constants_param_wizard.php3, row 697
 $_m["'New' sign"]
   = "";
 
-# include/constants_param_wizard.php3, row 676
+# include/constants_param_wizard.php3, row 698
 $_m["prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time."]
   = "";
 
-# include/constants_param_wizard.php3, row 678
+# include/constants_param_wizard.php3, row 700
 $_m["time"]
   = "";
 
-# include/constants_param_wizard.php3, row 679
+# include/constants_param_wizard.php3, row 701
 $_m["Time in minutes from current time."]
   = "";
 
-# include/constants_param_wizard.php3, row 681
+# include/constants_param_wizard.php3, row 703
 $_m["1440"]
   = "";
 
-# include/constants_param_wizard.php3, row 682
+# include/constants_param_wizard.php3, row 704
 $_m["newer text"]
   = "";
 
-# include/constants_param_wizard.php3, row 683
+# include/constants_param_wizard.php3, row 705
 $_m["Text to be printed, if the date in <i>the filed</i> is newer than <i>current_time</i> - <b>time</b>."]
   = "";
 
-# include/constants_param_wizard.php3, row 685
+# include/constants_param_wizard.php3, row 707
 $_m["NEW"]
   = "";
 
-# include/constants_param_wizard.php3, row 686
+# include/constants_param_wizard.php3, row 708
 $_m["older text"]
   = "";
 
-# include/constants_param_wizard.php3, row 687
+# include/constants_param_wizard.php3, row 709
 $_m["Text to be printed, if the date in <i>the filed</i> is older than <i>current_time</i> - <b>time</b>"]
   = "";
 
-# include/constants_param_wizard.php3, row 689
+# include/constants_param_wizard.php3, row 711, 759
 $_m[""]
   = "";
 
-# include/constants_param_wizard.php3, row 690
+# include/constants_param_wizard.php3, row 712
 $_m["id"]
   = "";
 
-# include/constants_param_wizard.php3, row 691
+# include/constants_param_wizard.php3, row 713
 $_m["prints unpacked id (use it, if you watn to show 'item id' or 'slice id')"]
   = "";
 
-# include/constants_param_wizard.php3, row 692
+# include/constants_param_wizard.php3, row 714
 $_m["text (blurb) from another slice"]
   = "";
 
-# include/constants_param_wizard.php3, row 693
+# include/constants_param_wizard.php3, row 715
 $_m["prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specifield by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>."]
   = "";
 
-# include/constants_param_wizard.php3, row 695
+# include/constants_param_wizard.php3, row 717
 $_m["stringToMatch"]
   = "";
 
-# include/constants_param_wizard.php3, row 696
+# include/constants_param_wizard.php3, row 718
 $_m["By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text."]
   = "";
 
-# include/constants_param_wizard.php3, row 699
+# include/constants_param_wizard.php3, row 721
 $_m["blurbSliceId"]
   = "";
 
-# include/constants_param_wizard.php3, row 700
+# include/constants_param_wizard.php3, row 722
 $_m["unpacked slice id of the slice where the blurb text is stored"]
   = "";
 
-# include/constants_param_wizard.php3, row 702
+# include/constants_param_wizard.php3, row 724
 $_m["41415f436f72655f4669656c64732e2e"]
   = "";
 
-# include/constants_param_wizard.php3, row 703
+# include/constants_param_wizard.php3, row 725
 $_m["fieldToMatch"]
   = "";
 
-# include/constants_param_wizard.php3, row 704
+# include/constants_param_wizard.php3, row 726
 $_m["field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>"]
   = "";
 
-# include/constants_param_wizard.php3, row 706
+# include/constants_param_wizard.php3, row 728
 $_m["headline........"]
   = "";
 
-# include/constants_param_wizard.php3, row 707
+# include/constants_param_wizard.php3, row 729
 $_m["fieldToReturn"]
   = "";
 
-# include/constants_param_wizard.php3, row 708
+# include/constants_param_wizard.php3, row 730
 $_m["field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)"]
   = "";
 
-# include/constants_param_wizard.php3, row 711
+# include/constants_param_wizard.php3, row 733
 $_m["RSS tag"]
   = "";
 
-# include/constants_param_wizard.php3, row 712
+# include/constants_param_wizard.php3, row 734
 $_m["serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags."]
   = "";
 
-# include/constants_param_wizard.php3, row 713, 716, 810
+# include/constants_param_wizard.php3, row 735, 738, 843
 $_m["default"]
   = "";
 
-# include/constants_param_wizard.php3, row 714
+# include/constants_param_wizard.php3, row 736
 $_m["prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>."]
   = "";
 
-# include/constants_param_wizard.php3, row 717
+# include/constants_param_wizard.php3, row 739
 $_m["default value"]
   = "";
 
-# include/constants_param_wizard.php3, row 719
+# include/constants_param_wizard.php3, row 741
 $_m["javascript: window.alert('No source url specified')"]
   = "";
 
-# include/constants_param_wizard.php3, row 720
-$_m["print HTML"]
+# include/constants_param_wizard.php3, row 742
+$_m["print fied"]
   = "";
 
-# include/constants_param_wizard.php3, row 721
-$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too. Obviously this function is used for fultexts.)"]
+# include/constants_param_wizard.php3, row 743
+$_m["prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)"]
   = "";
 
-# include/constants_param_wizard.php3, row 723
+# include/constants_param_wizard.php3, row 745
 $_m["unalias string"]
   = "";
 
-# include/constants_param_wizard.php3, row 724
+# include/constants_param_wizard.php3, row 746
 $_m["if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string"]
   = "";
 
-# include/constants_param_wizard.php3, row 726
+# include/constants_param_wizard.php3, row 748
 $_m["<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>"]
   = "";
 
-# include/constants_param_wizard.php3, row 727
+# include/constants_param_wizard.php3, row 749
+$_m["output modify"]
+  = "";
+
+# include/constants_param_wizard.php3, row 757
+$_m["You can use some output modifications:<br>\n"
+   ."                   &nbsp; - [<i>empty</i>] - no modification<br>\n"
+   ."                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>\n"
+   ."                   &nbsp; - <i>urlencode</i> - URL-encodes string (see <a href=\"http://php.net/urlencode\">urlencode<a> PHP function)<br>\n"
+   ."                   &nbsp; - <i>safe</i> - converts special characters to HTML entities (see <a href=\"http://php.net/htmlspecialchars\">htmlspecialchars<a> PHP function)<br>\n"
+   ."                   &nbsp; - <i>javascript</i> - escape ' (replace ' with \\')\n"
+   ."                   &nbsp; - <i>striptags</i>  - strip HTML and PHP tags from the string\n"
+   ."                   "]
+  = "";
+
+# include/constants_param_wizard.php3, row 760
 $_m["transformation"]
   = "";
 
-# include/constants_param_wizard.php3, row 728
+# include/constants_param_wizard.php3, row 761
 $_m["Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_1</b>:<b>return_value_1</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>."]
   = "";
 
-# include/constants_param_wizard.php3, row 730, 738, 746, 754, 762, 770, 778, 786, 794, 802
+# include/constants_param_wizard.php3, row 763, 771, 779, 787, 795, 803, 811, 819, 827, 835
 $_m["content"]
   = "";
 
-# include/constants_param_wizard.php3, row 731, 739, 747, 755, 763, 771, 779, 787, 795, 803
+# include/constants_param_wizard.php3, row 764, 772, 780, 788, 796, 804, 812, 820, 828, 836
 $_m["string for comparison with <i>the field</i> for following return value"]
   = "";
 
-# include/constants_param_wizard.php3, row 734, 742, 750, 758, 766, 774, 782, 790, 798, 806
+# include/constants_param_wizard.php3, row 767, 775, 783, 791, 799, 807, 815, 823, 831, 839
 $_m["return value"]
   = "";
 
-# include/constants_param_wizard.php3, row 735, 743, 751, 759, 767, 775, 783, 791, 799, 807
+# include/constants_param_wizard.php3, row 768, 776, 784, 792, 800, 808, 816, 824, 832, 840
 $_m["string to return if previous content matches - You can use field_id too"]
   = "";
 
-# include/constants_param_wizard.php3, row 737, 745, 753, 761, 769, 777, 785, 793, 801, 809
+# include/constants_param_wizard.php3, row 770, 778, 786, 794, 802, 810, 818, 826, 834, 842
 $_m["Environment"]
   = "";
 
-# include/constants_param_wizard.php3, row 811
+# include/constants_param_wizard.php3, row 844
 $_m["if no content matches, use this string as return value"]
   = "";
 
-# include/constants_param_wizard.php3, row 814
+# include/constants_param_wizard.php3, row 847
 $_m["user function"]
   = "";
 
-# include/constants_param_wizard.php3, row 815
+# include/constants_param_wizard.php3, row 848
 $_m["calls a user defined function (see How to create new aliases in <a href='http://apc-aa.sourceforge.net/faq/#aliases'>FAQ</a>)"]
   = "";
 
-# include/constants_param_wizard.php3, row 817
+# include/constants_param_wizard.php3, row 850
 $_m["function"]
   = "";
 
-# include/constants_param_wizard.php3, row 818
+# include/constants_param_wizard.php3, row 851
 $_m["name of the function in the include/usr_aliasfnc.php3 file"]
   = "";
 
-# include/constants_param_wizard.php3, row 820
+# include/constants_param_wizard.php3, row 853
 $_m["usr_start_end_date_cz"]
   = "";
 
-# include/constants_param_wizard.php3, row 821
+# include/constants_param_wizard.php3, row 854
 $_m["parameter"]
   = "";
 
-# include/constants_param_wizard.php3, row 822
+# include/constants_param_wizard.php3, row 855
 $_m["a parameter passed to the function"]
   = "";
 
-# include/constants_param_wizard.php3, row 825
+# include/constants_param_wizard.php3, row 858
 $_m["view"]
   = "";
 
-# include/constants_param_wizard.php3, row 826
+# include/constants_param_wizard.php3, row 859
 $_m["allows to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows to display any view in place of the alias. It can be used for 'related stories' table or for dislaying content of related slice."]
   = "";
 
-# include/constants_param_wizard.php3, row 828
+# include/constants_param_wizard.php3, row 861
 $_m["complex parameter"]
   = "";
 
-# include/constants_param_wizard.php3, row 829
+# include/constants_param_wizard.php3, row 862
 $_m["this parameter is the same as we use in view.php3 url parameter - see the FAQ"]
   = "";
 
-# include/constants_param_wizard.php3, row 831
+# include/constants_param_wizard.php3, row 864
 $_m["vid=4&amp;cmd[23]=v-25"]
   = "";
 
-# include/constants_param_wizard.php3, row 832
+# include/constants_param_wizard.php3, row 865
 $_m["image width"]
   = "";
 
-# include/constants_param_wizard.php3, row 833
+# include/constants_param_wizard.php3, row 866
 $_m["An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". "]
   = "";
 
-# include/constants_param_wizard.php3, row 838
+# include/constants_param_wizard.php3, row 871
 $_m["Transformation action"]
   = "";
 
-# include/constants_param_wizard.php3, row 840
+# include/constants_param_wizard.php3, row 873
 $_m["Store"]
   = "";
 
-# include/constants_param_wizard.php3, row 841
+# include/constants_param_wizard.php3, row 874
 $_m["Simply store a value from the input field"]
   = "";
 
-# include/constants_param_wizard.php3, row 845
+# include/constants_param_wizard.php3, row 878
 $_m["Remove string"]
   = "";
 
-# include/constants_param_wizard.php3, row 846
+# include/constants_param_wizard.php3, row 879
 $_m["Remove all occurences of a string from the input field."]
   = "";
 
-# include/constants_param_wizard.php3, row 848, 866, 873
+# include/constants_param_wizard.php3, row 881, 899, 906
 $_m["string parameter"]
   = "";
 
-# include/constants_param_wizard.php3, row 849
+# include/constants_param_wizard.php3, row 882
 $_m["Removed string"]
   = "";
 
-# include/constants_param_wizard.php3, row 853
+# include/constants_param_wizard.php3, row 886
 $_m["Format date"]
   = "";
 
-# include/constants_param_wizard.php3, row 854
+# include/constants_param_wizard.php3, row 887
 $_m["Parse the date in the input field expected to be in English date format. In case of error, the transformation fails"]
   = "";
 
-# include/constants_param_wizard.php3, row 858
+# include/constants_param_wizard.php3, row 891
 $_m["Add http prefix"]
   = "";
 
-# include/constants_param_wizard.php3, row 859
+# include/constants_param_wizard.php3, row 892
 $_m["Adds 'http://' prefix to the field if not beginning with 'http://' and not empty."]
   = "";
 
-# include/constants_param_wizard.php3, row 863
+# include/constants_param_wizard.php3, row 896
 $_m["Store parameter"]
   = "";
 
-# include/constants_param_wizard.php3, row 864
+# include/constants_param_wizard.php3, row 897
 $_m["Store parameter instead of the input field"]
   = "";
 
-# include/constants_param_wizard.php3, row 870
+# include/constants_param_wizard.php3, row 903
 $_m["Split input field by string"]
   = "";
 
-# include/constants_param_wizard.php3, row 871
+# include/constants_param_wizard.php3, row 904
 $_m["Split input field by string parameter and store the result as multi-value."]
   = "";
 
-# include/constants_param_wizard.php3, row 874
+# include/constants_param_wizard.php3, row 907
 $_m["string which separates the values of the input field"]
   = "";
 
-# include/constants_param_wizard.php3, row 879
+# include/constants_param_wizard.php3, row 912
 $_m["Store default value"]
   = "";
 
-# include/constants_param_wizard.php3, row 892
+# include/constants_param_wizard.php3, row 925
 $_m["Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
    ."    <table>\n"
    ."        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>\n"
@@ -1588,51 +1627,51 @@ $_m["Store these default values for the following output fields. The other outpu
 $_m["Param Wizard Summary"]
   = "";
 
-# doc/param_wizard_list.php3, row 44
+# doc/param_wizard_list.php3, row 45
 $_m["Choose a Parameter Wizard"]
   = "";
 
-# doc/param_wizard_list.php3, row 53, 70
+# doc/param_wizard_list.php3, row 54, 71
 $_m["Go"]
   = "";
 
-# doc/param_wizard_list.php3, row 62
+# doc/param_wizard_list.php3, row 63
 $_m["Change to: "]
   = "";
 
-# doc/param_wizard_list.php3, row 77
+# doc/param_wizard_list.php3, row 78
 $_m["TOP"]
   = "";
 
-# doc/param_wizard_list.php3, row 91
+# doc/param_wizard_list.php3, row 92
 $_m["Parameters:"]
   = "";
 
-# doc/param_wizard_list.php3, row 94
+# doc/param_wizard_list.php3, row 95
 $_m["name"]
   = "";
 
-# doc/param_wizard_list.php3, row 96
+# doc/param_wizard_list.php3, row 97
 $_m["description"]
   = "";
 
-# doc/param_wizard_list.php3, row 97
+# doc/param_wizard_list.php3, row 98
 $_m["example"]
   = "";
 
-# doc/param_wizard_list.php3, row 103
+# doc/param_wizard_list.php3, row 104
 $_m["integer number"]
   = "";
 
-# doc/param_wizard_list.php3, row 104
+# doc/param_wizard_list.php3, row 105
 $_m["any text"]
   = "";
 
-# doc/param_wizard_list.php3, row 105
+# doc/param_wizard_list.php3, row 106
 $_m["field id"]
   = "";
 
-# doc/param_wizard_list.php3, row 106
+# doc/param_wizard_list.php3, row 107
 $_m["boolean: 0=false,1=true"]
   = "";
 

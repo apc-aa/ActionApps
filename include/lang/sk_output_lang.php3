@@ -2,7 +2,7 @@
 # $Id$
 # Language: SK
 # This file was created automatically by the Mini GetText environment
-# on 4.11.2003 13:25
+# on 17.2.2004 13:43
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -33,20 +33,20 @@ $_m["Alias pro IP address of author's computer"]
   = "Alias pre IP adresu autorovho pocítaca";
 # End of unused messages
 
-# ./slice.php3, row 164
+# ./slice.php3, row 165
 $_m["Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"]
   = "";
 
-# ./slice.php3, row 169
+# ./slice.php3, row 170
 $_m["No such file"]
   = "";
 
-# ./slice.php3, row 199
+# ./slice.php3, row 204
 $_m["Invalid slice number or slice was deleted"]
   = "";
 
-# ./slice.php3, row 516
-# include/view.php3, row 381
+# ./slice.php3, row 530
+# include/view.php3, row 391
 $_m["No item found"]
   = "Nenalezena žádná zpráva";
 
@@ -248,23 +248,23 @@ $_m["Constant level (used for hierachical constants)"]
 $_m["Alias for %1"]
   = "";
 
-# include/item.php3, row 951
+# include/item.php3, row 965
 $_m["on"]
   = "";
 
-# include/item.php3, row 951
+# include/item.php3, row 965
 $_m["off"]
   = "";
 
-# include/item.php3, row 1076
+# include/item.php3, row 1090
 $_m["Back"]
   = "Spät";
 
-# include/item.php3, row 1077
+# include/item.php3, row 1091
 $_m["Home"]
   = "";
 
-# include/scroller.php3, row 217
+# include/scroller.php3, row 219
 $_m["All"]
   = "";
 
@@ -276,7 +276,7 @@ $_m["Previous"]
 $_m["Next"]
   = "";
 
-# include/itemview.php3, row 288
+# include/itemview.php3, row 287
 $_m["No comment was selected"]
   = "Nebol vybraný žiaden príspevok";
 
