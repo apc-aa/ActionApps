@@ -276,9 +276,37 @@ else {
   ExitPage();
 }  
 
-if( !$slice_info[even_odd_differ] )
-  $slice_info[even_row_format] = "";
+if( !$slice_info['even_odd_differ'] )
+  $slice_info['even_row_format'] = "";
 
+# it is possible to redefine the design of fulltext or compact view by the view 
+# see fview and iview url parameters for this file (slice.php3)
+if( $fview || $iview ) {
+  if( $fview ) {                       # use formating from view for fulltext
+    $fview_info = GetViewInfo($fview);
+    if ($fview_info AND ($fview_info['deleted']<1)) {
+      $slice_info['fulltext_format'] = $fview_info['odd'];
+      $slice_info['fulltext_format_top'] = $fview_info['before'];
+      $slice_info['fulltext_format_bottom'] = $fview_info['after'];
+      $slice_info['fulltext_remove'] = $fview_info['remove_string'];
+//      print_r( $slice_info );
+    }  
+  }  
+  if( $iview ) {                       # use formating from view for index
+    $iview_info = GetViewInfo($iview);
+    if ($iview_info AND ($iview_info['deleted']<1)) {
+      $slice_info['group_by'] = $iview_info['group_by1'];
+      $slice_info['category_format'] = $iview_info['group_title'];
+      $slice_info['compact_top'] = $iview_info['before'];
+      $slice_info['compact_bottom'] = $iview_info['after'];
+      $slice_info['compact_remove'] = $iview_info['remove_string'];
+      $slice_info['even_row_format'] = $iview_info['even'];
+      $slice_info['odd_row_format'] = $iview_info['odd'];
+      $slice_info['even_odd_differ'] = $iview_info['even_odd_differ'];
+    }  
+  }
+}
+  
 if (!$encap)
   Page_HTML_Begin(DEFAULT_CODEPAGE, $slice_info[name] );  // TODO codepage
 
@@ -536,6 +564,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.33  2002/01/10 14:09:45  honzam
+new possibility to redefine the design of output by fview and iview url parameter
+
 Revision 1.32  2002/01/04 13:15:49  honzam
 new hide fulltext parameter for slice (good for discussion)
 
