@@ -32,6 +32,8 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."feeding.php3";
 require $GLOBALS[AA_INC_PATH]."notify.php3";
+require $GLOBALS[AA_INC_PATH]."mgettext.php3";
+
 
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 	MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EXPORT_IMPORT, "standalone");
@@ -44,7 +46,7 @@ $itemvarset = new Cvarset();
 // Prooves whether this ID already exists in the slices table,
 // changes the ID to a new chosen one
 
-function proove_ID (&$slice) 
+function proove_ID ($slice) 
 {
 	global $newID,
 		   $sess,
@@ -54,19 +56,25 @@ function proove_ID (&$slice)
 		   $new_slice_ids;
 		   
 	$res = $resolve_conflicts[$slice["id"]];
-	if (strlen($res) == 32)	{
+	if ((strlen($res)!=0)&&(strlen($res) != 16))	{
+		if ((strlen($res) != 16)||(strlen($res) != 32)) {
+			echo "Warning: ". _m("Slice_ID (". $res.") has wrong length (".strlen($res).", should be 32)<br>\n");
+		}
 		$res = pack_id($res);
 		if (strlen($res) == 16)	$slice["id"] = unpack_id($res);
 	}
 	// Find out whether a slice of the same ID already exists
-	if (strlen($slice["id"]) != 32) {
-		MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_WRONG_FILE, "standalone");
-		exit;
-	}		
+
+        // ac je to nepochopitene, nektera ID maji 30 znaku (ale niz uz nejdu)
+
+//    if ((strlen($slice["id"]) != 32)&&(strlen($slice["id"]) != 30)) {				
+//		echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", $slice["id"], strlen($slice["id"]));
+//	}
 	// back-up old ids, if you want import slice definition with new id	
 	$new_slice_ids[$slice["id"]]["new_id"]=new_id();
 		
 	$slice_id = addslashes(pack_id($slice["id"]));
+	echo "$slice_id";
 	$SQL = "SELECT * FROM slice WHERE id=\"$slice_id\"";
 	global $db;
 	$db->query($SQL);
@@ -94,15 +102,18 @@ function proove_data_ID ($data_id)
 		   $data_overwrite;
 		   
 	$res = $data_resolve_conflicts[$data_id];
-	if (strlen($res) == 32)	{
-		$res = pack_id($res);
+
+	if (strlen($res) != 16)	{
+		if ((strlen($res) != 16)||(strlen($res) != 32)) {
+//			echo "Warning: ". _m("Slice_data_ID (".$res.") has wrong length (".strlen($res).", should be 32)<br>\n");
+		}
+		$res = q_pack_id($res);
 		if (strlen($res) == 16)	$data_id = unpack_id($res);
 	}
 	// Find out whether item with the same ID already exists
-	if (strlen($data_id) != 32) {
-		MsgPage($sess->url(self_base())."index.php3", L_E_IMPORT_WRONG_FILE, "standalone");
-		exit;
-	}		
+//	if ((strlen($data_id) != 32)&&(strlen($data_id) != 30)) {
+//		echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", $slice["id"], strlen($slice["id"]));
+//	}
 	$old_data_id = addslashes(pack_id($data_id));
 	$SQL = "SELECT * FROM item WHERE id=\"$old_data_id\"";
 	global $db;
@@ -148,6 +159,7 @@ function import_slice (&$slice)
 		}  
 		// inserting to table slice
 		$sqltext = create_SQL_insert_statement ($slice, "slice", ";id;owner;","","")."\n";
+//		exit;
 		$db->query($sqltext);
 		// inserting to table module
 		$sqltext = create_SQL_insert_statement ($slice, "module", ";id;owner;", ";id;name;deleted;slice_url;lang_file;created_at;created_by;owner;flag;","type=S")."\n";
@@ -187,7 +199,7 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 	   	$cont = $content4id[$id];
 		reset($fields);
 		while (list($name,)=each($fields)) {
-			$newcont[$name]=$cont[$name];
+			$newcont[$name]=addslashes($cont[$name]);
 		}
 		$data_IDconflict = !proove_data_ID($id);
 		if (($data_IDconflict)&&($GLOBALS["Submit"]!=L_E_IMPORT_INSERT_AS_NEW)) {
@@ -224,6 +236,37 @@ $imported_count = 0;
 
 // insert xml parser
 require "./sliceimp_xml.php3";
+
+# import via exported file
+if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
+  $dirname = IMG_UPLOAD_PATH;
+  $fileman_used=false;
+  $dest_file = $_FILES['slice_def_file']['name'];
+  $perms = 0664;
+  
+  # i must copy this from aa_move_uploaded_file because of some variables,that i can't (don't know how) set
+  
+    list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
+    if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
+        if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) 
+            if( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file")) 
+                echo L_CANT_UPLOAD;
+        else if ($perms)
+	            chmod ($dirname.$dest_file, $perms);
+    } 
+    else {   # for php 3.x and php <4.0.3
+        if (!copy($_FILES['slice_def_file']['tmp_name'],"$dirname$dest_file")) 
+            echo L_CANT_UPLOAD;
+        else if ($perms)
+            chmod ($dirname.$dest_file, $perms);
+    }  
+	
+	$fd = fopen ($dirname.$dest_file, "r");
+	$slice_def_bck = $slice_def = fread ($fd, filesize ($dirname.$dest_file));
+	fclose ($fd);
+	
+	unlink($dirname.$dest_file); // delete file...
+}
 
 if ($conflicts_list) {
 	$temp = split ("\n",$conflicts_list);
@@ -309,14 +352,14 @@ if ($Cancel || $conflicts_list || $data_conflicts_list):
 else:
 ?>
 
-<?php echo L_E_IMPORT_MEMO ?></p>
+<?php echo L_E_IMPORT_INFO ?></p>
 </td></tr>
 <?php 
 if ($IDconflict):?>
 	<tr><td class=tabtxt>
 	<b><?php echo sprintf (L_E_IMPORT_IDCONFLICT,pack_id($slice_id)) ?></b></p>
 	<p align=center>
-<TEXTAREA NAME=conflicts_list ROWS=<?php echo count($conflicts_ID) ?> COLS=110>
+<TEXTAREA NAME=conflicts_list ROWS=<?php echo count($conflicts_ID) ?> COLS=60>
 <?php
 	reset($conflicts_ID);
 	while (list($c_id,$name)=each($conflicts_ID))
@@ -331,7 +374,7 @@ if ($data_IDconflict): ?>
 <tr><td class=tabtxt>
 <b><?php echo sprintf (L_E_IMPORT_DATA_IDCONFLICT) ?></b></p>
 <p align=center>
-<TEXTAREA NAME=data_conflicts_list ROWS=<?php echo count($data_conflicts_ID) ?> COLS=120>
+<TEXTAREA NAME=data_conflicts_list ROWS=<?php echo count($data_conflicts_ID) ?> COLS=60>
 <?php
 	reset($data_conflicts_ID);
 	while (list($c_id,$name)=each($data_conflicts_ID))
@@ -358,12 +401,24 @@ if($IDconflict || $data_IDconflict): ?>
 	</td></tr>
 <?php
 endif;?>
+	<? if (!$IDconflict || !$data_IDconflict): ?>
 <tr><td class=tabtit align=center>
 <br>
+		<? echo L_E_IMPORT_FILE_SELECT ?><p>
+		<input type="file" name="slice_def_file" size="60">
+<!--		<p><input type="submit" name="file_submit" value="<? echo L_E_IMPORT_FILE_SEND; ?>">  -->
+	</td></tr>	
+	<? endif; ?>
+<tr><td class=tabtit align=center>
+<br>
+	<? if (!$IDconflict || !$data_IDconflict): ?>	
+		<? echo L_E_IMPORT_MEMO ?><p>
+	<? endif; ?>
 	<TEXTAREA NAME="slice_def" ROWS = 10 COLS = 100><?php if ($IDconflict || $data_IDconflict) echo $slice_def_bck ?></TEXTAREA>
 	<p>	
 <?php if (!$IDconflict || !$data_IDconflict): ?>	
 <? if (!$GLOBALS["Submit"]) { ?>
+	<? echo L_E_IMPORT_SELECT_WHAT; ?><p>
 	<input type=checkbox name=only_slice checked><?php echo L_E_IMPORT_IMPORT_SLICE ?><br>
 	<input type=checkbox name=only_data checked><?php echo L_E_IMPORT_IMPORT_ITEMS ?><br><br>	
 	<INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo L_E_IMPORT_SEND ?>">
