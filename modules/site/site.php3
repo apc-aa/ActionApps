@@ -72,7 +72,7 @@ $sitecache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ);
 
 # create keystring from values, which exactly identifies resulting content
 $key_str = $apc_state['state'];
-if( is_array($slices4chache) && !$nocache && ($res = $sitecache->get($key_str)) ) {
+if( is_array($slices4cache) && !$nocache && ($res = $sitecache->get($key_str)) ) {
   echo $res;
   if( $debug ) {
     $timeend = getmicrotime();
@@ -93,13 +93,13 @@ require $GLOBALS[AA_INC_PATH]."item.php3";
 $res = ModW_GetSite( $apc_state, $site_id, $site_info );
 echo $res;
 
-# In $slices4chache array MUST be listed all (unpacked) slice ids (and other 
+# In $slices4cache array MUST be listed all (unpacked) slice ids (and other 
 # modules including site module itself), which is used in the site. If you 
 # mention the slice in this array, cache is cleared on any change of the slice
 # (item addition) - the page is regenerated, then.
 
-if (is_array($slices4chache) && !$nocache) {
-  $clear_cache_str = "slice_id=". join(',slice_id=', $slices4chache);
+if (is_array($slices4cache) && !$nocache) {
+  $clear_cache_str = "slice_id=". join(',slice_id=', $slices4cache);
   $sitecache->store($key_str, $res, $clear_cache_str);
 }  
 
