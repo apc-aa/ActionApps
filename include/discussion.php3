@@ -331,7 +331,7 @@ function send2mailList ($d_item_id, $new_id) {
             FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
         }
 
-        $CurItem = new item("", $columns, $aliases, "", "", "");
+        $CurItem = new item($columns, $aliases);
 
         // newer version based on email templates
         if ( $vid{0} == 't' ) {   // email template
