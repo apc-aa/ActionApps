@@ -57,7 +57,13 @@ See http://sourceforge.net/projects/apc-aa/ for
   patches
   support manager for help with installation
 
+See http://apc-aa.sourceforge.net/aa/doc/ for recent documentation,
+or look in the doc/ subdirectory.
+
 $Log$
+Revision 1.4  2001/11/18 06:15:51  madebeer
+added links to documentation
+
 Revision 1.3  2001/11/01 11:04:35  honzam
 v2.0.0 released
 
