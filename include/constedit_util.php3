@@ -319,7 +319,6 @@ function hcUpdate ()
                     $ar[$i] = str_replace ("--$$--","~",str_replace("--$--",":",$ar[$i]));
                 $changes[] = $ar;
             }
-            print_r ($changes);
         }
     }
 	

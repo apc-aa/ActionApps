@@ -25,10 +25,12 @@ http://www.apc.org/
 #             category - edit categories for this slice (no group_id nor categ required)
 
 require "../include/init_page.php3";
+debuglog ("se_constant: group id $group_id");
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 //require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
+
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -312,19 +314,20 @@ if (!$owner_id || !$group_id)
 	echo L_CONSTANT_OWNER_HELP;
 	
 // display the select box to change group owner if requested ($chown)
-else if($chown AND is_array($g_slices) AND (count($g_slices) > 1) ) {
+else if($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
     echo "<select name=new_owner_id>";
-    reset($g_slices);
-    while(list($k, $v) = each($g_slices)) { 
+    reset($g_modules);
+    while(list($k, $v) = each($g_modules)) { 
       echo "<option value='". htmlspecialchars($k)."'".
 	  	 ($owner_id == $k ? " selected" : "").
-      	 "> ". htmlspecialchars($v);
+      	 "> ". htmlspecialchars($v["name"]);
     }
     echo "</select>\n";
 }
-else
+else {
 	echo $db->f("name")."&nbsp;&nbsp;&nbsp;&nbsp; 
 	<input type=submit name='chown' value='".L_CONSTANT_CHOWN."'>";
+}
 	
 echo"</td></tr>
 <tr><td colspan=4><input type=checkbox name='propagate_changes'".($db->f("propagate") ? " checked" : "").">".L_CONSTANT_PROPAGATE."</td></tr>

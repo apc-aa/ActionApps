@@ -281,7 +281,7 @@ function sendDirty () {
 		info += sendDirtyBranch (hcConsts[i],'');
 	}
 	if (info > "") 
-		return " :changes: "+info.substr (0,info.length-1);
+		return " :changes: "+info;
 	else return "";
 }
 		

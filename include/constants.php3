@@ -31,20 +31,24 @@ http://www.apc.org/
   # (on the other hand, new type can be added just by placing new fileld 
   # in database table fields as for 'AA_Core_Fields..' slice).
 
+// in the array MODULES "name" is a description of the module, "hide_create_module" doesn't show the module in the Create Slice / Module page
 
 $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => 'slice',
+                                'hide_create_module' => 1,
                                 'directory' => AA_INSTAL_URL ."admin/"),
                   'W' => array( 'table' => 'site',
-                                'name' => 'site',
+                                'name' => 'Site',
                                 'directory' => AA_INSTAL_URL ."modules/site/"),
                   'A' => array( 'table' => 'module', # this module doesn't have any special info yet
                                 'name' => 'MySQL Auth',
+                                'hide_create_module' => 1,
                                 'directory' => AA_INSTAL_URL ."modules/mysql_auth/"),
                   'J' => array( 'table' => 'jump',
                                 'name' => 'Jump inside AA control panel',
                                 'directory' => AA_INSTAL_URL ."modules/jump/"));
                   
+# language files for slices (not for some modules, e.g. site)
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "es_news_lang.php3" => "es_news_lang.php3",
                          "cz_news_lang.php3" => "cz_news_lang.php3",
@@ -86,22 +90,23 @@ $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
                               "now" => L_INPUT_DEFAULT_NOW,
 			      "variable" =>L_INPUT_DEFAULT_VAR);
   
-$INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT,
-																"edt" => L_INPUT_SHOW_EDT,
-                                "fld" => L_INPUT_SHOW_FLD, 
-                                "sel" => L_INPUT_SHOW_SEL, 
-                                "pre" => L_INPUT_SHOW_PRE, 
-                                "rio" => L_INPUT_SHOW_RIO, 
-                                "dte" => L_INPUT_SHOW_DTE, 
-                                "chb" => L_INPUT_SHOW_CHB, 
-                                "mch" => L_INPUT_SHOW_MCH,
-                                "mse" => L_INPUT_SHOW_MSE,
-#                               "wi2" => L_INPUT_SHOW_WI2,
-                                "fil" => L_INPUT_SHOW_FIL,
-#                               "isi" => L_INPUT_SHOW_ISI,
-                                "iso" => L_INPUT_SHOW_ISO,
-                                "nul" => L_INPUT_SHOW_NUL,
-				"hco" => L_INPUT_SHOW_HCO);
+$INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT, #textarea
+								"edt" => L_INPUT_SHOW_EDT, #rich text edit
+                                "fld" => L_INPUT_SHOW_FLD, #textfield
+                                "sel" => L_INPUT_SHOW_SEL, #selectbox
+                                "pre" => L_INPUT_SHOW_PRE, #selectbox with preset
+                                "tpr" => L_INPUT_SHOW_TPR, #textarea with preset								
+                                "rio" => L_INPUT_SHOW_RIO, #radio button
+                                "dte" => L_INPUT_SHOW_DTE, #date
+                                "chb" => L_INPUT_SHOW_CHB, #check box
+                                "mch" => L_INPUT_SHOW_MCH, #multiple checkbox
+                                "mse" => L_INPUT_SHOW_MSE, #multiple selectbox
+#                               "wi2" => L_INPUT_SHOW_WI2, #2 windows
+                                "fil" => L_INPUT_SHOW_FIL, #file
+#                               "isi" => L_INPUT_SHOW_ISI, #
+                                "iso" => L_INPUT_SHOW_ISO, #related items selectbox - outer
+                                "nul" => L_INPUT_SHOW_NUL, #
+								"hco" => L_INPUT_SHOW_HCO); #hierarchy constant
                               
 $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
                                "url" => L_INPUT_VALIDATE_URL, 
@@ -395,6 +400,7 @@ $VIEW_TYPES['calendar'] = array ('name' => L_CALENDAR_VIEW,
                               "cond3field" => L_V_COND3FLD ,
                               "cond3op" => L_V_COND3OP ,
                               "cond3cond" => L_V_COND3COND ,
+                              "listlen" => L_V_LISTLEN ,
                               "noitem_msg" => L_V_NO_ITEM );
 #                              "flag" => L_V_FLAG ,
 // TODO                              "scroller" => L_V_SCROLLER ,
