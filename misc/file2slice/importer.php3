@@ -70,6 +70,19 @@ function processDataArray($data, $actions)
  	    	  $retval[$fid][][value] = addslashes($tostore);
    		}	
   	    break; 
+  	  case "storemultiasone":
+        $pole = $arr["from"];
+		reset($pole);
+		$save = "";
+        	while( list(,$tostore) = each($pole)) {
+          		$savenext = trim($data[$tostore]);
+		  	if ($savenext != "") {
+				if ($save != "") { $save = $save . $arr["delimiter"]; }
+				$save = $save . $savenext;
+			}
+		}
+ 	    	$retval[$fid][][value] = addslashes($save);
+  	    break; 
   	  case "storeasmulti":
         $pole = $arr["from"];
 		reset($pole);
@@ -143,10 +156,17 @@ function Importer ($sliceID, $fileName, $separator, $actions, $postedBy, $fire=f
 
   while (!feof ($fd)) {
     $buffer = fgets($fd, $maxRowLength);
-  	$buffer = ereg_replace ("[\n\r]*","",$buffer);
+  //echo $buffer . "<br>";
+    // Concatenate multi-line fields as output by for example Excel 
+    $splitlinereg = '/(' . $separator . '["][^"' . $separator . ']*[\n\r]*)$/';
+    while (preg_match ($splitlinereg,$buffer,$arr) and !feof($fd)) {
+	$buffer = $buffer . fgets($fd, $maxRowLength);
+    }
+    $buffer = ereg_replace ("[\n\r]*$","",$buffer);   // Only change at end of line
     $arr = split($separator, $buffer);
     for( $i=0; $i< count($sourceFields); $i++) 
-      $data[ $sourceFields[$i] ] = $arr[$i];
+	// Strip quotes around fields
+      $data[ $sourceFields[$i] ] = ereg_replace('^"(.*)"$',"\\1",$arr[$i]);
 
   	$content4id_part = processDataArray($data, $actions);
     if( !(isset($content4id_part) AND is_array($content4id_part)) )
