@@ -52,91 +52,97 @@ $p_import_id= q_pack_id($import_id);
 $err["Init"] = "";       // error array (Init - just for initializing variable)
 $catVS = new Cvarset();
 
-if ($feed_id) {
-  // setting filters from external slice
+if ($feed_id) { // cross server feeding
+    // setting filters from external slice
 
-  if ($ext_categs = GetExternalCategories($feed_id)) {
-    // delete current filters and then insert new
-    $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");
+    if ($ext_categs = GetExternalCategories($feed_id)) {
+        // delete current filters and then insert new
+        $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");
 
-    if ($all) {                           // all categories
-      $to_id = ParseIdA($C, $app);
-      while (list($id, ) = each($ext_categs)) {
-        $ext_categs[$id]['target_category_id'] = $to_id;
-        $ext_categs[$id]['approved']           = $app;
-      }
+        if ($all) {                           // all categories
+            $to_id = ParseIdA($C, $app);
+
+            // $to_id could be zero, which means "The Same category"
+            if ( !$to_id ) {
+                // 'AA_Other_Categor' and 'AA_The_Same_Cate' are keywords
+                $ext_categs['AA_Other_Categor']['target_category_id'] = 'AA_The_Same_Cate';
+                $ext_categs['AA_Other_Categor']['approved']           = $app;
+            } else {
+                while (list($id, ) = each($ext_categs)) {
+                    $ext_categs[$id]['target_category_id'] = $to_id;
+                    $ext_categs[$id]['approved']           = $app;
+                }
+            }
+        } else {                              // individual categories
+            while (list($id, ) = each($ext_categs)) {
+                $ext_categs[$id]['target_category_id'] = "";
+                $ext_categs[$id]['approved']           = 0;
+            }
+
+            while (list($index,$id ) = each($_GET['F'])) {
+                $from_cat = ParseIdA($id, $app);
+                $ext_categs[$from_cat]['target_category_id'] = $_GET['T'][$index];
+                $ext_categs[$from_cat]['approved']           = $app;
+            }
+        }
+
+        foreach ( $ext_categs as $id => $v) {
+            $catVS->clear();
+            $catVS->add("category",           "text",     $v['value']);
+            $catVS->add("category_name",      "text",     $v['name']);
+            $catVS->add("category_id",        "unpacked", $id);
+            $catVS->add("feed_id",            "number",   $feed_id);
+            $catVS->add("target_category_id", "unpacked", $v['target_category_id']);
+            $catVS->add("approved",           "number",   $v['approved']);   // zero = the same category
+            $SQL = "INSERT INTO ef_categories" . $catVS->makeINSERT();
+            if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+                $err["DB"] .= MsgErr("Can't add import from $val");
+            }
+        }
     }
-    else {                                // individual categories
-      while (list($id, ) = each($ext_categs)) {
-        $ext_categs[$id]['target_category_id'] = "";
-        $ext_categs[$id]['approved']           = 0;
-      }
+} else { // inner feeding
 
-      while (list($index,$id ) = each($_GET['F'])) {
-        $from_cat = ParseIdA($id, $app);
-        $ext_categs[$from_cat]['target_category_id'] = $_GET['T'][$index];
-        $ext_categs[$from_cat]['approved']           = $app;
-      }
-    }
+    // First we DELETE current filters and then INSERT new.
+    // We can't use UPDATE because the count of old and new rows can be different.
+    // We could UPDATE existing rows and INSERT new, but DELETE/INSERT is simpler.
+    // A transaction would be nice.
 
-    reset($ext_categs);
-    while (list ($id,$v) = each($ext_categs)) {
-      $catVS->clear();
-      $catVS->add("category",           "quoted",   $v['value']);
-      $catVS->add("category_name",      "quoted",   $v['name']);
-      $catVS->add("category_id",        "unpacked", $id);
-      $catVS->add("feed_id",            "number",   $feed_id);
-      $catVS->add("target_category_id", "unpacked", $v['target_category_id']);
-      $catVS->add("approved",           "number",   $v['approved']);   // zero = the same category
-      $SQL = "INSERT INTO ef_categories" . $catVS->makeINSERT();
+    $db->query("DELETE FROM feeds WHERE to_id = '$p_slice_id' " .
+    "AND from_id = '$p_import_id'");
+
+    if ($all) {                                         // all_categories
+        $id = ParseIdA($C, $app);
+        $catVS->clear();
+        $catVS->add("to_id",          "unpacked", $slice_id);
+        $catVS->add("from_id",        "unpacked", $import_id);
+        $catVS->add("all_categories", "number",   1);
+        $catVS->add("to_approved",    "number",   $app);
+        $catVS->add("to_category_id", "unpacked", $id);   // zero = the same category
+        $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
         if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
-        $err["DB"] .= MsgErr("Can't add import from $val");
-      }
+            $err["DB"] .= MsgErr("Can't add import from $val");
+        }
+    } else if (isset($_GET['F']) AND is_array($_GET['F'])) {            // insert to categories
+        reset($_GET['F']);
+        while( list($index,$val) = each($_GET['F']) ) {
+            $from_cat = ParseIdA($val, $app);
+            $to_cat = $_GET['T'][$index];
+            if( $to_cat == "0" )
+            $to_cat = $from_cat;
+            $catVS->clear();
+            $catVS->add("to_id",          "unpacked", $slice_id);
+            $catVS->add("from_id",        "unpacked", $import_id);
+            $catVS->add("all_categories", "number",   0);
+            $catVS->add("to_approved",    "number",   $app);
+            $catVS->add("category_id",    "unpacked", $from_cat);
+            $catVS->add("to_category_id", "unpacked", $to_cat);
+            $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
+            if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+                $err["DB"] .= MsgErr("Can't add import from $val");
+                break;
+            }
+        }
     }
-  }
-} else {
-
-// First we DELETE current filters and then INSERT new.
-// We can't use UPDATE because the count of old and new rows can be different.
-// We could UPDATE existing rows and INSERT new, but DELETE/INSERT is simpler.
-// A transaction would be nice.
-
-$db->query("DELETE FROM feeds WHERE to_id = '$p_slice_id' " .
-           "AND from_id = '$p_import_id'");
-
-if ($all) {                                         // all_categories
-  $id = ParseIdA($C, $app);
-  $catVS->clear();
-  $catVS->add("to_id",          "unpacked", $slice_id);
-  $catVS->add("from_id",        "unpacked", $import_id);
-  $catVS->add("all_categories", "number",   1);
-  $catVS->add("to_approved",    "number",   $app);
-  $catVS->add("to_category_id", "unpacked", $id);   // zero = the same category
-  $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
-  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
-    $err["DB"] .= MsgErr("Can't add import from $val");
-  }
-} else if (isset($_GET['F']) AND is_array($_GET['F'])) {            // insert to categories
-  reset($_GET['F']);
-  while( list($index,$val) = each($_GET['F']) ) {
-    $from_cat = ParseIdA($val, $app);
-    $to_cat = $_GET['T'][$index];
-    if( $to_cat == "0" )
-      $to_cat = $from_cat;
-    $catVS->clear();
-    $catVS->add("to_id",          "unpacked", $slice_id);
-    $catVS->add("from_id",        "unpacked", $import_id);
-    $catVS->add("all_categories", "number",   0);
-    $catVS->add("to_approved",    "number",   $app);
-    $catVS->add("category_id",    "unpacked", $from_cat);
-    $catVS->add("to_category_id", "unpacked", $to_cat);
-    $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
-    if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
-      $err["DB"] .= MsgErr("Can't add import from $val");
-      break;
-    }
-  }
-}
 }
 
 if( count($err) <= 1 )

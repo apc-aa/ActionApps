@@ -92,55 +92,59 @@ if( $group ) {
 
 // lookup (from_categories) and preset form values
 if ($feed_id = $remote_slices[$import_id]) {
-  $ext_categs = GetExternalCategories($feed_id);
-  $imp_count = sizeof($ext_categs);
+    $ext_categs = GetExternalCategories($feed_id);
+    $imp_count  = sizeof($ext_categs);
 
-  if ($ext_categs && is_array($ext_categs)) {
-    $v0=current($ext_categs);
-    $same = true;
-    while (list(,$v) = each($ext_categs)) {
-      if ($v[target_category_id] != $v0[target_category_id] || $v[approved] != $v0[approved]) {
-        $same = false;
-        break;
-      }
+    if ($ext_categs && is_array($ext_categs)) {
+
+        // Check if all categories should have set exactly the same destination
+        // category
+        $v0   = current($ext_categs);
+        $same = true;
+        while (list(,$v) = each($ext_categs)) {
+            if (($v['target_category_id'] != $v0['target_category_id']) || ($v['approved'] != $v0['approved'])) {
+                // no categories do not go to the same categories
+                $same = false;
+                break;
+            }
+        }
+        if ($same) {
+            // yes, allsource categories are mapped to the same destination
+            // categories
+            $all_categories = true;
+            $approved_0     = $v0['approved'];
+            $categ_0        = $v0['target_category_id'];
+        } else {
+            foreach ( $ext_categs as $id => $v) {
+                $chboxcat[$id] = ($v['target_category_id'] != ""); // selected
+                $selcat[$id]   =  $v['target_category_id'];
+                $chboxapp[$id] =  $v['approved'];
+            }
+        }
     }
-    if ($same) {
-      $all_categories=true;
-      $approved_0 = $v0[approved];
-      $categ_0 = $v0[target_category_id];
-    } else {
-      reset($ext_categs);
-      while (list ($id,$v) = each($ext_categs)) {
-        $chboxcat[$id] = ($v[target_category_id] != "");
-        $selcat[$id] = $v[target_category_id];
-        $chboxapp[$id] = $v[approved];
-      }
-    }
-  }
 } else {   // inner feeding
-  $imp_group = GetCategoryGroup($import_id);
+    $imp_group = GetCategoryGroup($import_id);
 
-  // count number of imported categories
-  $SQL= "SELECT count(*) as cnt FROM constant
-          WHERE group_id='$imp_group'";
-  $db->query($SQL);
-  $imp_count = ($db->next_record() ? $db->f(cnt) : 0);
+    // count number of imported categories
+    $SQL= "SELECT count(*) as cnt FROM constant WHERE group_id='$imp_group'";
+    $db->query($SQL);
+    $imp_count = ($db->next_record() ? $db->f('cnt') : 0);
 
-  // preset variables due to feeds database
-  $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds
-         WHERE from_id='$p_import_id' AND to_id='$p_slice_id'";
-  $db->query($SQL);
-  while($db->next_record()) {
-    if( $db->f(all_categories) ) {
-      $all_categories=true;
-      $approved_0 = $db->f(to_approved);
-      $categ_0 = unpack_id($db->f(to_category_id));  // if 0 => the same category
-    }else{
-      $chboxcat[unpack_id($db->f(category_id))] = true;
-      $selcat[unpack_id($db->f(category_id))] = unpack_id($db->f(to_category_id));
-      $chboxapp[unpack_id($db->f(category_id))] = $db->f(to_approved);
+    // preset variables due to feeds database
+    $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds
+            WHERE from_id='$p_import_id' AND to_id='$p_slice_id'";
+    $db->query($SQL);
+    while($db->next_record()) {
+        if( $db->f('all_categories') ) {
+            $all_categories = true;
+            $approved_0     = $db->f('to_approved');
+            $categ_0        = unpack_id($db->f('to_category_id'));  // if 0 => the same category
+        } else {
+            $chboxcat[unpack_id($db->f('category_id'))] = true;
+            $selcat[  unpack_id($db->f('category_id'))] = unpack_id($db->f('to_category_id'));
+            $chboxapp[unpack_id($db->f('category_id'))] = $db->f('to_approved');
+        }
     }
-  }
 }
 ?>
  <TITLE><?php echo _m("Admin - Content Pooling - Filters");?></TITLE>

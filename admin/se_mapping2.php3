@@ -53,7 +53,7 @@ while (list($to_field_id,$val) = each($fmap)) {
   $catVS->clear();
   $catVS->add("from_slice_id", "unpacked", $from_slice_id);
   $catVS->add("to_slice_id", "unpacked", $slice_id);
-  $catVS->add("to_field_id", "quoted",$to_field_id);
+  $catVS->add("to_field_id", "text",$to_field_id);
   $catVS->add("from_field_name", "text", $map_to[$val]);
 
   switch ($val) {
@@ -69,13 +69,13 @@ while (list($to_field_id,$val) = each($fmap)) {
     case _m("-- RSS field or expr --"):
       $flag = FEEDMAP_FLAG_RSS;
       $catVS->add("value", "quoted", $fval[$to_field_id]);
-      if (! $map_to[$val]) $catVS->add("from_field_name", "text", $fval[$to_field_id]);
+      if (! $map_to[$val]) $catVS->add("from_field_name", "quoted", $fval[$to_field_id]);
       unset($map_to[$val]);
       break;
     case  FEEDMAP_FLAG_EXTMAP :
     case  FEEDMAP_FLAG_MAP :
       $flag = ($ext_slice) ? FEEDMAP_FLAG_EXTMAP : FEEDMAP_FLAG_MAP ;
-      $catVS->add("from_field_id", "quoted", $val );
+      $catVS->add("from_field_id", "text", $val );
       unset($map_to[$val]);
       break;
   }
@@ -93,7 +93,7 @@ if ($map_to && is_array($map_to)) {
     $catVS->clear();
     $catVS->add("from_slice_id", "unpacked", $from_slice_id);
     $catVS->add("to_slice_id", "unpacked", $slice_id);
-    $catVS->add("from_field_id", "quoted", $from_field_id );
+    $catVS->add("from_field_id",   "text", $from_field_id );
     $catVS->add("from_field_name", "text", $map_to[$from_field_id] );
 
     $catVS->add("flag", "quoted",FEEDMAP_FLAG_EXTMAP);
