@@ -394,12 +394,8 @@ function detect_browser() {
   elseif(eregi("osf",$HTTP_USER_AGENT)) 
     $BPlatform = "OSF"; 
   else{$BPlatform = "Unknown";} 
-/*   
-  echo $HTTP_USER_AGENT; 
-  echo $BName; 
-  echo $BVersion; 
-  echo $BPlatform; 
-*/
+
+  if ($GLOBALS[debug]) huhl("$HTTP_USER_AGENT => $BName,$BVersion,$BPlatform");   
 } 
 
  
@@ -415,7 +411,19 @@ function huhw($msg) {
   if(! $GLOBALS['debug'] )
     return;
   echo "<br>\n". HTMLspecialChars($msg);
-}  
+}
+
+# Debug function to print debug messages recursively - handles arrays
+function huhl ($before, $array="", $after="") {
+	if (isset($before)) {
+		print("<listing>");
+		print_r($before);
+		if (isset($array)) print_r($array);
+		if (isset($array)) print($after);
+		print("</listing>\n");
+	}
+}
+
 
 #Prints all values from array
 function PrintArray($a){
@@ -772,7 +780,7 @@ function ParseFnc($s) {
     $arr[fnc] = $s;
   return $arr;
 }
-  
+
 # returns html safe code (used for preparing variable to print in form)
 function safe( $var ) {
   return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
@@ -780,10 +788,13 @@ function safe( $var ) {
 
 // is the browser able to show rich edit box? (using triedit.dll)
 function richEditShowable () {
-  global $BName, $BVersion; 
+  global $BName, $BVersion, $BPlatform; 
 	global $showrich;
 	detect_browser();
-  return (($BName == "MSIE" && $BVersion >= "5.0") || $showrich > "");
+  # Note that Macintosh IE 5.2 does not support either richedit or current iframe
+  # Mac Omniweb/4.1.1 detects as Netscape 4.5 and doesn't support either
+  return (($BName == "MSIE" && $BVersion >= "5.0" && $BPlatform != "Macintosh") || $showrich > "");
+  # Note that RawRichEditTextarea could force iframe for certain BPlatform
 }
 
 function clean_email($line) { 

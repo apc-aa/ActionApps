@@ -210,9 +210,10 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false,
         $doc_complet = do you edit complete documents or HTML fragments only? */
 
 function RawRichEditTextarea ($BName, $name, $val, $rows=10, $cols=80, $type="class", $doc_complet=0) {
-    if (!$BName) {
+    if (!$BName || !$GLOBALS['BPlatform']) {
         detect_browser();
         $BName = $GLOBALS['BName'];
+	$BPlatform = $GLOBALS['BPlatform'];
     }
 
     $name=safe($name);
