@@ -5,6 +5,7 @@
 $host  = ''; # like 'http://127.0.0.1';
 $cachedir= '/tmp/cache';
 $cache4days = '.1'; # '.1' caches for 2.4 hours
+if (! $host ) die "Error -- you need to set \$host";
 
 use LWP::UserAgent;
 
@@ -137,6 +138,9 @@ if ( $nocache ) {
 }
 __END__
 #$Log$
+#Revision 1.3  2001/10/19 06:46:48  madebeer
+#added checks for $host
+#
 #Revision 1.2  2001/10/19 06:44:39  madebeer
 #nulled out $host variable, for security reasons
 #
