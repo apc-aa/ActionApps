@@ -640,7 +640,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
 
     $p = ParamExplode($param);
 
-    if ($col == 'hl_href.........' && strlen($p[0] == 16)) {
+    if ($col == 'hl_href.........' && strlen($p[0]) == 16) {
       $redirect  = $p[1] ? $p[1] :
             strtr(AA_INSTAL_URL, ':', '#:') .
                                   "slice.php3?slice_id=$slice_id&encap=false";
