@@ -353,7 +353,7 @@ if( OPTIMIZE_FOR_MYSQL )       // if no mySQL - go to item no (mySQL use LIMIT)
 $db->query($SQL);
 $db2 = new DB_AA; 	 // open BD	(for subqueries "feeded into" in long format)
 
-echo "<center>";
+//echo "<center>";
 echo "$Msg <br>";
 
 $col_count = count($r_slice_config["admin_fields"]);
@@ -565,7 +565,8 @@ echo '</td></tr></table>';
 echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
 echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
 echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
-echo '</form></center>';
+echo '</form>';
+// echo '</center>';
 
 echo L_ICON_LEGEND;
 echo L_SLICE_HINT;
@@ -584,6 +585,9 @@ echo '
 
 /*
 $Log$
+Revision 1.11  2000/11/13 10:37:36  honzam
+Admin item list is not centered on screen
+
 Revision 1.10  2000/10/10 18:28:00  honzam
 Support for Web.net's extended item table
 
