@@ -1288,11 +1288,9 @@ function GetFormJavascript ($show_func_used, $js_proove_fields) {
       }
 
       function moveItem(selectbox, type) {
-        length = selectbox.length;
+        len = selectbox.length;
         s = selectbox.selectedIndex;
-        dontwork = 0;
-        if (s < 0) { dontwork=1; }
-        if (type=="up") {
+        if (type == "up") {
             s2 = s-1;
             if (s2 < 0) { s2 = 0;}
         } else {
@@ -1300,19 +1298,16 @@ function GetFormJavascript ($show_func_used, $js_proove_fields) {
             if (selectbox.options[s2].value == "wIdThTor") {
               s2 = s;
             }
-            if (s2 >= length-1) { s2 = length-1; }
+            if (s2 >= len-1) { s2 = len-1; }
         }
-        if (dontwork == 0) {
-            dummy_val = selectbox.options[s2].value;
-            dummy_txt = selectbox.options[s2].text;
-            selectbox.options[s2].value = selectbox.options[s].value;
-            selectbox.options[s2].text = selectbox.options[s].text;
-            selectbox.options[s].value = dummy_val;
-            selectbox.options[s].text  = dummy_txt;
-
-            selectbox.selectedIndex = s2;
-          }
-        }
+        dummy_val = selectbox.options[s2].value;
+        dummy_txt = selectbox.options[s2].text;
+        selectbox.options[s2].value = selectbox.options[s].value;
+        selectbox.options[s2].text = selectbox.options[s].text;
+        selectbox.options[s].value = dummy_val;
+        selectbox.options[s].text  = dummy_txt;
+        selectbox.selectedIndex = s2;
+      }
       ';
 
       if ($show_func_used['wi2']) $retval .= '
