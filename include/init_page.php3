@@ -130,12 +130,6 @@ if( !$Add_slice AND !$New_slice ) {
     if($db->next_record()) {
       $r_slice_headline = $db->f(name);
       $r_config_file[$slice_id] = $db->f(lang_file);
-      if ($db->f(config)) {
-        // in config field are stored many parameters of this slice
-        $r_slice_config = wddx_deserialize($db->f(config));
-      } else {
-        $r_slice_config = wddx_deserialize(DEFAULT_SLICE_CONFIG);
-      }
       $r_stored_slice = $slice_id;
       $r_slice_view_url = ($db->f(slice_url)=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                       : $db->f(slice_url));
@@ -167,6 +161,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.9  2001/01/08 13:31:58  honzam
+Small bugfixes
+
 Revision 1.8  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 

@@ -293,13 +293,12 @@ define("L_SLICE_SET", L_SLICE);
 define("L_FULLTEXT_REMOVE", L_COMPACT_REMOVE);
 
 //new_constants
-define("DEFAULT_SLICE_CONFIG", "<wddxPacket version='0.9'><header/><data><struct><var name='admin_fields'><struct><var name='chbox'><struct><var name='width'><number>24</number></var></struct></var><var name='post_date'><struct><var name='width'><number>70</number></var></struct></var><var name='headline'><struct><var name='width'><number>224</number></var></struct></var><var name='catname'><struct><var name='width'><number>70</number></var></struct></var><var name='published'><struct><var name='width'><number>24</number></var></struct></var><var name='highlight'><struct><var name='width'><number>24</number></var></struct></var><var name='feed'><struct><var name='width'><number>24</number></var></struct></var></struct></var></struct></data></wddxPacket>");
 define("L_FEED", "Výmìna zpráv");
 define("L_FEEDTO_TITLE", "Pøedat zprávu do webíku");
 define("L_FEED_TO", "Pøedat vybrné zprávy do zvolených webíku");
 define("L_NO_PERMISSION_TO_FEED", "Nelze");
 define("L_NO_PS_CONFIG", "Nemáte právo nastavovat configuraèní parametry tohoto webíku");
-define("L_SLICE_CONFIG", "Parametry");
+define("L_SLICE_CONFIG", "Administrace");
 define("L_CHBOX_HEAD", "&nbsp;");   // title of checkbox in admin interface
 define("L_CHBOX", "Checkbox"); 
 define("L_CATNAME", "Kategorie");
@@ -486,6 +485,9 @@ define("L_NO_CATEGORY_FIELD","Pole kategorie není v tomto webíku definováno.<br>
     
 /*
 $Log$
+Revision 1.21  2001/01/08 13:31:58  honzam
+Small bugfixes
+
 Revision 1.20  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
 

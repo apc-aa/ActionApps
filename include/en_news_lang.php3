@@ -290,14 +290,13 @@ define("L_SLICE_SET", L_SLICE);
 define("L_FULLTEXT_REMOVE", L_COMPACT_REMOVE);
 
 //define("", "");   //prepared for new constants
-define("DEFAULT_SLICE_CONFIG", "<wddxPacket version='0.9'><header/><data><struct><var name='admin_fields'><struct><var name='chbox'><struct><var name='width'><number>24</number></var></struct></var><var name='post_date'><struct><var name='width'><number>70</number></var></struct></var><var name='headline'><struct><var name='width'><number>224</number></var></struct></var><var name='catname'><struct><var name='width'><number>70</number></var></struct></var><var name='published'><struct><var name='width'><number>24</number></var></struct></var><var name='highlight'><struct><var name='width'><number>24</number></var></struct></var><var name='feed'><struct><var name='width'><number>24</number></var></struct></var></struct></var></struct></data></wddxPacket>");
 
 define("L_FEED", "Export");
 define("L_FEEDTO_TITLE", "Export Item to Selected Slice");
 define("L_FEED_TO", "Export selected items to selected slice");
 define("L_NO_PERMISSION_TO_FEED", "No permission");
 define("L_NO_PS_CONFIG", "You have no permission to set configuration parameters of this slice");
-define("L_SLICE_CONFIG", "Parameters");
+define("L_SLICE_CONFIG", "Administration");
 define("L_CHBOX_HEAD", "&nbsp;");   // title of checkbox in admin interface
 define("L_CHBOX", "Checkbox"); 
 define("L_CATNAME", "Category Name");
@@ -452,6 +451,9 @@ define("L_PERMIT_OFFLINE_FILL","Allow off-line item filling");
     
 /*
 $Log$
+Revision 1.21  2001/01/08 13:31:58  honzam
+Small bugfixes
+
 Revision 1.20  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
 

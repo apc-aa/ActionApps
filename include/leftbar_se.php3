@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.5  2001/01/08 13:31:58  honzam
+Small bugfixes
+
 Revision 1.4  2000/12/23 19:56:50  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
 
@@ -139,7 +142,7 @@ added $Id $Log and $Copyright to some stray files
   <tr><td valign="TOP">
   <?php
   if( $show["config"] AND CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_CONFIG) ) 
-    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_config.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_SLICE_CONFIG."</a></td>"; 
+    echo "&nbsp;&nbsp;<a href=\"". $sess->url("se_admin.php3") ."&slice_id=$slice_id\" class=leftmenuy>".L_SLICE_CONFIG."</a></td>"; 
    else 
     echo "&nbsp;&nbsp;<span class=leftmenun>". L_SLICE_CONFIG ."</span></td>"; ?>
   </tr>

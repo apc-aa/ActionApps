@@ -25,6 +25,7 @@ class DB_AA extends DB_Sql {
   var $Database = DB_NAME;
   var $User     = DB_USER;
   var $Password = DB_PASSWORD;
+  var $Auto_Free = 'yes';
   function halt($msg) {
     printf("</td></table><b>Database error:</b> %s<br>\n", $msg);
     printf("<b>MySQL Error</b>: %s (%s)<br>\n",
@@ -191,6 +192,9 @@ class AA_SL_Session extends Session {
 
 /*
 $Log$
+Revision 1.5  2001/01/08 13:31:58  honzam
+Small bugfixes
+
 Revision 1.4  2000/08/07 15:27:45  kzajicek
 Added missing semicolon in global statement
 

@@ -134,8 +134,8 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
-Revision 1.1  2000/12/23 19:56:02  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
+Revision 1.2  2001/01/08 13:31:57  honzam
+Small bugfixes
 
 Revision 1.2  2000/08/03 12:49:22  kzajicek
 English editing

@@ -125,7 +125,7 @@ if( $add || $update ) {
       $SQL = "SELECT * FROM slice WHERE id='". q_pack_id($template_id) ."'";
       $db->query($SQL);
       if( !$db->next_record() ) {
-        $err["DB"] = MsgErr("Bad temlate id");
+        $err["DB"] = MsgErr("Bad template id");
         break;
       }
       $varset->setFromArray($db->Record);
@@ -268,6 +268,9 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.13  2001/01/08 13:31:58  honzam
+Small bugfixes
+
 Revision 1.12  2000/12/23 19:56:02  honzam
 Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
 

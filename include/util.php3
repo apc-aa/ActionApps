@@ -156,10 +156,10 @@ function q_pack_id ($unpacked_id){
 } 
   
 # returns unpacked md5 id
-function unpack_id ($packed_id){
+function unpack_id($packed_id){
   if( (string)$packed_id == "0" )
     return "0";
-  $foo=unpack("H*",$packed_id);
+  $foo=unpack("H*",$packed_id);  // "H*" does not work in PHP 4.0.3 
   return $foo[""];
 }
 
@@ -330,6 +330,9 @@ function PrintAliasHelp($aliases) {
 
 /*
 $Log$
+Revision 1.12  2001/01/08 13:31:58  honzam
+Small bugfixes
+
 Revision 1.11  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 
