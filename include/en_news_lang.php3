@@ -336,7 +336,7 @@ define("L_ACTIVE_BIN_EXPIRED_MENU", "Expired");
 define("L_ACTIVE_BIN_PENDING_MENU", "Pending");
 
 define("L_FIELD_PRIORITY", "Priority");
-define("L_FIELD_TYPE", "Type");
+define("L_FIELD_TYPE", "Id");
 define("L_CONSTANTS", "Constants");
 define("L_DEFAULT", "Default");
 define("L_DELETE_FIELD", "Do you really want to delete this field from this slice?");
@@ -571,6 +571,9 @@ define("L_MAP_OK","Fields' mapping update succesful");
 
 /*
 $Log$
+Revision 1.41  2001/05/26 14:50:58  honzam
+Field ID is displayed instead of field type
+
 Revision 1.40  2001/05/21 13:52:32  honzam
 New "Field mapping" feature for internal slice to slice feeding
 
