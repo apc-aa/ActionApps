@@ -75,7 +75,8 @@ function ShowAnonymousForm () {
     if ($use_show_result)
         echo "show_result=$show_result&";
         
-    echo 'form=inputform&notrun=1&slice_id='.$slice_id.'"-->';
+    if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) 
+        echo 'form=inputform&notrun=1&slice_id='.$slice_id.'"-->';
     
     echo '    
     

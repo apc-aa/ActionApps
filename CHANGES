@@ -1,3 +1,5 @@
+04/14/03 - added unsubscribe option to Alerts (_#UNSBFORM)
+(jakub)  - added "Show Not So Nice" to Anonym Wizard to be used when "Show" does not work
 04/14/03 - fixed bug in StoreItem for image fields (duplicated)
 (mitra)  - removed some global $db, involved changing args to some fnctns
 04/13/03 - fixed import to allow for just slice data,

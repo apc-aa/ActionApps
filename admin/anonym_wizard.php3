@@ -42,6 +42,11 @@ if(!IfSlPerm(PS_FIELDS)) {
   exit;
 }  
 
+if ($show_not_so_nice) {
+    require $GLOBALS["AA_BASE_PATH"]."post2shtml.php3";
+    go_url ($sess->url(self_base()."anonym_wizard2.php3?post2shtml_id=$post2shtml_id&slice_id=$slice_id"));
+}
+
 // lookup fields
 $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl 
         FROM field 
@@ -63,7 +68,7 @@ echo "<TITLE>"._m("Admin - Anonymous Form Wizard")."</TITLE>
 require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
 showMenu ($aamenus, "sliceadmin", "anonym_wizard");  
 
-echo "<H1>"._m("Admin - Anonymous Form Wizard")."</H1>";
+echo "<H1>"._m("Admin - Anonymous Form Wizard")."</B></H1>";
 
 PrintArray($err);
 echo $Msg;  
@@ -153,6 +158,7 @@ echo '
 </table>
 <tr><td align="center">
     <input type=submit name=show_form value="'._m("Show Form").'">&nbsp;&nbsp;
+    <input type=submit name=show_not_so_nice value="'._m("Show Not So Nice").'">&nbsp;&nbsp;
     <input type=submit name=cancel value="'._m("Cancel").'">
 </td></tr>
 ';
@@ -165,7 +171,7 @@ if ($show_form) {
     require $GLOBALS["AA_BASE_PATH"]."post2shtml.php3";
     $form_content = file (AA_INSTAL_URL
         ."admin/anonym_wizard2.php3?post2shtml_id=$post2shtml_id&slice_id=$slice_id");
-    echo HTMLSpecialChars (join ("", $form_content));
+    echo HTMLEntities (join ("", $form_content));
     echo "\n</textarea></td></tr>\n";
 }
 
