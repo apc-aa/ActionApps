@@ -57,6 +57,13 @@ http://www.apc.org/
                      // links generated in slice (at this time just prepared)
 #key                 // see lock (at this time just prepared)
 
+                      //Discussion parameters
+#optionaly add_disc   // if set, discussion comment will be added
+#optionaly parent_id  // parent id of added disc. comment
+#optionaly sel_ids    // if set, show only discussion comments in $ids[] array
+#optionaly ids[]      // array of discussion comments to show in fulltext mode (ids['x'.$id])
+#optionaly all_ids    // if set, show all discussion comments
+
 $encap = ( ($encap=="false") ? false : true );
 
 require "./include/config.php3";
@@ -66,6 +73,7 @@ require $GLOBALS[AA_INC_PATH]."item.php3";
 require $GLOBALS[AA_INC_PATH]."view.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
+require $GLOBALS[AA_INC_PATH]."discussion.php3";
 
 # $debugtimes[]=microtime();
 
@@ -263,6 +271,31 @@ if( $sh_itm OR $x ) {
     
   $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
   $itemview->print_item();
+
+  // show discussion if assigned
+  if( $slice_info[vid] > 0 ) {
+    $db->query("SELECT view.*, slice.flag
+                FROM view, slice
+                WHERE slice.id='".q_pack_id($slice_id)."' AND slice.vid=view.id");
+    if( $db->next_record() ) {
+      $view_info = $db->Record;
+      // create array of parameters
+      $disc = array('ids'=>$all_ids ? "" : $ids,
+                    'type'=>$add_disc ? "adddisc" : (($sel_ids || $all_ids) ? "fulltext" : "thread"),
+                    'item_id'=> $sh_itm,
+                    'vid'=> $view_info[id],
+                    'html_format' => ($view_info[flag] & DISCUS_HTML_FORMAT) ? true : false,
+                    'parent_id' => $parent_id
+                     );
+      $aliases = GetDiscussionAliases();
+  
+      $format = GetDiscussionFormat($view_info);
+      $format['id'] = $p_slice_id;                  // set slice_id because of caching
+  
+      $itemview = new itemview( $db, $format, "", $aliases, "","", "", $sess->MyUrl($slice_id, $encap), $disc);
+      $itemview->print_discussion();
+    }
+  }  
   ExitPage();
 }
 
@@ -435,8 +468,6 @@ $debugtimes[]=microtime();*/
 // echo "<br>new: ". (double)((double)($debugtimes[3]) - (double)($debugtimes[2]));
 
 }    
-if(!$encap) 
-  echo '<a href="'. $sess->MyUrl($slice_id, $encap). '&bigsrch=1">Search form</a><br>';
 if( !$srch AND !$encap AND !$query AND !$easy_query ) {
   $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories 
   pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
@@ -460,6 +491,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.25  2001/09/27 16:09:33  honzam
+New discussion support
+
 Revision 1.24  2001/07/09 18:01:43  honzam
 user defined aliases passed by url
 
