@@ -671,7 +671,7 @@ class aainputfield {
                                    $this->msg[] = _m("Unable to find tagprefix table %1", array($tp));
                                }
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $sid = $this->fill_const_arr('', false, false, AA_BIN_ACT_PEND|AA_BIN_EXPIRED|AA_BIN_HOLDING, $this->value, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
+                               $sid = $this->fill_const_arr('', false, false, AA_BIN_ALL, $this->value, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
                                if ( $this->mode == 'freeze' ) {
                                    $this->value_modified = $this->implodaval('<br>');
                                    $this->staticText();

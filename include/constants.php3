@@ -817,6 +817,7 @@ define("AA_BIN_PENDING",  2);
 define("AA_BIN_EXPIRED",  4);
 define("AA_BIN_HOLDING",  8);
 define("AA_BIN_TRASH",   16);
+define("AA_BIN_ALL",     31);   // all bins (AA_BIN_ACTIVE|AA_BIN_PENDING|...)
 
 /** HTMLArea constants */
 define("AA_HTMLAREA_SPELL_CGISCRIPT",""); // path for spellchecker cgi script (read misc/htmlarea/readme.aa)
