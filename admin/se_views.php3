@@ -55,16 +55,17 @@ if( $del ) {
 function PrintViewRow($id, $name, $type) {
   global $sess;
   $VIEW_TYPES = getViewTypes();
-
   $name=safe($name); $id=safe($id);
+
+  $edit_url = con_url($sess->url("./se_view.php3"), "view_id=$id&view_type=$type");
   $view_url = AA_INSTAL_URL. "view.php3?vid=$id&rXn=1";
 
   echo "<tr class=tabtxt>
-          <td class=tabtxt><a href=\"javascript:OpenWindowTop('$view_url')\" title=\"". _m('show this view') ."\">$id</a></td>
+          <td class=tabtxt><a href=\"$edit_url\">$id</a></td>
           <td class=tabtxt>". $VIEW_TYPES[$type]["name"] ."</td>
           <td class=tabtxt>$name</td>
-          <td class=tabtxt><a href=\"". con_url($sess->url("./se_view.php3"),
-            "view_id=$id&view_type=$type"). "\">". _m("Edit") . "</a></td>
+          <td class=tabtxt><a href=\"$edit_url\">". _m("Edit") . "</a></td>
+          <td class=tabtxt><a href=\"javascript:OpenWindowTop('$view_url')\" title=\"". _m('show this view') ."\">". _m("Show") . "</a></td>
           <td class=tabtxt><a href=\"javascript:DeleteView('$id')\">". _m("Delete") ."</a></td>
          </tr>";
 }
