@@ -21,10 +21,6 @@ http://www.apc.org/
 
 # script for MySQL database update
 
-
-crash !!!    - remove this line to run the script, please!
-
-
 # this script updates the database to last structure, create all tables, ...
 # can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
@@ -1005,14 +1001,17 @@ if( !$update AND !$restore AND !$restore_now) {
                 "Updates field templates, which is used when you adding new field to slice","");
   FrmInputChBox("templates", "Redefine slice templates", true, false, "", 1, false, 
                 "Updates only slice templates, which is in standard AA installation","");
-  FrmInputChBox("view_templates", "Add view templates", true, false, "", 1, false, 
+  FrmInputChBox("view_templates", "Add view templates", true, false, "", 1, false,
                 "Templates for javascript, constans, discussions views, ... you can see in 'Action Aplication Core' slice. If you haven't defined any view of some type, the templates are used as default values for new views","");
-  FrmInputChBox("addstatistic", "Add statistic fields", true, false, "", 1, false, 
+  FrmInputChBox("addstatistic", "Add statistic fields", true, false, "", 1, false,
                 "New fields (display_count, disc_count, disc_app) in v1.8 should be added to all slice definitions","");
-  FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false, 
+  FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false,
                 "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice). The default site and poll module is also created/renewed with this option.","");
   FrmInputChBox("alerts", "Add Alerts defaults", true, false, "", 1, false,
                 "Alerts are run by cron.php3, 5 entries to table cron are added/renewed (4 for alerts, 1 for cross server networking). Also two defaults to table alerts_collection are added.");
+  FrmStaticText("", "<hr>", false, "", "", false );
+  FrmInputText("dbpw5", "5 characters of database password", "", 5, 5, false,
+                "Fill in first five characters of the database password (see DB_PASSWORD in config.php3 file) - it is from security reasons");
   echo '
   </table></td></tr>
   <tr><td align="center">
@@ -1024,8 +1023,34 @@ if( !$update AND !$restore AND !$restore_now) {
   </html>
   ';
   exit;
-}  
-  
+}
+
+
+if( substr( DB_PASSWORD, 0, 5 ) != $dbpw5 ) {
+  echo '
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+    <html>
+    <head>
+    	<title>APC-AA database update script - bad password</title>
+    </head>
+    <body>
+
+    <h1>APC AA</h1>
+
+    <form name=f action="' .$PHP_SELF .'">
+    <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
+    <tr><td class=tabtit><b>&nbsp;Bad password. Please fill "first five characters from aa database password (DB_PASSWORD in config.php3 file)".</b></td></tr>
+    <tr><td align="center">
+      <input type=hidden name=dbpw5 value="'.$dbpw5.'">
+      <input type=submit name=xxxx value="Back">
+    </td></tr></table>
+    </FORM>
+    </body>
+    </html>';
+  exit;
+}
+
+
 if( $restore ) {
   echo '
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -1034,14 +1059,15 @@ if( $restore ) {
     	<title>APC-AA database restore script</title>
     </head>
     <body>
-  
+
     <h1>APC-AA database restore</h1>
-    
+
     <p>This script DELETES all the current tables (slice, item, ...) and then renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...). So, there MUST be bck_* tables if you want to have some content in database.</p>
     <form name=f action="' .$PHP_SELF .'">
     <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
     <tr><td class=tabtit><b>&nbsp;Are you sure you want to restore tables?</b></td></tr>
     <tr><td align="center">
+      <input type=hidden name=dbpw5 value="'.$dbpw5.'">
       <input type=submit name=restore_now value="Yes">
       <input type=submit name=xxxx value="No">
     </td></tr></table>
@@ -1049,7 +1075,7 @@ if( $restore ) {
     </body>
     </html>';
   exit;
-}  
+}
 
 if( $restore_now ) {
   echo '
@@ -1059,11 +1085,11 @@ if( $restore_now ) {
     	<title>APC-AA database restore script</title>
     </head>
     <body>
-  
+
     <h1>APC-AA database restore</h1>
-    
+
     <p>Resoring ...</p>';
-    
+
   echo '<h2>Replace tables with bck_* tables</h2>';
   reset( $tablelist );
   $store_halt = $db->Halt_On_Error;
@@ -1075,16 +1101,16 @@ if( $restore_now ) {
     $SQL = "ALTER TABLE bck_$t RENAME $t";
     safe_echo ($SQL);
     $db->query($SQL);
-  }  
+  }
   $db->Halt_On_Error = $store_halt;
 
   echo '<h2>Restore OK</h2>
         </body>
         </html>';
-    
+
   exit;
-}  
-  
+}
+
 echo '
   <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
   <html>
@@ -1095,11 +1121,11 @@ echo '
 
   <h1>APC-AA database update</h1>
   <p>Updating ...</p>';
-  
+
 if( $dbcreate ) {
-  # this script copies data from old tables to temp tables, 
+  # this script copies data from old tables to temp tables,
   # and then replaces the old tables with the temp tables.
-  # if an old table is 'missing' it will cause an error, 
+  # if an old table is 'missing' it will cause an error,
   # so here, we create missing old tables.
 
   echo '<h2>Delete temporary tables if exists</h2>';
@@ -1108,7 +1134,7 @@ if( $dbcreate ) {
     $SQL = "DROP TABLE IF EXISTS tmp_$t";
     safe_echo ($SQL);
     $db->query("$SQL");
-  }  
+  }
 
   echo '<h2>Creating temporary databases</h2>';
   reset( $tablelist );
