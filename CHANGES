@@ -1,3 +1,7 @@
+11/21/02 - fixed problem, where slice admin can't edit slice settings (only superadmins can)
+         - fixed bug of ocasional warning of empty array in sql_parse.php3
+         - fixed typo in slice4cache variable name in modules/site/site.php3
+
 --------------------
 11/18/02 - v2.4.0 - stable release
 --------------------
@@ -10,7 +14,7 @@
 11/15/02 - display control variables (like navbar, sort_filter) are in sessions
          - new input type "two boxes"
          - fixed problem of IsSuperuser() function - it didn't use cached values
-         - javascripts moved to new directory - it allows better security 
+         - javascripts moved to new directory - it allows better security
            settings for include directory
          - fixed {switch()..} bug - default option works, 
                                   - empty variable condition works
