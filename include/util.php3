@@ -823,4 +823,13 @@ function IsField($fld) {
   return( (strlen($fld)==16) && (ereg("^[a-z_]+\.+[0-9]*$",$fld)) );
 }
 
+# fulltext is viewed - count hit
+function CountHit($id, $column='id') {
+  global $db;
+  $where = (( $column == "id" ) ? "id='".q_pack_id($id)."'" : "short_id=$id");
+  $SQL = "UPDATE item 
+             SET display_count=(display_count+1) 
+          WHERE $where";
+  $db->query($SQL);
+}  
 ?>

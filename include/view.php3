@@ -91,8 +91,13 @@ function ParseViewParameters($query_string="") {
     case 'x':  $vid = $command[1];
                for( $i=2; $i<count($command); $i++)
                  $item_ids[] = $command[$i];
-               if( strlen($command[2]) < 16  )
+               if( strlen($command[2]) < 16  ) {           # short id is used
                  $use_short_ids = true;
+                 if( $command[2] > 0 )
+                   CountHit($command[2], 'short_id');      # count hit only for 
+               } else {                                    #  first displayed
+                 CountHit($command[2], 'id');              #  item
+               }  
                break;
     case 'c':  if( $command[1] && ($command[2] != 'AAnoCONDITION')) 
                  $param_conds[$command[1]] = stripslashes($command[2]);

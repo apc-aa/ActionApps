@@ -206,16 +206,12 @@ function RestoreVariables() {
 function LogItem($id, $column) {
   global $db;
 
-  $where = (( $column == "id" ) ? "id='".q_pack_id($id)."'" : "short_id=$id");
-  $SQL = "UPDATE item 
-             SET display_count=(display_count+1) 
-          WHERE $where";
-  $db->query($SQL);
+  CountHit($id, $column);
 
   if( $column == "id" )
     return $id;
     
-  $SQL = "SELECT id, display_count FROM item WHERE $where";
+  $SQL = "SELECT id, display_count FROM item WHERE short_id='$id'";
   $db->query($SQL);
   if( $db->next_record() )
     return unpack_id( $db->f('id') );
