@@ -22,6 +22,14 @@
  *        about the errors occured to the user.
  *  @param array result Array with error messages passed from filler.php3.
  *
+ *  @param string ac  Access Code to be used with Reader Management to
+ *        find the correct reader data.
+ *  @param string aw  The same Access Code as "ac", but additionally
+ *        confirms the reader's email. See doc/reader.html for more info.
+ *  @param string au  The same Access Code as "ac", but additionally
+ *        unsubscribes the user from the collection, the ID of which is given in $c
+ *  @param string c   Collection ID, used in connection with $au (see above).
+ *
  *  WARNING: There are some troubles with check boxes. You should never use
  *      checkboxes checked by default (<INPUT TYPE="CHECKBOX" CHECKED>) 
  *      in combination with fillform.
@@ -106,6 +114,7 @@ if ($encap) require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";
 /** Main include file for using session management function on a page */
 else require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; 
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 page_open(array("sess" => "AA_SL_Session"));
 
@@ -240,10 +249,17 @@ function fillForm () {
     
     // reader management: aw=ABCDE is sent in welcome
     // emails to confirm the email address
-    if ($slice_info["type"] == "ReaderManagement" && $GLOBALS["aw"]) {
-        $GLOBALS["ac"] = $GLOBALS["aw"];
-        if (confirm_email ())
-            $GLOBALS["result"]["email_confirmed"] = "OK";
+    if ($slice_info["type"] == "ReaderManagement") {
+        if ($GLOBALS["aw"]) {
+            $GLOBALS["ac"] = $GLOBALS["aw"];
+            if (confirm_email ())
+                $GLOBALS["result"]["email_confirmed"] = "OK";
+        }
+        if ($GLOBALS["au"]) {
+            $GLOBALS["ac"] = $GLOBALS["au"];
+            if (unsubscribe_reader ())
+                $GLOBALS["result"]["unsubscribed"] = "OK";
+        }
     }
     
     if (is_array ($oldcontent4id)) {        
@@ -302,7 +318,7 @@ function fillForm () {
            & ITEM_FLAG_ANONYMOUS_EDITABLE != 0);
         break;
     }
-    if (!$permsok) { echo "<!--this item is not allowed to be update-->"; return; }
+    if (!$permsok) { echo "<!--this item is not allowed to be updated-->"; return; }
 
     fillFormWithContent ($oldcontent4id);
 }
@@ -335,7 +351,7 @@ function fillFormWithContent ($oldcontent4id) {
 				if (substr ($field_id, 0, 14) != "password......" 
 					&& $field_id != "id.............."
 					&& $field_id != "slice_id........"
-					&& $myvalue != "") {
+					//&& $myvalue != "") {
                     if (!$first) echo ",\n"; else $first = false;
 					echo "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','".
 					($field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone)";
@@ -389,7 +405,43 @@ function confirm_email() {
                 "UPDATE content SET text='1'
                 WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
                 AND item_id = '".q_pack_id($item_id)."'");
-            echo "<!--confirm_email.php3: OK: email confirmed-->";
+            echo "<!--OK: email confirmed-->";
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+function unsubscribe_reader() {
+    global $slice_id;
+    
+    require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+
+    $db->query (
+        "SELECT item.id FROM content INNER JOIN item
+         ON content.item_id = item.id
+         WHERE item.slice_id='".q_pack_id($slice_id)."'
+         AND content.field_id='".FIELDID_ACCESS_CODE."'
+         AND content.text='".$GLOBALS["au"]."'");
+    if ($db->num_rows() != 1) 
+    { echo "<!--AU not OK: ".$db->num_rows()." items-->"; return; }
+    $db->next_record();
+    $item_id = unpack_id ($db->f("id"));
+    
+    $field_id = getAlertsField (FIELDID_HOWOFTEN, $GLOBALS["c"]);
+    $db->query (
+        "SELECT text FROM content 
+        WHERE field_id = '".$field_id."'
+        AND item_id = '".q_pack_id($item_id)."'");
+        
+    if ($db->next_record()) {
+        if ($db->f("text")) {
+            $db->query (
+                "UPDATE content SET text=''
+                WHERE field_id = '".$field_id."'
+                AND item_id = '".q_pack_id($item_id)."'");
+            echo "<!--OK: f $field_id unsubscribed-->";
             return true;
         }
     }
