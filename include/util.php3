@@ -83,7 +83,7 @@ function go_url($url, $add_param="") {
  	exit;
 }
 
-function go_url_javascript ($url) {
+function go_url_javascript ($to_go_url) {
 	echo "
     <SCRIPT language=JavaScript>
     <!--\n
@@ -646,10 +646,7 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $ids="
         GROUP BY text
         ORDER BY text";
 
-  if( $GLOBALS['debug'] )
-    $db->dquery($SQL);
-   else
-    $db->query($SQL);
+  $db->tquery($SQL);
     
   while($db->next_record())
     $arr[unpack_id($db->f(id))] = substr($db->f(text), 0, 50);  #truncate long headlines
@@ -658,7 +655,7 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $ids="
 }
 
 # fills content arr with specified constant data
-function GetConstantContent( $group, $order='pri' ) {
+function GetConstantContent( $group, $order='pri,name' ) {
   global $db;
 
   $db->query("SELECT * FROM constant 
