@@ -275,7 +275,15 @@ echo "</table>
   <tr>
    <td>
     <form name=fr>
-     <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">";
+     <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" width=\"100%\" bgcolor=\"". COLOR_TABBG ."\">
+      <tr class=tabtxt align=center>
+       <td><b>". L_RULE . "</b></td>
+       <td><b>". L_FIELD . "</b></td>
+       <td><b>". L_FUNCTION . "</b></td>
+       <td><b>". L_VALUE . "</b></td>
+       <td><b>". L_HTML . "</b></td>
+       <td>&nbsp;</td>
+      </tr>"; 
 
 PrintSetRule(1,'listlen',     0,0,                   1,0,L_PROFILE_LISTLEN_DESC );
 PrintSetRule(2,'admin_search',1,0,                   1,0,L_PROFILE_ADMIN_SEARCH_DESC);
@@ -305,6 +313,9 @@ echo "</form>
 
 /*
 $Log$
+Revision 1.2  2001/12/26 22:11:38  honzam
+Customizable 'No item found' message. Added missing language constants.
+
 Revision 1.1  2001/12/18 12:12:27  honzam
 new user profile feature
 

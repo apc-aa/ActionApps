@@ -528,12 +528,15 @@ if( $ids_cnt > 0 ) {
     $scr->pnavbar();
 }  
 else 
-  echo "<div>". L_NO_ITEM ."</div>";
+  echo $slice_info['noitem_msg'] ? $slice_info['noitem_msg'] : ("<div>".L_NO_ITEM ."</div>");
 
 ExitPage();
 
 /*
 $Log$
+Revision 1.31  2001/12/26 22:11:37  honzam
+Customizable 'No item found' message. Added missing language constants.
+
 Revision 1.30  2001/12/18 11:37:38  honzam
 scripts are now "magic_quotes" independent - no matter how it is set
 

@@ -83,7 +83,6 @@ define("L_NO_PS_EDIT_ITEMS", "Nemáte právo upravovat zprávy v tomto webíku");
 define("L_NO_DELETE_ITEMS", "Nemáte právo mazat zprávy");
 define("L_NO_PS_MOVE_ITEMS", "Nemáte právo pøesouvat zprávy");
 define("L_FULLTEXT_OK", "Vzhled textu zprávy byl úspìšnì zmìnìn");
-define("L_NO_ITEM", "Žádná zpráva nevyhovuje vašemu dotazu.");
 
 # aa toolkit common labels
 # can be the same for all toolkit aplications
@@ -755,8 +754,43 @@ require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 define("L_PARAM_WIZARD_LINK", "Prùvodce s nápovìdou");
 define("L_SHOW_RICH", "Zobraz toto pole v rich text editoru (použijte až po nainstalování potøebných komponent!)");
 
+
+define("L_NOITEM_MSG", "Hláška 'Nenalezena žádná zpráva'");
+define("L_NOITEM_MSG_HLP", "zpráva, která se objeví pøi nenalezení žádného odpovídajícího èlánku");
+
+# ---------------- Users profiles -----------------------------------------
+define('L_PROFILE','Profil');
+define('L_DEFAULT_USER_PROFILE','Spoleèný profil');
+define('L_PROFILE_DELETE_OK','Pravidlo úspìšnì vymazáno');
+define('L_PROFILE_ADD_OK','Pravidlo pøidáno');
+define('L_PROFILE_ADD_ERR','Chyba pøi pøidávání nového pravidla');
+define('L_PROFILE_LISTLEN','Poèet zpráv');
+define('L_PROFILE_ADMIN_SEARCH','Filtr zpráv');
+define('L_PROFILE_ADMIN_ORDER','Øazení');
+define('L_PROFILE_HIDE','Skrýt políèko');
+define('L_PROFILE_HIDEFILL','Skrýt a vyplnit');
+define('L_PROFILE_FILL','Vyplnit políèko');
+define('L_PROFILE_PREDEFINE','Pøednastavit políèíko');
+define('L_A_PROFILE_TIT','Správa webíku - Uživatelské profily');
+define('L_PROFILE_HDR','Nastavená pravidla');
+define('L_NO_RULE_SET','Žádné pravidlo nebylo definováno');
+define('L_PROFILE_ADD_HDR','Pøidat pravidlo');
+define('L_PROFILE_LISTLEN_DESC','poèet zpráv zobrazených v administraci');
+define('L_PROFILE_ADMIN_SEARCH_DESC','pøednastavení "Hledání" v administraci');
+define('L_PROFILE_ADMIN_ORDER_DESC','pøednastavení "Seøadit" v administraci');
+define('L_PROFILE_HIDE_DESC','skýt políèko ve vstupním foruláøi');
+define('L_PROFILE_HIDEFILL_DESC','skýt políèko ve vstupním foruláøi a vyplnit je danou hodnotou');
+define('L_PROFILE_FILL_DESC','vyplnit políèko ve vstupním foruláøi vždy danou hodnotou');
+define('L_PROFILE_PREDEFINE_DESC','pøednastavit hodnotu do políèka ve vstupním formuláøi');
+define('L_VALUE',L_MAP_VALUE2);
+define('L_FUNCTION',L_ALIAS_FUNC);
+define('L_RULE','Pravidlo');
+
 /*
 $Log$
+Revision 1.43  2001/12/26 22:11:37  honzam
+Customizable 'No item found' message. Added missing language constants.
+
 Revision 1.42  2001/12/18 11:49:26  honzam
 new WYSIWYG richtext editor for inputform (IE5+)
 

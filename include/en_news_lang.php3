@@ -82,7 +82,6 @@ define("L_NO_PS_EDIT_ITEMS", "You do not have permission to edit items in this s
 define("L_NO_DELETE_ITEMS", "You have not permissions to remove items");
 define("L_NO_PS_MOVE_ITEMS", "You have not permissions to move items");
 define("L_FULLTEXT_OK", "Fulltext format update successful");
-define("L_NO_ITEM", "No items match your query.");
 
 # aa toolkit common labels
 # can be the same for all toolkit aplications
@@ -762,10 +761,43 @@ define("L_SHOW_RICH", "Show this field as a rich text editor (use only after hav
 // not appended to other lang files
 //define("", "");
 define("L_MAP_JOIN","-- Joined fields --");
+define("L_NOITEM_MSG", "'No item found' message");
+define("L_NOITEM_MSG_HLP", "message to show in place of slice.php3, if no item matches the query");
+
+# ---------------- Users profiles -----------------------------------------
+define('L_PROFILE','Profile');
+define('L_DEFAULT_USER_PROFILE','Default user profile');
+define('L_PROFILE_DELETE_OK','Rule deleted');
+define('L_PROFILE_ADD_OK','Rule added');
+define('L_PROFILE_ADD_ERR',"Error: Can't add rule");
+define('L_PROFILE_LISTLEN','Item number');
+define('L_PROFILE_ADMIN_SEARCH','Item filter');
+define('L_PROFILE_ADMIN_ORDER','Item order');
+define('L_PROFILE_HIDE','Hide field');
+define('L_PROFILE_HIDEFILL','Hide and Fill');
+define('L_PROFILE_FILL','Fill field');
+define('L_PROFILE_PREDEFINE','Predefine field');
+define('L_A_PROFILE_TIT','Admin - user Profiles');
+define('L_PROFILE_HDR','Rules');
+define('L_NO_RULE_SET','No rule is set');
+define('L_PROFILE_ADD_HDR','Add Rule');
+define('L_PROFILE_LISTLEN_DESC','number of item displayed in Item Manager');
+define('L_PROFILE_ADMIN_SEARCH_DESC','preset "Search" in Itme Manager');
+define('L_PROFILE_ADMIN_ORDER_DESC','preset "Order" in Itme Manager');
+define('L_PROFILE_HIDE_DESC','hide the field in inputform');
+define('L_PROFILE_HIDEFILL_DESC','hide the field in inputform and fill it by the value');
+define('L_PROFILE_FILL_DESC','fill the field in inputform by the value');
+define('L_PROFILE_PREDEFINE_DESC','predefine value of the field in inputform');
+define('L_VALUE',L_MAP_VALUE2);
+define('L_FUNCTION',L_ALIAS_FUNC);
+define('L_RULE','Rule');
 
 
 /*
 $Log$
+Revision 1.55  2001/12/26 22:11:37  honzam
+Customizable 'No item found' message. Added missing language constants.
+
 Revision 1.54  2001/12/18 12:14:20  honzam
 new WYSIWYG richtext editor for inputform (IE5+), new possibility to join fields when fields are fed to another slice
 

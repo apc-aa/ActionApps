@@ -54,6 +54,7 @@ if( $update )
     ValidateInput("compact_top", L_COMPACT_TOP, &$compact_top, &$err, false, "text");
     ValidateInput("compact_bottom", L_COMPACT_BOTTOM, &$compact_bottom, &$err, false, "text");
     ValidateInput("compact_remove", L_COMPACT_REMOVE, &$compact_remove, &$err, false, "text");
+    ValidateInput("noitem_msg", L_NOITEM_MSG, &$noitem_msg, &$err, false, "text");
     if( $even_odd_differ )
       ValidateInput("even_row_format", L_EVEN_ROW_FORMAT, &$even_row_format, &$err, true, "text");
     if( $category_sort ) {
@@ -74,6 +75,9 @@ if( $update )
     $varset->add("compact_remove", "quoted", $compact_remove);
     $varset->add("even_odd_differ", "number", $even_odd_differ ? 1 : 0);
     $varset->add("category_sort", "number", $category_sort ? 1 : 0);
+      # if not filled, store " " - the empty value displays "No item found" for
+      # historical reasons
+    $varset->add("noitem_msg", "quoted", $noitem_msg ? $noitem_msg : " " );
 
     if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . " 
                       WHERE id='".q_pack_id($slice_id)."'")) {
@@ -92,7 +96,7 @@ if( $update )
 if( $slice_id!="" ) {  // set variables from database - allways
   $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top, 
                  compact_bottom, compact_remove, category_sort, category_format,
-                 category_top, category_bottom
+                 category_top, category_bottom, noitem_msg
           FROM slice WHERE id='". q_pack_id($slice_id)."'";
   $db->query($SQL);
   if ($db->next_record()) {
@@ -106,6 +110,7 @@ if( $slice_id!="" ) {  // set variables from database - allways
     $compact_remove = $db->f(compact_remove);
     $even_odd_differ = $db->f(even_odd_differ);
     $category_sort = $db->f(category_sort);
+    $noitem_msg = $db->f(noitem_msg);
   }  
 }
 
@@ -124,6 +129,7 @@ function Defaults()
   document.f.compact_remove.value = '<?php echo DEFAULT_COMPACT_REMOVE ?>'
   document.f.even_odd_differ.checked = <?php echo (DEFAULT_EVEN_ODD_DIFFER ? "true" : "false"). "\n"; ?>
   document.f.category_sort.checked = <?php echo (DEFAULT_CATEGORY_SORT ? "true" : "false")."\n"; ?>
+  document.f.noitem_msg.value = ''
   InitPage()
 }
 
@@ -177,6 +183,8 @@ function EnableClick(cond,what) {
                L_BOTTOM_HLP, DOCUMENTATION_URL, 1); 
   FrmInputText("compact_remove", L_COMPACT_REMOVE, $compact_remove, 254, 50, false,
                L_REMOVE_HLP, DOCUMENTATION_URL);
+  FrmInputText("noitem_msg", L_NOITEM_MSG, $noitem_msg, 254, 50, false,
+               L_NOITEM_MSG_HLP, DOCUMENTATION_URL);
 ?>
 </table></td></tr>
 <?php
@@ -191,6 +199,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.17  2001/12/26 22:11:38  honzam
+Customizable 'No item found' message. Added missing language constants.
+
 Revision 1.16  2001/09/27 15:44:35  honzam
 Easiest left navigation bar editation
 
