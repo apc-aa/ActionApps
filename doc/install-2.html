@@ -84,14 +84,15 @@ organization. It is recommended that you use a domain name you own for
 that. (You could also use a geographical category, but this is not 
 described here.) A domain name can be described in a LDAP dn using the
 <EM>dc</EM> attribute. For example, the base dn for a possible domain name
-<EM>ecn.apc.org</EM> would be <CODE>dc=ecn,dc=apc,dc=org</CODE>.</LI>
+<EM>ecn.apc.org</EM> would be <CODE>dc=ecn,dc=apc,dc=org</CODE>. Or you 
+can use only simply <CODE>ou=AA</CODE> .</LI>
 <LI>Your LDAP administrative account. OpenLDAP's built-in access
 control needs a <EM>root</EM> object which has all privileges. Once it exists,
 the root object can be used to modify the data stored in the LDAP database.
 Like every object in the database, the root object needs a dn. It is 
 recommended that you use the canonical name <EM>root</EM>. Following the
 example above, this gives us a root object dn of 
-<CODE>cn=root,dc=ecn,dc=apc,dc=org</CODE>.</LI>
+<CODE>cn=root,dc=ecn,dc=apc,dc=org</CODE>. Or simply <CODE>cn=root,ou=AA</CODE></LI>
 </UL>
 <P>Note: As with the database server,
 the OpenLDAP server does not necessarily need to be running on the same

@@ -195,7 +195,7 @@ the host where the ldap server runs:
 <BLOCKQUOTE><CODE>
 <HR>
 <PRE>
-BASE    dc=ecn,dc=apc,dc=org
+BASE    ou=AA
 HOST    localhost
 </PRE>
 <HR>
@@ -247,44 +247,28 @@ create this database, you need a <EM>ldif</EM> format file which can be translat
 into the database by the ldapmodify command. There is an example ldif file,
 namely <CODE>LDIF.ini</CODE>, in the doc/ directory. Edit this file to suit your
 needs according to the following instructions.
-<P>The initial ldif file should contain two objects:
+<P>The initial ldif file should contain four objects:
 <UL>
-<LI>Your base object</LI>
+<LI>Action Applications base object</LI>
 <LI>The Action Applications account object (used by Action Applications to access the ldap server)</LI>
+<LI>ldap tree for AA's users</LI>
+<LI>ldap tree for ACLs used by the Action Applications</LI>
 </UL>
 
 Objects are separated by blank lines. Each line consists of a keyword,
 followed by a colon, followed by a value. The first line of each object
 is the dn, thus the keyword is "dn". The other object lines are its
 attributes.
-<P>Edit these spots:
-<UL>
-<LI>Everywhere: replace
-occurances of the
-example "dc=ecn,dc=apc,dc=org" base dn with your own one</LI>
-<LI>root object (first block)
-<DL>
-<DT><B>o: Econnect</B><DD><P>Replace "Econnect" with your organization name.
-<DT><B>dc: ecn</B><DD><P>Replace "ecn" with your base dn domain name, but only the
-first word up to but not including the first dot.
-<DT><B>description</B><DD><P>Fill in a descriptive text describing your
-organization.
-</DL>
-</LI>
-<LI>Action Applications account object (second block)
-<P>No modifications
-</LI>
-</UL>
-<P>Having made these modifications, we can tell the ldap server to create
-the objects:
+<P>You can edit this file, but it's not necessary.
+<P>We can tell the ldap server to create the objects:
 <P>
 <BLOCKQUOTE><CODE>
 <HR>
 <PRE>
-% ldapmodify -a -f ldiffile -D "cn=root,dc=ecn,dc=apc,dc=org" -w password
-adding new entry dc=ecn,dc=apc,dc=org
+% ldapmodify -a -f ldiffile -D "cn=root,ou=AA" -w password
+adding new entry ou=AA
 
-adding new entry cn=aalduser,dc=ecn,dc=apc,dc=org
+adding new entry cn=aalduser,ou=AA
 </PRE>
 <HR>
 </CODE></BLOCKQUOTE>
@@ -330,11 +314,11 @@ new password, enter the new root dn password you want to set. And remind it!
 <BLOCKQUOTE><CODE>
 <HR>
 <PRE>
-% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha
+% ldappasswd -D "cn=root,ou=AA" -w password -t "cn=aalduser,ou=AA" -H ssha
 New password: 
 Re-enter new password: 
-% ldapsearch -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -L cn=aa
-dn: cn=aalduser,dc=ecn,dc=apc,dc=org
+% ldapsearch -D "cn=root,ou=AA" -w password -L cn=aa
+dn: cn=aalduser,ou=AA
 objectclass: top
 objectclass: person
 cn: aa
@@ -354,7 +338,7 @@ will no longer work, instead, you use the password you just entered.
 <BLOCKQUOTE><CODE>
 <HR>
 <PRE>
-% ldapsearch -D "cn=aalduser,dc=ecn,dc=apc,dc=org" -W -L objectclass=\*
+% ldapsearch -D "cn=aalduser,ou=AA" -W -L objectclass=\*
 Enter LDAP Password: 
 </PRE>
 <HR>
@@ -369,7 +353,7 @@ again so it is different from the root dn password:
 <BLOCKQUOTE><CODE>
 <HR>
 <PRE>
-% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha -W
+% ldappasswd -D "cn=root,ou=AA" -t "cn=aalduser,ou=AA" -H ssha -W
 </PRE>
 <HR>
 </CODE></BLOCKQUOTE>

@@ -227,13 +227,14 @@ that. (You could also use a geographical category, but this is not
 described here.) A domain name can be described in a LDAP dn using the
 <em/dc/ attribute. For example, the base dn for a possible domain name
 <em/ecn.apc.org/ would be <tt/dc=ecn,dc=apc,dc=org/.
+ Or you can use only simply <tt/ou=AA/.
 <item>Your LDAP administrative account. OpenLDAP's built-in access
 control needs a <em/root/ object which has all privileges. Once it exists,
 the root object can be used to modify the data stored in the LDAP database.
 Like every object in the database, the root object needs a dn. It is 
 recommended that you use the canonical name <em/root/. Following the
 example above, this gives us a root object dn of 
-<tt/cn=root,dc=ecn,dc=apc,dc=org/.
+<tt/cn=root,dc=ecn,dc=apc,dc=org/. Or simply <tt/cn=root,ou=AA/.
 </itemize>
 
 Note: As with the database server,
@@ -450,7 +451,7 @@ Edit the file <tt>/etc/openldap/ldap.conf</tt>. After installation, it
 only contains comments. Put in two lines containing your base dn and
 the host where the ldap server runs:
 <tscreen><code>
-BASE	dc=ecn,dc=apc,dc=org
+BASE	ou=AA
 HOST	localhost
 </code></tscreen>
 (This file is used by the programs that <em/access/ a ldap server, not
@@ -498,42 +499,27 @@ into the database by the ldapmodify command. There is an example ldif file,
 namely <tt/LDIF.ini/, in the doc/ directory. Edit this file to suit your
 needs according to the following instructions.
 
-The initial ldif file should contain two objects:
+The initial ldif file should contain four objects:
 <itemize>
-<item>Your base object
+<item>Action Applications base object
 <item>The Action Applications account object (used by Action Applications to access the ldap server)
+<item>ldap tree for AA's users
+<item>ldap tree for ACLs used by the Action Applications
 </itemize>
 Objects are separated by blank lines. Each line consists of a keyword,
 followed by a colon, followed by a value. The first line of each object
 is the dn, thus the keyword is "dn". The other object lines are its
 attributes.
 
-Edit these spots:
-<itemize>
-<item>Everywhere: replace
-	occurances of the
-	example "dc=ecn,dc=apc,dc=org" base dn with your own one
-<item>root object (first block)
-	<descrip>
-	<tag/o: Econnect/ Replace "Econnect" with your organization name.
-	<tag/dc: ecn/ Replace "ecn" with your base dn domain name, but only the
-	first word up to but not including the first dot.
-	<tag/description/ Fill in a descriptive text describing your
-		organization.
-	</descrip>
-<item>Action Applications account object (second block)
-<p>
-No modifications
-</itemize>
+You can edit this file, but it's not necessary.
 
-Having made these modifications, we can tell the ldap server to create
-the objects:
+We can tell the ldap server to create the objects:
 
 <tscreen><code>
-% ldapmodify -a -f ldiffile -D "cn=root,dc=ecn,dc=apc,dc=org" -w password
-adding new entry dc=ecn,dc=apc,dc=org
+% ldapmodify -a -f ldiffile -D "cn=root,ou=AA" -w password
+adding new entry ou=AA
 
-adding new entry cn=aalduser,dc=ecn,dc=apc,dc=org
+adding new entry cn=aalduser,ou=AA
 
 </code></tscreen>
 
@@ -574,11 +560,11 @@ switches must match the <em/old/ root dn password which is still defined
 in clear text in <tt>/etc/openldap/slapd.conf</tt>. When prompted for the
 new password, enter the new root dn password you want to set. And remind it!
 <tscreen><code>
-% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha
+% ldappasswd -D "cn=root,ou=AA" -w password -t "cn=aalduser,ou=AA" -H ssha
 New password: 
 Re-enter new password: 
-% ldapsearch -D "cn=root,dc=ecn,dc=apc,dc=org" -w password -L cn=aa
-dn: cn=aalduser,dc=ecn,dc=apc,dc=org
+% ldapsearch -D "cn=root,ou=AA" -w password -L cn=aa
+dn: cn=aalduser,ou=AA
 objectclass: top
 objectclass: person
 cn: aa
@@ -596,7 +582,7 @@ will no longer work, instead, you use the password you just entered.
 
 Try to access the ldap server using the aalduser account:
 <tscreen><code>
-% ldapsearch -D "cn=aalduser,dc=ecn,dc=apc,dc=org" -W -L objectclass=\*
+% ldapsearch -D "cn=aalduser,ou=AA" -W -L objectclass=\*
 Enter LDAP Password: 
 </code></tscreen>
 You should get all the objects that are stored. In case of an error message,
@@ -607,7 +593,7 @@ spelling errors.
 again so it is different from the root dn password:
 
 <tscreen><code>
-% ldappasswd -D "cn=root,dc=ecn,dc=apc,dc=org" -t "cn=aalduser,dc=ecn,dc=apc,dc=org" -H ssha -W
+% ldappasswd -D "cn=root,ou=AA" -t "cn=aalduser,ou=AA" -H ssha -W
 </code></tscreen>
 
 
