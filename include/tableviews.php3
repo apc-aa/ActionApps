@@ -50,7 +50,7 @@ http://www.apc.org/
 	   "error_insert" => when insert fails
 	   "error_update" => when update fails
 	   "error_delete" => when delete fails
-   "readonly" => true | false  default for all fields
+   "readonly" => true | false  default for all fields, default: true
    "where" => SQL WHERE condition
    "search" => view the search form?, default: true for browse view, false for edit view
                the form is shown only if scroller is shown (i.e. there are more records than 
@@ -70,12 +70,14 @@ http://www.apc.org/
             "default" => default value (for new records)
             "required" => is the field required? default: false
             "view" => (array of) special view (if other than default)
-                "type" => view type = "select" | "hide" | "text" | "area" | "date"
-                            (select box | hidden | text edit box | text area | date special)
+                "type" => view type = "select" | "hide" | "text" | "area" | "date" | "userdef"
+                            (select box | hidden | text edit box | text area | date special | user)
+                "function" => required for "userdef" type, name of function which
+                              takes field value as the only parameter
                 "source" => required for "select", array of ("value"=>"option")
                 "size" => applies for "text","area", default: array ("cols"=>40,"rows"=>4)
                 "format" => required for "date", usable only on readonly field, PHP date() format
-                "readonly" => true | false  if not set, the default readonly is used   
+                "readonly" => true | false  if not set, the default readonly is used; for "userdef" always true   
                 "href_view" => applicable only with readonly=true, links the text to another table view
                 "html" => is it html and not plain text? applicable only with readonly fields, default: false
             "view_new_record" => the same as "view", applied only on empty new record
@@ -268,9 +270,10 @@ function GetTableView ($viewID) {
     }
     
     if ($viewID == "acu") {
-        $db->query ("SELECT id, email FROM alerts_user");
-        while ($db->next_record())
-            $alerts_users[$db->f("id")] = $db->f("email");
+        $db->query ("SELECT id, email, confirm FROM alerts_user");
+        while ($db->next_record()) 
+            $alerts_users[$db->f("id")] = $db->f("email")
+                . ($db->f("confirm") ? " ("._m("Not yet confirmed").")" : "");
                     
         return  array (
         "table" => "alerts_user_filter",
@@ -374,6 +377,7 @@ function GetTableView ($viewID) {
                 "required" => true),
             "firstname" => array ("caption"=>_m("first name"),"view" => array ("type"=>"text","size"=>array("cols"=>8))),
             "lastname" => array ("caption"=>_m("last name"),"view" => array ("type"=>"text","size"=>array("cols"=>15))),
+            "confirm" => array ("caption" =>_m("confirmed"),"view" => array ("type" => "userdef", "function" => "te_au_confirm")),
             "lang" => array ("caption"=>_m("language"),"view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2)))),
         "attrs" => $attrs_browse,
         "where" => CreateWhereFromList ("id", FindAlertsUserPermissions()),
@@ -607,6 +611,13 @@ function CreateWhereFromList ($column, $list, $type="number") {
         }
         return $column." IN ($in)";
     }
+}
+
+// ----------------------------------------------------------------------------------        
+
+// user function for confirmed
+function te_au_confirm ($val) {
+    return $val ? _m("no") : _m("yes");
 }
 ?>
 

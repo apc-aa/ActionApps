@@ -372,11 +372,14 @@ class tabledit {
         $this->setDefault ($this->view["listlen"],   15);
         $this->setDefault ($this->view["search"],    $this->view["type"] == "browse");
         $this->setDefault ($this->view["messages"]["no_item"], _m("Nothing to be shown."));
+        $this->setDefault ($this->view["readonly"],  true);
         
         reset ($this->cols);
         while (list ($colname) = each ($this->cols)) {
             $column = &$this->cols[$colname];
             $this->setDefault ($column["caption"], $colname);
+            $this->setDefault ($column["view"]["readonly"], 
+                $this->view["readonly"] || $column["view"]["type"] == "userdef");
             $this->setDefault ($column["view"]["size"]["cols"], 40);
             $this->setDefault ($column["view"]["size"]["rows"], 4);
             $this->setDefault ($column["view"]["html"], false);
@@ -499,11 +502,7 @@ class tabledit {
 
             if ($cview["type"] == "hide") 
                 continue;
-            
-            if (isset ($cview["readonly"]))
-                 $readonly = $cview["readonly"];
-            else $readonly = $this->view["readonly"];
-                       
+                                   
             if ($this->view["type"] == "edit") {
                 echo "<TR>$td<b>".$column["caption"]."</b><br>\n";
                 if ($column["hint"])
@@ -520,7 +519,7 @@ class tabledit {
             $cols = 80;
             
             echo $td;
-            if (!$readonly) {
+            if (!$cview["readonly"]) {
                 switch ($type) {
                 case 'area':
                 case 'blob': 
@@ -538,10 +537,14 @@ class tabledit {
                         value=\"".$val."\">"; 
                 }
             }
-            else {
+            else { // READ ONLY
                 switch ($type) {
                     case "select": $val = $cview["source"][$record[$colname]]; break;
                     case "date" :  $val = date($cview["format"], $val); break;
+                    case "userdef" : 
+                        $fnc = $cview["function"];
+                        $val = $fnc ($val);
+                        break;
                 }
                 if ($val) {
                     if (!$cview["html"]) $val = htmlentities ($val);
