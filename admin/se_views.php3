@@ -43,7 +43,7 @@ if( $del ) {
   # check if deleted view is from this slice (for security)
   $SQL = "DELETE FROM view WHERE id='$vid' AND slice_id='$p_slice_id'";
   if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
-    $err["DB"] = MsgErr("Can't change field");
+    $err["DB"] = MsgErr("Can't delete view");
     break;
   }
   $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
@@ -59,13 +59,19 @@ function PrintViewRow($id, $name, $type) {
   
   echo "<tr class=tabtxt>
           <td class=tabtxt>$id</td>
-          <td class=tabtxt>$name</td>
           <td class=tabtxt>". $VIEW_TYPES[$type]["name"] ."</td>
+          <td class=tabtxt>$name</td>
           <td class=tabtxt><a href=\"". con_url($sess->url("./se_view.php3"),
             "view_id=$id&view_type=$type"). "\">". L_EDIT . "</a></td>
           <td class=tabtxt><a href=\"javascript:DeleteView('$id')\">". L_DELETE ."</a></td>
          </tr>";
 }
+
+# returns javascript row for view selection
+function GetViewJSArray( $sid, $id, $name, $type, $i ) {
+  $id=safe($id);     
+  return "\n vs[$i]='x$sid'; vv[$i]='$id'; vn[$i]='".safe(substr($name,0,20))."';";
+}         
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>"; ?>
@@ -75,6 +81,24 @@ echo "<TITLE>". L_A_VIEW_TIT ."</TITLE>"; ?>
          return
        var url="<?php echo $sess->url(con_url("./se_views.php3", "del=1")); ?>"
        document.location=url + "&vid=" + escape(id);
+     }
+
+     function SelectViewSlice() {
+       var i,j;
+       var xsid=document.fvtype.view_slice.options[document.fvtype.view_slice.selectedIndex].value;        
+         // clear selectbox
+       for( i=(document.fvtype.view_view.options.length-1); i>=0; i--){
+         document.fvtype.view_view.options[i] = null
+       }  
+         // fill selectbox from the right slice  
+       j=0;
+       for( i=0; i<vs.length ; i++) {
+         if( vs[i] == xsid ) {
+//           if(confirm(vs[i]+" - "+xsid))
+//             return;
+           document.fvtype.view_view.options[j++] = new Option(vv[i]+' - '+vn[i], vv[i])
+         }  
+       }    
      }
   // -->
   </SCRIPT>
@@ -89,35 +113,82 @@ PrintArray($err);
 echo $Msg;
 ?>
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR>
-</td></tr>
+<tr><td class=tabtit><b>&nbsp;<?php echo L_VIEWS_HDR?></b><BR></td></tr>
 <tr>
 <form name="fvtype" method=post action="<?php echo $sess->url("./se_view.php3") ?>">
 <td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   
-# -- get views for current slice --
-$SQL = "SELECT * FROM view WHERE slice_id='$p_slice_id' ORDER BY id";
+# -- get all views --
+$SQL = "SELECT * FROM view ORDER BY id";
 $db->query($SQL);
-while( $db->next_record() )
-  PrintViewRow($db->f(id), $db->f(name), $db->f(type));
+$i=0;
+while( $db->next_record() ) {
+  $view_sid = unpack_id($db->f(slice_id));
+  if( $view_sid == $slice_id ) # list views for this slice
+    PrintViewRow($db->f(id), $db->f(name), $db->f(type));
+  if($g_modules[$view_sid]) {  # if user has any permission for the view's slice
+    $view_array .= GetViewJSArray( $view_sid, $db->f(id), $db->f(name), $db->f(type), $i++ );
+    $sliceWview[$view_sid]=1;  # mark the slices, where is an view  
+  }  
+}  
 
-  # row for new view
-echo "<tr class=tabtit><td align=center colspan=5><select name='view_type'>";	
+  # row for new view creaded from view type selection
+echo "</td>
+     </tr>
+    </table>
+   </td>
+  </tr>
+  <tr><td class=tabtit><b>&nbsp;".L_VIEW_CREATE_NEW ."</b><BR></td></tr>
+  <tr>
+   <td>
+    <table width='100%' border=0 cellspacing=0 cellpadding=4 bgcolor='". COLOR_TABBG ."'>
+      <tr class=tabtxt>
+        <td>".L_VIEW_CREATE_TYPE."</td>
+        <td align=right><select name='view_type'>";	
 reset($VIEW_TYPES);
 while(list($k, $v) = each($VIEW_TYPES)) { 
   echo "<option value='$k'> ". htmlspecialchars($v["name"]) ." </option>";
 }
-echo "</select>
-      <input type=submit name=new value='". L_NEW ."'></td>
+echo "</select></td>
+        <td><input type=submit name=new value='". L_NEW ."'></td>
+     </tr>";
+
+  # row for new view creaded from template
+echo "<tr class=tabtxt>
+        <td>".L_VIEW_CREATE_TEMPL."</td>
+        <td align=right>
+         <select name='view_slice' OnChange='SelectViewSlice()'>";
+  # slice selection         
+reset($g_modules);
+while(list($k, $v) = each($g_modules)) { 
+  if( ($v['type'] != 'S') OR !$sliceWview[$k] )
+    continue;                            # we can feed just between slices ('S')
+  $selected = ( (string)$slice_id == (string)$k ) ? "selected" : "";
+  echo "<option value='x$k' $selected>". safe($v['name']) ."</option>\n";
+}  
+echo "   </select>&nbsp;<select name='view_view'>
+          <option> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>
+         </select>
+         </td>
+        <td><input type=submit name='new_templ' value='". L_NEW ."'></td>
      </tr>
     </table>
   </td>
    </form>
  </tr>
-</table><br>";
-
+</table><br>
+<SCRIPT type='text/javascript'> <!--
+  var vs, vv, vn;
+  vs=new Array();
+  vn=new Array();
+  vv=new Array();
+  $view_array
+  SelectViewSlice();
+//-->
+</SCRIPT>
+";
 
 
 $viewuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF); #include help

@@ -130,18 +130,23 @@ if( $update )
 if( !$update ) {  # set variables from database
   if( $view_id )  # edit specified view data
     $SQL= " SELECT * FROM view WHERE id='$view_id'";
-   else {         # new view - get default values from view table - 
-                  #            take first view of the same type
-    if( $view_type )
-      $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
-     else         # error - someone swith the slice or so
-      go_url($sess->url("se_views.php3")); 
-  }    
+  elseif( $new_templ AND $view_view)   # new view from template
+    $SQL= " SELECT * FROM view WHERE id='$view_view'";
+  elseif( $view_type )         # new view - get default values from view table - 
+                               #            take first view of the same type
+    $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
+  else         # error - someone swith the slice or so
+    go_url($sess->url("se_views.php3")); 
+
   $db->query($SQL);
-  if ($db->next_record())
+  
+  if ($db->next_record()) {
     $vw_data = $db->Record;
-   else
+    if( $new_templ )           # if we create view from template - get view type
+      $view_type = $db->f(type);  
+  } else
     $vw_data = array( "listlen" => 10 );   # default values
+    
 } else {        # updating - load data into vw_data array
   reset($VIEW_FIELDS);
   while(list($k, $v) = each($VIEW_FIELDS)) {

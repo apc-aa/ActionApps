@@ -191,4 +191,7 @@ define('L_FIELD_ID_HELP',
     You need to do it only in special cases, like using search form for multiple slices. <br><br>
     Choose a field ID to be changed and the new name and number, the dots ..... will be 
     added automatically.<br>');
+define('L_VIEW_CREATE_NEW', 'Create new view');    
+define('L_VIEW_CREATE_TYPE', 'by&nbsp;type:');    
+define('L_VIEW_CREATE_TEMPL', 'by&nbsp;template:');
 ?>

@@ -1,3 +1,4 @@
+06/03/02 - added possibility to create view from template (any other view)
 06/01/02 - http/https problem fixed for admin images
          - fixed parsing arrays from .shtml URL parameters (unlimited depth)
          - added possibility to define field mapping for manualy fed slices

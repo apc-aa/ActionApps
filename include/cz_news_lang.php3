@@ -854,6 +854,11 @@ define('L_C_NUMY','Kalendáø: Rok pøíslušného data');
 
 define('L_CONSTANT_USED','Hodnoty použity v');
 
+define('L_VIEW_CREATE_NEW', 'Vytvoøit nový pohled');    
+define('L_VIEW_CREATE_TYPE', 'dle&nbsp;typu:');    
+define('L_VIEW_CREATE_TEMPL', 'dle&nbsp;šablony:');
+
+
 // constants used in param wizard only:
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 
