@@ -1809,7 +1809,7 @@ function GetSortArray( $sort ) {
  *        $result = function_name(param1, param2);
  *    we will use
  *        $result = $contentcache->get_result("function_name", array(param1, param2));
- *    For the first time call teh function_name is called, for second, third,...
+ *    For the first time call the function_name is called, for second, third,...
  *    time calling, the result is returned from cache (for the same parameters)
  *
  *    The best to use this class for time-consuming functions with small results
@@ -1818,7 +1818,7 @@ class contentcache {
     // used for global cache of contents
     var $content;
 
-    /** "class function" obviously called as cattree::global_instance();
+    /** "class function" obviously called as contentcache::global_instance();
      *  This function makes sure, there is global instance of the class
      */
     function global_instance() {
@@ -1845,9 +1845,11 @@ class contentcache {
      *  value is then stored into cache, so next call of the $function with the
      *  same parameters is returned from cache - function is not performed.
      *  Use this feature mainly for repeating, time consuming functions!
+     *  You could use also object methods - then the $function parameter should
+     *  be array (see http://php.net/manual/en/function.call-user-func.php)
      */
     function get_result( $function, $params=array() ) {
-        $key = md5($function.serialize($params));
+        $key = md5(serialize($function).serialize($params));
         if ( isset( $this->content[$key]) ) {
             return $this->content[$key];
         }
@@ -1868,6 +1870,97 @@ class contentcache {
 // end of contentcache class
 }
 
+
+
+/** toexecute class - used for many short tasks, such as sending an e-mail for
+ *  alerts. Instead of sending thounsands of e-mails in one php script run (bad
+ *  eperienses with 1000+ emails), we store just store the task in the database.
+ *  Then we call misc/toexecute.php3 script from AA cron (say each 2 minutes)
+ *  and if there is any task in the quweue, it is executed. This way we spread
+ *  sending of weekls alerts to thounsands users to several hours.
+ *  Ussage:
+ *    Instead of calling:
+ *        $object->function_name(param1, param2);
+ *    we will use
+ *        $toexecute = new toexecute;
+ *        $toexecute->later($object, array(param1, param2));
+ *
+ *        Then we create method $toexecute->toexecutelater(param1, param2)
+ *        in which we will call $object->function_name(param1, param2);
+ *
+ *  The name of 'toexecutelater' method is fixed - This is because of security.
+ *  We do not want to allow users to execute any method of any object just
+ *  by inserting some data in the database.
+ */
+class toexecute {
+    // used for global cache of contents
+    var $onepass_tasks = 20;
+
+    /** "class function" obviously called as toexecute::global_instance();
+     *  This function makes sure, there is global instance of the class
+     */
+    function global_instance() {
+        if ( !isset($GLOBALS['toexecute']) ) {
+            $GLOBALS['toexecute'] = new toexecute;
+        }
+    }
+
+    function later( $object, $params=array(), $priority=100, $time=null ) {
+        global $auth;
+        $varset = new Cvarset(
+            array( 'created'       => time(),
+                   'execute_after' => ($time ? $time : time()),
+                   'aa_user'       => $auth->auth['uid'],
+                   'priority'      => $priority,
+                   'selector'      => '',
+                   'object'        => serialize($object),
+                   'params'        => serialize($params)
+                  ));
+         // store the task in the queue (toexecute table)
+         if ( !$varset->doInsert('toexecute') ) {
+             // if you can't store it in the queue (table not created?)
+             // - execute it directly
+             return $this->execute_one($object,$params);
+         }
+         return true;
+    }
+
+    function execute() {
+        $tasks = GetTable2Array("SELECT * FROM toexecute WHERE execute_after < ".now()." ORDER by priority", 'id', 'aa_fields');
+
+        $passcounter = $this->onepass_tasks;
+        foreach ( (array)$tasks as $task ) {
+            if ( !($passcounter--) ) {   // run only onepass_tasks tasks
+                break;
+            }
+            $varset = new Cvarset( array( 'priority' => max( $task['priority']-1, 0 )));
+            $varset->addkey('id', 'number', $task['id']);
+            // We lower the priority for this task before the execution, so
+            // if the task is not able to finish, then other tasks with the same
+            // priority is called before this one (next time)
+            $varset->doUpdate('toexecute');
+            $object = unserialize($task['object']);
+
+            $retcode = $this->execute_one($object, unserialize($task['params']));
+
+            // Task is done - remove it from queue
+            $varset->doDelete('toexecute');
+            writeLog('TOEXECUTE', $retcode. ":".$task['params'], get_class($object));
+        }
+    }
+
+    function execute_one($object, $params) {
+        if ( !is_object($object) ) {
+            return 'No object'; // Error
+        }
+        set_time_limit( 30 );   // 30 seconds for each task
+        return call_user_func_array(array($object, 'toexecutelater'), $params);
+    }
+
+
+// end of toexecute class
+}
+
 /** If $value is set, returns $value - else $else */
 function get_if($value, $else, $else2='aa_NoNe') {
     return $value ? $value :
@@ -1884,15 +1977,17 @@ function aa_version() {
 
 // file_get_contents works in PHP >=4.3.0
 if (!function_exists("file_get_contents")) {
-  function file_get_contents($filename, $use_include_path = 0) {
-    $data = ""; // just to be safe. Dunno, if this is really needed
-    $file = @fopen($filename, "rb", $use_include_path);
-    if ($file) {
-      while (!feof($file)) $data .= fread($file, 1024);
-      fclose($file);
+    function file_get_contents($filename, $use_include_path = 0) {
+        $data = ""; // just to be safe. Dunno, if this is really needed
+        $file = @fopen($filename, "rb", $use_include_path);
+        if ($file) {
+            while (!feof($file)) {
+                $data .= fread($file, 1024);
+            }
+            fclose($file);
+        }
+        return $data;
     }
-    return $data;
-  }
 }
 
 
