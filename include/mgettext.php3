@@ -53,6 +53,10 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
     // store strings into backup and look for new strings in backup
     if (!$_m_backup[$mgettext_domain] && $cache)
         $_m_backup[$mgettext_domain] = $_m;
+
+    if( $mgettext_domain == $filename )
+        return;                             // allready loaded
+    
     $mgettext_domain = $filename;
     $_m = $_m_backup[$mgettext_domain];
     if ($_m) return;
