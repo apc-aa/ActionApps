@@ -49,7 +49,7 @@ use the escape character \ - the wizard will translate the characters. Remember 
         "params"=>the params in the internal format (divided by :)
 */
 
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
+// require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 
 $INSERT_TYPES["name"] = _m("Insert Function");
 $INSERT_TYPES["items"]["qte"] =
@@ -417,7 +417,29 @@ array("name"=>_m("Related Item Window"),
         array("name"=>_m("Show move buttons"),
         "desc"=>_m("Show buttons for moving items up and down"),
         "type"=>"BOOL",
-        "example"=>"1")));
+        "example"=>"1"),
+        array("name"=>_m("Show headlines from selected bins"),
+        "desc"=>_m("To show headlines in related window from selected bins.<br>".
+                   "Use this values for bins:<br>".
+                   "active bin - '".AA_BIN_ACTIVE."'<br>".
+                   "expired bin - '".AA_BIN_EXPIRED."'<br>".
+                   "pending bin - '".AA_BIN_PENDING."'<br>".
+                   "holding bin - '".AA_BIN_HOLDING."'<br>".
+                   "trash bin - '".AA_BIN_TRASH."'<br>".
+                   "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value".
+                   "for this combination is counted like 1+2+4&nbsp;=&nbsp;7"),
+        "type" => "INT",
+        "example" => "7"),
+        array("name"=>_m("Filtering conditions - unchangeable"),
+        "desc"=>_m("Conditions for filtering items in related items window. This conds user can't change."),
+        "type"=>"STR",
+        "example"=>""),
+        array("name"=>_m("Filtering conditions - changeable"),
+        "desc"=>_m("Conditions for filtering items in related items window. This conds user can change."),
+        "type"=>"STR",
+        "example"=>"")
+
+        ));
 $INPUT_TYPES["items"]["wi2"]=
 array("name"=>_m("Two Windows"),
   "desc"=>_m("Two Windows. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"),
@@ -731,6 +753,7 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
                    &nbsp; - <i>urlencode</i> - URL-encodes string (see <a href=\"http://php.net/urlencode\">urlencode<a> PHP function)<br>
                    &nbsp; - <i>safe</i> - converts special characters to HTML entities (see <a href=\"http://php.net/htmlspecialchars\">htmlspecialchars<a> PHP function)<br>
                    &nbsp; - <i>javascript</i> - escape ' (replace ' with \\')
+                   &nbsp; - <i>striptags</i>  - strip HTML and PHP tags from the string
                    "),
         "type"=>"STR",
         "example"=>_m("")))),
