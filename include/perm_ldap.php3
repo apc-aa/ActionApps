@@ -56,6 +56,10 @@ $aa_ldap_servers = array(
 function AuthenticateUsername($username, $password, $flags = 0) {
   global $aa_ldap_servers, $aa_default_ldap;
 
+  if (!$username or !$password) {         // no password => anonymous in LDAP
+     return false;
+  }
+
   $return_val=false;
   if($org = strstr($username, "@"))       // user tries to auth. via e-mail  
     $LDAPserver = WhereToSearch( substr($org,"@"));  // get ldap server for this address
@@ -658,8 +662,11 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:45  madebeer
-Initial revision
+Revision 1.2  2000/07/17 10:31:16  kzajicek
+Fixed login without password bug
+
+Revision 1.1.1.1  2000/06/21 18:40:45  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:26  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
