@@ -234,7 +234,7 @@ define("PHPLIB_ALREADY_LOADED", false);
 $_PHPLIB["libdir"] = $AA_INC_PATH.'phplib/';    // do not change
 
 /** URL of aa instalation */
-define("AA_INSTAL_URL", $AA_HTTP_DOMAIN, substr($AA_INSTAL_PATH,1));    // do not change
+define("AA_INSTAL_URL", $AA_HTTP_DOMAIN. substr($AA_INSTAL_PATH,1));    // do not change
 
 /** URL or URL path to call admin/edititem.php etc.
  *  This is the variable to make _#EDITITEM alias, etc.
