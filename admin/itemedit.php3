@@ -57,20 +57,47 @@ if( $upd_preview )
   
 $add = !( $update OR $cancel OR $insert OR $edit );
 
-if($cancel) {
+if($cancel) 
+{
   if( $anonymous )  // anonymous login
-    if( $encap ) {
-      echo '<SCRIPT Language="JavaScript"><!--
-              document.location = "'. $r_slice_view_url .'";
-            // -->
-           </SCRIPT>';
-    } else
-      go_url( $r_slice_view_url );
+    	if( $encap ) 
+	{
+      		echo '<SCRIPT Language="JavaScript"><!--
+              	document.location = "'. $r_slice_view_url .'";
+            	// -->
+           	</SCRIPT>';
+    	} 
+	else
+      		go_url( $r_slice_view_url );
    else 
-    go_url( $sess->url(self_base() . "index.php3"));
+	{
+
+/*
+Code Added by Ram Prasad on 07-Feb-2002
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Function: 
+~~~~~~~~~
+This checks if the parameter return_url is present, and redirects the user
+to the $redirect_url page.
+if not present, it redirects the user to default (index.php3) page. 
+*/	
+// Begin Ram's Code
+if ($return_url)
+		{
+			echo '<SCRIPT Language="JavaScript"><!--
+              		document.location = "'. $return_url.'";
+            		// -->
+           		</SCRIPT>';			
+		}
+	else
+		{
+		// Old Version ? go_url( $sess->url(self_base() . "index.php3"));
+		go_url( con_url($sess->url(self_base() .  "index.php3"), "slice_id=$slice_id"));
+		}
+
+// End of Ram's Code
 }    
-
-
+}
 $db = new DB_AA;
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -161,7 +188,33 @@ if( ($insert || $update) AND (count($err)<=1)
      elseif( $ins_preview OR $upd_preview ) 
       go_url( con_url($sess->url(self_base() .  "preview.php3"), "slice_id=$slice_id&sh_itm=$id"));
      else 
-      go_url( con_url($sess->url(self_base() .  "index.php3"), "slice_id=$slice_id"));
+	{
+/*
+Code Added by Ram Prasad on 07-Feb-2002
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Function: 
+~~~~~~~~~ 
+This checks if the parameter return_url is present, and redirects the user
+to the $redirect_url page.
+if not present, it redirects the user to default (index.php3) page.
+*/      
+// Begin Ram's Code        
+
+	if ($return_url)
+                {
+                        echo '<SCRIPT Language="JavaScript"><!--
+                        document.location = "'. $return_url.'";
+                        // -->
+                        </SCRIPT>';
+        
+                }
+        else
+                {
+                go_url( $sess->url(self_base() . "index.php3"));
+                }
+
+// End of Ram's Code
+    }      	
   }  
 }
     
@@ -244,10 +297,31 @@ if( !$encap ) {
 }       
 PrintArray($err);
 echo $Msg;  
-
 ?>
-<form name=inputform onsubmit="BeforeSubmit()" enctype="multipart/form-data" method=post action="<?php echo  ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF ?>">
 
+<?
+/* 
+Code Added by Ram Prasad on 07-Feb-2002
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Function: 
+~~~~~~~~~ 
+This checks if the parameter return_url is present. If yes, it passes the parameter 
+instead of using $PHP_SELF , we use $PASS_PARAM
+*/      
+
+// Begin Ram's Code
+if ($return_url)
+{
+	$PASS_PARAM=$PHP_SELF."?return_url=".urlencode($return_url);
+}
+else
+{
+	$PASS_PARAM=$PHP_SELF;
+}
+// End of Ram's Code
+?>
+
+<form name=inputform onsubmit="BeforeSubmit()" enctype="multipart/form-data" method=post action="<?php echo  ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PASS_PARAM ?>">
 <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
 <tr><td class=tabtit align="center"><b>&nbsp;<?php echo L_ITEM_HDR?></b>
 </td>
@@ -288,8 +362,27 @@ if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
 <tr><td align=center><?php
 if($edit || $update || ($insert && $added_to_db)) { ?>
    <input type=submit name=update value="<?php echo L_POST ?>">
-   <input type=submit name=upd_preview value="<?php echo L_POST_PREV ?>">
+<?
+
+/*
+Code Added by Ram Prasad on 07-Feb-2002
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Function
+~~~~~~~~
+This checks if the parameter for post_preview, if passed and if equals 0 (zero)
+it does not display the "Post and Preview Option".
+*/
+
+// Begin Ram's Code
+if ((!($post_preview==0)) or (!(isset($post_preview))))
+{	 
+echo "<input type=submit name=upd_preview value='".L_POST_PREV."'>";
+}
+// End Ram's Code
+?>
+
    <input type=submit name=insert value="<?php echo L_INSERT_AS_NEW ?>">
+
    <input type=reset value="<?php echo L_RESET ?>"><?php
    $r_hidden["id"] = $id;
 } else { ?>
@@ -308,6 +401,13 @@ page_close();
 
 /*
 $Log$
+Revision 1.29  2002/02/12 09:55:51  mitraearth
+File: apc-aa/admin/itemedit.php3
+Changed By: Ram Prasad
+Change:
+1) Added enable/disable toggle for "Post and Preview" Button visibility.($post_preview=0 disables Post and Preview button)
+2) Added fuctionality of return_url ( when return_url is provided , clicking post/cancel takes the user to $return_url instead of index.php3.
+
 Revision 1.28  2002/02/05 21:42:14  honzam
 prepare for anonymous item edit feature
 
