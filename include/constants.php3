@@ -19,8 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined("ALERTS_CONSTANTS_INCLUDED"))
-    define("ALERTS_CONSTANTS_INCLUDED",1);
+if (!defined("AA_CONSTANTS_INCLUDED"))
+    define("AA_CONSTANTS_INCLUDED",1);
 else return;
 
 #
@@ -46,7 +46,10 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => 'Site',
                                 'show_templates' => 1,  # show list of sites on 'create new' - used as templates
                                 'directory' => $AA_INSTAL_PATH ."modules/site/",
-                                'menu' => $AA_BASE_PATH. "modules/site/menu.php3"),
+                                'menu' => $AA_BASE_PATH. "modules/site/menu.php3",
+                                'language_files' => array( 
+                                    'en_site_lang.php3' => 'en_site_lang.php3',
+                                    'cz_site_lang.php3' => 'cz_site_lang.php3')),
                   'A' => array( 'table' => 'module', # this module doesn't have any special info yet
                                 'name' => 'MySQL Auth',
                                 'hide_create_module' => 1,
@@ -55,15 +58,32 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                   'J' => array( 'table' => 'jump',
                                 'name' => 'Jump inside AA control panel',
                                 'directory' => $AA_INSTAL_PATH ."modules/jump/",
-                                'menu' => $AA_INC_PATH ."menu.php3"));
+                                'menu' => $AA_INC_PATH ."menu.php3"),
+            	  'P' => array ('table' => 'polls',
+                  				'name' => 'Polls for AA',
+                                'show_templates' => 1,
+                   				'directory' => $AA_INSTAL_PATH ."modules/polls/",
+                                'menu' => $AA_BASE_PATH ."modules/polls/menu.php3"));
 /*$MODULES ['Auth'] = array ('table' => 'module',
                            'name' => 'Auth',
                            'directory' => $AA_INSTAL_PATH ."modules/auth/",
-                           'menu' => $AA_BASE_PATH ."modules/auth/menu.php3");*/
-$MODULES ['Alerts'] = array ('table' => 'module',
-                             'name' => 'Alerts',
-                             'directory' => $AA_INSTAL_PATH ."modules/alerts/",
-                             'menu' => $AA_BASE_PATH ."modules/alerts/menu.php3");
+                           'menu' => $AA_BASE_PATH ."modules/auth/menu.php3",
+                           'letter' => 'M');*/
+$MODULES['Alerts'] = array ('table' => 'module',
+                            'name' => 'Alerts',
+                            'directory' => $AA_INSTAL_PATH ."modules/alerts/",
+                            'menu' => $AA_BASE_PATH ."modules/alerts/menu.php3",
+                            'letter' => 'A');  // letter is used for the modules 
+                                               // which indentificator is not 1 
+                                               // letter long (we need 1-letter
+                                               // identification for some 
+                                               // javascripts in um_util.php3
+$MODULES['Links'] =  array ('table' => 'links',
+                            'name' => 'Links',
+                            'show_templates' => 1,
+                            'directory' => $AA_INSTAL_PATH ."modules/links/",
+                            'menu' => $AA_BASE_PATH ."modules/links/menu.php3",
+                            'letter' => 'L');
 
 # language files for slices (not for some modules, e.g. site)
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",

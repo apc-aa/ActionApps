@@ -1,18 +1,29 @@
-01/13/02 - added "add" as option to f_e for adding an item; created parameter wizard for f_e
-01/12/02 - changed site module to go to prior sibling when deleting rather than parent
-01/12/02 - added default $item=null to new_unalias_recurent to allow calling from site module without warnings
-01/12/02 - fixed adding AA_CP_Session to url in site module AAPage where it is already there.
+01/14/02 - new language file selectbox for site module (Site Admin - modedit)
+01/13/02 - added "add" as option to f_e for adding an item; 
+           created parameter wizard for f_e
+01/12/02 - changed site module to go to prior sibling when deleting rather than 
+           parent
+01/12/02 - added default $item=null to new_unalias_recurent to allow calling 
+           from site module without warnings
+01/12/02 - fixed adding AA_CP_Session to url in site module AAPage where it is 
+           already there.
 01/12/02 - changes to allow _#EDITITEM to be used outside of admin interface
-01/12/02 - combined several ways of redirecting to a URL into common function go_return_or_url
-01/11/02 - Fixed item.php3:subst_alias, it relied on old bug of expanding bare field name without { }
-1/11/02 - Changed typos of _#ITEMEDIT to _#EDITITEM
-1/11/02 - Changed a type $New_silce to $New_slice in init_page.php3
-1/11/02 - Added alias checking so {xx} will also check als[xx] (it will default to returning "{xx}" if not set
-1/11/02 - Changed f_e to work in views outside of admin (appends slice_id instead of session_id if no session id), takes a second parameter - return url (not currently specifieable with wizzard), and defaults to $PHP_SELF if running with no $sess.
+01/12/02 - combined several ways of redirecting to a URL into common function 
+           go_return_or_url
+01/11/02 - Fixed item.php3:subst_alias, it relied on old bug of expanding bare 
+           field name without { }
+01/11/02 - Changed typos of _#ITEMEDIT to _#EDITITEM
+01/11/02 - Changed a type $New_silce to $New_slice in init_page.php3
+01/11/02 - Added alias checking so {xx} will also check als[xx] 
+           (it will default to returning "{xx}" if not set)
+01/11/02 - Changed f_e to work in views outside of admin (appends slice_id 
+           instead of session_id if no session id), takes a second parameter - 
+           return url (not currently specifieable with wizzard), and defaults 
+           to $PHP_SELF if running with no $sess.
 01/10/02 - fixed bad display of selected related items, when "Two Boxes" input 
            type is used (honzam)
          - {influde()} inline construct accepts "http://" includes, now (honzam)
-	- fixed bug of bad number of parameters to new_unalias_recurent()
+         - fixed bug of bad number of parameters to new_unalias_recurent()
            (honzam)
          - fixed problem with modification of bad spot when clicked "Back" 
            in browser for 'site module' (r_spot_id changed to spot_id) (honzam)

@@ -64,8 +64,6 @@ if( $add || $update ) {
       if( !( $owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset, $db)))
         break;
     
-    $lang_file = 'en_site_lang.php3';   # we do not use other language in this module, now
-    
     # validate all fields needed for module table (name, slice_url, lang_file, owner)
     ValidateModuleFields( $name, $slice_url, $lang_file, $owner, $err );
     $deleted  = ( $deleted  ? 1 : 0 );
@@ -203,7 +201,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   }
   if( $superadmin )
     FrmInputChBox("deleted", L_DELETED, $deleted);
-//  FrmInputSelect("lang_file", L_LANG_FILE, $LANGUAGE_FILES, $lang_file, false);
+  FrmInputSelect("lang_file", L_LANG_FILE, $MODULES['W']['language_files'], $lang_file, false);
   FrmInputText("state_file", L_STATE_FILE, $state_file, 99, 25, false, L_SITE_STATE_FILE_HLP);
 ?>
 </table>
