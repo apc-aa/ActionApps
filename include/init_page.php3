@@ -128,7 +128,12 @@ if( !$Add_slice AND !$New_slice ) {
     if($db->next_record()) {
       $r_slice_headline = $db->f(headline);
       $r_config_type[$slice_id] = $db->f(type);
-      
+      if ($db->f(config)) {
+        // in config field are stored many parameters of this slice
+        $r_slice_config = wddx_deserialize($db->f(config));
+      } else {
+        $r_slice_config = wddx_deserialize(DEFAULT_SLICE_CONFIG);
+      }
       $r_stored_slice = $slice_id;
       $r_slice_view_url = ($db->f(slice_url)=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                       : $db->f(slice_url));
@@ -143,23 +148,12 @@ if( !$Add_slice AND !$New_slice ) {
     header("Location: ". con_url($sess->url($PHP_SELF),$netscape));
     exit;
   }
-  
-  // This has to be after the redirect - header() call,
-  // otherwise the warning "HTTP headers were already sent" can occur
- 
-  if (!$db->f(config)) {
-    $r_slice_config = wddx_deserialize(DEFAULT_SLICE_CONFIG);
-    huh('This slice does not have config string (WDDX), default values are used. Possible reasons:<br>
-         1) You do not have the new column "config" in table "slices" or<br>
-         2) This is an old slice, where "config" string was not used. Please update Parameters in Slice Settings<br>');
-  } else {
-    // in config field are stored many parameters of this slice
-    $r_slice_config = wddx_deserialize($db->f(config));
-  }
-
 }
 /*
 $Log$
+Revision 1.4  2000/08/03 15:36:52  kzajicek
+The WDDX warning deleted, there are other potential redirects in other files
+
 Revision 1.3  2000/08/03 15:18:41  kzajicek
 The WDDX warning is printed after possible header() call
 
