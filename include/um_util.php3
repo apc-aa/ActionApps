@@ -80,8 +80,8 @@ function PrintModulePermModificator($selected_user) {
      else {               # no permission to this module
                           # this module should be listed in 'Add perm' listbox
       $mod_2B_add .= "<option value=\"$mid\">". safe($db->f('name')) .'</option>';
-      $mod_types .= $db->f('type');    # string for javascript to know, what
-    }                                  # type of module the $mod_2B_add is
+      $mod_types .= GetModuleLetter($db->f('type'));  # string for javascript 
+    }                       # to know, what type of module the $mod_2B_add is
   }?>
     </table></td></tr>
    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Assign new permissions")?></b></td></tr>
@@ -170,6 +170,16 @@ function AddUserModulePerms( $new_module, $new_module_role, $selected_user, $per
   }
 }
 
+/** 
+ * Returned Module letter is used for as full identification of the module 
+ * by 1-letter long id (we need it for some javascripts in um_util.php3)
+ */
+function GetModuleLetter($type) {
+  global $MODULES;
+  // get 'letter' or first letter of MODULE type 
+  return ($MODULES[$type]['letter'] ? $MODULES[$type]['letter'] : substr($type,0,1));  
+}
+
 function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
   <script language="JavaScript"><!--
     var mod = new Array();
@@ -177,8 +187,11 @@ function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
       # tell javascript, which module uses which permission roles
       echo "\n var mod_types='$mod_types';\n";
       reset($MODULES);
-      while( list($k,$v) = each($MODULES) )
-        echo " mod[".ord($k)."] = new Array('". join("','", $perms_roles_modules[$k]) ."');  // module type $k\n";
+      while( list($k,$v) = each($MODULES) ) {
+        $letter = GetModuleLetter($k);             // get 'letter' or first letter of MODULE type 
+        if( isset($perms_roles_modules[$k]) AND is_array($perms_roles_modules[$k]) )
+          echo " mod[".ord($letter)."] = new Array('". join("','", $perms_roles_modules[$k]) ."');  // module type $k\n";
+      }  
     ?>
     // set right roles for modules listed in 'Add rows'
     SetRole(1);
