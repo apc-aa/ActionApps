@@ -144,12 +144,14 @@ if ((isset($conds_rw)) && (isset($showcondsrw))) {
 
 // r_state array holds all configuration of Links Manager
 // the configuration then could be Bookmarked
-if ( !isset($r_state['related']) OR $sid OR ($r_state['related']['module_id'] != $module_id)) {
+if ( !isset($r_state['related']) OR $sid OR ($r_state['related']['sid'] != $module_id)) {
+//    huhl(" 1:", $r_state['related'], " sid:",$sid , " m:",$r_state['related']['module_id'], " mi:",$module_id);
     // we are here for the first time or we are switching to another slice
     unset($r_state['related']);
     // set default admin interface settings from user's profile
     // $r_state["module_id"]         = $module_id;
     // $r_state['bin']               = 'app';
+    $frombins = get_if( $frombins, AA_BIN_ACTIVE | AA_BIN_PENDING ) ;
     $r_state['related']['sid']       = $module_id;
     $r_state['related']['mode']      = $mode;
     $r_state['related']['var_id']    = $var_id;
