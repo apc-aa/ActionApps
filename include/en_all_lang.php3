@@ -54,7 +54,12 @@ define("DEFAULT_EDIT_FIELDS",    // shown fields (headline if allways shown)
  "y".  // publish_date
  "y".  // expiry_date
  "y".  // edit_note
+ "y".  // img_upload
  "y".  // redirect
+ "n".  // con_name
+ "n".  // con_email
+ "n".  // con_phone
+ "n".  // con_fax
  "y".  // source_desc
  "y".  // source_address
  "y".  // source_city
@@ -63,10 +68,6 @@ define("DEFAULT_EDIT_FIELDS",    // shown fields (headline if allways shown)
  "y".  // start_date
  "y".  // end_date
  "y".  // time
- "y".  // con_name
- "y".  // con_email
- "y".  // con_phone
- "y".  // con_fax
  "y".  // loc_name
  "y".  // loc_address
  "y".  // loc_city
@@ -102,7 +103,12 @@ define("DEFAULT_NEEDED_FIELDS",
  "n".  // publish_date
  "n".  // expiry_date
  "n".  // edit_note
+ "n".  // img_upload
  "n".  // redirect
+ "n".  // con_name
+ "n".  // con_email
+ "n".  // con_phone
+ "n".  // con_fax
  "n".  // source_desc
  "n".  // source_address
  "n".  // source_city
@@ -111,10 +117,6 @@ define("DEFAULT_NEEDED_FIELDS",
  "n".  // start_date
  "n".  // end_date
  "n".  // time
- "n".  // con_name
- "n".  // con_email
- "n".  // con_phone
- "n".  // con_fax
  "n".  // loc_name
  "n".  // loc_address
  "n".  // loc_city
@@ -615,6 +617,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.16  2000/11/13 10:41:14  honzam
+Fixed bad order for default setting of show fields and needed fields
+
 Revision 1.15  2000/10/12 15:56:09  honzam
 Updated language files with better defaults
 
