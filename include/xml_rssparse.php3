@@ -53,8 +53,14 @@ $module2abbrev = array(
 // 5 - http://www.aaronsw.com/weblog/index.xml
 // 6 - 	
 
+// You cant utf8 decode a feed which is iso-8859-1, so the utf8_decode part
+// of this is removed. There is an encoding parameter to xml_parser_create_ns,
+// but its unclear if that results in decoding the string or not, and all
+// feeds available appear to be iso-8859-1, mitra@mitra.biz 30oct03 
+// see also notes on RSS_restrict()
 function decode($v) {
-  return utf8_decode($v);
+#  return utf8_decode($v);
+  return($v);
 }
 
 function nsName2abbrevname($name) {

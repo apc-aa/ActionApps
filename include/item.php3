@@ -635,8 +635,18 @@ class item {
     }
 
 
-  function RSS_restrict($txt, $len) {
-    return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
+// This function used to do a UTF8 encode, but since characters 
+// are coming out of a DB which I believe is iso-8859-1, they shouldn't 
+// be utf8 encoded. Unfortunately the internationalisation of AA isn't 
+// documented anywhere and noone responded to email about it. So this is 
+// just a guess. If anyone who knows something about this is looking
+// at this comment, then you can replace this code with something 
+// that intelligently looks at the database encoding before converting to
+// iso-8859-1. OR possibly better, output the encoding in the head of the RSS 
+// via  a new alias - mitra@mitra.biz 30Oct03
+function RSS_restrict($txt, $len) {
+#    return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
+    return htmlspecialchars(substr($txt,0,$len));
   }
 
   # standard aliases to generate RSS .91 compliant meta-information
