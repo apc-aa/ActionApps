@@ -290,4 +290,80 @@ function updateDiscussionCount($item_id) {
   $SQL= "UPDATE item SET disc_count='$all', disc_app='". ($all-$hide) ."' WHERE id='$p_item_id'";
   $db->query($SQL);
 }
+
+// -----------------------------------------------------------------------------------------
+
+function GetDiscussion2MailAliases() {
+  $aliases["_#ITEMPAR3"] = GetAlias("", "", _m("3rd parameter filled in DiscussionMailList field"));
+  for ($i = 4; $i < 10; $i ++)
+      $aliases["_#ITEMPAR$i"] = GetAlias("", "", _m("%1th parameter filled in DiscussionMailList field", array ($i)));
+  return $aliases;
+}
+
+// -----------------------------------------------------------------------------------------
+/* This function sends new discussion items to one mail address 
+   if a field with name DiscussionMailList
+   exists and is filled with these parameters separated by ":" (use "#:" instead of verbatim ":")
+   
+   view_id:mail_address:param3:param4:...
+*/
+
+function send2mailList ($d_item_id, $new_id) {
+    global $db;
+    $db->query ("SELECT content.text FROM 
+                 content INNER JOIN item ON item.id = content.item_id INNER JOIN
+                 field ON content.field_id = field.id
+                 AND field.slice_id = item.slice_id
+                 WHERE item.id='".q_pack_id($d_item_id)."'
+                 AND field.name = 'DiscussionMailList'"); 
+    if ($db->next_record()) {
+        $item_params = split_escaped (":", $db->f("text"), "#:");
+        list ($vid, $maillist) = $item_params;
+        
+        $db->query("SELECT * FROM view WHERE id=$vid");
+        if ($db->next_record()) {
+            $view_info = $db->Record;
+                  
+            $mail_parts = array (
+                "from" => "aditional",
+                "reply_to" => "aditional2",
+                "errors_to" => "aditional3",
+                "sender" => "aditional4",
+                "subject" => "aditional5",
+                "body" => "even");
+   
+            $html = $view_info[flag] & DISCUS_HTML_FORMAT;
+            $aliases = GetDiscussionAliases();
+            $columns = GetDiscussionContentSQL (
+                "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
+                $d_item_id, "", $vid, true, $html, "");       
+            reset ($columns);
+            list (,$columns) = each ($columns);
+            $CurItem = new item("", $columns, $aliases, "", "", "");               
+             
+            reset ($mail_parts);
+            $mail = "";
+            while (list ($part, $field) = each ($mail_parts)) {
+                $s = $view_info [$field];
+                for ($i=2; $i < 9; $i ++)
+                    $s = str_replace ("_#ITEMPAR".($i+1), $item_params [$i], $s);
+                $CurItem->setformat ($s);
+                $mail [$part] = $CurItem->get_item();
+            }
+            
+            $mailheaders = $mail["from"] ? "From: $mail[from]\r\n" : "";
+            $mailheaders .= $mail["reply_to"] ? "Reply-To: $mail[reply_to]\r\n" : "";
+            $mailheaders .= $mail["errors_to"] ? "Errors-To: $mail[errors_to]\r\n" : "";
+            $mailheaders .= $mail["sender"] ? "Sender: $mail[sender]\r\n" : "";
+                        
+            $db->query ("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
+                         WHERE item.id='".q_pack_id($d_item_id)."'");
+            $db->next_record();                         
+            global $LANGUAGE_CHARSETS;                         
+            $charset = $LANGUAGE_CHARSETS [substr ($db->f("lang_file"),0,2)];
+            mail_html_text ($maillist, $mail["subject"], $mail["body"], $mailheaders, $charset, 0);
+        }
+    }
+}
+
 ?>
