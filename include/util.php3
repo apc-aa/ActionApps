@@ -1013,4 +1013,97 @@ function GetTimeZone () {
     - gmmktime ($d[hours],$d[minutes],$d[seconds],$d[mon],$d[mday],$d[year])) / 3600;
 }
 
+/*  Function: gensalt
+    Purpose:  generates random string of given length (useful as MD5 salt)
+*/
+function gensalt($saltlen)
+{    
+ list($usec, $sec) = explode(' ', microtime());
+ //srand ($sec + ((float) $usec * 100000));
+ srand((double) microtime() * 1000000);
+ $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
+ $i=0;
+ $salt=""; 
+ while ($i<$saltlen) {
+     $salt.= substr ($salt_chars, rand (0,strlen($salt_chars)-1), 1);
+     $i++; 
+ }
+ return $salt;
+}
+
+/*  Function: html2test
+    Purpose:  strips the HTML tags and lot more to get a plain text version
+*/
+function html2text ($html) {
+    
+    // reverse to htmlentities
+    if (function_exists ("get_html_translation_table")) {
+        $trans_tbl = get_html_translation_table (HTML_ENTITIES);
+	    $trans_tbl = array_flip ($trans_tbl);
+        $html = strtr ($html, $trans_tbl);
+    }
+
+    // strip HTML tags
+    $search = array ("'<script[^>]*?>.*?</script>'si",  // Strip out javascript
+                 "'<[\/\!]*?[^<>]*?>'si",           // Strip out html tags
+                 "'([\r\n])[\s]+'",                 // Strip out white space
+                 "'&(quot|#34);'i",                 // Replace html entities
+                 "'&(amp|#38);'i",
+                 "'&(lt|#60);'i",
+                 "'&(gt|#62);'i",
+                 "'&(nbsp|#160);'i",
+                 "'&#(\d+);'e");                    // evaluate as php
+
+    $replace = array ("",
+                  "",
+                  "\\1",
+                  "\"",
+                  "&",
+                  "<",
+                  ">",
+                  " ",
+                  "chr(\\1)");
+
+    return preg_replace ($search, $replace, $html);
+}
+
+/*  Function:    mail_html_text
+    Purpose:     sends safely HTML messages
+    Parameters:  same as PHP mail(), plus $charset 
+                 $use_base64 - set to 0 if you want to pass the message 8 bit
+    Description: some e-mail clients don't understand HTML. This function Creates a multipart message containing both the HTML and the plain-text version of the message (by leaving out the HTML tags). */
+
+function mail_html_text ($to, $subject, $message, $additional_headers = "", $charset = "iso-8859-1", $use_base64 = 1) {
+    $boundary = "-------AA-MULTI-".gensalt (20)."------";
+    $encoding = $use_base64 ? "base64" : "8bit";
+    $textmessage = html2text ($message);
+        
+    if ($use_base64) {
+        $message = base64_encode ($message);
+        $textmessage = base64_encode ($message);
+    }
+       
+    $additional_headers .= 
+        "MIME-Version: 1.0\r\n"
+        ."Content-Type: multipart/alternative;\r\n"
+        ." boundary=\"$boundary\"\r\n"
+        ."Content-Transfer-Encoding: $encoding\r\n"
+        ."\r\n"
+        ."--$boundary\r\n"
+
+        ."Content-Type: text/html; charset=\"$charset\"\r\n"
+        ."Content-Transfer-Encoding: $encoding\r\n"
+        ."\r\n"
+        .$message."\r\n"
+        ."--$boundary\r\n"
+
+        ."Content-Type: text/plain; charset=\"$charset\"\r\n"
+        ."Content-Transfer-Encoding: $encoding\r\n"
+        ."\r\n"
+        .$textmessage."\r\n"
+        ."--$boundary--\r\n";
+        
+     mail ($to, $subject, "", $additional_headers);
+}
+
 ?>
