@@ -13,7 +13,7 @@ require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
-require_once $AA_BASE_PATH.menu_include();   //show navigation column depending on $show
+require_once menu_include();      //show navigation column depending on $show
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 require_once $GLOBALS["AA_INC_PATH"]."../misc/alerts/util.php3";
 
@@ -36,6 +36,7 @@ $db = new DB_AA;
 
 if ($go_findview && $findview) {
     $fields = array (
+        "id",
         "before",
         "even",
         "odd",
@@ -76,6 +77,9 @@ if ($go_findview && $findview) {
 
 if ($go_findslice && $findslice) {
     $fields = array (
+        "name",
+        "type",
+        "id",
         "fulltext_format_top",
         "fulltext_format",
         "fulltext_format_bottom",
