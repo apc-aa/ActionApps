@@ -128,18 +128,20 @@ class zids {
     *   The type must be already set (from init). */
     function union($ids = "") {
         $this->add ($ids);
-        // we can't use array_unique because we need to preserve key range 0..x
-        sort ($this->a);
-        $last = "XXXXXXXX";
-        $unique = "";
-        for (reset ($this->a); list (,$v) = each($this->a);) {
+        if ($this->count() > 0 ) {
+            // we can't use array_unique because we need to preserve key range 0..x
+            sort ($this->a);
+            $last = "XXXXXXXX";
+            $unique = "";
+            for (reset ($this->a); list (,$v) = each($this->a);) {
+                if ($v && $v != $last)
+                    $unique[] = $v;
+                $last = $v;
+            }
             if ($v && $v != $last)
                 $unique[] = $v;
-            $last = $v;
+            $this->a = $unique;
         }
-        if ($v && $v != $last)
-            $unique[] = $v;
-        $this->a = $unique;
     }
 
     // Debugging function to print zids, don't rely on the output format, its only for debuging

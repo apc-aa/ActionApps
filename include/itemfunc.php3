@@ -84,7 +84,7 @@ function default_fnc_rnd($param) {
         $db->query ($SQL);
     } while ($db->next_record());
     freeDB($db);
-        
+
     return $salt;
 }
 
@@ -505,9 +505,9 @@ function show_fnc_rio($varname, $field, $value, $param, $html) {
 
   if( substr($constgroup,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $arr = GetItemHeadlines( substr($constgroup, 7), "" );
-   else 
+   else
     $arr = GetConstants($constgroup);
-  
+
   echo $field["input_before"];
   FrmInputRadio($varname, $field['name'], $arr, $value[0]['value'],
                 $field["required"], $field["input_help"], $field["input_morehlp"],
@@ -526,7 +526,7 @@ function show_fnc_mch($varname, $field, $value, $param, $html) {
 
   if( substr($constgroup,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $arr = GetItemHeadlines( substr($constgroup, 7), "" );
-   else 
+   else
     $arr = GetConstants($constgroup);
 
   # fill selected array from value
@@ -567,7 +567,7 @@ function show_fnc_mse($varname, $field, $value, $param, $html) {
     #add blank selection for not required field
     if( !$field["required"] )
       $arr[''] = " ";
-   } else 
+   } else
     $arr = GetConstants($constgroup);
 
   # fill selected array from value
@@ -761,7 +761,7 @@ function show_fnc_wi2($varname, $field, $value, $param, $html) {
 
   if (!empty($param))
     list($constgroup, $size, $wi2_offer, $wi2_selected) = explode(':', $param);
-  
+
   // default size is 5 rows
   if( !$size ) {
       $size = 5;
@@ -942,18 +942,18 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
 *   @param array $content4id   array (field_id => array of values
 *						      (usually just a single value, but still an array))
 *   @param array $oldcontent4id if not sent, StoreItem finds it
-*   @return true on success, false otherwise 
+*   @return true on success, false otherwise
 */
 function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     $invalidatecache=true, $feed=true, $oldcontent4id="" )
 {
     global $varset, $itemvarset;
-    $debugsi=$GLOBALS[debugsi]; 
+    $debugsi=$GLOBALS[debugsi];
 #$GLOBALS[debug] = 1;
-    if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id, fields size=",count($fields)); 
+    if ($debugsi) huhl("StoreItem id=$id, slice=$slice_id, fields size=",count($fields));
     if (!is_object ($varset)) $varset = new CVarset();
     if (!is_object ($itemvarset)) $itemvarset = new CVarset();
-    
+
     if( !( $id AND is_array($fields) AND is_array($content4id)) ) {
         if ($GLOBALS[errcheck]) huhl("Warning: StoreItem failed parameter check");
         return false;
@@ -1019,7 +1019,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                 if ($fnc["fnc"]=="fil")
                 {
                     if ($debugsi >= 5) huhl("StoreItem: fil");
-                    if ($debugsi >= 5) $GLOBALS[debug] = 1; $GLOBALS[debugupload] = 1;
+                    if ($debugsi >= 5) { $GLOBALS[debug] = 1; $GLOBALS[debugupload] = 1; }
                     //Note $thumbnails is undefined the first time in this loop
                     //print_r($arr_stop);
                     if (is_array($thumbnails)){
@@ -1071,7 +1071,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         $itemvarset->add("display_count", "quoted", "0");
 
         $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
-    }  
+    }
     $db = getDB();
     $db->tquery($SQL);
     freeDB($db);
@@ -1320,7 +1320,7 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
     $notshown="")
 {
     global $show_func_used, $js_proove_fields, $fields, $prifields, $oldcontent4id;
-    
+
     global $varset, $itemvarset;
     if (!is_object ($varset)) $varset = new Cvarset();
     if (!is_object ($itemvarset)) $itemvarset = new Cvarset();
