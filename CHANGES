@@ -1,3 +1,47 @@
+02/16/04 - uploaded new developer's version of AA (unstable yet). Changes:
+(honzam) - used HTMLAREA 3 (http://www.interactivetools.com/products/htmlarea)
+           instead of old RichText Editor
+         - new manager class used for 'Item manager' and 'Related items
+           selection window'. New manager allows much better searching (as many
+           conditions as you want also with constant selection) and new
+           possibility to save your query for future use
+         - new profile class for better handling user's profiles
+         - new Event class allowing us set event handlers for various events
+           in AA (new item, constant changed, ...)
+         - new inputform class - preparation for customizeable inputforms
+           (through view)
+         - bulk e-mail sending (to users from Reader slice)
+         - 'related items selection window' now allows to define default filters
+           of items (hidden filters as well as the preset ones). Now you can
+           restrict from which items you want allow users to select related
+           items
+         - users from Reader slice could became Authors/Editors/Administrators
+           of any slice (just like any other users) - now works for perm_LDAP
+           only, but we can extend it to perm_sql as well
+         - improved design of forms in admin interface (buttons on top, ...)
+         - improved Node setting for intrer exchange (check some errors)
+         - item class optimalization (simplifier constructor)
+         - improved design of 'Manual feeding' (export)
+         - you can set "No Item Message" also for slice.php3 (in AA admin)
+         - added new "Stored query" (Bookmark) and "Inputform" property in user
+           profile
+         - added link to user names which links to user's setting
+         - f_t alias function now supports output modification:
+           csv / safe / javascript / urlencode / striptags
+           (ussage: {alias:<field_id........>:f_t:the text - possibly with
+           {some aliases}:urlencode(or another modifier)})
+         - improved log function - added "selector" for easier searching in logs
+         - new hint and show (what) feature in manager class
+         - menu utils now supports javascript calling
+         - generalized bin design - now it is possible to have more than three
+           bins (active/holding/trash) (if someone programs it)
+         - added help texts for Links module
+         - fixed bug of not working "notshown" array
+         - remove duplicated lang_code field from AA Core Field slice template
+
+--------------------
+02/16/04 - v2.6.1 - stable release
+--------------------
 02/03/04 - fixed bug in feed field mapping settings - names with apostroph now
 (honzam)   works
          - slice.php3 with iview parameter now accepts view sort order
