@@ -117,3 +117,6 @@ define('L_V_D_ALL_BUTTON','HTML code for "Show all" button');
 define('L_V_D_NEW_BUTTON','HTML code for "Add" button');
 
 define('L_INPUT_SHOW_TPR','Textarea with Presets');
+define('L_CONSTANT_USED','Constants used in slice');
+
+?>

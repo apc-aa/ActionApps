@@ -25,7 +25,6 @@ http://www.apc.org/
 #             category - edit categories for this slice (no group_id nor categ required)
 
 require "../include/init_page.php3";
-debuglog ("se_constant: group id $group_id");
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
@@ -35,14 +34,6 @@ require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if( $deleteGroup && $group_id && !$category )
-{
-    $db = new DB_AA;
-    $db->query ("DELETE FROM constant WHERE (group_id='lt_groupNames' AND name='$group_id')
-                OR group_id='$group_id'");
-    go_url( $sess->url(self_base() . "index.php3"));
-}
-  
 if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_FIELDS, "admin");
   exit;
@@ -53,6 +44,15 @@ if( $categ OR $category ) {
     MsgPage($sess->url(self_base())."index.php3", L_NO_PS_CATEGORY, "admin");
     exit;
   }  
+}
+
+if( $deleteGroup && $group_id && !$category ) {
+  # delete constant group name
+  $db->query ("DELETE FROM constant WHERE (group_id='lt_groupNames' AND value='$group_id')
+              OR group_id='$group_id'");
+  # delete constants itself
+  $db->query ("DELETE FROM constant WHERE (group_id='$group_id')");
+  go_url( $sess->url(self_base() . "se_fields.php3"));
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -298,8 +298,27 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 	 </td>
 </tr>";
 
-// Find the slice owner of this group
+# Find slices, where the constant group is used 
+if( $group_id ) {
+  $delim = '';
+  $db->query ("
+  	SELECT slice.name FROM slice, field 
+     WHERE slice.id = field.slice_id
+       AND field.input_show_func LIKE '%$group_id%'");
+  while( $db->next_record() ) {
+    $using_slices .= $delim. $db->f('name');
+    $delim = ', ';
+  }
+  if( $using_slices ) {
+    echo "
+        <tr><td><b>".L_CONSTANT_USED."</b></td>
+          <td colspan=3>$using_slices</td>
+        </tr>";
+  }      
+}
 
+
+# Find the slice owner of this group
 $db->query ("
 	SELECT * FROM constant_slice INNER JOIN slice 
 	ON constant_slice.slice_id = slice.id 
@@ -314,7 +333,7 @@ if (!$owner_id || !$group_id)
 	echo L_CONSTANT_OWNER_HELP;
 	
 // display the select box to change group owner if requested ($chown)
-else if($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
+elseif($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
     echo "<select name=new_owner_id>";
     reset($g_modules);
     while(list($k, $v) = each($g_modules)) { 

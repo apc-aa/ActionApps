@@ -874,7 +874,7 @@ define('L_C_NUMD','Kalendáø: Den v mìsíci pøíslušného data');
 define('L_C_NUMM','Kalendáø: Èíslo mìsíce pøíslušného data');
 define('L_C_NUMY','Kalendáø: Rok pøíslušného data');
 
-
+define('L_CONSTANT_USED','Hodnoty pouity v');
 
 // constants used in param wizard only:
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
