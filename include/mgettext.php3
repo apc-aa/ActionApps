@@ -15,6 +15,10 @@ http://www.apc.org/
     GNU General Public License for more details.
 */
 
+if (!defined("MGETTEXT_INCLUDED")) 
+      define("MGETTEXT_INCLUDED",1);
+else return;
+
 function get_mgettext_lang () {
     global $mgettext_lang;
     if (!isset ($mgettext_lang))
