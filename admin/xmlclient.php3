@@ -116,15 +116,16 @@ function updateFieldsMapping($feed_id, &$l_slice_fields, $l_slice_id,
   reset($field_refs);
   while (list ($r_field_id,) = each($field_refs)) {
     if ($ext_map && $ext_map[$r_field_id]) {
-       // remote field is in the feedmap table => update name
-       $db->query("UPDATE feedmap SET from_field_name='".$fields[$r_field_id][name]."'
+       # remote field is in the feedmap table => update name
+       # we change it, because the field name could change on remote AA
+       $db->query("UPDATE feedmap SET from_field_name='".quote($fields[$r_field_id][name])."'
                     WHERE from_slice_id='$p_r_slice_id'
                       AND to_slice_id='$p_l_slice_id'
                       AND from_field_id='$r_field_id'");
 
     } else {
       $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id',
-                   '".FEEDMAP_FLAG_EXTMAP ."','','".$fields[$r_field_id][name]."')";
+                   '".FEEDMAP_FLAG_EXTMAP ."','','".quote($fields[$r_field_id][name])."')";
       $db->query($SQL);
     }
   }
@@ -216,7 +217,7 @@ function updateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_sl
                                                     # insert, invalidatecache, not feed
     // set the item to be recevied from remote node (todo - set via content4id)
 
-    $db->query("UPDATE item SET externally_fed='".$feed[name]."' WHERE id='".q_pack_id($item_id)."'");
+    $db->query("UPDATE item SET externally_fed='".quote($feed[name])."' WHERE id='".q_pack_id($item_id)."'");
   }
 }
 //-----------------------------------------------------------------------------

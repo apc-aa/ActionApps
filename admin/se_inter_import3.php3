@@ -97,7 +97,7 @@ while (list(,$f_slice) = each($f_slices)) {
     $catVS->add("to_slice_id","unpacked", $slice_id);
     $catVS->add("to_field_id","packed",$field_id );
     $catVS->add("flag","number", FEEDMAP_FLAG_EXTMAP);
-    $catVS->add("from_field_name","quoted",$aa_rss[fields][$field_id][name]);
+    $catVS->add("from_field_name","text",$aa_rss[fields][$field_id][name]);
     $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
     if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
         $err["DB"] .= MsgErr("Can't add external import");
