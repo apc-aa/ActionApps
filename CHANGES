@@ -1,3 +1,4 @@
+06/30/02 - added Slice Wizard
 06/17/02 - patched PHPLib is part of AA, now (use 'cvs update -d' to get it)
          - removed call-time passed-by-reference variables in function calls
          - better variable handling if magic_qoutes are not set (no more 
