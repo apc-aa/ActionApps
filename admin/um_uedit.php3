@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -77,9 +77,9 @@ if( $usr1_flt )   // group editation - list of all users
  else
   $all_users = $users;  // in group editation is $rusr=="", so $users are list of all users
 
- 
+
 if( $selected_user ) {
-  if( $selected_user != "n" )  // none user selected 
+  if( $selected_user != "n" )  // none user selected
     $user_groups = GetMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
   if( !isset($user_groups) OR !is_array($user_groups) )
     $sel_groups["n"][name] = (( $user_groups == "too much" ) ? _m("Too much groups found.") : "");
@@ -91,7 +91,7 @@ if( $selected_user ) {
 }
 
 if( $selected_group ) {
-  if( $selected_group != "n" )  // none group selected 
+  if( $selected_group != "n" )  // none group selected
     $groups_user = GetGroupMembers($selected_group);   // get list of users and groups right under $selected_group
   if( !isset($group_users) OR !is_array($group_users) )
     $sel_users["n"][name] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
@@ -245,10 +245,12 @@ if( $usr_edit OR ($submit_action == "update_submit") )
 
 # User data ---------------------------------------------------
 
-  if( $usr_edit OR ($submit_action == "update_submit") )
-    FrmStaticText( _m("Login name"), $user_data[login]);
-   else
+  if( $usr_edit OR ($submit_action == "update_submit") ) {
+    FrmStaticText( _m("Login name"), $user_data['login']);
+    FrmStaticText( _m("User Id"),    $user_data['uid']);
+  } else {
     FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);
+  }
   FrmInputPwd("user_password1", _m("Password"), $user_password1, 50, 50, true);
   FrmInputPwd("user_password2", _m("Retype password"), $user_password2, 50, 50, true);
   FrmInputText("user_firstname", _m("First name"), $user_firstname, 50, 50, true);
@@ -261,7 +263,8 @@ echo '</table></td></tr>';
 
 if( !$add_submit AND !$usr_new) {
 
-  # User - group membership -----------------------------------------?>
+  # User - group membership -----------------------------------------
+  ?>
 
   <tr><td class=tabtit><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
   <tr><td>
