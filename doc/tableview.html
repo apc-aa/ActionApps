@@ -287,8 +287,13 @@
     <td width="55%">
       <p>hidden | select box | text edit box | text area | date special | user 
         defined function</p>
-      <p>Date is shown formatted with &quot;format&quot; and may be changed by 
-        typing a value in the same format. </p>
+      <p>Date <span lang="en-us">works on a timestamp stored </span>i<span lang="en-us">n 
+      a numeric field in database. It </span>is <span lang="en-us">printed
+      </span>formatted with &quot;format&quot; and <span lang="en-us">users
+      </span>may<span lang="en-us"> change it</span> by 
+        typing a<span lang="en-us">nother</span> value in the same format.
+      <span lang="en-us">When using &quot;default&quot; in Field Parameters, give the 
+      numerical timestamp value.</span></p>
       <p>User defined function is always used only to print the field value, always 
         shown readonly.</p>
     </td>
@@ -343,6 +348,14 @@
     <td width="55%">applied only on readonly fields, show as HTML or as plain 
       text</td>
     <td width="13%"><code>false</code></td>
+  </tr>
+  <tr> 
+    <td width="12%">unpacked</td>
+    <td width="20%"><code>true <span lang="en-us">| false</span></code></td>
+    <td width="55%"><span lang="en-us">useful for packed IDs: show the value 
+    unpacked, store it packed. When using &quot;default&quot; in Field Parameters, give 
+    the&nbsp; packed unquoted value.</span></td>
+    <td width="13%"><code><span lang="en-us">false</span></code></td>
   </tr>
 </table>
 <h2>Child Table Grammar</h2>
